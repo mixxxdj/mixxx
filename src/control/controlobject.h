@@ -176,8 +176,8 @@ class ControlObject : public QObject {
     // Installs a value-change request handler that ignores all sets.
     void setReadOnly();
 
-    // Injects a specific MacroRecorder. For tests only.
-    void setMacroRecorder(std::shared_ptr<ThreadLocalMacroRecorder> pMacroRecorder) {
+    // Injects a specific QuickAction. For tests only.
+    void setMacroRecorder(std::shared_ptr<ThreadLocalQuickAction> pMacroRecorder) {
         if (m_pControl) {
             m_pControl->setMacroRecorder(std::move(pMacroRecorder));
         }

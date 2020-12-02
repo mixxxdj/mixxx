@@ -24,7 +24,7 @@
 #endif
 #include "broadcast/broadcastmanager.h"
 #include "control/controlpushbutton.h"
-#include "control/threadlocalmacrorecorder.h"
+#include "control/threadlocalquickaction.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
@@ -218,9 +218,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                 static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
 
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
-    ThreadLocalMacroRecorder::setGlobalInstance(
-            std::shared_ptr<ThreadLocalMacroRecorder>(
-                    new ThreadLocalMacroRecorder(this)));
+    ThreadLocalQuickAction::setGlobalInstance(
+            std::shared_ptr<ThreadLocalQuickAction>(
+                    new ThreadLocalQuickAction(this)));
 
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
     if (!m_pDbConnectionPool) {
@@ -760,7 +760,7 @@ void MixxxMainWindow::finalize() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting EffectsManager";
     delete m_pEffectsManager;
 
-    ThreadLocalMacroRecorder::setGlobalInstance(std::shared_ptr<ThreadLocalMacroRecorder>());
+    ThreadLocalQuickAction::setGlobalInstance(std::shared_ptr<ThreadLocalQuickAction>());
     delete m_pTouchShift;
 
     WaveformWidgetFactory::destroy();

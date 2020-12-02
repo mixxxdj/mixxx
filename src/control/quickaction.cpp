@@ -1,17 +1,17 @@
-#include "macrorecorder.h"
+#include "quickaction.h"
 
 #include "preferences/usersettings.h"
 
-MacroRecorder::MacroRecorder(QObject* parent)
+QuickAction::QuickAction(QObject* parent)
         : QObject(parent),
-          m_recordingMacro("[MacroRecorder]", "recording"),
-          m_trigger("[MacroRecorder]", "trigger"),
+          m_recordingMacro("[QuickAction]", "recording"),
+          m_trigger("[QuickAction]", "trigger"),
           m_recordedValues(),
           m_iBiggestOrdinal(0) {
-    m_trigger.connectValueChanged(this, &MacroRecorder::trigger);
+    m_trigger.connectValueChanged(this, &QuickAction::trigger);
 }
 
-bool MacroRecorder::recordCOValue(const ConfigKey& key, double value) {
+bool QuickAction::recordCOValue(const ConfigKey& key, double value) {
     if (m_recordingMacro.toBool()) {
         m_iBiggestOrdinal++;
         m_recordedValues.insert(Key(key, m_iBiggestOrdinal), value);
@@ -20,7 +20,7 @@ bool MacroRecorder::recordCOValue(const ConfigKey& key, double value) {
     return false;
 }
 
-void MacroRecorder::trigger(double) {
+void QuickAction::trigger(double) {
     auto it = m_recordedValues.constBegin();
     while (it != m_recordedValues.constEnd()) {
         ConfigKey key = it.key().m_configKey;
@@ -33,7 +33,7 @@ void MacroRecorder::trigger(double) {
 }
 
 // QMap assumes that two keys x and y are equal if neither x < y nor y < x is true.
-bool MacroRecorder::Key::operator<(const MacroRecorder::Key& other) const {
+bool QuickAction::Key::operator<(const QuickAction::Key& other) const {
     if (m_configKey == other.m_configKey) {
         return false;
     }

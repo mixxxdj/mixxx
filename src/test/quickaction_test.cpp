@@ -1,11 +1,11 @@
-#include "macrorecorder_test.h"
+#include "quickaction_test.h"
 
 MacroRecorderTest::MacroRecorderTest()
-        : pMacroRecorder(new ThreadLocalMacroRecorder()),
+        : pMacroRecorder(new ThreadLocalQuickAction()),
           co1(ConfigKey("[Test]", "control1")),
           co2(ConfigKey("[Test]", "control2")),
-          coRecording("[MacroRecorder]", "recording"),
-          coTrigger("[MacroRecorder]", "trigger") {
+          coRecording("[QuickAction]", "recording"),
+          coTrigger("[QuickAction]", "trigger") {
     co1.setMacroRecorder(pMacroRecorder);
     co2.setMacroRecorder(pMacroRecorder);
     co1.setMacroRecordable(true);
@@ -84,7 +84,7 @@ TEST_F(MacroRecorderTest, TriggerDisablesRecording) {
     EXPECT_EQ(co1.get(), 0) << "Values are set while recording";
     coTrigger.set(1);
     EXPECT_EQ(co1.get(), 1) << "Recorded values are not set when macro is triggered";
-    EXPECT_EQ(coRecording.get(), 0) << "MacroRecorder is still recording";
+    EXPECT_EQ(coRecording.get(), 0) << "QuickAction is still recording";
 }
 
 TEST_F(MacroRecorderTest, NonRecordableValuesAreNotPerturbed) {
@@ -94,5 +94,5 @@ TEST_F(MacroRecorderTest, NonRecordableValuesAreNotPerturbed) {
     EXPECT_EQ(co1.get(), 1) << "NonRecordable value is filtered while recording";
     coTrigger.set(1);
     EXPECT_EQ(setCount.m_value, 1) << "NonRecordable value is set again when "
-                                      "triggering the MacroRecorder";
+                                      "triggering the QuickAction";
 }

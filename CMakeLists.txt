@@ -364,8 +364,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlproxy.cpp
   src/control/controlpushbutton.cpp
   src/control/controlttrotary.cpp
-  src/control/macrorecorder.cpp
-  src/control/threadlocalmacrorecorder.cpp
+        src/control/quickaction.cpp
+        src/control/threadlocalquickaction.cpp
   src/controllers/controller.cpp
   src/controllers/controllerdebug.cpp
   src/controllers/controllerenumerator.cpp
@@ -1367,7 +1367,7 @@ add_executable(mixxx-test
   src/test/librarytest.cpp
   src/test/looping_control_test.cpp
   src/test/main.cpp
-  src/test/macrorecorder_test.cpp
+        src/test/quickaction_test.cpp
   src/test/mathutiltest.cpp
   src/test/metadatatest.cpp
   src/test/metaknob_link_test.cpp

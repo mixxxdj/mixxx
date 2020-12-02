@@ -4,8 +4,8 @@
 #include <QObject>
 
 #include "control/controlobject.h"
-#include "control/macrorecorder.h"
-#include "control/threadlocalmacrorecorder.h"
+#include "control/quickaction.h"
+#include "control/threadlocalquickaction.h"
 #include "mixxxtest.h"
 #include "util/memory.h"
 
@@ -41,7 +41,7 @@ class MacroRecorderTest : public MixxxTest {
   public:
     MacroRecorderTest();
 
-    std::shared_ptr<ThreadLocalMacroRecorder> pMacroRecorder;
+    std::shared_ptr<ThreadLocalQuickAction> pMacroRecorder;
     ControlObject co1;
     ControlObject co2;
     ControlProxy coRecording;

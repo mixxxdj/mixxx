@@ -30,7 +30,7 @@ enum class ControlFlag {
 Q_DECLARE_FLAGS(ControlFlags, ControlFlag)
 Q_DECLARE_OPERATORS_FOR_FLAGS(ControlFlags)
 
-class ThreadLocalMacroRecorder;
+class ThreadLocalQuickAction;
 
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
@@ -159,8 +159,8 @@ class ControlDoublePrivate : public QObject {
         m_bMacroRecordable = macroRecordable;
     }
 
-    // Injects a specific MacroRecorder. For tests only.
-    void setMacroRecorder(std::shared_ptr<ThreadLocalMacroRecorder> pMacroRecorder) {
+    // Injects a specific QuickAction. For tests only.
+    void setMacroRecorder(std::shared_ptr<ThreadLocalQuickAction> pMacroRecorder) {
         m_pMacroRecorder = std::move(pMacroRecorder);
     }
 
@@ -219,7 +219,7 @@ class ControlDoublePrivate : public QObject {
 
     QSharedPointer<ControlNumericBehavior> m_pBehavior;
 
-    std::shared_ptr<ThreadLocalMacroRecorder> m_pMacroRecorder;
+    std::shared_ptr<ThreadLocalQuickAction> m_pMacroRecorder;
 
     // Hack to implement persistent controls. This is a pointer to the current
     // user configuration object (if one exists). In general, we do not want the

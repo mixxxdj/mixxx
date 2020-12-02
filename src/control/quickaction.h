@@ -7,10 +7,10 @@
 
 class ConfigKey;
 
-class MacroRecorder : public QObject {
+class QuickAction : public QObject {
     Q_OBJECT
   public:
-    explicit MacroRecorder(QObject* parent = nullptr);
+    explicit QuickAction(QObject* parent = nullptr);
     // Record a new value for a CO.
     // Returns true if the macro recorder was in recording state and the new value was recorded,
     // returns false if the new value was not recorded.
@@ -36,7 +36,7 @@ class MacroRecorder : public QObject {
         // We use ordinal to sort the keys, so the recorded CO are triggered in the same order they were recorded.
         int m_iOrdinal;
 
-        bool operator<(const MacroRecorder::Key& other) const;
+        bool operator<(const QuickAction::Key& other) const;
     };
     QMap<Key, double> m_recordedValues;
     int m_iBiggestOrdinal;
