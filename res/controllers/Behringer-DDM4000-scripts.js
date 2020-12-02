@@ -12,6 +12,21 @@ var DDM4000 = new components.extension.GenericMidiController({
         var note = 0x90;
         var toggle = c.Button.prototype.types.toggle;
 
+        var CrossfaderAssignLED = function(options) {
+            options.outKey = options.outKey || "orientation";
+            e.CustomButton.call(this, options);
+        };
+        CrossfaderAssignLED.prototype = e.deriveFrom(e.CustomButton, {
+            position: {
+                left: 0,
+                center: 1,
+                right: 2
+            }
+        });
+        var left = CrossfaderAssignLED.prototype.position.left;
+        var center = CrossfaderAssignLED.prototype.position.center;
+        var right = CrossfaderAssignLED.prototype.position.right;
+
         return {
             init: function() {
 
@@ -30,16 +45,10 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Pot, options: {midi: [cc, 0x07], inKey: "volume"}}, // Volume
                         { // CF Assign
                             type: e.EnumToggleButton,
-                            options: {midi: [note, 0x20], inKey: "orientation", values: [0, 2, 1]},
+                            options: {midi: [note, 0x20], inKey: "orientation", values: [left, right, center]},
                         },
-                        { // CF Assign: A
-                            type: e.EnumEncoder,
-                            options: {midi: [cc, 0x20], outKey: "orientation", values: [1, 0]},
-                        },
-                        { // CF Assign: B
-                            type: e.EnumEncoder,
-                            options: {midi: [cc, 0x21], outKey: "orientation", values: [1, 2]},
-                        },
+                        {type: CrossfaderAssignLED, options: {midi: [cc, 0x20], onValue: left}}, // CF Assign A
+                        {type: CrossfaderAssignLED, options: {midi: [cc, 0x21], onValue: right}}, // CF Assign B
                         { // PFL
                             type: c.Button, options: {
                                 midi: [note, 0x3F], key: "pfl", type: toggle, sendShifted: true
@@ -66,17 +75,10 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Pot, options: {midi: [cc, 0x0B], inKey: "volume"}}, // Volume
                         { // CF Assign
                             type: e.EnumToggleButton,
-                            options: {midi: [note, 0x22],  inKey: "orientation", values: [0, 2, 1]},
+                            options: {midi: [note, 0x22],  inKey: "orientation", values: [right, center, left]},
                         },
-                        { // CF Assign: A
-                            type: e.EnumEncoder,
-                            options: {midi: [cc, 0x22], outKey: "orientation", values: [1, 0]}
-                        },
-                        { // CF Assign: B
-                            type: e.EnumEncoder, options: {
-                                midi: [cc, 0x23], outKey: "orientation", values: [1, 2]
-                            }
-                        },
+                        {type: CrossfaderAssignLED, options: {midi: [cc, 0x22], onValue: left}}, // CF Assign A
+                        {type: CrossfaderAssignLED, options: {midi: [cc, 0x23], onValue: right}}, // CF Assign B
                         { // PFL
                             type: c.Button, options: {
                                 midi: [note, 0x49], key: "pfl", type: toggle, sendShifted: true
@@ -103,16 +105,10 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Pot, options: {midi: [cc, 0x0F],  inKey: "volume"}}, // Volume
                         { // CF Assign
                             type: e.EnumToggleButton,
-                            options: {midi: [note, 0x24],  inKey: "orientation", values: [0, 2, 1]}
+                            options: {midi: [note, 0x24],  inKey: "orientation", values: [left, right, center]}
                         },
-                        { // CF Assign: A
-                            type: e.EnumEncoder,
-                            options: {midi: [cc,   0x24], outKey: "orientation", values: [1, 0]}
-                        },
-                        { // CF Assign: B
-                            type: e.EnumEncoder,
-                            options: {midi: [cc,   0x25], outKey: "orientation", values: [1, 2]}
-                        },
+                        {type: CrossfaderAssignLED, options: {midi: [cc, 0x24], onValue: left}}, // CF Assign A
+                        {type: CrossfaderAssignLED, options: {midi: [cc, 0x25], onValue: right}}, // CF Assign B
                         { // PFL
                             type: c.Button, options: {
                                 midi: [note, 0x53], key: "pfl", type: toggle, sendShifted: true
@@ -139,16 +135,10 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {type: c.Pot, options: {midi: [cc, 0x13], inKey: "volume"}}, // Volume
                         { // CF Assign
                             type: e.EnumToggleButton,
-                            options: {midi: [note, 0x26],  inKey: "orientation", values: [0, 2, 1]}
+                            options: {midi: [note, 0x26],  inKey: "orientation", values: [right, center, left]}
                         },
-                        { // CF Assign: A
-                            type: e.EnumEncoder,
-                            options: {midi: [cc,   0x26], outKey: "orientation", values: [1, 0]}
-                        },
-                        { // CF Assign: B
-                            type: e.EnumEncoder,
-                            options: {midi: [cc,   0x27], outKey: "orientation", values: [1, 2]}
-                        },
+                        {type: CrossfaderAssignLED, options: {midi: [cc, 0x26], onValue: left}}, // CF Assign A
+                        {type: CrossfaderAssignLED, options: {midi: [cc, 0x27], onValue: right}}, // CF Assign B
                         { // PFL
                             type: c.Button, options: {
                                 midi: [note, 0x5D], key: "pfl", type: toggle, sendShifted: true
@@ -255,16 +245,10 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {options: {midi: [note, 0x79],    key: "", sendShifted: true}}, // Sampler: Select
                         { // Sampler: CF Assign
                             type: e.EnumToggleButton,
-                            options: {midi: [note, 0x7A],  inKey: "orientation", values: [0, 2, 1]},
+                            options: {midi: [note, 0x7A],  inKey: "orientation", values: [center, left, right]},
                         },
-                        { // Sampler: CF Assign A
-                            type: e.EnumEncoder,
-                            options: {midi: [cc, 0x7A], outKey: "orientation", values: [1, 0]},
-                        },
-                        { // Sampler: CF Assign B
-                            type: e.EnumEncoder,
-                            options: {midi: [cc, 0x7B], outKey: "orientation", values: [1, 2]},
-                        },
+                        {type: CrossfaderAssignLED, options: {midi: [cc, 0x7A], onValue: left}}, // Sampler: CF Assign A
+                        {type: CrossfaderAssignLED, options: {midi: [cc, 0x7B], onValue: right}}, // Sampler: CF Assign B
                         {options: {midi: [note, 0x7C],    key: "", sendShifted: true}}, // Sampler: CF Start
                     ]
                 }
