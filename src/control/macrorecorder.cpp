@@ -21,10 +21,10 @@ bool MacroRecorder::recordCOValue(const ConfigKey& key, double value) {
 }
 
 void MacroRecorder::trigger(double) {
-    auto it = m_recordedValues.constKeyValueBegin();
-    while (it != m_recordedValues.constKeyValueEnd()) {
-        ConfigKey key = (*it).first.m_configKey;
-        double value = (*it).second;
+    auto it = m_recordedValues.constBegin();
+    while (it != m_recordedValues.constEnd()) {
+        ConfigKey key = it.key().m_configKey;
+        double value = it.value();
         ControlProxy(key).set(value);
         it++;
     }
