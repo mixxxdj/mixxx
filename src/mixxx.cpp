@@ -220,7 +220,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
     ThreadLocalMacroRecorder::setGlobalInstance(
             std::shared_ptr<ThreadLocalMacroRecorder>(
-                    new ThreadLocalMacroRecorder()));
+                    new ThreadLocalMacroRecorder(this)));
 
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
     if (!m_pDbConnectionPool) {
