@@ -12,7 +12,7 @@ const int kiMaxDelay = static_cast<int>((kdMaxDelayPot + 8) / 1000 *
         mixxx::audio::SampleRate::kValueMax * mixxx::kEngineChannelCount);
 } // anonymous namespace
 
-EngineDelay::EngineDelay(const QString& group, ConfigKey delayControl, bool bPersist)
+EngineDelay::EngineDelay(const QString& group, const ConfigKey& delayControl, bool bPersist)
         : m_iDelayPos(0),
           m_iDelay(0) {
     m_pDelayBuffer = SampleUtil::alloc(kiMaxDelay);

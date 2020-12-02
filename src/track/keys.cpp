@@ -19,7 +19,7 @@ Keys::Keys(const KeyMap& keyMap)
 QByteArray Keys::toByteArray() const {
     std::string output;
     m_keyMap.SerializeToString(&output);
-    return QByteArray(output.data(), output.length());
+    return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
 const QString& Keys::getSubVersion() const {

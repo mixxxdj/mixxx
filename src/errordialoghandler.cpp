@@ -72,8 +72,8 @@ ErrorDialogProperties* ErrorDialogHandler::newDialogProperties() {
     return new ErrorDialogProperties();
 }
 
-bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message,
-                                            bool shouldQuit) {
+bool ErrorDialogHandler::requestErrorDialog(
+        DialogType type, const QString& message, bool shouldQuit) {
     if (!s_bEnabled) {
         return false;
     }
@@ -196,7 +196,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     }
 }
 
-void ErrorDialogHandler::boxClosed(QString key, QMessageBox* msgBox) {
+void ErrorDialogHandler::boxClosed(const QString& key, QMessageBox* msgBox) {
     QMutexLocker locker(&m_mutex);
     locker.unlock();
 

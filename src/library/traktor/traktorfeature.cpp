@@ -121,7 +121,7 @@ TraktorFeature::~TraktorFeature() {
     delete m_pTraktorPlaylistModel;
 }
 
-BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(const QString& playlist) {
     TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
@@ -179,7 +179,7 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     }
 }
 
-TreeItem* TraktorFeature::importLibrary(QString file) {
+TreeItem* TraktorFeature::importLibrary(const QString& file) {
     //Give thread a low priority
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
@@ -453,8 +453,8 @@ TreeItem* TraktorFeature::parsePlaylists(QXmlStreamReader &xml) {
 }
 
 void TraktorFeature::parsePlaylistEntries(
-        QXmlStreamReader &xml,
-        QString playlist_path,
+        QXmlStreamReader& xml,
+        const QString& playlist_path,
         QSqlQuery query_insert_into_playlist,
         QSqlQuery query_insert_into_playlisttracks) {
     // In the database, the name of a playlist is specified by the unique path,
@@ -536,7 +536,7 @@ void TraktorFeature::parsePlaylistEntries(
     }
 }
 
-void TraktorFeature::clearTable(QString table_name) {
+void TraktorFeature::clearTable(const QString& table_name) {
     QSqlQuery query(m_database);
     query.prepare("delete from "+table_name);
 

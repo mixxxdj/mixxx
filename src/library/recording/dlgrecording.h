@@ -30,7 +30,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;
     void slotAddToAutoDJReplace() override;
-    void loadSelectedTrackToGroup(QString group, bool play) override;
+    void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void moveSelection(int delta) override;
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
 
@@ -39,12 +39,12 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void slotBytesRecorded(int);
     void refreshBrowseModel();
     void slotRestoreSearch();
-    void slotDurationRecorded(QString durationRecorded);
+    void slotDurationRecorded(const QString& durationRecorded);
 
   signals:
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group, bool play);
-    void restoreSearch(QString search);
+    void loadTrackToPlayer(TrackPointer tio, const QString& group, bool play);
+    void restoreSearch(const QString& search);
 
   private:
     UserSettingsPointer m_pConfig;

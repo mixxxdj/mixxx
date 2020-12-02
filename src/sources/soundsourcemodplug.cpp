@@ -32,7 +32,7 @@ const QStringList kSupportedFileExtensions = {
 /* read files in 512k chunks */
 constexpr SINT kChunkSizeInBytes = SINT(1) << 19;
 
-QString getModPlugTypeFromUrl(QUrl url) {
+QString getModPlugTypeFromUrl(const QUrl& url) {
     const QString fileExtension(SoundSource::getFileExtensionFromUrl(url));
     if (fileExtension == "mod") {
         return "Protracker";
@@ -119,7 +119,7 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
 
     // The modplug library currently does not support reading cover-art from
     // modplug files -- kain88 (Oct 2014)
-    return MetadataSource::importTrackMetadataAndCoverImage(nullptr, pCoverArt);
+    return MetadataSourceTagLib::importTrackMetadataAndCoverImage(nullptr, pCoverArt);
 }
 
 SoundSource::OpenResult SoundSourceModPlug::tryOpen(
@@ -207,7 +207,7 @@ void SoundSourceModPlug::close() {
 }
 
 ReadableSampleFrames SoundSourceModPlug::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT readOffset = getSignalInfo().frames2samples(writableSampleFrames.frameIndexRange().start());
     const SINT readSamples = getSignalInfo().frames2samples(writableSampleFrames.frameLength());
     SampleUtil::convertS16ToFloat32(

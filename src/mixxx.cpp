@@ -211,7 +211,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
 #if defined(Q_OS_LINUX)
     // XESetWireToError will segfault if running as a Wayland client
-    if (pApp->platformName() == QStringLiteral("xcb")) {
+    if (pApp->platformName() == QLatin1String("xcb")) {
         for (auto i = 0; i < NUM_HANDLERS; ++i) {
             XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
         }
@@ -522,6 +522,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
         m_pWidgetParent = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
+    } else {
+        m_pMenuBar->setStyleSheet(m_pWidgetParent->styleSheet());
     }
 
     // Fake a 100 % progress here.
@@ -571,7 +573,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
     // replaced with QSet<T>(list.begin(), list.end()).
     // However, the proposed alternative has just been introduced in Qt
-    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
     QSet<QString> prev_plugins =
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -1101,9 +1103,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
     if (pTrack) {
         QString trackInfo = pTrack->getInfo();
         if (!trackInfo.isEmpty()) {
-            appTitle = QString("%1 | %2")
-                    .arg(trackInfo)
-                    .arg(appTitle);
+            appTitle = QString("%1 | %2").arg(trackInfo, appTitle);
         }
     }
     this->setWindowTitle(appTitle);
@@ -1113,6 +1113,9 @@ void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pKbdConfig != nullptr);
     m_pMenuBar = make_parented<WMainMenuBar>(this, m_pSettingsManager->settings(), m_pKbdConfig);
+    if (m_pWidgetParent) {
+        m_pMenuBar->setStyleSheet(m_pWidgetParent->styleSheet());
+    }
     setMenuBar(m_pMenuBar);
 }
 
@@ -1477,6 +1480,7 @@ void MixxxMainWindow::rebootMixxxView() {
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
+    m_pMenuBar->setStyleSheet(m_pWidgetParent->styleSheet());
 
     setCentralWidget(m_pWidgetParent);
 #ifdef __LINUX__
@@ -1510,9 +1514,12 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
         // return true for no tool tips
         switch (m_toolTipsCfg) {
             case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
-                return dynamic_cast<WBaseWidget*>(obj) != nullptr;
+                if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
+                    return true;
+                }
+                break;
             case mixxx::TooltipsPreference::TOOLTIPS_ON:
-                return false;
+                break;
             case mixxx::TooltipsPreference::TOOLTIPS_OFF:
                 return true;
             default:
@@ -1521,7 +1528,7 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
         }
     }
     // standard event processing
-    return QObject::eventFilter(obj, event);
+    return QMainWindow::eventFilter(obj, event);
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {

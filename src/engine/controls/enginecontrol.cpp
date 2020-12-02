@@ -4,8 +4,8 @@
 #include "engine/sync/enginesync.h"
 #include "mixer/playermanager.h"
 
-EngineControl::EngineControl(QString group,
-                             UserSettingsPointer pConfig)
+EngineControl::EngineControl(const QString& group,
+        UserSettingsPointer pConfig)
         : m_group(group),
           m_pConfig(pConfig),
           m_pEngineMaster(nullptr),

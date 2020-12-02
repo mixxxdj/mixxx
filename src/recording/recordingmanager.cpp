@@ -74,7 +74,7 @@ RecordingManager::~RecordingManager() {
     delete m_pToggleRecording;
 }
 
-QString RecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
+QString RecordingManager::formatDateTimeForFilename(const QDateTime& dateTime) const {
     // Use a format based on ISO 8601. Windows does not support colons in
     // filenames so we can't use them anywhere.
     QString formatted = dateTime.toString("yyyy-MM-dd_hh'h'mm'm'ss's'");

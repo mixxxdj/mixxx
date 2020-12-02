@@ -30,16 +30,17 @@ class EngineAux : public EngineChannel, public AudioDestination {
     /// the soundcard this AudioDestination was registered for! Beware, in the
     /// case of multiple soundcards, this method is not re-entrant but it may be
     /// concurrent with EngineMaster processing.
-    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                               unsigned int nFrames);
+    virtual void receiveBuffer(const AudioInput& input,
+            const CSAMPLE* pBuffer,
+            unsigned int nFrames);
 
     /// Called by SoundManager whenever the aux input is connected to a
     /// soundcard input.
-    virtual void onInputConfigured(AudioInput input);
+    virtual void onInputConfigured(const AudioInput& input);
 
     /// Called by SoundManager whenever the aux input is disconnected from
     /// a soundcard input.
-    virtual void onInputUnconfigured(AudioInput input);
+    virtual void onInputUnconfigured(const AudioInput& input);
 
   private:
     QScopedPointer<ControlObject> m_pInputConfigured;

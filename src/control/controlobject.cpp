@@ -11,8 +11,11 @@
 ControlObject::ControlObject() {
 }
 
-ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                             bool bPersist, double defaultValue)
+ControlObject::ControlObject(const ConfigKey& key,
+        bool bIgnoreNops,
+        bool bTrack,
+        bool bPersist,
+        double defaultValue)
         : m_key(key) {
     // Don't bother looking up the control if key is invalid. Prevents log spew.
     if (m_key.isValid()) {

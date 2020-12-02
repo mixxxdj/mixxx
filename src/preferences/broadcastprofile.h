@@ -135,7 +135,7 @@ class BroadcastProfile : public QObject {
     void setOggDynamicUpdate(bool value);
 
   signals:
-    void profileNameChanged(QString oldName, QString newName);
+    void profileNameChanged(const QString& oldName, const QString& newName);
     void statusChanged(bool newStatus);
     void connectionStatusChanged(int newConnectionStatus);
 

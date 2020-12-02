@@ -22,7 +22,7 @@ class BpmControl : public EngineControl {
     Q_OBJECT
 
   public:
-    BpmControl(QString group, UserSettingsPointer pConfig);
+    BpmControl(const QString& group, UserSettingsPointer pConfig);
     ~BpmControl() override;
 
     double getBpm() const;

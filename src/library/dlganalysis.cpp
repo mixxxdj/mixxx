@@ -40,7 +40,7 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
             this,
             &DlgAnalysis::trackSelected);
 
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { // Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
@@ -116,7 +116,7 @@ void DlgAnalysis::loadSelectedTrack() {
     m_pAnalysisLibraryTableView->loadSelectedTrack();
 }
 
-void DlgAnalysis::loadSelectedTrackToGroup(QString group, bool play) {
+void DlgAnalysis::loadSelectedTrackToGroup(const QString& group, bool play) {
     m_pAnalysisLibraryTableView->loadSelectedTrackToGroup(group, play);
 }
 

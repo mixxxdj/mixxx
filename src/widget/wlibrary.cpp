@@ -30,7 +30,7 @@ void WLibrary::setup(const QDomNode& node, const SkinContext& context) {
             kMaxTrackTableBackgroundColorOpacity);
 }
 
-bool WLibrary::registerView(QString name, QWidget* view) {
+bool WLibrary::registerView(const QString& name, QWidget* view) {
     QMutexLocker lock(&m_mutex);
     if (m_viewMap.contains(name)) {
         return false;
@@ -50,8 +50,8 @@ void WLibrary::switchToView(const QString& name) {
     QMutexLocker lock(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
 
-    WTrackTableView* ttView = dynamic_cast<WTrackTableView*>(
-                currentWidget());
+    WTrackTableView* ttView = qobject_cast<WTrackTableView*>(
+            currentWidget());
 
     if (ttView != nullptr){
         //qDebug("trying to save position");
@@ -73,8 +73,8 @@ void WLibrary::switchToView(const QString& name) {
             lview->onShow();
         }
 
-        WTrackTableView* ttWidgetView = dynamic_cast<WTrackTableView*>(
-                    widget);
+        WTrackTableView* ttWidgetView = qobject_cast<WTrackTableView*>(
+                widget);
 
         if (ttWidgetView != nullptr){
             qDebug("trying to restore position");

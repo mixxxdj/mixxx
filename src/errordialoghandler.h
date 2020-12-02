@@ -129,8 +129,7 @@ class ErrorDialogHandler : public QObject {
     // requested message box. They return false if a dialog with the same key
     // (or title if no key) is already displayed. If shouldQuit is true, Mixxx
     // will shut down.
-    bool requestErrorDialog(DialogType type, QString message,
-                            bool shouldQuit = false);
+    bool requestErrorDialog(DialogType type, const QString& message, bool shouldQuit = false);
     bool requestErrorDialog(ErrorDialogProperties* props);
 
     // Allows a means for main() to skip exec() if there was a critical or fatal
@@ -139,12 +138,12 @@ class ErrorDialogHandler : public QObject {
 
   signals:
     void showErrorDialog(ErrorDialogProperties* props);
-    void stdButtonClicked(QString key, QMessageBox::StandardButton whichStdButton);
+    void stdButtonClicked(const QString& key, QMessageBox::StandardButton whichStdButton);
 
   private slots:
     /** Actually displays the box */
     void errorDialog(ErrorDialogProperties* props);
-    void boxClosed(QString key, QMessageBox* msgBox);
+    void boxClosed(const QString& key, QMessageBox* msgBox);
 
   private:
     // Private constructor

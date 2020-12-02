@@ -6,5 +6,5 @@
 class ControlEncoder : public ControlObject {
     Q_OBJECT
   public:
-    ControlEncoder(ConfigKey key, bool bIgnoreNops=true);
+    ControlEncoder(const ConfigKey& key, bool bIgnoreNops = true);
 };

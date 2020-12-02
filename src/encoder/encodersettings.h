@@ -9,8 +9,13 @@ class EncoderSettings {
     public:
         class OptionsGroup {
             public:
-            OptionsGroup(QString gName, QString gCode, QList<QString> conNames) :
-                groupName(gName), groupCode(gCode), controlNames(conNames) {}
+              OptionsGroup(const QString& gName,
+                      const QString& gCode,
+                      const QList<QString>& conNames)
+                      : groupName(gName),
+                        groupCode(gCode),
+                        controlNames(conNames) {
+              }
             QString groupName;
             QString groupCode;
             QList<QString> controlNames;
@@ -38,8 +43,11 @@ class EncoderSettings {
     // index 0 means disabled and 1 enabled.
     // Return the selected option of the group. If it is a single-element option, 
     // 0 means disabled and 1 enabled.
-    virtual int getSelectedOption(QString groupCode) const { Q_UNUSED(groupCode); return 0; }
-    
+    virtual int getSelectedOption(const QString& groupCode) const {
+        Q_UNUSED(groupCode);
+        return 0;
+    }
+
     virtual ChannelMode getChannelMode() const { return ChannelMode::AUTOMATIC; }
 
     // Returns the format subtype of this encoder settings.

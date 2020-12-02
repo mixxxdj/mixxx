@@ -85,10 +85,14 @@ bool BroadcastSettings::addProfile(BroadcastProfilePtr profile) {
     // at risk of being manually deleted.
     // However it's fine with Qt's connect because it can be trusted that
     // it won't delete the pointer.
-    connect(profile.data(), SIGNAL(profileNameChanged(QString, QString)),
-            this, SLOT(onProfileNameChanged(QString,QString)));
-    connect(profile.data(), SIGNAL(connectionStatusChanged(int)),
-            this, SLOT(onConnectionStatusChanged(int)));
+    connect(profile.data(),
+            &BroadcastProfile::profileNameChanged,
+            this,
+            &BroadcastSettings::onProfileNameChanged);
+    connect(profile.data(),
+            &BroadcastProfile::connectionStatusChanged,
+            this,
+            &BroadcastSettings::onConnectionStatusChanged);
     m_profiles.insert(profile->getProfileName(), BroadcastProfilePtr(profile));
 
     emit profileAdded(profile);
@@ -163,7 +167,7 @@ void BroadcastSettings::saveAll() {
     emit profilesChanged();
 }
 
-void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
+void BroadcastSettings::onProfileNameChanged(const QString& oldName, const QString& newName) {
     if (!m_profiles.contains(oldName))
         return;
 

@@ -16,9 +16,11 @@ class VisibilityControlConnection : public QObject {
     VisibilityControlConnection(QObject* pParent, QAction* pAction,
                                 const ConfigKey& key);
 
-  private slots:
+  public slots:
     void slotClearControl();
     void slotReconnectControl();
+
+  private slots:
     void slotControlChanged();
     void slotActionToggled(bool toggle);
 
@@ -61,7 +63,7 @@ class WMainMenuBar : public QMenuBar {
     void toggleBroadcasting(bool toggle);
     void toggleRecording(bool enabled);
     void toggleVinylControl(int deck);
-    void visitUrl(QString url);
+    void visitUrl(const QString& url);
     void quit();
 
     void internalRecordingStateChange(bool recording);

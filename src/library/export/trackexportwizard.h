@@ -20,7 +20,7 @@
 class TrackExportWizard : public QObject {
   Q_OBJECT
   public:
-    TrackExportWizard(QWidget* parent, UserSettingsPointer pConfig, TrackPointerList tracks)
+    TrackExportWizard(QWidget* parent, UserSettingsPointer pConfig, const TrackPointerList& tracks)
             : m_parent(parent), m_pConfig(pConfig), m_tracks(tracks) {
     }
     virtual ~TrackExportWizard() { }

@@ -30,11 +30,12 @@ class EffectProcessorInstantiator : public EffectInstantiator {
 class LV2EffectProcessorInstantiator : public EffectInstantiator {
   public:
     LV2EffectProcessorInstantiator(const LilvPlugin* plugin,
-                                   QList<int> audioPortIndices,
-                                   QList<int> controlPortIndices)
+            const QList<int>& audioPortIndices,
+            const QList<int>& controlPortIndices)
             : m_pPlugin(plugin),
               m_audioPortIndices(audioPortIndices),
-              m_controlPortIndices(controlPortIndices) { }
+              m_controlPortIndices(controlPortIndices) {
+    }
 
     EffectProcessor* instantiate(EngineEffect* pEngineEffect,
                                  EffectManifestPointer pManifest) {

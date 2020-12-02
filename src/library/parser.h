@@ -41,10 +41,9 @@ class Parser : public QObject {
     Note for developers:
     This function should return an empty PtrList
      or 0 in order for the trackimporter to function**/
-    virtual QList<QString> parse(QString) = 0;
+    virtual QList<QString> parse(const QString&) = 0;
 
-
-protected:
+  protected:
     // Pointer to the parsed Filelocations
     QList<QString> m_sLocations;
     // Returns the number of parsed locations
@@ -52,7 +51,7 @@ protected:
     // Clears m_psLocations
     void clearLocations();
     // Checks if the file does contain binary content
-    bool isBinary(QString);
+    bool isBinary(const QString&);
     // check for Utf8 encoding
     static bool isUtf8(const char* string);
     // Resolve an absolute or relative file path

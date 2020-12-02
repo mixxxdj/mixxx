@@ -194,8 +194,7 @@ void EncoderWave::initStream() {
     }
 }
 
-int EncoderWave::initEncoder(int samplerate, QString errorMessage) {
-
+int EncoderWave::initEncoder(int samplerate, QString& errorMessage) {
     // set sfInfo.
     // m_sfInfo.format is setup on setEncoderSettings previous to calling initEncoder.
     m_sfInfo.samplerate = samplerate;

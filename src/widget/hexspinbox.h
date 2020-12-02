@@ -4,8 +4,9 @@
 #include <QValidator>
 
 class HexSpinBox : public QSpinBox {
+    Q_OBJECT
   public:
-    explicit HexSpinBox(QWidget *pParent);
+    explicit HexSpinBox(QWidget* pParent);
 
   protected:
     QString textFromValue(int value) const override;

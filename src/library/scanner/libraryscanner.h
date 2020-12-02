@@ -43,12 +43,12 @@ class LibraryScanner : public QThread {
   signals:
     void scanStarted();
     void scanFinished();
-    void progressHashing(QString);
-    void progressLoading(QString path);
-    void progressCoverArt(QString file);
+    void progressHashing(const QString&);
+    void progressLoading(const QString& path);
+    void progressCoverArt(const QString& file);
     void trackAdded(TrackPointer pTrack);
-    void tracksChanged(QSet<TrackId> changedTrackIds);
-    void tracksRelocated(QList<RelocatedTrack> relocatedTracks);
+    void tracksChanged(const QSet<TrackId>& changedTrackIds);
+    void tracksRelocated(const QList<RelocatedTrack>& relocatedTracks);
 
     // Emitted by scan() to invoke slotStartScan in the scanner thread's event
     // loop.

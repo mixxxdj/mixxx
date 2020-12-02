@@ -3,6 +3,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QInputDialog>
 #include <QStandardPaths>
 #include <QTableWidget>
 #include <QTableWidgetItem>
@@ -16,11 +17,17 @@
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
-DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
-                                     ControllerManager* controllerManager,
-                                     UserSettingsPointer pConfig)
+namespace {
+const QString kPresetExt(".midi.xml");
+}
+
+DlgPrefController::DlgPrefController(QWidget* parent,
+        Controller* controller,
+        ControllerManager* controllerManager,
+        UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
+          m_pUserDir(userPresetsPath(pConfig)),
           m_pControllerManager(controllerManager),
           m_pController(controller),
           m_pDlgControllerLearning(NULL),
@@ -75,35 +82,35 @@ DlgPrefController::DlgPrefController(QWidget* parent, Controller* controller,
 
     // Input mappings
     connect(m_ui.btnAddInputMapping,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(addInputMapping()));
+            &DlgPrefController::addInputMapping);
     connect(m_ui.btnRemoveInputMappings,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(removeInputMappings()));
+            &DlgPrefController::removeInputMappings);
     connect(m_ui.btnLearningWizard,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(showLearningWizard()));
+            &DlgPrefController::showLearningWizard);
     connect(m_ui.btnClearAllInputMappings,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(clearAllInputMappings()));
+            &DlgPrefController::clearAllInputMappings);
 
     // Output mappings
     connect(m_ui.btnAddOutputMapping,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(addOutputMapping()));
+            &DlgPrefController::addOutputMapping);
     connect(m_ui.btnRemoveOutputMappings,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(removeOutputMappings()));
+            &DlgPrefController::removeOutputMappings);
     connect(m_ui.btnClearAllOutputMappings,
-            SIGNAL(clicked()),
+            &QAbstractButton::clicked,
             this,
-            SLOT(clearAllOutputMappings()));
+            &DlgPrefController::clearAllOutputMappings);
 }
 
 DlgPrefController::~DlgPrefController() {
@@ -139,31 +146,31 @@ void DlgPrefController::showLearningWizard() {
             m_pControllerManager->getControllerLearningEventFilter();
     pControllerLearning->startListening();
     connect(pControllerLearning,
-            SIGNAL(controlClicked(ControlObject*)),
+            &ControllerLearningEventFilter::controlClicked,
             m_pDlgControllerLearning,
-            SLOT(controlClicked(ControlObject*)));
+            &DlgControllerLearning::controlClicked);
     connect(m_pDlgControllerLearning,
-            SIGNAL(listenForClicks()),
+            &DlgControllerLearning::listenForClicks,
             pControllerLearning,
-            SLOT(startListening()));
+            &ControllerLearningEventFilter::startListening);
     connect(m_pDlgControllerLearning,
-            SIGNAL(stopListeningForClicks()),
+            &DlgControllerLearning::stopListeningForClicks,
             pControllerLearning,
-            SLOT(stopListening()));
+            &ControllerLearningEventFilter::stopListening);
     connect(m_pDlgControllerLearning,
-            SIGNAL(stopLearning()),
+            &DlgControllerLearning::stopLearning,
             this,
-            SLOT(show()));
+            &DlgPrefController::show);
     connect(m_pDlgControllerLearning,
-            SIGNAL(inputMappingsLearned(MidiInputMappings)),
+            &DlgControllerLearning::inputMappingsLearned,
             this,
-            SLOT(midiInputMappingsLearned(MidiInputMappings)));
+            &DlgPrefController::midiInputMappingsLearned);
 
     emit mappingStarted();
     connect(m_pDlgControllerLearning,
-            SIGNAL(stopLearning()),
+            &DlgControllerLearning::stopLearning,
             this,
-            SIGNAL(mappingEnded()));
+            &DlgPrefController::mappingEnded);
 }
 
 void DlgPrefController::midiInputMappingsLearned(
@@ -257,14 +264,24 @@ QString DlgPrefController::presetManualLink(
     return url;
 }
 
-QString DlgPrefController::presetScriptFileLinks(
+QString DlgPrefController::presetFileLinks(
         const ControllerPresetPointer pPreset) const {
-    if (!pPreset || pPreset->getScriptFiles().empty()) {
-        return tr("No Scripts");
+    if (!pPreset) {
+        return QString();
     }
 
+    const QString builtinFileSuffix = QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
     QString systemPresetPath = resourcePresetsPath(m_pConfig);
     QStringList linkList;
+    QString xmlFileName = QFileInfo(pPreset->filePath()).fileName();
+    QString xmlFileLink = QStringLiteral("<a href=\"") +
+            pPreset->filePath() + QStringLiteral("\">") +
+            xmlFileName + QStringLiteral("</a>");
+    if (pPreset->filePath().startsWith(systemPresetPath)) {
+        xmlFileLink += builtinFileSuffix;
+    }
+    linkList << xmlFileLink;
+
     for (const auto& script : pPreset->getScriptFiles()) {
         QString scriptFileLink = QStringLiteral("<a href=\"") +
                 script.file.absoluteFilePath() + QStringLiteral("\">") +
@@ -275,8 +292,7 @@ QString DlgPrefController::presetScriptFileLinks(
                     QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
         } else if (script.file.absoluteFilePath().startsWith(
                            systemPresetPath)) {
-            scriptFileLink +=
-                    QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
+            scriptFileLink += builtinFileSuffix;
         }
 
         linkList << scriptFileLink;
@@ -337,7 +353,7 @@ void DlgPrefController::enumeratePresets(const QString& selectedPresetPath) {
 }
 
 PresetInfo DlgPrefController::enumeratePresetsFromEnumerator(
-        QSharedPointer<PresetInfoEnumerator> pPresetEnumerator, QIcon icon) {
+        QSharedPointer<PresetInfoEnumerator> pPresetEnumerator, const QIcon& icon) {
     PresetInfo match;
 
     // Check if enumerator is ready. Should be rare that it isn't. We will
@@ -461,7 +477,7 @@ void DlgPrefController::slotPresetSelected(int chosenIndex) {
     applyPresetChanges();
     if (m_pPreset && m_pPreset->isDirty()) {
         if (QMessageBox::question(this,
-                    tr("Preset has been edited"),
+                    tr("Mapping has been edited"),
                     tr("Do you want to save the changes?")) ==
                 QMessageBox::Yes) {
             savePreset();
@@ -484,33 +500,118 @@ void DlgPrefController::savePreset() {
     }
 
     if (!m_pPreset->isDirty()) {
-        qDebug() << "Preset is not dirty, no need to save it.";
+        qDebug() << "Mapping is not dirty, no need to save it.";
         return;
     }
 
-    QFileInfo fileInfo(m_pPreset->filePath());
-    QString fileName = fileInfo.fileName();
+    QString oldFilePath = m_pPreset->filePath();
+    QString newFilePath;
+    QFileInfo fileInfo(oldFilePath);
+    QString presetName = m_pPreset->name();
 
-    // Add " (edited)" to preset name (if it's not already present)
-    QString editedSuffix = QStringLiteral(" (") + tr("edited") + QStringLiteral(")");
-    if (!m_pPreset->name().endsWith(editedSuffix)) {
-        m_pPreset->setName(m_pPreset->name() + editedSuffix);
-        qDebug() << "Renamed preset to " << m_pPreset->name();
+    bool isUserPreset = fileInfo.absoluteDir().absolutePath().append("/") == m_pUserDir;
+    bool saveAsNew = true;
+    if (m_pOverwritePresets.contains(oldFilePath) &&
+            m_pOverwritePresets.value(oldFilePath) == true) {
+        saveAsNew = false;
+    }
 
-        // Add " (edited)" to file name (if it's not already present)
-        QString baseName = fileInfo.baseName();
-        if (baseName.endsWith(editedSuffix)) {
-            baseName.chop(editedSuffix.size());
+    // If this is a user preset, ask whether to overwrite or save with new name.
+    // Optionally, tick checkbox to always overwrite this preset in the current session.
+    if (isUserPreset && saveAsNew) {
+        QString overwriteTitle = tr("Preset already exists.");
+        QString overwriteLabel = tr(
+                "<b>%1</b> already exists in user preset folder.<br>"
+                "Overwrite or save with a new name?");
+        QString overwriteCheckLabel = tr("Always overwrite during this session");
+
+        QMessageBox overwriteMsgBox;
+        overwriteMsgBox.setIcon(QMessageBox::Question);
+        overwriteMsgBox.setWindowTitle(overwriteTitle);
+        overwriteMsgBox.setText(overwriteLabel.arg(presetName));
+        QCheckBox overwriteCheckBox;
+        overwriteCheckBox.setText(overwriteCheckLabel);
+        overwriteCheckBox.blockSignals(true);
+        overwriteCheckBox.setCheckState(Qt::Unchecked);
+        overwriteMsgBox.addButton(&overwriteCheckBox, QMessageBox::ActionRole);
+        QPushButton* pSaveAsNew = overwriteMsgBox.addButton(
+                tr("Save As"), QMessageBox::AcceptRole);
+        QPushButton* pOverwrite = overwriteMsgBox.addButton(
+                tr("Overwrite"), QMessageBox::AcceptRole);
+        overwriteMsgBox.setDefaultButton(pSaveAsNew);
+        overwriteMsgBox.exec();
+
+        if (overwriteMsgBox.clickedButton() == pOverwrite) {
+            saveAsNew = false;
+            if (overwriteCheckBox.checkState() == Qt::Checked) {
+                m_pOverwritePresets.insert(m_pPreset->filePath(), true);
+            }
+        } else if (overwriteMsgBox.close()) {
+            return;
         }
-        fileName = baseName + editedSuffix + QStringLiteral(".") + fileInfo.completeSuffix();
-    }
-    QString filePath = QDir(userPresetsPath(m_pConfig)).absoluteFilePath(fileName);
-
-    if (!m_pPreset->savePreset(filePath)) {
-        qDebug() << "Failed to save preset!";
     }
 
-    m_pPreset->setFilePath(filePath);
+    // Ask for a preset name when
+    // * initially saving a modified Mixxx preset to the user folder
+    // * saving a user preset with a new name.
+    // The name will be used as display name and file name.
+    if (!saveAsNew) {
+        newFilePath = oldFilePath;
+    } else {
+        QString savePresetTitle = tr("Save user mapping");
+        QString savePresetLabel = tr("Enter the name for saving the mapping to the user folder.");
+        QString savingFailedTitle = tr("Saving mapping failed");
+        QString invalidNameLabel =
+                tr("A mapping cannot have a blank name and may not contain "
+                   "special characters.");
+        QString fileExistsLabel = tr("A mapping file with that name already exists.");
+        // Only allow the name to contain letters, numbers, whitespaces and _-+()/
+        const QRegExp rxRemove = QRegExp("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]");
+
+        // Choose a new file (base) name
+        bool validPresetName = false;
+        while (!validPresetName) {
+            QString userDir = m_pUserDir;
+            bool ok = false;
+            presetName = QInputDialog::getText(nullptr,
+                    savePresetTitle,
+                    savePresetLabel,
+                    QLineEdit::Normal,
+                    presetName,
+                    &ok)
+                                 .remove(rxRemove)
+                                 .trimmed();
+            if (!ok) {
+                return;
+            }
+            if (presetName.isEmpty()) {
+                QMessageBox::warning(nullptr,
+                        savingFailedTitle,
+                        invalidNameLabel);
+                continue;
+            }
+            // While / is allowed for the display name we can't use it for the file name.
+            QString fileName = presetName.replace(QString("/"), QString("-"));
+            newFilePath = userDir + fileName + kPresetExt;
+            if (QFile::exists(newFilePath)) {
+                QMessageBox::warning(nullptr,
+                        savingFailedTitle,
+                        fileExistsLabel);
+                continue;
+            }
+            validPresetName = true;
+        }
+        m_pPreset->setName(presetName);
+        qDebug() << "Mapping renamed to" << m_pPreset->name();
+    }
+
+    if (!m_pPreset->savePreset(newFilePath)) {
+        qDebug() << "Failed to save mapping as" << newFilePath;
+        return;
+    }
+    qDebug() << "Mapping saved as" << newFilePath;
+
+    m_pPreset->setFilePath(newFilePath);
     m_pPreset->setDirty(false);
 
     enumeratePresets(m_pPreset->filePath());
@@ -567,8 +668,8 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     QString support = supportLinks.join("&nbsp;&nbsp;");
     m_ui.labelLoadedPresetSupportLinks->setText(support);
 
-    QString scriptFiles = presetScriptFileLinks(preset);
-    m_ui.labelLoadedPresetScriptFileLinks->setText(scriptFiles);
+    QString mappingFileLinks = presetFileLinks(preset);
+    m_ui.labelLoadedPresetScriptFileLinks->setText(mappingFileLinks);
 
     // We mutate this preset so keep a reference to it while we are using it.
     // TODO(rryan): Clone it? Technically a waste since nothing else uses this

@@ -22,7 +22,7 @@ QString toDebugString(const T& object) {
 // the Qt event loop to continue processing. This means that you must not call
 // this function from a code section which is not re-entrant (e.g. paintEvent on
 // a QWidget).
-inline void reportFatalErrorAndQuit(QString message) {
+inline void reportFatalErrorAndQuit(const QString& message) {
     QByteArray message_bytes = message.toLocal8Bit();
     qFatal("%s", message_bytes.constData());
     ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
@@ -36,7 +36,7 @@ inline void reportFatalErrorAndQuit(QString message) {
 // user which allows the Qt event loop to continue processing. This means that
 // you must not call this function from a code section which is not re-entrant
 // (e.g. paintEvent on a QWidget).
-inline void reportCriticalErrorAndQuit(QString message) {
+inline void reportCriticalErrorAndQuit(const QString& message) {
     qCritical() << message;
     ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
     if (dialogHandler) {

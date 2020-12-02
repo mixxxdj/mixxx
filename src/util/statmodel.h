@@ -30,9 +30,6 @@ class StatModel final : public QAbstractTableModel {
     StatModel(QObject* pParent=NULL);
     virtual ~StatModel();
 
-  public slots:
-    void statUpdated(const Stat& stat);
-
     ////////////////////////////////////////////////////////////////////////////
     // QAbstractItemModel methods
     ////////////////////////////////////////////////////////////////////////////
@@ -43,6 +40,9 @@ class StatModel final : public QAbstractTableModel {
                        const QVariant& value, int role = Qt::EditRole);
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role = Qt::DisplayRole) const;
+
+  public slots:
+    void statUpdated(const Stat& stat);
 
   private:
     QVector<QHash<int, QVariant> > m_headerInfo;

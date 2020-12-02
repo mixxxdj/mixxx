@@ -102,7 +102,7 @@ SoundManager::~SoundManager() {
 }
 
 QList<SoundDevicePointer> SoundManager::getDeviceList(
-    QString filterAPI, bool bOutputDevices, bool bInputDevices) const {
+        const QString& filterAPI, bool bOutputDevices, bool bInputDevices) const {
     //qDebug() << "SoundManager::getDeviceList";
 
     if (filterAPI == "None") {
@@ -216,7 +216,7 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     }
 }
 
-QList<unsigned int> SoundManager::getSampleRates(QString api) const {
+QList<unsigned int> SoundManager::getSampleRates(const QString& api) const {
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
@@ -542,7 +542,7 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-SoundDeviceError SoundManager::setConfig(SoundManagerConfig config) {
+SoundDeviceError SoundManager::setConfig(const SoundManagerConfig& config) {
     SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     m_config = config;
     checkConfig();
@@ -617,7 +617,7 @@ void SoundManager::readProcess() const {
     }
 }
 
-void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
+void SoundManager::registerOutput(const AudioOutput& output, AudioSource* src) {
     if (m_registeredSources.contains(output)) {
         qDebug() << "WARNING: AudioOutput already registered!";
     }
@@ -625,7 +625,7 @@ void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
     emit outputRegistered(output, src);
 }
 
-void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
+void SoundManager::registerInput(const AudioInput& input, AudioDestination* dest) {
     if (m_registeredDestinations.contains(input)) {
         // note that this can be totally ok if we just want a certain
         // AudioInput to be going to a different AudioDest -bkgood

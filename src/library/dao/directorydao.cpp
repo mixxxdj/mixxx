@@ -9,7 +9,7 @@
 
 namespace {
 
-bool isChildDir(QString testDir, QString dirStr) {
+bool isChildDir(const QString& testDir, const QString& dirStr) {
     QDir test = QDir(testDir);
     QDir dir = QDir(dirStr);
     bool child = dir == test;

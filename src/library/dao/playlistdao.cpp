@@ -456,14 +456,15 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position) {
     emit tracksChanged(QSet<int>{playlistId});
 }
 
-void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions) {
+void PlaylistDAO::removeTracksFromPlaylist(int playlistId, const QList<int>& positions) {
     // get positions in reversed order
-    std::sort(positions.begin(), positions.end(), std::greater<int>());
+    auto sortedPositons = positions;
+    std::sort(sortedPositons.begin(), sortedPositons.end(), std::greater<int>());
 
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    for (const auto position : qAsConst(positions)) {
+    for (const auto position : qAsConst(sortedPositons)) {
         removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();
@@ -677,13 +678,14 @@ bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targe
     // INSERT INTO PlaylistTracks (playlist_id, track_id, position, pl_datetime_added) SELECT :target_plid, track_id, position + :position_offset, pl_datetime_added FROM PlaylistTracks WHERE playlist_id = :source_plid;
     QSqlQuery query(m_database);
     query.prepare(QString("INSERT INTO " PLAYLIST_TRACKS_TABLE
-        " (%1, %2, %3, %4) SELECT :target_plid, %2, "
-        "%3 + :position_offset, %4 FROM " PLAYLIST_TRACKS_TABLE
-        " WHERE %1 = :source_plid")
-        .arg(PLAYLISTTRACKSTABLE_PLAYLISTID)        // %1
-        .arg(PLAYLISTTRACKSTABLE_TRACKID)           // %2
-        .arg(PLAYLISTTRACKSTABLE_POSITION)          // %3
-        .arg(PLAYLISTTRACKSTABLE_DATETIMEADDED));   // %4
+                          " (%1, %2, %3, %4) SELECT :target_plid, %2, "
+                          "%3 + :position_offset, %4 FROM " PLAYLIST_TRACKS_TABLE
+                          " WHERE %1 = :source_plid")
+                          .arg(
+                                  PLAYLISTTRACKSTABLE_PLAYLISTID,      // %1
+                                  PLAYLISTTRACKSTABLE_TRACKID,         // %2
+                                  PLAYLISTTRACKSTABLE_POSITION,        // %3
+                                  PLAYLISTTRACKSTABLE_DATETIMEADDED)); // %4
     query.bindValue(":position_offset", positionOffset);
     query.bindValue(":source_plid", sourcePlaylistID);
     query.bindValue(":target_plid", targetPlaylistID);
@@ -696,10 +698,11 @@ bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targe
     // Query each added track and its new position.
     // SELECT track_id, position FROM PlaylistTracks WHERE playlist_id = :target_plid AND position > :position_offset;
     query.prepare(QString("SELECT %2, %3 FROM " PLAYLIST_TRACKS_TABLE
-        " WHERE %1 = :target_plid AND %3 > :position_offset")
-        .arg(PLAYLISTTRACKSTABLE_PLAYLISTID)    // %1
-        .arg(PLAYLISTTRACKSTABLE_TRACKID)       // %2
-        .arg(PLAYLISTTRACKSTABLE_POSITION));    // %3
+                          " WHERE %1 = :target_plid AND %3 > :position_offset")
+                          .arg(
+                                  PLAYLISTTRACKSTABLE_PLAYLISTID, // %1
+                                  PLAYLISTTRACKSTABLE_TRACKID,    // %2
+                                  PLAYLISTTRACKSTABLE_POSITION)); // %3
     query.bindValue(":target_plid", targetPlaylistID);
     query.bindValue(":position_offset", positionOffset);
     if (!query.exec()) {
@@ -987,7 +990,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
         // TODO: The following use of QList<T>::swap(int, int) is deprecated
         // and should be replaced with QList<T>::swapItemsAt(int, int)
         // However, the proposed alternative has just been introduced in Qt
-        // 5.13. Until the minimum required Qt version of Mixx is increased,
+        // 5.13. Until the minimum required Qt version of Mixxx is increased,
         // we need a version check here.
         #if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
         newPositions.swap(newPositions.indexOf(trackAPosition),

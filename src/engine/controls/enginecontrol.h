@@ -34,8 +34,8 @@ const int kNoTrigger = -1;
 class EngineControl : public QObject {
     Q_OBJECT
   public:
-    EngineControl(QString group,
-                  UserSettingsPointer pConfig);
+    EngineControl(const QString& group,
+            UserSettingsPointer pConfig);
     ~EngineControl() override;
 
     // Called by EngineBuffer::process every latency period. See the above

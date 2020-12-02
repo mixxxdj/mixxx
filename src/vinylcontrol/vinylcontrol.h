@@ -10,7 +10,7 @@ class ControlProxy;
 
 class VinylControl : public QObject {
   public:
-    VinylControl(UserSettingsPointer pConfig, QString group);
+    VinylControl(UserSettingsPointer pConfig, const QString& group);
     virtual ~VinylControl();
 
     virtual void toggleVinylControl(bool enable);

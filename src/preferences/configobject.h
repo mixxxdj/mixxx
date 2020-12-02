@@ -101,7 +101,7 @@ class ConfigValueKbd : public ConfigValue {
     ConfigValueKbd() = default;
     ~ConfigValueKbd() override = default;
     explicit ConfigValueKbd(const QKeySequence& keys);
-    explicit ConfigValueKbd(const QDomNode) {
+    explicit ConfigValueKbd(const QDomNode&) {
         reportFatalErrorAndQuit("ConfigValueKbd from QDomNode not implemented here");
     }
 
@@ -183,7 +183,7 @@ template <class ValueType> class ConfigObject {
     }
 
     QSet<QString> getGroups();
-    QList<ConfigKey> getKeysWithGroup(QString group) const;
+    QList<ConfigKey> getKeysWithGroup(const QString& group) const;
 
   protected:
     // We use QMap because we want a sorted list in mixxx.cfg

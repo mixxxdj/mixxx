@@ -45,6 +45,10 @@ else()
   set(LLVM_CLANG false)
 endif()
 
+if(APPLE AND CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS 10.14)
+  add_compile_options(-fno-aligned-allocation)
+endif()
+
 # CMake implicitly sets the variable MSVC to true for Microsoft
 # Visual C++ or another compiler simulating Visual C++.
 # https://cmake.org/cmake/help/latest/variable/MSVC.html
@@ -935,6 +939,17 @@ if(GNU_GCC OR LLVM_CLANG)
     APPEND_STRING
     PROPERTY COMPILE_OPTIONS -Wno-unused-parameter -Wno-switch
   )
+elseif(MSVC)
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS /w
+  )
+  set_property(
+    SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+    APPEND_STRING
+    PROPERTY COMPILE_OPTIONS /w
+  )
 endif()
 
 option(WARNINGS_PEDANTIC "Let the compiler show even more warnings" OFF)
@@ -943,6 +958,7 @@ if(MSVC)
     target_compile_options(mixxx-lib PUBLIC /W4)
   else()
     target_compile_options(mixxx-lib PUBLIC /W3)
+    target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
 else()
   target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Wfloat-conversion)
@@ -988,6 +1004,17 @@ if(APPLE)
   endif()
 endif()
 
+# Windows-specific options
+if(WIN32)
+  # https://docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt
+  # _WIN32_WINNT_WIN7 = 0x0601
+  target_compile_definitions(mixxx-lib PUBLIC WINVER=0x0601)
+  target_compile_definitions(mixxx-lib PUBLIC _WIN32_WINNT=0x0601)
+  if(MSVC)
+    target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
+  endif()
+endif()
+
 #
 # Installation directories
 #
@@ -1005,17 +1032,13 @@ if (APPLE AND MACOS_BUNDLE)
 elseif (UNIX)
   include(GNUInstallDirs)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
-  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
-  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}/mixxx")
-  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DATADIR}/licenses/mixxx")
+  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/${CMAKE_PROJECT_NAME}")
+  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}")
+  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DOCDIR}")
 endif()
 
 if(WIN32)
   target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
-
-  # Restrict ATL to XP-compatible SDK functions.
-  # TODO(rryan): Remove once we ditch XP support.
-  target_compile_definitions(mixxx-lib PUBLIC _ATL_XP_TARGETING)
 
   # Helps prevent duplicate symbols
   target_compile_definitions(mixxx-lib PUBLIC _ATL_MIN_CRT)
@@ -1035,6 +1058,8 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC shell32)
 
   if(MSVC)
+    # needed for clcache
+    target_compile_options(mixxx-lib PUBLIC /c)
     if(NOT STATIC_DEPS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
       target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
     endif()
@@ -1072,28 +1097,78 @@ if (APPLE)
 
     set(MACOS_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}")
     set(MACOS_BUNDLE_SHORTVERSION "${CMAKE_PROJECT_VERSION}")
-    set(MACOS_BUNDLE_MINOSVERSION "10.11.0")
 
     set_target_properties(mixxx PROPERTIES
         MACOSX_BUNDLE true
         MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos_bundle.plist.in"
     )
-  else()
-    get_filename_component(QT_PLUGIN_DIR "${Qt5_DIR}/../../../plugins/" ABSOLUTE)
-    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/cmake/run-mixxx.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/run-mixxx.sh" @ONLY)
-    execute_process(COMMAND chmod +x "${CMAKE_CURRENT_BINARY_DIR}/run-mixxx.sh")
   endif()
 else()
-    include(InstallRequiredSystemLibraries)
-    install(
-        FILES
-            ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-        DESTINATION
-            "${MIXXX_INSTALL_BINDIR}"
-        COMPONENT
-            Libraries
-    )
+  include(InstallRequiredSystemLibraries)
+  install(
+    FILES
+        ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
+    DESTINATION
+        "${MIXXX_INSTALL_BINDIR}"
+    COMPONENT
+        Libraries
+  )
 endif()
+
+if(WIN32)
+  option(WINDOWS_CODESIGN "Sign Windows executables and libraries with digital certificate" OFF)
+  mark_as_advanced(WINDOWS_CODESIGN)
+  if(WINDOWS_CODESIGN)
+    set(WINDOWS_CODESIGN_CERTIFICATE_PATH "$ENV{WINDOWS_CODESIGN_CERTIFICATE_PATH}" CACHE STRING "Path to signtool certificate")
+    set(WINDOWS_CODESIGN_CERTIFICATE_PASSWORD "$ENV{WINDOWS_CODESIGN_CERTIFICATE_PASSWORD}" CACHE STRING "Password of signtool certificate")
+    if("${WINDOWS_CODESIGN_CERTIFICATE_PATH}" STREQUAL "" AND "${WINDOWS_CODESIGN_CERTIFICATE_PASSWORD}" STREQUAL "")
+        set(WINDOWS_CODESIGN_ARGS /a /t http://timestamp.verisign.com/scripts/timstamp.dll CACHE STRING "parameters for signtool (list)")
+    else()
+        set(WINDOWS_CODESIGN_ARGS /f ${WINDOWS_CODESIGN_CERTIFICATE_PATH} /p ${WINDOWS_CODESIGN_CERTIFICATE_PASSWORD} CACHE STRING "parameters for signtool (list)")
+    endif()
+    find_program(SIGNTOOL_EXECUTABLE signtool)
+    if(NOT SIGNTOOL_EXECUTABLE)
+      message(FATAL_ERROR "signtool is not found. Signing executables not possible")
+    endif()
+    message(STATUS "Found signtool: ${SIGNTOOL_EXECUTABLE}")
+
+    # Check if we're able to sign an executable
+    if(NOT DEFINED WINDOWS_CODESIGN_OK)
+      file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/testsign.c "int main(){return 0;}")
+      file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/testsign)
+      try_compile(
+        RESULT ${CMAKE_CURRENT_BINARY_DIR}/testsign ${CMAKE_CURRENT_BINARY_DIR}/testsign.c
+        COPY_FILE ${CMAKE_CURRENT_BINARY_DIR}/testsign.exe
+      )
+      execute_process(
+        COMMAND ${SIGNTOOL_EXECUTABLE} sign ${WINDOWS_CODESIGN_ARGS} ${CMAKE_CURRENT_BINARY_DIR}/testsign.exe
+        RESULT_VARIABLE ERR OUTPUT_QUIET
+      )
+      if(ERR EQUAL 0)
+        message(STATUS "Windows codesigning via signtool is working")
+        set(WINDOWS_CODESIGN_OK 1 CACHE INTERNAL "Can sign executables")
+      else()
+        message(FATAL_ERROR "Could NOT codesign test sample (signtool failed)")
+        set(WINDOWS_CODESIGN_OK 0 CACHE INTERNAL "Invalid or missing certificate")
+      endif()
+    endif()
+    mark_as_advanced(SIGNTOOL_EXECUTABLE SIGNTOOL_ARGS)
+  endif()
+
+  macro(windows_codesign_target CODESIGN_TARGET)
+    add_custom_command(
+        TARGET "${CODESIGN_TARGET}" POST_BUILD
+        COMMAND ${SIGNTOOL_EXECUTABLE} sign ${WINDOWS_CODESIGN_ARGS} $<TARGET_FILE:${CODESIGN_TARGET}>
+        COMMENT "Signining target ${CODESIGN_TARGET}"
+        VERBATIM
+    )
+  endmacro()
+
+  if(WINDOWS_CODESIGN)
+    windows_codesign_target(mixxx)
+  endif()
+endif()
+
 
 install(
   TARGETS
@@ -1129,27 +1204,12 @@ install(
   FILES_MATCHING PATTERN
     "*.qm"
 )
-if(WIN32)
-install(
-  # I haven't seen a way to determine where the translations dir is, so I am making
-  # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
-  # which is what my configuration tells me.
-  DIRECTORY
-    "${Qt5_DIR}/../../../translations"
-  DESTINATION
-    "${MIXXX_INSTALL_DATADIR}"
-  # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-  # contain just shortcuts to load the qtbase, qtmultimedia etc files.
-  FILES_MATCHING REGEX
-    "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
-)
-endif()
 
 # Font files
 install(
   DIRECTORY
     "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
-  "DESTINATION"
+  DESTINATION
     "${MIXXX_INSTALL_DATADIR}"
 )
 
@@ -1521,6 +1581,7 @@ endif()
 add_library(fidlib STATIC EXCLUDE_FROM_ALL lib/fidlib/fidlib.c)
 if(MSVC)
   target_compile_definitions(fidlib PRIVATE T_MSVC)
+  target_compile_definitions(fidlib PRIVATE _USE_MATH_DEFINES)
 elseif(MINGW)
   target_compile_definitions(fidlib PRIVATE T_MINGW)
 else()
@@ -1543,8 +1604,8 @@ if(KEYFINDER)
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
     ExternalProject_Add(libKeyFinder
-      URL "https://github.com/ibsh/libKeyFinder/archive/v2.2.2.zip"
-      URL_HASH SHA256=f04ff63c9710d969e79b71bde18abd720e886f537951a1045cc50cb497a72492
+      URL "https://github.com/mixxxdj/libKeyFinder/archive/v2.2.3.zip"
+      URL_HASH SHA256=56887e7b51834223d4264f4ea9acf16f0b6a0c706c218478afbaf89ad1f9c6ea
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libKeyFinder"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
@@ -1654,15 +1715,16 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortMidi_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${PortMidi_LIBRARIES})
 
 # Protobuf
+if(STATIC_DEPS)
+  set(Protobuf_USE_STATIC_LIBS ON)
+  mark_as_advanced(Protobuf_USE_STATIC_LIBS)
+endif()
 add_subdirectory(src/proto)
 target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
-if(WIN32 AND NOT STATIC_DEPS)
-  target_compile_definitions(mixxx-lib PUBLIC PROTOBUF_USE_DLLS)
-endif()
 
 # Rigtorp SPSC Queue
 # https://github.com/rigtorp/SPSCQueue
-target_include_directories(mixxx-lib PUBLIC lib/rigtorp/SPSCQueue/include)
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include)
 
 # Qt
 find_package(Qt5
@@ -1735,8 +1797,6 @@ elseif(WIN32)
       # New libraries required by Qt5.
       dwmapi      # qtwindows
       iphlpapi    # qt5network
-      #libEGL      # qt5opengl
-      #libGLESv2   # qt5opengl
       mpr         # qt5core
       netapi32    # qt5core
       userenv     # qt5core
@@ -1797,6 +1857,32 @@ elseif(WIN32)
   endif()
 endif()
 
+# Qt5_DIR is not set until now, so this cannot be moved above with the rest of the install commands
+if(WIN32)
+  install(
+    # I haven't seen a way to determine where the translations dir is, so I am making
+    # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
+    # which is what my configuration tells me.
+    DIRECTORY
+      "${Qt5_DIR}/../../../translations"
+    DESTINATION
+      "${MIXXX_INSTALL_DATADIR}"
+    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+    FILES_MATCHING REGEX
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+  )
+
+  # ANGLE DLLs are dynamically linked even when the rest of Qt is built statically
+  install(
+    FILES
+        "${Qt5_DIR}/../../../bin/libEGL.dll"
+        "${Qt5_DIR}/../../../bin/libGLESv2.dll"
+    DESTINATION
+        "${MIXXX_INSTALL_DATADIR}"
+  )
+endif()
+
 # QtScriptByteArray
 add_library(QtScriptByteArray STATIC EXCLUDE_FROM_ALL
   lib/qtscript-bytearray/bytearrayclass.cpp
@@ -1804,7 +1890,7 @@ add_library(QtScriptByteArray STATIC EXCLUDE_FROM_ALL
 )
 set_target_properties(QtScriptByteArray PROPERTIES AUTOMOC ON)
 target_link_libraries(QtScriptByteArray Qt5::Core)
-target_include_directories(mixxx-lib PUBLIC lib/qtscript-bytearray)
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/qtscript-bytearray)
 target_link_libraries(mixxx-lib PUBLIC QtScriptByteArray)
 
 # Queen Mary DSP
@@ -1848,6 +1934,7 @@ add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   # lib/qm-dsp/maths/pca/pca.c
   # lib/qm-dsp/thread/Thread.cpp
 )
+
 target_compile_definitions(QueenMaryDsp PRIVATE kiss_fft_scalar=double)
 if(UNIX)
   target_compile_definitions(QueenMaryDsp PRIVATE USE_PTHREADS)
@@ -1856,7 +1943,7 @@ elseif(MSVC)
   # http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx We could define this
   # in our headers but then include order matters since headers we don't control
   # may include cmath first.
-  target_compile_definitions(QueenMaryDsp PUBLIC _USE_MATH_DEFINES)
+  target_compile_definitions(QueenMaryDsp PRIVATE _USE_MATH_DEFINES)
 endif()
 target_include_directories(QueenMaryDsp SYSTEM PUBLIC lib/qm-dsp lib/qm-dsp/include)
 target_link_libraries(mixxx-lib PUBLIC QueenMaryDsp)
@@ -1870,6 +1957,9 @@ target_link_libraries(mixxx-lib PRIVATE ReplayGain)
 
 # Reverb
 add_library(Reverb STATIC EXCLUDE_FROM_ALL lib/reverb/Reverb.cc)
+if(MSVC)
+  target_compile_definitions(Reverb PRIVATE _USE_MATH_DEFINES)
+endif()
 target_include_directories(Reverb PRIVATE src)
 target_link_libraries(Reverb PUBLIC Qt5::Core)
 target_include_directories(mixxx-lib SYSTEM PRIVATE lib/reverb)
@@ -1922,9 +2012,8 @@ else()
 endif()
 
 # TagLib
-find_package(Taglib REQUIRED)
-target_include_directories(mixxx-lib SYSTEM PUBLIC ${TAGLIB_INCLUDE_DIRS})
-target_link_libraries(mixxx-lib PUBLIC ${TAGLIB_LIBRARIES})
+find_package(TagLib REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
 if(WIN32 AND STATIC_DEPS)
   target_compile_definitions(mixxx-lib PUBLIC TAGLIB_STATIC)
 endif()
@@ -2172,7 +2261,7 @@ if(BROADCAST)
       # Fall back to internal libraray in the lib tree
       message(STATUS "Using internal libshout")
       add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout")
-      target_include_directories(mixxx-lib PUBLIC lib/libshout/include)
+      target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout/include)
       target_link_libraries(mixxx-lib PUBLIC shout_mixxx)
     else()
       target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
@@ -2301,7 +2390,7 @@ if(QTKEYCHAIN)
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __QTKEYCHAIN__)
   target_link_libraries(mixxx-lib PUBLIC ${QTKEYCHAIN_LIBRARIES})
-  target_include_directories(mixxx-lib PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
+  target_include_directories(mixxx-lib SYSTEM PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
 endif()
 
 # USB HID or/and Bulk controller support
@@ -2327,6 +2416,10 @@ if(HID)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi/windows/hid.c)
     elseif(APPLE)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi/mac/hid.c)
+        find_library(APPKIT_LIBRARY AppKit REQUIRED)
+        target_link_libraries(mixxx-lib PUBLIC
+          ${APPKIT_LIBRARY}
+        )
     elseif(UNIX)
       if(NOT LibUSB_FOUND)
         message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")
@@ -2392,7 +2485,7 @@ if(VINYLCONTROL)
   else()
     target_sources(mixxx-xwax PRIVATE lib/xwax/timecoder.c lib/xwax/lut.c)
   endif()
-  target_include_directories(mixxx-xwax PUBLIC lib/xwax)
+  target_include_directories(mixxx-xwax SYSTEM PUBLIC lib/xwax)
   target_link_libraries(mixxx-lib PUBLIC mixxx-xwax)
 endif()
 

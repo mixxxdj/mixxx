@@ -18,9 +18,11 @@ class ControlObject : public QObject {
     // bPersist: Store value on exit, load on startup.
     // defaultValue: default value of CO. If CO is persistent and there is no valid
     //               value found in the config, this is also the initial value.
-    ControlObject(ConfigKey key,
-                  bool bIgnoreNops = true, bool bTrack = false,
-                  bool bPersist = false, double defaultValue = 0.0);
+    ControlObject(const ConfigKey& key,
+            bool bIgnoreNops = true,
+            bool bTrack = false,
+            bool bPersist = false,
+            double defaultValue = 0.0);
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey

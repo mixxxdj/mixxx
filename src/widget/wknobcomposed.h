@@ -37,11 +37,11 @@ class WKnobComposed : public WWidget {
     void inputActivity();
     void clear();
     void setPixmapBackground(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
     void setPixmapKnob(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
     void drawArc(QPainter* pPainter);

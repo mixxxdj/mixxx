@@ -248,12 +248,3 @@ addons:
 notifications:
   webhooks:
     - https://mixxx.zulipchat.com/api/v1/external/travis?stream=travis&topic=build-status&api_key=$ZULIP_API_KEY
-
-deploy:
-  provider: script
-  skip_cleanup: true
-  # Deploy is executed from cmake_build.
-  script: ../build/travis/deploy.sh
-  on:
-    all_branches: true
-    condition: "\"${TRAVIS_JOB_NAME}\" =~ CMake"

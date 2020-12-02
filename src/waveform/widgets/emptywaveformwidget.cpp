@@ -21,7 +21,7 @@ EmptyWaveformWidget::~EmptyWaveformWidget() {
 }
 
 void EmptyWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(this);
+    m_widget = this;
 }
 
 void EmptyWaveformWidget::paintEvent(QPaintEvent* event) {

@@ -51,12 +51,14 @@ class PotmeterControls : public QObject {
 class ControlPotmeter : public ControlObject {
     Q_OBJECT
   public:
-    ControlPotmeter(ConfigKey key, double dMinValue = 0.0, double dMaxValue = 1.0,
-                    bool allowOutOfBounds = false,
-                    bool bIgnoreNops = true,
-                    bool bTrack = false,
-                    bool bPersist = false,
-                    double defaultValue = 0.0);
+    ControlPotmeter(const ConfigKey& key,
+            double dMinValue = 0.0,
+            double dMaxValue = 1.0,
+            bool allowOutOfBounds = false,
+            bool bIgnoreNops = true,
+            bool bTrack = false,
+            bool bPersist = false,
+            double defaultValue = 0.0);
     virtual ~ControlPotmeter();
 
     // Sets the step count of the associated PushButtons.

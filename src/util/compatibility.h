@@ -107,7 +107,7 @@ QString uuidToNullableStringWithoutBraces(const QUuid& uuid) {
 
 inline QScreen* getPrimaryScreen() {
 #if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
-    QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
+    QGuiApplication* app = qobject_cast<QGuiApplication*>(QCoreApplication::instance());
     VERIFY_OR_DEBUG_ASSERT(app) {
         qWarning() << "Unable to get applications QCoreApplication instance, "
                       "cannot determine primary screen!";
@@ -133,7 +133,7 @@ inline T atomicLoadAcquire(const QAtomicInteger<T>& atomicInt) {
     // TODO: QBasicAtomicInteger<T>::load() is deprecated and should be
     // replaced with QBasicAtomicInteger<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
-    // minimum required Qt version of Mixx is increased, we need a version
+    // minimum required Qt version of Mixxx is increased, we need a version
     // check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     return atomicInt.loadAcquire();
@@ -147,7 +147,7 @@ inline T* atomicLoadAcquire(const QAtomicPointer<T>& atomicPtr) {
     // TODO: QBasicAtomicPointer<T>::load() is deprecated and should be
     // replaced with QBasicAtomicPointer<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
-    // minimum required Qt version of Mixx is increased, we need a version
+    // minimum required Qt version of Mixxx is increased, we need a version
     // check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     return atomicPtr.loadAcquire();
@@ -161,7 +161,7 @@ inline T atomicLoadRelaxed(const QAtomicInteger<T>& atomicInt) {
     // TODO: QBasicAtomicInteger<T>::load() is deprecated and should be
     // replaced with QBasicAtomicInteger<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
-    // minimum required Qt version of Mixx is increased, we need a version
+    // minimum required Qt version of Mixxx is increased, we need a version
     // check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     return atomicInt.loadRelaxed();
@@ -175,7 +175,7 @@ inline T* atomicLoadRelaxed(const QAtomicPointer<T>& atomicPtr) {
     // TODO: QBasicAtomicPointer<T>::load() is deprecated and should be
     // replaced with QBasicAtomicPointer<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
-    // minimum required Qt version of Mixx is increased, we need a version
+    // minimum required Qt version of Mixxx is increased, we need a version
     // check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     return atomicPtr.loadRelaxed();
@@ -189,7 +189,7 @@ inline void atomicStoreRelaxed(QAtomicInteger<T>& atomicInt, T newValue) {
     // TODO: QBasicAtomicInteger<T>::store(T newValue) is deprecated and should
     // be replaced with QBasicAtomicInteger<T>::storeRelaxed(T newValue)
     // However, the proposed alternative has just been introduced in Qt 5.14.
-    // Until the minimum required Qt version of Mixx is increased, we need a
+    // Until the minimum required Qt version of Mixxx is increased, we need a
     // version check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     atomicInt.storeRelaxed(newValue);
@@ -203,7 +203,7 @@ inline void atomicStoreRelaxed(QAtomicPointer<T>& atomicPtr, T* newValue) {
     // TODO: QBasicAtomicPointer<T>::store(T* newValue) is deprecated and
     // should be replaced with QBasicAtomicPointer<T>::storeRelaxed(T*
     // newValue) However, the proposed alternative has just been introduced in
-    // Qt 5.14. Until the minimum required Qt version of Mixx is increased, we
+    // Qt 5.14. Until the minimum required Qt version of Mixxx is increased, we
     // need a version check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     atomicPtr.storeRelaxed(newValue);

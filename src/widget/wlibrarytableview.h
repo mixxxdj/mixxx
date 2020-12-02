@@ -15,8 +15,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   public:
     WLibraryTableView(QWidget* parent,
-                      UserSettingsPointer pConfig,
-                      ConfigKey vScrollBarPosKey);
+            UserSettingsPointer pConfig,
+            const ConfigKey& vScrollBarPosKey);
     ~WLibraryTableView() override;
 
     void moveSelection(int delta) override;
@@ -35,8 +35,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   signals:
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group,
-            bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
     void trackSelected(TrackPointer pTrack);
     void onlyCachedCoverArt(bool);
     void scrollValueChanged(int);

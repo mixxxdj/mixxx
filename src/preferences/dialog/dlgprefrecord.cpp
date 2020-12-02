@@ -9,6 +9,9 @@
 #include "control/controlproxy.h"
 #include "util/sandbox.h"
 
+namespace {
+constexpr bool kDefaultCueEnabled = true;
+} // anonymous namespace
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
@@ -27,8 +30,10 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         recordingsPath = recordDir.absolutePath();
     }
     LineEditRecordings->setText(recordingsPath);
-    connect(PushButtonBrowseRecordings, SIGNAL(clicked()),
-            this, SLOT(slotBrowseRecordingsDir()));
+    connect(PushButtonBrowseRecordings,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefRecord::slotBrowseRecordingsDir);
 
     // Setting Encoder
     bool found = false;
@@ -36,7 +41,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     for (const Encoder::Format& format : EncoderFactory::getFactory().getFormats()) {
         QRadioButton* button = new QRadioButton(format.label, this);
         button->setObjectName(format.internalName);
-        connect(button, SIGNAL(clicked()), this, SLOT(slotFormatChanged()));
+        connect(button, &QAbstractButton::clicked, this, &DlgPrefRecord::slotFormatChanged);
         if (format.lossless) {
             LosslessEncLayout->addWidget(button);
         } else {
@@ -67,8 +72,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     loadMetaData();
 
     // Setting miscellaneous
-    CheckBoxRecordCueFile->setChecked(
-            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
+    CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
+            ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     // Setting split
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -93,18 +98,24 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     }
 
     // Do the one-time connection of signals here.
-    connect(SliderQuality, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSliderQuality()));
-    connect(SliderQuality, SIGNAL(sliderMoved(int)),
-            this, SLOT(slotSliderQuality()));
-    connect(SliderQuality, SIGNAL(sliderReleased()),
-            this, SLOT(slotSliderQuality()));
-    connect(SliderCompression, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSliderCompression()));
-    connect(SliderCompression, SIGNAL(sliderMoved(int)),
-            this, SLOT(slotSliderCompression()));
-    connect(SliderCompression, SIGNAL(sliderReleased()),
-            this, SLOT(slotSliderCompression()));
+    connect(SliderQuality, &QAbstractSlider::valueChanged, this, &DlgPrefRecord::slotSliderQuality);
+    connect(SliderQuality, &QAbstractSlider::sliderMoved, this, &DlgPrefRecord::slotSliderQuality);
+    connect(SliderQuality,
+            &QAbstractSlider::sliderReleased,
+            this,
+            &DlgPrefRecord::slotSliderQuality);
+    connect(SliderCompression,
+            &QAbstractSlider::valueChanged,
+            this,
+            &DlgPrefRecord::slotSliderCompression);
+    connect(SliderCompression,
+            &QAbstractSlider::sliderMoved,
+            this,
+            &DlgPrefRecord::slotSliderCompression);
+    connect(SliderCompression,
+            &QAbstractSlider::sliderReleased,
+            this,
+            &DlgPrefRecord::slotSliderCompression);
 }
 
 DlgPrefRecord::~DlgPrefRecord()
@@ -165,8 +176,8 @@ void DlgPrefRecord::slotUpdate()
     loadMetaData();
 
      // Setting miscellaneous
-    CheckBoxRecordCueFile->setChecked(
-            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
+    CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
+            ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
@@ -191,8 +202,7 @@ void DlgPrefRecord::slotResetToDefaults()
 
     // 4GB splitting is the default
     comboBoxSplitting->setCurrentIndex(4);
-    CheckBoxRecordCueFile->setChecked(false);
-
+    CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
 }
 
 
@@ -256,7 +266,7 @@ void DlgPrefRecord::setupEncoderUI() {
     for (QAbstractButton* widget : qAsConst(m_optionWidgets)) {
         optionsgroup.removeButton(widget);
         OptionGroupsLayout->removeWidget(widget);
-        disconnect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
+        disconnect(widget, &QAbstractButton::clicked, this, &DlgPrefRecord::slotGroupChanged);
         widget->deleteLater();
     }
     m_optionWidgets.clear();
@@ -281,7 +291,7 @@ void DlgPrefRecord::setupEncoderUI() {
                 QRadioButton* button = new QRadioButton(name, this);
                 widget = button;
             }
-            connect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
+            connect(widget, &QAbstractButton::clicked, this, &DlgPrefRecord::slotGroupChanged);
             widget->setObjectName(group.groupCode);
             OptionGroupsLayout->addWidget(widget);
             optionsgroup.addButton(widget);

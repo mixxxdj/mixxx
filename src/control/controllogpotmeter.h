@@ -6,5 +6,5 @@
 class ControlLogpotmeter : public ControlPotmeter {
     Q_OBJECT
   public:
-    ControlLogpotmeter(ConfigKey key, double dMaxValue, double minDB);
+    ControlLogpotmeter(const ConfigKey& key, double dMaxValue, double minDB);
 };

@@ -72,7 +72,7 @@ QString BaseTrackCache::columnSortForFieldIndex(int index) const {
     return m_columnCache.columnSortForFieldIndex(index);
 }
 
-void BaseTrackCache::slotTracksAddedOrChanged(QSet<TrackId> trackIds) {
+void BaseTrackCache::slotTracksAddedOrChanged(const QSet<TrackId>& trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksAddedOrChanged" << trackIds.size();
     }
@@ -86,7 +86,7 @@ void BaseTrackCache::slotScanTrackAdded(TrackPointer pTrack) {
     updateTrackInIndex(pTrack);
 }
 
-void BaseTrackCache::slotTracksRemoved(QSet<TrackId> trackIds) {
+void BaseTrackCache::slotTracksRemoved(const QSet<TrackId>& trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksRemoved" << trackIds.size();
     }
@@ -120,7 +120,7 @@ void BaseTrackCache::ensureCached(TrackId trackId) {
     updateTrackInIndex(trackId);
 }
 
-void BaseTrackCache::ensureCached(QSet<TrackId> trackIds) {
+void BaseTrackCache::ensureCached(const QSet<TrackId>& trackIds) {
     updateTracksInIndex(trackIds);
 }
 
@@ -673,8 +673,10 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
     return min;
 }
 
-int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
-                                        QVariant val1, QVariant val2) const {
+int BaseTrackCache::compareColumnValues(int sortColumn,
+        Qt::SortOrder sortOrder,
+        const QVariant& val1,
+        const QVariant& val2) const {
     int result = 0;
 
     if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) ||

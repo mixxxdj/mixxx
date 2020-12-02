@@ -77,13 +77,16 @@ class WPushButton : public WWidget {
     virtual void restyleAndRepaint();
 
     // Associates a pixmap of a given state of the button with the widget
-    void setPixmap(int iState, bool bPressed, PixmapSource source,
-                   Paintable::DrawMode mode, double scaleFactor);
+    void setPixmap(int iState,
+            bool bPressed,
+            const PixmapSource& source,
+            Paintable::DrawMode mode,
+            double scaleFactor);
 
     // Associates a background pixmap with the widget. This is only needed if
     // the button pixmaps contains alpha channel values.
     void setPixmapBackground(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
 

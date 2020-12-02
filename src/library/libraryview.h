@@ -29,7 +29,7 @@ class LibraryView {
 
     /// If applicable, requests that the LibraryView load the selected track to
     /// the specified group. Does nothing otherwise.
-    virtual void loadSelectedTrackToGroup(QString group, bool play) {
+    virtual void loadSelectedTrackToGroup(const QString& group, bool play) {
         Q_UNUSED(group); Q_UNUSED(play);
     }
 

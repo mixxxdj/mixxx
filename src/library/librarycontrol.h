@@ -22,7 +22,7 @@ class LoadToGroupController : public QObject {
     virtual ~LoadToGroupController();
 
   signals:
-    void loadToGroup(QString group, bool);
+    void loadToGroup(const QString& group, bool);
 
   public slots:
     void slotLoadToGroup(double v);
@@ -49,7 +49,7 @@ class LibraryControl : public QObject {
 
   public slots:
     // Deprecated navigation slots
-    void slotLoadSelectedTrackToGroup(QString group, bool play);
+    void slotLoadSelectedTrackToGroup(const QString& group, bool play);
 
   private slots:
     void libraryWidgetDeleted();

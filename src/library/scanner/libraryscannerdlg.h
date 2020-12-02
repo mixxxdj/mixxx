@@ -13,15 +13,15 @@ class LibraryScannerDlg : public QWidget {
     virtual ~LibraryScannerDlg();
 
   public slots:
-    void slotUpdate(QString path);
-    void slotUpdateCover(QString path);
+    void slotUpdate(const QString& path);
+    void slotUpdateCover(const QString& path);
     void slotCancel();
     void slotScanFinished();
     void slotScanStarted();
 
   signals:
     void scanCancelled();
-    void progress(QString);
+    void progress(const QString&);
 
   private:
     PerformanceTimer m_timer;

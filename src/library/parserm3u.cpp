@@ -43,8 +43,7 @@ ParserM3u::~ParserM3u()
 
 }
 
-QList<QString> ParserM3u::parse(QString sFilename)
-{
+QList<QString> ParserM3u::parse(const QString& sFilename) {
     clearLocations();
 
     QFile file(sFilename);

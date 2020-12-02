@@ -59,8 +59,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void micMonitorModeComboBoxChanged(int value);
 
   private slots:
-    void addPath(AudioOutput output);
-    void addPath(AudioInput input);
+    void addPath(const AudioOutput& output);
+    void addPath(const AudioInput& input);
     void loadSettings();
     void apiChanged(int index);
     void updateAPIs();

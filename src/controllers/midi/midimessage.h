@@ -162,7 +162,7 @@ struct MidiInputMapping {
     MidiInputMapping(MidiKey key,
             MidiOptions options,
             const ConfigKey& control,
-            QString description)
+            const QString& description)
             : key(key),
               options(options),
               control(control),

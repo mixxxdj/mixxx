@@ -81,8 +81,6 @@ QSqlDatabase cloneDatabase(
             pTrackCollectionManager->internalCollection()) {
         return QSqlDatabase();
     }
-    const auto connectionName =
-            uuidToStringWithoutBraces(QUuid::createUuid());
     return cloneDatabase(
             pTrackCollectionManager->internalCollection()->database());
 }
@@ -229,7 +227,7 @@ void BaseTrackTableModel::initHeaderProperties() {
 
 void BaseTrackTableModel::setHeaderProperties(
         ColumnCache::Column column,
-        QString title,
+        const QString& title,
         int defaultWidth) {
     int section = fieldIndex(column);
     if (section < 0) {
@@ -740,7 +738,7 @@ QMimeData* BaseTrackTableModel::mimeData(
 }
 
 void BaseTrackTableModel::slotTrackLoaded(
-        QString group,
+        const QString& group,
         TrackPointer pTrack) {
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
@@ -760,7 +758,7 @@ void BaseTrackTableModel::slotTrackLoaded(
 }
 
 void BaseTrackTableModel::slotRefreshCoverRows(
-        QList<int> rows) {
+        const QList<int>& rows) {
     if (rows.isEmpty()) {
         return;
     }

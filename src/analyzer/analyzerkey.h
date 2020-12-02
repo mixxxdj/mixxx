@@ -13,7 +13,7 @@
 
 class AnalyzerKey : public Analyzer {
   public:
-    explicit AnalyzerKey(KeyDetectionSettings keySettings);
+    explicit AnalyzerKey(const KeyDetectionSettings& keySettings);
     ~AnalyzerKey() override = default;
 
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
@@ -26,7 +26,7 @@ class AnalyzerKey : public Analyzer {
 
   private:
     static QHash<QString, QString> getExtraVersionInfo(
-            QString pluginId, bool bPreferencesFastAnalysis);
+            const QString& pluginId, bool bPreferencesFastAnalysis);
 
     bool shouldAnalyze(TrackPointer tio) const;
 
