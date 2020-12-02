@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QThreadStorage>
+#include <memory>
 #include <utility>
 
 #include "control/controlpushbutton.h"

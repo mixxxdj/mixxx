@@ -20,6 +20,7 @@
 #include <QEvent>
 #include <QMutex>
 #include <QObject>
+#include <memory>
 #include <utility>
 
 #include "control/control.h"

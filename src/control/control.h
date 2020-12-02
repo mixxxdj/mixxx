@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
+#include <memory>
 
 #include "control/controlbehavior.h"
 #include "control/controlvalue.h"
