@@ -92,8 +92,12 @@ bool readJsonContent(
 QNetworkRequest newRequest(
         const QUrl& url) {
     QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, JSON_CONTENT_TYPE);
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    request.setHeader(
+            QNetworkRequest::ContentTypeHeader,
+            JSON_CONTENT_TYPE);
+    request.setAttribute(
+            QNetworkRequest::RedirectPolicyAttribute,
+            QNetworkRequest::NoLessSafeRedirectPolicy);
     return request;
 }
 

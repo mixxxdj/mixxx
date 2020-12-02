@@ -86,7 +86,9 @@
               ****************************************
               -->
               <!-- Play deck 1 -->
+              <!-- Play indicator, blinks depending on Cue mode -->
               <PushButton>
+                <Pos>11,200</Pos>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -98,13 +100,30 @@
                   <Pressed>skin:/btn/btn_play_deck_over.png</Pressed>
                   <Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
                 </State>
-                <Pos>11,200</Pos>
                 <Connection>
                   <ConfigKey>[Channel1],play_indicator</ConfigKey>
                 </Connection>
               </PushButton>
+              <!-- Preview indicator -->
+              <PushButton>
+                <Pos>11,200</Pos>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>skin:/btn/btn_play_deck_preview.png</Pressed>
+                  <Unpressed>skin:/btn/btn_play_deck_preview.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey>[Channel1],play</ConfigKey>
+                </Connection>
+              </PushButton>
+              <!-- Play -->
               <PushButton>
                 <TooltipId>play_cue_set</TooltipId>
+                <Pos>11,200</Pos>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -116,7 +135,6 @@
                   <Pressed>skin:/btn/btn_play_deck_overdown.png</Pressed>
                   <Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
                 </State>
-                <Pos>11,200</Pos>
                 <Connection>
                   <ConfigKey>[Channel1],play</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
@@ -125,9 +143,16 @@
                   <ConfigKey>[Channel1],cue_set</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
                 </Connection>
+                <Connection>
+                  <ConfigKey>[Channel1],play_latched</ConfigKey>
+                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
+                </Connection>
               </PushButton>
+
               <!-- Play deck 2 -->
+              <!-- Play indicator, blinks depending on Cue mode -->
               <PushButton>
+                <Pos>203,200</Pos>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -139,13 +164,30 @@
                   <Pressed>skin:/btn/btn_play_deck_over.png</Pressed>
                   <Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
                 </State>
-                <Pos>203,200</Pos>
                 <Connection>
                   <ConfigKey>[Channel2],play_indicator</ConfigKey>
                 </Connection>
               </PushButton>
+              <!-- Preview indicator -->
+              <PushButton>
+                <Pos>203,200</Pos>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>skin:/btn/btn_deck_preview.png</Pressed>
+                  <Unpressed>skin:/btn/btn_deck_preview.png</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey>[Channel2],play</ConfigKey>
+                </Connection>
+              </PushButton>
+              <!-- Play -->
               <PushButton>
                 <TooltipId>play_cue_set</TooltipId>
+                <Pos>203,200</Pos>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -157,7 +199,6 @@
                   <Pressed>skin:/btn/btn_play_deck_overdown.png</Pressed>
                   <Unpressed>skin:/btn/btn_play_deck_over.png</Unpressed>
                 </State>
-                <Pos>203,200</Pos>
                 <Connection>
                   <ConfigKey>[Channel2],play</ConfigKey>
                   <ButtonState>LeftButton</ButtonState>
@@ -165,6 +206,10 @@
                 <Connection>
                   <ConfigKey>[Channel2],cue_set</ConfigKey>
                   <ButtonState>RightButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[Channel2],play_latched</ConfigKey>
+                  <ConnectValueFromWidget>false</ConnectValueFromWidget>
                 </Connection>
               </PushButton>
 

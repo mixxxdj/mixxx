@@ -898,16 +898,8 @@ WLabel#TrackComment {
 
 /* Actual Play button. Receives click events, turns red
   when playing regularly, not from Cue or HotCue */
-#PlayCue[displayValue="0"],
-#PlayCue[displayValue="0"]:hover {
+#PlayCue[displayValue="0"] {
   background-color: transparent;
-  }
-
-#SamplerPlayCue[displayValue="0"] {
-  /* different than decks' Play button, this has some soft shadow to distinguish
-  it better from underlying Cover Art (if available) */
-  background-color: transparent;  /*
-  image: url(skin:/buttons/btn_sampler_play.png) no-repeat center center; */
   }
   #SamplerPlayCueUnderlay[displayValue="1"] {
     background: #a90000;
@@ -925,30 +917,30 @@ WLabel#TrackComment {
 }
 
 #PlayCue[displayValue="0"]:hover,
-#SamplerPlayCue[displayValue="0"]:hover,
 #MicTalkover[displayValue="0"]:hover,
 #AuxEnable[displayValue="0"]:hover,
 #MicAuxAdd[displayValue="0"]:hover {
   border: 1px solid #ff9900;
   }
-  #SamplerPlayCue[displayValue="0"]:hover {
+  #SamplerDeck #PlayCue[displayValue="0"]:hover {
     background-color: rgba(255, 128, 0, 210);
   }
 
 #PlayCue[displayValue="1"],
-#SamplerPlayCue[displayValue="1"] { /*
-  image: url(skin:/buttons/btn_pause.svg) no-repeat center center;  */
-}
-#PlayCue[value="1"],
 #PlayIndicator[value="1"],
-#SamplerPlayCue[displayValue="1"],
 #MicTalkover[displayValue="1"],
 #AuxEnable[displayValue="1"],
 #PassthroughPlayCover,
 #LoopIndicator {
   background-color: #ff8000;
   border: 1px solid #ff9900;
-}
+  }
+  #PreviewIndicator[value="1"] {
+    border: 3px solid #ff9900;
+  }
+  #PreviewPlay #PreviewIndicator {
+    background-color: #333;
+  }
   #PlayCue[displayValue="1"]:hover,
   #SamplerPlayCue[displayValue="1"]:hover,
   #MicTalkover[displayValue="1"]:hover,
