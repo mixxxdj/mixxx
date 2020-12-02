@@ -9,13 +9,18 @@ if( NOT CPACK_DEBIAN_DEBHELPER )
 	message( NOTICE "debhelper not found, required for cpack -G DEB" )
 endif()
 
-# Some debhelpers need fakeroot, we use it for all of them
-find_program( CPACK_DEBIAN_FAKEROOT fakeroot )
-if( NOT CPACK_DEBIAN_FAKEROOT )
-	message( NOTICE "fakeroot not found, required for cpack -G DEB" )
+execute_process(COMMAND whoami OUTPUT_VARIABLE _DH_USER)
+string(STRIP "${_DH_USER}" _DH_USER)
+if (NOT _DH_USER STREQUAL "root")
+	message( FATAL_ERROR "_11111111 ${CPACK_DEBIAN_FAKEROOT} _${_DH_USER}_ ${CPACK_DEBIAN_DEBHELPER}" )
+	# Some debhelpers need fakeroot, we use it for all of them
+	find_program( CPACK_DEBIAN_FAKEROOT fakeroot )
+	if( NOT CPACK_DEBIAN_FAKEROOT )
+		message( NOTICE "fakeroot not found, required for cpack -G DEB" )
+	endif()
 endif()
 
-IF(CPACK_DEBIAN_FAKEROOT AND CPACK_DEBIAN_DEBHELPER)
+IF((CPACK_DEBIAN_FAKEROOT OR _DH_USER STREQUAL "root") AND CPACK_DEBIAN_DEBHELPER)
 	# configure() .in-files to the CURRENT_BINARY_DIR
 	foreach( _F ${DH_INPUT} )
 		# strip the .in part
@@ -40,6 +45,13 @@ IF(CPACK_DEBIAN_FAKEROOT AND CPACK_DEBIAN_DEBHELPER)
 		set( _DH_RUN_SC_LIST "${_DH_RUN_SC_LIST} ${_DH} ;" )
 	endforeach()
 
+
+	if( CPACK_DEBIAN_FAKEROOT )
+		set( _DH_RUN_COMMAND ${CPACK_DEBIAN_FAKEROOT} -- sh -c "${_DH_RUN_SC_LIST}" )
+ 	else()
+		set( _DH_RUN_COMMAND sh -c "${_DH_RUN_SC_LIST}" )
+	endif()
+
 	# Making sure the debhelpers run each time we change one of ${DH_INPUT}
 	add_custom_command(
 		OUTPUT dhtimestamp
@@ -48,7 +60,7 @@ IF(CPACK_DEBIAN_FAKEROOT AND CPACK_DEBIAN_DEBHELPER)
 		COMMAND ${CPACK_DEBIAN_FAKEROOT} dh_prep
 
 		# I haven't found another way to run a list of commands here
-		COMMAND ${CPACK_DEBIAN_FAKEROOT} -- sh -c "${_DH_RUN_SC_LIST}"
+		COMMAND ${_DH_RUN_COMMAND}
 
 		# needed to create the files we'll use
 		COMMAND ${CPACK_DEBIAN_FAKEROOT} dh_installdeb
