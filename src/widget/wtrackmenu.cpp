@@ -234,6 +234,9 @@ void WTrackMenu::createActions() {
         m_pClearPlayCountAction = new QAction(tr("Play Count"), m_pClearMetadataMenu);
         connect(m_pClearPlayCountAction, &QAction::triggered, this, &WTrackMenu::slotClearPlayCount);
 
+        m_pClearRatingAction = new QAction(tr("Rating"), m_pClearMetadataMenu);
+        connect(m_pClearRatingAction, &QAction::triggered, this, &WTrackMenu::slotClearRating);
+
         m_pClearMainCueAction = new QAction(tr("Cue Point"), m_pClearMetadataMenu);
         connect(m_pClearMainCueAction, &QAction::triggered, this, &WTrackMenu::slotClearMainCue);
 
@@ -407,6 +410,7 @@ void WTrackMenu::setupActions() {
     if (featureIsEnabled(Feature::Reset)) {
         m_pClearMetadataMenu->addAction(m_pClearBeatsAction);
         m_pClearMetadataMenu->addAction(m_pClearPlayCountAction);
+        m_pClearMetadataMenu->addAction(m_pClearRatingAction);
         // FIXME: Why is clearing the loop not working?
         m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
         m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
@@ -1272,6 +1276,29 @@ void WTrackMenu::slotClearBeats() {
             tr("Resetting beats of %n track(s)", "", getTrackCount());
     const auto trackOperator =
             ResetBeatsTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+namespace {
+
+class ClearRatingTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->setRating(0);
+    }
+};
+
+} // anonymous namespace
+
+//slot for reset played count, sets count to 0 of one or more tracks
+void WTrackMenu::slotClearRating() {
+    const auto progressLabelText =
+            tr("Clear rating of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ClearRatingTrackPointerOperation();
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
