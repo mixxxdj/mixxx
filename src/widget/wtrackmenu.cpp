@@ -1296,7 +1296,7 @@ class ClearRatingTrackPointerOperation : public mixxx::TrackPointerOperation {
 //slot for reset played count, sets count to 0 of one or more tracks
 void WTrackMenu::slotClearRating() {
     const auto progressLabelText =
-            tr("Clear rating of %n track(s)", "", getTrackCount());
+            tr("Clearing rating of %n track(s)", "", getTrackCount());
     const auto trackOperator =
             ClearRatingTrackPointerOperation();
     applyTrackPointerOperation(
