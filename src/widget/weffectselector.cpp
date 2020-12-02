@@ -129,7 +129,7 @@ bool WEffectSelector::event(QEvent* pEvent) {
         populate();
     } else if (pEvent->type() == QEvent::Wheel && !hasFocus()) {
         // don't change effect by scrolling hovered effect selector
-        return false;
+        return true;
     }
 
     return QComboBox::event(pEvent);

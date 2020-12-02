@@ -110,6 +110,10 @@ jobs:
       if: runner.os == 'Windows'
       run: python -m pip install ninja git+https://github.com/frerich/clcache.git
 
+    - name: "[Windows] Set up MSVC Developer Command Prompt"
+      if: runner.os == 'Windows'
+      uses: seanmiddleditch/gha-setup-vsdevenv@v3
+
     - name: "[macOS/Windows] Get build environment name"
       if: runner.os != 'Linux'
       id: buildenv_name
@@ -140,9 +144,23 @@ jobs:
         security set-key-partition-list -S "apple-tool:,apple:" -k mixxx Mixxx.keychain
         # Add keychain to search list
         security list-keychains -s Mixxx.keychain
+        # Prevent keychain access from timing out
+        security set-keychain-settings Mixxx.keychain
+        echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
 
-        CMAKE_ARGS="-DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}"
-        echo "::set-output name=cmake_args::${CMAKE_ARGS}"
+    - name: "[Windows] Set up Windows code signing"
+      env:
+        WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ github.workspace }}\build\certificates\windows_sectigo_codesign_certificate.pfx
+        WINDOWS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD }}
+        WINDOWS_CODESIGN_SECURE_FILE_SALT: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SALT }}
+        WINDOWS_CODESIGN_SECURE_FILE_SECRET: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SECRET }}
+      if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_SECURE_FILE_SALT != null && env.WINDOWS_CODESIGN_SECURE_FILE_SECRET != null
+      run: |
+        iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
+        appveyor-tools/secure-file -decrypt "$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH.enc" -secret "$Env:WINDOWS_CODESIGN_SECURE_FILE_SECRET" -salt "$Env:WINDOWS_CODESIGN_SECURE_FILE_SALT"
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PATH=$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH"
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PASSWORD=$Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD"
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "CMAKE_ARGS_EXTRA=-DWINDOWS_CODESIGN=ON"
 
     - name: "Set up build environment"
       id: buildenv
@@ -166,12 +184,6 @@ jobs:
     - name: "Create build directory"
       run: mkdir cmake_build
 
-    - name: "[Windows] Set up MSVC Developer Command Prompt"
-      if: runner.os == 'Windows'
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        toolset: 14.16
-
     - name: "Configure"
       run: >-
         cmake
@@ -179,7 +191,7 @@ jobs:
         -DCMAKE_BUILD_TYPE=Release
         "-DCMAKE_PREFIX_PATH=${{ env.CMAKE_PREFIX_PATH }}"
         -DDEBUG_ASSERTIONS_FATAL=ON
-        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ steps.apple_codesign.outputs.cmake_args }}
+        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DBATTERY=ON
         -DBROADCAST=ON
         -DBULK=ON
@@ -241,6 +253,11 @@ jobs:
     - name: "[macOS] Sign Package"
       if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
       run: codesign --verbose=4 --options runtime --sign "${APPLE_CODESIGN_IDENTITY}" --entitlements ../build/osx/entitlements.plist *.dmg
+      working-directory: cmake_build
+
+    - name: "[Windows] Sign Package"
+      if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
+      run: signtool sign /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
       working-directory: cmake_build
 
     - name: "[macOS] Upload build to downloads.mixxx.org"
