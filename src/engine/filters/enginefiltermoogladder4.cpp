@@ -12,5 +12,3 @@ EngineFilterMoogLadder4High::EngineFilterMoogLadder4High(int sampleRate,
                                                  double resonance)
         : EngineFilterMoogLadderBase(sampleRate, (float)freqCorner1, (float)resonance) {
 }
-
-

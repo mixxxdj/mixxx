@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include "control/controlpotmeter.h"

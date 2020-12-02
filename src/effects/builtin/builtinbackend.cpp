@@ -1,4 +1,3 @@
-
 #include <QtDebug>
 
 #include "effects/builtin/builtinbackend.h"

@@ -1,4 +1,3 @@
-
 #include "track/beats.h"
 
 namespace mixxx {

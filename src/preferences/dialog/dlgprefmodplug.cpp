@@ -1,4 +1,3 @@
-
 #include <QtDebug>
 
 #include "preferences/dialog/dlgprefmodplug.h"

@@ -1,4 +1,3 @@
-
 #pragma once
 
 #ifdef __WINDOWS__

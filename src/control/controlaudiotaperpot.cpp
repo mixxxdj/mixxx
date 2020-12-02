@@ -1,4 +1,3 @@
-
 #include "control/controlaudiotaperpot.h"
 
 ControlAudioTaperPot::ControlAudioTaperPot(const ConfigKey& key,
