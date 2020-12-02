@@ -1,4 +1,3 @@
-// FFMPEG MP3 encoder for mixxx
 #include "encoder/encoderffmpegmp3.h"
 
 // Constructor

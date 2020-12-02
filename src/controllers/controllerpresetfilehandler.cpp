@@ -1,5 +1,3 @@
-/// Handles loading and saving of Controller presets.
-
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"

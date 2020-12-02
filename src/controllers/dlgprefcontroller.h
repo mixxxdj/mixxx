@@ -1,5 +1,3 @@
-/// Configuration dialog for a single DJ controller
-
 #pragma once
 
 #include <QHash>
@@ -19,6 +17,7 @@ class Controller;
 class ControllerManager;
 class PresetInfoEnumerator;
 
+/// Configuration dialog for a single DJ controller
 class DlgPrefController : public DlgPreferencePage {
     Q_OBJECT
   public:

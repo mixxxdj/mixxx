@@ -1,9 +1,9 @@
-// This class handles discovery and enumeration of DJ controllers that appear under the HSS1394 cross-platform API.
-
 #pragma once
 
 #include "controllers/midi/midienumerator.h"
 
+// Handles discovery and enumeration of DJ controllers that appear under the
+// HSS1394 cross-platform API.
 class Hss1394Enumerator : public MidiEnumerator {
     Q_OBJECT
   public:

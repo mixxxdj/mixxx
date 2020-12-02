@@ -1,5 +1,3 @@
-// wave/aiff "encoder" for mixxx
-
 #include <QtDebug>
 
 #include "encoder/encoderwave.h"

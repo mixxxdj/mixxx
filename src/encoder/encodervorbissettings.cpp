@@ -1,5 +1,3 @@
-// storage of setting for vorbis encoder
-
 #include "encoder/encodervorbissettings.h"
 #include "recording/defs_recording.h"
 

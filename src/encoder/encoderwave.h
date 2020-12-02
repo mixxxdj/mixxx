@@ -1,11 +1,9 @@
-// wave/aiff "encoder" for mixxx
-
 #pragma once
 
 #include "encoder/encoderwavesettings.h"
 #ifdef Q_OS_WIN
-//Enable unicode in libsndfile on Windows
-//(sf_open uses UTF-8 otherwise)
+// Enable unicode in libsndfile on Windows
+// (sf_open uses UTF-8 otherwise)
 #include <windows.h>
 #define ENABLE_SNDFILE_WINDOWS_PROTOTYPES 1
 #endif
@@ -17,6 +15,7 @@
 
 class EncoderCallback;
 
+// WAVE/AIFF "encoder"
 class EncoderWave : public Encoder {
   public:
     EncoderWave(EncoderCallback* pCallback = nullptr);

@@ -1,11 +1,3 @@
-/** MIDI Controller base class
-*
-* This is a base class representing a MIDI controller.
-*   It must be inherited by a class that implements it on some API.
-*
-*   Note that the subclass' destructor should call close() at a minimum.
-*/
-
 #pragma once
 
 #include "controllers/controller.h"
@@ -15,6 +7,12 @@
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
 
+/// MIDI Controller base class
+///
+/// This is a base class representing a MIDI controller.
+/// It must be inherited by a class that implements it on some API.
+///
+/// Note that the subclass' destructor should call close() at a minimum.
 class MidiController : public Controller {
     Q_OBJECT
   public:

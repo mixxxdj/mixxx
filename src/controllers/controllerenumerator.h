@@ -1,13 +1,11 @@
-/** Base class handling discovery and enumeration of DJ controllers.
- *
- * This class handles discovery and enumeration of DJ controllers and
- *   must be inherited by a class that implements it on some API.
- */
-
 #pragma once
 
 #include "controllers/controller.h"
 
+/// Base class handling discovery and enumeration of DJ controllers.
+///
+/// This class handles discovery and enumeration of DJ controllers and
+/// must be inherited by a class that implements it on some API.
 class ControllerEnumerator : public QObject {
     Q_OBJECT
   public:

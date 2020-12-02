@@ -1,10 +1,9 @@
-// Handles loading and saving of MIDI controller presets.
-
 #pragma once
 
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/midi/midicontrollerpreset.h"
 
+/// Handles loading and saving of MIDI controller presets.
 class MidiControllerPresetFileHandler : public ControllerPresetFileHandler {
   public:
     MidiControllerPresetFileHandler() {};

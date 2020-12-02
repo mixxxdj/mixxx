@@ -1,5 +1,3 @@
-// The controller mapping learning wizard
-
 #include <QCompleter>
 
 #include "control/controlobject.h"

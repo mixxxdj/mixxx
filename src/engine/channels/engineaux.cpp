@@ -1,5 +1,3 @@
-// shameless stolen from enginemicrophone.cpp (from RJ)
-
 #include "engine/channels/engineaux.h"
 
 #include <QtDebug>

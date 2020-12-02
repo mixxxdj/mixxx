@@ -1,8 +1,3 @@
-/// MIDI Controller Preset
-///
-/// This class represents a MIDI controller preset, containing the data elements
-///   that make it up.
-
 #include "controllers/midi/midicontrollerpreset.h"
 
 #include "controllers/defs_controllers.h"

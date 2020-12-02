@@ -1,5 +1,3 @@
-// PortMidi-based MIDI backend
-
 #include "controllers/midi/midiutils.h"
 #include "controllers/midi/portmidicontroller.h"
 #include "controllers/controllerdebug.h"

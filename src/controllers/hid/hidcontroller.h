@@ -1,5 +1,3 @@
-// HID controller backend
-
 #pragma once
 
 #include <hidapi.h>
@@ -11,6 +9,7 @@
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
 #include "util/duration.h"
 
+/// HID controller backend
 class HidController final : public Controller {
     Q_OBJECT
   public:

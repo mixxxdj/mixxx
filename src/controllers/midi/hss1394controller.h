@@ -1,12 +1,3 @@
-/** HSS1394-based MIDI backend
-  *
-  * This class represents a physical HSS1394 device.
-  * (HSS1394 is simply a way to send MIDI messages at high speed over
-  * IEEE1394 (FireWire))
-  * It uses the HSS1394 API to send and receive MIDI messages to/from
-  * the device.
-  */
-
 #pragma once
 
 #include <hss1394/HSS1394.h>
@@ -17,6 +8,11 @@
 #define MIXXX_HSS1394_BUFFER_LEN 64 /**Number of MIDI messages to buffer*/
 #define MIXXX_HSS1394_NO_DEVICE_STRING "None" /**String to display for no HSS1394 devices present */
 
+/// HSS1394-based MIDI backend
+///
+/// This class represents a physical HSS1394 device. (HSS1394 is simply a way
+/// to send MIDI messages at high speed over IEEE1394 (FireWire)) It uses the
+/// HSS1394 API to send and receive MIDI messages to/from the device.
 class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
     Q_OBJECT
   public:

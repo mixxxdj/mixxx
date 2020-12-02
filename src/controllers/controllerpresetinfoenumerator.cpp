@@ -1,4 +1,3 @@
-// Enumerate list of available controller mapping presets
 #include "controllers/controllerpresetinfoenumerator.h"
 
 #include <QDirIterator>

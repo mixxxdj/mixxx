@@ -1,5 +1,3 @@
-// MIDI Controller base class
-
 #include "controllers/midi/midicontroller.h"
 
 #include "controllers/midi/midiutils.h"

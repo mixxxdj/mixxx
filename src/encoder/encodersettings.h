@@ -1,11 +1,10 @@
-// Encoder settings interface for encoders.
-
 #pragma once
 
 #include <QList>
 #include <QObject>
 #include "util/memory.h"
 
+/// Encoder settings interface for encoders
 class EncoderSettings {
     public:
         class OptionsGroup {

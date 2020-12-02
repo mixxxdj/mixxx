@@ -1,5 +1,3 @@
-// unapologetically copied from enginemicrophone.h from RJ
-
 #pragma once
 
 #include <QScopedPointer>
@@ -12,8 +10,8 @@
 
 class ControlAudioTaperPot;
 
-// EngineAux is an EngineChannel that implements a mixing source whose
-// samples are fed directly from the SoundManager
+/// EngineAux is an EngineChannel that implements a mixing source whose
+/// samples are fed directly from the SoundManager
 class EngineAux : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
@@ -22,25 +20,25 @@ class EngineAux : public EngineChannel, public AudioDestination {
 
     bool isActive();
 
-    // Called by EngineMaster whenever is requesting a new buffer of audio.
+    /// Called by EngineMaster whenever is requesting a new buffer of audio.
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);
     virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const;
     virtual void postProcess(const int iBufferSize) { Q_UNUSED(iBufferSize) }
 
-    // This is called by SoundManager whenever there are new samples from the
-    // configured input to be processed. This is run in the callback thread of
-    // the soundcard this AudioDestination was registered for! Beware, in the
-    // case of multiple soundcards, this method is not re-entrant but it may be
-    // concurrent with EngineMaster processing.
+    /// This is called by SoundManager whenever there are new samples from the
+    /// configured input to be processed. This is run in the callback thread of
+    /// the soundcard this AudioDestination was registered for! Beware, in the
+    /// case of multiple soundcards, this method is not re-entrant but it may be
+    /// concurrent with EngineMaster processing.
     virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
                                unsigned int nFrames);
 
-    // Called by SoundManager whenever the aux input is connected to a
-    // soundcard input.
+    /// Called by SoundManager whenever the aux input is connected to a
+    /// soundcard input.
     virtual void onInputConfigured(AudioInput input);
 
-    // Called by SoundManager whenever the aux input is disconnected from
-    // a soundcard input.
+    /// Called by SoundManager whenever the aux input is disconnected from
+    /// a soundcard input.
     virtual void onInputUnconfigured(AudioInput input);
 
   private:

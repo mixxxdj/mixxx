@@ -1,11 +1,10 @@
-// storage of broadcast settings for the encoders.
-
 #pragma once
 
 #include "encoder/encodersettings.h"
 #include "encoder/encoder.h"
 #include "preferences/broadcastsettings.h"
 
+/// Storage of broadcast settings for the encoders.
 class EncoderBroadcastSettings : public EncoderSettings {
   public:
     explicit EncoderBroadcastSettings(BroadcastProfilePtr profile);

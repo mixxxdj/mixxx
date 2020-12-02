@@ -1,4 +1,3 @@
-// core code for ffmpeg encoders
 #pragma once
 
 #include <encoder/encoderffmpegresample.h>
@@ -30,6 +29,10 @@ extern "C" {
 
 class EncoderCallback;
 
+/// FFmpeg encoder class
+///
+/// Supports what FFmpeg is compiled to support and provides the same
+/// interface for all codecs.
 class EncoderFfmpegCore : public Encoder {
 public:
 #if LIBAVCODEC_VERSION_INT > 3544932

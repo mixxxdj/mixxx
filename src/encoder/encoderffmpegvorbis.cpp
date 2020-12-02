@@ -1,4 +1,3 @@
-// FFMPEG OGG/Vorbis encoder for mixxx
 #include "encoder/encoderffmpegvorbis.h"
 
 // Constructor

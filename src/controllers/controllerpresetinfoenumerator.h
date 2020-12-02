@@ -1,4 +1,3 @@
-// Enumerate list of available controller mapping presets
 #pragma once
 
 #include <QList>
@@ -7,6 +6,7 @@
 
 #include "controllers/controllerpresetinfo.h"
 
+/// Enumerate list of available controller mapping presets
 class PresetInfoEnumerator {
   public:
     PresetInfoEnumerator(const QString& searchPath);

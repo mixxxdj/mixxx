@@ -1,4 +1,3 @@
-// vorbis encoder for mixxx
 #pragma once
 
 // this also includes vorbis/codec.h
@@ -12,6 +11,7 @@
 
 class EncoderCallback;
 
+/// Vorbis encoder
 class EncoderVorbis : public Encoder {
   public:
     static const int MONO_BITRATE_THRESHOLD;

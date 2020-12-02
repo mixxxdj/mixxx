@@ -1,5 +1,3 @@
-// storage of setting for wave/aiff encoder
-
 #include "encoder/encoderwavesettings.h"
 
 #include "recording/defs_recording.h"

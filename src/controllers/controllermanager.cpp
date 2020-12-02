@@ -1,5 +1,3 @@
-// Manages creation/enumeration/deletion of hardware controllers.
-
 #include <QSet>
 
 #include "util/trace.h"

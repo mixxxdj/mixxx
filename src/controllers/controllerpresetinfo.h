@@ -1,10 +1,3 @@
-/** Base class handling enumeration and parsing of preset info headers
-*
-* This class handles enumeration and parsing of controller XML description file
-* <info> header tags. It can be used to match controllers automatically or to
-* show details for a mapping.
-*/
-
 #pragma once
 
 #include <QString>
@@ -32,6 +25,11 @@ struct ProductInfo {
     QString interface_number;
 };
 
+/// Base class handling enumeration and parsing of preset info headers
+///
+/// This class handles enumeration and parsing of controller XML description file
+/// <info> header tags. It can be used to match controllers automatically or to
+/// show details for a mapping.
 class PresetInfo {
   public:
     PresetInfo();

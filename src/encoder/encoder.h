@@ -1,5 +1,3 @@
-// encoder API for mixxx
-
 #pragma once
 
 #include "util/memory.h"

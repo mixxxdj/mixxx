@@ -1,14 +1,3 @@
-/** PortMidi-based MIDI backend
- *
- * This class is represents a MIDI device, either physical or software.
- * It uses the PortMidi API to send and receive MIDI messages to/from the device.
- * It's important to note that PortMidi treats input and output on a single
- * physical device as two separate half-duplex devices. In this class, we wrap
- * those together into a single device, which is why the constructor takes
- * both arguments pertaining to both input and output "devices".
- *
- */
-
 #pragma once
 
 #include <portmidi.h>
@@ -49,7 +38,14 @@
 // String to display for no MIDI devices present
 #define MIXXX_PORTMIDI_NO_DEVICE_STRING "None"
 
-// A PortMidi-based implementation of MidiController
+/// PortMidi-based implementation of MidiController
+///
+/// This class is represents a MIDI device, either physical or software.
+/// It uses the PortMidi API to send and receive MIDI messages to/from the device.
+/// It's important to note that PortMidi treats input and output on a single
+/// physical device as two separate half-duplex devices. In this class, we wrap
+/// those together into a single device, which is why the constructor takes
+/// both arguments pertaining to both input and output "devices".
 class PortMidiController : public MidiController {
     Q_OBJECT
   public:

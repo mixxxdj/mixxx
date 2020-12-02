@@ -1,11 +1,10 @@
-// storage of setting for mp3 encoder
-
 #pragma once
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 #include "recording/defs_recording.h"
 
+// Storage of settings for MP3 encoder
 class EncoderMp3Settings : public EncoderRecordingSettings {
   public:
     EncoderMp3Settings(UserSettingsPointer m_pConfig);

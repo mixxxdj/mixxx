@@ -1,4 +1,3 @@
-// The controller mapping learning wizard
 #pragma once
 
 #include <QDialog>
@@ -22,6 +21,7 @@ class ControllerPreset;
 
 //#define CONTROLLERLESSTESTING
 
+/// The controller mapping learning wizard
 class DlgControllerLearning : public QDialog,
                               public ControllerVisitor,
                               public Ui::DlgControllerLearning {

@@ -1,10 +1,3 @@
-/** Implement handling enumeration and parsing of preset info headers
-*
-* This class handles parsing of controller XML description file
-* <info> header tags. It can be used to match controllers automatically or to
-* show details for a mapping.
-*/
-
 #include "controllers/controllerpresetinfo.h"
 
 #include "controllers/defs_controllers.h"

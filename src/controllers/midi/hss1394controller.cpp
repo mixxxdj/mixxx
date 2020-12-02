@@ -1,5 +1,3 @@
-// HSS1394-based MIDI backend
-
 #include "controllers/midi/midiutils.h"
 #include "controllers/midi/hss1394controller.h"
 #include "controllers/controllerdebug.h"

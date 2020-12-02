@@ -1,5 +1,3 @@
-// Handles loading and saving of MIDI controller presets.
-
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/midi/midiutils.h"
 

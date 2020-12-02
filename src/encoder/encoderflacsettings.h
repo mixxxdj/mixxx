@@ -1,11 +1,10 @@
-// storage of setting for flac encoder
-
 #pragma once
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 #include "recording/defs_recording.h"
 
+/// Storage of settings for FLAC encoder
 class EncoderFlacSettings : public EncoderRecordingSettings {
   public:
     EncoderFlacSettings(UserSettingsPointer pConfig);

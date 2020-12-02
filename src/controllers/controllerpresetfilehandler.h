@@ -1,5 +1,4 @@
 #pragma once
-/// Handles loading and saving of Controller presets.
 
 #include "util/xml.h"
 #include "controllers/controllerpreset.h"

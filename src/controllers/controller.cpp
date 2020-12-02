@@ -1,5 +1,3 @@
-// Base class representing a physical (or software) controller.
-
 #include <QApplication>
 #include <QScriptValue>
 

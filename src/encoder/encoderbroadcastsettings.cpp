@@ -1,5 +1,3 @@
-// storage of broadcast settings for the encoders.
-
 #include "encoder/encoderbroadcastsettings.h"
 #include "broadcast/defs_broadcast.h"
 

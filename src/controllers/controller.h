@@ -1,10 +1,3 @@
-/** Base class representing a physical (or software) controller.
-*
-* This is a base class representing a physical (or software) controller.  It
-* must be inherited by a class that implements it on some API. Note that the
-* subclass' destructor should call close() at a minimum.
-*/
-
 #pragma once
 
 #include "controllers/controllerengine.h"
@@ -15,6 +8,11 @@
 #include "controllers/controllerpresetfilehandler.h"
 #include "util/duration.h"
 
+/// Base class representing a physical (or software) controller.
+///
+/// This is a base class representing a physical (or software) controller.  It
+/// must be inherited by a class that implements it on some API. Note that the
+/// subclass' destructor should call close() at a minimum.
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:

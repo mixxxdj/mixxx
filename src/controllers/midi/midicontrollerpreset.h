@@ -6,8 +6,8 @@
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/midi/midimessage.h"
 
-/// This class represents a MIDI controller preset, containing the data elements
-///   that make it up.
+/// Represents a MIDI controller preset, containing the data elements that make
+/// it up.
 class MidiControllerPreset : public ControllerPreset {
   public:
     MidiControllerPreset(){};

@@ -1,5 +1,3 @@
-// storage of setting for flac encoder
-
 #include "encoder/encoderflacsettings.h"
 #include "recording/defs_recording.h"
 #include <sndfile.h>

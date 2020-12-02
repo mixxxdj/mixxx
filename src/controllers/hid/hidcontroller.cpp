@@ -1,5 +1,3 @@
-// HID controller backend
-
 #include <wchar.h>
 #include <string.h>
 

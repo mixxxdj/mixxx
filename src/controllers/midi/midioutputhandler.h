@@ -1,9 +1,3 @@
-/** Static MIDI output mapping handler
- *
- * This class listens to a control object and sends a midi message based on the
- * value.
- */
-
 #pragma once
 
 #include "control/controlproxy.h"
@@ -11,6 +5,10 @@
 
 class MidiController;
 
+/// Static MIDI output mapping handler
+///
+/// This class listens to a control object and sends a midi message based on
+/// the  value.
 class MidiOutputHandler : public QObject {
     Q_OBJECT
   public:

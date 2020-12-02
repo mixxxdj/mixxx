@@ -1,5 +1,3 @@
-// Configuration dialog for a DJ controller
-
 #include "controllers/dlgprefcontroller.h"
 
 #include <QDesktopServices>

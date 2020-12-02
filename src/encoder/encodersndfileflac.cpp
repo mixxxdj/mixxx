@@ -1,5 +1,3 @@
-// encoder for flac using libsndfile
-
 #include <QtDebug>
 
 #include "encoder/encodersndfileflac.h"

@@ -1,11 +1,10 @@
-// storage of setting for vorbis encoder
-
 #pragma once
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 #include "recording/defs_recording.h"
 
+/// Storage of settings for Vorbis encoder
 class EncoderVorbisSettings : public EncoderRecordingSettings {
     public:
     EncoderVorbisSettings(UserSettingsPointer pConfig);

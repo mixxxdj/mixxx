@@ -1,5 +1,3 @@
-// encoder for flac using libsndfile
-
 #pragma once
 
 #include "encoder/encoderflacsettings.h"
@@ -16,6 +14,7 @@
 
 class EncoderCallback;
 
+/// Encoder for FLAC using libsndfile
 class EncoderSndfileFlac : public EncoderWave {
   public:
     EncoderSndfileFlac(EncoderCallback* pCallback = nullptr);
