@@ -215,7 +215,7 @@ void ControlDoublePrivate::set(double value, QObject* pSender) {
 
 void ControlDoublePrivate::setAndConfirm(double value, QObject* pSender) {
     if (m_bQuickActionsRecordable) {
-        bool wasRecorded = ThreadLocalQuickAction::globalInstance()
+        bool wasRecorded = m_pQuickAction
                                    ->get()
                                    ->recordCOValue(m_key, value);
         if (wasRecorded) {
