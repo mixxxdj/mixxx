@@ -3,6 +3,7 @@
 #include <QDebug>
 #include <QMutexLocker>
 
+#include "control/controlobject.h"
 #include "util/assert.h"
 
 namespace {
@@ -15,10 +16,35 @@ namespace mixxx {
 NotificationManager::NotificationManager()
         : m_inhibitNotifications(false),
           m_notificationsAddedWhileInhibited(false),
-          m_notificationsClosedWhileInhibited(false) {
+          m_notificationsClosedWhileInhibited(false),
+          m_pStatusControl(
+                  new ControlObject(ConfigKey(QStringLiteral("[Notifications]"),
+                          QStringLiteral("status")))),
+          m_pNumNotificationsControl(
+                  new ControlObject(ConfigKey(QStringLiteral("[Notifications]"),
+                          QStringLiteral("num_notifications")))),
+          m_pShowControl(new ControlObject(ConfigKey(
+                  QStringLiteral("[Notifications]"), QStringLiteral("show")))) {
     m_timer.setInterval(1000);
+    m_pStatusControl->set(0);
     connect(&m_timer, &QTimer::timeout, this, &NotificationManager::slotUpdateNotifications);
+    connect(this,
+            &NotificationManager::notificationAdded,
+            this,
+            &NotificationManager::slotNotificationAdded);
+    m_pNumNotificationsControl->connectValueChangeRequest(
+            this, &NotificationManager::slotNumNotificationsChangeRequested);
+    m_pShowControl->connectValueChangeRequest(this, &NotificationManager::slotShowChangeRequested);
+    m_pStatusControl->connectValueChangeRequest(this, [](double value) {
+        qWarning() << "Status" << value;
+    });
 };
+
+NotificationManager::~NotificationManager() {
+    delete m_pShowControl;
+    delete m_pNumNotificationsControl;
+    delete m_pStatusControl;
+}
 
 void NotificationManager::notify(NotificationPointer pNotification) {
     VERIFY_OR_DEBUG_ASSERT(pNotification) {
@@ -44,6 +70,7 @@ void NotificationManager::notify(NotificationPointer pNotification) {
     m_notifications.prepend(pNotification);
     lock.unlock();
 
+    m_pNumNotificationsControl->set(m_notifications.size());
     if (m_inhibitNotifications) {
         m_notificationsAddedWhileInhibited = true;
     } else {
@@ -51,13 +78,52 @@ void NotificationManager::notify(NotificationPointer pNotification) {
     }
 }
 
+void NotificationManager::slotNotificationAdded() {
+    m_pShowControl->set(1.0);
+}
+
 void NotificationManager::closeNotification(NotificationPointer pNotification) {
     m_notifications.removeAll(pNotification);
+    m_pNumNotificationsControl->set(m_notifications.size());
     if (m_inhibitNotifications) {
         m_notificationsClosedWhileInhibited = true;
     } else {
         emit notificationClosed();
     }
+}
+
+void NotificationManager::slotShowChangeRequested(double value) {
+    const int numNotifications = static_cast<int>(m_pNumNotificationsControl->get());
+    if (value == 0.0) {
+        m_pShowControl->setAndConfirm(0.0);
+        if (numNotifications > 0) {
+            m_pStatusControl->set(1.0);
+        } else {
+            m_pStatusControl->set(0.0);
+        }
+        return;
+    }
+
+    if (numNotifications > 0) {
+        m_pShowControl->setAndConfirm(1.0);
+        m_pStatusControl->set(2.0);
+    }
+}
+
+void NotificationManager::slotNumNotificationsChangeRequested(double numNotifications) {
+    m_pNumNotificationsControl->setAndConfirm(numNotifications);
+
+    if (numNotifications > 0) {
+        if (m_pShowControl->toBool()) {
+            m_pStatusControl->set(2.0);
+        } else {
+            m_pStatusControl->set(1.0);
+        }
+        return;
+    }
+
+    m_pShowControl->set(0.0);
+    m_pStatusControl->set(0.0);
 }
 
 void NotificationManager::slotUpdateNotifications() {
@@ -92,6 +158,7 @@ void NotificationManager::slotUpdateNotifications() {
     }
 
     if (changed) {
+        m_pNumNotificationsControl->set(m_notifications.size());
         if (m_inhibitNotifications) {
             m_notificationsClosedWhileInhibited = true;
         } else {

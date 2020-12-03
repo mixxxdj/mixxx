@@ -156,15 +156,23 @@
       <NotificationButton>
         <TooltipId>notifications</TooltipId>
         <ObjectName>NotificationButton</ObjectName>
-        <MinimumSize>26,26</MinimumSize>
-        <MaximumSize>26,26</MaximumSize>
-        <Text>N</Text>
-        <SizePolicy>me,f</SizePolicy>
-        <NumberStates>1</NumberStates>
+        <Size>20f,20f</Size>
+        <SizePolicy>f,f</SizePolicy>
+        <NumberStates>2</NumberStates>
         <State>
           <Number>0</Number>
-          <Unpressed scalemode="FIXED">skin:/<Variable name="BtnScheme"/>/buttons/btn__notifications.svg</Unpressed>
-          <Pressed scalemode="FIXED">skin:/<Variable name="BtnScheme"/>/buttons/btn__notifications_active.svg</Pressed>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__notifications_none.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__notifications_menuopen.svg</Pressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__notifications_active.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__notifications_menuopen.svg</Pressed>
+        </State>
+        <State>
+          <Number>2</Number>
+          <Unpressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__notifications_menuopen.svg</Unpressed>
+          <Pressed scalemode="STRETCH_ASPECT">skin:/<Variable name="BtnScheme"/>/buttons/btn__notifications_menuopen.svg</Pressed>
         </State>
       </NotificationButton>
 

@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 
+#include "control/controlproxy.h"
 #include "notification.h"
 #include "notificationmanager.h"
 #include "widget/wnotification.h"

@@ -1413,6 +1413,7 @@ WOverview #PassthroughLabel {
 
 /* crop shadow on the left border for all buttons in Fx assign and vinyl control grid
   (except leftmost button in each grid > overwritten in the block below) */
+WNotification QPushButton,
 #VinylModeButton,
 #VinylCueButton[displayValue="0"],
 #PassthroughButton[displayValue="0"],
@@ -1422,6 +1423,7 @@ WOverview #PassthroughLabel {
   border-image: url(skin:/palemoon/buttons/btn_embedded_grid.svg) 2 2 2 1;
   }
   /* Active */
+  WNotification QPushButton,
   #VinylCueButton[displayValue="1"],
   #VinylCueButton[displayValue="2"],
   #PassthroughButton[displayValue="1"],
@@ -1431,6 +1433,8 @@ WOverview #PassthroughLabel {
     border-image: url(skin:/palemoon/buttons/btn_embedded_grid_active.svg) 2 2 2 1;
   }
 
+#NotificationButton[displayValue="0"],
+#NotificationButton[displayValue="1"],
 #GuiToggleButton[displayValue="0"],
 #RecFeedback[displayValue="0"],
 #BroadcastButton[displayValue="0"],
@@ -1441,8 +1445,7 @@ WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector,
 #LibraryFeatureControls QPushButton:enabled,
 #fadeModeCombobox,
-#CueDeleteButton,
-WNotification #CloseButton {
+#CueDeleteButton {
   outline: none;
   border-width: 2px;
   border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
@@ -1451,6 +1454,7 @@ WNotification #CloseButton {
   WPushButton#BpmTap[displayValue="1"], */
   WPushButton#VinylButton[displayValue="1"],
   WPushButton#FxAssignButton1[displayValue="1"],
+  #NotificationButton[displayValue="2"],
   #KeyMatchReset[pressed="true"],
   #GuiToggleButton[displayValue="1"],
   #RecFeedback[displayValue="1"],
@@ -1551,6 +1555,7 @@ WPushButton#SamplerExpand,
 #SamplerSettingsMini WPushButton,
 WPushButton#CrossfaderButton,
 #LibExpand,
+WNotificationButton,
 #ToolBar WPushButton {
   margin: 0px;
   border-radius: 0px;
@@ -1623,6 +1628,7 @@ WBeatSpinBox::down-button {
     background-color: #222;
   }
   /* dark buttons in toolbar */
+  WNotificationButton,
   #ToolBar WPushButton[displayValue="0"],
   #MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"] {
     background-color: #151517;
@@ -1791,6 +1797,7 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 }
 
 /* Grey for GUI toggles */
+#NotificationButton[displayValue="2"],
 #GuiToggleButton[displayValue="1"],
 #SkinSettingsToggle[displayValue="1"] {
   background-color: #555;

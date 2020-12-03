@@ -10,6 +10,8 @@
 
 #include "notification.h"
 
+class ControlObject;
+
 namespace mixxx {
 
 class NotificationManager : public QObject {
@@ -17,7 +19,7 @@ class NotificationManager : public QObject {
 
   public:
     NotificationManager();
-    ~NotificationManager() = default;
+    ~NotificationManager();
 
     void notify(NotificationPointer pNotification);
 
@@ -50,6 +52,9 @@ class NotificationManager : public QObject {
     void notificationClosed();
 
   private slots:
+    void slotNotificationAdded();
+    void slotShowChangeRequested(double value);
+    void slotNumNotificationsChangeRequested(double numNotifications);
     void slotUpdateNotifications();
 
   private:
@@ -60,6 +65,9 @@ class NotificationManager : public QObject {
     bool m_inhibitNotifications;
     bool m_notificationsAddedWhileInhibited;
     bool m_notificationsClosedWhileInhibited;
+    ControlObject* m_pStatusControl;
+    ControlObject* m_pNumNotificationsControl;
+    ControlObject* m_pShowControl;
 };
 
 } // namespace mixxx

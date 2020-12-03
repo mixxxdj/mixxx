@@ -6,6 +6,8 @@
 
 #include "util/widgethelper.h"
 
+class ControlProxy;
+
 namespace mixxx {
 class NotificationManager;
 }
@@ -43,4 +45,5 @@ class WNotificationMenuPopup : public QWidget {
     mixxx::NotificationManager* m_pNotificationManager;
     QScrollArea* m_pScrollArea;
     QVBoxLayout* m_pNotificationLayout;
+    ControlProxy* m_pNotificationMenuStatus;
 };
