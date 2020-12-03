@@ -1466,15 +1466,42 @@ file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
 string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
 
 # Windows-only resource file
+# refer to https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource for documentation
 if(WIN32)
-  # Remove anything after ~ or - in the version number and replace the dots with commas
-  string(REGEX REPLACE "^([^~-]+).*$" "\\1" MIXXX_FILEVERSION "${MIXXX_VERSION}")
-  string(REPLACE "." "," MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  if(GIT_COMMIT_DESCRIPTION STREQUAL "unknown-commit")
+    set(WINDOWS_RC_VERSION "${MIXXX_VERSION}")
+  else()
+    set(WINDOWS_RC_VERSION "${GIT_COMMIT_DESCRIPTION}")
+  endif()
+
+  string(FIND "${WINDOWS_RC_VERSION}" "alpha" MIXXX_ALPHA_POSITION)
+  string(FIND "${WINDOWS_RC_VERSION}" "beta" MIXXX_BETA_POSITION)
+  if(MIXXX_ALPHA_POSITION GREATER_EQUAL 0 OR MIXXX_BETA_POSITION GREATER_EQUAL 0)
+    set(MIXXX_PRERELEASE 1)
+  else()
+    set(MIXXX_PRERELEASE 0)
+  endif()
+
+  # Remove anything after - to get just the version number
+  string(REGEX REPLACE "^([^-]+).*$" "\\1" WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION}")
+  string(REPLACE "." "," WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION}")
+  # alpha and beta version strings only have the MAJOR and MINOR version numbers, not PATCH
+  # for example 2.3-beta
+  # so append 0 to make up for that
+  if(MIXXX_PRERELEASE)
+    set(WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION},0")
+  endif()
+
   if(NOT GIT_COMMIT_DESCRIPTION STREQUAL "unknown-commit")
     string(REGEX MATCH "-([0-9]*)-" GIT_COMMITS_SINCE_LAST_TAG "${GIT_COMMIT_DESCRIPTION}")
-    set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${CMAKE_MATCH_1}")
+    set(WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION},${CMAKE_MATCH_1}")
+    string(FIND "${GIT_COMMIT_DESCRIPTION}" "-modified" MODIFIED_POSITION)
+    if(MODIFIED_POSITION GREATER_EQUAL 0)
+      set(MIXXX_PATCHED 1)
+    else()
+      set(MIXXX_PATCHED 0)
+    endif()
   endif()
-  set(MIXXX_PRODUCTVERSION "${MIXXX_FILEVERSION}")
 
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(MIXXX_DEBUG 1)
@@ -1482,12 +1509,8 @@ if(WIN32)
     set(MIXXX_DEBUG 0)
   endif()
 
-  string(FIND "${MIXXX_VERSION}" "pre" MIXXX_PRERELEASE_POSITION)
-  if(MIXXX_PRERELEASE_POSITION EQUAL -1)
-    set(MIXXX_PRERELEASE 0)
-  else()
-    set(MIXXX_PRERELEASE 1)
-  endif()
+  message(STATUS "WINDOWS_RC_VERSION ${WINDOWS_RC_VERSION}")
+  message(STATUS "MIXXX_PATCHED ${MIXXX_PATCHED}")
 
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/mixxx.rc.include.template"

@@ -1,6 +1,5 @@
-#define CUR_YEAR                    "@MIXXX_YEAR@"
-#define VER_FILEVERSION             @MIXXX_FILEVERSION@
-#define VER_PRODUCTVERSION          @MIXXX_PRODUCTVERSION@
+#define MIXXX_YEAR                  "@MIXXX_YEAR@"
+#define WINDOWS_RC_VERSION          @WINDOWS_RC_VERSION@
 
 #if @MIXXX_DEBUG@
     #define DEBUG
@@ -8,4 +7,8 @@
 
 #if @MIXXX_PRERELEASE@
     #define PRERELEASE
+#endif
+
+#if @MIXXX_PATCHED@
+    #define PATCHED
 #endif
