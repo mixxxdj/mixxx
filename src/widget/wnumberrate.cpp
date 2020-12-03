@@ -29,9 +29,11 @@ WNumberRate::WNumberRate(const char * group, QWidget * parent)
 }
 
 void WNumberRate::setValue(double dValue) {
-    double digitFactor = pow(10, m_iNoDigits);
+    const double rateRange = m_pRateRangeControl->get();
+    const double rateDir = m_pRateDirControl->get();
+    const double digitFactor = pow(10, m_iNoDigits);
     // Calculate percentage rounded to the number of digits specified by iNoDigits
-    double percentage = round((dValue - 1) * 100.0 * digitFactor) / digitFactor;
+    const double percentage = round(dValue * rateRange * rateDir * 100.0 * digitFactor) / digitFactor;
 
     QString sign(' ');
     if (percentage > 0) {
