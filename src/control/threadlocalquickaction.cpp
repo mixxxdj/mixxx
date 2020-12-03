@@ -4,7 +4,7 @@
 #include "control/quickaction.h"
 
 //static
-std::shared_ptr<ThreadLocalQuickAction> ThreadLocalQuickAction::s_pMacroRecorder;
+std::shared_ptr<ThreadLocalQuickAction> ThreadLocalQuickAction::s_pQuickAction;
 
 ThreadLocalQuickAction::ThreadLocalQuickAction(QObject* parent)
         : QObject(parent),
@@ -19,10 +19,10 @@ ThreadLocalQuickAction::ThreadLocalQuickAction(QObject* parent)
 }
 
 QuickAction* ThreadLocalQuickAction::get() {
-    if (!m_pMacroRecorder.hasLocalData()) {
-        m_pMacroRecorder.setLocalData(new QuickAction(this));
+    if (!m_pQuickAction.hasLocalData()) {
+        m_pQuickAction.setLocalData(new QuickAction(this));
     }
-    return m_pMacroRecorder.localData();
+    return m_pQuickAction.localData();
 }
 
 void ThreadLocalQuickAction::slotTriggered(double) {

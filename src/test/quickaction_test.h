@@ -37,11 +37,11 @@ class Counter : public QObject {
     double m_value;
 };
 
-class MacroRecorderTest : public MixxxTest {
+class QuickActionTest : public MixxxTest {
   public:
-    MacroRecorderTest();
+    QuickActionTest();
 
-    std::shared_ptr<ThreadLocalQuickAction> pMacroRecorder;
+    std::shared_ptr<ThreadLocalQuickAction> pQuickAction;
     ControlObject co1;
     ControlObject co2;
     ControlProxy coRecording;

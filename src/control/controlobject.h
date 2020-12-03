@@ -73,9 +73,9 @@ class ControlObject : public QObject {
         }
     }
 
-    void setMacroRecordable(bool macroRecordable) {
+    void setQuickActionsRecordable(bool quickActionsRecordable) {
         if (m_pControl) {
-            m_pControl->setMacroRecordable(macroRecordable);
+            m_pControl->setQuickActionsRecordable(quickActionsRecordable);
         }
     }
 
@@ -177,9 +177,9 @@ class ControlObject : public QObject {
     void setReadOnly();
 
     // Injects a specific QuickAction. For tests only.
-    void setMacroRecorder(std::shared_ptr<ThreadLocalQuickAction> pMacroRecorder) {
+    void setQuickAction(std::shared_ptr<ThreadLocalQuickAction> pQuickAction) {
         if (m_pControl) {
-            m_pControl->setMacroRecorder(std::move(pMacroRecorder));
+            m_pControl->setQuickAction(std::move(pQuickAction));
         }
     }
 

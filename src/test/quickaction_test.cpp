@@ -1,15 +1,15 @@
 #include "quickaction_test.h"
 
-MacroRecorderTest::MacroRecorderTest()
-        : pMacroRecorder(new ThreadLocalQuickAction()),
+QuickActionTest::QuickActionTest()
+        : pQuickAction(new ThreadLocalQuickAction()),
           co1(ConfigKey("[Test]", "control1")),
           co2(ConfigKey("[Test]", "control2")),
           coRecording("[QuickAction]", "recording"),
           coTrigger("[QuickAction]", "trigger") {
-    co1.setMacroRecorder(pMacroRecorder);
-    co2.setMacroRecorder(pMacroRecorder);
-    co1.setMacroRecordable(true);
-    co2.setMacroRecordable(true);
+    co1.setQuickAction(pQuickAction);
+    co2.setQuickAction(pQuickAction);
+    co1.setQuickActionsRecordable(true);
+    co2.setQuickActionsRecordable(true);
 
     QObject::connect(&co1,
             &ControlObject::valueChanged,
@@ -33,7 +33,7 @@ MacroRecorderTest::MacroRecorderTest()
             Qt::DirectConnection);
 }
 
-TEST_F(MacroRecorderTest, ValuesAreSetInRecordingOrder) {
+TEST_F(QuickActionTest, ValuesAreSetInRecordingOrder) {
     coRecording.set(1);
     co1.set(1);
     co2.set(2);
@@ -65,7 +65,7 @@ TEST_F(MacroRecorderTest, ValuesAreSetInRecordingOrder) {
     EXPECT_EQ(setCount.m_value, 2) << "Value set too many or too few times";
 }
 
-TEST_F(MacroRecorderTest, OldValuesAreOverwritten) {
+TEST_F(QuickActionTest, OldValuesAreOverwritten) {
     coRecording.set(1);
     co1.set(1);
     co1.set(2);
@@ -78,7 +78,7 @@ TEST_F(MacroRecorderTest, OldValuesAreOverwritten) {
                "taking the place of the old value";
 }
 
-TEST_F(MacroRecorderTest, TriggerDisablesRecording) {
+TEST_F(QuickActionTest, TriggerDisablesRecording) {
     coRecording.set(1);
     co1.set(1);
     EXPECT_EQ(co1.get(), 0) << "Values are set while recording";
@@ -87,8 +87,8 @@ TEST_F(MacroRecorderTest, TriggerDisablesRecording) {
     EXPECT_EQ(coRecording.get(), 0) << "QuickAction is still recording";
 }
 
-TEST_F(MacroRecorderTest, NonRecordableValuesAreNotPerturbed) {
-    co1.setMacroRecordable(false);
+TEST_F(QuickActionTest, NonRecordableValuesAreNotPerturbed) {
+    co1.setQuickActionsRecordable(false);
     coRecording.set(1);
     co1.set(1);
     EXPECT_EQ(co1.get(), 1) << "NonRecordable value is filtered while recording";

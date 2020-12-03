@@ -28,17 +28,17 @@ class ThreadLocalQuickAction : public QObject {
 
     // Don't store the shared pointer or the QuickAction CO might leak.
     static std::shared_ptr<ThreadLocalQuickAction> globalInstance() {
-        return s_pMacroRecorder;
+        return s_pQuickAction;
     }
 
-    static void setGlobalInstance(std::shared_ptr<ThreadLocalQuickAction> pMacroRecorder) {
-        s_pMacroRecorder = std::move(pMacroRecorder);
+    static void setGlobalInstance(std::shared_ptr<ThreadLocalQuickAction> pQuickAction) {
+        s_pQuickAction = std::move(pQuickAction);
     }
 
   private:
     void slotTriggered(double);
 
-    QThreadStorage<QuickAction*> m_pMacroRecorder;
+    QThreadStorage<QuickAction*> m_pQuickAction;
 
     // QuickAction instances need these controls to exists when they are constructed.
     // We know this is the case since each QuickAction instance in QThreadStorage
@@ -46,5 +46,5 @@ class ThreadLocalQuickAction : public QObject {
     ControlPushButton m_coRecording;
     ControlPushButton m_coTrigger;
 
-    static std::shared_ptr<ThreadLocalQuickAction> s_pMacroRecorder;
+    static std::shared_ptr<ThreadLocalQuickAction> s_pQuickAction;
 };

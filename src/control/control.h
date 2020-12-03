@@ -155,13 +155,13 @@ class ControlDoublePrivate : public QObject {
         return m_confirmRequired;
     }
 
-    void setMacroRecordable(bool macroRecordable) {
-        m_bMacroRecordable = macroRecordable;
+    void setQuickActionsRecordable(bool bQuickActionsRecordable) {
+        m_bQuickActionsRecordable = bQuickActionsRecordable;
     }
 
     // Injects a specific QuickAction. For tests only.
-    void setMacroRecorder(std::shared_ptr<ThreadLocalQuickAction> pMacroRecorder) {
-        m_pMacroRecorder = std::move(pMacroRecorder);
+    void setQuickAction(std::shared_ptr<ThreadLocalQuickAction> pQuickAction) {
+        m_pQuickAction = std::move(pQuickAction);
     }
 
   signals:
@@ -204,7 +204,7 @@ class ControlDoublePrivate : public QObject {
     int m_trackType;
     int m_trackFlags;
     bool m_confirmRequired;
-    bool m_bMacroRecordable;
+    bool m_bQuickActionsRecordable;
 
     // User-visible, i18n name for what the control is.
     QString m_name;
@@ -219,7 +219,7 @@ class ControlDoublePrivate : public QObject {
 
     QSharedPointer<ControlNumericBehavior> m_pBehavior;
 
-    std::shared_ptr<ThreadLocalQuickAction> m_pMacroRecorder;
+    std::shared_ptr<ThreadLocalQuickAction> m_pQuickAction;
 
     // Hack to implement persistent controls. This is a pointer to the current
     // user configuration object (if one exists). In general, we do not want the
