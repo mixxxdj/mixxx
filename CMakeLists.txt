@@ -305,10 +305,10 @@ set_property(DIRECTORY APPEND
     PROPERTY CMAKE_CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/.git/index")
 
-# uses GIT_BRANCH and GIT_COMMIT_COUNT
+# uses GIT_COMMIT_DESCRIPTION and GIT_COMMIT_DATE
 configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
-  "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/git_info.h.template"
+  "${CMAKE_CURRENT_BINARY_DIR}/src/git_info.h"
 )
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
