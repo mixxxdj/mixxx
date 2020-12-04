@@ -245,7 +245,7 @@ message(STATUS "Git commit: ${GIT_COMMIT_DESCRIPTION}")
 
 set(ENV{TZ} UTC)
 execute_process(
-  COMMAND git show --quiet --format=%cs
+  COMMAND git show --quiet --format=%cd --date=short
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_COMMIT_DATE
   OUTPUT_STRIP_TRAILING_WHITESPACE
