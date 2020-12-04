@@ -24,8 +24,9 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetWaveformEndRender(int endTime);
 
   private slots:
+    void openGlEnabledChanged(bool checked);
     void slotSetFrameRate(int frameRate);
-    void slotSetWaveformType(int index);
+    void slotSetWaveformType(int comboboxIndex);
     void slotSetWaveformOverviewType(int index);
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);
@@ -40,9 +41,13 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetPlayMarkerPosition(int position);
 
   private:
+    void populateWaveformTypeCombobox();
+    void pickDefaultWaveformType();
     void initWaveformControl();
     void calculateCachedWaveformDiskUsage();
     void notifyRebootNecessary();
+
+    bool m_openGlEnabled;
 
     UserSettingsPointer m_pConfig;
     Library* m_pLibrary;

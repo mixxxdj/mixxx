@@ -21,13 +21,17 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     waveformOverviewComboBox->addItem(tr("HSV")); // "1"
     waveformOverviewComboBox->addItem(tr("RGB")); // "2"
 
-    // Populate waveform options.
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
-    for (int i = 0; i < handles.size(); ++i) {
-        waveformTypeComboBox->addItem(handles[i].getDisplayName(),
-                                      handles[i].getType());
+    if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
+        openGlStatusIcon->setText(factory->getOpenGLVersion());
+    } else {
+        openGlStatusIcon->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
     }
+
+    connect(openGLEnabledCheckBox,
+            &QCheckBox::stateChanged,
+            this,
+            &DlgPrefWaveform::openGlEnabledChanged);
 
     // Populate zoom options.
     for (int i = static_cast<int>(WaveformWidgetRenderer::s_waveformMinZoom);
@@ -136,19 +140,19 @@ DlgPrefWaveform::~DlgPrefWaveform() {
 }
 
 void DlgPrefWaveform::slotUpdate() {
+    m_openGlEnabled = m_pConfig->getValue(ConfigKey("[Waveform]", "OpenGlEnabled"),
+            WaveformWidgetFactory::defaultOpenGlEnabled);
+    openGLEnabledCheckBox->setChecked(m_openGlEnabled);
+
+    populateWaveformTypeCombobox();
+
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
-    if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
-        openGlStatusIcon->setText(factory->getOpenGLVersion());
-    } else {
-        openGlStatusIcon->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
-    }
-
-    WaveformWidgetType::Type currentType = factory->getType();
-    int currentIndex = waveformTypeComboBox->findData(currentType);
-    if (currentIndex != -1 && waveformTypeComboBox->currentIndex() != currentIndex) {
-        waveformTypeComboBox->setCurrentIndex(currentIndex);
-    }
+    auto waveType = static_cast<WaveformWidgetType::Type>(
+            m_pConfig->getValue(ConfigKey("[Waveform]", "WaveformType"),
+                    static_cast<int>(factory->chooseWidgetType(m_openGlEnabled))));
+    waveformTypeComboBox->setCurrentIndex(
+            waveformTypeComboBox->findData(waveType));
 
     frameRateSpinBox->setValue(factory->getFrameRate());
     frameRateSlider->setValue(factory->getFrameRate());
@@ -194,18 +198,25 @@ void DlgPrefWaveform::slotApply() {
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
         enableWaveformGenerationWithAnalysis->isChecked());
+
+    bool openGlWasEnabled = m_pConfig->getValue(ConfigKey("[Waveform]", "OpenGlEnabled"),
+            WaveformWidgetFactory::defaultOpenGlEnabled);
+
+    if (m_openGlEnabled != openGlWasEnabled) {
+        m_pConfig->setValue(ConfigKey("[Waveform]", "OpenGlEnabled"), m_openGlEnabled);
+#ifdef __APPLE__
+        QMessageBox::information(this,
+                tr("Information"),
+                tr("Mixxx must be restarted to %1 OpenGL.")
+                        .arg(m_openGlEnabled ? tr("enable") : tr("disable")));
+#else
+        m_pMixxx->rebootMixxxView();
+#endif
+    }
 }
 
 void DlgPrefWaveform::slotResetToDefaults() {
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-
-    // Get the default we ought to use based on whether the user has OpenGL or
-    // not.
-    WaveformWidgetType::Type defaultType = factory->autoChooseWidgetType();
-    int defaultIndex = waveformTypeComboBox->findData(defaultType);
-    if (defaultIndex != -1 && waveformTypeComboBox->currentIndex() != defaultIndex) {
-        waveformTypeComboBox->setCurrentIndex(defaultIndex);
-    }
+    openGLEnabledCheckBox->setChecked(WaveformWidgetFactory::defaultOpenGlEnabled);
 
     allVisualGain->setValue(1.0);
     lowVisualGain->setValue(1.0);
@@ -239,6 +250,35 @@ void DlgPrefWaveform::slotResetToDefaults() {
     playMarkerPositionSlider->setValue(50);
 }
 
+void DlgPrefWaveform::openGlEnabledChanged(bool checked) {
+    m_openGlEnabled = checked;
+    populateWaveformTypeCombobox();
+    pickDefaultWaveformType();
+}
+
+void DlgPrefWaveform::populateWaveformTypeCombobox() {
+    waveformTypeComboBox->blockSignals(true);
+    waveformTypeComboBox->clear();
+
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes(m_openGlEnabled);
+    for (int i = 0; i < handles.size(); ++i) {
+        waveformTypeComboBox->addItem(handles[i].getDisplayName(),
+                handles[i].getType());
+    }
+
+    waveformTypeComboBox->blockSignals(false);
+}
+
+void DlgPrefWaveform::pickDefaultWaveformType() {
+    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
+    WaveformWidgetType::Type defaultType = factory->chooseWidgetType(m_openGlEnabled);
+    int defaultIndex = waveformTypeComboBox->findData(defaultType);
+    if (defaultIndex != -1 && waveformTypeComboBox->currentIndex() != defaultIndex) {
+        waveformTypeComboBox->setCurrentIndex(defaultIndex);
+    }
+}
+
 void DlgPrefWaveform::notifyRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
     QMessageBox::information(
@@ -253,19 +293,27 @@ void DlgPrefWaveform::slotSetWaveformEndRender(int endTime) {
     WaveformWidgetFactory::instance()->setEndOfTrackWarningTime(endTime);
 }
 
-void DlgPrefWaveform::slotSetWaveformType(int index) {
-    // Ignore sets for -1 since this happens when we clear the combobox.
-    if (index < 0) {
+void DlgPrefWaveform::slotSetWaveformType(int comboboxIndex) {
+    Q_UNUSED(comboboxIndex);
+
+    auto waveType = static_cast<WaveformWidgetType::Type>(
+            waveformTypeComboBox->currentData().toInt());
+
+    bool openGlWasEnabled = m_pConfig->getValue(ConfigKey("[Waveform]", "OpenGlEnabled"),
+            WaveformWidgetFactory::defaultOpenGlEnabled);
+    if (m_openGlEnabled != openGlWasEnabled) {
+        m_pConfig->setValue(ConfigKey("[Waveform]", "WaveformType"), static_cast<int>(waveType));
         return;
     }
-    WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index);
+
+    WaveformWidgetFactory::instance()->setWidgetType(waveType);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && defined __WINDOWS__
     // This regenerates the waveforms twice because of a bug found on Windows
     // where the first one fails.
     // The problem is that the window of the widget thinks that it is not exposed.
     // (https://doc.qt.io/qt-5/qwindow.html#exposeEvent )
     // TODO: Remove this when it has been fixed upstream.
-    WaveformWidgetFactory::instance()->setWidgetTypeFromHandle(index, true);
+    WaveformWidgetFactory::instance()->reloadWaveforms();
 #endif
 }
 

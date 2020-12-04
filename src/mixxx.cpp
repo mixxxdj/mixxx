@@ -1559,8 +1559,11 @@ void MixxxMainWindow::checkDirectRendering() {
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
-    if (!factory->isOpenGlAvailable() && !factory->isOpenGlesAvailable() &&
-        pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
+    bool openGlEnabled = pConfig->getValue(ConfigKey("[Waveform]", "OpenGlEnabled"),
+            WaveformWidgetFactory::defaultOpenGlEnabled);
+
+    if (openGlEnabled && !factory->isOpenGlAvailable() && !factory->isOpenGlesAvailable() &&
+            pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
         QMessageBox::warning(
             0, tr("OpenGL Direct Rendering"),
             tr("Direct rendering is not enabled on your machine.<br><br>"

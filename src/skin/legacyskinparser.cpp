@@ -1204,8 +1204,12 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
 
     auto waveformWidgetFactory = WaveformWidgetFactory::instance();
 
-    if (!waveformWidgetFactory->isOpenGlAvailable() &&
-            !waveformWidgetFactory->isOpenGlesAvailable()) {
+    bool openGlEnabled = m_pConfig->getValue(ConfigKey("[Waveform]", "OpenGlEnabled"),
+            WaveformWidgetFactory::defaultOpenGlEnabled);
+
+    if (!openGlEnabled ||
+            (!waveformWidgetFactory->isOpenGlAvailable() &&
+                    !waveformWidgetFactory->isOpenGlesAvailable())) {
         WLabel* dummy = new WLabel(m_pParent);
         //: Shown when Spinny can not be displayed. Please keep \n unchanged
         dummy->setText(tr("No OpenGL\nsupport."));

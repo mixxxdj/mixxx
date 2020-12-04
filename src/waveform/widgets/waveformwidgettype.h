@@ -1,5 +1,6 @@
-#ifndef WAVEFORMWIDGETTYPE_H
-#define WAVEFORMWIDGETTYPE_H
+#pragma once
+
+#include <QSet>
 
 class WaveformWidgetType {
   public:
@@ -24,6 +25,6 @@ class WaveformWidgetType {
         QtRGBWaveform,
         Count_WaveformwidgetType // Also used as invalid value
     };
-};
 
-#endif // WAVEFORMWIDGETTYPE_H
+    static const QSet<Type> openGlTypes;
+};

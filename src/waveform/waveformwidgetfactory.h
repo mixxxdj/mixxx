@@ -60,6 +60,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     //TODO merge this enum with the waveform analyzer one
     enum FilterIndex { All = 0, Low = 1, Mid = 2, High = 3, FilterCount = 4};
 
+    static const bool defaultOpenGlEnabled;
+
     bool setConfig(UserSettingsPointer config);
 
     /// Creates the waveform widget using the type set with setWidgetType
@@ -83,20 +85,9 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool isOpenGlShaderAvailable() const { return m_openGLShaderAvailable;}
 
     /// Sets the widget type and saves it to configuration.
-    /// Returns false and sets EmtpyWaveform if type is invalid
-    bool setWidgetType(WaveformWidgetType::Type type);
-    /// Changes the widget type to that loaded from config and recreates them.
-    /// Used as a workaround on Windows due to a problem with GL and QT 5.14.2
-    bool setWidgetTypeFromConfig();
-    /// Changes the widget type and recreates them. Used from the preferences
-    /// dialog.
-    bool setWidgetTypeFromHandle(int handleIndex, bool force = false);
+    void setWidgetType(WaveformWidgetType::Type type);
+    void reloadWaveforms();
     WaveformWidgetType::Type getType() const { return m_type;}
-
-  protected:
-    bool setWidgetType(
-            WaveformWidgetType::Type type,
-            WaveformWidgetType::Type* pCurrentType);
 
   public:
     void setDefaultZoom(double zoom);
@@ -114,7 +105,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void setOverviewNormalized(bool normalize);
     int isOverviewNormalized() const { return m_overviewNormalized;}
 
-    const QVector<WaveformWidgetAbstractHandle> getAvailableTypes() const { return m_waveformWidgetHandles;}
+    const QVector<WaveformWidgetAbstractHandle> getAvailableTypes(bool openGlEnabled) const;
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void destroyWidgets();
 
@@ -129,7 +120,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
     void notifyZoomChange(WWaveformViewer *viewer);
 
-    WaveformWidgetType::Type autoChooseWidgetType() const;
+    WaveformWidgetType::Type chooseWidgetType(bool openGlEnabled) const;
 
   signals:
     void waveformUpdateTick();
@@ -155,18 +146,15 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     WaveformWidgetAbstract* createWaveformWidget(WaveformWidgetType::Type type, WWaveformViewer* viewer);
     int findIndexOf(WWaveformViewer* viewer) const;
 
-    WaveformWidgetType::Type findTypeFromHandleIndex(int index);
-    int findHandleIndexFromType(WaveformWidgetType::Type type);
+    bool typeSupported(WaveformWidgetType::Type type);
 
-    //All type of available widgets
-
-    QVector<WaveformWidgetAbstractHandle> m_waveformWidgetHandles;
+    QVector<WaveformWidgetAbstractHandle> m_availableWaveformWidgetHandles;
+    QVector<WaveformWidgetAbstractHandle> m_allWaveformWidgetHandles;
 
     //Currently in use widgets/visual/node
     std::vector<WaveformWidgetHolder> m_waveformWidgetHolders;
 
     WaveformWidgetType::Type m_type;
-    WaveformWidgetType::Type m_configType;
 
     UserSettingsPointer m_config;
 
@@ -178,6 +166,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     double m_visualGain[FilterCount];
     bool m_overviewNormalized;
 
+    bool m_openGlEnabled;
     bool m_openGlAvailable;
     bool m_openGlesAvailable;
     QString m_openGLVersion;
