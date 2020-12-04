@@ -22,7 +22,6 @@ class QuickAction : public QObject {
     ControlProxy m_recordingMacro;
     ControlProxy m_trigger;
 
-    // TODO: tests for this
     class Key {
       public:
         Key(ConfigKey configKey, int ordinal)
