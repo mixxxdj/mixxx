@@ -9,15 +9,15 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     QString buildCommitDescription = Version::gitCommitDescription();
     QString buildCommitDate = Version::gitCommitDate();
 
-    QString versionInfo(QStringLiteral("Mixxx version:\n"));
+    QString versionInfo = tr("Mixxx version:") + QChar('\n');
+    // The Git commit description string is long, so put it on its own line
     if (!buildCommitDescription.isEmpty()) {
-        // The Git commit description string is long, so put it on its own line
-        versionInfo.append(buildCommitDescription + QStringLiteral("\n"));
+        versionInfo.append(buildCommitDescription);
     } else {
         versionInfo.append(mixxxVersion);
     }
     if (!buildCommitDate.isEmpty()) {
-        versionInfo.append(QStringLiteral("\nGit commit date:\n") + buildCommitDate);
+        versionInfo += QChar('\n') + tr("Git commit date:") + QChar('\n') + buildCommitDate;
     }
     version_label->setText(versionInfo);
 
