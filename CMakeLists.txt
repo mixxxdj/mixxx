@@ -1503,6 +1503,8 @@ if(WIN32)
     else()
       set(MIXXX_PATCHED 0)
     endif()
+  else()
+      set(MIXXX_PATCHED 0)
   endif()
 
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -1511,6 +1513,7 @@ if(WIN32)
     set(MIXXX_DEBUG 0)
   endif()
 
+  # uses MIXXX_YEAR WINDOWS_RC_VERSION MIXXX_DEBUG MIXXX_PRERELEASE MIXXX_PATCHED
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/mixxx.rc.include.template"
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
