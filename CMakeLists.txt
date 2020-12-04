@@ -1509,9 +1509,6 @@ if(WIN32)
     set(MIXXX_DEBUG 0)
   endif()
 
-  message(STATUS "WINDOWS_RC_VERSION ${WINDOWS_RC_VERSION}")
-  message(STATUS "MIXXX_PATCHED ${MIXXX_PATCHED}")
-
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/mixxx.rc.include.template"
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
