@@ -232,7 +232,7 @@ endif()
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
 execute_process(
-  COMMAND git describe --tags --always --dirty=-modified
+  COMMAND git describe --always --long --dirty=-modified
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_COMMIT_DESCRIPTION
   OUTPUT_STRIP_TRAILING_WHITESPACE
