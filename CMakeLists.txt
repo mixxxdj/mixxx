@@ -1464,6 +1464,8 @@ add_dependencies(mixxx-lib mixxx-res mixxx-script)
 
 file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
 string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
+# a dummy configure to force a reconfigure when the version changes
+configure_file(src/_version.h src/_version.h)
 
 # Windows-only resource file
 # refer to https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource for documentation
