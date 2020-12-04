@@ -1494,7 +1494,12 @@ if(WIN32)
 
   if(NOT GIT_COMMIT_DESCRIPTION STREQUAL "unknown-commit")
     string(REGEX MATCH "-([0-9]*)-" GIT_COMMITS_SINCE_LAST_TAG "${GIT_COMMIT_DESCRIPTION}")
-    set(WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION},${CMAKE_MATCH_1}")
+    # When the current commit is tagged, `git describe` outputs only the tag name
+    if(CMAKE_MATCH_1)
+      set(WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION},${CMAKE_MATCH_1}")
+    else()
+      set(WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION},0")
+    endif()
     string(FIND "${GIT_COMMIT_DESCRIPTION}" "-modified" MODIFIED_POSITION)
     if(MODIFIED_POSITION GREATER_EQUAL 0)
       set(MIXXX_PATCHED 1)
