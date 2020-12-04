@@ -11,7 +11,8 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
 
     QString versionInfo = tr("Mixxx version:") + QChar('\n');
     // The Git commit description string is long, so put it on its own line
-    if (!buildCommitDescription.isEmpty()) {
+    if (buildCommitDescription.contains("-g")) {
+        // Is like 2.3-beta-2331-g3cd285e6dd
         versionInfo.append(buildCommitDescription);
     } else {
         versionInfo.append(mixxxVersion);
