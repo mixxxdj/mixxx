@@ -32,12 +32,9 @@ void Sandbox::initialize(const QString& permissionsFile) {
 
 #ifdef Q_OS_MAC
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
-    // If we are running on at least 10.7.0 and have the com.apple.security.app-sandbox
-    // entitlement, we are in a sandbox
-    SInt32 version = 0;
-    Gestalt(gestaltSystemVersion, &version);
+#ifdef __APPLE__
     SecCodeRef secCodeSelf;
-    if (version >= 0x1070 && SecCodeCopySelf(kSecCSDefaultFlags, &secCodeSelf) == errSecSuccess) {
+    if (SecCodeCopySelf(kSecCSDefaultFlags, &secCodeSelf) == errSecSuccess) {
         SecRequirementRef sandboxReq;
         CFStringRef entitlement = CFSTR("entitlement [\"com.apple.security.app-sandbox\"]");
         if (SecRequirementCreateWithString(entitlement, kSecCSDefaultFlags,
