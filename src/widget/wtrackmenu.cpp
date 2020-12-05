@@ -1283,7 +1283,7 @@ void WTrackMenu::slotClearBeats() {
 
 namespace {
 
-class ClearRatingTrackPointerOperation : public mixxx::TrackPointerOperation {
+class ResetRatingTrackPointerOperation : public mixxx::TrackPointerOperation {
   private:
     void doApply(
             const TrackPointer& pTrack) const override {
@@ -1298,7 +1298,7 @@ void WTrackMenu::slotClearRating() {
     const auto progressLabelText =
             tr("Clearing rating of %n track(s)", "", getTrackCount());
     const auto trackOperator =
-            ClearRatingTrackPointerOperation();
+            ResetRatingTrackPointerOperation();
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
@@ -1474,6 +1474,7 @@ class ClearAllPerformanceMetadataTrackPointerOperation : public mixxx::TrackPoin
         m_resetKeys.apply(pTrack);
         m_resetReplayGain.apply(pTrack);
         m_resetWaveform.apply(pTrack);
+        m_resetRating.apply(pTrack);
     }
 
     const ResetBeatsTrackPointerOperation m_resetBeats;
@@ -1486,6 +1487,7 @@ class ClearAllPerformanceMetadataTrackPointerOperation : public mixxx::TrackPoin
     const ResetKeysTrackPointerOperation m_resetKeys;
     const ResetReplayGainTrackPointerOperation m_resetReplayGain;
     const ResetWaveformTrackPointerOperation m_resetWaveform;
+    const ResetRatingTrackPointerOperation m_resetRating;
 };
 
 } // anonymous namespace
