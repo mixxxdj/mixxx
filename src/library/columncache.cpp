@@ -81,8 +81,10 @@ void ColumnCache::setColumns(const QStringList& columns) {
         m_columnIndexByEnum[i] = -1;
     }
 
-    for (const auto& col : m_columnNameByEnum.keys()) {
-        m_columnIndexByEnum[col] = fieldIndex(m_columnNameByEnum[col]);
+    for (auto it = m_columnNameByEnum.constKeyValueBegin();
+            it != m_columnNameByEnum.constKeyValueEnd();
+            ++it) {
+        m_columnIndexByEnum[(*it).first] = fieldIndex((*it).second);
     }
 
     const QString sortInt("cast(%1 as integer)");
