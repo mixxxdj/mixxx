@@ -69,22 +69,34 @@
                 </Children>
               </WidgetGroup>
 
-              <Splitter>
-                <ObjectName>InfobarSplitter</ObjectName>
-                <Orientation>vertical</Orientation>
+              <!-- with infobar -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
                 <SizePolicy>me,me</SizePolicy>
-                <SplitSizesConfigKey>[Skin],libraryInfobar_splitsize</SplitSizesConfigKey>
-                <SplitSizes>8,1</SplitSizes>
+                <Orientation>vertical</Orientation>
                 <Children>
                   <Library>
                     <ShowButtonText>false</ShowButtonText>
                     <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
                   </Library>
-                  <Infobar>
-                    <Group>[Library]</Group>
-                  </Infobar>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>m,m</SizePolicy>
+                    <Connection>
+                      <ConfigKey>[Library],show_infobar</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                    <Children>
+                      <Infobar>
+                        <ObjectName>Infobar</ObjectName>
+                        <Group>[Library]</Group>
+                      </Infobar>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
-              </Splitter>
+              </WidgetGroup>
+
 
             </Children>
             <!--Connection>
