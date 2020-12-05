@@ -30,7 +30,8 @@ class WidgetRenderTimer : public QObject {
     Q_OBJECT
   public:
     WidgetRenderTimer(mixxx::Duration renderFrequency,
-                      mixxx::Duration inactivityTimeout);
+            mixxx::Duration inactivityTimeout,
+            bool openGlEnabled);
 
     // Call this method whenever the widget's state has changed such that a
     // re-render is necessary.
@@ -49,6 +50,7 @@ class WidgetRenderTimer : public QObject {
   private:
     const mixxx::Duration m_renderFrequency;
     const mixxx::Duration m_inactivityTimeout;
+    bool m_openGlEnabled;
     GuiTickTimer m_guiTickTimer;
     mixxx::Duration m_lastActivity;
     mixxx::Duration m_lastRender;

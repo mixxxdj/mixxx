@@ -41,7 +41,7 @@
 class WSliderComposed : public WWidget  {
     Q_OBJECT
   public:
-    explicit WSliderComposed(QWidget* parent = nullptr);
+    explicit WSliderComposed(QWidget* parent = nullptr, bool openGlEnabled = false);
     ~WSliderComposed() override;
 
     void setup(const QDomNode& node, const SkinContext& context);

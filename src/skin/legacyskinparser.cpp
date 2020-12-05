@@ -504,7 +504,7 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
             result.append(pOuterWidget);
         }
     } else if (nodeName == "SliderComposed") {
-        result = wrapWidget(parseStandardWidget<WSliderComposed>(node));
+        result = wrapWidget(parseRenderTimedWidget<WSliderComposed>(node));
     } else if (nodeName == "PushButton") {
         result = wrapWidget(parseStandardWidget<WPushButton>(node));
     } else if (nodeName == "EffectPushButton") {
@@ -545,9 +545,9 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
     } else if (nodeName == "Label") {
         result = wrapWidget(parseLabelWidget<WLabel>(node));
     } else if (nodeName == "Knob") {
-        result = wrapWidget(parseStandardWidget<WKnob>(node));
+        result = wrapWidget(parseRenderTimedWidget<WKnob>(node));
     } else if (nodeName == "KnobComposed") {
-        result = wrapWidget(parseStandardWidget<WKnobComposed>(node));
+        result = wrapWidget(parseRenderTimedWidget<WKnobComposed>(node));
     } else if (nodeName == "TableView") {
         result = wrapWidget(parseTableView(node));
     } else if (nodeName == "CoverArt") {
@@ -866,6 +866,20 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
 template<class T>
 T* LegacySkinParser::parseStandardWidget(const QDomElement& element) {
     T* pWidget = new T(m_pParent);
+    commonWidgetSetup(element, pWidget);
+    pWidget->setup(element, *m_pContext);
+    pWidget->installEventFilter(m_pKeyboard);
+    pWidget->installEventFilter(
+            m_pControllerManager->getControllerLearningEventFilter());
+    pWidget->Init();
+    return pWidget;
+}
+
+template<class T>
+T* LegacySkinParser::parseRenderTimedWidget(const QDomElement& element) {
+    bool openGlEnabled = m_pConfig->getValue(
+            ConfigKey("[Waveform]", "OpenGlEnabled"), WaveformWidgetFactory::defaultOpenGlEnabled);
+    T* pWidget = new T(m_pParent, openGlEnabled);
     commonWidgetSetup(element, pWidget);
     pWidget->setup(element, *m_pContext);
     pWidget->installEventFilter(m_pKeyboard);

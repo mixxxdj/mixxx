@@ -18,7 +18,7 @@
 class WKnob : public WDisplay {
    Q_OBJECT
   public:
-    explicit WKnob(QWidget* pParent=nullptr);
+    explicit WKnob(QWidget* pParent = nullptr, bool openGlEnabled = false);
 
   protected:
     void wheelEvent(QWheelEvent *e) override;

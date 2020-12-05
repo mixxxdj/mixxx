@@ -6,7 +6,7 @@
 #include "widget/wknobcomposed.h"
 #include "widget/wskincolor.h"
 
-WKnobComposed::WKnobComposed(QWidget* pParent)
+WKnobComposed::WKnobComposed(QWidget* pParent, bool openGlEnabled)
         : WWidget(pParent),
           m_dCurrentAngle(140.0),
           m_dMinAngle(-230.0),
@@ -20,7 +20,8 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_arcReversed(false),
           m_arcPenCap(Qt::FlatCap),
           m_renderTimer(mixxx::Duration::fromMillis(20),
-                        mixxx::Duration::fromSeconds(1)) {
+                  mixxx::Duration::fromSeconds(1),
+                  openGlEnabled) {
     connect(&m_renderTimer,
             &WidgetRenderTimer::update,
             this,
@@ -222,9 +223,5 @@ void WKnobComposed::wheelEvent(QWheelEvent* e) {
 }
 
 void WKnobComposed::inputActivity() {
-#ifdef __APPLE__
     m_renderTimer.activity();
-#else
-    update();
-#endif
 }

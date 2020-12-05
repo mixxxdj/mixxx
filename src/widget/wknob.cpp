@@ -22,10 +22,11 @@
 #include "util/duration.h"
 #include "widget/wknob.h"
 
-WKnob::WKnob(QWidget* pParent)
+WKnob::WKnob(QWidget* pParent, bool openGlEnabled)
         : WDisplay(pParent),
           m_renderTimer(mixxx::Duration::fromMillis(20),
-                        mixxx::Duration::fromSeconds(1)) {
+                  mixxx::Duration::fromSeconds(1),
+                  openGlEnabled) {
     connect(&m_renderTimer,
             &WidgetRenderTimer::update,
             this,
@@ -50,9 +51,5 @@ void WKnob::wheelEvent(QWheelEvent* e) {
 }
 
 void WKnob::inputActivity() {
-#ifdef __APPLE__
     m_renderTimer.activity();
-#else
-    update();
-#endif
 }

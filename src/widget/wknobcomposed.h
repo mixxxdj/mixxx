@@ -21,7 +21,7 @@
 class WKnobComposed : public WWidget {
     Q_OBJECT
   public:
-    explicit WKnobComposed(QWidget* pParent=nullptr);
+    explicit WKnobComposed(QWidget* pParent = nullptr, bool openGlEnabled = false);
 
     void setup(const QDomNode& node, const SkinContext& context);
 

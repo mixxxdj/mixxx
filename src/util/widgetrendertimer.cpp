@@ -3,9 +3,11 @@
 #include "util/time.h"
 
 WidgetRenderTimer::WidgetRenderTimer(mixxx::Duration renderFrequency,
-                                     mixxx::Duration inactivityTimeout)
+        mixxx::Duration inactivityTimeout,
+        bool openGlEnabled)
         : m_renderFrequency(renderFrequency),
           m_inactivityTimeout(inactivityTimeout),
+          m_openGlEnabled(openGlEnabled),
           m_guiTickTimer(this) {
     connect(&m_guiTickTimer, &GuiTickTimer::timeout, this, &WidgetRenderTimer::guiTick);
 }
@@ -22,8 +24,16 @@ void WidgetRenderTimer::guiTick() {
 }
 
 void WidgetRenderTimer::activity() {
-    m_lastActivity = mixxx::Time::elapsed();
-    if (!m_guiTickTimer.isActive()) {
-        m_guiTickTimer.start(m_renderFrequency);
+#ifdef __APPLE__
+    if (m_openGlEnabled) {
+        m_lastActivity = mixxx::Time::elapsed();
+        if (!m_guiTickTimer.isActive()) {
+            m_guiTickTimer.start(m_renderFrequency);
+        }
+    } else {
+        emit update();
     }
+#else
+    emit update();
+#endif
 }
