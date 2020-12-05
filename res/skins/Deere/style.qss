@@ -526,6 +526,9 @@ WLibrary QRadioButton::indicator:unchecked {
 }
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
+#InfobarCratesContainer > QPushButton,
+#InfobarPlaylistsContainer > QPushButton,
+#InfobarHistoryContainer > QPushButton,
 #LibraryFeatureControls QPushButton {
   margin: 9px 3px 6px 3px;
   padding: 3px 4px;
@@ -543,7 +546,12 @@ WLibrary QRadioButton::indicator:unchecked {
     QPushButton#pushButtonAutoDJ {
       width: 42px;
     }
-
+  #InfobarCratesContainer > QPushButton,
+  #InfobarPlaylistsContainer > QPushButton,
+  #InfobarHistoryContainer > QPushButton {
+    padding: 0px 3px 0px 3px;
+    margin: 0px;
+  }
 
 #LibraryFeatureControls QPushButton:!enabled {
   /* buttons in "disabled" (not click-able) state. They are nearly invisible
@@ -556,6 +564,9 @@ WLibrary QRadioButton::indicator:unchecked {
   outline: none;
 }
 
+#InfobarCratesContainer > QPushButton:hover,
+#InfobarPlaylistsContainer > QPushButton:hover,
+#InfobarHistoryContainer > QPushButton:hover,
 #LibraryFeatureControls QPushButton:hover {
   color: #D2D2D2;
   background-color: #5F5F5F;
@@ -593,6 +604,9 @@ QPushButton#pushButtonRecording:checked:hover {
   outline: none;
 }
 
+#InfobarCratesContainer > QPushButton:pressed,
+#InfobarPlaylistsContainer > QPushButton:pressed,
+#InfobarHistoryContainer > QPushButton:pressed,
 #LibraryFeatureControls QPushButton:pressed {
   /* pushbuttons in "down" state */
   margin: 9px 3px 6px 3px;
@@ -601,7 +615,12 @@ QPushButton#pushButtonRecording:checked:hover {
   border: 1px solid #006596;
   outline: none;
 }
-
+#InfobarCratesContainer > QPushButton:pressed,
+#InfobarPlaylistsContainer > QPushButton:pressed,
+#InfobarHistoryContainer > QPushButton:pressed {
+  margin: 0px;
+  border-right: 1px ridge #015d8d;
+}
 
 /* AutoDJ button icons */
 QPushButton#pushButtonAutoDJ {
@@ -1305,6 +1324,7 @@ WBeatSpinBox,
   qproperty-layoutSpacing: 0;
 }
 
+#Infobar,
 #MainDecks, #MainDeckContainer {
   background-color: #333333;
 }
@@ -2233,63 +2253,65 @@ WRateRange {
     qproperty-alignment: 'AlignRight | AlignTop';
 }
 
-#RateDisplayBottomPrefix {
-    qproperty-alignment: 'AlignLeft | AlignBottom';
-}
-#RateDisplayBottomRate {
-    qproperty-alignment: 'AlignRight | AlignBottom';
-}
-
 #InfobarSplitter {
   background-color: #222222;
 }
 
-#infobarContainer {
-  background-color: #ff00ff;
-}
 
-#infobarCrates {
-  border: 1px solid #ffff00;
-  border-width: 0px 1px 0px 1px;
-  background-color: #006f00;
-  border-radius: 2px;
-  margin: 0;
-  padding: 0 3px 0 3px;
-  Text-align:left;
-}
-
-WInfoBarItem {
-  background-color: #F0fff0;
-  margin: 0;
+WInfoBarContainer,
+WInfoBarContainer QWidget {
   padding: 0;
-  Text-align:left;
-}
-
-WInfoBarCrateItem {
-  background-color: #F00ff0;
-}
-
-#infobarCratesContainer {
   margin: 0;
-  padding: 0;
-  spacing: 0;
 }
 
-
-#infobarPlaylists {
-  border: 1px solid #ffff00;
-  border-width: 0px 1px 0px 1px;
-  background-color: #00fff0;
-  border-radius: 2px;
-  margin: 0;
-  padding: 0 3px 0 3px;
+WInfoBarButton {
+  /* tall button, about the same height as cue number + label edit box */
+    padding: 1px;
+    margin: 0 2px 0 0;
+    width: 20px;
+    height: 20px;
+    /* make the icon slightly larger than default 16px */
+    qproperty-iconSize: 20px;
+    background-color: #3B3B3B;
+    border-radius: 2px;
+    outline: none;
 }
 
-#infobarHistory {
-  border: 1px solid #ffff00;
-  border-width: 0px 1px 0px 1px;
-  background-color: #f03f00;
-  border-radius: 2px;
-  margin: 0;
-  padding: 0 3px 0 3px;
+/* normal */
+#InfobarCratesFrame WInfoBarButton[state="0"] {
+  qproperty-icon: url(:/images/library/ic_library_crates_half_grey.svg);
+}
+/* hidden */
+#InfobarCratesFrame WInfoBarButton[state="1"] {
+  qproperty-icon: url(:/images/library/ic_library_crates_grey.svg);
+}
+/* extended */
+#InfobarCratesFrame WInfoBarButton[state="2"] {
+  qproperty-icon: url(:/images/library/ic_library_crates.svg);
+}
+
+/* normal */
+#InfobarPlaylistsFrame WInfoBarButton[state="0"] {
+  qproperty-icon: url(:/images/library/ic_library_playlist_half_grey.svg);
+}
+/* hidden */
+#InfobarPlaylistsFrame WInfoBarButton[state="1"] {
+  qproperty-icon: url(:/images/library/ic_library_playlist_grey.svg);
+}
+/* extended */
+#InfobarPlaylistsFrame WInfoBarButton[state="2"] {
+  qproperty-icon: url(:/images/library/ic_library_playlist.svg);
+}
+
+/* normal */
+#InfobarHistoryFrame WInfoBarButton[state="0"] {
+  qproperty-icon: url(:/images/library/ic_library_history_half_grey.svg);
+}
+/* hidden */
+#InfobarHistoryFrame WInfoBarButton[state="1"] {
+  qproperty-icon: url(:/images/library/ic_library_history_grey.svg);
+}
+/* extended */
+#InfobarHistoryFrame WInfoBarButton[state="2"] {
+  qproperty-icon: url(:/images/library/ic_library_history.svg);
 }

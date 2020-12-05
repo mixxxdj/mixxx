@@ -138,7 +138,8 @@ Library::Library(
     addFeature(browseFeature);
 
     addFeature(new RecordingFeature(this, m_pConfig, pRecordingManager));
-    addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig)));
+    m_pSetlogFeature = new SetlogFeature(this, UserSettingsPointer(m_pConfig));
+    addFeature(m_pSetlogFeature);
 
     m_pAnalysisFeature = new AnalysisFeature(this, m_pConfig);
     connect(m_pPlaylistFeature,

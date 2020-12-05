@@ -1091,13 +1091,3 @@ QListView::branch:open:has-children:!has-siblings:selected,
 QListView::branch:open:has-children:has-siblings:selected { border-image: none; image: url(skin:/style/style_branch_open.png);
   background-color:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 #585858, stop:1 #0f0f0f);
 }
-
-WInfoBarCrateItem {
-  background-color: #FF0000;
-  color: black;
-}
-
-WInfoBarCrateMixedItem {
-  background-color: #FF0000;
-  color: black;
-}

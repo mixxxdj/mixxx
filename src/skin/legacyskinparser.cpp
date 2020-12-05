@@ -1320,39 +1320,39 @@ QWidget* LegacySkinParser::parseInfobar(const QDomElement& node) {
         return NULL;
     }
 
-    WInfoBar* p = new WInfoBar(group, m_pConfig, m_pLibrary, m_pParent);
+    WInfoBar* pInfobar = new WInfoBar(group, m_pConfig, m_pLibrary, m_pParent);
 
-    commonWidgetSetup(node, p);
-    p->setup(node, *m_pContext);
+    commonWidgetSetup(node, pInfobar);
+    pInfobar->setup(node, *m_pContext);
 
     if (pPlayer) {
         connect(pPlayer,
                 SIGNAL(newTrackLoaded(TrackPointer)),
-                p,
+                pInfobar,
                 SLOT(slotTrackLoaded(TrackPointer)));
         connect(pPlayer,
                 SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-                p,
+                pInfobar,
                 SLOT(slotTrackLoaded(TrackPointer)));
 
         // load if there is already a track in the deck
         TrackPointer pTrack = pPlayer->getLoadedTrack();
         if (pTrack) {
-            p->slotTrackLoaded(pTrack);
+            pInfobar->slotTrackLoaded(pTrack);
         }
     } else {
         // hookup to library
         // FIXME(poelzi) signals
         connect(m_pLibrary,
                 &Library::switchToView,
-                p,
+                pInfobar,
                 &WInfoBar::slotClear);
         connect(m_pLibrary,
                 &Library::trackSelection,
-                p,
+                pInfobar,
                 &WInfoBar::slotTrackSelection);
     }
-    return p;
+    return pInfobar;
 }
 
 void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {

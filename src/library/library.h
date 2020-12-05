@@ -27,6 +27,7 @@ class KeyboardEventFilter;
 class MixxxLibraryFeature;
 class PlayerManager;
 class PlaylistFeature;
+class SetlogFeature;
 class RecordingManager;
 class SidebarModel;
 class TrackCollection;
@@ -85,6 +86,15 @@ class Library: public QObject {
     }
 
     //static Library* buildDefaultLibrary();
+    CrateFeature* getCreateFeature() {
+        return m_pCrateFeature;
+    };
+    PlaylistFeature* getPlaylistFeature() {
+        return m_pPlaylistFeature;
+    };
+    SetlogFeature* getSetlogFeature() {
+        return m_pSetlogFeature;
+    };
 
     enum class RemovalType {
         KeepTracks,
@@ -161,6 +171,7 @@ class Library: public QObject {
     const static QString m_sAutoDJViewName;
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
+    SetlogFeature* m_pSetlogFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
     QFont m_trackTableFont;

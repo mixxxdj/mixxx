@@ -1129,9 +1129,9 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Show/hide cover art in the library"),
             guiMenu);
     addControl("[Library]",
-            "show_crates",
+            "show_infobar",
             tr("Crates List Show/Hide"),
-            tr("Show/hide list of crates"),
+            tr("Show/hide infobar"),
             guiMenu);
     addControl("[Master]",
             "maximize_library",
@@ -1151,6 +1151,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             "show_coverart",
             tr("Cover Art Show/Hide (Decks)"),
             tr("Show/hide cover art in the main decks"),
+            guiMenu);
+    addControl("[Library]",
+            "show_infobar",
+            tr("Infobar Show/Hide (Decks)"),
+            tr("Show/hide the infobar in the library"),
             guiMenu);
     addControl(VINYL_PREF_KEY,
             "show_vinylcontrol",
