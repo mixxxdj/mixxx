@@ -105,7 +105,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_frameRate(30),
           m_endOfTrackWarningTime(30),
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
-          m_zoomSync(false),
+          m_zoomSync(true),
           m_overviewNormalized(false),
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
@@ -303,12 +303,8 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
 
-    int zoomSync = m_config->getValueString(ConfigKey("[Waveform]","ZoomSynchronization")).toInt(&ok);
-    if (ok) {
-        setZoomSync(static_cast<bool>(zoomSync));
-    } else {
-        m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
-    }
+    bool zoomSync = m_config->getValue(ConfigKey("[Waveform]", "ZoomSynchronization"), m_zoomSync);
+    setZoomSync(zoomSync);
 
     int beatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "beatGridAlpha"), m_beatGridAlpha);
     setDisplayBeatGridAlpha(beatGridAlpha);
