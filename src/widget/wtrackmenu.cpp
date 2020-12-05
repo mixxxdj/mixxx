@@ -1287,7 +1287,7 @@ class ResetRatingTrackPointerOperation : public mixxx::TrackPointerOperation {
   private:
     void doApply(
             const TrackPointer& pTrack) const override {
-        pTrack->setRating(0);
+        pTrack->resetRating();
     }
 };
 
