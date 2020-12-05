@@ -14,13 +14,19 @@
         <file>images/library/ic_library_banshee.svg</file>
         <file>images/library/ic_library_computer.svg</file> <!-- from Gnome high contrast icons LGPL 2.1 -->
         <file>images/library/ic_library_crates.svg</file>
+        <file>images/library/ic_library_crates_half_grey.svg</file>
+        <file>images/library/ic_library_crates_grey.svg</file>
         <file>images/library/ic_library_cross_grey.svg</file>
         <file>images/library/ic_library_cross_orange.svg</file>
         <file>images/library/ic_library_history.svg</file>
+        <file>images/library/ic_library_history_half_grey.svg</file>
+        <file>images/library/ic_library_history_grey.svg</file>
         <file>images/library/ic_library_history_current.svg</file>
         <file>images/library/ic_library_itunes.svg</file>
         <file>images/library/ic_library_tracks.svg</file> <!-- from Gnome high contrast icons LGPL 2.1 -->
         <file>images/library/ic_library_playlist.svg</file>
+        <file>images/library/ic_library_playlist_half_grey.svg</file>
+        <file>images/library/ic_library_playlist_grey.svg</file>
         <file>images/library/ic_library_prepare.svg</file>
         <file>images/library/ic_library_preview_pause.svg</file>
         <file>images/library/ic_library_preview_play.svg</file>
