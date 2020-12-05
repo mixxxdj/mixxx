@@ -996,8 +996,14 @@
         createDeck: function(deckDefinition, componentStorage) {
             var deck = new components.Deck(deckDefinition.deckNumbers);
             deckDefinition.components.forEach(function(componentDefinition, index) {
-                var options = _.merge({group: deck.currentDeck}, componentDefinition.options);
-                deck[index] = new componentDefinition.type(options);
+                if (componentDefinition && componentDefinition.type) {
+                    var options = _.merge({group: deck.currentDeck}, componentDefinition.options);
+                    deck[index] = new componentDefinition.type(options);
+                } else {
+                    log.error("Skipping component without type on Deck of " + deck.currentDeck
+                        + ": " + stringifyObject(componentDefinition));
+                    deck[index] = null;
+                }
             }, this);
             if (deckDefinition.equalizerUnit) {
                 deck.equalizerUnit = this.setupMidi(
@@ -1129,7 +1135,13 @@
             containerDefinition.components.forEach(function(componentDefinition, index) {
                 var definition = _.merge(
                     {}, containerDefinition.defaultDefinition || {}, componentDefinition);
-                container[index] = new definition.type(definition.options);
+                if (definition.type) {
+                    container[index] = new definition.type(definition.options);
+                } else {
+                    log.error("Skipping component without type on a component container: "
+                        + stringifyObject(componentDefinition));
+                    container[index] = null;
+                }
             }, this);
             if (typeof containerDefinition.init === "function") {
                 containerDefinition.init.call(container);
@@ -1146,12 +1158,14 @@
          * @private
          */
         registerComponents: function(layerManager, definition, implementation) {
-            if (implementation instanceof components.Component) {
-                layerManager.register(implementation, definition.shift === true);
-            } else if (implementation instanceof components.ComponentContainer) {
-                Object.keys(definition).forEach(function(name) {
-                    this.registerComponents(layerManager, definition[name], implementation[name]);
-                }, this);
+            if (definition) {
+                if (implementation instanceof components.Component) {
+                    layerManager.register(implementation, definition.shift === true);
+                } else if (implementation instanceof components.ComponentContainer) {
+                    Object.keys(definition).forEach(function(name) {
+                        this.registerComponents(layerManager, definition[name], implementation[name]);
+                    }, this);
+                }
             }
         },
     });
