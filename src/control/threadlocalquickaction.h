@@ -35,9 +35,10 @@ class ThreadLocalQuickAction : public QObject {
         s_pQuickAction = std::move(pQuickAction);
     }
 
-  private:
+  private slots:
     void slotTriggered(double);
 
+  private:
     QThreadStorage<QuickAction*> m_pQuickAction;
 
     // QuickAction instances need these controls to exists when they are constructed.
