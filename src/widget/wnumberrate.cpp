@@ -16,6 +16,20 @@
 #include "control/controlproxy.h"
 #include "util/math.h"
 
+namespace {
+
+inline QChar sign(double number) {
+    if (number > 0) {
+        return '+';
+    }
+    if (number < 0) {
+        return '-';
+    }
+    return ' ';
+}
+
+} // namespace
+
 WNumberRate::WNumberRate(const QString& group, QWidget* parent)
         : WNumber(parent) {
     m_pRateRatio = new ControlProxy(group, "rate_ratio", this, ControlFlag::NoAssertIfMissing);
@@ -30,13 +44,8 @@ void WNumberRate::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WNumberRate::setValue(double dValue) {
-    double vsign = dValue - 1;
-
-    char sign = '+';
-    if (vsign < -0.00000001) {
-        sign = '-';
-    }
-
-    setText(QString(m_skinText).append(sign)
-            .append("%1").arg(fabs(vsign) * 100.0, 0, 'f', m_iNoDigits));
+    const double digitFactor = pow(10, m_iNoDigits);
+    // Calculate percentage rounded to the number of digits specified by iNoDigits
+    const double percentage = round((dValue - 1) * 100.0 * digitFactor) / digitFactor;
+    setText(m_skinText + sign(percentage) + QString::number(fabs(percentage), 'f', m_iNoDigits));
 }
