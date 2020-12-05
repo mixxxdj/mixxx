@@ -37,6 +37,7 @@ class QuickAction : public QObject {
 
         bool operator<(const QuickAction::Key& other) const;
     };
-    QMap<Key, double> m_recordedValues;
-    int m_iBiggestOrdinal;
+
+    std::vector<std::pair<ConfigKey, double>> m_recordedValues;
+    QHash<ConfigKey, unsigned int> m_validPosition;
 };
