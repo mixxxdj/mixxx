@@ -18,7 +18,7 @@
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_spinnies">0</attribute>
       <attribute persist="true" config_key="[Skin],show_starrating">1</attribute>
       <attribute persist="true" config_key="[Deere],show_track_info">1</attribute>
       <attribute persist="true" config_key="[Deere],show_bpm_info">1</attribute>

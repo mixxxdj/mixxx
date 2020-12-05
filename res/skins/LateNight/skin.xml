@@ -49,7 +49,7 @@
       <attribute persist="true" config_key="[Skin],show_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_spinnies">0</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
       <!-- ToDo: deck-independent vinyl controls? -->
