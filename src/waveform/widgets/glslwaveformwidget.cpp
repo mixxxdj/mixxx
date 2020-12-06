@@ -31,8 +31,7 @@ GLSLWaveformWidget::GLSLWaveformWidget(
         const QString& group,
         QWidget* parent,
         bool rgbRenderer)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
-          WaveformWidgetAbstract(group) {
+        : GLWaveformWidgetAbstract(group, parent) {
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
@@ -46,9 +45,9 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     if (rgbRenderer) {
-        m_signalRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
+        m_pGlRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
     } else {
-        m_signalRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
+        m_pGlRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
     }
 #else
     Q_UNUSED(rgbRenderer);

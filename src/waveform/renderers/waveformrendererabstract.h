@@ -2,6 +2,7 @@
 #define WAVEFORMRENDERERABSTRACT_H
 
 #include <QDomNode>
+#include <QOpenGLFunctions_2_1>
 #include <QPaintEvent>
 #include <QPainter>
 
@@ -45,6 +46,18 @@ class WaveformRendererAbstract {
     double m_scaleFactor;
 
     friend class WaveformWidgetRenderer;
+};
+
+/// GLWaveformRenderer is a WaveformRendererAbstract which directly calls OpenGL functions.
+///
+/// Note that the Qt OpenGL WaveformRendererAbstracts are not GLWaveformRenderers because
+/// they do not call OpenGL functions directly. Instead, they inherit QGLWidget and use the
+/// QPainter API which Qt translates to OpenGL under the hood.
+class GLWaveformRenderer : protected QOpenGLFunctions_2_1 {
+  public:
+    virtual void onInitializeGL() {
+        initializeOpenGLFunctions();
+    }
 };
 
 #endif // WAVEFORMRENDERERABSTRACT_H

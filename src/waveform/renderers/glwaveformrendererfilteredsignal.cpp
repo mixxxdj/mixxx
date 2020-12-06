@@ -12,7 +12,6 @@
 GLWaveformRendererFilteredSignal::GLWaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererSignalBase(waveformWidgetRenderer) {
-    initializeOpenGLFunctions();
 }
 
 GLWaveformRendererFilteredSignal::~GLWaveformRendererFilteredSignal() {

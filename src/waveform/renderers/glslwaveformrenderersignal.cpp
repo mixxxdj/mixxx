@@ -17,7 +17,6 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
           m_bDumpPng(false),
           m_shadersValid(false),
           m_rgbShader(rgbShader) {
-    initializeOpenGLFunctions();
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
@@ -189,7 +188,8 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
     }
 }
 
-bool GLSLWaveformRendererSignal::onInit() {
+void GLSLWaveformRendererSignal::onInitializeGL() {
+    initializeOpenGLFunctions();
     m_textureRenderedWaveformCompletion = 0;
 
     if (!m_frameShaderProgram) {
@@ -197,14 +197,12 @@ bool GLSLWaveformRendererSignal::onInit() {
     }
 
     if (!loadShaders()) {
-        return false;
+        return;
     }
     createGeometry();
     if (!loadTexture()) {
-        return false;
+        return;
     }
-
-    return true;
 }
 
 void GLSLWaveformRendererSignal::onSetup(const QDomNode& node) {

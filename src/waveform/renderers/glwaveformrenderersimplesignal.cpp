@@ -10,7 +10,6 @@
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererSignalBase(waveformWidgetRenderer) {
-    initializeOpenGLFunctions();
 }
 
 GLWaveformRendererSimpleSignal::~GLWaveformRendererSimpleSignal() {
