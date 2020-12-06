@@ -1158,14 +1158,13 @@
          * @private
          */
         registerComponents: function(layerManager, definition, implementation) {
-            if (definition) {
-                if (implementation instanceof components.Component) {
-                    layerManager.register(implementation, definition.shift === true);
-                } else if (implementation instanceof components.ComponentContainer) {
-                    Object.keys(definition).forEach(function(name) {
-                        this.registerComponents(layerManager, definition[name], implementation[name]);
-                    }, this);
-                }
+            if (implementation instanceof components.Component) {
+                layerManager.register(implementation, definition && definition.shift === true);
+            } else if (implementation instanceof components.ComponentContainer) {
+                Object.keys(implementation).forEach(function(name) {
+                    var definitionName = definition ? definition[name] : null;
+                    this.registerComponents(layerManager, definitionName, implementation[name]);
+                }, this);
             }
         },
     });
