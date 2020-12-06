@@ -1132,21 +1132,39 @@
         createComponentContainer: function(containerDefinition) {
             var containerType = containerDefinition.type || components.ComponentContainer;
             var container = new containerType(containerDefinition.options);
+            if (containerDefinition.components) {
             containerDefinition.components.forEach(function(componentDefinition, index) {
                 var definition = _.merge(
                     {}, containerDefinition.defaultDefinition || {}, componentDefinition);
-                if (definition.type) {
-                    container[index] = new definition.type(definition.options);
-                } else {
-                    log.error("Skipping component without type on a component container: "
-                        + stringifyObject(componentDefinition));
-                    container[index] = null;
-                }
+                    container[index] = this.createComponent(definition);
             }, this);
+            }
             if (typeof containerDefinition.init === "function") {
                 containerDefinition.init.call(container);
             }
             return container;
+        },
+
+        /**
+         * Create a component or component container.
+         *
+         * @param {object} definition Definition of a component or component container
+         * @yields {component.Component|component.ComponentContainer|null} The new component or component container
+         * @private
+         */
+        createComponent: function(definition) {
+            var component = null;
+            if (definition && definition.type) {
+                if (definition.type.prototype instanceof components.ComponentContainer) {
+                    component = this.createComponentContainer(definition);
+                } else {
+                    component = new definition.type(definition.options);
+                }
+            } else {
+                log.error("Skipping invalid component definition without type: "
+                    + stringifyObject(definition));
+            }
+            return component;
         },
 
         /**
