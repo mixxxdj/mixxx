@@ -1363,9 +1363,28 @@ ExportTrackMetadataResult Track::exportMetadata(
 
 #if defined(__EXPORT_SERATO_MARKERS__)
     {
+        const auto streamInfo = m_record.getStreamInfoFromSource();
+        VERIFY_OR_DEBUG_ASSERT(streamInfo && streamInfo->isValid()) {
+            kLogger.warning()
+                    << "Cannot write Serato Markers tag because stream info is not available:"
+                    << getLocation();
+        }
+
+        const mixxx::audio::SampleRate sampleRate =
+                streamInfo->getSignalInfo().getSampleRate();
+
+        QList<mixxx::CueInfo> cueInfos;
+        for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+            cueInfos.append(pCue->getCueInfo(sampleRate));
+        }
+
         mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
         seratoTags->setTrackColor(getColor());
         seratoTags->setBpmLocked(isBpmLocked());
+
+        double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
+                getLocation(), streamInfo->getSignalInfo());
+        seratoTags->setCueInfos(cueInfos, timingOffset);
     }
 #endif
 
