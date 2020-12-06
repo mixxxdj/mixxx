@@ -1128,11 +1128,6 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Cover Art Show/Hide (Library)"),
             tr("Show/hide cover art in the library"),
             guiMenu);
-    addControl("[Library]",
-            "show_infobar",
-            tr("Crates List Show/Hide"),
-            tr("Show/hide infobar"),
-            guiMenu);
     addControl("[Master]",
             "maximize_library",
             tr("Library Maximize/Restore"),
