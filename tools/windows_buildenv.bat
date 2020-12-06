@@ -109,37 +109,57 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     IF EXIST %CMakeSettings% del /f /q %CMakeSettings%
     >>%CMakeSettings% echo {
     >>%CMakeSettings% echo   "configurations": [
-    >>%CMakeSettings% echo     {
-    >>%CMakeSettings% echo       "buildCommandArgs": "",
-    >>%CMakeSettings% echo       "buildRoot": "${projectDir}\\cmake_build",
-    >>%CMakeSettings% echo       "cmakeCommandArgs": "-DDEBUG_ASSERTIONS_FATAL=ON -DHSS1394=ON -DKEYFINDER=OFF -DLOCALECOMPARE=ON -DMAD=ON -DMEDIAFOUNDATION=ON -DSTATIC_DEPS=ON -DBATTERY=ON -DBROADCAST=ON -DBULK=ON -DHID=ON -DLILV=ON -DOPUS=ON -DQTKEYCHAIN=ON -DVINYLCONTROL=ON",
-    >>%CMakeSettings% echo       "configurationType": "Release",
-    >>%CMakeSettings% echo       "ctestCommandArgs": "",
-    >>%CMakeSettings% echo       "enableClangTidyCodeAnalysis": true,
-    >>%CMakeSettings% echo       "generator": "Ninja",
-    >>%CMakeSettings% echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
-    >>%CMakeSettings% echo       "installRoot": "${projectDir}\\cmake_dist",
-    >>%CMakeSettings% echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
-    >>%CMakeSettings% echo       "name": "!PLATFORM!-!CONFIGURATION!",
-    >>%CMakeSettings% echo       "variables": [
-    >>%CMakeSettings% echo         {
-    >>%CMakeSettings% echo           "name": "CMAKE_PREFIX_PATH",
-    >>%CMakeSettings% echo           "type": "STRING",
-    REM Replaces all \ by \\ in CMAKE_PREFIX_PATH
-    >>%CMakeSettings% echo           "value": "!CMAKE_PREFIX_PATH:\=\\!"
-    >>%CMakeSettings% echo         },
-    >>%CMakeSettings% echo         {
-    >>%CMakeSettings% echo           "name": "CMAKE_INTERPROCEDURAL_OPTIMIZATION",
-    >>%CMakeSettings% echo           "type": "BOOL",
-    >>%CMakeSettings% echo           "value": "FALSE"
-    >>%CMakeSettings% echo         },
-    >>%CMakeSettings% echo         {
-    >>%CMakeSettings% echo           "name": "CMAKE_EXPORT_COMPILE_COMMANDS",
-    >>%CMakeSettings% echo           "type": "BOOL",
-    >>%CMakeSettings% echo           "value": "TRUE"
-    >>%CMakeSettings% echo         }
-    >>%CMakeSettings% echo       ]
-    >>%CMakeSettings% echo     }
+    SET configElementTermination=,
+    CALL :Configuration2CMakeSettings_JSON off       Release
+    CALL :Configuration2CMakeSettings_JSON legacy    Release
+    CALL :Configuration2CMakeSettings_JSON portable  Release
+    CALL :Configuration2CMakeSettings_JSON fastbuild RelWithDebInfo
+    SET configElementTermination=
+    CALL :Configuration2CMakeSettings_JSON native    Release
     >>%CMakeSettings% echo   ]
     >>%CMakeSettings% echo }
     GOTO :EOF
+
+:Configuration2CMakeSettings_JSON <optimize> <configurationtype>
+    >>%CMakeSettings% echo     {
+    >>%CMakeSettings% echo       "buildRoot": "${projectDir}\\build_!PLATFORM!__%1",
+    >>%CMakeSettings% echo       "configurationType": "%2",
+    >>%CMakeSettings% echo       "enableClangTidyCodeAnalysis": true,
+    >>%CMakeSettings% echo       "generator": "Ninja",
+    >>%CMakeSettings% echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
+    >>%CMakeSettings% echo       "installRoot": "${projectDir}\\dist_!PLATFORM!__%1",
+    >>%CMakeSettings% echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
+    >>%CMakeSettings% echo       "name": "!PLATFORM!__%1",
+    >>%CMakeSettings% echo       "variables": [
+    SET variableElementTermination=,
+    CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_EXPORT_COMPILE_COMMANDS"      "BOOL"   "true"
+    REM Replace all \ by \\ in CMAKE_PREFIX_PATH
+    CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_PREFIX_PATH"                  "PATH"   "!CMAKE_PREFIX_PATH:\=\\!"
+    CALL :AddCMakeVar2CMakeSettings_JSON "DEBUG_ASSERTIONS_FATAL"             "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "HID"                                "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "HSS1394"                            "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "KEYFINDER"                          "BOOL"   "false"
+    CALL :AddCMakeVar2CMakeSettings_JSON "LOCALECOMPARE"                      "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "LILV"                               "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "MAD"                                "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "MEDIAFOUNDATION"                    "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "OPUS"                               "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
+    CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "true"
+    SET variableElementTermination=
+    CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "true"
+    >>%CMakeSettings% echo       ]
+    >>%CMakeSettings% echo     }!configElementTermination!
+  GOTO :EOF
+
+:AddCMakeVar2CMakeSettings_JSON <varname> <vartype> <value>
+    >>%CMakeSettings% echo         {
+    >>%CMakeSettings% echo           "name": %1,
+    >>%CMakeSettings% echo           "type": %2,
+    >>%CMakeSettings% echo           "value": %3
+    >>%CMakeSettings% echo         }!variableElementTermination!
+  GOTO :EOF
