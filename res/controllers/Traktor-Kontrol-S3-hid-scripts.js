@@ -1,17 +1,15 @@
 ///////////////////////////////////////////////////////////////////////////////////
-/*                                                                               */
-/* Traktor Kontrol S3 HID controller script v1.00                                */
-/* Last modification: August 2020                                                */
-/* Author: Owen Williams                                                         */
-/* https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s3     */
-/*                                                                               */
-/* For linter:                                                                   */
-/* global HIDController, HIDDebug, HIDPacket, controller                         */
+//
+// Traktor Kontrol S3 HID controller script v1.00
+// Last modification: August 2020
+// Author: Owen Williams
+// https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s3
+//
 ///////////////////////////////////////////////////////////////////////////////////
-/*                                                                               */
-/* TODO:                                                                         */
-/*   * star button                                                               */
-/*                                                                               */
+//
+// TODO:
+//   * star button
+//
 ///////////////////////////////////////////////////////////////////////////////////
 
 var TraktorS3 = {};
