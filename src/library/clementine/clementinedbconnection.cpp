@@ -74,23 +74,23 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
     queryPlaylist.setForwardOnly(true); // Saves about 50% time
     queryPlaylist.prepare(
             "SELECT "
-            "ROWID, "                     // 0
-            "playlist_items.title, "      // 1
-            "playlist_items.filename, "   // 2
-            "playlist_items.length, "     // 3
-            "playlist_items.artist, "     // 4
-            "playlist_items.year, "       // 5
-            "playlist_items.album, "      // 6
-            "playlist_items.rating, "     // 7
-            "playlist_items.genre, "      // 8
-            "playlist_items.track, "      // 9
-            "playlist_items.bpm, "        // 10
-            "playlist_items.bitrate, "    // 11
-            "playlist_items.comment, "    // 12
-            "playlist_items.playcount, "  // 13
-            "playlist_items.composer, "   // 14
-            "playlist_items.grouping, "   // 15
-            "playlist_items.type "        // 16
+            "ROWID, "                    // 0
+            "playlist_items.title, "     // 1
+            "playlist_items.filename, "  // 2
+            "playlist_items.length, "    // 3
+            "playlist_items.artist, "    // 4
+            "playlist_items.year, "      // 5
+            "playlist_items.album, "     // 6
+            "playlist_items.rating, "    // 7
+            "playlist_items.genre, "     // 8
+            "playlist_items.track, "     // 9
+            "playlist_items.bpm, "       // 10
+            "playlist_items.bitrate, "   // 11
+            "playlist_items.comment, "   // 12
+            "playlist_items.playcount, " // 13
+            "playlist_items.composer, "  // 14
+            "playlist_items.grouping, "  // 15
+            "playlist_items.type "       // 16
             "FROM playlist_items "
             "WHERE playlist_items.playlist = :playlistId");
     queryPlaylist.bindValue(":playlistId", playlistId);
@@ -105,22 +105,22 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
     queryLibrary.setForwardOnly(true);
     queryLibrary.prepare(
             "SELECT "
-            "songs.ROWID, "      // 0
-            "songs.title, "      // 1
-            "songs.filename, "   // 2
-            "songs.length, "     // 3
-            "songs.artist, "     // 4
-            "songs.year, "       // 5
-            "songs.album, "      // 6
-            "songs.rating, "     // 7
-            "songs.genre, "      // 8
-            "songs.track, "      // 9
-            "songs.bpm, "        // 10
-            "songs.bitrate, "    // 11
-            "songs.comment, "    // 12
-            "songs.playcount, "  // 13
-            "songs.composer, "   // 14
-            "songs.grouping "    // 15
+            "songs.ROWID, "     // 0
+            "songs.title, "     // 1
+            "songs.filename, "  // 2
+            "songs.length, "    // 3
+            "songs.artist, "    // 4
+            "songs.year, "      // 5
+            "songs.album, "     // 6
+            "songs.rating, "    // 7
+            "songs.genre, "     // 8
+            "songs.track, "     // 9
+            "songs.bpm, "       // 10
+            "songs.bitrate, "   // 11
+            "songs.comment, "   // 12
+            "songs.playcount, " // 13
+            "songs.composer, "  // 14
+            "songs.grouping "   // 15
             "FROM songs "
             "INNER JOIN playlist_items "
             "ON playlist_items.library_id = songs.ROWID "
@@ -135,10 +135,9 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
     while (queryPlaylist.next()) {
         // Determine datasource/table for a the specific playlist track
         QString type = queryPlaylist.value(16).toString();
-        if (type == ("File")){
+        if (type == ("File")) {
             playlistTrackDataSourceQuery = queryPlaylist;
-        }
-        else if(type == ("Library")){
+        } else if (type == ("Library")) {
             queryLibrary.next();
             playlistTrackDataSourceQuery = queryLibrary;
         }
