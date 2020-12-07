@@ -135,9 +135,9 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
     while (queryPlaylist.next()) {
         // Determine datasource/table for a the specific playlist track
         QString type = queryPlaylist.value(16).toString();
-        if (type == ("File")) {
+        if (type == QLatin1String("File")) {
             playlistTrackDataSourceQuery = queryPlaylist;
-        } else if (type == ("Library")) {
+        } else if (type == QLatin1String("Library")) {
             queryLibrary.next();
             playlistTrackDataSourceQuery = queryLibrary;
         }
