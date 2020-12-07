@@ -1,8 +1,9 @@
-#include <QMutexLocker>
-
 #include "vinylcontrol/vinylcontrolprocessor.h"
 
+#include <QMutexLocker>
+
 #include "control/controlpushbutton.h"
+#include "moc_vinylcontrolprocessor.cpp"
 #include "util/defs.h"
 #include "util/event.h"
 #include "util/sample.h"

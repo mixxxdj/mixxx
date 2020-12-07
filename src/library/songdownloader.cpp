@@ -5,6 +5,7 @@
 #include <QString>
 #include <QtDebug>
 
+#include "moc_songdownloader.cpp"
 #include "util/compatibility.h"
 #include "util/version.h"
 

@@ -11,6 +11,7 @@
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "moc_wspinny.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"

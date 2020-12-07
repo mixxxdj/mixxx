@@ -1,12 +1,13 @@
 // Created 03/26/2011 by Tobias Rafreider
 
-#include <QMutex>
-#include <QDir>
-#include <QtDebug>
-#include <QDebug>
-#include <QMessageBox>
-#include <QStorageInfo>
+#include "recording/recordingmanager.h"
 
+#include <QDebug>
+#include <QDir>
+#include <QMessageBox>
+#include <QMutex>
+#include <QStorageInfo>
+#include <QtDebug>
 #include <climits>
 
 #include "control/controlproxy.h"
@@ -15,8 +16,8 @@
 #include "engine/sidechain/enginerecord.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "errordialoghandler.h"
+#include "moc_recordingmanager.cpp"
 #include "recording/defs_recording.h"
-#include "recording/recordingmanager.h"
 
 // one gibibyte
 #define MIN_DISK_FREE 1024 * 1024 * 1024ll

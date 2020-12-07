@@ -17,6 +17,8 @@
 
 #include "widget/wnumber.h"
 
+#include "moc_wnumber.cpp"
+
 WNumber::WNumber(QWidget* pParent)
         : WLabel(pParent),
           m_iNoDigits(2) {

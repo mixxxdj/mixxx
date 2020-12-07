@@ -7,10 +7,11 @@
 #include <QtDebug>
 
 #include "control/control.h"
-#include "preferences/usersettings.h"
 #include "control/controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
+#include "moc_engineaux.cpp"
+#include "preferences/usersettings.h"
 #include "util/sample.h"
 
 EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)

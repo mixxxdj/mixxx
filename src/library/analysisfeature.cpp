@@ -2,21 +2,21 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 // Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
 
-#include <QtDebug>
-
-#include "library/library.h"
 #include "library/analysisfeature.h"
 
+#include <QtDebug>
+
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/dlganalysis.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
-#include "library/dlganalysis.h"
-#include "widget/wlibrary.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "moc_analysisfeature.cpp"
 #include "sources/soundsourceproxy.h"
-#include "util/dnd.h"
 #include "util/debug.h"
+#include "util/dnd.h"
 #include "util/logger.h"
+#include "widget/wlibrary.h"
 
 namespace {
 

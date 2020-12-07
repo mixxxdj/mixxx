@@ -11,6 +11,7 @@
 #include <QtDebug>
 
 #include "control/controlpotmeter.h"
+#include "moc_waveformwidgetfactory.cpp"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 #include "util/performancetimer.h"

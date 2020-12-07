@@ -19,10 +19,12 @@
 #include "widget/wstatuslight.h"
 
 #include <QPaintEvent>
-#include <QStylePainter>
-#include <QStyleOption>
-#include <QtDebug>
 #include <QPixmap>
+#include <QStyleOption>
+#include <QStylePainter>
+#include <QtDebug>
+
+#include "moc_wstatuslight.cpp"
 
 WStatusLight::WStatusLight(QWidget * parent)
         : WWidget(parent),

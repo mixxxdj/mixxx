@@ -18,6 +18,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
+#include "moc_trackdao.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"

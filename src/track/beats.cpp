@@ -1,6 +1,8 @@
 
 #include "track/beats.h"
 
+#include "moc_beats.cpp"
+
 namespace mixxx {
 
 int Beats::numBeatsInRange(double dStartSample, double dEndSample) {

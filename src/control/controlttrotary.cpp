@@ -16,6 +16,8 @@
 
 #include "control/controlttrotary.h"
 
+#include "moc_controlttrotary.cpp"
+
 /* -------- ------------------------------------------------------
    Purpose: Creates a new rotary encoder
    Input:   key

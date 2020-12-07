@@ -1,9 +1,11 @@
-#include <QList>
+#include "preferences/dialog/dlgprefdeck.h"
+
 #include <QDir>
-#include <QToolTip>
 #include <QDoubleSpinBox>
-#include <QWidget>
+#include <QList>
 #include <QLocale>
+#include <QToolTip>
+#include <QWidget>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -14,7 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "mixxx.h"
-#include "preferences/dialog/dlgprefdeck.h"
+#include "moc_dlgprefdeck.cpp"
 #include "preferences/usersettings.h"
 #include "util/compatibility.h"
 #include "util/duration.h"

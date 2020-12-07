@@ -13,17 +13,20 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QtDebug>
-#include <QMessageBox>
 #include "preferences/dialog/dlgprefsound.h"
-#include "preferences/dialog/dlgprefsounditem.h"
+
+#include <QMessageBox>
+#include <QtDebug>
+
+#include "control/controlproxy.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "mixer/playermanager.h"
+#include "moc_dlgprefsound.cpp"
+#include "preferences/dialog/dlgprefsounditem.h"
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
-#include "control/controlproxy.h"
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the

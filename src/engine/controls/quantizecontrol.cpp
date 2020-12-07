@@ -9,6 +9,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"
+#include "moc_quantizecontrol.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/assert.h"

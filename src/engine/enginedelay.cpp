@@ -16,9 +16,10 @@
 
 #include "enginedelay.h"
 
-#include "control/controlproxy.h"
 #include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
 #include "engine/engine.h"
+#include "moc_enginedelay.cpp"
 #include "util/assert.h"
 #include "util/sample.h"
 

@@ -2,6 +2,7 @@
 
 #include <QPainter>
 
+#include "moc_locationdelegate.cpp"
 
 LocationDelegate::LocationDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView) {

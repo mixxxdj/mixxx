@@ -13,6 +13,7 @@
 #include "engine/sync/enginesync.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_basetrackplayer.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/beatgrid.h"
 #include "track/track.h"

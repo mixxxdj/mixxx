@@ -3,6 +3,7 @@
 #include <QTreeWidget>
 #include <QtDebug>
 
+#include "moc_dlgtagfetcher.cpp"
 #include "track/track.h"
 #include "track/tracknumbers.h"
 

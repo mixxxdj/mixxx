@@ -1,10 +1,12 @@
+#include "controllers/keyboard/keyboardeventfilter.h"
+
+#include <QEvent>
+#include <QKeyEvent>
 #include <QList>
 #include <QtDebug>
-#include <QKeyEvent>
-#include <QEvent>
 
-#include "controllers/keyboard/keyboardeventfilter.h"
 #include "control/controlobject.h"
+#include "moc_keyboardeventfilter.cpp"
 #include "util/cmdlineargs.h"
 
 KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
