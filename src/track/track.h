@@ -214,6 +214,10 @@ class Track : public QObject {
     int getRating() const;
     // Sets rating
     void setRating(int);
+    /// Resets the rating
+    void resetRating() {
+        setRating(mixxx::TrackRecord::kNoRating);
+    }
 
     // Get URL for track
     QString getURL() const;
