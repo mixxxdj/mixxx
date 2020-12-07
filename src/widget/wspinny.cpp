@@ -318,6 +318,8 @@ void WSpinny::render(VSyncThread* vSyncThread) {
         return;
     }
 
+    makeCurrent();
+
     if (!m_pVisualPlayPos.isNull() && vSyncThread != nullptr) {
         m_pVisualPlayPos->getPlaySlipAtNextVSync(
                 vSyncThread,
