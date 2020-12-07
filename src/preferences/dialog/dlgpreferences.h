@@ -130,8 +130,6 @@ DlgPreferences(MixxxMainWindow* mixxx,
     UserSettingsPointer m_pConfig;
     PreferencesPage m_soundPage;
     DlgPrefControllers* m_pControllersDlg;
-    DlgPrefColors* m_colorsPage;
-    QTreeWidgetItem* m_pColorsButton;
 
     QSize m_pageSizeHint;
 };
