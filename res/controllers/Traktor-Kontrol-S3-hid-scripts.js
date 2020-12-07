@@ -388,15 +388,10 @@ TraktorS3.Deck.prototype.padModeHandler = function(field) {
 
 TraktorS3.Deck.prototype.numberButtonHandler = function(field) {
     var padNumber = parseInt(field.name[field.name.length - 1]);
-    var action = "";
 
     // Hotcues mode
     if (this.padModeState === 0) {
-        if (this.shiftPressed) {
-            action = "_clear";
-        } else {
-            action = "_activate";
-        }
+        var action = this.shiftPressed ? "_clear" : "_activate";
         engine.setValue(this.activeChannel, "hotcue_" + padNumber + action, field.value);
         return;
     }
