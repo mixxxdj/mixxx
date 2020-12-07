@@ -5,6 +5,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "moc_playlisttablemodel.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,

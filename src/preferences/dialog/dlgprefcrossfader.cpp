@@ -1,9 +1,11 @@
+#include "preferences/dialog/dlgprefcrossfader.h"
+
 #include <QButtonGroup>
 #include <QtDebug>
 
-#include "preferences/dialog/dlgprefcrossfader.h"
 #include "control/controlobject.h"
 #include "engine/enginexfader.h"
+#include "moc_dlgprefcrossfader.cpp"
 #include "util/math.h"
 #include "util/rescaler.h"
 

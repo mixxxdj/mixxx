@@ -17,17 +17,18 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtDebug>
-
 #include "preferences/dialog/dlgprefvinyl.h"
+
+#include <QtDebug>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "defs_urls.h"
 #include "mixer/playermanager.h"
+#include "moc_dlgprefvinyl.cpp"
+#include "util/platform.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "defs_urls.h"
-#include "util/platform.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            UserSettingsPointer  _config)

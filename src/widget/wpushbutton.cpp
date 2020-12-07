@@ -17,18 +17,19 @@
 
 #include "widget/wpushbutton.h"
 
-#include <QStylePainter>
-#include <QStyleOption>
-#include <QPixmap>
-#include <QtDebug>
-#include <QMouseEvent>
-#include <QTouchEvent>
-#include <QPaintEvent>
 #include <QApplication>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPixmap>
+#include <QStyleOption>
+#include <QStylePainter>
+#include <QTouchEvent>
+#include <QtDebug>
 
 #include "control/controlbehavior.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "moc_wpushbutton.cpp"
 #include "util/debug.h"
 #include "util/math.h"
 #include "widget/wpixmapstore.h"

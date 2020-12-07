@@ -6,6 +6,7 @@
 #include "library/trackcollection.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
+#include "moc_autodjprocessor.cpp"
 #include "track/track.h"
 #include "util/math.h"
 

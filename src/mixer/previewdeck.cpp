@@ -1,5 +1,7 @@
 #include "mixer/previewdeck.h"
 
+#include "moc_previewdeck.cpp"
+
 PreviewDeck::PreviewDeck(QObject* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,

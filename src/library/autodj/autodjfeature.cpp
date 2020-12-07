@@ -18,6 +18,7 @@
 #include "library/trackset/crate/cratestorage.h"
 #include "library/treeitem.h"
 #include "mixer/playermanager.h"
+#include "moc_autodjfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility.h"

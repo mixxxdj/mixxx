@@ -32,6 +32,7 @@
 #include "library/trackset/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
+#include "moc_library.cpp"
 #include "recording/recordingmanager.h"
 #include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"

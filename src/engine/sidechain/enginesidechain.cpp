@@ -24,11 +24,12 @@
 
 #include "engine/sidechain/enginesidechain.h"
 
-#include <QtDebug>
 #include <QMutexLocker>
+#include <QtDebug>
 
-#include "engine/sidechain/sidechainworker.h"
 #include "engine/engine.h"
+#include "engine/sidechain/sidechainworker.h"
+#include "moc_enginesidechain.cpp"
 #include "util/counter.h"
 #include "util/event.h"
 #include "util/sample.h"

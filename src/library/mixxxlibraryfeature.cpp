@@ -18,6 +18,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_mixxxlibraryfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"

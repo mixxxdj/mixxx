@@ -1,6 +1,7 @@
 #include "database/mixxxdb.h"
 
 #include "database/schemamanager.h"
+#include "moc_mixxxdb.cpp"
 #include "util/assert.h"
 #include "util/logger.h"
 

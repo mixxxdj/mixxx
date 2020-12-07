@@ -2,6 +2,7 @@
 
 #include <QScreen>
 
+#include "moc_wsearchrelatedtracksmenu.cpp"
 #include "track/track.h"
 #include "util/math.h"
 #include "util/qt.h"

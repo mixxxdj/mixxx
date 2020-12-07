@@ -23,6 +23,7 @@
 #include "library/stareditor.h"
 #include "library/starrating.h"
 #include "library/tableitemdelegate.h"
+#include "moc_stardelegate.cpp"
 
 StarDelegate::StarDelegate(QTableView* pTableView)
         : TableItemDelegate(pTableView),

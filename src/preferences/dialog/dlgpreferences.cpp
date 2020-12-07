@@ -15,20 +15,22 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "preferences/dialog/dlgpreferences.h"
+
+#include <QDesktopServices>
 #include <QDialog>
 #include <QEvent>
-#include <QScrollArea>
-#include <QTabBar>
-#include <QTabWidget>
 #include <QMoveEvent>
 #include <QResizeEvent>
 #include <QScreen>
+#include <QScrollArea>
+#include <QTabBar>
+#include <QTabWidget>
 
-#include "preferences/dialog/dlgpreferences.h"
-
-#include "preferences/dialog/dlgprefsound.h"
-#include "preferences/dialog/dlgpreflibrary.h"
 #include "controllers/dlgprefcontrollers.h"
+#include "moc_dlgpreferences.cpp"
+#include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefsound.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -64,7 +66,6 @@
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
-#include "mixxx.h"
 #include "skin/skinloader.h"
 #include "util/widgethelper.h"
 
@@ -75,6 +76,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
 #ifndef __LILV__
     Q_UNUSED(pLV2Backend);
 #endif /* __LILV__ */
+    Q_UNUSED(pPlayerManager);
     setupUi(this);
     contentsTreeWidget->setHeaderHidden(true);
 
@@ -94,7 +96,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
 
     // Construct widgets for use in tabs.
     m_soundPage = PreferencesPage(
-            new DlgPrefSound(this, soundman, pPlayerManager, m_pConfig),
+            new DlgPrefSound(this, soundman, m_pConfig),
             createTreeItem(tr("Sound Hardware"), QIcon(":/images/preferences/ic_preferences_soundhardware.svg")));
     addPageWidget(m_soundPage);
 
@@ -138,7 +140,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
             createTreeItem(tr("Colors"), QIcon(":/images/preferences/ic_preferences_colors.svg"))));
 
     addPageWidget(PreferencesPage(
-            new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig),
+            new DlgPrefDeck(this, m_pConfig),
             createTreeItem(tr("Decks"), QIcon(":/images/preferences/ic_preferences_decks.svg"))));
 
     addPageWidget(PreferencesPage(

@@ -17,6 +17,8 @@
 
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 
+#include "moc_vinylcontrolsignalwidget.cpp"
+
 VinylControlSignalWidget::VinylControlSignalWidget()
     : QWidget(),
       m_iVinylInput(-1),

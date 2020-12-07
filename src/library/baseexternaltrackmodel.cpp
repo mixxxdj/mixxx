@@ -4,6 +4,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "moc_baseexternaltrackmodel.cpp"
 #include "track/track.h"
 
 BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,

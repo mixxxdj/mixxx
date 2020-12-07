@@ -9,6 +9,7 @@
 #include "controllers/engine/scriptconnectionjsproxy.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_controllerengine.cpp"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
 #include "util/time.h"

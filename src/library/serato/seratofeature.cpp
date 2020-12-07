@@ -15,6 +15,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_seratofeature.cpp"
 #include "track/beatfactory.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"

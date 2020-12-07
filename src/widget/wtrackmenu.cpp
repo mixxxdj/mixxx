@@ -22,6 +22,7 @@
 #include "library/trackprocessing.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "mixer/playermanager.h"
+#include "moc_wtrackmenu.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"

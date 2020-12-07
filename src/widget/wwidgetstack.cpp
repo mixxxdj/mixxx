@@ -1,7 +1,9 @@
-#include <QtDebug>
-#include <QApplication>
-
 #include "widget/wwidgetstack.h"
+
+#include <QApplication>
+#include <QtDebug>
+
+#include "moc_wwidgetstack.cpp"
 
 WidgetStackControlListener::WidgetStackControlListener(
         QObject* pParent, ControlObject* pControl, int index)

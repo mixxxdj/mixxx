@@ -10,6 +10,7 @@
 #include "library/dao/settingsdao.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
+#include "moc_bansheefeature.cpp"
 #include "track/track.h"
 
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";

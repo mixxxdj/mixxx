@@ -6,3 +6,4 @@
 
 #include "util/sleepableqthread.h"
 
+#include "moc_sleepableqthread.cpp"

@@ -6,12 +6,14 @@
 *
 */
 
+#include "controllers/dlgcontrollerlearning.h"
+
 #include <QCompleter>
 
 #include "control/controlobject.h"
-#include "controllers/dlgcontrollerlearning.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
+#include "moc_dlgcontrollerlearning.cpp"
 #include "util/version.h"
 
 namespace {
