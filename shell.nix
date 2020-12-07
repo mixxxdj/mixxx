@@ -296,6 +296,7 @@ in stdenv.mkDerivation rec {
         gdb
         git-clang-format
         glibcLocales
+        include-what-you-use
         # for pre-commit installation since nixpkg.pre-commit may be to old
         python3
         python37Packages.pip
