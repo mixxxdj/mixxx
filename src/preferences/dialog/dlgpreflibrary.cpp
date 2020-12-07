@@ -63,6 +63,10 @@ DlgPrefLibrary::DlgPrefLibrary(
                 QDesktopServices::openUrl(QUrl::fromLocalFile(settingsDir));
             });
 
+#if defined(__EXPORT_SERATO_MARKERS__)
+    checkBox_SeratoMetadataExport->show();
+#endif
+
     // Set default direction as stored in config file
     int rowHeight = m_pLibrary->getTrackTableRowHeight();
     spinBoxRowHeight->setValue(rowHeight);
@@ -168,6 +172,7 @@ void DlgPrefLibrary::initializeDirList() {
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
     checkBox_SyncTrackMetadataExport->setChecked(false);
+    checkBox_SeratoMetadataExport->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -188,6 +193,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","RescanOnStartup"), false));
     checkBox_SyncTrackMetadataExport->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","SyncTrackMetadataExport"), false));
+    checkBox_SeratoMetadataExport->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "SeratoMetadataExport"), false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","UseRelativePathOnExport"), false));
     checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
@@ -332,6 +339,8 @@ void DlgPrefLibrary::slotApply() {
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","SyncTrackMetadataExport"),
                 ConfigValue((int)checkBox_SyncTrackMetadataExport->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "SeratoMetadataExport"),
+            ConfigValue(static_cast<int>(checkBox_SeratoMetadataExport->isChecked())));
     m_pConfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),

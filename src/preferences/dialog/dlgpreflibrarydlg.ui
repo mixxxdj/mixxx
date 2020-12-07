@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>593</width>
-    <height>1049</height>
+    <height>1080</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -135,6 +135,16 @@
        <widget class="QCheckBox" name="checkBox_SyncTrackMetadataExport">
         <property name="text">
          <string>Automatically write modified track metadata from the library into file tags</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBox_SeratoMetadataExport">
+        <property name="visible">
+         <bool>false</bool>
+        </property>
+        <property name="text">
+         <string>Write Serato Metadata to files (experimental)</string>
         </property>
        </widget>
       </item>
