@@ -44,7 +44,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
   public:
     DlgPrefSound(QWidget *parent, SoundManager *soundManager,
-                 PlayerManager* pPlayerManager,
                  UserSettingsPointer pSettings);
     virtual ~DlgPrefSound();
 
@@ -99,7 +98,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool eventFilter(QObject* object, QEvent* event) override;
 
     SoundManager *m_pSoundManager;
-    PlayerManager *m_pPlayerManager;
     UserSettingsPointer m_pSettings;
     SoundManagerConfig m_config;
     ControlProxy* m_pMasterAudioLatencyOverloadCount;

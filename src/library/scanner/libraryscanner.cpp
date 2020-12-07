@@ -6,6 +6,7 @@
 #include "library/scanner/recursivescandirectorytask.h"
 #include "library/scanner/scannertask.h"
 #include "library/scanner/scannerutil.h"
+#include "moc_libraryscanner.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/db/dbconnectionpooled.h"

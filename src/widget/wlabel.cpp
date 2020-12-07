@@ -19,6 +19,7 @@
 
 #include <QFont>
 
+#include "moc_wlabel.cpp"
 #include "widget/wskincolor.h"
 
 WLabel::WLabel(QWidget* pParent)

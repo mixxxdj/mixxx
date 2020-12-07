@@ -3,6 +3,7 @@
 #include <QTimerEvent>
 #include <mutex> // std::once_flag
 
+#include "moc_webtask.cpp"
 #include "util/assert.h"
 #include "util/counter.h"
 #include "util/logger.h"

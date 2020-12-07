@@ -5,6 +5,7 @@
 #include <QStyleOption>
 #include <QStylePainter>
 
+#include "moc_wstarrating.cpp"
 #include "track/track.h"
 
 WStarRating::WStarRating(const QString& group, QWidget* pParent)

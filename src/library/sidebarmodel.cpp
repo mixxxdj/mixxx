@@ -1,11 +1,13 @@
-#include <QtDebug>
-#include <QUrl>
-#include <QApplication>
-
-#include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
-#include "library/treeitem.h"
+
+#include <QApplication>
+#include <QUrl>
+#include <QtDebug>
+
 #include "library/browse/browsefeature.h"
+#include "library/libraryfeature.h"
+#include "library/treeitem.h"
+#include "moc_sidebarmodel.cpp"
 #include "util/assert.h"
 
 namespace {

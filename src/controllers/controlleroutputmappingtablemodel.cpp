@@ -1,11 +1,12 @@
 #include "controllers/controlleroutputmappingtablemodel.h"
 
-#include "controllers/midi/midimessage.h"
-#include "controllers/midi/midiutils.h"
 #include "controllers/delegates/controldelegate.h"
+#include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midichanneldelegate.h"
 #include "controllers/delegates/midiopcodedelegate.h"
-#include "controllers/delegates/midibytedelegate.h"
+#include "controllers/midi/midimessage.h"
+#include "controllers/midi/midiutils.h"
+#include "moc_controlleroutputmappingtablemodel.cpp"
 
 ControllerOutputMappingTableModel::ControllerOutputMappingTableModel(QObject* pParent)
         : ControllerMappingTableModel(pParent) {

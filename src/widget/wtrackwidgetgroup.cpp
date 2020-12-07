@@ -6,6 +6,7 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "moc_wtrackwidgetgroup.cpp"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"

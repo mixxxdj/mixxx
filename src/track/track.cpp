@@ -5,6 +5,7 @@
 #include <atomic>
 
 #include "engine/engine.h"
+#include "moc_track.cpp"
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
 #include "track/trackref.h"

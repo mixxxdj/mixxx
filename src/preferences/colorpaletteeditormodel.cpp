@@ -1,5 +1,7 @@
 #include "preferences/colorpaletteeditormodel.h"
 
+#include "moc_colorpaletteeditormodel.cpp"
+
 namespace {
 
 QIcon toQIcon(const QColor& color) {

@@ -14,10 +14,12 @@
 
 #include "library/parsercsv.h"
 
-#include <QTextStream>
-#include <QtDebug>
 #include <QDir>
 #include <QMessageBox>
+#include <QTextStream>
+#include <QtDebug>
+
+#include "moc_parsercsv.cpp"
 
 ParserCsv::ParserCsv() : Parser() {
 }

@@ -24,10 +24,12 @@
  * see http://doc.trolltech.com/4.5/itemviews-stardelegate.html            *
  ***************************************************************************/
 
+#include "library/stareditor.h"
+
 #include <QStylePainter>
 
-#include "library/stareditor.h"
 #include "library/starrating.h"
+#include "moc_stareditor.cpp"
 #include "util/painterscope.h"
 
 /*

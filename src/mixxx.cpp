@@ -34,6 +34,7 @@
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemaster.h"
+#include "moc_mixxx.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgpreferences.h"

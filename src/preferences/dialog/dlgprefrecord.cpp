@@ -1,12 +1,14 @@
+#include "preferences/dialog/dlgprefrecord.h"
+
 #include <QFileDialog>
 #include <QStandardPaths>
 
-#include "preferences/dialog/dlgprefrecord.h"
-#include "recording/defs_recording.h"
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encodermp3settings.h"
-#include "control/controlproxy.h"
+#include "moc_dlgprefrecord.cpp"
+#include "recording/defs_recording.h"
 #include "util/sandbox.h"
 
 namespace {

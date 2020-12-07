@@ -13,11 +13,13 @@
 
 #include "library/parserm3u.h"
 
-#include <QtDebug>
 #include <QDir>
 #include <QMessageBox>
-#include <QUrl>
 #include <QTextCodec>
+#include <QUrl>
+#include <QtDebug>
+
+#include "moc_parserm3u.cpp"
 
 /**
    @author Ingo Kossyk (kossyki@cs.tu-berlin.de)

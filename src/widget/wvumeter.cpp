@@ -17,15 +17,16 @@
 
 #include "widget/wvumeter.h"
 
-#include <QStylePainter>
-#include <QStyleOption>
 #include <QPaintEvent>
-#include <QtDebug>
 #include <QPixmap>
+#include <QStyleOption>
+#include <QStylePainter>
+#include <QtDebug>
 
+#include "moc_wvumeter.cpp"
+#include "util/math.h"
 #include "util/timer.h"
 #include "widget/wpixmapstore.h"
-#include "util/math.h"
 
 #define DEFAULT_FALLTIME 20
 #define DEFAULT_FALLSTEP 1
