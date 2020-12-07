@@ -160,7 +160,9 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
         entry.year = playlistTrackDataSourceQuery.value(5).toInt();
         entry.album = playlistTrackDataSourceQuery.value(6).toString();
         entry.albumartist = playlistTrackDataSourceQuery.value(17).toString();
-        entry.uri = QUrl::fromEncoded(playlistTrackDataSourceQuery.value(2).toByteArray(), QUrl::StrictMode);
+        entry.uri = QUrl::fromEncoded(
+                playlistTrackDataSourceQuery.value(2).toByteArray(),
+                QUrl::StrictMode);
         entry.rating = playlistTrackDataSourceQuery.value(7).toInt();
         entry.genre = playlistTrackDataSourceQuery.value(8).toString();
         entry.grouping = playlistTrackDataSourceQuery.value(15).toString();
