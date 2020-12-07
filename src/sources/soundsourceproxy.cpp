@@ -682,7 +682,7 @@ mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
                 DEBUG_ASSERT(m_pAudioSource);
                 // Overwrite metadata with actual audio properties
                 if (m_pTrack) {
-                    m_pTrack->updateAudioPropertiesFromStream(
+                    m_pTrack->updateStreamInfoFromSource(
                             m_pAudioSource->getStreamInfo());
                 }
                 return m_pAudioSource;

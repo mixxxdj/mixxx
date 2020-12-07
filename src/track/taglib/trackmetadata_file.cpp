@@ -25,22 +25,22 @@ void readAudioProperties(
     DEBUG_ASSERT(pTrackMetadata);
 
     // NOTE(uklotzde): All audio properties will be updated
-    // with the actual (and more precise) values when reading
-    // the audio data for this track. Often those properties
-    // stored in tags don't match with the corresponding
-    // audio data in the file.
-    pTrackMetadata->setChannelCount(
-            audio::ChannelCount(audioProperties.channels()));
-    pTrackMetadata->setSampleRate(
-            audio::SampleRate(audioProperties.sampleRate()));
-    pTrackMetadata->setBitrate(
-            audio::Bitrate(audioProperties.bitrate()));
+    // with the actual (and more precise) values when opening
+    // the audio source for this track. Often those properties
+    // stored in tags are imprecise and don't match the actual
+    // audio data of the stream.
+    pTrackMetadata->setStreamInfo(audio::StreamInfo {
+        audio::SignalInfo{
+                audio::ChannelCount(audioProperties.channels()),
+                audio::SampleRate(audioProperties.sampleRate()),
+        },
+                audio::Bitrate(audioProperties.bitrate()),
 #if (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
-    const auto duration = Duration::fromMillis(audioProperties.lengthInMilliseconds());
+                Duration::fromMillis(audioProperties.lengthInMilliseconds()),
 #else
-    const auto duration = Duration::fromSeconds(audioProperties.length());
+                        Duration::fromSeconds(audioProperties.length()),
 #endif
-    pTrackMetadata->setDuration(duration);
+    });
 }
 
 } // anonymous namespace
