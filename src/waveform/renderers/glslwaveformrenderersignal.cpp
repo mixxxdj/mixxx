@@ -199,6 +199,7 @@ void GLSLWaveformRendererSignal::onInitializeGL() {
     if (!loadShaders()) {
         return;
     }
+    createFrameBuffers();
     createGeometry();
     if (!loadTexture()) {
         return;
@@ -236,11 +237,19 @@ void GLSLWaveformRendererSignal::onSetTrack() {
 }
 
 void GLSLWaveformRendererSignal::onResize() {
+    // onInitializeGL not called yet
+    if (!m_frameShaderProgram) {
+        return;
+    }
     createFrameBuffers();
 }
 
 void GLSLWaveformRendererSignal::slotWaveformUpdated() {
     m_textureRenderedWaveformCompletion = 0;
+    // onInitializeGL not called yet
+    if (!m_frameShaderProgram) {
+        return;
+    }
     loadTexture();
 }
 
