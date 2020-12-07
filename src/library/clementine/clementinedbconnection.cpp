@@ -69,11 +69,12 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
     QList<ClementinePlaylistEntry> list;
     ClementinePlaylistEntry entry;
 
-    QSqlQuery query(m_database);
-    query.setForwardOnly(true); // Saves about 50% time
-    query.prepare(
+    //Query clementine playlist tracks
+    QSqlQuery queryPlaylist(m_database);
+    queryPlaylist.setForwardOnly(true); // Saves about 50% time
+    queryPlaylist.prepare(
             "SELECT "
-            "ROWID, "
+            "ROWID, "                     // 0
             "playlist_items.title, "      // 1
             "playlist_items.filename, "   // 2
             "playlist_items.length, "     // 3
@@ -89,47 +90,87 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
             "playlist_items.playcount, "  // 13
             "playlist_items.composer, "   // 14
             "playlist_items.grouping, "   // 15
-            "playlist_items.type, "       // 16
-            "playlist_items.albumartist " // 17
+            "playlist_items.type "        // 16
             "FROM playlist_items "
             "WHERE playlist_items.playlist = :playlistId");
-    query.bindValue(":playlistId", playlistId);
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
+    queryPlaylist.bindValue(":playlistId", playlistId);
+    if (!queryPlaylist.exec()) {
+        LOG_FAILED_QUERY(queryPlaylist);
         return {};
     }
-    while (query.next()) {
-        QString type = query.value(16).toString();
-        if (type != "File")
-            continue;
+
+    //Query clementine library tracks which are needed in playlist
+    //Note that we use the same indices as in the playlist query!
+    QSqlQuery queryLibrary(m_database);
+    queryLibrary.setForwardOnly(true);
+    queryLibrary.prepare(
+            "SELECT "
+            "songs.ROWID, "      // 0
+            "songs.title, "      // 1
+            "songs.filename, "   // 2
+            "songs.length, "     // 3
+            "songs.artist, "     // 4
+            "songs.year, "       // 5
+            "songs.album, "      // 6
+            "songs.rating, "     // 7
+            "songs.genre, "      // 8
+            "songs.track, "      // 9
+            "songs.bpm, "        // 10
+            "songs.bitrate, "    // 11
+            "songs.comment, "    // 12
+            "songs.playcount, "  // 13
+            "songs.composer, "   // 14
+            "songs.grouping "    // 15
+            "FROM songs "
+            "INNER JOIN playlist_items "
+            "ON playlist_items.library_id = songs.ROWID "
+            "WHERE playlist_items.playlist = :playlistId");
+    queryLibrary.bindValue(":playlistId", playlistId);
+    if (!queryLibrary.exec()) {
+        LOG_FAILED_QUERY(queryLibrary);
+        return {};
+    }
+
+    QSqlQuery& playlistTrackDataSourceQuery = queryPlaylist;
+    while (queryPlaylist.next()) {
+        // Determine datasource/table for a the specific playlist track
+        QString type = queryPlaylist.value(16).toString();
+        if (type == ("File")){
+            playlistTrackDataSourceQuery = queryPlaylist;
+        }
+        else if(type == ("Library")){
+            queryLibrary.next();
+            playlistTrackDataSourceQuery = queryLibrary;
+        }
 
         //Search for track in mixxx lib to provide bpm information
         QString location = QUrl::fromEncoded(
-                query.value(2).toByteArray(), QUrl::StrictMode)
+                playlistTrackDataSourceQuery.value(2).toByteArray(), QUrl::StrictMode)
                                    .toLocalFile();
+        qDebug() << "location " << location;
+
         bool trackAlreadyInLibrary = false;
         TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
                 TrackRef::fromFileInfo(location),
                 &trackAlreadyInLibrary);
 
-        entry.artist = query.value(4).toString();
-        entry.title = query.value(1).toString();
-        entry.trackId = query.value(0).toInt();
-        long long duration = query.value(3).toLongLong();
-        entry.year = query.value(5).toInt();
-        entry.album = query.value(6).toString();
-        entry.albumartist = query.value(17).toString();
-        entry.uri = QUrl::fromEncoded(query.value(2).toByteArray(), QUrl::StrictMode);
-        entry.rating = query.value(7).toInt();
-        entry.genre = query.value(8).toString();
-        entry.grouping = query.value(15).toString();
-        entry.tracknumber = query.value(9).toInt();
-        entry.bpm = query.value(10).toDouble();
-        entry.bitrate = query.value(11).toInt();
-        entry.comment = query.value(12).toString();
-        entry.playcount = query.value(13).toInt();
-        entry.composer = query.value(14).toString();
+        entry.artist = playlistTrackDataSourceQuery.value(4).toString();
+        entry.title = playlistTrackDataSourceQuery.value(1).toString();
+        entry.trackId = playlistTrackDataSourceQuery.value(0).toInt();
+        long long duration = playlistTrackDataSourceQuery.value(3).toLongLong();
+        entry.year = playlistTrackDataSourceQuery.value(5).toInt();
+        entry.album = playlistTrackDataSourceQuery.value(6).toString();
+        entry.albumartist = playlistTrackDataSourceQuery.value(17).toString();
+        entry.uri = QUrl::fromEncoded(playlistTrackDataSourceQuery.value(2).toByteArray(), QUrl::StrictMode);
+        entry.rating = playlistTrackDataSourceQuery.value(7).toInt();
+        entry.genre = playlistTrackDataSourceQuery.value(8).toString();
+        entry.grouping = playlistTrackDataSourceQuery.value(15).toString();
+        entry.tracknumber = playlistTrackDataSourceQuery.value(9).toInt();
+        entry.bpm = playlistTrackDataSourceQuery.value(10).toDouble();
+        entry.bitrate = playlistTrackDataSourceQuery.value(11).toInt();
+        entry.comment = playlistTrackDataSourceQuery.value(12).toString();
+        entry.playcount = playlistTrackDataSourceQuery.value(13).toInt();
+        entry.composer = playlistTrackDataSourceQuery.value(14).toString();
 
         if (entry.artist.isEmpty() && entry.title.isEmpty()) {
             entry.artist =
