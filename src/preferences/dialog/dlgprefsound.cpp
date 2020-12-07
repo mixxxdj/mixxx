@@ -32,11 +32,11 @@
  * Construct a new sound preferences pane. Initializes and populates all the
  * all the controls to the values obtained from SoundManager.
  */
-DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
-                           PlayerManager* pPlayerManager, UserSettingsPointer pSettings)
+DlgPrefSound::DlgPrefSound(QWidget* pParent,
+        SoundManager* pSoundManager,
+        UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
           m_pSoundManager(pSoundManager),
-          m_pPlayerManager(pPlayerManager),
           m_pSettings(pSettings),
           m_config(pSoundManager),
           m_settingsModified(false),
