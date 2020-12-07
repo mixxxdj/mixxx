@@ -142,7 +142,6 @@ class LoopingControl : public EngineControl {
     ControlPushButton* m_pLoopOutButton;
     ControlPushButton* m_pLoopOutGotoButton;
     ControlPushButton* m_pLoopExitButton;
-    ControlPushButton* m_pLoopToggleButton;
     ControlPushButton* m_pReloopToggleButton;
     ControlPushButton* m_pReloopAndStopButton;
     ControlObject* m_pCOLoopScale;
