@@ -1,6 +1,6 @@
 { nixroot ? (import <nixpkgs> { }), defaultLv2Plugins ? false, lv2Plugins ? [ ]
 , releaseMode ? false, enableKeyfinder ? true, buildType ? "auto", cFlags ? [ ]
-, useClang ? true }:
+, useClang ? true, useClazy ? false }:
 let
   inherit (nixroot)
     pkgs lib makeWrapper clang-tools cmake fetchurl fetchgit glibcLocales
@@ -99,7 +99,7 @@ let
     };
 
   shell-configure = nixroot.writeShellScriptBin "configure"
-    ((if useClang then ''
+    ((if useClazy then ''
       if [ -e .github/workflows/clazy.yml ]; then
         echo "Using clazy"
         CXX=clazy
