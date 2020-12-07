@@ -1,11 +1,13 @@
 #include "effects/effectchainmanager.h"
-#include "effects/effectsmanager.h"
-#include "effects/effectxmlelements.h"
 
-#include <QtDebug>
+#include <QDir>
 #include <QDomDocument>
 #include <QFile>
-#include <QDir>
+#include <QtDebug>
+
+#include "effects/effectsmanager.h"
+#include "effects/effectxmlelements.h"
+#include "moc_effectchainmanager.cpp"
 
 EffectChainManager::EffectChainManager(UserSettingsPointer pConfig,
                                        EffectsManager* pEffectsManager)

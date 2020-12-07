@@ -1,5 +1,7 @@
 #include "engine/engineworker.h"
+
 #include "engine/engineworkerscheduler.h"
+#include "moc_engineworker.cpp"
 
 EngineWorker::EngineWorker()
     : m_pScheduler(nullptr) {

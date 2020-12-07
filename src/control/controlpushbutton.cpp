@@ -1,5 +1,7 @@
 #include "control/controlpushbutton.h"
 
+#include "moc_controlpushbutton.cpp"
+
 /* -------- ------------------------------------------------------
    Purpose: Creates a new simulated latching push-button.
    Input:   key - Key for the configuration file

@@ -31,6 +31,8 @@ class Sandbox {
     static void initialize(const QString& permissionsFile);
     static void shutdown();
 
+    static QString migrateOldSettings();
+
     // Returns true if we are in a sandbox.
     static bool enabled() {
         return s_bInSandbox;

@@ -1,4 +1,6 @@
 #include "engine/filters/enginefilterbessel4.h"
+
+#include "moc_enginefilterbessel4.cpp"
 #include "util/math.h"
 
 namespace {

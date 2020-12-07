@@ -3,6 +3,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "mixer/playermanager.h"
+#include "moc_vinylcontrolmanager.cpp"
 #include "soundio/soundmanager.h"
 #include "util/compatibility.h"
 #include "util/timer.h"

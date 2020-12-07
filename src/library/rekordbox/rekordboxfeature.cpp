@@ -18,6 +18,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_rekordboxfeature.cpp"
 #include "track/beatmap.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"

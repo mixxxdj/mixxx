@@ -5,6 +5,7 @@
 
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
+#include "moc_dlgprefkey.cpp"
 #include "util/compatibility.h"
 #include "util/xml.h"
 

@@ -1,19 +1,19 @@
 #include "widget/wslidercomposed.h"
 
-#include <QtDebug>
-#include <QStylePainter>
 #include <QStyleOption>
+#include <QStylePainter>
+#include <QtDebug>
 
-#include "widget/controlwidgetconnection.h"
-#include "widget/wpixmapstore.h"
-#include "widget/wskincolor.h"
+#include "moc_wslidercomposed.cpp"
 #include "util/debug.h"
 #include "util/duration.h"
 #include "util/math.h"
+#include "widget/controlwidgetconnection.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wskincolor.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
-      m_bRightButtonPressed(false),
       m_dHandleLength(0.0),
       m_dSliderLength(0.0),
       m_bHorizontal(false),

@@ -1,6 +1,8 @@
+#include "preferences/dialog/dlgprefsounditem.h"
+
 #include <QPoint>
 
-#include "preferences/dialog/dlgprefsounditem.h"
+#include "moc_dlgprefsounditem.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/compatibility.h"

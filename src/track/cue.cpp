@@ -4,6 +4,7 @@
 #include <QtDebug>
 
 #include "engine/engine.h"
+#include "moc_cue.cpp"
 #include "util/assert.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"

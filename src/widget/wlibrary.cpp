@@ -1,11 +1,13 @@
-#include <QtDebug>
-#include <QMutexLocker>
-
 #include "widget/wlibrary.h"
-#include "library/libraryview.h"
+
+#include <QMutexLocker>
+#include <QtDebug>
+
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "widget/wtracktableview.h"
+#include "library/libraryview.h"
+#include "moc_wlibrary.cpp"
 #include "util/math.h"
+#include "widget/wtracktableview.h"
 
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),

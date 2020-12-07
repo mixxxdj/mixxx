@@ -1,7 +1,9 @@
+#include "engine/engineworkerscheduler.h"
+
 #include <QtDebug>
 
 #include "engine/engineworker.h"
-#include "engine/engineworkerscheduler.h"
+#include "moc_engineworkerscheduler.cpp"
 #include "util/event.h"
 
 EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)

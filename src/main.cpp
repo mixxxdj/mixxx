@@ -84,17 +84,8 @@ int main(int argc, char * argv[]) {
     // the main thread. Bug #1748636.
     ErrorDialogHandler::instance();
 
-    mixxx::Logging::initialize(args.getSettingsPath(),
-                               args.getLogLevel(),
-                               args.getLogFlushLevel(),
-                               args.getDebugAssertBreak());
-
     MixxxApplication app(argc, argv);
 
-    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
-        qCritical() << "Failed to register any SoundSource providers";
-        return kFatalErrorOnStartupExitCode;
-    }
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());

@@ -14,6 +14,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "defs_urls.h"
+#include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
 #include "util/version.h"
 

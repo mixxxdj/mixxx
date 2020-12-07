@@ -1,9 +1,11 @@
+#include "library/scanner/libraryscannerdlg.h"
+
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QtDebug>
 
-#include "library/scanner/libraryscannerdlg.h"
+#include "moc_libraryscannerdlg.cpp"
 
 LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
         : QWidget(parent, f),

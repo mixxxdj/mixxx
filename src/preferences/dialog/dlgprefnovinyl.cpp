@@ -1,5 +1,8 @@
-#include <QtDebug>
 #include "preferences/dialog/dlgprefnovinyl.h"
+
+#include <QtDebug>
+
+#include "moc_dlgprefnovinyl.cpp"
 
 DlgPrefNoVinyl::DlgPrefNoVinyl(QWidget * parent, SoundManager * soundman,
                                UserSettingsPointer  _config)

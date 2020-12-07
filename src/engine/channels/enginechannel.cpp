@@ -2,6 +2,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "moc_enginechannel.cpp"
 
 EngineChannel::EngineChannel(const ChannelHandleAndGroup& handle_group,
         EngineChannel::ChannelOrientation defaultOrientation,

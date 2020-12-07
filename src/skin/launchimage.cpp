@@ -7,6 +7,8 @@
 #include <QStyleOption>
 #include <QVBoxLayout>
 
+#include "moc_launchimage.cpp"
+
 LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
         : QWidget(pParent) {
     if (styleSheet.isEmpty()) {

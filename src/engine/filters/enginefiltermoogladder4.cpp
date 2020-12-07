@@ -1,5 +1,6 @@
 #include "engine/filters/enginefiltermoogladder4.h"
 
+#include "moc_enginefiltermoogladder4.cpp"
 
 EngineFilterMoogLadder4Low::EngineFilterMoogLadder4Low(int sampleRate,
                                                double freqCorner1,

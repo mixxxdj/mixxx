@@ -1,7 +1,9 @@
+#include "widget/wtracktableviewheader.h"
+
 #include <QtDebug>
 
-#include "widget/wtracktableviewheader.h"
 #include "library/trackmodel.h"
+#include "moc_wtracktableviewheader.cpp"
 #include "util/math.h"
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20

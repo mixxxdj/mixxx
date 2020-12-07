@@ -1,3 +1,5 @@
+#include "library/browse/browsefeature.h"
+
 #include <QAction>
 #include <QDirModel>
 #include <QFileInfo>
@@ -8,16 +10,16 @@
 #include <QTreeView>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/browse/browsefeature.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_browsefeature.cpp"
 #include "track/track.h"
 #include "util/memory.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarytextbrowser.h"
 
 namespace {
 

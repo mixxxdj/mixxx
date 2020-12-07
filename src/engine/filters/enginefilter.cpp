@@ -1,8 +1,10 @@
 // Wrapper for FidLib Filter Library
 
 #include "engine/filters/enginefilter.h"
+
 #include <QtDebug>
 
+#include "moc_enginefilter.cpp"
 
 EngineFilter::EngineFilter(char * conf, int predefinedType)
         : iir(0),

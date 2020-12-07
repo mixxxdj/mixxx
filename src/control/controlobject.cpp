@@ -1,10 +1,12 @@
-#include <QtDebug>
-#include <QHash>
-#include <QSet>
-#include <QMutexLocker>
-
 #include "control/controlobject.h"
+
+#include <QHash>
+#include <QMutexLocker>
+#include <QSet>
+#include <QtDebug>
+
 #include "control/control.h"
+#include "moc_controlobject.cpp"
 #include "util/stat.h"
 #include "util/timer.h"
 

@@ -1,6 +1,8 @@
-#include "controllers/midi/midiutils.h"
 #include "controllers/midi/hss1394controller.h"
+
 #include "controllers/controllerdebug.h"
+#include "controllers/midi/midiutils.h"
+#include "moc_hss1394controller.cpp"
 #include "util/time.h"
 
 DeviceChannelListener::DeviceChannelListener(QObject* pParent, QString name)

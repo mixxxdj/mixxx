@@ -1,9 +1,11 @@
-#include <portmidi.h>
-#include <QRegExp>
-
 #include "controllers/midi/portmidienumerator.h"
 
+#include <portmidi.h>
+
+#include <QRegExp>
+
 #include "controllers/midi/portmidicontroller.h"
+#include "moc_portmidienumerator.cpp"
 #include "util/cmdlineargs.h"
 
 namespace {

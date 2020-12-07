@@ -1,10 +1,11 @@
-#include <QStandardPaths>
-
 #include "library/libraryfeature.h"
+
+#include <QStandardPaths>
 
 #include "library/library.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
+#include "moc_libraryfeature.cpp"
 #include "util/logger.h"
 
 // KEEP THIS cpp file to tell scons that moc should be called on the class!!!

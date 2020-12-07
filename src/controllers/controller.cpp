@@ -1,9 +1,11 @@
+#include "controllers/controller.h"
+
 #include <QApplication>
 #include <QScriptValue>
 
-#include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
+#include "moc_controller.cpp"
 #include "util/screensaver.h"
 
 Controller::Controller(UserSettingsPointer pConfig)

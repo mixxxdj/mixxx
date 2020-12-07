@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "moc_weffectpushbutton.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectPushButton::WEffectPushButton(QWidget* pParent, EffectsManager* pEffectsManager)

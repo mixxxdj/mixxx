@@ -1,10 +1,12 @@
+#include "errordialoghandler.h"
+
 #include <QCoreApplication>
 #include <QMutexLocker>
 #include <QScopedPointer>
 #include <QThread>
 #include <QtDebug>
 
-#include "errordialoghandler.h"
+#include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
 #include "util/version.h"
 

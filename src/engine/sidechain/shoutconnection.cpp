@@ -22,13 +22,13 @@
 #ifdef __OPUS__
 #include "encoder/encoderopus.h"
 #endif
+#include "engine/sidechain/shoutconnection.h"
 #include "mixer/playerinfo.h"
+#include "moc_shoutconnection.cpp"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
 #include "util/logger.h"
-
-#include <engine/sidechain/shoutconnection.h>
 
 namespace {
 

@@ -51,8 +51,6 @@ class WSliderComposed : public WWidget  {
     double calculateHandleLength();
     void unsetPixmaps();
 
-    // True if right mouse button is pressed.
-    bool m_bRightButtonPressed;
     // Length of handle in pixels
     double m_dHandleLength;
     // Length of the slider in pixels.

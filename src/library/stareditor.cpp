@@ -1,7 +1,9 @@
+#include "library/stareditor.h"
+
 #include <QStylePainter>
 
-#include "library/stareditor.h"
 #include "library/starrating.h"
+#include "moc_stareditor.cpp"
 #include "util/painterscope.h"
 
 // We enable mouse tracking on the widget so we can follow the cursor even

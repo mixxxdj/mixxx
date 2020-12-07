@@ -1,5 +1,7 @@
 #include "network/jsonwebtask.h"
 
+#include "moc_jsonwebtask.cpp"
+
 #if QT_VERSION < QT_VERSION_CHECK(5, 8, 0)
 #include <QBuffer>
 #endif

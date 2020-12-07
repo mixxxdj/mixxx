@@ -1,8 +1,10 @@
-#include <QtDebug>
-#include <QTouchEvent>
-
 #include "widget/wwidget.h"
+
+#include <QTouchEvent>
+#include <QtDebug>
+
 #include "control/controlproxy.h"
+#include "moc_wwidget.cpp"
 #include "util/assert.h"
 
 WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)

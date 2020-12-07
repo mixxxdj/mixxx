@@ -6,6 +6,7 @@
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgprefcontroller.h"
 #include "defs_urls.h"
+#include "moc_dlgprefcontrollers.cpp"
 #include "preferences/dialog/dlgpreferences.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,

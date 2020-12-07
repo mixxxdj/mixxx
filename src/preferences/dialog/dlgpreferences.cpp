@@ -1,16 +1,18 @@
+#include "preferences/dialog/dlgpreferences.h"
+
+#include <QDialog>
 #include <QEvent>
-#include <QScrollArea>
-#include <QTabBar>
-#include <QTabWidget>
 #include <QMoveEvent>
 #include <QResizeEvent>
 #include <QScreen>
+#include <QScrollArea>
+#include <QTabBar>
+#include <QTabWidget>
 
-#include "preferences/dialog/dlgpreferences.h"
-
-#include "preferences/dialog/dlgprefsound.h"
-#include "preferences/dialog/dlgpreflibrary.h"
 #include "controllers/dlgprefcontrollers.h"
+#include "moc_dlgpreferences.cpp"
+#include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefsound.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -62,6 +64,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
 #ifndef __LILV__
     Q_UNUSED(pLV2Backend);
 #endif /* __LILV__ */
+    Q_UNUSED(pPlayerManager);
     setupUi(this);
     contentsTreeWidget->setHeaderHidden(true);
 
@@ -77,7 +80,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     }
 
     // Construct widgets for use in tabs.
-    m_soundPage = new DlgPrefSound(this, soundman, pPlayerManager, m_pConfig);
+    m_soundPage = new DlgPrefSound(this, soundman, m_pConfig);
     addPageWidget(m_soundPage);
     m_libraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_libraryPage);
@@ -94,16 +97,18 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     // TODO(rryan) determine why/if this is still true
     m_vinylControlPage = new DlgPrefVinyl(this, pVCManager, m_pConfig);
     addPageWidget(m_vinylControlPage);
+    Q_UNUSED(m_noVinylControlPage);
 #else
     m_noVinylControlPage = new DlgPrefNoVinyl(this, soundman, m_pConfig);
     addPageWidget(m_noVinylControlPage);
+    Q_UNUSED(m_vinylControlPage);
 #endif
 
     m_interfacePage = new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig);
     addPageWidget(m_interfacePage);
     m_waveformPage = new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary);
     addPageWidget(m_waveformPage);
-    m_deckPage = new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig);
+    m_deckPage = new DlgPrefDeck(this, m_pConfig);
     addPageWidget(m_deckPage);
     m_colorsPage = new DlgPrefColors(this, m_pConfig, pLibrary);
     addPageWidget(m_colorsPage);

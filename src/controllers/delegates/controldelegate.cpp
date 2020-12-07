@@ -1,9 +1,11 @@
-#include <QtDebug>
+#include "controllers/delegates/controldelegate.h"
+
 #include <QLineEdit>
 #include <QStringList>
+#include <QtDebug>
 
-#include "controllers/delegates/controldelegate.h"
 #include "controllers/midi/midimessage.h"
+#include "moc_controldelegate.cpp"
 
 ControlDelegate::ControlDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent),

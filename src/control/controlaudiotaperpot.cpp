@@ -1,5 +1,7 @@
 #include "control/controlaudiotaperpot.h"
 
+#include "moc_controlaudiotaperpot.cpp"
+
 ControlAudioTaperPot::ControlAudioTaperPot(const ConfigKey& key,
         double minDB,
         double maxDB,

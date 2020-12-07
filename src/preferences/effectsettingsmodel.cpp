@@ -1,5 +1,6 @@
-#include <preferences/effectsettingsmodel.h>
+#include "preferences/effectsettingsmodel.h"
 
+#include "moc_effectsettingsmodel.cpp"
 
 namespace {
 const int kColumnEnabled = 0;

@@ -1,9 +1,11 @@
-#include <QtDebug>
+#include "widget/wknob.h"
+
 #include <QMouseEvent>
 #include <QWheelEvent>
+#include <QtDebug>
 
+#include "moc_wknob.cpp"
 #include "util/duration.h"
-#include "widget/wknob.h"
 
 WKnob::WKnob(QWidget* pParent)
         : WDisplay(pParent),

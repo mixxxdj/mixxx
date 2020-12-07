@@ -5,6 +5,7 @@
 
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
+#include "moc_hidcontroller.cpp"
 #include "util/path.h" // for PATH_MAX on Windows
 #include "util/time.h"
 #include "util/trace.h"

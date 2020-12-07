@@ -1,6 +1,7 @@
 #include "control/control.h"
 
 #include "control/controlobject.h"
+#include "moc_control.cpp"
 #include "util/stat.h"
 
 //static

@@ -1,7 +1,9 @@
+#include "controllers/midi/hss1394enumerator.h"
+
 #include <hss1394/HSS1394.h>
 
 #include "controllers/midi/hss1394controller.h"
-#include "controllers/midi/hss1394enumerator.h"
+#include "moc_hss1394enumerator.cpp"
 
 Hss1394Enumerator::Hss1394Enumerator(UserSettingsPointer pConfig)
         : MidiEnumerator(),

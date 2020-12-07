@@ -7,6 +7,7 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
+#include "moc_playerinfo.cpp"
 #include "track/track.h"
 
 namespace {

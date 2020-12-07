@@ -13,6 +13,7 @@
 #include "effects/effectslot.h"
 #include "engine/filters/enginefilterbessel4.h"
 #include "mixer/playermanager.h"
+#include "moc_dlgprefeq.cpp"
 #include "util/math.h"
 
 const QString kConfigKey = "[Mixer Profile]";

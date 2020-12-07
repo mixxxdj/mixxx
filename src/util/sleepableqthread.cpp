@@ -2,3 +2,5 @@
 // runs on the class and linker errors are avoided.
 
 #include "util/sleepableqthread.h"
+
+#include "moc_sleepableqthread.cpp"

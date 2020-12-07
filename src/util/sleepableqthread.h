@@ -1,3 +1,5 @@
+#pragma once
+
 #include <QThread>
 
 // Subclass of QThread exposing static sleep methods. Qt developers know

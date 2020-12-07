@@ -1,18 +1,19 @@
-#include "control/controlobject.h"
-#include "control/controlpushbutton.h"
-#include "control/controlpotmeter.h"
-#include "control/controlttrotary.h"
-#include "control/controlproxy.h"
-#include "util/rotary.h"
-#include "util/math.h"
-#include "vinylcontrol/defs_vinylcontrol.h"
-
-#include "engine/controls/bpmcontrol.h"
-#include "engine/controls/enginecontrol.h"
 #include "engine/controls/ratecontrol.h"
-#include "engine/positionscratchcontroller.h"
 
 #include <QtDebug>
+
+#include "control/controlobject.h"
+#include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "control/controlttrotary.h"
+#include "engine/controls/bpmcontrol.h"
+#include "engine/controls/enginecontrol.h"
+#include "engine/positionscratchcontroller.h"
+#include "moc_ratecontrol.cpp"
+#include "util/math.h"
+#include "util/rotary.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 namespace {
 constexpr int kRateSensitivityMin = 100;

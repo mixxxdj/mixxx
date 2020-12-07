@@ -1,6 +1,8 @@
-#include "controllers/midi/midiutils.h"
 #include "controllers/midi/portmidicontroller.h"
+
 #include "controllers/controllerdebug.h"
+#include "controllers/midi/midiutils.h"
+#include "moc_portmidicontroller.cpp"
 
 PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
         const PmDeviceInfo* outputDeviceInfo,

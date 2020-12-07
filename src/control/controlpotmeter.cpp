@@ -1,6 +1,8 @@
-#include "control/controlpushbutton.h"
 #include "control/controlpotmeter.h"
+
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "moc_controlpotmeter.cpp"
 
 ControlPotmeter::ControlPotmeter(const ConfigKey& key,
         double dMinValue,

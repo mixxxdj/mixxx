@@ -19,6 +19,7 @@
 #include "library/library.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
+#include "moc_legacyskinparser.cpp"
 #include "recording/recordingmanager.h"
 #include "skin/colorschemeparser.h"
 #include "skin/launchimage.h"
