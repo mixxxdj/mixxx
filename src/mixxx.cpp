@@ -169,6 +169,24 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_runtime_timer.start();
     mixxx::Time::start();
 
+    QString settingsPath = args.getSettingsPath();
+#ifdef __APPLE__
+    if (!args.getSettingsPathSet()) {
+        settingsPath = Sandbox::migrateOldSettings();
+    }
+#endif
+
+    mixxx::Logging::initialize(
+            settingsPath,
+            args.getLogLevel(),
+            args.getLogFlushLevel(),
+            args.getDebugAssertBreak());
+
+    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
+        qCritical() << "Failed to register any SoundSource providers";
+        return;
+    }
+
     Version::logBuildDetails();
 
     // Only record stats in developer mode.
