@@ -25,6 +25,8 @@ void GLWaveformRendererRGB::onSetup(const QDomNode& /* node */) {
 }
 
 void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
+    maybeInitializeGL();
+
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;

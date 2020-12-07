@@ -2,6 +2,7 @@
 #define WAVEFORMRENDERERABSTRACT_H
 
 #include <QDomNode>
+#include <QGLContext>
 #include <QOpenGLFunctions_2_1>
 #include <QPaintEvent>
 #include <QPainter>
@@ -58,6 +59,20 @@ class GLWaveformRenderer : protected QOpenGLFunctions_2_1 {
     virtual void onInitializeGL() {
         initializeOpenGLFunctions();
     }
+
+  protected:
+    // Somehow QGLWidget does not call QGLWidget::initializeGL on macOS, so hack around that
+    // by calling this in `draw` when the QGLContext has been made current.
+    // TODO: remove this when upgrading to QOpenGLWidget
+    void maybeInitializeGL() {
+        if (QGLContext::currentContext() != m_pLastContext) {
+            onInitializeGL();
+            m_pLastContext = QGLContext::currentContext();
+        }
+    }
+
+  private:
+    const QGLContext* m_pLastContext;
 };
 
 #endif // WAVEFORMRENDERERABSTRACT_H

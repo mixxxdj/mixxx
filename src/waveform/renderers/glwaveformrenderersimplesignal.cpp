@@ -25,6 +25,8 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 }
 
 void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
+    maybeInitializeGL();
+
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;

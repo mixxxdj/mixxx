@@ -254,10 +254,6 @@ void GLSLWaveformRendererSignal::slotWaveformUpdated() {
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    if (!m_framebuffer || !m_framebuffer->isValid() || !m_shadersValid) {
-        return;
-    }
-
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
     if (!trackInfo) {
         return;
@@ -277,6 +273,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     if (data == nullptr) {
         return;
     }
+
+    maybeInitializeGL();
 
     // save the GL state set for QPainter
     painter->beginNativePainting();
