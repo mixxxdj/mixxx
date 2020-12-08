@@ -4,6 +4,7 @@
 
 #include "effects/effectsmanager.h"
 #include "effects/visibleeffectslist.h"
+#include "moc_weffectselector.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)

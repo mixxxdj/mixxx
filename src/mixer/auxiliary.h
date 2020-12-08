@@ -1,5 +1,4 @@
-#ifndef MIXER_AUXILIARY_H
-#define MIXER_AUXILIARY_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -33,5 +32,3 @@ class Auxiliary : public BasePlayer {
     parented_ptr<ControlProxy> m_pInputConfigured;
     parented_ptr<ControlProxy> m_pAuxMasterEnabled;
 };
-
-#endif /* MIXER_AUXILIARY_H */

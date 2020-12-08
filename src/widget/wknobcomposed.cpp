@@ -1,9 +1,11 @@
-#include <QStylePainter>
+#include "widget/wknobcomposed.h"
+
 #include <QStyleOption>
+#include <QStylePainter>
 #include <QTransform>
 
+#include "moc_wknobcomposed.cpp"
 #include "util/duration.h"
-#include "widget/wknobcomposed.h"
 #include "widget/wskincolor.h"
 
 WKnobComposed::WKnobComposed(QWidget* pParent)

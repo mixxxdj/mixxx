@@ -1,5 +1,4 @@
-#ifndef ENGINEEFFECTSMANAGER_H
-#define ENGINEEFFECTSMANAGER_H
+#pragma once
 
 #include <QScopedPointer>
 
@@ -85,5 +84,3 @@ class EngineEffectsManager : public EffectsRequestHandler {
     mixxx::SampleBuffer m_buffer1;
     mixxx::SampleBuffer m_buffer2;
 };
-
-#endif /* ENGINEEFFECTSMANAGER_H */

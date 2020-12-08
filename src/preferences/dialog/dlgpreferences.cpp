@@ -1,22 +1,6 @@
-/***************************************************************************
-                         dlgpreferences.cpp  -  description
-                         ------------------
-   begin                : Sun Jun 30 2002
-   copyright            : (C) 2002 by Tue & Ken Haste Andersen
-   email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "preferences/dialog/dlgpreferences.h"
 
+#include <QDesktopServices>
 #include <QDialog>
 #include <QEvent>
 #include <QMoveEvent>
@@ -27,6 +11,7 @@
 #include <QTabWidget>
 
 #include "controllers/dlgprefcontrollers.h"
+#include "moc_dlgpreferences.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "preferences/dialog/dlgprefsound.h"
 
@@ -61,7 +46,6 @@
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
-#include "mixxx.h"
 #include "skin/skinloader.h"
 #include "util/widgethelper.h"
 
@@ -97,7 +81,7 @@ DlgPreferences::DlgPreferences(
 
     // Construct widgets for use in tabs.
     m_soundPage = PreferencesPage(
-            new DlgPrefSound(this, soundman, pPlayerManager, m_pConfig),
+            new DlgPrefSound(this, soundman, m_pConfig),
             createTreeItem(tr("Sound Hardware"), QIcon(":/images/preferences/ic_preferences_soundhardware.svg")));
     addPageWidget(m_soundPage);
 
@@ -141,7 +125,7 @@ DlgPreferences::DlgPreferences(
             createTreeItem(tr("Colors"), QIcon(":/images/preferences/ic_preferences_colors.svg"))));
 
     addPageWidget(PreferencesPage(
-            new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig),
+            new DlgPrefDeck(this, m_pConfig),
             createTreeItem(tr("Decks"), QIcon(":/images/preferences/ic_preferences_decks.svg"))));
 
     addPageWidget(PreferencesPage(

@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QStyle>
 
+#include "moc_wcolorpicker.cpp"
 #include "util/color/color.h"
 #include "util/parented_ptr.h"
 

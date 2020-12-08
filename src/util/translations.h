@@ -1,5 +1,4 @@
-#ifndef MIXXX_UTIL_TRANSLATIONS_H
-#define MIXXX_UTIL_TRANSLATIONS_H
+#pragma once
 
 #include <QCoreApplication>
 #include <QLibraryInfo>
@@ -104,6 +103,3 @@ class Translations {
 };
 
 }  // namespace mixxx
-
-
-#endif /* MIXXX_UTIL_TRANSLATIONS_H */

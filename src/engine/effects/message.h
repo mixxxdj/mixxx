@@ -1,5 +1,4 @@
-#ifndef MESSAGE_H
-#define MESSAGE_H
+#pragma once
 
 #include <QString>
 #include <QVariant>
@@ -169,5 +168,3 @@ class EffectsRequestHandler {
             EffectsRequest& message,
             EffectsResponsePipe* pResponsePipe) = 0;
 };
-
-#endif /* MESSAGE_H */

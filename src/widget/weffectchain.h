@@ -1,5 +1,4 @@
-#ifndef WEFFECTCHAIN_H
-#define WEFFECTCHAIN_H
+#pragma once
 
 #include <QDomNode>
 #include <QLabel>
@@ -28,5 +27,3 @@ class WEffectChain : public WLabel {
     EffectsManager* m_pEffectsManager;
     EffectChainPointer m_pEffectChain;
 };
-
-#endif /* WEFFECTCHAIN_H */

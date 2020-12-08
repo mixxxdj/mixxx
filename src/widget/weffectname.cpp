@@ -3,6 +3,7 @@
 #include <QtDebug>
 
 #include "effects/effectsmanager.h"
+#include "moc_weffectname.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectName::WEffectName(QWidget* pParent, EffectsManager* pEffectsManager)

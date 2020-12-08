@@ -3,6 +3,7 @@
 #include <QtDebug>
 
 #include "effects/effectsmanager.h"
+#include "moc_weffectparameterbase.cpp"
 
 WEffectParameterBase::WEffectParameterBase(QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),

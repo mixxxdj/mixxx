@@ -17,6 +17,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
+#include "moc_baseplaylistfeature.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"

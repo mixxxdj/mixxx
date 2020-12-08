@@ -1,5 +1,4 @@
-#ifndef DLGPREFAUTODJ_H
-#define DLGPREFAUTODJ_H
+#pragma once
 
 #include <QWidget>
 
@@ -30,5 +29,3 @@ class DlgPrefAutoDJ : public DlgPreferencePage, public Ui::DlgPrefAutoDJDlg {
   private:
     UserSettingsPointer m_pConfig;
 };
-
-#endif /* DLGPREFAUTODJ_H */

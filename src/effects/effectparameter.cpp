@@ -1,5 +1,7 @@
 #include "effects/effectparameter.h"
 
+#include "moc_effectparameter.cpp"
+
 #include <QtDebug>
 
 #include "effects/effectsmessenger.h"

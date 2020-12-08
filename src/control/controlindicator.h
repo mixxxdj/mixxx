@@ -1,5 +1,4 @@
-#ifndef CONTROLINDICATOR_H
-#define CONTROLINDICATOR_H
+#pragma once
 
 #include "control/controlobject.h"
 
@@ -39,5 +38,3 @@ class ControlIndicator : public ControlObject {
     ControlProxy* m_pCOTGuiTickTime;
     ControlProxy* m_pCOTGuiTick50ms;
 };
-
-#endif // CONTROLINDICATOR_H

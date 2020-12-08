@@ -1,5 +1,4 @@
-#ifndef CONTROLLERMAPPINGTABLEMODEL_H
-#define CONTROLLERMAPPINGTABLEMODEL_H
+#pragma once
 
 #include <QAbstractTableModel>
 #include <QVariant>
@@ -47,5 +46,3 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     MidiControllerPreset* m_pMidiPreset;
     HidControllerPreset* m_pHidPreset;
 };
-
-#endif /* CONTROLLERMAPPINGTABLEMODEL_H */

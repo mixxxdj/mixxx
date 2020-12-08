@@ -44,8 +44,7 @@
 // in the skin.  Note that if a Singleton is visible twice at the same time,
 // behavior is undefined and could be crashy.
 
-#ifndef WSINGLETONCONTAINER_H
-#define WSINGLETONCONTAINER_H
+#pragma once
 
 #include <QPointer>
 
@@ -83,6 +82,3 @@ class SingletonMap {
   private:
     QMap<QString, QWidget*> m_singletons;
 };
-
-
-#endif  // WSINGLETONCONTAINER_H

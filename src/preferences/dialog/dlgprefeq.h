@@ -1,22 +1,4 @@
-/***************************************************************************
-                          dlgprefeq.h  -  description
-                             -------------------
-    begin                : Thu Jun 7 2007
-    copyright            : (C) 2007 by John Sully
-    email                : jsully@scs.ryerson.ca
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFEQ_H
-#define DLGPREFEQ_H
+#pragma once
 
 #include <QComboBox>
 #include <QWidget>
@@ -28,10 +10,7 @@
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 
-/**
-  *@author John Sully
-  */
-class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg {
+class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
     DlgPrefEQ(QWidget* parent, EffectsManager* pEffectsManager, UserSettingsPointer _config);
@@ -111,5 +90,3 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg {
 
     QList<int> m_eqIndiciesOnUpdate;
 };
-
-#endif

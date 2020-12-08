@@ -1,10 +1,3 @@
-/**
-* @file dlgprefcontroller.cpp
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Mon May 2 2011
-* @brief Configuration dialog for a DJ controller
-*/
-
 #include "controllers/dlgprefcontroller.h"
 
 #include <QDesktopServices>
@@ -21,6 +14,7 @@
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "defs_urls.h"
+#include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
 #include "util/version.h"
 

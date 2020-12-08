@@ -1,14 +1,9 @@
-/**
- * @file vinylcontrolmanager.cpp
- * @author Bill Good <bkgood@gmail.com>
- * @date April 15, 2011
- */
-
 #include "vinylcontrol/vinylcontrolmanager.h"
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "mixer/playermanager.h"
+#include "moc_vinylcontrolmanager.cpp"
 #include "soundio/soundmanager.h"
 #include "util/compatibility.h"
 #include "util/timer.h"

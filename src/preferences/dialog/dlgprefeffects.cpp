@@ -8,6 +8,7 @@
 #include "effects/effectsmanager.h"
 #include "effects/visibleeffectslist.h"
 #include "preferences/effectchainpresetlistmodel.h"
+#include "moc_dlgprefeffects.cpp"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         UserSettingsPointer pConfig,

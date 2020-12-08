@@ -12,6 +12,7 @@
 #include "library/library.h"
 #include "library/libraryview.h"
 #include "mixer/playermanager.h"
+#include "moc_librarycontrol.cpp"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"

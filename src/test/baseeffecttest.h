@@ -1,5 +1,4 @@
-#ifndef BASEEFFECTTEST_H
-#define BASEEFFECTTEST_H
+#pragma once
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -82,5 +81,3 @@ class BaseEffectTest : public MixxxTest {
     TestEffectBackend* m_pTestBackend;
     QScopedPointer<EffectsManager> m_pEffectsManager;
 };
-
-#endif /* BASEEFFECTTEST_H */

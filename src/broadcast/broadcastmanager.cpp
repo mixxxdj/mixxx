@@ -7,14 +7,14 @@
 #undef WIN32
 #endif
 
+#include "broadcast/broadcastmanager.h"
 #include "broadcast/defs_broadcast.h"
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
+#include "moc_broadcastmanager.cpp"
 #include "soundio/soundmanager.h"
 #include "util/logger.h"
-
-#include "broadcast/broadcastmanager.h"
 
 namespace {
 const mixxx::Logger kLogger("BroadcastManager");

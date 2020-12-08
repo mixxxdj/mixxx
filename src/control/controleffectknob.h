@@ -1,5 +1,4 @@
-#ifndef CONTROLEFFECTKNOB_H
-#define CONTROLEFFECTKNOB_H
+#pragma once
 
 #include "control/controlpotmeter.h"
 #include "effects/backends/effectmanifestparameter.h"
@@ -13,5 +12,3 @@ class ControlEffectKnob : public ControlPotmeter {
             double dMinValue,
             double dMaxValue);
 };
-
-#endif // CONTROLLEFFECTKNOB_H

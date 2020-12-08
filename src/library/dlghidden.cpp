@@ -2,9 +2,10 @@
 
 #include "library/hiddentablemodel.h"
 #include "library/trackcollectionmanager.h"
+#include "moc_dlghidden.cpp"
+#include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
-#include "util/assert.h"
 
 DlgHidden::DlgHidden(
         WLibrary* parent,

@@ -1,17 +1,10 @@
-/**
-* @file bulkenumerator.h
-* @author Neale Pickett  neale@woozle.org
-* @date Thu Jun 28 2012
-* @brief Locate supported USB bulk controllers
-*/
-
-#ifndef BULKENUMERATOR_H
-#define BULKENUMERATOR_H
+#pragma once
 
 #include "controllers/controllerenumerator.h"
 
 struct libusb_context;
 
+/// Locate supported USB bulk controllers
 class BulkEnumerator : public ControllerEnumerator {
   public:
     explicit BulkEnumerator(UserSettingsPointer pConfig);
@@ -24,5 +17,3 @@ class BulkEnumerator : public ControllerEnumerator {
     libusb_context* m_context;
     UserSettingsPointer m_pConfig;
 };
-
-#endif

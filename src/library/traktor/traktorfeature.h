@@ -1,8 +1,4 @@
-// traktorfeature.h
-// Created 9/26/2010 by Tobias Rafreider
-
-#ifndef TRAKTOR_FEATURE_H
-#define TRAKTOR_FEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QtSql>
@@ -80,5 +76,3 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     QSharedPointer<BaseTrackCache> m_trackSource;
     QIcon m_icon;
 };
-
-#endif // TRAKTOR_FEATURE_H

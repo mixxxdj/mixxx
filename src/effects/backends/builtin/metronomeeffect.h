@@ -1,4 +1,5 @@
 #pragma once
+
 #include <QMap>
 
 #include "effects/backends/effectprocessor.h"

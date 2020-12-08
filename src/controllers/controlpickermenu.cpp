@@ -6,6 +6,7 @@
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "mixer/playermanager.h"
+#include "moc_controlpickermenu.cpp"
 #include "recording/defs_recording.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 

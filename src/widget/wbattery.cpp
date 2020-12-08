@@ -1,7 +1,9 @@
+#include "widget/wbattery.h"
+
 #include <QStyleOption>
 #include <QStylePainter>
 
-#include "widget/wbattery.h"
+#include "moc_wbattery.cpp"
 #include "util/battery/battery.h"
 #include "util/math.h"
 

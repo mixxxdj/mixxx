@@ -1,5 +1,4 @@
-#ifndef WAVEFORMWIDGETABSTRACT_H
-#define WAVEFORMWIDGETABSTRACT_H
+#pragma once
 
 #include <QWidget>
 #include <QString>
@@ -42,5 +41,3 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
 
     friend class WaveformWidgetFactory;
 };
-
-#endif // WAVEFORMWIDGETABSTRACT_H

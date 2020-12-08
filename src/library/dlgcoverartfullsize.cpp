@@ -7,6 +7,7 @@
 
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "moc_dlgcoverartfullsize.cpp"
 #include "track/track.h"
 #include "util/widgethelper.h"
 

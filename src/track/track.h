@@ -2,6 +2,7 @@
 
 #include <QList>
 #include <QMutex>
+#include <QMutexLocker>
 #include <QObject>
 #include <QUrl>
 
@@ -214,6 +215,10 @@ class Track : public QObject {
     int getRating() const;
     // Sets rating
     void setRating(int);
+    /// Resets the rating
+    void resetRating() {
+        setRating(mixxx::TrackRecord::kNoRating);
+    }
 
     // Get URL for track
     QString getURL() const;
@@ -342,6 +347,8 @@ class Track : public QObject {
             mixxx::audio::SampleRate sampleRate,
             mixxx::audio::Bitrate bitrate,
             mixxx::Duration duration);
+    void setAudioProperties(
+            const mixxx::audio::StreamInfo& streamInfo);
 
   signals:
     void waveformUpdated();
@@ -423,10 +430,15 @@ class Track : public QObject {
             mixxx::MetadataSourcePointer pMetadataSource);
 
     // Information about the actual properties of the
-    // audio stream is only available after opening it.
-    // On this occasion the audio properties of the track
-    // need to be updated to reflect these values.
-    void updateAudioPropertiesFromStream(
+    // audio stream is only available after opening the
+    // source at least once. On this occasion the metadata
+    // stream info of the track need to be updated to reflect
+    // these values.
+    bool hasStreamInfoFromSource() const {
+        QMutexLocker lock(&m_qMutex);
+        return static_cast<bool>(m_streamInfoFromSource);
+    }
+    void updateStreamInfoFromSource(
             mixxx::audio::StreamInfo&& streamInfo);
 
     // Mutex protecting access to object
@@ -450,7 +462,7 @@ class Track : public QObject {
     // Reliable information about the PCM audio stream
     // that only becomes available when opening the
     // corresponding file.
-    std::optional<mixxx::audio::StreamInfo> m_streamInfo;
+    std::optional<mixxx::audio::StreamInfo> m_streamInfoFromSource;
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;

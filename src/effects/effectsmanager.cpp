@@ -10,6 +10,8 @@
 #include "effects/presets/effectxmlelements.h"
 #include "effects/visibleeffectslist.h"
 #include "engine/effects/engineeffectsmanager.h"
+
+#include "moc_effectsmanager.cpp"
 #include "util/assert.h"
 
 namespace {

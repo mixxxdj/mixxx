@@ -1,4 +1,5 @@
 #pragma once
+
 #include "control/controlproxy.h"
 #include "effects/backends/effectprocessor.h"
 #include "engine/effects/engineeffect.h"

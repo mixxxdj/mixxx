@@ -6,6 +6,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "effects/effectparameter.h"
+#include "moc_effectparameterslotbase.cpp"
 
 EffectParameterSlotBase::EffectParameterSlotBase(const QString& group,
         const unsigned int iParameterSlotNumber,

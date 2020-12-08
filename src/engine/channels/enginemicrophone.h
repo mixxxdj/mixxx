@@ -1,8 +1,4 @@
-// enginemicrophone.h
-// created 3/16/2011 by RJ Ryan (rryan@mit.edu)
-
-#ifndef ENGINEMICROPHONE_H
-#define ENGINEMICROPHONE_H
+#pragma once
 
 #include <QScopedPointer>
 
@@ -59,5 +55,3 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
 
     bool m_wasActive;
 };
-
-#endif /* ENGINEMICROPHONE_H */

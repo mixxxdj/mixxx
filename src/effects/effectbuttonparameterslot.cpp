@@ -6,6 +6,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "effects/effectslot.h"
+#include "moc_effectbuttonparameterslot.cpp"
 #include "util/math.h"
 #include "util/xml.h"
 

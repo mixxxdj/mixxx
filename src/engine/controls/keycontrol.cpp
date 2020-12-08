@@ -8,6 +8,7 @@
 #include "control/controlproxy.h"
 #include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
+#include "moc_keycontrol.cpp"
 #include "track/keyutils.h"
 
 //static const double kLockOriginalKey = 0;

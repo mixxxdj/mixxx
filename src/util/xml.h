@@ -1,5 +1,4 @@
-#ifndef XML_H
-#define XML_H
+#pragma once
 
 #include <QDomNode>
 #include <QDomElement>
@@ -59,5 +58,3 @@ class XmlParse {
     XmlParse() {}
     ~XmlParse() {}
 };
-
-#endif

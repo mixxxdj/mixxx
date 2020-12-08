@@ -1,19 +1,4 @@
-/***************************************************************************
-                          errordialoghandler.cpp  -  description
-                             -------------------
-    begin                : Sun Feb 22 2009
-    copyright            : (C) 2009 by Sean M. Pappalardo
-    email                : pegasus@c64.org
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+#include "errordialoghandler.h"
 
 #include <QCoreApplication>
 #include <QMutexLocker>
@@ -21,7 +6,7 @@
 #include <QThread>
 #include <QtDebug>
 
-#include "errordialoghandler.h"
+#include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
 #include "util/version.h"
 

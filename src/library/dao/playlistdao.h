@@ -1,5 +1,4 @@
-#ifndef PLAYLISTDAO_H
-#define PLAYLISTDAO_H
+#pragma once
 
 #include <QHash>
 #include <QObject>
@@ -151,5 +150,3 @@ class PlaylistDAO : public QObject, public virtual DAO {
     AutoDJProcessor* m_pAutoDJProcessor;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };
-
-#endif //PLAYLISTDAO_H

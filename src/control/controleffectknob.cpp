@@ -1,6 +1,7 @@
 #include "control/controleffectknob.h"
 
 #include "effects/backends/effectmanifestparameter.h"
+#include "moc_controleffectknob.cpp"
 #include "util/math.h"
 
 ControlEffectKnob::ControlEffectKnob(const ConfigKey& key, double dMinValue, double dMaxValue)

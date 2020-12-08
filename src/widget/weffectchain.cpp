@@ -3,6 +3,7 @@
 #include <QtDebug>
 
 #include "effects/effectsmanager.h"
+#include "moc_weffectchain.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectChain::WEffectChain(QWidget* pParent, EffectsManager* pEffectsManager)
