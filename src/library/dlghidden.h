@@ -2,14 +2,14 @@
 
 #include <QItemSelection>
 
-#include "library/ui_dlghidden.h"
-#include "preferences/usersettings.h"
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/library.h"
 #include "library/libraryview.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/ui_dlghidden.h"
+#include "preferences/usersettings.h"
+#include "widget/wtracktableview.h"
 
 class WLibrary;
-class WTrackTableView;
 class HiddenTableModel;
 
 class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
@@ -25,6 +25,12 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     bool hasFocus() const override;
     void onSearch(const QString& text) override;
     QString currentSearch();
+    void saveCurrentViewState() override {
+        m_pTrackTableView->saveCurrentViewState();
+    };
+    void restoreCurrentViewState() override {
+        m_pTrackTableView->restoreCurrentViewState();
+    };
 
   public slots:
     void clicked();

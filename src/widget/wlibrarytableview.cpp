@@ -71,13 +71,13 @@ void WLibraryTableView::moveSelection(int delta) {
     clearSelection();
     currentSelection->clearSelection();
     QModelIndex newIndex;
-    while(delta != 0) {
+    while (delta != 0) {
         QModelIndex currentIndex = currentSelection->currentIndex();
         //clearSelection();
         //currentSelection->clearSelection();
         if (currentIndex.isValid()) {
             int row = currentIndex.row();
-            if(delta > 0) {
+            if (delta > 0) {
                 // i is positive, so we want to move the highlight down
                 if (row + 1 < pModel->rowCount()) {
                     newIndex = currentIndex.sibling(row + 1, 0);
@@ -97,7 +97,7 @@ void WLibraryTableView::moveSelection(int delta) {
             }
         } else {
             // no selection, so select the first or last element depending on delta
-            if(delta > 0) {
+            if (delta > 0) {
                 //selectRow(0);
                 newIndex = pModel->index(0, 0);
                 delta--;

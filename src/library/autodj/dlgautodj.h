@@ -12,10 +12,10 @@
 #include "library/trackcollection.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
+#include "widget/wtracktableview.h"
 
 class PlaylistTableModel;
 class WLibrary;
-class WTrackTableView;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
@@ -33,6 +33,12 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void loadSelectedTrack() override;
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void moveSelection(int delta) override;
+    void saveCurrentViewState() override {
+        m_pTrackTableView->saveCurrentViewState();
+    };
+    void restoreCurrentViewState() override {
+        m_pTrackTableView->restoreCurrentViewState();
+    };
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);

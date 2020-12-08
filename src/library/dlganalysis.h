@@ -3,14 +3,14 @@
 #include <QButtonGroup>
 #include <QItemSelection>
 
-#include "preferences/usersettings.h"
+#include "analyzer/analyzerprogress.h"
 #include "library/analysislibrarytablemodel.h"
 #include "library/libraryview.h"
 #include "library/ui_dlganalysis.h"
-#include "analyzer/analyzerprogress.h"
+#include "preferences/usersettings.h"
+#include "widget/wanalysislibrarytableview.h"
 
 class AnalysisLibraryTableModel;
-class WAnalysisLibraryTableView;
 class Library;
 class WLibrary;
 
@@ -34,6 +34,12 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     inline const QString currentSearch() {
         return m_pAnalysisLibraryTableModel->currentSearch();
     }
+    void saveCurrentViewState() override {
+        m_pAnalysisLibraryTableView->saveCurrentViewState();
+    };
+    void restoreCurrentViewState() override {
+        m_pAnalysisLibraryTableView->restoreCurrentViewState();
+    };
 
   public slots:
     void tableSelectionChanged(const QItemSelection& selected,

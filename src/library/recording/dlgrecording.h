@@ -10,10 +10,10 @@
 #include "preferences/usersettings.h"
 #include "recording/recordingmanager.h"
 #include "track/track_decl.h"
+#include "widget/wtracktableview.h"
 
 class PlaylistTableModel;
 class WLibrary;
-class WTrackTableView;
 
 class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual LibraryView {
     Q_OBJECT
@@ -33,6 +33,12 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void moveSelection(int delta) override;
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
+    void saveCurrentViewState() override {
+        m_pTrackTableView->saveCurrentViewState();
+    };
+    void restoreCurrentViewState() override {
+        m_pTrackTableView->restoreCurrentViewState();
+    };
 
   public slots:
     void slotRecordingStateChanged(bool);
