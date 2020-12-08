@@ -435,6 +435,10 @@ QString parseCrate(
 
 QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* databaseItem) {
     QString databaseName = databaseItem->getLabel();
+    VERIFY_OR_DEBUG_ASSERT(databaseItem->getData().toList().length() == 2) {
+        qWarning() << "Malformed data in TreeItem" << databaseItem->getData();
+        return QString();
+    }
     QString databaseFilePath = databaseItem->getData().toList()[0].toString();
     QDir databaseDir = QFileInfo(databaseFilePath).dir();
 
