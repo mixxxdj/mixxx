@@ -141,13 +141,17 @@ bool BeatGrid::isValid() const {
 // This could be implemented in the Beats Class itself.
 // If necessary, the child class can redefine it.
 double BeatGrid::findNextBeat(double dSamples) const {
-    return findNthBeat(dSamples, +1);
+    const double position = findNthBeat(dSamples, +1);
+    DEBUG_ASSERT(position >= dSamples || position == -1);
+    return position;
 }
 
 // This could be implemented in the Beats Class itself.
 // If necessary, the child class can redefine it.
 double BeatGrid::findPrevBeat(double dSamples) const {
-    return findNthBeat(dSamples, -1);
+    const double position = findNthBeat(dSamples, -1);
+    DEBUG_ASSERT(position <= dSamples || position == -1);
+    return position;
 }
 
 // This is an internal call. This could be implemented in the Beats Class itself.
