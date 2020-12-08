@@ -1,6 +1,8 @@
+#include "control/controlobjectscript.h"
+
 #include <QtDebug>
 
-#include "control/controlobjectscript.h"
+#include "moc_controlobjectscript.cpp"
 
 ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
         : ControlProxy(key, pParent, ControlFlag::NoAssertIfMissing) {

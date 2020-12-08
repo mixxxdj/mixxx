@@ -1,5 +1,4 @@
-#ifndef LIBRARYHASHDAO_H
-#define LIBRARYHASHDAO_H
+#pragma once
 
 #include <QObject>
 #include <QHash>
@@ -26,5 +25,3 @@ class LibraryHashDAO : public DAO {
                                  const bool deleted, const bool verified);
     QStringList getDeletedDirectories();
 };
-
-#endif //LIBRARYHASHDAO_H

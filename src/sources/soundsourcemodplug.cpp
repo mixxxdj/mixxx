@@ -108,11 +108,14 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
 
         pTrackMetadata->refTrackInfo().setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->refTrackInfo().setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
-        pTrackMetadata->setChannelCount(audio::ChannelCount(kChannelCount));
-        pTrackMetadata->setSampleRate(audio::SampleRate(kSampleRate));
-        pTrackMetadata->setBitrate(audio::Bitrate(8));
-        pTrackMetadata->setDuration(Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)));
-        ModPlug::ModPlug_Unload(pModFile);
+        pTrackMetadata->setStreamInfo(audio::StreamInfo{
+                audio::SignalInfo{
+                        audio::ChannelCount(kChannelCount),
+                        audio::SampleRate(kSampleRate),
+                },
+                audio::Bitrate(8),
+                Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)),
+        });
 
         return std::make_pair(ImportResult::Succeeded, QFileInfo(modFile).lastModified());
     }

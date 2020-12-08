@@ -1,6 +1,8 @@
+#include "widget/wsplitter.h"
+
 #include <QList>
 
-#include "widget/wsplitter.h"
+#include "moc_wsplitter.cpp"
 
 WSplitter::WSplitter(QWidget* pParent, UserSettingsPointer pConfig)
         : QSplitter(pParent),

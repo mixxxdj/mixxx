@@ -1,12 +1,10 @@
-// cue.cpp
-// Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "track/cue.h"
 
 #include <QMutexLocker>
 #include <QtDebug>
 
 #include "engine/engine.h"
+#include "moc_cue.cpp"
 #include "util/assert.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"

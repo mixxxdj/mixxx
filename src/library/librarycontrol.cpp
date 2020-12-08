@@ -8,13 +8,14 @@
 
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "library/library.h"
+#include "library/libraryview.h"
 #include "mixer/playermanager.h"
+#include "moc_librarycontrol.cpp"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wtracktableview.h"
-#include "library/library.h"
-#include "library/libraryview.h"
 
 LoadToGroupController::LoadToGroupController(LibraryControl* pParent, const QString& group)
         : QObject(pParent),

@@ -10,8 +10,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef PARSERM3U_H
-#define PARSERM3U_H
+#pragma once
 
 #include <QDir>
 #include <QTextStream>
@@ -39,5 +38,3 @@ private:
 
 
 };
-
-#endif

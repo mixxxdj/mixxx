@@ -1,8 +1,4 @@
-// ratecontrol.h
-// Created 7/4/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef RATECONTROL_H
-#define RATECONTROL_H
+#pragma once
 
 #include <QObject>
 
@@ -168,5 +164,3 @@ private:
   // Speed for temporary rate change
   double m_dRateTempRampChange;
 };
-
-#endif /* RATECONTROL_H */

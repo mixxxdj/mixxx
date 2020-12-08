@@ -1,10 +1,12 @@
-#include <QtDebug>
+#include "controllers/delegates/midioptionsdelegate.h"
+
 #include <QComboBox>
 #include <QTableView>
+#include <QtDebug>
 
-#include "controllers/delegates/midioptionsdelegate.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
+#include "moc_midioptionsdelegate.cpp"
 
 MidiOptionsDelegate::MidiOptionsDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent) {

@@ -1,5 +1,4 @@
-#ifndef BUILTINBACKEND_H
-#define BUILTINBACKEND_H
+#pragma once
 
 #include "effects/defs.h"
 #include "effects/effectsbackend.h"
@@ -15,5 +14,3 @@ class BuiltInBackend : public EffectsBackend {
         return "BuiltInBackend";
     }
 };
-
-#endif /* BUILTINBACKEND_H */

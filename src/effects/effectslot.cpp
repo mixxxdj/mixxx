@@ -1,11 +1,12 @@
 #include "effects/effectslot.h"
-#include "effects/effectxmlelements.h"
 
 #include <QDebug>
 
-#include "control/controlpushbutton.h"
 #include "control/controlencoder.h"
 #include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "effects/effectxmlelements.h"
+#include "moc_effectslot.cpp"
 #include "util/math.h"
 #include "util/xml.h"
 

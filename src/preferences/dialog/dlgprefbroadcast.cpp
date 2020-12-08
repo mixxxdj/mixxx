@@ -17,11 +17,12 @@
 #endif
 
 #include "broadcast/defs_broadcast.h"
-#include "recording/defs_recording.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "preferences/dialog/dlgprefbroadcast.h"
 #include "encoder/encodersettings.h"
+#include "moc_dlgprefbroadcast.cpp"
+#include "preferences/dialog/dlgprefbroadcast.h"
+#include "recording/defs_recording.h"
 #include "util/logger.h"
 
 namespace {

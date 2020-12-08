@@ -4,7 +4,7 @@
 #include <QLineEdit>
 
 #include "library/trackcollection.h"
-
+#include "moc_cratefeaturehelper.cpp"
 
 CrateFeatureHelper::CrateFeatureHelper(
         TrackCollection* pTrackCollection,

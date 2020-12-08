@@ -1,5 +1,4 @@
-#ifndef CONTROLLERPRESETVISITOR_H
-#define CONTROLLERPRESETVISITOR_H
+#pragma once
 
 class MidiControllerPreset;
 class HidControllerPreset;
@@ -17,5 +16,3 @@ class ConstControllerPresetVisitor {
     virtual void visit(const MidiControllerPreset* preset) = 0;
     virtual void visit(const HidControllerPreset* preset) = 0;
 };
-
-#endif /* CONTROLLERPRESETVISITOR_H */

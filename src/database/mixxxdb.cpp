@@ -1,10 +1,9 @@
 #include "database/mixxxdb.h"
 
 #include "database/schemamanager.h"
-
+#include "moc_mixxxdb.cpp"
 #include "util/assert.h"
 #include "util/logger.h"
-
 
 // The schema XML is baked into the binary via Qt resources.
 //static

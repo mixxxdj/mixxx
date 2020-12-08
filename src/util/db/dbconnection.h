@@ -1,6 +1,4 @@
-#ifndef MIXXX_DBCONNECTION_H
-#define MIXXX_DBCONNECTION_H
-
+#pragma once
 
 #include <QSqlDatabase>
 #include <QtDebug>
@@ -68,6 +66,3 @@ class DbConnection final {
 };
 
 } // namespace mixxx
-
-
-#endif // MIXXX_DBCONNECTION_H

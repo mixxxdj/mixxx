@@ -1,17 +1,18 @@
-#include <QPainter>
-#include <QGLContext>
-#include <QtDebug>
-
 #include "waveform/widgets/qthsvwaveformwidget.h"
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
+#include <QGLContext>
+#include <QPainter>
+#include <QtDebug>
+
+#include "moc_qthsvwaveformwidget.cpp"
 #include "waveform/renderers/waveformrenderbackground.h"
-#include "waveform/renderers/waveformrendermark.h"
-#include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererhsv.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendermark.h"
+#include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 
 QtHSVWaveformWidget::QtHSVWaveformWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent),

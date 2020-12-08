@@ -991,6 +991,17 @@ if(APPLE)
   endif()
 endif()
 
+# Windows-specific options
+if(WIN32)
+  # https://docs.microsoft.com/en-us/cpp/porting/modifying-winver-and-win32-winnt
+  # _WIN32_WINNT_WIN7 = 0x0601
+  target_compile_definitions(mixxx-lib PUBLIC WINVER=0x0601)
+  target_compile_definitions(mixxx-lib PUBLIC _WIN32_WINNT=0x0601)
+  if(MSVC)
+    target_compile_definitions(mixxx-lib PUBLIC _USE_MATH_DEFINES)
+  endif()
+endif()
+
 #
 # Installation directories
 #
@@ -1008,17 +1019,13 @@ if (APPLE AND MACOS_BUNDLE)
 elseif (UNIX)
   include(GNUInstallDirs)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
-  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/mixxx")
-  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}/mixxx")
-  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DATADIR}/licenses/mixxx")
+  set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/${CMAKE_PROJECT_NAME}")
+  set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}")
+  set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DOCDIR}")
 endif()
 
 if(WIN32)
   target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
-
-  # Restrict ATL to XP-compatible SDK functions.
-  # TODO(rryan): Remove once we ditch XP support.
-  target_compile_definitions(mixxx-lib PUBLIC _ATL_XP_TARGETING)
 
   # Helps prevent duplicate symbols
   target_compile_definitions(mixxx-lib PUBLIC _ATL_MIN_CRT)
@@ -1189,7 +1196,7 @@ install(
 install(
   DIRECTORY
     "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
-  "DESTINATION"
+  DESTINATION
     "${MIXXX_INSTALL_DATADIR}"
 )
 
@@ -1405,6 +1412,12 @@ gtest_add_tests(
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   TEST_LIST testsuite
 )
+if (NOT WIN32)
+  # Default to offscreen rendering during tests.
+  # This is required if the build system like Fedora koji/mock does not
+  # allow to pass environment variables into the ctest macro expansion.
+  set_tests_properties(${testsuite} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+endif()
 
 # Benchmarking
 add_custom_target(mixxx-benchmark
@@ -1584,6 +1597,7 @@ endif()
 add_library(fidlib STATIC EXCLUDE_FROM_ALL lib/fidlib/fidlib.c)
 if(MSVC)
   target_compile_definitions(fidlib PRIVATE T_MSVC)
+  target_compile_definitions(fidlib PRIVATE _USE_MATH_DEFINES)
 elseif(MINGW)
   target_compile_definitions(fidlib PRIVATE T_MINGW)
 else()
@@ -1945,7 +1959,7 @@ elseif(MSVC)
   # http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx We could define this
   # in our headers but then include order matters since headers we don't control
   # may include cmath first.
-  target_compile_definitions(QueenMaryDsp PUBLIC _USE_MATH_DEFINES)
+  target_compile_definitions(QueenMaryDsp PRIVATE _USE_MATH_DEFINES)
 endif()
 target_include_directories(QueenMaryDsp SYSTEM PUBLIC lib/qm-dsp lib/qm-dsp/include)
 target_link_libraries(mixxx-lib PUBLIC QueenMaryDsp)
@@ -1959,6 +1973,9 @@ target_link_libraries(mixxx-lib PRIVATE ReplayGain)
 
 # Reverb
 add_library(Reverb STATIC EXCLUDE_FROM_ALL lib/reverb/Reverb.cc)
+if(MSVC)
+  target_compile_definitions(Reverb PRIVATE _USE_MATH_DEFINES)
+endif()
 target_include_directories(Reverb PRIVATE src)
 target_link_libraries(Reverb PUBLIC Qt5::Core)
 target_include_directories(mixxx-lib SYSTEM PRIVATE lib/reverb)

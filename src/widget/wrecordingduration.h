@@ -1,9 +1,7 @@
-// wrecordingduration.h
 // WRecordingDuration is a widget showing the duration of running recoding
-// In skin it is represented by a <RecordingDuration> node.
+// In skins it is represented by a <RecordingDuration> node.
 
-#ifndef WRECORDINGDURATION_H
-#define WRECORDINGDURATION_H
+#pragma once
 
 #include "widget/wlabel.h"
 #include "skin/skincontext.h"
@@ -25,5 +23,3 @@ class WRecordingDuration: public WLabel {
     RecordingManager* m_pRecordingManager;
     QString m_inactiveText;
 };
-
-#endif /* WRECORDINGDURATION_H */

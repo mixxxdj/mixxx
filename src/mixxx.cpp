@@ -34,6 +34,7 @@
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemaster.h"
+#include "moc_mixxx.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -167,6 +168,24 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
           m_pTouchShift(nullptr) {
     m_runtime_timer.start();
     mixxx::Time::start();
+
+    QString settingsPath = args.getSettingsPath();
+#ifdef __APPLE__
+    if (!args.getSettingsPathSet()) {
+        settingsPath = Sandbox::migrateOldSettings();
+    }
+#endif
+
+    mixxx::Logging::initialize(
+            settingsPath,
+            args.getLogLevel(),
+            args.getLogFlushLevel(),
+            args.getDebugAssertBreak());
+
+    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
+        qCritical() << "Failed to register any SoundSource providers";
+        return;
+    }
 
     Version::logBuildDetails();
 

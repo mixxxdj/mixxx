@@ -1,4 +1,6 @@
 #include "waveform/renderers/glslwaveformrenderersignal.h"
+
+#include "moc_glslwaveformrenderersignal.cpp"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QGLFramebufferObject>

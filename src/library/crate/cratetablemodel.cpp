@@ -1,4 +1,3 @@
-
 #include "library/crate/cratetablemodel.h"
 
 #include <QtDebug>
@@ -7,6 +6,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "moc_cratetablemodel.cpp"
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"
 

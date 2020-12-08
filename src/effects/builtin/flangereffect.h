@@ -1,5 +1,4 @@
-#ifndef FLANGEREFFECT_H
-#define FLANGEREFFECT_H
+#pragma once
 
 #include <QMap>
 
@@ -77,5 +76,3 @@ class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(FlangerEffect);
 };
-
-#endif /* FLANGEREFFECT_H */

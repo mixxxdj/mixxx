@@ -5,6 +5,7 @@
 #include <QtDebug>
 #include <vector>
 
+#include "moc_chromaprinter.cpp"
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
