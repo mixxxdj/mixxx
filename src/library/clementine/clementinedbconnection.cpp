@@ -74,23 +74,24 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
     queryPlaylist.setForwardOnly(true); // Saves about 50% time
     queryPlaylist.prepare(
             "SELECT "
-            "ROWID, "                    // 0
-            "playlist_items.title, "     // 1
-            "playlist_items.filename, "  // 2
-            "playlist_items.length, "    // 3
-            "playlist_items.artist, "    // 4
-            "playlist_items.year, "      // 5
-            "playlist_items.album, "     // 6
-            "playlist_items.rating, "    // 7
-            "playlist_items.genre, "     // 8
-            "playlist_items.track, "     // 9
-            "playlist_items.bpm, "       // 10
-            "playlist_items.bitrate, "   // 11
-            "playlist_items.comment, "   // 12
-            "playlist_items.playcount, " // 13
-            "playlist_items.composer, "  // 14
-            "playlist_items.grouping, "  // 15
-            "playlist_items.type "       // 16
+            "ROWID, "                       // 0
+            "playlist_items.title, "        // 1
+            "playlist_items.filename, "     // 2
+            "playlist_items.length, "       // 3
+            "playlist_items.artist, "       // 4
+            "playlist_items.year, "         // 5
+            "playlist_items.album, "        // 6
+            "playlist_items.rating, "       // 7
+            "playlist_items.genre, "        // 8
+            "playlist_items.track, "        // 9
+            "playlist_items.bpm, "          // 10
+            "playlist_items.bitrate, "      // 11
+            "playlist_items.comment, "      // 12
+            "playlist_items.playcount, "    // 13
+            "playlist_items.composer, "     // 14
+            "playlist_items.grouping, "     // 15
+            "playlist_items.albumartist, "  // 16
+            "playlist_items.type "          // 17
             "FROM playlist_items "
             "WHERE playlist_items.playlist = :playlistId");
     queryPlaylist.bindValue(":playlistId", playlistId);
@@ -105,22 +106,24 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
     queryLibrary.setForwardOnly(true);
     queryLibrary.prepare(
             "SELECT "
-            "songs.ROWID, "     // 0
-            "songs.title, "     // 1
-            "songs.filename, "  // 2
-            "songs.length, "    // 3
-            "songs.artist, "    // 4
-            "songs.year, "      // 5
-            "songs.album, "     // 6
-            "songs.rating, "    // 7
-            "songs.genre, "     // 8
-            "songs.track, "     // 9
-            "songs.bpm, "       // 10
-            "songs.bitrate, "   // 11
-            "songs.comment, "   // 12
-            "songs.playcount, " // 13
-            "songs.composer, "  // 14
-            "songs.grouping "   // 15
+            "songs.ROWID, "         // 0
+            "songs.title, "         // 1
+            "songs.filename, "      // 2
+            "songs.length, "        // 3
+            "songs.artist, "        // 4
+            "songs.year, "          // 5
+            "songs.album, "         // 6
+            "songs.rating, "        // 7
+            "songs.genre, "         // 8
+            "songs.track, "         // 9
+            "songs.bpm, "           // 10
+            "songs.bitrate, "       // 11
+            "songs.comment, "       // 12
+            "songs.playcount, "     // 13
+            "songs.composer, "      // 14
+            "songs.grouping, "      // 15
+            "songs.albumartist, "   // 16
+            "songs.albumartist "    // 17
             "FROM songs "
             "INNER JOIN playlist_items "
             "ON playlist_items.library_id = songs.ROWID "
@@ -131,20 +134,25 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
         return {};
     }
 
-    QSqlQuery& playlistTrackDataSourceQuery = queryPlaylist;
+    QSqlQuery* playlistTrackDataSourceQuery = &queryPlaylist;
     while (queryPlaylist.next()) {
         // Determine datasource/table for a the specific playlist track
-        QString type = queryPlaylist.value(16).toString();
-        if (type == QLatin1String("File")) {
-            playlistTrackDataSourceQuery = queryPlaylist;
-        } else if (type == QLatin1String("Library")) {
+        QString type = queryPlaylist.value(17).toString();
+        qDebug() << "type " << type;
+        if (type == QString("File")) {
+            playlistTrackDataSourceQuery = &queryPlaylist;
+        } else if (type == QString("Library")) {
             queryLibrary.next();
-            playlistTrackDataSourceQuery = queryLibrary;
+            playlistTrackDataSourceQuery = &queryLibrary;
+        }
+        else {
+            qDebug() << "Unknown type " << type << " in playlist_item.type - skip!";
+            continue;
         }
 
         //Search for track in mixxx lib to provide bpm information
         QString location = QUrl::fromEncoded(
-                playlistTrackDataSourceQuery.value(2).toByteArray(), QUrl::StrictMode)
+                playlistTrackDataSourceQuery->value(2).toByteArray(), QUrl::StrictMode)
                                    .toLocalFile();
         qDebug() << "location " << location;
 
@@ -153,25 +161,25 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
                 TrackRef::fromFileInfo(location),
                 &trackAlreadyInLibrary);
 
-        entry.artist = playlistTrackDataSourceQuery.value(4).toString();
-        entry.title = playlistTrackDataSourceQuery.value(1).toString();
-        entry.trackId = playlistTrackDataSourceQuery.value(0).toInt();
-        long long duration = playlistTrackDataSourceQuery.value(3).toLongLong();
-        entry.year = playlistTrackDataSourceQuery.value(5).toInt();
-        entry.album = playlistTrackDataSourceQuery.value(6).toString();
-        entry.albumartist = playlistTrackDataSourceQuery.value(17).toString();
+        entry.artist = playlistTrackDataSourceQuery->value(4).toString();
+        entry.title = playlistTrackDataSourceQuery->value(1).toString();
+        entry.trackId = playlistTrackDataSourceQuery->value(0).toInt();
+        long long duration = playlistTrackDataSourceQuery->value(3).toLongLong();
+        entry.year = playlistTrackDataSourceQuery->value(5).toInt();
+        entry.album = playlistTrackDataSourceQuery->value(6).toString();
+        entry.albumartist = playlistTrackDataSourceQuery->value(16).toString();
         entry.uri = QUrl::fromEncoded(
-                playlistTrackDataSourceQuery.value(2).toByteArray(),
+                playlistTrackDataSourceQuery->value(2).toByteArray(),
                 QUrl::StrictMode);
-        entry.rating = playlistTrackDataSourceQuery.value(7).toInt();
-        entry.genre = playlistTrackDataSourceQuery.value(8).toString();
-        entry.grouping = playlistTrackDataSourceQuery.value(15).toString();
-        entry.tracknumber = playlistTrackDataSourceQuery.value(9).toInt();
-        entry.bpm = playlistTrackDataSourceQuery.value(10).toDouble();
-        entry.bitrate = playlistTrackDataSourceQuery.value(11).toInt();
-        entry.comment = playlistTrackDataSourceQuery.value(12).toString();
-        entry.playcount = playlistTrackDataSourceQuery.value(13).toInt();
-        entry.composer = playlistTrackDataSourceQuery.value(14).toString();
+        entry.rating = playlistTrackDataSourceQuery->value(7).toInt();
+        entry.genre = playlistTrackDataSourceQuery->value(8).toString();
+        entry.grouping = playlistTrackDataSourceQuery->value(15).toString();
+        entry.tracknumber = playlistTrackDataSourceQuery->value(9).toInt();
+        entry.bpm = playlistTrackDataSourceQuery->value(10).toDouble();
+        entry.bitrate = playlistTrackDataSourceQuery->value(11).toInt();
+        entry.comment = playlistTrackDataSourceQuery->value(12).toString();
+        entry.playcount = playlistTrackDataSourceQuery->value(13).toInt();
+        entry.composer = playlistTrackDataSourceQuery->value(14).toString();
 
         if (entry.artist.isEmpty() && entry.title.isEmpty()) {
             entry.artist =
