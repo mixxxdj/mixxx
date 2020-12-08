@@ -1,5 +1,4 @@
-#ifndef HIDDENTABLEMODEL_H
-#define HIDDENTABLEMODEL_H
+#pragma once
 
 #include "library/basesqltablemodel.h"
 
@@ -17,5 +16,3 @@ class HiddenTableModel final : public BaseSqlTableModel {
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     Capabilities getCapabilities() const final;
 };
-
-#endif

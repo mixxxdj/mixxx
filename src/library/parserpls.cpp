@@ -12,15 +12,13 @@
 //
 #include "library/parserpls.h"
 
-#include <QtDebug>
-#include <QMessageBox>
 #include <QDir>
 #include <QFile>
+#include <QMessageBox>
 #include <QUrl>
+#include <QtDebug>
 
-/**
-   @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
- **/
+#include "moc_parserpls.cpp"
 
 /**
    ToDo:

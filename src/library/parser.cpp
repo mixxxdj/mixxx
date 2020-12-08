@@ -19,11 +19,6 @@
 
 #include "library/parser.h"
 
-/**
-   @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
- **/
-
-
 Parser::Parser() {
 }
 

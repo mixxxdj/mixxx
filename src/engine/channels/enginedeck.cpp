@@ -6,6 +6,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
 #include "engine/enginevumeter.h"
+#include "moc_enginedeck.cpp"
 #include "util/sample.h"
 #include "waveform/waveformwidgetfactory.h"
 

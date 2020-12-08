@@ -18,6 +18,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/treeitem.h"
+#include "moc_cratefeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/dnd.h"

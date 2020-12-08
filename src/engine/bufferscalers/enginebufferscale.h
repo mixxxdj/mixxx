@@ -1,5 +1,4 @@
-#ifndef ENGINEBUFFERSCALE_H
-#define ENGINEBUFFERSCALE_H
+#pragma once
 
 #include <QObject>
 
@@ -15,10 +14,6 @@
 // just gives us stuttering if you set the speed to be lower than this.
 // This took me ages to figure out.
 // -- Albert July 17, 2010.
-
-/**
-  *@author Tue & Ken Haste Andersen
-  */
 
 class EngineBufferScale : public QObject {
     Q_OBJECT
@@ -79,5 +74,3 @@ class EngineBufferScale : public QObject {
     double m_dTempoRatio;
     double m_dPitchRatio;
 };
-
-#endif

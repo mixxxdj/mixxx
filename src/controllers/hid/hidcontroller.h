@@ -5,6 +5,7 @@
 #include "controllers/hid/hiddevice.h"
 #include "util/duration.h"
 
+/// HID controller backend
 class HidController final : public Controller {
     Q_OBJECT
   public:

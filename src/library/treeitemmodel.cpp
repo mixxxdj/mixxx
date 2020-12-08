@@ -1,6 +1,7 @@
 #include "library/treeitemmodel.h"
 
 #include "library/treeitem.h"
+#include "moc_treeitemmodel.cpp"
 
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:

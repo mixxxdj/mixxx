@@ -1,5 +1,4 @@
-#ifndef HEXSPINBOX_H
-#define HEXSPINBOX_H
+#pragma once
 
 #include <QSpinBox>
 #include <QValidator>
@@ -14,5 +13,3 @@ class HexSpinBox : public QSpinBox {
     int valueFromText(const QString& text) const override;
     QValidator::State validate(QString& input, int& pos) const override;
 };
-
-#endif /* HEXSPINBOX_H */

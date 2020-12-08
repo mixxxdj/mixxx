@@ -9,6 +9,7 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
+#include "moc_bpmcontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/duration.h"

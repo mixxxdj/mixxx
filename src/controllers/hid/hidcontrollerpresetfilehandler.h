@@ -1,5 +1,4 @@
-#ifndef HIDCONTROLLERPRESETFILEHANDLER_H
-#define HIDCONTROLLERPRESETFILEHANDLER_H
+#pragma once
 
 #include "controllers/hid/hidcontrollerpreset.h"
 #include "controllers/controllerpresetfilehandler.h"
@@ -16,5 +15,3 @@ class HidControllerPresetFileHandler : public ControllerPresetFileHandler {
             const QString& filePath,
             const QDir& systemPresetsPath);
 };
-
-#endif /* HIDCONTROLLERPRESETFILEHANDLER_H */

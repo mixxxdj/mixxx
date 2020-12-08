@@ -1441,6 +1441,12 @@ gtest_add_tests(
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
   TEST_LIST testsuite
 )
+if (NOT WIN32)
+  # Default to offscreen rendering during tests.
+  # This is required if the build system like Fedora koji/mock does not
+  # allow to pass environment variables into the ctest macro expansion.
+  set_tests_properties(${testsuite} PROPERTIES ENVIRONMENT "QT_QPA_PLATFORM=offscreen")
+endif()
 
 # Benchmarking
 add_custom_target(mixxx-benchmark

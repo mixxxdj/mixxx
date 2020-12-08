@@ -1,5 +1,4 @@
-#ifndef WAVEFORMMARK_H
-#define WAVEFORMMARK_H
+#pragma once
 
 #include <QDomNode>
 #include <QImage>
@@ -132,5 +131,3 @@ inline bool operator<(const WaveformMarkPointer& lhs, const WaveformMarkPointer&
     }
     return leftPosition < rightPosition;
 }
-
-#endif // WAVEFORMMARK_H

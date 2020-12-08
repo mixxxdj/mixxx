@@ -1,5 +1,4 @@
-#ifndef BESSEL8LVMIXEQEFFECT_H
-#define BESSEL8LVMIXEQEFFECT_H
+#pragma once
 
 #include "effects/builtin/lvmixeqbase.h"
 
@@ -60,5 +59,3 @@ class Bessel8LVMixEQEffect : public EffectProcessorImpl<Bessel8LVMixEQEffectGrou
 
     DISALLOW_COPY_AND_ASSIGN(Bessel8LVMixEQEffect);
 };
-
-#endif /* BESSEL8LVMIXEQEFFECT_H */

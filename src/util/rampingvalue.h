@@ -1,6 +1,4 @@
-#ifndef MIXXX_UTIL_RAMPINGVALUE_H
-#define MIXXX_UTIL_RAMPINGVALUE_H
-
+#pragma once
 
 template <typename T>
 class RampingValue {
@@ -18,5 +16,3 @@ class RampingValue {
     T m_value;
     T m_increment;
 };
-
-#endif // MIXXX_UTIL_RAMPINGVALUE_H

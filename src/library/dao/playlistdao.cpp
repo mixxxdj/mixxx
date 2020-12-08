@@ -1,5 +1,7 @@
 #include "library/dao/playlistdao.h"
 
+#include "moc_playlistdao.cpp"
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
 #endif

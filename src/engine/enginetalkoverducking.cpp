@@ -1,5 +1,7 @@
-#include "control/controlproxy.h"
 #include "engine/enginetalkoverducking.h"
+
+#include "control/controlproxy.h"
+#include "moc_enginetalkoverducking.cpp"
 
 namespace {
 

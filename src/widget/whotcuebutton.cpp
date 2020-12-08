@@ -5,6 +5,7 @@
 #include <QtDebug>
 
 #include "mixer/playerinfo.h"
+#include "moc_whotcuebutton.cpp"
 #include "track/track.h"
 
 namespace {

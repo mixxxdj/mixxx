@@ -1,6 +1,4 @@
-
-#ifndef TRACKDROPTARGET_H
-#define TRACKDROPTARGET_H
+#pragma once
 
 #include <QString>
 
@@ -26,5 +24,3 @@ class TrackDropTarget {
     virtual void trackDropped(const QString& filename, const QString& group) = 0;
     virtual void cloneDeck(const QString& sourceGroup, const QString& targetGroup) = 0;
 };
-
-#endif // TRACKDROPTARGET

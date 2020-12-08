@@ -1,5 +1,7 @@
 #include "util/battery/battery.h"
 
+#include "moc_battery.cpp"
+
 // Do not include platform-specific battery implementation unless we are built
 // with battery support (__BATTERY__).
 #ifdef __BATTERY__

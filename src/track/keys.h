@@ -1,5 +1,4 @@
-#ifndef KEYS_H
-#define KEYS_H
+#pragma once
 
 #include <QByteArray>
 #include <QPair>
@@ -53,5 +52,3 @@ class Keys final {
     // For private constructor access.
     friend class KeyFactory;
 };
-
-#endif /* KEYS_H */

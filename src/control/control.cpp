@@ -3,6 +3,7 @@
 #include "control/controlobject.h"
 #include "control/quickaction.h"
 #include "control/threadlocalquickaction.h"
+#include "moc_control.cpp"
 #include "util/stat.h"
 
 //static

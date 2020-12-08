@@ -1,5 +1,4 @@
-#ifndef SYNCCONTROL_H
-#define SYNCCONTROL_H
+#pragma once
 
 #include <QScopedPointer>
 #include <gtest/gtest_prod.h>
@@ -135,6 +134,3 @@ class SyncControl : public EngineControl, public Syncable {
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;
 };
-
-
-#endif /* SYNCCONTROL_H */

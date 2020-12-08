@@ -1,9 +1,4 @@
-// loopingcontrol.h
-// Created on Sep 23, 2008
-// Author: asantoni, rryan
-
-#ifndef LOOPINGCONTROL_H
-#define LOOPINGCONTROL_H
+#pragma once
 
 #include <QObject>
 #include <QStack>
@@ -142,7 +137,6 @@ class LoopingControl : public EngineControl {
     ControlPushButton* m_pLoopOutButton;
     ControlPushButton* m_pLoopOutGotoButton;
     ControlPushButton* m_pLoopExitButton;
-    ControlPushButton* m_pLoopToggleButton;
     ControlPushButton* m_pReloopToggleButton;
     ControlPushButton* m_pReloopAndStopButton;
     ControlObject* m_pCOLoopScale;
@@ -268,5 +262,3 @@ class BeatLoopingControl : public QObject {
     ControlPushButton* m_pToggle;
     ControlObject* m_pEnabled;
 };
-
-#endif /* LOOPINGCONTROL_H */

@@ -1,5 +1,4 @@
-#ifndef ANALYSISDAO_H
-#define ANALYSISDAO_H
+#pragma once
 
 #include <QObject>
 #include <QDir>
@@ -67,5 +66,3 @@ class AnalysisDao : public DAO {
 
     const UserSettingsPointer m_pConfig;
 };
-
-#endif // ANALYSISDAO_H

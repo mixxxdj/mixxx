@@ -1,17 +1,10 @@
-/**
-* @file encoderwavesettings.h
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for vorbis encoder
-*/
-
-#ifndef ENCODERVORBISSETTINGS_H
-#define ENCODERVORBISSETTINGS_H
+#pragma once
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 #include "recording/defs_recording.h"
 
+/// Storage of settings for Vorbis encoder
 class EncoderVorbisSettings : public EncoderRecordingSettings {
     public:
     EncoderVorbisSettings(UserSettingsPointer pConfig);
@@ -39,6 +32,3 @@ class EncoderVorbisSettings : public EncoderRecordingSettings {
     QList<int> m_qualList;
     UserSettingsPointer m_pConfig;
 };
-
-
-#endif // ENCODERVORBISSETTINGS_H

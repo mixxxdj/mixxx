@@ -1,5 +1,4 @@
-#ifndef DEFS_BROADCAST_H
-#define DEFS_BROADCAST_H
+#pragma once
 
 // NOTE(rryan): Do not change this from [Shoutcast] unless you also put upgrade
 // logic in src/preferences/upgrade.h.
@@ -34,5 +33,3 @@
 // the workers are then performed on thread-safe QSharedPointers and not
 // onto the thread-unsafe QVector
 #define BROADCAST_MAX_CONNECTIONS 16
-
-#endif /* DEFS_BROADCAST_H */

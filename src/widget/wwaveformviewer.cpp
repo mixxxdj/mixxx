@@ -10,6 +10,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "moc_wwaveformviewer.cpp"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "util/math.h"

@@ -1,22 +1,20 @@
-// traktorfeature.cpp
-// Created 9/26/2010 by Tobias Rafreider
-
-#include <QtDebug>
-#include <QMessageBox>
-#include <QXmlStreamReader>
-#include <QMap>
-#include <QSettings>
-#include <QStandardPaths>
-
 #include "library/traktor/traktorfeature.h"
 
+#include <QMap>
+#include <QMessageBox>
+#include <QSettings>
+#include <QStandardPaths>
+#include <QXmlStreamReader>
+#include <QtDebug>
+
+#include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/missingtablemodel.h"
 #include "library/queryutil.h"
-#include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_traktorfeature.cpp"
 #include "util/sandbox.h"
 
 namespace {

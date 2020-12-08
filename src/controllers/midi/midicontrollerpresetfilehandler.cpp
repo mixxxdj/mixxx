@@ -1,11 +1,3 @@
-/**
-* @file midicontrollerpresetfilehandler.cpp
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Mon 9 Apr 2012
-* @brief Handles loading and saving of MIDI controller presets.
-*
-*/
-
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/midi/midiutils.h"
 

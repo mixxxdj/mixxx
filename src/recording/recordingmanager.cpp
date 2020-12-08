@@ -12,6 +12,7 @@
 #include "engine/sidechain/enginerecord.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "errordialoghandler.h"
+#include "moc_recordingmanager.cpp"
 #include "recording/defs_recording.h"
 
 #define MIN_DISK_FREE 1024 * 1024 * 1024ll // one gibibyte

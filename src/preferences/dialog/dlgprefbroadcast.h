@@ -1,5 +1,4 @@
-#ifndef DLGPREFBROADCAST_H
-#define DLGPREFBROADCAST_H
+#pragma once
 
 #include <QModelIndex>
 #include <QWidget>
@@ -57,5 +56,3 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     ControlProxy* m_pBroadcastEnabled;
     BroadcastProfilePtr m_pProfileListSelection;
 };
-
-#endif

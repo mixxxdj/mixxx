@@ -1,6 +1,3 @@
-// shoutconnection.cpp
-// Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
 #include <QUrl>
 
 // These includes are only required by ignoreSigpipe, which is unix-only
@@ -25,13 +22,13 @@
 #ifdef __OPUS__
 #include "encoder/encoderopus.h"
 #endif
+#include "engine/sidechain/shoutconnection.h"
 #include "mixer/playerinfo.h"
+#include "moc_shoutconnection.cpp"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
 #include "util/logger.h"
-
-#include <engine/sidechain/shoutconnection.h>
 
 namespace {
 

@@ -1,5 +1,4 @@
-#ifndef DLGAUTODJ_H
-#define DLGAUTODJ_H
+#pragma once
 
 #include <QLineEdit>
 #include <QString>
@@ -69,5 +68,3 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     QString m_enableBtnTooltip;
     QString m_disableBtnTooltip;
 };
-
-#endif //DLGAUTODJ_H

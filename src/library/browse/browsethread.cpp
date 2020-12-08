@@ -2,12 +2,15 @@
  * browsethread.cpp         (C) 2011 Tobias Rafreider
  */
 
+#include "library/browse/browsethread.h"
+
 #include <QDateTime>
 #include <QDirIterator>
 #include <QStringList>
 #include <QtDebug>
 
 #include "library/browse/browsetablemodel.h"
+#include "moc_browsethread.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/datetime.h"

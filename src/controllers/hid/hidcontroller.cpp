@@ -1,8 +1,11 @@
 #include "controllers/hid/hidcontroller.h"
 
+#include <hidapi.h>
+
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
+#include "moc_hidcontroller.cpp"
 #include "util/string.h"
 #include "util/time.h"
 #include "util/trace.h"

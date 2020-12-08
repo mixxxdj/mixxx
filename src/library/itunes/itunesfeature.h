@@ -1,8 +1,4 @@
-// itunesfeaturefeature.h
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef ITUNESFEATURE_H
-#define ITUNESFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QtSql>
@@ -75,5 +71,3 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     QPointer<WLibrarySidebar> m_pSidebarWidget;
     QIcon m_icon;
 };
-
-#endif // ITUNESFEATURE_H

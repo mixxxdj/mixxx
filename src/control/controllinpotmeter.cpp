@@ -1,5 +1,7 @@
 #include "control/controllinpotmeter.h"
 
+#include "moc_controllinpotmeter.cpp"
+
 ControlLinPotmeter::ControlLinPotmeter(const ConfigKey& key,
         double dMinValue,
         double dMaxValue,

@@ -2,27 +2,18 @@
 
 #include <QDateTime>
 
-#include "audio/types.h"
+#include "audio/streaminfo.h"
 #include "track/albuminfo.h"
 #include "track/trackinfo.h"
 
 namespace mixxx {
-
-namespace audio {
-
-class StreamInfo;
-
-} // namespace audio
 
 class TrackMetadata final {
     // Audio properties
     //  - read-only
     //  - stored in file tags
     //  - adjusted when opening the audio stream (if available)
-    MIXXX_DECL_PROPERTY(audio::ChannelCount, channels, ChannelCount)
-    MIXXX_DECL_PROPERTY(audio::SampleRate, sampleRate, SampleRate)
-    MIXXX_DECL_PROPERTY(audio::Bitrate, bitrate, Bitrate)
-    MIXXX_DECL_PROPERTY(Duration, duration, Duration)
+    MIXXX_DECL_PROPERTY(audio::StreamInfo, streamInfo, StreamInfo)
 
     // Track properties
     //   - read-write
@@ -39,7 +30,7 @@ class TrackMetadata final {
     TrackMetadata& operator=(TrackMetadata&&) = default;
     TrackMetadata& operator=(const TrackMetadata&) = default;
 
-    bool updateAudioPropertiesFromStream(
+    bool updateStreamInfoFromSource(
             const audio::StreamInfo& streamInfo);
 
     // Adjusts floating-point values to match their string representation
@@ -56,6 +47,14 @@ class TrackMetadata final {
     bool anyFileTagsModified(
             const TrackMetadata& importedFromFile,
             Bpm::Comparison cmpBpm = Bpm::Comparison::Default) const;
+
+    QString getBitrateText() const;
+
+    double getDurationSecondsRounded() const {
+        return std::round(getStreamInfo().getDuration().toDoubleSeconds());
+    }
+    QString getDurationText(
+            Duration::Precision precision) const;
 
     // Parse an format date/time values according to ISO 8601
     static QDate parseDate(const QString& str) {

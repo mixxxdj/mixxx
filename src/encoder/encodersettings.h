@@ -1,17 +1,10 @@
-/**
-* @file encodersettings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief Encoder settings interface for encoders.
-*/
-
-#ifndef ENCODERSETTINGS_H
-#define ENCODERSETTINGS_H
+#pragma once
 
 #include <QList>
 #include <QObject>
 #include "util/memory.h"
 
+/// Encoder settings interface for encoders
 class EncoderSettings {
     public:
         class OptionsGroup {
@@ -62,5 +55,3 @@ class EncoderSettings {
 };
 
 typedef std::shared_ptr<EncoderSettings> EncoderSettingsPointer;
-
-#endif // ENCODERSETTINGS_H

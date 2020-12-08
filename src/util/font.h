@@ -1,5 +1,4 @@
-#ifndef FONT_H
-#define FONT_H
+#pragma once
 
 #include <QFontDatabase>
 #include <QString>
@@ -65,5 +64,3 @@ class FontUtils {
   private:
     FontUtils() {}
 };
-
-#endif /* FONT_H */

@@ -26,6 +26,7 @@
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
+#include "moc_enginebuffer.cpp"
 #include "preferences/usersettings.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"

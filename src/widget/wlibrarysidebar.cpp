@@ -2,11 +2,12 @@
 
 #include <QFileInfo>
 #include <QHeaderView>
+#include <QMimeData>
 #include <QUrl>
 #include <QtDebug>
-#include <QMimeData>
 
 #include "library/sidebarmodel.h"
+#include "moc_wlibrarysidebar.cpp"
 #include "util/dnd.h"
 
 const int expand_time = 250;
