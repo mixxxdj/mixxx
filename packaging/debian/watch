@@ -1,6 +1,3 @@
-# Example watch control file for uscan
-# Rename this file to "watch" and then you can run the "uscan" command
-# to check for upstream updates and more.
-# Site		Directory		Pattern			Version	Script
-version=2
-http://heanet.dl.sourceforge.net/sourceforge/mixxx/mixxx-(\d+\.+\d+\.+\d).tar.gz
+version=4
+opts=filenamemangle=s/.+\/v?(\d\S+)\.tar\.gz/<project>-$1\.tar\.gz/ \
+  https://github.com/mixxxdj/mixxx/tags .*/v?(\d\S+)\.tar\.gz
