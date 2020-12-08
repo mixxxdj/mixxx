@@ -366,13 +366,6 @@ void WaveformWidgetFactory::addTimerListener(WVuMeter* pWidget) {
 
 void WaveformWidgetFactory::slotSkinLoaded() {
     setWidgetTypeFromConfig();
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0) && defined __WINDOWS__
-    // This regenerates the waveforms twice because of a bug found on Windows
-    // where the first one fails.
-    // The problem is that the window of the widget thinks that it is not exposed.
-    // (https://doc.qt.io/qt-5/qwindow.html#exposeEvent )
-    setWidgetTypeFromConfig();
-#endif
 }
 
 bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
