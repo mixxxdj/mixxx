@@ -1,5 +1,4 @@
-#ifndef KNOBEVENTHANDLER_H
-#define KNOBEVENTHANDLER_H
+#pragma once
 
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -110,5 +109,3 @@ class KnobEventHandler {
     QPoint m_startPos;
     QCursor m_blankCursor;
 };
-
-#endif /* KNOBEVENTHANDLER_H */

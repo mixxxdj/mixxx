@@ -1,6 +1,3 @@
-// cuecontrol.cpp
-// Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/controls/cuecontrol.h"
 
 #include <QMutexLocker>
@@ -9,6 +6,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
+#include "moc_cuecontrol.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
 #include "util/color/color.h"

@@ -1,24 +1,3 @@
-/***************************************************************************
-                          vinylcontrolxwax.cpp
-                             -------------------
-    begin                : Sometime in Summer 2007
-    copyright            : (C) 2007 Albert Santoni
-                           (C) 2007 Mark Hills
-                           (C) 2011 Owen Williams
-                           Portions of xwax used under the terms of the GPL
-    current maintainer   : Owen Williams
-    email                : owilliams@mixxx.org
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include <QtDebug>
 #include <limits.h>
 
@@ -35,7 +14,6 @@
    2) Tons of cleanup
    3) Speed up needle dropping
    4) Extrapolate small dropouts and keep track of "dynamics"
-
  ********************/
 
 namespace {

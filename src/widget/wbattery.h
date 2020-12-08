@@ -1,5 +1,4 @@
-#ifndef WBATTERY_H
-#define WBATTERY_H
+#pragma once
 
 #include <QList>
 #include <QPixmap>
@@ -41,5 +40,3 @@ class WBattery : public WWidget {
     QVector<PaintablePointer> m_dischargingPixmaps;
     QVector<PaintablePointer> m_chargingPixmaps;
 };
-
-#endif /* WBATTERY_H */

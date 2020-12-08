@@ -6,6 +6,7 @@
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
+#include "moc_wmainmenubar.cpp"
 #include "util/cmdlineargs.h"
 #include "util/experiment.h"
 #include "vinylcontrol/defs_vinylcontrol.h"

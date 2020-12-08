@@ -1,4 +1,3 @@
-
 #include <QtSql>
 #include <QString>
 #include <QtDebug>

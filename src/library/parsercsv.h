@@ -11,8 +11,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef PARSERCSV_H
-#define PARSERCSV_H
+#pragma once
 
 #include <QList>
 #include <QString>
@@ -39,5 +38,3 @@ private:
 
 
 };
-
-#endif

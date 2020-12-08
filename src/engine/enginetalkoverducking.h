@@ -1,3 +1,5 @@
+#pragma once
+
 #include "engine/enginesidechaincompressor.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"

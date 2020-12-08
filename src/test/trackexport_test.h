@@ -1,3 +1,5 @@
+#pragma once
+
 #include "library/export/trackexportworker.h"
 
 #include <future>

@@ -1,22 +1,4 @@
-/***************************************************************************
-                          dlgprefvinyl.h  -  description
-                             -------------------
-    begin                : Thu Oct 23 2006
-    copyright            : (C) 2006 by Stefan Langhammer
-    email                : stefan.langhammer@9elements.com
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFVINYL_H
-#define DLGPREFVINYL_H
+#pragma once
 
 #include <QSpinBox>
 #include <QWidget>
@@ -71,5 +53,3 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     QList<ControlProxy*> m_COSpeeds;
     ControlProxy* m_pNumDecks;
 };
-
-#endif

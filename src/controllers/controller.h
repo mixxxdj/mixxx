@@ -19,7 +19,7 @@ class ControllerJSProxy;
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
-    Controller();
+    explicit Controller();
     ~Controller() override;  // Subclass should call close() at minimum.
 
     /// The object that is exposed to the JS scripts as the "controller" object.

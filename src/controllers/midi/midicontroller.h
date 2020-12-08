@@ -1,17 +1,4 @@
-/**
-* @file midicontroller.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Tue 7 Feb 2012
-* @brief MIDI Controller base class
-*
-* This is a base class representing a MIDI controller.
-*   It must be inherited by a class that implements it on some API.
-*
-*   Note that the subclass' destructor should call close() at a minimum.
-*/
-
-#ifndef MIDICONTROLLER_H
-#define MIDICONTROLLER_H
+#pragma once
 
 #include "controllers/controller.h"
 #include "controllers/midi/midicontrollerpreset.h"
@@ -20,6 +7,14 @@
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
 
+class DlgControllerLearning;
+
+/// MIDI Controller base class
+///
+/// This is a base class representing a MIDI controller.
+/// It must be inherited by a class that implements it on some API.
+///
+/// Note that the subclass' destructor should call close() at a minimum.
 class MidiController : public Controller {
     Q_OBJECT
   public:
@@ -49,11 +44,10 @@ class MidiController : public Controller {
         return m_preset.isMappable();
     }
 
-    bool matchPreset(const PresetInfo& preset)  override;
+    bool matchPreset(const PresetInfo& preset) override;
 
   signals:
-    void messageReceived(unsigned char status, unsigned char control,
-                         unsigned char value);
+    void messageReceived(unsigned char status, unsigned char control, unsigned char value);
 
   protected:
     virtual void sendShortMsg(unsigned char status,
@@ -144,5 +138,3 @@ class MidiControllerJSProxy : public ControllerJSProxy {
   private:
     MidiController* m_pMidiController;
 };
-
-#endif

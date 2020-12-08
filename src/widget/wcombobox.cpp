@@ -1,7 +1,9 @@
-#include <QtDebug>
-#include <QIcon>
-
 #include "widget/wcombobox.h"
+
+#include <QIcon>
+#include <QtDebug>
+
+#include "moc_wcombobox.cpp"
 
 WComboBox::WComboBox(QWidget* pParent)
         : QComboBox(pParent),

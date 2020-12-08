@@ -1,5 +1,4 @@
-#ifndef PLAYLISTDAO_H
-#define PLAYLISTDAO_H
+#pragma once
 
 #include <QHash>
 #include <QObject>
@@ -59,6 +58,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int createUniquePlaylist(QString* pName, const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
     void deletePlaylist(const int playlistId);
+    /// Delete Playlists with fewer entries then "length"
+    /// Needs to be called inside a transaction.
+    /// @return number of deleted playlists, -1 on error
+    int deleteAllPlaylistsWithFewerTracks(PlaylistDAO::HiddenType type, int minNumberOfTracks);
     // Rename a playlist
     void renamePlaylist(const int playlistId, const QString& newName);
     // Lock or unlock a playlist
@@ -147,5 +150,3 @@ class PlaylistDAO : public QObject, public virtual DAO {
     AutoDJProcessor* m_pAutoDJProcessor;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };
-
-#endif //PLAYLISTDAO_H

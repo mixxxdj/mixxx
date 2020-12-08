@@ -1,5 +1,4 @@
-#ifndef UTIL_BATTERY_BATTERYMAC_H
-#define UTIL_BATTERY_BATTERYMAC_H
+#pragma once
 
 #include "util/battery/battery.h"
 
@@ -11,5 +10,3 @@ class BatteryMac : public Battery {
   protected:
     void read() override;
 };
-
-#endif /* UTIL_BATTERY_BATTERYMAC_H */

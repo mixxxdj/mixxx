@@ -1,12 +1,13 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
-#include "mixxx.h"
-#include "library/library.h"
 #include "library/dao/analysisdao.h"
+#include "library/library.h"
+#include "mixxx.h"
+#include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "util/db/dbconnectionpooled.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetfactory.h"
 
 DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
                                  UserSettingsPointer pConfig, Library* pLibrary)
@@ -215,8 +216,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Default zoom level is 3 in WaveformWidgetFactory.
     defaultZoomComboBox->setCurrentIndex(3 + 1);
 
-    // Don't synchronize zoom by default.
-    synchronizeZoomCheckBox->setChecked(false);
+    synchronizeZoomCheckBox->setChecked(true);
 
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(2);

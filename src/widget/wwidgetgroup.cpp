@@ -2,13 +2,14 @@
 
 #include <QLayout>
 #include <QMap>
-#include <QStylePainter>
 #include <QStackedLayout>
+#include <QStylePainter>
 
+#include "moc_wwidgetgroup.cpp"
 #include "skin/skincontext.h"
-#include "widget/wwidget.h"
 #include "util/debug.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),

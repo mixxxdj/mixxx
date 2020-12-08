@@ -1,16 +1,16 @@
 #include "effects/effectsmanager.h"
 
 #include <QMetaType>
-
 #include <algorithm>
 
-#include "engine/effects/engineeffectsmanager.h"
 #include "effects/effectchainmanager.h"
 #include "effects/effectsbackend.h"
 #include "effects/effectslot.h"
 #include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectrack.h"
 #include "engine/effects/engineeffectchain.h"
+#include "engine/effects/engineeffectrack.h"
+#include "engine/effects/engineeffectsmanager.h"
+#include "moc_effectsmanager.cpp"
 #include "util/assert.h"
 
 namespace {

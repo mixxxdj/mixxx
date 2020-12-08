@@ -1,5 +1,7 @@
 #include "skin/tooltips.h"
 
+#include "moc_tooltips.cpp"
+
 Tooltips::Tooltips() {
     addStandardTooltips();
 }

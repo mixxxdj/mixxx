@@ -12,6 +12,7 @@ struct libusb_device_handle;
 struct libusb_context;
 struct libusb_device_descriptor;
 
+/// USB Bulk controller backend
 class BulkReader : public QThread {
     Q_OBJECT
   public:

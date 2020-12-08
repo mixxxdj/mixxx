@@ -1,11 +1,3 @@
-/**
-* @file encoderflacsettings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for flac encoder
-*/
-
-
 #include "encoder/encoderflacsettings.h"
 #include "recording/defs_recording.h"
 #include <sndfile.h>

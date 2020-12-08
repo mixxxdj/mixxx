@@ -1,6 +1,3 @@
-// broadcastprofile.cpp
-// Created June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
 #include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
@@ -15,14 +12,14 @@ using namespace QKeychain;
 #endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
-#include "recording/defs_recording.h"
-#include "defs_urls.h"
-#include "util/compatibility.h"
-#include "util/xml.h"
-#include "util/memory.h"
-#include "util/logger.h"
-
 #include "broadcastprofile.h"
+#include "defs_urls.h"
+#include "moc_broadcastprofile.cpp"
+#include "recording/defs_recording.h"
+#include "util/compatibility.h"
+#include "util/logger.h"
+#include "util/memory.h"
+#include "util/xml.h"
 
 namespace {
 constexpr const char* kDoctype = "broadcastprofile";

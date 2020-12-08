@@ -1,5 +1,4 @@
-#ifndef TRACKDAO_H
-#define TRACKDAO_H
+#pragma once
 
 #include <QFileInfo>
 #include <QObject>
@@ -184,5 +183,3 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(TrackDAO::ResolveTrackIdFlags)
-
-#endif //TRACKDAO_H

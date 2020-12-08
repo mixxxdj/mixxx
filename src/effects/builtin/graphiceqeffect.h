@@ -1,5 +1,4 @@
-#ifndef GRAPHICEQEFFECT_H
-#define GRAPHICEQEFFECT_H
+#pragma once
 
 #include <QMap>
 
@@ -58,5 +57,3 @@ class GraphicEQEffect : public EffectProcessorImpl<GraphicEQEffectGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(GraphicEQEffect);
 };
-
-#endif // GRAPHICEQEFFECT_H

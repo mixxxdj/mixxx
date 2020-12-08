@@ -6,6 +6,7 @@
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/portmidienumerator.h"
+#include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
 #include "util/time.h"
 #include "util/trace.h"

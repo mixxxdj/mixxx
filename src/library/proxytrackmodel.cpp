@@ -1,5 +1,4 @@
-// proxytrackmodel.cpp
-// Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
+#include "library/proxytrackmodel.h"
 
 #include "library/proxytrackmodel.h"
 

@@ -1,5 +1,4 @@
-#ifndef ANALYZER_PLUGINS_ANALYZERPLUGIN_H
-#define ANALYZER_PLUGINS_ANALYZERPLUGIN_H
+#pragma once
 
 #include <QString>
 
@@ -66,5 +65,3 @@ class AnalyzerKeyPlugin : public AnalyzerPlugin {
 };
 
 } // namespace mixxx
-
-#endif /* ANALYZER_PLUGINS_ANALYZERPLUGIN_H */

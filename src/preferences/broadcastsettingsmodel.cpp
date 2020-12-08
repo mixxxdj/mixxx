@@ -1,9 +1,8 @@
-// broadcastsettingsmodel.cpp
-// Created on August 7th by Stéphane Lepin (Palakis)
-
-#include <preferences/broadcastsettingsmodel.h>
+#include "preferences/broadcastsettingsmodel.h"
 
 #include <preferences/broadcastsettings.h>
+
+#include "moc_broadcastsettingsmodel.cpp"
 
 namespace {
 const int kColumnEnabled = 0;

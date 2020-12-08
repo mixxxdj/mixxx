@@ -1,33 +1,15 @@
-/***************************************************************************
-                          dlgprefvinyl.cpp  -  description
-                             -------------------
-    begin                : Thu Oct 23 2006
-    copyright            : (C) 2006 by Stefan Langhammer
-                           (C) 2007 by Albert Santoni
-    email                : stefan.langhammer@9elements.com
-                           gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+#include "preferences/dialog/dlgprefvinyl.h"
 
 #include <QtDebug>
 
-#include "preferences/dialog/dlgprefvinyl.h"
-
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "defs_urls.h"
 #include "mixer/playermanager.h"
+#include "moc_dlgprefvinyl.cpp"
+#include "util/platform.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "defs_urls.h"
-#include "util/platform.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            UserSettingsPointer  _config)
@@ -166,7 +148,7 @@ void DlgPrefVinyl::slotVinylType4Changed(const QString& text) {
     LeadinTime4->setValue(getDefaultLeadIn(text));
 }
 
-/** @brief Performs any necessary actions that need to happen when the prefs dialog is opened */
+/// Performs any necessary actions that need to happen when the prefs dialog is opened.
 void DlgPrefVinyl::slotShow() {
     if (m_pVCManager) {
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -180,7 +162,7 @@ void DlgPrefVinyl::slotShow() {
     }
 }
 
-/** @brief Performs any necessary actions that need to happen when the prefs dialog is closed */
+/** Performs any necessary actions that need to happen when the prefs dialog is closed. */
 void DlgPrefVinyl::slotHide() {
     if (m_pVCManager) {
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {

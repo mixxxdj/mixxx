@@ -6,6 +6,7 @@
 #include <QTimerEvent>
 #include <mutex> // std::once_flag
 
+#include "moc_jsonwebtask.cpp"
 #include "util/counter.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"

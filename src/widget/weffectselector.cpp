@@ -1,8 +1,9 @@
-#include <QtDebug>
-
 #include "widget/weffectselector.h"
 
+#include <QtDebug>
+
 #include "effects/effectsmanager.h"
+#include "moc_weffectselector.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
