@@ -608,7 +608,9 @@ bool exportTrackMetadataIntoTag(
     //
     // FIXME: We're only dumping FLAC tags for now, since the Ogg format is
     // different we don't support it yet.
-    if (fileType == FileType::FLAC) {
+    if (fileType == FileType::FLAC &&
+            trackMetadata.getTrackInfo().getSeratoTags().status() !=
+                    SeratoTags::ParserStatus::Failed) {
         writeCommentField(
                 pTag,
                 kCommentFieldKeySeratoBeatGrid,

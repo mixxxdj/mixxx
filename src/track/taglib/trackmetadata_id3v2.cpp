@@ -1284,18 +1284,20 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
     // does not modify them.
 #if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
-    writeGeneralEncapsulatedObjectFrame(
-            pTag,
-            kFrameDescriptionSeratoBeatGrid,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
-    writeGeneralEncapsulatedObjectFrame(
-            pTag,
-            kFrameDescriptionSeratoMarkers,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
-    writeGeneralEncapsulatedObjectFrame(
-            pTag,
-            kFrameDescriptionSeratoMarkers2,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
+    if (trackMetadata.getTrackInfo().getSeratoTags().status() != SeratoTags::ParserStatus::Failed) {
+        writeGeneralEncapsulatedObjectFrame(
+                pTag,
+                kFrameDescriptionSeratoBeatGrid,
+                trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
+        writeGeneralEncapsulatedObjectFrame(
+                pTag,
+                kFrameDescriptionSeratoMarkers,
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
+        writeGeneralEncapsulatedObjectFrame(
+                pTag,
+                kFrameDescriptionSeratoMarkers2,
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
+    }
 #endif // __EXPORT_SERATO_MARKERS__
 
     return true;

@@ -1379,17 +1379,23 @@ ExportTrackMetadataResult Track::exportMetadata(
         mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
         DEBUG_ASSERT(seratoTags);
 
-        seratoTags->setTrackColor(getColor());
-        seratoTags->setBpmLocked(isBpmLocked());
+        if (seratoTags->status() == mixxx::SeratoTags::ParserStatus::Failed) {
+            kLogger.warning()
+                    << "Refusing to overwrite Serato metadata that failed to parse:"
+                    << getLocation();
+        } else {
+            seratoTags->setTrackColor(getColor());
+            seratoTags->setBpmLocked(isBpmLocked());
 
-        QList<mixxx::CueInfo> cueInfos;
-        for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
-            cueInfos.append(pCue->getCueInfo(sampleRate));
+            QList<mixxx::CueInfo> cueInfos;
+            for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+                cueInfos.append(pCue->getCueInfo(sampleRate));
+            }
+
+            double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
+                    getLocation(), streamInfo->getSignalInfo());
+            seratoTags->setCueInfos(cueInfos, timingOffset);
         }
-
-        double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
-                getLocation(), streamInfo->getSignalInfo());
-        seratoTags->setCueInfos(cueInfos, timingOffset);
     }
 #else
     Q_UNUSED(pConfig);
