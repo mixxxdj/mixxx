@@ -1368,21 +1368,24 @@ ExportTrackMetadataResult Track::exportMetadata(
         const auto streamInfo = m_record.getStreamInfoFromSource();
         VERIFY_OR_DEBUG_ASSERT(streamInfo && streamInfo->isValid()) {
             kLogger.warning()
-                    << "Cannot write Serato Markers tag because stream info is not available:"
+                    << "Cannot write Serato metadata because stream info is not available:"
                     << getLocation();
+            return ExportTrackMetadataResult::Skipped;
         }
 
         const mixxx::audio::SampleRate sampleRate =
                 streamInfo->getSignalInfo().getSampleRate();
 
+        mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
+        DEBUG_ASSERT(seratoTags);
+
+        seratoTags->setTrackColor(getColor());
+        seratoTags->setBpmLocked(isBpmLocked());
+
         QList<mixxx::CueInfo> cueInfos;
         for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
             cueInfos.append(pCue->getCueInfo(sampleRate));
         }
-
-        mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
-        seratoTags->setTrackColor(getColor());
-        seratoTags->setBpmLocked(isBpmLocked());
 
         double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
                 getLocation(), streamInfo->getSignalInfo());
