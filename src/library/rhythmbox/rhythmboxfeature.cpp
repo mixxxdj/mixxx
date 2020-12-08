@@ -1,17 +1,18 @@
-#include <QMessageBox>
-#include <QtDebug>
-#include <QStringList>
-#include <QUrl>
-
 #include "library/rhythmbox/rhythmboxfeature.h"
 
-#include "library/baseexternaltrackmodel.h"
+#include <QMessageBox>
+#include <QStringList>
+#include <QUrl>
+#include <QtDebug>
+
 #include "library/baseexternalplaylistmodel.h"
+#include "library/baseexternaltrackmodel.h"
 #include "library/library.h"
+#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
-#include "library/queryutil.h"
+#include "moc_rhythmboxfeature.cpp"
 
 RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),

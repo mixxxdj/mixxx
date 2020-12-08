@@ -1,10 +1,11 @@
+#include "library/scanner/recursivescandirectorytask.h"
+
 #include <QCryptographicHash>
 #include <QDirIterator>
 
-#include "library/scanner/recursivescandirectorytask.h"
-
-#include "library/scanner/libraryscanner.h"
 #include "library/scanner/importfilestask.h"
+#include "library/scanner/libraryscanner.h"
+#include "moc_recursivescandirectorytask.cpp"
 #include "util/timer.h"
 
 RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(

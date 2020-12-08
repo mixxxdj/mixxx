@@ -1,9 +1,9 @@
 #include "library/hiddentablemodel.h"
 
+#include "library/dao/trackschema.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "library/dao/trackschema.h"
-
+#include "moc_hiddentablemodel.cpp"
 
 HiddenTableModel::HiddenTableModel(QObject* parent,
                                    TrackCollectionManager* pTrackCollectionManager)

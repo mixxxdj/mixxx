@@ -1,5 +1,7 @@
 #include "controllers/controllermappingtablemodel.h"
 
+#include "moc_controllermappingtablemodel.cpp"
+
 ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent)
         : QAbstractTableModel(pParent),
           m_pMidiPreset(NULL),

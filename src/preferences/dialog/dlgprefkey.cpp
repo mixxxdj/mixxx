@@ -1,20 +1,3 @@
-/***************************************************************************
-                          dlgprefkey.cpp  -  description
-                             -------------------
-    begin                : Thu Jun 7 2012
-    copyright            : (C) 2012 by Keith Salisbury
-    email                : keithsalisbury@gmail.com
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "preferences/dialog/dlgprefkey.h"
 
 #include <QLineEdit>
@@ -22,6 +5,7 @@
 
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
+#include "moc_dlgprefkey.cpp"
 #include "util/compatibility.h"
 #include "util/xml.h"
 

@@ -14,6 +14,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "moc_wnumberrate.cpp"
 #include "util/math.h"
 
 namespace {

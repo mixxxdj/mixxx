@@ -1,5 +1,4 @@
-#ifndef FILE_H
-#define FILE_H
+#pragma once
 
 #include <QFile>
 #include <QDir>
@@ -34,5 +33,3 @@ class MDir {
     QDir m_dir;
     SecurityTokenPointer m_pSecurityToken;
 };
-
-#endif /* FILE_H */

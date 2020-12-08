@@ -1,5 +1,3 @@
-// Created by RJ Ryan (rryan@mit.edu) 1/29/2010
-
 #include "library/basesqltablemodel.h"
 
 #include <QUrl>
@@ -12,6 +10,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "moc_basesqltablemodel.cpp"
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "track/trackmetadata.h"

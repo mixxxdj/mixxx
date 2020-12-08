@@ -10,6 +10,7 @@
 #include <QStandardItemModel>
 #include <QTableView>
 
+#include "moc_colorpaletteeditor.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "util/color/predefinedcolorpalettes.h"
 

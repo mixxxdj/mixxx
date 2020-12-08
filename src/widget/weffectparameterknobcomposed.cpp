@@ -1,5 +1,8 @@
-#include "widget/effectwidgetutils.h"
 #include "widget/weffectparameterknobcomposed.h"
+
+#include "moc_effectwidgetutils.cpp"
+#include "moc_weffectparameterknobcomposed.cpp"
+#include "widget/effectwidgetutils.h"
 
 namespace {
 const QString effectGroupSeparator = "_";

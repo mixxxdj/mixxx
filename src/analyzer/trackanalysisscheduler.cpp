@@ -2,9 +2,8 @@
 
 #include "library/library.h"
 #include "library/trackcollection.h"
-
+#include "moc_trackanalysisscheduler.cpp"
 #include "util/logger.h"
-
 
 namespace {
 

@@ -1,6 +1,3 @@
-// encoderopussettings.cpp
-// Create on August 15th 2017 by Palakis
-
 #include <QMap>
 
 #include "encoder/encoderopussettings.h"

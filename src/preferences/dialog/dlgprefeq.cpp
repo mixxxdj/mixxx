@@ -1,20 +1,3 @@
-/***************************************************************************
-                          dlgprefeq.cpp  -  description
-                             -------------------
-    begin                : Thu Jun 7 2007
-    copyright            : (C) 2007 by John Sully
-    email                : jsully@scs.ryerson.ca
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "preferences/dialog/dlgprefeq.h"
 
 #include <QHBoxLayout>
@@ -30,6 +13,7 @@
 #include "effects/effectslot.h"
 #include "engine/filters/enginefilterbessel4.h"
 #include "mixer/playermanager.h"
+#include "moc_dlgprefeq.cpp"
 #include "util/math.h"
 
 const QString kConfigKey = "[Mixer Profile]";

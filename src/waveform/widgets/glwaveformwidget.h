@@ -1,5 +1,4 @@
-#ifndef GLWAVEFORMWIDGET_H
-#define GLWAVEFORMWIDGET_H
+#pragma once
 
 #include <QGLWidget>
 
@@ -27,5 +26,3 @@ class GLWaveformWidget : public GLWaveformWidgetAbstract {
   private:
     friend class WaveformWidgetFactory;
 };
-
-#endif // GLWAVEFORMWIDGET_H

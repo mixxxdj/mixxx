@@ -1,8 +1,4 @@
-// wlibrarytableview.h
-// Created 10/19/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef WLIBRARYTABLEVIEW_H
-#define WLIBRARYTABLEVIEW_H
+#pragma once
 
 #include <QFont>
 #include <QString>
@@ -26,14 +22,13 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     void moveSelection(int delta) override;
 
     /**
-     * @brief saveVScrollBarPos function saves current position of scrollbar
-     * using string key - can be any value but should invariant for model
+     * Saves current position of scrollbar using string key
+     * can be any value but should invariant for model
      * @param key unique for trackmodel
      */
     void saveVScrollBarPos(TrackModel* key);
     /**
-     * @brief restoreVScrollBarPos function finds scrollbar value associated with model
-     * by given key and restores it
+     * Finds scrollbar value associated with model by given key and restores it
      * @param key unique for trackmodel
      */
     void restoreVScrollBarPos(TrackModel* key);
@@ -69,6 +64,3 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     // executed
     int m_noSearchVScrollBarPos;
 };
-
-
-#endif /* WLIBRARYTABLEVIEW_H */

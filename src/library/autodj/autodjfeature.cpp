@@ -1,7 +1,3 @@
-// autodjfeature.cpp
-// FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "library/autodj/autodjfeature.h"
 
 #include <QMenu>
@@ -18,6 +14,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
 #include "mixer/playermanager.h"
+#include "moc_autodjfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility.h"

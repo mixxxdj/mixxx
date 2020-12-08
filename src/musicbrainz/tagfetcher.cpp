@@ -3,6 +3,7 @@
 #include <QFuture>
 #include <QtConcurrentRun>
 
+#include "moc_tagfetcher.cpp"
 #include "musicbrainz/chromaprinter.h"
 #include "track/track.h"
 #include "util/thread_affinity.h"

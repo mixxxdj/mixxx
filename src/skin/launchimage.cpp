@@ -7,6 +7,8 @@
 #include <QStyleOption>
 #include <QVBoxLayout>
 
+#include "moc_launchimage.cpp"
+
 LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
         : QWidget(pParent) {
     if (styleSheet.isEmpty()) {
@@ -65,4 +67,3 @@ void LaunchImage::paintEvent(QPaintEvent *)
     QPainter p(this);
     style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
 }
-

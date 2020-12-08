@@ -1,11 +1,3 @@
-/**
-  * @file hidcontroller.cpp
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Sun May 1 2011
-  * @brief HID controller backend
-  *
-  */
-
 #include "controllers/hid/hidcontroller.h"
 
 #include <cstring>
@@ -13,6 +5,7 @@
 
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
+#include "moc_hidcontroller.cpp"
 #include "util/path.h" // for PATH_MAX on Windows
 #include "util/time.h"
 #include "util/trace.h"

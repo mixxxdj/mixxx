@@ -1,11 +1,13 @@
-#include <QStyle>
 #include "widget/controlwidgetconnection.h"
 
-#include "widget/wbasewidget.h"
+#include <QStyle>
+
 #include "control/controlproxy.h"
+#include "moc_controlwidgetconnection.cpp"
+#include "util/assert.h"
 #include "util/debug.h"
 #include "util/valuetransformer.h"
-#include "util/assert.h"
+#include "widget/wbasewidget.h"
 
 ControlWidgetConnection::ControlWidgetConnection(
         WBaseWidget* pBaseWidget,

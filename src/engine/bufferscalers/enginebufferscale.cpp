@@ -1,6 +1,7 @@
 #include "engine/bufferscalers/enginebufferscale.h"
 
 #include "engine/engine.h"
+#include "moc_enginebufferscale.cpp"
 #include "util/defs.h"
 
 EngineBufferScale::EngineBufferScale()

@@ -1,5 +1,4 @@
-#ifndef BROWSETABLEMODEL_H
-#define BROWSETABLEMODEL_H
+#pragma once
 
 #include <QStandardItemModel>
 #include <QMimeData>
@@ -93,5 +92,3 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
 
 };
-
-#endif

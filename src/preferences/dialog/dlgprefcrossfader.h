@@ -1,5 +1,4 @@
-#ifndef DLGPREFCROSSFADER_H
-#define DLGPREFCROSSFADER_H
+#pragma once
 
 #include <QWidget>
 
@@ -46,5 +45,3 @@ class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfader
 
     bool m_xFaderReverse;
 };
-
-#endif

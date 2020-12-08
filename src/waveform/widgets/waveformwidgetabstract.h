@@ -1,5 +1,4 @@
-#ifndef WAVEFORMWIDGETABSTRACT_H
-#define WAVEFORMWIDGETABSTRACT_H
+#pragma once
 
 #include <QGLWidget>
 #include <QString>
@@ -61,5 +60,3 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public QGLWidget
 
     GLWaveformRenderer* m_pGlRenderer;
 };
-
-#endif // WAVEFORMWIDGETABSTRACT_H

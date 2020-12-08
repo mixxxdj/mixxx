@@ -1,5 +1,4 @@
-#ifndef CONTROLPICKERMENU_H
-#define CONTROLPICKERMENU_H
+#pragma once
 
 #include <QMenu>
 #include <QObject>
@@ -110,5 +109,3 @@ class ControlPickerMenu : public QMenu {
     QHash<ConfigKey, QString> m_descriptionsByKey;
     QHash<ConfigKey, QString> m_titlesByKey;
 };
-
-#endif /* CONTROLPICKERMENU_H */

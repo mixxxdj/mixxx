@@ -6,8 +6,9 @@
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "widget/wlibrarysidebar.h"
+#include "moc_baseexternallibraryfeature.cpp"
 #include "util/logger.h"
+#include "widget/wlibrarysidebar.h"
 
 namespace {
 

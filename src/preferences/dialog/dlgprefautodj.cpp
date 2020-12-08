@@ -1,5 +1,7 @@
 #include "preferences/dialog/dlgprefautodj.h"
 
+#include "moc_dlgprefautodj.cpp"
+
 DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
                              UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),

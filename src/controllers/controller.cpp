@@ -1,16 +1,11 @@
-/**
-* @file controller.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Sat Apr 30 2011
-* @brief Base class representing a physical (or software) controller.
-*/
+#include "controllers/controller.h"
 
 #include <QApplication>
 #include <QScriptValue>
 
-#include "controllers/controller.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
+#include "moc_controller.cpp"
 #include "util/screensaver.h"
 
 Controller::Controller(UserSettingsPointer pConfig)

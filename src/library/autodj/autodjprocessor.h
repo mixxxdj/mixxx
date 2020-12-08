@@ -1,5 +1,4 @@
-#ifndef AUTODJPROCESSOR_H
-#define AUTODJPROCESSOR_H
+#pragma once
 
 #include <QModelIndexList>
 #include <QObject>
@@ -297,5 +296,3 @@ class AutoDJProcessor : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
-
-#endif /* AUTODJPROCESSOR_H */

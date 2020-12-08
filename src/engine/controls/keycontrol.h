@@ -1,5 +1,4 @@
-#ifndef KEYCONTROL_H
-#define KEYCONTROL_H
+#pragma once
 
 #include "engine/controls/enginecontrol.h"
 #include "control/controlvalue.h"
@@ -78,5 +77,3 @@ class KeyControl : public EngineControl {
     QAtomicInt m_updatePitchAdjustRequest;
     QAtomicInt m_updateRateRequest;
 };
-
-#endif // KEYCONTROL_H

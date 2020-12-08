@@ -1,6 +1,4 @@
-#ifndef MIXXX_DBFIELDINDEX_H
-#define MIXXX_DBFIELDINDEX_H
-
+#pragma once
 
 // Type-safe wrapper with a default constructor that encapsulates
 // field indices of QSqlRecord.
@@ -27,6 +25,3 @@ private:
 };
 
 Q_DECLARE_METATYPE(DbFieldIndex)
-
-
-#endif // MIXXX_DBFIELDINDEX_H

@@ -1,31 +1,27 @@
 // library.cpp
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
+#include "library/library.h"
+
+#include <QDir>
 #include <QItemSelectionModel>
 #include <QMessageBox>
-#include <QTranslator>
-#include <QDir>
 #include <QPointer>
+#include <QTranslator>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
-
-#include "library/library.h"
-#include "library/library_preferences.h"
-#include "library/librarycontrol.h"
-#include "library/libraryfeature.h"
-#include "library/librarytablemodel.h"
-#include "library/sidebarmodel.h"
-#include "library/trackcollection.h"
-#include "library/externaltrackcollection.h"
-#include "library/trackcollectionmanager.h"
-#include "library/trackmodel.h"
-
 #include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
 #include "library/crate/cratefeature.h"
+#include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
+#include "library/library_preferences.h"
+#include "library/librarycontrol.h"
+#include "library/libraryfeature.h"
+#include "library/librarytablemodel.h"
 #include "library/mixxxlibraryfeature.h"
 #include "library/playlistfeature.h"
 #include "library/recording/recordingfeature.h"
@@ -33,23 +29,22 @@
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/serato/seratofeature.h"
 #include "library/setlogfeature.h"
+#include "library/sidebarmodel.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "library/trackmodel.h"
 #include "library/traktor/traktorfeature.h"
-
 #include "mixer/playermanager.h"
-
+#include "moc_library.cpp"
 #include "recording/recordingmanager.h"
-
-#include "util/db/dbconnectionpooled.h"
-#include "util/sandbox.h"
-#include "util/logger.h"
 #include "util/assert.h"
-
-#include "widget/wtracktableview.h"
+#include "util/db/dbconnectionpooled.h"
+#include "util/logger.h"
+#include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
-
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "widget/wtracktableview.h"
 
 namespace {
 

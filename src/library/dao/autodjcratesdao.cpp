@@ -1,5 +1,7 @@
 #include "library/dao/autodjcratesdao.h"
 
+#include "moc_autodjcratesdao.cpp"
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
 #endif

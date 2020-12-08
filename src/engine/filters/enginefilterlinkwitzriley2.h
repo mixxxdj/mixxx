@@ -1,5 +1,4 @@
-#ifndef ENGINEFILTELINKWITZRILEY2_H
-#define ENGINEFILTELINKWITZRILEY2_H
+#pragma once
 
 #include "engine/filters/enginefilteriir.h"
 
@@ -17,5 +16,3 @@ class EngineFilterLinkwitzRiley2High : public EngineFilterIIR<2, IIR_HP2> {
     EngineFilterLinkwitzRiley2High(int sampleRate, double freqCorner1);
     void setFrequencyCorners(int sampleRate, double freqCorner1);
 };
-
-#endif // ENGINEFILTERLINKWITZRILEY2_H

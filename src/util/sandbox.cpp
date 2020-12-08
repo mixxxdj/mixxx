@@ -359,6 +359,92 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
     return SecurityTokenPointer();
 }
 
+QString Sandbox::migrateOldSettings() {
+    // QStandardPaths::DataLocation returns a different location depending on whether the build
+    // is signed (and therefore sandboxed with the hardened runtime), so use the absolute path
+    // that the sandbox uses regardless of whether this build is actually sandboxed.
+    // Otherwise, developers would need to run with --settingsPath every time or symlink
+    // to use the same settings directory with signed and unsigned builds.
+
+    // QDir::homePath returns a path inside the sandbox.
+    QString homePath = QLatin1String("/Users/") + qgetenv("USER");
+
+    QString sandboxedPath = homePath +
+            QLatin1String(
+                    "/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support/Mixxx");
+    QDir sandboxedSettings(sandboxedPath);
+
+    if (sandboxedSettings.exists() && !sandboxedSettings.isEmpty()) {
+        return sandboxedPath;
+    }
+
+    // Because Mixxx cannot test if the old path exists before getting permission to access it
+    // outside the sandbox, unfortunately it is necessary to annoy the user with this popup
+    // even if they are installing Mixxx >= 2.3.0 without having installed an old version of Mixxx.
+    QString title = QObject::tr("Upgrading old Mixxx settings");
+    QString oldPath = homePath + QLatin1String("/Library/Application Support/Mixxx");
+    QMessageBox::information(nullptr,
+            title,
+            QObject::tr(
+                    "Due to Mac sandboxing, Mixxx needs your permission to "
+                    "access your music library "
+                    "and settings from Mixxx versions before 2.3.0. After "
+                    "clicking OK, you will see a file picker. "
+                    "To give Mixxx permission, press the Ok button in the file "
+                    "picker."
+                    "\n\n"
+                    "If you do not want to grant Mixxx access click Cancel on "
+                    "the file picker."));
+    QString result = QFileDialog::getExistingDirectory(
+            nullptr,
+            title,
+            oldPath);
+    if (result != oldPath) {
+        qInfo() << "Sandbox::migrateOldSettings: User declined to migrate "
+                   "old settings from"
+                << oldPath << "User selected" << result;
+        return sandboxedPath;
+    }
+
+    // Sandbox::askForAccess cannot be used here because it depends on settings being
+    // initialized. There is no need to store the bookmark anyway because this is a
+    // one time process.
+#ifdef __APPLE__
+    CFURLRef url = CFURLCreateWithFileSystemPath(
+            kCFAllocatorDefault, QStringToCFString(oldPath), kCFURLPOSIXPathStyle, true);
+    if (url) {
+        CFErrorRef error = NULL;
+        CFDataRef bookmark = CFURLCreateBookmarkData(
+                kCFAllocatorDefault,
+                url,
+                kCFURLBookmarkCreationWithSecurityScope,
+                nil,
+                nil,
+                &error);
+        CFRelease(url);
+        if (bookmark) {
+            QFile oldSettings(oldPath);
+            if (oldSettings.rename(sandboxedPath)) {
+                qInfo() << "Sandbox::migrateOldSettings: Successfully "
+                           "migrated old settings from"
+                        << oldPath << "to new path" << sandboxedPath;
+            } else {
+                qWarning() << "Sandbox::migrateOldSettings: Failed to migrate "
+                              "old settings from"
+                           << oldPath << "to new path" << sandboxedPath;
+            }
+        } else {
+            qWarning() << "Sandbox::migrateOldSettings: Failed to access old "
+                          "settings path"
+                       << oldPath << "Cannot migrate to new path"
+                       << sandboxedPath;
+        }
+        CFRelease(bookmark);
+    }
+#endif
+    return sandboxedPath;
+}
+
 #ifdef __APPLE__
 SandboxSecurityToken::SandboxSecurityToken(const QString& path, CFURLRef url)
         : m_path(path),

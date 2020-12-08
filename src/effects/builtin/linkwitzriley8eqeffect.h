@@ -1,5 +1,4 @@
-#ifndef LINKWITZRILEYEQEFFECT_H
-#define LINKWITZRILEYEQEFFECT_H
+#pragma once
 
 #include <QMap>
 
@@ -73,5 +72,3 @@ class LinkwitzRiley8EQEffect : public EffectProcessorImpl<LinkwitzRiley8EQEffect
 
     DISALLOW_COPY_AND_ASSIGN(LinkwitzRiley8EQEffect);
 };
-
-#endif /* LINKWITZRILEYEQEFFECT_H */

@@ -1,5 +1,4 @@
-#ifndef WAVEFORMRENDERERABSTRACT_H
-#define WAVEFORMRENDERERABSTRACT_H
+#pragma once
 
 #include <QDomNode>
 #include <QGLContext>
@@ -74,5 +73,3 @@ class GLWaveformRenderer : protected QOpenGLFunctions_2_1 {
   private:
     const QGLContext* m_pLastContext;
 };
-
-#endif // WAVEFORMRENDERERABSTRACT_H
