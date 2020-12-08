@@ -1,11 +1,3 @@
-/**
- * @file midioutputhandler.cpp
- * @author Sean Pappalardo spappalardo@mixxx.org
- * @date Tue 11 Feb 2012
- * @brief MIDI output mapping handler
- *
- */
-
 #include "controllers/midi/midioutputhandler.h"
 
 #include <QtDebug>

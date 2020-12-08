@@ -1,16 +1,4 @@
-/**
-* @file controller.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Sat Apr 30 2011
-* @brief Base class representing a physical (or software) controller.
-*
-* This is a base class representing a physical (or software) controller.  It
-* must be inherited by a class that implements it on some API. Note that the
-* subclass' destructor should call close() at a minimum.
-*/
-
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetfilehandler.h"
@@ -22,10 +10,15 @@
 
 class ControllerJSProxy;
 
+/// Base class representing a physical (or software) controller.
+///
+/// This is a base class representing a physical (or software) controller.  It
+/// must be inherited by a class that implements it on some API. Note that the
+/// subclass' destructor should call close() at a minimum.
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
-    Controller();
+    explicit Controller();
     ~Controller() override;  // Subclass should call close() at minimum.
 
     /// The object that is exposed to the JS scripts as the "controller" object.
@@ -91,7 +84,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
     /// Apply the preset to the controller.
-    /// @brief Initializes both controller engine and static output mappings.
+    /// Initializes both controller engine and static output mappings.
     ///
     /// @param initializeScripts Can be set to false to skip script
     /// initialization for unit tests.
@@ -203,5 +196,3 @@ class ControllerJSProxy : public QObject {
   private:
     Controller* const m_pController;
 };
-
-#endif

@@ -1,6 +1,3 @@
-// browsefeature.cpp
-// Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "library/browse/browsefeature.h"
 
 #include <QAction>

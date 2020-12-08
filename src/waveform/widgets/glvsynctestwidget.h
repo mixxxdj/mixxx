@@ -1,5 +1,4 @@
-#ifndef GLVSYNCTESTWIDGET_H
-#define GLVSYNCTESTWIDGET_H
+#pragma once
 
 #include <QGLWidget>
 
@@ -27,4 +26,3 @@ class GLVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
   private:
     friend class WaveformWidgetFactory;
 };
-#endif // GLVSYNCTESTWIDGET_H

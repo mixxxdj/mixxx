@@ -1,12 +1,4 @@
-/***************************************************************************
-                          defs_controllers.h
-                          ------------------
-    copyright            : (C) 2011 by Sean Pappalardo
-    email                : spappalardo@mixxx.org
- ***************************************************************************/
-
-#ifndef DEFS_CONTROLLERS_H
-#define DEFS_CONTROLLERS_H
+#pragma once
 
 #include <QDir>
 #include "preferences/usersettings.h"
@@ -35,5 +27,3 @@ inline QString userPresetsPath(UserSettingsPointer pConfig) {
 #define BULK_PRESET_EXTENSION ".bulk.xml"
 #define REQUIRED_SCRIPT_FILE "common-controller-scripts.js"
 #define XML_SCHEMA_VERSION "1"
-
-#endif /* DEFS_CONTROLLERS_H */

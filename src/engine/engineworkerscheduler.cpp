@@ -1,6 +1,3 @@
-// engineworkerscheduler.cpp
-// Created 6/2/2010 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/engineworkerscheduler.h"
 
 #include <QtDebug>

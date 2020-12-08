@@ -1,5 +1,7 @@
 #include "controllers/hid/hidcontroller.h"
 
+#include <hidapi.h>
+
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"

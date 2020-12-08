@@ -1,4 +1,3 @@
-
 #include <QImageReader>
 #include <QFileInfo>
 

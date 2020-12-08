@@ -1,4 +1,3 @@
-
 #include "widget/wpixmapstore.h"
 
 #include <QDir>

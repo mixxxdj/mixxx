@@ -1,9 +1,3 @@
-/**
- * @file vinylcontrolmanager.cpp
- * @author Bill Good <bkgood@gmail.com>
- * @date April 15, 2011
- */
-
 #include "vinylcontrol/vinylcontrolmanager.h"
 
 #include "control/controlobject.h"

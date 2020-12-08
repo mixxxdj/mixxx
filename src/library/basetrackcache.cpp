@@ -1,6 +1,3 @@
-// basetrackcache.cpp
-// Created 7/3/2011 by RJ Ryan (rryan@mit.edu)
-
 #include "library/basetrackcache.h"
 
 #include "library/queryutil.h"

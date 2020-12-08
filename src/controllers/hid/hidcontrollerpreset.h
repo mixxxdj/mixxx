@@ -1,6 +1,4 @@
 #pragma once
-/// @file hidcontrollerpreset.h
-/// @brief HID/Bulk Controller Preset
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetvisitor.h"

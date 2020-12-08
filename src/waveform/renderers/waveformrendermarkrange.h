@@ -1,5 +1,4 @@
-#ifndef WAVEFORMRENDERMARKRANGE_H
-#define WAVEFORMRENDERMARKRANGE_H
+#pragma once
 
 #include <QObject>
 #include <QColor>
@@ -30,5 +29,3 @@ class WaveformRenderMarkRange : public WaveformRendererAbstract {
 
     std::vector<WaveformMarkRange> m_markRanges;
 };
-
-#endif

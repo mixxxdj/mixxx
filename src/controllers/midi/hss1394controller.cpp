@@ -1,10 +1,3 @@
-/**
-  * @file hss1394controller.cpp
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Thu 15 Mar 2012
-  * @brief HSS1394-based MIDI backend
-  */
-
 #include "controllers/midi/hss1394controller.h"
 
 #include "controllers/controllerdebug.h"

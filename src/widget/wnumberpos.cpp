@@ -1,5 +1,3 @@
-// Tue Haste Andersen <haste@diku.dk>, (C) 2003
-
 #include "widget/wnumberpos.h"
 
 #include "control/controlobject.h"

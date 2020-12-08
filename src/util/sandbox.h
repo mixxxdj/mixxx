@@ -1,5 +1,4 @@
-#ifndef SANDBOX_H
-#define SANDBOX_H
+#pragma once
 
 #include <QFile>
 #include <QDir>
@@ -81,6 +80,3 @@ class Sandbox {
     static QSharedPointer<ConfigObject<ConfigValue>> s_pSandboxPermissions;
     static QHash<QString, SecurityTokenWeakPointer> s_activeTokens;
 };
-
-
-#endif /* SANDBOX_H */

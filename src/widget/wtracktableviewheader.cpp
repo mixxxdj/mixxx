@@ -1,6 +1,3 @@
-// wtracktableviewheader.cpp
-// Created 1/2/2010 by RJ Ryan (rryan@mit.edu)
-
 #include "widget/wtracktableviewheader.h"
 
 #include <QtDebug>

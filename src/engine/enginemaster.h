@@ -1,22 +1,4 @@
-/***************************************************************************
-                          enginemaster.h  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEMASTER_H
-#define ENGINEMASTER_H
+#pragma once
 
 #include <QObject>
 #include <QVarLengthArray>
@@ -365,5 +347,3 @@ class EngineMaster : public QObject, public AudioSource {
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
 };
-
-#endif

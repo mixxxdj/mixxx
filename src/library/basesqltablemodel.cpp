@@ -1,5 +1,3 @@
-// Created by RJ Ryan (rryan@mit.edu) 1/29/2010
-
 #include "library/basesqltablemodel.h"
 
 #include <QUrl>

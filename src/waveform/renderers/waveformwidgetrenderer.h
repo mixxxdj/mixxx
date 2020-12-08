@@ -1,5 +1,4 @@
-#ifndef WAVEFORMWIDGETRENDERER_H
-#define WAVEFORMWIDGETRENDERER_H
+#pragma once
 
 #include <QPainter>
 #include <QTime>
@@ -211,5 +210,3 @@ private:
             QPointF p2,
             QPointF p3);
 };
-
-#endif // WAVEFORMWIDGETRENDERER_H

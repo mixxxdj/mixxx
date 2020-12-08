@@ -1,11 +1,3 @@
-/**
- * @file midicontroller.cpp
- * @author Sean Pappalardo spappalardo@mixxx.org
- * @date Tue 7 Feb 2012
- * @brief MIDI Controller base class
- *
- */
-
 #include "controllers/midi/midicontroller.h"
 
 #include "control/controlobject.h"

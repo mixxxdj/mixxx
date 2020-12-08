@@ -1,11 +1,3 @@
-/***************************************************************************
-                          enginerecord.cpp  -  class to record the mix
-                             -------------------
-    copyright            : (C) 2007 by John Sully
-    copyright            : (C) 2010 by Tobias Rafreider
-    email                :
-***************************************************************************/
-
 #include "engine/sidechain/enginerecord.h"
 
 #include "control/controlobject.h"
