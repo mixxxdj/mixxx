@@ -458,18 +458,20 @@ bool exportTrackMetadataIntoTag(
     // does not modify them.
 #if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
-    writeAtom(
-            pTag,
-            kAtomKeySeratoBeatGrid,
-            dumpSeratoBeatGrid(trackMetadata, FileType::MP4));
-    writeAtom(
-            pTag,
-            kAtomKeySeratoMarkers,
-            dumpSeratoMarkers(trackMetadata, FileType::MP4));
-    writeAtom(
-            pTag,
-            kAtomKeySeratoMarkers2,
-            dumpSeratoMarkers2(trackMetadata, FileType::MP4));
+    if (trackMetadata.getTrackInfo().getSeratoTags().status() != SeratoTags::ParserStatus::Failed) {
+        writeAtom(
+                pTag,
+                kAtomKeySeratoBeatGrid,
+                dumpSeratoBeatGrid(trackMetadata, FileType::MP4));
+        writeAtom(
+                pTag,
+                kAtomKeySeratoMarkers,
+                dumpSeratoMarkers(trackMetadata, FileType::MP4));
+        writeAtom(
+                pTag,
+                kAtomKeySeratoMarkers2,
+                dumpSeratoMarkers2(trackMetadata, FileType::MP4));
+    }
 #endif // __EXPORT_SERATO_MARKERS__
 
     return true;
