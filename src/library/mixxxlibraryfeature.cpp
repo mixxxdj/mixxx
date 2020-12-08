@@ -1,6 +1,3 @@
-// mixxxlibraryfeature.cpp
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "library/mixxxlibraryfeature.h"
 
 #include <QtDebug>

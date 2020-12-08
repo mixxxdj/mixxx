@@ -1,11 +1,3 @@
-/**
-  * @file hidcontroller.cpp
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Sun May 1 2011
-  * @brief HID controller backend
-  *
-  */
-
 #include "controllers/hid/hidcontroller.h"
 
 #include <cstring>

@@ -336,4 +336,3 @@ void ScreenSaverHelper::uninhibitInternal()
 
 
 } // namespace mixxx
-

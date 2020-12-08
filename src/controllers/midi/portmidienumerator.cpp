@@ -1,10 +1,3 @@
-/**
-* @file portmidienumerator.cpp
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Thu 15 Mar 2012
-* @brief This class handles discovery and enumeration of DJ controller devices that appear under the PortMIDI cross-platform API.
-*/
-
 #include "controllers/midi/portmidienumerator.h"
 
 #include <portmidi.h>

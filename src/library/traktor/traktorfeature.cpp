@@ -1,6 +1,3 @@
-// traktorfeature.cpp
-// Created 9/26/2010 by Tobias Rafreider
-
 #include "library/traktor/traktorfeature.h"
 
 #include <QMap>

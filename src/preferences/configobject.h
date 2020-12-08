@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_CONFIGOBJECT_H
-#define PREFERENCES_CONFIGOBJECT_H
+#pragma once
 
 #include <QString>
 #include <QKeySequence>
@@ -198,5 +197,3 @@ template <class ValueType> class ConfigObject {
     // not be opened; otherwise true.
     bool parse();
 };
-
-#endif // PREFERENCES_CONFIGOBJECT_H

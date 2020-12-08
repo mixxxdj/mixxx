@@ -1,4 +1,3 @@
-
 #include "library/crate/cratetablemodel.h"
 
 #include <QtDebug>

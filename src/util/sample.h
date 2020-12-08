@@ -1,5 +1,4 @@
-#ifndef MIXXX_UTIL_SAMPLE_H
-#define MIXXX_UTIL_SAMPLE_H
+#pragma once
 
 #include <algorithm>
 #include <cstring> // memset
@@ -287,5 +286,3 @@ class SampleUtil {
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(SampleUtil::CLIP_STATUS);
-
-#endif /* MIXXX_UTIL_SAMPLE_H */

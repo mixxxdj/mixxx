@@ -1,4 +1,3 @@
-
 #include "control/controlaudiotaperpot.h"
 
 #include "moc_controlaudiotaperpot.cpp"

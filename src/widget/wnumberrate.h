@@ -9,8 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef WNUMBERRATE_H
-#define WNUMBERRATE_H
+#pragma once
 
 #include "widget/wnumber.h"
 
@@ -29,5 +28,3 @@ class WNumberRate final : public WNumber {
   private:
     ControlProxy* m_pRateRatio;
 };
-
-#endif

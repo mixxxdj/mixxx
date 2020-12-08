@@ -1,6 +1,3 @@
-// broadcastprofile.cpp
-// Created June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
 #include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>

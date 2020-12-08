@@ -1,5 +1,4 @@
-#ifndef SONGDOWNLOADER_H
-#define SONGDOWNLOADER_H
+#pragma once
 
 #include <QFile>
 #include <QNetworkAccessManager>
@@ -38,5 +37,3 @@ class SongDownloader : public QObject {
     QNetworkReply* m_pReply;
     QNetworkRequest* m_pRequest;
 };
-
-#endif // SONGDOWNLOADER_H

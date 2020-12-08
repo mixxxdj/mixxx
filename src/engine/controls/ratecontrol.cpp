@@ -1,6 +1,3 @@
-// ratecontrol.cpp
-// Created 7/4/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/controls/ratecontrol.h"
 
 #include <QtDebug>

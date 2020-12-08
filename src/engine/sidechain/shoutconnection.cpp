@@ -1,6 +1,3 @@
-// shoutconnection.cpp
-// Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
 #include <QUrl>
 
 // These includes are only required by ignoreSigpipe, which is unix-only

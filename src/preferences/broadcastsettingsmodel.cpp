@@ -1,6 +1,3 @@
-// broadcastsettingsmodel.cpp
-// Created on August 7th by Stéphane Lepin (Palakis)
-
 #include "preferences/broadcastsettingsmodel.h"
 
 #include <preferences/broadcastsettings.h>

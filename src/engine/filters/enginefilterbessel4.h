@@ -1,5 +1,4 @@
-#ifndef ENGINEFILTERBESSEL4_H
-#define ENGINEFILTERBESSEL4_H
+#pragma once
 
 #include "engine/filters/enginefilteriir.h"
 
@@ -30,5 +29,3 @@ class EngineFilterBessel4High : public EngineFilterIIR<4, IIR_HP> {
     EngineFilterBessel4High(int sampleRate, double freqCorner1);
     void setFrequencyCorners(int sampleRate, double freqCorner1);
 };
-
-#endif // ENGINEFILTERBESSEL4_H

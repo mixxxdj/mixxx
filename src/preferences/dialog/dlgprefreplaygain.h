@@ -1,5 +1,4 @@
-#ifndef DLGPREFREPLAYGAIN_H
-#define DLGPREFREPLAYGAIN_H
+#pragma once
 
 #include <QButtonGroup>
 #include <QWidget>
@@ -45,5 +44,3 @@ class DlgPrefReplayGain: public DlgPreferencePage,
 
     QButtonGroup m_analysisButtonGroup;
 };
-
-#endif /* DLGPREFREPLAYGAIN_H */

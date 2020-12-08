@@ -1,4 +1,3 @@
-
 #include "widget/wtracktext.h"
 
 #include <QDebug>

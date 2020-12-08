@@ -1,7 +1,3 @@
-// QuantizeControl.cpp
-// Created on Sat 5, 2011
-// Author: pwhelan
-
 #include "engine/controls/quantizecontrol.h"
 
 #include <QtDebug>
@@ -12,7 +8,6 @@
 #include "moc_quantizecontrol.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/assert.h"
 
 QuantizeControl::QuantizeControl(const QString& group,
         UserSettingsPointer pConfig)

@@ -1,5 +1,4 @@
-#ifndef DLGPREFEFFECTS_H
-#define DLGPREFEFFECTS_H
+#pragma once
 
 #include <QButtonGroup>
 
@@ -32,5 +31,3 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
 };
-
-#endif /* DLGPREFEFFECTS_H */

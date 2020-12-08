@@ -1,8 +1,4 @@
-// mixxxlibraryfeature.h
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef MIXXXLIBRARYFEATURE_H
-#define MIXXXLIBRARYFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QUrl>
@@ -63,5 +59,3 @@ class MixxxLibraryFeature final : public LibraryFeature {
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;
 };
-
-#endif /* MIXXXLIBRARYFEATURE_H */
