@@ -11,11 +11,6 @@
 #include <QUrl>
 #include <QtDebug>
 
-#include "dialog/dlgabout.h"
-#include "dialog/dlgdevelopertools.h"
-#include "effects/effectsmanager.h"
-#include "engine/enginemaster.h"
-#include "moc_mixxx.cpp"
 #include "broadcast/broadcastmanager.h"
 #include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
@@ -32,6 +27,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_mixxx.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferences.h"
 #include "preferences/settingsmanager.h"

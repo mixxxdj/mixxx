@@ -10,8 +10,8 @@
 #include "effects/effectsmessenger.h"
 #include "effects/presets/effectpresetmanager.h"
 #include "effects/visibleeffectslist.h"
-#include "util/defs.h"
 #include "moc_effectslot.cpp"
+#include "util/defs.h"
 #include "util/math.h"
 
 // The maximum number of effect parameters we're going to support.

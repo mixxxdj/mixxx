@@ -3,8 +3,6 @@
 
 #pragma once
 
-#include <QMap>
-
 #include <Reverb.h>
 
 #include <QMap>
