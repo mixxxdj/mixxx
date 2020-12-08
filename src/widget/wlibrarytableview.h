@@ -68,7 +68,4 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
     // saves scrollposition/selection/etc
     QMap<QString, ModelState*> m_vModelState;
-    // The position of the vertical scrollbar slider, eg. before a search is
-    // executed
-    int m_noSearchVScrollBarPos;
 };

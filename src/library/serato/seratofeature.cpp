@@ -1052,6 +1052,7 @@ void SeratoFeature::activateChild(const QModelIndex& index) {
         item->setData(QVariant(data));
     } else {
         qDebug() << "Activate Serato Playlist: " << playlist;
+        emit saveModelState();
         m_pSeratoPlaylistModel->setPlaylist(playlist);
         emit showTrackModel(m_pSeratoPlaylistModel);
     }
@@ -1128,7 +1129,7 @@ void SeratoFeature::onTracksFound() {
     QString databasePlaylist = m_tracksFuture.result();
 
     qDebug() << "Show Serato Database Playlist: " << databasePlaylist;
-
+    emit saveModelState();
     m_pSeratoPlaylistModel->setPlaylist(databasePlaylist);
     emit showTrackModel(m_pSeratoPlaylistModel);
 }

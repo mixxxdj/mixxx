@@ -9,16 +9,16 @@
 #include "track/track.h"
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
-                                                     TrackCollectionManager* pTrackCollectionManager,
-                                                     const char* settingsNamespace,
-                                                     const QString& playlistsTable,
-                                                     const QString& playlistTracksTable,
-                                                     QSharedPointer<BaseTrackCache> trackSource)
-        : BaseSqlTableModel(parent, pTrackCollectionManager,
-                            settingsNamespace),
+        TrackCollectionManager* pTrackCollectionManager,
+        const char* settingsNamespace,
+        const QString& playlistsTable,
+        const QString& playlistTracksTable,
+        QSharedPointer<BaseTrackCache> trackSource)
+        : BaseSqlTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_playlistsTable(playlistsTable),
           m_playlistTracksTable(playlistTracksTable),
-          m_trackSource(trackSource) {
+          m_trackSource(trackSource),
+          m_currentPlaylistId(0) {
 }
 
 BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
@@ -140,6 +140,7 @@ void BaseExternalPlaylistModel::setPlaylist(const QString& playlist_path) {
         return;
     }
 
+    m_currentPlaylistId = playlistId;
     columns[2] = LIBRARYTABLE_PREVIEW;
     setTable(playlistViewTable, columns[0], columns, m_trackSource);
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),

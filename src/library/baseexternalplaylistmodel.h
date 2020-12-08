@@ -28,6 +28,12 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     bool isColumnInternal(int column) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     CapabilitiesFlags getCapabilities() const override;
+    QString modelKey() override {
+        return QString("0x%1/%2#%3")
+                .arg((quintptr)this, QT_POINTER_SIZE * 2, 16, QChar('0'))
+                .arg(m_currentPlaylistId)
+                .arg(currentSearch());
+    }
 
   private:
     TrackId doGetTrackId(const TrackPointer& pTrack) const override;
@@ -35,4 +41,5 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     QString m_playlistsTable;
     QString m_playlistTracksTable;
     QSharedPointer<BaseTrackCache> m_trackSource;
+    int m_currentPlaylistId;
 };
