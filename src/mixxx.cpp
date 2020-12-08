@@ -239,7 +239,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
     ThreadLocalQuickAction::setGlobalInstance(
             std::shared_ptr<ThreadLocalQuickAction>(
-                    new ThreadLocalQuickAction(this)));
+                    new ThreadLocalQuickAction()));
 
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
     if (!m_pDbConnectionPool) {
