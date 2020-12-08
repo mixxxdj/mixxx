@@ -156,6 +156,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
     int playlistId = playlistIdFromIndex(index);
     if (playlistId != -1) {
+        emit saveModelState();
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit showTrackModel(m_pPlaylistTableModel);
         emit enableCoverArtDisplay(true);
@@ -166,6 +167,7 @@ void BasePlaylistFeature::activatePlaylist(int playlistId) {
     //qDebug() << "BasePlaylistFeature::activatePlaylist()" << playlistId;
     QModelIndex index = indexFromPlaylistId(playlistId);
     if (playlistId != -1 && index.isValid()) {
+        emit saveModelState();
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit showTrackModel(m_pPlaylistTableModel);
         emit enableCoverArtDisplay(true);
@@ -431,6 +433,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
 
         lastPlaylistId = m_playlistDao.createPlaylist(name);
         if (lastPlaylistId != -1) {
+            emit saveModelState();
             m_pPlaylistTableModel->setTableModel(lastPlaylistId);
         } else {
             QMessageBox::warning(NULL,
@@ -485,7 +488,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // This will only export songs that we think exist on default
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
             new PlaylistTableModel(this, m_pLibrary->trackCollections(), "mixxx.db.model.playlist_export"));
-
+    emit saveModelState();
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
                                          ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
@@ -523,6 +526,7 @@ void BasePlaylistFeature::slotExportTrackFiles() {
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
             new PlaylistTableModel(this, m_pLibrary->trackCollections(), "mixxx.db.model.playlist_export"));
 
+    emit saveModelState();
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
                                          ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),

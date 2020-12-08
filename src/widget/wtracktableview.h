@@ -43,8 +43,6 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
-    void saveCurrentVScrollBarPos();
-    void restoreCurrentVScrollBarPos();
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
@@ -56,8 +54,7 @@ class WTrackTableView : public WLibraryTableView {
     }
 
   public slots:
-    void loadTrackModel(QAbstractItemModel* model);
-    void slotSaveState();
+    void loadTrackModel(QAbstractItemModel* model, bool restoreState = false);
     void slotMouseDoubleClicked(const QModelIndex &);
     void slotUnhide();
     void slotPurge();
@@ -77,6 +74,9 @@ class WTrackTableView : public WLibraryTableView {
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
     void keyNotationChanged();
+
+  protected:
+    QString getStateKey() override;
 
   private:
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);

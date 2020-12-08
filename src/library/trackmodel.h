@@ -207,9 +207,12 @@ class TrackModel {
     virtual void select() {
     }
 
-    virtual QString key() {
-        return QString("0x%1").arg((quintptr)this,
-                                   QT_POINTER_SIZE * 2, 16, QChar('0'));
+    virtual QString modelKey() {
+        return QString("0x%1#%2").arg((quintptr)this,
+                                         QT_POINTER_SIZE * 2,
+                                         16,
+                                         QChar('0'))
+                .arg(currentSearch());
     }
 
   private:

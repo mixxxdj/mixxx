@@ -26,6 +26,12 @@ class LibraryView {
     virtual void slotAddToAutoDJBottom() {};
     virtual void slotAddToAutoDJTop() {};
     virtual void slotAddToAutoDJReplace() {};
+    virtual void saveCurrentViewState() {
+        qDebug() << "empty save model sate";
+    };
+    virtual void restoreCurrentViewState() {
+        qDebug() << "empty restore model sate";
+    };
 
     /// If applicable, requests that the LibraryView load the selected track to
     /// the specified group. Does nothing otherwise.

@@ -138,7 +138,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
 }
 
 // slot
-void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
+void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreState) {
     qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
@@ -161,10 +161,14 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
         // a select() if the table is dirty.
         doSortByColumn(horizontalHeader()->sortIndicatorSection(),
                 horizontalHeader()->sortIndicatorOrder());
+
+        if (restoreState) {
+            restoreCurrentViewState();
+        }
         return;
     } else {
         newModel = trackModel;
-        //saveVScrollBarPos(getTrackModel());
+        //saveTrackModelState(getTrackModel());
         //saving current vertical bar position
         //using address of track model as key
     }
@@ -308,9 +312,11 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
 
     setVisible(true);
 
-    restoreVScrollBarPos(newModel);
     // restoring scrollBar position using model pointer as key
     // scrollbar positions with respect to different models are backed by map
+    if (restoreState) {
+        restoreCurrentViewState();
+    }
     initTrackMenu();
 }
 
@@ -457,15 +463,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 void WTrackTableView::onSearch(const QString& text) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel) {
-        bool searchWasEmpty = false;
-        if (trackModel->currentSearch().isEmpty()) {
-            saveNoSearchVScrollBarPos();
-            searchWasEmpty = true;
-        }
+        saveCurrentViewState();
         trackModel->search(text);
-        if (!searchWasEmpty && text.isEmpty()) {
-            restoreNoSearchVScrollBarPos();
-        }
+        restoreCurrentViewState();
     }
 }
 
@@ -1006,17 +1006,12 @@ bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
 }
 
-void WTrackTableView::saveCurrentVScrollBarPos() {
-    saveVScrollBarPos(getTrackModel());
-}
-
-void WTrackTableView::restoreCurrentVScrollBarPos() {
-    restoreVScrollBarPos(getTrackModel());
-}
-
-void WTrackTableView::slotSaveState() {
-    qDebug() << "WTrackTableView::slotSaveState";
-    saveVScrollBarPos(getTrackModel());
+QString WTrackTableView::getStateKey() {
+    TrackModel* rv = getTrackModel();
+    if (rv) {
+        return rv->modelKey();
+    }
+    return QString();
 }
 
 void WTrackTableView::keyNotationChanged() {

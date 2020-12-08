@@ -105,7 +105,7 @@ class Library: public QObject {
     void onSkinLoadFinished();
 
   signals:
-    void showTrackModel(QAbstractItemModel* model);
+    void showTrackModel(QAbstractItemModel* model, bool restoreState = true);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
@@ -115,7 +115,8 @@ class Library: public QObject {
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
-    void saveState();
+    void saveModelState();
+    void restoreModelState();
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);

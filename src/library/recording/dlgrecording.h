@@ -45,6 +45,7 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, const QString& group, bool play);
     void restoreSearch(const QString& search);
+    void restoreModelState();
 
   private:
     UserSettingsPointer m_pConfig;

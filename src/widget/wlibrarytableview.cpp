@@ -3,6 +3,7 @@
 #include <QFocusEvent>
 #include <QFontMetrics>
 #include <QHeaderView>
+#include <QMultiMap>
 #include <QPalette>
 #include <QScrollBar>
 
@@ -12,13 +13,17 @@
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
+namespace {
+constexpr int kClearModelStatesLowWatermark = 1000;
+constexpr int kClearModelStatesHighWatermark = 1100;
+} // namespace
+
 WLibraryTableView::WLibraryTableView(QWidget* parent,
         UserSettingsPointer pConfig,
         const ConfigKey& vScrollBarPosKey)
         : QTableView(parent),
           m_pConfig(pConfig),
           m_vScrollBarPosKey(vScrollBarPosKey) {
-    loadVScrollBarPosState();
 
     // Setup properties for table
 
@@ -55,35 +60,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 WLibraryTableView::~WLibraryTableView() {
 }
 
-void WLibraryTableView::loadVScrollBarPosState() {
-    // TODO(rryan) I'm not sure I understand the value in saving the v-scrollbar
-    // position across restarts of Mixxx. Now that we have different views for
-    // each mode, the views should just maintain their scrollbar position when
-    // you switch views. We should discuss this.
-    m_noSearchVScrollBarPos = m_pConfig->getValueString(m_vScrollBarPosKey).toInt();
-}
-
-void WLibraryTableView::restoreNoSearchVScrollBarPos() {
-    // Restore the scrollbar's position (scroll to that spot)
-    // when the search has been cleared
-    //qDebug() << "restoreNoSearchVScrollBarPos()" << m_noSearchVScrollBarPos;
-    updateGeometries();
-    verticalScrollBar()->setValue(m_noSearchVScrollBarPos);
-}
-
-void WLibraryTableView::saveNoSearchVScrollBarPos() {
-    // Save the scrollbar's position so we can return here after
-    // a search is cleared.
-    //qDebug() << "saveNoSearchVScrollBarPos()" << m_noSearchVScrollBarPos;
-    m_noSearchVScrollBarPos = verticalScrollBar()->value();
-}
-
-
-void WLibraryTableView::saveVScrollBarPosState() {
-    //Save the vertical scrollbar position.
-    int scrollbarPosition = verticalScrollBar()->value();
-    m_pConfig->set(m_vScrollBarPosKey, ConfigValue(scrollbarPosition));
-}
 
 void WLibraryTableView::moveSelection(int delta) {
     QAbstractItemModel* pModel = model();
@@ -91,65 +67,111 @@ void WLibraryTableView::moveSelection(int delta) {
     if (pModel == nullptr) {
         return;
     }
-
+    QItemSelectionModel* currentSelection = selectionModel();
+    clearSelection();
+    currentSelection->clearSelection();
+    QModelIndex newIndex;
     while(delta != 0) {
-        QItemSelectionModel* currentSelection = selectionModel();
-        if (currentSelection->selectedRows().length() > 0) {
+        QModelIndex currentIndex = currentSelection->currentIndex();
+        //clearSelection();
+        //currentSelection->clearSelection();
+        if (currentIndex.isValid()) {
+            int row = currentIndex.row();
             if(delta > 0) {
                 // i is positive, so we want to move the highlight down
-                int row = currentSelection->selectedRows().last().row();
                 if (row + 1 < pModel->rowCount()) {
-                    selectRow(row + 1);
+                    newIndex = currentIndex.sibling(row + 1, 0);
                 } else {
-                    selectRow(0);
+                    // we wrap around at the end of the list so it is faster to get
+                    // to the top of the list again
+                    newIndex = currentIndex.sibling(0, 0);
                 }
-
                 delta--;
             } else {
-                int row = currentSelection->selectedRows().first().row();
                 if (row - 1 >= 0) {
-                    selectRow(row - 1);
+                    newIndex = currentIndex.sibling(row - 1, 0);
                 } else {
-                    selectRow(pModel->rowCount() - 1);
+                    newIndex = pModel->index(pModel->rowCount() - 1, 0);
                 }
-
                 delta++;
             }
         } else {
             // no selection, so select the first or last element depending on delta
             if(delta > 0) {
-                selectRow(0);
+                //selectRow(0);
+                newIndex = pModel->index(0, 0);
                 delta--;
             } else {
-                selectRow(pModel->rowCount() - 1);
+                //selectRow(pModel->rowCount() - 1);
+                newIndex = pModel->index(pModel->rowCount() - 1, 0);
                 delta++;
             }
         }
+        // this wired combination works when switching between
+        setCurrentIndex(newIndex);
+        currentSelection->select(newIndex, QItemSelectionModel::ClearAndSelect);
+        // does not work, why ?
+        // scrollTo(newIndex);
+        selectRow(newIndex.row());
     }
 }
 
-void WLibraryTableView::saveVScrollBarPos(TrackModel* model){
-    if (model == nullptr) {
+void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, const QString& key) {
+    VERIFY_OR_DEBUG_ASSERT(model) {
         return;
     }
-    qDebug() << "save: m_vScrollBarPosValues:" << model->key() << verticalScrollBar()->value() << " | " << m_vScrollBarPosValues;
-    m_vScrollBarPosValues[model->key()] = verticalScrollBar()->value();
+    VERIFY_OR_DEBUG_ASSERT(!key.isEmpty()) {
+        return;
+    }
+    ModelState* state;
+    if (m_vModelState.contains(key)) {
+        state = m_vModelState[key];
+    } else {
+        state = new ModelState();
+    }
+    state->lastChange = QDateTime::currentSecsSinceEpoch();
+    qDebug() << "save: m_vModelScrollBarPos:" << key << verticalScrollBar()->value() << " | ";
+    state->scrollPosition = verticalScrollBar()->value();
+    const QModelIndexList selectedIndexes = selectionModel()->selectedIndexes();
+    if (!selectedIndexes.isEmpty()) {
+        state->selectionIndex = selectedIndexes;
+    } else {
+        state->selectionIndex = QModelIndexList();
+    }
+    state->currentIndex = selectionModel()->currentIndex();
+    m_vModelState[key] = state;
+
+    if (m_vModelState.size() > kClearModelStatesHighWatermark) {
+        clearStateCache();
+    }
 }
 
-void WLibraryTableView::restoreVScrollBarPos(TrackModel* model){
+void WLibraryTableView::restoreTrackModelState(
+        const QAbstractItemModel* model, const QString& key) {
     updateGeometries();
+    qDebug() << "restoreTrackModelState:" << key << model << m_vModelState.keys();
     if (model == nullptr) {
         return;
     }
-    QString key = model->key();
-    qDebug() << "m_vScrollBarPosValues:" << m_vScrollBarPosValues;
 
-    if (m_vScrollBarPosValues.contains(key)){
-        qDebug() << "restore key found:" << key << " pos: " << m_vScrollBarPosValues[key];
-        verticalScrollBar()->setValue(m_vScrollBarPosValues[key]);
-    }else{
-        m_vScrollBarPosValues[key] = 0;
-        verticalScrollBar()->setValue(0);
+    if (!m_vModelState.contains(key)) {
+        return;
+    }
+    ModelState* state = m_vModelState[key];
+
+    qDebug() << "restore key found:" << key;
+
+    verticalScrollBar()->setValue(state->scrollPosition);
+
+    auto selection = selectionModel();
+    selection->clearSelection();
+    if (!state->selectionIndex.isEmpty()) {
+        for (auto index : qAsConst(state->selectionIndex)) {
+            selection->select(index, QItemSelectionModel::Select);
+        }
+    }
+    if (state->currentIndex.isValid()) {
+        selection->setCurrentIndex(state->currentIndex, QItemSelectionModel::NoUpdate);
     }
 }
 
@@ -170,6 +192,47 @@ void WLibraryTableView::setSelectedClick(bool enable) {
         setEditTriggers(QAbstractItemView::SelectedClicked|QAbstractItemView::EditKeyPressed);
     } else {
         setEditTriggers(QAbstractItemView::EditKeyPressed);
+    }
+}
+
+void WLibraryTableView::saveCurrentViewState() {
+    const QAbstractItemModel* currentModel = model();
+    QString key = getStateKey();
+    if (!currentModel || key.isEmpty()) {
+        return;
+    }
+    saveTrackModelState(currentModel, key);
+};
+void WLibraryTableView::restoreCurrentViewState() {
+    const QAbstractItemModel* currentModel = model();
+    QString key = getStateKey();
+    if (!currentModel || key.isEmpty()) {
+        return;
+    }
+    restoreTrackModelState(currentModel, key);
+};
+
+void WLibraryTableView::clearStateCache() {
+    auto lru = QMultiMap<qint64, QString>();
+
+    auto i = m_vModelState.constBegin();
+    while (i != m_vModelState.constEnd()) {
+        lru.insert(i.value()->lastChange, i.key());
+        i++;
+    }
+    QList sortKeys = lru.keys();
+    std::sort(sortKeys.begin(),
+            sortKeys.end(),
+            [](const qint64 a, const qint64 b) { return a < b; });
+
+    while (m_vModelState.size() > kClearModelStatesLowWatermark) {
+        const QStringList keys = lru.values(sortKeys.takeFirst());
+        for (auto key : keys) {
+            auto m = m_vModelState.take(key);
+            if (m) {
+                delete m;
+            }
+        }
     }
 }
 

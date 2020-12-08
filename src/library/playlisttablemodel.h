@@ -30,6 +30,12 @@ class PlaylistTableModel final : public BaseSqlTableModel {
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     bool isLocked() final;
     CapabilitiesFlags getCapabilities() const final;
+    virtual QString modelKey() override {
+        return QString("0x%1/%2#%3")
+                .arg((quintptr)this, QT_POINTER_SIZE * 2, 16, QChar('0'))
+                .arg(m_iPlaylistId)
+                .arg(currentSearch());
+    }
 
   private slots:
     void playlistsChanged(const QSet<int>& playlistIds);
