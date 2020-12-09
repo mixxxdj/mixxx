@@ -204,12 +204,10 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
                 trackDataSource->value(2).toByteArray(),
                 QUrl::StrictMode);
         float clementineRating = trackDataSource->value(7).toFloat();
-        if  (clementineRating < 0){
+        if (clementineRating < 0) {
             entry.rating = 0;
-        }
-        else
-        {
-            entry.rating = int(clementineRating*5);
+        } else {
+            entry.rating = int(clementineRating * 5);
         }
         entry.genre = trackDataSource->value(8).toString();
         entry.grouping = trackDataSource->value(15).toString();
