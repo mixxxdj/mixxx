@@ -65,7 +65,6 @@ void WLibrary::switchToView(const QString& name) {
             return;
         }
         if (currentWidget() != widget) {
-            qDebug() << "oldLibraryView" << oldLibraryView;
             if (oldLibraryView) {
                 oldLibraryView->saveCurrentViewState();
             }

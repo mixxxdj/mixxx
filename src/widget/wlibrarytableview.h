@@ -30,18 +30,16 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
     void moveSelection(int delta) override;
 
-    /**
-     * @brief saveTrackModelState function saves current position of scrollbar
-     * using string key - can be any value but should invariant for model
-     * @param key unique for trackmodel
-     */
+    /// @brief saveTrackModelState function saves current position of scrollbar
+    /// using string key - can be any value but should invariant for model
+    /// @param key unique for trackmodel
     void saveTrackModelState(const QAbstractItemModel* model, const QString& key);
-    /**
-     * @brief restoreTrackModelState function finds scrollbar value associated with model
-     * by given key and restores it
-     * @param key unique for trackmodel
-     */
+
+    /// @brief restoreTrackModelState function finds scrollbar value associated with model
+    /// by given key and restores it
+    /// @param key unique for trackmodel
     void restoreTrackModelState(const QAbstractItemModel* model, const QString& key);
+    /// @brief clears the state cache until it's size is = kClearModelStatesLowWatermark
     void clearStateCache();
     void saveCurrentViewState() override;
     void restoreCurrentViewState() override;

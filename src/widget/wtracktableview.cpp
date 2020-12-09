@@ -168,9 +168,8 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
         return;
     } else {
         newModel = trackModel;
-        //saveTrackModelState(getTrackModel());
-        //saving current vertical bar position
-        //using address of track model as key
+        // we can't save the state here, becaus the model might already be
+        // associated with different data and this would override the wrong state
     }
 
     setVisible(false);
@@ -312,8 +311,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
 
     setVisible(true);
 
-    // restoring scrollBar position using model pointer as key
-    // scrollbar positions with respect to different models are backed by map
+    // trigger restoring scrollBar position, selection etc
     if (restoreState) {
         restoreCurrentViewState();
     }

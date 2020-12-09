@@ -130,7 +130,7 @@ void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, con
         state = new ModelState();
     }
     state->lastChange = QDateTime::currentSecsSinceEpoch();
-    qDebug() << "save: m_vModelScrollBarPos:" << key << verticalScrollBar()->value() << " | ";
+    // qDebug() << "save: saveTrackModelState:" << key << model << verticalScrollBar()->value() << " | ";
     state->scrollPosition = verticalScrollBar()->value();
     const QModelIndexList selectedIndexes = selectionModel()->selectedIndexes();
     if (!selectedIndexes.isEmpty()) {
@@ -149,7 +149,7 @@ void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, con
 void WLibraryTableView::restoreTrackModelState(
         const QAbstractItemModel* model, const QString& key) {
     updateGeometries();
-    qDebug() << "restoreTrackModelState:" << key << model << m_vModelState.keys();
+    // qDebug() << "restoreTrackModelState:" << key << model << m_vModelState.keys();
     if (model == nullptr) {
         return;
     }
@@ -158,8 +158,6 @@ void WLibraryTableView::restoreTrackModelState(
         return;
     }
     ModelState* state = m_vModelState[key];
-
-    qDebug() << "restore key found:" << key;
 
     verticalScrollBar()->setValue(state->scrollPosition);
 
@@ -202,7 +200,8 @@ void WLibraryTableView::saveCurrentViewState() {
         return;
     }
     saveTrackModelState(currentModel, key);
-};
+}
+
 void WLibraryTableView::restoreCurrentViewState() {
     const QAbstractItemModel* currentModel = model();
     QString key = getStateKey();
@@ -210,7 +209,7 @@ void WLibraryTableView::restoreCurrentViewState() {
         return;
     }
     restoreTrackModelState(currentModel, key);
-};
+}
 
 void WLibraryTableView::clearStateCache() {
     auto lru = QMultiMap<qint64, QString>();
@@ -227,7 +226,7 @@ void WLibraryTableView::clearStateCache() {
 
     while (m_vModelState.size() > kClearModelStatesLowWatermark) {
         const QStringList keys = lru.values(sortKeys.takeFirst());
-        for (auto key : keys) {
+        for (const auto& key : keys) {
             auto m = m_vModelState.take(key);
             if (m) {
                 delete m;
