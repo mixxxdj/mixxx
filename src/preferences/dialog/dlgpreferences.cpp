@@ -53,7 +53,6 @@ DlgPreferences::DlgPreferences(
         MixxxMainWindow* mixxx,
         SkinLoader* pSkinLoader,
         SoundManager* soundman,
-        PlayerManager* pPlayerManager,
         ControllerManager* controllers,
         VinylControlManager* pVCManager,
         EffectsManager* pEffectsManager,

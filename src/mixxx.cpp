@@ -456,7 +456,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     m_pPrefDlg = new DlgPreferences(this,
             m_pSkinLoader,
             m_pSoundManager,
-            m_pPlayerManager,
             m_pControllerManager,
             m_pVCManager,
             m_pEffectsManager,
