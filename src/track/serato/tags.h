@@ -13,6 +13,12 @@ namespace mixxx {
 /// Serato DJ Pro software.
 class SeratoTags final {
   public:
+    enum class ParserStatus {
+        None = 0,
+        Parsed = 1,
+        Failed = 2,
+    };
+
     static constexpr RgbColor kDefaultTrackColor = RgbColor(0xFF9999);
     static constexpr RgbColor kDefaultCueColor = RgbColor(0xCC0000);
 
@@ -30,16 +36,41 @@ class SeratoTags final {
                 m_seratoMarkers2.isEmpty();
     }
 
+    /// Return the cumulated parse status for all Serato tags. If no tags were parsed,
+    /// this returns `ParserStatus::None`. If any tag failed to parse, this
+    /// returns `ParserStatus::Failed`.
+    ParserStatus status() const {
+        if (m_seratoBeatGridParserStatus == ParserStatus::Failed ||
+                m_seratoMarkersParserStatus == ParserStatus::Failed ||
+                m_seratoMarkers2ParserStatus == ParserStatus::Failed) {
+            return ParserStatus::Failed;
+        }
+
+        if (m_seratoBeatGridParserStatus == ParserStatus::None ||
+                m_seratoMarkersParserStatus == ParserStatus::None ||
+                m_seratoMarkers2ParserStatus == ParserStatus::None) {
+            return ParserStatus::None;
+        }
+
+        return ParserStatus::Parsed;
+    }
+
     bool parseBeatGrid(const QByteArray& data, taglib::FileType fileType) {
-        return SeratoBeatGrid::parse(&m_seratoBeatGrid, data, fileType);
+        bool success = SeratoBeatGrid::parse(&m_seratoBeatGrid, data, fileType);
+        m_seratoBeatGridParserStatus = success ? ParserStatus::Parsed : ParserStatus::Failed;
+        return success;
     }
 
     bool parseMarkers(const QByteArray& data, taglib::FileType fileType) {
-        return SeratoMarkers::parse(&m_seratoMarkers, data, fileType);
+        bool success = SeratoMarkers::parse(&m_seratoMarkers, data, fileType);
+        m_seratoMarkersParserStatus = success ? ParserStatus::Parsed : ParserStatus::Failed;
+        return success;
     }
 
     bool parseMarkers2(const QByteArray& data, taglib::FileType fileType) {
-        return SeratoMarkers2::parse(&m_seratoMarkers2, data, fileType);
+        bool success = SeratoMarkers2::parse(&m_seratoMarkers2, data, fileType);
+        m_seratoMarkers2ParserStatus = success ? ParserStatus::Parsed : ParserStatus::Failed;
+        return success;
     }
 
     QByteArray dumpBeatGrid(taglib::FileType fileType) const {
@@ -74,8 +105,11 @@ class SeratoTags final {
 
   private:
     SeratoBeatGrid m_seratoBeatGrid;
+    ParserStatus m_seratoBeatGridParserStatus;
     SeratoMarkers m_seratoMarkers;
+    ParserStatus m_seratoMarkersParserStatus;
     SeratoMarkers2 m_seratoMarkers2;
+    ParserStatus m_seratoMarkers2ParserStatus;
 };
 
 inline bool operator==(const SeratoTags& lhs, const SeratoTags& rhs) {

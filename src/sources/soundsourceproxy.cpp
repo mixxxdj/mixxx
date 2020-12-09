@@ -345,7 +345,7 @@ QImage SoundSourceProxy::importTemporaryCoverImage(
 
 //static
 ExportTrackMetadataResult
-SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
+SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack, UserSettingsPointer pConfig) {
     DEBUG_ASSERT(pTrack);
     const auto fileInfo = pTrack->getFileInfo();
     mixxx::MetadataSourcePointer pMetadataSource;
@@ -370,7 +370,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack) {
         pMetadataSource = proxy.m_pSoundSource;
     }
     if (pMetadataSource) {
-        return pTrack->exportMetadata(pMetadataSource);
+        return pTrack->exportMetadata(pMetadataSource, pConfig);
     } else {
         kLogger.warning()
                 << "Unable to export track metadata into file"

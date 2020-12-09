@@ -17,6 +17,7 @@ namespace {
 const mixxx::Logger kLogger("Track");
 
 constexpr bool kLogStats = false;
+const ConfigKey kConfigKeySeratoMetadataExport("[Library]", "SeratoMetadataExport");
 
 // Count the number of currently existing instances for detecting
 // memory leaks.
@@ -1307,7 +1308,8 @@ quint16 Track::getCoverHash() const {
 }
 
 ExportTrackMetadataResult Track::exportMetadata(
-        mixxx::MetadataSourcePointer pMetadataSource) {
+        mixxx::MetadataSourcePointer pMetadataSource,
+        UserSettingsPointer pConfig) {
     VERIFY_OR_DEBUG_ASSERT(pMetadataSource) {
         kLogger.warning()
                 << "Cannot export track metadata:"
@@ -1336,11 +1338,40 @@ ExportTrackMetadataResult Track::exportMetadata(
     }
 
 #if defined(__EXPORT_SERATO_MARKERS__)
-    {
+    if (pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
+        VERIFY_OR_DEBUG_ASSERT(m_streamInfoFromSource && m_streamInfoFromSource->isValid()) {
+            kLogger.warning()
+                    << "Cannot write Serato metadata because stream info is not available:"
+                    << getLocation();
+            return ExportTrackMetadataResult::Skipped;
+        }
+
+        const mixxx::audio::SampleRate sampleRate =
+                m_streamInfoFromSource->getSignalInfo().getSampleRate();
+
         mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
-        seratoTags->setTrackColor(getColor());
-        seratoTags->setBpmLocked(isBpmLocked());
+        DEBUG_ASSERT(seratoTags);
+
+        if (seratoTags->status() == mixxx::SeratoTags::ParserStatus::Failed) {
+            kLogger.warning()
+                    << "Refusing to overwrite Serato metadata that failed to parse:"
+                    << getLocation();
+        } else {
+            seratoTags->setTrackColor(getColor());
+            seratoTags->setBpmLocked(isBpmLocked());
+
+            QList<mixxx::CueInfo> cueInfos;
+            for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+                cueInfos.append(pCue->getCueInfo(sampleRate));
+            }
+
+            const double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
+                    getLocation(), m_streamInfoFromSource->getSignalInfo());
+            seratoTags->setCueInfos(cueInfos, timingOffset);
+        }
     }
+#else
+    Q_UNUSED(pConfig);
 #endif
 
     // Normalize metadata before exporting to adjust the precision of
