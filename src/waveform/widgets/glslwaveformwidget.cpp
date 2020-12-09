@@ -27,10 +27,10 @@ GLSLRGBWaveformWidget::GLSLRGBWaveformWidget(
         : GLSLWaveformWidget(group, parent, GLSLWaveformWidget::GlslType::RGB) {
 }
 
-GLSLRGB3BandWaveformWidget::GLSLRGB3BandWaveformWidget(
+GLSLRGBStackedWaveformWidget::GLSLRGBStackedWaveformWidget(
         const QString& group,
         QWidget* parent)
-        : GLSLWaveformWidget(group, parent, GLSLWaveformWidget::GlslType::RGB3Band) {
+        : GLSLWaveformWidget(group, parent, GLSLWaveformWidget::GlslType::RGBStacked) {
 }
 
 GLSLWaveformWidget::GLSLWaveformWidget(
@@ -55,8 +55,8 @@ GLSLWaveformWidget::GLSLWaveformWidget(
         m_signalRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
     } else if (type == GlslType::RGB) {
         m_signalRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
-    } else if (type == GlslType::RGB3Band) {
-        m_signalRenderer = addRenderer<GLSLWaveformRenderer3BandSignal>();
+    } else if (type == GlslType::RGBStacked) {
+        m_signalRenderer = addRenderer<GLSLWaveformRendererStackedSignal>();
     }
 #else
     Q_UNUSED(rgbRenderer);

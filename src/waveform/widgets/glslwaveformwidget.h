@@ -12,7 +12,7 @@ class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     enum class GlslType {
         Filtered,
         RGB,
-        RGB3Band,
+        RGBStacked,
     };
     GLSLWaveformWidget(
             const QString& group,
@@ -64,18 +64,18 @@ class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
     static inline bool developerOnly() { return false; }
 };
 
-class GLSLRGB3BandWaveformWidget : public GLSLWaveformWidget {
+class GLSLRGBStackedWaveformWidget : public GLSLWaveformWidget {
     Q_OBJECT
   public:
-    GLSLRGB3BandWaveformWidget(const QString& group, QWidget* parent);
-    ~GLSLRGB3BandWaveformWidget() override = default;
+    GLSLRGBStackedWaveformWidget(const QString& group, QWidget* parent);
+    ~GLSLRGBStackedWaveformWidget() override = default;
 
     WaveformWidgetType::Type getType() const override {
-        return WaveformWidgetType::GLSLRGB3BandWaveform;
+        return WaveformWidgetType::GLSLRGBStackedWaveform;
     }
 
     static inline QString getWaveformWidgetName() {
-        return tr("RGB 3Band");
+        return tr("RGB Stacked");
     }
     static inline bool useOpenGl() {
         return true;

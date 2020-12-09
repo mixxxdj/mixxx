@@ -86,15 +86,15 @@ class GLSLWaveformRendererRGBSignal : public GLSLWaveformRendererSignal {
     ~GLSLWaveformRendererRGBSignal() override {}
 };
 
-class GLSLWaveformRenderer3BandSignal : public GLSLWaveformRendererSignal {
+class GLSLWaveformRendererStackedSignal : public GLSLWaveformRendererSignal {
   public:
-    GLSLWaveformRenderer3BandSignal(
+    GLSLWaveformRendererStackedSignal(
             WaveformWidgetRenderer* waveformWidgetRenderer)
             : GLSLWaveformRendererSignal(waveformWidgetRenderer,
                       ColorType::RGBFiltered,
-                      ":/shaders/3bandsignal.frag") {
+                      ":/shaders/stackedsignal.frag") {
     }
-    ~GLSLWaveformRenderer3BandSignal() override {
+    ~GLSLWaveformRendererStackedSignal() override {
     }
 };
 
