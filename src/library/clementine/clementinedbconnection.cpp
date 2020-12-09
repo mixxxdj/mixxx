@@ -170,7 +170,14 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
         entry.uri = QUrl::fromEncoded(
                 playlistTrackDataSourceQuery->value(2).toByteArray(),
                 QUrl::StrictMode);
-        entry.rating = playlistTrackDataSourceQuery->value(7).toInt();
+        float clementineRating = playlistTrackDataSourceQuery->value(7).toFloat();
+        if  (clementineRating < 0){
+            entry.rating = 0;
+        }
+        else
+        {
+            entry.rating = int(clementineRating*5);
+        }
         entry.genre = playlistTrackDataSourceQuery->value(8).toString();
         entry.grouping = playlistTrackDataSourceQuery->value(15).toString();
         entry.tracknumber = playlistTrackDataSourceQuery->value(9).toInt();
