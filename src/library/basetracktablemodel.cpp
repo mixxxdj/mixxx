@@ -633,7 +633,7 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             }
             if (bpm.hasValue()) {
-                return mixxx::Bpm::displayString(bpm.getValue());
+                return bpm.displayString();
             } else {
                 return QChar('-');
             }

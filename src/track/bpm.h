@@ -51,6 +51,10 @@ public:
         m_value = kValueUndefined;
     }
 
+    QString displayString() {
+        return Bpm::displayString(m_value);
+    }
+
     static double valueFromString(const QString& str, bool* pValid = nullptr);
     static QString valueToString(double value);
     static int valueToInteger(double value) {
