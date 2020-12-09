@@ -1205,13 +1205,26 @@ install(
     "*.qm"
 )
 
+
 # Font files
-install(
-  DIRECTORY
-    "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
-  DESTINATION
-    "${MIXXX_INSTALL_DATADIR}"
-)
+if(UNIX AND NOT APPLE)
+  # Ubuntu and OpenSans are already installed by package manager
+  install(
+    DIRECTORY
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
+    DESTINATION
+      "${MIXXX_INSTALL_DATADIR}"
+    PATTERN "OpenSans*" EXCLUDE
+    PATTERN "Ubuntu*" EXCLUDE
+  )
+else()
+  install(
+    DIRECTORY
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
+    DESTINATION
+      "${MIXXX_INSTALL_DATADIR}"
+  )
+endif()
 
 # Keyboard mapping(s)
 install(
@@ -2538,7 +2551,7 @@ set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_PACKAGE_SUGGESTS "pdf-viewer, pulseaudio-utils")
 set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite, fonts-open-sans, fonts-ubuntu")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CPACK_PACKAGE_HOMEPAGE_URL}")
 file(READ ${CPACK_PACKAGE_DESCRIPTION_FILE} CPACK_DEBIAN_PACKAGE_DESCRIPTION)
