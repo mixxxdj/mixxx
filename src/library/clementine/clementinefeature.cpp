@@ -16,6 +16,7 @@ ClementineFeature::ClementineFeature(
         : BaseExternalLibraryFeature(pLibrary, pConfig),
           m_connection(std::make_shared<ClementineDbConnection>(
                   m_pLibrary->trackCollections())),
+          m_isActivated(false),
           m_pClementinePlaylistModel(make_parented<ClementinePlaylistModel>(
                   this, m_pLibrary->trackCollections(), m_connection)),
           m_childModel(),
@@ -52,24 +53,27 @@ void ClementineFeature::activate() {
 
     QString databaseFile = ClementineDbConnection::getDatabaseFile();
 
-    if (!QFile::exists(databaseFile)) {
-        QMessageBox::warning(
-                nullptr,
-                tr("Error loading Clementine database"),
-                tr("Clementine database file not found at\n") +
-                        databaseFile);
-        qInfo() << "Clementine database file" << databaseFile << "does not exist";
-        return;
-    }
+    if (!m_isActivated) {
+        if (!QFile::exists(databaseFile)) {
+            QMessageBox::warning(
+                    nullptr,
+                    tr("Error loading Clementine database"),
+                    tr("Clementine database file not found at\n") +
+                            databaseFile);
+            qInfo() << "Clementine database file" << databaseFile << "does not exist";
+            return;
+        }
 
-    if (!m_connection->open(databaseFile)) {
-        QMessageBox::warning(
-                nullptr,
-                tr("Error loading Clementine database"),
-                tr("There was an error loading your Clementine database at\n") +
-                        databaseFile);
-        return;
+        if (!m_connection->open(databaseFile)) {
+            QMessageBox::warning(
+                    nullptr,
+                    tr("Error loading Clementine database"),
+                    tr("There was an error loading your Clementine database at\n") +
+                            databaseFile);
+            return;
+        }
     }
+    m_isActivated = true;
 
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     QList<ClementinePlaylist> playlists = m_connection->getPlaylists();

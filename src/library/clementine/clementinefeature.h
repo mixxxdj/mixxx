@@ -33,6 +33,7 @@ class ClementineFeature : public BaseExternalLibraryFeature {
 
     //a new DB connection for the worker thread
     std::shared_ptr<ClementineDbConnection> m_connection;
+    bool m_isActivated;
 
     parented_ptr<ClementinePlaylistModel> m_pClementinePlaylistModel;
     TreeItemModel m_childModel;
