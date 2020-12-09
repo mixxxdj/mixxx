@@ -55,8 +55,11 @@ Build-Depends: debhelper (>= 11),
                libebur128-dev,
 # for running mixxx-test
                xvfb
+Rules-Requires-Root: no
 Standards-Version: 4.1.4
 Homepage: @CPACK_DEBIAN_PACKAGE_HOMEPAGE@
+Vcs-Browser: https://github.com/mixxxdj/mixxx
+Vcs-Git: https://github.com/mixxxdj/mixxx.git
 
 Package: mixxx
 Section: @CPACK_DEBIAN_PACKAGE_SECTION@
