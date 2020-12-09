@@ -24,7 +24,7 @@ class GLSLWaveformRendererSignal: public QObject,
 
     GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
             ColorType colorType,
-            const char* fragShader);
+            const QString& fragShader);
     ~GLSLWaveformRendererSignal() override;
 
     bool onInit() override;
@@ -59,7 +59,7 @@ class GLSLWaveformRendererSignal: public QObject,
     // shaders
     bool m_shadersValid;
     ColorType m_colorType;
-    const char* m_pFragShader;
+    const QString m_pFragShader;
     std::unique_ptr<QGLShaderProgram> m_frameShaderProgram;
 };
 
@@ -69,7 +69,7 @@ public:
           WaveformWidgetRenderer* waveformWidgetRenderer)
           : GLSLWaveformRendererSignal(waveformWidgetRenderer,
                     ColorType::Filtered,
-                    ":/shaders/filteredsignal.frag") {
+                    QLatin1String(":/shaders/filteredsignal.frag")) {
   }
     ~GLSLWaveformRendererFilteredSignal() override {
     }
@@ -81,7 +81,7 @@ class GLSLWaveformRendererRGBSignal : public GLSLWaveformRendererSignal {
             WaveformWidgetRenderer* waveformWidgetRenderer)
             : GLSLWaveformRendererSignal(waveformWidgetRenderer,
                       ColorType::RGB,
-                      ":/shaders/rgbsignal.frag") {
+                      QLatin1String(":/shaders/rgbsignal.frag")) {
     }
     ~GLSLWaveformRendererRGBSignal() override {}
 };
@@ -92,7 +92,7 @@ class GLSLWaveformRendererStackedSignal : public GLSLWaveformRendererSignal {
             WaveformWidgetRenderer* waveformWidgetRenderer)
             : GLSLWaveformRendererSignal(waveformWidgetRenderer,
                       ColorType::RGBFiltered,
-                      ":/shaders/stackedsignal.frag") {
+                      QLatin1String(":/shaders/stackedsignal.frag")) {
     }
     ~GLSLWaveformRendererStackedSignal() override {
     }

@@ -10,7 +10,7 @@
 
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
         ColorType colorType,
-        const char* fragShader)
+        const QString& fragShader)
         : WaveformRendererSignalBase(waveformWidgetRenderer),
           m_unitQuadListId(-1),
           m_textureId(0),
@@ -53,10 +53,9 @@ bool GLSLWaveformRendererSignal::loadShaders() {
                  << m_frameShaderProgram->log();
         return false;
     }
-    QString fragmentShader = QString(m_pFragShader);
 
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Fragment, fragmentShader)) {
+                QGLShader::Fragment, m_pFragShader)) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
         return false;
