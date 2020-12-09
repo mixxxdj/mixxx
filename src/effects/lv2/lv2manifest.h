@@ -1,5 +1,4 @@
-#ifndef LV2MANIFEST_H
-#define LV2MANIFEST_H
+#pragma once
 
 #include "effects/effectmanifest.h"
 #include "effects/defs.h"
@@ -43,5 +42,3 @@ class LV2Manifest {
     float* m_default;
     Status m_status;
 };
-
-#endif // LV2MANIFEST_H

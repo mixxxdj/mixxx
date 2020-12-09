@@ -1,5 +1,4 @@
-#ifndef EFFECTSMANAGER_H
-#define EFFECTSMANAGER_H
+#pragma once
 
 #include <QObject>
 #include <QHash>
@@ -143,6 +142,3 @@ class EffectsManager : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
-
-
-#endif /* EFFECTSMANAGER_H */

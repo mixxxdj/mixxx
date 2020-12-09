@@ -1,5 +1,4 @@
-#ifndef SKINPARSER_H
-#define SKINPARSER_H
+#pragma once
 
 #include <QString>
 #include <QWidget>
@@ -12,5 +11,3 @@ class SkinParser {
     virtual bool canParse(const QString& skinPath) = 0;
     virtual QWidget* parseSkin(const QString& skinPath, QWidget* pParent) = 0;
 };
-
-#endif /* SKINPARSER_H */

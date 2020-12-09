@@ -27,8 +27,6 @@ class PlaylistFeature : public BasePlaylistFeature {
     QVariant title() override;
     QIcon getIcon() override;
 
-    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
-
     bool dropAcceptChild(const QModelIndex& index,
             const QList<QUrl>& urls,
             QObject* pSource) override;
@@ -44,12 +42,12 @@ class PlaylistFeature : public BasePlaylistFeature {
     void slotPlaylistTableRenamed(int playlistId, const QString& newName) override;
 
   protected:
-    QList<BasePlaylistFeature::IdAndLabel> createPlaylistLabels() override;
     QString fetchPlaylistLabel(int playlistId) override;
-    void decorateChild(TreeItem* pChild, int playlist_id) override;
+    void decorateChild(TreeItem* pChild, int playlistId) override;
+    QList<IdAndLabel> createPlaylistLabels();
+    QModelIndex constructChildModel(int selectedId);
 
   private:
     QString getRootViewHtml() const override;
     const QIcon m_icon;
-    QPointer<WLibrarySidebar> m_pSidebarWidget;
 };

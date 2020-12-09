@@ -1,5 +1,4 @@
-#ifndef WAVEFORMRENDERERABSTRACT_H
-#define WAVEFORMRENDERERABSTRACT_H
+#pragma once
 
 #include <QDomNode>
 #include <QPaintEvent>
@@ -46,5 +45,3 @@ class WaveformRendererAbstract {
 
     friend class WaveformWidgetRenderer;
 };
-
-#endif // WAVEFORMRENDERERABSTRACT_H

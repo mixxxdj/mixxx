@@ -2,8 +2,7 @@
  * browsethread.h         (C) 2011 Tobias Rafreider
  */
 
-#ifndef BROWSETHREAD_H
-#define BROWSETHREAD_H
+#pragma once
 
 #include <QThread>
 #include <QMutex>
@@ -55,5 +54,3 @@ class BrowseThread : public QThread {
 
     static QWeakPointer<BrowseThread> m_weakInstanceRef;
 };
-
-#endif // BROWSETHREAD_H

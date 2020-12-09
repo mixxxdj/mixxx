@@ -11,32 +11,81 @@ jobs:
         include:
           - name: Ubuntu 18.04 (gcc)
             os: ubuntu-18.04
-            cmake_args: -DFAAD=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
+            cmake_args: >-
+              -DFAAD=ON
+              -DKEYFINDER=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+            cmake_generator: Unix Makefiles
             ctest_args:
-            ccache_path: ~/.ccache
+            compiler_cache: ccache
+            compiler_cache_path: ~/.ccache
             cpack_generator: DEB
+            buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/ubuntu_buildenv.sh
             artifacts_name: Ubuntu 18.04 DEB
             artifacts_path: cmake_build/*.deb
+            qt_qpa_platform: offscreen
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
-            cmake_args: -DFFMPEG=ON -DKEYFINDER=ON -DLOCALECOMPARE=ON -DMAD=ON -DMODPLUG=ON -DWAVPACK=ON
+            cmake_args: >-
+              -DFFMPEG=ON
+              -DKEYFINDER=ON
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
+            cmake_generator: Unix Makefiles
             ctest_args:
-            ccache_path: ~/.ccache
+            compiler_cache: ccache
+            compiler_cache_path: ~/.ccache
             cpack_generator: DEB
+            buildenv_basepath: /home/runner/buildenv
             buildenv_script: tools/ubuntu_buildenv.sh
             artifacts_name: Ubuntu 20.04 DEB
             artifacts_path: cmake_build/*.deb
+            qt_qpa_platform: offscreen
           - name: macOS 10.15
             os: macos-10.15
-            cmake_args: -DCOREAUDIO=ON -DHSS1394=ON -DMACOS_BUNDLE=ON
+            cmake_args: >-
+              -DCOREAUDIO=ON
+              -DHSS1394=ON
+              -DMACOS_BUNDLE=ON
+            cmake_generator: Unix Makefiles
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
-            ccache_path: /Users/runner/Library/Caches/ccache
+            compiler_cache: ccache
+            compiler_cache_path: /Users/runner/Library/Caches/ccache
+            buildenv_basepath: /Users/runner/buildenv
             buildenv_script: tools/macos_buildenv.sh
             artifacts_name: macOS DMG
             artifacts_path: cmake_build/*.dmg
+            qt_qpa_platform: offscreen
+          - name: Windows 2019 (MSVC)
+            os: windows-2019
+            cmake_args: >-
+              -DHSS1394=ON
+              -DKEYFINDER=OFF
+              -DLOCALECOMPARE=ON
+              -DMAD=ON
+              -DMEDIAFOUNDATION=ON
+              -DSTATIC_DEPS=ON
+            cc: cl
+            cxx: cl
+            cmake_generator: Ninja
+            # TODO: Fix these broken tests on Windows
+            ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
+            cpack_generator: WIX
+            compiler_cache: clcache
+            compiler_cache_path: ${{ github.workspace }}\clcache
+            buildenv_basepath: C:\buildenv
+            buildenv_script: tools/windows_buildenv.bat
+            artifacts_name: Windows Installer
+            artifacts_path: cmake_build/*.msi
+            qt_qpa_platform: windows
 
     env:
       # macOS codesigning
@@ -57,20 +106,28 @@ jobs:
         # our CMakeLists.txt
         cmake-version: '3.13.x'
 
-    - name: "[macOS] Get build environment name"
-      if: runner.os == 'macOS'
-      id: buildenv_name
-      run: ${{ matrix.buildenv_script }} name --ghactions
+    - name: "[Windows] Install additional build tools"
+      if: runner.os == 'Windows'
+      run: python -m pip install ninja git+https://github.com/frerich/clcache.git
 
-    - name: "[macOS] Set up build environment cache"
-      if: runner.os == 'macOS'
+    - name: "[Windows] Set up MSVC Developer Command Prompt"
+      if: runner.os == 'Windows'
+      uses: seanmiddleditch/gha-setup-vsdevenv@v3
+
+    - name: "[macOS/Windows] Get build environment name"
+      if: runner.os != 'Linux'
+      id: buildenv_name
+      run: ${{ matrix.buildenv_script }} name
+
+    - name: "[macOS/Windows] Set up build environment cache"
+      if: runner.os != 'Linux'
       uses: actions/cache@v2
       with:
-        path: ${{ github.workspace }}/buildenv
-        key: macOS-build-environment-${{ steps.buildenv_name.outputs.buildenv_name }}
+        path: ${{ matrix.buildenv_basepath }}
+        key: ${{ runner.os }}-buildenv-${{ env.BUILDENV_NAME }}
 
     - name: "[macOS] Import Apple code signing identity"
-      id: codesign
+      id: apple_codesign
       if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
       run: |
         # Decrypt the certificate
@@ -83,82 +140,101 @@ jobs:
         security create-keychain -p mixxx Mixxx.keychain
         security unlock-keychain -p mixxx Mixxx.keychain
         security import ~/certificate.p12 -k Mixxx.keychain \
-          -P "${MACOS_CODESIGN_CERTIFICATE_PASSWORD}" -T /usr/bin/codesign
+          -P "${MACOS_CODESIGN_CERTIFICATE_PASSWORD}" -A
         security set-key-partition-list -S "apple-tool:,apple:" -k mixxx Mixxx.keychain
         # Add keychain to search list
         security list-keychains -s Mixxx.keychain
+        # Prevent keychain access from timing out
+        security set-keychain-settings Mixxx.keychain
+        echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
 
-        CMAKE_ARGS="-DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}"
-        echo "::set-output name=cmake_args::${CMAKE_ARGS}"
+    - name: "[Windows] Set up Windows code signing"
+      env:
+        WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ github.workspace }}\build\certificates\windows_sectigo_codesign_certificate.pfx
+        WINDOWS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD }}
+        WINDOWS_CODESIGN_SECURE_FILE_SALT: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SALT }}
+        WINDOWS_CODESIGN_SECURE_FILE_SECRET: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SECRET }}
+      if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_SECURE_FILE_SALT != null && env.WINDOWS_CODESIGN_SECURE_FILE_SECRET != null
+      run: |
+        iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
+        appveyor-tools/secure-file -decrypt "$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH.enc" -secret "$Env:WINDOWS_CODESIGN_SECURE_FILE_SECRET" -salt "$Env:WINDOWS_CODESIGN_SECURE_FILE_SALT"
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PATH=$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH"
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PASSWORD=$Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD"
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "CMAKE_ARGS_EXTRA=-DWINDOWS_CODESIGN=ON"
 
     - name: "Set up build environment"
       id: buildenv
-      run: ${{ matrix.buildenv_script }} setup --ghactions
+      run: ${{ matrix.buildenv_script }} setup
       env:
-        BUILDENV_BASEPATH: ${{ github.workspace }}/buildenv
+        BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
-    - name: "Set ccache size limit"
-      run: ccache -M 5G
-      env:
-        PATH: ${{ steps.buildenv.outputs.path }}
+    - name: "Set compiler cache size limit"
+      # Set size to 2 GiB
+      run: ${{ matrix.compiler_cache }}  -M 2097152
 
-    - name: "Set up ccache cache"
+    - name: "Set up compiler cache"
       uses: actions/cache@v2
       with:
-        path: ${{ matrix.ccache_path }}
-        key: ${{ matrix.os }}-ccache-${{ github.head_ref }}-${{ github.run_number }}
+        path: ${{ matrix.compiler_cache_path }}
+        key: ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}-${{ github.run_number }}
         restore-keys: |
-          ${{ matrix.os }}-ccache-${{ github.head_ref }}
-          ${{ matrix.os }}-ccache
+          ${{ matrix.os }}-${{ matrix.compiler_cache }}-${{ github.head_ref }}
+          ${{ matrix.os }}-${{ matrix.compiler_cache }}
 
     - name: "Create build directory"
       run: mkdir cmake_build
 
     - name: "Configure"
-      run: |
-        cmake \
-          -DCMAKE_BUILD_TYPE=Release \
-          -DBATTERY=ON \
-          -DBROADCAST=ON \
-          -DBULK=ON \
-          -DDEBUG_ASSERTIONS_FATAL=ON \
-          -DHID=ON \
-          -DLILV=ON \
-          -DOPUS=ON \
-          -DQTKEYCHAIN=ON \
-          -DVINYLCONTROL=ON \
-          ${CMAKE_FLAGS_EXTRA} \
-          ..
+      run: >-
+        cmake
+        -G "${{ matrix.cmake_generator }}"
+        -DCMAKE_BUILD_TYPE=Release
+        "-DCMAKE_PREFIX_PATH=${{ env.CMAKE_PREFIX_PATH }}"
+        -DDEBUG_ASSERTIONS_FATAL=ON
+        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
+        -DBATTERY=ON
+        -DBROADCAST=ON
+        -DBULK=ON
+        -DHID=ON
+        -DLILV=ON
+        -DOPUS=ON
+        -DQTKEYCHAIN=ON
+        -DVINYLCONTROL=ON
+        ..
       working-directory: cmake_build
       env:
-         PATH: ${{ steps.buildenv.outputs.path }}
-         CMAKE_FLAGS_EXTRA: ${{ matrix.cmake_args }} ${{ steps.apple_codesign.outputs.cmake_args }} -DCMAKE_PREFIX_PATH=${{ steps.buildenv.outputs.cmake_prefix_path }} -DQt5_DIR=${{ steps.buildenv.outputs.qt_path }}
-         MACOSX_DEPLOYMENT_TARGET: ${{ steps.buildenv.outputs.macosx_deployment_target }}
+        CC: ${{ matrix.cc }}
+        CXX: ${{ matrix.cxx }}
 
-    - name: "Set up problem matcher"
+    - name: "[Ubuntu/macOS] Set up gcc/clang problem matcher"
+      if: runner.os != 'Windows'
       uses: ammaraskar/gcc-problem-matcher@master
+
+    - name: "[Windows] Set up MSVC problem matcher"
+      if: runner.os == 'Windows'
+      uses: ammaraskar/msvc-problem-matcher@master
 
     - name: "Build"
       run: cmake --build .
       working-directory: cmake_build
       env:
+        CC: ${{ matrix.cc }}
+        CXX: ${{ matrix.cxx }}
         CMAKE_BUILD_PARALLEL_LEVEL: 2
         # GitHub Actions automatically zstd compresses caches
         CCACHE_NOCOMPRESS: true
-        PATH: ${{ steps.buildenv.outputs.path }}
+        CLCACHE_COMPRESS: false
+        CLCACHE_HARDLINK: true
 
-    - name: "Print ccache stats"
-      run: ccache -s
-      env:
-        PATH: ${{ steps.buildenv.outputs.path }}
+    - name: "Print compiler cache stats"
+      run: ${{ matrix.compiler_cache }} -s
 
     - name: "Test"
       run: ctest --timeout 45 ${{ matrix.ctest_args }}
       working-directory: cmake_build
       env:
-        QT_QPA_PLATFORM_PLUGIN_PATH: ${{ steps.buildenv.outputs.qt_qpa_platform_plugin_path }}
         # Render analyzer waveform tests to an offscreen buffer
-        QT_QPA_PLATFORM: offscreen
+        QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
         GTEST_COLOR: 1
         CTEST_PARALLEL_LEVEL: 2
         CTEST_OUTPUT_ON_FAILURE: 1
@@ -167,23 +243,34 @@ jobs:
       run: cmake --build . --target mixxx-benchmark
       working-directory: cmake_build
       env:
-        QT_QPA_PLATFORM_PLUGIN_PATH: ${{ steps.buildenv.outputs.qt_qpa_platform_plugin_path }}
         # Render analyzer waveform tests to an offscreen buffer
-        QT_QPA_PLATFORM: offscreen
+        QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
     - name: "Package"
-      run: cpack -G ${{ matrix.cpack_generator }}
+      run: cpack -G ${{ matrix.cpack_generator }} -V
       working-directory: cmake_build
-      env:
-        PATH: ${{ steps.buildenv.outputs.path }}
 
     - name: "[macOS] Sign Package"
       if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
-      run: codesign --verbose=4 --deep --force --options runtime --sign "${APPLE_CODESIGN_IDENTITY}" --entitlements ../build/osx/entitlements.plist *.dmg
-        fi
+      run: codesign --verbose=4 --options runtime --sign "${APPLE_CODESIGN_IDENTITY}" --entitlements ../build/osx/entitlements.plist *.dmg
       working-directory: cmake_build
 
-    - name: "Deploy artifacts"
+    - name: "[Windows] Sign Package"
+      if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
+      run: signtool sign /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
+      working-directory: cmake_build
+
+    - name: "[macOS] Upload build to downloads.mixxx.org"
+      # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
+      if: runner.os == 'macOS' && env.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD != null
+      run: tools/deploy.sh
+      env:
+        FILE_TO_DEPLOY: ${{ matrix.artifacts_path }}
+        OS: ${{ runner.os }}
+        DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+        SSH_KEY: build/certificates/downloads-hostgator.mixxx.org.key
+
+    - name: "Upload GitHub Actions artifacts"
       uses: actions/upload-artifact@v2
       with:
         name: ${{ matrix.artifacts_name }}

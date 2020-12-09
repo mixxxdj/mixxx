@@ -7,11 +7,6 @@ shift
 case "$COMMAND" in
     name)
         echo "No build environment needed for Ubuntu, please install dependencies using apt." >&2
-
-        if [ "$1" = "--ghactions" ]
-        then
-            echo "::set-output name=buildenv_name::"
-        fi
         ;;
 
     setup)
@@ -28,7 +23,7 @@ case "$COMMAND" in
                 DISTRIB_CODENAME=
         esac
 
-        if [ ! -z "${DISTRIB_CODENAME}" ]
+        if [ -n "${DISTRIB_CODENAME}" ]
         then
             sudo apt-get update
             sudo apt-get install -y --no-install-recommends \
@@ -64,20 +59,9 @@ case "$COMMAND" in
                 protobuf-compiler \
                 qt5-default \
                 qt5keychain-dev \
+                qtdeclarative5-dev \
                 qtscript5-dev \
                 ${PACKAGES_EXTRA}
-        fi
-
-        if [ "$1" = "--ghactions" ]
-        then
-            QT_QPA_PLATFORM_PLUGIN_PATH="$(qtpaths --plugin-directory)"
-
-            echo "::set-output name=buildenv_path::"
-            echo "::set-output name=macosx_deployment_target::"
-            echo "::set-output name=cmake_prefix_path::"
-            echo "::set-output name=path::${PATH}"
-            echo "::set-output name=qt_path::"
-            echo "::set-output name=qt_qpa_platform_plugin_path::${QT_QPA_PLATFORM_PLUGIN_PATH}"
         fi
         ;;
 esac

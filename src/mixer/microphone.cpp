@@ -1,8 +1,9 @@
 #include "mixer/microphone.h"
 
 #include "control/controlproxy.h"
-#include "engine/enginemaster.h"
 #include "engine/channels/enginemicrophone.h"
+#include "engine/enginemaster.h"
+#include "moc_microphone.cpp"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 

@@ -1,5 +1,4 @@
-#ifndef VALUETRANSFORMER_H
-#define VALUETRANSFORMER_H
+#pragma once
 
 #include <QList>
 #include <QDomElement>
@@ -94,5 +93,3 @@ class ValueTransformer {
 
     QList<TransformNode*> m_transformers;
 };
-
-#endif /* VALUETRANSFORMER_H */

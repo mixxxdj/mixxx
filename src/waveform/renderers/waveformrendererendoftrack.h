@@ -1,5 +1,4 @@
-#ifndef WAVEFORMRENDERERENDOFTRACK_H
-#define WAVEFORMRENDERERENDOFTRACK_H
+#pragma once
 
 #include <QColor>
 #include <QTime>
@@ -41,5 +40,3 @@ class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererEndOfTrack);
 };
-
-#endif // WAVEFORMRENDERERENDOFTRACK_H

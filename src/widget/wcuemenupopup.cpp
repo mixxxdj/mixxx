@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 
 #include "engine/engine.h"
+#include "moc_wcuemenupopup.cpp"
 #include "track/track.h"
 #include "util/color/color.h"
 

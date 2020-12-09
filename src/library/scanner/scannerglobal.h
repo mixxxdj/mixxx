@@ -1,5 +1,4 @@
-#ifndef SCANNERGLOBAL_H
-#define SCANNERGLOBAL_H
+#pragma once
 
 #include <QDir>
 #include <QHash>
@@ -223,5 +222,3 @@ class ScannerGlobal {
 };
 
 typedef QSharedPointer<ScannerGlobal> ScannerGlobalPointer;
-
-#endif /* SCANNERGLOBAL_H */

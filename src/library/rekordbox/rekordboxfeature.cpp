@@ -1,6 +1,3 @@
-// rekordboxfeature.cpp
-// Created 05/24/2019 by Evan Dekker
-
 #include "library/rekordbox/rekordboxfeature.h"
 
 #include <mp3guessenc.h>
@@ -21,6 +18,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_rekordboxfeature.cpp"
 #include "track/beatmap.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
@@ -258,7 +256,8 @@ inline bool instanceof (const T* ptr) {
 }
 
 QString toUnicode(const std::string& toConvert) {
-    return QTextCodec::codecForName("UTF-16BE")->toUnicode(QByteArray(toConvert.c_str(), toConvert.length()));
+    return QTextCodec::codecForName("UTF-16BE")
+            ->toUnicode(toConvert.data(), static_cast<int>(toConvert.length()));
 }
 
 // Functions getText and parseDeviceDB are roughly based on the following Java file:

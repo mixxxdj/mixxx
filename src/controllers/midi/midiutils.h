@@ -1,5 +1,4 @@
-#ifndef MIDIUTILS_H
-#define MIDIUTILS_H
+#pragma once
 
 #include "controllers/midi/midimessage.h"
 #include "util/duration.h"
@@ -48,6 +47,3 @@ class MidiUtils {
                               const QByteArray& data,
                               mixxx::Duration timestamp = mixxx::Duration::fromMillis(0));
 };
-
-
-#endif /* MIDIUTILS_H */

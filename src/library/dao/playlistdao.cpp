@@ -1,5 +1,7 @@
 #include "library/dao/playlistdao.h"
 
+#include "moc_playlistdao.cpp"
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
 #endif
@@ -11,6 +13,7 @@
 #include "library/trackcollection.h"
 #include "track/track.h"
 #include "util/compatibility.h"
+#include "util/db/fwdsqlquery.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
@@ -225,6 +228,53 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     if (!playedTrackIds.isEmpty()) {
         emit tracksRemovedFromPlayedHistory(playedTrackIds);
     }
+}
+
+int PlaylistDAO::deleteAllPlaylistsWithFewerTracks(
+        PlaylistDAO::HiddenType type, int minNumberOfTracks) {
+    VERIFY_OR_DEBUG_ASSERT(minNumberOfTracks > 0) {
+        return 0; // nothing to do, probably unintended invocation
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "SELECT id FROM Playlists  "
+            "WHERE (SELECT count(playlist_id) FROM PlaylistTracks WHERE "
+            "Playlists.ID = PlaylistTracks.playlist_id) < :length AND "
+            "Playlists.hidden = :hidden"));
+    query.bindValue(":hidden", static_cast<int>(type));
+    query.bindValue(":length", minNumberOfTracks);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return -1;
+    }
+
+    QStringList idStringList;
+    while (query.next()) {
+        idStringList.append(query.value(0).toString());
+    }
+    if (idStringList.isEmpty()) {
+        return 0;
+    }
+    QString idString = idStringList.join(",");
+
+    qInfo() << "Deleting" << idStringList.size() << "playlists of type" << type
+            << "that contain fewer than" << minNumberOfTracks << "tracks";
+
+    auto deleteTracks = FwdSqlQuery(m_database,
+            QString("DELETE FROM PlaylistTracks WHERE playlist_id IN (%1)")
+                    .arg(idString));
+    if (!deleteTracks.execPrepared()) {
+        return -1;
+    }
+
+    auto deletePlaylists = FwdSqlQuery(m_database,
+            QString("DELETE FROM Playlists WHERE id IN (%1)").arg(idString));
+    if (!deletePlaylists.execPrepared()) {
+        return -1;
+    }
+
+    return idStringList.length();
 }
 
 void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {
@@ -480,7 +530,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position) {
 
 void PlaylistDAO::removeTracksFromPlaylist(int playlistId, const QList<int>& positions) {
     // get positions in reversed order
-    QList sortedPositons = positions;
+    auto sortedPositons = positions;
     std::sort(sortedPositons.begin(), sortedPositons.end(), std::greater<int>());
 
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"

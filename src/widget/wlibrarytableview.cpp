@@ -7,6 +7,7 @@
 #include <QScrollBar>
 
 #include "library/trackmodel.h"
+#include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"

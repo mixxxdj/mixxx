@@ -1,11 +1,9 @@
-// basetrackcache.cpp
-// Created 7/3/2011 by RJ Ryan (rryan@mit.edu)
-
 #include "library/basetrackcache.h"
 
 #include "library/queryutil.h"
 #include "library/searchqueryparser.h"
 #include "library/trackcollection.h"
+#include "moc_basetrackcache.cpp"
 #include "track/globaltrackcache.h"
 #include "track/keyutils.h"
 #include "track/track.h"

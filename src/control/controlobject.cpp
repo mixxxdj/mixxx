@@ -1,27 +1,12 @@
-/***************************************************************************
-                          controlobject.cpp  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include <QtDebug>
-#include <QHash>
-#include <QSet>
-#include <QMutexLocker>
-
 #include "control/controlobject.h"
+
+#include <QHash>
+#include <QMutexLocker>
+#include <QSet>
+#include <QtDebug>
+
 #include "control/control.h"
+#include "moc_controlobject.cpp"
 #include "util/stat.h"
 #include "util/timer.h"
 

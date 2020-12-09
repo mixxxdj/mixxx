@@ -4,6 +4,7 @@
 
 #include "control/controlobject.h"
 #include "library/trackcollectionmanager.h"
+#include "moc_dlgrecording.cpp"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wskincolor.h"

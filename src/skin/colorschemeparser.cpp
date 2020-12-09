@@ -1,4 +1,3 @@
-
 #include "skin/colorschemeparser.h"
 
 #include "widget/wpixmapstore.h"

@@ -9,6 +9,7 @@
 #include "controllers/engine/scriptconnectionjsproxy.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_controllerengine.cpp"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
 #include "util/time.h"
@@ -240,7 +241,7 @@ void ControllerEngine::uninitializeScriptEngine() {
     }
 }
 
-void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
+void ControllerEngine::loadModule(const QFileInfo& moduleFileInfo) {
     // QFileInfo does not have a isValid/isEmpty/isNull method to check if it
     // actually contains a reference, so we check if the filePath is empty as a
     // workaround.
@@ -291,7 +292,7 @@ void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
 #endif
 }
 
-void ControllerEngine::handleInput(QByteArray data, mixxx::Duration timestamp) {
+void ControllerEngine::handleInput(const QByteArray& data, mixxx::Duration timestamp) {
     if (m_handleInputFunction.isCallable()) {
         QJSValueList args;
         args << byteArrayToScriptValue(data);
@@ -438,7 +439,8 @@ void ControllerEngine::throwJSError(const QString& message) {
 #endif
 }
 
-void ControllerEngine::showScriptExceptionDialog(QJSValue evaluationResult, bool bFatalError) {
+void ControllerEngine::showScriptExceptionDialog(
+        const QJSValue& evaluationResult, bool bFatalError) {
     VERIFY_OR_DEBUG_ASSERT(evaluationResult.isError()) {
         return;
     }
@@ -679,7 +681,7 @@ void ControllerEngine::log(const QString& message) {
 }
 
 QJSValue ControllerEngine::makeConnection(
-        const QString& group, const QString& name, const QJSValue callback) {
+        const QString& group, const QString& name, const QJSValue& callback) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine != nullptr) {
         return QJSValue();
     }
@@ -714,7 +716,7 @@ QJSValue ControllerEngine::makeConnection(
     return QJSValue();
 }
 
-bool ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+bool ControllerEngine::removeScriptConnection(const ScriptConnection& connection) {
     ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
             connection.key.item);
 
@@ -725,7 +727,7 @@ bool ControllerEngine::removeScriptConnection(const ScriptConnection connection)
     return coScript->removeScriptConnection(connection);
 }
 
-void ControllerEngine::triggerScriptConnection(const ScriptConnection connection) {
+void ControllerEngine::triggerScriptConnection(const ScriptConnection& connection) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine) {
         return;
     }

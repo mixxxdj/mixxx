@@ -1,12 +1,13 @@
 #include "effects/effectchainslot.h"
 
-#include "effects/effectrack.h"
-#include "effects/effectxmlelements.h"
-#include "effects/effectslot.h"
+#include "control/controlencoder.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "control/controlencoder.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
+#include "effects/effectxmlelements.h"
 #include "mixer/playermanager.h"
+#include "moc_effectchainslot.cpp"
 #include "util/math.h"
 #include "util/xml.h"
 

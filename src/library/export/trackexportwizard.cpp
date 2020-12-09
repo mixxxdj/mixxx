@@ -2,9 +2,10 @@
 
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QStandardPaths>
 #include <QMessageBox>
+#include <QStandardPaths>
 
+#include "moc_trackexportwizard.cpp"
 #include "util/assert.h"
 
 void TrackExportWizard::exportTracks() {

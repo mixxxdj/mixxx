@@ -1,10 +1,3 @@
-/**
- * @file bulkenumerator.cpp
- * @author Neale Picket  neale@woozle.org
- * @date Thu Jun 28 2012
- * @brief USB Bulk controller backend
- */
-
 #include <libusb.h>
 
 #include "controllers/bulk/bulkcontroller.h"

@@ -1,9 +1,10 @@
 #include "library/export/trackexportdlg.h"
 
-#include <QFileInfo>
 #include <QDesktopServices>
+#include <QFileInfo>
 #include <QMessageBox>
 
+#include "moc_trackexportdlg.cpp"
 #include "util/assert.h"
 
 TrackExportDlg::TrackExportDlg(QWidget *parent,

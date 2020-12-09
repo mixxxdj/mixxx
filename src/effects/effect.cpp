@@ -1,11 +1,13 @@
+#include "effects/effect.h"
+
 #include <QtDebug>
 
-#include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"
-#include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectchain.h"
+#include "moc_effect.cpp"
 #include "util/xml.h"
 
 Effect::Effect(EffectsManager* pEffectsManager,

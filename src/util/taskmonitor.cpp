@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QThread>
 
+#include "moc_taskmonitor.cpp"
 #include "util/assert.h"
 #include "util/math.h"
 #include "util/thread_affinity.h"

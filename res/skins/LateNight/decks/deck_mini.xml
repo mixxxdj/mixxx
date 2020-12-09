@@ -67,26 +67,24 @@
                         <SetVariable name="BtnSize">medium</SetVariable>
                         <SetVariable name="ConfigKey"><Variable name="Group"/>,play</SetVariable>
                         <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,cue_default</SetVariable>
+                        <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play_latched</SetVariable>
                       </Template>
+                      <PushButton>
+                        <ObjectName>PreviewIndicator</ObjectName>
+                        <Size>42f,26f</Size>
+                        <NumberStates>2</NumberStates>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,play</ConfigKey>
+                        </Connection>
+                      </PushButton>
                       <PushButton>
                         <ObjectName>PlayIndicator</ObjectName>
                         <Size>42f,26f</Size>
                         <NumberStates>2</NumberStates>
-                        <RightClickIsPushButton>false</RightClickIsPushButton>
-                        <State>
-                          <Number>0</Number>
-                        </State>
-                        <State>
-                          <Number>1</Number>
-                        </State>
                         <Connection>
                           <ConfigKey><Variable name="Group"/>,play_indicator</ConfigKey>
                         </Connection>
                       </PushButton>
-                      <WidgetGroup>
-                        <ObjectName>PlayBg</ObjectName>
-                        <Size>42f,26f</Size>
-                      </WidgetGroup>
                     </Children>
                   </WidgetGroup><!-- Play + PlayBlink + default grey background -->
 

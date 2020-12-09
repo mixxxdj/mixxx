@@ -1,26 +1,10 @@
-/**
- * @file soundmanager.cpp
- * @author Albert Santoni <gamegod at users dot sf dot net>
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20070815
- */
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "soundio/soundmanager.h"
 
-#include <QtDebug>
-#include <cstring> // for memcpy and strcmp
+#include <portaudio.h>
 
 #include <QLibrary>
-#include <portaudio.h>
+#include <QtDebug>
+#include <cstring> // for memcpy and strcmp
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -28,13 +12,14 @@
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
+#include "moc_soundmanager.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
 #include "soundio/soundmanagerutil.h"
-#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
+#include "util/compatibility.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/sleep.h"

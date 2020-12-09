@@ -1,36 +1,19 @@
-/***************************************************************************
-                          wslidercomposed.cpp  -  description
-                             -------------------
-    begin                : Tue Jun 25 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "widget/wslidercomposed.h"
 
-#include <QtDebug>
-#include <QStylePainter>
 #include <QStyleOption>
+#include <QStylePainter>
+#include <QtDebug>
 
-#include "widget/controlwidgetconnection.h"
-#include "widget/wpixmapstore.h"
-#include "widget/wskincolor.h"
+#include "moc_wslidercomposed.cpp"
 #include "util/debug.h"
 #include "util/duration.h"
 #include "util/math.h"
+#include "widget/controlwidgetconnection.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wskincolor.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
-      m_bRightButtonPressed(false),
       m_dHandleLength(0.0),
       m_dSliderLength(0.0),
       m_bHorizontal(false),

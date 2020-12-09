@@ -1,5 +1,4 @@
-#ifndef TRACKDAO_H
-#define TRACKDAO_H
+#pragma once
 
 #include <QFileInfo>
 #include <QObject>
@@ -73,7 +72,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     /// Update the play counter properties according to the corresponding
     /// aggregated properties obtained from the played history.
     bool updatePlayCounterFromPlayedHistory(
-            const QSet<TrackId> trackIds) const;
+            const QSet<TrackId>& trackIds) const;
 
   signals:
     // Forwarded from Track object
@@ -184,5 +183,3 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(TrackDAO::ResolveTrackIdFlags)
-
-#endif //TRACKDAO_H

@@ -18,6 +18,7 @@
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackset/crate/cratestorage.h"
+#include "moc_trackdao.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
@@ -540,13 +541,13 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":replaygain_peak", trackInfo.getReplayGain().getPeak());
 
     pTrackLibraryQuery->bindValue(":channels",
-            static_cast<uint>(trackMetadata.getChannelCount()));
+            static_cast<uint>(trackMetadata.getStreamInfo().getSignalInfo().getChannelCount()));
     pTrackLibraryQuery->bindValue(":samplerate",
-            static_cast<uint>(trackMetadata.getSampleRate()));
+            static_cast<uint>(trackMetadata.getStreamInfo().getSignalInfo().getSampleRate()));
     pTrackLibraryQuery->bindValue(":bitrate",
-            static_cast<uint>(trackMetadata.getBitrate()));
+            static_cast<uint>(trackMetadata.getStreamInfo().getBitrate()));
     pTrackLibraryQuery->bindValue(":duration",
-            trackMetadata.getDuration().toDoubleSeconds());
+            trackMetadata.getStreamInfo().getDuration().toDoubleSeconds());
 
     pTrackLibraryQuery->bindValue(":header_parsed",
             track.getMetadataSynchronized() ? 1 : 0);
@@ -606,7 +607,7 @@ bool insertTrackLibrary(
         const mixxx::BeatsPointer& pBeats,
         DbId trackLocationId,
         const TrackFile& trackFile,
-        QDateTime trackDateAdded) {
+        const QDateTime& trackDateAdded) {
     bindTrackLibraryValues(pTrackLibraryInsert, trackRecord, pBeats);
 
     if (!trackRecord.getDateAdded().isNull()) {
@@ -2169,7 +2170,7 @@ TrackFile TrackDAO::relocateCachedTrack(
 }
 
 bool TrackDAO::updatePlayCounterFromPlayedHistory(
-        const QSet<TrackId> trackIds) const {
+        const QSet<TrackId>& trackIds) const {
     // Update both timesplay and last_played_at according to the
     // corresponding aggregated properties from the played history,
     // i.e. COUNT for the number of times a track has been played
