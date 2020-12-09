@@ -1,9 +1,14 @@
 #include "waveform/waveformmarklabel.h"
 #include "util/math.h"
 
-void WaveformMarkLabel::prerender(QPointF bottomLeft, QPixmap icon, QString text,
-            QFont font, QColor textColor, QColor backgroundColor,
-            float widgetWidth, double scaleFactor) {
+void WaveformMarkLabel::prerender(QPointF bottomLeft,
+        const QPixmap& icon,
+        QString text,
+        const QFont& font,
+        QColor textColor,
+        QColor backgroundColor,
+        float widgetWidth,
+        double scaleFactor) {
     if (text.isEmpty() && icon.isNull()) {
         clear();
         return;

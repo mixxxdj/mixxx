@@ -1,12 +1,6 @@
-/**
-* @file encoderwavesettings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for wave/aiff encoder
-*/
+#include "encoder/encoderwavesettings.h"
 
- #include "encoder/encoderwavesettings.h"
- #include "recording/defs_recording.h"
+#include "recording/defs_recording.h"
 
 const QString EncoderWaveSettings::BITS_GROUP = "BITS";
 
@@ -34,7 +28,7 @@ QList<EncoderSettings::OptionsGroup> EncoderWaveSettings::getOptionGroups() cons
 
 // Selects the option by its index. If it is a single-element option,
 // index 0 means disabled and 1 enabled.
-void EncoderWaveSettings::setGroupOption(QString groupCode, int optionIndex) {
+void EncoderWaveSettings::setGroupOption(const QString& groupCode, int optionIndex) {
     bool found=false;
     for (const auto& group : qAsConst(m_radioList)) {
         if (groupCode == group.groupCode) {
@@ -55,7 +49,7 @@ void EncoderWaveSettings::setGroupOption(QString groupCode, int optionIndex) {
 }
 // Return the selected option of the group. If it is a single-element option,
 // 0 means disabled and 1 enabled.
-int EncoderWaveSettings::getSelectedOption(QString groupCode) const {
+int EncoderWaveSettings::getSelectedOption(const QString& groupCode) const {
     bool found=false;
     int value = m_pConfig->getValue(
             ConfigKey(RECORDING_PREF_KEY, m_format + "_" + groupCode), 0);

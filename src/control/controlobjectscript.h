@@ -1,5 +1,4 @@
-#ifndef CONTROLOBJECTSCRIPT_H
-#define CONTROLOBJECTSCRIPT_H
+#pragma once
 
 #include <QVector>
 
@@ -38,7 +37,5 @@ class ControlObjectScript : public ControlProxy {
     void slotValueChanged(double v, QObject*);
 
   private:
-    QList<ScriptConnection> m_scriptConnections;
+    QVector<ScriptConnection> m_scriptConnections;
 };
-
-#endif // CONTROLOBJECTSCRIPT_H

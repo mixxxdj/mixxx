@@ -1,40 +1,42 @@
-#include <QStringList>
-#include <QTime>
-#include <QWidget>
-#include <QtDebug>
+#include "waveform/waveformwidgetfactory.h"
+
 #include <QGLFormat>
 #include <QGLShaderProgram>
 #include <QGuiApplication>
-#include <QWindow>
 #include <QOpenGLFunctions>
-
-#include "waveform/waveformwidgetfactory.h"
+#include <QStringList>
+#include <QTime>
+#include <QWidget>
+#include <QWindow>
+#include <QtDebug>
 
 #include "control/controlpotmeter.h"
-#include "waveform/sharedglcontext.h"
-#include "waveform/widgets/emptywaveformwidget.h"
-#include "waveform/widgets/softwarewaveformwidget.h"
-#include "waveform/widgets/hsvwaveformwidget.h"
-#include "waveform/widgets/rgbwaveformwidget.h"
-#include "waveform/widgets/qthsvwaveformwidget.h"
-#include "waveform/widgets/qtrgbwaveformwidget.h"
-#include "waveform/widgets/glrgbwaveformwidget.h"
-#include "waveform/widgets/glwaveformwidget.h"
-#include "waveform/widgets/glsimplewaveformwidget.h"
-#include "waveform/widgets/qtwaveformwidget.h"
-#include "waveform/widgets/qtsimplewaveformwidget.h"
-#include "waveform/widgets/glslwaveformwidget.h"
-#include "waveform/widgets/glvsynctestwidget.h"
-#include "waveform/widgets/qtvsynctestwidget.h"
-#include "waveform/widgets/waveformwidgetabstract.h"
-#include "widget/wwaveformviewer.h"
-#include "waveform/guitick.h"
-#include "waveform/visualsmanager.h"
-#include "waveform/vsyncthread.h"
+#include "moc_waveformwidgetfactory.cpp"
 #include "util/cmdlineargs.h"
+#include "util/math.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
-#include "util/math.h"
+#include "waveform/guitick.h"
+#include "waveform/sharedglcontext.h"
+#include "waveform/visualsmanager.h"
+#include "waveform/vsyncthread.h"
+#include "waveform/widgets/emptywaveformwidget.h"
+#include "waveform/widgets/glrgbwaveformwidget.h"
+#include "waveform/widgets/glsimplewaveformwidget.h"
+#include "waveform/widgets/glslwaveformwidget.h"
+#include "waveform/widgets/glvsynctestwidget.h"
+#include "waveform/widgets/glwaveformwidget.h"
+#include "waveform/widgets/hsvwaveformwidget.h"
+#include "waveform/widgets/qthsvwaveformwidget.h"
+#include "waveform/widgets/qtrgbwaveformwidget.h"
+#include "waveform/widgets/qtsimplewaveformwidget.h"
+#include "waveform/widgets/qtvsynctestwidget.h"
+#include "waveform/widgets/qtwaveformwidget.h"
+#include "waveform/widgets/rgbwaveformwidget.h"
+#include "waveform/widgets/softwarewaveformwidget.h"
+#include "waveform/widgets/waveformwidgetabstract.h"
+#include "widget/wvumeter.h"
+#include "widget/wwaveformviewer.h"
 
 namespace {
 // Returns true if the given waveform should be rendered.
@@ -45,10 +47,10 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
         return false;
     }
 
-    auto glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
+    auto* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
     if (glw == nullptr) {
         // Not a QGLWidget. We can simply use QWidget::isVisible.
-        auto qwidget = dynamic_cast<QWidget*>(pWaveformWidget->getWidget());
+        auto qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
         return qwidget != nullptr && qwidget->isVisible();
     }
 
@@ -104,7 +106,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
           m_frameRate(30),
           m_endOfTrackWarningTime(30),
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
-          m_zoomSync(false),
+          m_zoomSync(true),
           m_overviewNormalized(false),
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
@@ -302,12 +304,8 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
 
-    int zoomSync = m_config->getValueString(ConfigKey("[Waveform]","ZoomSynchronization")).toInt(&ok);
-    if (ok) {
-        setZoomSync(static_cast<bool>(zoomSync));
-    } else {
-        m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
-    }
+    bool zoomSync = m_config->getValue(ConfigKey("[Waveform]", "ZoomSynchronization"), m_zoomSync);
+    setZoomSync(zoomSync);
 
     int beatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "beatGridAlpha"), m_beatGridAlpha);
     setDisplayBeatGridAlpha(beatGridAlpha);
@@ -355,15 +353,16 @@ void WaveformWidgetFactory::destroyWidgets() {
     m_waveformWidgetHolders.clear();
 }
 
-void WaveformWidgetFactory::addTimerListener(QWidget* pWidget) {
+void WaveformWidgetFactory::addTimerListener(WVuMeter* pWidget) {
     // Do not hold the pointer to of timer listeners since they may be deleted.
     // We don't activate update() or repaint() directly so listener widgets
     // can decide whether to paint or not.
-    connect(this, SIGNAL(waveformUpdateTick()),
-            pWidget, SLOT(maybeUpdate()),
+    connect(this,
+            &WaveformWidgetFactory::waveformUpdateTick,
+            pWidget,
+            &WVuMeter::maybeUpdate,
             Qt::DirectConnection);
 }
-
 
 void WaveformWidgetFactory::slotSkinLoaded() {
     setWidgetTypeFromConfig();
@@ -397,7 +396,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer,
     if (index == -1) {
         // add holder
         m_waveformWidgetHolders.push_back(std::move(holder));
-        index = m_waveformWidgetHolders.size() - 1;
+        index = static_cast<int>(m_waveformWidgetHolders.size()) - 1;
     } else {
         // update holder
         DEBUG_ASSERT(index >= 0);
@@ -626,7 +625,8 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
 }
 
 void WaveformWidgetFactory::render() {
-    ScopedTimer t("WaveformWidgetFactory::render() %1waveforms", m_waveformWidgetHolders.size());
+    ScopedTimer t("WaveformWidgetFactory::render() %1waveforms",
+            static_cast<int>(m_waveformWidgetHolders.size()));
 
     //int paintersSetupTime0 = 0;
     //int paintersSetupTime1 = 0;
@@ -636,8 +636,11 @@ void WaveformWidgetFactory::render() {
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
             // next rendered frame is displayed after next buffer swap and than after VSync
-            QVarLengthArray<bool, 10> shouldRenderWaveforms(m_waveformWidgetHolders.size());
-            for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
+            QVarLengthArray<bool, 10> shouldRenderWaveforms(
+                    static_cast<int>(m_waveformWidgetHolders.size()));
+            for (decltype(m_waveformWidgetHolders)::size_type i = 0;
+                    i < m_waveformWidgetHolders.size();
+                    i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 // Don't bother doing the pre-render work if we aren't going to
                 // render this widget.
@@ -654,7 +657,9 @@ void WaveformWidgetFactory::render() {
             // It may happen that there is an artificially delayed due to
             // anti tearing driver settings
             // all render commands are delayed until the swap from the previous run is executed
-            for (std::size_t i = 0; i < m_waveformWidgetHolders.size(); i++) {
+            for (decltype(m_waveformWidgetHolders)::size_type i = 0;
+                    i < m_waveformWidgetHolders.size();
+                    i++) {
                 WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
                 if (!shouldRenderWaveforms[i]) {
                     continue;
@@ -692,7 +697,8 @@ void WaveformWidgetFactory::render() {
 }
 
 void WaveformWidgetFactory::swap() {
-    ScopedTimer t("WaveformWidgetFactory::swap() %1waveforms", m_waveformWidgetHolders.size());
+    ScopedTimer t("WaveformWidgetFactory::swap() %1waveforms",
+            static_cast<int>(m_waveformWidgetHolders.size()));
 
     // Do this in an extra slot to be sure to hit the desired interval
     if (!m_skipRender) {
@@ -709,8 +715,11 @@ void WaveformWidgetFactory::swap() {
                 if (!shouldRenderWaveform(pWaveformWidget)) {
                     continue;
                 }
-                QGLWidget* glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
+                QGLWidget* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
                 if (glw != nullptr) {
+                    if (glw->context() != QGLContext::currentContext()) {
+                        glw->makeCurrent();
+                    }
                     glw->swapBuffers();
                 }
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();

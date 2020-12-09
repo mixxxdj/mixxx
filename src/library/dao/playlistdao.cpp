@@ -1,5 +1,7 @@
 #include "library/dao/playlistdao.h"
 
+#include "moc_playlistdao.cpp"
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
 #endif
@@ -11,6 +13,7 @@
 #include "library/trackcollection.h"
 #include "track/track.h"
 #include "util/compatibility.h"
+#include "util/db/fwdsqlquery.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
@@ -172,6 +175,22 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     //qDebug() << "PlaylistDAO::deletePlaylist" << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
 
+    QSet<TrackId> playedTrackIds;
+    if (getHiddenType(playlistId) == PLHT_SET_LOG) {
+        const QList<TrackId> trackIds = getTrackIds(playlistId);
+
+        // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
+        // replaced with QSet<T>(list.begin(), list.end()).
+        // However, the proposed alternative has just been introduced in Qt
+        // 5.14. Until the minimum required Qt version of Mixxx is increased,
+        // we need a version check here
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+        playedTrackIds = QSet<TrackId>(trackIds.constBegin(), trackIds.constEnd());
+#else
+        playedTrackIds = QSet<TrackId>::fromList(trackIds);
+#endif
+    }
+
     // Get the playlist id for this
     QSqlQuery query(m_database);
 
@@ -206,6 +225,56 @@ void PlaylistDAO::deletePlaylist(const int playlistId) {
     }
 
     emit deleted(playlistId);
+    if (!playedTrackIds.isEmpty()) {
+        emit tracksRemovedFromPlayedHistory(playedTrackIds);
+    }
+}
+
+int PlaylistDAO::deleteAllPlaylistsWithFewerTracks(
+        PlaylistDAO::HiddenType type, int minNumberOfTracks) {
+    VERIFY_OR_DEBUG_ASSERT(minNumberOfTracks > 0) {
+        return 0; // nothing to do, probably unintended invocation
+    }
+
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral(
+            "SELECT id FROM Playlists  "
+            "WHERE (SELECT count(playlist_id) FROM PlaylistTracks WHERE "
+            "Playlists.ID = PlaylistTracks.playlist_id) < :length AND "
+            "Playlists.hidden = :hidden"));
+    query.bindValue(":hidden", static_cast<int>(type));
+    query.bindValue(":length", minNumberOfTracks);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return -1;
+    }
+
+    QStringList idStringList;
+    while (query.next()) {
+        idStringList.append(query.value(0).toString());
+    }
+    if (idStringList.isEmpty()) {
+        return 0;
+    }
+    QString idString = idStringList.join(",");
+
+    qInfo() << "Deleting" << idStringList.size() << "playlists of type" << type
+            << "that contain fewer than" << minNumberOfTracks << "tracks";
+
+    auto deleteTracks = FwdSqlQuery(m_database,
+            QString("DELETE FROM PlaylistTracks WHERE playlist_id IN (%1)")
+                    .arg(idString));
+    if (!deleteTracks.execPrepared()) {
+        return -1;
+    }
+
+    auto deletePlaylists = FwdSqlQuery(m_database,
+            QString("DELETE FROM Playlists WHERE id IN (%1)").arg(idString));
+    if (!deletePlaylists.execPrepared()) {
+        return -1;
+    }
+
+    return idStringList.length();
 }
 
 void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {
@@ -459,14 +528,15 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position) {
     emit tracksChanged(QSet<int>{playlistId});
 }
 
-void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions) {
+void PlaylistDAO::removeTracksFromPlaylist(int playlistId, const QList<int>& positions) {
     // get positions in reversed order
-    std::sort(positions.begin(), positions.end(), std::greater<int>());
+    auto sortedPositons = positions;
+    std::sort(sortedPositons.begin(), sortedPositons.end(), std::greater<int>());
 
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    for (const auto position : qAsConst(positions)) {
+    for (const auto position : qAsConst(sortedPositons)) {
         removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();
@@ -516,7 +586,11 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
     }
 
     m_playlistsTrackIsIn.remove(trackId, playlistId);
+
     emit trackRemoved(playlistId, trackId, position);
+    if (getHiddenType(playlistId) == PLHT_SET_LOG) {
+        emit tracksRemovedFromPlayedHistory({trackId});
+    }
 }
 
 bool PlaylistDAO::insertTrackIntoPlaylist(TrackId trackId, const int playlistId, int position) {
@@ -1039,7 +1113,7 @@ void PlaylistDAO::shuffleTracks(const int playlistId,
 // TODO: The following use of QList<T>::swap(int, int) is deprecated
 // and should be replaced with QList<T>::swapItemsAt(int, int)
 // However, the proposed alternative has just been introduced in Qt
-// 5.13. Until the minimum required Qt version of Mixx is increased,
+// 5.13. Until the minimum required Qt version of Mixxx is increased,
 // we need a version check here.
 #if (QT_VERSION < QT_VERSION_CHECK(5, 13, 0))
         newPositions.swap(newPositions.indexOf(trackAPosition),

@@ -1,6 +1,3 @@
-// encoderopus.cpp
-// Create on August 15th 2017 by Palakis
-
 #include "encoder/encoderopus.h"
 
 #include <stdlib.h>
@@ -151,7 +148,7 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderOpus::initEncoder(int samplerate, QString errorMessage) {
+int EncoderOpus::initEncoder(int samplerate, QString& errorMessage) {
     Q_UNUSED(errorMessage);
 
     if (samplerate != kMasterSamplerate) {

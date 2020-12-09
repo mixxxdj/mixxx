@@ -1,8 +1,4 @@
-// cuecontrol.h
-// Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef CUECONTROL_H
-#define CUECONTROL_H
+#pragma once
 
 #include <QList>
 #include <QMutex>
@@ -71,17 +67,17 @@ class HotcueControl : public QObject {
         Active = 2,
     };
 
-    HotcueControl(QString group, int hotcueNumber);
+    HotcueControl(const QString& group, int hotcueIndex);
     ~HotcueControl() override;
 
-    int getHotcueNumber() const {
-        return m_iHotcueNumber;
+    int getHotcueIndex() const {
+        return m_hotcueIndex;
     }
 
     CuePointer getCue() const {
         return m_pCue;
     }
-    void setCue(CuePointer pCue);
+    void setCue(const CuePointer& pCue);
     void resetCue();
 
     double getPosition() const;
@@ -147,32 +143,32 @@ class HotcueControl : public QObject {
     void hotcuePlay(double v);
 
   private:
-    ConfigKey keyForControl(int hotcue, const char* name);
+    ConfigKey keyForControl(const QString& name);
 
     const QString m_group;
-    int m_iHotcueNumber;
+    const int m_hotcueIndex;
     CuePointer m_pCue;
 
     // Hotcue state controls
-    ControlObject* m_hotcuePosition;
-    ControlObject* m_hotcueEndPosition;
-    ControlObject* m_pHotcueStatus;
-    ControlObject* m_hotcueType;
-    ControlObject* m_hotcueColor;
+    std::unique_ptr<ControlObject> m_hotcuePosition;
+    std::unique_ptr<ControlObject> m_hotcueEndPosition;
+    std::unique_ptr<ControlObject> m_pHotcueStatus;
+    std::unique_ptr<ControlObject> m_hotcueType;
+    std::unique_ptr<ControlObject> m_hotcueColor;
     // Hotcue button controls
-    ControlObject* m_hotcueSet;
-    ControlObject* m_hotcueSetCue;
-    ControlObject* m_hotcueSetLoop;
-    ControlObject* m_hotcueGoto;
-    ControlObject* m_hotcueGotoAndPlay;
-    ControlObject* m_hotcueGotoAndStop;
-    ControlObject* m_hotcueGotoAndLoop;
-    ControlObject* m_hotcueCueLoop;
-    ControlObject* m_hotcueActivate;
-    ControlObject* m_hotcueActivateCue;
-    ControlObject* m_hotcueActivateLoop;
-    ControlObject* m_hotcueActivatePreview;
-    ControlObject* m_hotcueClear;
+    std::unique_ptr<ControlPushButton> m_hotcueSet;
+    std::unique_ptr<ControlPushButton> m_hotcueSetCue;
+    std::unique_ptr<ControlPushButton> m_hotcueSetLoop;
+    std::unique_ptr<ControlPushButton> m_hotcueGoto;
+    std::unique_ptr<ControlPushButton> m_hotcueGotoAndPlay;
+    std::unique_ptr<ControlPushButton> m_hotcueGotoAndStop;
+    std::unique_ptr<ControlPushButton> m_hotcueGotoAndLoop;
+    std::unique_ptr<ControlPushButton> m_hotcueCueLoop;
+    std::unique_ptr<ControlPushButton> m_hotcueActivate;
+    std::unique_ptr<ControlPushButton> m_hotcueActivateCue;
+    std::unique_ptr<ControlPushButton> m_hotcueActivateLoop;
+    std::unique_ptr<ControlPushButton> m_hotcueActivatePreview;
+    std::unique_ptr<ControlPushButton> m_hotcueClear;
 
     mixxx::CueType m_previewingType;
     double m_previewingPosition;
@@ -181,8 +177,8 @@ class HotcueControl : public QObject {
 class CueControl : public EngineControl {
     Q_OBJECT
   public:
-    CueControl(QString group,
-               UserSettingsPointer pConfig);
+    CueControl(const QString& group,
+            UserSettingsPointer pConfig);
     ~CueControl() override;
 
     void hintReader(HintVector* pHintList) override;
@@ -257,7 +253,7 @@ class CueControl : public EngineControl {
 
     // These methods are not thread safe, only call them when the lock is held.
     void createControls();
-    void attachCue(CuePointer pCue, HotcueControl* pControl);
+    void attachCue(const CuePointer& pCue, HotcueControl* pControl);
     void detachCue(HotcueControl* pControl);
     void setCurrentSavedLoopControlAndActivate(HotcueControl* pControl);
     void loadCuesFromTrack();
@@ -265,6 +261,8 @@ class CueControl : public EngineControl {
     double getQuantizedCurrentPosition();
     TrackAt getTrackAt() const;
     void seekOnLoad(double seekOnLoadPosition);
+    void setHotcueFocusIndex(int hotcueIndex);
+    int getHotcueFocusIndex() const;
 
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
@@ -295,6 +293,7 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pPlayStutter;
     ControlIndicator* m_pCueIndicator;
     ControlIndicator* m_pPlayIndicator;
+    ControlObject* m_pPlayLatched;
     ControlPushButton* m_pCueGoto;
     ControlPushButton* m_pCueGotoAndPlay;
     ControlPushButton* m_pCuePlay;
@@ -353,6 +352,3 @@ class CueControl : public EngineControl {
 
     friend class HotcueControlTest;
 };
-
-
-#endif /* CUECONTROL_H */

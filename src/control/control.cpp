@@ -1,6 +1,7 @@
 #include "control/control.h"
 
 #include "control/controlobject.h"
+#include "moc_control.cpp"
 #include "util/stat.h"
 
 //static
@@ -18,7 +19,7 @@ QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash
 MMutex ControlDoublePrivate::s_qCOHashMutex;
 
 ControlDoublePrivate::ControlDoublePrivate(
-        ConfigKey key,
+        const ConfigKey& key,
         ControlObject* pCreatorCO,
         bool bIgnoreNops,
         bool bTrack,

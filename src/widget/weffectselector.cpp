@@ -1,8 +1,9 @@
-#include <QtDebug>
-
 #include "widget/weffectselector.h"
 
+#include <QtDebug>
+
 #include "effects/effectsmanager.h"
+#include "moc_weffectselector.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
@@ -27,12 +28,18 @@ void WEffectSelector::setup(const QDomNode& node, const SkinContext& context) {
             node, context, m_pChainSlot);
 
     if (m_pEffectSlot != nullptr) {
-        connect(m_pEffectsManager, SIGNAL(visibleEffectsUpdated()),
-                this, SLOT(populate()));
-        connect(m_pEffectSlot.data(), SIGNAL(updated()),
-                this, SLOT(slotEffectUpdated()));
-        connect(this, SIGNAL(currentIndexChanged(int)),
-                this, SLOT(slotEffectSelected(int)));
+        connect(m_pEffectsManager,
+                &EffectsManager::visibleEffectsUpdated,
+                this,
+                &WEffectSelector::populate);
+        connect(m_pEffectSlot.data(),
+                &EffectSlot::updated,
+                this,
+                &WEffectSelector::slotEffectUpdated);
+        connect(this,
+                QOverload<int>::of(&WEffectSelector::currentIndexChanged),
+                this,
+                &WEffectSelector::slotEffectSelected);
     } else {
         SKIN_WARNING(node, context)
                 << "EffectSelector node could not attach to effect slot.";
@@ -123,7 +130,7 @@ bool WEffectSelector::event(QEvent* pEvent) {
         populate();
     } else if (pEvent->type() == QEvent::Wheel && !hasFocus()) {
         // don't change effect by scrolling hovered effect selector
-        return false;
+        return true;
     }
 
     return QComboBox::event(pEvent);

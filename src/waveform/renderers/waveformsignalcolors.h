@@ -1,5 +1,4 @@
-#ifndef WAVEFORMSIGNALCOLORS_H
-#define WAVEFORMSIGNALCOLORS_H
+#pragma once
 
 #include <QColor>
 #include <QDomNode>
@@ -74,5 +73,3 @@ class WaveformSignalColors {
     QColor m_bgColor;
     int m_dimBrightThreshold;
 };
-
-#endif // WAVEFORMSIGNALCOLORS_H

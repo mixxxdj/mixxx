@@ -32,6 +32,7 @@
 #include "library/trackset/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
+#include "moc_library.cpp"
 #include "recording/recordingmanager.h"
 #include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
@@ -425,7 +426,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit loadTrack(pTrack);
 }
 
-void Library::slotLoadLocationToPlayer(QString location, QString group) {
+void Library::slotLoadLocationToPlayer(const QString& location, const QString& group) {
     auto trackRef = TrackRef::fromFileInfo(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
@@ -434,7 +435,7 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
 }
 
 void Library::slotLoadTrackToPlayer(
-        TrackPointer pTrack, QString group, bool play) {
+        TrackPointer pTrack, const QString& group, bool play) {
     emit loadTrackToPlayer(pTrack, group, play);
 }
 
@@ -456,7 +457,7 @@ void Library::onSkinLoadFinished() {
     m_pSidebarModel->activateDefaultSelection();
 }
 
-void Library::slotRequestAddDir(QString dir) {
+void Library::slotRequestAddDir(const QString& dir) {
     // We only call this method if the user has picked a new directory via a
     // file dialog. This means the system sandboxer (if we are sandboxed) has
     // granted us permission to this folder. Create a security bookmark while we
@@ -480,7 +481,7 @@ void Library::slotRequestAddDir(QString dir) {
     }
 }
 
-void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
+void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) {
     switch (removalType) {
     case RemovalType::KeepTracks:
         break;
@@ -516,7 +517,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
     }
 }
 
-void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
+void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDir) {
     m_pTrackCollectionManager->relocateDirectory(oldDir, newDir);
 
     // also update the config file if necessary so that downgrading is still

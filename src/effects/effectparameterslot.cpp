@@ -1,11 +1,13 @@
+#include "effects/effectparameterslot.h"
+
 #include <QtDebug>
 
 #include "control/controleffectknob.h"
-#include "effects/effectparameterslot.h"
-#include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "controllers/softtakeover.h"
+#include "effects/effectxmlelements.h"
+#include "moc_effectparameterslot.cpp"
 #include "util/xml.h"
 
 EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned int iParameterSlotNumber)
@@ -14,8 +16,10 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
 
     m_pControlValue = new ControlEffectKnob(
             ConfigKey(m_group, itemPrefix));
-    connect(m_pControlValue, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueChanged(double)));
+    connect(m_pControlValue,
+            &ControlEffectKnob::valueChanged,
+            this,
+            &EffectParameterSlot::slotValueChanged);
 
     m_pControlLoaded = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_loaded")));
@@ -36,8 +40,10 @@ EffectParameterSlot::EffectParameterSlot(const QString& group, const unsigned in
     m_pControlLinkInverse = new ControlPushButton(
             ConfigKey(m_group, itemPrefix + QString("_link_inverse")));
     m_pControlLinkInverse->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pControlLinkInverse, SIGNAL(valueChanged(double)),
-            this, SLOT(slotLinkInverseChanged(double)));
+    connect(m_pControlLinkInverse,
+            &ControlPushButton::valueChanged,
+            this,
+            &EffectParameterSlot::slotLinkInverseChanged);
 
     m_pSoftTakeover = new SoftTakeover();
 
@@ -93,8 +99,10 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
             m_pControlLinkInverse->set(
                 static_cast<double>(m_pEffectParameter->getDefaultLinkInversion()));
 
-            connect(m_pEffectParameter, SIGNAL(valueChanged(double)),
-                    this, SLOT(slotParameterValueChanged(double)));
+            connect(m_pEffectParameter,
+                    &EffectParameter::valueChanged,
+                    this,
+                    &EffectParameterSlot::slotParameterValueChanged);
         }
     }
     emit updated();

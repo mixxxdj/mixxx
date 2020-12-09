@@ -158,7 +158,7 @@ class MockAutoDJProcessor : public AutoDJProcessor {
     virtual ~MockAutoDJProcessor() {
     }
 
-    MOCK_METHOD3(emitLoadTrackToPlayer, void(TrackPointer, QString, bool));
+    MOCK_METHOD3(emitLoadTrackToPlayer, void(TrackPointer, const QString&, bool));
     MOCK_METHOD1(emitAutoDJStateChanged, void(AutoDJProcessor::AutoDJState));
 };
 

@@ -5,6 +5,7 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
+#include "moc_cachingreaderworker.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility.h"
@@ -18,7 +19,7 @@ mixxx::Logger kLogger("CachingReaderWorker");
 } // anonymous namespace
 
 CachingReaderWorker::CachingReaderWorker(
-        QString group,
+        const QString& group,
         FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
         FIFO<ReaderStatusUpdate>* pReaderStatusFIFO)
         : m_group(group),

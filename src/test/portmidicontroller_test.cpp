@@ -31,13 +31,13 @@ class MockPortMidiController : public PortMidiController {
         PortMidiController::sendShortMsg(status, byte1, byte2);
     }
 
-    void sendSysexMsg(QList<int> data, unsigned int length) {
+    void sendSysexMsg(const QList<int>& data, unsigned int length) {
         PortMidiController::sendSysexMsg(data, length);
     }
 
     MOCK_METHOD4(receive, void(unsigned char, unsigned char, unsigned char,
                                mixxx::Duration));
-    MOCK_METHOD2(receive, void(const QByteArray, mixxx::Duration));
+    MOCK_METHOD2(receive, void(const QByteArray&, mixxx::Duration));
 };
 
 class MockPortMidiDevice : public PortMidiDevice {
@@ -245,15 +245,15 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExWithRealtime) {
     messages.push_back(MakeEvent(0x000000F7, 0x0));
 
     QByteArray sysex;
-    sysex.append(0xF0);
-    sysex.append(0x11);
-    sysex.append(0x22);
-    sysex.append(0x33);
-    sysex.append(0x44);
-    sysex.append(0x55);
-    sysex.append(0x66);
-    sysex.append(0x77);
-    sysex.append(0xF7);
+    sysex.append('\xF0');
+    sysex.append('\x11');
+    sysex.append('\x22');
+    sysex.append('\x33');
+    sysex.append('\x44');
+    sysex.append('\x55');
+    sysex.append('\x66');
+    sysex.append('\x77');
+    sysex.append('\xF7');
 
     Sequence read;
     EXPECT_CALL(*m_mockInput, isOpen())
@@ -281,14 +281,14 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysEx) {
     messages.push_back(MakeEvent(0xF7665544, 0x1));
 
     QByteArray sysex;
-    sysex.append(0xF0);
-    sysex.append(0x11);
-    sysex.append(0x22);
-    sysex.append(0x33);
-    sysex.append(0x44);
-    sysex.append(0x55);
-    sysex.append(0x66);
-    sysex.append(0xF7);
+    sysex.append('\xF0');
+    sysex.append('\x11');
+    sysex.append('\x22');
+    sysex.append('\x33');
+    sysex.append('\x44');
+    sysex.append('\x55');
+    sysex.append('\x66');
+    sysex.append('\xF7');
 
     Sequence read;
     EXPECT_CALL(*m_mockInput, isOpen())
@@ -316,16 +316,16 @@ TEST_F(PortMidiControllerTest,
     messages.push_back(MakeEvent(0x0000F777, 0x0));
 
     QByteArray sysex;
-    sysex.append(0xF0);
-    sysex.append(0x11);
-    sysex.append(0x22);
-    sysex.append(0x33);
-    sysex.append(0x44);
-    sysex.append(0xF8);
-    sysex.append(0x55);
-    sysex.append(0x66);
-    sysex.append(0x77);
-    sysex.append(0xF7);
+    sysex.append('\xF0');
+    sysex.append('\x11');
+    sysex.append('\x22');
+    sysex.append('\x33');
+    sysex.append('\x44');
+    sysex.append('\xF8');
+    sysex.append('\x55');
+    sysex.append('\x66');
+    sysex.append('\x77');
+    sysex.append('\xF7');
 
     Sequence read;
     EXPECT_CALL(*m_mockInput, isOpen())
@@ -382,14 +382,14 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExInterrupted_FollowedBySysExMessage
     messages.push_back(MakeEvent(0xF7665544, 0x0));
 
     QByteArray sysex;
-    sysex.append(0xF0);
-    sysex.append(0x11);
-    sysex.append(0x22);
-    sysex.append(0x33);
-    sysex.append(0x44);
-    sysex.append(0x55);
-    sysex.append(0x66);
-    sysex.append(0xF7);
+    sysex.append('\xF0');
+    sysex.append('\x11');
+    sysex.append('\x22');
+    sysex.append('\x33');
+    sysex.append('\x44');
+    sysex.append('\x55');
+    sysex.append('\x66');
+    sysex.append('\xF7');
 
     Sequence read;
     EXPECT_CALL(*m_mockInput, isOpen())
@@ -425,14 +425,14 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysEx_BufferOverflow) {
     messages3.push_back(MakeEvent(0xF7665544, 0x2));
 
     QByteArray sysex;
-    sysex.append(0xF0);
-    sysex.append(0x11);
-    sysex.append(0x22);
-    sysex.append(0x33);
-    sysex.append(0x44);
-    sysex.append(0x55);
-    sysex.append(0x66);
-    sysex.append(0xF7);
+    sysex.append('\xF0');
+    sysex.append('\x11');
+    sysex.append('\x22');
+    sysex.append('\x33');
+    sysex.append('\x44');
+    sysex.append('\x55');
+    sysex.append('\x66');
+    sysex.append('\xF7');
 
     Sequence read;
     EXPECT_CALL(*m_mockInput, isOpen())

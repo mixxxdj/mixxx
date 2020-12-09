@@ -99,10 +99,9 @@ Variables:
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,start</SetVariable>
                     <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
                   </Template>
-                  <!--	Turns Orange when playing Cue/HotCue.
-                        Only visible when play_indicator=0 -->
+                  <!-- Preview indicator, indicates previewing from Cue or Hotcue -->
                   <Template src="skin:button_2state.xml">
-                    <SetVariable name="ObjectName">CueUnderlay</SetVariable>
+                    <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
                     <SetVariable name="Size">24f,34f</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
                   </Template>

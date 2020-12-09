@@ -1,8 +1,9 @@
 #include "preferences/dialog/dlgprefeffects.h"
 
-#include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectsbackend.h"
+#include "effects/effectsmanager.h"
+#include "moc_dlgprefeffects.cpp"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
                                UserSettingsPointer pConfig,
@@ -13,7 +14,8 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
     setupUi(this);
 
     m_availableEffectsModel.resetFromEffectManager(pEffectsManager);
-    for (auto& profile : m_availableEffectsModel.profiles()) {
+    const QList<EffectProfilePtr> effectProfiles = m_availableEffectsModel.profiles();
+    for (auto& profile : effectProfiles) {
         EffectManifestPointer pManifest = profile->pManifest;
 
         // Users are likely to have lots of external plugins installed and
@@ -60,7 +62,8 @@ void DlgPrefEffects::slotUpdate() {
 }
 
 void DlgPrefEffects::slotApply() {
-    for (const EffectProfilePtr& profile : m_availableEffectsModel.profiles()) {
+    const QList<EffectProfilePtr> effectProfiles = m_availableEffectsModel.profiles();
+    for (const EffectProfilePtr& profile : effectProfiles) {
         EffectManifestPointer pManifest = profile->pManifest;
         m_pEffectsManager->setEffectVisibility(pManifest, profile->bIsVisible);
 

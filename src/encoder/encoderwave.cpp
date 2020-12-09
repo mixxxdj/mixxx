@@ -1,10 +1,3 @@
-/**
-* @file encoderwave.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief wave/aiff "encoder" for mixxx
-*/
-
 #include <QtDebug>
 
 #include "encoder/encoderwave.h"
@@ -201,8 +194,7 @@ void EncoderWave::initStream() {
     }
 }
 
-int EncoderWave::initEncoder(int samplerate, QString errorMessage) {
-
+int EncoderWave::initEncoder(int samplerate, QString& errorMessage) {
     // set sfInfo.
     // m_sfInfo.format is setup on setEncoderSettings previous to calling initEncoder.
     m_sfInfo.samplerate = samplerate;

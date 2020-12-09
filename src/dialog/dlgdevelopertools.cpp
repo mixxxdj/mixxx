@@ -3,9 +3,10 @@
 #include <QDateTime>
 
 #include "control/control.h"
+#include "moc_dlgdevelopertools.cpp"
 #include "util/cmdlineargs.h"
-#include "util/statsmanager.h"
 #include "util/logging.h"
+#include "util/statsmanager.h"
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      UserSettingsPointer pConfig)

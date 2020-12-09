@@ -1,11 +1,3 @@
-/**
-* @file encoderflacsettings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for flac encoder
-*/
-
-
 #include "encoder/encoderflacsettings.h"
 #include "recording/defs_recording.h"
 #include <sndfile.h>
@@ -78,7 +70,7 @@ QList<EncoderSettings::OptionsGroup> EncoderFlacSettings::getOptionGroups() cons
 
 // Selects the option by its index. If it is a single-element option,
 // index 0 means disabled and 1 enabled.
-void EncoderFlacSettings::setGroupOption(QString groupCode, int optionIndex) {
+void EncoderFlacSettings::setGroupOption(const QString& groupCode, int optionIndex) {
     bool found=false;
     for (const auto& group : qAsConst(m_radioList)) {
         if (groupCode == group.groupCode) {
@@ -98,7 +90,7 @@ void EncoderFlacSettings::setGroupOption(QString groupCode, int optionIndex) {
 }
 // Return the selected option of the group. If it is a single-element option,
 // 0 means disabled and 1 enabled.
-int EncoderFlacSettings::getSelectedOption(QString groupCode) const {
+int EncoderFlacSettings::getSelectedOption(const QString& groupCode) const {
     bool found=false;
     int value = m_pConfig->getValue(ConfigKey(RECORDING_PREF_KEY, groupCode), 0);
     for (const auto&  group : m_radioList) {

@@ -1,16 +1,16 @@
 #include "glrgbwaveformwidget.h"
 
-#include "waveform/sharedglcontext.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/renderers/waveformrenderbackground.h"
+#include "moc_glrgbwaveformwidget.cpp"
+#include "util/performancetimer.h"
 #include "waveform/renderers/glwaveformrendererrgb.h"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
-
-#include "util/performancetimer.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/sharedglcontext.h"
 
 GLRGBWaveformWidget::GLRGBWaveformWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
@@ -45,7 +45,7 @@ GLRGBWaveformWidget::~GLRGBWaveformWidget() {
 }
 
 void GLRGBWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = this;
 }
 
 void GLRGBWaveformWidget::paintEvent(QPaintEvent* event) {

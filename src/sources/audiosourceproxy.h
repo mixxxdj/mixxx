@@ -31,7 +31,7 @@ class AudioSourceProxy : public AudioSource {
     }
 
     ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) override {
+            const WritableSampleFrames& sampleFrames) override {
         DEBUG_ASSERT(getSignalInfo() == m_pAudioSource->getSignalInfo());
         DEBUG_ASSERT(getBitrate() == m_pAudioSource->getBitrate());
         DEBUG_ASSERT(frameIndexRange() == m_pAudioSource->frameIndexRange());

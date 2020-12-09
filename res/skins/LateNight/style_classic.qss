@@ -744,6 +744,11 @@ WLibrary,
   #FxUnitLabel {
     alignment: left;
   }
+#FxUnitHeaderCollapsed[highlight="1"],
+#FxUnitHeaderExpanded[highlight="1"] {
+  border-top: 1px solid #d09300;
+  border-right: 1px solid #d09300;
+}
 
 #FxUnitControlsExpanded,
 #FxUnitControlsCollapsed {
@@ -1031,14 +1036,6 @@ WTrackMenu QMenu QCheckBox,
 #LatencyLabel, WTime {
   color: #f0bb2b;
   }
-  WSearchLineEdit,
-  #LibraryBPMSpinBox,
-  #LibraryBPMButton::item,
-  #LibraryContainer QTableView,
-  #LibraryContainer QTextBrowser,
-  #LibraryContainer QTreeView {
-    selection-color: #f0bb2b;
-  }
   #SkinSettingsNumToggleHeader[displayValue="0"] {
     color: #b9901f;
   }
@@ -1299,17 +1296,23 @@ QPushButton#pushButtonRecording:checked {
     border-image: url(skin:/classic/buttons/btn_embedded_library_active.svg) 2 2 2 2;
   }
 
-#BeatgridControls WPushButton, #BeatgridControlsToggle,
+#BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
-#PlayDeck, #PlayIndicator, #PlayBg,
-#CueDeck, #PlayCueMini WPushButton,
-#LoopActivate,
-#RateControls WPushButton, #SyncDeck,
+WPushButton#PlayDeck,
+WPushButton#PreviewIndicator,
+WPushButton#PlayIndicator,
+WPushButton#CueDeck,
+#PlayCueMini WPushButton,
+WPushButton#LoopActivate,
+#RateControls WPushButton,
+WPushButton#SyncDeck,
+WPushButton#SyncSampler,
 #MixerContainer WPushButton,
 #FxUnitContainer WPushButton,
 #Sampler WPushButton,
+#SamplerMini WPushButton,
 #MicAuxRack WPushButton,
-#PlayPreview {
+WPushButton#PlayPreview {
   /* Limit background-color area to button area designed in SVG backpath. */
   margin: 1px;
   /* just to be sure the colored background doesn't overlap the rounded SVG border */
@@ -1325,7 +1328,7 @@ WPushButton#SamplerExpand,
 #SamplerSettingsMini WPushButton,
 WPushButton#CrossfaderButton,
 WPushButton#FxExpandOverlay,
-#LibExpand,
+WPushButton#LibExpand,
 #ToolBar WPushButton {
   margin: 0px;
   border-radius: 0px;
@@ -1334,17 +1337,22 @@ WPushButton#FxExpandOverlay,
 
 
 /************** button background colors **************************************/
+
+/* top-level buttons in transport, fx, micaux and others */
 #BeatgridControls WPushButton[displayValue="0"],
 #DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
-#PlayBg, #PlayCueMini WPushButton[displayValue="0"],
-#CueDeck[displayValue="0"], #LoopActivate[displayValue="0"],
+#PlayCueMini WPushButton[displayValue="0"],
+WPushButton#CueDeck[displayValue="0"],
+WPushButton#PlayIndicator[value="0"],
+WPushButton#LoopActivate[displayValue="0"],
 #FxAssignButtons WPushButton[displayValue="0"],
 #VinylControls WPushButton[displayValue="0"],
 #KeyControls WPushButton[displayValue="0"],
-  WPushButton#VinylModeButton[displayValue="1"],
-  WPushButton#VinylModeButton[displayValue="2"],
+WPushButton#VinylModeButton[displayValue="1"],
+WPushButton#VinylModeButton[displayValue="2"],
 WPushButton#MixModeButton[displayValue="1"],
-#RateControls WPushButton[displayValue="0"], #SyncDeck[value="0"],
+#RateControls WPushButton[displayValue="0"],
+WPushButton#SyncDeck[value="0"],
 #MixerContainer WPushButton[displayValue="0"],
 #FxUnitContainer WPushButton[displayValue="0"],
 #Sampler WPushButton[displayValue="0"],
@@ -1356,23 +1364,27 @@ QPushButton#pushButtonAutoDJ:enabled:!checked,
 #DlgAutoDJ > QPushButton:enabled,
 #DlgRecording > QPushButton:enabled,
 #DlgAnalysis > QPushButton:enabled,
-#GuiToggleButton[displayValue="0"], #RecFeedback[displayValue="0"],
-#BroadcastButton[displayValue="0"], #SkinSettingsToggle[displayValue="0"] {
+WPushButton#GuiToggleButton[displayValue="0"],
+#RecFeedback[displayValue="0"],
+WPushButton#BroadcastButton[displayValue="0"],
+WPushButton#SkinSettingsToggle[displayValue="0"] {
   background-color: #262626;
 }
 
-/* Red */
+/* Red for 'active' status */
 #BeatgridControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
 #SyncDeck[value="1"], #SyncSampler[displayValue="1"],
 WPushButton#PlayDeck[displayValue="1"],
 WPushButton#PlayDeckMini[displayValue="1"],
-#PlaySampler[displayValue="1"], #PlayPreview[displayValue="1"],
+WPushButton#PlaySampler[displayValue="1"],
+WPushButton#PlayPreview[displayValue="1"],
 WPushButton#PlayIndicator[displayValue="1"],
 #LibraryPreviewButton:checked,
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
-#LoopControls WPushButton[value="1"], #LoopActivate[displayValue="1"],
+#LoopControls WPushButton[value="1"],
+#LoopActivate[displayValue="1"],
 #BeatjumpControls WPushButton[value="1"],
 #EQKillButtonBox WPushButton[displayValue="1"],
 #PflButton[value="1"],
@@ -1381,7 +1393,14 @@ WPushButton#Reverse[pressed="true"],
 #RecFeedback[displayValue="2"],
 QPushButton#pushButtonRecording:checked {
   background-color: #db0000;
-}
+  }
+  /* Red border for Play buttons when previewing from
+    Cue or Hotcue */
+  WPushButton#PreviewIndicator[value="1"] {
+    border: 3px solid #db0000;
+    /* work around round borders being painted outside the actual border area */
+    border-radius: 0px;
+  }
 
 /* Green for Fx buttons: QuickEffect + Fx 1/2 */
 #FxUnit1 #FxToggleButton[displayValue="1"],
@@ -1514,7 +1533,7 @@ QPushButton#pushButtonAutoDJ:checked,
 /* Special flat buttons */
 WPushButton#PlayDeck[displayValue="0"],
 WPushButton#PlayDeckMini[displayValue="0"],
-WPushButton#PlayIndicator[value="0"],
+WPushButton#PlaySampler[displayValue="0"],
 WPushButton#BpmTap[displayValue="0"],
 WPushButton#FxFocusButton[displayValue="0"],
 #SamplerSettings WPushButton[displayValue="0"],
@@ -1838,7 +1857,8 @@ WPushButton#SamplerExpand[displayValue="0"],
 #RecDot[highlight="0"] {
   image: url(skin:/classic/buttons/btn__rec_dot.svg) no-repeat center center;
   }
-  #RecDot[highlight="1"], #RecDot[highlight="2"] {
+  #RecDot[highlight="1"],
+  #RecDot[highlight="2"] {
     image: url(skin:/classic/buttons/btn__rec_dot_active.svg) no-repeat center center;
   }
 
@@ -1945,16 +1965,6 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
 /************** Library *******************************************************/
 
 #LibraryContainer {
-  /* ToDo (ronso0)
-  Check, may be obsolete since tollbar is at the top now.
-
-  make a smooth transition from toolbar at the bottom to
-  darker skin background at the top.
-  Splitter handles should be translucent for this to work.
-
-  background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
-    stop:0 #080808,
-    stop:1 #1e1e1e); */
 }
 
 WLibrary,
@@ -1977,43 +1987,61 @@ WLibrary,
     stop:1 #444);
   border-bottom: 1px solid #444;
   border-left: 1px solid #0a0a0a;
+  background-color: #0f0f0f;
   alternate-background-color: #1a1a1a;
+/* In selected library rows this sets the color of
+  * shapes in star rating delegate
+  * focus border of Cover Art and Color delegates
+   > See src/library/coverartdelegate.cpp: "option.palette.highlightedText().color();" */
+  selection-color: #fff;
+  /* background of Color delegate in selected row */
   selection-background-color: #5e4507;
 }
-
 #LibraryContainer QTableView:focus,
 #LibraryContainer QTreeView:focus,
 #LibraryContainer QTextBrowser:focus {
   border: 1px solid #d09300;
-  }
-  #FxUnitHeaderCollapsed[highlight="1"],
-  #FxUnitHeaderExpanded[highlight="1"] {
-    border-top: 1px solid #d09300;
-    border-right: 1px solid #d09300;
-  }
+}
+
+/* Selected rows in Tree and Tracks table */
+#LibraryContainer QTreeView::item:selected,
+#LibraryContainer QTableView::item:selected,
+#LibraryBPMButton::item:selected {
+  color: #fff;
+  background-color: #5e4507;
+}
+#LibraryContainer QTreeView::item:focus {
+  outline: none;
+}
+
+/* Use the native focus decoration */
+/* This is for all cells including Played and Location */
+#LibraryContainer QTableView,
+/* This is for the BPM cell */
+#LibraryContainer QTableView QCheckBox:focus {
+  outline: 1px solid #fff;
+}
+/* This uses a custom qproperty to set the focus border
+  for Color and Cover Art cells, 1px solid, sharp corners.
+  See src/library/tableitemdelegate.cpp */
+WTrackTableView {
+  qproperty-focusBorderColor: #fff;
+}
 
 #LibraryContainer QTreeView {
   show-decoration-selected: 0;
 }
-
-/* selected items in Tree and Tracks table */
-#LibraryContainer QTreeView::item:selected,
-#LibraryContainer QTableView::item:selected,
-#LibraryBPMButton::item:selected {
-/* this doesn't style BPM value in selected row
-#LibraryContainer QTableView::item:selected #LibraryBPMSpinBox::item:selected,
-#LibraryContainer QTableView::item:selected > #LibraryBPMSpinBox::item:selected */
-  color: #fff;
-  background-color: #5e4507;
+#LibraryContainer QTreeView,
+#LibraryContainer QTreeView::item:focus {
+  outline: none;
 }
 
-/* checkbox in library "Played" column */
-#LibraryContainer QTableView::indicator {/*
-  This results in 10x10px + 1px border = 12x12px
+/* This is the only way to select the 'Played' checkbox.
+  Note that this also selects the BPM lock. */
+#LibraryContainer QTableView::indicator {
+/* This results in 10x10px + 1px border = 12x12px
   Omitting this definitions makes the checkbox grow to
-  12x12px + 1px border = 14x14px
-  which also miraculously makes the BPM icon grow to 14x14px
-  Neither checkbox nor BPM icon size have an effect on the size... */
+  12x12px + 1px border = 14x14px */
   width: 10px;
   height: 10px;
   /* border is added to size defined above */
@@ -2021,17 +2049,13 @@ WLibrary,
   margin: 0px;
   padding: 0px;
   }
-  #LibraryContainer QTableView::indicator:checked,
-  #LibraryContainer QTableView::indicator:checked:selected {
+  #LibraryContainer QTableView::indicator:checked {
     image: url(skin:/classic/buttons/btn__lib_checkmark_orange.svg);
     border: 1px solid #ff6600;
     }
   #LibraryContainer QTableView::indicator:unchecked {
     image: none;
     border: 1px solid rgba(151,151,151,128);
-    }
-    #LibraryContainer QTableView::indicator:selected {
-      border: 1px solid #888;
     }
 
 /* Table cell in edit mode */
@@ -2048,32 +2072,31 @@ WLibrary QLineEdit,
 /* Lock icon at the left */
 #LibraryBPMButton::indicator:checked {
   image: url(skin:/classic/buttons/btn__lib_bpm_locked_orange.svg);
-  }
+}
 #LibraryBPMButton::indicator:unchecked {
   image: url(skin:/classic/buttons/btn__lib_bpm_unlocked_grey.svg);
-  }
+}
 /* BPM value */
 #LibraryBPMButton::item {
-  }
+}
+/* BPM spinbox in edit mode */
 #LibraryBPMSpinBox {
   border-left: 0px;
-}
-/* When activated, the left border of the spinbox shows an
-  artefact of the inactive BPM value. */
-#LibraryBPMSpinBox::up-button,
-#LibraryBPMSpinBox::down-button {
-  margin-right: 3px;
-  background-color: #382904;
   }
-  #LibraryBPMSpinBox::up-button {
-    image: url(skin:/classic/buttons/btn__lib_bpm_up.svg) no-repeat;
-    }
+  /* When activated, the left border of the spinbox shows an
+    artefact of the inactive BPM value. */
+  #LibraryBPMSpinBox::up-button,
   #LibraryBPMSpinBox::down-button {
-    image: url(skin:/classic/buttons/btn__lib_bpm_down.svg) no-repeat;
+    margin-right: 3px;
+    background-color: #382904;
     }
-/* remove OS focus indicator from BPM cell */
-WLibrary QCheckBox,
-#LibraryBPMButton::item:selected,
+    #LibraryBPMSpinBox::up-button {
+      image: url(skin:/classic/buttons/btn__lib_bpm_up.svg) no-repeat;
+    }
+    #LibraryBPMSpinBox::down-button {
+      image: url(skin:/classic/buttons/btn__lib_bpm_down.svg) no-repeat;
+    }
+
 WCueMenuPopup QPushButton:focus {
   outline: none;
 }
@@ -2348,9 +2371,6 @@ WTrackMenu QMenu {
 #CrossfaderButtonContainer_Deck,
 #CrossfaderButtonContainer_Aux,
 WPushButton#CrossfaderButton[value="0"],
-#LibraryContainer QTableView,
-#LibraryContainer QTextBrowser,
-#LibraryContainer QTreeView,
 QToolTip,
 WBeatSpinBox QMenu,
   WCueMenuPopup,

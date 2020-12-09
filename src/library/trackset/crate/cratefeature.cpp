@@ -18,6 +18,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/treeitem.h"
+#include "moc_cratefeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/dnd.h"
@@ -209,7 +210,7 @@ void CrateFeature::updateTreeItemForCrateSummary(
 }
 
 bool CrateFeature::dropAcceptChild(
-        const QModelIndex& index, QList<QUrl> urls, QObject* pSource) {
+        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
     CrateId crateId(crateIdFromIndex(index));
     VERIFY_OR_DEBUG_ASSERT(crateId.isValid()) {
         return false;
@@ -229,7 +230,7 @@ bool CrateFeature::dropAcceptChild(
     return true;
 }
 
-bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
     CrateId crateId(crateIdFromIndex(index));
     if (!crateId.isValid()) {
         return false;
@@ -318,7 +319,7 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
 }
 
 void CrateFeature::onRightClickChild(
-        const QPoint& globalPos, QModelIndex index) {
+        const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     CrateId crateId(crateIdFromIndex(index));

@@ -1,41 +1,21 @@
-/***************************************************************************
-                           stareditor.cpp
-                              -------------------
-     copyright            : (C) 2010 Tobias Rafreider
-     copyright            : (C) 2009 Nokia Corporation
-
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- * StarEditor inherits QWidget and is used by StarDelegate to let the user *
- * edit a star rating in the library using the mouse.                      *
- *                                                                         *
- * The class has been adapted from the official "Star Delegate Example",   *
- * see http://doc.trolltech.com/4.5/itemviews-stardelegate.html            *
- ***************************************************************************/
+#include "library/stareditor.h"
 
 #include <QStylePainter>
 
-#include "library/stareditor.h"
 #include "library/starrating.h"
+#include "moc_stareditor.cpp"
 #include "util/painterscope.h"
 
-/*
- * We enable mouse tracking on the widget so we can follow the cursor even
- * when the user doesn't hold down any mouse button. We also turn on
- * QWidget's auto-fill background feature to obtain an opaque background.
- * (Without the call, the view's background would shine through the editor.)
- */
+// We enable mouse tracking on the widget so we can follow the cursor even
+// when the user doesn't hold down any mouse button. We also turn on
+// QWidget's auto-fill background feature to obtain an opaque background.
+// (Without the call, the view's background would shine through the editor.)
+
+/// StarEditor inherits QWidget and is used by StarDelegate to let the user
+/// edit a star rating in the library using the mouse.
+///
+/// The class has been adapted from the official "Star Delegate Example",
+/// see http://doc.trolltech.com/4.5/itemviews-stardelegate.html
 StarEditor::StarEditor(QWidget *parent, QTableView* pTableView,
                        const QModelIndex& index,
                        const QStyleOptionViewItem& option)

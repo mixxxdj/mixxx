@@ -13,15 +13,13 @@
 
 #include "library/parserm3u.h"
 
-#include <QtDebug>
 #include <QDir>
 #include <QMessageBox>
-#include <QUrl>
 #include <QTextCodec>
+#include <QUrl>
+#include <QtDebug>
 
-/**
-   @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
- **/
+#include "moc_parserm3u.cpp"
 
 /**
    ToDo:
@@ -47,8 +45,7 @@ ParserM3u::~ParserM3u()
 
 }
 
-QList<QString> ParserM3u::parse(QString sFilename)
-{
+QList<QString> ParserM3u::parse(const QString& sFilename) {
     clearLocations();
 
     QFile file(sFilename);

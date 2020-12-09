@@ -472,7 +472,7 @@ METADATA
     <sql>
       <!-- No Color becomes Orange (not in default palette) -->
       UPDATE cues SET color=0xFF8C00 WHERE color=0;
-      <!-- Mixx Hotcue Color Palette (also defined in src/util/color/colorpalette.h) -->
+      <!-- Mixxx Hotcue Color Palette (also defined in src/util/color/colorpalette.h) -->
       <!-- Red -->
       UPDATE cues SET color=0xC50A08 WHERE color=1;
       <!-- Green -->
@@ -501,6 +501,40 @@ METADATA
     <sql>
       ALTER TABLE library ADD COLUMN coverart_color INTEGER;
       ALTER TABLE library ADD COLUMN coverart_digest BLOB;
+    </sql>
+  </revision>
+  <revision version="34" min_compatible="3">
+    <description>
+      Add indexes for tracks in playlists and crates
+    </description>
+    <sql>
+      CREATE INDEX IF NOT EXISTS idx_PlaylistTracks_playlist_id_track_id ON PlaylistTracks (
+          playlist_id,
+          track_id
+      );
+      CREATE INDEX IF NOT EXISTS idx_PlaylistTracks_track_id ON PlaylistTracks (
+          track_id
+      );
+      CREATE INDEX IF NOT EXISTS idx_crate_tracks_track_id ON crate_tracks (
+          track_id
+      );
+    </sql>
+  </revision>
+  <revision version="35" min_compatible="3">
+    <description>
+      Add last_played_at column to library table
+    </description>
+    <sql>
+      -- Add new column
+      ALTER TABLE library ADD COLUMN last_played_at DATETIME DEFAULT NULL;
+      -- Populate new column from history playlists
+      UPDATE library SET last_played_at=(
+        SELECT MAX(PlaylistTracks.pl_datetime_added)
+          FROM PlaylistTracks
+          JOIN Playlists ON PlaylistTracks.playlist_id=Playlists.id
+          WHERE PlaylistTracks.track_id=library.id
+          AND Playlists.hidden=2
+          GROUP BY PlaylistTracks.track_id);
     </sql>
   </revision>
 </schema>

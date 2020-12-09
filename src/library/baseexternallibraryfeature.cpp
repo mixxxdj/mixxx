@@ -6,8 +6,9 @@
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-#include "widget/wlibrarysidebar.h"
+#include "moc_baseexternallibraryfeature.cpp"
 #include "util/logger.h"
+#include "widget/wlibrarysidebar.h"
 
 namespace {
 
@@ -55,7 +56,8 @@ void BaseExternalLibraryFeature::onRightClick(const QPoint& globalPos) {
     m_lastRightClickedIndex = QModelIndex();
 }
 
-void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void BaseExternalLibraryFeature::onRightClickChild(
+        const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QMenu menu(m_pSidebarWidget);

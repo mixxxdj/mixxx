@@ -5,6 +5,7 @@
 #include <QtDebug>
 
 #include "mixer/playerinfo.h"
+#include "moc_whotcuebutton.cpp"
 #include "track/track.h"
 
 namespace {
@@ -90,6 +91,12 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 void WHotcueButton::mousePressEvent(QMouseEvent* e) {
     const bool rightClick = e->button() == Qt::RightButton;
     if (rightClick) {
+        if (isPressed()) {
+            // Discard right clicks when already left clicked.
+            // Otherwise the pop up menu receives the release event and the
+            // button stucks in the pressed stage.
+            return;
+        }
         if (readDisplayValue()) {
             // hot cue is set
             TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(m_group);
@@ -121,6 +128,15 @@ void WHotcueButton::mousePressEvent(QMouseEvent* e) {
 
     // Pass all other press events to the base class.
     WPushButton::mousePressEvent(e);
+}
+
+void WHotcueButton::mouseReleaseEvent(QMouseEvent* e) {
+    const bool rightClick = e->button() == Qt::RightButton;
+    if (rightClick) {
+        // Don't handle stray release events
+        return;
+    }
+    WPushButton::mouseReleaseEvent(e);
 }
 
 ConfigKey WHotcueButton::createConfigKey(const QString& name) {
@@ -165,7 +181,7 @@ void WHotcueButton::slotTypeChanged(double type) {
     const mixxx::CueType cueType = static_cast<mixxx::CueType>(static_cast<int>(type));
     switch (cueType) {
     case mixxx::CueType::Invalid:
-        m_type = QStringLiteral("");
+        m_type = QLatin1String("");
         break;
     case mixxx::CueType::HotCue:
         m_type = QStringLiteral("hotcue");
@@ -193,7 +209,7 @@ void WHotcueButton::slotTypeChanged(double type) {
         break;
     default:
         DEBUG_ASSERT(!"Unknown cue type!");
-        m_type = QStringLiteral("");
+        m_type = QLatin1String("");
     }
     restyleAndRepaint();
 }

@@ -27,3 +27,6 @@ compile_commands.json
 .sconsign.branch
 .sconsign.dblite
 cache/
+
+# Exclude buildenv directory from our helper scripts
+/buildenv/

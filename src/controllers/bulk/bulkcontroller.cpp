@@ -1,19 +1,14 @@
-/**
-  * @file bulkcontroller.cpp
-  * @author Neale Pickett  neale@woozle.org
-  * @date Thu Jun 28 2012
-  * @brief USB Bulk controller backend
-  *
-  */
+#include "controllers/bulk/bulkcontroller.h"
+
 #include <libusb.h>
 
-#include "controllers/bulk/bulkcontroller.h"
 #include "controllers/bulk/bulksupported.h"
-#include "controllers/defs_controllers.h"
 #include "controllers/controllerdebug.h"
+#include "controllers/defs_controllers.h"
+#include "moc_bulkcontroller.cpp"
 #include "util/compatibility.h"
-#include "util/trace.h"
 #include "util/time.h"
+#include "util/trace.h"
 
 BulkReader::BulkReader(libusb_device_handle *handle, unsigned char in_epaddr)
         : QThread(),
@@ -86,7 +81,7 @@ BulkController::BulkController(
 
     setDeviceCategory(tr("USB Controller"));
 
-    setDeviceName(QString("%1 %2").arg(product).arg(m_sUID));
+    setDeviceName(QString("%1 %2").arg(product, m_sUID));
 
     setInputDevice(true);
     setOutputDevice(true);
@@ -223,7 +218,7 @@ int BulkController::close() {
     return 0;
 }
 
-void BulkController::send(QList<int> data, unsigned int length) {
+void BulkController::send(const QList<int>& data, unsigned int length) {
     Q_UNUSED(length);
     QByteArray temp;
 

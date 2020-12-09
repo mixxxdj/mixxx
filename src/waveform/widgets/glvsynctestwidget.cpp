@@ -2,18 +2,18 @@
 
 #include <QPainter>
 
-#include "waveform/sharedglcontext.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/renderers/waveformrenderbackground.h"
-#include "waveform/renderers/glwaveformrenderersimplesignal.h"
+#include "moc_glvsynctestwidget.cpp"
+#include "util/performancetimer.h"
 #include "waveform/renderers/glvsynctestrenderer.h"
+#include "waveform/renderers/glwaveformrenderersimplesignal.h"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
-
-#include "util/performancetimer.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/sharedglcontext.h"
 
 GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
@@ -50,7 +50,7 @@ GLVSyncTestWidget::~GLVSyncTestWidget() {
 }
 
 void GLVSyncTestWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = this;
 }
 
 void GLVSyncTestWidget::paintEvent(QPaintEvent* event) {

@@ -1,11 +1,3 @@
-/// @file midicontrollerpreset.cpp
-/// @author Jan Holthuis holzhaus@mixxx.org
-/// @date Wed 8 Apr 2020
-/// @brief MIDI Controller Preset
-///
-/// This class represents a MIDI controller preset, containing the data elements
-///   that make it up.
-
 #include "controllers/midi/midicontrollerpreset.h"
 
 #include "controllers/defs_controllers.h"
@@ -32,7 +24,7 @@ bool MidiControllerPreset::isMappable() const {
     return true;
 }
 
-void MidiControllerPreset::addInputMapping(uint16_t key, MidiInputMapping mapping) {
+void MidiControllerPreset::addInputMapping(uint16_t key, const MidiInputMapping& mapping) {
     m_inputMappings.insert(key, mapping);
     setDirty(true);
 }
@@ -56,12 +48,12 @@ void MidiControllerPreset::setInputMappings(
 }
 
 void MidiControllerPreset::addOutputMapping(
-        ConfigKey key, MidiOutputMapping mapping) {
+        const ConfigKey& key, const MidiOutputMapping& mapping) {
     m_outputMappings.insert(key, mapping);
     setDirty(true);
 }
 
-void MidiControllerPreset::removeOutputMapping(ConfigKey key) {
+void MidiControllerPreset::removeOutputMapping(const ConfigKey& key) {
     m_outputMappings.remove(key);
     setDirty(true);
 }

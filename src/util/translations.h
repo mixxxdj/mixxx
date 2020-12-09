@@ -1,5 +1,4 @@
-#ifndef MIXXX_UTIL_TRANSLATIONS_H
-#define MIXXX_UTIL_TRANSLATIONS_H
+#pragma once
 
 #include <QCoreApplication>
 #include <QLocale>
@@ -78,9 +77,12 @@ class Translations {
     }
 
   private:
-    static bool loadTranslations(const QLocale& systemLocale, QString userLocale,
-                                 const QString& translation, const QString& prefix,
-                                 const QString& translationPath, QTranslator* pTranslator) {
+    static bool loadTranslations(const QLocale& systemLocale,
+            const QString& userLocale,
+            const QString& translation,
+            const QString& prefix,
+            const QString& translationPath,
+            QTranslator* pTranslator) {
         if (userLocale.size() == 0) {
             QStringList uiLanguages = systemLocale.uiLanguages();
             if (uiLanguages.size() > 0 && uiLanguages.first() == "en") {
@@ -100,6 +102,3 @@ class Translations {
 };
 
 }  // namespace mixxx
-
-
-#endif /* MIXXX_UTIL_TRANSLATIONS_H */

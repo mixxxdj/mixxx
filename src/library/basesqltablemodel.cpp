@@ -1,5 +1,3 @@
-// Created by RJ Ryan (rryan@mit.edu) 1/29/2010
-
 #include "library/basesqltablemodel.h"
 
 #include <QUrl>
@@ -12,6 +10,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "moc_basesqltablemodel.cpp"
 #include "track/keyutils.h"
 #include "track/track.h"
 #include "track/trackmetadata.h"
@@ -35,8 +34,6 @@ const int kMaxSortColumns = 3;
 // Constant for getModelSetting(name)
 const QString COLUMNS_SORTING = QStringLiteral("ColumnsSorting");
 
-const QString kEmptyString = QStringLiteral("");
-
 } // anonymous namespace
 
 BaseSqlTableModel::BaseSqlTableModel(
@@ -46,8 +43,7 @@ BaseSqlTableModel::BaseSqlTableModel(
         : BaseTrackTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_pTrackCollectionManager(pTrackCollectionManager),
           m_database(pTrackCollectionManager->internalCollection()->database()),
-          m_bInitialized(false),
-          m_currentSearch(kEmptyString) {
+          m_bInitialized(false) {
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -804,7 +800,7 @@ CoverInfo BaseSqlTableModel::getCoverInfo(const QModelIndex& index) const {
     return coverInfo;
 }
 
-void BaseSqlTableModel::tracksChanged(QSet<TrackId> trackIds) {
+void BaseSqlTableModel::tracksChanged(const QSet<TrackId>& trackIds) {
     if (sDebug) {
         qDebug() << this << "trackChanged" << trackIds.size();
     }

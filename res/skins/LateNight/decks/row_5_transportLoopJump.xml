@@ -67,18 +67,27 @@
                 </Children>
               </WidgetGroup><!-- Reverse | Cue -->
 
-              <WidgetGroup><!-- Play + PlayBlink + default grey background -->
+              <WidgetGroup><!-- Play + PlayBlink + default dark background -->
                 <Layout>stacked</Layout>
                 <Size>68f,26f</Size>
                 <Children>
-                  <Template src="skin:/controls/button_2state_right.xml">
+                  <Template src="skin:/controls/button_2state_right_display.xml">
                     <SetVariable name="TooltipId">play_cue_set</SetVariable>
                     <SetVariable name="ObjectName">PlayDeck</SetVariable>
                     <SetVariable name="Size">68f,26f</SetVariable>
                     <SetVariable name="BtnSize">play</SetVariable>
                     <SetVariable name="ConfigKey"><Variable name="Group"/>,play</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,cue_set</SetVariable>
+                    <SetVariable name="ConfigKeyDisp"><Variable name="Group"/>,play_latched</SetVariable>
                   </Template>
+                  <PushButton>
+                    <ObjectName>PreviewIndicator</ObjectName>
+                    <Size>68f,26f</Size>
+                    <NumberStates>2</NumberStates>
+                    <Connection>
+                      <ConfigKey><Variable name="Group"/>,play</ConfigKey>
+                    </Connection>
+                  </PushButton>
                   <PushButton>
                     <ObjectName>PlayIndicator</ObjectName>
                     <Size>68f,26f</Size>
@@ -87,15 +96,11 @@
                       <ConfigKey><Variable name="Group"/>,play_indicator</ConfigKey>
                     </Connection>
                   </PushButton>
-                  <WidgetGroup>
-                    <ObjectName>PlayBg</ObjectName>
-                    <Size>68f,26f</Size>
-                  </WidgetGroup>
                 </Children>
-              </WidgetGroup><!-- Play + PlayBlink + default grey background -->
+              </WidgetGroup><!-- Play + PlayBlink + default dark background -->
 
             </Children>
-          </WidgetGroup><!-- Play, Cue, Reverse -->
+          </WidgetGroup>
 
           <WidgetGroup><Size>2f,0min</Size></WidgetGroup><!--  = 2-10px wide -->
           <WidgetGroup><SizePolicy>i,min</SizePolicy><MaximumSize>8,</MaximumSize></WidgetGroup>
@@ -247,10 +252,11 @@
                     <MinimumSize>46,26</MinimumSize>
                     <MaximumSize>72,26</MaximumSize>
                     <Value><Variable name="Group"/>,beatloop_size</Value>
+                    <!-- disabled until 'highlight' property has been added to WBeatSpinBox / wbasewidget.
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
                       <BindProperty>highlight</BindProperty>
-                    </Connection>
+                    </Connection> -->
                   </BeatSpinBox>
                 </Children>
               </WidgetGroup>
@@ -313,10 +319,11 @@
                     <MinimumSize>46,26</MinimumSize>
                     <MaximumSize>72,26</MaximumSize>
                     <Value><Variable name="Group"/>,beatjump_size</Value>
+                    <!-- disabled until 'highlight' property has been added to WBeatSpinBox / wbasewidget.
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
                       <BindProperty>highlight</BindProperty>
-                    </Connection>
+                    </Connection> -->
                   </BeatSpinBox>
                 </Children>
               </WidgetGroup>

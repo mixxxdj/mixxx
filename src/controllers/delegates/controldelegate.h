@@ -1,5 +1,4 @@
-#ifndef CONTROLDELEGATE_H
-#define CONTROLDELEGATE_H
+#pragma once
 
 #include <QStyledItemDelegate>
 
@@ -36,5 +35,3 @@ class ControlDelegate : public QStyledItemDelegate {
     // can't check there.
     mutable bool m_bIsIndexScript;
 };
-
-#endif /* CONTROLDELEGATE_H */

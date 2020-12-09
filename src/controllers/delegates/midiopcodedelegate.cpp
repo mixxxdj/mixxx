@@ -40,7 +40,7 @@ QString MidiOpCodeDelegate::displayText(const QVariant& value,
 void MidiOpCodeDelegate::setEditorData(QWidget* editor,
                                        const QModelIndex& index) const {
     int opCode = index.data(Qt::EditRole).toInt();
-    QComboBox* pComboBox = dynamic_cast<QComboBox*>(editor);
+    QComboBox* pComboBox = qobject_cast<QComboBox*>(editor);
     if (pComboBox == NULL) {
         return;
     }
@@ -55,7 +55,7 @@ void MidiOpCodeDelegate::setEditorData(QWidget* editor,
 void MidiOpCodeDelegate::setModelData(QWidget* editor,
                                       QAbstractItemModel* model,
                                       const QModelIndex& index) const {
-    QComboBox* pComboBox = dynamic_cast<QComboBox*>(editor);
+    QComboBox* pComboBox = qobject_cast<QComboBox*>(editor);
     if (pComboBox == NULL) {
         return;
     }

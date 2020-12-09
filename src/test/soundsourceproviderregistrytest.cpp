@@ -9,8 +9,8 @@ namespace mixxx {
 class TestSoundSourceProvider : public SoundSourceProvider {
   public:
     TestSoundSourceProvider(
-            QString displayName,
-            QStringList supportedFileExtensions,
+            const QString& displayName,
+            const QStringList& supportedFileExtensions,
             SoundSourceProviderPriority priorityHint)
             : m_displayName(displayName),
               m_supportedFileExtensions(supportedFileExtensions),
@@ -56,8 +56,8 @@ class SoundSourceProviderRegistryTest : public testing::Test {
     }
 
     SoundSourceProviderPointer createProvider(
-            QString name,
-            QStringList supportedFileExtensions,
+            const QString& name,
+            const QStringList& supportedFileExtensions,
             SoundSourceProviderPriority priorityHint = SoundSourceProviderPriority::Default) {
         return SoundSourceProviderPointer(
                 new TestSoundSourceProvider(
@@ -65,7 +65,7 @@ class SoundSourceProviderRegistryTest : public testing::Test {
     }
 
     static QStringList getAllRegisteredProviderDisplayNamesForFileExtension(
-            const SoundSourceProviderRegistry& cut, QString fileExt) {
+            const SoundSourceProviderRegistry& cut, const QString& fileExt) {
         QStringList displayNames;
         const QList<SoundSourceProviderRegistration> registrations(
                 cut.getRegistrationsForFileExtension(fileExt));

@@ -7,7 +7,7 @@
 #include "waveformmark.h"
 
 namespace {
-Qt::Alignment decodeAlignmentFlags(QString alignString, Qt::Alignment defaultFlags) {
+Qt::Alignment decodeAlignmentFlags(const QString& alignString, Qt::Alignment defaultFlags) {
     QStringList stringFlags = alignString.toLower()
                                       .split('|',
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)

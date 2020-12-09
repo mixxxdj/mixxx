@@ -1,19 +1,12 @@
-/**
- * @file midicontroller.cpp
- * @author Sean Pappalardo spappalardo@mixxx.org
- * @date Tue 7 Feb 2012
- * @brief MIDI Controller base class
- *
- */
-
 #include "controllers/midi/midicontroller.h"
 
-#include "controllers/midi/midiutils.h"
-#include "controllers/defs_controllers.h"
-#include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
+#include "controllers/controllerdebug.h"
+#include "controllers/defs_controllers.h"
+#include "controllers/midi/midiutils.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_midicontroller.cpp"
 #include "util/math.h"
 #include "util/screensaver.h"
 
@@ -107,10 +100,12 @@ void MidiController::createOutputHandlers() {
         MidiOutputHandler* moh = new MidiOutputHandler(this, mapping);
         if (!moh->validate()) {
             QString errorLog =
-                QString("MIDI output message 0x%1 0x%2 has invalid MixxxControl %3, %4")
-                        .arg(QString::number(status, 16).toUpper(),
-                             QString::number(control, 16).toUpper().rightJustified(2,'0'))
-                        .arg(group, key).toUtf8();
+                    QString("MIDI output message 0x%1 0x%2 has invalid MixxxControl %3, %4")
+                            .arg(QString::number(status, 16).toUpper(),
+                                    QString::number(control, 16).toUpper().rightJustified(2, '0'),
+                                    group,
+                                    key)
+                            .toUtf8();
             qWarning() << errorLog;
 
             int deckNum = 0;
@@ -480,7 +475,7 @@ double MidiController::computeValue(
     return newmidivalue;
 }
 
-void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
+void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) {
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
     getEngine()->handleInput(data, timestamp);
     // legacy stuff below

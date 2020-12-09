@@ -1,8 +1,4 @@
 #pragma once
-/// @file controllerpresetfilehandler.h
-/// @author Sean Pappalardo spappalardo@mixxx.org
-/// @date Mon 9 Apr 2012
-/// @brief Handles loading and saving of Controller presets.
 
 #include "util/xml.h"
 #include "controllers/controllerpreset.h"
@@ -29,7 +25,7 @@ class ControllerPresetFileHandler {
 
     // Returns just the name of a given device (everything before the first
     // space)
-    QString rootDeviceName(QString deviceName) const {
+    QString rootDeviceName(const QString& deviceName) const {
         return deviceName.left(deviceName.indexOf(" "));
     }
 
@@ -56,7 +52,7 @@ class ControllerPresetFileHandler {
     /// loaded. Sub-classes need to call this before adding any other items.
     QDomDocument buildRootWithScripts(const ControllerPreset& preset) const;
 
-    bool writeDocument(QDomDocument root, const QString fileName) const;
+    bool writeDocument(const QDomDocument& root, const QString& fileName) const;
 
   private:
     // Sub-classes implement this.

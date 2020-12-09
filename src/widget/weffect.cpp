@@ -1,8 +1,9 @@
-#include <QtDebug>
-
 #include "widget/weffect.h"
 
+#include <QtDebug>
+
 #include "effects/effectsmanager.h"
+#include "moc_weffect.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffect::WEffect(QWidget* pParent, EffectsManager* pEffectsManager)
@@ -31,8 +32,7 @@ void WEffect::setup(const QDomNode& node, const SkinContext& context) {
 void WEffect::setEffectSlot(EffectSlotPointer pEffectSlot) {
     if (pEffectSlot) {
         m_pEffectSlot = pEffectSlot;
-        connect(pEffectSlot.data(), SIGNAL(updated()),
-                this, SLOT(effectUpdated()));
+        connect(pEffectSlot.data(), &EffectSlot::updated, this, &WEffect::effectUpdated);
         effectUpdated();
     }
 }

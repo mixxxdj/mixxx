@@ -1,11 +1,13 @@
-#include <QtDebug>
-#include <QUrl>
-#include <QApplication>
-
-#include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
-#include "library/treeitem.h"
+
+#include <QApplication>
+#include <QUrl>
+#include <QtDebug>
+
 #include "library/browse/browsefeature.h"
+#include "library/libraryfeature.h"
+#include "library/treeitem.h"
+#include "moc_sidebarmodel.cpp"
 #include "util/assert.h"
 
 namespace {
@@ -253,7 +255,7 @@ QVariant SidebarModel::data(const QModelIndex& index, int role) const {
     return QVariant();
 }
 
-void SidebarModel::startPressedUntilClickedTimer(QModelIndex pressedIndex) {
+void SidebarModel::startPressedUntilClickedTimer(const QModelIndex& pressedIndex) {
     m_pressedIndex = pressedIndex;
     m_pressedUntilClickedTimer->start(kPressedUntilClickedTimeoutMillis);
 }
@@ -330,8 +332,7 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
     }
 }
 
-bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
-                              QObject* pSource) {
+bool SidebarModel::dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
     //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
     bool result = false;
     if (index.isValid()) {
@@ -355,8 +356,7 @@ bool SidebarModel::hasTrackTable(const QModelIndex& index) const {
     return false;
 }
 
-
-bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
+bool SidebarModel::dragMoveAccept(const QModelIndex& index, const QUrl& url) {
     //qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
     bool result = false;
 
@@ -376,8 +376,6 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
 
 // Translates an index from the child models to an index of the sidebar models
 QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
-    QModelIndex translatedIndex;
-
     /* These method is called from the slot functions below.
      * QObject::sender() return the object which emitted the signal
      * handled by the slot functions.
@@ -389,6 +387,13 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
     VERIFY_OR_DEBUG_ASSERT(model != NULL) {
         return QModelIndex();
     }
+
+    return translateIndex(index, model);
+}
+
+QModelIndex SidebarModel::translateIndex(
+        const QModelIndex& index, const QAbstractItemModel* model) {
+    QModelIndex translatedIndex;
 
     if (index.isValid()) {
        TreeItem* item = (TreeItem*)index.internalPointer();

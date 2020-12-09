@@ -30,6 +30,7 @@ const QString LIBRARYTABLE_MIXXXDELETED = QStringLiteral("mixxx_deleted");
 const QString LIBRARYTABLE_DATETIMEADDED = QStringLiteral("datetime_added");
 const QString LIBRARYTABLE_HEADERPARSED = QStringLiteral("header_parsed");
 const QString LIBRARYTABLE_TIMESPLAYED = QStringLiteral("timesplayed");
+const QString LIBRARYTABLE_LAST_PLAYED_AT = QStringLiteral("last_played_at");
 const QString LIBRARYTABLE_PLAYED = QStringLiteral("played");
 const QString LIBRARYTABLE_RATING = QStringLiteral("rating");
 const QString LIBRARYTABLE_KEY = QStringLiteral("key");

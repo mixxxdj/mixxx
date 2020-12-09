@@ -26,34 +26,34 @@ class CueInfo {
   public:
     CueInfo();
     CueInfo(CueType type,
-            std::optional<double> startPositionMillis,
-            std::optional<double> endPositionMillis,
-            std::optional<int> hotCueNumber,
+            const std::optional<double>& startPositionMillis,
+            const std::optional<double>& endPositionMillis,
+            const std::optional<int>& hotCueNumber,
             QString label,
-            RgbColor::optional_t color);
+            const RgbColor::optional_t& color);
 
     CueType getType() const;
     void setType(CueType type);
 
     std::optional<double> getStartPositionMillis() const;
     void setStartPositionMillis(
-            std::optional<double> positionMillis = std::nullopt);
+            const std::optional<double>& positionMillis = std::nullopt);
 
     std::optional<double> getEndPositionMillis() const;
     void setEndPositionMillis(
-            std::optional<double> positionMillis = std::nullopt);
+            const std::optional<double>& positionMillis = std::nullopt);
 
     std::optional<int> getHotCueNumber() const;
     void setHotCueNumber(
-            std::optional<int> hotCueNumber = std::nullopt);
+            const std::optional<int>& hotCueNumber = std::nullopt);
 
     QString getLabel() const;
     void setLabel(
-            QString label = QString());
+            const QString& label = QString());
 
     mixxx::RgbColor::optional_t getColor() const;
     void setColor(
-            mixxx::RgbColor::optional_t color = std::nullopt);
+            const mixxx::RgbColor::optional_t& color = std::nullopt);
 
   private:
     CueType m_type;

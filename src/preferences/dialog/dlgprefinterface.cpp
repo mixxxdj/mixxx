@@ -12,6 +12,7 @@
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "mixxx.h"
+#include "moc_dlgprefinterface.cpp"
 #include "preferences/usersettings.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
@@ -96,7 +97,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         if (lang == "C") { // Ugly hack to remove the non-resolving locales
             continue;
         }
-        lang = QString("%1 (%2)").arg(lang).arg(country);
+        lang = QString("%1 (%2)").arg(lang, country);
         ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
     }
     ComboBoxLocale->model()->sort(0); // Sort languages list
@@ -147,8 +148,14 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         index++;
     }
 
-    connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
-    connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
+    connect(ComboBoxSkinconf,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefInterface::slotSetSkin);
+    connect(ComboBoxSchemeconf,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefInterface::slotSetScheme);
 
     checkBoxScaleFactorAuto->hide();
     spinBoxScaleFactor->hide();
@@ -181,8 +188,13 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     // Initialize checkboxes to match config
     loadTooltipPreferenceFromConfig();
     slotSetTooltips();  // Update disabled status of "only library" checkbox
-    connect(buttonGroupTooltips, SIGNAL(buttonClicked(QAbstractButton*)),
-            this, SLOT(slotSetTooltips()));
+    connect(buttonGroupTooltips,
+            QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
+            this,
+            [this](QAbstractButton* button) {
+                Q_UNUSED(button);
+                slotSetTooltips();
+            });
 
     slotUpdate();
 }
@@ -340,7 +352,7 @@ void DlgPrefInterface::slotSetScheme(int) {
     skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
 }
 
-void DlgPrefInterface::slotSetSkinDescription(QString skin) {
+void DlgPrefInterface::slotSetSkinDescription(const QString& skin) {
     SkinManifest manifest = LegacySkinParser::getSkinManifest(
             LegacySkinParser::openSkin(m_pSkinLoader->getSkinPath(skin)));
     QString description = QString::fromStdString(manifest.description());

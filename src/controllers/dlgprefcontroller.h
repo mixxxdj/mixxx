@@ -1,10 +1,4 @@
-/// @file dlgprefcontroller.h
-/// @author Sean M. Pappalardo  spappalardo@mixxx.org
-/// @date Mon May 2 2011
-/// @brief Configuration dialog for a single DJ controller
-
-#ifndef DLGPREFCONTROLLER_H
-#define DLGPREFCONTROLLER_H
+#pragma once
 
 #include <QHash>
 #include <QSortFilterProxyModel>
@@ -23,6 +17,7 @@ class Controller;
 class ControllerManager;
 class PresetInfoEnumerator;
 
+/// Configuration dialog for a single DJ controller
 class DlgPrefController : public DlgPreferencePage {
     Q_OBJECT
   public:
@@ -31,6 +26,8 @@ class DlgPrefController : public DlgPreferencePage {
                       UserSettingsPointer pConfig);
     virtual ~DlgPrefController();
 
+    QUrl helpUrl() const override;
+
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.
     void slotUpdate() override;
@@ -38,8 +35,6 @@ class DlgPrefController : public DlgPreferencePage {
     void slotApply() override;
     /// Called when the user clicks the global "Reset to Defaults" button.
     void slotResetToDefaults() override;
-
-    QUrl helpUrl() const override;
 
   signals:
     void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);
@@ -74,7 +69,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetForumLink(const ControllerPresetPointer pPreset) const;
     QString presetManualLink(const ControllerPresetPointer pPreset) const;
     QString presetWikiLink(const ControllerPresetPointer pPreset) const;
-    QString presetScriptFileLinks(const ControllerPresetPointer pPreset) const;
+    QString presetFileLinks(const ControllerPresetPointer pPreset) const;
     void applyPresetChanges();
     void savePreset();
     void initTableView(QTableView* pTable);
@@ -103,22 +98,22 @@ class DlgPrefController : public DlgPreferencePage {
     void enumeratePresets(const QString& selectedPresetPath);
     PresetInfo enumeratePresetsFromEnumerator(
             QSharedPointer<PresetInfoEnumerator> pPresetEnumerator,
-            QIcon icon = QIcon());
+            const QIcon& icon = QIcon());
 
     void enableDevice();
     void disableDevice();
 
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;
+    const QString m_pUserDir;
     ControllerManager* m_pControllerManager;
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
     ControllerPresetPointer m_pPreset;
+    QMap<QString, bool> m_pOverwritePresets;
     ControllerInputMappingTableModel* m_pInputTableModel;
     QSortFilterProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
     QSortFilterProxyModel* m_pOutputProxyModel;
     bool m_bDirty;
 };
-
-#endif /*DLGPREFCONTROLLER_H*/

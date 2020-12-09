@@ -1,12 +1,14 @@
-#include <QtDebug>
-#include <QMouseEvent>
-#include <QKeyEvent>
+#include "controllers/controllerlearningeventfilter.h"
 
-#include "widget/wwidget.h"
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QtDebug>
+
+#include "moc_controllerlearningeventfilter.cpp"
 #include "widget/wknob.h"
 #include "widget/wknobcomposed.h"
 #include "widget/wslidercomposed.h"
-#include "controllers/controllerlearningeventfilter.h"
+#include "widget/wwidget.h"
 
 ControllerLearningEventFilter::ControllerLearningEventFilter(QObject* pParent)
         : QObject(pParent),
@@ -19,14 +21,14 @@ ControllerLearningEventFilter::~ControllerLearningEventFilter() {
 bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent) {
     //qDebug() << "ControllerLearningEventFilter::eventFilter" << pObject << pEvent;
 
-    WWidget* pWidget = dynamic_cast<WWidget*>(pObject);
+    WWidget* pWidget = qobject_cast<WWidget*>(pObject);
     if (!pWidget || !m_bListening) {
         return false;
     }
 
-    WKnob* pKnob = dynamic_cast<WKnob*>(pObject);
-    WKnobComposed* pKnobComposed = dynamic_cast<WKnobComposed*>(pObject);
-    WSliderComposed* pSlider = dynamic_cast<WSliderComposed*>(pObject);
+    WKnob* pKnob = qobject_cast<WKnob*>(pObject);
+    WKnobComposed* pKnobComposed = qobject_cast<WKnobComposed*>(pObject);
+    WSliderComposed* pSlider = qobject_cast<WSliderComposed*>(pObject);
     bool has_right_click_reset = pKnob || pKnobComposed || pSlider;
 
     if (pEvent->type() == QEvent::KeyPress) {

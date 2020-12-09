@@ -16,6 +16,7 @@
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemaster.h"
+#include "moc_mixxx.cpp"
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgprefeq.h"
 #include "preferences/dialog/dlgpreferences.h"
@@ -151,6 +152,24 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     m_runtime_timer.start();
     mixxx::Time::start();
 
+    QString settingsPath = args.getSettingsPath();
+#ifdef __APPLE__
+    if (!args.getSettingsPathSet()) {
+        settingsPath = Sandbox::migrateOldSettings();
+    }
+#endif
+
+    mixxx::Logging::initialize(
+            settingsPath,
+            args.getLogLevel(),
+            args.getLogFlushLevel(),
+            args.getDebugAssertBreak());
+
+    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
+        qCritical() << "Failed to register any SoundSource providers";
+        return;
+    }
+
     Version::logBuildDetails();
 
     // Only record stats in developer mode.
@@ -194,7 +213,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
 #if defined(Q_OS_LINUX)
     // XESetWireToError will segfault if running as a Wayland client
-    if (pApp->platformName() == QStringLiteral("xcb")) {
+    if (pApp->platformName() == QLatin1String("xcb")) {
         for (auto i = 0; i < NUM_HANDLERS; ++i) {
             XESetWireToError(QX11Info::display(), i, &__xErrorHandler);
         }
@@ -493,6 +512,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
                 "default skin cannot be loaded - see <b>mixxx</b> trace for more information");
         m_pCentralWidget = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
+    } else {
+        m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
     }
 
     // Fake a 100 % progress here.
@@ -542,7 +563,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // TODO: QSet<T>::fromList(const QList<T>&) is deprecated and should be
     // replaced with QSet<T>(list.begin(), list.end()).
     // However, the proposed alternative has just been introduced in Qt
-    // 5.14. Until the minimum required Qt version of Mixx is increased,
+    // 5.14. Until the minimum required Qt version of Mixxx is increased,
     // we need a version check here
     QSet<QString> prev_plugins =
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -551,7 +572,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         QSet<QString>::fromList(prev_plugins_list);
 #endif
 
-    QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
+    const QList<QString> curr_plugins_list = SoundSourceProxy::getSupportedFileExtensions();
     QSet<QString> curr_plugins =
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
         QSet<QString>(curr_plugins_list.begin(), curr_plugins_list.end());
@@ -560,8 +581,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 #endif
 
     rescan = rescan || (prev_plugins != curr_plugins);
-    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
-            QStringList(SoundSourceProxy::getSupportedFileExtensions()).join(","));
+    pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"), curr_plugins_list.join(","));
 
     // Scan the library directory. Do this after the skinloader has
     // loaded a skin, see Bug #1047435
@@ -780,7 +800,7 @@ void MixxxMainWindow::finalize() {
 
     // Check for leaked ControlObjects and give warnings.
     {
-        QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
+        const QList<QSharedPointer<ControlDoublePrivate>> leakedControls =
                 ControlDoublePrivate::takeAllInstances();
         if (!leakedControls.isEmpty()) {
             qWarning()
@@ -1073,9 +1093,7 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
     if (pTrack) {
         QString trackInfo = pTrack->getInfo();
         if (!trackInfo.isEmpty()) {
-            appTitle = QString("%1 | %2")
-                    .arg(trackInfo)
-                    .arg(appTitle);
+            appTitle = QString("%1 | %2").arg(trackInfo, appTitle);
         }
     }
     this->setWindowTitle(appTitle);
@@ -1085,6 +1103,9 @@ void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pKbdConfig != nullptr);
     m_pMenuBar = make_parented<WMainMenuBar>(this, m_pSettingsManager->settings(), m_pKbdConfig);
+    if (m_pCentralWidget) {
+        m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
+    }
     setMenuBar(m_pMenuBar);
 }
 
@@ -1408,15 +1429,8 @@ void MixxxMainWindow::setToolTipsCfg(mixxx::TooltipsPreference tt) {
 void MixxxMainWindow::rebootMixxxView() {
     qDebug() << "Now in rebootMixxxView...";
 
-    QPoint initPosition = pos();
-    // frameSize()  : Window size including all borders and only if the window manager works.
-    // size() : Window without the borders nor title, but including the Menu!
-    // centralWidget()->size() : Size of the internal window Widget.
-    QSize initSize;
-    QWidget* pWidget = centralWidget(); // can be null if previous skin loading fails
-    if (pWidget) {
-        initSize = centralWidget()->size();
-    }
+    // safe geometry for later restoration
+    const QRect initGeometry = geometry();
 
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
@@ -1445,6 +1459,7 @@ void MixxxMainWindow::rebootMixxxView() {
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
+    m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
 
     setCentralWidget(m_pCentralWidget);
 #ifdef __LINUX__
@@ -1457,24 +1472,16 @@ void MixxxMainWindow::rebootMixxxView() {
 
     if (wasFullScreen) {
         slotViewFullScreen(true);
-    } else if (!initSize.isEmpty()) {
-        // Not all OSs and/or window managers keep the window inside of the screen, so force it.
-        int newX = initPosition.x() + (initSize.width() - m_pCentralWidget->width()) / 2;
-        int newY = initPosition.y() + (initSize.height() - m_pCentralWidget->height()) / 2;
-
-        const QScreen* const pScreen = mixxx::widgethelper::getScreen(*this);
-        VERIFY_OR_DEBUG_ASSERT(pScreen) {
-            qWarning() << "Unable to move window inside screen borders.";
-        }
-        else {
-            const auto windowMarginWidth =
-                    pScreen->geometry().width() - m_pCentralWidget->width();
-            const auto windowMarginHeight =
-                    pScreen->geometry().height() - m_pCentralWidget->height();
-            newX = std::max(0, std::min(newX, windowMarginWidth));
-            newY = std::max(0, std::min(newY, windowMarginHeight));
-            move(newX, newY);
-        }
+    } else {
+        // Programatic placement at this point is very problematic.
+        // The screen() method returns stale data (primary screen)
+        // until the user interacts with mixxx again. Keyboard shortcuts
+        // do not count, moving window, opening menu etc does
+        // Therefore the placement logic was removed by a simple geometry restore.
+        // If the minimum size of the new skin is larger then the restored
+        // geometry, the window will be enlarged right & bottom which is
+        // safe as the menu is still reachable.
+        setGeometry(initGeometry);
     }
 
     qDebug() << "rebootMixxxView DONE";
@@ -1499,9 +1506,12 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
         // return true for no tool tips
         switch (m_toolTipsCfg) {
             case mixxx::TooltipsPreference::TOOLTIPS_ONLY_IN_LIBRARY:
-                return dynamic_cast<WBaseWidget*>(obj) != nullptr;
+                if (dynamic_cast<WBaseWidget*>(obj) != nullptr) {
+                    return true;
+                }
+                break;
             case mixxx::TooltipsPreference::TOOLTIPS_ON:
-                return false;
+                break;
             case mixxx::TooltipsPreference::TOOLTIPS_OFF:
                 return true;
             default:
@@ -1510,7 +1520,7 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event) {
         }
     }
     // standard event processing
-    return QObject::eventFilter(obj, event);
+    return QMainWindow::eventFilter(obj, event);
 }
 
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {

@@ -9,6 +9,7 @@
 #include "dialog/dlgreplacecuecolor.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
+#include "moc_dlgprefcolors.cpp"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility.h"
 #include "util/math.h"
@@ -93,7 +94,8 @@ void DlgPrefColors::loadSettings() {
                 paletteIcon);
     }
 
-    for (const auto& paletteName : m_colorPaletteSettings.getColorPaletteNames()) {
+    const QSet<QString> colorPaletteNames = m_colorPaletteSettings.getColorPaletteNames();
+    for (const auto& paletteName : colorPaletteNames) {
         QIcon paletteIcon = drawPalettePreview(paletteName);
         comboBoxHotcueColors->addItem(paletteName);
         comboBoxHotcueColors->setItemIcon(

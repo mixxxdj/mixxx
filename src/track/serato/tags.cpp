@@ -24,7 +24,6 @@ QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
             mixxx::SoundSource::getFileExtensionFromUrl(QUrl::fromLocalFile(filePath));
     const mixxx::SoundSourceProviderPointer pPrimaryProvider =
             SoundSourceProxy::getPrimaryProviderForFileExtension(fileExtension);
-    QString decoderName;
     if (pPrimaryProvider) {
         return pPrimaryProvider->getDisplayName();
     } else {
@@ -278,7 +277,8 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
     // Serato will use the values from "Serato Markers_").
 
     QMap<int, CueInfo> cueMap;
-    for (const CueInfo& cueInfo : m_seratoMarkers2.getCues()) {
+    const QList<CueInfo> cuesMarkers2 = m_seratoMarkers2.getCues();
+    for (const CueInfo& cueInfo : cuesMarkers2) {
         std::optional<int> index = findIndexForCueInfo(cueInfo);
         if (!index) {
             continue;
@@ -313,7 +313,8 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
         unsetCuesInMarkersTag.insert(i);
     }
 
-    for (const CueInfo& cueInfo : m_seratoMarkers.getCues()) {
+    const QList<CueInfo> cuesMarkers = m_seratoMarkers.getCues();
+    for (const CueInfo& cueInfo : cuesMarkers) {
         std::optional<int> index = findIndexForCueInfo(cueInfo);
         if (!index) {
             continue;
@@ -435,7 +436,7 @@ RgbColor::optional_t SeratoTags::getTrackColor() const {
     return color;
 }
 
-void SeratoTags::setTrackColor(RgbColor::optional_t color) {
+void SeratoTags::setTrackColor(const RgbColor::optional_t& color) {
     mixxx::RgbColor rgbColor = SeratoTags::displayedToStoredTrackColor(color);
     m_seratoMarkers.setTrackColor(rgbColor);
     m_seratoMarkers2.setTrackColor(rgbColor);

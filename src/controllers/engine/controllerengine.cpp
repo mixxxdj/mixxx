@@ -9,6 +9,7 @@
 #include "controllers/engine/scriptconnectionjsproxy.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_controllerengine.cpp"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
 #include "util/time.h"
@@ -68,9 +69,10 @@ ControllerEngine::~ControllerEngine() {
     uninitializeScriptEngine();
 }
 
-bool ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes,
+bool ControllerEngine::callFunctionOnObjects(
+        const QList<QString>& scriptFunctionPrefixes,
         const QString& function,
-        QJSValueList args,
+        const QJSValueList& args,
         bool bFatalError) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine) {
         return false;
@@ -239,7 +241,7 @@ void ControllerEngine::uninitializeScriptEngine() {
     }
 }
 
-void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
+void ControllerEngine::loadModule(const QFileInfo& moduleFileInfo) {
     // QFileInfo does not have a isValid/isEmpty/isNull method to check if it
     // actually contains a reference, so we check if the filePath is empty as a
     // workaround.
@@ -290,7 +292,7 @@ void ControllerEngine::loadModule(QFileInfo moduleFileInfo) {
 #endif
 }
 
-void ControllerEngine::handleInput(QByteArray data, mixxx::Duration timestamp) {
+void ControllerEngine::handleInput(const QByteArray& data, mixxx::Duration timestamp) {
     if (m_handleInputFunction.isCallable()) {
         QJSValueList args;
         args << byteArrayToScriptValue(data);
@@ -309,7 +311,10 @@ bool ControllerEngine::loadScriptFiles(const QList<ControllerPreset::ScriptFileI
 
     m_lastScriptFiles = scripts;
 
-    connect(&m_scriptWatcher, &QFileSystemWatcher::fileChanged, this, &ControllerEngine::scriptHasChanged);
+    connect(&m_scriptWatcher,
+            &QFileSystemWatcher::fileChanged,
+            this,
+            &ControllerEngine::scriptHasChanged);
 
     if (!scriptsEvaluatedCorrectly) {
         gracefulShutdown();
@@ -373,7 +378,7 @@ void ControllerEngine::initializeScripts(const QList<ControllerPreset::ScriptFil
     }
 }
 
-bool ControllerEngine::executeFunction(QJSValue functionObject, QJSValueList args) {
+bool ControllerEngine::executeFunction(QJSValue functionObject, const QJSValueList& args) {
     // This function is called from outside the controller engine, so we can't
     // use VERIFY_OR_DEBUG_ASSERT here
     if (!m_pScriptEngine) {
@@ -403,7 +408,7 @@ bool ControllerEngine::executeFunction(QJSValue functionObject, QJSValueList arg
     return true;
 }
 
-bool ControllerEngine::executeFunction(QJSValue functionObject, const QByteArray& data) {
+bool ControllerEngine::executeFunction(const QJSValue& functionObject, const QByteArray& data) {
     // This function is called from outside the controller engine, so we can't
     // use VERIFY_OR_DEBUG_ASSERT here
     if (!m_pScriptEngine) {
@@ -434,7 +439,8 @@ void ControllerEngine::throwJSError(const QString& message) {
 #endif
 }
 
-void ControllerEngine::showScriptExceptionDialog(QJSValue evaluationResult, bool bFatalError) {
+void ControllerEngine::showScriptExceptionDialog(
+        const QJSValue& evaluationResult, bool bFatalError) {
     VERIFY_OR_DEBUG_ASSERT(evaluationResult.isError()) {
         return;
     }
@@ -521,7 +527,10 @@ void ControllerEngine::scriptErrorDialog(
     if (ErrorDialogHandler::instance()->requestErrorDialog(props)) {
         m_bDisplayingExceptionDialog = true;
         // Enable custom handling of the dialog buttons
-        connect(ErrorDialogHandler::instance(), &ErrorDialogHandler::stdButtonClicked, this, &ControllerEngine::errorDialogButton);
+        connect(ErrorDialogHandler::instance(),
+                &ErrorDialogHandler::stdButtonClicked,
+                this,
+                &ControllerEngine::errorDialogButton);
     }
 }
 
@@ -531,8 +540,7 @@ void ControllerEngine::errorDialogButton(
 
     m_bDisplayingExceptionDialog = false;
     // Something was clicked, so disable this signal now
-    disconnect(
-            ErrorDialogHandler::instance(),
+    disconnect(ErrorDialogHandler::instance(),
             &ErrorDialogHandler::stdButtonClicked,
             this,
             &ControllerEngine::errorDialogButton);
@@ -566,7 +574,7 @@ ControlObjectScript* ControllerEngine::getControlObjectScript(const QString& gro
     return coScript;
 }
 
-double ControllerEngine::getValue(QString group, QString name) {
+double ControllerEngine::getValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
@@ -575,7 +583,7 @@ double ControllerEngine::getValue(QString group, QString name) {
     return coScript->get();
 }
 
-void ControllerEngine::setValue(QString group, QString name, double newValue) {
+void ControllerEngine::setValue(const QString& group, const QString& name, double newValue) {
     if (isnan(newValue)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                    << "] to NotANumber, ignoring.";
@@ -593,7 +601,7 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
     }
 }
 
-double ControllerEngine::getParameter(QString group, QString name) {
+double ControllerEngine::getParameter(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
@@ -602,7 +610,8 @@ double ControllerEngine::getParameter(QString group, QString name) {
     return coScript->getParameter();
 }
 
-void ControllerEngine::setParameter(QString group, QString name, double newParameter) {
+void ControllerEngine::setParameter(
+        const QString& group, const QString& name, double newParameter) {
     if (isnan(newParameter)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                    << "] to NotANumber, ignoring.";
@@ -620,7 +629,8 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
     }
 }
 
-double ControllerEngine::getParameterForValue(QString group, QString name, double value) {
+double ControllerEngine::getParameterForValue(
+        const QString& group, const QString& name, double value) {
     if (isnan(value)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                    << "] to NotANumber, ignoring.";
@@ -637,14 +647,14 @@ double ControllerEngine::getParameterForValue(QString group, QString name, doubl
     return coScript->getParameterForValue(value);
 }
 
-void ControllerEngine::reset(QString group, QString name) {
+void ControllerEngine::reset(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->reset();
     }
 }
 
-double ControllerEngine::getDefaultValue(QString group, QString name) {
+double ControllerEngine::getDefaultValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
@@ -655,7 +665,7 @@ double ControllerEngine::getDefaultValue(QString group, QString name) {
     return coScript->getDefault();
 }
 
-double ControllerEngine::getDefaultParameter(QString group, QString name) {
+double ControllerEngine::getDefaultParameter(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
@@ -666,11 +676,12 @@ double ControllerEngine::getDefaultParameter(QString group, QString name) {
     return coScript->getParameterForValue(coScript->getDefault());
 }
 
-void ControllerEngine::log(QString message) {
+void ControllerEngine::log(const QString& message) {
     controllerDebug(message);
 }
 
-QJSValue ControllerEngine::makeConnection(QString group, QString name, const QJSValue callback) {
+QJSValue ControllerEngine::makeConnection(
+        const QString& group, const QString& name, const QJSValue& callback) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine != nullptr) {
         return QJSValue();
     }
@@ -705,7 +716,7 @@ QJSValue ControllerEngine::makeConnection(QString group, QString name, const QJS
     return QJSValue();
 }
 
-bool ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+bool ControllerEngine::removeScriptConnection(const ScriptConnection& connection) {
     ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
             connection.key.item);
 
@@ -716,7 +727,7 @@ bool ControllerEngine::removeScriptConnection(const ScriptConnection connection)
     return coScript->removeScriptConnection(connection);
 }
 
-void ControllerEngine::triggerScriptConnection(const ScriptConnection connection) {
+void ControllerEngine::triggerScriptConnection(const ScriptConnection& connection) {
     VERIFY_OR_DEBUG_ASSERT(m_pScriptEngine) {
         return;
     }
@@ -738,8 +749,10 @@ void ControllerEngine::triggerScriptConnection(const ScriptConnection connection
 // it is disconnected.
 // WARNING: These behaviors are quirky and confusing, so if you change this function,
 // be sure to run the ControllerEngineTest suite to make sure you do not break old scripts.
-QJSValue ControllerEngine::connectControl(
-        QString group, QString name, QJSValue passedCallback, bool disconnect) {
+QJSValue ControllerEngine::connectControl(const QString& group,
+        const QString& name,
+        const QJSValue& passedCallback,
+        bool disconnect) {
     // The passedCallback may or may not actually be a function, so when
     // the actual callback function is found, store it in this variable.
     QJSValue actualCallbackFunction;
@@ -842,7 +855,7 @@ QJSValue ControllerEngine::connectControl(
     return makeConnection(group, name, actualCallbackFunction);
 }
 
-void ControllerEngine::trigger(QString group, QString name) {
+void ControllerEngine::trigger(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->emitValueChanged();
@@ -989,7 +1002,7 @@ void ControllerEngine::timerEvent(QTimerEvent* event) {
     executeFunction(timerTarget.callback, QJSValueList());
 }
 
-void ControllerEngine::softTakeover(QString group, QString name, bool set) {
+void ControllerEngine::softTakeover(const QString& group, const QString& name, bool set) {
     ConfigKey key = ConfigKey(group, name);
     ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
     if (!pControl) {
@@ -1004,7 +1017,7 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
     }
 }
 
-void ControllerEngine::softTakeoverIgnoreNextValue(QString group, const QString name) {
+void ControllerEngine::softTakeoverIgnoreNextValue(const QString& group, const QString& name) {
     ConfigKey key = ConfigKey(group, name);
     ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
     if (!pControl) {

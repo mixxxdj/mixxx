@@ -1,22 +1,4 @@
-/***************************************************************************
-                          dlgprefeq.h  -  description
-                             -------------------
-    begin                : Thu Jun 7 2007
-    copyright            : (C) 2007 by John Sully
-    email                : jsully@scs.ryerson.ca
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFEQ_H
-#define DLGPREFEQ_H
+#pragma once
 
 #include <QWidget>
 #include <QComboBox>
@@ -28,9 +10,6 @@
 #include "effects/effectsmanager.h"
 #include "effects/effectrack.h"
 
-/**
-  *@author John Sully
-  */
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
@@ -69,7 +48,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   signals:
     void apply(const QString &);
-    void effectOnChainSlot(const unsigned int, const unsigned int, QString);
+    void effectOnChainSlot(const unsigned int, const unsigned int, const QString&);
 
   private:
     void loadSettings();
@@ -109,5 +88,3 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     bool m_bEqAutoReset;
     bool m_bGainAutoReset;
 };
-
-#endif
