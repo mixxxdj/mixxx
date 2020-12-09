@@ -1270,7 +1270,7 @@ if(UNIX AND NOT APPLE)
     FILES
       "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml"
     DESTINATION
-      "${CMAKE_INSTALL_DATADIR}/appdata"
+      "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
   )
 
   # udev rule file for USB HID and Bulk controllers
