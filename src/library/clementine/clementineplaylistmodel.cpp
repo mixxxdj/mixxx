@@ -50,10 +50,6 @@ void ClementinePlaylistModel::setTableModel(int playlistId) {
         return;
     }
 
-    if (playlistId < 0) {
-        return;
-    }
-
     if (m_playlistId >= 0) {
         // Clear old playlist
         m_playlistId = -1;
