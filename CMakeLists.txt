@@ -2039,6 +2039,9 @@ endif()
 
 # iOS/OS X Frameworks
 if(APPLE)
+  find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
+  target_link_libraries(mixxx-lib PUBLIC ${COREFOUNDATION_LIBRARY})
+
   # The iOS/OS X security framework is used to implement sandboxing.
   find_library(SECURITY_LIBRARY Security REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC ${SECURITY_LIBRARY})
@@ -2127,11 +2130,7 @@ if(COREAUDIO)
     lib/apple/CAStreamBasicDescription.cpp
   )
   find_library(AUDIOTOOLBOX_LIBRARY AudioToolbox REQUIRED)
-  find_library(COREFOUNDATION_LIBRARY CoreFoundation REQUIRED)
-  target_link_libraries(mixxx-lib PUBLIC
-    ${AUDIOTOOLBOX_LIBRARY}
-    ${COREFOUNDATION_LIBRARY}
-  )
+  target_link_libraries(mixxx-lib PUBLIC ${AUDIOTOOLBOX_LIBRARY})
   target_compile_definitions(mixxx-lib PRIVATE __COREAUDIO__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC lib/apple)
 endif()
