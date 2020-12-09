@@ -74,15 +74,3 @@ Depends: ${shlibs:Depends},
 Suggests: @CPACK_DEBIAN_PACKAGE_SUGGESTS@
 Replaces: mixxx-data
 Description: @CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED@
-
-Package: mixxx-test
-Section: @CPACK_DEBIAN_PACKAGE_SECTION@
-Architecture: linux-any
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         libqt5opengl5,
-         libqt5svg5,
-         libqt5xml5,
-         libqt5sql5,
-         libqt5sql5-sqlite
-Description: The Mixxx test suite.
