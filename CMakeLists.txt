@@ -922,7 +922,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
 )
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON)
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
-target_compile_definitions(mixxx-lib PRIVATE SETTINGS_FILE="mixxx.cfg")
+target_compile_definitions(mixxx-lib PRIVATE SETTINGS_FILE="mixxx.cfg" __EXPORT_SERATO_MARKERS__)
 if(UNIX AND NOT APPLE)
   target_compile_definitions(mixxx-lib PRIVATE SETTINGS_PATH=".mixxx/")
 endif()
