@@ -19,11 +19,11 @@ endif()
 
 find_program(CPACK_DEBIAN_MARKDOWN markdown)
 if(NOT CPACK_DEBIAN_MARKDOWN)
-  message(FATAL_ERROR "debchange not found, required for cpack -G External -D DEB_UPLOAD_PPA=true" )
+  message(FATAL_ERROR "markdown not found, required for cpack -G External -D DEB_UPLOAD_PPA=true")
 endif()
 
 
-message( NOTICE "Creating mixxx_${CPACK_DEBIAN_UPSTREAM_VERSION}.orig.tar.gz" )
+message(NOTICE "Creating mixxx_${CPACK_DEBIAN_UPSTREAM_VERSION}.orig.tar.gz")
 execute_process(
   COMMAND tar -czf "mixxx_${CPACK_DEBIAN_UPSTREAM_VERSION}.orig.tar.gz" ${CPACK_PACKAGE_FILE_NAME}
   WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}
