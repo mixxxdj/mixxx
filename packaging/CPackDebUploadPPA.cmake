@@ -44,6 +44,12 @@ configure_file(${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/con
                @ONLY)
 file(REMOVE ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control.in)
 
+file(COPY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/res/linux/mixxx-usb-uaccess.rules
+    DESTINATION ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control)
+file(RENAME
+    ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control/mixxx-usb-uaccess.rules
+    ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control/mixxx.mixxx-usb-uaccess.rules)
+
 foreach(RELEASE ${CPACK_DEBIAN_DISTRIBUTION_RELEASES})
 
    file(COPY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/packaging/debian/changelog

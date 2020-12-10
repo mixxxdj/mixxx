@@ -1286,13 +1286,19 @@ if(UNIX AND NOT APPLE)
       "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
   )
 
-  # udev rule file for USB HID and Bulk controllers
-  install(
-    FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
-    DESTINATION
-      "${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d"
-  )
+  option(INSTALL_USER_UDEV_RULES "Install user udev rule file for USB HID and Bulk controllers" ON)
+  if (INSTALL_USER_UDEV_RULES)
+    install(
+      FILES
+        "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
+      DESTINATION
+        "${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d"
+    )
+    message(WARNING "Installing udev rules to ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d, "
+        "which is reserved for user-installed files. The correct directory for "
+        "system rules is /lib/udev/rules.d. with a appropiated priority prefix. "
+        "Adjust your package script accordingly and set -DINSTALL_USER_UDEV_RULES=OFF")
+  endif()
 endif()
 
 #
