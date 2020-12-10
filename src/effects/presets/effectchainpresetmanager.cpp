@@ -455,6 +455,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
 
             EffectChainPresetPointer pEffectChainPreset = loadPresetFromFile(copiedFileName);
             if (pEffectChainPreset && !pEffectChainPreset->isEmpty()) {
+                m_effectChainPresets.insert(pEffectChainPreset->name(), pEffectChainPreset);
                 chainPresetsSorted.append(pEffectChainPreset->name());
             }
         }
