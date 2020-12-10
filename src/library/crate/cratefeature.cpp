@@ -816,5 +816,5 @@ void CrateFeature::slotTrackSelected(TrackPointer pTrack) {
 }
 
 void CrateFeature::slotResetSelectedTrack() {
-    //slotTrackSelected(TrackPointer());
+    slotTrackSelected(TrackPointer());
 }

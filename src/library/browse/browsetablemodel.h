@@ -72,10 +72,12 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     bool isColumnSortable(int column) override;
     TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) override;
     int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
-    QString modelKey() override {
-        return QString("0x%1/%2#%3")
-                .arg((quintptr)this, QT_POINTER_SIZE * 2, 16, QChar('0'))
-                .arg(m_current_directory.dir().path(), currentSearch());
+    QString modelKey() const override {
+        return pointerToQString(this) +
+                QLatin1String("/") +
+                m_current_directory.dir().path() +
+                QLatin1String("#") +
+                currentSearch();
     }
   signals:
     void restoreModelState();

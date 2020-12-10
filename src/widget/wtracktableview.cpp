@@ -1004,7 +1004,7 @@ bool WTrackTableView::hasFocus() const {
     return QWidget::hasFocus();
 }
 
-QString WTrackTableView::getStateKey() {
+QString WTrackTableView::getStateKey() const {
     TrackModel* rv = getTrackModel();
     if (rv) {
         return rv->modelKey();

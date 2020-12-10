@@ -2,6 +2,7 @@
 
 #include <QItemDelegate>
 #include <QList>
+#include <QStringBuilder>
 #include <QVector>
 #include <QtSql>
 
@@ -9,6 +10,7 @@
 #include "library/dao/settingsdao.h"
 #include "track/track_decl.h"
 #include "track/trackref.h"
+#include "util/string.h"
 
 /** Pure virtual (abstract) class that provides an interface for data models which
     display track lists. */
@@ -207,12 +209,10 @@ class TrackModel {
     virtual void select() {
     }
 
-    virtual QString modelKey() {
-        return QString("0x%1#%2").arg((quintptr)this,
-                                         QT_POINTER_SIZE * 2,
-                                         16,
-                                         QChar('0'))
-                .arg(currentSearch());
+    virtual QString modelKey() const {
+        return pointerToQString(this) +
+                QLatin1String("#") +
+                currentSearch();
     }
 
   private:

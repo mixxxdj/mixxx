@@ -24,3 +24,10 @@ class StringCollator {
   private:
     QCollator m_collator;
 };
+/// writes the hexadecimal version of the pointer address in a QString
+static inline QString pointerToQString(const void* ptr) {
+    return QString("0x%1").arg(reinterpret_cast<quintptr>(ptr),
+            QT_POINTER_SIZE * 2,
+            16,
+            QChar('0'));
+};

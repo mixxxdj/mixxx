@@ -69,7 +69,7 @@ void ProxyTrackModel::search(const QString& searchText, const QString& extraFilt
     }
 }
 
-QString ProxyTrackModel::modelKey() {
+QString ProxyTrackModel::modelKey() const {
     return m_pTrackModel ? m_pTrackModel->modelKey() : QString();
 }
 

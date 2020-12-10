@@ -18,7 +18,7 @@ BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,
           m_playlistsTable(playlistsTable),
           m_playlistTracksTable(playlistTracksTable),
           m_trackSource(trackSource),
-          m_currentPlaylistId(0) {
+          m_currentPlaylistId(-1) {
 }
 
 BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {

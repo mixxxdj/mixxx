@@ -1,5 +1,6 @@
 #include "library/crate/cratetablemodel.h"
 
+#include <QStringBuilder>
 #include <QtDebug>
 
 #include "library/dao/trackschema.h"
@@ -9,6 +10,7 @@
 #include "moc_cratetablemodel.cpp"
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"
+#include "util/string.h"
 
 CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollectionManager* pTrackCollectionManager)
@@ -192,13 +194,16 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
     select();
 }
 
-QString CrateTableModel::modelKey() {
+QString CrateTableModel::modelKey() const {
     if (this->m_selectedCrate.isValid()) {
-        return QString("0x%1/%2#%3")
-                .arg((quintptr)this, 0, 16, QChar('0'))
-                .arg((quintptr)this->m_selectedCrate.value())
-                .arg(currentSearch());
+        return pointerToQString(this) +
+                QLatin1String("/") +
+                QString::number(m_selectedCrate.value()) +
+                QLatin1String("#") +
+                currentSearch();
     } else {
-        return QString("0x%1#%2").arg((quintptr)this, 0, 16, QChar('0')).arg(currentSearch());
+        return pointerToQString(this) +
+                QLatin1String("#") +
+                currentSearch();
     }
 }

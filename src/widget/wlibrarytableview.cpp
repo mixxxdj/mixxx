@@ -228,9 +228,7 @@ void WLibraryTableView::clearStateCache() {
         const QStringList keys = lru.values(sortKeys.takeFirst());
         for (const auto& key : keys) {
             auto m = m_vModelState.take(key);
-            if (m) {
-                delete m;
-            }
+            delete m;
         }
     }
 }

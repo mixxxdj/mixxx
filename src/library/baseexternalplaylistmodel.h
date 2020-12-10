@@ -1,16 +1,18 @@
 #pragma once
 
-#include <QtSql>
 #include <QItemDelegate>
-#include <QString>
-#include <QObject>
 #include <QModelIndex>
+#include <QObject>
+#include <QString>
+#include <QStringBuilder>
+#include <QtSql>
 
-#include "library/trackmodel.h"
 #include "library/basesqltablemodel.h"
-#include "library/librarytablemodel.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
+#include "library/librarytablemodel.h"
+#include "library/trackmodel.h"
+#include "util/string.h"
 
 class BaseExternalPlaylistModel : public BaseSqlTableModel {
     Q_OBJECT
@@ -28,11 +30,12 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     bool isColumnInternal(int column) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     CapabilitiesFlags getCapabilities() const override;
-    QString modelKey() override {
-        return QString("0x%1/%2#%3")
-                .arg((quintptr)this, QT_POINTER_SIZE * 2, 16, QChar('0'))
-                .arg(m_currentPlaylistId)
-                .arg(currentSearch());
+    QString modelKey() const override {
+        return pointerToQString(this) +
+                QLatin1String("/") +
+                QString::number(m_currentPlaylistId) +
+                QLatin1String("#") +
+                currentSearch();
     }
 
   private:

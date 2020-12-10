@@ -76,7 +76,7 @@ class WTrackTableView : public WLibraryTableView {
     void keyNotationChanged();
 
   protected:
-    QString getStateKey() override;
+    QString getStateKey() const override;
 
   private:
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);

@@ -58,7 +58,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   protected:
     void focusInEvent(QFocusEvent* event) override;
-    virtual QString getStateKey() = 0;
+    virtual QString getStateKey() const = 0;
 
   private:
     const UserSettingsPointer m_pConfig;
