@@ -16,7 +16,6 @@ const float kHeightScaleFactor = 255.0f / sqrtf(255 * 255 * 3);
 GLWaveformRendererRGB::GLWaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererSignalBase(waveformWidgetRenderer) {
-    initializeOpenGLFunctions();
 }
 
 GLWaveformRendererRGB::~GLWaveformRendererRGB() {
@@ -26,6 +25,8 @@ void GLWaveformRendererRGB::onSetup(const QDomNode& /* node */) {
 }
 
 void GLWaveformRendererRGB::draw(QPainter* painter, QPaintEvent* /*event*/) {
+    maybeInitializeGL();
+
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
