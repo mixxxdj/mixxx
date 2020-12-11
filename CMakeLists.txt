@@ -1790,7 +1790,8 @@ target_link_libraries(mixxx-lib PUBLIC mixxx-proto)
 target_include_directories(mixxx-lib SYSTEM PUBLIC lib/rigtorp/SPSCQueue/include)
 
 # Qt
-find_package(Qt5
+find_package(QT NAMES Qt6 Qt5 REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR}
   COMPONENTS
     Concurrent
     Core
@@ -1806,29 +1807,33 @@ find_package(Qt5
   REQUIRED
 )
 target_link_libraries(mixxx-lib PUBLIC
-  Qt5::Concurrent
-  Qt5::Core
-  Qt5::Gui
-  Qt5::Network
-  Qt5::OpenGL
-  Qt5::Qml
-  Qt5::Sql
-  Qt5::Svg
-  Qt5::Test
-  Qt5::Widgets
-  Qt5::Xml)
+  Qt${QT_VERSION_MAJOR}::Concurrent
+  Qt${QT_VERSION_MAJOR}::Core
+  Qt${QT_VERSION_MAJOR}::Gui
+  Qt${QT_VERSION_MAJOR}::Network
+  Qt${QT_VERSION_MAJOR}::OpenGL
+  Qt${QT_VERSION_MAJOR}::Qml
+  Qt${QT_VERSION_MAJOR}::Sql
+  Qt${QT_VERSION_MAJOR}::Svg
+  Qt${QT_VERSION_MAJOR}::Test
+  Qt${QT_VERSION_MAJOR}::Widgets
+  Qt${QT_VERSION_MAJOR}::Xml)
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
-  find_package(Qt5 COMPONENTS X11Extras DBus REQUIRED)
+  # QtX11Extras has been removed in Qt6
+  if(QT_VERSION_MAJOR LESS 6)
+    find_package(Qt${QT_VERSION_MAJOR} COMPONENTS X11Extras)
+    target_link_libraries(mixxx-lib PUBLIC Qt${QT_VERSION_MAJOR}::X11Extras)
+  endif()
+  find_package(Qt${QT_VERSION_MAJOR} COMPONENTS DBus REQUIRED)
   target_include_directories(mixxx-lib SYSTEM PUBLIC "${X11_INCLUDE_DIR}")
   target_link_libraries(mixxx-lib PUBLIC
     "${X11_LIBRARIES}"
-    Qt5::X11Extras
-    Qt5::DBus
+    Qt${QT_VERSION_MAJOR}::DBus
   )
 elseif(WIN32)
-  get_target_property(QT5_TYPE Qt5::Core TYPE)
+  get_target_property(QT5_TYPE Qt${QT_VERSION_MAJOR}::Core TYPE)
   if(QT5_TYPE STREQUAL "STATIC_LIBRARY")
     target_compile_definitions(mixxx-lib PUBLIC QT_NODLL)
     target_link_libraries(mixxx-lib PUBLIC
@@ -1855,7 +1860,7 @@ elseif(WIN32)
       # QtNetwork openssl-linked
       crypt32
 
-      # New libraries required by Qt5.
+      # New libraries required by Qt${QT_VERSION_MAJOR}.
       dwmapi      # qtwindows
       iphlpapi    # qt5network
       mpr         # qt5core
@@ -1873,32 +1878,32 @@ elseif(WIN32)
       # into Qt .libs by default.
 
       # iconengines plugins
-      Qt5::QSvgIconPlugin
+      Qt${QT_VERSION_MAJOR}::QSvgIconPlugin
 
       # imageformats plugins
-      Qt5::QGifPlugin
-      Qt5::QICOPlugin
-      Qt5::QJpegPlugin
-      Qt5::QSvgPlugin
-      Qt5::QTgaPlugin
+      Qt${QT_VERSION_MAJOR}::QGifPlugin
+      Qt${QT_VERSION_MAJOR}::QICOPlugin
+      Qt${QT_VERSION_MAJOR}::QJpegPlugin
+      Qt${QT_VERSION_MAJOR}::QSvgPlugin
+      Qt${QT_VERSION_MAJOR}::QTgaPlugin
 
-      # platform plugins (new in Qt5 for Windows)
-      Qt5::QWindowsIntegrationPlugin
+      # platform plugins (new in Qt${QT_VERSION_MAJOR} for Windows)
+      Qt${QT_VERSION_MAJOR}::QWindowsIntegrationPlugin
 
-      # styles (new in Qt5 for Windows)
-      Qt5::QWindowsVistaStylePlugin
+      # styles (new in Qt${QT_VERSION_MAJOR} for Windows)
+      Qt${QT_VERSION_MAJOR}::QWindowsVistaStylePlugin
 
-      # sqldrivers (new in Qt5? or did we just start enabling them)
-      Qt5::QSQLiteDriverPlugin
+      # sqldrivers (new in Qt${QT_VERSION_MAJOR}? or did we just start enabling them)
+      Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin
     )
 
-    find_library(QT5FONTDATABASESUPPORT_LIBRARY Qt5FontDatabaseSupport)
+    find_library(QT5FONTDATABASESUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}FontDatabaseSupport)
     target_link_libraries(mixxx-lib PUBLIC "${QT5FONTDATABASESUPPORT_LIBRARY}")
-    find_library(QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY Qt5WindowsUIAutomationSupport)
+    find_library(QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}WindowsUIAutomationSupport)
     target_link_libraries(mixxx-lib PUBLIC "${QT5WINDOWSUIAUTOMATIONSUPPORT_LIBRARY}")
-    find_library(QT5EVENTDISPATCHERSUPPORT_LIBRARY Qt5EventDispatcherSupport)
+    find_library(QT5EVENTDISPATCHERSUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}EventDispatcherSupport)
     target_link_libraries(mixxx-lib PUBLIC "${QT5EVENTDISPATCHERSUPPORT_LIBRARY}")
-    find_library(QT5THEMESUPPORT_LIBRARY Qt5ThemeSupport)
+    find_library(QT5THEMESUPPORT_LIBRARY Qt${QT_VERSION_MAJOR}ThemeSupport)
     target_link_libraries(mixxx-lib PUBLIC "${QT5THEMESUPPORT_LIBRARY}")
 
     find_library(QTFREETYPE_LIBRARY qtfreetype)
@@ -1918,14 +1923,14 @@ elseif(WIN32)
   endif()
 endif()
 
-# Qt5_DIR is not set until now, so this cannot be moved above with the rest of the install commands
+# Qt${QT_VERSION_MAJOR}_DIR is not set until now, so this cannot be moved above with the rest of the install commands
 if(WIN32)
   install(
     # I haven't seen a way to determine where the translations dir is, so I am making
-    # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
+    # some assumptions here, and assuming that Qt${QT_VERSION_MAJOR}_DIR points to Qt-5.14.2/lib/cmake/Qt${QT_VERSION_MAJOR}
     # which is what my configuration tells me.
     DIRECTORY
-      "${Qt5_DIR}/../../../translations"
+      "${Qt${QT_VERSION_MAJOR}_DIR}/../../../translations"
     DESTINATION
       "${MIXXX_INSTALL_DATADIR}"
     # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
@@ -1937,8 +1942,8 @@ if(WIN32)
   # ANGLE DLLs are dynamically linked even when the rest of Qt is built statically
   install(
     FILES
-        "${Qt5_DIR}/../../../bin/libEGL.dll"
-        "${Qt5_DIR}/../../../bin/libGLESv2.dll"
+        "${Qt${QT_VERSION_MAJOR}_DIR}/../../../bin/libEGL.dll"
+        "${Qt${QT_VERSION_MAJOR}_DIR}/../../../bin/libGLESv2.dll"
     DESTINATION
         "${MIXXX_INSTALL_DATADIR}"
   )
@@ -2012,7 +2017,7 @@ if(MSVC)
   target_compile_definitions(Reverb PRIVATE _USE_MATH_DEFINES)
 endif()
 target_include_directories(Reverb PRIVATE src)
-target_link_libraries(Reverb PUBLIC Qt5::Core)
+target_link_libraries(Reverb PUBLIC Qt${QT_VERSION_MAJOR}::Core)
 target_include_directories(mixxx-lib SYSTEM PRIVATE lib/reverb)
 target_link_libraries(mixxx-lib PUBLIC Reverb)
 
@@ -2432,15 +2437,18 @@ if(MODPLUG)
 endif()
 
 # QtKeychain
-find_package(Qt5Keychain QUIET)
-option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" ON)
-if(QTKEYCHAIN)
-  if(NOT Qt5Keychain_FOUND)
-    message(FATAL_ERROR "Secure credential storage support requires the Qt5::Keychain component.")
-  endif()
-  target_compile_definitions(mixxx-lib PUBLIC __QTKEYCHAIN__)
-  target_link_libraries(mixxx-lib PUBLIC ${QTKEYCHAIN_LIBRARIES})
-  target_include_directories(mixxx-lib SYSTEM PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
+# TODO: remove if condition when QtKeychain supports Qt6
+if (QT_VERSION_MAJOR LESS 6)
+    find_package(Qt${QT_VERSION_MAJOR}Keychain QUIET)
+    option(QTKEYCHAIN "Secure credentials storage support for Live Broadcasting profiles" ON)
+    if(QTKEYCHAIN)
+    if(NOT Qt${QT_VERSION_MAJOR}Keychain_FOUND)
+        message(FATAL_ERROR "Secure credential storage support requires the Qt${QT_VERSION_MAJOR}::Keychain component.")
+    endif()
+    target_compile_definitions(mixxx-lib PUBLIC __QTKEYCHAIN__)
+    target_link_libraries(mixxx-lib PUBLIC ${QTKEYCHAIN_LIBRARIES})
+    target_include_directories(mixxx-lib SYSTEM PUBLIC ${QTKEYCHAIN_INCLUDE_DIRS})
+    endif()
 endif()
 
 # USB HID or/and Bulk controller support
@@ -2601,16 +2609,16 @@ if(APPLE AND MACOS_BUNDLE)
     endmacro()
 
 
-    install_qt5_plugin(Qt5::QCocoaIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QSQLiteDriverPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QMacStylePlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QSvgPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QSvgIconPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QJpegPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
-    install_qt5_plugin(Qt5::QGifPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt${QT_VERSION_MAJOR}::QCocoaIntegrationPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt${QT_VERSION_MAJOR}::QSQLiteDriverPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt${QT_VERSION_MAJOR}::QMacStylePlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt${QT_VERSION_MAJOR}::QSvgPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt${QT_VERSION_MAJOR}::QSvgIconPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt${QT_VERSION_MAJOR}::QJpegPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
+    install_qt5_plugin(Qt${QT_VERSION_MAJOR}::QGifPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
 
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
-    set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib;${Qt5Widgets_DIR}/../..")
+    set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib;${Qt${QT_VERSION_MAJOR}Widgets_DIR}/../..")
     set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/build/osx/entitlements.plist")
 
     configure_file(cmake/modules/BundleInstall.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake" @ONLY)
