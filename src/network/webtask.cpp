@@ -92,7 +92,10 @@ WebTask::~WebTask() {
 
 void WebTask::onAborted(
         QUrl&& requestUrl) {
-    DEBUG_ASSERT(m_status == Status::Aborted);
+    VERIFY_OR_DEBUG_ASSERT(m_status == Status::Aborting) {
+        return;
+    }
+    m_status = Status::Aborted;
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&WebTask::aborted)) {
         kLogger.warning()
@@ -107,7 +110,13 @@ void WebTask::onAborted(
 
 void WebTask::onTimedOut(
         QUrl&& requestUrl) {
-    DEBUG_ASSERT(m_status == Status::TimedOut);
+    VERIFY_OR_DEBUG_ASSERT(m_status == Status::Pending) {
+        return;
+    }
+    if (m_timeoutTimerId != kInvalidTimerId) {
+        killTimer(m_timeoutTimerId);
+        m_timeoutTimerId = kInvalidTimerId;
+    }
     onNetworkError(
             std::move(requestUrl),
             QNetworkReply::TimeoutError,
@@ -120,10 +129,20 @@ void WebTask::onNetworkError(
         QNetworkReply::NetworkError errorCode,
         QString&& errorString,
         QByteArray&& errorContent) {
+    DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
+    VERIFY_OR_DEBUG_ASSERT(m_status == Status::Pending) {
+        return;
+    }
+    DEBUG_ASSERT(errorCode != QNetworkReply::NoError);
+    if (errorCode == QNetworkReply::TimeoutError) {
+        m_status = Status::TimedOut;
+    } else {
+        m_status = Status::Failed;
+    }
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&WebTask::networkError)) {
         kLogger.warning()
-                << "Unhandled network error signal"
+                << "Unhandled network error:"
                 << requestUrl
                 << errorCode
                 << errorString
@@ -168,8 +187,13 @@ void WebTask::invokeAbort() {
 
 void WebTask::slotStart(int timeoutMillis) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    DEBUG_ASSERT(m_status != Status::Pending);
+    VERIFY_OR_DEBUG_ASSERT(m_status != Status::Pending) {
+        return;
+    }
+    m_status = Status::Idle;
+
     VERIFY_OR_DEBUG_ASSERT(m_networkAccessManager) {
+        m_status = Status::Pending;
         onNetworkError(
                 QUrl(),
                 QNetworkReply::NetworkSessionFailedError,
@@ -180,12 +204,12 @@ void WebTask::slotStart(int timeoutMillis) {
 
     kLogger.debug()
             << "Starting...";
-    m_status = Status::Idle;
     if (!doStart(m_networkAccessManager, timeoutMillis)) {
         // Still idle, because we are in the same thread.
         // The callee is not supposed to abort a request
         // before it has beeen started successfully.
         DEBUG_ASSERT(m_status == Status::Idle);
+        m_status = Status::Pending;
         onNetworkError(
                 QUrl(),
                 QNetworkReply::OperationCanceledError,
@@ -240,7 +264,7 @@ QUrl WebTask::abort() {
         killTimer(m_timeoutTimerId);
         m_timeoutTimerId = kInvalidTimerId;
     }
-    m_status = Status::Aborted;
+    m_status = Status::Aborting;
     kLogger.debug()
             << "Aborting...";
     QUrl url = doAbort();
@@ -256,14 +280,13 @@ void WebTask::timerEvent(QTimerEvent* event) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     const auto timerId = event->timerId();
     DEBUG_ASSERT(timerId != kInvalidTimerId);
-    if (timerId != m_timeoutTimerId) {
-        // ignore
+    VERIFY_OR_DEBUG_ASSERT(timerId == m_timeoutTimerId) {
         return;
     }
     killTimer(m_timeoutTimerId);
     m_timeoutTimerId = kInvalidTimerId;
-    if (m_status != Status::Aborted) {
-        m_status = Status::TimedOut;
+    VERIFY_OR_DEBUG_ASSERT(m_status == Status::Pending) {
+        return;
     }
     kLogger.debug()
             << "Timed out";
@@ -280,26 +303,6 @@ QPair<QNetworkReply*, HttpStatusCode> WebTask::receiveNetworkReply() {
     }
     networkReply->deleteLater();
 
-    if (m_timeoutTimerId != kInvalidTimerId) {
-        killTimer(m_timeoutTimerId);
-        m_timeoutTimerId = kInvalidTimerId;
-    }
-
-    if (m_status == Status::Aborted) {
-        onAborted(networkReply->request().url());
-        return qMakePair(nullptr, statusCode);
-    }
-    m_status = Status::Finished;
-
-    if (networkReply->error() != QNetworkReply::NetworkError::NoError) {
-        onNetworkError(
-                networkReply->request().url(),
-                networkReply->error(),
-                networkReply->errorString(),
-                networkReply->readAll());
-        return qMakePair(nullptr, statusCode);
-    }
-
     if (kLogger.debugEnabled()) {
         if (networkReply->url() == networkReply->request().url()) {
             kLogger.debug()
@@ -314,6 +317,35 @@ QPair<QNetworkReply*, HttpStatusCode> WebTask::receiveNetworkReply() {
                     << networkReply->url();
         }
     }
+
+    if (m_status == Status::Aborted ||
+            m_status == Status::TimedOut) {
+        // Already aborted or timed out by the client
+        DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
+        kLogger.debug()
+                << this
+                << "Ignoring obsolete network reply";
+        return qMakePair(nullptr, statusCode);
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_status == Status::Pending) {
+        DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
+        return qMakePair(nullptr, statusCode);
+    }
+
+    if (m_timeoutTimerId != kInvalidTimerId) {
+        killTimer(m_timeoutTimerId);
+        m_timeoutTimerId = kInvalidTimerId;
+    }
+
+    if (networkReply->error() != QNetworkReply::NetworkError::NoError) {
+        onNetworkError(
+                networkReply->request().url(),
+                networkReply->error(),
+                networkReply->errorString(),
+                networkReply->readAll());
+        return qMakePair(nullptr, statusCode);
+    }
+    m_status = Status::Finished;
 
     DEBUG_ASSERT(statusCode == kHttpStatusCodeInvalid);
     VERIFY_OR_DEBUG_ASSERT(readStatusCode(networkReply, &statusCode)) {

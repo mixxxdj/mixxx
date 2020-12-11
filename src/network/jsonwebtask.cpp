@@ -268,18 +268,11 @@ bool JsonWebTask::doStart(
         return false;
     }
 
+    // It is not necessary to connect the QNetworkReply::errorOccurred
+    // signal (since Qt 5.15). Network errors are also received trough
+    // the QNetworkReply::finished signal.
     connect(m_pendingNetworkReply,
             &QNetworkReply::finished,
-            this,
-            &JsonWebTask::slotNetworkReplyFinished,
-            Qt::UniqueConnection);
-
-    connect(m_pendingNetworkReply,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-            &QNetworkReply::errorOccurred,
-#else
-            QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
-#endif
             this,
             &JsonWebTask::slotNetworkReplyFinished,
             Qt::UniqueConnection);
