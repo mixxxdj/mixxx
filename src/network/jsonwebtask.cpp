@@ -138,6 +138,7 @@ JsonWebTask::~JsonWebTask() {
 void JsonWebTask::onFinished(
         JsonWebResponse&& response) {
     kLogger.info()
+            << this
             << "Response received"
             << response.replyUrl
             << response.statusCode
@@ -148,6 +149,7 @@ void JsonWebTask::onFinished(
 void JsonWebTask::onFinishedCustom(
         CustomWebResponse&& response) {
     kLogger.info()
+            << this
             << "Custom response received"
             << response.replyUrl
             << response.statusCode
@@ -165,6 +167,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
         DEBUG_ASSERT(m_request.content.isEmpty());
         if (kLogger.debugEnabled()) {
             kLogger.debug()
+                    << this
                     << "GET"
                     << url;
         }
@@ -175,6 +178,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
         const auto body = content.toJson(QJsonDocument::Compact);
         if (kLogger.debugEnabled()) {
             kLogger.debug()
+                    << this
                     << "PUT"
                     << url
                     << body;
@@ -187,6 +191,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
         const auto body = content.toJson(QJsonDocument::Compact);
         if (kLogger.debugEnabled()) {
             kLogger.debug()
+                    << this
                     << "POST"
                     << url
                     << body;
@@ -199,6 +204,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
         const auto body = m_request.content.toJson(QJsonDocument::Compact);
         if (kLogger.debugEnabled()) {
             kLogger.debug()
+                    << this
                     << "PATCH"
                     << url
                     << body;
@@ -212,6 +218,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
         DEBUG_ASSERT(content.isEmpty());
         if (kLogger.debugEnabled()) {
             kLogger.debug()
+                    << this
                     << "DELETE"
                     << url;
         }
@@ -231,6 +238,7 @@ bool JsonWebTask::doStart(
     DEBUG_ASSERT(networkAccessManager);
     VERIFY_OR_DEBUG_ASSERT(!m_pendingNetworkReply) {
         kLogger.warning()
+                << this
                 << "Task has already been started";
         return false;
     }
@@ -250,22 +258,15 @@ bool JsonWebTask::doStart(
             m_request.content);
     VERIFY_OR_DEBUG_ASSERT(m_pendingNetworkReply) {
         kLogger.warning()
+                << this
                 << "Request not sent";
         return false;
     }
 
+    // It is not necessary to connect the QNetworkReply::errorOccurred signal.
+    // Network errors are also received through the QNetworkReply::finished signal.
     connect(m_pendingNetworkReply,
             &QNetworkReply::finished,
-            this,
-            &JsonWebTask::slotNetworkReplyFinished,
-            Qt::UniqueConnection);
-
-    connect(m_pendingNetworkReply,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-            &QNetworkReply::errorOccurred,
-#else
-            QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
-#endif
             this,
             &JsonWebTask::slotNetworkReplyFinished,
             Qt::UniqueConnection);
@@ -337,6 +338,7 @@ void JsonWebTask::emitFailed(
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&JsonWebTask::failed)) {
         kLogger.warning()
+                << this
                 << "Unhandled failed signal"
                 << response;
         deleteLater();
