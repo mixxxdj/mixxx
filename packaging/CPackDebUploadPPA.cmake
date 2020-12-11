@@ -24,6 +24,11 @@ if(NOT CPACK_DEBIAN_MARKDOWN)
   message(FATAL_ERROR "markdown not found, required for cpack -G External -D DEB_UPLOAD_PPA=true")
 endif()
 
+# hack from sconscript
+#if (DEB_UPLOAD_PPA MATCHES "mixxxbetas")
+  string(REGEX MATCH "^.*(~git[0-9]*).*$" GITVERSION "${CPACK_DEBIAN_DEBIAN_VERSION_EXTRA}")
+  set(CPACK_DEBIAN_UPSTREAM_VERSION "${CPACK_DEBIAN_UPSTREAM_VERSION}${CMAKE_MATCH_1}")
+#endif()
 
 message(NOTICE "Creating mixxx_${CPACK_DEBIAN_UPSTREAM_VERSION}.orig.tar.gz")
 execute_process(
