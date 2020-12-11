@@ -393,6 +393,7 @@ QPair<QList<TrackRelease>, bool> readElementRecording(QXmlStreamReader& reader) 
                 while (continueReading(reader)) {
                     const QXmlStreamReader::TokenType type = reader.readNext();
                     if (type == QXmlStreamReader::StartElement) {
+                        const QStringRef name = reader.name();
                         if (name == QLatin1String("release")) {
                             trackReleases.append(readElementRelease(reader));
                         } else if (name == QLatin1String("release-group")) {
