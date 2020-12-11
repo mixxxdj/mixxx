@@ -379,6 +379,13 @@ var DDM4000 = new components.extension.GenericMidiController({
                             },
                         },
                         { // Sampler: FX On
+                        /*
+                         * When the sampler is in audio (non-midi) mode, this button causes a
+                         * brake effect. Mixxx supports brake only for decks, not for samplers:
+                         * - https://github.com/mixxxdj/mixxx/blob/a2866dfe9d9004e68610aa2d53220957954bfca3/src/controllers/engine/controllerengine.cpp#L1251
+                         *   void ControllerEngineJSProxy::brake(int deck, bool activate, double factor = 1.0, double rate = 1.0)
+                         * Thus we toggle effect unit 1 for the sampler instead.
+                         */
                             options: {
                                 midi: [note, 0x78], type: toggle, sendShifted: true,
                                 group: "[EffectRack1_EffectUnit1]", key: "group_[Sampler1]_enable",
