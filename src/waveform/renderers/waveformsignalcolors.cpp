@@ -93,7 +93,7 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     m_passthroughOverlayColor = context.selectColor(node, "PassthroughOverlayColor");
     m_passthroughOverlayColor = WSkinColor::getCorrectColor(m_passthroughOverlayColor).toRgb();
     if (!m_passthroughOverlayColor.isValid()) {
-        m_passthroughOverlayColor = WSkinColor::getCorrectColor(QColor(187, 0, 0, 0)).toRgb();
+        m_passthroughOverlayColor = WSkinColor::getCorrectColor(QColor(0, 0, 0, 187)).toRgb();
     }
 
     m_bgColor = context.selectColor(node, "BgColor");

@@ -1,14 +1,13 @@
 #pragma once
 
-#include <QOpenGLFunctions_2_1>
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include "waveformrenderersignalbase.h"
 
 class ControlObject;
 
-class GLWaveformRendererRGB: public WaveformRendererSignalBase,
-        protected QOpenGLFunctions_2_1 {
+class GLWaveformRendererRGB : public WaveformRendererSignalBase,
+                              public GLWaveformRenderer {
   public:
     explicit GLWaveformRendererRGB(
             WaveformWidgetRenderer* waveformWidgetRenderer);
