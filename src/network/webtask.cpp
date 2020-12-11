@@ -99,6 +99,7 @@ void WebTask::onAborted(
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&WebTask::aborted)) {
         kLogger.warning()
+                << this
                 << "Unhandled abort signal"
                 << requestUrl;
         deleteLater();
@@ -142,6 +143,7 @@ void WebTask::onNetworkError(
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&WebTask::networkError)) {
         kLogger.warning()
+                << this
                 << "Unhandled network error:"
                 << requestUrl
                 << errorCode
@@ -203,6 +205,7 @@ void WebTask::slotStart(int timeoutMillis) {
     }
 
     kLogger.debug()
+            << this
             << "Starting...";
     if (!doStart(m_networkAccessManager, timeoutMillis)) {
         // Still idle, because we are in the same thread.
@@ -266,6 +269,7 @@ QUrl WebTask::abort() {
     }
     m_status = Status::Aborting;
     kLogger.debug()
+            << this
             << "Aborting...";
     QUrl url = doAbort();
     onAborted(QUrl(url));
@@ -288,7 +292,8 @@ void WebTask::timerEvent(QTimerEvent* event) {
     VERIFY_OR_DEBUG_ASSERT(m_status == Status::Pending) {
         return;
     }
-    kLogger.debug()
+    kLogger.info()
+            << this
             << "Timed out";
     onTimedOut(doTimeOut());
 }
@@ -306,11 +311,13 @@ QPair<QNetworkReply*, HttpStatusCode> WebTask::receiveNetworkReply() {
     if (kLogger.debugEnabled()) {
         if (networkReply->url() == networkReply->request().url()) {
             kLogger.debug()
+                    << this
                     << "Received reply for request"
                     << networkReply->url();
         } else {
             // Redirected
             kLogger.debug()
+                    << this
                     << "Received reply for redirected request"
                     << networkReply->request().url()
                     << "->"
@@ -350,6 +357,7 @@ QPair<QNetworkReply*, HttpStatusCode> WebTask::receiveNetworkReply() {
     DEBUG_ASSERT(statusCode == kHttpStatusCodeInvalid);
     VERIFY_OR_DEBUG_ASSERT(readStatusCode(networkReply, &statusCode)) {
         kLogger.warning()
+                << this
                 << "Failed to read HTTP status code";
     }
 
