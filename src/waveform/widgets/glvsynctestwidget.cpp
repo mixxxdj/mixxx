@@ -5,7 +5,6 @@
 #include "moc_glvsynctestwidget.cpp"
 #include "util/performancetimer.h"
 #include "waveform/renderers/glvsynctestrenderer.h"
-#include "waveform/renderers/glwaveformrenderersimplesignal.h"
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
