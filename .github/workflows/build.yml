@@ -251,7 +251,7 @@ jobs:
       working-directory: cmake_build
 
     - name: "Package for PPA"
-      if: startsWith(matrix.os, 'ubuntu')
+      if: false # startsWith(matrix.os, 'ubuntu')
       run: cpack -G External -D DEB_SOURCEPKG=ON
       working-directory: cmake_build
 
