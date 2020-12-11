@@ -61,6 +61,7 @@
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
         <file>shaders/rgbsignal.frag</file>
+        <file>shaders/stackedsignal.frag</file>
         <file>skins/default.qss</file>
     </qresource>
 </RCC>

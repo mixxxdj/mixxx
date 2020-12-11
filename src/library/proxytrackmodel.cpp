@@ -1,7 +1,5 @@
 #include "library/proxytrackmodel.h"
 
-#include "library/proxytrackmodel.h"
-
 #include <QVariant>
 
 #include "util/assert.h"

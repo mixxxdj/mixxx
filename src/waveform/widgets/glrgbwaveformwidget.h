@@ -4,7 +4,7 @@
 
 #include "waveformwidgetabstract.h"
 
-class GLRGBWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class GLRGBWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
     GLRGBWaveformWidget(const QString& group, QWidget* parent);

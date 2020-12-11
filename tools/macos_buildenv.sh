@@ -78,12 +78,41 @@ case "$COMMAND" in
             echo "Build environment found: ${BUILDENV_PATH}"
         fi
 
+        export SDKROOT="${BUILDENV_BASEPATH}/MacOSX10.13.sdk"
+        if [ -d "${SDKROOT}" ]; then
+            if [ "$1" != "--profile" ]; then
+                echo "macOS 10.13 SDK found: ${SDKROOT}"
+            fi
+        else
+            echo "macOS 10.13 SDK not found, downloading it..."
+            curl -L "https://github.com/phracker/MacOSX-SDKs/releases/download/10.15/MacOSX10.13.sdk.tar.xz" -o "${SDKROOT}.tar.xz"
+            OBSERVED_SHA256=$(shasum -a 256 "${SDKROOT}.tar.xz"|cut -f 1 -d' ')
+            EXPECTED_SHA256="a3a077385205039a7c6f9e2c98ecdf2a720b2a819da715e03e0630c75782c1e4"
+            if [[ $OBSERVED_SHA256 == $EXPECTED_SHA256 ]]; then
+                echo "Download matched expected SHA256 sum $EXPECTED_SHA256"
+            else
+                echo "ERROR: Download did not match expected SHA256 checksum!"
+                echo "Expected $EXPECTED_SHA256"
+                echo "Got $OBSERVED_SHA256"
+                exit 1
+            fi
+            echo "Extracting MacOSX10.13.sdk.tar.xz..."
+            tar xf "${SDKROOT}.tar.xz" -C "${BUILDENV_BASEPATH}" && \
+            echo "Successfully extacted MacOSX10.13.sdk.tar.xz"
+            rm "${SDKROOT}.tar.xz"
+        fi
+
+        export CC="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
+        export CXX="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
         export CMAKE_PREFIX_PATH="${BUILDENV_PATH}"
         export Qt5_DIR="$(find "${BUILDENV_PATH}" -type d -path "*/cmake/Qt5")"
         export QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${BUILDENV_PATH}" -type d -path "*/plugins")"
         export PATH="${BUILDENV_PATH}/bin:${PATH}"
 
         echo_exported_variables() {
+            echo "CC=${CC}"
+            echo "CXX=${CXX}"
+            echo "SDKROOT=${SDKROOT}"
             echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
             echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
             echo "Qt5_DIR=${Qt5_DIR}"
