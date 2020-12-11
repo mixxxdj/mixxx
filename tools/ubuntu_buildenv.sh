@@ -13,7 +13,7 @@ case "$COMMAND" in
         source /etc/lsb-release 2>/dev/null
         case "${DISTRIB_CODENAME}" in
             bionic)
-                PACKAGES_EXTRA="libfaad-dev libmp4v2-dev"
+                PACKAGES_EXTRA="libmp4v2-dev"
                 ;;
             focal)
                 PACKAGES_EXTRA="libavcodec-dev libavutil-dev"
@@ -28,12 +28,17 @@ case "$COMMAND" in
             sudo apt-get update
             sudo apt-get install -y --no-install-recommends \
                 ccache \
+                cmake \
+                debhelper \
                 devscripts \
+                docbook-to-man \
                 libavformat-dev \
                 libchromaprint-dev \
                 libebur128-dev \
+                libfaad-dev \
                 libfftw3-dev \
                 libflac-dev \
+                libhidapi-dev \
                 libid3tag0-dev \
                 liblilv-dev \
                 libmad0-dev \
