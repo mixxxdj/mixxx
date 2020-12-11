@@ -19,8 +19,7 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
 
     // Waveform overview init
     waveformOverviewComboBox->addItem(tr("Filtered")); // "0"
-    waveformOverviewComboBox->addItem(tr("HSV")); // "1"
-    waveformOverviewComboBox->addItem(tr("RGB")); // "2"
+    waveformOverviewComboBox->addItem(tr("RGB"));      // "1"
 
     // Populate waveform options.
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
@@ -167,7 +166,11 @@ void DlgPrefWaveform::slotUpdate() {
     int overviewType = m_pConfig->getValue(
             ConfigKey("[Waveform]","WaveformOverviewType"), 2);
     if (overviewType != waveformOverviewComboBox->currentIndex()) {
-        waveformOverviewComboBox->setCurrentIndex(overviewType);
+        if (overviewType < waveformOverviewComboBox->count()) {
+            waveformOverviewComboBox->setCurrentIndex(overviewType);
+        } else {
+            waveformOverviewComboBox->setCurrentIndex(1); // RGB
+        }
     }
 
     WaveformSettings waveformSettings(m_pConfig);
@@ -210,7 +213,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     synchronizeZoomCheckBox->setChecked(true);
 
     // RGB overview.
-    waveformOverviewComboBox->setCurrentIndex(2);
+    waveformOverviewComboBox->setCurrentIndex(1);
 
     // Don't normalize overview.
     normalizeOverviewCheckBox->setChecked(false);

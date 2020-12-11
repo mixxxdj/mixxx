@@ -22,14 +22,10 @@
 #include "waveform/vsyncthread.h"
 #include "waveform/widgets/emptywaveformwidget.h"
 #include "waveform/widgets/glrgbwaveformwidget.h"
-#include "waveform/widgets/glsimplewaveformwidget.h"
 #include "waveform/widgets/glslwaveformwidget.h"
 #include "waveform/widgets/glvsynctestwidget.h"
 #include "waveform/widgets/glwaveformwidget.h"
-#include "waveform/widgets/hsvwaveformwidget.h"
-#include "waveform/widgets/qthsvwaveformwidget.h"
 #include "waveform/widgets/qtrgbwaveformwidget.h"
-#include "waveform/widgets/qtsimplewaveformwidget.h"
 #include "waveform/widgets/qtvsynctestwidget.h"
 #include "waveform/widgets/qtwaveformwidget.h"
 #include "waveform/widgets/rgbwaveformwidget.h"
@@ -761,21 +757,12 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = EmptyWaveformWidget::useOpenGLShaders();
             developerOnly = EmptyWaveformWidget::developerOnly();
             break;
-        case WaveformWidgetType::SoftwareSimpleWaveform:
-            continue; // //TODO(vrince):
         case WaveformWidgetType::SoftwareWaveform:
             widgetName = SoftwareWaveformWidget::getWaveformWidgetName();
             useOpenGl = SoftwareWaveformWidget::useOpenGl();
             useOpenGles = SoftwareWaveformWidget::useOpenGles();
             useOpenGLShaders = SoftwareWaveformWidget::useOpenGLShaders();
             developerOnly = SoftwareWaveformWidget::developerOnly();
-            break;
-        case WaveformWidgetType::HSVWaveform:
-            widgetName = HSVWaveformWidget::getWaveformWidgetName();
-            useOpenGl = HSVWaveformWidget::useOpenGl();
-            useOpenGles = HSVWaveformWidget::useOpenGles();
-            useOpenGLShaders = HSVWaveformWidget::useOpenGLShaders();
-            developerOnly = HSVWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::RGBWaveform:
             widgetName = RGBWaveformWidget::getWaveformWidgetName();
@@ -784,26 +771,12 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGLShaders = RGBWaveformWidget::useOpenGLShaders();
             developerOnly = RGBWaveformWidget::developerOnly();
             break;
-        case WaveformWidgetType::QtSimpleWaveform:
-            widgetName = QtSimpleWaveformWidget::getWaveformWidgetName();
-            useOpenGl = QtSimpleWaveformWidget::useOpenGl();
-            useOpenGles = QtSimpleWaveformWidget::useOpenGles();
-            useOpenGLShaders = QtSimpleWaveformWidget::useOpenGLShaders();
-            developerOnly = QtSimpleWaveformWidget::developerOnly();
-            break;
         case WaveformWidgetType::QtWaveform:
             widgetName = QtWaveformWidget::getWaveformWidgetName();
             useOpenGl = QtWaveformWidget::useOpenGl();
             useOpenGles = QtWaveformWidget::useOpenGles();
             useOpenGLShaders = QtWaveformWidget::useOpenGLShaders();
             developerOnly = QtWaveformWidget::developerOnly();
-            break;
-        case WaveformWidgetType::GLSimpleWaveform:
-            widgetName = GLSimpleWaveformWidget::getWaveformWidgetName();
-            useOpenGl = GLSimpleWaveformWidget::useOpenGl();
-            useOpenGles = GLSimpleWaveformWidget::useOpenGles();
-            useOpenGLShaders = GLSimpleWaveformWidget::useOpenGLShaders();
-            developerOnly = GLSimpleWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLFilteredWaveform:
             widgetName = GLWaveformWidget::getWaveformWidgetName();
@@ -853,13 +826,6 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGles =  QtVSyncTestWidget::useOpenGles();
             useOpenGLShaders = QtVSyncTestWidget::useOpenGLShaders();
             developerOnly = QtVSyncTestWidget::developerOnly();
-            break;
-        case WaveformWidgetType::QtHSVWaveform:
-            widgetName = QtHSVWaveformWidget::getWaveformWidgetName();
-            useOpenGl = QtHSVWaveformWidget::useOpenGl();
-            useOpenGles = QtHSVWaveformWidget::useOpenGles();
-            useOpenGLShaders = QtHSVWaveformWidget::useOpenGLShaders();
-            developerOnly = QtHSVWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::QtRGBWaveform:
             widgetName = QtRGBWaveformWidget::getWaveformWidgetName();
@@ -932,20 +898,11 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         case WaveformWidgetType::SoftwareWaveform:
             widget = new SoftwareWaveformWidget(viewer->getGroup(), viewer);
             break;
-        case WaveformWidgetType::HSVWaveform:
-            widget = new HSVWaveformWidget(viewer->getGroup(), viewer);
-            break;
         case WaveformWidgetType::RGBWaveform:
             widget = new RGBWaveformWidget(viewer->getGroup(), viewer);
             break;
-        case WaveformWidgetType::QtSimpleWaveform:
-            widget = new QtSimpleWaveformWidget(viewer->getGroup(), viewer);
-            break;
         case WaveformWidgetType::QtWaveform:
             widget = new QtWaveformWidget(viewer->getGroup(), viewer);
-            break;
-        case WaveformWidgetType::GLSimpleWaveform:
-            widget = new GLSimpleWaveformWidget(viewer->getGroup(), viewer);
             break;
         case WaveformWidgetType::GLFilteredWaveform:
             widget = new GLWaveformWidget(viewer->getGroup(), viewer);
@@ -968,14 +925,10 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         case WaveformWidgetType::QtVSyncTest:
             widget = new QtVSyncTestWidget(viewer->getGroup(), viewer);
             break;
-        case WaveformWidgetType::QtHSVWaveform:
-            widget = new QtHSVWaveformWidget(viewer->getGroup(), viewer);
-            break;
         case WaveformWidgetType::QtRGBWaveform:
             widget = new QtRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
         default:
-        //case WaveformWidgetType::SoftwareSimpleWaveform: TODO: (vrince)
         //case WaveformWidgetType::EmptyWaveform:
             widget = new EmptyWaveformWidget(viewer->getGroup(), viewer);
             break;

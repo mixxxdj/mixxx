@@ -819,10 +819,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/renderers/glvsynctestrenderer.cpp
   src/waveform/renderers/glwaveformrendererfilteredsignal.cpp
   src/waveform/renderers/glwaveformrendererrgb.cpp
-  src/waveform/renderers/glwaveformrenderersimplesignal.cpp
   src/waveform/renderers/qtvsynctestrenderer.cpp
   src/waveform/renderers/qtwaveformrendererfilteredsignal.cpp
-  src/waveform/renderers/qtwaveformrenderersimplesignal.cpp
   src/waveform/renderers/waveformmark.cpp
   src/waveform/renderers/waveformmarkrange.cpp
   src/waveform/renderers/waveformmarkset.cpp
@@ -831,7 +829,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/renderers/waveformrendererabstract.cpp
   src/waveform/renderers/waveformrendererendoftrack.cpp
   src/waveform/renderers/waveformrendererfilteredsignal.cpp
-  src/waveform/renderers/waveformrendererhsv.cpp
   src/waveform/renderers/waveformrendererpreroll.cpp
   src/waveform/renderers/waveformrendererrgb.cpp
   src/waveform/renderers/waveformrenderersignalbase.cpp
@@ -849,14 +846,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/waveformwidgetfactory.cpp
   src/waveform/widgets/emptywaveformwidget.cpp
   src/waveform/widgets/glrgbwaveformwidget.cpp
-  src/waveform/widgets/glsimplewaveformwidget.cpp
   src/waveform/widgets/glslwaveformwidget.cpp
   src/waveform/widgets/glvsynctestwidget.cpp
   src/waveform/widgets/glwaveformwidget.cpp
-  src/waveform/widgets/hsvwaveformwidget.cpp
-  src/waveform/widgets/qthsvwaveformwidget.cpp
   src/waveform/widgets/qtrgbwaveformwidget.cpp
-  src/waveform/widgets/qtsimplewaveformwidget.cpp
   src/waveform/widgets/qtvsynctestwidget.cpp
   src/waveform/widgets/qtwaveformwidget.cpp
   src/waveform/widgets/rgbwaveformwidget.cpp
@@ -902,7 +895,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wnumberpos.cpp
   src/widget/wnumberrate.cpp
   src/widget/woverview.cpp
-  src/widget/woverviewhsv.cpp
   src/widget/woverviewlmh.cpp
   src/widget/woverviewrgb.cpp
   src/widget/wpixmapstore.cpp
