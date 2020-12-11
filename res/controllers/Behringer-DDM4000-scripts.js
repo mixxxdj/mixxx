@@ -77,6 +77,77 @@ var DDM4000 = new components.extension.GenericMidiController({
         };
         CrossfaderUnit.prototype = e.deriveFrom(c.ComponentContainer);
 
+        var SamplerBank = function(bankOptions) {
+            c.ComponentContainer.call(this);
+            var bank = this;
+
+            var PlayButton = function(options) {
+                options = options || {};
+                options.key = options.key || "cue_gotoandplay";
+                if (options.sendShifted === undefined) {
+                    options.sendShifted = true;
+                }
+                c.Button.call(this, options);
+            };
+            PlayButton.prototype = e.deriveFrom(c.Button, {
+                inSetValue: function(value) {
+                    engine.setValue(this.group, this.inKey, value);
+                    if (!value) {
+                        engine.setValue(this.group, "cue_default", 1);
+                    }
+                },
+            });
+            this.playButton = new PlayButton({midi: bankOptions.play, group: bankOptions.group});
+
+            var ReverseMode = function(options) {
+                options = options || {};
+                options.key = options.key || "reverse";
+                c.Button.call(this, options);
+            };
+            ReverseMode.prototype = e.deriveFrom(c.Button);
+            this.reverseMode = new ReverseMode({midi: bankOptions.reverse, group: bankOptions.group});
+
+            var LoopMode = function(options) {
+                options = options || {};
+                options.key = options.key || "repeat";
+                c.Button.call(this, options);
+                this.inSetValue(true);
+            };
+            LoopMode.prototype = e.deriveFrom(c.Button, {
+                outValueScale: function(value) {
+                    var button = c.Button.prototype;
+                    bank.playButton.type = value ? button.types.toggle : button.types.push;
+                    return button.outValueScale(value);
+                },
+            });
+            this.loopMode = new LoopMode({midi: bankOptions.loop, group: bankOptions.group});
+
+            var ModeButton = function(options) {
+                options = options || {};
+                options.key = options.key || "mode";
+                e.LongPressButton.call(this, options);
+            };
+            ModeButton.prototype = e.deriveFrom(e.LongPressButton, {
+                onShortPress: function() {
+                    this.setBlue(true);
+                    bank.reverseMode.inToggle();
+                },
+                onLongPress: function() {
+                    bank.reverseMode.inToggle();
+                    bank.loopMode.toggle();
+                },
+                onRelease: function() {
+                    this.setBlue(false);
+                },
+                setBlue: function(value) {
+                    midi.sendShortMsg(this.midi[0], this.midi[1] + 1, this.outValueScale(value));
+                },
+            });
+            this.modeButton = new ModeButton(
+                {midi: bankOptions.mode, group: bankOptions.group, longPressTimeout: 750});
+        };
+        SamplerBank.prototype = e.deriveFrom(c.ComponentContainer);
+
         return {
             init: function() {
 
@@ -288,18 +359,25 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {options: {midi: [cc,   0x6C], outKey: ""}}, // Sampler: Sample Length ∞
                         {options: {midi: [note, 0x6D],    key: "", sendShifted: true}}, // Sampler: Record / In
                         {options: {midi: [note, 0x6C],  inKey: ""}}, // Sampler: Bank Assign
-                        {options: {midi: [note, 0x6E],    key: "cue_gotoandplay", sendShifted: true}}, // Sampler: Bank 1 Play / Out
-                        {options: {midi: [cc,   0x6F], outKey: ""}}, // Sampler: Bank 1 Reverse
-                        {options: {midi: [cc,   0x70], outKey: "repeat"}}, // Sampler: Bank 1 Loop
-                        {options: {midi: [note, 0x71],  inKey: "repeat", type: toggle}}, // Sampler: Bank 1 Mode
-                        {options: {midi: [cc,   0x71], outKey: ""}}, // Sampler: Bank 1 Mode Amber
-                        {options: {midi: [cc,   0x72], outKey: ""}}, // Sampler: Bank 1 Mode Blue
-                        {options: {midi: [note, 0x73],    key: "", sendShifted: true}}, // Sampler: Bank 2 Play / Out
-                        {options: {midi: [cc,   0x74], outKey: ""}}, // Sampler: Bank 2 Reverse
-                        {options: {midi: [cc,   0x75], outKey: ""}}, // Sampler: Bank 2 Loop
-                        {options: {midi: [note, 0x76],  inKey: ""}}, // Sampler: Bank 2 Mode
-                        {options: {midi: [cc,   0x76], outKey: ""}}, // Sampler: Bank 2 Mode Amber
-                        {options: {midi: [cc,   0x77], outKey: ""}}, // Sampler: Bank 2 Mode Blue
+                        { // Sampler Bank 1
+                            type: SamplerBank,
+                            options: {
+                                play: [note,  0x6E], // Sampler: Bank 1 Play / Out
+                                reverse: [cc, 0x6F], // Sampler: Bank 1 Reverse
+                                loop: [cc,    0x70], // Sampler: Bank 1 Loop
+                                mode: [note,  0x71], // Sampler: Bank 1 Mode
+                            },
+                        },
+                        { // Sampler Bank 2
+                            type: SamplerBank,
+                            defaultDefinition: {options: {group: "[Sampler2]"}},
+                            options: {
+                                play: [note,  0x73], // Sampler: Bank 2 Play / Out
+                                reverse: [cc, 0x74], // Sampler: Bank 2 Reverse
+                                loop: [cc,    0x75], // Sampler: Bank 2 Loop
+                                mode: [note,  0x76], // Sampler: Bank 2 Mode
+                            },
+                        },
                         { // Sampler: FX On
                             options: {
                                 midi: [note, 0x78], type: toggle, sendShifted: true,
