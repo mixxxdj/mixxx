@@ -118,9 +118,8 @@ bool MusicBrainzRecordingsTask::doStart(
         return false;
     }
 
-    // It is not necessary to connect the QNetworkReply::errorOccurred
-    // signal (since Qt 5.15). Network errors are also received trough
-    // the QNetworkReply::finished signal.
+    // It is not necessary to connect the QNetworkReply::errorOccurred signal.
+    // Network errors are also received trough the QNetworkReply::finished signal.
     connect(m_pendingNetworkReply,
             &QNetworkReply::finished,
             this,
