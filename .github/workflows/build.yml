@@ -252,7 +252,7 @@ jobs:
 
     - name: "Package for PPA"
       if: startsWith(matrix.os, 'ubuntu')
-      run: cpack -G External -DDEB_SOURCEPKG=ON
+      run: cpack -G External -D DEB_SOURCEPKG=ON
       working-directory: cmake_build
 
     - name: "[macOS] Sign Package"
