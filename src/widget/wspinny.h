@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QEvent>
-#include <QGLWidget>
 #include <QHideEvent>
+#include <QOpenGLWidget>
 #include <QShowEvent>
 
 #include "library/dlgcoverartfullsize.h"
@@ -21,7 +21,9 @@ class VisualPlayPosition;
 class VinylControlManager;
 class VSyncThread;
 
-class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityListener,
+class WSpinny : public QOpenGLWidget,
+                public WBaseWidget,
+                public VinylSignalQualityListener,
                 public TrackDropTarget {
     Q_OBJECT
   public:
@@ -44,8 +46,7 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     void updateVinylControlEnabled(double enabled);
     void updateVinylControlSignalEnabled(double enabled);
     void updateSlipEnabled(double enabled);
-    void render(VSyncThread* vSyncThread);
-    void swap();
+    void render();
 
   protected slots:
     void slotCoverFound(

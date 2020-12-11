@@ -5,7 +5,6 @@
 
 #include "util/compatibility.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/sharedglcontext.h"
 
 WaveformWidgetAbstract::WaveformWidgetAbstract(const QString& group)
         : WaveformWidgetRenderer(group),
@@ -28,8 +27,8 @@ void WaveformWidgetAbstract::release() {
     }
 }
 
-void WaveformWidgetAbstract::preRender(VSyncThread* vsyncThread) {
-    WaveformWidgetRenderer::onPreRender(vsyncThread);
+void WaveformWidgetAbstract::preRender() {
+    WaveformWidgetRenderer::onPreRender();
 }
 
 mixxx::Duration WaveformWidgetAbstract::render() {
@@ -51,5 +50,5 @@ void WaveformWidgetAbstract::resize(int width, int height) {
 
 GLWaveformWidgetAbstract::GLWaveformWidgetAbstract(const QString& group, QWidget* parent)
         : WaveformWidgetAbstract(group),
-          QGLWidget(parent, SharedGLContext::getWidget()) {
+          QOpenGLWidget(parent) {
 }

@@ -2,7 +2,6 @@
 
 #include <QDesktopServices>
 #include <QFileDialog>
-#include <QGLFormat>
 #include <QGuiApplication>
 #include <QInputMethod>
 #include <QLocale>
@@ -58,7 +57,6 @@
 #include "util/version.h"
 #include "util/widgethelper.h"
 #include "waveform/guitick.h"
-#include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wmainmenubar.h"
@@ -414,39 +412,8 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(47);
 
-    // Before creating the first skin we need to create a QGLWidget so that all
-    // the QGLWidget's we create can use it as a shared QGLContext.
-    if (!CmdlineArgs::Instance().getSafeMode() && QGLFormat::hasOpenGL()) {
-        QGLFormat glFormat;
-        glFormat.setDirectRendering(true);
-        glFormat.setDoubleBuffer(true);
-        glFormat.setDepth(false);
-        // Disable waiting for vertical Sync
-        // This can be enabled when using a single Threads for each QGLContext
-        // Setting 1 causes QGLContext::swapBuffer to sleep until the next VSync
-#if defined(__APPLE__)
-        // On OS X, syncing to vsync has good performance FPS-wise and
-        // eliminates tearing.
-        glFormat.setSwapInterval(1);
-#else
-        // Otherwise, turn VSync off because it could cause horrible FPS on
-        // Linux.
-        // TODO(XXX): Make this configurable.
-        // TODO(XXX): What should we do on Windows?
-        glFormat.setSwapInterval(0);
-#endif
-        glFormat.setRgba(true);
-        QGLFormat::setDefaultFormat(glFormat);
-
-        QGLWidget* pContextWidget = new QGLWidget(this);
-        pContextWidget->setGeometry(QRect(0, 0, 3, 3));
-        pContextWidget->hide();
-        SharedGLContext::setWidget(pContextWidget);
-    }
-
     WaveformWidgetFactory::createInstance(); // takes a long time
     WaveformWidgetFactory::instance()->setConfig(pConfig);
-    WaveformWidgetFactory::instance()->startVSync(m_pGuiTick, m_pVisualsManager);
 
     launchProgress(52);
 

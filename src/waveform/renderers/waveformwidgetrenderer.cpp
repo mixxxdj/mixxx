@@ -101,7 +101,7 @@ bool WaveformWidgetRenderer::init() {
     return true;
 }
 
-void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
+void WaveformWidgetRenderer::onPreRender() {
     // For a valid track to render we need
     m_trackSamples = static_cast<int>(m_pTrackSamplesControlObject->get());
     if (m_trackSamples <= 0) {
@@ -130,7 +130,8 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         m_audioSamplePerPixel = 0.0;
     }
 
-    double truePlayPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
+    // TODO: figure out how to determine this without the deleted VSyncThread
+    double truePlayPos = 0;
     // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
     if (m_audioSamplePerPixel != 0 && truePlayPos != -1) {

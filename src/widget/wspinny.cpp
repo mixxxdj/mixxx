@@ -18,9 +18,7 @@
 #include "util/math.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "waveform/sharedglcontext.h"
 #include "waveform/visualplayposition.h"
-#include "waveform/vsyncthread.h"
 #include "wimagestore.h"
 
 // The SampleBuffers format enables antialiasing.
@@ -30,7 +28,7 @@ WSpinny::WSpinny(
         UserSettingsPointer pConfig,
         VinylControlManager* pVCMan,
         BaseTrackPlayer* pPlayer)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
+        : QOpenGLWidget(parent),
           WBaseWidget(this),
           m_group(group),
           m_pConfig(pConfig),
@@ -71,12 +69,6 @@ WSpinny::WSpinny(
 #endif
     //Drag and drop
     setAcceptDrops(true);
-    qDebug() << "WSpinny(): Created QGLWidget, Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
 
     CoverArtCache* pCache = CoverArtCache::instance();
     if (pCache) {
@@ -100,7 +92,6 @@ WSpinny::WSpinny(
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     setAutoFillBackground(false);
-    setAutoBufferSwap(false);
 }
 
 WSpinny::~WSpinny() {
@@ -308,7 +299,7 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     Q_UNUSED(e);
 }
 
-void WSpinny::render(VSyncThread* vSyncThread) {
+void WSpinny::render() {
     if (!isValid() || !isVisible()) {
         return;
     }
@@ -318,12 +309,13 @@ void WSpinny::render(VSyncThread* vSyncThread) {
         return;
     }
 
-    if (!m_pVisualPlayPos.isNull() && vSyncThread != nullptr) {
-        m_pVisualPlayPos->getPlaySlipAtNextVSync(
-                vSyncThread,
-                &m_dAngleCurrentPlaypos,
-                &m_dGhostAngleCurrentPlaypos);
-    }
+    // TODO: implement replacement for VSyncThread
+    //     if (!m_pVisualPlayPos.isNull()) {
+    //         m_pVisualPlayPos->getPlaySlip(
+    //                 vSyncThread,
+    //                 &m_dAngleCurrentPlaypos,
+    //                 &m_dGhostAngleCurrentPlaypos);
+    //     }
 
     double scaleFactor = getDevicePixelRatioF(this);
 
@@ -394,21 +386,6 @@ void WSpinny::render(VSyncThread* vSyncThread) {
                     -(m_fgImageScaled.height() / 2), m_fgImageScaled);
     }
 }
-
-void WSpinny::swap() {
-    if (!isValid() || !isVisible()) {
-        return;
-    }
-    auto window = windowHandle();
-    if (window == nullptr || !window->isExposed()) {
-        return;
-    }
-    if (context() != QGLContext::currentContext()) {
-        makeCurrent();
-    }
-    swapBuffers();
-}
-
 
 QPixmap WSpinny::scaledCoverArt(const QPixmap& normal) {
     if (normal.isNull()) {
@@ -686,7 +663,7 @@ bool WSpinny::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QGLWidget::event(pEvent);
+    return QOpenGLWidget::event(pEvent);
 }
 
 void WSpinny::dragEnterEvent(QDragEnterEvent* event) {

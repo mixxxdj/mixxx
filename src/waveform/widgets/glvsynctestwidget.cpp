@@ -12,18 +12,10 @@
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/sharedglcontext.h"
 
 GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
+        : QOpenGLWidget(parent),
           WaveformWidgetAbstract(group) {
-    qDebug() << "Created QGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
-
     addRenderer<WaveformRenderBackground>(); // 172 µs
 //  addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
 //  addRenderer<WaveformRendererPreroll>(); // 652 µs 2034 µs (active)
@@ -39,10 +31,7 @@ GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    setAutoBufferSwap(false);
-
     m_initSuccess = init();
-    qDebug() << "GLVSyncTestWidget.isSharing() =" << isSharing();
 }
 
 GLVSyncTestWidget::~GLVSyncTestWidget() {

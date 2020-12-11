@@ -28,7 +28,6 @@
 #include "util/timer.h"
 #include "util/valuetransformer.h"
 #include "util/xml.h"
-#include "waveform/vsyncthread.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wbasewidget.h"
@@ -1220,7 +1219,6 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
             &WaveformWidgetFactory::renderSpinnies,
             spinny,
             &WSpinny::render);
-    connect(waveformWidgetFactory, &WaveformWidgetFactory::swapSpinnies, spinny, &WSpinny::swap);
     connect(spinny, &WSpinny::trackDropped, m_pPlayerManager, &PlayerManager::slotLoadToPlayer);
     connect(spinny, &WSpinny::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 

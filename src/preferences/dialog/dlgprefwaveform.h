@@ -33,7 +33,7 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void slotSetVisualGainMid(double gain);
     void slotSetVisualGainHigh(double gain);
     void slotSetNormalizeOverview(bool normalize);
-    void slotWaveformMeasured(float frameRate, int droppedFrames);
+    void slotWaveformMeasured(float frameRate);
     void slotClearCachedWaveforms();
     void slotSetBeatGridAlpha(int alpha);
     void slotSetPlayMarkerPosition(int position);

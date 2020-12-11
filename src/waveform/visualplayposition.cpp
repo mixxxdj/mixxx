@@ -6,7 +6,6 @@
 #include "control/controlproxy.h"
 #include "moc_visualplayposition.cpp"
 #include "util/math.h"
-#include "waveform/vsyncthread.h"
 
 namespace {
 // The offset is limited to two callback intervals.
@@ -49,43 +48,6 @@ void VisualPlayPosition::set(double playPos, double rate, double positionStep,
     // Atomic write
     m_data.setValue(data);
     m_valid = true;
-}
-
-double VisualPlayPosition::getAtNextVSync(VSyncThread* vSyncThread) {
-    //static double testPos = 0;
-    //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
-    //return testPos;
-
-    if (m_valid) {
-        VisualPlayPositionData data = m_data.getValue();
-        int refToVSync = vSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
-        int offset = refToVSync - data.m_callbackEntrytoDac;
-        offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
-        double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
-        // add the offset for the position of the sample that will be transferred to the DAC
-        // When the next display frame is displayed
-        playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferMicros;
-        //qDebug() << "playPos" << playPos << offset;
-        return playPos;
-    }
-    return -1;
-}
-
-void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* vSyncThread, double* pPlayPosition, double* pSlipPosition) {
-    //static double testPos = 0;
-    //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
-    //return testPos;
-
-    if (m_valid) {
-        VisualPlayPositionData data = m_data.getValue();
-        int refToVSync = vSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
-        int offset = refToVSync - data.m_callbackEntrytoDac;
-        offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
-        double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
-        playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferMicros;
-        *pPlayPosition = playPos;
-        *pSlipPosition = data.m_slipPosition;
-    }
 }
 
 double VisualPlayPosition::getEnginePlayPos() {

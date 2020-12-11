@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QGLWidget>
-
 #include "waveformwidgetabstract.h"
 
 class GLRGBWaveformWidget : public GLWaveformWidgetAbstract {

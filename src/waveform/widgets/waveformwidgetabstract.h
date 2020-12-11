@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QGLWidget>
+#include <QOpenGLWidget>
 #include <QString>
 #include <QWidget>
 
@@ -8,11 +8,9 @@
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveformwidgettype.h"
 
-class VSyncThread;
-
 // NOTE(vRince) This class represent objects the waveformwidgetfactory can
 // holds, IMPORTANT all WaveformWidgetAbstract MUST inherist QWidget too !!  we
-// can't do it here because QWidget and QGLWidget are both QWidgets so they
+// can't do it here because QWidget and QOpenGLWidget are both QWidgets so they
 // already have a common QWidget base class (ambiguous polymorphism)
 
 class WaveformWidgetAbstract : public WaveformWidgetRenderer {
@@ -29,7 +27,7 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     void hold();
     void release();
 
-    virtual void preRender(VSyncThread* vsyncThread);
+    virtual void preRender();
     virtual mixxx::Duration render();
     virtual void resize(int width, int height);
 
@@ -43,11 +41,11 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     friend class WaveformWidgetFactory;
 };
 
-/// GLWaveformWidgetAbstract is a WaveformWidgetAbstract & QGLWidget that has
+/// GLWaveformWidgetAbstract is a WaveformWidgetAbstract & QOpenGLWidget that has
 /// a GLWaveformRenderer member which requires initialization that must be
-/// deferred until Qt calls QGLWidget::initializeGL and cannot be done in the
+/// deferred until Qt calls QOpenGLWidget::initializeGL and cannot be done in the
 /// constructor.
-class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public QGLWidget {
+class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public QOpenGLWidget {
   public:
     GLWaveformWidgetAbstract(const QString& group, QWidget* parent);
 

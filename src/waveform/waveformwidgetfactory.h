@@ -14,7 +14,6 @@
 class WVuMeter;
 class WWaveformViewer;
 class WaveformWidgetAbstract;
-class VSyncThread;
 class GuiTick;
 class VisualsManager;
 
@@ -133,9 +132,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
   signals:
     void waveformUpdateTick();
-    void waveformMeasured(float frameRate, int droppedFrames);
-    void renderSpinnies(VSyncThread*);
-    void swapSpinnies();
+    void waveformMeasured(float frameRate);
+    void renderSpinnies();
 
   public slots:
     void slotSkinLoaded();
@@ -148,7 +146,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
 
   private slots:
     void render();
-    void swap();
 
   private:
     void evaluateWidgets();
@@ -184,7 +181,6 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     bool m_openGLShaderAvailable;
     int m_beatGridAlpha;
 
-    VSyncThread* m_vsyncThread;
     GuiTick* m_pGuiTick;  // not owned
     VisualsManager* m_pVisualsManager;  // not owned
 
@@ -192,6 +188,5 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     PerformanceTimer m_time;
     float m_frameCnt;
     double m_actualFrameRate;
-    int m_vSyncType;
     double m_playMarkerPosition;
 };

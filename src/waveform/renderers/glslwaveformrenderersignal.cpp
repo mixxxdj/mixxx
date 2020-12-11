@@ -276,8 +276,6 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
         return;
     }
 
-    maybeInitializeGL();
-
     // save the GL state set for QPainter
     painter->beginNativePainting();
 

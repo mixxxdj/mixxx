@@ -13,7 +13,6 @@
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/sharedglcontext.h"
 
 GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(
         const QString& group,
@@ -38,13 +37,6 @@ GLSLWaveformWidget::GLSLWaveformWidget(
         QWidget* parent,
         GlslType type)
         : GLWaveformWidgetAbstract(group, parent) {
-    qDebug() << "Created QGLWidget. Context"
-             << "Valid:" << context()->isValid()
-             << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
-
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
@@ -65,8 +57,6 @@ GLSLWaveformWidget::GLSLWaveformWidget(
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
-
-    setAutoBufferSwap(false);
 
     m_initSuccess = init();
 }

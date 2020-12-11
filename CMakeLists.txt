@@ -835,10 +835,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/renderers/waveformrendermarkrange.cpp
   src/waveform/renderers/waveformsignalcolors.cpp
   src/waveform/renderers/waveformwidgetrenderer.cpp
-  src/waveform/sharedglcontext.cpp
   src/waveform/visualplayposition.cpp
   src/waveform/visualsmanager.cpp
-  src/waveform/vsyncthread.cpp
   src/waveform/waveform.cpp
   src/waveform/waveformfactory.cpp
   src/waveform/waveformmarklabel.cpp
