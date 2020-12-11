@@ -473,19 +473,12 @@ Error::Error(
 }
 
 QPair<QList<TrackRelease>, bool> parseRecordings(QXmlStreamReader& reader) {
-    QStringRef codecName;
     QList<TrackRelease> trackReleases;
     while (continueReading(reader)) {
         switch (reader.readNext()) {
         case QXmlStreamReader::Invalid:
         {
             return qMakePair(trackReleases, false);
-        }
-        case QXmlStreamReader::StartDocument:
-        {
-            // The character encoding is always an ASCII string
-            codecName = reader.documentEncoding();
-            break;
         }
         case QXmlStreamReader::StartElement:
         {
