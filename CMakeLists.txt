@@ -705,7 +705,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/pixmapsource.cpp
   src/skin/skincontext.cpp
   src/skin/skinloader.cpp
-  src/skin/svgparser.cpp
   src/skin/tooltips.cpp
   src/soundio/sounddevice.cpp
   src/soundio/sounddevicenetwork.cpp
