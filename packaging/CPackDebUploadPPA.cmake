@@ -9,7 +9,7 @@ endif()
 
 if(DEB_UPLOAD_PPA)
   find_program(CPACK_DEBIAN_DPUT dput)
-  if(NOT CPACK_DEBIAN_DPUT )
+  if(NOT CPACK_DEBIAN_DPUT)
     message(FATAL_ERROR "dput not found, required for cpack -G External -D DEB_UPLOAD_PPA=true" )
   endif()
 endif()
