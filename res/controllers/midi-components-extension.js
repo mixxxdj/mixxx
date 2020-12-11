@@ -130,6 +130,125 @@
     });
 
     /**
+     * A button with configurable Mixxx control values for `on` and `off`.
+     *
+     * @constructor
+     * @extends {components.Button}
+     * @param {number} options.onValue Value for `on`; optional, default: `1`
+     * @param {number} options.offValue Value for `off`; optional, default: opposite of `onValue`
+     * @public
+     */
+    var CustomButton = function(options) {
+        options = options || {};
+        if (options.onValue === undefined) { // do not use '||' to allow 0
+            options.onValue = 1;
+        }
+        if (options.offValue === undefined) { // do not use '!' to keep number type
+            options.offValue = options.onValue ? 0 : 1;
+        }
+        components.Button.call(this, options);
+    };
+    CustomButton.prototype = deriveFrom(components.Button, {
+        isOn: function(engineValue) { // engine -> boolean
+            return engineValue === this.onValue;
+        },
+        inGetValue: function() { // engine -> boolean
+            return this.isOn(engine.getValue(this.group, this.inKey));
+        },
+        inSetValue: function(on) { // boolean -> engine
+            engine.setValue(this.group, this.inKey, on ? this.onValue : this.offValue);
+        },
+        outGetValue: function() { // engine -> boolean
+            return this.isOn(engine.getValue(this.group, this.outKey));
+        },
+        outSetValue: function(on) { // boolean -> engine
+            engine.setValue(this.group, this.outKey, on ? this.onValue : this.offValue);
+        },
+        outValueScale: function(engineValue) { // engine -> MIDI
+            return this.isOn(engineValue) ? this.on : this.off;
+        },
+        inValueScale: function(midiValue) { // MIDI -> engine
+            return midiValue === this.on ? this.onValue : this.offValue;
+        }
+    });
+
+    /**
+     * An object that simplifies using a timer safely.
+     * Use `start(action)` to start and `reset()` to reset.
+     *
+     * @constructor
+     * @param {number} timeout Duration between start and action
+     * @param {boolean} oneShot If `true`, the action is run once;
+     *                          otherwise, it is run periodically until the timer is reset.
+     * @public
+     * @see https://github.com/mixxxdj/mixxx/wiki/Script-Timers
+     */
+    var Timer = function(timeout, oneShot) {
+        this.timeout = timeout;
+        this.oneShot = oneShot;
+        this.disable();
+    };
+    Timer.prototype = {
+        disable: function() { this.id = 0; },
+        isEnabled: function() { return this.id !== 0; },
+        start: function(action) {
+            this.reset();
+            var timer = this;
+            this.id = engine.beginTimer(this.timeout, function() {
+                if (timer.oneShot) {
+                    timer.disable();
+                }
+                action();
+            }, this.oneShot);
+        },
+        reset: function() {
+            if (this.isEnabled()) {
+                engine.stopTimer(this.id);
+                this.disable();
+            }
+        },
+    };
+
+    /**
+     * A button that supports different actions on short and long press.
+     *
+     * @constructor
+     * @extends {components.Button}
+     * @param {object} options Options object
+     * @public
+     */
+    var LongPressButton = function(options) {
+        components.Button.call(this, options);
+        this.longPressTimer = new Timer(this.longPressTimeout, true);
+    };
+    LongPressButton.prototype = deriveFrom(components.Button, {
+        isLongPressed: false,
+        input: function(channel, control, value, status, _group) {
+            if (this.isPress(channel, control, value, status)) {
+                this.handlePress();
+            } else {
+                this.handleRelease();
+            }
+        },
+        handlePress: function() {
+            this.onShortPress();
+            var button = this;
+            this.longPressTimer.start(function() {
+                button.isLongPressed = true;
+                button.onLongPress();
+            });
+        },
+        handleRelease: function() {
+            this.longPressTimer.reset();
+            this.onRelease();
+            this.isLongPressed = false;
+        },
+        onShortPress: function(_value) {},
+        onLongPress: function(_value)  {},
+        onRelease: function(_value)  {},
+    });
+
+    /**
      * An encoder for directions.
      *
      * Turning the encoder to the right means "forwards" and returns 1;
@@ -1190,6 +1309,9 @@
     var exports = {};
     exports.ShiftButton = ShiftButton;
     exports.Trigger = Trigger;
+    exports.CustomButton = CustomButton;
+    exports.Timer = Timer;
+    exports.LongPressButton = LongPressButton;
     exports.DirectionEncoder = DirectionEncoder;
     exports.RangeAwareEncoder = RangeAwareEncoder;
     exports.EnumToggleButton = EnumToggleButton;
