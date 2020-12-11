@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QElapsedTimer>
+
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/controllerpresetinfo.h"

@@ -1231,14 +1231,6 @@ install(
     "${MIXXX_INSTALL_DATADIR}"
 )
 
-# QScriptEngine extensions
-install(
-  DIRECTORY
-    "${CMAKE_CURRENT_SOURCE_DIR}/script"
-  DESTINATION
-    "${MIXXX_INSTALL_DATADIR}"
-)
-
 # Licenses
 install(
   FILES
@@ -1484,21 +1476,13 @@ if(UNIX AND USE_SYMLINKS)
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Symlinking resources to build directory..."
   )
-  add_custom_target(mixxx-script
-    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
-    COMMENT "Symlinking to build directory..."
-  )
 else()
   add_custom_target(mixxx-res
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Copying resources to build directory..."
   )
-  add_custom_target(mixxx-script
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
-    COMMENT "Copying QScriptEngine extensions to build directory..."
-  )
 endif()
-add_dependencies(mixxx-lib mixxx-res mixxx-script)
+add_dependencies(mixxx-lib mixxx-res)
 
 # Windows-only resource file
 if(WIN32)
@@ -1815,8 +1799,6 @@ find_package(Qt5
     Network
     OpenGL
     Qml
-    Script
-    ScriptTools
     Sql
     Svg
     Test
@@ -1831,8 +1813,6 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Network
   Qt5::OpenGL
   Qt5::Qml
-  Qt5::Script
-  Qt5::ScriptTools
   Qt5::Sql
   Qt5::Svg
   Qt5::Test
@@ -1952,7 +1932,7 @@ if(WIN32)
     # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
     # contain just shortcuts to load the qtbase, qtmultimedia etc files.
     FILES_MATCHING REGEX
-      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtxmlpatterns_.*\.qm"
   )
 
   # ANGLE DLLs are dynamically linked even when the rest of Qt is built statically
