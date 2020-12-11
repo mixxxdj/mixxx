@@ -28,6 +28,7 @@ case "$COMMAND" in
             sudo apt-get update
             sudo apt-get install -y --no-install-recommends \
                 ccache \
+                devscripts \
                 libavformat-dev \
                 libchromaprint-dev \
                 libebur128-dev \
@@ -55,6 +56,7 @@ case "$COMMAND" in
                 libupower-glib-dev \
                 libusb-1.0-0-dev \
                 libwavpack-dev \
+                markdown \
                 portaudio19-dev \
                 protobuf-compiler \
                 qt5-default \
