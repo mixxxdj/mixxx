@@ -119,7 +119,7 @@ bool MusicBrainzRecordingsTask::doStart(
     }
 
     // It is not necessary to connect the QNetworkReply::errorOccurred signal.
-    // Network errors are also received trough the QNetworkReply::finished signal.
+    // Network errors are also received through the QNetworkReply::finished signal.
     connect(m_pendingNetworkReply,
             &QNetworkReply::finished,
             this,
