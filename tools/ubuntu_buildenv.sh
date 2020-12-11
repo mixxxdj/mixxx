@@ -34,6 +34,7 @@ case "$COMMAND" in
                 docbook-to-man \
                 libavformat-dev \
                 libchromaprint-dev \
+                libdistro-info-perl \
                 libebur128-dev \
                 libfaad-dev \
                 libfftw3-dev \
