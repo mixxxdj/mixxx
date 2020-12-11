@@ -1,6 +1,7 @@
 #include "controllers/controllermanager.h"
 
 #include <QSet>
+#include <QThread>
 
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/defs_controllers.h"

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAtomicInt>
+#include <QThread>
 
 #include "controllers/controller.h"
 #include "controllers/hid/hidcontrollerpreset.h"

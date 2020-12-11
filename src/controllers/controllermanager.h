@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QSharedPointer>
+#include <QTimer>
 
 #include "controllers/controllerenumerator.h"
 #include "controllers/controllerpreset.h"

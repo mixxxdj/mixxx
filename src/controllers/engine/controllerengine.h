@@ -5,7 +5,6 @@
 #include <QJSValue>
 #include <QMessageBox>
 #include <QTimerEvent>
-#include <QtScript>
 
 #include "controllers/controllerpreset.h"
 #include "controllers/softtakeover.h"
