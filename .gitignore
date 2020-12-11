@@ -32,6 +32,7 @@ src/mixxx.res
 !/res/keyboard/*.cfg
 
 cache
+__pycache__
 
 lib/*/*.a
 lib/*/lib/*.a
