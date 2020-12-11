@@ -13,6 +13,8 @@ src/mixxx.res
 src/test/**/*.actual
 res/qrc_mixxx.cc
 
+__pycache__
+
 # TOOLS
 
 # Clang/cmake
