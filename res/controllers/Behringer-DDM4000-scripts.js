@@ -28,32 +28,54 @@ var DDM4000 = new components.extension.GenericMidiController({
         var center = CrossfaderAssignLED.prototype.position.center;
         var right = CrossfaderAssignLED.prototype.position.right;
 
+        var CrossfaderUnit = function(options) {
+            var unitOptions = options || {};
+            unitOptions.group = unitOptions.group || "[Master]";
+            c.ComponentContainer.call(this, unitOptions);
+
         var Crossfader = function(options) {
+                options = options || {};
+                options.inKey = options.inKey || options.key || "crossfader";
+                options.group = options.group || unitOptions.group;
             c.Pot.call(this, options);
         };
         Crossfader.prototype = e.deriveFrom(c.Pot, {
-            input: function(channel, control, value, status, group) {
-                if (engine.getValue("[Master]", "show_xfader")) {
-                    c.Pot.prototype.input.call(this, channel, control, value, status, group);
-                }
+                ignoreInput: function() {},
+                enable: function() {
+                    this.input = c.Pot.prototype.input;
             },
+                disable: function() {
+                    this.input = this.ignoreInput;
+                    engine.setValue("[Master]", "crossfader_set_default", 1);
+                },
         });
+            var crossfader = new Crossfader(options.crossfader);
 
         var CrossfaderToggleButton = function(options) {
             options = options || {};
             if (options.type === undefined) {
-                options.type = toggle;
+                    options.type = c.Button.prototype.types.toggle;
             }
+                if (!options.inKey && !options.key) {
+                    options.key = "show_xfader";
+                }
+                options.group = options.group || unitOptions.group;
             c.Button.call(this, options);
         };
         CrossfaderToggleButton.prototype = e.deriveFrom(c.Button, {
             inSetValue: function(value) {
-                if (!value) {
-                    engine.setValue("[Master]", "crossfader_set_default", 1);
-                }
-                c.Button.prototype.inSetValue(value);
-            },
-        });
+                    if (value) {
+                        crossfader.enable();
+                    } else {
+                        crossfader.disable();
+                    }
+                    c.Button.prototype.inSetValue.call(this, value);
+                },
+            });
+            this.crossfader = crossfader;
+            this.button = new CrossfaderToggleButton(options.button);
+        };
+        CrossfaderUnit.prototype = e.deriveFrom(c.ComponentContainer);
 
         return {
             init: function() {
@@ -213,7 +235,6 @@ var DDM4000 = new components.extension.GenericMidiController({
                 { // Crossfader
                     defaultDefinition: {type: c.Button, options: {group: "[Master]"}},
                     components: [
-                        {options: {midi: [cc,   0x15],  inKey: "crossfader"}, type: Crossfader}, // Crossfader
                         {options: {midi: [note, 0x17],    key: "", sendShifted: true}}, // Crossfader: A Full Freq
                         {options: {midi: [note, 0x18],    key: "", sendShifted: true}}, // Crossfader: A High
                         {options: {midi: [note, 0x19],    key: "", sendShifted: true}}, // Crossfader: A Mid
@@ -222,7 +243,17 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {options: {midi: [note, 0x1C],    key: "", sendShifted: true}}, // Crossfader: B High
                         {options: {midi: [note, 0x1D],    key: "", sendShifted: true}}, // Crossfader: B Mid
                         {options: {midi: [note, 0x1E],    key: "", sendShifted: true}}, // Crossfader: B Low
-                        {options: {midi: [note, 0x1F],    key: "show_xfader", sendShifted: true}, type: CrossfaderToggleButton}, // Crossfader: On
+                        { // Crossfader: On
+                            type: CrossfaderUnit,
+                            options: {
+                                button: {midi: [note, 0x1F], sendShifted: true},
+                                crossfader: {midi: [cc, 0x15]}
+                            },
+                            components: [ // Idee: in registerComponents nicht über def schleifen, sondern über impl, und fehlende defs ignorieren.
+                                {},
+                                {},
+                            ],
+                        },
                         {options: {midi: [note, 0x2A],    key: "", sendShifted: true}}, // Crossfader: Bounce to MIDI Clock
                         {options: {midi: [note, 0x2B],  inKey: ""}}, // Crossfader: Beat (Left)
                         {options: {midi: [note, 0x2C],  inKey: ""}}, // Crossfader: Beat (Right)
