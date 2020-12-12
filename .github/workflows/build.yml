@@ -250,6 +250,11 @@ jobs:
       run: cpack -G ${{ matrix.cpack_generator }} -V
       working-directory: cmake_build
 
+    - name: "Package for PPA"
+      if: startsWith(matrix.os, 'ubuntu')
+      run: cpack -G External -D DEB_SOURCEPKG=ON
+      working-directory: cmake_build
+
     - name: "[macOS] Sign Package"
       if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
       run: codesign --verbose=4 --options runtime --sign "${APPLE_CODESIGN_IDENTITY}" --entitlements ../build/osx/entitlements.plist *.dmg
