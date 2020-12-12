@@ -998,7 +998,7 @@ TraktorS3.Channel.prototype.playpositionChanged = function(value) {
     // How many segments away from the actual angle should we light?
     // (in both directions, so "2" will light up to four segments)
     if (this.trackDurationSec === 0) {
-        var samples = engine.getValue(this.group, "track_samples");
+        var samples = engine.getValue(this.group, "track_loaded");
         if (samples > 0) {
             this.trackLoadedHandler();
         } else {
@@ -1066,7 +1066,7 @@ TraktorS3.Channel.prototype.lightWheelPosition = function() {
         return false;
     }
     this.positionUpdated = false;
-    var rotations = this.curPosition * (1 / 1.8);  // 1/1.8 is rotations per second
+    var rotations = this.curPosition * (1 / 1.8);  // 1/1.8 is rotations per second (33 1/3 RPM)
     // Calculate angle from 0-1.0
     var angle = rotations - Math.floor(rotations);
     // The wheel has 8 segments
@@ -1676,7 +1676,7 @@ TraktorS3.Controller.prototype.registerInputPackets = function() {
 
     for (ch in this.Channels) {
         var chanob = this.Channels[ch];
-        engine.connectControl(ch, "playposition",
+        engine.makeConnection(ch, "playposition",
             TraktorS3.bind(TraktorS3.Channel.prototype.playpositionChanged, chanob));
         engine.connectControl(ch, "track_loaded",
             TraktorS3.bind(TraktorS3.Channel.prototype.trackLoadedHandler, chanob));
