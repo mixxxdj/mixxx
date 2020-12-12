@@ -33,37 +33,37 @@ var DDM4000 = new components.extension.GenericMidiController({
             unitOptions.group = unitOptions.group || "[Master]";
             c.ComponentContainer.call(this, unitOptions);
 
-        var Crossfader = function(options) {
+            var Crossfader = function(options) {
                 options = options || {};
                 options.inKey = options.inKey || options.key || "crossfader";
                 options.group = options.group || unitOptions.group;
-            c.Pot.call(this, options);
-        };
-        Crossfader.prototype = e.deriveFrom(c.Pot, {
+                c.Pot.call(this, options);
+            };
+            Crossfader.prototype = e.deriveFrom(c.Pot, {
                 ignoreInput: function() {},
                 enable: function() {
                     this.input = c.Pot.prototype.input;
-            },
+                },
                 disable: function() {
                     this.input = this.ignoreInput;
                     engine.setValue("[Master]", "crossfader_set_default", 1);
                 },
-        });
+            });
             var crossfader = new Crossfader(options.crossfader);
 
-        var CrossfaderToggleButton = function(options) {
-            options = options || {};
-            if (options.type === undefined) {
+            var CrossfaderToggleButton = function(options) {
+                options = options || {};
+                if (options.type === undefined) {
                     options.type = c.Button.prototype.types.toggle;
-            }
+                }
                 if (!options.inKey && !options.key) {
                     options.key = "show_xfader";
                 }
                 options.group = options.group || unitOptions.group;
-            c.Button.call(this, options);
-        };
-        CrossfaderToggleButton.prototype = e.deriveFrom(c.Button, {
-            inSetValue: function(value) {
+                c.Button.call(this, options);
+            };
+            CrossfaderToggleButton.prototype = e.deriveFrom(c.Button, {
+                inSetValue: function(value) {
                     if (value) {
                         crossfader.enable();
                     } else {
