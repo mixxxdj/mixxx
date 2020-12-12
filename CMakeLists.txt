@@ -59,7 +59,7 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Speed up builds on HDDs and prevent wearing of SDDs
 if(GNU_GCC OR LLVM_CLANG)
-  option(BUILD_LOW_MEMORY "Store temporary build files on disk on low-memory systems" OFF)
+  option(BUILD_LOW_MEMORY "Store temporary build files on disk by disabling the build option -pipe" OFF)
   if(NOT BUILD_LOW_MEMORY)
     add_compile_options(-pipe)
   endif()
