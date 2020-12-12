@@ -696,7 +696,7 @@ TraktorS3.Deck.prototype.wheelDeltas = function(value) {
 };
 
 TraktorS3.Deck.prototype.pitchSliderHandler = function(field) {
-    // Adapt midi value to rate control range.
+    // Adapt HID value to rate control range.
     var value = -1.0 + ((field.value / 4095) * 2.0);
     if (TraktorS3.PitchSliderRelativeMode) {
         if (this.pitchSliderLastValue === -1) {
