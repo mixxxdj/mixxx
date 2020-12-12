@@ -21,6 +21,9 @@ enum class CueType {
                       // sound; not shown to user
 };
 
+/// Hot cues are sequentially indexed starting with kFirstHotCueIndex (inclusive)
+static constexpr int kFirstHotCueIndex = 0;
+
 // DTO for Cue information without dependencies on the actual Track object
 class CueInfo {
   public:
@@ -28,7 +31,7 @@ class CueInfo {
     CueInfo(CueType type,
             std::optional<double> startPositionMillis,
             std::optional<double> endPositionMillis,
-            std::optional<int> hotCueNumber,
+            const std::optional<int> hotCueIndex,
             const QString& label,
             RgbColor::optional_t color);
 
@@ -43,9 +46,9 @@ class CueInfo {
     void setEndPositionMillis(
             std::optional<double> positionMillis = std::nullopt);
 
-    std::optional<int> getHotCueNumber() const;
-    void setHotCueNumber(
-            std::optional<int> hotCueNumber = std::nullopt);
+    std::optional<int> getHotCueIndex() const;
+    void setHotCueIndex(
+            const std::optional<int> hotCueIndex = std::nullopt);
 
     QString getLabel() const;
     void setLabel(
@@ -59,7 +62,7 @@ class CueInfo {
     CueType m_type;
     std::optional<double> m_startPositionMillis;
     std::optional<double> m_endPositionMillis;
-    std::optional<int> m_hotCueNumber;
+    std::optional<int> m_hotCueIndex;
     QString m_label;
     RgbColor::optional_t m_color;
 };
