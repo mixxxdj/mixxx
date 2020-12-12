@@ -57,9 +57,12 @@ endif()
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Speed up builds on HDDs
+# Speed up builds on HDDs and prevent wearing of SDDs
 if(GNU_GCC OR LLVM_CLANG)
-  add_compile_options(-pipe)
+  option(BUILD_LOW_MEMORY "Store temporary build files on disk on low-memory systems" OFF)
+  if(NOT BUILD_LOW_MEMORY)
+    add_compile_options(-pipe)
+  endif()
 endif()
 
 # Profiling
