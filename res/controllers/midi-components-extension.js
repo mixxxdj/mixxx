@@ -308,7 +308,7 @@
      * @constructor
      * @extends {components.Button}
      * @param {object} options Options object
-     * @param {Array<number>} options.values An array of enumeration values
+     * @param {Array} options.values An array of enumeration values
      * @param {number} options.maxValue A positive integer defining the maximum enumeration value
      * @public
      */
@@ -317,6 +317,9 @@
         if (options.maxValue === undefined && options.values === undefined) {
             log.error("An EnumToggleButton requires either `values` or a `maxValue`.");
             this.maxValue = 0;
+        }
+        if (options.type === undefined) { // do not use '||' to allow 0
+            options.type = components.Button.prototype.types.toggle;
         }
         components.Button.call(this, options);
     };
