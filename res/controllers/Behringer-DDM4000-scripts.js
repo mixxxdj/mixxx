@@ -134,7 +134,7 @@ var DDM4000 = new components.extension.GenericMidiController({
                 },
                 onLongPress: function() {
                     bank.reverseMode.inToggle();
-                    bank.loopMode.toggle();
+                    bank.loopMode.inToggle();
                 },
                 onRelease: function() {
                     this.setBlue(false);
@@ -370,8 +370,8 @@ var DDM4000 = new components.extension.GenericMidiController({
                         },
                         { // Sampler Bank 2
                             type: SamplerBank,
-                            defaultDefinition: {options: {group: "[Sampler2]"}},
                             options: {
+                                group: "[Sampler2]",
                                 play: [note,  0x73], // Sampler: Bank 2 Play / Out
                                 reverse: [cc, 0x74], // Sampler: Bank 2 Reverse
                                 loop: [cc,    0x75], // Sampler: Bank 2 Loop
