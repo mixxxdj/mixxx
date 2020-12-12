@@ -135,8 +135,6 @@
 
 ## [2.2.2](https://launchpad.net/mixxx/+milestone/2.2.2) (2019-08-10)
 
-==== 2.2.2 2019-08-10 ====
-
 * Fix battery widget with upower <= 0.99.7. #2221
 * Fix BPM adjust in BpmControl. lp:1836480
 * Disable track metadata export for .ogg files and TagLib 1.11.1. lp:1833190
