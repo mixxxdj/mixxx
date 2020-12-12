@@ -1111,20 +1111,20 @@ TraktorS3.FXControl = function(controller) {
         "[Channel3]": false,
         "[Channel4]": false
     };
-    this.selectPressed = {
-        0: false,
-        1: false,
-        2: false,
-        3: false,
-        4: false
-    };
-    this.selectBlinkState = {
-        0: false,
-        1: false,
-        2: false,
-        3: false,
-        4: false
-    };
+    this.selectPressed = [
+        false,
+        false,
+        false,
+        false,
+        false
+    ];
+    this.selectBlinkState = [
+        false,
+        false,
+        false,
+        false,
+        false
+    ];
 
     // States
     this.STATE_FILTER = 0;
@@ -2216,6 +2216,8 @@ TraktorS3.init = function(_id) {
     if (TraktorS3.DebugMode) {
         TraktorS3.debugLights();
     } else {
+        // Light secondary decks first so that the primary decks overwrite their values where
+        // needed.  This way the controller looks correct on startup.
         this.kontrol.lightDeck("[Channel3]", false);
         this.kontrol.lightDeck("[Channel4]", false);
         this.kontrol.lightDeck("[Channel1]", false);
