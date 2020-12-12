@@ -349,14 +349,14 @@ var DDM4000 = new components.extension.GenericMidiController({
                         {options: {midi: [cc,   0x64], outKey: ""}}, // Sampler: REC Source Microphone
                         {options: {midi: [cc,   0x65], outKey: ""}}, // Sampler: REC Source Master
                         {options: {midi: [note, 0x66],    key: "pfl", sendShifted: true}}, // Sampler: PFL
-                        {options: {midi: [note, 0x67],  inKey: ""}}, // Sampler: Sample Length (Right)
-                        {options: {midi: [note, 0x68],  inKey: ""}}, // Sampler: Sample Length (Left)
-                        {options: {midi: [cc,   0x67], outKey: ""}}, // Sampler: Sample Length 1
-                        {options: {midi: [cc,   0x68], outKey: ""}}, // Sampler: Sample Length 2
-                        {options: {midi: [cc,   0x69], outKey: ""}}, // Sampler: Sample Length 4
-                        {options: {midi: [cc,   0x6A], outKey: ""}}, // Sampler: Sample Length 8
-                        {options: {midi: [cc,   0x6B], outKey: ""}}, // Sampler: Sample Length 16
-                        {options: {midi: [cc,   0x6C], outKey: ""}}, // Sampler: Sample Length ∞
+                        {options: {midi: [note, 0x67],  inKey: "beatloop_size", values: [1, 2, 4, 8, 16, 512]}, type: e.EnumToggleButton}, // Sampler: Sample Length (Right)
+                        {options: {midi: [note, 0x68],  inKey: "beatloop_size", values: [512, 16, 8, 4, 2, 1]}, type: e.EnumToggleButton}, // Sampler: Sample Length (Left)
+                        {options: {midi: [cc,   0x67], outKey: "beatloop_size", onValue: 1},   type: e.CustomButton}, // Sampler: Sample Length 1
+                        {options: {midi: [cc,   0x68], outKey: "beatloop_size", onValue: 2},   type: e.CustomButton}, // Sampler: Sample Length 2
+                        {options: {midi: [cc,   0x69], outKey: "beatloop_size", onValue: 4},   type: e.CustomButton}, // Sampler: Sample Length 4
+                        {options: {midi: [cc,   0x6A], outKey: "beatloop_size", onValue: 8},   type: e.CustomButton}, // Sampler: Sample Length 8
+                        {options: {midi: [cc,   0x6B], outKey: "beatloop_size", onValue: 16},  type: e.CustomButton}, // Sampler: Sample Length 16
+                        {options: {midi: [cc,   0x6C], outKey: "beatloop_size", onValue: 512}, type: e.CustomButton}, // Sampler: Sample Length ∞
                         {options: {midi: [note, 0x6D],    key: "", sendShifted: true}}, // Sampler: Record / In
                         {options: {midi: [note, 0x6C],  inKey: ""}}, // Sampler: Bank Assign
                         { // Sampler Bank 1
