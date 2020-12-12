@@ -14,10 +14,12 @@
 
 #include "library/parsercsv.h"
 
-#include <QTextStream>
-#include <QtDebug>
 #include <QDir>
 #include <QMessageBox>
+#include <QTextStream>
+#include <QtDebug>
+
+#include "moc_parsercsv.cpp"
 
 ParserCsv::ParserCsv() : Parser() {
 }
@@ -25,7 +27,7 @@ ParserCsv::ParserCsv() : Parser() {
 ParserCsv::~ParserCsv() {
 }
 
-QList<QString> ParserCsv::parse(QString sFilename) {
+QList<QString> ParserCsv::parse(const QString& sFilename) {
     QFile file(sFilename);
     QString basepath = sFilename.section('/', 0, -2);
 

@@ -15,7 +15,7 @@ namespace {
 QDrag* dragUrls(
         const QList<QUrl>& trackUrls,
         QWidget* pDragSource,
-        QString sourceIdentifier) {
+        const QString& sourceIdentifier) {
     if (trackUrls.isEmpty()) {
         return NULL;
     }
@@ -188,7 +188,7 @@ bool DragAndDropHelper::dragEnterAccept(
 QDrag* DragAndDropHelper::dragTrack(
         TrackPointer pTrack,
         QWidget* pDragSource,
-        QString sourceIdentifier) {
+        const QString& sourceIdentifier) {
     QList<QUrl> trackUrls;
     trackUrls.append(pTrack->getFileInfo().toUrl());
     return dragUrls(trackUrls, pDragSource, sourceIdentifier);
@@ -198,7 +198,7 @@ QDrag* DragAndDropHelper::dragTrack(
 QDrag* DragAndDropHelper::dragTrackLocations(
         const QList<QString>& locations,
         QWidget* pDragSource,
-        QString sourceIdentifier) {
+        const QString& sourceIdentifier) {
     QList<QUrl> trackUrls;
     foreach (QString location, locations) {
         trackUrls.append(TrackFile(location).toUrl());

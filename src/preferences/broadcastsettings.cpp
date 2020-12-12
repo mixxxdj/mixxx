@@ -1,11 +1,13 @@
+#include "preferences/broadcastsettings.h"
+
 #include <QDir>
-#include <QStringList>
-#include <QFileInfoList>
 #include <QFileInfo>
+#include <QFileInfoList>
+#include <QStringList>
 
 #include "broadcast/defs_broadcast.h"
 #include "defs_urls.h"
-#include "preferences/broadcastsettings.h"
+#include "moc_broadcastsettings.cpp"
 #include "util/logger.h"
 #include "util/memory.h"
 
@@ -167,7 +169,7 @@ void BroadcastSettings::saveAll() {
     emit profilesChanged();
 }
 
-void BroadcastSettings::onProfileNameChanged(QString oldName, QString newName) {
+void BroadcastSettings::onProfileNameChanged(const QString& oldName, const QString& newName) {
     if (!m_profiles.contains(oldName))
         return;
 

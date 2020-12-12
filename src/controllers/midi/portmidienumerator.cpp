@@ -1,16 +1,11 @@
-/**
-* @file portmidienumerator.cpp
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Thu 15 Mar 2012
-* @brief This class handles discovery and enumeration of DJ controller devices that appear under the PortMIDI cross-platform API.
-*/
-
-#include <portmidi.h>
-#include <QRegExp>
-
 #include "controllers/midi/portmidienumerator.h"
 
+#include <portmidi.h>
+
+#include <QRegExp>
+
 #include "controllers/midi/portmidicontroller.h"
+#include "moc_portmidienumerator.cpp"
 #include "util/cmdlineargs.h"
 
 namespace {
@@ -53,8 +48,8 @@ PortMidiEnumerator::~PortMidiEnumerator() {
     }
 }
 
-bool namesMatchMidiPattern(const QString input_name,
-                           const QString output_name) {
+bool namesMatchMidiPattern(const QString& input_name,
+        const QString& output_name) {
     // Some platforms format MIDI device names as "deviceName MIDI ###" where
     // ### is the instance # of the device. Therefore we want to link two
     // devices that have an equivalent "deviceName" and ### section.
@@ -77,8 +72,8 @@ bool namesMatchMidiPattern(const QString input_name,
     return false;
 }
 
-bool namesMatchInOutPattern(const QString input_name,
-                            const QString output_name) {
+bool namesMatchInOutPattern(const QString& input_name,
+        const QString& output_name) {
     QString basePattern = "^(.*) %1 (\\d+)( .*)?$";
     QRegExp inputPattern(basePattern.arg("in"));
     QRegExp outputPattern(basePattern.arg("out"));
@@ -100,8 +95,8 @@ bool namesMatchInOutPattern(const QString input_name,
     return false;
 }
 
-bool namesMatchPattern(const QString input_name,
-                       const QString output_name) {
+bool namesMatchPattern(const QString& input_name,
+        const QString& output_name) {
     // This is a broad pattern that matches a text blob followed by a numeral
     // potentially followed by non-numeric text. The non-numeric requirement is
     // meant to avoid corner cases around devices with names like "Hercules RMX
@@ -126,8 +121,8 @@ bool namesMatchPattern(const QString input_name,
     return false;
 }
 
-bool namesMatchAllowableEdgeCases(const QString input_name,
-                                  const QString output_name) {
+bool namesMatchAllowableEdgeCases(const QString& input_name,
+        const QString& output_name) {
     // Mac OS 10.12 & Korg Kaoss DJ 1.6:
     // Korg Kaoss DJ has input 'KAOSS DJ CONTROL' and output 'KAOSS DJ SOUND'.
     // This means it doesn't pass the shouldLinkInputToOutput test. Without an
@@ -139,8 +134,8 @@ bool namesMatchAllowableEdgeCases(const QString input_name,
     return false;
 }
 
-bool shouldLinkInputToOutput(const QString input_name,
-                             const QString output_name) {
+bool shouldLinkInputToOutput(const QString& input_name,
+        const QString& output_name) {
     // Early exit.
     if (input_name == output_name || namesMatchAllowableEdgeCases(input_name, output_name)) {
         return true;

@@ -21,6 +21,7 @@ class WHotcueButton : public WPushButton {
 
   protected:
     void mousePressEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
     void restyleAndRepaint() override;
 
   private slots:

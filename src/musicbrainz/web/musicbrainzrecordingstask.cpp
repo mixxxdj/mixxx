@@ -4,6 +4,7 @@
 #include <QXmlStreamReader>
 
 #include "defs_urls.h"
+#include "moc_musicbrainzrecordingstask.cpp"
 #include "musicbrainz/gzip.h"
 #include "musicbrainz/musicbrainzxml.h"
 #include "network/httpstatuscode.h"
@@ -117,18 +118,10 @@ bool MusicBrainzRecordingsTask::doStart(
         return false;
     }
 
+    // It is not necessary to connect the QNetworkReply::errorOccurred signal.
+    // Network errors are also received through the QNetworkReply::finished signal.
     connect(m_pendingNetworkReply,
             &QNetworkReply::finished,
-            this,
-            &MusicBrainzRecordingsTask::slotNetworkReplyFinished,
-            Qt::UniqueConnection);
-
-    connect(m_pendingNetworkReply,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-            &QNetworkReply::errorOccurred,
-#else
-            QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
-#endif
             this,
             &MusicBrainzRecordingsTask::slotNetworkReplyFinished,
             Qt::UniqueConnection);

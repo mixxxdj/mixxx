@@ -1,15 +1,13 @@
-// enginemicrophone.cpp
-// created 3/16/2011 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/channels/enginemicrophone.h"
 
 #include <QtDebug>
 
-#include "preferences/usersettings.h"
 #include "control/control.h"
 #include "control/controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
+#include "moc_enginemicrophone.cpp"
+#include "preferences/usersettings.h"
 #include "util/sample.h"
 
 EngineMicrophone::EngineMicrophone(const ChannelHandleAndGroup& handle_group,
@@ -43,7 +41,7 @@ bool EngineMicrophone::isActive() {
     return m_wasActive;
 }
 
-void EngineMicrophone::onInputConfigured(AudioInput input) {
+void EngineMicrophone::onInputConfigured(const AudioInput& input) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
         qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
@@ -53,7 +51,7 @@ void EngineMicrophone::onInputConfigured(AudioInput input) {
     m_pInputConfigured->forceSet(1.0);
 }
 
-void EngineMicrophone::onInputUnconfigured(AudioInput input) {
+void EngineMicrophone::onInputUnconfigured(const AudioInput& input) {
     if (input.getType() != AudioPath::MICROPHONE) {
         // This is an error!
         qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
@@ -63,8 +61,8 @@ void EngineMicrophone::onInputUnconfigured(AudioInput input) {
     m_pInputConfigured->forceSet(0.0);
 }
 
-void EngineMicrophone::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                                     unsigned int nFrames) {
+void EngineMicrophone::receiveBuffer(
+        const AudioInput& input, const CSAMPLE* pBuffer, unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
     m_sampleBuffer = pBuffer;

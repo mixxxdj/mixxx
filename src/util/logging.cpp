@@ -1,20 +1,21 @@
 #include "util/logging.h"
 
-#include <stdio.h>
 #include <signal.h>
+#include <stdio.h>
 
 #include <QByteArray>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QIODevice>
+#include <QLoggingCategory>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QString>
 #include <QThread>
 #include <QtDebug>
 #include <QtGlobal>
-#include <QLoggingCategory>
+#include <cstring>
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
@@ -58,7 +59,7 @@ inline void writeToLog(const QByteArray& message, bool shouldPrint,
 void MessageHandler(QtMsgType type,
                     const QMessageLogContext&, const QString& input) {
     // For "]: " and '\n'.
-    size_t baSize = 4;
+    std::size_t baSize = 4;
     const char* tag = nullptr;
     bool shouldPrint = true;
     bool shouldFlush = false;
@@ -67,7 +68,7 @@ void MessageHandler(QtMsgType type,
     switch (type) {
         case QtDebugMsg:
             tag = "Debug [";
-            baSize += strlen(tag);
+            baSize += std::strlen(tag);
             isControllerDebug = input.startsWith(QLatin1String(
                 ControllerDebug::kLogMessagePrefix));
             shouldPrint = Logging::enabled(LogLevel::Debug) ||
@@ -76,30 +77,30 @@ void MessageHandler(QtMsgType type,
             break;
         case QtInfoMsg:
             tag = "Info [";
-            baSize += strlen(tag);
+            baSize += std::strlen(tag);
             shouldPrint = Logging::enabled(LogLevel::Info);
             shouldFlush = Logging::flushing(LogLevel::Info);
             break;
         case QtWarningMsg:
             tag = "Warning [";
-            baSize += strlen(tag);
+            baSize += std::strlen(tag);
             shouldPrint = Logging::enabled(LogLevel::Warning);
             shouldFlush = Logging::flushing(LogLevel::Warning);
             break;
         case QtCriticalMsg:
             tag = "Critical [";
-            baSize += strlen(tag);
+            baSize += std::strlen(tag);
             shouldFlush = true;
             isDebugAssert = input.startsWith(QLatin1String(kDebugAssertPrefix));
             break;
         case QtFatalMsg:
             tag = "Fatal [";
-            baSize += strlen(tag);
+            baSize += std::strlen(tag);
             shouldFlush = true;
             break;
         default:
             tag = "Unknown [";
-            baSize += strlen(tag);
+            baSize += std::strlen(tag);
     }
 
     // qthread.cpp contains a Q_ASSERT that currentThread does not return
@@ -110,14 +111,14 @@ void MessageHandler(QtMsgType type,
 
     QByteArray input8Bit;
     if (isControllerDebug) {
-        input8Bit = input.mid(strlen(ControllerDebug::kLogMessagePrefix) + 1).toLocal8Bit();
+        input8Bit = input.mid(ControllerDebug::kLogMessagePrefixLength + 1).toLocal8Bit();
     } else {
         input8Bit = input.toLocal8Bit();
     }
     baSize += input8Bit.size();
 
     QByteArray ba;
-    ba.reserve(baSize);
+    ba.reserve(static_cast<int>(baSize));
 
     ba += tag;
     ba += threadName;

@@ -1,33 +1,29 @@
 #include "glrgbwaveformwidget.h"
 
-#include "waveform/sharedglcontext.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/renderers/waveformrenderbackground.h"
+#include "moc_glrgbwaveformwidget.cpp"
+#include "util/performancetimer.h"
 #include "waveform/renderers/glwaveformrendererrgb.h"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
-
-#include "util/performancetimer.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/sharedglcontext.h"
 
 GLRGBWaveformWidget::GLRGBWaveformWidget(const QString& group, QWidget* parent)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
-          WaveformWidgetAbstract(group) {
+        : GLWaveformWidgetAbstract(group, parent) {
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-    addRenderer<GLWaveformRendererRGB>();
+    m_pGlRenderer = addRenderer<GLWaveformRendererRGB>();
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
@@ -45,7 +41,7 @@ GLRGBWaveformWidget::~GLRGBWaveformWidget() {
 }
 
 void GLRGBWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = this;
 }
 
 void GLRGBWaveformWidget::paintEvent(QPaintEvent* event) {

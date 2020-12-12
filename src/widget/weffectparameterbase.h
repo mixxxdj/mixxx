@@ -1,5 +1,4 @@
-#ifndef WEFFECTPARAMETERBASE_H
-#define WEFFECTPARAMETERBASE_H
+#pragma once
 
 #include <QDomNode>
 
@@ -27,5 +26,3 @@ class WEffectParameterBase : public WLabel {
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
 };
-
-#endif /* WEFFECTPARAMETERBASE_H */

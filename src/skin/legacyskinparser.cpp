@@ -1,6 +1,3 @@
-// legacyskinparser.cpp
-// Created 9/19/2010 by RJ Ryan (rryan@mit.edu)
-
 #include "skin/legacyskinparser.h"
 
 #include <QDir>
@@ -22,6 +19,7 @@
 #include "library/library.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
+#include "moc_legacyskinparser.cpp"
 #include "recording/recordingmanager.h"
 #include "skin/colorschemeparser.h"
 #include "skin/launchimage.h"

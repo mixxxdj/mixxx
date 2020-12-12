@@ -6,14 +6,16 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
-#include "controllers/colormapperjsproxy.h"
 #include "controllers/controllerengine.h"
-#include "controllers/controller.h"
-#include "controllers/controllerdebug.h"
+
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
+#include "controllers/colormapperjsproxy.h"
+#include "controllers/controller.h"
+#include "controllers/controllerdebug.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_controllerengine.cpp"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
 #include "util/time.h"
@@ -84,8 +86,9 @@ Purpose: Calls the same method on a list of JS Objects
 Input:   -
 Output:  -
 -------- ------------------------------------------------------ */
-void ControllerEngine::callFunctionOnObjects(QList<QString> scriptFunctionPrefixes,
-                                             const QString& function, QScriptValueList args) {
+void ControllerEngine::callFunctionOnObjects(const QList<QString>& scriptFunctionPrefixes,
+        const QString& function,
+        const QScriptValueList& args) {
     VERIFY_OR_DEBUG_ASSERT(m_pEngine) {
         return;
     }
@@ -421,7 +424,7 @@ Input:   'this' object if applicable, Code string
 Output:  false if an exception
 -------- ------------------------------------------------------ */
 bool ControllerEngine::internalExecute(
-        QScriptValue thisObject, const QString& scriptCode) {
+        const QScriptValue& thisObject, const QString& scriptCode) {
     // A special version of safeExecute since we're evaluating strings, not actual functions
     //  (execute() would print an error that it's not a function every time a timer fires.)
     if (m_pEngine == nullptr) {
@@ -452,9 +455,9 @@ Purpose: Evaluate & run script code
 Input:   'this' object if applicable, Code string
 Output:  false if an exception
 -------- ------------------------------------------------------ */
-bool ControllerEngine::internalExecute(QScriptValue thisObject,
+bool ControllerEngine::internalExecute(const QScriptValue& thisObject,
         QScriptValue functionObject,
-        QScriptValueList args) {
+        const QScriptValueList& args) {
     if (m_pEngine == nullptr) {
         qDebug() << "ControllerEngine::execute: No script engine exists!";
         return false;
@@ -489,7 +492,7 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject,
     return !checkException();
 }
 
-bool ControllerEngine::execute(QScriptValue functionObject,
+bool ControllerEngine::execute(const QScriptValue& functionObject,
         unsigned char channel,
         unsigned char control,
         unsigned char value,
@@ -509,8 +512,8 @@ bool ControllerEngine::execute(QScriptValue functionObject,
     return internalExecute(m_pEngine->globalObject(), functionObject, args);
 }
 
-bool ControllerEngine::execute(QScriptValue function,
-        const QByteArray data,
+bool ControllerEngine::execute(const QScriptValue& function,
+        const QByteArray& data,
         mixxx::Duration timestamp) {
     Q_UNUSED(timestamp);
     if (m_pEngine == nullptr) {
@@ -686,7 +689,7 @@ ControlObjectScript* ControllerEngine::getControlObjectScript(const QString& gro
    Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh])
    Output:  The value
    -------- ------------------------------------------------------ */
-double ControllerEngine::getValue(QString group, QString name) {
+double ControllerEngine::getValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
@@ -700,7 +703,7 @@ double ControllerEngine::getValue(QString group, QString name) {
    Input:   Control group, Key name, new value
    Output:  -
    -------- ------------------------------------------------------ */
-void ControllerEngine::setValue(QString group, QString name, double newValue) {
+void ControllerEngine::setValue(const QString& group, const QString& name, double newValue) {
     if (isnan(newValue)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                  << "] to NotANumber, ignoring.";
@@ -723,7 +726,7 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
    Input:   Control group (e.g. [Channel1]), Key name (e.g. [filterHigh])
    Output:  The value
    -------- ------------------------------------------------------ */
-double ControllerEngine::getParameter(QString group, QString name) {
+double ControllerEngine::getParameter(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript == nullptr) {
         qWarning() << "ControllerEngine: Unknown control" << group << name << ", returning 0.0";
@@ -737,7 +740,8 @@ double ControllerEngine::getParameter(QString group, QString name) {
    Input:   Control group, Key name, new value
    Output:  -
    -------- ------------------------------------------------------ */
-void ControllerEngine::setParameter(QString group, QString name, double newParameter) {
+void ControllerEngine::setParameter(
+        const QString& group, const QString& name, double newParameter) {
     if (isnan(newParameter)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                  << "] to NotANumber, ignoring.";
@@ -760,7 +764,8 @@ void ControllerEngine::setParameter(QString group, QString name, double newParam
    Input:   Control group, Key name, new value
    Output:  -
    -------- ------------------------------------------------------ */
-double ControllerEngine::getParameterForValue(QString group, QString name, double value) {
+double ControllerEngine::getParameterForValue(
+        const QString& group, const QString& name, double value) {
     if (isnan(value)) {
         qWarning() << "ControllerEngine: script setting [" << group << "," << name
                  << "] to NotANumber, ignoring.";
@@ -782,7 +787,7 @@ double ControllerEngine::getParameterForValue(QString group, QString name, doubl
    Input:   Control group, Key name, new value
    Output:  -
    -------- ------------------------------------------------------ */
-void ControllerEngine::reset(QString group, QString name) {
+void ControllerEngine::reset(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->reset();
@@ -794,7 +799,7 @@ void ControllerEngine::reset(QString group, QString name) {
    Input:   Control group, Key name, new value
    Output:  -
    -------- ------------------------------------------------------ */
-double ControllerEngine::getDefaultValue(QString group, QString name) {
+double ControllerEngine::getDefaultValue(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
@@ -810,7 +815,7 @@ double ControllerEngine::getDefaultValue(QString group, QString name) {
    Input:   Control group, Key name, new value
    Output:  -
    -------- ------------------------------------------------------ */
-double ControllerEngine::getDefaultParameter(QString group, QString name) {
+double ControllerEngine::getDefaultParameter(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
 
     if (coScript == nullptr) {
@@ -826,7 +831,7 @@ double ControllerEngine::getDefaultParameter(QString group, QString name) {
    Input:   String to log
    Output:  -
    -------- ------------------------------------------------------ */
-void ControllerEngine::log(QString message) {
+void ControllerEngine::log(const QString& message) {
     controllerDebug(message);
 }
 
@@ -836,8 +841,9 @@ void ControllerEngine::log(QString message) {
 //          The script should store this object to call its
 //          'disconnect' and 'trigger' methods as needed.
 //          If unsuccessful, returns undefined.
-QScriptValue ControllerEngine::makeConnection(QString group, QString name,
-                                              const QScriptValue callback) {
+QScriptValue ControllerEngine::makeConnection(const QString& group,
+        const QString& name,
+        const QScriptValue& callback) {
     VERIFY_OR_DEBUG_ASSERT(m_pEngine != nullptr) {
         qWarning() << "Tried to connect script callback, but there is no script engine!";
         return QScriptValue();
@@ -895,7 +901,7 @@ void ScriptConnection::executeCallback(double value) const {
    Purpose: (Dis)connects a ScriptConnection
    Input:   the ScriptConnection to disconnect
    -------- ------------------------------------------------------ */
-bool ControllerEngine::removeScriptConnection(const ScriptConnection connection) {
+bool ControllerEngine::removeScriptConnection(const ScriptConnection& connection) {
     ControlObjectScript* coScript = getControlObjectScript(connection.key.group,
                                                            connection.key.item);
 
@@ -917,7 +923,7 @@ bool ScriptConnectionInvokableWrapper::disconnect() {
    Purpose: Triggers the callback function of a ScriptConnection
    Input:   the ScriptConnection to trigger
    -------- ------------------------------------------------------ */
-void ControllerEngine::triggerScriptConnection(const ScriptConnection connection) {
+void ControllerEngine::triggerScriptConnection(const ScriptConnection& connection) {
     if (m_pEngine == nullptr) {
         return;
     }
@@ -943,8 +949,10 @@ void ScriptConnectionInvokableWrapper::trigger() {
 // it is disconnected.
 // WARNING: These behaviors are quirky and confusing, so if you change this function,
 // be sure to run the ControllerEngineTest suite to make sure you do not break old scripts.
-QScriptValue ControllerEngine::connectControl(
-        QString group, QString name, const QScriptValue passedCallback, bool disconnect) {
+QScriptValue ControllerEngine::connectControl(const QString& group,
+        const QString& name,
+        const QScriptValue& passedCallback,
+        bool disconnect) {
     // The passedCallback may or may not actually be a function, so when
     // the actual callback function is found, store it in this variable.
     QScriptValue actualCallbackFunction;
@@ -1050,7 +1058,7 @@ QScriptValue ControllerEngine::connectControl(
    Input:   -
    Output:  -
    -------- ------------------------------------------------------ */
-void ControllerEngine::trigger(QString group, QString name) {
+void ControllerEngine::trigger(const QString& group, const QString& name) {
     ControlObjectScript* coScript = getControlObjectScript(group, name);
     if (coScript != nullptr) {
         coScript->emitValueChanged();
@@ -1136,8 +1144,7 @@ bool ControllerEngine::hasErrors(const QString& filename) {
                 whether it should fire just once
    Output:  The timer's ID, 0 if starting it failed
    -------- ------------------------------------------------------ */
-int ControllerEngine::beginTimer(int interval, QScriptValue timerCallback,
-                                 bool oneShot) {
+int ControllerEngine::beginTimer(int interval, const QScriptValue& timerCallback, bool oneShot) {
     if (!timerCallback.isFunction() && !timerCallback.isString()) {
         qWarning() << "Invalid timer callback provided to beginTimer."
                    << "Valid callbacks are strings and functions.";
@@ -1474,7 +1481,7 @@ bool ControllerEngine::isScratching(int deck) {
                 whether to set the soft-takeover status or not
     Output:  -
     -------- ------------------------------------------------------ */
-void ControllerEngine::softTakeover(QString group, QString name, bool set) {
+void ControllerEngine::softTakeover(const QString& group, const QString& name, bool set) {
     ConfigKey key = ConfigKey(group, name);
     ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
     if (!pControl) {
@@ -1499,7 +1506,7 @@ void ControllerEngine::softTakeover(QString group, QString name, bool set) {
      Output:  -
      -------- ------------------------------------------------------ */
 void ControllerEngine::softTakeoverIgnoreNextValue(
-        QString group, const QString name) {
+        const QString& group, const QString& name) {
     ConfigKey key = ConfigKey(group, name);
     ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
     if (!pControl) {

@@ -2,9 +2,10 @@
 
 #include "library/hiddentablemodel.h"
 #include "library/trackcollectionmanager.h"
+#include "moc_dlghidden.cpp"
+#include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
-#include "util/assert.h"
 
 DlgHidden::DlgHidden(
         WLibrary* parent,
@@ -24,7 +25,7 @@ DlgHidden::DlgHidden(
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     // Install our own trackTable
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);

@@ -1,16 +1,17 @@
-#include <QtDebug>
-#include <QFileInfo>
-
 #include "engine/cachingreader/cachingreader.h"
+
+#include <QFileInfo>
+#include <QtDebug>
+
 #include "control/controlobject.h"
+#include "moc_cachingreader.cpp"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/compatibility.h"
 #include "util/counter.h"
+#include "util/logger.h"
 #include "util/math.h"
 #include "util/sample.h"
-#include "util/logger.h"
-#include "util/compatibility.h"
-
 
 namespace {
 
@@ -40,7 +41,7 @@ const SINT kNumberOfCachedChunksInMemory = 80;
 
 } // anonymous namespace
 
-CachingReader::CachingReader(QString group,
+CachingReader::CachingReader(const QString& group,
         UserSettingsPointer config)
         : m_pConfig(config),
           // Limit the number of in-flight requests to the worker. This should

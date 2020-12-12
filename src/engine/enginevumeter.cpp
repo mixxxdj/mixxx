@@ -1,7 +1,8 @@
 #include "engine/enginevumeter.h"
 
-#include "control/controlproxy.h"
 #include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
+#include "moc_enginevumeter.cpp"
 #include "util/math.h"
 #include "util/sample.h"
 
@@ -18,7 +19,7 @@ constexpr CSAMPLE kDecaySmoothing = 0.1f;  //.16//.4
 
 } // namespace
 
-EngineVuMeter::EngineVuMeter(QString group) {
+EngineVuMeter::EngineVuMeter(const QString& group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
     m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);

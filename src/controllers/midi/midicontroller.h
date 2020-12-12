@@ -1,17 +1,4 @@
-/**
-* @file midicontroller.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Tue 7 Feb 2012
-* @brief MIDI Controller base class
-*
-* This is a base class representing a MIDI controller.
-*   It must be inherited by a class that implements it on some API.
-*
-*   Note that the subclass' destructor should call close() at a minimum.
-*/
-
-#ifndef MIDICONTROLLER_H
-#define MIDICONTROLLER_H
+#pragma once
 
 #include "controllers/controller.h"
 #include "controllers/midi/midicontrollerpreset.h"
@@ -22,6 +9,12 @@
 
 class DlgControllerLearning;
 
+/// MIDI Controller base class
+///
+/// This is a base class representing a MIDI controller.
+/// It must be inherited by a class that implements it on some API.
+///
+/// Note that the subclass' destructor should call close() at a minimum.
 class MidiController : public Controller {
     Q_OBJECT
   public:
@@ -49,11 +42,10 @@ class MidiController : public Controller {
         return m_preset.isMappable();
     }
 
-    bool matchPreset(const PresetInfo& preset)  override;
+    bool matchPreset(const PresetInfo& preset) override;
 
   signals:
-    void messageReceived(unsigned char status, unsigned char control,
-                         unsigned char value);
+    void messageReceived(unsigned char status, unsigned char control, unsigned char value);
 
   protected:
     Q_INVOKABLE virtual void sendShortMsg(unsigned char status,
@@ -62,21 +54,23 @@ class MidiController : public Controller {
     /// Alias for send()
     /// The length parameter is here for backwards compatibility for when scripts
     /// were required to specify it.
-    Q_INVOKABLE inline void sendSysexMsg(QList<int> data, unsigned int length = 0) {
+    Q_INVOKABLE inline void sendSysexMsg(const QList<int>& data, unsigned int length = 0) {
         Q_UNUSED(length);
         send(data);
     }
 
   protected slots:
-    virtual void receive(unsigned char status, unsigned char control,
-                         unsigned char value, mixxx::Duration timestamp);
+    virtual void receive(unsigned char status,
+            unsigned char control,
+            unsigned char value,
+            mixxx::Duration timestamp);
     // For receiving System Exclusive messages
-    void receive(const QByteArray data, mixxx::Duration timestamp) override;
+    void receive(const QByteArray& data, mixxx::Duration timestamp) override;
     int close() override;
 
   private slots:
     /// Apply the preset to the controller.
-    /// @brief Initializes both controller engine and static output mappings.
+    /// Initializes both controller engine and static output mappings.
     ///
     /// @param initializeScripts Can be set to false to skip script
     /// initialization for unit tests.
@@ -121,5 +115,3 @@ class MidiController : public Controller {
     // MIDI learning assistant
     friend class DlgControllerLearning;
 };
-
-#endif

@@ -1,6 +1,3 @@
-// rekordboxfeature.cpp
-// Created 05/24/2019 by Evan Dekker
-
 #include "library/rekordbox/rekordboxfeature.h"
 
 #include <mp3guessenc.h>
@@ -21,6 +18,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_rekordboxfeature.cpp"
 #include "track/beatmap.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
@@ -149,7 +147,7 @@ bool createPlaylistTracksTable(QSqlDatabase& database, const QString& tableName)
     return true;
 }
 
-bool dropTable(QSqlDatabase& database, QString tableName) {
+bool dropTable(QSqlDatabase& database, const QString& tableName) {
     qDebug() << "Dropping Rekordbox table: " << tableName;
 
     QSqlQuery query(database);
@@ -257,8 +255,9 @@ inline bool instanceof (const T* ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
-QString toUnicode(std::string toConvert) {
-    return QTextCodec::codecForName("UTF-16BE")->toUnicode(QByteArray(toConvert.c_str(), toConvert.length()));
+QString toUnicode(const std::string& toConvert) {
+    return QTextCodec::codecForName("UTF-16BE")
+            ->toUnicode(toConvert.data(), static_cast<int>(toConvert.length()));
 }
 
 // Functions getText and parseDeviceDB are roughly based on the following Java file:
@@ -287,7 +286,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
     return text.remove(QChar('\x0'));
 }
 
-int createDevicePlaylist(QSqlDatabase& database, QString devicePath) {
+int createDevicePlaylist(QSqlDatabase& database, const QString& devicePath) {
     int playlistID = -1;
 
     QSqlQuery queryInsertIntoDevicePlaylist(database);
@@ -352,8 +351,8 @@ void insertTrack(
         QMap<uint32_t, QString>& albumsMap,
         QMap<uint32_t, QString>& genresMap,
         QMap<uint32_t, QString>& keysMap,
-        QString devicePath,
-        QString device,
+        const QString& devicePath,
+        const QString& device,
         int audioFilesCount) {
     int rbID = static_cast<int>(track->id());
     QString title = getText(track->title());
@@ -427,8 +426,8 @@ void buildPlaylistTree(
         QMap<uint32_t, bool>& playlistIsFolderMap,
         QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTreeMap,
         QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTrackMap,
-        QString playlistPath,
-        QString device);
+        const QString& playlistPath,
+        const QString& device);
 
 QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* deviceItem) {
     QString device = deviceItem->getLabel();
@@ -628,8 +627,8 @@ void buildPlaylistTree(
         QMap<uint32_t, bool>& playlistIsFolderMap,
         QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTreeMap,
         QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTrackMap,
-        QString playlistPath,
-        QString device) {
+        const QString& playlistPath,
+        const QString& device) {
     for (uint32_t childIndex = 0; childIndex < (uint32_t)playlistTreeMap[parentID].size(); childIndex++) {
         uint32_t childID = playlistTreeMap[parentID][childIndex];
         QString playlistItemName = playlistNameMap[childID];
@@ -786,7 +785,12 @@ void clearDeviceTables(QSqlDatabase& database, TreeItem* child) {
     transaction.commit();
 }
 
-void setHotCue(TrackPointer track, double startPosition, double endPosition, int id, QString label, mixxx::RgbColor::optional_t color) {
+void setHotCue(TrackPointer track,
+        double startPosition,
+        double endPosition,
+        int id,
+        const QString& label,
+        mixxx::RgbColor::optional_t color) {
     CuePointer pCue;
     bool hotCueFound = false;
 
@@ -817,7 +821,11 @@ void setHotCue(TrackPointer track, double startPosition, double endPosition, int
     }
 }
 
-void readAnalyze(TrackPointer track, double sampleRate, int timingOffset, bool ignoreCues, QString anlzPath) {
+void readAnalyze(TrackPointer track,
+        double sampleRate,
+        int timingOffset,
+        bool ignoreCues,
+        const QString& anlzPath) {
     if (!QFile(anlzPath).exists()) {
         return;
     }
@@ -1314,7 +1322,7 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
     RekordboxPlaylistModel* model = new RekordboxPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
     model->setPlaylist(playlist);
     return model;

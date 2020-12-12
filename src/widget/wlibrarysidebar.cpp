@@ -2,11 +2,12 @@
 
 #include <QFileInfo>
 #include <QHeaderView>
+#include <QMimeData>
 #include <QUrl>
 #include <QtDebug>
-#include <QMimeData>
 
 #include "library/sidebarmodel.h"
+#include "moc_wlibrarysidebar.cpp"
 #include "util/dnd.h"
 
 const int expand_time = 250;
@@ -77,7 +78,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event) {
             // Do nothing.
             event->ignore();
         } else {
-            SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
+            SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
             bool accepted = true;
             if (sidebarModel) {
                 accepted = false;
@@ -134,7 +135,7 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             //this->selectionModel()->clear();
             //Drag-and-drop from an external application or the track table widget
             //eg. dragging a track from Windows Explorer onto the sidebar
-            SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
+            SidebarModel* sidebarModel = qobject_cast<SidebarModel*>(model());
             if (sidebarModel) {
                 QModelIndex destIndex = indexAt(event->pos());
                 // event->source() will return NULL if something is dropped from
@@ -173,7 +174,7 @@ bool WLibrarySidebar::isLeafNodeSelected() {
         if(!index.model()->hasChildren(index)) {
             return true;
         }
-        const SidebarModel* sidebarModel = dynamic_cast<const SidebarModel*>(index.model());
+        const SidebarModel* sidebarModel = qobject_cast<const SidebarModel*>(index.model());
         if (sidebarModel) {
             return sidebarModel->hasTrackTable(index);
         }

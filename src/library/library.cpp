@@ -1,31 +1,27 @@
 // library.cpp
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
+#include "library/library.h"
+
+#include <QDir>
 #include <QItemSelectionModel>
 #include <QMessageBox>
-#include <QTranslator>
-#include <QDir>
 #include <QPointer>
+#include <QTranslator>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
-
-#include "library/library.h"
-#include "library/library_preferences.h"
-#include "library/librarycontrol.h"
-#include "library/libraryfeature.h"
-#include "library/librarytablemodel.h"
-#include "library/sidebarmodel.h"
-#include "library/trackcollection.h"
-#include "library/externaltrackcollection.h"
-#include "library/trackcollectionmanager.h"
-#include "library/trackmodel.h"
-
 #include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
 #include "library/crate/cratefeature.h"
+#include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
+#include "library/library_preferences.h"
+#include "library/librarycontrol.h"
+#include "library/libraryfeature.h"
+#include "library/librarytablemodel.h"
 #include "library/mixxxlibraryfeature.h"
 #include "library/playlistfeature.h"
 #include "library/recording/recordingfeature.h"
@@ -33,23 +29,22 @@
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/serato/seratofeature.h"
 #include "library/setlogfeature.h"
+#include "library/sidebarmodel.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "library/trackmodel.h"
 #include "library/traktor/traktorfeature.h"
-
 #include "mixer/playermanager.h"
-
+#include "moc_library.cpp"
 #include "recording/recordingmanager.h"
-
-#include "util/db/dbconnectionpooled.h"
-#include "util/sandbox.h"
-#include "util/logger.h"
 #include "util/assert.h"
-
-#include "widget/wtracktableview.h"
+#include "util/db/dbconnectionpooled.h"
+#include "util/logger.h"
+#include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
-
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "widget/wtracktableview.h"
 
 namespace {
 
@@ -421,7 +416,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit loadTrack(pTrack);
 }
 
-void Library::slotLoadLocationToPlayer(QString location, QString group) {
+void Library::slotLoadLocationToPlayer(const QString& location, const QString& group) {
     auto trackRef = TrackRef::fromFileInfo(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
@@ -429,7 +424,7 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
     }
 }
 
-void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+void Library::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
     emit loadTrackToPlayer(pTrack, group, play);
 }
 
@@ -451,7 +446,7 @@ void Library::onSkinLoadFinished() {
     m_pSidebarModel->activateDefaultSelection();
 }
 
-void Library::slotRequestAddDir(QString dir) {
+void Library::slotRequestAddDir(const QString& dir) {
     // We only call this method if the user has picked a new directory via a
     // file dialog. This means the system sandboxer (if we are sandboxed) has
     // granted us permission to this folder. Create a security bookmark while we
@@ -474,7 +469,7 @@ void Library::slotRequestAddDir(QString dir) {
     }
 }
 
-void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
+void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) {
     switch (removalType) {
     case RemovalType::KeepTracks:
         break;
@@ -510,7 +505,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
     }
 }
 
-void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
+void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDir) {
     m_pTrackCollectionManager->relocateDirectory(oldDir, newDir);
 
     // also update the config file if necessary so that downgrading is still

@@ -1,5 +1,4 @@
-#ifndef WCOVERART_H
-#define WCOVERART_H
+#pragma once
 
 #include <QColor>
 #include <QDomNode>
@@ -33,8 +32,8 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     void slotEnable(bool);
 
   signals:
-    void trackDropped(QString filename, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   private slots:
     void slotCoverFound(
@@ -76,5 +75,3 @@ class WCoverArt : public QWidget, public WBaseWidget, public TrackDropTarget {
     DlgCoverArtFullSize* m_pDlgFullSize;
     QTimer m_clickTimer;
 };
-
-#endif // WCOVERART_H

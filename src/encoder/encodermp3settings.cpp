@@ -1,9 +1,4 @@
-/**
-* @file encodermp3settings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for mp3 encoder
-*/
+// storage of setting for mp3 encoder
 
 #include "encoder/encodermp3settings.h"
 #include "recording/defs_recording.h"
@@ -94,8 +89,7 @@ QList<EncoderSettings::OptionsGroup> EncoderMp3Settings::getOptionGroups() const
 }
 // Selects the option by its index. If it is a single-element option,
 // index 0 means disabled and 1 enabled.
-void EncoderMp3Settings::setGroupOption(QString groupCode, int optionIndex)
-{
+void EncoderMp3Settings::setGroupOption(const QString& groupCode, int optionIndex) {
     bool found=false;
     for (const auto& group : qAsConst(m_radioList)) {
         if (groupCode == group.groupCode) {
@@ -115,8 +109,7 @@ void EncoderMp3Settings::setGroupOption(QString groupCode, int optionIndex)
 }
 // Return the selected option of the group. If it is a single-element option,
 // 0 means disabled and 1 enabled.
-int EncoderMp3Settings::getSelectedOption(QString groupCode) const
-{
+int EncoderMp3Settings::getSelectedOption(const QString& groupCode) const {
     bool found=false;
     int value = m_pConfig->getValue(
         ConfigKey(RECORDING_PREF_KEY, ENCODING_MODE_GROUP), 0);

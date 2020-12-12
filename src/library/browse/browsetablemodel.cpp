@@ -15,6 +15,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_browsetablemodel.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "widget/wlibrarytableview.h"
@@ -437,7 +438,7 @@ bool BrowseTableModel::setData(
     return true;
 }
 
-void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
+void BrowseTableModel::trackLoaded(const QString& group, TrackPointer pTrack) {
     if (group == m_previewDeckGroup) {
         for (int row = 0; row < rowCount(); ++row) {
             QModelIndex i = index(row, COLUMN_PREVIEW);

@@ -17,11 +17,12 @@
 #endif
 
 #include "broadcast/defs_broadcast.h"
-#include "recording/defs_recording.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "preferences/dialog/dlgprefbroadcast.h"
 #include "encoder/encodersettings.h"
+#include "moc_dlgprefbroadcast.cpp"
+#include "preferences/dialog/dlgprefbroadcast.h"
+#include "recording/defs_recording.h"
 #include "util/logger.h"
 
 namespace {
@@ -359,7 +360,7 @@ void DlgPrefBroadcast::selectConnectionRow(int row) {
     connectionListItemSelected(newSelection);
 }
 
-void DlgPrefBroadcast::selectConnectionRowByName(QString rowName) {
+void DlgPrefBroadcast::selectConnectionRowByName(const QString& rowName) {
     int row = -1;
     for (int i = 0; i < m_pSettingsModel->rowCount(); i++) {
         QModelIndex index = m_pSettingsModel->index(i, kColumnName);

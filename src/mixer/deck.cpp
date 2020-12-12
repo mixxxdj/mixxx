@@ -1,5 +1,7 @@
 #include "mixer/deck.h"
 
+#include "moc_deck.cpp"
+
 Deck::Deck(QObject* pParent,
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,

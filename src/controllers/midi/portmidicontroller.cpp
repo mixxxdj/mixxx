@@ -1,15 +1,8 @@
-/**
- * @file portmidicontroller.h
- * @author Albert Santoni alberts@mixxx.org
- * @author Sean M. Pappalardo  spappalardo@mixxx.org
- * @date Thu 15 Mar 2012
- * @brief PortMidi-based MIDI backend
- *
- */
-
-#include "controllers/midi/midiutils.h"
 #include "controllers/midi/portmidicontroller.h"
+
 #include "controllers/controllerdebug.h"
+#include "controllers/midi/midiutils.h"
+#include "moc_portmidicontroller.cpp"
 
 PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
         const PmDeviceInfo* outputDeviceInfo,
@@ -229,7 +222,7 @@ void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
     }
 }
 
-void PortMidiController::send(QByteArray data) {
+void PortMidiController::send(const QByteArray& data) {
     // PortMidi does not receive a length argument for the buffer we provide to
     // Pm_WriteSysEx. Instead, it scans for a MIDI_EOX byte to know when the
     // message is over. If one is not provided, it will overflow the buffer and

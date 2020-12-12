@@ -1,5 +1,7 @@
 #include "library/dao/playlistdao.h"
 
+#include "moc_playlistdao.cpp"
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
 #endif
@@ -456,14 +458,15 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position) {
     emit tracksChanged(QSet<int>{playlistId});
 }
 
-void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions) {
+void PlaylistDAO::removeTracksFromPlaylist(int playlistId, const QList<int>& positions) {
     // get positions in reversed order
-    std::sort(positions.begin(), positions.end(), std::greater<int>());
+    auto sortedPositons = positions;
+    std::sort(sortedPositons.begin(), sortedPositons.end(), std::greater<int>());
 
     //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
     //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
-    for (const auto position : qAsConst(positions)) {
+    for (const auto position : qAsConst(sortedPositons)) {
         removeTracksFromPlaylistInner(playlistId, position);
     }
     transaction.commit();

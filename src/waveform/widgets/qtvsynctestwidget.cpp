@@ -1,20 +1,20 @@
-#include <QPainter>
-#include <QGLContext>
-#include <QtDebug>
-
 #include "waveform/widgets/qtvsynctestwidget.h"
 
-#include "waveform/sharedglcontext.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/renderers/waveformrenderbackground.h"
+#include <QGLContext>
+#include <QPainter>
+#include <QtDebug>
+
+#include "moc_qtvsynctestwidget.cpp"
+#include "util/performancetimer.h"
 #include "waveform/renderers/qtvsynctestrenderer.h"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
-
-#include "util/performancetimer.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/sharedglcontext.h"
 
 QtVSyncTestWidget::QtVSyncTestWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent, SharedGLContext::getWidget()),
@@ -22,9 +22,6 @@ QtVSyncTestWidget::QtVSyncTestWidget(const QString& group, QWidget* parent)
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
 
     addRenderer<QtVSyncTestRenderer>();
 
@@ -40,7 +37,7 @@ QtVSyncTestWidget::~QtVSyncTestWidget() {
 }
 
 void QtVSyncTestWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = this;
 }
 
 void QtVSyncTestWidget::paintEvent(QPaintEvent* event) {

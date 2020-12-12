@@ -3,17 +3,17 @@
 #include <QPainter>
 #include <QtDebug>
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/renderers/waveformrenderbackground.h"
+#include "moc_glslwaveformwidget.cpp"
+#include "util/performancetimer.h"
 #include "waveform/renderers/glslwaveformrenderersignal.h"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/sharedglcontext.h"
-
-#include "util/performancetimer.h"
 
 GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(
         const QString& group,
@@ -31,8 +31,7 @@ GLSLWaveformWidget::GLSLWaveformWidget(
         const QString& group,
         QWidget* parent,
         bool rgbRenderer)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
-          WaveformWidgetAbstract(group) {
+        : GLWaveformWidgetAbstract(group, parent) {
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
@@ -46,9 +45,9 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     if (rgbRenderer) {
-        m_signalRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
+        m_pGlRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
     } else {
-        m_signalRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
+        m_pGlRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
     }
 #else
     Q_UNUSED(rgbRenderer);

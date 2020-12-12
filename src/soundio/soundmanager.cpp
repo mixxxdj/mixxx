@@ -1,26 +1,10 @@
-/**
- * @file soundmanager.cpp
- * @author Albert Santoni <gamegod at users dot sf dot net>
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20070815
- */
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "soundio/soundmanager.h"
 
-#include <QtDebug>
-#include <cstring> // for memcpy and strcmp
+#include <portaudio.h>
 
 #include <QLibrary>
-#include <portaudio.h>
+#include <QtDebug>
+#include <cstring> // for memcpy and strcmp
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -28,13 +12,14 @@
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
+#include "moc_soundmanager.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
 #include "soundio/soundmanagerutil.h"
-#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
+#include "util/compatibility.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/sleep.h"
@@ -118,7 +103,7 @@ SoundManager::~SoundManager() {
 }
 
 QList<SoundDevicePointer> SoundManager::getDeviceList(
-    QString filterAPI, bool bOutputDevices, bool bInputDevices) const {
+        const QString& filterAPI, bool bOutputDevices, bool bInputDevices) const {
     //qDebug() << "SoundManager::getDeviceList";
 
     if (filterAPI == "None") {
@@ -232,7 +217,7 @@ void SoundManager::clearDeviceList(bool sleepAfterClosing) {
     }
 }
 
-QList<unsigned int> SoundManager::getSampleRates(QString api) const {
+QList<unsigned int> SoundManager::getSampleRates(const QString& api) const {
     if (api == MIXXX_PORTAUDIO_JACK_STRING) {
         // queryDevices must have been called for this to work, but the
         // ctor calls it -bkgood
@@ -558,7 +543,7 @@ SoundManagerConfig SoundManager::getConfig() const {
     return m_config;
 }
 
-SoundDeviceError SoundManager::setConfig(SoundManagerConfig config) {
+SoundDeviceError SoundManager::setConfig(const SoundManagerConfig& config) {
     SoundDeviceError err = SOUNDDEVICE_ERROR_OK;
     m_config = config;
     checkConfig();
@@ -633,7 +618,7 @@ void SoundManager::readProcess() const {
     }
 }
 
-void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
+void SoundManager::registerOutput(const AudioOutput& output, AudioSource* src) {
     if (m_registeredSources.contains(output)) {
         qDebug() << "WARNING: AudioOutput already registered!";
     }
@@ -641,7 +626,7 @@ void SoundManager::registerOutput(AudioOutput output, AudioSource *src) {
     emit outputRegistered(output, src);
 }
 
-void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
+void SoundManager::registerInput(const AudioInput& input, AudioDestination* dest) {
     if (m_registeredDestinations.contains(input)) {
         // note that this can be totally ok if we just want a certain
         // AudioInput to be going to a different AudioDest -bkgood

@@ -1,8 +1,4 @@
-// enginecontrol.h
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef ENGINECONTROL_H
-#define ENGINECONTROL_H
+#pragma once
 
 #include <gtest/gtest_prod.h>
 
@@ -38,8 +34,8 @@ const int kNoTrigger = -1;
 class EngineControl : public QObject {
     Q_OBJECT
   public:
-    EngineControl(QString group,
-                  UserSettingsPointer pConfig);
+    EngineControl(const QString& group,
+            UserSettingsPointer pConfig);
     ~EngineControl() override;
 
     // Called by EngineBuffer::process every latency period. See the above
@@ -109,5 +105,3 @@ class EngineControl : public QObject {
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
     FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
 };
-
-#endif /* ENGINECONTROL_H */

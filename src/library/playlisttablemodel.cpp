@@ -5,8 +5,8 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
-
 #include "mixer/playermanager.h"
+#include "moc_playlisttablemodel.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
                                        TrackCollectionManager* pTrackCollectionManager,
@@ -351,7 +351,7 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
     return caps;
 }
 
-void PlaylistTableModel::playlistsChanged(QSet<int> playlistIds) {
+void PlaylistTableModel::playlistsChanged(const QSet<int>& playlistIds) {
     if (playlistIds.contains(m_iPlaylistId)) {
         select(); // Repopulate the data model.
     }

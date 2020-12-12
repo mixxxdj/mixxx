@@ -15,7 +15,7 @@ class SoundSource
         : public AudioSource,
           public MetadataSourceTagLib {
   public:
-    static QString getFileExtensionFromUrl(QUrl url);
+    static QString getFileExtensionFromUrl(const QUrl& url);
 
     QString getType() const {
         return m_type;
@@ -24,10 +24,10 @@ class SoundSource
   protected:
     // If no type is provided the file extension of the file referred
     // by the URL will be used as the type of the SoundSource.
-    explicit SoundSource(QUrl url)
+    explicit SoundSource(const QUrl& url)
             : SoundSource(url, getFileExtensionFromUrl(url)) {
     }
-    SoundSource(QUrl url, QString type);
+    SoundSource(const QUrl& url, const QString& type);
 
   private:
     QString m_type;
@@ -36,7 +36,7 @@ class SoundSource
 typedef std::shared_ptr<SoundSource> SoundSourcePointer;
 
 template<typename T>
-SoundSourcePointer newSoundSourceFromUrl(QUrl url) {
+SoundSourcePointer newSoundSourceFromUrl(const QUrl& url) {
     return std::make_shared<T>(url);
 }
 

@@ -1,6 +1,4 @@
-// loopingcontrol.cpp
-// Created on Sep 23, 2008
-// Author: asantoni, rryan
+#include "engine/controls/loopingcontrol.h"
 
 #include <QtDebug>
 
@@ -8,20 +6,20 @@
 #include "control/controlpushbutton.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
-#include "engine/controls/loopingcontrol.h"
 #include "engine/enginebuffer.h"
+#include "moc_loopingcontrol.cpp"
 #include "preferences/usersettings.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/math.h"
 #include "util/sample.h"
-#include "track/track.h"
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
                                           1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
 
 // Used to generate the beatloop_%SIZE, beatjump_%SIZE, and loop_move_%SIZE CO
 // ConfigKeys.
-ConfigKey keyForControl(QString group, QString ctrlName, double num) {
+ConfigKey keyForControl(const QString& group, const QString& ctrlName, double num) {
     ConfigKey key;
     key.group = group;
     key.item = ctrlName.arg(num);
@@ -37,8 +35,8 @@ QList<double> LoopingControl::getBeatSizes() {
     return result;
 }
 
-LoopingControl::LoopingControl(QString group,
-                               UserSettingsPointer pConfig)
+LoopingControl::LoopingControl(const QString& group,
+        UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_bLoopingEnabled(false),
           m_bLoopRollActive(false),
@@ -1305,7 +1303,7 @@ double LoopingControl::seekInsideAdjustedLoop(
     }
 }
 
-BeatJumpControl::BeatJumpControl(QString group, double size)
+BeatJumpControl::BeatJumpControl(const QString& group, double size)
         : m_dBeatJumpSize(size) {
     m_pJumpForward = new ControlPushButton(
             keyForControl(group, "beatjump_%1_forward", size));
@@ -1336,7 +1334,7 @@ void BeatJumpControl::slotJumpForward(double pressed) {
     }
 }
 
-LoopMoveControl::LoopMoveControl(QString group, double size)
+LoopMoveControl::LoopMoveControl(const QString& group, double size)
         : m_dLoopMoveSize(size) {
     m_pMoveForward = new ControlPushButton(
             keyForControl(group, "loop_move_%1_forward", size));
@@ -1367,7 +1365,7 @@ void LoopMoveControl::slotMoveForward(double v) {
     }
 }
 
-BeatLoopingControl::BeatLoopingControl(QString group, double size)
+BeatLoopingControl::BeatLoopingControl(const QString& group, double size)
         : m_dBeatLoopSize(size),
           m_bActive(false) {
     // This is the original beatloop control which is now deprecated. Its value

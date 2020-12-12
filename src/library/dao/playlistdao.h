@@ -1,5 +1,4 @@
-#ifndef PLAYLISTDAO_H
-#define PLAYLISTDAO_H
+#pragma once
 
 #include <QHash>
 #include <QObject>
@@ -92,7 +91,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void removeHiddenTracks(const int playlistId);
     // Remove a track from a playlist
     void removeTrackFromPlaylist(int playlistId, int position);
-    void removeTracksFromPlaylist(int playlistId, QList<int> positions);
+    void removeTracksFromPlaylist(int playlistId, const QList<int>& positions);
     void removeTracksFromPlaylistById(int playlistId, TrackId trackId);
     // Insert a track into a specific position in a playlist
     bool insertTrackIntoPlaylist(TrackId trackId, int playlistId, int position);
@@ -123,11 +122,11 @@ class PlaylistDAO : public QObject, public virtual DAO {
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
-    void renamed(int playlistId, QString newName);
+    void renamed(int playlistId, const QString& newName);
     void lockChanged(int playlistId);
     void trackAdded(int playlistId, TrackId trackId, int position);
     void trackRemoved(int playlistId, TrackId trackId, int position);
-    void tracksChanged(QSet<int> playlistIds); // added/removed/reordered
+    void tracksChanged(const QSet<int>& playlistIds); // added/removed/reordered
 
   private:
     bool removeTracksFromPlaylist(int playlistId, int startIndex);
@@ -146,5 +145,3 @@ class PlaylistDAO : public QObject, public virtual DAO {
     AutoDJProcessor* m_pAutoDJProcessor;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };
-
-#endif //PLAYLISTDAO_H

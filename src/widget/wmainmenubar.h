@@ -1,5 +1,4 @@
-#ifndef WIDGET_WMAINMENUBAR
-#define WIDGET_WMAINMENUBAR
+#pragma once
 
 #include <QAction>
 #include <QList>
@@ -64,7 +63,7 @@ class WMainMenuBar : public QMenuBar {
     void toggleBroadcasting(bool toggle);
     void toggleRecording(bool enabled);
     void toggleVinylControl(int deck);
-    void visitUrl(QString url);
+    void visitUrl(const QString& url);
     void quit();
 
     void internalRecordingStateChange(bool recording);
@@ -90,5 +89,3 @@ class WMainMenuBar : public QMenuBar {
     QList<QAction*> m_loadToDeckActions;
     QList<QAction*> m_vinylControlEnabledActions;
 };
-
-#endif /* WIDGET_WMAINMENUBAR */

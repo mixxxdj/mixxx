@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QStyle>
 
+#include "moc_wcolorpicker.cpp"
 #include "util/color/color.h"
 #include "util/parented_ptr.h"
 
@@ -74,7 +75,7 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
 }
 
 void WColorPicker::removeColorButtons() {
-    QGridLayout* pLayout = static_cast<QGridLayout*>(layout());
+    QGridLayout* pLayout = qobject_cast<QGridLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(pLayout) {
         qWarning() << "Color Picker has no layout!";
         return;
@@ -100,7 +101,7 @@ void WColorPicker::removeColorButtons() {
 }
 
 void WColorPicker::addColorButtons() {
-    QGridLayout* pLayout = static_cast<QGridLayout*>(layout());
+    QGridLayout* pLayout = qobject_cast<QGridLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(pLayout) {
         qWarning() << "Color Picker has no layout!";
         return;

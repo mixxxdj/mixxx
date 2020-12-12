@@ -1,5 +1,4 @@
-#ifndef BASESYNCABLELISTENER_H
-#define BASESYNCABLELISTENER_H
+#pragma once
 
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
@@ -71,5 +70,3 @@ class BaseSyncableListener : public SyncableListener {
     // addSyncableDeck.
     QList<Syncable*> m_syncables;
 };
-
-#endif /* BASESYNCABLELISTENER_H */

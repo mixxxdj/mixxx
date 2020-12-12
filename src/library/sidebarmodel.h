@@ -1,8 +1,4 @@
-// sidebarmodel.h
-// Created 8/21/09 by RJ Ryan (rryan@mit.edu)
-
-#ifndef SIDEBARMODEL_H
-#define SIDEBARMODEL_H
+#pragma once
 
 #include <QAbstractItemModel>
 #include <QList>
@@ -36,8 +32,8 @@ class SidebarModel : public QAbstractItemModel {
     int columnCount(const QModelIndex& parent = QModelIndex()) const override;
     QVariant data(const QModelIndex& index,
                   int role = Qt::DisplayRole) const override;
-    bool dropAccept(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
-    bool dragMoveAccept(const QModelIndex& index, QUrl url);
+    bool dropAccept(const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource);
+    bool dragMoveAccept(const QModelIndex& index, const QUrl& url);
     bool hasChildren(const QModelIndex& parent = QModelIndex()) const override;
     bool hasTrackTable(const QModelIndex& index) const;
 
@@ -83,8 +79,6 @@ class SidebarModel : public QAbstractItemModel {
     QTimer* const m_pressedUntilClickedTimer;
     QModelIndex m_pressedIndex;
 
-    void startPressedUntilClickedTimer(QModelIndex pressedIndex);
+    void startPressedUntilClickedTimer(const QModelIndex& pressedIndex);
     void stopPressedUntilClickedTimer();
 };
-
-#endif /* SIDEBARMODEL_H */

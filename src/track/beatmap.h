@@ -5,8 +5,7 @@
  *      Author: vittorio
  */
 
-#ifndef BEATMAP_H_
-#define BEATMAP_H_
+#pragma once
 
 #include <QMutex>
 
@@ -52,7 +51,7 @@ class BeatMap final : public Beats {
     BeatsPointer clone() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
-    virtual void setSubVersion(QString subVersion);
+    virtual void setSubVersion(const QString& subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -113,4 +112,3 @@ class BeatMap final : public Beats {
 };
 
 } // namespace mixxx
-#endif /* BEATMAP_H_ */

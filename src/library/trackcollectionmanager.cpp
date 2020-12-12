@@ -3,6 +3,7 @@
 #include "library/externaltrackcollection.h"
 #include "library/scanner/libraryscanner.h"
 #include "library/trackcollection.h"
+#include "moc_trackcollectionmanager.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/assert.h"

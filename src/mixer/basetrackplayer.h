@@ -1,5 +1,4 @@
-#ifndef MIXER_BASETRACKPLAYER_H
-#define MIXER_BASETRACKPLAYER_H
+#pragma once
 
 #include <QObject>
 #include <QScopedPointer>
@@ -82,7 +81,7 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotCloneFromGroup(const QString& group) final;
     void slotCloneDeck() final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void slotLoadFailed(TrackPointer pTrack, QString reason);
+    void slotLoadFailed(TrackPointer pTrack, const QString& reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
     void slotSetTrackColor(mixxx::RgbColor::optional_t color);
     void slotPlayToggled(double);
@@ -159,5 +158,3 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     parented_ptr<ControlProxy> m_pVinylControlEnabled;
     parented_ptr<ControlProxy> m_pVinylControlStatus;
 };
-
-#endif // MIXER_BASETRACKPLAYER_H

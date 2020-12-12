@@ -1,33 +1,15 @@
-/***************************************************************************
-                          dlgprefvinyl.cpp  -  description
-                             -------------------
-    begin                : Thu Oct 23 2006
-    copyright            : (C) 2006 by Stefan Langhammer
-                           (C) 2007 by Albert Santoni
-    email                : stefan.langhammer@9elements.com
-                           gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+#include "preferences/dialog/dlgprefvinyl.h"
 
 #include <QtDebug>
 
-#include "preferences/dialog/dlgprefvinyl.h"
-
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "defs_urls.h"
 #include "mixer/playermanager.h"
+#include "moc_dlgprefvinyl.cpp"
+#include "util/platform.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "defs_urls.h"
-#include "util/platform.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            UserSettingsPointer  _config)
@@ -150,23 +132,23 @@ void DlgPrefVinyl::slotNumDecksChanged(double dNumDecks) {
     }
 }
 
-void DlgPrefVinyl::slotVinylType1Changed(QString text) {
+void DlgPrefVinyl::slotVinylType1Changed(const QString& text) {
     LeadinTime1->setValue(getDefaultLeadIn(text));
 }
 
-void DlgPrefVinyl::slotVinylType2Changed(QString text) {
+void DlgPrefVinyl::slotVinylType2Changed(const QString& text) {
     LeadinTime2->setValue(getDefaultLeadIn(text));
 }
 
-void DlgPrefVinyl::slotVinylType3Changed(QString text) {
+void DlgPrefVinyl::slotVinylType3Changed(const QString& text) {
     LeadinTime3->setValue(getDefaultLeadIn(text));
 }
 
-void DlgPrefVinyl::slotVinylType4Changed(QString text) {
+void DlgPrefVinyl::slotVinylType4Changed(const QString& text) {
     LeadinTime4->setValue(getDefaultLeadIn(text));
 }
 
-/** @brief Performs any necessary actions that need to happen when the prefs dialog is opened */
+/// Performs any necessary actions that need to happen when the prefs dialog is opened.
 void DlgPrefVinyl::slotShow() {
     if (m_pVCManager) {
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -180,7 +162,7 @@ void DlgPrefVinyl::slotShow() {
     }
 }
 
-/** @brief Performs any necessary actions that need to happen when the prefs dialog is closed */
+/** Performs any necessary actions that need to happen when the prefs dialog is closed. */
 void DlgPrefVinyl::slotHide() {
     if (m_pVCManager) {
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -281,7 +263,8 @@ void DlgPrefVinyl::slotUpdate() {
     }
 }
 
-void DlgPrefVinyl::verifyAndSaveLeadInTime(QSpinBox* widget, QString group, QString vinyl_type) {
+void DlgPrefVinyl::verifyAndSaveLeadInTime(
+        QSpinBox* widget, const QString& group, const QString& vinyl_type) {
     QString strLeadIn = widget->text();
     bool isInteger;
     strLeadIn.toInt(&isInteger);
@@ -293,7 +276,7 @@ void DlgPrefVinyl::verifyAndSaveLeadInTime(QSpinBox* widget, QString group, QStr
     }
 }
 
-int DlgPrefVinyl::getDefaultLeadIn(QString vinyl_type) const {
+int DlgPrefVinyl::getDefaultLeadIn(const QString& vinyl_type) const {
     if (vinyl_type == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
         return MIXXX_VINYL_SERATOCV02VINYLSIDEA_LEADIN;
     } else if (vinyl_type == MIXXX_VINYL_SERATOCV02VINYLSIDEB) {

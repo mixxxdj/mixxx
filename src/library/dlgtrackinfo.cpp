@@ -8,6 +8,7 @@
 #include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
 #include "library/trackmodel.h"
+#include "moc_dlgtrackinfo.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
@@ -318,7 +319,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     }
 }
 
-void DlgTrackInfo::loadTrack(QModelIndex index) {
+void DlgTrackInfo::loadTrack(const QModelIndex& index) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }

@@ -1,19 +1,12 @@
-/**
- * @file midicontroller.cpp
- * @author Sean Pappalardo spappalardo@mixxx.org
- * @date Tue 7 Feb 2012
- * @brief MIDI Controller base class
- *
- */
-
 #include "controllers/midi/midicontroller.h"
 
-#include "controllers/midi/midiutils.h"
-#include "controllers/defs_controllers.h"
-#include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
+#include "controllers/controllerdebug.h"
+#include "controllers/defs_controllers.h"
+#include "controllers/midi/midiutils.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_midicontroller.cpp"
 #include "util/math.h"
 #include "util/screensaver.h"
 
@@ -460,7 +453,7 @@ double MidiController::computeValue(
     return newmidivalue;
 }
 
-void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
+void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) {
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
 
     MidiKey mappingKey(data.at(0), 0xFF);

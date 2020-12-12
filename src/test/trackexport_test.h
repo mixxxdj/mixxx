@@ -1,3 +1,5 @@
+#pragma once
+
 #include "library/export/trackexportworker.h"
 
 #include <future>
@@ -25,8 +27,8 @@ class FakeOverwriteAnswerer : public QObject {
     }
     virtual ~FakeOverwriteAnswerer();
 
-    void setAnswer(QString expected_filename,
-                   TrackExportWorker::OverwriteAnswer answer) {
+    void setAnswer(const QString& expected_filename,
+            TrackExportWorker::OverwriteAnswer answer) {
         // We should never copy a duplicate filename, so if a name already
         // exists that's a bug in the test.
         Q_ASSERT(m_answers.find(expected_filename) == m_answers.end());
@@ -46,9 +48,9 @@ class FakeOverwriteAnswerer : public QObject {
     }
 
   public slots:
-    void slotProgress(QString filename, int progress, int count);
+    void slotProgress(const QString& filename, int progress, int count);
     void slotAskOverwriteMode(
-            QString filename,
+            const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
     void cancelButtonClicked();
 

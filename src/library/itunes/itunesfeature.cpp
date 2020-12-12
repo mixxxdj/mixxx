@@ -1,22 +1,23 @@
-#include <QMessageBox>
-#include <QtDebug>
-#include <QXmlStreamReader>
-#include <QStandardPaths>
-#include <QFileDialog>
-#include <QMenu>
-#include <QAction>
-#include <QUrl>
-#include <QFileInfo>
-
 #include "library/itunes/itunesfeature.h"
 
+#include <QAction>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QMenu>
+#include <QMessageBox>
+#include <QStandardPaths>
+#include <QUrl>
+#include <QXmlStreamReader>
+#include <QtDebug>
+
+#include "library/baseexternalplaylistmodel.h"
+#include "library/baseexternaltrackmodel.h"
 #include "library/basetrackcache.h"
 #include "library/dao/settingsdao.h"
-#include "library/baseexternaltrackmodel.h"
-#include "library/baseexternalplaylistmodel.h"
-#include "library/queryutil.h"
 #include "library/library.h"
+#include "library/queryutil.h"
 #include "library/trackcollectionmanager.h"
+#include "moc_itunesfeature.cpp"
 #include "util/lcs.h"
 #include "util/sandbox.h"
 #include "widget/wlibrarysidebar.h"
@@ -121,7 +122,7 @@ ITunesFeature::~ITunesFeature() {
     delete m_pITunesPlaylistModel;
 }
 
-BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(const QString& playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
         this, m_pLibrary->trackCollections(),
         "mixxx.db.model.itunes_playlist",
@@ -789,7 +790,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
     }
 }
 
-void ITunesFeature::clearTable(QString table_name) {
+void ITunesFeature::clearTable(const QString& table_name) {
     QSqlQuery query(m_database);
     query.prepare("delete from "+table_name);
     bool success = query.exec();

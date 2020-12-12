@@ -1,6 +1,7 @@
 #include "mixer/sampler.h"
 
 #include "control/controlobject.h"
+#include "moc_sampler.cpp"
 
 Sampler::Sampler(QObject* pParent,
         UserSettingsPointer pConfig,
@@ -8,7 +9,7 @@ Sampler::Sampler(QObject* pParent,
         EffectsManager* pEffectsManager,
         VisualsManager* pVisualsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
-        QString group)
+        const QString& group)
         : BaseTrackPlayerImpl(pParent, pConfig, pMixingEngine, pEffectsManager, pVisualsManager, defaultOrientation, group, /*defaultMaster*/ true,
                   /*defaultHeadphones*/ false,
                   /*primaryDeck*/ false) {

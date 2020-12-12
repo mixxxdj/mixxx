@@ -1,39 +1,27 @@
-/**
- * @file dlgprefsound.cpp
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100625
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#include <QtDebug>
-#include <QMessageBox>
 #include "preferences/dialog/dlgprefsound.h"
-#include "preferences/dialog/dlgprefsounditem.h"
+
+#include <QMessageBox>
+#include <QtDebug>
+
+#include "control/controlproxy.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "mixer/playermanager.h"
+#include "moc_dlgprefsound.cpp"
+#include "preferences/dialog/dlgprefsounditem.h"
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
-#include "control/controlproxy.h"
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the
  * all the controls to the values obtained from SoundManager.
  */
-DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
-                           PlayerManager* pPlayerManager, UserSettingsPointer pSettings)
+DlgPrefSound::DlgPrefSound(QWidget* pParent,
+        SoundManager* pSoundManager,
+        UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
           m_pSoundManager(pSoundManager),
-          m_pPlayerManager(pPlayerManager),
           m_pSettings(pSettings),
           m_config(pSoundManager),
           m_settingsModified(false),
@@ -176,7 +164,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(m_pSoundManager,
             &SoundManager::outputRegistered,
             this,
-            [this](AudioOutput output, AudioSource* source) {
+            [this](const AudioOutput& output, AudioSource* source) {
                 Q_UNUSED(source);
                 addPath(output);
                 loadSettings();
@@ -185,7 +173,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     connect(m_pSoundManager,
             &SoundManager::inputRegistered,
             this,
-            [this](AudioInput input, AudioDestination* dest) {
+            [this](const AudioInput& input, AudioDestination* dest) {
                 Q_UNUSED(dest);
                 addPath(input);
                 loadSettings();
@@ -343,7 +331,7 @@ void DlgPrefSound::initializePaths() {
     }
 }
 
-void DlgPrefSound::addPath(AudioOutput output) {
+void DlgPrefSound::addPath(const AudioOutput& output) {
     // if we already know about this output, don't make a new entry
     foreach (QObject *obj, outputTab->children()) {
         DlgPrefSoundItem *item = qobject_cast<DlgPrefSoundItem*>(obj);
@@ -374,7 +362,7 @@ void DlgPrefSound::addPath(AudioOutput output) {
     connectSoundItem(toInsert);
 }
 
-void DlgPrefSound::addPath(AudioInput input) {
+void DlgPrefSound::addPath(const AudioInput& input) {
     DlgPrefSoundItem *toInsert;
     // if we already know about this input, don't make a new entry
     foreach (QObject *obj, inputTab->children()) {

@@ -9,8 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef WOVERVIEW_H
-#define WOVERVIEW_H
+#pragma once
 
 #include <QColor>
 #include <QList>
@@ -47,8 +46,8 @@ class WOverview : public WWidget, public TrackDropTarget {
             AnalyzerProgress analyzerProgress);
 
   signals:
-    void trackDropped(QString filename, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   protected:
     WOverview(
@@ -197,5 +196,3 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_trackLoaded;
     double m_scaleFactor;
 };
-
-#endif

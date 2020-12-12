@@ -1,12 +1,10 @@
-// cue.cpp
-// Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "track/cue.h"
 
 #include <QMutexLocker>
 #include <QtDebug>
 
 #include "engine/engine.h"
+#include "moc_cue.cpp"
 #include "util/assert.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
@@ -64,7 +62,7 @@ Cue::Cue(
         double position,
         double length,
         int hotCue,
-        QString label,
+        const QString& label,
         mixxx::RgbColor color)
         : m_bDirty(false), // clear flag after loading from database
           m_dbId(id),
@@ -243,7 +241,7 @@ QString Cue::getLabel() const {
     return m_label;
 }
 
-void Cue::setLabel(const QString label) {
+void Cue::setLabel(const QString& label) {
     QMutexLocker lock(&m_mutex);
     if (m_label == label) {
         return;

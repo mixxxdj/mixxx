@@ -1,21 +1,4 @@
-/**
- * @file portmidicontroller.h
- * @author Albert Santoni alberts@mixxx.org
- * @author Sean M. Pappalardo  spappalardo@mixxx.org
- * @date Thu 15 Mar 2012
- * @brief PortMidi-based MIDI backend
- *
- * This class is represents a MIDI device, either physical or software.
- * It uses the PortMidi API to send and receive MIDI messages to/from the device.
- * It's important to note that PortMidi treats input and output on a single
- * physical device as two separate half-duplex devices. In this class, we wrap
- * those together into a single device, which is why the constructor takes
- * both arguments pertaining to both input and output "devices".
- *
- */
-
-#ifndef PORTMIDICONTROLLER_H
-#define PORTMIDICONTROLLER_H
+#pragma once
 
 #include <portmidi.h>
 
@@ -55,7 +38,14 @@
 // String to display for no MIDI devices present
 #define MIXXX_PORTMIDI_NO_DEVICE_STRING "None"
 
-// A PortMidi-based implementation of MidiController
+/// PortMidi-based implementation of MidiController
+///
+/// This class is represents a MIDI device, either physical or software.
+/// It uses the PortMidi API to send and receive MIDI messages to/from the device.
+/// It's important to note that PortMidi treats input and output on a single
+/// physical device as two separate half-duplex devices. In this class, we wrap
+/// those together into a single device, which is why the constructor takes
+/// both arguments pertaining to both input and output "devices".
 class PortMidiController : public MidiController {
     Q_OBJECT
   public:
@@ -79,7 +69,7 @@ class PortMidiController : public MidiController {
   private:
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
-    void send(QByteArray data) override;
+    void send(const QByteArray& data) override;
 
     bool isPolling() const override {
         return true;
@@ -105,5 +95,3 @@ class PortMidiController : public MidiController {
 
     friend class PortMidiControllerTest;
 };
-
-#endif

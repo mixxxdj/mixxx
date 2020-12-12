@@ -65,7 +65,7 @@ inline bool isDisjunct(
 } // namespace
 
 ReadableSampleFrames AudioSourceStereoProxy::readSampleFramesClamped(
-        WritableSampleFrames sampleFrames) {
+        const WritableSampleFrames& sampleFrames) {
     if (m_pAudioSource->getSignalInfo().getChannelCount() == kChannelCount) {
         return readSampleFramesClampedOn(*m_pAudioSource, sampleFrames);
     }

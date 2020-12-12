@@ -16,7 +16,7 @@ const SINT kVerifyReadableMaxFrameCount = 1;
 
 } // anonymous namespace
 
-AudioSource::AudioSource(QUrl url)
+AudioSource::AudioSource(const QUrl& url)
         : UrlResource(url),
           m_signalInfo(kSampleLayout) {
 }
@@ -217,7 +217,7 @@ bool AudioSource::verifyReadable() {
 }
 
 std::optional<WritableSampleFrames> AudioSource::clampWritableSampleFrames(
-        WritableSampleFrames sampleFrames) const {
+        const WritableSampleFrames& sampleFrames) const {
     const auto clampedFrameIndexRange =
             intersect2(sampleFrames.frameIndexRange(), frameIndexRange());
 
@@ -275,7 +275,7 @@ std::optional<WritableSampleFrames> AudioSource::clampWritableSampleFrames(
 }
 
 ReadableSampleFrames AudioSource::readSampleFrames(
-        WritableSampleFrames sampleFrames) {
+        const WritableSampleFrames& sampleFrames) {
     const auto clamped =
             clampWritableSampleFrames(sampleFrames);
     if (!clamped) {

@@ -1,16 +1,4 @@
-/**
-* @file controller.h
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Sat Apr 30 2011
-* @brief Base class representing a physical (or software) controller.
-*
-* This is a base class representing a physical (or software) controller.  It
-* must be inherited by a class that implements it on some API. Note that the
-* subclass' destructor should call close() at a minimum.
-*/
-
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+#pragma once
 
 #include "controllers/controllerengine.h"
 #include "controllers/controllervisitor.h"
@@ -20,11 +8,16 @@
 #include "controllers/controllerpresetfilehandler.h"
 #include "util/duration.h"
 
+/// Base class representing a physical (or software) controller.
+///
+/// This is a base class representing a physical (or software) controller.  It
+/// must be inherited by a class that implements it on some API. Note that the
+/// subclass' destructor should call close() at a minimum.
 class Controller : public QObject, ConstControllerPresetVisitor {
     Q_OBJECT
   public:
     explicit Controller(UserSettingsPointer pConfig);
-    ~Controller() override;  // Subclass should call close() at minimum.
+    ~Controller() override; // Subclass should call close() at minimum.
 
     /// Returns the extension for the controller (type) preset files.  This is
     /// used by the ControllerManager to display only relevant preset files for
@@ -81,10 +74,10 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Handles packets of raw bytes and passes them to an ".incomingData" script
     // function that is assumed to exist. (Sub-classes may want to reimplement
     // this if they have an alternate way of handling such data.)
-    virtual void receive(const QByteArray data, mixxx::Duration timestamp);
+    virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
     /// Apply the preset to the controller.
-    /// @brief Initializes both controller engine and static output mappings.
+    /// Initializes both controller engine and static output mappings.
     ///
     /// @param initializeScripts Can be set to false to skip script
     /// initialization for unit tests.
@@ -98,7 +91,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
   protected:
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
-    Q_INVOKABLE void send(QList<int> data, unsigned int length = 0);
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0);
 
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
@@ -114,10 +107,10 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     inline ControllerEngine* getEngine() const {
         return m_pEngine;
     }
-    inline void setDeviceName(QString deviceName) {
+    inline void setDeviceName(const QString& deviceName) {
         m_sDeviceName = deviceName;
     }
-    inline void setDeviceCategory(QString deviceCategory) {
+    inline void setDeviceCategory(const QString& deviceCategory) {
         m_sDeviceCategory = deviceCategory;
     }
     inline void setOutputDevice(bool outputDevice) {
@@ -148,7 +141,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
   private:
     // This must be reimplemented by sub-classes desiring to send raw bytes to a
     // controller.
-    virtual void send(QByteArray data) = 0;
+    virtual void send(const QByteArray& data) = 0;
 
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
@@ -176,5 +169,3 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // For testing
     friend class ControllerPresetValidationTest;
 };
-
-#endif

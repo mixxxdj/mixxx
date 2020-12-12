@@ -48,7 +48,7 @@ class RecordingManager : public QObject
     // Emits the cumulative number of bytes currently recorded.
     void bytesRecorded(int);
     void isRecording(bool);
-    void durationRecorded(QString);
+    void durationRecorded(const QString&);
 
   public slots:
     void slotIsRecording(bool recording, bool error);
@@ -58,7 +58,7 @@ class RecordingManager : public QObject
     void slotToggleRecording(double value);
 
   private:
-    QString formatDateTimeForFilename(QDateTime dateTime) const;
+    QString formatDateTimeForFilename(const QDateTime& dateTime) const;
     // slotBytesRecorded just noticed that recording must be interrupted
     // to split the file. The nth filename will follow the date/time
     // name of the first split but with a suffix.

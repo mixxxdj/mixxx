@@ -12,6 +12,7 @@
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_setlogfeature.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "widget/wlibrary.h"
@@ -98,7 +99,7 @@ void SetlogFeature::onRightClick(const QPoint& globalPos) {
     // menu.exec(globalPos);
 }
 
-void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
 
@@ -371,7 +372,7 @@ void SetlogFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
 
 void SetlogFeature::slotPlaylistTableRenamed(
         int playlistId,
-        QString newName) {
+        const QString& newName) {
     Q_UNUSED(newName);
     //qDebug() << "slotPlaylistTableRenamed() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);

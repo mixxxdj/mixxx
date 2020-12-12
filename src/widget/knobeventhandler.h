@@ -1,5 +1,4 @@
-#ifndef KNOBEVENTHANDLER_H
-#define KNOBEVENTHANDLER_H
+#pragma once
 
 #include <QMouseEvent>
 #include <QWheelEvent>
@@ -59,7 +58,7 @@ class KnobEventHandler {
                 m_bRightButtonPressed = true;
                 break;
             case Qt::LeftButton:
-            case Qt::MidButton:
+            case Qt::MiddleButton:
                 m_startPos = e->globalPos();
                 // Somehow using Qt::BlankCursor does not work on Windows
                 // https://mixxx.org/forums/viewtopic.php?p=40298#p40298
@@ -74,7 +73,7 @@ class KnobEventHandler {
         double value = 0.0;
         switch (e->button()) {
             case Qt::LeftButton:
-            case Qt::MidButton:
+            case Qt::MiddleButton:
                 QCursor::setPos(m_startPos);
                 QApplication::restoreOverrideCursor();
                 value = valueFromMouseEvent(pWidget, e);
@@ -110,5 +109,3 @@ class KnobEventHandler {
     QPoint m_startPos;
     QCursor m_blankCursor;
 };
-
-#endif /* KNOBEVENTHANDLER_H */

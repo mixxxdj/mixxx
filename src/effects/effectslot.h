@@ -1,5 +1,4 @@
-#ifndef EFFECTSLOT_H
-#define EFFECTSLOT_H
+#pragma once
 
 #include <QObject>
 #include <QSharedPointer>
@@ -135,5 +134,3 @@ class EffectSlot : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectSlot);
 };
-
-#endif /* EFFECTSLOT_H */

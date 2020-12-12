@@ -1,5 +1,4 @@
-#ifndef AUTODJPROCESSOR_H
-#define AUTODJPROCESSOR_H
+#pragma once
 
 #include <QModelIndexList>
 #include <QObject>
@@ -203,8 +202,7 @@ class AutoDJProcessor : public QObject {
     AutoDJError toggleAutoDJ(bool enable);
 
   signals:
-    void loadTrackToPlayer(TrackPointer pTrack, QString group,
-                                   bool play);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void transitionTimeChanged(int time);
     void randomTrackRequested(int tracksToAdd);
@@ -229,7 +227,7 @@ class AutoDJProcessor : public QObject {
 
   protected:
     // The following virtual signal wrappers are used for testing
-    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
         emit loadTrackToPlayer(pTrack, group, play);
     }
     virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
@@ -298,5 +296,3 @@ class AutoDJProcessor : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
-
-#endif /* AUTODJPROCESSOR_H */

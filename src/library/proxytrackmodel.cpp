@@ -1,9 +1,7 @@
-// proxytrackmodel.cpp
-// Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
+#include "library/proxytrackmodel.h"
 
 #include <QVariant>
 
-#include "library/proxytrackmodel.h"
 #include "util/assert.h"
 
 ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
@@ -148,14 +146,14 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
     return rowMatches;
 }
 
-QString ProxyTrackModel::getModelSetting(QString name) {
+QString ProxyTrackModel::getModelSetting(const QString& name) {
     if (m_pTrackModel == NULL) {
         return QString();
     }
     return m_pTrackModel->getModelSetting(name);
 }
 
-bool ProxyTrackModel::setModelSetting(QString name, QVariant value) {
+bool ProxyTrackModel::setModelSetting(const QString& name, const QVariant& value) {
     if (m_pTrackModel == NULL) {
         return false;
     }

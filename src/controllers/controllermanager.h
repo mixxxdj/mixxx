@@ -1,12 +1,4 @@
-/**
-  * @file controllermanager.h
-  * @author Sean Pappalardo spappalardo@mixxx.org
-  * @date Sat Apr 30 2011
-  * @brief Manages creation/enumeration/deletion of hardware controllers.
-  */
-
-#ifndef CONTROLLERMANAGER_H
-#define CONTROLLERMANAGER_H
+#pragma once
 
 #include <QSharedPointer>
 
@@ -16,14 +8,14 @@
 #include "controllers/controllerpresetinfoenumerator.h"
 #include "preferences/usersettings.h"
 
-//Forward declaration(s)
+// Forward declaration(s)
 class Controller;
 class ControllerLearningEventFilter;
 
-// Function to sort controllers by name
+/// Function to sort controllers by name
 bool controllerCompare(Controller *a, Controller *b);
 
-/** Manages enumeration/operation/deletion of hardware controllers. */
+/// Manages enumeration/operation/deletion of hardware controllers.
 class ControllerManager : public QObject {
     Q_OBJECT
   public:
@@ -41,9 +33,9 @@ class ControllerManager : public QObject {
     QSharedPointer<PresetInfoEnumerator> getMainThreadSystemPresetEnumerator() {
         return m_pMainThreadSystemPresetEnumerator;
     }
-    QString getConfiguredPresetFileForDevice(QString name);
+    QString getConfiguredPresetFileForDevice(const QString& name);
 
-    // Prevent other parts of Mixxx from having to manually connect to our slots
+    /// Prevent other parts of Mixxx from having to manually connect to our slots
     void setUpDevices() { emit requestSetUpDevices(); };
 
     static QList<QString> getPresetPaths(UserSettingsPointer pConfig);
@@ -62,15 +54,15 @@ class ControllerManager : public QObject {
     void closeController(Controller* pController);
 
   private slots:
-    // Perform initialization that should be delayed until the ControllerManager
-    // thread is started.
+    /// Perform initialization that should be delayed until the ControllerManager
+    /// thread is started.
     void slotInitialize();
-    // Open whatever controllers are selected in the preferences. This currently
-    // only runs on start-up but maybe should instead be signaled by the
-    // preferences dialog on apply, and only open/close changed devices
+    /// Open whatever controllers are selected in the preferences. This currently
+    /// only runs on start-up but maybe should instead be signaled by the
+    /// preferences dialog on apply, and only open/close changed devices
     void slotSetUpDevices();
     void slotShutdown();
-    // Calls poll() on all devices that have isPolling() true.
+    /// Calls poll() on all devices that have isPolling() true.
     void pollDevices();
     void startPolling();
     void stopPolling();
@@ -88,5 +80,3 @@ class ControllerManager : public QObject {
     QSharedPointer<PresetInfoEnumerator> m_pMainThreadSystemPresetEnumerator;
     bool m_skipPoll;
 };
-
-#endif  // CONTROLLERMANAGER_H

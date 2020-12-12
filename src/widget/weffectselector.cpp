@@ -1,8 +1,9 @@
-#include <QtDebug>
-
 #include "widget/weffectselector.h"
 
+#include <QtDebug>
+
 #include "effects/effectsmanager.h"
+#include "moc_weffectselector.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
@@ -129,7 +130,7 @@ bool WEffectSelector::event(QEvent* pEvent) {
         populate();
     } else if (pEvent->type() == QEvent::Wheel && !hasFocus()) {
         // don't change effect by scrolling hovered effect selector
-        return false;
+        return true;
     }
 
     return QComboBox::event(pEvent);

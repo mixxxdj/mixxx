@@ -6,7 +6,7 @@
 
 class GLSLWaveformRendererSignal;
 
-class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class GLSLWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
     GLSLWaveformWidget(

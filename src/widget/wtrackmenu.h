@@ -72,7 +72,7 @@ class WTrackMenu : public QMenu {
     void slotShowDlgTrackInfo();
 
   signals:
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
 
   private slots:
     // File
@@ -84,6 +84,7 @@ class WTrackMenu : public QMenu {
     // Reset
     void slotClearBeats();
     void slotClearPlayCount();
+    void slotClearRating();
     void slotClearMainCue();
     void slotClearHotCues();
     void slotClearIntroCue();
@@ -166,7 +167,7 @@ class WTrackMenu : public QMenu {
 
     void lockBpm(bool lock);
 
-    void loadSelectionToGroup(QString group, bool play = false);
+    void loadSelectionToGroup(const QString& group, bool play = false);
     void clearTrackSelection();
 
     bool isAnyTrackBpmLocked() const;
@@ -246,6 +247,7 @@ class WTrackMenu : public QMenu {
     // Clear track metadata actions
     QAction* m_pClearBeatsAction{};
     QAction* m_pClearPlayCountAction{};
+    QAction* m_pClearRatingAction{};
     QAction* m_pClearMainCueAction{};
     QAction* m_pClearHotCuesAction{};
     QAction* m_pClearIntroCueAction{};

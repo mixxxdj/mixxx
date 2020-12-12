@@ -1,8 +1,11 @@
-#include <QScriptValueIterator>
-
 #include "controllers/colormapperjsproxy.h"
 
-ColorMapperJSProxy::ColorMapperJSProxy(QScriptEngine* pScriptEngine, QMap<QRgb, QVariant> availableColors)
+#include <QScriptValueIterator>
+
+#include "moc_colormapperjsproxy.cpp"
+
+ColorMapperJSProxy::ColorMapperJSProxy(QScriptEngine* pScriptEngine,
+        const QMap<QRgb, QVariant>& availableColors)
         : m_pScriptEngine(pScriptEngine),
           m_colorMapper(new ColorMapper(availableColors)) {
 }

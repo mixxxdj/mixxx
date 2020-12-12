@@ -1,22 +1,4 @@
-/***************************************************************************
-                          enginebuffer.h  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEBUFFER_H
-#define ENGINEBUFFER_H
+#pragma once
 
 #include <gtest/gtest_prod.h>
 
@@ -64,10 +46,6 @@ class EngineSync;
 class EngineWorkerScheduler;
 class VisualPlayPosition;
 class EngineMaster;
-
-/**
-  *@author Tue and Ken Haste Andersen
-*/
 
 // Length of audio beat marks in samples
 const int audioBeatMarkLen = 40;
@@ -199,14 +177,14 @@ class EngineBuffer : public EngineObject {
 
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void trackLoadFailed(TrackPointer pTrack, QString reason);
+    void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private slots:
     void slotTrackLoading();
     void slotTrackLoaded(TrackPointer pTrack,
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
-                             QString reason);
+            const QString& reason);
     // Fired when passthrough mode is enabled or disabled.
     void slotPassthroughChanged(double v);
     void slotUpdatedTrackBeats();
@@ -424,5 +402,3 @@ class EngineBuffer : public EngineObject {
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(EngineBuffer::SeekRequests)
-
-#endif

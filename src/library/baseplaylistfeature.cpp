@@ -16,6 +16,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_baseplaylistfeature.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
@@ -136,7 +137,7 @@ void BasePlaylistFeature::initActions() {
             &BasePlaylistFeature::slotResetSelectedTrack);
 }
 
-int BasePlaylistFeature::playlistIdFromIndex(QModelIndex index) {
+int BasePlaylistFeature::playlistIdFromIndex(const QModelIndex& index) {
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());
     if (item == nullptr) {
         return -1;

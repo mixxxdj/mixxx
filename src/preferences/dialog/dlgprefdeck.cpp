@@ -1,9 +1,11 @@
-#include <QList>
+#include "preferences/dialog/dlgprefdeck.h"
+
 #include <QDir>
-#include <QToolTip>
 #include <QDoubleSpinBox>
-#include <QWidget>
+#include <QList>
 #include <QLocale>
+#include <QToolTip>
+#include <QWidget>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -14,7 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "mixxx.h"
-#include "preferences/dialog/dlgprefdeck.h"
+#include "moc_dlgprefdeck.cpp"
 #include "preferences/usersettings.h"
 #include "util/compatibility.h"
 #include "util/duration.h"
@@ -34,12 +36,8 @@ constexpr int kDefaultRateRampSensitivity = 250;
 }
 
 DlgPrefDeck::DlgPrefDeck(QWidget* parent,
-        MixxxMainWindow* mixxx,
-        PlayerManager* pPlayerManager,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_mixxx(mixxx),
-          m_pPlayerManager(pPlayerManager),
           m_pConfig(pConfig),
           m_pControlTrackTimeDisplay(std::make_unique<ControlObject>(
                   ConfigKey("[Controls]", "ShowDurationRemaining"))),
@@ -375,6 +373,39 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
 
     connect(checkBoxResetSpeed, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdateSpeedAutoReset);
     connect(checkBoxResetPitch, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdatePitchAutoReset);
+
+    connect(SliderRateRampSensitivity,
+            QOverload<int>::of(&QAbstractSlider::valueChanged),
+            SpinBoxRateRampSensitivity,
+            QOverload<int>::of(&QSpinBox::setValue));
+    connect(SpinBoxRateRampSensitivity,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            SliderRateRampSensitivity,
+            QOverload<int>::of(&QAbstractSlider::setValue));
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            labelSpeedRampSensitivity,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            SliderRateRampSensitivity,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            SpinBoxRateRampSensitivity,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            labelSpeedTemporary,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            spinBoxTemporaryRateCoarse,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            spinBoxTemporaryRateFine,
+            &QWidget::setEnabled);
 
     slotUpdate();
 }
