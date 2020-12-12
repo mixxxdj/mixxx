@@ -104,8 +104,8 @@ case "$COMMAND" in
 
         export CC="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang"
         export CXX="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++"
-        export CMAKE_PREFIX_PATH="${BUILDENV_PATH}"
-        export Qt5_DIR="$(find "${BUILDENV_PATH}" -type d -path "*/cmake/Qt5")"
+        QT_DIR="$(find "${BUILDENV_PATH}" -type d -name "Qt-*")"
+        export CMAKE_PREFIX_PATH="${BUILDENV_PATH}:${QT_DIR}"
         export QT_QPA_PLATFORM_PLUGIN_PATH="$(find "${BUILDENV_PATH}" -type d -path "*/plugins")"
         export PATH="${BUILDENV_PATH}/bin:${PATH}"
 
@@ -115,7 +115,6 @@ case "$COMMAND" in
             echo "SDKROOT=${SDKROOT}"
             echo "MACOSX_DEPLOYMENT_TARGET=${MACOSX_DEPLOYMENT_TARGET}"
             echo "CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}"
-            echo "Qt5_DIR=${Qt5_DIR}"
             echo "QT_QPA_PLATFORM_PLUGIN_PATH=${QT_QPA_PLATFORM_PLUGIN_PATH}"
             echo "PATH=${PATH}"
         }

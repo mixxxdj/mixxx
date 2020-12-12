@@ -2618,7 +2618,10 @@ if(APPLE AND MACOS_BUNDLE)
     install_qt5_plugin(Qt${QT_VERSION_MAJOR}::QGifPlugin BUNDLE_LIBS "${MIXXX_INSTALL_PREFIX}")
 
     set(BUNDLE_NAME "${MIXXX_INSTALL_PREFIX}")
-    set(BUNDLE_DIRS "${CMAKE_PREFIX_PATH}/lib;${Qt${QT_VERSION_MAJOR}Widgets_DIR}/../..")
+    string(REPLACE ":" ";" CMAKE_PREFIX_PATH "$ENV{CMAKE_PREFIX_PATH}")
+    foreach(DIR IN LISTS CMAKE_PREFIX_PATH)
+      list(APPEND BUNDLE_DIRS "${DIR}/lib")
+    endforeach()
     set(APPLE_CODESIGN_ENTITLEMENTS "${CMAKE_CURRENT_SOURCE_DIR}/build/osx/entitlements.plist")
 
     configure_file(cmake/modules/BundleInstall.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake" @ONLY)
