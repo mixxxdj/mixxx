@@ -1255,11 +1255,11 @@
             var containerType = containerDefinition.type || components.ComponentContainer;
             var container = new containerType(containerDefinition.options);
             if (containerDefinition.components) {
-            containerDefinition.components.forEach(function(componentDefinition, index) {
-                var definition = _.merge(
-                    {}, containerDefinition.defaultDefinition || {}, componentDefinition);
+                containerDefinition.components.forEach(function(componentDefinition, index) {
+                    var definition = _.merge(
+                        {}, containerDefinition.defaultDefinition || {}, componentDefinition);
                     container[index] = this.createComponent(definition);
-            }, this);
+                }, this);
             }
             if (typeof containerDefinition.init === "function") {
                 containerDefinition.init.call(container);
