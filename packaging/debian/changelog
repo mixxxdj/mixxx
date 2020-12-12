@@ -18,16 +18,16 @@ mixxx (2.2.2-0ubuntu1) bionic; urgency=medium
 
 mixxx (2.2.1-0ubuntu1) bionic; urgency=medium
 
-  * Bugfix release 
+  * Bugfix release
 
  -- Daniel Schürmann <daschuer@mixxx.org>  Thu, 22 Apr 2019 23:05:28 +0100
 
 mixxx (2.2.0-0ubuntu1) bionic; urgency=medium
 
-  * Bugfix release 
+  * Bugfix release
 
- -- Daniel Schürmann <daschuer@mixxx.org>  Fr, 11 Jan 2019 23:26:08 +0100
- 
+ -- Daniel Schürmann <daschuer@mixxx.org>  Fri, 11 Jan 2019 23:26:08 +0100
+
 mixxx (2.1.8-0ubuntu1) bionic; urgency=medium
 
   * New upstream release
@@ -36,7 +36,7 @@ mixxx (2.1.8-0ubuntu1) bionic; urgency=medium
 
 mixxx (2.1.7-0ubuntu1) bionic; urgency=medium
 
-  * New upstream release  
+  * New upstream release
 
  -- Daniel Schürmann <daschuer@mixxx.org>  Mon, 14 Jan 2019 00:08:23 +0100
 

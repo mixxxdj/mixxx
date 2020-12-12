@@ -148,8 +148,10 @@ class WebTask : public QObject {
     enum class Status {
         Idle,
         Pending,
+        Aborting,
         Aborted,
         TimedOut,
+        Failed,
         Finished,
     };
 

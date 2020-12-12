@@ -734,7 +734,6 @@ void WaveformWidgetFactory::swap() {
 }
 
 WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
-    //default selection
     if (m_openGlAvailable) {
         if (m_openGLShaderAvailable) {
             return WaveformWidgetType::GLSLRGBWaveform;
@@ -742,7 +741,7 @@ WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
             return WaveformWidgetType::GLRGBWaveform;
         }
     }
-    return WaveformWidgetType::SoftwareWaveform;
+    return WaveformWidgetType::RGBWaveform;
 }
 
 void WaveformWidgetFactory::evaluateWidgets() {

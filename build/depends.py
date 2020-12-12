@@ -1131,7 +1131,6 @@ class MixxxCore(Feature):
                    "src/library/dao/autodjcratesdao.cpp",
 
                    "src/library/librarycontrol.cpp",
-                   "src/library/songdownloader.cpp",
                    "src/library/starrating.cpp",
                    "src/library/stardelegate.cpp",
                    "src/library/stareditor.cpp",
