@@ -1060,7 +1060,7 @@ TraktorZ2.displayBeatLeds = function(group, now) {
     var beatPeriodMillis = 60 / engine.getValue(group, "bpm") * 1000;
     var timeSinceLastBeatMillis = (now - TraktorZ2.lastBeatTimestamp[group]);
 
-    if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "play_indicator") && (engine.getValue(group, "beatloop_size") < 1)) {
+    if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "play") && (engine.getValue(group, "beatloop_size") < 1)) {
         // If beatloop_size is < 1, it can be, that the loop is in between two beats. Than beat_active will set TraktorZ2.lastBeatTimestamp[group].
         var playposition = engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
         if (
@@ -1102,9 +1102,9 @@ TraktorZ2.displayBeatLeds = function(group, now) {
         TraktorZ2.displayLoopCount(group, false);
     }
     if (engine.getValue(group, "track_loaded") === 0) {
-        TraktorZ2.controller.setOutput(group, "!beatIndicator", LedOff, group == "[Channel4]");
+        TraktorZ2.controller.setOutput(group, "!beatIndicator", LedOff, group === "[Channel4]");
     } else {
-        TraktorZ2.controller.setOutput(group, "!beatIndicator", TraktorZ2.displayBrightness[group], group == "[Channel4]");
+        TraktorZ2.controller.setOutput(group, "!beatIndicator", TraktorZ2.displayBrightness[group], group === "[Channel4]");
     }
 };
 
