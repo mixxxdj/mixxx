@@ -727,20 +727,20 @@ TraktorZ2.eqExecute = function(group, name, value) {
     HIDDebug("TraktorZ2: eqExecute");
     if ((group === "[EqualizerRack1_[Channel1]_Effect1]") ||
          (group === "[QuickEffectRack1_[Channel1]]")) {
-            if (TraktorZ2.pregainCh3Timer !== 0) {
-                engine.stopTimer(TraktorZ2.pregainCh3Timer);
-                TraktorZ2.pregainCh3Timer = 0;
-                TraktorZ2.displayVuValue(engine.getValue("[Channel1]", "VuMeter"), "[Channel1]", "VuMeter");
-                TraktorZ2.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
-            }
+        if (TraktorZ2.pregainCh3Timer !== 0) {
+            engine.stopTimer(TraktorZ2.pregainCh3Timer);
+            TraktorZ2.pregainCh3Timer = 0;
+            TraktorZ2.displayVuValue(engine.getValue("[Channel1]", "VuMeter"), "[Channel1]", "VuMeter");
+            TraktorZ2.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
+        }
     } else if ((group === "[EqualizerRack1_[Channel2]_Effect1]") ||
         (group === "[QuickEffectRack1_[Channel2]]")) {
-            if (TraktorZ2.pregainCh4Timer !== 0) {
-                engine.stopTimer(TraktorZ2.pregainCh4Timer);
-                TraktorZ2.pregainCh4Timer = 0;
-                TraktorZ2.displayVuValue(engine.getValue("[Channel2]", "VuMeter"), "[Channel2]", "VuMeter");
-                TraktorZ2.displayPeakIndicator(engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
-            }
+        if (TraktorZ2.pregainCh4Timer !== 0) {
+            engine.stopTimer(TraktorZ2.pregainCh4Timer);
+            TraktorZ2.pregainCh4Timer = 0;
+            TraktorZ2.displayVuValue(engine.getValue("[Channel2]", "VuMeter"), "[Channel2]", "VuMeter");
+            TraktorZ2.displayPeakIndicator(engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
+        }
     }
     engine.setParameter(group, name, value / 4095);
     TraktorZ2.eqValueStorage[group + name + "changed"] = false;
@@ -1054,7 +1054,7 @@ TraktorZ2.beatOutputHandler = function(value, group) {
     if (value === 1) {
         TraktorZ2.lastBeatTimestamp[group] = Date.now(); // +50ms
     }
-}
+};
 
 TraktorZ2.displayBeatLeds = function(group, now) {
     var beatPeriodMillis = 60 / engine.getValue(group, "bpm") * 1000;
@@ -1062,13 +1062,13 @@ TraktorZ2.displayBeatLeds = function(group, now) {
 
     if (engine.getValue(group, "loop_enabled") && engine.getValue(group, "play_indicator") && (engine.getValue(group, "beatloop_size") < 1)) {
         // If beatloop_size is < 1, it can be, that the loop is in between two beats. Than beat_active will set TraktorZ2.lastBeatTimestamp[group].
-         var playposition = engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
+        var playposition = engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
         if (
             (playposition >= engine.getValue(group, "loop_start_position")) &&
             (playposition <= engine.getValue(group, "loop_end_position"))
         ) {
             beatPeriodMillis *= engine.getValue(group, "beatloop_size");
-            if (( TraktorZ2.beatLoopFractionCounter[group] <= 0) || (TraktorZ2.beatLoopFractionCounter[group] > beatPeriodMillis / 20) || (timeSinceLastBeatMillis >= beatPeriodMillis)) {
+            if ((TraktorZ2.beatLoopFractionCounter[group] <= 0) || (TraktorZ2.beatLoopFractionCounter[group] > beatPeriodMillis / 20) || (timeSinceLastBeatMillis >= beatPeriodMillis)) {
                 TraktorZ2.beatLoopFractionCounter[group] = beatPeriodMillis / 20;
                 TraktorZ2.lastBeatTimestamp[group] = Date.now();
                 if (TraktorZ2.displayBrightness[group] !== 7) {
@@ -1076,29 +1076,27 @@ TraktorZ2.displayBeatLeds = function(group, now) {
                 } else {
                     TraktorZ2.displayBrightness[group] = 0;
                 }
-            }
-            else 
-            {
+            } else {
                 TraktorZ2.beatLoopFractionCounter[group]--;
-        TraktorZ2.displayBrightness[group] = (1 - (timeSinceLastBeatMillis / beatPeriodMillis * 2)) * 5 + 2;
-           //HIDDebug("TraktorZ2.beatLoopFractionCounter[group] " + TraktorZ2.beatLoopFractionCounter[group] + "     TraktorZ2.lastBeatTimestamp[group] " + TraktorZ2.lastBeatTimestamp[group] + "   beatPeriodMillis " + beatPeriodMillis + "   TraktorZ2.displayBrightness[group] " + TraktorZ2.displayBrightness[group] + "   timeSinceLastBeatMillis " + timeSinceLastBeatMillis);
+                TraktorZ2.displayBrightness[group] = (1 - (timeSinceLastBeatMillis / beatPeriodMillis * 2)) * 5 + 2;
+                //HIDDebug("TraktorZ2.beatLoopFractionCounter[group] " + TraktorZ2.beatLoopFractionCounter[group] + "     TraktorZ2.lastBeatTimestamp[group] " + TraktorZ2.lastBeatTimestamp[group] + "   beatPeriodMillis " + beatPeriodMillis + "   TraktorZ2.displayBrightness[group] " + TraktorZ2.displayBrightness[group] + "   timeSinceLastBeatMillis " + timeSinceLastBeatMillis);
 
             }
         }
-       // TraktorZ2.displayBrightness[group] = (1 - (TraktorZ2.beatLoopFractionCounter[group] / (beatPeriodMillis / 20) * 2)) * 5 + 2;
+        // TraktorZ2.displayBrightness[group] = (1 - (TraktorZ2.beatLoopFractionCounter[group] / (beatPeriodMillis / 20) * 2)) * 5 + 2;
 
     } else {
         // No loop or beatloop_size >=1, than TraktorZ2.lastBeatTimestamp[group] is reliable
         TraktorZ2.displayBrightness[group] = (1 - (timeSinceLastBeatMillis / beatPeriodMillis * 2)) * 5 + 2;
-          //HIDDebug("now " + now + "     TraktorZ2.lastBeatTimestamp[group] " + TraktorZ2.lastBeatTimestamp[group] + "   beatPeriodMillis " + beatPeriodMillis + "   TraktorZ2.displayBrightness[group] " + TraktorZ2.displayBrightness[group] + "   timeSinceLastBeatMillis " + timeSinceLastBeatMillis);
+        //HIDDebug("now " + now + "     TraktorZ2.lastBeatTimestamp[group] " + TraktorZ2.lastBeatTimestamp[group] + "   beatPeriodMillis " + beatPeriodMillis + "   TraktorZ2.displayBrightness[group] " + TraktorZ2.displayBrightness[group] + "   timeSinceLastBeatMillis " + timeSinceLastBeatMillis);
     }
 
     if (TraktorZ2.displayBrightness[group] < 2) {
-             TraktorZ2.displayBrightness[group] = 2;
-        }
-        if (TraktorZ2.displayBrightness[group] > 7) {
-             TraktorZ2.displayBrightness[group] = 7;
-        }
+        TraktorZ2.displayBrightness[group] = 2;
+    }
+    if (TraktorZ2.displayBrightness[group] > 7) {
+        TraktorZ2.displayBrightness[group] = 7;
+    }
 
     if ((group === "[Channel1]") || (group === "[Channel2]")) {
         TraktorZ2.displayLoopCount(group, false);
@@ -1384,11 +1382,11 @@ TraktorZ2.registerOutputPackets = function() {
         "[Channel4]": 0x19  // ChD_MasterR
     };
 
-        engine.makeConnection("[Master]", "VuMeterL", TraktorZ2.displayVuValue);
-        engine.makeConnection("[Master]", "VuMeterR", TraktorZ2.displayVuValue);
-        engine.makeConnection("[Master]", "PeakIndicatorL", TraktorZ2.displayPeakIndicator);
-        engine.makeConnection("[Master]", "PeakIndicatorR", TraktorZ2.displayPeakIndicator);
-        
+    engine.makeConnection("[Master]", "VuMeterL", TraktorZ2.displayVuValue);
+    engine.makeConnection("[Master]", "VuMeterR", TraktorZ2.displayVuValue);
+    engine.makeConnection("[Master]", "PeakIndicatorL", TraktorZ2.displayPeakIndicator);
+    engine.makeConnection("[Master]", "PeakIndicatorR", TraktorZ2.displayPeakIndicator);
+
     for (ch in VuOffsets) {
         outputB.addOutput(ch, "!VuLabel", VuOffsets[ch], "B", 0x70);
         for (var i = 0; i < 6; i++) {
@@ -1456,7 +1454,7 @@ TraktorZ2.displayPeakIndicator = function(value, group, key) {
         ch = "[Channel1]";
         TraktorZ2.controller.setOutput("[Channel1]", "!VuLabel", LedBright, false);
         TraktorZ2.controller.setOutput("[Channel3]", "!VuLabel", LedOff, false);
-     } else if  ((group === "[Channel3]") && (key === "PeakIndicator") && (TraktorZ2.pregainCh3Timer !== 0)) {
+    } else if  ((group === "[Channel3]") && (key === "PeakIndicator") && (TraktorZ2.pregainCh3Timer !== 0)) {
         // ChC
         ch = "[Channel1]";
         TraktorZ2.controller.setOutput("[Channel1]", "!VuLabel", LedOff, false);
@@ -1499,7 +1497,7 @@ TraktorZ2.displayLEDs = function() {
         TraktorZ2.displayBeatLeds(ch, now);
     }
     TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", LedBright, true);
-}
+};
 
 TraktorZ2.init = function(_id) {
     this.Decks = {
@@ -1542,5 +1540,5 @@ TraktorZ2.init = function(_id) {
     TraktorZ2.hotcueOutputHandler();
     HIDDebug("TraktorZ2: Init done!");
 
-   engine.beginTimer(20, this.displayLEDs);
+    engine.beginTimer(20, this.displayLEDs);
 };
