@@ -3,11 +3,11 @@
 #include <QMetaMethod>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
-#include <QPair>
 #include <QPointer>
 #include <QUrl>
 
 #include "network/httpstatuscode.h"
+#include "util/optional.h"
 
 namespace mixxx {
 
@@ -113,12 +113,15 @@ class WebTask : public QObject {
     void invokeAbort();
 
     /// Cancel a pending request from the event loop thread.
-    QUrl abort();
+    void abort();
 
   public slots:
     void slotStart(
             int timeoutMillis);
     void slotAbort();
+
+  private slots:
+    void slotNetworkReplyFinished();
 
   signals:
     /// The receiver is responsible for deleting the task in the
@@ -144,7 +147,7 @@ class WebTask : public QObject {
 
     void timerEvent(QTimerEvent* event) final;
 
-    enum class Status {
+    enum class State {
         Idle,
         Pending,
         Aborting,
@@ -153,21 +156,9 @@ class WebTask : public QObject {
         Failed,
         Finished,
     };
-
-    QUrl abortPendingNetworkReply(
-            QNetworkReply* pendingNetworkReply);
-    QUrl timeOutPendingNetworkReply(
-            QNetworkReply* pendingNetworkReply);
-
-    QPair<QNetworkReply*, HttpStatusCode> receiveNetworkReply();
-
-    /// Handle status changes and ensure that the task eventually
-    /// gets deleted. The default implementations emit a signal
-    /// if connected or otherwise implicitly delete the task.
-    virtual void onAborted(
-            QUrl&& requestUrl);
-    virtual void onTimedOut(
-            QUrl&& requestUrl);
+    State state() const {
+        return m_state;
+    }
 
     /// Handle the abort and ensure that the task eventually
     /// gets deleted. The default implementation logs a warning
@@ -179,26 +170,33 @@ class WebTask : public QObject {
             QByteArray&& errorContent);
 
   private:
-    /// Try to compose and send the actual network request. If
-    /// true is returned than the network request is running
-    /// and a reply is pending.
-    virtual bool doStart(
+    QUrl abortPendingNetworkReply();
+
+    /// Try to compose and send the actual network request.
+    /// Return nullptr on failure.
+    virtual QNetworkReply* doStartNetworkRequest(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) = 0;
 
-    /// Handle status change requests by aborting a running request
-    /// and return the request URL. If no request is running or if
-    /// the request has already been finished the QUrl() must be
-    /// returned.
-    virtual QUrl doAbort() = 0;
-    virtual QUrl doTimeOut() = 0;
+    /// Optional: Do something after aborted.
+    virtual void doNetworkReplyAborted(
+            QNetworkReply* abortedNetworkReply) {
+        Q_UNUSED(abortedNetworkReply);
+    }
+
+    /// Handle network response.
+    virtual void doNetworkReplyFinished(
+            QNetworkReply* finishedNetworkReply,
+            HttpStatusCode statusCode) = 0;
 
     /// All member variables must only be accessed from
     /// the event loop thread!!
     const QPointer<QNetworkAccessManager> m_networkAccessManager;
 
     int m_timeoutTimerId;
-    Status m_status;
+    State m_state;
+
+    QPointer<QNetworkReply> m_pendingNetworkReply;
 };
 
 } // namespace network
