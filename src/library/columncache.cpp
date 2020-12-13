@@ -117,17 +117,23 @@ void ColumnCache::slotSetKeySortOrder(double notationValue) {
     // A custom COLLATE function was tested, but using CASE ... WHEN was found to be faster
     // see GitHub PR#649
     // https://github.com/mixxxdj/mixxx/pull/649#discussion_r34863809
-    KeyUtils::KeyNotation notation =
+    const auto notation =
             KeyUtils::keyNotationFromNumericValue(notationValue);
-    QString keySortSQL("CASE %1_id WHEN NULL THEN 0 ");
+    // The placeholder %1 will be replaced by the "key" column. The actual
+    // key code needed for sorting is stored in the column "key_id".
+    DEBUG_ASSERT(LIBRARYTABLE_KEY_ID == LIBRARYTABLE_KEY_ID + QStringLiteral("_id"));
+    QString keySortSQL = QStringLiteral("CASE %1_id WHEN NULL THEN 0");
     for (int i = 0; i <= 24; ++i) {
-        keySortSQL.append(QString("WHEN %1 THEN %2 ")
-            .arg(QString::number(i),
-                 QString::number(KeyUtils::keyToCircleOfFifthsOrder(
-                                     static_cast<mixxx::track::io::key::ChromaticKey>(i),
-                                     notation))));
+        const auto sortOrder = KeyUtils::keyToCircleOfFifthsOrder(
+                static_cast<mixxx::track::io::key::ChromaticKey>(i),
+                notation);
+        keySortSQL +=
+                QStringLiteral(" WHEN ") +
+                QString::number(i) +
+                QStringLiteral(" THEN ") +
+                QString::number(sortOrder);
     }
-    keySortSQL.append("END");
+    keySortSQL.append(" END");
 
     m_columnSortByIndex.insert(m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY], keySortSQL);
 }
