@@ -759,8 +759,8 @@ TraktorZ2.pregainHandler = function(field) {
         if (TraktorZ2.pregainCh3Timer !== 0) {
             engine.stopTimer(TraktorZ2.pregainCh3Timer);
         }
-        TraktorZ2.displayVuValue(engine.getValue("[Channel3]", "VuMeter"), "[Channel1]", "VuMeter");
-        TraktorZ2.displayPeakIndicator(engine.getValue("[Channel3]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
+        TraktorZ2.displayVuValue(engine.getValue("[Channel3]", "VuMeter"), "[Channel3]", "VuMeter");
+        TraktorZ2.displayPeakIndicator(engine.getValue("[Channel3]", "PeakIndicator"), "[Channel3]", "PeakIndicator");
         TraktorZ2.pregainCh3Timer = engine.beginTimer(2500, function() {
             TraktorZ2.pregainCh3Timer = 0;
             TraktorZ2.displayVuValue(engine.getValue("[Channel1]", "VuMeter"), "[Channel1]", "VuMeter");
@@ -777,8 +777,8 @@ TraktorZ2.pregainHandler = function(field) {
         if (TraktorZ2.pregainCh4Timer !== 0) {
             engine.stopTimer(TraktorZ2.pregainCh4Timer);
         }
-        TraktorZ2.displayVuValue(engine.getValue("[Channel4]", "VuMeter"), "[Channel2]", "VuMeter");
-        TraktorZ2.displayPeakIndicator(engine.getValue("[Channel4]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
+        TraktorZ2.displayVuValue(engine.getValue("[Channel4]", "VuMeter"), "[Channel4]", "VuMeter");
+        TraktorZ2.displayPeakIndicator(engine.getValue("[Channel4]", "PeakIndicator"), "[Channel4]", "PeakIndicator");
         TraktorZ2.pregainCh4Timer = engine.beginTimer(2500, function() {
             TraktorZ2.pregainCh4Timer = 0;
             TraktorZ2.displayVuValue(engine.getValue("[Channel2]", "VuMeter"), "[Channel2]", "VuMeter");
@@ -1536,6 +1536,10 @@ TraktorZ2.init = function(_id) {
     TraktorZ2.controller.setOutput("[Channel4]", "!deck", LedOff,       true);
 
     TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", LedBright, false);
+
+    // Initialize VU-Labels A and B
+    TraktorZ2.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
+    TraktorZ2.displayPeakIndicator(engine.getValue("[Channel2]", "PeakIndicator"), "[Channel2]", "PeakIndicator");
 
     TraktorZ2.hotcueOutputHandler();
     HIDDebug("TraktorZ2: Init done!");
