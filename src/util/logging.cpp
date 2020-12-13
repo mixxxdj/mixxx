@@ -16,6 +16,7 @@
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
+#include "util/cmdlineargs.h"
 
 namespace {
 
@@ -35,6 +36,21 @@ bool s_debugAssertBreak = false;
 const QString kThreadNamePattern = QStringLiteral("{{threadname}}");
 const QString kDefaultMessagePattern = QStringLiteral("%{type} [") +
         kThreadNamePattern + QStringLiteral("] %{message}");
+
+const QString kDefaultMessagePatternColor =
+        QStringLiteral(
+                "%{if-category}\033[35m %{category}:\033[35m%{endif}"
+                "%{if-debug}\033[34m%{type} \033[36m%{function}%{endif}"
+                "%{if-info}\033[32m%{type}%{endif}"
+                "%{if-warning}\033[93m%{type}%{endif}"
+                "%{if-critical}\033[91m%{type}%{endif}"
+                "\033[0m [\033[97m") +
+        kThreadNamePattern +
+        QStringLiteral(
+                "\033[0m] "
+                "%{if-fatal}\033[97m\033[41m%{type} "
+                "\033[30m%{file}:%{line}\033[0m %{endif}"
+                "%{message}");
 
 const QLoggingCategory kDefaultLoggingCategory = QLoggingCategory(nullptr);
 
@@ -319,7 +335,11 @@ void Logging::initialize(
     s_debugAssertBreak = debugAssertBreak;
 
     if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
-        qSetMessagePattern(kDefaultMessagePattern);
+        if (CmdlineArgs::Instance().useColors()) {
+            qSetMessagePattern(kDefaultMessagePatternColor);
+        } else {
+            qSetMessagePattern(kDefaultMessagePattern);
+        }
     }
 
     // Install the Qt message handler.
