@@ -1,0 +1,515 @@
+#!/usr/bin/env python3
+"""
+Wrapper to configure cmake build environments for mixxx with prepared build
+environments from Mixxx CI and to build current mixxx branch with correct
+tools.
+
+This tool creates separate cmake build directory for each git commit
+automatically. When you switch git branch, the tool autoconfigures the build
+directory for the new branch. This allows having multiple complete builds for
+different git branches without risk of messing up them with each other.
+"""
+
+import hashlib
+import multiprocessing
+import os
+import sys
+import tarfile
+
+from argparse import ArgumentParser
+from pathlib import Path
+from subprocess import run, PIPE
+
+# Source code directory is relative to this file
+MIXXX_SRC = Path(__file__).parent.parent.resolve()
+
+# Place 'builds' and 'env' directories one level up from source code
+BUILD_ROOT = MIXXX_SRC.parent
+BUILD_ENV_ROOT = BUILD_ROOT.joinpath('env')
+CMAKE_BUILD_ROOT = BUILD_ROOT.joinpath('builds')
+
+PACKAGE_MODE = 'r:gz'
+
+BUILD_URL_PREFIX = 'https://downloads.mixxx.org/builds/buildserver/'
+CMAKE_BUILD_ENV_FLAGS = [
+    '-DQt5_DIR=%(cmake_qt_config)s',
+    '-DCMAKE_PREFIX_PATH=%(cmake_build_env)s',
+]
+CMAKE_DEBUG_BUILD_FLAGS = [
+    '-DCMAKE_BUILD_TYPE=Debug',
+    '-DDEBUG_ASSERTIONS_FATAL=ON',
+]
+
+QT5_PATH_PATTERNS = (
+    'Qt-*',
+)
+QT5_PLUGIGS_RELATIVE_PATH_PATTERNS = (
+    'plugins',
+)
+QT5_CMAKE_RELATIVE_PATH_PATTERNS = (
+    'lib/cmake/Qt5',
+)
+
+CMAKE_PLATFORM_CONFIG = {
+    'darwin': {
+        'build_env': MIXXX_SRC.joinpath('cmake/macos_build_environment'),
+        'build_url': f'{BUILD_URL_PREFIX}2.3.x-unix/%(version)s.tar.gz',
+        'cmake_flags': [
+            '-DCOREAUDIO=ON',
+        ]
+    }
+}
+BUILD_RUN_ENV = {
+    'QT_QPA_PLATFORM_PLUGIN_PATH': '%(qt_plugins)s',
+}
+BUILD_RUN_DEVELOPER_FLAGS = [
+    '--developer',
+    '--logLevel',
+    'debug'
+]
+
+USAGE = f"""{Path(__file__).name}
+
+Wrapper script to configure and build mixxx git branches with custom build
+environment as downloaded from Mixxx CI buildserver.
+
+Usage:
+"""
+
+
+class BuildEnvError(Exception):
+    """
+    Errors raised by build environment processing
+    """
+
+
+# pylint: disable=too-many-instance-attributes
+class BuildEnv:
+    """
+    MacOS prepared build environment
+    """
+    def __init__(self, platform=None, by_commit=False):
+        self.cmake_qt_config = None
+        self.qt_plugins = None
+
+        self.args = self.__parse_args__()
+        self.prefix = Path(self.args.build_env_prefix)
+        self.platform = platform if platform is not None else sys.platform
+        self.debug_enabled = self.args.debug
+        self.by_commit = by_commit
+
+        if self.args.build_env_version:
+            self.build_env_version = self.args.build_env_version
+            self.download_sha256 = None
+        else:
+            self.__load_version__()
+
+    def __repr__(self):
+        return str(self.cmake_build_directory)
+
+    @staticmethod
+    def __parse_args__():
+        parser = ArgumentParser(USAGE)
+        parser.add_argument(
+            '--debug',
+            action='store_true',
+            help='Set debug flag'
+        )
+        parser.add_argument(
+            '--version',
+            action='store_true',
+            help='Show build environment version details'
+        )
+        parser.add_argument(
+            '--parallel',
+            type=int,
+            default=multiprocessing.cpu_count(),
+            help='Number of build threads'
+        )
+        parser.add_argument(
+            '--build-env-version',
+            help='Use alternative build env'
+        )
+        parser.add_argument(
+            '--build-env-prefix',
+            default=BUILD_ENV_ROOT,
+            help='Prefix for build environments'
+        )
+        parser.add_argument(
+            '--configure',
+            action='store_true',
+            help='Configure cmake build directory for git branch'
+        )
+        parser.add_argument(
+            '--build',
+            action='store_true',
+            help='Build mixxx branch'
+        )
+        parser.add_argument(
+            '--run',
+            action='store_true',
+            help='Run mixxx from build directory'
+        )
+        return parser.parse_args()
+
+    def __load_version__(self):
+        """
+        Load build version from build version config file
+        """
+        try:
+            settings = CMAKE_PLATFORM_CONFIG[self.platform]
+            config = settings['build_env']
+        except KeyError as error:
+            raise BuildEnvError(
+                f'Build environment config not available for {self.platform}'
+            ) from error
+        if not config.exists:
+            raise BuildEnvError(f'Missing configuration file {config}')
+        try:
+            with open(config, 'r') as filedescriptor:
+                self.build_env_version = filedescriptor.readline().strip()
+                self.download_sha256 = filedescriptor.readline().strip()
+                self.url = settings['build_url'] % {
+                    'version': self.build_env_version
+                }
+        except Exception as error:
+            raise BuildEnvError(f'Error loading {config} {error}') from error
+
+    def __detect_qt__(self):
+        """
+        Detect Qt directory from build environment
+        """
+        def detect_qt_directory(path, patterns):
+            """
+            Return directory matching patterns from Qt install prefix
+            """
+            for prefix in patterns:
+                cmake_qt_path = path.joinpath(prefix)
+                if cmake_qt_path.exists():
+                    return cmake_qt_path
+            return None
+
+        self.cmake_qt_config = None
+        self.qt_plugins = None
+        if not self.exists:
+            return
+
+        for pattern in QT5_PATH_PATTERNS:
+            matches = sorted(self.path.glob(pattern))
+            if matches:
+                path = Path(matches[-1])
+                cmake_qt_config = detect_qt_directory(
+                    path,
+                    QT5_CMAKE_RELATIVE_PATH_PATTERNS
+                )
+                if not cmake_qt_config or not cmake_qt_config.is_dir():
+                    continue
+                qt_plugins = detect_qt_directory(
+                    path,
+                    QT5_PLUGIGS_RELATIVE_PATH_PATTERNS
+                )
+                if not qt_plugins or not qt_plugins.is_dir():
+                    continue
+                self.cmake_qt_config = cmake_qt_config
+                self.qt_plugins = qt_plugins
+                return
+        raise BuildEnvError(f'Error detecting Qt from {self.path}')
+
+    @property
+    def path(self):
+        """
+        Path to unpacked build environment directory
+        """
+        return self.prefix.joinpath(self.build_env_version)
+
+    @property
+    def exists(self):
+        """
+        Check if build environment directory exists
+        """
+        return self.path.exists()
+
+    @property
+    def build_env_package(self):
+        """
+        Path to compressed build environment download package
+        """
+        return self.path.parent.joinpath(self.url.split('/')[-1])
+
+    @property
+    def git_build_dir(self):
+        """
+        Return git commit identifier for target build
+
+        If self.by_commit is True, return short commit hash, otherwise return
+        symbolic build ref (master, upstream/main)
+        """
+        cmd = ('git', 'log', '-n', '1', '--pretty=%h,%D', 'HEAD')
+        rv = run(cmd, stdout=PIPE, stderr=PIPE, cwd=MIXXX_SRC, check=False)
+        if rv.returncode != 0:
+            raise BuildEnvError(
+                f'Error detecting git branch in {MIXXX_SRC}: {rv.stderr}'
+            )
+        commit, refs = str(rv.stdout, 'utf-8').strip().split(',', 1)
+
+        if self.by_commit:
+            return commit
+
+        ref = [ref for ref in refs.split(', ') if ref != 'HEAD'][0]
+        try:
+            ref = ref.split('HEAD -> ')[-1]
+        except IndexError:
+            pass
+        return ref
+
+    @property
+    def cmake_build_env_config(self):
+        """
+        Return cmake build flag settings kwargs as dictionary
+        """
+        return {
+            'cmake_qt_config': str(self.cmake_qt_config),
+            'cmake_build_env': str(self.path),
+            'qt_plugins': str(self.qt_plugins),
+            'version': self.build_env_version,
+        }
+
+    @property
+    def cmake_build_directory(self):
+        """
+        Return cmake build directory for current git branch
+        """
+        return CMAKE_BUILD_ROOT.joinpath(self.git_build_dir)
+
+    @property
+    def cmake_config_flags(self):
+        """
+        Return list of cmake configuration flags for build environment
+        """
+
+        flags = []
+        kwargs = self.cmake_build_env_config
+        flags.extend(
+            CMAKE_PLATFORM_CONFIG[self.platform].get('cmake_flags', [])
+        )
+        if self.debug_enabled:
+            flags.extend(CMAKE_DEBUG_BUILD_FLAGS)
+        for pattern in CMAKE_BUILD_ENV_FLAGS:
+            flags.append(pattern % kwargs)
+        return flags
+
+    @property
+    def runtime_environment_config(self):
+        """
+        Return environment variables required to run the development
+        build
+        """
+        env = {}
+        kwargs = self.cmake_build_env_config
+        for item in BUILD_RUN_ENV:
+            env[item] = BUILD_RUN_ENV[item] % kwargs
+        return env
+
+    @property
+    def runtime_flags(self):
+        """
+        Return flags for running mixxx in build directory
+        """
+        flags = []
+        if self.debug_enabled:
+            flags.extend(BUILD_RUN_DEVELOPER_FLAGS)
+        return flags
+
+    @staticmethod
+    def get_file_checksum(path, chunk_size=8192):
+        """
+        Return sha256 checksum for specified file
+        """
+        path = Path(path)
+        if not path.exists():
+            raise BuildEnvError(
+                f'Error validating {path} checksum: no such file'
+            )
+
+        checksum = hashlib.sha256()
+        with open(path, 'rb') as filedescriptor:
+            while chunk := filedescriptor.read(chunk_size):
+                checksum.update(chunk)
+        return checksum.hexdigest()
+
+    def export_environment(self, force=False):
+        """
+        Export environment variables to use this Mixxx build environment
+        """
+        env_config = self.cmake_build_directory.joinpath('.env')
+        if env_config.exists() and not force:
+            return env_config
+        with env_config.open('w', encoding='utf-8') as filedescriptor:
+            for var, value in self.runtime_environment_config.items():
+                filedescriptor.write(f'export {var}="{value}"\n')
+        return env_config
+
+    def download(self, overwrite=False):
+        """
+        Download build environment package to specified file
+        """
+        if self.build_env_package.exists():
+            if overwrite:
+                self.build_env_package.unlink()
+            else:
+                return self.build_env_package
+
+        cmd = (
+            'curl',
+            '--silent',
+            '--output', str(self.build_env_package),
+            self.url
+        )
+        print(f'download {self.url} to {self.build_env_package}')
+        rv = run(cmd, check=False)
+        if rv.returncode != 0:
+            raise BuildEnvError(f'Error downloading {self.url}')
+
+        self.validate_download()
+        return self.build_env_package
+
+    def validate_download(self):
+        """
+        Validate downloaded build env file
+        """
+        if not self.download_sha256:
+            return None
+        file_sha256 = self.get_file_checksum(self.build_env_package)
+        if file_sha256 != self.download_sha256:
+            raise BuildEnvError(
+                f'Download sha256 checksum {file_sha256} is invalid. '
+                f'Expected: {self.download_sha256}'
+            )
+        return file_sha256
+
+    def extract_build_package(self, overwrite=False):
+        """
+        Unpack build environment package from downloaded file
+        """
+        if not self.build_env_package.exists():
+            raise BuildEnvError(f'No such file: {self.build_env_package}')
+
+        if self.exists:
+            if overwrite:
+                print(f'remove directory {self.path}')
+            else:
+                return self.path
+
+        print(f'extract build environment {self.build_env_package}')
+        package = tarfile.open(self.build_env_package, mode=PACKAGE_MODE)
+        package.extractall(self.path.parent)
+
+        return self.path
+
+    def initialize(self, overwrite=False):
+        """
+        Initialize build environment if it's missing
+
+        Downloads the file from Internet if download is True
+        """
+        self.download(overwrite)
+        self.extract_build_package()
+        self.__detect_qt__()
+
+    def version(self):
+        """
+        Callback to show build environment version detials
+        """
+        print(f'cmake qt config: {self.cmake_qt_config}')
+
+    def configure(self):
+        """
+        Configure build environment for current git branch with cmake
+        """
+        build_directory = self.cmake_build_directory
+        if build_directory.exists() and not self.args.configure:
+            return
+
+        print(f'configure cmake build directory {build_directory}')
+        build_flags = ['-B', build_directory, '-S', MIXXX_SRC]
+        cmd = ['cmake'] + self.cmake_config_flags + build_flags
+        rv = run(cmd, check=False)
+        if rv.returncode != 0:
+            raise BuildEnvError(
+                f'Error configuring cmake build directory {build_directory}'
+            )
+        self.export_environment()
+
+    def build(self):
+        """
+        Build mixxx with cmake in build directory
+
+        Number of build executors is defined by --parallel CLI flag
+        """
+        build_directory = self.cmake_build_directory
+        if not build_directory.exists():
+            self.configure()
+        cmd = [
+            'cmake',
+            '--build', str(build_directory),
+            '--parallel', str(self.args.parallel)
+        ]
+        rv = run(cmd, check=False)
+        if rv.returncode != 0:
+            raise BuildEnvError(f'Error building mixxx in {build_directory}')
+        return rv.returncode == 0
+
+    def run(self):
+        """
+        Callback to run mixxx from build directory with developer arguments
+
+        Debug arguments are added based on --debug CLI flags
+        """
+        mixxx = self.cmake_build_directory.joinpath('mixxx')
+        if not mixxx.exists() or not mixxx.is_file():
+            raise BuildEnvError(f'No such file: {mixxx}')
+
+        cmd = [str(mixxx)] + self.runtime_flags
+        env = os.environ.copy()
+        env.update(**self.runtime_environment_config)
+        print('\n'.join(cmd))
+        rv = run(cmd, env=env, check=False)
+        return rv.returncode == 0
+
+    def execute_tasks(self):
+        """
+        Execute tasks based on CLI arguments
+        """
+        self.initialize()
+
+        actions = (
+            'version',
+            'configure',
+            'build',
+            'run'
+        )
+        success = True
+        for action in actions:
+            if getattr(self.args, action, None) is True:
+                # pylint: disable=broad-except
+                try:
+                    callback = getattr(self, action, None)
+                    if not callable(callback):
+                        raise ValueError(f'Invalid action: {action}')
+                    status = callback()
+                    if status not in (True, None):
+                        success = False
+                except Exception as error:
+                    sys.stderr.write(f'Error in {action} callback: {error}\n')
+                    success = False
+
+        return success
+
+
+if __name__ == '__main__':
+    # pylint: disable=broad-except
+    try:
+        if not BuildEnv().execute_tasks():
+            sys.exit(1, 'Error executing tasks')
+    except BuildEnvError as error:
+        sys.exit(1, str(error))
