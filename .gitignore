@@ -24,11 +24,5 @@ compile_commands.json
 # Doxygen documentation
 /doxygen/
 
-# SCons
-.sconf_temp
-.sconsign.branch
-.sconsign.dblite
-cache/
-
 # Exclude buildenv directory from our helper scripts
 /buildenv/
