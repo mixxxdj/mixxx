@@ -522,8 +522,17 @@ QStringList Library::getDirs() {
 }
 
 void Library::setFont(const QFont& font) {
+    QFontMetrics currMetrics(m_trackTableFont);
+    QFontMetrics newMetrics(font);
+    double currFontHeight = currMetrics.height();
+    double newFontHeight = newMetrics.height();
+
     m_trackTableFont = font;
     emit setTrackTableFont(font);
+    //  adapt the previous font heigh/row height ratio
+    int scaledRowHeight = static_cast<int>(std::round(
+            (newFontHeight / currFontHeight) * m_iTrackTableRowHeight));
+    setRowHeight(scaledRowHeight);
 }
 
 void Library::setRowHeight(int rowHeight) {
