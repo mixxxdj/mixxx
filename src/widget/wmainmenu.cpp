@@ -589,12 +589,11 @@ QMenuBar* WMainMenu::createMainMenuBar(QMainWindow* parent, bool native) {
     Pal.setColor(QPalette::Window, MenuBarBackground);
     pMainMenuBar->setPalette(Pal);
 
-    createMenuInternal([pMainMenuBar](QMenu* menu, QAction* action, bool separator) {
-        if (menu) {
-            //    menu->setParent(pMainMenuBar);
-            //   pMainMenuBar->addMenu(menu);
-        }
+    if (parent && parent->centralWidget()) {
+        pMainMenuBar->setStyleSheet(parent->centralWidget()->styleSheet());
+    }
 
+    createMenuInternal([](QMenu* menu, QAction* action, bool separator) {
         Q_UNUSED(menu);
         Q_UNUSED(action);
         Q_UNUSED(separator);

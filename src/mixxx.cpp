@@ -514,7 +514,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         m_pCentralWidget = oldWidget;
         //TODO (XXX) add dialog to warn user and launch skin choice page
     } else {
-        m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
+        menuBar()->setStyleSheet(m_pCentralWidget->styleSheet());
     }
 
     // Fake a 100 % progress here.
@@ -1343,7 +1343,19 @@ void MixxxMainWindow::slotMenubarToggled(bool visible) {
     } else {
         if (visible) {
             setMenuBar(nullptr);
-            QMenuBar* bar = m_pMainMenu->createMainMenuBar(this, true);
+#if __LINUX__
+            // native menubar need to be disabled for now under linux as
+            // QT5 seems very buggy in this regard. Tests under unity/xfce + appmenu/gnome3
+            // all showed different behaviour when building the menubar and at least
+            // one platform showed strange behaviour. The current hypothesis is,
+            // that the QAction that lives longer then the QMenuBar is culpit.
+            // Since the new default is to have no menubar at all, it does not
+            // really matter.
+            bool native = false;
+#else
+            bool native = true;
+#endif
+            QMenuBar* bar = m_pMainMenu->createMainMenuBar(this, native);
             setMenuBar(bar);
         } else {
             setMenuBar(nullptr);
@@ -1481,7 +1493,7 @@ void MixxxMainWindow::rebootMixxxView() {
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
-    m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
+    menuBar()->setStyleSheet(m_pCentralWidget->styleSheet());
 
     setCentralWidget(m_pCentralWidget);
 #ifdef __LINUX__
