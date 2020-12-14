@@ -24,6 +24,18 @@ Description:
         <Layout>horizontal</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+          <MainMenuButton>
+            <ObjectName>MainMenuButton</ObjectName>
+            <Size>60f,28f</Size>
+            <SizePolicy>f,f</SizePolicy>
+            <Connection>
+              <ConfigKey>[Skin],show_menubar</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform>
+                <Not/>
+              </Transform>
+            </Connection>
+          </MainMenuButton>
           <WidgetGroup><!-- Logo + Master, Headphone & Booth Mixer -->
             <ObjectName>MixerBar</ObjectName>
             <Layout>horizontal</Layout>

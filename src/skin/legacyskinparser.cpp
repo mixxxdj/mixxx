@@ -53,6 +53,7 @@
 #include "widget/wlabel.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wmainmenubarbutton.h"
 #include "widget/wnumber.h"
 #include "widget/wnumberdb.h"
 #include "widget/wnumberpos.h"
@@ -108,9 +109,8 @@ ControlObject* LegacySkinParser::controlFromConfigKey(
 
     // TODO(rryan): Make this configurable by the skin.
     if (CmdlineArgs::Instance().getDeveloper()) {
-        qWarning() << "Requested control does not exist:"
-                   << QString("%1,%2").arg(key.group, key.item)
-                   << "Creating it.";
+        qInfo() << "Creating skin control object:"
+                << QString("%1,%2").arg(key.group, key.item);
     }
     // Since the usual behavior here is to create a skin-defined push
     // button, actually make it a push button and set it to toggle.
@@ -161,6 +161,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig)
           m_pVCManager(nullptr),
           m_pEffectsManager(nullptr),
           m_pRecordingManager(nullptr),
+          m_pMainMenu(nullptr),
           m_pParent(nullptr) {
 }
 
@@ -172,7 +173,8 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
         Library* pLibrary,
         VinylControlManager* pVCMan,
         EffectsManager* pEffectsManager,
-        RecordingManager* pRecordingManager)
+        RecordingManager* pRecordingManager,
+        WMainMenu* pMainMenu)
         : m_pConfig(pConfig),
           m_pSkinCreatedControls(pSkinCreatedControls),
           m_pKeyboard(pKeyboard),
@@ -182,6 +184,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
           m_pRecordingManager(pRecordingManager),
+          m_pMainMenu(pMainMenu),
           m_pParent(NULL) {
     DEBUG_ASSERT(m_pSkinCreatedControls);
 }
@@ -531,6 +534,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseStandardWidget<WDisplay>(node));
     } else if (nodeName == "BeatSpinBox") {
         result = wrapWidget(parseBeatSpinBox(node));
+    } else if (nodeName == "MainMenuButton") {
+        result = wrapWidget(parseMainMenuButton(node));
     } else if (nodeName == "NumberRate") {
         result = wrapWidget(parseNumberRate(node));
     } else if (nodeName == "NumberPos") {
@@ -1117,6 +1122,14 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
     }
 
     return pStarRating;
+}
+
+QWidget* LegacySkinParser::parseMainMenuButton(const QDomElement& node) {
+    WMainMenuBarButton* pMainmenu = new WMainMenuBarButton(
+            m_pParent, m_pMainMenu, m_pKeyboard->getKeyboardConfig());
+    commonWidgetSetup(node, pMainmenu);
+
+    return pMainmenu;
 }
 
 QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {

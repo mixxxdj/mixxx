@@ -1785,7 +1785,8 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 
 /* Grey for GUI toggles */
 #GuiToggleButton[displayValue="1"],
-#SkinSettingsToggle[displayValue="1"] { /*
+#SkinSettingsToggle[displayValue="1"],
+WMainMenuBarButton { /*
   background-color: #216e75; Pale blue */
   background-color: #555;
 }
@@ -1824,6 +1825,10 @@ WPushButton#RecButton[displayValue="1"],
   background-color: transparent;
 }
 
+WMainMenuBarButton {
+  color: rgba(151,151,151,0);
+  image: url(skin:/classic/buttons/btn__mainmenu.svg);
+}
 
 
 /************** Button icons **************************************************/
@@ -2900,6 +2905,7 @@ WCueMenuPopup,
 WCueMenuPopup QMenu,
 WCoverArtMenu,
 WTrackMenu,
+WMainMenuBarButton,
 WTrackMenu QMenu {
   padding: 3px;
   border: 1px solid #333;

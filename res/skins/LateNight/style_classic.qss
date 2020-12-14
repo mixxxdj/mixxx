@@ -250,6 +250,13 @@ WLibrary,
   border-top-right-radius: 0px;
 }
 
+WMainMenuBarButton {
+  color: rgba(151,151,151,0);;
+  border: 3px solid #4B4B4B;
+  border-radius: 3px;
+  image: url(skin:/classic/buttons/btn__mainmenu.svg);
+}
+
 
 /************ separator lines & borders within containers ***********/
 #DeckRows2345,
@@ -1358,6 +1365,7 @@ WPushButton#SyncDeck[value="0"],
 #Sampler WPushButton[displayValue="0"],
 #MicAuxRack WPushButton[displayValue="0"],
 /* library buttons */
+WMainMenuBarButton,
 QPushButton#pushButtonAutoDJ:enabled:!checked,
 #DlgMissing > QPushButton:enabled,
 #DlgHidden > QPushButton:enabled,

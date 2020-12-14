@@ -52,6 +52,7 @@
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_menubar">0</attribute>
       <!-- ToDo: deck-independent vinyl controls? -->
       <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
       <!-- Deck variant that is shown as soon as the mixer is hidden, see deck.xm
@@ -89,6 +90,12 @@
       <attribute persist="true" config_key="[LateNight],expand_samplers_9-16">0</attribute>
     <!-- Mic / Aux -->
       <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+
+    <!-- Enable skin features -->
+      <attribute persist="false" config_key="[Skin],feature_hide_menubar">1</attribute>
+      <attribute persist="false" config_key="[Skin],feature_skin_settings">1</attribute>
+      <attribute persist="false" config_key="[Skin],feature_vinyl_control">1</attribute>
+
     <!-- Library -->
       <attribute config_key="[Master],maximize_library">0</attribute>
       <attribute persist="true" config_key="[LateNight],max_lib_show_decks">1</attribute>

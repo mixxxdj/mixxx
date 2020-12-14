@@ -11,6 +11,31 @@
     <SizePolicy>min,f</SizePolicy>
     <Children>
 
+      <MainMenuButton>
+        <ObjectName>MainMenuButton</ObjectName>
+        <Size>40f,24f</Size>
+        <SizePolicy>f,f</SizePolicy>
+        <Connection>
+          <ConfigKey>[Skin],show_menubar</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </MainMenuButton>
+
+      <WidgetGroup>
+        <ObjectName>ToolbarSeparator</ObjectName>
+        <Size>4f,0min</Size>
+        <Connection>
+          <ConfigKey>[Skin],show_menubar</ConfigKey>
+          <BindProperty>visible</BindProperty>
+          <Transform>
+            <Not/>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
       <Battery>
         <ObjectName>Battery</ObjectName>
         <Size>24,24</Size>
