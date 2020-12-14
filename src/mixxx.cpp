@@ -171,15 +171,15 @@ MixxxMainWindow::MixxxMainWindow(
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(
             this,
-            m_pSkinLoader.get(),
-            m_pCoreServices->getSoundManager().get(),
-            m_pCoreServices->getPlayerManager().get(),
-            m_pCoreServices->getControllerManager().get(),
-            m_pCoreServices->getVinylControlManager().get(),
+            m_pSkinLoader,
+            m_pCoreServices->getSoundManager(),
+            m_pCoreServices->getPlayerManager(),
+            m_pCoreServices->getControllerManager(),
+            m_pCoreServices->getVinylControlManager(),
             m_pCoreServices->getLV2Backend(),
-            m_pCoreServices->getEffectsManager().get(),
-            m_pCoreServices->getSettingsManager().get(),
-            m_pCoreServices->getLibrary().get());
+            m_pCoreServices->getEffectsManager(),
+            m_pCoreServices->getSettingsManager(),
+            m_pCoreServices->getLibrary());
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 

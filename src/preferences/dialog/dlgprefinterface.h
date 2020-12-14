@@ -17,8 +17,11 @@ class ControlObject;
 class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg  {
     Q_OBJECT
   public:
-    DlgPrefInterface(QWidget *parent, MixxxMainWindow *mixxx,
-                    SkinLoader* pSkinLoader, UserSettingsPointer pConfig);
+    DlgPrefInterface(
+            QWidget* parent,
+            MixxxMainWindow* mixxx,
+            std::shared_ptr<SkinLoader> pSkinLoader,
+            UserSettingsPointer pConfig);
     ~DlgPrefInterface() override = default;
 
   public slots:
@@ -48,8 +51,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     UserSettingsPointer m_pConfig;
     ControlObject* m_pControlTrackTimeDisplay;
     MixxxMainWindow *m_mixxx;
-    SkinLoader* m_pSkinLoader;
-    PlayerManager* m_pPlayerManager;
+    std::shared_ptr<SkinLoader> m_pSkinLoader;
 
     QString m_skin;
     QString m_skinOnUpdate;

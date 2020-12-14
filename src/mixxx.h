@@ -117,7 +117,7 @@ class MixxxMainWindow : public QMainWindow {
     QWidget* m_pCentralWidget;
     LaunchImage* m_pLaunchImage;
 
-    std::unique_ptr<SkinLoader> m_pSkinLoader;
+    std::shared_ptr<SkinLoader> m_pSkinLoader;
     GuiTick* m_pGuiTick;
     VisualsManager* m_pVisualsManager;
 

@@ -52,7 +52,17 @@
 #include "skin/skinloader.h"
 #include "util/widgethelper.h"
 
-DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman, PlayerManager* pPlayerManager, ControllerManager* controllers, VinylControlManager* pVCManager, LV2Backend* pLV2Backend, EffectsManager* pEffectsManager, SettingsManager* pSettingsManager, Library* pLibrary)
+DlgPreferences::DlgPreferences(
+        MixxxMainWindow* mixxx,
+        std::shared_ptr<SkinLoader> pSkinLoader,
+        std::shared_ptr<SoundManager> soundman,
+        std::shared_ptr<PlayerManager> pPlayerManager,
+        std::shared_ptr<ControllerManager> controllers,
+        std::shared_ptr<VinylControlManager> pVCManager,
+        LV2Backend* pLV2Backend,
+        std::shared_ptr<EffectsManager> pEffectsManager,
+        std::shared_ptr<SettingsManager> pSettingsManager,
+        std::shared_ptr<Library> pLibrary)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
