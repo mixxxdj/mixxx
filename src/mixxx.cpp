@@ -91,6 +91,8 @@ MixxxMainWindow::MixxxMainWindow(
           m_pDeveloperToolsDlg(nullptr),
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON),
           m_pTouchShift(nullptr) {
+    DEBUG_ASSERT(pApp);
+    DEBUG_ASSERT(pCoreServices);
     m_pCoreServices->initializeSettings();
     m_pCoreServices->initializeKeyboard();
     // These depend on the settings
