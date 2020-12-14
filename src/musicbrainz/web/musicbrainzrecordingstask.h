@@ -19,7 +19,7 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             QNetworkAccessManager* networkAccessManager,
             QList<QUuid>&& recordingIds,
             QObject* parent = nullptr);
-    ~MusicBrainzRecordingsTask() override;
+    ~MusicBrainzRecordingsTask() override = default;
 
   signals:
     void succeeded(
@@ -29,15 +29,13 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             int errorCode,
             const QString& errorMessage);
 
-  private slots:
-    void slotNetworkReplyFinished();
-
   private:
-    bool doStart(
+    QNetworkReply* doStartNetworkRequest(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) override;
-    QUrl doAbort() override;
-    QUrl doTimeOut() override;
+    void doNetworkReplyFinished(
+            QNetworkReply* finishedNetworkReply,
+            network::HttpStatusCode statusCode) override;
 
     void emitSucceeded(
             QList<musicbrainz::TrackRelease>&& trackReleases);
@@ -55,7 +53,6 @@ class MusicBrainzRecordingsTask : public network::WebTask {
 
     QMap<QUuid, musicbrainz::TrackRelease> m_trackReleases;
 
-    QPointer<QNetworkReply> m_pendingNetworkReply;
     int m_parentTimeoutMillis;
 };
 
