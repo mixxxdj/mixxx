@@ -121,7 +121,8 @@ MixxxMainWindow::MixxxMainWindow(
     m_pGuiTick = new GuiTick();
     m_pVisualsManager = new VisualsManager();
     DEBUG_ASSERT(m_pCoreServices->getPlayerManager());
-    for (const QString& group : m_pCoreServices->getPlayerManager()->getVisualPlayerGroups()) {
+    const QStringList visualGroups = m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
+    for (const QString& group : visualGroups) {
         m_pVisualsManager->addDeck(group);
     }
 
@@ -226,7 +227,6 @@ MixxxMainWindow::MixxxMainWindow(
     if (CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) {
         slotViewFullScreen(true);
     }
-    emit skinLoaded();
 
     // Try open player device If that fails, the preference panel is opened.
     bool retryClicked;
@@ -929,7 +929,6 @@ void MixxxMainWindow::rebootMixxxView() {
     }
 
     qDebug() << "rebootMixxxView DONE";
-    emit skinLoaded();
 }
 
 bool MixxxMainWindow::loadConfiguredSkin() {
@@ -946,6 +945,7 @@ bool MixxxMainWindow::loadConfiguredSkin() {
     if (centralWidget() == m_pLaunchImage) {
         initializationProgressUpdate(100, "");
     }
+    emit skinLoaded();
     return m_pCentralWidget != nullptr;
 }
 
