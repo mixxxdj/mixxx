@@ -57,7 +57,7 @@ DlgPreferences::DlgPreferences(
         std::shared_ptr<SkinLoader> pSkinLoader,
         std::shared_ptr<SoundManager> soundman,
         std::shared_ptr<PlayerManager> pPlayerManager,
-        std::shared_ptr<ControllerManager> controllers,
+        std::shared_ptr<ControllerManager> pControllerManager,
         std::shared_ptr<VinylControlManager> pVCManager,
         LV2Backend* pLV2Backend,
         std::shared_ptr<EffectsManager> pEffectsManager,
@@ -105,7 +105,8 @@ DlgPreferences::DlgPreferences(
     QTreeWidgetItem* pControllersTreeItem = createTreeItem(
             tr("Controllers"),
             QIcon(":/images/preferences/ic_preferences_controllers.svg"));
-    m_pControllersDlg = new DlgPrefControllers(this, m_pConfig, controllers, pControllersTreeItem);
+    m_pControllersDlg = new DlgPrefControllers(
+            this, m_pConfig, pControllerManager, pControllersTreeItem);
     addPageWidget(PreferencesPage(m_pControllersDlg, pControllersTreeItem));
 
 #ifdef __VINYLCONTROL__

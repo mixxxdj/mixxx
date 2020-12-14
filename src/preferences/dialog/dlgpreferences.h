@@ -65,7 +65,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<SkinLoader> pSkinLoader,
             std::shared_ptr<SoundManager> soundman,
             std::shared_ptr<PlayerManager> pPlayerManager,
-            std::shared_ptr<ControllerManager> controllers,
+            std::shared_ptr<ControllerManager> pControllerManager,
             std::shared_ptr<VinylControlManager> pVCManager,
             LV2Backend* pLV2Backend,
             std::shared_ptr<EffectsManager> pEffectsManager,
