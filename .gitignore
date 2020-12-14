@@ -16,22 +16,14 @@
 *~
 .#*
 
-dist32
-dist64
-
 src/mixxx.rc.include
 src/mixxx.res
-
-.sconf_temp
-.sconsign.branch
-.sconsign.dblite
 
 *.sqlite
 
 *.cfg
 !/res/keyboard/*.cfg
 
-cache
 __pycache__
 
 lib/*/*.a

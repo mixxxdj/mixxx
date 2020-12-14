@@ -23,7 +23,7 @@ THIS_SCRIPT_NAME=${BASH_SOURCE[0]}
 
 MIXXX_ROOT="$(realpath "$(dirname "$THIS_SCRIPT_NAME")/..")"
 
-read -d'\n' BUILDENV_NAME BUILDENV_SHA256 < "${MIXXX_ROOT}/cmake/macos_build_environment"
+read -d'\n' BUILDENV_NAME BUILDENV_SHA256 < "${MIXXX_ROOT}/packaging/macos/build_environment"
 
 [ -z "$BUILDENV_BASEPATH" ] && BUILDENV_BASEPATH="${MIXXX_ROOT}/buildenv"
 
@@ -46,7 +46,7 @@ case "$COMMAND" in
                 export MACOSX_DEPLOYMENT_TARGET="${match[1]}"
             fi
         else
-            echo "Build environment did not match expected pattern. Check ${MIXXX_ROOT}/cmake/macos_build_environment file." >&2
+            echo "Build environment did not match expected pattern. Check ${MIXXX_ROOT}/packaging/macos/build_environment file." >&2
             return
         fi
 
