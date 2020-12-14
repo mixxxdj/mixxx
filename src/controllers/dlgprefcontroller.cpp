@@ -20,7 +20,7 @@
 
 namespace {
 const QString kPresetExt(".midi.xml");
-}
+} // namespace
 
 DlgPrefController::DlgPrefController(QWidget* parent,
         Controller* controller,

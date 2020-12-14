@@ -8,7 +8,7 @@ namespace {
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const int kColumnStatus = 2;
-}
+} // namespace
 
 BroadcastSettingsModel::BroadcastSettingsModel() {
 }

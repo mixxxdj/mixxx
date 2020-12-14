@@ -9,7 +9,7 @@ namespace {
 const int kDefaultQualityIndex = 6;
 const char* kQualityKey = "Opus_Quality";
 const mixxx::Logger kLogger("EncoderOpusSettings");
-}
+} // namespace
 
 const QString EncoderOpusSettings::BITRATE_MODE_GROUP = "Opus_BitrateMode";
 

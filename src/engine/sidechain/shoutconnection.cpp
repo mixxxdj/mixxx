@@ -40,7 +40,7 @@ const int kMaxShoutFailures = 3;
 
 const mixxx::Logger kLogger("ShoutConnection");
 
-}
+} // namespace
 
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
         UserSettingsPointer pConfig)

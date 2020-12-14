@@ -19,7 +19,7 @@ const double WaveformWidgetRenderer::s_defaultPlayMarkerPosition = 0.5;
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
-}
+} // namespace
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
         : m_group(group),

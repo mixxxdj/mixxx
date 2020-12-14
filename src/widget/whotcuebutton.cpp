@@ -10,7 +10,7 @@
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
-}
+} // namespace
 
 WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
         : WPushButton(pParent),

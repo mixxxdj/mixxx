@@ -18,7 +18,7 @@
 
 namespace {
 const mixxx::Logger kLogger("BroadcastManager");
-}
+} // namespace
 
 BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
                                    SoundManager* pSoundManager)

@@ -38,7 +38,7 @@ const QString xmlElementOutput = "output";
 const QString xmlElementInput = "input";
 
 const QRegularExpression kLegacyFormatRegex("((\\d*), )(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))?\\)");
-}
+} // namespace
 
 SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
     : m_api(kDefaultAPI),

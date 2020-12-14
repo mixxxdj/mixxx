@@ -30,7 +30,7 @@ const char* kSettingsGroupHeader = "Settings for %1";
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
-}
+} // namespace
 
 DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
                                    BroadcastSettingsPointer pBroadcastSettings)

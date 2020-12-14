@@ -18,7 +18,7 @@
 
 namespace {
 constexpr int kChannels = 2;
-}
+} // namespace
 
 // Sample threshold below which we consider there to be no signal.
 const double kMinSignal = 75.0 / SAMPLE_MAX;

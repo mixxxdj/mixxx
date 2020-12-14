@@ -14,7 +14,7 @@ namespace {
 
 const mixxx::Logger kLogger("BaseExternalLibraryFeature");
 
-}
+} // namespace
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(
         Library* pLibrary,

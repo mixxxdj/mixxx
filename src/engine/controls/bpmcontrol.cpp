@@ -39,7 +39,7 @@ constexpr int kBpmTapFilterLength = 5;
 // the actual number of beats is this x2.
 constexpr int kLocalBpmSpan = 4;
 constexpr SINT kSamplesPerFrame = 2;
-}
+} // namespace
 
 BpmControl::BpmControl(const QString& group,
         UserSettingsPointer pConfig)

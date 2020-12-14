@@ -1574,7 +1574,7 @@ namespace {
         }
         return matchLength;
     }
-}
+    } // namespace
 
 // Look for moved files. Look for files that have been marked as
 // "deleted on disk" and see if another "file" with the same name and

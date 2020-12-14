@@ -28,7 +28,7 @@ const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
 
 const mixxx::Logger kLogger("SoundDeviceNetwork");
-}
+} // namespace
 
 SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
                                        SoundManager *sm,

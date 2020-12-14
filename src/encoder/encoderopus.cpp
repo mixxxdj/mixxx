@@ -76,7 +76,7 @@ int getSerial() {
     kLogger.debug() << "RETURNING SERIAL " << serial;
     return serial;
 }
-}
+} // namespace
 
 //static
 int EncoderOpus::getMasterSamplerate() {

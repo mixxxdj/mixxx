@@ -7,7 +7,7 @@ const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const int kColumnType = 2;
 const int kNumberOfColumns = 3;
-}
+} // namespace
 
 EffectSettingsModel::EffectSettingsModel() {
 }

@@ -11,7 +11,7 @@
 
 namespace {
 const float kHeightScaleFactor = 255.0f / sqrtf(255 * 255 * 3);
-}
+} // namespace
 
 GLWaveformRendererRGB::GLWaveformRendererRGB(
         WaveformWidgetRenderer* waveformWidgetRenderer)

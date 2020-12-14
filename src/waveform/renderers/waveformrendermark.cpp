@@ -18,7 +18,7 @@
 
 namespace {
     const int kMaxCueLabelLength = 23;
-}
+    } // namespace
 
 WaveformRenderMark::WaveformRenderMark(
         WaveformWidgetRenderer* waveformWidgetRenderer) :

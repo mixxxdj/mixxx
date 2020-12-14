@@ -113,7 +113,7 @@ public:
     }
 };
 
-}
+} // namespace
 
 void BrowseThread::populateModel() {
     m_path_mutex.lock();
