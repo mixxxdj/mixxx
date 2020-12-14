@@ -40,7 +40,6 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,
-        VisualsManager* pVisualsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         const ChannelHandleAndGroup& handleGroup,
         bool defaultMaster,
@@ -193,8 +192,6 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 
     m_pRateRatio = make_parented<ControlProxy>(getGroup(), "rate_ratio", this);
     m_pPitchAdjust = make_parented<ControlProxy>(getGroup(), "pitch_adjust", this);
-
-    pVisualsManager->addDeck(getGroup());
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
