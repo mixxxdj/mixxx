@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QOpenGLFunctions_2_1>
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QGLFramebufferObject>
@@ -11,9 +10,9 @@
 #include "util/memory.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
 
-class GLSLWaveformRendererSignal: public QObject,
-        public WaveformRendererSignalBase,
-        protected QOpenGLFunctions_2_1 {
+class GLSLWaveformRendererSignal : public QObject,
+                                   public WaveformRendererSignalBase,
+                                   public GLWaveformRenderer {
     Q_OBJECT
   public:
     enum class ColorType {
@@ -27,8 +26,8 @@ class GLSLWaveformRendererSignal: public QObject,
             const QString& fragShader);
     ~GLSLWaveformRendererSignal() override;
 
-    bool onInit() override;
     void onSetup(const QDomNode& node) override;
+    void onInitializeGL() override;
     void draw(QPainter* painter, QPaintEvent* event) override;
 
     void onSetTrack() override;

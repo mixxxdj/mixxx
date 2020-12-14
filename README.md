@@ -38,9 +38,12 @@ bug list][easybugs] and get started!
 * Jenkins [![Build status](https://img.shields.io/jenkins/s/https/builds.mixxx.org/job/master-release.svg)](https://builds.mixxx.org/job/master-release)
 
 First, you must install all of Mixxx's dependencies. To compile Mixxx using
-[SCons], run:
+[CMake], run:
 
-    $ scons
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ cmake --build .
 
 Please see our helpful guides on the [wiki] for more information:
 - [Compiling on Linux]
@@ -98,15 +101,15 @@ license.
 [compiling on macOS]: https://mixxx.org/wiki/doku.php/compiling_on_os_x
 [compiling on windows]: https://mixxx.org/wiki/doku.php/compiling_on_windows
 [mailing list]: https://lists.sourceforge.net/lists/listinfo/mixxx-devel
-[SCons]: https://www.scons.org/
+[CMake]: https://cmake.org/
 [launchpad 2.3.0]: https://launchpad.net/mixxx/+milestone/2.3.0
 [wiki roadmap]: https://mixxx.org/wiki/doku.php/development_roadmap
 [easybugs]: https://bugs.launchpad.net/mixxx/+bugs?field.searchtext=&orderby=-importance&search=Search&field.status%3Alist=NEW&field.status%3Alist=CONFIRMED&field.status%3Alist=TRIAGED&field.status%3Alist=INPROGRESS&field.status%3Alist=INCOMPLETE_WITH_RESPONSE&field.status%3Alist=INCOMPLETE_WITHOUT_RESPONSE&assignee_option=any&field.assignee=&field.bug_reporter=&field.bug_commenter=&field.subscriber=&field.structural_subscriber=&field.tag=easy&field.tags_combinator=ANY&field.has_cve.used=&field.omit_dupes.used=&field.omit_dupes=on&field.affects_me.used=&field.has_patch.used=&field.has_branches.used=&field.has_branches=on&field.has_no_branches.used=&field.has_no_branches=on&field.has_blueprints.used=&field.has_blueprints=on&field.has_no_blueprints.used=&field.has_no_blueprints=on
-[creating skins]: https://mixxx.org/wiki/doku.php/creating_skins
+[creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
 [help translate content]: https://www.transifex.com/projects/p/mixxxdj
 [Mixxx i18n wiki]: https://mixxx.org/wiki/doku.php/internationalization
 [Mixxx localization forum]: https://mixxx.org/forums/viewforum.php?f=10
 [Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
-[hardware compatibility]: https://mixxx.org/wiki/doku.php/hardware_compatibility
+[hardware compatibility]: https://mixxx.org/wiki/doku.php/Hardware-Compatibility
 [zulip]: https://mixxx.zulipchat.com/
 [discourse]: https://mixxx.discourse.group/
