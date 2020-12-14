@@ -1,35 +1,94 @@
 #include "database/schemamanager.h"
 
+#include "util/assert.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqltransaction.h"
-#include "util/xml.h"
 #include "util/logger.h"
-#include "util/assert.h"
-
+#include "util/time.h"
+#include "util/xml.h"
 
 const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
 const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";
 
 namespace {
-    mixxx::Logger kLogger("SchemaManager");
 
-    int readCurrentSchemaVersion(const SettingsDAO& settings) {
-        QString settingsValue = settings.getValue(SchemaManager::SETTINGS_VERSION_STRING);
-        // May be a null string if the schema has not been created. We default the
-        // startVersion to 0 so that we automatically try to upgrade to revision 1.
-        if (settingsValue.isNull()) {
-            return 0; // initial version
-        } else {
-            bool ok = false;
-            int schemaVersion = settingsValue.toInt(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok && (schemaVersion >= 0)) {
-                kLogger.critical()
-                        << "Invalid database schema version" << settingsValue;
-            }
-            return schemaVersion;
+mixxx::Logger kLogger("SchemaManager");
+
+int readCurrentSchemaVersion(const SettingsDAO& settings) {
+    QString settingsValue = settings.getValue(SchemaManager::SETTINGS_VERSION_STRING);
+    // May be a null string if the schema has not been created. We default the
+    // startVersion to 0 so that we automatically try to upgrade to revision 1.
+    if (settingsValue.isNull()) {
+        return 0; // initial version
+    } else {
+        bool ok = false;
+        int schemaVersion = settingsValue.toInt(&ok);
+        VERIFY_OR_DEBUG_ASSERT(ok && (schemaVersion >= 0)) {
+            kLogger.critical()
+                    << "Invalid database schema version" << settingsValue;
         }
+        return schemaVersion;
     }
 }
+
+constexpr int kLibraryLastPlayedAtSchemaVersion = 35;
+
+// TODO: This unconditional qeury might be useful for database
+// maintenance. It allows to refresh all values from history
+// playlists, discarding the previously stored values.
+const QString kUpdateLibraryLastPlayedAtFromHistoryPlaylists = QStringLiteral(
+        " \
+            UPDATE library SET last_played_at=( \
+                SELECT MAX(PlaylistTracks.pl_datetime_added) \
+                FROM PlaylistTracks \
+                JOIN Playlists ON PlaylistTracks.playlist_id=Playlists.id \
+                WHERE PlaylistTracks.track_id=library.id \
+                AND Playlists.hidden=2 \
+                GROUP BY PlaylistTracks.track_id)");
+
+const QString kUpdateLibraryLastPlayedAtFromHistoryPlaylistsIfNull =
+        kUpdateLibraryLastPlayedAtFromHistoryPlaylists +
+        QStringLiteral(" WHERE last_played_at IS NULL");
+
+// Populates column library.last_played_at that has been added
+// in schema version 35. If an older version of Mixxx is started
+// this column will not be updated and still contain NULL or
+// remain at the last value.
+//
+// We only update columns that are NULL and have never been populated
+// before. Otherwise this operation could not be executed on on
+// every startup!
+//
+// This workaround became necessary after accidentally publishing
+// 2.4.0-alpha-pre to PPAs months before the final release in Dec 2020.
+void updateLibraryLastPlayedAtFromHistoryPlaylistsIfNull(
+        const QSqlDatabase& database,
+        int currentSchemaVersion) {
+    if (currentSchemaVersion < kLibraryLastPlayedAtSchemaVersion) {
+        // Nothing to do
+        return;
+    }
+    const auto started = mixxx::Time::elapsed();
+    auto query = FwdSqlQuery{
+            database,
+            kUpdateLibraryLastPlayedAtFromHistoryPlaylistsIfNull};
+    VERIFY_OR_DEBUG_ASSERT(query.isPrepared()) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
+        kLogger.warning()
+                << "Updating library.last_played_at failed:"
+                << query.lastError().databaseText();
+        return;
+    }
+    const auto finished = mixxx::Time::elapsed();
+    kLogger.debug()
+            << "Updating library.last_played_at finished in"
+            << (finished - started).toIntegerMillis()
+            << "ms";
+}
+
+} // namespace
 
 SchemaManager::SchemaManager(const QSqlDatabase& database)
         : m_database(database),
@@ -71,6 +130,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         kLogger.info()
                 << "Database schema is up-to-date"
                 << "at version" << m_currentVersion;
+        updateLibraryLastPlayedAtFromHistoryPlaylistsIfNull(m_database, m_currentVersion);
         return Result::CurrentVersion;
     } else if (m_currentVersion > targetVersion) {
         if (isBackwardsCompatibleWithVersion(targetVersion)) {
@@ -79,6 +139,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
                     << "at version" << m_currentVersion
                     << "and backwards compatible"
                     << "with version" << targetVersion;
+            updateLibraryLastPlayedAtFromHistoryPlaylistsIfNull(m_database, targetVersion);
             return Result::NewerVersionBackwardsCompatible;
         } else {
             kLogger.warning()
@@ -214,5 +275,6 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
             return Result::UpgradeFailed;
         }
     }
+    updateLibraryLastPlayedAtFromHistoryPlaylistsIfNull(m_database, m_currentVersion);
     return Result::UpgradeSucceeded;
 }

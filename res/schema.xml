@@ -524,17 +524,25 @@ METADATA
     <description>
       Add last_played_at column to library table
     </description>
+    <!--
+      Populating the new column from history playlists has to be done
+      programmatically on every restart to ensure that missing values
+      are added even after using the database with an older Mixxx
+      version! Otherwise backwards compatibility is broken
+      -->
     <sql>
-      -- Add new column
       ALTER TABLE library ADD COLUMN last_played_at DATETIME DEFAULT NULL;
-      -- Populate new column from history playlists
-      UPDATE library SET last_played_at=(
-        SELECT MAX(PlaylistTracks.pl_datetime_added)
-          FROM PlaylistTracks
-          JOIN Playlists ON PlaylistTracks.playlist_id=Playlists.id
-          WHERE PlaylistTracks.track_id=library.id
-          AND Playlists.hidden=2
-          GROUP BY PlaylistTracks.track_id);
+    </sql>
+  </revision>
+  <revision version="36" min_compatible="3">
+    <description>
+      Add index for library.last_played_at
+    </description>
+    <sql>
+      -- Required for efficiently updating library.last_played_at on startup
+      CREATE INDEX IF NOT EXISTS idx_library_last_played_at ON library (
+          last_played_at
+      );
     </sql>
   </revision>
 </schema>
