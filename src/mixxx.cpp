@@ -120,7 +120,7 @@ MixxxMainWindow::MixxxMainWindow(
 
     m_pGuiTick = new GuiTick();
     m_pVisualsManager = new VisualsManager();
-    for (const auto& group : m_pCoreServices->getPlayerManager()->getVisualPlayerGroups()) {
+    for (const QString& group : m_pCoreServices->getPlayerManager()->getVisualPlayerGroups()) {
         m_pVisualsManager->addDeck(group);
     }
 
