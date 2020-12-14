@@ -144,6 +144,7 @@ class WMainMenu : public QWidget {
 
     ControlObject* m_pFeatureCOHideMenubar;
     ControlObject* m_pFeatureCOSkinSettings;
+    ControlObject* m_pFeatureCOVinylControl;
 
     unsigned int m_lastNumPlayers;
     VisibilityControlConnection* m_pMenubarConnection;

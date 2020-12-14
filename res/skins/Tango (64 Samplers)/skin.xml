@@ -100,6 +100,7 @@
       <!-- Enable skin features -->
       <attribute persist="false" config_key="[Skin],feature_hide_menubar">1</attribute>
       <attribute persist="false" config_key="[Skin],feature_skin_settings">1</attribute>
+      <attribute persist="false" config_key="[Skin],feature_vinyl_control">1</attribute>
 
       <!-- Library -->
       <attribute config_key="[Master],maximize_library">0</attribute>

@@ -19,6 +19,7 @@ namespace {
 const int kMaxLoadToDeckActions = 4;
 const auto kFeatureHideMenubar = ConfigKey("[Skin]", QLatin1String("feature_hide_menubar"));
 const auto kFeatureSkinSettings = ConfigKey("[Skin]", QLatin1String("feature_skin_settings"));
+const auto kFeatureVinylControl = ConfigKey("[Skin]", QLatin1String("feature_vinyl_control"));
 
 QString buildWhatsThis(const QString& title, const QString& text) {
     QString preparedTitle = title;
@@ -75,6 +76,7 @@ WMainMenu::WMainMenu(QWidget* pParent,
     // feature COs
     m_pFeatureCOHideMenubar = new ControlObject(kFeatureHideMenubar);
     m_pFeatureCOSkinSettings = new ControlObject(kFeatureSkinSettings);
+    m_pFeatureCOVinylControl = new ControlObject(kFeatureVinylControl);
 
     // FILE MENU
     QString loadTrackText = tr("Load Track to Deck &%1");
@@ -200,7 +202,9 @@ WMainMenu::WMainMenu(QWidget* pParent,
                     tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"))));
     m_pViewVinylControl->setStatusTip(showVinylControlText);
     m_pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
-    createVisibilityControl(m_pViewVinylControl, ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
+    createVisibilityControl(m_pViewVinylControl,
+            ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"),
+            m_pFeatureCOVinylControl);
 #endif
 
     QString showPreviewDeckTitle = tr("Show Preview Deck");
@@ -743,6 +747,7 @@ void WMainMenu::createMenuInternal(FnAddMenu fnAddMenu, QMenuBar* pMenuBar, QWid
 void WMainMenu::resetFeatureFlags() {
     m_pFeatureCOHideMenubar->set(0.0);
     m_pFeatureCOSkinSettings->set(0.0);
+    m_pFeatureCOVinylControl->set(0.0);
 }
 
 bool WMainMenu::shouldBeVisible() {
