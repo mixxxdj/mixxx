@@ -1,5 +1,12 @@
 #pragma once
 
+#include "preferences/configobject.h"
+#include "preferences/constants.h"
+#include "preferences/settingsmanager.h"
+#include "soundio/sounddeviceerror.h"
+#include "util/cmdlineargs.h"
+#include "util/timer.h"
+
 class QApplication;
 class CmdlineArgs;
 class KeyboardEventFilter;
@@ -14,13 +21,6 @@ class VinylControlManager;
 class TrackCollectionManager;
 class Library;
 class LV2Backend;
-
-#include "preferences/configobject.h"
-#include "preferences/constants.h"
-#include "preferences/settingsmanager.h"
-#include "soundio/sounddeviceerror.h"
-#include "util/cmdlineargs.h"
-#include "util/timer.h"
 
 namespace mixxx {
 
