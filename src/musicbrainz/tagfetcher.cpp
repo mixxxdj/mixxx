@@ -10,9 +10,11 @@
 
 namespace {
 
-constexpr int kAcoustIdTimeoutMillis = 5000; // msec
+// Long timeout to cope with occasional server-side unresponsiveness
+constexpr int kAcoustIdTimeoutMillis = 60000; // msec
 
-constexpr int kMusicBrainzTimeoutMillis = 5000; // msec
+// Long timeout to cope with occasional server-side unresponsiveness
+constexpr int kMusicBrainzTimeoutMillis = 60000; // msec
 
 } // anonymous namespace
 
