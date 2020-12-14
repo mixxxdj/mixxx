@@ -12,7 +12,9 @@
 #include "database/mixxxdb.h"
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
+#ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
+#endif
 #include "engine/enginemaster.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
