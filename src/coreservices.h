@@ -135,9 +135,6 @@ class CoreServices : public QObject {
     ScreenSaverPreference m_inhibitScreensaver;
 
     QSet<ControlObject*> m_skinCreatedControls;
-
-    static const int kMicrophoneCount;
-    static const int kAuxiliaryCount;
 };
 
 } // namespace mixxx

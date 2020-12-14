@@ -51,6 +51,8 @@
 
 namespace {
 const mixxx::Logger kLogger("CoreServices");
+constexpr int kMicrophoneCount = 4;
+constexpr int kAuxiliaryCount = 4;
 
 #define CLEAR_AND_CHECK_DELETED(x) clearHelper(x, #x);
 
@@ -94,11 +96,6 @@ inline QLocale inputLocale() {
 } // anonymous namespace
 
 namespace mixxx {
-
-// static
-const int CoreServices::kMicrophoneCount = 4;
-// static
-const int CoreServices::kAuxiliaryCount = 4;
 
 CoreServices::CoreServices(const CmdlineArgs& args)
         : m_runtime_timer(QLatin1String("CoreServices::runtime")),
