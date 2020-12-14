@@ -4,12 +4,13 @@
 #include <QEvent>
 #include <QRect>
 #include <QStringList>
+#include <memory>
 
-#include "preferences/dialog/ui_dlgpreferencesdlg.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
+#include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/settingsmanager.h"
+#include "preferences/usersettings.h"
 
 class MixxxMainWindow;
 class SoundManager;

@@ -2,6 +2,7 @@
 
 #include <QSpinBox>
 #include <QWidget>
+#include <memory>
 
 #include "preferences/dialog/ui_dlgprefvinyldlg.h"
 #include "preferences/dlgpreferencepage.h"

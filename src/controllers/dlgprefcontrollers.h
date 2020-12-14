@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QTreeWidgetItem>
+#include <memory>
 
-#include "preferences/usersettings.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class DlgPreferences;
 class DlgPrefController;

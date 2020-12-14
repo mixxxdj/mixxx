@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QWidget>
+#include <memory>
 
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
-#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class MixxxMainWindow;
 class Library;

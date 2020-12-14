@@ -2,6 +2,7 @@
 
 #include <QHash>
 #include <QSortFilterProxyModel>
+#include <memory>
 
 #include "controllers/controllerinputmappingtablemodel.h"
 #include "controllers/controlleroutputmappingtablemodel.h"
@@ -9,8 +10,8 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
-#include "preferences/usersettings.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 // Forward declarations
 class Controller;
