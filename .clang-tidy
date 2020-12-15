@@ -1,5 +1,5 @@
 ---
-Checks: '-*,modernize-use-nullptr,readability-braces-around-statements,readability-namespace-comment,readability-qualified-auto'
+Checks: '-*,modernize-use-nullptr,modernize-use-override,readability-braces-around-statements,readability-namespace-comment,readability-qualified-auto'
 WarningsAsErrors: ''
 HeaderFilterRegex: ''
 AnalyzeTemporaryDtors: false
