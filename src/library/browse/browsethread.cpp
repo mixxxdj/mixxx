@@ -33,7 +33,7 @@ static QMutex s_Mutex;
 BrowseThread::BrowseThread(QObject *parent)
         : QThread(parent) {
     m_bStopThread = false;
-    m_model_observer = NULL;
+    m_model_observer = nullptr;
     //start Thread
     start(QThread::LowPriority);
 
@@ -113,7 +113,7 @@ public:
     }
 };
 
-}
+} // namespace
 
 void BrowseThread::populateModel() {
     m_path_mutex.lock();

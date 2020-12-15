@@ -594,8 +594,9 @@ void PlaylistDAO::removeTracksFromPlaylistInner(int playlistId, int position) {
 }
 
 bool PlaylistDAO::insertTrackIntoPlaylist(TrackId trackId, const int playlistId, int position) {
-    if (playlistId < 0 || !trackId.isValid() || position < 0)
+    if (playlistId < 0 || !trackId.isValid() || position < 0) {
         return false;
+    }
 
     ScopedTransaction transaction(m_database);
 
@@ -954,8 +955,9 @@ void PlaylistDAO::searchForDuplicateTrack(const int fromPosition,
                 pos != excludePosition) {
             int tempTrackDistance =
                     (otherTrackPosition - pos) * (otherTrackPosition - pos);
-            if (tempTrackDistance < *pTrackDistance || *pTrackDistance == -1)
+            if (tempTrackDistance < *pTrackDistance || *pTrackDistance == -1) {
                 *pTrackDistance = tempTrackDistance;
+            }
         }
     }
 }

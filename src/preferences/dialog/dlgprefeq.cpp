@@ -38,8 +38,8 @@ DlgPrefEQ::DlgPrefEQ(
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager),
-          m_firstSelectorLabel(NULL),
-          m_pNumDecks(NULL),
+          m_firstSelectorLabel(nullptr),
+          m_pNumDecks(nullptr),
           m_inSlotPopulateDeckEffectSelectors(false),
           m_bEqAutoReset(false),
           m_bGainAutoReset(false) {
@@ -289,7 +289,7 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
         }
     }
 
-    if (m_firstSelectorLabel != NULL) {
+    if (m_firstSelectorLabel != nullptr) {
         if (do_hide) {
             m_firstSelectorLabel->setText(QObject::tr("EQ Effect"));
         } else {

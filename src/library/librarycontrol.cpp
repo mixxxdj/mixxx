@@ -356,7 +356,7 @@ void LibraryControl::slotNumPreviewDecksChanged(double v) {
 
 void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     if (m_pSidebarWidget) {
-        disconnect(m_pSidebarWidget, 0, this, 0);
+        disconnect(m_pSidebarWidget, nullptr, this, nullptr);
     }
     m_pSidebarWidget = pSidebarWidget;
     connect(m_pSidebarWidget,
@@ -368,7 +368,7 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
     Q_UNUSED(pKeyboard);
     if (m_pLibraryWidget) {
-        disconnect(m_pLibraryWidget, 0, this, 0);
+        disconnect(m_pLibraryWidget, nullptr, this, nullptr);
     }
     m_pLibraryWidget = pLibraryWidget;
     connect(m_pLibraryWidget,
@@ -379,7 +379,7 @@ void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFi
 
 void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
     if (m_pSearchbox) {
-        disconnect(m_pSearchbox, 0, this, 0);
+        disconnect(m_pSearchbox, nullptr, this, nullptr);
     }
     m_pSearchbox = pSearchbox;
     connect(this,
@@ -438,7 +438,7 @@ void LibraryControl::slotAutoDjAddTop(double v) {
     }
 
     if (v > 0) {
-        auto activeView = m_pLibraryWidget->getActiveView();
+        auto* activeView = m_pLibraryWidget->getActiveView();
         if (!activeView) {
             return;
         }
@@ -451,7 +451,7 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
         return;
     }
     if (v > 0) {
-        auto activeView = m_pLibraryWidget->getActiveView();
+        auto* activeView = m_pLibraryWidget->getActiveView();
         if (!activeView) {
             return;
         }
@@ -464,7 +464,7 @@ void LibraryControl::slotAutoDjAddReplace(double v) {
         return;
     }
     if (v > 0) {
-        auto activeView = m_pLibraryWidget->getActiveView();
+        auto* activeView = m_pLibraryWidget->getActiveView();
         if (!activeView) {
             return;
         }
@@ -491,7 +491,7 @@ void LibraryControl::slotSelectTrack(double v) {
 
     int i = (int)v;
 
-    auto activeView = m_pLibraryWidget->getActiveView();
+    auto* activeView = m_pLibraryWidget->getActiveView();
     if (!activeView) {
         return;
     }
@@ -606,7 +606,7 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     }
 
     // Send the event pointer to the currently focused widget
-    auto focusWidget = QApplication::focusWidget();
+    auto* focusWidget = QApplication::focusWidget();
     if (focusWidget) {
         for (auto i = 0; i < event.count(); ++i) {
             QApplication::sendEvent(focusWidget, &event);
@@ -717,7 +717,7 @@ void LibraryControl::slotGoToItem(double v) {
     emit clearSearchIfClearButtonHasFocus();
 
     // If the focused window is a dialog, press Enter
-    auto focusWindow = QApplication::focusWindow();
+    auto* focusWindow = QApplication::focusWindow();
     if (focusWindow && (focusWindow->type() & (Qt::Dialog | Qt::Popup))) {
         QKeyEvent event(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
         QApplication::sendEvent(focusWindow, &event);

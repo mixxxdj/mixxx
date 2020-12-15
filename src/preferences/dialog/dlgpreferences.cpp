@@ -245,8 +245,9 @@ QTreeWidgetItem* DlgPreferences::createTreeItem(const QString& text, const QIcon
 }
 
 void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous) {
-    if (!current)
+    if (!current) {
         current = previous;
+    }
 
     if (m_pControllersDlg->handleTreeItemClick(current)) {
         // Do nothing. m_controllersPage handled this click.
@@ -405,12 +406,12 @@ void DlgPreferences::addPageWidget(PreferencesPage page) {
 DlgPreferencePage* DlgPreferences::currentPage() {
     QObject* pObject = pagesWidget->currentWidget();
     for (int i = 0; i < 2; ++i) {
-        if (pObject == NULL) {
-            return NULL;
+        if (pObject == nullptr) {
+            return nullptr;
         }
         QObjectList children = pObject->children();
         if (children.isEmpty()) {
-            return NULL;
+            return nullptr;
         }
         pObject = children[0];
     }

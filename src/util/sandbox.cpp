@@ -81,25 +81,28 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
     QString title = QObject::tr("Mixxx Needs Access to: %1")
             .arg(info.fileName());
 
-    QMessageBox::question(
-        NULL, title,
-        QObject::tr(
-            "Due to Mac Sandboxing, we need your permission to access this file:"
-            "\n\n%1\n\n"
-            "After clicking OK, you will see a file picker. "
-            "To give Mixxx permission, you must select '%2' to proceed. "
-            "If you do not want to grant Mixxx access click Cancel on the file picker. "
-            "We're sorry for this inconvenience.\n\n"
-            "To abort this action, press Cancel on the file dialog.")
-        .arg(canonicalPath, info.fileName()));
+    QMessageBox::question(nullptr,
+            title,
+            QObject::tr(
+                    "Due to Mac Sandboxing, we need your permission to access "
+                    "this file:"
+                    "\n\n%1\n\n"
+                    "After clicking OK, you will see a file picker. "
+                    "To give Mixxx permission, you must select '%2' to "
+                    "proceed. "
+                    "If you do not want to grant Mixxx access click Cancel on "
+                    "the file picker. "
+                    "We're sorry for this inconvenience.\n\n"
+                    "To abort this action, press Cancel on the file dialog.")
+                    .arg(canonicalPath, info.fileName()));
 
     QString result;
     QFileInfo resultInfo;
     while (true) {
         if (info.isFile()) {
-            result = QFileDialog::getOpenFileName(NULL, title, canonicalPath);
+            result = QFileDialog::getOpenFileName(nullptr, title, canonicalPath);
         } else if (info.isDir()) {
-            result = QFileDialog::getExistingDirectory(NULL, title, canonicalPath);
+            result = QFileDialog::getExistingDirectory(nullptr, title, canonicalPath);
         }
 
         if (result.isNull()) {
@@ -121,10 +124,10 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
             qDebug() << "User selected the wrong file.";
         }
         QMessageBox::question(
-            NULL, title,
-            QObject::tr("You selected the wrong file. To grant Mixxx access, "
-                        "please select the file '%1'. If you do not want to "
-                        "continue, press Cancel.").arg(info.fileName()));
+                nullptr, title, QObject::tr("You selected the wrong file. To grant Mixxx access, "
+                                            "please select the file '%1'. If you do not want to "
+                                            "continue, press Cancel.")
+                                        .arg(info.fileName()));
     }
 
     return createSecurityToken(resultInfo);
@@ -146,7 +149,7 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
         return false;
     }
     QMutexLocker locker(&s_mutex);
-    if (s_pSandboxPermissions == NULL) {
+    if (s_pSandboxPermissions == nullptr) {
         return false;
     }
 
@@ -200,7 +203,7 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool crea
     }
 
     QMutexLocker locker(&s_mutex);
-    if (s_pSandboxPermissions == NULL) {
+    if (s_pSandboxPermissions == nullptr) {
         return SecurityTokenPointer();
     }
 

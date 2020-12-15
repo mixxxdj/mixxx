@@ -27,7 +27,9 @@ void ErrorDialogProperties::setTitle(const QString& title) {
 
 void ErrorDialogProperties::setText(const QString& text) {
     // If no key is set, use this window text since it is likely to be unique
-    if (m_key.isEmpty()) m_key = text;
+    if (m_key.isEmpty()) {
+        m_key = text;
+    }
     m_text = text;
 }
 
@@ -53,7 +55,7 @@ void ErrorDialogProperties::addButton(QMessageBox::StandardButton button) {
 // ----------------------------------------------------
 // ---------- ErrorDialogHandler begins here ----------
 
-ErrorDialogHandler* ErrorDialogHandler::s_pInstance = NULL;
+ErrorDialogHandler* ErrorDialogHandler::s_pInstance = nullptr;
 bool ErrorDialogHandler::s_bEnabled = true;
 
 // static
@@ -67,7 +69,7 @@ ErrorDialogHandler::ErrorDialogHandler() {
 }
 
 ErrorDialogHandler::~ErrorDialogHandler() {
-    s_pInstance = NULL;
+    s_pInstance = nullptr;
 }
 
 ErrorDialogProperties* ErrorDialogHandler::newDialogProperties() {

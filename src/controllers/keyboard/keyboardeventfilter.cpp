@@ -10,9 +10,10 @@
 #include "util/cmdlineargs.h"
 
 KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
-                                         QObject* parent, const char* name)
+        QObject* parent,
+        const char* name)
         : QObject(parent),
-          m_pKbdConfigObject(NULL) {
+          m_pKbdConfigObject(nullptr) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
 }
@@ -131,17 +132,21 @@ QKeySequence KeyboardEventFilter::getKeySeq(QKeyEvent* e) {
 
     // TODO(XXX) check if we may simply return QKeySequence(e->modifiers()+e->key())
 
-    if (e->modifiers() & Qt::ShiftModifier)
+    if (e->modifiers() & Qt::ShiftModifier) {
         modseq += "Shift+";
+    }
 
-    if (e->modifiers() & Qt::ControlModifier)
+    if (e->modifiers() & Qt::ControlModifier) {
         modseq += "Ctrl+";
+    }
 
-    if (e->modifiers() & Qt::AltModifier)
+    if (e->modifiers() & Qt::AltModifier) {
         modseq += "Alt+";
+    }
 
-    if (e->modifiers() & Qt::MetaModifier)
+    if (e->modifiers() & Qt::MetaModifier) {
         modseq += "Meta+";
+    }
 
     if (e->key() >= 0x01000020 && e->key() <= 0x01000023) {
         // Do not act on Modifier only

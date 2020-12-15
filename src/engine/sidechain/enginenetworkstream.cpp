@@ -33,7 +33,7 @@ const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
 // the broadcast thread is not scheduled in time.
 
 const mixxx::Logger kLogger("EngineNetworkStream");
-}
+} // namespace
 
 EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
                                          int numInputChannels)

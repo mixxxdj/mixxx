@@ -7,7 +7,7 @@ namespace {
 
 constexpr CSAMPLE kDuckThreshold = 0.1f;
 
-}
+} // namespace
 
 EngineTalkoverDucking::EngineTalkoverDucking(
         UserSettingsPointer pConfig, const QString& group)

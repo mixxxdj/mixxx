@@ -16,7 +16,7 @@
 
 namespace {
 const QColor kDefaultPaletteColor(0, 0, 0);
-}
+} // namespace
 
 ColorPaletteEditor::ColorPaletteEditor(QWidget* parent, bool showHotcueNumbers)
         : QDialog(parent),

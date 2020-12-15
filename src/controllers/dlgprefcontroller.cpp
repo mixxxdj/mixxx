@@ -20,7 +20,7 @@
 
 namespace {
 const QString kPresetExt(".midi.xml");
-}
+} // namespace
 
 DlgPrefController::DlgPrefController(
         QWidget* parent,
@@ -32,11 +32,11 @@ DlgPrefController::DlgPrefController(
           m_pUserDir(userPresetsPath(pConfig)),
           m_pControllerManager(controllerManager),
           m_pController(controller),
-          m_pDlgControllerLearning(NULL),
-          m_pInputTableModel(NULL),
-          m_pInputProxyModel(NULL),
-          m_pOutputTableModel(NULL),
-          m_pOutputProxyModel(NULL),
+          m_pDlgControllerLearning(nullptr),
+          m_pInputTableModel(nullptr),
+          m_pInputProxyModel(nullptr),
+          m_pOutputTableModel(nullptr),
+          m_pOutputProxyModel(nullptr),
           m_bDirty(false) {
     m_ui.setupUi(this);
 
@@ -193,7 +193,7 @@ void DlgPrefController::midiInputMappingsLearned(
         const MidiInputMappings& mappings) {
     // This is just a shortcut since doing a round-trip from Learning ->
     // Controller -> slotPresetLoaded -> setPreset is too heavyweight.
-    if (m_pInputTableModel != NULL) {
+    if (m_pInputTableModel != nullptr) {
         m_pInputTableModel->addMappings(mappings);
     }
 }
@@ -220,8 +220,9 @@ QString DlgPrefController::presetName(
         const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString name = pPreset->name();
-        if (name.length() > 0)
+        if (name.length() > 0) {
             return name;
+        }
     }
     return tr("No Name");
 }
@@ -230,8 +231,9 @@ QString DlgPrefController::presetDescription(
         const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString description = pPreset->description();
-        if (description.length() > 0)
+        if (description.length() > 0) {
             return description;
+        }
     }
     return tr("No Description");
 }
@@ -240,8 +242,9 @@ QString DlgPrefController::presetAuthor(
         const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString author = pPreset->author();
-        if (author.length() > 0)
+        if (author.length() > 0) {
             return author;
+        }
     }
     return tr("No Author");
 }
@@ -251,8 +254,9 @@ QString DlgPrefController::presetForumLink(
     QString url;
     if (pPreset) {
         QString link = pPreset->forumlink();
-        if (link.length() > 0)
+        if (link.length() > 0) {
             url = "<a href=\"" + link + "\">Mixxx Forums</a>";
+        }
     }
     return url;
 }
@@ -262,8 +266,9 @@ QString DlgPrefController::presetWikiLink(
     QString url;
     if (pPreset) {
         QString link = pPreset->wikilink();
-        if (link.length() > 0)
+        if (link.length() > 0) {
             url = "<a href=\"" + link + "\">Mixxx Wiki</a>";
+        }
     }
     return url;
 }
@@ -704,7 +709,7 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     for (int i = 0; i < pInputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pInputModel->delegateForColumn(
             i, m_ui.m_pInputMappingTableView);
-        if (pDelegate != NULL) {
+        if (pDelegate != nullptr) {
             qDebug() << "Setting input delegate for column" << i << pDelegate;
             m_ui.m_pInputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }
@@ -728,7 +733,7 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     for (int i = 0; i < pOutputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pOutputModel->delegateForColumn(
             i, m_ui.m_pOutputMappingTableView);
-        if (pDelegate != NULL) {
+        if (pDelegate != nullptr) {
             qDebug() << "Setting output delegate for column" << i << pDelegate;
             m_ui.m_pOutputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }

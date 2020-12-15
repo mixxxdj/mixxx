@@ -260,7 +260,9 @@ MixxxMainWindow::MixxxMainWindow(
         if (noOutputDlg(&continueClicked) != QDialog::Accepted) {
             exit(0);
         }
-        if (continueClicked) break;
+        if (continueClicked) {
+            break;
+        }
     }
 
     // this has to be after the OpenGL widgets are created or depending on a
@@ -707,8 +709,9 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
 
-        if (ret != QMessageBox::Yes)
+        if (ret != QMessageBox::Yes) {
             return;
+        }
     }
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
@@ -761,7 +764,7 @@ void MixxxMainWindow::slotDeveloperTools(bool visible) {
 }
 
 void MixxxMainWindow::slotDeveloperToolsClosed() {
-    m_pDeveloperToolsDlg = NULL;
+    m_pDeveloperToolsDlg = nullptr;
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle) {
@@ -996,21 +999,25 @@ void MixxxMainWindow::checkDirectRendering() {
     //  * Warn user
 
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    if (!factory)
+    if (!factory) {
         return;
+    }
 
     UserSettingsPointer pConfig = m_pCoreServices->getSettings();
 
     if (!factory->isOpenGlAvailable() && !factory->isOpenGlesAvailable() &&
         pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
-        QMessageBox::warning(
-            0, tr("OpenGL Direct Rendering"),
-            tr("Direct rendering is not enabled on your machine.<br><br>"
-               "This means that the waveform displays will be very<br>"
-               "<b>slow and may tax your CPU heavily</b>. Either update your<br>"
-               "configuration to enable direct rendering, or disable<br>"
-               "the waveform displays in the Mixxx preferences by selecting<br>"
-               "\"Empty\" as the waveform display in the 'Interface' section."));
+        QMessageBox::warning(nullptr,
+                tr("OpenGL Direct Rendering"),
+                tr("Direct rendering is not enabled on your machine.<br><br>"
+                   "This means that the waveform displays will be very<br>"
+                   "<b>slow and may tax your CPU heavily</b>. Either update "
+                   "your<br>"
+                   "configuration to enable direct rendering, or disable<br>"
+                   "the waveform displays in the Mixxx preferences by "
+                   "selecting<br>"
+                   "\"Empty\" as the waveform display in the 'Interface' "
+                   "section."));
         pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
     }
 }

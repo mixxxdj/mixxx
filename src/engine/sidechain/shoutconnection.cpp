@@ -40,7 +40,7 @@ const int kMaxShoutFailures = 3;
 
 const mixxx::Logger kLogger("ShoutConnection");
 
-}
+} // namespace
 
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
         UserSettingsPointer pConfig)
@@ -106,8 +106,9 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
 ShoutConnection::~ShoutConnection() {
     delete m_pMasterSamplerate;
 
-    if (m_pShoutMetaData)
+    if (m_pShoutMetaData) {
         shout_metadata_free(m_pShoutMetaData);
+    }
 
     if (m_pShout) {
         shout_close(m_pShout);
@@ -128,8 +129,9 @@ ShoutConnection::~ShoutConnection() {
 bool ShoutConnection::isConnected() {
     if (m_pShout) {
         m_iShoutStatus = shout_get_connected(m_pShout);
-        if (m_iShoutStatus == SHOUTERR_CONNECTED)
+        if (m_iShoutStatus == SHOUTERR_CONNECTED) {
             return true;
+        }
     }
     return false;
 }
@@ -137,9 +139,9 @@ bool ShoutConnection::isConnected() {
 // Only called when applying settings while broadcasting is active
 void ShoutConnection::applySettings() {
     // Do nothing if profile or Live Broadcasting is disabled
-    if(!m_pBroadcastEnabled->toBool()
-            || !m_pProfile->getEnabled())
+    if (!m_pBroadcastEnabled->toBool() || !m_pProfile->getEnabled()) {
         return;
+    }
 
     // Setting the profile's enabled value to false tells the
     // connection's thread to exit, so no need to call
@@ -465,8 +467,9 @@ void ShoutConnection::updateFromPreferences() {
 }
 
 bool ShoutConnection::serverConnect() {
-    if(!m_pProfile->getEnabled())
+    if (!m_pProfile->getEnabled()) {
         return false;
+    }
 
     start(QThread::HighPriority);
     setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
@@ -701,14 +704,16 @@ bool ShoutConnection::writeSingle(const unsigned char* data, size_t len) {
 
 void ShoutConnection::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setFunctionCode(4);
-    if(!m_pProfile->getEnabled())
+    if (!m_pProfile->getEnabled()) {
         return;
+    }
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
     // If we aren't connected, bail.
-    if (m_iShoutStatus != SHOUTERR_CONNECTED)
+    if (m_iShoutStatus != SHOUTERR_CONNECTED) {
         return;
+    }
 
     // If we are connected, encode the samples.
     if (iBufferSize > 0 && m_encoder) {
@@ -737,8 +742,9 @@ bool ShoutConnection::metaDataHasChanged() {
     m_iMetaDataLife = 0;
 
     pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
-    if (!pTrack)
+    if (!pTrack) {
         return false;
+    }
 
     if (m_pMetaData) {
         if (!pTrack->getId().isValid() || !m_pMetaData->getId().isValid()) {
