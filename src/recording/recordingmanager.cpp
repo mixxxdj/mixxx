@@ -120,7 +120,7 @@ void RecordingManager::startRecording() {
     m_secondsRecordedSplit=0;
     m_iNumberOfBytesRecorded = 0;
     m_secondsRecorded=0;
-    m_dfSilence=0;
+    m_dfSilence = false;
     m_dfCounter=0;
     m_split_size = getFileSplitSize();
     m_split_time = getFileSplitSeconds();
