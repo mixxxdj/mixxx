@@ -1,5 +1,6 @@
 #pragma once
 
+#include "control/controlpushbutton.h"
 #include "preferences/configobject.h"
 #include "preferences/constants.h"
 #include "preferences/settingsmanager.h"
@@ -126,6 +127,8 @@ class CoreServices : public QObject {
     std::shared_ptr<KeyboardEventFilter> m_pKeyboardEventFilter;
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfig;
     std::shared_ptr<ConfigObject<ConfigValueKbd>> m_pKbdConfigEmpty;
+
+    std::unique_ptr<ControlPushButton> m_pTouchShift;
 
     TooltipsPreference m_toolTipsCfg;
 
