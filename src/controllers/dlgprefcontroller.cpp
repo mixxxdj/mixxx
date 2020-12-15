@@ -25,7 +25,7 @@ const QString kPresetExt(".midi.xml");
 DlgPrefController::DlgPrefController(
         QWidget* parent,
         Controller* controller,
-        ControllerManager* controllerManager,
+        std::shared_ptr<ControllerManager> controllerManager,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
@@ -86,7 +86,7 @@ DlgPrefController::DlgPrefController(
     // Connect our signals to controller manager.
     connect(this,
             &DlgPrefController::applyPreset,
-            m_pControllerManager,
+            m_pControllerManager.get(),
             &ControllerManager::slotApplyPreset);
 
     // Open script file links

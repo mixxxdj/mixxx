@@ -14,7 +14,7 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
   public:
     DlgPrefEffects(QWidget* pParent,
             UserSettingsPointer pConfig,
-            EffectsManager* pEffectsManager);
+            std::shared_ptr<EffectsManager> pEffectsManager);
     virtual ~DlgPrefEffects();
 
     void slotUpdate() override;

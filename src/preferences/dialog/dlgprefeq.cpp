@@ -34,7 +34,10 @@ static bool isMasterEQ(EffectManifest* pManifest) {
 }
 } // anonymous namespace
 
-DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager, UserSettingsPointer pConfig)
+DlgPrefEQ::DlgPrefEQ(
+        QWidget* pParent,
+        std::shared_ptr<EffectsManager> pEffectsManager,
+        UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_COLoFreq(kConfigKey, "LoEQFrequency"),
           m_COHiFreq(kConfigKey, "HiEQFrequency"),

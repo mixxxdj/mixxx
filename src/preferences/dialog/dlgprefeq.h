@@ -13,7 +13,10 @@
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
-    DlgPrefEQ(QWidget* parent, EffectsManager* pEffectsManager, UserSettingsPointer _config);
+    DlgPrefEQ(
+            QWidget* parent,
+            std::shared_ptr<EffectsManager> pEffectsManager,
+            UserSettingsPointer _config);
     virtual ~DlgPrefEQ();
 
     QUrl helpUrl() const override;
@@ -70,8 +73,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     UserSettingsPointer m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 
-    // Members needed for changing the effects loaded on the EQ Effect Rack
-    EffectsManager* m_pEffectsManager;
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
     EffectsBackendManagerPointer m_pBackendManager;
     QLabel* m_firstSelectorLabel;
     QList<QComboBox*> m_deckEqEffectSelectors;

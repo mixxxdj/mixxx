@@ -12,7 +12,7 @@
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         UserSettingsPointer pConfig,
-        EffectsManager* pEffectsManager)
+        std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_pVisibleEffectsList(pEffectsManager->getVisibleEffectsList()),

@@ -51,13 +51,14 @@
 
 DlgPreferences::DlgPreferences(
         MixxxMainWindow* mixxx,
-        SkinLoader* pSkinLoader,
-        SoundManager* soundman,
-        ControllerManager* controllers,
-        VinylControlManager* pVCManager,
-        EffectsManager* pEffectsManager,
-        SettingsManager* pSettingsManager,
-        Library* pLibrary)
+        std::shared_ptr<SkinLoader> pSkinLoader,
+        std::shared_ptr<SoundManager> soundman,
+        std::shared_ptr<PlayerManager> pPlayerManager,
+        std::shared_ptr<ControllerManager> pControllerManager,
+        std::shared_ptr<VinylControlManager> pVCManager,
+        std::shared_ptr<EffectsManager> pEffectsManager,
+        std::shared_ptr<SettingsManager> pSettingsManager,
+        std::shared_ptr<Library> pLibrary)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
@@ -96,7 +97,8 @@ DlgPreferences::DlgPreferences(
     QTreeWidgetItem* pControllersTreeItem = createTreeItem(
             tr("Controllers"),
             QIcon(":/images/preferences/ic_preferences_controllers.svg"));
-    m_pControllersDlg = new DlgPrefControllers(this, m_pConfig, controllers, pControllersTreeItem);
+    m_pControllersDlg = new DlgPrefControllers(
+            this, m_pConfig, pControllerManager, pControllersTreeItem);
     addPageWidget(PreferencesPage(m_pControllersDlg, pControllersTreeItem));
 
 #ifdef __VINYLCONTROL__

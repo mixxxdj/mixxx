@@ -4,12 +4,13 @@
 #include <QEvent>
 #include <QRect>
 #include <QStringList>
+#include <memory>
 
-#include "preferences/dialog/ui_dlgpreferencesdlg.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
+#include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/settingsmanager.h"
+#include "preferences/usersettings.h"
 
 class MixxxMainWindow;
 class SoundManager;
@@ -58,13 +59,14 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     };
 
     DlgPreferences(MixxxMainWindow* mixxx,
-            SkinLoader* pSkinLoader,
-            SoundManager* soundman,
-            ControllerManager* controllers,
-            VinylControlManager* pVCManager,
-            EffectsManager* pEffectsManager,
-            SettingsManager* pSettingsManager,
-            Library* pLibrary);
+            std::shared_ptr<SkinLoader> pSkinLoader,
+            std::shared_ptr<SoundManager> soundman,
+            std::shared_ptr<PlayerManager> pPlayerManager,
+            std::shared_ptr<ControllerManager> pControllerManager,
+            std::shared_ptr<VinylControlManager> pVCManager,
+            std::shared_ptr<EffectsManager> pEffectsManager,
+            std::shared_ptr<SettingsManager> pSettingsManager,
+            std::shared_ptr<Library> pLibrary);
     virtual ~DlgPreferences();
 
     void addPageWidget(PreferencesPage page);
