@@ -23,11 +23,11 @@ class BeatGridIterator : public BeatIterator {
               m_dEndSample(dEndSample) {
     }
 
-    virtual bool hasNext() const {
+    bool hasNext() const override {
         return m_dBeatLength > 0 && m_dCurrentSample <= m_dEndSample;
     }
 
-    virtual double next() {
+    double next() override {
         double beat = m_dCurrentSample;
         m_dCurrentSample += m_dBeatLength;
         return beat;

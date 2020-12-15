@@ -147,7 +147,7 @@ int likeCompareInner(
             }
         } else if (!prevEscape && uPattern == esc) {
             // Case 3.
-            prevEscape = 1;
+            prevEscape = true;
         } else {
             // Case 4.
             if (iString == stringSize) {
