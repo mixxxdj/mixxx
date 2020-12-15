@@ -106,7 +106,9 @@ void ColumnCache::setColumns(const QStringList& columns) {
 }
 
 void ColumnCache::slotSetKeySortOrder(double notationValue) {
-    if (m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY] < 0) return;
+    if (m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY] < 0) {
+        return;
+    }
 
     // A custom COLLATE function was tested, but using CASE ... WHEN was found to be faster
     // see GitHub PR#649

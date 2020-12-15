@@ -180,7 +180,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
     // EffectStates are passed to the EffectRequest and the EffectProcessorImpls
     // store the pointers. The containers of EffectState* pointers get deleted
     // by ~EffectsRequest, but the EffectStates are managed by EffectProcessorImpl.
-    auto pEffectStatesMapArray = new EffectStatesMapArray;
+    auto* pEffectStatesMapArray = new EffectStatesMapArray;
 
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(

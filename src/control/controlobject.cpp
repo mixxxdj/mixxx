@@ -63,7 +63,7 @@ ControlObject* ControlObject::getControl(const ConfigKey& key, ControlFlags flag
     if (pCDP) {
         return pCDP->getCreatorCO();
     }
-    return NULL;
+    return nullptr;
 }
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
@@ -110,7 +110,7 @@ void ControlObject::setParameterFrom(double v, QObject* pSender) {
 void ControlObject::set(const ConfigKey& key, const double& value) {
     QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
     if (pCop) {
-        pCop->set(value, NULL);
+        pCop->set(value, nullptr);
     }
 }
 

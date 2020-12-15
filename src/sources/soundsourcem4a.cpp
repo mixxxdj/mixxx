@@ -359,7 +359,7 @@ bool SoundSourceM4A::openDecoder() {
 }
 
 bool SoundSourceM4A::reopenDecoder() {
-    auto hNewDecoder = m_pFaad->Open();
+    auto* hNewDecoder = m_pFaad->Open();
     if (!hNewDecoder) {
         kLogger.warning() << "Failed to open the AAC decoder";
         return false;

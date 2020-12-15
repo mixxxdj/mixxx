@@ -50,7 +50,7 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
     auto* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
     if (glw == nullptr) {
         // Not a QGLWidget. We can simply use QWidget::isVisible.
-        auto qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
+        auto* qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
         return qwidget != nullptr && qwidget->isVisible();
     }
 
@@ -60,7 +60,7 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
 
     // Strangely, a widget can have non-zero width/height, be valid and visible,
     // yet still not show up on the screen. QWindow::isExposed tells us this.
-    auto window = glw->windowHandle();
+    auto* window = glw->windowHandle();
     if (window == nullptr || !window->isExposed()) {
         return false;
     }
@@ -78,9 +78,9 @@ WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
 ///////////////////////////////////////////
 
 WaveformWidgetHolder::WaveformWidgetHolder()
-    : m_waveformWidget(NULL),
-      m_waveformViewer(NULL),
-      m_skinContextCache(UserSettingsPointer(), QString()) {
+        : m_waveformWidget(nullptr),
+          m_waveformViewer(nullptr),
+          m_skinContextCache(UserSettingsPointer(), QString()) {
 }
 
 WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
@@ -101,7 +101,7 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         // loads correctly.
         : m_type(WaveformWidgetType::EmptyWaveform),
           m_configType(WaveformWidgetType::EmptyWaveform),
-          m_config(0),
+          m_config(nullptr),
           m_skipRender(false),
           m_frameRate(30),
           m_endOfTrackWarningTime(30),
@@ -347,7 +347,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 void WaveformWidgetFactory::destroyWidgets() {
     for (auto& holder : m_waveformWidgetHolders) {
         WaveformWidgetAbstract* pWidget = holder.m_waveformWidget;
-        holder.m_waveformWidget = NULL;
+        holder.m_waveformWidget = nullptr;
         delete pWidget;
     }
     m_waveformWidgetHolders.clear();
@@ -582,8 +582,9 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
 
 void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {
     m_visualGain[index] = gain;
-    if (m_config)
+    if (m_config) {
         m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(index)), QString::number(m_visualGain[index]));
+    }
 }
 
 double WaveformWidgetFactory::getVisualGain(FilterIndex index) const {
@@ -611,7 +612,7 @@ void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
 
 void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     WaveformWidgetAbstract* pWaveformWidget = viewer->getWaveformWidget();
-    if (pWaveformWidget != NULL && isZoomSync()) {
+    if (pWaveformWidget != nullptr && isZoomSync()) {
         //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
         double refZoom = pWaveformWidget->getZoomFactor();
 
@@ -915,7 +916,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         WaveformWidgetType::Type type, WWaveformViewer* viewer) {
-    WaveformWidgetAbstract* widget = NULL;
+    WaveformWidgetAbstract* widget = nullptr;
     if (viewer) {
         if (CmdlineArgs::Instance().getSafeMode()) {
             type = WaveformWidgetType::EmptyWaveform;
@@ -979,7 +980,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             if (!widget->isValid()) {
                 qWarning() << "failed to init EmptyWaveformWidget";
                 delete widget;
-                widget = NULL;
+                widget = nullptr;
             }
         }
     }

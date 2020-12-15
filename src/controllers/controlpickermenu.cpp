@@ -1380,7 +1380,7 @@ void ControlPickerMenu::addPreviewDeckControl(const QString& control,
 }
 
 QMenu* ControlPickerMenu::addSubmenu(QString title, QMenu* pParent) {
-    if (pParent == NULL) {
+    if (pParent == nullptr) {
         pParent = this;
     }
     auto subMenu = make_parented<QMenu>(title, pParent);

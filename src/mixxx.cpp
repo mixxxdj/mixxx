@@ -109,12 +109,12 @@ const mixxx::Logger kLogger("MixxxMainWindow");
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
 const int NUM_HANDLERS = 256;
-WireToErrorType __oldHandlers[NUM_HANDLERS] = {0};
+WireToErrorType __oldHandlers[NUM_HANDLERS] = {nullptr};
 
 Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
     // Call any previous handler first in case it needs to do real work.
     auto code = static_cast<int>(event->error_code);
-    if (__oldHandlers[code] != NULL) {
+    if (__oldHandlers[code] != nullptr) {
         __oldHandlers[code](display, event, error);
     }
 
@@ -366,7 +366,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
 #ifdef __MODPLUG__
     // restore the configuration for the modplug library before trying to load a module
-    DlgPrefModplug* pModplugPrefs = new DlgPrefModplug(0, pConfig);
+    DlgPrefModplug* pModplugPrefs = new DlgPrefModplug(nullptr, pConfig);
     pModplugPrefs->loadSettings();
     pModplugPrefs->applySettings();
     delete pModplugPrefs; // not needed anymore
@@ -652,7 +652,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         if (noOutputDlg(&continueClicked) != QDialog::Accepted) {
             exit(0);
         }
-        if (continueClicked) break;
+        if (continueClicked) {
+            break;
+        }
    }
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
@@ -874,12 +876,14 @@ bool MixxxMainWindow::initializeDatabase() {
     kLogger.info() << "Connecting to database";
     QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
     if (!dbConnection.isOpen()) {
-        QMessageBox::critical(0, tr("Cannot open database"),
-                            tr("Unable to establish a database connection.\n"
-                                "Mixxx requires QT with SQLite support. Please read "
-                                "the Qt SQL driver documentation for information on how "
-                                "to build it.\n\n"
-                                "Click OK to exit."), QMessageBox::Ok);
+        QMessageBox::critical(nullptr,
+                tr("Cannot open database"),
+                tr("Unable to establish a database connection.\n"
+                   "Mixxx requires QT with SQLite support. Please read "
+                   "the Qt SQL driver documentation for information on how "
+                   "to build it.\n\n"
+                   "Click OK to exit."),
+                QMessageBox::Ok);
         return false;
     }
 
@@ -916,8 +920,9 @@ void MixxxMainWindow::initializeKeyboard() {
     QString resourcePath = pConfig->getResourcePath();
 
     // Set the default value in settings file
-    if (pConfig->getValueString(ConfigKey("[Keyboard]","Enabled")).length() == 0)
+    if (pConfig->getValueString(ConfigKey("[Keyboard]", "Enabled")).length() == 0) {
         pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
+    }
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
@@ -1276,8 +1281,9 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
 
-        if (ret != QMessageBox::Yes)
+        if (ret != QMessageBox::Yes) {
             return;
+        }
     }
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
@@ -1344,7 +1350,7 @@ void MixxxMainWindow::slotDeveloperTools(bool visible) {
 }
 
 void MixxxMainWindow::slotDeveloperToolsClosed() {
-    m_pDeveloperToolsDlg = NULL;
+    m_pDeveloperToolsDlg = nullptr;
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle) {
@@ -1471,7 +1477,7 @@ void MixxxMainWindow::rebootMixxxView() {
         m_pWidgetParent->hide();
         WaveformWidgetFactory::instance()->destroyWidgets();
         delete m_pWidgetParent;
-        m_pWidgetParent = NULL;
+        m_pWidgetParent = nullptr;
     }
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1573,21 +1579,25 @@ void MixxxMainWindow::checkDirectRendering() {
     //  * Warn user
 
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    if (!factory)
+    if (!factory) {
         return;
+    }
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
     if (!factory->isOpenGlAvailable() && !factory->isOpenGlesAvailable() &&
         pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
-        QMessageBox::warning(
-            0, tr("OpenGL Direct Rendering"),
-            tr("Direct rendering is not enabled on your machine.<br><br>"
-               "This means that the waveform displays will be very<br>"
-               "<b>slow and may tax your CPU heavily</b>. Either update your<br>"
-               "configuration to enable direct rendering, or disable<br>"
-               "the waveform displays in the Mixxx preferences by selecting<br>"
-               "\"Empty\" as the waveform display in the 'Interface' section."));
+        QMessageBox::warning(nullptr,
+                tr("OpenGL Direct Rendering"),
+                tr("Direct rendering is not enabled on your machine.<br><br>"
+                   "This means that the waveform displays will be very<br>"
+                   "<b>slow and may tax your CPU heavily</b>. Either update "
+                   "your<br>"
+                   "configuration to enable direct rendering, or disable<br>"
+                   "the waveform displays in the Mixxx preferences by "
+                   "selecting<br>"
+                   "\"Empty\" as the waveform display in the 'Interface' "
+                   "section."));
         pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
     }
 }

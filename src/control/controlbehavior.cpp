@@ -28,7 +28,7 @@ void ControlNumericBehavior::setValueFromMidi(
         MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
     double dNorm = midiToParameter(dParam);
-    pControl->set(parameterToValue(dNorm), NULL);
+    pControl->set(parameterToValue(dNorm), nullptr);
 }
 
 double ControlEncoderBehavior::midiToParameter(double midiValue) {
@@ -269,7 +269,7 @@ void ControlAudioTaperPotBehavior::setValueFromMidi(
         MidiOpCode o, double dMidiParam, ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
     double dParam = midiToParameter(dMidiParam);
-    pControl->set(parameterToValue(dParam), NULL);
+    pControl->set(parameterToValue(dParam), nullptr);
 }
 
 double ControlTTRotaryBehavior::valueToParameter(double dValue) {
@@ -322,7 +322,7 @@ void ControlPushButtonBehavior::setValueFromMidi(
             timer->start(kPowerWindowTimeMillis);
         } else if (!timer->isActive()) {
             // Disable after releasing a long press
-            pControl->set(0., NULL);
+            pControl->set(0., nullptr);
         }
     } else if (m_buttonMode == TOGGLE || m_buttonMode == LONGPRESSLATCHING) {
         // This block makes push-buttons act as toggle buttons.
@@ -334,7 +334,7 @@ void ControlPushButtonBehavior::setValueFromMidi(
                 // the same control from different devices.
                 double value = pControl->get();
                 value = (int)(value + 1.) % m_iNumStates;
-                pControl->set(value, NULL);
+                pControl->set(value, nullptr);
                 if (m_buttonMode == LONGPRESSLATCHING) {
                     auto* timer = getTimer();
                     timer->setSingleShot(true);
@@ -346,15 +346,15 @@ void ControlPushButtonBehavior::setValueFromMidi(
                         getTimer()->isActive() && value >= 1.) {
                     // revert toggle if button is released too early
                     value = (int)(value - 1.) % m_iNumStates;
-                    pControl->set(value, NULL);
+                    pControl->set(value, nullptr);
                 }
             }
         }
     } else { // Not a toggle button (trigger only when button pushed)
         if (pressed) {
-            pControl->set(1., NULL);
+            pControl->set(1., nullptr);
         } else {
-            pControl->set(0., NULL);
+            pControl->set(0., nullptr);
         }
     }
 }

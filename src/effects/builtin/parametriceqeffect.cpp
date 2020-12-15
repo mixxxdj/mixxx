@@ -2,10 +2,10 @@
 #include "util/math.h"
 
 namespace {
-    constexpr int kBandCount = 2;
-    constexpr double kDefaultCenter1 = 1000; // 1 kHz
-    constexpr double kDefaultCenter2 = 3000; // 3 kHz
-}
+constexpr int kBandCount = 2;
+constexpr double kDefaultCenter1 = 1000; // 1 kHz
+constexpr double kDefaultCenter2 = 3000; // 3 kHz
+} // namespace
 
 // static
 QString ParametricEQEffect::getId() {

@@ -413,15 +413,17 @@ bool BeatMap::hasBeatInRange(double startSample, double stopSample) const {
 
 double BeatMap::getBpm() const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return -1;
+    }
     return m_dCachedBpm;
 }
 
 double BeatMap::getBpmRange(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return -1;
+    }
     Beat startBeat, stopBeat;
     startBeat.set_frame_position(
             static_cast<google::protobuf::int32>(samplesToFrames(startSample)));
@@ -431,8 +433,9 @@ double BeatMap::getBpmRange(double startSample, double stopSample) const {
 
 double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return -1;
+    }
 
     // To make sure we are always counting n beats, iterate backward to the
     // lower bound, then iterate forward from there to the upper bound.

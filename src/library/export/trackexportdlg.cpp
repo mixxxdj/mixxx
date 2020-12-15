@@ -106,9 +106,11 @@ void TrackExportDlg::finish() {
     m_worker->wait();
     if (m_worker->errorMessage().length()) {
         QMessageBox::warning(
-                NULL,
-                tr("Export Error"), m_worker->errorMessage(),
-                QMessageBox::Ok, QMessageBox::Ok);
+                nullptr,
+                tr("Export Error"),
+                m_worker->errorMessage(),
+                QMessageBox::Ok,
+                QMessageBox::Ok);
     }
     hide();
     accept();

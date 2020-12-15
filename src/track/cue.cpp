@@ -36,7 +36,7 @@ inline double positionMillisToSamples(
     // Try to avoid rounding errors
     return (*positionMillis * sampleRate * mixxx::kEngineChannelCount) / 1000;
 }
-}
+} // namespace
 
 //static
 void CuePointer::deleteLater(Cue* pCue) {

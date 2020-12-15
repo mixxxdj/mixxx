@@ -10,7 +10,7 @@
 
 Controller::Controller(UserSettingsPointer pConfig)
         : QObject(),
-          m_pEngine(NULL),
+          m_pEngine(nullptr),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
@@ -27,7 +27,7 @@ Controller::~Controller() {
 void Controller::startEngine()
 {
     controllerDebug("  Starting engine");
-    if (m_pEngine != NULL) {
+    if (m_pEngine != nullptr) {
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
@@ -36,13 +36,13 @@ void Controller::startEngine()
 
 void Controller::stopEngine() {
     controllerDebug("  Shutting down engine");
-    if (m_pEngine == NULL) {
+    if (m_pEngine == nullptr) {
         qWarning() << "Controller::stopEngine(): No engine exists!";
         return;
     }
     m_pEngine->gracefulShutdown();
     delete m_pEngine;
-    m_pEngine = NULL;
+    m_pEngine = nullptr;
 }
 
 bool Controller::applyPreset(bool initializeScripts) {
@@ -51,7 +51,7 @@ bool Controller::applyPreset(bool initializeScripts) {
     const ControllerPreset* pPreset = preset();
 
     // Load the script code into the engine
-    if (m_pEngine == NULL) {
+    if (m_pEngine == nullptr) {
         qWarning() << "Controller::applyPreset(): No engine exists!";
         return false;
     }
@@ -103,7 +103,7 @@ void Controller::triggerActivity()
     }
 }
 void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
-    if (m_pEngine == NULL) {
+    if (m_pEngine == nullptr) {
         //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
         //  queued signals flush out
@@ -120,8 +120,12 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
                                           QString::number(length));
         for(int i=0; i<length; i++) {
             QString spacer=" ";
-            if ((i+1) % 4 == 0) spacer="  ";
-            if ((i+1) % 16 == 0) spacer="\n";
+            if ((i + 1) % 4 == 0) {
+                spacer = "  ";
+            }
+            if ((i + 1) % 16 == 0) {
+                spacer = "\n";
+            }
             message += QString("%1%2")
                         .arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper()
                         .arg(spacer);
