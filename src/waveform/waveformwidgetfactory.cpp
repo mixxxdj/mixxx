@@ -60,7 +60,7 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
 
     // Strangely, a widget can have non-zero width/height, be valid and visible,
     // yet still not show up on the screen. QWindow::isExposed tells us this.
-    auto* window = glw->windowHandle();
+    const QWindow* window = glw->windowHandle();
     if (window == nullptr || !window->isExposed()) {
         return false;
     }
