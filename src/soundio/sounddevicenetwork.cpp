@@ -107,7 +107,7 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
 }
 
 bool SoundDeviceNetwork::isOpen() const {
-    return (m_inputFifo != NULL || m_outputFifo != NULL);
+    return (m_inputFifo != nullptr || m_outputFifo != nullptr);
 }
 
 SoundDeviceError SoundDeviceNetwork::close() {

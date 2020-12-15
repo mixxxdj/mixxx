@@ -44,12 +44,12 @@ const unsigned int kSleepSecondsAfterClosingDevice = 5;
 } // anonymous namespace
 
 SoundManager::SoundManager(UserSettingsPointer pConfig,
-                           EngineMaster *pMaster)
+        EngineMaster* pMaster)
         : m_pMaster(pMaster),
           m_pConfig(pConfig),
           m_paInitialized(false),
           m_config(this),
-          m_pErrorDevice(NULL),
+          m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
@@ -191,7 +191,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
 
     while (!m_inputBuffers.isEmpty()) {
         CSAMPLE* pBuffer = m_inputBuffers.takeLast();
-        if (pBuffer != NULL) {
+        if (pBuffer != nullptr) {
             SampleUtil::free(pBuffer);
         }
     }
@@ -410,7 +410,7 @@ SoundDeviceError SoundManager::setupDevices() {
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
             const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out);
-            if (pBuffer == NULL) {
+            if (pBuffer == nullptr) {
                 qDebug() << "AudioSource returned null for" << out.getString();
                 continue;
             }

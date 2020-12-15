@@ -26,7 +26,7 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
             inputDeviceInfo, inputDeviceIndex));
     }
     if (outputDeviceInfo) {
-        if (inputDeviceInfo == NULL) {
+        if (inputDeviceInfo == nullptr) {
             setDeviceName(QString("%1").arg(outputDeviceInfo->name));
         }
         setOutputDevice(outputDeviceInfo->output);

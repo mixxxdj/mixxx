@@ -107,7 +107,7 @@ void EncoderVorbis::writePage() {
     }
 
     while (vorbis_analysis_blockout(&m_vdsp, &m_vblock) == 1) {
-        vorbis_analysis(&m_vblock, 0);
+        vorbis_analysis(&m_vblock, nullptr);
         vorbis_bitrate_addblock(&m_vblock);
         while (vorbis_bitrate_flushpacket(&m_vdsp, &m_oggpacket)) {
             // weld packet into bitstream
@@ -169,7 +169,7 @@ void EncoderVorbis::initStream() {
     vorbis_block_init(&m_vdsp, &m_vblock);
 
     // set up packet-to-stream encoder; attach a random serial number
-    srand(time(0));
+    srand(time(nullptr));
     ogg_stream_init(&m_oggs, getSerial());
 
     // add comment

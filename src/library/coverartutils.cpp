@@ -93,7 +93,7 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
     }
 
     PreferredCoverType bestType = NONE;
-    const QFileInfo* bestInfo = NULL;
+    const QFileInfo* bestInfo = nullptr;
 
     // If there is a single image then we use it unconditionally. Otherwise
     // we use the priority order described in PreferredCoverType. Notably,
@@ -143,7 +143,7 @@ CoverInfoRelative CoverArtUtils::selectCoverArtForTrack(
         }
     }
 
-    if (bestInfo != NULL) {
+    if (bestInfo != nullptr) {
         QImage image(bestInfo->filePath());
         if (!image.isNull()) {
             coverInfoRelative.type = CoverInfo::FILE;

@@ -55,7 +55,7 @@ void ErrorDialogProperties::addButton(QMessageBox::StandardButton button) {
 // ----------------------------------------------------
 // ---------- ErrorDialogHandler begins here ----------
 
-ErrorDialogHandler* ErrorDialogHandler::s_pInstance = NULL;
+ErrorDialogHandler* ErrorDialogHandler::s_pInstance = nullptr;
 bool ErrorDialogHandler::s_bEnabled = true;
 
 // static
@@ -69,7 +69,7 @@ ErrorDialogHandler::ErrorDialogHandler() {
 }
 
 ErrorDialogHandler::~ErrorDialogHandler() {
-    s_pInstance = NULL;
+    s_pInstance = nullptr;
 }
 
 ErrorDialogProperties* ErrorDialogHandler::newDialogProperties() {

@@ -186,7 +186,7 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
     //Invisible root item of Traktor's child model
-    TreeItem* root = NULL;
+    TreeItem* root = nullptr;
     //Delete all table entries of Traktor feature
     ScopedTransaction transaction(m_database);
     clearTable("traktor_playlist_tracks");
@@ -206,7 +206,7 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     QFile traktor_file(file);
     if (!traktor_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Cannot open Traktor music collection";
-        return NULL;
+        return nullptr;
     }
     QXmlStreamReader xml(&traktor_file);
     bool inCollectionTag = false;
@@ -255,7 +255,7 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
          if (root) {
              delete root;
          }
-         return NULL;
+         return nullptr;
     }
 
     qDebug() << "Found: " << nAudioFiles << " audio files in Traktor";
@@ -615,10 +615,10 @@ void TraktorFeature::onTrackCollectionLoaded() {
         qDebug() << "Traktor library loaded successfully";
     } else {
         QMessageBox::warning(
-            NULL,
-            tr("Error Loading Traktor Library"),
-            tr("There was an error loading your Traktor library. Some of "
-               "your Traktor tracks or playlists may not have loaded."));
+                nullptr,
+                tr("Error Loading Traktor Library"),
+                tr("There was an error loading your Traktor library. Some of "
+                   "your Traktor tracks or playlists may not have loaded."));
     }
 
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.

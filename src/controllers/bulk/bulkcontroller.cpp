@@ -86,7 +86,7 @@ BulkController::BulkController(UserSettingsPointer pConfig,
 
     setInputDevice(true);
     setOutputDevice(true);
-    m_pReader = NULL;
+    m_pReader = nullptr;
 }
 
 BulkController::~BulkController() {
@@ -161,12 +161,12 @@ int BulkController::open() {
     }
 
     // XXX: we should enumerate devices and match vendor, product, and serial
-    if (m_phandle == NULL) {
+    if (m_phandle == nullptr) {
         m_phandle = libusb_open_device_with_vid_pid(
             m_context, vendor_id, product_id);
     }
 
-    if (m_phandle == NULL) {
+    if (m_phandle == nullptr) {
         qWarning()  << "Unable to open USB Bulk device" << getName();
         return -1;
     }
@@ -174,7 +174,7 @@ int BulkController::open() {
     setOpen(true);
     startEngine();
 
-    if (m_pReader != NULL) {
+    if (m_pReader != nullptr) {
         qWarning() << "BulkReader already present for" << getName();
     } else {
         m_pReader = new BulkReader(m_phandle, in_epaddr);
@@ -199,7 +199,7 @@ int BulkController::close() {
     qDebug() << "Shutting down USB Bulk device" << getName();
 
     // Stop the reading thread
-    if (m_pReader == NULL) {
+    if (m_pReader == nullptr) {
         qWarning() << "BulkReader not present for" << getName()
                    << "yet the device is open!";
     } else {
@@ -208,7 +208,7 @@ int BulkController::close() {
         controllerDebug("  Waiting on reader to finish");
         m_pReader->wait();
         delete m_pReader;
-        m_pReader = NULL;
+        m_pReader = nullptr;
     }
 
     // Stop controller engine here to ensure it's done before the device is
@@ -218,7 +218,7 @@ int BulkController::close() {
     // Close device
     controllerDebug("  Closing device");
     libusb_close(m_phandle);
-    m_phandle = NULL;
+    m_phandle = nullptr;
     setOpen(false);
     return 0;
 }

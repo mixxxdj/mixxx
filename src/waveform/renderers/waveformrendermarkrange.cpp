@@ -70,7 +70,7 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
             continue;
         }
 
-        QImage* selectedImage = NULL;
+        QImage* selectedImage = nullptr;
 
         selectedImage = markRange.enabled() ? &markRange.m_activeImage : &markRange.m_disabledImage;
 

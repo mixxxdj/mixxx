@@ -42,17 +42,17 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
           m_dOldDuration(0.0),
           m_dOldDurationInaccurate(-1.0),
           m_bWasReversed(false),
-          m_pPitchRing(NULL),
+          m_pPitchRing(nullptr),
           m_iPitchRingSize(0),
           m_iPitchRingPos(0),
           m_iPitchRingFilled(0),
           m_dDisplayPitch(0.0),
-          m_pSteadySubtle(NULL),
-          m_pSteadyGross(NULL),
+          m_pSteadySubtle(nullptr),
+          m_pSteadyGross(nullptr),
           m_bCDControl(false),
           m_bTrackSelectMode(false),
-          m_pControlTrackSelector(NULL),
-          m_pControlTrackLoader(NULL),
+          m_pControlTrackSelector(nullptr),
+          m_pControlTrackLoader(nullptr),
           m_dLastTrackSelectPos(0.0),
           m_dCurTrackSelectPos(0.0),
           m_dDriftAmt(0.0),
@@ -70,8 +70,7 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
 
     // libxwax indexes by C-strings so we pass libxwax string literals so we
     // don't have to deal with freeing the strings later
-    char* timecode = NULL;
-
+    char* timecode = nullptr;
 
     if (strVinylType == MIXXX_VINYL_SERATOCV02VINYLSIDEA) {
         timecode = (char*)"serato_2a";
@@ -96,16 +95,15 @@ VinylControlXwax::VinylControlXwax(UserSettingsPointer pConfig, const QString& g
     }
 
     // If we didn't set up the steady monitors already (not CDJ), do it now.
-    if (m_pSteadySubtle == NULL) {
+    if (m_pSteadySubtle == nullptr) {
         m_pSteadySubtle = new SteadyPitch(0.12, false);
     }
-    if (m_pSteadyGross == NULL) {
+    if (m_pSteadyGross == nullptr) {
         m_pSteadyGross = new SteadyPitch(0.5, false);
     }
 
-
     timecode_def* tc_def = timecoder_find_definition(timecode);
-    if (tc_def == NULL) {
+    if (tc_def == nullptr) {
         qDebug() << "Error finding timecode definition for " << timecode << ", defaulting to serato_2a";
         timecode = (char*)"serato_2a";
         tc_def = timecoder_find_definition(timecode);
@@ -238,7 +236,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
 
     if(bHaveSignal) {
         // Always analyze the input samples
-        m_iPosition = timecoder_get_position(&timecoder, NULL);
+        m_iPosition = timecoder_get_position(&timecoder, nullptr);
         //Notify the UI if the timecode quality is good
         establishQuality(m_iPosition != -1);
     }
@@ -408,7 +406,7 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
                 return;
             } else if (m_bTrackSelectMode) {
                 //qDebug() << "discontinuing select mode, selecting track";
-                if (m_pControlTrackLoader == NULL) {
+                if (m_pControlTrackLoader == nullptr) {
                     m_pControlTrackLoader = new ControlProxy(
                             m_group, "LoadSelectedTrack", this);
                 }
@@ -690,7 +688,7 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
     const int SELECT_INTERVAL = 150;
     const double NOPOS_SPEED = 0.50;
 
-    if (m_pControlTrackSelector == NULL) {
+    if (m_pControlTrackSelector == nullptr) {
         // this isn't done in the constructor because this object
         // doesn't seem to be created yet
         m_pControlTrackSelector = new ControlProxy(
@@ -814,7 +812,7 @@ void VinylControlXwax::establishQuality(bool quality_sample) {
 }
 
 float VinylControlXwax::getAngle() {
-    float pos = timecoder_get_position(&timecoder, NULL);
+    float pos = timecoder_get_position(&timecoder, nullptr);
 
     if (pos == -1) {
         return -1.0;

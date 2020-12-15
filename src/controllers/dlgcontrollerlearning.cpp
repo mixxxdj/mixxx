@@ -15,11 +15,11 @@ bool namedControlComparator(const NamedControl& l1, const NamedControl& l2) {
 }
 } // namespace
 
-DlgControllerLearning::DlgControllerLearning(QWidget * parent,
-                                             Controller* controller)
+DlgControllerLearning::DlgControllerLearning(QWidget* parent,
+        Controller* controller)
         : QDialog(parent),
           m_pController(controller),
-          m_pMidiController(NULL),
+          m_pMidiController(nullptr),
           m_controlPickerMenu(this),
           m_messagesLearned(false) {
     qRegisterMetaType<MidiInputMappings>("MidiInputMappings");

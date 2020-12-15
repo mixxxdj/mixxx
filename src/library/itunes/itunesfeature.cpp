@@ -194,7 +194,7 @@ void ITunesFeature::activate(bool forceReload) {
             // if the path we got between the default and the database doesn't
             // exist, ask for a new one and use/save it if it exists
             m_dbfile = QFileDialog::getOpenFileName(
-                NULL, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
+                    nullptr, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
             QFileInfo dbFile(m_dbfile);
             if (m_dbfile.isEmpty() || !dbFile.exists()) {
                 return;
@@ -249,7 +249,7 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
     } else if (chosen == &chooseNew) {
         SettingsDAO settings(m_database);
         QString dbfile = QFileDialog::getOpenFileName(
-            NULL, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
+                nullptr, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
 
         QFileInfo dbFileInfo(dbfile);
         if (dbfile.isEmpty() || !dbFileInfo.exists()) {
@@ -390,11 +390,11 @@ TreeItem* ITunesFeature::importLibrary() {
     QFile itunes_file(m_dbfile);
     if (!itunes_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Cannot open iTunes music collection";
-        return NULL;
+        return nullptr;
     }
 
     QXmlStreamReader xml(&itunes_file);
-    TreeItem* playlist_root = NULL;
+    TreeItem* playlist_root = nullptr;
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
         if (xml.isStartElement()) {
@@ -409,7 +409,7 @@ TreeItem* ITunesFeature::importLibrary() {
                     }
                 } else if (key == "Tracks") {
                     parseTracks(xml);
-                    if (playlist_root != NULL) {
+                    if (playlist_root != nullptr) {
                         delete playlist_root;
                     }
                     playlist_root = parsePlaylists(xml);
@@ -448,7 +448,7 @@ TreeItem* ITunesFeature::importLibrary() {
         if (playlist_root) {
             delete playlist_root;
         }
-        playlist_root = NULL;
+        playlist_root = nullptr;
     }
     return playlist_root;
 }
@@ -823,10 +823,10 @@ void ITunesFeature::onTrackCollectionLoaded() {
         qDebug() << "Itunes library loaded: success";
     } else {
         QMessageBox::warning(
-            NULL,
-            tr("Error Loading iTunes Library"),
-            tr("There was an error loading your iTunes library. Some of "
-               "your iTunes tracks or playlists may not have loaded."));
+                nullptr,
+                tr("Error Loading iTunes Library"),
+                tr("There was an error loading your iTunes library. Some of "
+                   "your iTunes tracks or playlists may not have loaded."));
     }
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("iTunes");

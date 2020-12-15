@@ -145,7 +145,7 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
             return QModelIndex();
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
-            if (tree_item == NULL) {
+            if (tree_item == nullptr) {
                 return QModelIndex();
             }
             TreeItem* tree_item_parent = tree_item->parent();
@@ -388,7 +388,7 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
      */
 
     const QAbstractItemModel* model = qobject_cast<QAbstractItemModel*>(sender());
-    VERIFY_OR_DEBUG_ASSERT(model != NULL) {
+    VERIFY_OR_DEBUG_ASSERT(model != nullptr) {
         return QModelIndex();
     }
 

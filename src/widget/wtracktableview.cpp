@@ -150,7 +150,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
         return;
     }
 
-    TrackModel* newModel = 0;
+    TrackModel* newModel = nullptr;
 
     /* If the model has not changed
      * there's no need to exchange the headers

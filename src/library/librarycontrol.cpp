@@ -314,7 +314,7 @@ void LibraryControl::slotNumPreviewDecksChanged(double v) {
 
 void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     if (m_pSidebarWidget) {
-        disconnect(m_pSidebarWidget, 0, this, 0);
+        disconnect(m_pSidebarWidget, nullptr, this, nullptr);
     }
     m_pSidebarWidget = pSidebarWidget;
     connect(m_pSidebarWidget,
@@ -326,7 +326,7 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
     Q_UNUSED(pKeyboard);
     if (m_pLibraryWidget) {
-        disconnect(m_pLibraryWidget, 0, this, 0);
+        disconnect(m_pLibraryWidget, nullptr, this, nullptr);
     }
     m_pLibraryWidget = pLibraryWidget;
     connect(m_pLibraryWidget,
@@ -337,7 +337,7 @@ void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFi
 
 void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
     if (m_pSearchbox) {
-        disconnect(m_pSearchbox, 0, this, 0);
+        disconnect(m_pSearchbox, nullptr, this, nullptr);
     }
     m_pSearchbox = pSearchbox;
     connect(this,

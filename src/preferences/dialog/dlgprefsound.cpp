@@ -298,7 +298,7 @@ void DlgPrefSound::slotApply() {
     }
     if (err != SOUNDDEVICE_ERROR_OK) {
         QString error = m_pSoundManager->getLastErrorMessage(err);
-        QMessageBox::warning(NULL, tr("Configuration error"), error);
+        QMessageBox::warning(nullptr, tr("Configuration error"), error);
     } else {
         m_settingsModified = false;
         m_bLatencyChanged = false;

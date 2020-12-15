@@ -198,7 +198,7 @@ int HidController::open() {
     m_pHidDevice = hid_open_path(hid_path);
 
     // If that fails, try to open device with vendor/product/serial #
-    if (m_pHidDevice == NULL) {
+    if (m_pHidDevice == nullptr) {
         controllerDebug("Failed. Trying to open with make, model & serial no:"
                 << hid_vendor_id << hid_product_id << hid_serial);
         m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, hid_serial_raw);
@@ -206,15 +206,15 @@ int HidController::open() {
 
     // If it does fail, try without serial number WARNING: This will only open
     // one of multiple identical devices
-    if (m_pHidDevice == NULL) {
+    if (m_pHidDevice == nullptr) {
         qWarning() << "Unable to open specific HID device" << getName()
                    << "Trying now with just make and model."
                    << "(This may only open the first of multiple identical devices.)";
-        m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, NULL);
+        m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, nullptr);
     }
 
     // If that fails, we give up!
-    if (m_pHidDevice == NULL) {
+    if (m_pHidDevice == nullptr) {
         qWarning()  << "Unable to open HID device" << getName();
         return -1;
     }
@@ -340,7 +340,7 @@ void HidController::send(QByteArray data, unsigned int reportID) {
 
 //static
 QString HidController::safeDecodeWideString(const wchar_t* pStr, size_t max_length) {
-    if (pStr == NULL) {
+    if (pStr == nullptr) {
         return QString();
     }
     // find a terminating 0 or take all chars

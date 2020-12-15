@@ -10,9 +10,10 @@
 #include "util/cmdlineargs.h"
 
 KeyboardEventFilter::KeyboardEventFilter(ConfigObject<ConfigValueKbd>* pKbdConfigObject,
-                                         QObject* parent, const char* name)
+        QObject* parent,
+        const char* name)
         : QObject(parent),
-          m_pKbdConfigObject(NULL) {
+          m_pKbdConfigObject(nullptr) {
     setObjectName(name);
     setKeyboardConfig(pKbdConfigObject);
 }

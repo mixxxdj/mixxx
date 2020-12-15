@@ -3,14 +3,14 @@
 #include "moc_vinylcontrolsignalwidget.cpp"
 
 VinylControlSignalWidget::VinylControlSignalWidget()
-    : QWidget(),
-      m_iVinylInput(-1),
-      m_iSize(MIXXX_VINYL_SCOPE_SIZE),
-      m_qImage(),
-      m_imageData(NULL),
-      m_iAngle(0),
-      m_fSignalQuality(0.0f),
-      m_bVinylActive(false) {
+        : QWidget(),
+          m_iVinylInput(-1),
+          m_iSize(MIXXX_VINYL_SCOPE_SIZE),
+          m_qImage(),
+          m_imageData(nullptr),
+          m_iAngle(0),
+          m_fSignalQuality(0.0f),
+          m_bVinylActive(false) {
 }
 
 void VinylControlSignalWidget::setSize(int size) {
@@ -57,7 +57,7 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
     qual_color.setHsv((int)(120.0 * m_fSignalQuality), 255, 255);
     qual_color.getRgb(&r, &g, &b);
 
-    if (m_imageData == NULL) {
+    if (m_imageData == nullptr) {
         return;
     }
 
@@ -76,7 +76,7 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
 
 void VinylControlSignalWidget::resetWidget()
 {
-    if (m_imageData != NULL) {
+    if (m_imageData != nullptr) {
         memset(m_imageData, 0, sizeof(uchar) * m_iSize * m_iSize * 4);
     }
 }

@@ -370,9 +370,9 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
     // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
     // relies on signals and slots to get tons of things done. Don't
     // randomly disconnect things.
-    disconnect(m_pLoadedTrack.get(), 0, m_pFileBPM.get(), 0);
-    disconnect(m_pLoadedTrack.get(), 0, this, 0);
-    disconnect(m_pLoadedTrack.get(), 0, m_pKey.get(), 0);
+    disconnect(m_pLoadedTrack.get(), nullptr, m_pFileBPM.get(), nullptr);
+    disconnect(m_pLoadedTrack.get(), nullptr, this, nullptr);
+    disconnect(m_pLoadedTrack.get(), nullptr, m_pKey.get(), nullptr);
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {

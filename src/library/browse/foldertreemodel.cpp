@@ -93,9 +93,9 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     DIR *directory = opendir(ba);
     int unknown_count = 0;
     int total_count = 0;
-    if (directory != NULL) {
+    if (directory != nullptr) {
         struct dirent *entry;
-        while (!has_children && ((entry = readdir(directory)) != NULL)) {
+        while (!has_children && ((entry = readdir(directory)) != nullptr)) {
             if (entry->d_name != dot && entry->d_name != dotdot) {
                 total_count++;
                 if (entry->d_type == DT_UNKNOWN) {
@@ -110,7 +110,7 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     // If all files are of type DH_UNKNOWN then do a costlier analysis to
     // determine if the directory has subdirectories. This affects folders on
     // filesystems that do not fully implement readdir such as JFS.
-    if (directory == NULL || (unknown_count == total_count && total_count > 0)) {
+    if (directory == nullptr || (unknown_count == total_count && total_count > 0)) {
         QDir dir(path);
         QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
         has_children = all.count() > 0;

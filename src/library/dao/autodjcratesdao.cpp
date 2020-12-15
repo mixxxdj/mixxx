@@ -1078,7 +1078,7 @@ void AutoDJCratesDAO::slotPlaylistTrackRemoved(int playlistId,
 void AutoDJCratesDAO::slotPlayerInfoTrackLoaded(const QString& a_strGroup,
         TrackPointer a_pTrack) {
     // This gets called with a null track during an unload.  Filter that out.
-    if (a_pTrack == NULL) {
+    if (a_pTrack == nullptr) {
         return;
     }
 

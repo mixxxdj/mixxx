@@ -39,7 +39,7 @@ void WaveformRendererHSV::draw(QPainter* painter,
     }
 
     const WaveformData* data = waveform->data();
-    if (data == NULL) {
+    if (data == nullptr) {
         return;
     }
 
@@ -65,7 +65,7 @@ void WaveformRendererHSV::draw(QPainter* painter,
             (double)m_waveformRenderer->getLength();
 
     float allGain(1.0);
-    getGains(&allGain, NULL, NULL, NULL);
+    getGains(&allGain, nullptr, nullptr, nullptr);
 
     // Save HSV of waveform color. NOTE(rryan): On ARM, qreal is float so it's
     // important we use qreal here and not double or float or else we will get

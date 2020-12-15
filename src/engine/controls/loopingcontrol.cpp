@@ -48,8 +48,8 @@ LoopingControl::LoopingControl(const QString& group,
     m_oldLoopSamples = { kNoTrigger, kNoTrigger, false };
     m_loopSamples.setValue(m_oldLoopSamples);
     m_currentSample.setValue(0.0);
-    m_pActiveBeatLoop = NULL;
-    m_pRateControl = NULL;
+    m_pActiveBeatLoop = nullptr;
+    m_pRateControl = nullptr;
     //Create loop-in, loop-out, loop-exit, and reloop/exit ControlObjects
     m_pLoopInButton = new ControlPushButton(ConfigKey(group, "loop_in"));
     connect(m_pLoopInButton, &ControlObject::valueChanged,
@@ -1088,7 +1088,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             // If running reverse, move the loop one loop size to the left.
             // Thus, the loops end will be closest to the current position
             bool reverse = false;
-            if (m_pRateControl != NULL) {
+            if (m_pRateControl != nullptr) {
                 reverse = m_pRateControl->isReverseButtonPressed();
             }
             if (reverse) {

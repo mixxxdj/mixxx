@@ -193,7 +193,7 @@ void BasePlaylistFeature::slotRenamePlaylist() {
 
     while (!validNameGiven) {
         bool ok = false;
-        newName = QInputDialog::getText(NULL,
+        newName = QInputDialog::getText(nullptr,
                 tr("Rename Playlist"),
                 tr("Enter new name for playlist:"),
                 QLineEdit::Normal,
@@ -207,11 +207,11 @@ void BasePlaylistFeature::slotRenamePlaylist() {
         int existingId = m_playlistDao.getPlaylistIdFromName(newName);
 
         if (existingId != -1) {
-            QMessageBox::warning(NULL,
+            QMessageBox::warning(nullptr,
                     tr("Renaming Playlist Failed"),
                     tr("A playlist by that name already exists."));
         } else if (newName.isEmpty()) {
-            QMessageBox::warning(NULL,
+            QMessageBox::warning(nullptr,
                     tr("Renaming Playlist Failed"),
                     tr("A playlist cannot have a blank name."));
         } else {
@@ -235,7 +235,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
     while (!validNameGiven) {
         bool ok = false;
-        name = QInputDialog::getText(NULL,
+        name = QInputDialog::getText(nullptr,
                 tr("Duplicate Playlist"),
                 tr("Enter name for new playlist:"),
                 QLineEdit::Normal,
@@ -250,11 +250,11 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
         int existingId = m_playlistDao.getPlaylistIdFromName(name);
 
         if (existingId != -1) {
-            QMessageBox::warning(NULL,
+            QMessageBox::warning(nullptr,
                     tr("Playlist Creation Failed"),
                     tr("A playlist by that name already exists."));
         } else if (name.isEmpty()) {
-            QMessageBox::warning(NULL,
+            QMessageBox::warning(nullptr,
                     tr("Playlist Creation Failed"),
                     tr("A playlist cannot have a blank name."));
         } else {
@@ -288,7 +288,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 
     while (!validNameGiven) {
         bool ok = false;
-        name = QInputDialog::getText(NULL,
+        name = QInputDialog::getText(nullptr,
                 tr("Create New Playlist"),
                 tr("Enter name for new playlist:"),
                 QLineEdit::Normal,
@@ -302,11 +302,11 @@ void BasePlaylistFeature::slotCreatePlaylist() {
         int existingId = m_playlistDao.getPlaylistIdFromName(name);
 
         if (existingId != -1) {
-            QMessageBox::warning(NULL,
+            QMessageBox::warning(nullptr,
                     tr("Playlist Creation Failed"),
                     tr("A playlist by that name already exists."));
         } else if (name.isEmpty()) {
-            QMessageBox::warning(NULL,
+            QMessageBox::warning(nullptr,
                     tr("Playlist Creation Failed"),
                     tr("A playlist cannot have a blank name."));
         } else {
@@ -319,7 +319,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     if (playlistId != -1) {
         activatePlaylist(playlistId);
     } else {
-        QMessageBox::warning(NULL,
+        QMessageBox::warning(nullptr,
                 tr("Playlist Creation Failed"),
                 tr("An unknown error occurred while creating playlist: ") + name);
     }
@@ -370,7 +370,7 @@ void BasePlaylistFeature::slotImportPlaylistFile(const QString& playlist_file) {
     // folder. We don't need access to this file on a regular basis so we do not
     // register a security bookmark.
 
-    Parser* playlist_parser = NULL;
+    Parser* playlist_parser = nullptr;
 
     if (playlist_file.endsWith(".m3u", Qt::CaseInsensitive) ||
             playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
@@ -435,7 +435,7 @@ void BasePlaylistFeature::slotCreateImportPlaylist() {
         if (lastPlaylistId != -1) {
             m_pPlaylistTableModel->setTableModel(lastPlaylistId);
         } else {
-            QMessageBox::warning(NULL,
+            QMessageBox::warning(nullptr,
                     tr("Playlist Creation Failed"),
                     tr("An unknown error occurred while creating playlist: ") + name);
             return;
@@ -463,7 +463,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // name to the playlist name.
     QString filefilter = tr("M3U Playlist (*.m3u)");
     QString file_location = QFileDialog::getSaveFileName(
-            NULL,
+            nullptr,
             tr("Export Playlist"),
             lastPlaylistDirectory.append("/").append(playlistName),
             tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"

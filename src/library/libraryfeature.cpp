@@ -31,10 +31,10 @@ QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) const {
             ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
-    QFileDialog dialog(NULL,
-                     tr("Import Playlist"),
-                     lastPlaylistDirectory,
-                     tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
+    QFileDialog dialog(nullptr,
+            tr("Import Playlist"),
+            lastPlaylistDirectory,
+            tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
     dialog.setFileMode(mode);
     dialog.setModal(true);
@@ -75,12 +75,12 @@ bool LibraryFeature::exportPlaylistItemsIntoFile(
             playlistFilePath.append(QStringLiteral(".m3u"));
             if (QFileInfo::exists(playlistFilePath)) {
                 auto overwrite = QMessageBox::question(
-                        NULL,
+                        nullptr,
                         tr("Overwrite File?"),
                         tr("A playlist file with the name \"%1\" already exists.\n"
                            "The default \"m3u\" extension was added because none was specified.\n\n"
-                           "Do you really want to overwrite it?").arg(playlistFilePath)
-                );
+                           "Do you really want to overwrite it?")
+                                .arg(playlistFilePath));
                 if (overwrite != QMessageBox::StandardButton::Yes) {
                     return false;
                 }

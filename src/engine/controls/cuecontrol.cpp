@@ -367,14 +367,14 @@ void CueControl::detachCue(HotcueControl* pControl) {
     if (!pCue) {
         return;
     }
-    disconnect(pCue.get(), 0, this, 0);
+    disconnect(pCue.get(), nullptr, this, nullptr);
     pControl->resetCue();
 }
 
 void CueControl::trackLoaded(TrackPointer pNewTrack) {
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack) {
-        disconnect(m_pLoadedTrack.get(), 0, this, 0);
+        disconnect(m_pLoadedTrack.get(), nullptr, this, nullptr);
         for (const auto& pControl : qAsConst(m_hotcueControls)) {
             detachCue(pControl);
         }

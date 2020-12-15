@@ -154,7 +154,7 @@ void VinylControlManager::removeSignalQualityListener(VinylSignalQualityListener
 
 void VinylControlManager::updateSignalQualityListeners() {
     FIFO<VinylSignalQualityReport>* signalQualityFifo = m_pProcessor->getSignalQualityFifo();
-    if (signalQualityFifo == NULL) {
+    if (signalQualityFifo == nullptr) {
         return;
     }
 

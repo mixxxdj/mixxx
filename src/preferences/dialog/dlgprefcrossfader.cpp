@@ -13,7 +13,7 @@ DlgPrefCrossfader::DlgPrefCrossfader(
         QWidget* parent, UserSettingsPointer config)
         : DlgPreferencePage(parent),
           m_config(config),
-          m_pxfScene(NULL),
+          m_pxfScene(nullptr),
           m_xFaderMode(MIXXX_XFADER_ADDITIVE),
           m_transform(EngineXfader::kTransformDefault),
           m_cal(0.0),
@@ -136,7 +136,7 @@ void DlgPrefCrossfader::drawXfaderDisplay()
     // Initialize Scene
     if (m_pxfScene) {
         delete m_pxfScene;
-        m_pxfScene = NULL;
+        m_pxfScene = nullptr;
     }
     m_pxfScene = new QGraphicsScene();
     m_pxfScene->setSceneRect(0,0,sizeX, sizeY);

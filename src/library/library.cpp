@@ -457,10 +457,11 @@ void Library::slotRequestAddDir(const QString& dir) {
     Sandbox::createSecurityToken(directory);
 
     if (!m_pTrackCollectionManager->addDirectory(dir)) {
-        QMessageBox::information(0, tr("Add Directory to Library"),
+        QMessageBox::information(nullptr,
+                tr("Add Directory to Library"),
                 tr("Could not add the directory to your library. Either this "
-                    "directory is already in your library or you are currently "
-                    "rescanning your library."));
+                   "directory is already in your library or you are currently "
+                   "rescanning your library."));
     }
     // set at least one directory in the config file so that it will be possible
     // to downgrade from 1.12

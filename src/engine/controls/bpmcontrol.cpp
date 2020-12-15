@@ -543,11 +543,11 @@ bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
         return false;
     }
 
-    if (dpPrevBeat != NULL) {
+    if (dpPrevBeat != nullptr) {
         *dpPrevBeat = dPrevBeat;
     }
 
-    if (dpNextBeat != NULL) {
+    if (dpNextBeat != nullptr) {
         *dpNextBeat = dNextBeat;
     }
 
@@ -567,11 +567,11 @@ bool BpmControl::getBeatContextNoLookup(
     }
 
     double dBeatLength = dNextBeat - dPrevBeat;
-    if (dpBeatLength != NULL) {
+    if (dpBeatLength != nullptr) {
         *dpBeatLength = dBeatLength;
     }
 
-    if (dpBeatPercentage != NULL) {
+    if (dpBeatPercentage != nullptr) {
         *dpBeatPercentage = dBeatLength == 0.0 ? 0.0 :
                 (dPosition - dPrevBeat) / dBeatLength;
         // Because findNext and findPrev have an epsilon built in, sometimes
@@ -613,15 +613,20 @@ double BpmControl::getNearestPositionInPhase(
         }
         // This happens if dThisPosition is the target position of a requested
         // seek command
-        if (!getBeatContext(pBeats, dThisPosition,
-                            &dThisPrevBeat, &dThisNextBeat,
-                            &dThisBeatLength, NULL)) {
+        if (!getBeatContext(pBeats,
+                    dThisPosition,
+                    &dThisPrevBeat,
+                    &dThisNextBeat,
+                    &dThisBeatLength,
+                    nullptr)) {
             return dThisPosition;
         }
     } else {
         if (!getBeatContextNoLookup(dThisPosition,
-                                    dThisPrevBeat, dThisNextBeat,
-                                    &dThisBeatLength, NULL)) {
+                    dThisPrevBeat,
+                    dThisNextBeat,
+                    &dThisBeatLength,
+                    nullptr)) {
             return dThisPosition;
         }
     }
@@ -660,9 +665,9 @@ double BpmControl::getNearestPositionInPhase(
 
         if (!BpmControl::getBeatContext(otherBeats,
                     dOtherPosition,
-                    NULL,
-                    NULL,
-                    NULL,
+                    nullptr,
+                    nullptr,
+                    nullptr,
                     &dOtherBeatFraction)) {
             return dThisPosition;
         }

@@ -686,11 +686,11 @@ void CrateFeature::slotExportPlaylist() {
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
-    QString file_location = QFileDialog::getSaveFileName(
-        NULL,
-        tr("Export Crate"),
-        lastCrateDirectory.append("/").append(crate.getName()),
-        tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
+    QString file_location = QFileDialog::getSaveFileName(nullptr,
+            tr("Export Crate"),
+            lastCrateDirectory.append("/").append(crate.getName()),
+            tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist "
+               "(*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
     // Exit method if user cancelled the open dialog.
     if (file_location.isNull() || file_location.isEmpty()) {
         return;
