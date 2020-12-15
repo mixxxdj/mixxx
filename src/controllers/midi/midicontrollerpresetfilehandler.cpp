@@ -66,49 +66,35 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement&
             strMidiOption = optionsNode.nodeName().toLower();
 
             // "normal" is no options
-            if (strMidiOption == "invert") {
+            if (strMidiOption == QLatin1String("invert")) {
                 options.invert = true;
-            }
-            if (strMidiOption == "rot64") {
+            } else if (strMidiOption == QLatin1String("rot64")) {
                 options.rot64 = true;
-            }
-            if (strMidiOption == "rot64inv") {
+            } else if (strMidiOption == QLatin1String("rot64inv")) {
                 options.rot64_inv = true;
-            }
-            if (strMidiOption == "rot64fast") {
+            } else if (strMidiOption == QLatin1String("rot64fast")) {
                 options.rot64_fast = true;
-            }
-            if (strMidiOption == "diff") {
+            } else if (strMidiOption == QLatin1String("diff")) {
                 options.diff = true;
-            }
-            if (strMidiOption == "button") {
+            } else if (strMidiOption == QLatin1String("button")) {
                 options.button = true;
-            }
-            if (strMidiOption == "switch") {
+            } else if (strMidiOption == QLatin1String("switch")) {
                 options.sw = true;
-            }
-            if (strMidiOption == "hercjog") {
+            } else if (strMidiOption == QLatin1String("hercjog")) {
                 options.herc_jog = true;
-            }
-            if (strMidiOption == "hercjogfast") {
+            } else if (strMidiOption == QLatin1String("hercjogfast")) {
                 options.herc_jog_fast = true;
-            }
-            if (strMidiOption == "spread64") {
+            } else if (strMidiOption == QLatin1String("spread64")) {
                 options.spread64 = true;
-            }
-            if (strMidiOption == "selectknob") {
+            } else if (strMidiOption == QLatin1String("selectknob")) {
                 options.selectknob = true;
-            }
-            if (strMidiOption == "soft-takeover") {
+            } else if (strMidiOption == QLatin1String("soft-takeover")) {
                 options.soft_takeover = true;
-            }
-            if (strMidiOption == "script-binding") {
+            } else if (strMidiOption == QLatin1String("script-binding")) {
                 options.script = true;
-            }
-            if (strMidiOption == "fourteen-bit-msb") {
+            } else if (strMidiOption == QLatin1String("fourteen-bit-msb")) {
                 options.fourteen_bit_msb = true;
-            }
-            if (strMidiOption == "fourteen-bit-lsb") {
+            } else if (strMidiOption == QLatin1String("fourteen-bit-lsb")) {
                 options.fourteen_bit_lsb = true;
             }
 
