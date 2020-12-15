@@ -58,6 +58,8 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 }
 
 WLibraryTableView::~WLibraryTableView() {
+    qDeleteAll(m_vModelState);
+    m_vModelState.clear();
 }
 
 

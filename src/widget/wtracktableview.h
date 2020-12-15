@@ -62,6 +62,12 @@ class WTrackTableView : public WLibraryTableView {
     void slotAddToAutoDJBottom() override;
     void slotAddToAutoDJTop() override;
     void slotAddToAutoDJReplace() override;
+    void slotSaveCurrentViewState() {
+        saveCurrentViewState();
+    };
+    void slotRestoreCurrentViewState() {
+        restoreCurrentViewState();
+    };
 
   private slots:
     void doSortByColumn(int headerSection, Qt::SortOrder sortOrder);
