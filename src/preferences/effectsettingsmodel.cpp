@@ -33,8 +33,9 @@ void EffectSettingsModel::resetFromEffectManager(EffectsManager* pEffectsManager
 }
 
 bool EffectSettingsModel::addProfileToModel(EffectProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return false;
+    }
 
     int position = m_profiles.size();
     beginInsertRows(QModelIndex(), position, position);
@@ -46,8 +47,9 @@ bool EffectSettingsModel::addProfileToModel(EffectProfilePtr profile) {
 }
 
 void EffectSettingsModel::deleteProfileFromModel(EffectProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return;
+    }
 
     int position = m_profiles.indexOf(profile);
     if (position > -1) {
@@ -112,14 +114,17 @@ QVariant EffectSettingsModel::headerData(int section, Qt::Orientation orientatio
 }
 
 Qt::ItemFlags EffectSettingsModel::flags(const QModelIndex& index) const {
-    if (index.column() == kColumnEnabled)
+    if (index.column() == kColumnEnabled) {
         return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
+    }
 
-    if (index.column() == kColumnName)
+    if (index.column() == kColumnName) {
         return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable;
+    }
 
-    if (index.column() == kColumnType)
+    if (index.column() == kColumnType) {
         return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable;
+    }
 
     return QAbstractItemModel::flags(index) | Qt::ItemIsEnabled;
 }

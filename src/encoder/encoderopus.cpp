@@ -443,8 +443,9 @@ void EncoderOpus::writePage(ogg_packet* pPacket) {
     if (m_header_write) {
         while (true) {
             int result = ogg_stream_flush(&m_oggStream, &m_oggPage);
-            if (result == 0)
+            if (result == 0) {
                 break;
+            }
 
             kLogger.debug() << "pushing headers to output";
             m_pCallback->write(m_oggPage.header, m_oggPage.body,

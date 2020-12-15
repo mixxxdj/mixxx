@@ -196,8 +196,9 @@ bool LegacySkinParser::canParse(const QString& skinPath) {
         return false;
     }
 
-    if (!skinDir.exists("skin.xml"))
+    if (!skinDir.exists("skin.xml")) {
         return false;
+    }
 
     // TODO check skin.xml for compliance
 
@@ -627,8 +628,9 @@ QWidget* LegacySkinParser::parseSplitter(const QDomElement& node) {
             if (node.isElement()) {
                 QList<QWidget*> children = parseNode(node.toElement());
                 foreach (QWidget* pChild, children) {
-                    if (pChild == NULL)
+                    if (pChild == NULL) {
                         continue;
+                    }
                     pSplitter->addWidget(pChild);
                 }
             }

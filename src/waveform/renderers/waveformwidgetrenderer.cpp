@@ -69,8 +69,9 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
 WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     //qDebug() << "~WaveformWidgetRenderer";
 
-    for (int i = 0; i < m_rendererStack.size(); ++i)
+    for (int i = 0; i < m_rendererStack.size(); ++i) {
         delete m_rendererStack[i];
+    }
 
     delete m_pRateRatioCO;
     delete m_pGainControlObject;

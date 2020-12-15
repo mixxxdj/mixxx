@@ -45,8 +45,9 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setWorldMatrixEnabled(false);
 
     for (auto& pMark: m_marks) {
-        if (!pMark->isValid())
+        if (!pMark->isValid()) {
             continue;
+        }
 
         if (pMark->hasVisible() && !pMark->isVisible()) {
             continue;

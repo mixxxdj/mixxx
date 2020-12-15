@@ -582,8 +582,9 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
 
 void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {
     m_visualGain[index] = gain;
-    if (m_config)
+    if (m_config) {
         m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(index)), QString::number(m_visualGain[index]));
+    }
 }
 
 double WaveformWidgetFactory::getVisualGain(FilterIndex index) const {

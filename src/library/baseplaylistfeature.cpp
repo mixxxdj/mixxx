@@ -295,8 +295,9 @@ void BasePlaylistFeature::slotCreatePlaylist() {
                 tr("New Playlist"),
                 &ok)
                        .trimmed();
-        if (!ok)
+        if (!ok) {
             return;
+        }
 
         int existingId = m_playlistDao.getPlaylistIdFromName(name);
 
@@ -350,8 +351,9 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 void BasePlaylistFeature::slotImportPlaylist() {
     //qDebug() << "slotImportPlaylist() row:" << m_lastRightClickedIndex.data();
     QString playlist_file = getPlaylistFile();
-    if (playlist_file.isEmpty())
+    if (playlist_file.isEmpty()) {
         return;
+    }
 
     // Update the import/export playlist directory
     QFileInfo fileName(playlist_file);

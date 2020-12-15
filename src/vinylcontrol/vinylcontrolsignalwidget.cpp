@@ -32,8 +32,9 @@ VinylControlSignalWidget::~VinylControlSignalWidget() {
 
 void VinylControlSignalWidget::setVinylActive(bool active)
 {
-    if (m_bVinylActive != active && !active)
+    if (m_bVinylActive != active && !active) {
         resetWidget();
+    }
     m_bVinylActive = active;
 }
 

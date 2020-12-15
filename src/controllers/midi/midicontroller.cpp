@@ -371,14 +371,16 @@ double MidiController::computeValue(
     if (options.rot64 || options.rot64_inv) {
         tempval = prevmidivalue;
         diff = newmidivalue - 64.;
-        if (diff == -1 || diff == 1)
+        if (diff == -1 || diff == 1) {
             diff /= 16;
-        else
+        } else {
             diff += (diff > 0 ? -1 : +1);
-        if (options.rot64)
+        }
+        if (options.rot64) {
             tempval += diff;
-        else
+        } else {
             tempval -= diff;
+        }
         return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
     }
 
@@ -392,8 +394,9 @@ double MidiController::computeValue(
 
     if (options.diff) {
         //Interpret 7-bit signed value using two's compliment.
-        if (newmidivalue >= 64.)
+        if (newmidivalue >= 64.) {
             newmidivalue = newmidivalue - 128.;
+        }
         //Apply sensitivity to signed value. FIXME
        // if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
@@ -403,8 +406,9 @@ double MidiController::computeValue(
 
     if (options.selectknob) {
         //Interpret 7-bit signed value using two's compliment.
-        if (newmidivalue >= 64.)
+        if (newmidivalue >= 64.) {
             newmidivalue = newmidivalue - 128.;
+        }
         //Apply sensitivity to signed value. FIXME
         //if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);

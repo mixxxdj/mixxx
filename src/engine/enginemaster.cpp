@@ -841,8 +841,9 @@ const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
 }
 
 const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
-    if (i <= EngineChannel::RIGHT)
+    if (i <= EngineChannel::RIGHT) {
         return m_pOutputBusBuffers[i];
+    }
     return NULL;
 }
 

@@ -154,9 +154,9 @@ void WaveformRendererHSV::draw(QPainter* painter,
                 // Normalize low and high (mid not need, because it not change the color)
                 lo = (maxLow[0] + maxLow[1]) / total;
                 hi = (maxHigh[0] + maxHigh[1]) / total;
-            }
-            else
+            } else {
                 lo = hi = 0.0;
+            }
 
             // Set color
             color.setHsvF(h, 1.0-hi, 1.0-lo);

@@ -417,7 +417,9 @@ SoundDeviceError SoundManager::setupDevices() {
 
             AudioOutputBuffer aob(out, pBuffer);
             err = pDevice->addOutput(aob);
-            if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
+            if (err != SOUNDDEVICE_ERROR_OK) {
+                goto closeAndError;
+            }
 
             if (!m_config.getForceNetworkClock()) {
                 if (out.getType() == AudioOutput::MASTER) {
@@ -465,7 +467,9 @@ SoundDeviceError SoundManager::setupDevices() {
             syncBuffers = 2;
         }
         err = pDevice->open(pNewMasterClockRef == pDevice, syncBuffers);
-        if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
+        if (err != SOUNDDEVICE_ERROR_OK) {
+            goto closeAndError;
+        }
         devicesNotFound.remove(pDevice->getDeviceId());
         if (mode.isOutput) {
             ++outputDevicesOpened;
@@ -659,7 +663,9 @@ void SoundManager::setJACKName() const {
             // need to make sure it will last forever so we intentionally leak
             // this string.
             char* jackNameCopy = strdup(Version::applicationName().toLocal8Bit().constData());
-            if (!func(jackNameCopy)) qDebug() << "JACK client name set";
+            if (!func(jackNameCopy)) {
+                qDebug() << "JACK client name set";
+            }
         } else {
             qWarning() << "failed to resolve JACK name method";
         }

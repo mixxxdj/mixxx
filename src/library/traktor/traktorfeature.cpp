@@ -166,8 +166,9 @@ void TraktorFeature::activate() {
 }
 
 void TraktorFeature::activateChild(const QModelIndex& index) {
-
-    if (!index.isValid()) return;
+    if (!index.isValid()) {
+        return;
+    }
 
     //access underlying TreeItem object
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
@@ -251,8 +252,9 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     if (xml.hasError()) {
          // do error handling
          qDebug() << "Cannot process Traktor music collection";
-         if (root)
+         if (root) {
              delete root;
+         }
          return NULL;
     }
 
@@ -541,11 +543,12 @@ void TraktorFeature::clearTable(const QString& table_name) {
     QSqlQuery query(m_database);
     query.prepare("delete from "+table_name);
 
-    if (!query.exec())
+    if (!query.exec()) {
         qDebug() << "Could not delete remove old entries from table "
                  << table_name << " : " << query.lastError();
-    else
+    } else {
         qDebug() << "Traktor table entries of '" << table_name << "' have been cleared.";
+    }
 }
 
 QString TraktorFeature::getTraktorMusicDatabase() {

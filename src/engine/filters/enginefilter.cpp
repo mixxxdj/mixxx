@@ -40,8 +40,9 @@ EngineFilter::EngineFilter(char * conf, int predefinedType)
         processSample = funcp;
     }
     int i;
-    for(i=0; i < FILTER_BUF_SIZE; i++)
+    for (i = 0; i < FILTER_BUF_SIZE; i++) {
         buf1[i] = buf2[i] = 0;
+    }
 }
 
 EngineFilter::~EngineFilter()

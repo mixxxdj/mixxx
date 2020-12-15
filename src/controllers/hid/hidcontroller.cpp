@@ -103,8 +103,9 @@ void HidController::visit(const HidControllerPreset* preset) {
 bool HidController::matchPreset(const PresetInfo& preset) {
     const QList<ProductInfo>& products = preset.getProducts();
     for (const auto& product : products) {
-        if (matchProductInfo(product))
+        if (matchProductInfo(product)) {
             return true;
+        }
     }
     return false;
 }
@@ -114,20 +115,30 @@ bool HidController::matchProductInfo(const ProductInfo& product) {
     bool ok;
     // Product and vendor match is always required
     value = product.vendor_id.toInt(&ok,16);
-    if (!ok || hid_vendor_id!=value) return false;
+    if (!ok || hid_vendor_id != value) {
+        return false;
+    }
     value = product.product_id.toInt(&ok,16);
-    if (!ok || hid_product_id!=value) return false;
+    if (!ok || hid_product_id != value) {
+        return false;
+    }
 
     // Optionally check against interface_number / usage_page && usage
     if (hid_interface_number!=-1) {
         value = product.interface_number.toInt(&ok,16);
-        if (!ok || hid_interface_number!=value) return false;
+        if (!ok || hid_interface_number != value) {
+            return false;
+        }
     } else {
         value = product.usage_page.toInt(&ok,16);
-        if (!ok || hid_usage_page!=value) return false;
+        if (!ok || hid_usage_page != value) {
+            return false;
+        }
 
         value = product.usage.toInt(&ok,16);
-        if (!ok || hid_usage!=value) return false;
+        if (!ok || hid_usage != value) {
+            return false;
+        }
     }
     // Match found
     return true;

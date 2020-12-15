@@ -138,8 +138,9 @@ EffectChainSlot::~EffectChainSlot() {
 }
 
 QString EffectChainSlot::id() const {
-    if (m_pEffectChain)
+    if (m_pEffectChain) {
         return m_pEffectChain->id();
+    }
     return "";
 }
 

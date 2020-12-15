@@ -401,14 +401,17 @@ TreeItem* ITunesFeature::importLibrary() {
             if (xml.name() == "key") {
                 QString key = xml.readElementText();
                 if (key == "Music Folder") {
-                    if (isTracksParsed) isMusicFolderLocatedAfterTracks = true;
+                    if (isTracksParsed) {
+                        isMusicFolderLocatedAfterTracks = true;
+                    }
                     if (readNextStartElement(xml)) {
                         guessMusicLibraryMountpoint(xml);
                     }
                 } else if (key == "Tracks") {
                     parseTracks(xml);
-                    if (playlist_root != NULL)
+                    if (playlist_root != NULL) {
                         delete playlist_root;
+                    }
                     playlist_root = parsePlaylists(xml);
                     isTracksParsed = true;
                 }
@@ -664,8 +667,9 @@ TreeItem* ITunesFeature::parsePlaylists(QXmlStreamReader& xml) {
             continue;
         }
         if (xml.isEndElement()) {
-            if (xml.name() == "array")
+            if (xml.name() == "array") {
                 break;
+            }
         }
     }
     return pRootItem.release();
@@ -729,7 +733,9 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader& xml, QSqlQuery& query_insert
                     isPlaylistItemsStarted = true;
 
                     //if the playlist is prebuild don't hit the database
-                    if (isSystemPlaylist) continue;
+                    if (isSystemPlaylist) {
+                        continue;
+                    }
                     query_insert_to_playlists.bindValue(":id", playlist_id);
                     query_insert_to_playlists.bindValue(":name", playlistname);
 

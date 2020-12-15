@@ -69,8 +69,9 @@ int EncoderVorbis::getSerial()
 {
     static int prevSerial = 0;
     int serial = rand();
-    while (prevSerial == serial)
+    while (prevSerial == serial) {
         serial = rand();
+    }
     prevSerial = serial;
     qDebug() << "RETURNING SERIAL " << serial;
     return serial;
@@ -93,8 +94,9 @@ void EncoderVorbis::writePage() {
     if (m_header_write) {
         while (true) {
             result = ogg_stream_flush(&m_oggs, &m_oggpage);
-            if (result == 0)
+            if (result == 0) {
                 break;
+            }
             m_pCallback->write(
                     m_oggpage.header,
                     m_oggpage.body,
@@ -114,12 +116,14 @@ void EncoderVorbis::writePage() {
             bool eos = false;
             while (!eos) {
                 int result = ogg_stream_pageout(&m_oggs, &m_oggpage);
-                if (result == 0)
+                if (result == 0) {
                     break;
+                }
                 m_pCallback->write(m_oggpage.header, m_oggpage.body,
                                    m_oggpage.header_len, m_oggpage.body_len);
-                if (ogg_page_eos(&m_oggpage))
+                if (ogg_page_eos(&m_oggpage)) {
                     eos = true;
+                }
             }
         }
     }

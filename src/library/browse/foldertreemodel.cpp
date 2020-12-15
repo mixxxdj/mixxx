@@ -39,11 +39,13 @@ bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
      * However, for, buid-in items such as 'Quick Links' there exist
      * child items at init time
      */
-    if(item->getData().toString() == QUICK_LINK_NODE)
+    if (item->getData().toString() == QUICK_LINK_NODE) {
         return true;
+    }
     //Can only happen on Windows
-    if(item->getData().toString() == DEVICE_NODE)
+    if (item->getData().toString() == DEVICE_NODE) {
         return true;
+    }
 
     // In all other cases the getData() points to a folder
     QString folder = item->getData().toString();

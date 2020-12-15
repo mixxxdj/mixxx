@@ -126,9 +126,13 @@ bool BulkController::matchProductInfo(const ProductInfo& product) {
     bool ok;
     // Product and vendor match is always required
     value = product.vendor_id.toInt(&ok, 16);
-    if (!ok || vendor_id!=value) return false;
+    if (!ok || vendor_id != value) {
+        return false;
+    }
     value = product.product_id.toInt(&ok, 16);
-    if (!ok || product_id!=value) return false;
+    if (!ok || product_id != value) {
+        return false;
+    }
 
     // Match found
     return true;

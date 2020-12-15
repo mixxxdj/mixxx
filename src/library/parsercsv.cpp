@@ -63,11 +63,11 @@ QList<QString> ParserCsv::parse(const QString& sFilename) {
 
         file.close();
 
-        if(m_sLocations.count() != 0)
+        if (m_sLocations.count() != 0) {
             return m_sLocations;
-        else
+        } else {
             return QList<QString>(); // NULL pointer returned when no locations were found
-
+        }
     }
 
     file.close();

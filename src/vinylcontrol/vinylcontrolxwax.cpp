@@ -359,10 +359,11 @@ void VinylControlXwax::analyzeSamples(CSAMPLE* pSamples, size_t nFrames) {
         if (m_bAtRecordEnd) {
             //ok, it's still valid, blink
             if ((reportedPlayButton && (int)(filePosition * 2.0) % 2) ||
-                (!reportedPlayButton && (int)(m_iPosition / 500.0) % 2))
+                    (!reportedPlayButton && (int)(m_iPosition / 500.0) % 2)) {
                 vinylStatus->slotSet(VINYL_STATUS_WARNING);
-            else
+            } else {
                 vinylStatus->slotSet(VINYL_STATUS_DISABLED);
+            }
         }
     }
 
@@ -802,8 +803,9 @@ void VinylControlXwax::establishQuality(bool quality_sample) {
 
     int quality = 0;
     for (int i = 0; i < m_iQualFilled; ++i) {
-        if (m_bQualityRing[i])
+        if (m_bQualityRing[i]) {
             quality++;
+        }
     }
 
     m_fTimecodeQuality = static_cast<float>(quality) /

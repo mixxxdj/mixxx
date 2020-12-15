@@ -564,7 +564,9 @@ void CrateFeature::slotImportPlaylist() {
     //qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 
     QString playlist_file = getPlaylistFile();
-    if (playlist_file.isEmpty()) return;
+    if (playlist_file.isEmpty()) {
+        return;
+    }
 
     // Update the import/export crate directory
     QFileInfo fileName(playlist_file);

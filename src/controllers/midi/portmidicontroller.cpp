@@ -47,8 +47,9 @@ int PortMidiController::open() {
         return -1;
     }
 
-    if (getName() == MIXXX_PORTMIDI_NO_DEVICE_STRING)
+    if (getName() == MIXXX_PORTMIDI_NO_DEVICE_STRING) {
         return -1;
+    }
 
     m_bInSysex = false;
     m_cReceiveMsg_index = 0;

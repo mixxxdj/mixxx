@@ -264,10 +264,11 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
 
     // Don't allow 0 samples loop, so one can still manipulate it
     if (loopSamples.end == loopSamples.start) {
-        if ((loopSamples.end + 2) >= trackSamples)
+        if ((loopSamples.end + 2) >= trackSamples) {
             loopSamples.start -= 2;
-        else
+        } else {
             loopSamples.end += 2;
+        }
     }
     // Do not allow loops to go past the end of the song
     else if (loopSamples.end > trackSamples) {

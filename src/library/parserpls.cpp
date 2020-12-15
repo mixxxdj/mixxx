@@ -53,8 +53,9 @@ QList<QString> ParserPls::parse(const QString& sFilename) {
         //detect encoding
         bool isCRLF_encoded = ba.contains("\r\n");
         bool isCR_encoded = ba.contains("\r");
-        if(isCR_encoded && !isCRLF_encoded)
+        if (isCR_encoded && !isCRLF_encoded) {
             ba.replace('\r','\n');
+        }
         QTextStream textstream(ba.constData());
 
         while(!textstream.atEnd()) {
@@ -69,10 +70,11 @@ QList<QString> ParserPls::parse(const QString& sFilename) {
 
         file.close();
 
-        if(m_sLocations.count() != 0)
+        if (m_sLocations.count() != 0) {
             return m_sLocations;
-        else
+        } else {
             return QList<QString>(); // NULL pointer returned when no locations were found
+        }
     }
 
     file.close();

@@ -205,8 +205,9 @@ QString DlgPrefController::presetName(
         const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString name = pPreset->name();
-        if (name.length() > 0)
+        if (name.length() > 0) {
             return name;
+        }
     }
     return tr("No Name");
 }
@@ -215,8 +216,9 @@ QString DlgPrefController::presetDescription(
         const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString description = pPreset->description();
-        if (description.length() > 0)
+        if (description.length() > 0) {
             return description;
+        }
     }
     return tr("No Description");
 }
@@ -225,8 +227,9 @@ QString DlgPrefController::presetAuthor(
         const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString author = pPreset->author();
-        if (author.length() > 0)
+        if (author.length() > 0) {
             return author;
+        }
     }
     return tr("No Author");
 }
@@ -236,8 +239,9 @@ QString DlgPrefController::presetForumLink(
     QString url;
     if (pPreset) {
         QString link = pPreset->forumlink();
-        if (link.length() > 0)
+        if (link.length() > 0) {
             url = "<a href=\"" + link + "\">Mixxx Forums</a>";
+        }
     }
     return url;
 }
@@ -247,8 +251,9 @@ QString DlgPrefController::presetWikiLink(
     QString url;
     if (pPreset) {
         QString link = pPreset->wikilink();
-        if (link.length() > 0)
+        if (link.length() > 0) {
             url = "<a href=\"" + link + "\">Mixxx Wiki</a>";
+        }
     }
     return url;
 }

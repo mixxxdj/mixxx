@@ -120,8 +120,12 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
                                           QString::number(length));
         for(int i=0; i<length; i++) {
             QString spacer=" ";
-            if ((i+1) % 4 == 0) spacer="  ";
-            if ((i+1) % 16 == 0) spacer="\n";
+            if ((i + 1) % 4 == 0) {
+                spacer = "  ";
+            }
+            if ((i + 1) % 16 == 0) {
+                spacer = "\n";
+            }
             message += QString("%1%2")
                         .arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper()
                         .arg(spacer);

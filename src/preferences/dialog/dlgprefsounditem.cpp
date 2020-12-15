@@ -80,7 +80,9 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
         deviceComboBox->removeItem(deviceComboBox->count() - 1);
     }
     for (const auto& pDevice: qAsConst(m_devices)) {
-        if (!hasSufficientChannels(*pDevice)) continue;
+        if (!hasSufficientChannels(*pDevice)) {
+            continue;
+        }
         deviceComboBox->addItem(pDevice->getDisplayName(), QVariant::fromValue(pDevice->getDeviceId()));
     }
     int newIndex = deviceComboBox->findData(QVariant::fromValue(oldDev));

@@ -40,7 +40,9 @@ QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) const {
     dialog.setModal(true);
 
     // If the user refuses return
-    if (! dialog.exec()) return QStringList();
+    if (!dialog.exec()) {
+        return QStringList();
+    }
     return dialog.selectedFiles();
 }
 

@@ -150,8 +150,9 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
         }
     }
 
-    if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (!db.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return NULL;
+    }
 
     //Delete all table entries of Traktor feature
     ScopedTransaction transaction(m_database);
@@ -205,8 +206,9 @@ TreeItem* RhythmboxFeature::importPlaylists() {
         }
     }
     //Open file
-     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (!db.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return NULL;
+    }
 
     QSqlQuery query_insert_to_playlists(m_database);
     query_insert_to_playlists.prepare("INSERT INTO rhythmbox_playlists (id, name) "

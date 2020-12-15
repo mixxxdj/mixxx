@@ -369,8 +369,9 @@ double RateControl::getJogFactor() const {
     double jogValue = m_pJog->get();
 
     // Since m_pJog is an accumulator, reset it since we've used its value.
-    if(jogValue != 0.)
+    if (jogValue != 0.) {
         m_pJog->set(0.);
+    }
 
     double jogValueFiltered = m_pJogFilter->filter(jogValue);
     double jogFactor = jogValueFiltered * jogSensitivity;

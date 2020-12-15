@@ -52,8 +52,9 @@ void StarEditor::renderHelper(QPainter* painter,
     // appropriate ColorGroup.
     QPalette::ColorGroup cg = option.state & QStyle::State_Enabled
             ? QPalette::Normal : QPalette::Disabled;
-    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active))
+    if (cg == QPalette::Normal && !(option.state & QStyle::State_Active)) {
         cg = QPalette::Inactive;
+    }
 
     if (option.state & QStyle::State_Selected) {
         painter->setBrush(option.palette.color(cg, QPalette::HighlightedText));

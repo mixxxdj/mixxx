@@ -310,8 +310,9 @@ void DlgPreferences::createIcons() {
 }
 
 void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous) {
-    if (!current)
+    if (!current) {
         current = previous;
+    }
 
     if (current == m_pSoundButton) {
         switchToPage(m_soundPage);

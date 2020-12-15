@@ -27,7 +27,9 @@ void ErrorDialogProperties::setTitle(const QString& title) {
 
 void ErrorDialogProperties::setText(const QString& text) {
     // If no key is set, use this window text since it is likely to be unique
-    if (m_key.isEmpty()) m_key = text;
+    if (m_key.isEmpty()) {
+        m_key = text;
+    }
     m_text = text;
 }
 

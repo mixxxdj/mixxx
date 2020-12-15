@@ -652,7 +652,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         if (noOutputDlg(&continueClicked) != QDialog::Accepted) {
             exit(0);
         }
-        if (continueClicked) break;
+        if (continueClicked) {
+            break;
+        }
    }
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
@@ -916,8 +918,9 @@ void MixxxMainWindow::initializeKeyboard() {
     QString resourcePath = pConfig->getResourcePath();
 
     // Set the default value in settings file
-    if (pConfig->getValueString(ConfigKey("[Keyboard]","Enabled")).length() == 0)
+    if (pConfig->getValueString(ConfigKey("[Keyboard]", "Enabled")).length() == 0) {
         pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
+    }
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
@@ -1276,8 +1279,9 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
 
-        if (ret != QMessageBox::Yes)
+        if (ret != QMessageBox::Yes) {
             return;
+        }
     }
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
@@ -1573,8 +1577,9 @@ void MixxxMainWindow::checkDirectRendering() {
     //  * Warn user
 
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    if (!factory)
+    if (!factory) {
         return;
+    }
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 

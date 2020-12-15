@@ -118,8 +118,9 @@ TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
                                        const QModelIndex& sourceParent) const {
-    if (!m_bHandleSearches)
+    if (!m_bHandleSearches) {
         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+    }
 
     if (m_pTrackModel == NULL) {
         return false;
@@ -139,8 +140,9 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         QVariant data = itemModel->data(index);
         if (data.canConvert(QMetaType::QString)) {
             QString strData = data.toString();
-            if (strData.contains(filter))
+            if (strData.contains(filter)) {
                 rowMatches = true;
+            }
         }
     }
     return rowMatches;

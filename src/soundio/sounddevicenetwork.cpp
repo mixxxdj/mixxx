@@ -130,7 +130,9 @@ QString SoundDeviceNetwork::getError() const {
 }
 
 void SoundDeviceNetwork::readProcess() {
-    if (!m_inputFifo || !m_pNetworkStream || !m_iNumInputChannels) return;
+    if (!m_inputFifo || !m_pNetworkStream || !m_iNumInputChannels) {
+        return;
+    }
 
     int inChunkSize = m_framesPerBuffer * m_iNumInputChannels;
     int readAvailable = m_pNetworkStream->getReadExpected()
@@ -222,7 +224,9 @@ void SoundDeviceNetwork::readProcess() {
 }
 
 void SoundDeviceNetwork::writeProcess() {
-    if (!m_outputFifo || !m_pNetworkStream) return;
+    if (!m_outputFifo || !m_pNetworkStream) {
+        return;
+    }
 
     int outChunkSize = m_framesPerBuffer * m_iNumOutputChannels;
     int writeAvailable = m_outputFifo->writeAvailable();
