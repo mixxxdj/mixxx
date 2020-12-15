@@ -150,7 +150,7 @@ jobs:
 
     - name: "[Windows] Set up Windows code signing"
       env:
-        WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ github.workspace }}\build\certificates\windows_sectigo_codesign_certificate.pfx
+        WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ github.workspace }}\packaging\certificates\windows_sectigo_codesign_certificate.pfx
         WINDOWS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD }}
         WINDOWS_CODESIGN_SECURE_FILE_SALT: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SALT }}
         WINDOWS_CODESIGN_SECURE_FILE_SECRET: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SECRET }}
