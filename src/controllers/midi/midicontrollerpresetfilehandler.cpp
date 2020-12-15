@@ -179,7 +179,8 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement&
             ok = false;
         }
 
-        if (!ok) { //If not a double, or node wasn't defined
+        if (!ok) {
+            // If not a double, or node wasn't defined
             mapping.output.min = DEFAULT_OUTPUT_MIN;
         }
 
