@@ -33,6 +33,7 @@ void LibraryExporter::requestExportWithOptionalInitialCrate(
                 Qt::WindowActive);
     }
 
+    m_pDialog->refresh();
     m_pDialog->setSelectedCrate(initialSelectedCrate);
 }
 

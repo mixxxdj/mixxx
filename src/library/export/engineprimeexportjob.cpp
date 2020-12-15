@@ -25,6 +25,10 @@ namespace {
 
 const std::string kMixxxRootCrateName = "Mixxx";
 
+const int kMaxHotCues = 8;
+
+const uint8_t kDefaultWaveformOpacity = 127;
+
 const QStringList kSupportedFileTypes = {"mp3", "flac", "ogg"};
 
 std::optional<djinterop::musical_key> toDjinteropKey(
@@ -60,15 +64,25 @@ std::optional<djinterop::musical_key> toDjinteropKey(
     return keyMap[key];
 }
 
-std::string exportFile(const EnginePrimeExportRequest& request,
+inline double playPosToSampleOffset(double playPos) {
+    // Play positions are twice the sample offset expected by libdjinterop.
+    return playPos / 2;
+}
+
+inline double sampleOffsetToPlayPos(double sampleOffset) {
+    // Play positions are twice the sample offset expected by libdjinterop.
+    return sampleOffset * 2;
+}
+
+QString exportFile(const EnginePrimeExportRequest& request,
         TrackPointer pTrack) {
     if (!request.engineLibraryDbDir.exists()) {
-        auto msg = QString(
+        auto msg = QStringLiteral(
                 "Engine Library DB directory %1 has been removed from disk!")
                            .arg(request.engineLibraryDbDir.absolutePath());
         throw std::runtime_error{msg.toStdString()};
     } else if (!request.musicFilesDir.exists()) {
-        auto msg = QString(
+        auto msg = QStringLiteral(
                 "Music file export directory %1 has been removed from disk!")
                            .arg(request.musicFilesDir.absolutePath());
         throw std::runtime_error{msg.toStdString()};
@@ -88,15 +102,15 @@ std::string exportFile(const EnginePrimeExportRequest& request,
         QFile::copy(srcPath, dstPath);
     }
 
-    return request.engineLibraryDbDir.relativeFilePath(dstPath).toStdString();
+    return request.engineLibraryDbDir.relativeFilePath(dstPath);
 }
 
 djinterop::track getTrackByRelativePath(
-        djinterop::database& database, const std::string& relativePath) {
-    auto trackCandidates = database.tracks_by_relative_path(relativePath);
+        djinterop::database* pDatabase, const QString& relativePath) {
+    auto trackCandidates = pDatabase->tracks_by_relative_path(relativePath.toStdString());
     switch (trackCandidates.size()) {
     case 0:
-        return database.create_track(relativePath);
+        return pDatabase->create_track(relativePath.toStdString());
     case 1:
         return trackCandidates.front();
     default:
@@ -105,16 +119,16 @@ djinterop::track getTrackByRelativePath(
     }
 }
 
-void exportMetadata(djinterop::database& db,
-        QHash<TrackId, int64_t>& mixxxToEnginePrimeTrackIdMap,
+void exportMetadata(djinterop::database* pDatabase,
+        QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
         TrackPointer pTrack,
         std::unique_ptr<Waveform> pWaveform,
-        const std::string& relativePath) {
+        const QString& relativePath) {
     // Create or load the track in the database, using the relative path to
     // the music file.  We will record the mapping from Mixxx track id to
     // exported track id as well.
-    auto externalTrack = getTrackByRelativePath(db, relativePath);
-    mixxxToEnginePrimeTrackIdMap.insert(pTrack->getId(), externalTrack.id());
+    auto externalTrack = getTrackByRelativePath(pDatabase, relativePath);
+    pMixxxToEnginePrimeTrackIdMap->insert(pTrack->getId(), externalTrack.id());
 
     // Note that the Engine Prime format has the scope for recording meta-data
     // about whether track was imported from an external database.  However,
@@ -152,8 +166,9 @@ void exportMetadata(djinterop::database& db,
 
     // Set main cue-point.
     double cuePlayPos = pTrack->getCuePoint().getPosition();
-    externalTrack.set_default_main_cue(cuePlayPos / 2);
-    externalTrack.set_adjusted_main_cue(cuePlayPos / 2);
+    double cueSampleOffset = playPosToSampleOffset(cuePlayPos);
+    externalTrack.set_default_main_cue(cueSampleOffset);
+    externalTrack.set_adjusted_main_cue(cueSampleOffset);
 
     // Fill in beat grid.  For now, assume a constant average BPM across
     // the whole track.  Note that points in the track are specified as
@@ -175,11 +190,12 @@ void exportMetadata(djinterop::database& db,
         // We will treat the first bar-aligned beat as beat zero.  Find the
         // number of beats from there until the end of the track in order to
         // correctly assign an index for the last beat.
-        double lastBeatPlayPos = beats->findPrevBeat(sampleCount * 2);
+        double lastBeatPlayPos = sampleOffsetToPlayPos(beats->findPrevBeat(sampleCount));
         int numBeats = beats->numBeatsInRange(firstBarAlignedBeatPlayPos, lastBeatPlayPos);
         if (numBeats > 0) {
             std::vector<djinterop::beatgrid_marker> beatgrid{
-                    {0, firstBarAlignedBeatPlayPos / 2}, {numBeats, lastBeatPlayPos / 2}};
+                    {0, playPosToSampleOffset(firstBarAlignedBeatPlayPos)},
+                    {numBeats, playPosToSampleOffset(lastBeatPlayPos)}};
             beatgrid = el::normalize_beatgrid(std::move(beatgrid), sampleCount);
             externalTrack.set_default_beatgrid(beatgrid);
             externalTrack.set_adjusted_beatgrid(beatgrid);
@@ -199,25 +215,24 @@ void exportMetadata(djinterop::database& db,
             continue;
         }
 
-        int hot_cue_index = pCue->getHotCue(); // Note: Mixxx uses 0-based.
-        if (hot_cue_index < 0 || hot_cue_index >= 8) {
-            // Only supports a maximum of 8 hot cues.
-            qInfo() << "Skipping hot cue" << hot_cue_index
-                    << "as the Engine Prime format only supports at most 8"
-                    << "hot cues.";
+        int hotCueIndex = pCue->getHotCue(); // Note: Mixxx uses 0-based.
+        if (hotCueIndex < 0 || hotCueIndex >= kMaxHotCues) {
+            qInfo() << "Skipping hot cue" << hotCueIndex
+                    << "as the Engine Prime format only supports at most"
+                    << kMaxHotCues << "hot cues.";
             continue;
         }
 
         QString label = pCue->getLabel();
         if (label == "") {
-            label = QString("Cue %1").arg(hot_cue_index + 1);
+            label = QString("Cue %1").arg(hotCueIndex + 1);
         }
 
-        djinterop::hot_cue hc{};
-        hc.label = label.toStdString();
-        hc.sample_offset = pCue->getPosition() / 2; // Convert "play pos".
-        hc.color = el::standard_pad_colors::pads[hot_cue_index];
-        externalTrack.set_hot_cue_at(hot_cue_index, hc);
+        djinterop::hot_cue hotCue{};
+        hotCue.label = label.toStdString();
+        hotCue.sample_offset = playPosToSampleOffset(pCue->getPosition());
+        hotCue.color = el::standard_pad_colors::pads[hotCueIndex];
+        externalTrack.set_hot_cue_at(hotCueIndex, hotCue);
     }
 
     // Note that Mixxx does not support pre-calculated stored loops, but it will
@@ -237,9 +252,9 @@ void exportMetadata(djinterop::database& db,
         externalWaveform.reserve(externalWaveformSize);
         for (int64_t i = 0; i < externalWaveformSize; ++i) {
             auto j = pWaveform->getDataSize() * i / externalWaveformSize;
-            externalWaveform.push_back({{pWaveform->getLow(j), 127},
-                    {pWaveform->getMid(j), 127},
-                    {pWaveform->getHigh(j), 127}});
+            externalWaveform.push_back({{pWaveform->getLow(j), kDefaultWaveformOpacity},
+                    {pWaveform->getMid(j), kDefaultWaveformOpacity},
+                    {pWaveform->getHigh(j), kDefaultWaveformOpacity}});
         }
         externalTrack.set_waveform(std::move(externalWaveform));
     } else {
@@ -250,8 +265,8 @@ void exportMetadata(djinterop::database& db,
 
 void exportTrack(
         const EnginePrimeExportRequest& request,
-        djinterop::database& db,
-        QHash<TrackId, int64_t>& mixxxToEnginePrimeTrackIdMap,
+        djinterop::database* pDatabase,
+        QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
         const TrackPointer pTrack,
         std::unique_ptr<Waveform> pWaveform) {
     // Only export supported file types.
@@ -266,20 +281,20 @@ void exportTrack(
     auto musicFileRelativePath = exportFile(request, pTrack);
 
     // Export meta-data.
-    exportMetadata(db,
-            mixxxToEnginePrimeTrackIdMap,
+    exportMetadata(pDatabase,
+            pMixxxToEnginePrimeTrackIdMap,
             pTrack,
             std::move(pWaveform),
             musicFileRelativePath);
 }
 
 void exportCrate(
-        djinterop::crate& extRootCrate,
-        QHash<TrackId, int64_t>& mixxxToEnginePrimeTrackIdMap,
+        djinterop::crate* pExtRootCrate,
+        const QHash<TrackId, int64_t>& mixxxToEnginePrimeTrackIdMap,
         const Crate& crate,
         const QList<TrackId>& trackIds) {
     // Create a new crate as a sub-crate of the top-level Mixxx crate.
-    auto extCrate = extRootCrate.create_sub_crate(crate.getName().toStdString());
+    auto extCrate = pExtRootCrate->create_sub_crate(crate.getName().toStdString());
 
     // Loop through all track ids in this crate and add.
     for (auto trackId : trackIds) {
@@ -470,8 +485,8 @@ void EnginePrimeExportJob::run() {
                 << "at" << m_pLastLoadedTrack->getFileInfo().location() << "...";
         try {
             exportTrack(m_request,
-                    *pDb,
-                    mixxxToEnginePrimeTrackIdMap,
+                    pDb.get(),
+                    &mixxxToEnginePrimeTrackIdMap,
                     m_pLastLoadedTrack,
                     std::move(m_pLastLoadedWaveform));
         } catch (std::exception& e) {
@@ -545,7 +560,7 @@ void EnginePrimeExportJob::run() {
         qInfo() << "Exporting crate" << m_lastLoadedCrate.getId().value() << "...";
         try {
             exportCrate(
-                    *pExtRootCrate,
+                    pExtRootCrate.get(),
                     mixxxToEnginePrimeTrackIdMap,
                     m_lastLoadedCrate,
                     m_lastLoadedCrateTrackIds);

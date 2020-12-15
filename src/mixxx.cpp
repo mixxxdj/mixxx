@@ -743,12 +743,11 @@ void MixxxMainWindow::connectMenuBar() {
     }
 
 #ifdef __ENGINEPRIME__
-    if (m_pLibraryExporter) {
-        connect(m_pMenuBar,
-                &WMainMenuBar::exportLibrary,
-                m_pLibraryExporter.get(),
-                &mixxx::LibraryExporter::slotRequestExport);
-    }
+    DEBUG_ASSERT(m_pLibraryExporter);
+    connect(m_pMenuBar,
+            &WMainMenuBar::exportLibrary,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExport);
 #endif
 }
 
