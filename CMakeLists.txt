@@ -932,6 +932,16 @@ if(UNIX AND NOT APPLE)
 endif()
 
 # Disable warnings in generated source files
+set_property(
+  SOURCE src/library/rekordbox/rekordbox_anlz.cpp
+  APPEND_STRING
+  PROPERTY CXX_CLANG_TIDY ""
+)
+set_property(
+  SOURCE src/library/rekordbox/rekordbox_pdb.cpp
+  APPEND_STRING
+  PROPERTY CXX_CLANG_TIDY ""
+)
 if(GNU_GCC OR LLVM_CLANG)
   set_property(
     SOURCE src/library/rekordbox/rekordbox_anlz.cpp
