@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="fr_FR" sourcelanguage="en" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="hi_IN" sourcelanguage="en" version="2.1">
 <context>
     <name>:</name>
     <message>
@@ -13,7 +13,7 @@
     <message>
         <location filename="../../src/library/analysisfeature.cpp" line="52"/>
         <source>Analyze</source>
-        <translation>Analyse</translation>
+        <translation>विश्लेषण</translation>
     </message>
 </context>
 <context>
@@ -21,7 +21,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="71"/>
         <source>Crates</source>
-        <translation>Caisses</translation>
+        <translation>संदूक</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="95"/>
@@ -31,7 +31,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="108"/>
         <source>Auto DJ</source>
-        <translation>Auto DJ</translation>
+        <translation>स्वत: डीजे</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="296"/>
@@ -45,25 +45,26 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="26"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="110"/>
         <source>Banshee</source>
-        <translation>Banshee</translation>
+        <translation>बैन्शी</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
         <source>Error loading Banshee database</source>
-        <translation>Erreur lors du chargement de la banque de données banshee</translation>
+        <translation>बैन्शी डेटाबेस को लोड करने में त्रुटि</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="77"/>
         <source>Banshee database file not found at
 </source>
-        <translation>La base de données banshee n&apos;est pas trouvée à</translation>
+        <translation>
+में बैन्शी डेटाबेस का फ़ाइल नहीं मिला</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="86"/>
         <source>There was an error loading your Banshee database at
 </source>
-        <translation>Il y a eut une erreur pendant le chargement de la base de donnée banshee à </translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -71,12 +72,12 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="24"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Ajouter à la file d&apos;attente de l&apos;auto-dj (en dernier)</translation>
+        <translation>स्वत: डीजे के पंक्ति में जोड़ें (सब से नीचे)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="30"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Ajouter à la file d&apos;attente de l&apos;auto-dj (en premier)</translation>
+        <translation>स्वत: डीजे के पंक्ति में जोड़ें (सब से ऊपर)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="36"/>
@@ -86,17 +87,17 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="42"/>
         <source>Import Playlist</source>
-        <translation>Importer une playlist</translation>
+        <translation>प्लेलिस्ट आयात करें</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="121"/>
         <source>Playlist Creation Failed</source>
-        <translation>Creation de la playlist échouée </translation>
+        <translation>प्लेलिस्ट निर्माण विफल रहा</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="122"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation>Une erreur inconnue s&apos;est produite lors de la création de la playlist:</translation>
+        <translation>प्लेलिस्ट बनाते समय एक अज्ञात त्रुटि हुई:</translation>
     </message>
 </context>
 <context>
@@ -104,81 +105,81 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="295"/>
         <source>New Playlist</source>
-        <translation>Nouvelle playlist</translation>
+        <translation>नई प्लेलिस्ट</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="66"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Ajouter à la file d&apos;attente de l&apos;auto-dj (en dernier)</translation>
+        <translation>स्वत: डीजे के पंक्ति में जोड़ें (सब से नीचे)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="39"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="292"/>
         <source>Create New Playlist</source>
-        <translation>Créer une nouvelle playlist</translation>
+        <translation>नई प्लेलिस्ट बनाएं</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="71"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Ajouter à la file d&apos;attente de l&apos;auto-dj (en premier)</translation>
+        <translation>स्वत: डीजे के पंक्ति में जोड़ें (सब से ऊपर)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="55"/>
         <source>Remove</source>
-        <translation>Enlever</translation>
+        <translation>हटाएं</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="45"/>
         <source>Rename</source>
-        <translation>Renomer</translation>
+        <translation>नाम बदलें</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="60"/>
         <source>Lock</source>
-        <translation>Verroullier</translation>
+        <translation>लॉक</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="50"/>
         <source>Duplicate</source>
-        <translation>Dupliquer</translation>
+        <translation>नक़ल</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="88"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="93"/>
         <source>Import Playlist</source>
-        <translation>Importer une playlist</translation>
+        <translation>प्लेलिस्ट आयात करें</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="103"/>
         <source>Export Track Files</source>
-        <translation>Exporter des fichiers audio</translation>
+        <translation>ट्रैक फ़ाइलें निर्यात करें</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="82"/>
         <source>Analyze entire Playlist</source>
-        <translation>Analyser l&apos;entièreté de la playlist</translation>
+        <translation>पूरी प्लेलिस्ट का विश्लेषण करें</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="198"/>
         <source>Enter new name for playlist:</source>
-        <translation>Entrez un nom pour la playlist</translation>
+        <translation>प्लेलिस्ट के लिए नया नाम दर्ज करें:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="239"/>
         <source>Duplicate Playlist</source>
-        <translation>Dupliquer la playlist</translation>
+        <translation>प्लेलिस्ट का प्रतिरूप बनाएं</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="240"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="293"/>
         <source>Enter name for new playlist:</source>
-        <translation>Entrez un nom pour la nouvelle playlist</translation>
+        <translation>नई प्लेलिस्ट के लिए नाम दर्ज करें:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="98"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="467"/>
         <source>Export Playlist</source>
-        <translation>Exporter la playlist</translation>
+        <translation>प्लेलिस्ट निर्यात करें</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="76"/>
@@ -188,34 +189,34 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="197"/>
         <source>Rename Playlist</source>
-        <translation>Renomer la playlist</translation>
+        <translation>प्लेलिस्ट का नाम बदलें</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="211"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="215"/>
         <source>Renaming Playlist Failed</source>
-        <translation>Echec pour renommer la playlist</translation>
+        <translation>प्लेलिस्ट का नामकरण विफल</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="212"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="255"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="307"/>
         <source>A playlist by that name already exists.</source>
-        <translation>Une playlist utilise déjà ce nom</translation>
+        <translation>उस नाम की एक प्लेलिस्ट पहले से मौजूद है।</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="216"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="259"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="311"/>
         <source>A playlist cannot have a blank name.</source>
-        <translation>Une playlist ne peut pas avoir de nom vide</translation>
+        <translation>एक प्लेलिस्ट में एक खाली नाम नहीं हो सकता।</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="243"/>
         <source>_copy</source>
         <comment>[noun]</comment>
         <extracomment>Appendix to default name when duplicating a playlist</extracomment>
-        <translation>_copier</translation>
+        <translation>_कॉपी</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="254"/>
@@ -225,23 +226,23 @@
         <location filename="../../src/library/baseplaylistfeature.cpp" line="323"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="439"/>
         <source>Playlist Creation Failed</source>
-        <translation>Creation de la playlist échouée </translation>
+        <translation>प्लेलिस्ट निर्माण विफल रहा</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="324"/>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="440"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation>Une erreur inconnue s&apos;est produite lors de la création de la playlist:</translation>
+        <translation>प्लेलिस्ट बनाते समय एक अज्ञात त्रुटि हुई:</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="464"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation>M3U Playlist (*.m3u)</translation>
+        <translation>एम३यू प्लेलिस्ट (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="469"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Texte CSV (*.csv);;Texte lisible (*.txt)</translation>
+        <translation>एम३यू प्लेलिस्ट (*.m3u);;एम३यू८ प्लेलिस्ट (*.m3u8);;पीएलएस प्लेलिस्ट (*.pls);;टेक्स्ट सीएसवी (*.csv);;रीडेबल टेक्स्ट (*.txt)</translation>
     </message>
 </context>
 <context>
@@ -254,7 +255,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="62"/>
         <source>Timestamp</source>
-        <translation>Horodatage</translation>
+        <translation>टाइमस्टैम्प</translation>
     </message>
 </context>
 <context>
@@ -262,7 +263,7 @@
     <message>
         <location filename="../../src/mixer/basetrackplayer.cpp" line="415"/>
         <source>Couldn&apos;t load track.</source>
-        <translation>Impossible de charger la piste.</translation>
+        <translation>ट्रैक लोड नहीं हो सका</translation>
     </message>
 </context>
 <context>
@@ -270,27 +271,27 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="129"/>
         <source>Album</source>
-        <translation>Album</translation>
+        <translation>एल्बम</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="133"/>
         <source>Album Artist</source>
-        <translation>Artiste de l&apos;album</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="137"/>
         <source>Artist</source>
-        <translation>Artiste</translation>
+        <translation>कलाकार</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="141"/>
         <source>Bitrate</source>
-        <translation>Qualité audio</translation>
+        <translation>बिटरेट</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="145"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation>बीपीएम</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="149"/>
@@ -300,97 +301,97 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="153"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>रंग</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="157"/>
         <source>Comment</source>
-        <translation>Commentaire</translation>
+        <translation>टिप्पणी</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="161"/>
         <source>Composer</source>
-        <translation>Compositeur</translation>
+        <translation>संगीतकार</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="165"/>
         <source>Cover Art</source>
-        <translation>Couverture</translation>
+        <translation>कवर आर्ट</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="169"/>
         <source>Date Added</source>
-        <translation>Ajouté au :</translation>
+        <translation>तारीख संकलित हुई</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="173"/>
         <source>Duration</source>
-        <translation>Durée</translation>
+        <translation>अवधि</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="177"/>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation>प्रकार</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="181"/>
         <source>Genre</source>
-        <translation>Genre</translation>
+        <translation>शैली</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="185"/>
         <source>Grouping</source>
-        <translation>Regroupement</translation>
+        <translation>समूहीकरण</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="189"/>
         <source>Key</source>
-        <translation>Clé</translation>
+        <translation>चाभी</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="193"/>
         <source>Location</source>
-        <translation>Location</translation>
+        <translation>स्थान</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="197"/>
         <source>Preview</source>
-        <translation>Prévisualisation</translation>
+        <translation>पूर्वावलोकन</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="201"/>
         <source>Rating</source>
-        <translation>Note</translation>
+        <translation>रेटिंग</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="205"/>
         <source>ReplayGain</source>
-        <translation>ReplayGain</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="209"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>सैम्पलरेट</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="213"/>
         <source>Played</source>
-        <translation>Joué</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="217"/>
         <source>Title</source>
-        <translation>Titre</translation>
+        <translation>शीर्षक</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="221"/>
         <source>Track #</source>
-        <translation>Titre #</translation>
+        <translation>ट्रैक #</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="225"/>
         <source>Year</source>
-        <translation>Année</translation>
+        <translation>साल</translation>
     </message>
 </context>
 <context>
@@ -398,12 +399,12 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="112"/>
         <source>Action failed</source>
-        <translation>Action échouée</translation>
+        <translation>क्रिया: विफल रही</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="113"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation>Veuillez activer au moins une connexion pour utiliser la diffusion en direct.</translation>
+        <translation>लाइव प्रसारण का उपयोग करने के लिए कृपया कम से कम एक कनेक्शन सक्षम करें।</translation>
     </message>
 </context>
 <context>
@@ -411,23 +412,22 @@
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="469"/>
         <source>Can&apos;t use secure password storage: keychain access failed.</source>
-        <translation>Impossible d&apos;utiliser le stockage sécurisé des mots de passe: l&apos;accès au trousseau a échoué.</translation>
+        <translation>सुरक्षित पासवर्ड संग्रहण का उपयोग नहीं कर सकते: किचेन ऐक्सेस विफल।</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="499"/>
         <source>Secure password retrieval unsuccessful: keychain access failed.</source>
-        <translation>Échec de la récupération du mot de passe sécurisé: l&apos;accès au trousseau a échoué.
-</translation>
+        <translation>सुरक्षित पासवर्ड पुनर्प्राप्ति असफल: कीचेन ऐक्सेस विफल।</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="511"/>
         <source>Settings error</source>
-        <translation>Erreur des paramètres</translation>
+        <translation>सेटिंग्स त्रुटि</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastprofile.cpp" line="512"/>
         <source>&lt;b&gt;Error with settings for &apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</source>
-        <translation>&lt;b&gt;Erreur avec les paramètres de&apos;%1&apos;:&lt;/b&gt;&lt;br&gt;</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -435,42 +435,42 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="143"/>
         <source>Enabled</source>
-        <translation>Activé</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="145"/>
         <source>Name</source>
-        <translation>Nom</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="147"/>
         <source>Status</source>
-        <translation>Status</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="197"/>
         <source>Disconnected</source>
-        <translation>Déconnecté</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="199"/>
         <source>Connecting...</source>
-        <translation>Connction...</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="201"/>
         <source>Connected</source>
-        <translation>Connecté</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="203"/>
         <source>Failed</source>
-        <translation>Echec</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="206"/>
         <source>Unknown</source>
-        <translation>Iconnu</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -478,17 +478,17 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="45"/>
         <source>Add to Quick Links</source>
-        <translation>Ajouter au liens rapides </translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="51"/>
         <source>Remove from Quick Links</source>
-        <translation>Enlever des liens rapides</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="57"/>
         <source>Add to Library</source>
-        <translation>Ajouter à la bibliothèque</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="74"/>
@@ -538,7 +538,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="35"/>
         <source>Preview</source>
-        <translation>Prévisualisation</translation>
+        <translation>पूर्वावलोकन</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="36"/>
@@ -548,87 +548,87 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="37"/>
         <source>Artist</source>
-        <translation>Artiste</translation>
+        <translation>कलाकार</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="38"/>
         <source>Title</source>
-        <translation>Titre</translation>
+        <translation>शीर्षक</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="39"/>
         <source>Album</source>
-        <translation>Album</translation>
+        <translation>एल्बम</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="40"/>
         <source>Track #</source>
-        <translation>Titre #</translation>
+        <translation>ट्रैक #</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="41"/>
         <source>Year</source>
-        <translation>Année</translation>
+        <translation>साल</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="42"/>
         <source>Genre</source>
-        <translation>Genre</translation>
+        <translation>शैली</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="43"/>
         <source>Composer</source>
-        <translation>Compositeur</translation>
+        <translation>संगीतकार</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="44"/>
         <source>Comment</source>
-        <translation>Commentaire</translation>
+        <translation>टिप्पणी</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="45"/>
         <source>Duration</source>
-        <translation>Durée</translation>
+        <translation>अवधि</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="46"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation>बीपीएम</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="47"/>
         <source>Key</source>
-        <translation>Clé</translation>
+        <translation>चाभी</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="48"/>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation>प्रकार</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="49"/>
         <source>Bitrate</source>
-        <translation>Qualité audio</translation>
+        <translation>बिटरेट</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="55"/>
         <source>ReplayGain</source>
-        <translation>ReplayGain</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="50"/>
         <source>Location</source>
-        <translation>Location</translation>
+        <translation>स्थान</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="51"/>
         <source>Album Artist</source>
-        <translation>Artiste de l&apos;album</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="52"/>
         <source>Grouping</source>
-        <translation>Regroupement</translation>
+        <translation>समूहीकरण</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="53"/>
@@ -692,7 +692,7 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="61"/>
         <source>Name</source>
-        <translation>Nom</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="67"/>
@@ -703,7 +703,7 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="83"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>रंग</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="84"/>
@@ -759,7 +759,7 @@
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="12"/>
         <source>Title</source>
-        <translation>Titre</translation>
+        <translation>शीर्षक</translation>
     </message>
     <message>
         <location filename="../../src/control/controlmodel.cpp" line="13"/>
@@ -946,7 +946,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="190"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation>बीपीएम</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="191"/>
@@ -1096,7 +1096,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="334"/>
         <source>Hotcues</source>
-        <translation>Points de repère</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="342"/>
@@ -1809,7 +1809,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="654"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Ajouter à la file d&apos;attente de l&apos;auto-dj (en dernier)</translation>
+        <translation>स्वत: डीजे के पंक्ति में जोड़ें (सब से नीचे)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="655"/>
@@ -1819,7 +1819,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="658"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Ajouter à la file d&apos;attente de l&apos;auto-dj (en premier)</translation>
+        <translation>स्वत: डीजे के पंक्ति में जोड़ें (सब से ऊपर)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="659"/>
@@ -1855,7 +1855,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="672"/>
         <source>Effects</source>
-        <translation>Effets</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="675"/>
@@ -2783,7 +2783,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1014"/>
         <source>Auto DJ</source>
-        <translation>Auto DJ</translation>
+        <translation>स्वत: डीजे</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1016"/>
@@ -3041,7 +3041,7 @@
     <message>
         <location filename="../../src/controllers/controllerinputmappingtablemodel.cpp" line="43"/>
         <source>Comment</source>
-        <translation>Commentaire</translation>
+        <translation>टिप्पणी</translation>
     </message>
 </context>
 <context>
@@ -3089,7 +3089,7 @@
     <message>
         <location filename="../../src/controllers/controlleroutputmappingtablemodel.cpp" line="45"/>
         <source>Comment</source>
-        <translation>Commentaire</translation>
+        <translation>टिप्पणी</translation>
     </message>
 </context>
 <context>
@@ -3097,7 +3097,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="76"/>
         <source>Remove</source>
-        <translation>Enlever</translation>
+        <translation>हटाएं</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="60"/>
@@ -3108,23 +3108,23 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="66"/>
         <source>Rename</source>
-        <translation>Renomer</translation>
+        <translation>नाम बदलें</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="81"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="350"/>
         <source>Lock</source>
-        <translation>Verroullier</translation>
+        <translation>लॉक</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="115"/>
         <source>Export Track Files</source>
-        <translation>Exporter des fichiers audio</translation>
+        <translation>ट्रैक फ़ाइलें निर्यात करें</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="71"/>
         <source>Duplicate</source>
-        <translation>Dupliquer</translation>
+        <translation>नक़ल</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="94"/>
@@ -3145,7 +3145,7 @@
         <location filename="../../src/library/crate/cratefeature.cpp" line="157"/>
         <location filename="../../src/library/crate/cratefeature.cpp" line="165"/>
         <source>Crates</source>
-        <translation>Caisses</translation>
+        <translation>संदूक</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="100"/>
@@ -3188,7 +3188,7 @@
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="692"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-        <translation>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Texte CSV (*.csv);;Texte lisible (*.txt)</translation>
+        <translation>एम३यू प्लेलिस्ट (*.m3u);;एम३यू८ प्लेलिस्ट (*.m3u8);;पीएलएस प्लेलिस्ट (*.pls);;टेक्स्ट सीएसवी (*.csv);;रीडेबल टेक्स्ट (*.txt)</translation>
     </message>
     <message>
         <location filename="../../src/library/crate/cratefeature.cpp" line="166"/>
@@ -3288,22 +3288,22 @@
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="39"/>
         <source>With contributions from:</source>
-        <translation>Avec des contributions de :</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="40"/>
         <source>And special thanks to:</source>
-        <translation>Et des remerciements spéciaux à :</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="41"/>
         <source>Past Developers</source>
-        <translation>Anciens développeurs</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/dialog/dlgabout.cpp" line="42"/>
         <source>Past Contributors</source>
-        <translation>Anciens contributeurs</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3311,12 +3311,12 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="26"/>
         <source>About Mixxx</source>
-        <translation>à propos de Mixxx</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="110"/>
         <source>Credits</source>
-        <translation>Crédits</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="145"/>
@@ -3336,7 +3336,7 @@
         <location filename="../../src/library/dlganalysis.ui" line="97"/>
         <location filename="../../src/library/dlganalysis.cpp" line="183"/>
         <source>Analyze</source>
-        <translation>Analyse</translation>
+        <translation>विश्लेषण</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.ui" line="55"/>
@@ -3542,7 +3542,7 @@ last sound.</source>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="277"/>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="285"/>
         <source>Auto DJ</source>
-        <translation>Auto DJ</translation>
+        <translation>स्वत: डीजे</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="94"/>
@@ -4063,7 +4063,7 @@ You tried to learn: %1,%2</source>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="566"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="601"/>
         <source>Action failed</source>
-        <translation>Action échouée</translation>
+        <translation>क्रिया: विफल रही</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="228"/>
@@ -4238,7 +4238,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="613"/>
         <source>Genre</source>
-        <translation>Genre</translation>
+        <translation>शैली</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="447"/>
@@ -4258,7 +4258,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="279"/>
         <source>Bitrate</source>
-        <translation>Qualité audio</translation>
+        <translation>बिटरेट</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="263"/>
@@ -4279,7 +4279,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="679"/>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation>प्रकार</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcastdlg.ui" line="720"/>
@@ -4393,7 +4393,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="275"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>रंग</translation>
     </message>
 </context>
 <context>
@@ -4584,7 +4584,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="81"/>
         <source>Enabled</source>
-        <translation>Activé</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="230"/>
@@ -4611,7 +4611,7 @@ Apply settings and continue?</source>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="414"/>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="483"/>
         <source>Remove</source>
-        <translation>Enlever</translation>
+        <translation>हटाएं</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="88"/>
@@ -5778,7 +5778,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="57"/>
         <source>Remove</source>
-        <translation>Enlever</translation>
+        <translation>हटाएं</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="83"/>
@@ -6017,7 +6017,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="299"/>
         <source>Reverb</source>
-        <translation>Reverb</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="306"/>
@@ -6178,7 +6178,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="289"/>
         <source>Title</source>
-        <translation>Titre</translation>
+        <translation>शीर्षक</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="311"/>
@@ -6188,7 +6188,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="333"/>
         <source>Album</source>
-        <translation>Album</translation>
+        <translation>एल्बम</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefrecorddlg.ui" line="233"/>
@@ -6409,7 +6409,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="193"/>
         <source>Enabled</source>
-        <translation>Activé</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsound.cpp" line="202"/>
@@ -6816,7 +6816,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="339"/>
         <source>End of track warning</source>
-        <translation>Avertissement de fin de piste</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="139"/>
@@ -6986,7 +6986,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="262"/>
         <source>Auto DJ</source>
-        <translation>Auto DJ</translation>
+        <translation>स्वत: डीजे</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="236"/>
@@ -7011,7 +7011,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="248"/>
         <source>Effects</source>
-        <translation>Effets</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="255"/>
@@ -7047,7 +7047,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="269"/>
         <source>Live Broadcasting</source>
-        <translation>Diffusion en Direct</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="301"/>
@@ -7194,29 +7194,29 @@ Select from different types of displays for the waveform, which differ primarily
         <location filename="../../src/library/dlgtagfetcher.ui" line="50"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="501"/>
         <source>Year</source>
-        <translation>Année</translation>
+        <translation>साल</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="70"/>
         <source>Title</source>
-        <translation>Titre</translation>
+        <translation>शीर्षक</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="75"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="511"/>
         <source>Artist</source>
-        <translation>Artiste</translation>
+        <translation>कलाकार</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="55"/>
         <location filename="../../src/library/dlgtagfetcher.ui" line="516"/>
         <source>Album</source>
-        <translation>Album</translation>
+        <translation>एल्बम</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="60"/>
         <source>Album Artist</source>
-        <translation>Artiste de l&apos;album</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="115"/>
@@ -7369,7 +7369,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="662"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation>बीपीएम</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="764"/>
@@ -7394,52 +7394,52 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="368"/>
         <source>Track #</source>
-        <translation>Titre #</translation>
+        <translation>ट्रैक #</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="193"/>
         <source>Album Artist</source>
-        <translation>Artiste de l&apos;album</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="240"/>
         <source>Composer</source>
-        <translation>Compositeur</translation>
+        <translation>संगीतकार</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="72"/>
         <source>Title</source>
-        <translation>Titre</translation>
+        <translation>शीर्षक</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="340"/>
         <source>Grouping</source>
-        <translation>Regroupement</translation>
+        <translation>समूहीकरण</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="315"/>
         <source>Key</source>
-        <translation>Clé</translation>
+        <translation>चाभी</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="268"/>
         <source>Year</source>
-        <translation>Année</translation>
+        <translation>साल</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="125"/>
         <source>Artist</source>
-        <translation>Artiste</translation>
+        <translation>कलाकार</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="159"/>
         <source>Album</source>
-        <translation>Album</translation>
+        <translation>एल्बम</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="287"/>
         <source>Genre</source>
-        <translation>Genre</translation>
+        <translation>शैली</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="506"/>
@@ -7636,12 +7636,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/effectsettingsmodel.cpp" line="107"/>
         <source>Name</source>
-        <translation>Nom</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/preferences/effectsettingsmodel.cpp" line="109"/>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation>प्रकार</translation>
     </message>
 </context>
 <context>
@@ -7649,12 +7649,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="356"/>
         <source>Flanger</source>
-        <translation>Flanger</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="364"/>
         <source>BitCrusher</source>
-        <translation>BitCrusher</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="371"/>
@@ -7664,12 +7664,12 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="379"/>
         <source>Reverb</source>
-        <translation>Reverb</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="387"/>
         <source>Echo</source>
-        <translation>Echo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/effectsmanager.cpp" line="394"/>
@@ -7975,7 +7975,7 @@ support.</source>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="35"/>
         <source>Import Playlist</source>
-        <translation>Importer une playlist</translation>
+        <translation>प्लेलिस्ट आयात करें</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="37"/>
@@ -8327,7 +8327,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="45"/>
         <source>Location</source>
-        <translation>Location</translation>
+        <translation>स्थान</translation>
     </message>
     <message>
         <location filename="../../src/library/parsercsv.cpp" line="133"/>
@@ -8390,7 +8390,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="87"/>
         <source>Lock</source>
-        <translation>Verroullier</translation>
+        <translation>लॉक</translation>
     </message>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="57"/>
@@ -8426,7 +8426,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/library/playlistfeature.cpp" line="279"/>
         <source>Create New Playlist</source>
-        <translation>Créer une nouvelle playlist</translation>
+        <translation>नई प्लेलिस्ट बनाएं</translation>
     </message>
 </context>
 <context>
@@ -8746,7 +8746,7 @@ If you do not want to grant Mixxx access click Cancel on the file picker.</sourc
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="36"/>
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="37"/>
         <source>Echo</source>
-        <translation>Echo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/builtin/echoeffect.cpp" line="46"/>
@@ -8900,7 +8900,7 @@ Default: flat top</source>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="27"/>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="28"/>
         <source>Flanger</source>
-        <translation>Flanger</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="37"/>
@@ -8912,7 +8912,7 @@ Default: flat top</source>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="64"/>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="65"/>
         <source>Manual</source>
-        <translation>Manuel</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="31"/>
@@ -8993,7 +8993,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="30"/>
         <source>BPM</source>
-        <translation>BPM</translation>
+        <translation>बीपीएम</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="31"/>
@@ -9059,7 +9059,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="19"/>
         <source>Reverb</source>
-        <translation>Reverb</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="22"/>
@@ -10017,7 +10017,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="981"/>
         <source>Crates</source>
-        <translation>Caisses</translation>
+        <translation>संदूक</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="984"/>
@@ -10056,7 +10056,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="114"/>
         <source>Lock</source>
-        <translation>Verroullier</translation>
+        <translation>लॉक</translation>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="391"/>
@@ -10295,7 +10295,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="11"/>
         <source>Name</source>
-        <translation>Nom</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="12"/>
@@ -10305,7 +10305,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="13"/>
         <source>Type</source>
-        <translation>Type</translation>
+        <translation>प्रकार</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="14"/>
@@ -10687,7 +10687,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="246"/>
         <source>Preview Deck</source>
-        <translation>Platine de prévisualisation</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="247"/>
@@ -10699,7 +10699,7 @@ Fully right: end of the effect period</source>
         <location filename="../../src/skin/tooltips.cpp" line="254"/>
         <location filename="../../src/skin/tooltips.cpp" line="817"/>
         <source>Cover Art</source>
-        <translation>Couverture</translation>
+        <translation>कवर आर्ट</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="251"/>
@@ -10985,7 +10985,7 @@ Fully right: end of the effect period</source>
         <location filename="../../src/skin/tooltips.cpp" line="385"/>
         <source>Key</source>
         <extracomment>The musical key of a track</extracomment>
-        <translation>Clé</translation>
+        <translation>चाभी</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="389"/>
@@ -13544,7 +13544,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="110"/>
         <source>Crates</source>
-        <translation>Caisses</translation>
+        <translation>संदूक</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="116"/>
@@ -13559,7 +13559,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="122"/>
         <source>Cover Art</source>
-        <translation>Couverture</translation>
+        <translation>कवर आर्ट</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="129"/>
@@ -13580,12 +13580,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="146"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>Ajouter à la file d&apos;attente de l&apos;auto-dj (en dernier)</translation>
+        <translation>स्वत: डीजे के पंक्ति में जोड़ें (सब से नीचे)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="149"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>Ajouter à la file d&apos;attente de l&apos;auto-dj (en premier)</translation>
+        <translation>स्वत: डीजे के पंक्ति में जोड़ें (सब से ऊपर)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="152"/>
@@ -13595,12 +13595,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="157"/>
         <source>Preview Deck</source>
-        <translation>Platine de prévisualisation</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="164"/>
         <source>Remove</source>
-        <translation>Enlever</translation>
+        <translation>हटाएं</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="167"/>
@@ -13665,7 +13665,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="238"/>
         <source>Rating</source>
-        <translation>Note</translation>
+        <translation>रेटिंग</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="241"/>
@@ -13675,7 +13675,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="244"/>
         <source>Hotcues</source>
-        <translation>Points de repère</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="247"/>
@@ -13695,12 +13695,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="256"/>
         <source>Key</source>
-        <translation>Clé</translation>
+        <translation>चाभी</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="259"/>
         <source>ReplayGain</source>
-        <translation>ReplayGain</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="262"/>
@@ -13781,39 +13781,39 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/widget/wtrackmenu.cpp" line="941"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="963"/>
         <source>Create New Playlist</source>
-        <translation>Créer une nouvelle playlist</translation>
+        <translation>नई प्लेलिस्ट बनाएं</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="964"/>
         <source>Enter name for new playlist:</source>
-        <translation>Entrez un nom pour la nouvelle playlist</translation>
+        <translation>नई प्लेलिस्ट के लिए नाम दर्ज करें:</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="966"/>
         <source>New Playlist</source>
-        <translation>Nouvelle playlist</translation>
+        <translation>नई प्लेलिस्ट</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="974"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="978"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="987"/>
         <source>Playlist Creation Failed</source>
-        <translation>Creation de la playlist échouée </translation>
+        <translation>प्लेलिस्ट निर्माण विफल रहा</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="975"/>
         <source>A playlist by that name already exists.</source>
-        <translation>Une playlist utilise déjà ce nom</translation>
+        <translation>उस नाम की एक प्लेलिस्ट पहले से मौजूद है।</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="979"/>
         <source>A playlist cannot have a blank name.</source>
-        <translation>Une playlist ne peut pas avoir de nom vide</translation>
+        <translation>एक प्लेलिस्ट में एक खाली नाम नहीं हो सकता।</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="988"/>
         <source>An unknown error occurred while creating playlist: </source>
-        <translation>Une erreur inconnue s&apos;est produite lors de la création de la playlist:</translation>
+        <translation>प्लेलिस्ट बनाते समय एक अज्ञात त्रुटि हुई:</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1050"/>
