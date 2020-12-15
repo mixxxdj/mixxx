@@ -82,9 +82,8 @@ rekordbox_pdb_t::playlist_tree_row_t::~playlist_tree_row_t() {
 }
 
 bool rekordbox_pdb_t::playlist_tree_row_t::is_folder() {
-    if (f_is_folder) {
+    if (f_is_folder)
         return m_is_folder;
-    }
     m_is_folder = raw_is_folder() != 0;
     f_is_folder = true;
     return m_is_folder;
@@ -129,9 +128,8 @@ rekordbox_pdb_t::device_sql_short_ascii_t::~device_sql_short_ascii_t() {
 }
 
 int32_t rekordbox_pdb_t::device_sql_short_ascii_t::length() {
-    if (f_length) {
+    if (f_length)
         return m_length;
-    }
     m_length = (((mangled_length() - 1) / 2) - 1);
     f_length = true;
     return m_length;
@@ -162,9 +160,8 @@ rekordbox_pdb_t::album_row_t::~album_row_t() {
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::album_row_t::name() {
-    if (f_name) {
+    if (f_name)
         return m_name;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_name()));
     m_name = new device_sql_string_t(m__io, this, m__root);
@@ -221,27 +218,24 @@ rekordbox_pdb_t::page_t::~page_t() {
 }
 
 uint16_t rekordbox_pdb_t::page_t::num_rows() {
-    if (f_num_rows) {
+    if (f_num_rows)
         return m_num_rows;
-    }
     m_num_rows = (( ((num_rows_large() > num_rows_small()) && (num_rows_large() != 8191)) ) ? (num_rows_large()) : (num_rows_small()));
     f_num_rows = true;
     return m_num_rows;
 }
 
 int32_t rekordbox_pdb_t::page_t::num_groups() {
-    if (f_num_groups) {
+    if (f_num_groups)
         return m_num_groups;
-    }
     m_num_groups = (((num_rows() - 1) / 16) + 1);
     f_num_groups = true;
     return m_num_groups;
 }
 
 std::vector<rekordbox_pdb_t::row_group_t*>* rekordbox_pdb_t::page_t::row_groups() {
-    if (f_row_groups) {
+    if (f_row_groups)
         return m_row_groups;
-    }
     n_row_groups = true;
     if (is_data_page()) {
         n_row_groups = false;
@@ -257,18 +251,16 @@ std::vector<rekordbox_pdb_t::row_group_t*>* rekordbox_pdb_t::page_t::row_groups(
 }
 
 int32_t rekordbox_pdb_t::page_t::heap_pos() {
-    if (f_heap_pos) {
+    if (f_heap_pos)
         return m_heap_pos;
-    }
     m_heap_pos = _io()->pos();
     f_heap_pos = true;
     return m_heap_pos;
 }
 
 bool rekordbox_pdb_t::page_t::is_data_page() {
-    if (f_is_data_page) {
+    if (f_is_data_page)
         return m_is_data_page;
-    }
     m_is_data_page = (page_flags() & 64) == 0;
     f_is_data_page = true;
     return m_is_data_page;
@@ -299,18 +291,16 @@ rekordbox_pdb_t::row_group_t::~row_group_t() {
 }
 
 int32_t rekordbox_pdb_t::row_group_t::base() {
-    if (f_base) {
+    if (f_base)
         return m_base;
-    }
     m_base = (_root()->len_page() - (group_index() * 36));
     f_base = true;
     return m_base;
 }
 
 uint16_t rekordbox_pdb_t::row_group_t::row_present_flags() {
-    if (f_row_present_flags) {
+    if (f_row_present_flags)
         return m_row_present_flags;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((base() - 4));
     m_row_present_flags = m__io->read_u2le();
@@ -320,9 +310,8 @@ uint16_t rekordbox_pdb_t::row_group_t::row_present_flags() {
 }
 
 std::vector<rekordbox_pdb_t::row_ref_t*>* rekordbox_pdb_t::row_group_t::rows() {
-    if (f_rows) {
+    if (f_rows)
         return m_rows;
-    }
     int l_rows = ((group_index() < (_parent()->num_groups() - 1)) ? (16) : ((kaitai::kstream::mod((_parent()->num_rows() - 1), 16) + 1)));
     m_rows = new std::vector<row_ref_t*>();
     m_rows->reserve(l_rows);
@@ -402,9 +391,8 @@ rekordbox_pdb_t::artist_row_t::~artist_row_t() {
 }
 
 uint16_t rekordbox_pdb_t::artist_row_t::ofs_name_far() {
-    if (f_ofs_name_far) {
+    if (f_ofs_name_far)
         return m_ofs_name_far;
-    }
     n_ofs_name_far = true;
     if (subtype() == 100) {
         n_ofs_name_far = false;
@@ -418,9 +406,8 @@ uint16_t rekordbox_pdb_t::artist_row_t::ofs_name_far() {
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::artist_row_t::name() {
-    if (f_name) {
+    if (f_name)
         return m_name;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ((subtype() == 100) ? (ofs_name_far()) : (ofs_name_near()))));
     m_name = new device_sql_string_t(m__io, this, m__root);
@@ -448,9 +435,8 @@ rekordbox_pdb_t::page_ref_t::~page_ref_t() {
 }
 
 rekordbox_pdb_t::page_t* rekordbox_pdb_t::page_ref_t::body() {
-    if (f_body) {
+    if (f_body)
         return m_body;
-    }
     kaitai::kstream *io = _root()->_io();
     std::streampos _pos = io->pos();
     io->seek((_root()->len_page() * index()));
@@ -611,9 +597,8 @@ rekordbox_pdb_t::track_row_t::~track_row_t() {
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_string_8() {
-    if (f_unknown_string_8) {
+    if (f_unknown_string_8)
         return m_unknown_string_8;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(18)));
     m_unknown_string_8 = new device_sql_string_t(m__io, this, m__root);
@@ -623,9 +608,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_string_6() {
-    if (f_unknown_string_6) {
+    if (f_unknown_string_6)
         return m_unknown_string_6;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(9)));
     m_unknown_string_6 = new device_sql_string_t(m__io, this, m__root);
@@ -635,9 +619,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::analyze_date() {
-    if (f_analyze_date) {
+    if (f_analyze_date)
         return m_analyze_date;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(15)));
     m_analyze_date = new device_sql_string_t(m__io, this, m__root);
@@ -647,9 +630,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::analyze_date
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::file_path() {
-    if (f_file_path) {
+    if (f_file_path)
         return m_file_path;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(20)));
     m_file_path = new device_sql_string_t(m__io, this, m__root);
@@ -659,9 +641,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::file_path() 
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::autoload_hotcues() {
-    if (f_autoload_hotcues) {
+    if (f_autoload_hotcues)
         return m_autoload_hotcues;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(7)));
     m_autoload_hotcues = new device_sql_string_t(m__io, this, m__root);
@@ -671,9 +652,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::autoload_hot
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::date_added() {
-    if (f_date_added) {
+    if (f_date_added)
         return m_date_added;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(10)));
     m_date_added = new device_sql_string_t(m__io, this, m__root);
@@ -683,9 +663,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::date_added()
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_string_3() {
-    if (f_unknown_string_3) {
+    if (f_unknown_string_3)
         return m_unknown_string_3;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(3)));
     m_unknown_string_3 = new device_sql_string_t(m__io, this, m__root);
@@ -695,9 +674,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::texter() {
-    if (f_texter) {
+    if (f_texter)
         return m_texter;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(1)));
     m_texter = new device_sql_string_t(m__io, this, m__root);
@@ -707,9 +685,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::texter() {
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::kuvo_public() {
-    if (f_kuvo_public) {
+    if (f_kuvo_public)
         return m_kuvo_public;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(6)));
     m_kuvo_public = new device_sql_string_t(m__io, this, m__root);
@@ -719,9 +696,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::kuvo_public(
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::mix_name() {
-    if (f_mix_name) {
+    if (f_mix_name)
         return m_mix_name;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(12)));
     m_mix_name = new device_sql_string_t(m__io, this, m__root);
@@ -731,9 +707,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::mix_name() {
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_string_5() {
-    if (f_unknown_string_5) {
+    if (f_unknown_string_5)
         return m_unknown_string_5;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(8)));
     m_unknown_string_5 = new device_sql_string_t(m__io, this, m__root);
@@ -743,9 +718,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_string_4() {
-    if (f_unknown_string_4) {
+    if (f_unknown_string_4)
         return m_unknown_string_4;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(4)));
     m_unknown_string_4 = new device_sql_string_t(m__io, this, m__root);
@@ -755,9 +729,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::message() {
-    if (f_message) {
+    if (f_message)
         return m_message;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(5)));
     m_message = new device_sql_string_t(m__io, this, m__root);
@@ -767,9 +740,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::message() {
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_string_2() {
-    if (f_unknown_string_2) {
+    if (f_unknown_string_2)
         return m_unknown_string_2;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(2)));
     m_unknown_string_2 = new device_sql_string_t(m__io, this, m__root);
@@ -779,9 +751,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_string_1() {
-    if (f_unknown_string_1) {
+    if (f_unknown_string_1)
         return m_unknown_string_1;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(0)));
     m_unknown_string_1 = new device_sql_string_t(m__io, this, m__root);
@@ -791,9 +762,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_string_7() {
-    if (f_unknown_string_7) {
+    if (f_unknown_string_7)
         return m_unknown_string_7;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(13)));
     m_unknown_string_7 = new device_sql_string_t(m__io, this, m__root);
@@ -803,9 +773,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::unknown_stri
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::filename() {
-    if (f_filename) {
+    if (f_filename)
         return m_filename;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(19)));
     m_filename = new device_sql_string_t(m__io, this, m__root);
@@ -815,9 +784,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::filename() {
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::analyze_path() {
-    if (f_analyze_path) {
+    if (f_analyze_path)
         return m_analyze_path;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(14)));
     m_analyze_path = new device_sql_string_t(m__io, this, m__root);
@@ -827,9 +795,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::analyze_path
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::comment() {
-    if (f_comment) {
+    if (f_comment)
         return m_comment;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(16)));
     m_comment = new device_sql_string_t(m__io, this, m__root);
@@ -839,9 +806,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::comment() {
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::release_date() {
-    if (f_release_date) {
+    if (f_release_date)
         return m_release_date;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(11)));
     m_release_date = new device_sql_string_t(m__io, this, m__root);
@@ -851,9 +817,8 @@ rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::release_date
 }
 
 rekordbox_pdb_t::device_sql_string_t* rekordbox_pdb_t::track_row_t::title() {
-    if (f_title) {
+    if (f_title)
         return m_title;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->row_base() + ofs_strings()->at(17)));
     m_title = new device_sql_string_t(m__io, this, m__root);
@@ -949,9 +914,8 @@ rekordbox_pdb_t::row_ref_t::~row_ref_t() {
 }
 
 uint16_t rekordbox_pdb_t::row_ref_t::ofs_row() {
-    if (f_ofs_row) {
+    if (f_ofs_row)
         return m_ofs_row;
-    }
     std::streampos _pos = m__io->pos();
     m__io->seek((_parent()->base() - (6 + (2 * row_index()))));
     m_ofs_row = m__io->read_u2le();
@@ -961,27 +925,24 @@ uint16_t rekordbox_pdb_t::row_ref_t::ofs_row() {
 }
 
 int32_t rekordbox_pdb_t::row_ref_t::row_base() {
-    if (f_row_base) {
+    if (f_row_base)
         return m_row_base;
-    }
     m_row_base = (ofs_row() + _parent()->_parent()->heap_pos());
     f_row_base = true;
     return m_row_base;
 }
 
 bool rekordbox_pdb_t::row_ref_t::present() {
-    if (f_present) {
+    if (f_present)
         return m_present;
-    }
     m_present = ((((_parent()->row_present_flags() >> row_index()) & 1) != 0) ? (true) : (false));
     f_present = true;
     return m_present;
 }
 
 kaitai::kstruct* rekordbox_pdb_t::row_ref_t::body() {
-    if (f_body) {
+    if (f_body)
         return m_body;
-    }
     n_body = true;
     if (present()) {
         n_body = false;

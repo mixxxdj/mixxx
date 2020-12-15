@@ -411,11 +411,11 @@ void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool pla
         return;
     }
 
-    LibraryView* activeView = m_pLibraryWidget->getActiveView();
-    if (!activeView) {
+    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+    if (!pActiveView) {
         return;
     }
-    activeView->loadSelectedTrackToGroup(group, play);
+    pActiveView->loadSelectedTrackToGroup(group, play);
 }
 
 void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
@@ -424,11 +424,11 @@ void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
     }
 
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->loadSelectedTrack();
+        pActiveView->loadSelectedTrack();
     }
 }
 
@@ -438,11 +438,11 @@ void LibraryControl::slotAutoDjAddTop(double v) {
     }
 
     if (v > 0) {
-        auto* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->slotAddToAutoDJTop();
+        pActiveView->slotAddToAutoDJTop();
     }
 }
 
@@ -451,11 +451,11 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
         return;
     }
     if (v > 0) {
-        auto* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->slotAddToAutoDJBottom();
+        pActiveView->slotAddToAutoDJBottom();
     }
 }
 
@@ -464,11 +464,11 @@ void LibraryControl::slotAutoDjAddReplace(double v) {
         return;
     }
     if (v > 0) {
-        auto* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->slotAddToAutoDJReplace();
+        pActiveView->slotAddToAutoDJReplace();
     }
 }
 
@@ -491,11 +491,11 @@ void LibraryControl::slotSelectTrack(double v) {
 
     int i = (int)v;
 
-    auto* activeView = m_pLibraryWidget->getActiveView();
-    if (!activeView) {
+    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+    if (!pActiveView) {
         return;
     }
-    activeView->moveSelection(i);
+    pActiveView->moveSelection(i);
 }
 
 void LibraryControl::slotMoveUp(double v) {
@@ -702,9 +702,9 @@ void LibraryControl::slotGoToItem(double v) {
     }
 
     // Load current track if a LibraryView object has focus
-    LibraryView* activeView = m_pLibraryWidget->getActiveView();
-    if (activeView && activeView->hasFocus()) {
-        activeView->loadSelectedTrack();
+    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+    if (pActiveView && pActiveView->hasFocus()) {
+        pActiveView->loadSelectedTrack();
         return;
     }
 
@@ -780,11 +780,11 @@ void LibraryControl::slotTrackColorPrev(double v) {
     }
 
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->assignPreviousTrackColor();
+        pActiveView->assignPreviousTrackColor();
     }
 }
 
@@ -794,10 +794,10 @@ void LibraryControl::slotTrackColorNext(double v) {
     }
 
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->assignNextTrackColor();
+        pActiveView->assignNextTrackColor();
     }
 }
