@@ -116,7 +116,8 @@ when a critical error occurs unless this is set properly.\n", stdout);
                            "--color", Qt::CaseInsensitive) &&
                 i + 1 < argc) {
             colorSettings = QString::fromLocal8Bit(argv[i + 1]);
-        } else {
+        } else if (i > 0) {
+            // Don't try to load the program name to a deck
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
     }

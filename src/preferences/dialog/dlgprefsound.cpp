@@ -18,19 +18,22 @@
  * all the controls to the values obtained from SoundManager.
  */
 DlgPrefSound::DlgPrefSound(QWidget* pParent,
-        SoundManager* pSoundManager,
+        std::shared_ptr<SoundManager> pSoundManager,
         UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
           m_pSoundManager(pSoundManager),
           m_pSettings(pSettings),
-          m_config(pSoundManager),
+          m_config(pSoundManager.get()),
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
           m_loading(false) {
     setupUi(this);
 
-    connect(m_pSoundManager, &SoundManager::devicesUpdated, this, &DlgPrefSound::refreshDevices);
+    connect(m_pSoundManager.get(),
+            &SoundManager::devicesUpdated,
+            this,
+            &DlgPrefSound::refreshDevices);
 
     apiComboBox->clear();
     apiComboBox->addItem(tr("None"), "None");
@@ -161,7 +164,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     connect(queryButton, &QAbstractButton::clicked, this, &DlgPrefSound::queryClicked);
 
-    connect(m_pSoundManager,
+    connect(m_pSoundManager.get(),
             &SoundManager::outputRegistered,
             this,
             [this](const AudioOutput& output, AudioSource* source) {
@@ -170,7 +173,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                 loadSettings();
             });
 
-    connect(m_pSoundManager,
+    connect(m_pSoundManager.get(),
             &SoundManager::inputRegistered,
             this,
             [this](const AudioInput& input, AudioDestination* dest) {
@@ -651,8 +654,8 @@ void DlgPrefSound::queryClicked() {
  * Slot called when the "Reset to Defaults" button is clicked.
  */
 void DlgPrefSound::slotResetToDefaults() {
-    SoundManagerConfig newConfig(m_pSoundManager);
-    newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
+    SoundManagerConfig newConfig(m_pSoundManager.get());
+    newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
     loadSettings(newConfig);
     keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
     m_pKeylockEngine->set(EngineBuffer::RUBBERBAND);

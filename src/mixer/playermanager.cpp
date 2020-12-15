@@ -42,13 +42,11 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
-        VisualsManager* pVisualsManager,
         EngineMaster* pEngine)
         : m_mutex(QMutex::Recursive),
           m_pConfig(pConfig),
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),
-          m_pVisualsManager(pVisualsManager),
           m_pEngine(pEngine),
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
@@ -155,6 +153,20 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
                 this,
                 &PlayerManager::slotAnalyzeTrack);
     }
+}
+
+QStringList PlayerManager::getVisualPlayerGroups() {
+    QStringList groups;
+    for (const auto& pDeck : std::as_const(m_decks)) {
+        groups.append(pDeck->getGroup());
+    }
+    for (const auto& pPreview : std::as_const(m_previewDecks)) {
+        groups.append(pPreview->getGroup());
+    }
+    for (const auto& pSampler : std::as_const(m_samplers)) {
+        groups.append(pSampler->getGroup());
+    }
+    return groups;
 }
 
 // static
@@ -374,7 +386,6 @@ void PlayerManager::addDeckInner() {
             m_pConfig,
             m_pEngine,
             m_pEffectsManager,
-            m_pVisualsManager,
             deckIndex % 2 == 1 ? EngineChannel::RIGHT : EngineChannel::LEFT,
             handleGroup);
     connect(pDeck->getEngineDeck(),
@@ -452,7 +463,6 @@ void PlayerManager::addSamplerInner() {
             m_pConfig,
             m_pEngine,
             m_pEffectsManager,
-            m_pVisualsManager,
             orientation,
             handleGroup);
     if (m_pTrackAnalysisScheduler) {
@@ -486,7 +496,6 @@ void PlayerManager::addPreviewDeckInner() {
             m_pConfig,
             m_pEngine,
             m_pEffectsManager,
-            m_pVisualsManager,
             orientation,
             handleGroup);
     if (m_pTrackAnalysisScheduler) {

@@ -58,7 +58,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     PlayerManager(UserSettingsPointer pConfig,
             SoundManager* pSoundManager,
             EffectsManager* pEffectsManager,
-            VisualsManager* pVisualsManager,
             EngineMaster* pEngine);
     ~PlayerManager() override;
 
@@ -134,6 +133,8 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // Binds signals between PlayerManager and Library. The library
     // must exist at least for the lifetime of this instance.
     void bindToLibrary(Library* pLibrary);
+
+    QStringList getVisualPlayerGroups();
 
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
@@ -258,7 +259,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     UserSettingsPointer m_pConfig;
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
-    VisualsManager* m_pVisualsManager;
     EngineMaster* m_pEngine;
     SamplerBank* m_pSamplerBank;
     ControlObject* m_pCONumDecks;
