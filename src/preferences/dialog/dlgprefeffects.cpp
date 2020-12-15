@@ -15,7 +15,7 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
 
     m_availableEffectsModel.resetFromEffectManager(pEffectsManager);
     const QList<EffectProfilePtr> effectProfiles = m_availableEffectsModel.profiles();
-    for (auto& profile : effectProfiles) {
+    for (const auto& profile : effectProfiles) {
         EffectManifestPointer pManifest = profile->pManifest;
 
         // Users are likely to have lots of external plugins installed and

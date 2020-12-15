@@ -169,7 +169,7 @@ Library::Library(
     }
 
     for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
-        auto feature = externalTrackCollection->newLibraryFeature(this, m_pConfig);
+        auto* feature = externalTrackCollection->newLibraryFeature(this, m_pConfig);
         if (feature) {
             kLogger.info()
                     << "Adding library feature for"

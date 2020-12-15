@@ -863,7 +863,7 @@ void readAnalyze(TrackPointer track,
                 beats << (sampleRateKhz * static_cast<double>(time));
             }
 
-            auto pBeats = new mixxx::BeatMap(*track, static_cast<SINT>(sampleRate), beats);
+            auto* pBeats = new mixxx::BeatMap(*track, static_cast<SINT>(sampleRate), beats);
             pBeats->setSubVersion(mixxx::rekordboxconstants::beatsSubversion);
             track->setBeats(mixxx::BeatsPointer(pBeats));
         } break;

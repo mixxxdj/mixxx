@@ -1202,7 +1202,7 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         return dummy;
     }
 
-    auto waveformWidgetFactory = WaveformWidgetFactory::instance();
+    auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
 
     if (!waveformWidgetFactory->isOpenGlAvailable() &&
             !waveformWidgetFactory->isOpenGlesAvailable()) {

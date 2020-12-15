@@ -923,7 +923,7 @@ void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
     pBeatLoopControl->deactivate();
     const double size = pBeatLoopControl->getSize();
-    auto i = m_activeLoopRolls.begin();
+    auto* i = m_activeLoopRolls.begin();
     while (i != m_activeLoopRolls.end()) {
         if (size == *i) {
             i = m_activeLoopRolls.erase(i);

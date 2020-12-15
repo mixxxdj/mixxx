@@ -50,7 +50,7 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
     auto* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
     if (glw == nullptr) {
         // Not a QGLWidget. We can simply use QWidget::isVisible.
-        auto qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
+        auto* qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
         return qwidget != nullptr && qwidget->isVisible();
     }
 
@@ -60,7 +60,7 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
 
     // Strangely, a widget can have non-zero width/height, be valid and visible,
     // yet still not show up on the screen. QWindow::isExposed tells us this.
-    auto window = glw->windowHandle();
+    auto* window = glw->windowHandle();
     if (window == nullptr || !window->isExposed()) {
         return false;
     }
