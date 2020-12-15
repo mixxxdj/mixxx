@@ -45,11 +45,11 @@ class BeatMapIterator : public BeatIterator {
         }
     }
 
-    virtual bool hasNext() const {
+    bool hasNext() const override {
         return m_currentBeat != m_endBeat;
     }
 
-    virtual double next() {
+    double next() override {
         double beat = framesToSamples(m_currentBeat->frame_position());
         ++m_currentBeat;
         while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {

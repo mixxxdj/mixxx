@@ -100,17 +100,16 @@ public:
           : QStandardItem(year) {
   }
 
-    QVariant data(int role) const {
-        switch (role) {
-        case Qt::DisplayRole:
-        {
-            const QString year(QStandardItem::data(role).toString());
-            return mixxx::TrackMetadata::formatCalendarYear(year);
-        }
-        default:
-            return QStandardItem::data(role);
-        }
-    }
+  QVariant data(int role) const override {
+      switch (role) {
+      case Qt::DisplayRole: {
+          const QString year(QStandardItem::data(role).toString());
+          return mixxx::TrackMetadata::formatCalendarYear(year);
+      }
+      default:
+          return QStandardItem::data(role);
+      }
+  }
 };
 
 } // namespace

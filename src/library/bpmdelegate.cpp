@@ -16,9 +16,10 @@
 class BpmEditorCreator : public QItemEditorCreatorBase {
   public:
     BpmEditorCreator() {}
-    virtual ~BpmEditorCreator() {}
+    ~BpmEditorCreator() override {
+    }
 
-    virtual QWidget* createWidget (QWidget* parent) const {
+    QWidget* createWidget(QWidget* parent) const override {
         QDoubleSpinBox* pBpmSpinbox = new QDoubleSpinBox(parent);
         pBpmSpinbox->setFrame(false);
         pBpmSpinbox->setMinimum(0);
@@ -29,7 +30,7 @@ class BpmEditorCreator : public QItemEditorCreatorBase {
         return pBpmSpinbox;
     }
 
-    virtual QByteArray valuePropertyName() const {
+    QByteArray valuePropertyName() const override {
         return QByteArray("value");
     }
 };
