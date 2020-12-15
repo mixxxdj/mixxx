@@ -44,6 +44,9 @@ class CmdlineArgs final {
     const QString& getResourcePath() const { return m_resourcePath; }
     const QString& getPluginPath() const { return m_pluginPath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
+    const QString& getQmlPath() const {
+        return m_qmlPath;
+    }
 
   private:
     QList<QString> m_musicFiles;    // List of files to load into players at startup
@@ -61,4 +64,5 @@ class CmdlineArgs final {
     QString m_resourcePath;
     QString m_pluginPath;
     QString m_timelinePath;
+    QString m_qmlPath;
 };

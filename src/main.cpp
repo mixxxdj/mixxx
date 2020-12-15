@@ -1,5 +1,6 @@
 #include <QApplication>
 #include <QDir>
+#include <QQmlApplicationEngine>
 #include <QString>
 #include <QStringList>
 #include <QTextCodec>
@@ -10,6 +11,7 @@
 #include "errordialoghandler.h"
 #include "mixxx.h"
 #include "mixxxapplication.h"
+#include "qmlapplication.h"
 #include "sources/soundsourceproxy.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
@@ -28,16 +30,22 @@ constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
     auto coreServices = std::make_shared<mixxx::CoreServices>(args);
-    MixxxMainWindow mainWindow(app, coreServices);
-    // If startup produced a fatal error, then don't even start the
-    // Qt event loop.
-    if (ErrorDialogHandler::instance()->checkError()) {
-        return kFatalErrorOnStartupExitCode;
-    } else {
-        qDebug() << "Displaying main window";
-        mainWindow.show();
 
-        qDebug() << "Running Mixxx";
+    if (args.getQmlPath().isEmpty()) {
+        MixxxMainWindow mainWindow(app, coreServices);
+        // If startup produced a fatal error, then don't even start the
+        // Qt event loop.
+        if (ErrorDialogHandler::instance()->checkError()) {
+            return kFatalErrorOnStartupExitCode;
+        } else {
+            qDebug() << "Displaying main window";
+            mainWindow.show();
+
+            qDebug() << "Running Mixxx";
+            return app->exec();
+        }
+    } else {
+        mixxx::QmlApplication qmlApplication(app, coreServices, args);
         return app->exec();
     }
 }

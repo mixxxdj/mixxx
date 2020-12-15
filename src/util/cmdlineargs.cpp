@@ -116,6 +116,8 @@ when a critical error occurs unless this is set properly.\n", stdout);
                            "--color", Qt::CaseInsensitive) &&
                 i + 1 < argc) {
             colorSettings = QString::fromLocal8Bit(argv[i + 1]);
+        } else if (QString::fromLocal8Bit(argv[i]).contains("--qml", Qt::CaseInsensitive)) {
+            m_qmlPath = QString::fromLocal8Bit(argv[i + 1]);
         } else if (i > 0) {
             // Don't try to load the program name to a deck
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
@@ -183,6 +185,8 @@ void CmdlineArgs::printUsage() {
 \n\
 --developer             Enables developer-mode. Includes extra log info,\n\
                         stats on performance, and a Developer tools menu.\n\
+\n\
+--qml                   Load GUI from a QML file instead of legacy skin system\n\
 \n\
 --safeMode              Enables safe-mode. Disables OpenGL waveforms,\n\
                         and spinning vinyl widgets. Try this option if\n\

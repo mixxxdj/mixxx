@@ -389,6 +389,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/control/controlobjectscript.cpp
   src/control/controlpotmeter.cpp
   src/control/controlproxy.cpp
+  src/control/controlproxyqml.cpp
   src/control/controlpushbutton.cpp
   src/control/controlttrotary.cpp
   src/controllers/controller.cpp
@@ -665,6 +666,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/coreservices.cpp
   src/mixxx.cpp
   src/mixxxapplication.cpp
+  src/qmlapplication.cpp
   src/musicbrainz/chromaprinter.cpp
   src/musicbrainz/crc.cpp
   src/musicbrainz/gzip.cpp
@@ -1875,6 +1877,7 @@ find_package(Qt5
     Network
     OpenGL
     Qml
+    Quick
     Sql
     Svg
     Test
@@ -1889,6 +1892,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Network
   Qt5::OpenGL
   Qt5::Qml
+  Qt5::Quick
   Qt5::Sql
   Qt5::Svg
   Qt5::Test
