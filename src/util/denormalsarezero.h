@@ -1,8 +1,6 @@
 
 #pragma once
 
-#include "util/platform.h"
-
 // This was copied from the gcc header pmmintrin.h which requires SSE3
 // According to https://gcc.gnu.org/bugzilla/show_bug.cgi?id=21408
 // the DAZ bit is also available on SSE2
