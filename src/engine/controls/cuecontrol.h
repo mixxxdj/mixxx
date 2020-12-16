@@ -347,9 +347,9 @@ class CueControl : public EngineControl {
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
 
-    TrackPointer m_pLoadedTrack; // is written from an engine worker thread
     // Must be locked when using the m_pLoadedTrack and it's properties
     QMutex m_trackMutex;
+    TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 
     friend class HotcueControlTest;
 };
