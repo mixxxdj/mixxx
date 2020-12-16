@@ -46,13 +46,13 @@ EXIT /B 0
     SET BUILDENV_NAME=%RETVAL%
     SET BUILDENV_PATH=%BUILDENV_BASEPATH%\%BUILDENV_NAME%
 
+    IF NOT EXIST %BUILDENV_BASEPATH% (
+        ECHO ### Create subdirectory buildenv ###
+        MD %BUILDENV_BASEPATH%
+    )
+
     IF NOT DEFINED GITHUB_ENV (
         CALL :GENERATE_CMakeSettings_JSON
-
-        IF NOT EXIST %BUILDENV_BASEPATH% (
-            ECHO ### Create subdirectory buildenv ###
-            MD %BUILDENV_BASEPATH%
-        )
 
         IF NOT EXIST %BUILD_ROOT% (
             ECHO ### Create subdirectory build ###
