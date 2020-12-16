@@ -9,11 +9,12 @@ set -eu -o pipefail
 [ -z "${SSH_PASSWORD}" ] && echo "Please set the SSH_PASSWORD env var." >&2 && exit 1
 [ -z "${SSH_USER}" ] && echo "Please set the SSH_USER env var." >&2 && exit 1
 [ -z "${UPLOAD_ID}" ] && echo "Please set the UPLOAD_ID env var." >&2 && exit 1
+[ -z "${OS}" ] && echo "Please set the OS env var." >&2 && exit 1
 [ -z "${DESTDIR}" ] && echo "Please set the DESTDIR env var." >&2 && exit 1
 
 SSH="ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 GIT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-DEST_PATH="${DESTDIR}/${GIT_BRANCH}"
+DEST_PATH="${DESTDIR}/${GIT_BRANCH}/${OS}"
 TMP_PATH="${DESTDIR}/.tmp/${UPLOAD_ID}"
 
 echo "Deploying to $TMP_PATH, then to $DEST_PATH."

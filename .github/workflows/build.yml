@@ -276,6 +276,7 @@ jobs:
       run: bash tools/deploy.sh ${{ matrix.artifacts_path }}
       env:
         DESTDIR: public_html/downloads/builds
+        OS: ${{ runner.os }}
         SSH_HOST: downloads-hostgator.mixxx.org
         SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
