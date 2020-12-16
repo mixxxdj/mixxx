@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-#include <QVariant>
 
 #include "effects/effectmanifestparameter.h"
 #include "effects/effectslot.h"
