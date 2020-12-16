@@ -1,5 +1,4 @@
-#ifndef UTIL_BATTERY_BATTERYWINDOWS_H
-#define UTIL_BATTERY_BATTERYWINDOWS_H
+#pragma once
 
 #include "util/battery/battery.h"
 
@@ -11,5 +10,3 @@ class BatteryWindows : public Battery {
   protected:
     void read() override;
 };
-
-#endif /* UTIL_BATTERY_BATTERYWINDOWS_H */

@@ -1,8 +1,4 @@
-// enginecontrol.h
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef ENGINECONTROL_H
-#define ENGINECONTROL_H
+#pragma once
 
 #include <gtest/gtest_prod.h>
 
@@ -112,5 +108,3 @@ class EngineControl : public QObject {
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
     FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
 };
-
-#endif /* ENGINECONTROL_H */

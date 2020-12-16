@@ -1,6 +1,4 @@
-// loopingcontrol.cpp
-// Created on Sep 23, 2008
-// Author: asantoni, rryan
+#include "engine/controls/loopingcontrol.h"
 
 #include <QtDebug>
 
@@ -8,13 +6,13 @@
 #include "control/controlpushbutton.h"
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/enginecontrol.h"
-#include "engine/controls/loopingcontrol.h"
 #include "engine/enginebuffer.h"
+#include "moc_loopingcontrol.cpp"
 #include "preferences/usersettings.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/math.h"
 #include "util/sample.h"
-#include "track/track.h"
 
 double LoopingControl::s_dBeatSizes[] = { 0.03125, 0.0625, 0.125, 0.25, 0.5,
                                           1, 2, 4, 8, 16, 32, 64, 128, 256, 512 };
@@ -50,8 +48,8 @@ LoopingControl::LoopingControl(const QString& group,
     m_oldLoopSamples = {kNoTrigger, kNoTrigger, LoopSeekMode::MovedOut};
     m_loopSamples.setValue(m_oldLoopSamples);
     m_currentSample.setValue(0.0);
-    m_pActiveBeatLoop = NULL;
-    m_pRateControl = NULL;
+    m_pActiveBeatLoop = nullptr;
+    m_pRateControl = nullptr;
     //Create loop-in, loop-out, loop-exit, and reloop/exit ControlObjects
     m_pLoopInButton = new ControlPushButton(ConfigKey(group, "loop_in"));
     connect(m_pLoopInButton, &ControlObject::valueChanged,
@@ -269,10 +267,11 @@ void LoopingControl::slotLoopScale(double scaleFactor) {
 
     // Don't allow 0 samples loop, so one can still manipulate it
     if (loopSamples.end == loopSamples.start) {
-        if ((loopSamples.end + 2) >= trackSamples)
+        if ((loopSamples.end + 2) >= trackSamples) {
             loopSamples.start -= 2;
-        else
+        } else {
             loopSamples.end += 2;
+        }
     }
     // Do not allow loops to go past the end of the song
     else if (loopSamples.end > trackSamples) {
@@ -1059,7 +1058,7 @@ void LoopingControl::slotBeatLoopDeactivate(BeatLoopingControl* pBeatLoopControl
 void LoopingControl::slotBeatLoopDeactivateRoll(BeatLoopingControl* pBeatLoopControl) {
     pBeatLoopControl->deactivate();
     const double size = pBeatLoopControl->getSize();
-    auto i = m_activeLoopRolls.begin();
+    auto* i = m_activeLoopRolls.begin();
     while (i != m_activeLoopRolls.end()) {
         if (size == *i) {
             i = m_activeLoopRolls.erase(i);
@@ -1229,7 +1228,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
             // If running reverse, move the loop one loop size to the left.
             // Thus, the loops end will be closest to the current position
             bool reverse = false;
-            if (m_pRateControl != NULL) {
+            if (m_pRateControl != nullptr) {
                 reverse = m_pRateControl->isReverseButtonPressed();
             }
             if (reverse) {

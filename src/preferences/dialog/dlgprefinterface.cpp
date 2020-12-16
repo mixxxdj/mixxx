@@ -12,6 +12,7 @@
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "mixxx.h"
+#include "moc_dlgprefinterface.cpp"
 #include "preferences/usersettings.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
@@ -58,18 +59,20 @@ bool skinFitsScreenSize(
 
 } // namespace
 
-DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
-                                 SkinLoader* pSkinLoader,
-                                 UserSettingsPointer pConfig)
-        :  DlgPreferencePage(parent),
-           m_pConfig(pConfig),
-           m_mixxx(mixxx),
-           m_pSkinLoader(pSkinLoader),
-           m_dScaleFactorAuto(1.0),
-           m_bUseAutoScaleFactor(false),
-           m_dScaleFactor(1.0),
-           m_bStartWithFullScreen(false),
-           m_bRebootMixxxView(false) {
+DlgPrefInterface::DlgPrefInterface(
+        QWidget* parent,
+        MixxxMainWindow* mixxx,
+        std::shared_ptr<SkinLoader> pSkinLoader,
+        UserSettingsPointer pConfig)
+        : DlgPreferencePage(parent),
+          m_pConfig(pConfig),
+          m_mixxx(mixxx),
+          m_pSkinLoader(pSkinLoader),
+          m_dScaleFactorAuto(1.0),
+          m_bUseAutoScaleFactor(false),
+          m_dScaleFactor(1.0),
+          m_bStartWithFullScreen(false),
+          m_bRebootMixxxView(false) {
     setupUi(this);
 
     //
@@ -221,7 +224,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
-        ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", 0));
+        ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", nullptr));
         ComboBoxSchemeconf->setCurrentIndex(0);
         // clear m_colorScheme so that SkinLoader::getSkinPreview returns the correct preview
         m_colorScheme = QString();
@@ -335,17 +338,11 @@ void DlgPrefInterface::slotSetTooltips() {
     }
 }
 
-void DlgPrefInterface::notifyLocaleRebootNecessary() {
+void DlgPrefInterface::notifyRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
     QMessageBox::information(
         this, tr("Information"),
         tr("Mixxx must be restarted before the new locale setting will take effect."));
-}
-
-void DlgPrefInterface::notifySkinRebootNecessary() {
-    // make the fact that you have to restart mixxx more obvious
-    QMessageBox::information(
-            this, tr("Information"), tr("Mixxx must be restarted to load the new skin."));
 }
 
 void DlgPrefInterface::slotSetScheme(int) {
@@ -420,21 +417,15 @@ void DlgPrefInterface::slotApply() {
     }
 
     if (locale != m_localeOnUpdate) {
-        notifyLocaleRebootNecessary();
+        notifyRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
         m_localeOnUpdate = locale;
     }
 
     if (m_bRebootMixxxView) {
-        // Require restarting Mixxx to apply the new skin in order to work around
-        // macOS skin change crash. https://bugs.launchpad.net/mixxx/+bug/1877487
-#ifdef __APPLE__
-        notifySkinRebootNecessary();
-#else
         m_mixxx->rebootMixxxView();
         // Allow switching skins multiple times without closing the dialog
         m_skinOnUpdate = m_skin;
-#endif
     }
     m_bRebootMixxxView = false;
 }

@@ -1,5 +1,4 @@
-#ifndef BEATS_H
-#define BEATS_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -174,4 +173,3 @@ class Beats : public QObject {
 };
 
 } // namespace mixxx
-#endif /* BEATS_H */

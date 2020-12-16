@@ -14,6 +14,7 @@
 #include "mixer/previewdeck.h"
 #include "mixer/sampler.h"
 #include "mixer/samplerbank.h"
+#include "moc_playermanager.cpp"
 #include "preferences/dialog/dlgprefdeck.h"
 #include "soundio/soundmanager.h"
 #include "track/track.h"
@@ -41,13 +42,11 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
-        VisualsManager* pVisualsManager,
         EngineMaster* pEngine)
         : m_mutex(QMutex::Recursive),
           m_pConfig(pConfig),
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),
-          m_pVisualsManager(pVisualsManager),
           m_pEngine(pEngine),
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
@@ -156,6 +155,20 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
     }
 }
 
+QStringList PlayerManager::getVisualPlayerGroups() {
+    QStringList groups;
+    for (const auto& pDeck : std::as_const(m_decks)) {
+        groups.append(pDeck->getGroup());
+    }
+    for (const auto& pPreview : std::as_const(m_previewDecks)) {
+        groups.append(pPreview->getGroup());
+    }
+    for (const auto& pSampler : std::as_const(m_samplers)) {
+        groups.append(pSampler->getGroup());
+    }
+    return groups;
+}
+
 // static
 bool PlayerManager::isDeckGroup(const QString& group, int* number) {
     if (!group.startsWith("[Channel")) {
@@ -167,7 +180,7 @@ bool PlayerManager::isDeckGroup(const QString& group, int* number) {
     if (!ok || deckNum <= 0) {
         return false;
     }
-    if (number != NULL) {
+    if (number != nullptr) {
         *number = deckNum;
     }
     return true;
@@ -201,7 +214,7 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
     if (!ok || deckNum <= 0) {
         return false;
     }
-    if (number != NULL) {
+    if (number != nullptr) {
         *number = deckNum;
     }
     return true;
@@ -373,7 +386,6 @@ void PlayerManager::addDeckInner() {
             m_pConfig,
             m_pEngine,
             m_pEffectsManager,
-            m_pVisualsManager,
             deckIndex % 2 == 1 ? EngineChannel::RIGHT : EngineChannel::LEFT,
             handleGroup);
     connect(pDeck->getEngineDeck(),
@@ -451,7 +463,6 @@ void PlayerManager::addSamplerInner() {
             m_pConfig,
             m_pEngine,
             m_pEffectsManager,
-            m_pVisualsManager,
             orientation,
             handleGroup);
     if (m_pTrackAnalysisScheduler) {
@@ -485,7 +496,6 @@ void PlayerManager::addPreviewDeckInner() {
             m_pConfig,
             m_pEngine,
             m_pEffectsManager,
-            m_pVisualsManager,
             orientation,
             handleGroup);
     if (m_pTrackAnalysisScheduler) {
@@ -567,7 +577,7 @@ PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const 
     if (libPreviewPlayer < 1 || libPreviewPlayer > numPreviewDecks()) {
         kLogger.warning() << "Warning getPreviewDeck() called with invalid index: "
                    << libPreviewPlayer;
-        return NULL;
+        return nullptr;
     }
     return m_previewDecks[libPreviewPlayer - 1];
 }
@@ -577,7 +587,7 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
     if (sampler < 1 || sampler > numSamplers()) {
         kLogger.warning() << "Warning getSampler() called with invalid index: "
                    << sampler;
-        return NULL;
+        return nullptr;
     }
     return m_samplers[sampler - 1];
 }
@@ -587,7 +597,7 @@ Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
     if (microphone < 1 || microphone >= static_cast<unsigned int>(m_microphones.size())) {
         kLogger.warning() << "Warning getMicrophone() called with invalid index: "
                    << microphone;
-        return NULL;
+        return nullptr;
     }
     return m_microphones[microphone - 1];
 }
@@ -597,7 +607,7 @@ Auxiliary* PlayerManager::getAuxiliary(unsigned int auxiliary) const {
     if (auxiliary < 1 || auxiliary > static_cast<unsigned int>(m_auxiliaries.size())) {
         kLogger.warning() << "Warning getAuxiliary() called with invalid index: "
                    << auxiliary;
-        return NULL;
+        return nullptr;
     }
     return m_auxiliaries[auxiliary - 1];
 }
@@ -618,7 +628,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
     // PlayerManager state.
     BaseTrackPlayer* pPlayer = getPlayer(group);
 
-    if (pPlayer == NULL) {
+    if (pPlayer == nullptr) {
         kLogger.warning() << "Invalid group argument " << group << " to slotLoadTrackToPlayer.";
         return;
     }

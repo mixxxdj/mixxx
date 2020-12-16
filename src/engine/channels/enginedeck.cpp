@@ -6,6 +6,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
 #include "engine/enginevumeter.h"
+#include "moc_enginedeck.cpp"
 #include "util/sample.h"
 #include "waveform/waveformwidgetfactory.h"
 
@@ -53,7 +54,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     if (isPassthroughActive() && sampleBuffer) {
         SampleUtil::copy(pOut, sampleBuffer, iBufferSize);
         m_bPassthroughWasActive = true;
-        m_sampleBuffer = NULL;
+        m_sampleBuffer = nullptr;
         m_pPregain->setSpeedAndScratching(1, false);
     } else {
         // If passthrough is no longer enabled, zero out the buffer
@@ -121,7 +122,7 @@ void EngineDeck::receiveBuffer(
     Q_UNUSED(nFrames);
     // Skip receiving audio input if passthrough is not active
     if (!m_bPassthroughIsActive) {
-        m_sampleBuffer = NULL;
+        m_sampleBuffer = nullptr;
         return;
     } else {
         m_sampleBuffer = pBuffer;
@@ -135,7 +136,7 @@ void EngineDeck::onInputConfigured(const AudioInput& input) {
         return;
     }
     m_pInputConfigured->forceSet(1.0);
-    m_sampleBuffer =  NULL;
+    m_sampleBuffer = nullptr;
 }
 
 void EngineDeck::onInputUnconfigured(const AudioInput& input) {
@@ -145,7 +146,7 @@ void EngineDeck::onInputUnconfigured(const AudioInput& input) {
         return;
     }
     m_pInputConfigured->forceSet(0.0);
-    m_sampleBuffer = NULL;
+    m_sampleBuffer = nullptr;
 }
 
 bool EngineDeck::isPassthroughActive() const {

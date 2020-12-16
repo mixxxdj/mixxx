@@ -1,6 +1,7 @@
 #include "database/mixxxdb.h"
 
 #include "database/schemamanager.h"
+#include "moc_mixxxdb.cpp"
 #include "util/assert.h"
 #include "util/logger.h"
 
@@ -84,7 +85,7 @@ bool MixxxDb::initDatabaseSchema(
     case SchemaManager::Result::NewerVersionBackwardsCompatible:
         return true; // done
     case SchemaManager::Result::UpgradeFailed:
-        QMessageBox::warning(0,
+        QMessageBox::warning(nullptr,
                 upgradeFailed,
                 upgradeToVersionFailed + "\n" +
                         tr("Your mixxxdb.sqlite file may be corrupt.") +
@@ -93,7 +94,7 @@ bool MixxxDb::initDatabaseSchema(
                 QMessageBox::Ok);
         return false; // abort
     case SchemaManager::Result::NewerVersionIncompatible:
-        QMessageBox::warning(0,
+        QMessageBox::warning(nullptr,
                 upgradeFailed,
                 upgradeToVersionFailed + "\n" +
                         tr("Your mixxxdb.sqlite file was created by a newer "
@@ -102,7 +103,7 @@ bool MixxxDb::initDatabaseSchema(
                 QMessageBox::Ok);
         return false; // abort
     case SchemaManager::Result::SchemaError:
-        QMessageBox::warning(0,
+        QMessageBox::warning(nullptr,
                 upgradeFailed,
                 upgradeToVersionFailed + "\n" +
                         tr("The database schema file is invalid.") + "\n" +

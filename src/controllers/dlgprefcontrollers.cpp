@@ -6,12 +6,13 @@
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgprefcontroller.h"
 #include "defs_urls.h"
+#include "moc_dlgprefcontrollers.cpp"
 #include "preferences/dialog/dlgpreferences.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
-                                       UserSettingsPointer pConfig,
-                                       ControllerManager* pControllerManager,
-                                       QTreeWidgetItem* pControllerTreeItem)
+        UserSettingsPointer pConfig,
+        std::shared_ptr<ControllerManager> pControllerManager,
+        QTreeWidgetItem* pControllerTreeItem)
         : DlgPreferencePage(pPreferences),
           m_pDlgPreferences(pPreferences),
           m_pConfig(pConfig),
@@ -26,7 +27,7 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     });
 
     // Connections
-    connect(m_pControllerManager,
+    connect(m_pControllerManager.get(),
             &ControllerManager::devicesChanged,
             this,
             &DlgPrefControllers::rescanControllers);

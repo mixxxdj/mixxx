@@ -3,6 +3,7 @@
 #include <QPainter>
 #include <QTableView>
 
+#include "moc_tableitemdelegate.cpp"
 #include "util/painterscope.h"
 #include "widget/wtracktableview.h"
 

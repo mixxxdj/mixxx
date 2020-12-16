@@ -1,5 +1,4 @@
-#ifndef WAVEFORMRENDERMARK_H
-#define WAVEFORMRENDERMARK_H
+#pragma once
 
 #include <QObject>
 
@@ -38,5 +37,3 @@ class WaveformRenderMark : public QObject, public WaveformRendererAbstract {
     WaveformMarkSet m_marks;
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderMark);
 };
-
-#endif

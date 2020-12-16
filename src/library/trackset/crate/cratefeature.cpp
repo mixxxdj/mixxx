@@ -18,6 +18,7 @@
 #include "library/trackcollectionmanager.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "library/treeitem.h"
+#include "moc_cratefeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/dnd.h"
@@ -555,8 +556,9 @@ void CrateFeature::slotImportPlaylist() {
     //qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 
     QString playlist_file = getPlaylistFile();
-    if (playlist_file.isEmpty())
+    if (playlist_file.isEmpty()) {
         return;
+    }
 
     // Update the import/export crate directory
     QFileInfo fileName(playlist_file);
@@ -675,7 +677,7 @@ void CrateFeature::slotExportPlaylist() {
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
-    QString file_location = QFileDialog::getSaveFileName(NULL,
+    QString file_location = QFileDialog::getSaveFileName(nullptr,
             tr("Export Crate"),
             lastCrateDirectory.append("/").append(crate.getName()),
             tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist "

@@ -11,6 +11,7 @@
 #include <QtDebug>
 
 #include "control/controlpotmeter.h"
+#include "moc_waveformwidgetfactory.cpp"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 #include "util/performancetimer.h"
@@ -49,7 +50,7 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
     auto* glw = qobject_cast<QGLWidget*>(pWaveformWidget->getWidget());
     if (glw == nullptr) {
         // Not a QGLWidget. We can simply use QWidget::isVisible.
-        auto qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
+        auto* qwidget = qobject_cast<QWidget*>(pWaveformWidget->getWidget());
         return qwidget != nullptr && qwidget->isVisible();
     }
 
@@ -59,7 +60,7 @@ bool shouldRenderWaveform(WaveformWidgetAbstract* pWaveformWidget) {
 
     // Strangely, a widget can have non-zero width/height, be valid and visible,
     // yet still not show up on the screen. QWindow::isExposed tells us this.
-    auto window = glw->windowHandle();
+    const QWindow* window = glw->windowHandle();
     if (window == nullptr || !window->isExposed()) {
         return false;
     }
@@ -77,9 +78,9 @@ WaveformWidgetAbstractHandle::WaveformWidgetAbstractHandle()
 ///////////////////////////////////////////
 
 WaveformWidgetHolder::WaveformWidgetHolder()
-    : m_waveformWidget(NULL),
-      m_waveformViewer(NULL),
-      m_skinContextCache(UserSettingsPointer(), QString()) {
+        : m_waveformWidget(nullptr),
+          m_waveformViewer(nullptr),
+          m_skinContextCache(UserSettingsPointer(), QString()) {
 }
 
 WaveformWidgetHolder::WaveformWidgetHolder(WaveformWidgetAbstract* waveformWidget,
@@ -100,12 +101,12 @@ WaveformWidgetFactory::WaveformWidgetFactory()
         // loads correctly.
         : m_type(WaveformWidgetType::EmptyWaveform),
           m_configType(WaveformWidgetType::EmptyWaveform),
-          m_config(0),
+          m_config(nullptr),
           m_skipRender(false),
           m_frameRate(30),
           m_endOfTrackWarningTime(30),
           m_defaultZoom(WaveformWidgetRenderer::s_waveformDefaultZoom),
-          m_zoomSync(false),
+          m_zoomSync(true),
           m_overviewNormalized(false),
           m_openGlAvailable(false),
           m_openGlesAvailable(false),
@@ -303,12 +304,8 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
         m_config->set(ConfigKey("[Waveform]","DefaultZoom"), ConfigValue(m_defaultZoom));
     }
 
-    int zoomSync = m_config->getValueString(ConfigKey("[Waveform]","ZoomSynchronization")).toInt(&ok);
-    if (ok) {
-        setZoomSync(static_cast<bool>(zoomSync));
-    } else {
-        m_config->set(ConfigKey("[Waveform]","ZoomSynchronization"), ConfigValue(m_zoomSync));
-    }
+    bool zoomSync = m_config->getValue(ConfigKey("[Waveform]", "ZoomSynchronization"), m_zoomSync);
+    setZoomSync(zoomSync);
 
     int beatGridAlpha = m_config->getValue(ConfigKey("[Waveform]", "beatGridAlpha"), m_beatGridAlpha);
     setDisplayBeatGridAlpha(beatGridAlpha);
@@ -350,7 +347,7 @@ bool WaveformWidgetFactory::setConfig(UserSettingsPointer config) {
 void WaveformWidgetFactory::destroyWidgets() {
     for (auto& holder : m_waveformWidgetHolders) {
         WaveformWidgetAbstract* pWidget = holder.m_waveformWidget;
-        holder.m_waveformWidget = NULL;
+        holder.m_waveformWidget = nullptr;
         delete pWidget;
     }
     m_waveformWidgetHolders.clear();
@@ -585,8 +582,9 @@ void WaveformWidgetFactory::setDisplayBeatGridAlpha(int alpha) {
 
 void WaveformWidgetFactory::setVisualGain(FilterIndex index, double gain) {
     m_visualGain[index] = gain;
-    if (m_config)
+    if (m_config) {
         m_config->set(ConfigKey("[Waveform]","VisualGain_" + QString::number(index)), QString::number(m_visualGain[index]));
+    }
 }
 
 double WaveformWidgetFactory::getVisualGain(FilterIndex index) const {
@@ -614,7 +612,7 @@ void WaveformWidgetFactory::setPlayMarkerPosition(double position) {
 
 void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     WaveformWidgetAbstract* pWaveformWidget = viewer->getWaveformWidget();
-    if (pWaveformWidget != NULL && isZoomSync()) {
+    if (pWaveformWidget != nullptr && isZoomSync()) {
         //qDebug() << "WaveformWidgetFactory::notifyZoomChange";
         double refZoom = pWaveformWidget->getZoomFactor();
 
@@ -737,7 +735,6 @@ void WaveformWidgetFactory::swap() {
 }
 
 WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
-    //default selection
     if (m_openGlAvailable) {
         if (m_openGLShaderAvailable) {
             return WaveformWidgetType::GLSLRGBWaveform;
@@ -745,7 +742,7 @@ WaveformWidgetType::Type WaveformWidgetFactory::autoChooseWidgetType() const {
             return WaveformWidgetType::GLRGBWaveform;
         }
     }
-    return WaveformWidgetType::SoftwareWaveform;
+    return WaveformWidgetType::RGBWaveform;
 }
 
 void WaveformWidgetFactory::evaluateWidgets() {
@@ -829,6 +826,13 @@ void WaveformWidgetFactory::evaluateWidgets() {
             useOpenGles = GLSLRGBWaveformWidget::useOpenGles();
             useOpenGLShaders = GLSLRGBWaveformWidget::useOpenGLShaders();
             developerOnly = GLSLRGBWaveformWidget::developerOnly();
+            break;
+        case WaveformWidgetType::GLSLRGBStackedWaveform:
+            widgetName = GLSLRGBStackedWaveformWidget::getWaveformWidgetName();
+            useOpenGl = GLSLRGBStackedWaveformWidget::useOpenGl();
+            useOpenGles = GLSLRGBStackedWaveformWidget::useOpenGles();
+            useOpenGLShaders = GLSLRGBStackedWaveformWidget::useOpenGLShaders();
+            developerOnly = GLSLRGBStackedWaveformWidget::developerOnly();
             break;
         case WaveformWidgetType::GLVSyncTest:
             widgetName = GLVSyncTestWidget::getWaveformWidgetName();
@@ -919,7 +923,7 @@ void WaveformWidgetFactory::evaluateWidgets() {
 
 WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         WaveformWidgetType::Type type, WWaveformViewer* viewer) {
-    WaveformWidgetAbstract* widget = NULL;
+    WaveformWidgetAbstract* widget = nullptr;
     if (viewer) {
         if (CmdlineArgs::Instance().getSafeMode()) {
             type = WaveformWidgetType::EmptyWaveform;
@@ -956,6 +960,9 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
         case WaveformWidgetType::GLSLRGBWaveform:
             widget = new GLSLRGBWaveformWidget(viewer->getGroup(), viewer);
             break;
+        case WaveformWidgetType::GLSLRGBStackedWaveform:
+            widget = new GLSLRGBStackedWaveformWidget(viewer->getGroup(), viewer);
+            break;
         case WaveformWidgetType::GLVSyncTest:
             widget = new GLVSyncTestWidget(viewer->getGroup(), viewer);
             break;
@@ -983,7 +990,7 @@ WaveformWidgetAbstract* WaveformWidgetFactory::createWaveformWidget(
             if (!widget->isValid()) {
                 qWarning() << "failed to init EmptyWaveformWidget";
                 delete widget;
-                widget = NULL;
+                widget = nullptr;
             }
         }
     }

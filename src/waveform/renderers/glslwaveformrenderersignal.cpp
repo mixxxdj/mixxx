@@ -1,4 +1,6 @@
 #include "waveform/renderers/glslwaveformrenderersignal.h"
+
+#include "moc_glslwaveformrenderersignal.cpp"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QGLFramebufferObject>
@@ -9,15 +11,16 @@
 #include "waveform/waveformwidgetfactory.h"
 
 GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
-                                                       bool rgbShader)
+        ColorType colorType,
+        const QString& fragShader)
         : WaveformRendererSignalBase(waveformWidgetRenderer),
           m_unitQuadListId(-1),
           m_textureId(0),
           m_textureRenderedWaveformCompletion(0),
           m_bDumpPng(false),
           m_shadersValid(false),
-          m_rgbShader(rgbShader) {
-    initializeOpenGLFunctions();
+          m_colorType(colorType),
+          m_pFragShader(fragShader) {
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
@@ -51,11 +54,9 @@ bool GLSLWaveformRendererSignal::loadShaders() {
                  << m_frameShaderProgram->log();
         return false;
     }
-    QString fragmentShader = m_rgbShader ?
-            ":/shaders/rgbsignal.frag" :
-            ":/shaders/filteredsignal.frag";
+
     if (!m_frameShaderProgram->addShaderFromSourceFile(
-            QGLShader::Fragment, fragmentShader)) {
+                QGLShader::Fragment, m_pFragShader)) {
         qDebug() << "GLWaveformRendererSignalShader::loadShaders - "
                  << m_frameShaderProgram->log();
         return false;
@@ -189,7 +190,8 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
     }
 }
 
-bool GLSLWaveformRendererSignal::onInit() {
+void GLSLWaveformRendererSignal::onInitializeGL() {
+    initializeOpenGLFunctions();
     m_textureRenderedWaveformCompletion = 0;
 
     if (!m_frameShaderProgram) {
@@ -197,14 +199,13 @@ bool GLSLWaveformRendererSignal::onInit() {
     }
 
     if (!loadShaders()) {
-        return false;
+        return;
     }
+    createFrameBuffers();
     createGeometry();
     if (!loadTexture()) {
-        return false;
+        return;
     }
-
-    return true;
 }
 
 void GLSLWaveformRendererSignal::onSetup(const QDomNode& node) {
@@ -238,19 +239,23 @@ void GLSLWaveformRendererSignal::onSetTrack() {
 }
 
 void GLSLWaveformRendererSignal::onResize() {
+    // onInitializeGL not called yet
+    if (!m_frameShaderProgram) {
+        return;
+    }
     createFrameBuffers();
 }
 
 void GLSLWaveformRendererSignal::slotWaveformUpdated() {
     m_textureRenderedWaveformCompletion = 0;
+    // onInitializeGL not called yet
+    if (!m_frameShaderProgram) {
+        return;
+    }
     loadTexture();
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    if (!m_framebuffer || !m_framebuffer->isValid() || !m_shadersValid) {
-        return;
-    }
-
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
     if (!trackInfo) {
         return;
@@ -270,6 +275,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     if (data == nullptr) {
         return;
     }
+
+    maybeInitializeGL();
 
     // save the GL state set for QPainter
     painter->beginNativePainting();
@@ -339,36 +346,56 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
                         static_cast<GLfloat>(m_axesColor_b),
                         static_cast<GLfloat>(m_axesColor_a)));
 
-        QVector4D lowColor = m_rgbShader
-                ? QVector4D(static_cast<GLfloat>(m_rgbLowColor_r),
-                          static_cast<GLfloat>(m_rgbLowColor_g),
-                          static_cast<GLfloat>(m_rgbLowColor_b),
-                          1.0f)
-                : QVector4D(static_cast<GLfloat>(m_lowColor_r),
-                          static_cast<GLfloat>(m_lowColor_g),
-                          static_cast<GLfloat>(m_lowColor_b),
-                          1.0f);
-        QVector4D midColor = m_rgbShader
-                ? QVector4D(static_cast<GLfloat>(m_rgbMidColor_r),
-                          static_cast<GLfloat>(m_rgbMidColor_g),
-                          static_cast<GLfloat>(m_rgbMidColor_b),
-                          1.0f)
-                : QVector4D(static_cast<GLfloat>(m_midColor_r),
-                          static_cast<GLfloat>(m_midColor_g),
-                          static_cast<GLfloat>(m_midColor_b),
-                          1.0f);
-        QVector4D highColor = m_rgbShader
-                ? QVector4D(static_cast<GLfloat>(m_rgbHighColor_r),
-                          static_cast<GLfloat>(m_rgbHighColor_g),
-                          static_cast<GLfloat>(m_rgbHighColor_b),
-                          1.0f)
-                : QVector4D(static_cast<GLfloat>(m_highColor_r),
-                          static_cast<GLfloat>(m_highColor_g),
-                          static_cast<GLfloat>(m_highColor_b),
-                          1.0f);
-        m_frameShaderProgram->setUniformValue("lowColor", lowColor);
-        m_frameShaderProgram->setUniformValue("midColor", midColor);
-        m_frameShaderProgram->setUniformValue("highColor", highColor);
+        if (m_colorType == ColorType::RGBFiltered) {
+            m_frameShaderProgram->setUniformValue("lowFilteredColor",
+                    QVector4D(static_cast<GLfloat>(m_rgbLowFilteredColor_r),
+                            static_cast<GLfloat>(m_rgbLowFilteredColor_g),
+                            static_cast<GLfloat>(m_rgbLowFilteredColor_b),
+                            1.0));
+            m_frameShaderProgram->setUniformValue("midFilteredColor",
+                    QVector4D(static_cast<GLfloat>(m_rgbMidFilteredColor_r),
+                            static_cast<GLfloat>(m_rgbMidFilteredColor_g),
+                            static_cast<GLfloat>(m_rgbMidFilteredColor_b),
+                            1.0));
+            m_frameShaderProgram->setUniformValue("highFilteredColor",
+                    QVector4D(static_cast<GLfloat>(m_rgbHighFilteredColor_r),
+                            static_cast<GLfloat>(m_rgbHighFilteredColor_g),
+                            static_cast<GLfloat>(m_rgbHighFilteredColor_b),
+                            1.0));
+        }
+        if (m_colorType == ColorType::RGB || m_colorType == ColorType::RGBFiltered) {
+            m_frameShaderProgram->setUniformValue("lowColor",
+                    QVector4D(static_cast<GLfloat>(m_rgbLowColor_r),
+                            static_cast<GLfloat>(m_rgbLowColor_g),
+                            static_cast<GLfloat>(m_rgbLowColor_b),
+                            1.0));
+            m_frameShaderProgram->setUniformValue("midColor",
+                    QVector4D(static_cast<GLfloat>(m_rgbMidColor_r),
+                            static_cast<GLfloat>(m_rgbMidColor_g),
+                            static_cast<GLfloat>(m_rgbMidColor_b),
+                            1.0));
+            m_frameShaderProgram->setUniformValue("highColor",
+                    QVector4D(static_cast<GLfloat>(m_rgbHighColor_r),
+                            static_cast<GLfloat>(m_rgbHighColor_g),
+                            static_cast<GLfloat>(m_rgbHighColor_b),
+                            1.0));
+        } else {
+            m_frameShaderProgram->setUniformValue("lowColor",
+                    QVector4D(static_cast<GLfloat>(m_lowColor_r),
+                            static_cast<GLfloat>(m_lowColor_g),
+                            static_cast<GLfloat>(m_lowColor_b),
+                            1.0));
+            m_frameShaderProgram->setUniformValue("midColor",
+                    QVector4D(static_cast<GLfloat>(m_midColor_r),
+                            static_cast<GLfloat>(m_midColor_g),
+                            static_cast<GLfloat>(m_midColor_b),
+                            1.0));
+            m_frameShaderProgram->setUniformValue("highColor",
+                    QVector4D(static_cast<GLfloat>(m_highColor_r),
+                            static_cast<GLfloat>(m_highColor_g),
+                            static_cast<GLfloat>(m_highColor_b),
+                            1.0));
+        }
 
         glEnable(GL_TEXTURE_2D);
         glBindTexture(GL_TEXTURE_2D, m_textureId);

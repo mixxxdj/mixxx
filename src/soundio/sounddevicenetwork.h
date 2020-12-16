@@ -1,5 +1,4 @@
-#ifndef SOUNDDEVICENETWORK_H
-#define SOUNDDEVICENETWORK_H
+#pragma once
 
 #include <QString>
 #include <QSharedPointer>
@@ -103,5 +102,3 @@ class SoundDeviceNetworkThread : public QThread {
     SoundDeviceNetwork* m_pParent;
     bool m_stop;
 };
-
-#endif // SOUNDDEVICENETWORK_H

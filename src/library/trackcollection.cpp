@@ -1,8 +1,9 @@
-#include <QApplication>
-
 #include "library/trackcollection.h"
 
+#include <QApplication>
+
 #include "library/basetrackcache.h"
+#include "moc_trackcollection.cpp"
 #include "track/globaltrackcache.h"
 #include "util/assert.h"
 #include "util/db/sqltransaction.h"

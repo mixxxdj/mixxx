@@ -5,8 +5,7 @@
  *      Author: vittorio
  */
 
-#ifndef BEATMAP_H_
-#define BEATMAP_H_
+#pragma once
 
 #include <QMutex>
 
@@ -113,4 +112,3 @@ class BeatMap final : public Beats {
 };
 
 } // namespace mixxx
-#endif /* BEATMAP_H_ */

@@ -1,5 +1,7 @@
 #include "controllerenginejsproxy.h"
+
 #include "controllers/engine/controllerengine.h"
+#include "moc_controllerenginejsproxy.cpp"
 
 ControllerEngineJSProxy::ControllerEngineJSProxy(ControllerEngine* m_pEngine)
         : m_pEngine(m_pEngine) {

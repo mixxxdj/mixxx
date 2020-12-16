@@ -103,7 +103,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trac
 }
 
 bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
-    if (!m_database.isOpen() || info == NULL) {
+    if (!m_database.isOpen() || info == nullptr) {
         return false;
     }
 

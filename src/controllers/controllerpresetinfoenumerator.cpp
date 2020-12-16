@@ -1,9 +1,3 @@
-/**
-* @file controllerpresetinfoenumerator.cpp
-* @author Be be.0@gmx.com
-* @date Sat Jul 18 2015
-* @brief Enumerate list of available controller mapping presets
-*/
 #include "controllers/controllerpresetinfoenumerator.h"
 
 #include <QDirIterator>
@@ -27,7 +21,7 @@ bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
         return a.getDirPath() < b.getDirPath();
     }
 }
-}
+} // namespace
 
 PresetInfoEnumerator::PresetInfoEnumerator(const QString& searchPath)
         : PresetInfoEnumerator(QList<QString>{searchPath}) {

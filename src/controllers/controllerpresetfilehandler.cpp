@@ -1,8 +1,3 @@
-/// @file controllerpresetfilehandler.cpp
-/// @author Sean Pappalardo spappalardo@mixxx.org
-/// @date Mon 9 Apr 2012
-/// @brief Handles loading and saving of Controller presets.
-
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
@@ -121,8 +116,9 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
         const QDomElement& controller,
         ControllerPreset* preset,
         const QDir& systemPresetsPath) const {
-    if (controller.isNull())
+    if (controller.isNull()) {
         return;
+    }
 
     QString deviceId = controller.attribute("id", "");
     preset->setDeviceId(deviceId);

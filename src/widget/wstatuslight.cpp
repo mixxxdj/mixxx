@@ -1,28 +1,12 @@
-/***************************************************************************
-                          wstatuslight.cpp  -  description
-                             -------------------
-    begin                : Wed May 30 2007
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-                           (C) 2007 by John Sully (converted from WVumeter)
-    email                : jsully@scs.ryerson.ca
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "widget/wstatuslight.h"
 
 #include <QPaintEvent>
-#include <QStylePainter>
-#include <QStyleOption>
-#include <QtDebug>
 #include <QPixmap>
+#include <QStyleOption>
+#include <QStylePainter>
+#include <QtDebug>
+
+#include "moc_wstatuslight.cpp"
 
 WStatusLight::WStatusLight(QWidget * parent)
         : WWidget(parent),

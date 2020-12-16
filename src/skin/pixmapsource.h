@@ -1,5 +1,4 @@
-#ifndef PIXMAPSOURCE_H
-#define PIXMAPSOURCE_H
+#pragma once
 
 #include <QString>
 #include <QByteArray>
@@ -29,5 +28,3 @@ class PixmapSource final {
     QByteArray m_svgSourceData;
     enum Type m_eType;
 };
-
-#endif /* PIXMAPSOURCE_H */

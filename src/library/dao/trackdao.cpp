@@ -18,6 +18,7 @@
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackset/crate/cratestorage.h"
+#include "moc_trackdao.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
@@ -540,13 +541,13 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":replaygain_peak", trackInfo.getReplayGain().getPeak());
 
     pTrackLibraryQuery->bindValue(":channels",
-            static_cast<uint>(trackMetadata.getChannelCount()));
+            static_cast<uint>(trackMetadata.getStreamInfo().getSignalInfo().getChannelCount()));
     pTrackLibraryQuery->bindValue(":samplerate",
-            static_cast<uint>(trackMetadata.getSampleRate()));
+            static_cast<uint>(trackMetadata.getStreamInfo().getSignalInfo().getSampleRate()));
     pTrackLibraryQuery->bindValue(":bitrate",
-            static_cast<uint>(trackMetadata.getBitrate()));
+            static_cast<uint>(trackMetadata.getStreamInfo().getBitrate()));
     pTrackLibraryQuery->bindValue(":duration",
-            trackMetadata.getDuration().toDoubleSeconds());
+            trackMetadata.getStreamInfo().getDuration().toDoubleSeconds());
 
     pTrackLibraryQuery->bindValue(":header_parsed",
             track.getMetadataSynchronized() ? 1 : 0);
@@ -1257,10 +1258,14 @@ bool setTrackCoverInfo(const QSqlRecord& record, const int column,
     bool ok = false;
     coverInfo.source = static_cast<CoverInfo::Source>(
             record.value(column).toInt(&ok));
-    if (!ok) coverInfo.source = CoverInfo::UNKNOWN;
+    if (!ok) {
+        coverInfo.source = CoverInfo::UNKNOWN;
+    }
     coverInfo.type = static_cast<CoverInfo::Type>(
             record.value(column + 1).toInt(&ok));
-    if (!ok) coverInfo.type = CoverInfo::NONE;
+    if (!ok) {
+        coverInfo.type = CoverInfo::NONE;
+    }
     coverInfo.coverLocation = record.value(column + 2).toString();
     coverInfo.color = mixxx::RgbColor::fromQVariant(record.value(column + 3));
     coverInfo.setImageDigest(
@@ -1718,7 +1723,7 @@ namespace {
         }
         return matchLength;
     }
-}
+    } // namespace
 
 // Look for moved files. Look for files that have been marked as
 // "deleted on disk" and see if another "file" with the same name and

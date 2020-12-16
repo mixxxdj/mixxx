@@ -1,20 +1,3 @@
-/***************************************************************************
-                          dlgprefeq.cpp  -  description
-                             -------------------
-    begin                : Thu Jun 7 2007
-    copyright            : (C) 2007 by John Sully
-    email                : jsully@scs.ryerson.ca
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "preferences/dialog/dlgprefeq.h"
 
 #include <QHBoxLayout>
@@ -30,6 +13,7 @@
 #include "effects/effectslot.h"
 #include "engine/filters/enginefilterbessel4.h"
 #include "mixer/playermanager.h"
+#include "moc_dlgprefeq.cpp"
 #include "util/math.h"
 
 const QString kConfigKey = "[Mixer Profile]";
@@ -43,8 +27,10 @@ const QString kDefaultQuickEffectId = FilterEffect::getId();
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
 
-DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
-                     UserSettingsPointer pConfig)
+DlgPrefEQ::DlgPrefEQ(
+        QWidget* pParent,
+        std::shared_ptr<EffectsManager> pEffectsManager,
+        UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_COLoFreq(kConfigKey, "LoEQFrequency"),
           m_COHiFreq(kConfigKey, "HiEQFrequency"),
@@ -52,8 +38,8 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager,
           m_lowEqFreq(0.0),
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager),
-          m_firstSelectorLabel(NULL),
-          m_pNumDecks(NULL),
+          m_firstSelectorLabel(nullptr),
+          m_pNumDecks(nullptr),
           m_inSlotPopulateDeckEffectSelectors(false),
           m_bEqAutoReset(false),
           m_bGainAutoReset(false) {
@@ -303,7 +289,7 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
         }
     }
 
-    if (m_firstSelectorLabel != NULL) {
+    if (m_firstSelectorLabel != nullptr) {
         if (do_hide) {
             m_firstSelectorLabel->setText(QObject::tr("EQ Effect"));
         } else {
@@ -738,7 +724,7 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
     if (pChainSlot) {
         EffectChainPointer pChain = pChainSlot->getEffectChain();
         VERIFY_OR_DEBUG_ASSERT(pChain) {
-            pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+            pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager.get());
         }
         EffectPointer pEffect = m_pEffectsManager->instantiateEffect(effectId);
         pChain->replaceEffect(0, pEffect);

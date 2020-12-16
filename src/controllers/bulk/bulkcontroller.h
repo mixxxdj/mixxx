@@ -1,14 +1,7 @@
-/**
-  * @file bulkcontroller.h
-  * @author Neale Picket  neale@woozle.org
-  * @date Thu Jun 28 2012
-  * @brief USB Bulk controller backend
-  */
-
-#ifndef BULKCONTROLLER_H
-#define BULKCONTROLLER_H
+#pragma once
 
 #include <QAtomicInt>
+#include <QThread>
 
 #include "controllers/controller.h"
 #include "controllers/hid/hidcontrollerpreset.h"
@@ -19,6 +12,7 @@ struct libusb_device_handle;
 struct libusb_context;
 struct libusb_device_descriptor;
 
+/// USB Bulk controller backend
 class BulkReader : public QThread {
     Q_OBJECT
   public:
@@ -107,5 +101,3 @@ class BulkController : public Controller {
     BulkReader* m_pReader;
     HidControllerPreset m_preset;
 };
-
-#endif

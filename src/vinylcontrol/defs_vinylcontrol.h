@@ -1,5 +1,4 @@
-#ifndef DEFS_VINYLCONTROL_H
-#define DEFS_VINYLCONTROL_H
+#pragma once
 
 #define VINYL_PREF_KEY "[VinylControl]"
 
@@ -46,5 +45,3 @@ const int VINYL_STATUS_ERROR = 3;
 #define MIXXX_VINYL_SCOPE_SIZE 100
 
 const int kMaximumVinylControlInputs = 4;
-
-#endif /* DEFS_VINYLCONTROL_H */

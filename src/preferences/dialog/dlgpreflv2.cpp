@@ -1,18 +1,21 @@
-#include <QWidget>
-#include <QString>
-#include <QPair>
-#include <QLabel>
-#include <QCheckBox>
-#include <QPushButton>
-
 #include "dlgpreflv2.h"
-#include "control/controlobject.h"
-#include "util/math.h"
-#include "effects/effectsmanager.h"
 
-DlgPrefLV2::DlgPrefLV2(QWidget* pParent, LV2Backend* lv2Backend,
-                       UserSettingsPointer pConfig,
-                       EffectsManager* pEffectsManager)
+#include <QCheckBox>
+#include <QLabel>
+#include <QPair>
+#include <QPushButton>
+#include <QString>
+#include <QWidget>
+
+#include "control/controlobject.h"
+#include "effects/effectsmanager.h"
+#include "moc_dlgpreflv2.cpp"
+#include "util/math.h"
+
+DlgPrefLV2::DlgPrefLV2(QWidget* pParent,
+        LV2Backend* lv2Backend,
+        UserSettingsPointer pConfig,
+        std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pLV2Backend(lv2Backend),
           m_iCheckedParameters(0),

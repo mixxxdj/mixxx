@@ -49,16 +49,11 @@ enum class KeyunlockMode {
     KeepLockedKey
 };
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
 class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     Q_OBJECT
   public:
-    DlgPrefDeck(QWidget *parent, MixxxMainWindow *mixxx,
-                    PlayerManager* pPlayerManager,
-                    UserSettingsPointer pConfig);
+    DlgPrefDeck(QWidget* parent,
+            UserSettingsPointer pConfig);
     ~DlgPrefDeck() override;
 
   public slots:
@@ -102,8 +97,6 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void setRateRangeForAllDecks(int rangePercent);
     void setRateDirectionForAllDecks(bool inverted);
 
-    MixxxMainWindow* const m_mixxx;
-    PlayerManager* const m_pPlayerManager;
     const UserSettingsPointer m_pConfig;
 
     const std::unique_ptr<ControlObject> m_pControlTrackTimeDisplay;
@@ -129,7 +122,6 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     bool m_bSetIntroStartAtMainCue;
     bool m_bDisallowTrackLoadToPlayingDeck;
     bool m_bCloneDeckOnLoadDoubleTap;
-    bool m_bAssignHotcueColors;
 
     int m_iRateRangePercent;
     bool m_bRateDownIncreasesSpeed;

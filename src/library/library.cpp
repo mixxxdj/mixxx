@@ -32,6 +32,7 @@
 #include "library/trackset/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
+#include "moc_library.cpp"
 #include "recording/recordingmanager.h"
 #include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
@@ -177,10 +178,8 @@ Library::Library(
         addFeature(new SeratoFeature(this, m_pConfig));
     }
 
-    for (const auto& externalTrackCollection :
-            m_pTrackCollectionManager->externalCollections()) {
-        auto feature =
-                externalTrackCollection->newLibraryFeature(this, m_pConfig);
+    for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
+        auto* feature = externalTrackCollection->newLibraryFeature(this, m_pConfig);
         if (feature) {
             kLogger.info() << "Adding library feature for"
                            << externalTrackCollection->name();
@@ -467,7 +466,7 @@ void Library::slotRequestAddDir(const QString& dir) {
     Sandbox::createSecurityToken(directory);
 
     if (!m_pTrackCollectionManager->addDirectory(dir)) {
-        QMessageBox::information(0,
+        QMessageBox::information(nullptr,
                 tr("Add Directory to Library"),
                 tr("Could not add the directory to your library. Either this "
                    "directory is already in your library or you are currently "

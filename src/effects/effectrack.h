@@ -1,5 +1,4 @@
-#ifndef EFFECTRACK_H
-#define EFFECTRACK_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -251,5 +250,3 @@ class EqualizerRack : public PerGroupRack {
         return formatEffectChainSlotGroupString(iRackNumber, group);
     }
 };
-
-#endif /* EFFECTRACK_H */

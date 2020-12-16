@@ -22,6 +22,7 @@
 #include "library/trackprocessing.h"
 #include "library/trackset/crate/cratefeaturehelper.h"
 #include "mixer/playermanager.h"
+#include "moc_wtrackmenu.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
@@ -261,6 +262,9 @@ void WTrackMenu::createActions() {
         m_pClearPlayCountAction = new QAction(tr("Play Count"), m_pClearMetadataMenu);
         connect(m_pClearPlayCountAction, &QAction::triggered, this, &WTrackMenu::slotClearPlayCount);
 
+        m_pClearRatingAction = new QAction(tr("Rating"), m_pClearMetadataMenu);
+        connect(m_pClearRatingAction, &QAction::triggered, this, &WTrackMenu::slotClearRating);
+
         m_pClearMainCueAction = new QAction(tr("Cue Point"), m_pClearMetadataMenu);
         connect(m_pClearMainCueAction, &QAction::triggered, this, &WTrackMenu::slotClearMainCue);
 
@@ -439,6 +443,7 @@ void WTrackMenu::setupActions() {
     if (featureIsEnabled(Feature::Reset)) {
         m_pClearMetadataMenu->addAction(m_pClearBeatsAction);
         m_pClearMetadataMenu->addAction(m_pClearPlayCountAction);
+        m_pClearMetadataMenu->addAction(m_pClearRatingAction);
         // FIXME: Why is clearing the loop not working?
         m_pClearMetadataMenu->addAction(m_pClearMainCueAction);
         m_pClearMetadataMenu->addAction(m_pClearHotCuesAction);
@@ -970,7 +975,7 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
         if (!playlistDao.isHidden(it.value())) {
             // No leak because making the menu the parent means they will be
             // auto-deleted
-            auto pAction = new QAction(
+            auto* pAction = new QAction(
                     mixxx::escapeTextPropertyWithoutShortcuts(it.key()),
                     m_pPlaylistMenu);
             bool locked = playlistDao.isPlaylistLocked(it.value());
@@ -1103,7 +1108,7 @@ void WTrackMenu::slotPopulateCrateMenu() {
 }
 
 void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
-    auto pCheckBox = qobject_cast<QCheckBox*>(pWidget);
+    auto* pCheckBox = qobject_cast<QCheckBox*>(pWidget);
     VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
         qWarning() << "crateId is not of CrateId type";
         return;
@@ -1335,6 +1340,29 @@ void WTrackMenu::slotClearBeats() {
 
 namespace {
 
+class ResetRatingTrackPointerOperation : public mixxx::TrackPointerOperation {
+  private:
+    void doApply(
+            const TrackPointer& pTrack) const override {
+        pTrack->resetRating();
+    }
+};
+
+} // anonymous namespace
+
+//slot for reset played count, sets count to 0 of one or more tracks
+void WTrackMenu::slotClearRating() {
+    const auto progressLabelText =
+            tr("Clearing rating of %n track(s)", "", getTrackCount());
+    const auto trackOperator =
+            ResetRatingTrackPointerOperation();
+    applyTrackPointerOperation(
+            progressLabelText,
+            &trackOperator);
+}
+
+namespace {
+
 class RemoveCuesOfTypeTrackPointerOperation : public mixxx::TrackPointerOperation {
   public:
     explicit RemoveCuesOfTypeTrackPointerOperation(mixxx::CueType cueType)
@@ -1503,6 +1531,7 @@ class ClearAllPerformanceMetadataTrackPointerOperation : public mixxx::TrackPoin
         m_resetKeys.apply(pTrack);
         m_resetReplayGain.apply(pTrack);
         m_resetWaveform.apply(pTrack);
+        m_resetRating.apply(pTrack);
     }
 
     const ResetBeatsTrackPointerOperation m_resetBeats;
@@ -1515,6 +1544,7 @@ class ClearAllPerformanceMetadataTrackPointerOperation : public mixxx::TrackPoin
     const ResetKeysTrackPointerOperation m_resetKeys;
     const ResetReplayGainTrackPointerOperation m_resetReplayGain;
     const ResetWaveformTrackPointerOperation m_resetWaveform;
+    const ResetRatingTrackPointerOperation m_resetRating;
 };
 
 } // anonymous namespace

@@ -1,5 +1,4 @@
-#ifndef MIXER_BASETRACKPLAYER_H
-#define MIXER_BASETRACKPLAYER_H
+#pragma once
 
 #include <QObject>
 #include <QScopedPointer>
@@ -58,7 +57,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
-            VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             const ChannelHandleAndGroup& handleGroup,
             bool defaultMaster,
@@ -159,5 +157,3 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     parented_ptr<ControlProxy> m_pVinylControlEnabled;
     parented_ptr<ControlProxy> m_pVinylControlStatus;
 };
-
-#endif // MIXER_BASETRACKPLAYER_H

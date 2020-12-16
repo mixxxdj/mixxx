@@ -1,23 +1,24 @@
+#include "waveform/renderers/waveformrendermark.h"
+
 #include <QDomNode>
 #include <QPainter>
 #include <QPainterPath>
 
-#include "waveform/renderers/waveformrendermark.h"
-
 #include "control/controlproxy.h"
 #include "engine/controls/cuecontrol.h"
+#include "moc_waveformrendermark.cpp"
 #include "track/track.h"
 #include "util/color/color.h"
+#include "util/painterscope.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
+#include "widget/wimagestore.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
-#include "widget/wimagestore.h"
-#include "util/painterscope.h"
 
 namespace {
     const int kMaxCueLabelLength = 23;
-}
+    } // namespace
 
 WaveformRenderMark::WaveformRenderMark(
         WaveformWidgetRenderer* waveformWidgetRenderer) :
@@ -43,9 +44,10 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     painter->setWorldMatrixEnabled(false);
 
-    for (auto& pMark: m_marks) {
-        if (!pMark->isValid())
+    for (const auto& pMark : m_marks) {
+        if (!pMark->isValid()) {
             continue;
+        }
 
         if (pMark->hasVisible() && !pMark->isVisible()) {
             continue;

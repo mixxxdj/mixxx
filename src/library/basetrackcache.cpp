@@ -1,11 +1,9 @@
-// basetrackcache.cpp
-// Created 7/3/2011 by RJ Ryan (rryan@mit.edu)
-
 #include "library/basetrackcache.h"
 
 #include "library/queryutil.h"
 #include "library/searchqueryparser.h"
 #include "library/trackcollection.h"
+#include "moc_basetrackcache.cpp"
 #include "track/globaltrackcache.h"
 #include "track/keyutils.h"
 #include "track/track.h"
@@ -702,12 +700,13 @@ int BaseTrackCache::compareColumnValues(int sortColumn,
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
 
-        if (fabs(delta) < .00001)
+        if (fabs(delta) < .00001) {
             result = 0;
-        else if (delta > 0.0)
+        } else if (delta > 0.0) {
             result = 1;
-        else
+        } else {
             result = -1;
+        }
     } else if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
         KeyUtils::KeyNotation keyNotation = m_columnCache.keyNotation();
 

@@ -79,11 +79,11 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
         PaHostApiTypeId deviceTypeId,
         unsigned int devIndex)
         : SoundDevice(config, sm),
-          m_pStream(NULL),
+          m_pStream(nullptr),
           m_deviceInfo(deviceInfo),
           m_deviceTypeId(deviceTypeId),
-          m_outputFifo(NULL),
-          m_inputFifo(NULL),
+          m_outputFifo(nullptr),
+          m_inputFifo(nullptr),
           m_outputDrift(false),
           m_inputDrift(false),
           m_bSetThreadPriority(false),
@@ -124,13 +124,13 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
     m_inputParams.channelCount = 0;
     m_inputParams.sampleFormat = 0;
     m_inputParams.suggestedLatency = 0.0;
-    m_inputParams.hostApiSpecificStreamInfo = NULL;
+    m_inputParams.hostApiSpecificStreamInfo = nullptr;
 
     m_outputParams.device = 0;
     m_outputParams.channelCount = 0;
     m_outputParams.sampleFormat = 0;
     m_outputParams.suggestedLatency = 0.0;
-    m_outputParams.hostApiSpecificStreamInfo = NULL;
+    m_outputParams.hostApiSpecificStreamInfo = nullptr;
 }
 
 SoundDevicePortAudio::~SoundDevicePortAudio() {
@@ -157,7 +157,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     // so we can figure out how many output channels we need to open.
     if (m_audioOutputs.empty()) {
         m_outputParams.channelCount = 0;
-        pOutputParams = NULL;
+        pOutputParams = nullptr;
     } else {
         foreach (AudioOutput out, m_audioOutputs) {
             ChannelGroup channelGroup = out.getChannelGroup();
@@ -173,7 +173,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     // so we can figure out how many input channels we need to open.
     if (m_audioInputs.empty()) {
         m_inputParams.channelCount = 0;
-        pInputParams = NULL;
+        pInputParams = nullptr;
     } else {
         foreach (AudioInput in, m_audioInputs) {
             ChannelGroup channelGroup = in.getChannelGroup();
@@ -233,12 +233,12 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     m_outputParams.device = m_deviceId.portAudioIndex;
     m_outputParams.sampleFormat = paFloat32;
     m_outputParams.suggestedLatency = bufferMSec / 1000.0;
-    m_outputParams.hostApiSpecificStreamInfo = NULL;
+    m_outputParams.hostApiSpecificStreamInfo = nullptr;
 
     m_inputParams.device  = m_deviceId.portAudioIndex;
     m_inputParams.sampleFormat  = paFloat32;
     m_inputParams.suggestedLatency = bufferMSec / 1000.0;
-    m_inputParams.hostApiSpecificStreamInfo = NULL;
+    m_inputParams.hostApiSpecificStreamInfo = nullptr;
 
     qDebug() << "Opening stream with id" << m_deviceId.portAudioIndex;
 
@@ -247,7 +247,7 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
     m_syncBuffers = syncBuffers;
 
     // Create the callback function pointer.
-    PaStreamCallback* callback = NULL;
+    PaStreamCallback* callback = nullptr;
     if (isClkRefDevice) {
         callback = paV19CallbackClkRef;
     } else if (m_syncBuffers == 2) { // "Default (long delay)"
@@ -377,13 +377,13 @@ SoundDeviceError SoundDevicePortAudio::open(bool isClkRefDevice, int syncBuffers
 }
 
 bool SoundDevicePortAudio::isOpen() const {
-    return m_pStream != NULL;
+    return m_pStream != nullptr;
 }
 
 SoundDeviceError SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << m_deviceId;
     PaStream* pStream = m_pStream;
-    m_pStream = NULL;
+    m_pStream = nullptr;
     if (pStream) {
         // Make sure the stream is not stopped before we try stopping it.
         PaError err = Pa_IsStreamStopped(pStream);
@@ -431,8 +431,8 @@ SoundDeviceError SoundDevicePortAudio::close() {
         }
     }
 
-    m_outputFifo = NULL;
-    m_inputFifo = NULL;
+    m_outputFifo = nullptr;
+    m_inputFifo = nullptr;
     m_bSetThreadPriority = false;
 
     return SOUNDDEVICE_ERROR_OK;

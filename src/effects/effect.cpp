@@ -1,21 +1,23 @@
+#include "effects/effect.h"
+
 #include <QtDebug>
 
-#include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "effects/effectsmanager.h"
 #include "effects/effectxmlelements.h"
-#include "engine/effects/engineeffectchain.h"
 #include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectchain.h"
+#include "moc_effect.cpp"
 #include "util/xml.h"
 
 Effect::Effect(EffectsManager* pEffectsManager,
-               EffectManifestPointer pManifest,
-               EffectInstantiatorPointer pInstantiator)
+        EffectManifestPointer pManifest,
+        EffectInstantiatorPointer pInstantiator)
         : QObject(), // no parent
           m_pEffectsManager(pEffectsManager),
           m_pManifest(pManifest),
           m_pInstantiator(pInstantiator),
-          m_pEngineEffect(NULL),
+          m_pEngineEffect(nullptr),
           m_bAddedToEngine(false),
           m_bEnabled(false) {
     for (const auto& pManifestParameter: m_pManifest->parameters()) {
@@ -88,7 +90,7 @@ void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
     request->RemoveEffectFromChain.pEffect = m_pEngineEffect;
     request->RemoveEffectFromChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
-    m_pEngineEffect = NULL;
+    m_pEngineEffect = nullptr;
 
     m_bAddedToEngine = false;
 }
@@ -158,7 +160,7 @@ unsigned int Effect::numButtonParameters() const {
 
 EffectParameter* Effect::getParameterById(const QString& id) const {
     EffectParameter* pParameter = m_parametersById.value(id, NULL);
-    if (pParameter == NULL) {
+    if (pParameter == nullptr) {
         qWarning() << debugString() << "getParameterById"
                    << "WARNING: parameter for id does not exist:" << id;
     }
@@ -189,7 +191,7 @@ EffectParameter* Effect::getFilteredParameterForSlot(ParameterFilterFnc filterFn
             ++num;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 EffectParameter* Effect::getKnobParameterForSlot(unsigned int slotNumber) {

@@ -9,6 +9,7 @@
 #include "dialog/dlgreplacecuecolor.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
+#include "moc_dlgprefcolors.cpp"
 #include "util/color/predefinedcolorpalettes.h"
 #include "util/compatibility.h"
 #include "util/math.h"
@@ -27,7 +28,9 @@ const ConfigKey kLoopDefaultColorIndexConfigKey("[Controls]", "LoopDefaultColorI
 } // anonymous namespace
 
 DlgPrefColors::DlgPrefColors(
-        QWidget* parent, UserSettingsPointer pConfig, Library* pLibrary)
+        QWidget* parent,
+        UserSettingsPointer pConfig,
+        std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_colorPaletteSettings(ColorPaletteSettings(pConfig)),

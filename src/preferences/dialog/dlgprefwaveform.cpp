@@ -1,15 +1,19 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
-#include "mixxx.h"
-#include "library/library.h"
 #include "library/dao/analysisdao.h"
+#include "library/library.h"
+#include "mixxx.h"
+#include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "util/db/dbconnectionpooled.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetfactory.h"
 
-DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                                 UserSettingsPointer pConfig, Library* pLibrary)
+DlgPrefWaveform::DlgPrefWaveform(
+        QWidget* pParent,
+        MixxxMainWindow* pMixxx,
+        UserSettingsPointer pConfig,
+        std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
@@ -114,14 +118,10 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
             &WaveformWidgetFactory::waveformMeasured,
             this,
             &DlgPrefWaveform::slotWaveformMeasured);
-    // Don't automatically reload the skin after changing the overview type to
-    // work around macOS skin change crash. https://bugs.launchpad.net/mixxx/+bug/1877487
-#ifndef __APPLE__
     connect(waveformOverviewComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefWaveform::slotSetWaveformOverviewType);
-#endif
     connect(clearCachedWaveforms,
             &QAbstractButton::clicked,
             this,
@@ -181,15 +181,10 @@ void DlgPrefWaveform::slotUpdate() {
 }
 
 void DlgPrefWaveform::slotApply() {
-    // Require restarting Mixxx to apply the new overview type in order to work
-    // around macOS skin change crash. https://bugs.launchpad.net/mixxx/+bug/1877487
-#ifdef __APPLE__
     ConfigValue overviewtype = ConfigValue(waveformOverviewComboBox->currentIndex());
     if (overviewtype != m_pConfig->get(ConfigKey("[Waveform]", "WaveformOverviewType"))) {
         m_pConfig->set(ConfigKey("[Waveform]", "WaveformOverviewType"), overviewtype);
-        notifyRebootNecessary();
     }
-#endif
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
@@ -215,8 +210,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Default zoom level is 3 in WaveformWidgetFactory.
     defaultZoomComboBox->setCurrentIndex(3 + 1);
 
-    // Don't synchronize zoom by default.
-    synchronizeZoomCheckBox->setChecked(false);
+    synchronizeZoomCheckBox->setChecked(true);
 
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(2);
@@ -238,12 +232,6 @@ void DlgPrefWaveform::slotResetToDefaults() {
 
     // 50 (center) is default
     playMarkerPositionSlider->setValue(50);
-}
-
-void DlgPrefWaveform::notifyRebootNecessary() {
-    // make the fact that you have to restart mixxx more obvious
-    QMessageBox::information(
-            this, tr("Information"), tr("Mixxx must be restarted to load the new overview type."));
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {

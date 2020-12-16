@@ -6,13 +6,18 @@
 
 class GLSLWaveformRendererSignal;
 
-class GLSLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
+class GLSLWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
+    enum class GlslType {
+        Filtered,
+        RGB,
+        RGBStacked,
+    };
     GLSLWaveformWidget(
             const QString& group,
             QWidget* parent,
-            bool rgbRenderer);
+            GlslType type);
     ~GLSLWaveformWidget() override = default;
 
     void resize(int width, int height) override;
@@ -57,4 +62,31 @@ class GLSLRGBWaveformWidget : public GLSLWaveformWidget {
     static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return true; }
     static inline bool developerOnly() { return false; }
+};
+
+class GLSLRGBStackedWaveformWidget : public GLSLWaveformWidget {
+    Q_OBJECT
+  public:
+    GLSLRGBStackedWaveformWidget(const QString& group, QWidget* parent);
+    ~GLSLRGBStackedWaveformWidget() override = default;
+
+    WaveformWidgetType::Type getType() const override {
+        return WaveformWidgetType::GLSLRGBStackedWaveform;
+    }
+
+    static inline QString getWaveformWidgetName() {
+        return tr("RGB Stacked");
+    }
+    static inline bool useOpenGl() {
+        return true;
+    }
+    static inline bool useOpenGles() {
+        return false;
+    }
+    static inline bool useOpenGLShaders() {
+        return true;
+    }
+    static inline bool developerOnly() {
+        return false;
+    }
 };

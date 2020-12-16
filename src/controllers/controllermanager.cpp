@@ -1,20 +1,15 @@
-/**
-  * @file controllermanager.cpp
-  * @author Sean Pappalardo spappalardo@mixxx.org
-  * @date Sat Apr 30 2011
-  * @brief Manages creation/enumeration/deletion of hardware controllers.
-  */
+#include "controllers/controllermanager.h"
 
 #include <QSet>
+#include <QThread>
 
-#include "util/trace.h"
-#include "controllers/controllermanager.h"
-#include "controllers/defs_controllers.h"
 #include "controllers/controllerlearningeventfilter.h"
+#include "controllers/defs_controllers.h"
+#include "controllers/midi/portmidienumerator.h"
+#include "moc_controllermanager.cpp"
 #include "util/cmdlineargs.h"
 #include "util/time.h"
-
-#include "controllers/midi/portmidienumerator.h"
+#include "util/trace.h"
 #ifdef __HSS1394__
 #include "controllers/midi/hss1394enumerator.h"
 #endif

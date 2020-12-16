@@ -16,6 +16,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_browsetablemodel.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "widget/wlibrarytableview.h"
@@ -195,7 +196,7 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
 
 TrackPointer BrowseTableModel::getTrackByRef(const TrackRef& trackRef) const {
     if (m_pRecordingManager->getRecordingLocation() == trackRef.getLocation()) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(nullptr,
                 tr("Mixxx Library"),
                 tr("Could not load the following file because it is in use by "
                    "Mixxx or another application.") +

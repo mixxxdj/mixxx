@@ -30,14 +30,9 @@ void Sandbox::initialize(const QString& permissionsFile) {
     s_pSandboxPermissions = QSharedPointer<ConfigObject<ConfigValue>>(
         new ConfigObject<ConfigValue>(permissionsFile));
 
-#ifdef Q_OS_MAC
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
-    // If we are running on at least 10.7.0 and have the com.apple.security.app-sandbox
-    // entitlement, we are in a sandbox
-    SInt32 version = 0;
-    Gestalt(gestaltSystemVersion, &version);
+#ifdef __APPLE__
     SecCodeRef secCodeSelf;
-    if (version >= 0x1070 && SecCodeCopySelf(kSecCSDefaultFlags, &secCodeSelf) == errSecSuccess) {
+    if (SecCodeCopySelf(kSecCSDefaultFlags, &secCodeSelf) == errSecSuccess) {
         SecRequirementRef sandboxReq;
         CFStringRef entitlement = CFSTR("entitlement [\"com.apple.security.app-sandbox\"]");
         if (SecRequirementCreateWithString(entitlement, kSecCSDefaultFlags,
@@ -50,7 +45,6 @@ void Sandbox::initialize(const QString& permissionsFile) {
         }
         CFRelease(secCodeSelf);
     }
-#endif
 #endif
 }
 
@@ -87,25 +81,28 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
     QString title = QObject::tr("Mixxx Needs Access to: %1")
             .arg(info.fileName());
 
-    QMessageBox::question(
-        NULL, title,
-        QObject::tr(
-            "Due to Mac Sandboxing, we need your permission to access this file:"
-            "\n\n%1\n\n"
-            "After clicking OK, you will see a file picker. "
-            "To give Mixxx permission, you must select '%2' to proceed. "
-            "If you do not want to grant Mixxx access click Cancel on the file picker. "
-            "We're sorry for this inconvenience.\n\n"
-            "To abort this action, press Cancel on the file dialog.")
-        .arg(canonicalPath, info.fileName()));
+    QMessageBox::question(nullptr,
+            title,
+            QObject::tr(
+                    "Due to Mac Sandboxing, we need your permission to access "
+                    "this file:"
+                    "\n\n%1\n\n"
+                    "After clicking OK, you will see a file picker. "
+                    "To give Mixxx permission, you must select '%2' to "
+                    "proceed. "
+                    "If you do not want to grant Mixxx access click Cancel on "
+                    "the file picker. "
+                    "We're sorry for this inconvenience.\n\n"
+                    "To abort this action, press Cancel on the file dialog.")
+                    .arg(canonicalPath, info.fileName()));
 
     QString result;
     QFileInfo resultInfo;
     while (true) {
         if (info.isFile()) {
-            result = QFileDialog::getOpenFileName(NULL, title, canonicalPath);
+            result = QFileDialog::getOpenFileName(nullptr, title, canonicalPath);
         } else if (info.isDir()) {
-            result = QFileDialog::getExistingDirectory(NULL, title, canonicalPath);
+            result = QFileDialog::getExistingDirectory(nullptr, title, canonicalPath);
         }
 
         if (result.isNull()) {
@@ -127,10 +124,10 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
             qDebug() << "User selected the wrong file.";
         }
         QMessageBox::question(
-            NULL, title,
-            QObject::tr("You selected the wrong file. To grant Mixxx access, "
-                        "please select the file '%1'. If you do not want to "
-                        "continue, press Cancel.").arg(info.fileName()));
+                nullptr, title, QObject::tr("You selected the wrong file. To grant Mixxx access, "
+                                            "please select the file '%1'. If you do not want to "
+                                            "continue, press Cancel.")
+                                        .arg(info.fileName()));
     }
 
     return createSecurityToken(resultInfo);
@@ -152,12 +149,11 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
         return false;
     }
     QMutexLocker locker(&s_mutex);
-    if (s_pSandboxPermissions == NULL) {
+    if (s_pSandboxPermissions == nullptr) {
         return false;
     }
 
-#ifdef Q_OS_MAC
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+#ifdef __APPLE__
     CFURLRef url = CFURLCreateWithFileSystemPath(
             kCFAllocatorDefault, QStringToCFString(canonicalPath),
             kCFURLPOSIXPathStyle, isDirectory);
@@ -192,7 +188,6 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
         }
     }
 #endif
-#endif
     return false;
 }
 
@@ -208,7 +203,7 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool crea
     }
 
     QMutexLocker locker(&s_mutex);
-    if (s_pSandboxPermissions == NULL) {
+    if (s_pSandboxPermissions == nullptr) {
         return SecurityTokenPointer();
     }
 
@@ -322,8 +317,7 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
 
 SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath,
                                                     const QString& bookmarkBase64) {
-#ifdef Q_OS_MAC
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+#ifdef __APPLE__
     QByteArray bookmarkBA = QByteArray::fromBase64(bookmarkBase64.toLatin1());
     if (!bookmarkBA.isEmpty()) {
         CFDataRef bookmarkData = CFDataCreate(
@@ -360,7 +354,6 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
             }
         }
     }
-#endif
 #else
     Q_UNUSED(canonicalPath);
     Q_UNUSED(bookmarkBase64);
@@ -369,7 +362,93 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
     return SecurityTokenPointer();
 }
 
-#ifdef Q_OS_MAC
+QString Sandbox::migrateOldSettings() {
+    // QStandardPaths::DataLocation returns a different location depending on whether the build
+    // is signed (and therefore sandboxed with the hardened runtime), so use the absolute path
+    // that the sandbox uses regardless of whether this build is actually sandboxed.
+    // Otherwise, developers would need to run with --settingsPath every time or symlink
+    // to use the same settings directory with signed and unsigned builds.
+
+    // QDir::homePath returns a path inside the sandbox.
+    QString homePath = QLatin1String("/Users/") + qgetenv("USER");
+
+    QString sandboxedPath = homePath +
+            QLatin1String(
+                    "/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support/Mixxx");
+    QDir sandboxedSettings(sandboxedPath);
+
+    if (sandboxedSettings.exists() && !sandboxedSettings.isEmpty()) {
+        return sandboxedPath;
+    }
+
+    // Because Mixxx cannot test if the old path exists before getting permission to access it
+    // outside the sandbox, unfortunately it is necessary to annoy the user with this popup
+    // even if they are installing Mixxx >= 2.3.0 without having installed an old version of Mixxx.
+    QString title = QObject::tr("Upgrading old Mixxx settings");
+    QString oldPath = homePath + QLatin1String("/Library/Application Support/Mixxx");
+    QMessageBox::information(nullptr,
+            title,
+            QObject::tr(
+                    "Due to Mac sandboxing, Mixxx needs your permission to "
+                    "access your music library "
+                    "and settings from Mixxx versions before 2.3.0. After "
+                    "clicking OK, you will see a file picker. "
+                    "To give Mixxx permission, press the Ok button in the file "
+                    "picker."
+                    "\n\n"
+                    "If you do not want to grant Mixxx access click Cancel on "
+                    "the file picker."));
+    QString result = QFileDialog::getExistingDirectory(
+            nullptr,
+            title,
+            oldPath);
+    if (result != oldPath) {
+        qInfo() << "Sandbox::migrateOldSettings: User declined to migrate "
+                   "old settings from"
+                << oldPath << "User selected" << result;
+        return sandboxedPath;
+    }
+
+    // Sandbox::askForAccess cannot be used here because it depends on settings being
+    // initialized. There is no need to store the bookmark anyway because this is a
+    // one time process.
+#ifdef __APPLE__
+    CFURLRef url = CFURLCreateWithFileSystemPath(
+            kCFAllocatorDefault, QStringToCFString(oldPath), kCFURLPOSIXPathStyle, true);
+    if (url) {
+        CFErrorRef error = NULL;
+        CFDataRef bookmark = CFURLCreateBookmarkData(
+                kCFAllocatorDefault,
+                url,
+                kCFURLBookmarkCreationWithSecurityScope,
+                nil,
+                nil,
+                &error);
+        CFRelease(url);
+        if (bookmark) {
+            QFile oldSettings(oldPath);
+            if (oldSettings.rename(sandboxedPath)) {
+                qInfo() << "Sandbox::migrateOldSettings: Successfully "
+                           "migrated old settings from"
+                        << oldPath << "to new path" << sandboxedPath;
+            } else {
+                qWarning() << "Sandbox::migrateOldSettings: Failed to migrate "
+                              "old settings from"
+                           << oldPath << "to new path" << sandboxedPath;
+            }
+        } else {
+            qWarning() << "Sandbox::migrateOldSettings: Failed to access old "
+                          "settings path"
+                       << oldPath << "Cannot migrate to new path"
+                       << sandboxedPath;
+        }
+        CFRelease(bookmark);
+    }
+#endif
+    return sandboxedPath;
+}
+
+#ifdef __APPLE__
 SandboxSecurityToken::SandboxSecurityToken(const QString& path, CFURLRef url)
         : m_path(path),
           m_url(url) {
@@ -382,16 +461,14 @@ SandboxSecurityToken::SandboxSecurityToken(const QString& path, CFURLRef url)
 #endif
 
 SandboxSecurityToken::~SandboxSecurityToken() {
-#ifdef Q_OS_MAC
+#ifdef __APPLE__
     if (sDebug) {
         qDebug() << "~SandboxSecurityToken" << m_path;
     }
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
     if (m_url) {
         CFURLStopAccessingSecurityScopedResource(m_url);
         CFRelease(m_url);
         m_url = 0;
     }
-#endif
 #endif
 }
