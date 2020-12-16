@@ -173,7 +173,6 @@ MixxxMainWindow::MixxxMainWindow(
             this,
             m_pSkinLoader,
             m_pCoreServices->getSoundManager(),
-            m_pCoreServices->getPlayerManager(),
             m_pCoreServices->getControllerManager(),
             m_pCoreServices->getVinylControlManager(),
             m_pCoreServices->getEffectsManager(),
