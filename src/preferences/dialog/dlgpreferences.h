@@ -65,8 +65,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
   public:
     DlgPreferences(MixxxMainWindow* mixxx,
             SkinLoader* pSkinLoader,
-            SoundManager* soundman,
-            ControllerManager* controllers,
+            SoundManager* pSoundManager,
+            ControllerManager* pControllerManager,
             VinylControlManager* pVCManager,
             EffectsManager* pEffectsManager,
             SettingsManager* pSettingsManager,

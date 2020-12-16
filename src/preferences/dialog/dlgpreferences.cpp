@@ -66,12 +66,12 @@
 #include "library/trackcollectionmanager.h"
 #include "util/compatibility.h"
 
-DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
-                               SoundManager * soundman,
-                               ControllerManager * controllers, VinylControlManager *pVCManager,
+DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader,
+                               SoundManager* pSoundManager,
+                               ControllerManager* pControllerManager, VinylControlManager *pVCManager,
                                EffectsManager* pEffectsManager,
                                SettingsManager* pSettingsManager,
-                               Library *pLibrary)
+                               Library* pLibrary)
         : m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
     setupUi(this);
@@ -87,7 +87,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     }
 
     // Construct widgets for use in tabs.
-    m_soundPage = new DlgPrefSound(this, soundman, m_pConfig);
+    m_soundPage = new DlgPrefSound(this, pSoundManager, m_pConfig);
     addPageWidget(m_soundPage);
     m_libraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_libraryPage);
@@ -95,7 +95,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
             &DlgPrefLibrary::scanLibrary,
             pLibrary->trackCollections(),
             &TrackCollectionManager::startLibraryScan);
-    m_controllersPage = new DlgPrefControllers(this, m_pConfig, controllers,
+    m_controllersPage = new DlgPrefControllers(this, m_pConfig, pControllerManager,
                                             m_pControllerTreeItem);
     addPageWidget(m_controllersPage);
 
@@ -105,7 +105,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     m_vinylControlPage = new DlgPrefVinyl(this, pVCManager, m_pConfig);
     addPageWidget(m_vinylControlPage);
 #else
-    m_noVinylControlPage = new DlgPrefNoVinyl(this, soundman, m_pConfig);
+    m_noVinylControlPage = new DlgPrefNoVinyl(this, pSoundManager, m_pConfig);
     addPageWidget(m_noVinylControlPage);
 #endif
 
