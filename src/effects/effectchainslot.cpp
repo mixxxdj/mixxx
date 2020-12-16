@@ -1,12 +1,13 @@
 #include "effects/effectchainslot.h"
 
-#include "effects/effectrack.h"
-#include "effects/effectxmlelements.h"
-#include "effects/effectslot.h"
+#include "control/controlencoder.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "control/controlencoder.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
+#include "effects/effectxmlelements.h"
 #include "mixer/playermanager.h"
+#include "moc_effectchainslot.cpp"
 #include "util/math.h"
 #include "util/xml.h"
 
@@ -137,8 +138,9 @@ EffectChainSlot::~EffectChainSlot() {
 }
 
 QString EffectChainSlot::id() const {
-    if (m_pEffectChain)
+    if (m_pEffectChain) {
         return m_pEffectChain->id();
+    }
     return "";
 }
 
@@ -177,7 +179,7 @@ void EffectChainSlot::slotChainMixModeChanged(EffectChainMixMode mixMode) {
 void EffectChainSlot::slotChainChannelStatusChanged(const QString& group,
                                                     bool enabled) {
     ChannelInfo* pInfo = m_channelInfoByName.value(group, NULL);
-    if (pInfo != NULL && pInfo->pEnabled != NULL) {
+    if (pInfo != nullptr && pInfo->pEnabled != nullptr) {
         pInfo->pEnabled->set(enabled);
         emit updated();
     }
@@ -461,7 +463,7 @@ void EffectChainSlot::slotControlChainPrevPreset(double v) {
 void EffectChainSlot::slotChannelStatusChanged(const QString& group) {
     if (m_pEffectChain) {
         ChannelInfo* pChannelInfo = m_channelInfoByName.value(group, NULL);
-        if (pChannelInfo != NULL && pChannelInfo->pEnabled != NULL) {
+        if (pChannelInfo != nullptr && pChannelInfo->pEnabled != nullptr) {
             bool bEnable = pChannelInfo->pEnabled->toBool();
             if (bEnable) {
                 m_pEffectChain->enableForInputChannel(pChannelInfo->handle_group);

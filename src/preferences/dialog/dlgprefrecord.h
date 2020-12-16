@@ -1,5 +1,4 @@
-#ifndef DLGPREFRECORD_H
-#define DLGPREFRECORD_H
+#pragma once
 
 #include <QButtonGroup>
 #include <QRadioButton>
@@ -55,5 +54,3 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     QList<QRadioButton*> m_formatButtons;
     QList<QAbstractButton*> m_optionWidgets;
 };
-
-#endif

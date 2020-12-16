@@ -11,6 +11,7 @@
 #include "analyzer/constants.h"
 #include "engine/engine.h"
 #include "library/dao/analysisdao.h"
+#include "moc_analyzerthread.cpp"
 #include "sources/audiosourcestereoproxy.h"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"

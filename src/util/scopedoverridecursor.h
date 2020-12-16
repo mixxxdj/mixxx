@@ -1,5 +1,4 @@
-#ifndef SCOPEDOVERRIDECURSOR_H
-#define SCOPEDOVERRIDECURSOR_H
+#pragma once
 
 #include <QApplication>
 
@@ -22,5 +21,3 @@ class ScopedWaitCursor : public ScopedOverrideCursor {
     {
     }
 };
-
-#endif // SCOPEDOVERRIDECURSOR_H

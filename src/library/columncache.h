@@ -1,5 +1,4 @@
-#ifndef COLUMNCACHE_H
-#define COLUMNCACHE_H
+#pragma once
 
 #include <QObject>
 #include <QMap>
@@ -122,5 +121,3 @@ class ColumnCache : public QObject {
   private slots:
     void slotSetKeySortOrder(double);
 };
-
-#endif /* COLUMNCACHE_H */

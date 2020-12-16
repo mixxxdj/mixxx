@@ -1,10 +1,12 @@
+#include "effects/effectbuttonparameterslot.h"
+
 #include <QtDebug>
 
 #include "control/controleffectknob.h"
-#include "effects/effectbuttonparameterslot.h"
-#include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "effects/effectxmlelements.h"
+#include "moc_effectbuttonparameterslot.cpp"
 #include "util/math.h"
 #include "util/xml.h"
 
@@ -93,7 +95,7 @@ void EffectButtonParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
-        m_pEffectParameter = NULL;
+        m_pEffectParameter = nullptr;
     }
 
     m_pEffect.clear();

@@ -1,5 +1,4 @@
-#ifndef VINYLCONTROLCONTROL_H
-#define VINYLCONTROLCONTROL_H
+#pragma once
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -40,5 +39,3 @@ class VinylControlControl : public EngineControl {
 
     bool m_bSeekRequested;
 };
-
-#endif /* VINYLCONTROLCONTROL_H */

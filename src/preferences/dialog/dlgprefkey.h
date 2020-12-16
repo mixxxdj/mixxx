@@ -1,5 +1,4 @@
-#ifndef DLGPREFKEY_H
-#define DLGPREFKEY_H
+#pragma once
 
 #include <QList>
 #include <QMap>
@@ -54,5 +53,3 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyzeEnabled;
 };
-
-#endif

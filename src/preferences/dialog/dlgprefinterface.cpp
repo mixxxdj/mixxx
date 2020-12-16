@@ -12,6 +12,7 @@
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "mixxx.h"
+#include "moc_dlgprefinterface.cpp"
 #include "preferences/usersettings.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
@@ -221,7 +222,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
-        ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", 0));
+        ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", nullptr));
         ComboBoxSchemeconf->setCurrentIndex(0);
         // clear m_colorScheme so that SkinLoader::getSkinPreview returns the correct preview
         m_colorScheme = QString();

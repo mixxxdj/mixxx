@@ -6,6 +6,7 @@
 #include <QTableView>
 
 #include "library/trackmodel.h"
+#include "moc_colordelegate.cpp"
 #include "util/color/rgbcolor.h"
 
 ColorDelegate::ColorDelegate(QTableView* pTableView)

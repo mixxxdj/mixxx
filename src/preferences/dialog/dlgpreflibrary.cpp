@@ -1,22 +1,24 @@
+#include "preferences/dialog/dlgpreflibrary.h"
+
+#include <QApplication>
 #include <QDesktopServices>
-#include <QStandardPaths>
 #include <QDir>
 #include <QFileDialog>
-#include <QStringList>
-#include <QUrl>
-#include <QApplication>
 #include <QFontDialog>
 #include <QFontMetrics>
 #include <QMessageBox>
+#include <QStandardPaths>
+#include <QStringList>
+#include <QUrl>
 
-#include "preferences/dialog/dlgpreflibrary.h"
 #include "library/dlgtrackmetadataexport.h"
+#include "moc_dlgpreflibrary.cpp"
 #include "sources/soundsourceproxy.h"
 #include "widget/wsearchlineedit.h"
 
 namespace {
     const ConfigKey kSearchDebouncingTimeoutMillisKey = ConfigKey("[Library]","SearchDebouncingTimeoutMillis");
-}
+    } // namespace
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,

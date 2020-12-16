@@ -1,8 +1,4 @@
 #pragma once
-/// @file controllerpresetfilehandler.h
-/// @author Sean Pappalardo spappalardo@mixxx.org
-/// @date Mon 9 Apr 2012
-/// @brief Handles loading and saving of Controller presets.
 
 #include "util/xml.h"
 #include "controllers/controllerpreset.h"

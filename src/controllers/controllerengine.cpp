@@ -6,14 +6,16 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
-#include "controllers/colormapperjsproxy.h"
 #include "controllers/controllerengine.h"
-#include "controllers/controller.h"
-#include "controllers/controllerdebug.h"
+
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
+#include "controllers/colormapperjsproxy.h"
+#include "controllers/controller.h"
+#include "controllers/controllerdebug.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_controllerengine.cpp"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
 #include "util/time.h"

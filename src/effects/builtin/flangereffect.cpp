@@ -13,7 +13,7 @@ inline CSAMPLE tanh_approx(CSAMPLE input) {
     // return tanhf(input); // 142ns for process;
     return input / (1 + input * input / (3 + input * input / 5)); // 119ns for process
 }
-}
+} // namespace
 
 // static
 QString FlangerEffect::getId() {

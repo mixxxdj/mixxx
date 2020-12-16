@@ -1,8 +1,9 @@
 #include "preferences/dialog/dlgprefeffects.h"
 
-#include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectsbackend.h"
+#include "effects/effectsmanager.h"
+#include "moc_dlgprefeffects.cpp"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
                                UserSettingsPointer pConfig,
@@ -14,7 +15,7 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
 
     m_availableEffectsModel.resetFromEffectManager(pEffectsManager);
     const QList<EffectProfilePtr> effectProfiles = m_availableEffectsModel.profiles();
-    for (auto& profile : effectProfiles) {
+    for (const auto& profile : effectProfiles) {
         EffectManifestPointer pManifest = profile->pManifest;
 
         // Users are likely to have lots of external plugins installed and

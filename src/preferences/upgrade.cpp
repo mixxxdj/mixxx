@@ -1,20 +1,3 @@
-/***************************************************************************
-                          upgrade.cpp  -  description
-                             -------------------
-    begin                : Fri Mar 13 2009
-    copyright            : (C) 2009 by Sean M. Pappalardo
-    email                : pegasus@c64.org
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "preferences/upgrade.h"
 
 #include <QPixmap>
@@ -86,8 +69,15 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                 oldFile->remove();
             }
             else {
-                if (oldFile->error()==14) qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qDebug() << errorText.arg("library", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+                if (oldFile->error() == 14) {
+                    qDebug() << errorText.arg(
+                                        "library", oldFilePath, newFilePath)
+                             << "The destination file already exists.";
+                } else {
+                    qDebug() << errorText.arg(
+                                        "library", oldFilePath, newFilePath)
+                             << "Error #" << oldFile->error();
+                }
             }
         }
         delete oldFile;
@@ -100,11 +90,18 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         newFilePath = newLocation.filePath("mixxxbpmscheme.xml");
         oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
-            if (oldFile->copy(newFilePath))
+            if (oldFile->copy(newFilePath)) {
                 oldFile->remove();
-            else {
-                if (oldFile->error()==14) qDebug() << errorText.arg("settings", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qDebug() << errorText.arg("settings", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+            } else {
+                if (oldFile->error() == 14) {
+                    qDebug() << errorText.arg(
+                                        "settings", oldFilePath, newFilePath)
+                             << "The destination file already exists.";
+                } else {
+                    qDebug() << errorText.arg(
+                                        "settings", oldFilePath, newFilePath)
+                             << "Error #" << oldFile->error();
+                }
             }
         }
         delete oldFile;
@@ -117,11 +114,20 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         oldFile = new QFile(oldFilePath);
         if (oldFile->exists()) {
             qWarning() << "The MIDI mapping file format has changed in this version of Mixxx. You will need to reconfigure your MIDI controller. See the Wiki for full details on the new format.";
-            if (oldFile->copy(newFilePath))
+            if (oldFile->copy(newFilePath)) {
                 oldFile->remove();
-            else {
-                if (oldFile->error()==14) qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qDebug() << errorText.arg("MIDI mapping", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+            } else {
+                if (oldFile->error() == 14) {
+                    qDebug()
+                            << errorText.arg(
+                                       "MIDI mapping", oldFilePath, newFilePath)
+                            << "The destination file already exists.";
+                } else {
+                    qDebug()
+                            << errorText.arg(
+                                       "MIDI mapping", oldFilePath, newFilePath)
+                            << "Error #" << oldFile->error();
+                }
             }
         }
         // Tidy up
@@ -139,12 +145,19 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 #endif
         newFilePath = newLocation.filePath(SETTINGS_FILE);
         oldFile = new QFile(oldFilePath);
-        if (oldFile->copy(newFilePath))
+        if (oldFile->copy(newFilePath)) {
             oldFile->remove();
-        else {
-                if (oldFile->error()==14) qDebug() << errorText.arg("configuration", oldFilePath, newFilePath) << "The destination file already exists.";
-                else qDebug() << errorText.arg("configuration", oldFilePath, newFilePath) << "Error #" << oldFile->error();
+        } else {
+            if (oldFile->error() == 14) {
+                qDebug() << errorText.arg(
+                                    "configuration", oldFilePath, newFilePath)
+                         << "The destination file already exists.";
+            } else {
+                qDebug() << errorText.arg(
+                                    "configuration", oldFilePath, newFilePath)
+                         << "Error #" << oldFile->error();
             }
+        }
         delete oldFile;
 
     }
@@ -420,8 +433,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
     }
 
-    if (configVersion == MIXXX_VERSION) qDebug() << "Configuration file is now at the current version" << MIXXX_VERSION;
-    else {
+    if (configVersion == MIXXX_VERSION) {
+        qDebug() << "Configuration file is now at the current version" << MIXXX_VERSION;
+    } else {
         qWarning() << "Configuration file is at version" << configVersion
                    << "instead of the current" << MIXXX_VERSION;
     }

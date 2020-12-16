@@ -1,10 +1,10 @@
-
 #include "widget/wtracktext.h"
 
 #include <QDebug>
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "moc_wtracktext.cpp"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
@@ -19,7 +19,7 @@ const WTrackMenu::Features trackMenuFeatures =
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Properties;
-}
+} // namespace
 
 WTrackText::WTrackText(QWidget* pParent,
         UserSettingsPointer pConfig,

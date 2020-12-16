@@ -1,5 +1,4 @@
-#ifndef KEYUTILS_H
-#define KEYUTILS_H
+#pragma once
 
 #include <QMutex>
 #include <QString>
@@ -162,5 +161,3 @@ class KeyUtils {
     static QMap<mixxx::track::io::key::ChromaticKey, QString> s_notation;
     static QMap<QString, mixxx::track::io::key::ChromaticKey> s_reverseNotation;
 };
-
-#endif /* KEYUTILS_H */

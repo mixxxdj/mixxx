@@ -3,6 +3,7 @@
 #include <QTreeWidget>
 #include <QtDebug>
 
+#include "moc_dlgtagfetcher.cpp"
 #include "track/track.h"
 #include "track/tracknumbers.h"
 
@@ -330,8 +331,9 @@ void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* parent) const {
 }
 
 void DlgTagFetcher::resultSelected() {
-    if (!results->currentItem())
+    if (!results->currentItem()) {
         return;
+    }
 
     const int resultIndex = results->currentItem()->data(0, Qt::UserRole).toInt();
     m_data.m_selectedResult = resultIndex;

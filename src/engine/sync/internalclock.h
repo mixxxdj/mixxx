@@ -1,5 +1,4 @@
-#ifndef INTERNALCLOCK_H
-#define INTERNALCLOCK_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -84,5 +83,3 @@ class InternalClock : public QObject, public Clock, public Syncable {
     // distance is m_dClockPosition / m_dBeatLength).
     double m_dClockPosition;
 };
-
-#endif /* INTERNALCLOCK_H */

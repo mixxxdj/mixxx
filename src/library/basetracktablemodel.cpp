@@ -13,6 +13,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_basetracktablemodel.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
@@ -450,7 +451,11 @@ QVariant BaseTrackTableModel::rawSiblingValue(
         return QVariant();
     }
     const auto siblingColumn = fieldIndex(siblingField);
-    DEBUG_ASSERT(siblingColumn >= 0);
+    if (siblingColumn < 0) {
+        // Unsupported or unknown column/field
+        // FIXME: This should never happen but it does. But why??
+        return QVariant();
+    }
     VERIFY_OR_DEBUG_ASSERT(siblingColumn != index.column()) {
         // Prevent infinite recursion
         return QVariant();

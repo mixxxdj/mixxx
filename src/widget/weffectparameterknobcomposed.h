@@ -1,5 +1,4 @@
-#ifndef WEFFECTKNOBCOMPOSED_H
-#define WEFFECTKNOBCOMPOSED_H
+#pragma once
 
 #include "widget/wknobcomposed.h"
 #include "effects/effectparameterslot.h"
@@ -31,5 +30,3 @@ class WEffectParameterKnobComposed : public WKnobComposed {
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
 };
-
-#endif // WEFFECTKNOBCOMPOSED_H

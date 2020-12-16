@@ -2,19 +2,20 @@
 
 #include <QtDebug>
 
-#include "waveform/visualplayposition.h"
-#include "util/timer.h"
-#include "util/trace.h"
-#include "control/controlproxy.h"
 #include "control/controlobject.h"
-#include "util/denormalsarezero.h"
+#include "control/controlproxy.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "float.h"
+#include "moc_sounddevicenetwork.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/denormalsarezero.h"
 #include "util/logger.h"
 #include "util/sample.h"
+#include "util/timer.h"
+#include "util/trace.h"
+#include "waveform/visualplayposition.h"
 
 namespace {
 const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
@@ -27,7 +28,7 @@ const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
 
 const mixxx::Logger kLogger("SoundDeviceNetwork");
-}
+} // namespace
 
 SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
                                        SoundManager *sm,
@@ -106,7 +107,7 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
 }
 
 bool SoundDeviceNetwork::isOpen() const {
-    return (m_inputFifo != NULL || m_outputFifo != NULL);
+    return (m_inputFifo != nullptr || m_outputFifo != nullptr);
 }
 
 SoundDeviceError SoundDeviceNetwork::close() {
@@ -129,7 +130,9 @@ QString SoundDeviceNetwork::getError() const {
 }
 
 void SoundDeviceNetwork::readProcess() {
-    if (!m_inputFifo || !m_pNetworkStream || !m_iNumInputChannels) return;
+    if (!m_inputFifo || !m_pNetworkStream || !m_iNumInputChannels) {
+        return;
+    }
 
     int inChunkSize = m_framesPerBuffer * m_iNumInputChannels;
     int readAvailable = m_pNetworkStream->getReadExpected()
@@ -221,7 +224,9 @@ void SoundDeviceNetwork::readProcess() {
 }
 
 void SoundDeviceNetwork::writeProcess() {
-    if (!m_outputFifo || !m_pNetworkStream) return;
+    if (!m_outputFifo || !m_pNetworkStream) {
+        return;
+    }
 
     int outChunkSize = m_framesPerBuffer * m_iNumOutputChannels;
     int writeAvailable = m_outputFifo->writeAvailable();

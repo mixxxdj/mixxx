@@ -1,10 +1,12 @@
-#include <QtDebug>
+#include "controllers/delegates/midioptionsdelegate.h"
+
 #include <QComboBox>
 #include <QTableView>
+#include <QtDebug>
 
-#include "controllers/delegates/midioptionsdelegate.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midiutils.h"
+#include "moc_midioptionsdelegate.cpp"
 
 MidiOptionsDelegate::MidiOptionsDelegate(QObject* pParent)
         : QStyledItemDelegate(pParent) {
@@ -67,7 +69,7 @@ void MidiOptionsDelegate::setEditorData(QWidget* editor,
     MidiOptions options = index.data(Qt::EditRole).value<MidiOptions>();
 
     QComboBox* pComboBox = qobject_cast<QComboBox*>(editor);
-    if (pComboBox == NULL) {
+    if (pComboBox == nullptr) {
         return;
     }
     for (int i = 0; i < pComboBox->count(); ++i) {
@@ -83,7 +85,7 @@ void MidiOptionsDelegate::setModelData(QWidget* editor,
                                        const QModelIndex& index) const {
     MidiOptions options;
     QComboBox* pComboBox = qobject_cast<QComboBox*>(editor);
-    if (pComboBox == NULL) {
+    if (pComboBox == nullptr) {
         return;
     }
     options.all = pComboBox->itemData(pComboBox->currentIndex()).toInt();

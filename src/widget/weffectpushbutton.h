@@ -1,5 +1,4 @@
-#ifndef WEFFECTPUSHBUTTON_H
-#define WEFFECTPUSHBUTTON_H
+#pragma once
 
 #include <QMenu>
 #include <QAction>
@@ -41,5 +40,3 @@ class WEffectPushButton : public WPushButton {
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
     QMenu* m_pButtonMenu;
 };
-
-#endif // WEFFECTPUSHBUTTON_H

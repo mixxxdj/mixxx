@@ -1,11 +1,13 @@
 #include "controllers/controllerinputmappingtablemodel.h"
-#include "controllers/midi/midimessage.h"
-#include "controllers/midi/midiutils.h"
+
 #include "controllers/delegates/controldelegate.h"
+#include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midichanneldelegate.h"
 #include "controllers/delegates/midiopcodedelegate.h"
-#include "controllers/delegates/midibytedelegate.h"
 #include "controllers/delegates/midioptionsdelegate.h"
+#include "controllers/midi/midimessage.h"
+#include "controllers/midi/midiutils.h"
+#include "moc_controllerinputmappingtablemodel.cpp"
 
 ControllerInputMappingTableModel::ControllerInputMappingTableModel(QObject* pParent)
         : ControllerMappingTableModel(pParent) {
@@ -15,7 +17,7 @@ ControllerInputMappingTableModel::~ControllerInputMappingTableModel() {
 }
 
 void ControllerInputMappingTableModel::apply() {
-    if (m_pMidiPreset != NULL) {
+    if (m_pMidiPreset != nullptr) {
         // Clear existing input mappings and insert all the input mappings in
         // the table into the preset.
         QMultiHash<uint16_t, MidiInputMapping> mappings;
@@ -31,7 +33,7 @@ void ControllerInputMappingTableModel::apply() {
 void ControllerInputMappingTableModel::onPresetLoaded() {
     clear();
 
-    if (m_pMidiPreset != NULL) {
+    if (m_pMidiPreset != nullptr) {
         // TODO(rryan): Tooltips
         setHeaderData(MIDI_COLUMN_CHANNEL, Qt::Horizontal, tr("Channel"));
         setHeaderData(MIDI_COLUMN_OPCODE, Qt::Horizontal, tr("Opcode"));
@@ -49,7 +51,7 @@ void ControllerInputMappingTableModel::onPresetLoaded() {
 }
 
 void ControllerInputMappingTableModel::clear() {
-    if (m_pMidiPreset != NULL) {
+    if (m_pMidiPreset != nullptr) {
         if (!m_midiInputMappings.isEmpty()) {
             beginRemoveRows(QModelIndex(), 0, m_midiInputMappings.size() - 1);
             m_midiInputMappings.clear();
@@ -63,7 +65,7 @@ void ControllerInputMappingTableModel::addMappings(const MidiInputMappings& mapp
         return;
     }
 
-    if (m_pMidiPreset != NULL) {
+    if (m_pMidiPreset != nullptr) {
         // When we add mappings from controller learning, we first remove the
         // duplicates from the table. We allow multiple mappings per MIDI
         // message but MIDI learning over-writes duplicates instead of adding.
@@ -91,7 +93,7 @@ void ControllerInputMappingTableModel::addMappings(const MidiInputMappings& mapp
 }
 
 void ControllerInputMappingTableModel::addEmptyMapping() {
-    if (m_pMidiPreset != NULL) {
+    if (m_pMidiPreset != nullptr) {
         beginInsertRows(QModelIndex(), m_midiInputMappings.size(),
                         m_midiInputMappings.size());
         m_midiInputMappings.append(MidiInputMapping());
@@ -123,8 +125,8 @@ void ControllerInputMappingTableModel::removeMappings(QModelIndexList indices) {
 
 QAbstractItemDelegate* ControllerInputMappingTableModel::delegateForColumn(
         int column, QWidget* pParent) {
-    if (m_pMidiPreset != NULL) {
-        ControlDelegate* pControlDelegate = NULL;
+    if (m_pMidiPreset != nullptr) {
+        ControlDelegate* pControlDelegate = nullptr;
         switch (column) {
             case MIDI_COLUMN_CHANNEL:
                 return new MidiChannelDelegate(pParent);
@@ -140,14 +142,14 @@ QAbstractItemDelegate* ControllerInputMappingTableModel::delegateForColumn(
                 return pControlDelegate;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 int ControllerInputMappingTableModel::rowCount(const QModelIndex& parent) const {
     if (parent.isValid()) {
         return 0;
     }
-    if (m_pMidiPreset != NULL) {
+    if (m_pMidiPreset != nullptr) {
         return m_midiInputMappings.size();
     }
     return 0;
@@ -159,7 +161,7 @@ int ControllerInputMappingTableModel::columnCount(const QModelIndex& parent) con
     }
     // Control and description.
     const int kBaseColumns = 2;
-    if (m_pMidiPreset != NULL) {
+    if (m_pMidiPreset != nullptr) {
         // Channel, Opcode, Control, Options
         return kBaseColumns + 4;
     }
@@ -178,7 +180,7 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
     int row = index.row();
     int column = index.column();
 
-    if (m_pMidiPreset != NULL) {
+    if (m_pMidiPreset != nullptr) {
         if (row < 0 || row >= m_midiInputMappings.size()) {
             return QVariant();
         }
@@ -222,7 +224,7 @@ bool ControllerInputMappingTableModel::setData(const QModelIndex& index,
     int row = index.row();
     int column = index.column();
 
-    if (m_pMidiPreset != NULL) {
+    if (m_pMidiPreset != nullptr) {
         if (row < 0 || row >= m_midiInputMappings.size()) {
             return false;
         }

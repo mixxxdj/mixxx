@@ -1,5 +1,4 @@
-#ifndef EVENT_H
-#define EVENT_H
+#pragma once
 
 #include <QtGlobal>
 #include <QString>
@@ -39,5 +38,3 @@ class Event {
     static bool start(const char*) = delete;
     static bool end(const char*) = delete;
 };
-
-#endif /* EVENT_H */
