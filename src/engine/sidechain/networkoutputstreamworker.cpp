@@ -6,7 +6,7 @@
 
 namespace {
 const mixxx::Logger kLogger("NetworkStreamWorker");
-}
+} // namespace
 
 NetworkOutputStreamWorker::NetworkOutputStreamWorker()
     : m_sampleRate(0),

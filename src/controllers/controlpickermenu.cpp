@@ -7,6 +7,7 @@
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "mixer/playermanager.h"
+#include "moc_controlpickermenu.cpp"
 #include "recording/defs_recording.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -1379,7 +1380,7 @@ void ControlPickerMenu::addPreviewDeckControl(const QString& control,
 }
 
 QMenu* ControlPickerMenu::addSubmenu(QString title, QMenu* pParent) {
-    if (pParent == NULL) {
+    if (pParent == nullptr) {
         pParent = this;
     }
     auto subMenu = make_parented<QMenu>(title, pParent);

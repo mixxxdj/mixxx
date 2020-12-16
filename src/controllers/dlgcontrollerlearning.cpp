@@ -1,17 +1,11 @@
-/**
-* @file dlgcontrollerlearning.cpp
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Thu 12 Apr 2012
-* @brief The controller mapping learning wizard
-*
-*/
+#include "controllers/dlgcontrollerlearning.h"
 
 #include <QCompleter>
 
 #include "control/controlobject.h"
-#include "controllers/dlgcontrollerlearning.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
+#include "moc_dlgcontrollerlearning.cpp"
 #include "util/version.h"
 
 namespace {
@@ -19,13 +13,13 @@ typedef QPair<QString, ConfigKey> NamedControl;
 bool namedControlComparator(const NamedControl& l1, const NamedControl& l2) {
     return l1.first < l2.first;
 }
-}
+} // namespace
 
-DlgControllerLearning::DlgControllerLearning(QWidget * parent,
-                                             Controller* controller)
+DlgControllerLearning::DlgControllerLearning(QWidget* parent,
+        Controller* controller)
         : QDialog(parent),
           m_pController(controller),
-          m_pMidiController(NULL),
+          m_pMidiController(nullptr),
           m_controlPickerMenu(this),
           m_messagesLearned(false) {
     qRegisterMetaType<MidiInputMappings>("MidiInputMappings");

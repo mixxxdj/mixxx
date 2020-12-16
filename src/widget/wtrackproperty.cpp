@@ -4,6 +4,7 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "moc_wtrackproperty.cpp"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
@@ -18,7 +19,7 @@ const WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Properties;
-}
+} // namespace
 
 WTrackProperty::WTrackProperty(
         QWidget* pParent,

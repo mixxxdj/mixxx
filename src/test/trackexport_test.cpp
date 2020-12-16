@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QScopedPointer>
 
+#include "moc_trackexport_test.cpp"
 #include "track/track.h"
 
 FakeOverwriteAnswerer::~FakeOverwriteAnswerer() { }

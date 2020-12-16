@@ -1,14 +1,4 @@
-/***************************************************************************
-                     encodervorbis.h  -  vorbis encoder for mixxx
-                             -------------------
-    copyright            : (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (broadcast and recording fixes)
- ***************************************************************************/
-
-
-#ifndef ENCODERVORBIS_H
-#define ENCODERVORBIS_H
+#pragma once
 
 // this also includes vorbis/codec.h
 #include <vorbis/vorbisenc.h>
@@ -21,6 +11,7 @@
 
 class EncoderCallback;
 
+/// Vorbis encoder
 class EncoderVorbis : public Encoder {
   public:
     static const int MONO_BITRATE_THRESHOLD;
@@ -61,5 +52,3 @@ class EncoderVorbis : public Encoder {
     int m_channels;
     QFile m_file;
 };
-
-#endif

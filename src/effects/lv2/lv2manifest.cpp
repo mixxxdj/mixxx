@@ -193,7 +193,7 @@ void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
                 static_cast<double>(lilv_node_as_float(value))));
     }
 
-    if (options != NULL) {
+    if (options != nullptr) {
         lilv_scale_points_free(options);
     }
 }

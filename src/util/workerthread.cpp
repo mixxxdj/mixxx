@@ -1,5 +1,6 @@
 #include "util/workerthread.h"
 
+#include "moc_workerthread.cpp"
 
 namespace {
 

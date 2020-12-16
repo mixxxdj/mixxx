@@ -6,6 +6,7 @@
 #include "library/trackcollection.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
+#include "moc_autodjprocessor.cpp"
 #include "track/track.h"
 #include "util/math.h"
 
@@ -104,7 +105,7 @@ void DeckAttributes::slotRateChanged(double v) {
 }
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
-    return m_pPlayer != NULL ? m_pPlayer->getLoadedTrack() : TrackPointer();
+    return m_pPlayer != nullptr ? m_pPlayer->getLoadedTrack() : TrackPointer();
 }
 
 AutoDJProcessor::AutoDJProcessor(
@@ -116,7 +117,7 @@ AutoDJProcessor::AutoDJProcessor(
         : QObject(pParent),
           m_pConfig(pConfig),
           m_pPlayerManager(pPlayerManager),
-          m_pAutoDJTableModel(NULL),
+          m_pAutoDJTableModel(nullptr),
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),
           m_transitionTime(kTransitionPreferenceDefault) {
@@ -152,7 +153,7 @@ AutoDJProcessor::AutoDJProcessor(
         QString group = PlayerManager::groupForDeck(i);
         BaseTrackPlayer* pPlayer = pPlayerManager->getPlayer(group);
         // Shouldn't be possible.
-        if (pPlayer == NULL) {
+        if (pPlayer == nullptr) {
             qWarning() << "PROGRAMMING ERROR deck does not exist" << i;
             continue;
         }

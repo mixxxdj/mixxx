@@ -1,5 +1,4 @@
-#ifndef ENCODERMP3_H
-#define ENCODERMP3_H
+#pragma once
 
 #include <lame/lame.h>
 
@@ -42,5 +41,3 @@ class EncoderMp3 final : public Encoder {
 
     EncoderCallback* m_pCallback;
 };
-
-#endif

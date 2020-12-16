@@ -1,4 +1,3 @@
-
 #pragma once
 
 // This was copied from the gcc header pmmintrin.h which requires SSE3

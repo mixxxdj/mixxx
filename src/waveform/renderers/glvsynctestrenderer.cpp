@@ -11,7 +11,6 @@ GLVSyncTestRenderer::GLVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer),
       m_drawcount(0) {
-    initializeOpenGLFunctions();
 }
 
 GLVSyncTestRenderer::~GLVSyncTestRenderer() {
@@ -27,6 +26,7 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 }
 
 void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
+    maybeInitializeGL();
 
     PerformanceTimer timer;
     //mixxx::Duration t5, t6, t7, t8, t9, t10, t11, t12, t13;
@@ -50,7 +50,7 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
     }
 
     const WaveformData* data = waveform->data();
-    if (data == NULL) {
+    if (data == nullptr) {
         return;
     }
 

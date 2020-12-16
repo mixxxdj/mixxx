@@ -1,5 +1,4 @@
-#ifndef ENGINEFILTERBESSEL8_H
-#define ENGINEFILTERBESSEL8_H
+#pragma once
 
 #include "engine/filters/enginefilteriir.h"
 
@@ -30,5 +29,3 @@ class EngineFilterBessel8High : public EngineFilterIIR<8, IIR_HP> {
     EngineFilterBessel8High(int sampleRate, double freqCorner1);
     void setFrequencyCorners(int sampleRate, double freqCorner1);
 };
-
-#endif // ENGINEFILTERBESSEL8_H

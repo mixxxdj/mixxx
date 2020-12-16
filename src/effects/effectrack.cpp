@@ -1,10 +1,10 @@
 #include "effects/effectrack.h"
 
-#include "effects/effectsmanager.h"
 #include "effects/effectchainmanager.h"
 #include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectrack.h"
-
+#include "moc_effectrack.cpp"
 #include "util/assert.h"
 
 EffectRack::EffectRack(EffectsManager* pEffectsManager,
@@ -69,7 +69,7 @@ void EffectRack::removeFromEngine() {
     pRequest->RemoveEffectRack.signalProcessingStage = m_signalProcessingStage;
     pRequest->RemoveEffectRack.pRack = m_pEngineEffectRack;
     m_pEffectsManager->writeRequest(pRequest);
-    m_pEngineEffectRack = NULL;
+    m_pEngineEffectRack = nullptr;
 }
 
 void EffectRack::registerInputChannel(const ChannelHandleAndGroup& handle_group) {

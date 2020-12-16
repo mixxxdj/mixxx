@@ -1,10 +1,3 @@
-/**
- * @file bulkenumerator.cpp
- * @author Neale Picket  neale@woozle.org
- * @date Thu Jun 28 2012
- * @brief USB Bulk controller backend
- */
-
 #include <libusb.h>
 
 #include "controllers/bulk/bulkcontroller.h"
@@ -49,7 +42,7 @@ QList<Controller*> BulkEnumerator::queryDevices() {
 
         libusb_get_device_descriptor(device, &desc);
         if (is_interesting(&desc)) {
-            struct libusb_device_handle *handle = NULL;
+            struct libusb_device_handle* handle = nullptr;
             err = libusb_open(device, &handle);
             if (err) {
                 qWarning() << "Error opening a device";

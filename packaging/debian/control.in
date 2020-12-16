@@ -1,0 +1,71 @@
+Source: mixxx
+Section: @CPACK_DEBIAN_PACKAGE_SECTION@
+Priority: @CPACK_DEBIAN_PACKAGE_PRIORITY@
+Maintainer: @CPACK_PACKAGE_CONTACT@
+Build-Depends: debhelper (>= 11),
+               pkg-config,
+               docbook-to-man,
+               markdown,
+               libglu1-mesa-dev,
+# qt5-default depends on qtbase5-dev, which includes headers for
+# QtConcurrent
+# QtCore
+# QtGui
+# QtNetwork
+# QtPlatformHeaders
+# QtPrintSupport
+# QtSql
+# QtWidgets
+# QtXml
+               qt5-default,
+               qt5keychain-dev,
+# We additionally need headers for QtOpenGL, QtScript, and QtSvg.
+               qtscript5-dev,
+               libqt5opengl5-dev,
+               libqt5svg5-dev,
+# Only needed for running tests that use SQLite.
+               libqt5sql5-sqlite,
+               libqt5x11extras5-dev,
+               cmake (>= 3.13),
+               libjack-dev,
+               portaudio19-dev,
+               libid3tag0-dev,
+               libmad0-dev,
+               libogg-dev,
+               libsndfile1-dev,
+               libasound2-dev,
+               libvorbis-dev,
+               libfaad-dev,
+               libportmidi-dev,
+               libtag1-dev,
+               libshout-dev,
+               libssl-dev,
+               libprotobuf-dev,
+               protobuf-compiler,
+               libusb-1.0-0-dev,
+               libchromaprint-dev,
+               librubberband-dev,
+               libopusfile-dev,
+               libsqlite3-dev,
+               libsoundtouch-dev,
+               libhidapi-dev,
+               libupower-glib-dev,
+               liblilv-dev,
+               libmodplug-dev,
+               libmp3lame-dev,
+               libebur128-dev,
+# for running mixxx-test
+               xvfb
+Rules-Requires-Root: no
+Standards-Version: 4.1.4
+Homepage: @CPACK_DEBIAN_PACKAGE_HOMEPAGE@
+Vcs-Browser: https://github.com/mixxxdj/mixxx
+Vcs-Git: https://github.com/mixxxdj/mixxx.git
+
+Package: mixxx
+Section: @CPACK_DEBIAN_PACKAGE_SECTION@
+Architecture: linux-any
+Depends: ${shlibs:Depends}, ${misc:Depends}, @CPACK_DEBIAN_PACKAGE_DEPENDS@
+Suggests: @CPACK_DEBIAN_PACKAGE_SUGGESTS@
+Replaces: mixxx-data
+Description: @CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED@

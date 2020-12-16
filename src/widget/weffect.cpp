@@ -1,8 +1,9 @@
-#include <QtDebug>
-
 #include "widget/weffect.h"
 
+#include <QtDebug>
+
 #include "effects/effectsmanager.h"
+#include "moc_weffect.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffect::WEffect(QWidget* pParent, EffectsManager* pEffectsManager)

@@ -1,12 +1,4 @@
-/**
-* @file dlgcontrollerlearning.h
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Thu 12 Apr 2012
-* @brief The controller mapping learning wizard
-*
-*/
-#ifndef DLGCONTROLLERLEARNING_H
-#define DLGCONTROLLERLEARNING_H
+#pragma once
 
 #include <QDialog>
 #include <QList>
@@ -29,6 +21,7 @@ class ControllerPreset;
 
 //#define CONTROLLERLESSTESTING
 
+/// The controller mapping learning wizard
 class DlgControllerLearning : public QDialog,
                               public ControllerVisitor,
                               public Ui::DlgControllerLearning {
@@ -99,5 +92,3 @@ class DlgControllerLearning : public QDialog,
     QList<QPair<MidiKey, unsigned char> > m_messages;
     MidiInputMappings m_mappings;
 };
-
-#endif

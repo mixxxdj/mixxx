@@ -1,5 +1,4 @@
-#ifndef EFFECTCHAINSLOT_H
-#define EFFECTCHAINSLOT_H
+#pragma once
 
 #include <QObject>
 #include <QMap>
@@ -170,6 +169,3 @@ class EffectChainSlot : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };
-
-
-#endif /* EFFECTCHAINSLOT_H */

@@ -21,9 +21,5 @@
 /res/translations/*.ts merge=ours
 /res/translations/*.qm merge=ours
 
-# Exclude WiX translations from merging
-/build/wix/Localization/po/*.po merge=ours
-/build/wix/Localization/po/*.wxl merge=ours
-
 # Treat serato test data as binary
 *.octet-stream binary

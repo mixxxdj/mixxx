@@ -1,5 +1,7 @@
 #include "engine/bufferscalers/enginebufferscalest.h"
 
+#include "moc_enginebufferscalest.cpp"
+
 // Fixes redefinition warnings from SoundTouch.
 #include <soundtouch/SoundTouch.h>
 

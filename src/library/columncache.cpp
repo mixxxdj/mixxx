@@ -1,10 +1,10 @@
 #include "library/columncache.h"
 
-#include "library/dao/trackschema.h"
 #include "library/dao/playlistdao.h"
+#include "library/dao/trackschema.h"
+#include "moc_columncache.cpp"
 
-
- ColumnCache::ColumnCache(const QStringList& columns) {
+ColumnCache::ColumnCache(const QStringList& columns) {
     m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
     m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
 
@@ -106,7 +106,9 @@ void ColumnCache::setColumns(const QStringList& columns) {
 }
 
 void ColumnCache::slotSetKeySortOrder(double notationValue) {
-    if (m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY] < 0) return;
+    if (m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY] < 0) {
+        return;
+    }
 
     // A custom COLLATE function was tested, but using CASE ... WHEN was found to be faster
     // see GitHub PR#649
