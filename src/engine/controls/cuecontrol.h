@@ -96,15 +96,21 @@ class HotcueControl : public QObject {
     void setColor(mixxx::RgbColor::optional_t newColor);
     mixxx::RgbColor::optional_t getColor() const;
 
-    // Used for caching the preview state of this hotcue control
-    // for the case the cue is deleted during preview.
+    /// Used for caching the preview state of this hotcue control
+    /// for the case the cue is deleted during preview.
     mixxx::CueType getPreviewingType() const {
         return m_previewingType.getValue();
     }
+
+    /// Used for caching the preview state of this hotcue control
+    /// for the case the cue is deleted during preview.
     double getPreviewingPosition() const {
         return m_previewingPosition.getValue();
     }
-    void storePreviewingActivateData() {
+
+    /// Used for caching the preview state of this hotcue control
+    /// for the case the cue is deleted during preview.
+    void cachePreviewingStartState() {
         if (m_pCue) {
             m_previewingPosition.setValue(m_pCue->getPosition());
             m_previewingType.setValue(m_pCue->getType());

@@ -1006,7 +1006,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
     int index = pControl->getHotcueIndex();
     if (value > 0) {
         if (m_currentlyPreviewingIndex != index) {
-            pControl->storePreviewingActivateData();
+            pControl->cachePreviewingStartState();
             double position = pControl->getPreviewingPosition();
             mixxx::CueType type = pControl->getPreviewingType();
             ;
