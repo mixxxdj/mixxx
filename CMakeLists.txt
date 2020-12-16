@@ -147,7 +147,7 @@ if(MSVC)
         # Define the target processor instruction and other compiler optimization flags here:
         # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
         # add_compile_options(/arch:AVX512)
-        message(FATAL_ERROR "User need to set the MSVC compiler flags for the native processor here!") 
+        message(FATAL_ERROR "User need to set the MSVC compiler flags for the native processor here!")
       add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
     elseif(OPTIMIZE STREQUAL "legacy")
     if(CMAKE_SIZEOF_VOID_P EQUAL 8)
