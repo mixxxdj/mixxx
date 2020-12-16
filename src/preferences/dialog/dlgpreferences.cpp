@@ -67,7 +67,7 @@
 #include "util/compatibility.h"
 
 DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
-                               SoundManager * soundman, PlayerManager* pPlayerManager,
+                               SoundManager * soundman,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
                                EffectsManager* pEffectsManager,
                                SettingsManager* pSettingsManager,
@@ -87,7 +87,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     }
 
     // Construct widgets for use in tabs.
-    m_soundPage = new DlgPrefSound(this, soundman, pPlayerManager, m_pConfig);
+    m_soundPage = new DlgPrefSound(this, soundman, m_pConfig);
     addPageWidget(m_soundPage);
     m_libraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_libraryPage);
@@ -113,7 +113,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_interfacePage);
     m_waveformPage = new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary);
     addPageWidget(m_waveformPage);
-    m_deckPage = new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig);
+    m_deckPage = new DlgPrefDeck(this, mixxx, m_pConfig);
     addPageWidget(m_deckPage);
     m_colorsPage = new DlgPrefColors(this, m_pConfig);
     addPageWidget(m_colorsPage);

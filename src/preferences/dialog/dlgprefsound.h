@@ -43,7 +43,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
   public:
     DlgPrefSound(QWidget *parent, SoundManager *soundManager,
-                 PlayerManager* pPlayerManager,
                  UserSettingsPointer pSettings);
     virtual ~DlgPrefSound();
 
@@ -94,8 +93,7 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
     void checkLatencyCompensation();
 
-    SoundManager *m_pSoundManager;
-    PlayerManager *m_pPlayerManager;
+    SoundManager* m_pSoundManager;
     UserSettingsPointer m_pSettings;
     SoundManagerConfig m_config;
     ControlProxy* m_pMasterAudioLatencyOverloadCount;

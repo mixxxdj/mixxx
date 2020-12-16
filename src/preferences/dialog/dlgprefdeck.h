@@ -56,7 +56,6 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     Q_OBJECT
   public:
     DlgPrefDeck(QWidget *parent, MixxxMainWindow *mixxx,
-                    PlayerManager* pPlayerManager,
                     UserSettingsPointer pConfig);
     virtual ~DlgPrefDeck();
 
@@ -112,8 +111,7 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     QList<ControlProxy*> m_rateRangeControls;
     QList<ControlProxy*> m_keylockModeControls;
     QList<ControlProxy*> m_keyunlockModeControls;
-    MixxxMainWindow *m_mixxx;
-    PlayerManager* m_pPlayerManager;
+    MixxxMainWindow* m_mixxx;
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
