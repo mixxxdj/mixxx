@@ -815,7 +815,6 @@ CuePointer Track::createAndAddCue(
         int hotCueIndex,
         double sampleStartPosition,
         double sampleEndPosition) {
-    QMutexLocker lock(&m_qMutex);
     CuePointer pCue(new Cue(
             type,
             hotCueIndex,
@@ -829,6 +828,7 @@ CuePointer Track::createAndAddCue(
             &Cue::updated,
             this,
             &Track::slotCueUpdated);
+    QMutexLocker lock(&m_qMutex);
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&lock);
     emit cuesUpdated();
