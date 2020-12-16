@@ -805,16 +805,15 @@ void setHotCue(TrackPointer track,
         type = mixxx::CueType::Loop;
     }
 
-    if (!pCue) {
+    if (pCue) {
+        pCue->setStartAndEndPosition(startPosition, endPosition);
+    } else {
         pCue = track->createAndAddCue(
                 type,
                 id,
                 startPosition,
                 endPosition);
-    } else {
-        pCue->setStartAndEndPosition(startPosition, endPosition);
     }
-
     pCue->setLabel(label);
     if (color) {
         pCue->setColor(*color);
