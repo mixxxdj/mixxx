@@ -104,6 +104,22 @@ class ColumnCache : public QObject {
         return format.arg(columnNameForFieldIndex(index));
     }
 
+    void insertColumnSortByIndex(
+            int index,
+            const QString& name) {
+        DEBUG_ASSERT(!m_columnSortByIndex.contains(index) ||
+                m_columnSortByIndex[index] == name);
+        m_columnSortByIndex.insert(index, name);
+    }
+
+    void insertColumnNameByEnum(
+            Column column,
+            const QString& name) {
+        DEBUG_ASSERT(!m_columnNameByEnum.contains(column) ||
+                m_columnNameByEnum[column] == name);
+        m_columnNameByEnum.insert(column, name);
+    }
+
     QStringList m_columnsByIndex;
     QMap<int, QString> m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
