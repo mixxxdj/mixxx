@@ -400,9 +400,6 @@ QString Sandbox::migrateOldSettings() {
     // one time process.
 #ifdef __APPLE__
 
-    // Legacy non-sandboxed mixxx settings path
-    QString legacySettingsPath = homePath + QLatin1String("/Library/Application Support/Mixxx");
-
     // Because Mixxx cannot test if the old path exists before getting permission to access it
     // outside the sandbox, unfortunately it is necessary to annoy the user with this popup
     // even if they are installing Mixxx >= 2.3.0 without having installed an old version of Mixxx.
