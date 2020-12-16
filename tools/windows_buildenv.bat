@@ -123,9 +123,9 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>%CMakeSettings% echo {
     >>%CMakeSettings% echo   "configurations": [
     SET configElementTermination=,
-    CALL :Configuration2CMakeSettings_JSON off       Release
-    CALL :Configuration2CMakeSettings_JSON legacy    Release
-    CALL :Configuration2CMakeSettings_JSON portable  Release
+    CALL :Configuration2CMakeSettings_JSON off       Debug
+    CALL :Configuration2CMakeSettings_JSON legacy    RelWithDebInfo
+    CALL :Configuration2CMakeSettings_JSON portable  RelWithDebInfo
     CALL :Configuration2CMakeSettings_JSON fastbuild RelWithDebInfo
     SET configElementTermination=
     CALL :Configuration2CMakeSettings_JSON native    Release
@@ -135,12 +135,12 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
 
 :Configuration2CMakeSettings_JSON <optimize> <configurationtype>
     >>%CMakeSettings% echo     {
-    >>%CMakeSettings% echo       "buildRoot": "${projectDir}\\build_!PLATFORM!__%1",
+    >>%CMakeSettings% echo       "buildRoot": "${projectDir}\\build\\!PLATFORM!__%1",
     >>%CMakeSettings% echo       "configurationType": "%2",
     >>%CMakeSettings% echo       "enableClangTidyCodeAnalysis": true,
     >>%CMakeSettings% echo       "generator": "Ninja",
     >>%CMakeSettings% echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
-    >>%CMakeSettings% echo       "installRoot": "${projectDir}\\dist_!PLATFORM!__%1",
+    >>%CMakeSettings% echo       "installRoot": "${projectDir}\\install\\!PLATFORM!__%1",
     >>%CMakeSettings% echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>%CMakeSettings% echo       "name": "!PLATFORM!__%1",
     >>%CMakeSettings% echo       "variables": [
