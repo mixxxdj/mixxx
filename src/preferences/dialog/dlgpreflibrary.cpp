@@ -18,7 +18,7 @@
 
 namespace {
     const ConfigKey kSearchDebouncingTimeoutMillisKey = ConfigKey("[Library]","SearchDebouncingTimeoutMillis");
-}
+    } // namespace
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,

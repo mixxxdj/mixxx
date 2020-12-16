@@ -55,7 +55,7 @@ VinylControlProcessor::~VinylControlProcessor() {
             delete pProcessor;
 
             delete m_samplePipes[i];
-            m_samplePipes[i] = NULL;
+            m_samplePipes[i] = nullptr;
         }
     }
 
@@ -141,7 +141,7 @@ void VinylControlProcessor::reloadConfig() {
         QMutexLocker locker(&m_processorsLock);
         VinylControl* pCurrent = m_processors[i];
 
-        if (pCurrent == NULL) {
+        if (pCurrent == nullptr) {
             continue;
         }
 
@@ -222,7 +222,7 @@ void VinylControlProcessor::receiveBuffer(const AudioInput& input,
 
     FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[vcIndex];
 
-    if (pSamplePipe == NULL) {
+    if (pSamplePipe == nullptr) {
         // Should not be possible.
         return;
     }

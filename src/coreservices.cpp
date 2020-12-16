@@ -70,12 +70,12 @@ void clearHelper(std::shared_ptr<T>& ref_ptr, const char* name) {
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
 const int NUM_HANDLERS = 256;
-WireToErrorType __oldHandlers[NUM_HANDLERS] = {0};
+WireToErrorType __oldHandlers[NUM_HANDLERS] = {nullptr};
 
 Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
     // Call any previous handler first in case it needs to do real work.
     auto code = static_cast<int>(event->error_code);
-    if (__oldHandlers[code] != NULL) {
+    if (__oldHandlers[code] != nullptr) {
         __oldHandlers[code](display, event, error);
     }
 
@@ -364,8 +364,9 @@ void CoreServices::initializeKeyboard() {
     QString resourcePath = pConfig->getResourcePath();
 
     // Set the default value in settings file
-    if (pConfig->getValueString(ConfigKey("[Keyboard]", "Enabled")).length() == 0)
+    if (pConfig->getValueString(ConfigKey("[Keyboard]", "Enabled")).length() == 0) {
         pConfig->set(ConfigKey("[Keyboard]", "Enabled"), ConfigValue(1));
+    }
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
@@ -424,7 +425,7 @@ bool CoreServices::initializeDatabase() {
     kLogger.info() << "Connecting to database";
     QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
     if (!dbConnection.isOpen()) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(nullptr,
                 tr("Cannot open database"),
                 tr("Unable to establish a database connection.\n"
                    "Mixxx requires QT with SQLite support. Please read "

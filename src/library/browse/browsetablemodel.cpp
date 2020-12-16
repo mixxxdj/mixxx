@@ -196,7 +196,7 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
 
 TrackPointer BrowseTableModel::getTrackByRef(const TrackRef& trackRef) const {
     if (m_pRecordingManager->getRecordingLocation() == trackRef.getLocation()) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(nullptr,
                 tr("Mixxx Library"),
                 tr("Could not load the following file because it is in use by "
                    "Mixxx or another application.") +

@@ -17,7 +17,7 @@ QDrag* dragUrls(
         QWidget* pDragSource,
         const QString& sourceIdentifier) {
     if (trackUrls.isEmpty()) {
-        return NULL;
+        return nullptr;
     }
 
     QMimeData* mimeData = new QMimeData();

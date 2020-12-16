@@ -49,7 +49,7 @@ void EngineAux::onInputConfigured(const AudioInput& input) {
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
     }
-    m_sampleBuffer = NULL;
+    m_sampleBuffer = nullptr;
     m_pInputConfigured->forceSet(1.0);
 }
 
@@ -59,7 +59,7 @@ void EngineAux::onInputUnconfigured(const AudioInput& input) {
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
     }
-    m_sampleBuffer = NULL;
+    m_sampleBuffer = nullptr;
     m_pInputConfigured->forceSet(0.0);
 }
 
@@ -82,7 +82,7 @@ void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
                     // TODO(jholthuis): Use mixxx::audio::SampleRate instead
                     static_cast<unsigned int>(m_pSampleRate->get()));
         }
-        m_sampleBuffer = NULL;
+        m_sampleBuffer = nullptr;
     } else {
         SampleUtil::clear(pOut, iBufferSize);
     }

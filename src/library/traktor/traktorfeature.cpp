@@ -166,8 +166,9 @@ void TraktorFeature::activate() {
 }
 
 void TraktorFeature::activateChild(const QModelIndex& index) {
-
-    if (!index.isValid()) return;
+    if (!index.isValid()) {
+        return;
+    }
 
     //access underlying TreeItem object
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
@@ -185,7 +186,7 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
     //Invisible root item of Traktor's child model
-    TreeItem* root = NULL;
+    TreeItem* root = nullptr;
     //Delete all table entries of Traktor feature
     ScopedTransaction transaction(m_database);
     clearTable("traktor_playlist_tracks");
@@ -205,7 +206,7 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     QFile traktor_file(file);
     if (!traktor_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Cannot open Traktor music collection";
-        return NULL;
+        return nullptr;
     }
     QXmlStreamReader xml(&traktor_file);
     bool inCollectionTag = false;
@@ -251,9 +252,10 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     if (xml.hasError()) {
          // do error handling
          qDebug() << "Cannot process Traktor music collection";
-         if (root)
+         if (root) {
              delete root;
-         return NULL;
+         }
+         return nullptr;
     }
 
     qDebug() << "Found: " << nAudioFiles << " audio files in Traktor";
@@ -541,11 +543,12 @@ void TraktorFeature::clearTable(const QString& table_name) {
     QSqlQuery query(m_database);
     query.prepare("delete from "+table_name);
 
-    if (!query.exec())
+    if (!query.exec()) {
         qDebug() << "Could not delete remove old entries from table "
                  << table_name << " : " << query.lastError();
-    else
+    } else {
         qDebug() << "Traktor table entries of '" << table_name << "' have been cleared.";
+    }
 }
 
 QString TraktorFeature::getTraktorMusicDatabase() {
@@ -612,10 +615,10 @@ void TraktorFeature::onTrackCollectionLoaded() {
         qDebug() << "Traktor library loaded successfully";
     } else {
         QMessageBox::warning(
-            NULL,
-            tr("Error Loading Traktor Library"),
-            tr("There was an error loading your Traktor library. Some of "
-               "your Traktor tracks or playlists may not have loaded."));
+                nullptr,
+                tr("Error Loading Traktor Library"),
+                tr("There was an error loading your Traktor library. Some of "
+                   "your Traktor tracks or playlists may not have loaded."));
     }
 
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.

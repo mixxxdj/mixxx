@@ -212,7 +212,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
-    auto pModel = new QItemSelectionModel(model());
+    auto* pModel = new QItemSelectionModel(model());
     pModel->select(index, QItemSelectionModel::Select);
     if (selectionModel()) {
         selectionModel()->deleteLater();
@@ -234,7 +234,7 @@ void WLibrarySidebar::selectChildIndex(const QModelIndex& index, bool selectItem
     QModelIndex translated = sidebarModel->translateChildIndex(index);
 
     if (selectItem) {
-        auto pModel = new QItemSelectionModel(sidebarModel);
+        auto* pModel = new QItemSelectionModel(sidebarModel);
         pModel->select(translated, QItemSelectionModel::Select);
         if (selectionModel()) {
             selectionModel()->deleteLater();

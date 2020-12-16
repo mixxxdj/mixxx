@@ -301,7 +301,7 @@ void DlgPrefSound::slotApply() {
     }
     if (err != SOUNDDEVICE_ERROR_OK) {
         QString error = m_pSoundManager->getLastErrorMessage(err);
-        QMessageBox::warning(NULL, tr("Configuration error"), error);
+        QMessageBox::warning(nullptr, tr("Configuration error"), error);
     } else {
         m_settingsModified = false;
         m_bLatencyChanged = false;
@@ -408,7 +408,9 @@ void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
     for (pos = 0; pos < pLayout->count() - 1; ++pos) {
         DlgPrefSoundItem *pOther(qobject_cast<DlgPrefSoundItem*>(
             pLayout->itemAt(pos)->widget()));
-        if (!pOther) continue;
+        if (!pOther) {
+            continue;
+        }
         if (pItem->type() < pOther->type()) {
             break;
         } else if (pItem->type() == pOther->type()
@@ -631,12 +633,16 @@ void DlgPrefSound::refreshDevices() {
  * DlgPrefSound::slotApply knows to apply them.
  */
 void DlgPrefSound::settingChanged() {
-    if (m_loading) return; // doesn't count if we're just loading prefs
+    if (m_loading) {
+        return; // doesn't count if we're just loading prefs
+    }
     m_settingsModified = true;
 }
 
 void DlgPrefSound::deviceSettingChanged() {
-    if (m_loading) return;
+    if (m_loading) {
+        return;
+    }
     checkLatencyCompensation();
     m_settingsModified = true;
 }

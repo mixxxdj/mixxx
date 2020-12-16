@@ -68,7 +68,7 @@ void EngineEffect::deleteStatesForInputChannel(const ChannelHandle* inputChannel
 }
 
 bool EngineEffect::processEffectsRequest(EffectsRequest& message,
-        EffectsResponsePipe* pResponsePipe) {
+                                         EffectsResponsePipe* pResponsePipe) {
     EngineEffectParameterPointer pParameter;
     EffectsResponse response(message);
 

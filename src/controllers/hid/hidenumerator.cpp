@@ -13,16 +13,19 @@ bool recognizeDevice(const hid_device_info& device_info) {
     for (int bl_index = 0; bl_index < denylist_len; bl_index++) {
         hid_denylist_t denylisted = hid_denylisted[bl_index];
         // If vendor ids do not match, skip.
-        if (device_info.vendor_id != denylisted.vendor_id)
+        if (device_info.vendor_id != denylisted.vendor_id) {
             continue;
+        }
         // If product IDs do not match, skip.
-        if (device_info.product_id != denylisted.product_id)
+        if (device_info.product_id != denylisted.product_id) {
             continue;
+        }
         // Denylist entry based on interface number
         if (denylisted.interface_number != -1) {
             // Skip matching for devices without usage info.
-            if (!interface_number_valid)
+            if (!interface_number_valid) {
                 continue;
+            }
             // If interface number is present and the interface numbers do not
             // match, skip.
             if (device_info.interface_number != denylisted.interface_number) {
@@ -32,14 +35,17 @@ bool recognizeDevice(const hid_device_info& device_info) {
         // Denylist entry based on usage_page and usage (both required)
         if (denylisted.usage_page != 0 && denylisted.usage != 0) {
             // Skip matching for devices with no usage_page/usage info.
-            if (device_info.usage_page == 0 && device_info.usage == 0)
+            if (device_info.usage_page == 0 && device_info.usage == 0) {
                 continue;
+            }
             // If usage_page is different, skip.
-            if (device_info.usage_page != denylisted.usage_page)
+            if (device_info.usage_page != denylisted.usage_page) {
                 continue;
+            }
             // If usage is different, skip.
-            if (device_info.usage != denylisted.usage)
+            if (device_info.usage != denylisted.usage) {
                 continue;
+            }
         }
         return false;
     }

@@ -116,8 +116,9 @@ void ControllerPresetFileHandler::addScriptFilesToPreset(
         const QDomElement& controller,
         ControllerPreset* preset,
         const QDir& systemPresetsPath) const {
-    if (controller.isNull())
+    if (controller.isNull()) {
         return;
+    }
 
     QString deviceId = controller.attribute("id", "");
     preset->setDeviceId(deviceId);

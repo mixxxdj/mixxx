@@ -16,7 +16,7 @@ const int kPlayingDeckUpdateIntervalMillis = 2000;
 
 PlayerInfo* s_pPlayerInfo = nullptr;
 
-}
+} // namespace
 
 PlayerInfo::PlayerInfo()
         : m_pCOxfader(new ControlProxy("[Master]","crossfader", this)),

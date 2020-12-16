@@ -1258,10 +1258,14 @@ bool setTrackCoverInfo(const QSqlRecord& record, const int column,
     bool ok = false;
     coverInfo.source = static_cast<CoverInfo::Source>(
             record.value(column).toInt(&ok));
-    if (!ok) coverInfo.source = CoverInfo::UNKNOWN;
+    if (!ok) {
+        coverInfo.source = CoverInfo::UNKNOWN;
+    }
     coverInfo.type = static_cast<CoverInfo::Type>(
             record.value(column + 1).toInt(&ok));
-    if (!ok) coverInfo.type = CoverInfo::NONE;
+    if (!ok) {
+        coverInfo.type = CoverInfo::NONE;
+    }
     coverInfo.coverLocation = record.value(column + 2).toString();
     coverInfo.color = mixxx::RgbColor::fromQVariant(record.value(column + 3));
     coverInfo.setImageDigest(
@@ -1719,7 +1723,7 @@ namespace {
         }
         return matchLength;
     }
-}
+    } // namespace
 
 // Look for moved files. Look for files that have been marked as
 // "deleted on disk" and see if another "file" with the same name and

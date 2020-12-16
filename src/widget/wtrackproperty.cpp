@@ -20,7 +20,7 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Properties;
-}
+} // namespace
 
 WTrackProperty::WTrackProperty(
         QWidget* pParent,

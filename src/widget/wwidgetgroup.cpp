@@ -126,7 +126,7 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
         } else if (layout == "horizontal") {
             pLayout = new QHBoxLayout();
         } else if (layout == "stacked") {
-            auto pStackedLayout = new QStackedLayout();
+            auto* pStackedLayout = new QStackedLayout();
             pStackedLayout->setStackingMode(QStackedLayout::StackAll);
             pLayout = pStackedLayout;
             // Adding a zero-size dummy widget as index 0 here before

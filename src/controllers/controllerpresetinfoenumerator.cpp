@@ -21,7 +21,7 @@ bool presetInfoNameComparator(const PresetInfo &a, const PresetInfo &b) {
         return a.getDirPath() < b.getDirPath();
     }
 }
-}
+} // namespace
 
 PresetInfoEnumerator::PresetInfoEnumerator(const QString& searchPath)
         : PresetInfoEnumerator(QList<QString>{searchPath}) {
