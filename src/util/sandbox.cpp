@@ -397,24 +397,27 @@ QString Sandbox::migrateOldSettings() {
         return sandboxedPath;
     }
 
+    // Sandbox::askForAccess cannot be used here because it depends on settings being
+    // initialized. There is no need to store the bookmark anyway because this is a
+    // one time process.
+#ifdef __APPLE__
+
     // Because Mixxx cannot test if the old path exists before getting permission to access it
     // outside the sandbox, unfortunately it is necessary to annoy the user with this popup
     // even if they are installing Mixxx >= 2.3.0 without having installed an old version of Mixxx.
     QString title = QObject::tr("Upgrading old Mixxx settings");
     QMessageBox::information(nullptr,
-        title,
-        QObject::tr(
-            "Existing Mixxx settings directory must be moved to new location."
-            "\n\n"
-            "Due to MacOS sandboxing, Mixxx needs your permission to access your "
-            "music library and move settings to the sandbox from Mixxx versions "
-            "before 2.3.0. After clicking OK, you will see standars file open dialog. "
-            "\n\n"
-            "Select Open button in the file open dialog to grant Mixxx access to old files."
-            "\n\n"
-            "If you do not want to grant Mixxx access click Cancel on the file picker."
-        )
-    );
+            title,
+            QObject::tr(
+                    "Existing Mixxx settings directory must be moved to new location."
+                    "\n\n"
+                    "Due to macOS sandboxing, Mixxx needs your permission to access your "
+                    "music library and move settings to the sandbox from Mixxx versions "
+                    "before 2.3.0. After clicking OK, you will see standard file open dialog. "
+                    "\n\n"
+                    "Select Open button in the file open dialog to grant Mixxx access to old files."
+                    "\n\n"
+                    "If you do not want to grant Mixxx access click Cancel on the file picker."));
     QString result = QFileDialog::getExistingDirectory(
         nullptr,
         title,
@@ -432,8 +435,9 @@ QString Sandbox::migrateOldSettings() {
             kCFAllocatorDefault, QStringToCFString(legacySettingsPath), kCFURLPOSIXPathStyle, true);
     if (url) {
         CFErrorRef error = NULL;
-        if (sandboxContainerId != "") {
-            // Request permissions to old sandboxed settings path in sandbox and move the directory
+        if (!sandboxContainerId.isEmpty()) {
+            // Request permissions to the old sandboxed settings path in sandbox and move the directory
+            // into the sandbox
             CFDataRef bookmark = CFURLCreateBookmarkData(
                 kCFAllocatorDefault,
                 url,
@@ -471,6 +475,7 @@ QString Sandbox::migrateOldSettings() {
             }
         }
     }
+#endif
     return sandboxedPath;
 }
 
