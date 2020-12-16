@@ -60,7 +60,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
     DlgPreferences(MixxxMainWindow* mixxx,
             std::shared_ptr<SkinLoader> pSkinLoader,
-            std::shared_ptr<SoundManager> soundman,
+            std::shared_ptr<SoundManager> pSoundManager,
             std::shared_ptr<ControllerManager> pControllerManager,
             std::shared_ptr<VinylControlManager> pVCManager,
             std::shared_ptr<EffectsManager> pEffectsManager,

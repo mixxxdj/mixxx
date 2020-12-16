@@ -52,7 +52,7 @@
 DlgPreferences::DlgPreferences(
         MixxxMainWindow* mixxx,
         std::shared_ptr<SkinLoader> pSkinLoader,
-        std::shared_ptr<SoundManager> soundman,
+        std::shared_ptr<SoundManager> pSoundManager,
         std::shared_ptr<ControllerManager> pControllerManager,
         std::shared_ptr<VinylControlManager> pVCManager,
         std::shared_ptr<EffectsManager> pEffectsManager,
@@ -80,7 +80,7 @@ DlgPreferences::DlgPreferences(
 
     // Construct widgets for use in tabs.
     m_soundPage = PreferencesPage(
-            new DlgPrefSound(this, soundman, m_pConfig),
+            new DlgPrefSound(this, pSoundManager, m_pConfig),
             createTreeItem(tr("Sound Hardware"), QIcon(":/images/preferences/ic_preferences_soundhardware.svg")));
     addPageWidget(m_soundPage);
 
@@ -108,7 +108,7 @@ DlgPreferences::DlgPreferences(
             createTreeItem(tr("Vinyl Control"), QIcon(":/images/preferences/ic_preferences_vinyl.svg"))));
 #else
     addPageWidget(PreferencesPage(
-            new DlgPrefNoVinyl(this, soundman, m_pConfig),
+            new DlgPrefNoVinyl(this, pSoundManager, m_pConfig),
             createTreeItem(tr("Vinyl Control"), QIcon(":/images/preferences/ic_preferences_vinyl.svg"))));
 #endif
 
