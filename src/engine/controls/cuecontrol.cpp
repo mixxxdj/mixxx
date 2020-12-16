@@ -30,7 +30,7 @@ constexpr double CUE_MODE_CUP = 5.0;
 /// This is the position of a fresh loaded tack without any seek
 constexpr double kDefaultLoadPosition = 0.0;
 constexpr int kNoHotCueNumber = 0;
-/// Used for a common tarcking of the previewing Hotcue in m_currentlyPreviewingIndex
+/// Used for a common tracking of the previewing Hotcue in m_currentlyPreviewingIndex
 constexpr int kMainCueIndex = NUM_HOT_CUES;
 
 // Helper function to convert control values (i.e. doubles) into RgbColor
@@ -416,7 +416,7 @@ void CueControl::detachCue(HotcueControl* pControl) {
     pControl->resetCue();
 }
 
-// This is called from the EngineWokerThread and ends with the initial seek v
+// This is called from the EngineWokerThread and ends with the initial seek
 // via seekOnLoad(). There is the theoretical and pending issue of a delayed control
 // command intended for the old track that might be performed instead.
 void CueControl::trackLoaded(TrackPointer pNewTrack) {
@@ -1179,7 +1179,7 @@ void CueControl::cueGoto(double value) {
     // Seek to cue point
     double cuePoint = m_pCuePoint->get();
 
-    // Note: We do not mess with ply here, we continue playing or previewing.
+    // Note: We do not mess with play here, we continue playing or previewing.
 
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
@@ -1433,7 +1433,7 @@ void CueControl::introStartSet(double value) {
     lock.unlock();
 
     // Update Track's cue.
-    // CO's are update loadCuesFromTrack()
+    // CO's are updated in loadCuesFromTrack()
     // this can be done outside the locking scope
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
@@ -1460,7 +1460,7 @@ void CueControl::introStartClear(double value) {
     lock.unlock();
 
     // Update Track's cue.
-    // CO's are update loadCuesFromTrack()
+    // CO's are updated in loadCuesFromTrack()
     // this can be done outside the locking scope
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
@@ -1520,7 +1520,7 @@ void CueControl::introEndSet(double value) {
     lock.unlock();
 
     // Update Track's cue.
-    // CO's are update loadCuesFromTrack()
+    // CO's are updated in loadCuesFromTrack()
     // this can be done outside the locking scope
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
@@ -1547,7 +1547,7 @@ void CueControl::introEndClear(double value) {
     lock.unlock();
 
     // Update Track's cue.
-    // CO's are update loadCuesFromTrack()
+    // CO's are updated in loadCuesFromTrack()
     // this can be done outside the locking scope
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Intro);
@@ -1610,7 +1610,7 @@ void CueControl::outroStartSet(double value) {
     lock.unlock();
 
     // Update Track's cue.
-    // CO's are update loadCuesFromTrack()
+    // CO's are updated in loadCuesFromTrack()
     // this can be done outside the locking scope
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
@@ -1637,7 +1637,7 @@ void CueControl::outroStartClear(double value) {
     lock.unlock();
 
     // Update Track's cue.
-    // CO's are update loadCuesFromTrack()
+    // CO's are updated in loadCuesFromTrack()
     // this can be done outside the locking scope
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
@@ -1700,7 +1700,7 @@ void CueControl::outroEndSet(double value) {
     lock.unlock();
 
     // Update Track's cue.
-    // CO's are update loadCuesFromTrack()
+    // CO's are updated in loadCuesFromTrack()
     // this can be done outside the locking scope
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
@@ -1727,7 +1727,7 @@ void CueControl::outroEndClear(double value) {
     lock.unlock();
 
     // Update Track's cue.
-    // CO's are update loadCuesFromTrack()
+    // CO's are updated in loadCuesFromTrack()
     // this can be done outside the locking scope
     if (pLoadedTrack) {
         CuePointer pCue = pLoadedTrack->findCueByType(mixxx::CueType::Outro);
