@@ -137,18 +137,24 @@ if(MSVC)
         add_compile_options(/arch:SSE2)
       endif()
     elseif(OPTIMIZE STREQUAL "native")
-      message("Enabling native optimizations for ${CMAKE_SYSTEM_PROCESSOR}")
+      message("Enabling optimizations for native system, specified by user")
       if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
         # Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SS2 CPU optimizations (>= Pentium 4)")
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
-        # Set compiler option for SSE/SSE2
-        add_compile_options(/arch:SSE2)
       endif()
+        # Define the target processor instruction and other compiler optimization flags here:
+        # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
+        # add_compile_options(/arch:AVX512)
+        message(FATAL_ERROR "User need to set the MSVC compiler flags for the native processor here!") 
       add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
     elseif(OPTIMIZE STREQUAL "legacy")
-      message("Enabling pure i386 code")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      message("Enabling pure x64 instruction set (without AVX etc.)")
+    else()
+      message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
+    endif()
     else()
       message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
     endif()
