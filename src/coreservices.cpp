@@ -349,6 +349,8 @@ void CoreServices::initialize(QApplication* pApp) {
     // https://bugs.launchpad.net/mixxx/+bug/1758189
     m_pPlayerManager->loadSamplers();
 
+    m_pTouchShift = std::make_unique<ControlPushButton>(ConfigKey("[Controls]", "touch_shift"));
+
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
     const QList<QString>& musicFiles = m_cmdlineArgs.getMusicFiles();
@@ -523,6 +525,8 @@ void CoreServices::shutdown() {
     // a precaution. The earlier one can be removed when stuff is more stable
     // at exit.
     m_pSettingsManager->save();
+
+    m_pTouchShift.reset();
 
     // Check for leaked ControlObjects and give warnings.
     {

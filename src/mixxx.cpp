@@ -104,6 +104,9 @@ MixxxMainWindow::MixxxMainWindow(
     show();
     pApp->processEvents();
 
+    m_pGuiTick = new GuiTick();
+    m_pVisualsManager = new VisualsManager();
+
     connect(
             m_pCoreServices.get(),
             &mixxx::CoreServices::initializationProgressUpdate,
@@ -116,8 +119,6 @@ MixxxMainWindow::MixxxMainWindow(
 
     installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
 
-    m_pGuiTick = new GuiTick();
-    m_pVisualsManager = new VisualsManager();
     DEBUG_ASSERT(m_pCoreServices->getPlayerManager());
     const QStringList visualGroups = m_pCoreServices->getPlayerManager()->getVisualPlayerGroups();
     for (const QString& group : visualGroups) {
