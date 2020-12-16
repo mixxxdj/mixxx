@@ -377,8 +377,6 @@ QString Sandbox::migrateOldSettings() {
     QString sandboxAppSettingsPath = homePath +
         QLatin1String("/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support");
 
-    // Legacy non-sandboxed mixxx settings path
-    QString legacySettingsPath = homePath + QLatin1String("/Library/Application Support/Mixxx");
     // Sandboxed mixxx settings path
     QString sandboxedPath = sandboxAppSettingsPath + "/Mixxx";
     QDir sandboxedSettings(sandboxedPath);
@@ -401,6 +399,9 @@ QString Sandbox::migrateOldSettings() {
     // initialized. There is no need to store the bookmark anyway because this is a
     // one time process.
 #ifdef __APPLE__
+
+    // Legacy non-sandboxed mixxx settings path
+    QString legacySettingsPath = homePath + QLatin1String("/Library/Application Support/Mixxx");
 
     // Because Mixxx cannot test if the old path exists before getting permission to access it
     // outside the sandbox, unfortunately it is necessary to annoy the user with this popup
