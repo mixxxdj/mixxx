@@ -407,10 +407,7 @@ void CueControl::detachCue(HotcueControl* pControl) {
     }
 
     disconnect(pCue.get(), nullptr, this, nullptr);
-
-    if (m_pCurrentSavedLoopControl == pControl) {
-        m_pCurrentSavedLoopControl = nullptr;
-    }
+    m_pCurrentSavedLoopControl.testAndSetRelease(pControl, nullptr);
     pControl->resetCue();
 }
 
@@ -595,9 +592,9 @@ void CueControl::loadCuesFromTrack() {
     }
 
     // Detach all hotcues that are no longer present
-    for (int hotCue = 0; hotCue < m_iNumHotCues; ++hotCue) {
-        if (!active_hotcues.contains(hotCue)) {
-            HotcueControl* pControl = m_hotcueControls.at(hotCue);
+    for (int hotCueIndex = 0; hotCueIndex < m_iNumHotCues; ++hotCueIndex) {
+        if (!active_hotcues.contains(hotCueIndex)) {
+            HotcueControl* pControl = m_hotcueControls.at(hotCueIndex);
             detachCue(pControl);
         }
     }
@@ -2059,11 +2056,11 @@ void CueControl::hotcueFocusColorNext(double value) {
 }
 
 void CueControl::setCurrentSavedLoopControlAndActivate(HotcueControl* pControl) {
-    if (m_pCurrentSavedLoopControl && m_pCurrentSavedLoopControl != pControl) {
+    HotcueControl* pOldSavedLoopControl = m_pCurrentSavedLoopControl.fetchAndStoreAcquire(nullptr);
+    if (pOldSavedLoopControl && pOldSavedLoopControl != pControl) {
         // Disable previous saved loop
-        DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() != HotcueControl::Status::Empty);
-        m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Set);
-        m_pCurrentSavedLoopControl = nullptr;
+        DEBUG_ASSERT(pOldSavedLoopControl->getStatus() != HotcueControl::Status::Empty);
+        pOldSavedLoopControl->setStatus(HotcueControl::Status::Set);
     }
 
     if (!pControl) {
@@ -2084,9 +2081,9 @@ void CueControl::setCurrentSavedLoopControlAndActivate(HotcueControl* pControl) 
     }
 
     // Set new control as active
-    m_pCurrentSavedLoopControl = pControl;
     setLoop(pos.startPosition, pos.endPosition, true);
     pControl->setStatus(HotcueControl::Status::Active);
+    m_pCurrentSavedLoopControl.storeRelease(pControl);
 }
 
 void CueControl::slotLoopReset() {
@@ -2094,39 +2091,42 @@ void CueControl::slotLoopReset() {
 }
 
 void CueControl::slotLoopEnabledChanged(bool enabled) {
-    if (!m_pCurrentSavedLoopControl) {
+    HotcueControl* pSavedLoopControl = m_pCurrentSavedLoopControl;
+    if (!pSavedLoopControl) {
         return;
     }
 
-    DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() != HotcueControl::Status::Empty);
+    DEBUG_ASSERT(pSavedLoopControl->getStatus() != HotcueControl::Status::Empty);
     DEBUG_ASSERT(
-            m_pCurrentSavedLoopControl->getCue() &&
-            m_pCurrentSavedLoopControl->getCue()->getPosition() ==
+            pSavedLoopControl->getCue() &&
+            pSavedLoopControl->getCue()->getPosition() ==
                     m_pLoopStartPosition->get());
     DEBUG_ASSERT(
-            m_pCurrentSavedLoopControl->getCue() &&
-            m_pCurrentSavedLoopControl->getCue()->getEndPosition() ==
+            pSavedLoopControl->getCue() &&
+            pSavedLoopControl->getCue()->getEndPosition() ==
                     m_pLoopEndPosition->get());
 
     if (enabled) {
-        m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Active);
+        pSavedLoopControl->setStatus(HotcueControl::Status::Active);
     } else {
-        m_pCurrentSavedLoopControl->setStatus(HotcueControl::Status::Set);
+        pSavedLoopControl->setStatus(HotcueControl::Status::Set);
     }
 }
 
 void CueControl::slotLoopUpdated(double startPosition, double endPosition) {
-    if (!m_pCurrentSavedLoopControl) {
+    HotcueControl* pSavedLoopControl = m_pCurrentSavedLoopControl;
+    if (!pSavedLoopControl) {
         return;
     }
 
-    if (m_pCurrentSavedLoopControl->getStatus() != HotcueControl::Status::Active) {
+    if (pSavedLoopControl->getStatus() != HotcueControl::Status::Active) {
         slotLoopReset();
         return;
     }
 
-    CuePointer pCue = m_pCurrentSavedLoopControl->getCue();
+    CuePointer pCue = pSavedLoopControl->getCue();
     if (!pCue) {
+        // this can happen if the cue is deleted while this slot is cued
         return;
     }
 
@@ -2139,10 +2139,10 @@ void CueControl::slotLoopUpdated(double startPosition, double endPosition) {
     DEBUG_ASSERT(endPosition != Cue::kNoPosition);
     DEBUG_ASSERT(startPosition < endPosition);
 
-    DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() == HotcueControl::Status::Active);
+    DEBUG_ASSERT(pSavedLoopControl->getStatus() == HotcueControl::Status::Active);
     pCue->setStartPosition(startPosition);
     pCue->setEndPosition(endPosition);
-    DEBUG_ASSERT(m_pCurrentSavedLoopControl->getStatus() == HotcueControl::Status::Active);
+    DEBUG_ASSERT(pSavedLoopControl->getStatus() == HotcueControl::Status::Active);
 }
 
 void CueControl::setHotcueFocusIndex(int hotcueIndex) {

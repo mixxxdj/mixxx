@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QAtomicInt>
+#include <QAtomicPointer>
 #include <QList>
 #include <QMutex>
 
@@ -335,7 +336,7 @@ class CueControl : public EngineControl {
     ControlObject* m_pHotcueFocusColorNext;
     ControlObject* m_pHotcueFocusColorPrev;
 
-    HotcueControl* m_pCurrentSavedLoopControl;
+    QAtomicPointer<HotcueControl> m_pCurrentSavedLoopControl;
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
