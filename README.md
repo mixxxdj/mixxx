@@ -100,7 +100,7 @@ development and community news:
 
 ## License
 
-Mixxx is released under the GPLv2. See the LICENSE file for a full copy of the
+Mixxx is released under the GPLv3. See the LICENSE file for a full copy of the
 license.
 
 [mixxx]: https://www.mixxx.org
