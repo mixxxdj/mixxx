@@ -55,6 +55,8 @@ void ColumnCache::setColumns(const QStringList& columns) {
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_DATETIMEADDED] = fieldIndex(LIBRARYTABLE_DATETIMEADDED);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_HEADERPARSED] = fieldIndex(LIBRARYTABLE_HEADERPARSED);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_TIMESPLAYED] = fieldIndex(LIBRARYTABLE_TIMESPLAYED);
+    m_columnIndexByEnum[COLUMN_LIBRARYTABLE_LAST_PLAYED_AT] =
+            fieldIndex(LIBRARYTABLE_LAST_PLAYED_AT);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_PLAYED] = fieldIndex(LIBRARYTABLE_PLAYED);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_RATING] = fieldIndex(LIBRARYTABLE_RATING);
     m_columnIndexByEnum[COLUMN_LIBRARYTABLE_KEY] = fieldIndex(LIBRARYTABLE_KEY);

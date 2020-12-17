@@ -85,6 +85,7 @@ class TrackModel {
         FileCreationTime = 28,
         SampleRate = 29,
         Color = 30,
+        LastPlayedAt = 31,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,

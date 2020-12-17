@@ -38,6 +38,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
+            << "library." + LIBRARYTABLE_LAST_PLAYED_AT
             //has to be up here otherwise Played and TimesPlayed are not show
             << "library." + LIBRARYTABLE_ALBUMARTIST
             << "library." + LIBRARYTABLE_ALBUM

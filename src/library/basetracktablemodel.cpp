@@ -54,6 +54,7 @@ const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_REPLAYGAIN,
         LIBRARYTABLE_SAMPLERATE,
         LIBRARYTABLE_TIMESPLAYED,
+        LIBRARYTABLE_LAST_PLAYED_AT,
         LIBRARYTABLE_TITLE,
         LIBRARYTABLE_TRACKNUMBER,
         LIBRARYTABLE_YEAR,
@@ -165,6 +166,10 @@ void BaseTrackTableModel::initHeaderProperties() {
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED,
             tr("Date Added"),
+            defaultColumnWidth() * 3);
+    setHeaderProperties(
+            ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT,
+            tr("Last Time Played"),
             defaultColumnWidth() * 3);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_DURATION,
@@ -613,6 +618,7 @@ QVariant BaseTrackTableModel::roleValue(
             return QString("(%1)").arg(timesPlayed);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT:
         case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
                 return QVariant();
@@ -841,6 +847,7 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) ||
