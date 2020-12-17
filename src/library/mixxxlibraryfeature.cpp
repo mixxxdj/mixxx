@@ -33,7 +33,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     QStringList columns = DEFAULT_COLUMNS;
     QStringList qualifiedTableColumns;
     for (const auto& col : columns) {
-        qualifiedTableColumns.append(mixxx::TrackSchema::tableForColumn(col) +
+        qualifiedTableColumns.append(mixxx::trackschema::tableForColumn(col) +
                 QLatin1Char('.') + col);
     }
 

@@ -91,10 +91,10 @@ const QStringList DEFAULT_COLUMNS = {
         LIBRARYTABLE_COVERART_HASH};
 
 namespace mixxx {
-namespace TrackSchema {
+namespace trackschema {
 // TableForColumn returns the name of the table that contains the named column.
 QString tableForColumn(const QString& columnName);
-} // namespace TrackSchema
+} // namespace trackschema
 } // namespace mixxx
 
 #endif //MIXXX_TRACKSCHEMA_H

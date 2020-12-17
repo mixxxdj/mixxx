@@ -1,7 +1,7 @@
 #include "library/dao/trackschema.h"
 
 namespace mixxx {
-namespace TrackSchema {
+namespace trackschema {
 QString tableForColumn(const QString& columnName) {
     if (columnName == TRACKLOCATIONSTABLE_FSDELETED || columnName == TRACKLOCATIONSTABLE_LOCATION) {
         return QStringLiteral(TRACKLOCATIONS_TABLE);
@@ -9,5 +9,5 @@ QString tableForColumn(const QString& columnName) {
     // This doesn't detect unknown columns, but that's not really important here.
     return QStringLiteral(LIBRARY_TABLE);
 }
-} // namespace TrackSchema
+} // namespace trackschema
 } // namespace mixxx
