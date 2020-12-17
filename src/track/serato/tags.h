@@ -60,6 +60,12 @@ class SeratoTags final {
     QList<CueInfo> getCueInfos() const;
     void setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset = 0);
 
+    void setBeats(BeatsPointer pBeats,
+            const audio::StreamInfo& streamInfo,
+            double timingOffset) {
+        m_seratoBeatGrid.setBeats(pBeats, streamInfo, timingOffset);
+    }
+
     RgbColor::optional_t getTrackColor() const;
     void setTrackColor(const RgbColor::optional_t& color);
 
