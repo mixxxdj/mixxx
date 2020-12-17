@@ -154,6 +154,10 @@ void ControllerScriptEngineBase::scriptErrorDialog(
                 tr("The functionality provided by this controller mapping will "
                    "be disabled until the issue has been resolved.");
     } else {
+        // This happens when an exception is throws in an input handler (e. g.
+        // when pressing a button on the midi controller).  In case you ignore
+        // the issue, the button might not work if there's a bug in the
+        // mapping, but the other buttons probably will.
         additionalErrorText =
                 tr("You can ignore this error for this session but "
                    "you may experience erratic behavior.") +
