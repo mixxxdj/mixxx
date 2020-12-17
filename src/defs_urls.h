@@ -10,6 +10,8 @@
     "https://mixxx.discourse.group/c/controller-mappings/10"
 
 #define MIXXX_WIKI_URL "https://github.com/mixxxdj/mixxx/wiki"
+#define MIXXX_WIKI_TROUBLESHOOTING_SOUND_URL \
+    MIXXX_WIKI_URL "/troubleshooting#i-cant-select-my-sound-card-in-the-sound-hardware-preferences"
 #define MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL \
     MIXXX_WIKI_URL "/Hardware-Compatibility"
 #define MIXXX_WIKI_AUDIO_LATENCY_URL \

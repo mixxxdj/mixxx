@@ -29,6 +29,7 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "effects/builtin/builtinbackend.h"
@@ -988,9 +989,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
             *retryClicked = true;
             return QDialog::Accepted;
         } else if (msgBox.clickedButton() == wikiButton) {
-            QDesktopServices::openUrl(QUrl(
-                "http://mixxx.org/wiki/doku.php/troubleshooting"
-                "#i_can_t_select_my_sound_card_in_the_sound_hardware_preferences"));
+            QDesktopServices::openUrl(QUrl(MIXXX_WIKI_TROUBLESHOOTING_SOUND_URL));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
