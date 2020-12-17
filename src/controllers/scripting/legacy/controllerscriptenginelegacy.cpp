@@ -90,8 +90,7 @@ QJSValue ControllerScriptEngineLegacy::wrapFunctionCode(
 }
 
 bool ControllerScriptEngineLegacy::initialize() {
-    const bool success = ControllerScriptEngineBase::initialize();
-    if (!success) {
+    if (!ControllerScriptEngineBase::initialize()) {
         return false;
     }
 
