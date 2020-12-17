@@ -34,7 +34,7 @@ const double RateControl::kPausedJogMultiplier = 18.0;
 RateControl::RateControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
-          m_pBpmControl(NULL),
+          m_pBpmControl(nullptr),
           m_bTempStarted(false),
           m_tempRateRatio(0.0),
           m_dRateTempRampChange(0.0) {
@@ -369,8 +369,9 @@ double RateControl::getJogFactor() const {
     double jogValue = m_pJog->get();
 
     // Since m_pJog is an accumulator, reset it since we've used its value.
-    if(jogValue != 0.)
+    if (jogValue != 0.) {
         m_pJog->set(0.);
+    }
 
     double jogValueFiltered = m_pJogFilter->filter(jogValue);
     double jogFactor = jogValueFiltered * jogSensitivity;
@@ -464,7 +465,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             // If master sync is on, respond to it -- but vinyl and scratch mode always override.
             if (getSyncMode() == SYNC_FOLLOWER && !paused &&
                     !bVinylControlEnabled && !useScratch2Value) {
-                if (m_pBpmControl == NULL) {
+                if (m_pBpmControl == nullptr) {
                     qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
                     return 1.0;
                 }

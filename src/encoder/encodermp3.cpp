@@ -36,12 +36,15 @@ EncoderMp3::~EncoderMp3() {
         lame_close(m_lameFlags);
     }
     // free requested buffers
-    if (m_bufferIn[0] != nullptr)
+    if (m_bufferIn[0] != nullptr) {
         free(m_bufferIn[0]);
-    if (m_bufferIn[1] != nullptr)
+    }
+    if (m_bufferIn[1] != nullptr) {
         free(m_bufferIn[1]);
-    if (m_bufferOut != nullptr)
+    }
+    if (m_bufferOut != nullptr) {
         free(m_bufferOut);
+    }
 }
 
 void EncoderMp3::setEncoderSettings(const EncoderSettings& settings) {

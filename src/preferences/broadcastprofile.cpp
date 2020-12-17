@@ -108,8 +108,9 @@ QString BroadcastProfile::stripForbiddenChars(const QString& str) {
 BroadcastProfilePtr BroadcastProfile::loadFromFile(
         const QString& filename) {
     QFileInfo xmlFile(filename);
-    if (!xmlFile.exists())
+    if (!xmlFile.exists()) {
         return BroadcastProfilePtr(nullptr);
+    }
 
     QString profileFilename = xmlFile.baseName();
     // The profile filename (without extension) is used to create the instance
@@ -260,8 +261,9 @@ void BroadcastProfile::adoptDefaultValues() {
 
 bool BroadcastProfile::loadValues(const QString& filename) {
     QDomElement doc = XmlParse::openXMLFile(filename, kDoctype);
-    if (doc.childNodes().size() < 1)
+    if (doc.childNodes().size() < 1) {
         return false;
+    }
 
     m_filename = filename;
 

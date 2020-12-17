@@ -18,12 +18,12 @@
 
 namespace {
     const ConfigKey kSearchDebouncingTimeoutMillisKey = ConfigKey("[Library]","SearchDebouncingTimeoutMillis");
-}
+    } // namespace
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
         UserSettingsPointer pConfig,
-        Library* pLibrary)
+        std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_dirListModel(),
           m_pConfig(pConfig),
@@ -34,15 +34,15 @@ DlgPrefLibrary::DlgPrefLibrary(
 
     connect(this,
             &DlgPrefLibrary::requestAddDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestAddDir);
     connect(this,
             &DlgPrefLibrary::requestRemoveDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestRemoveDir);
     connect(this,
             &DlgPrefLibrary::requestRelocateDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestRelocateDir);
     connect(PushButtonAddDir,
             &QPushButton::clicked,

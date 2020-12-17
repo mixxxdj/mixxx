@@ -8,10 +8,3 @@ source_file = res/translations/mixxx.ts
 source_lang = en
 minimum_perc = 0
 type = QT
-
-[mixxxdj-windows-installer.mixxxpot]
-file_filter = build/wix/Localization/po/<lang>.po
-source_file = build/wix/Localization/po/mixxx.pot
-source_lang = en_US
-minimum_perc = 0
-type = PO

@@ -116,13 +116,19 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
                                   .arg(m_sDeviceName,
                                           timestamp.formatMillisWithUnit(),
                                           QString::number(length));
-        for(int i=0; i<length; i++) {
-            QString spacer=" ";
-            if ((i+1) % 4 == 0) spacer="  ";
-            if ((i+1) % 16 == 0) spacer="\n";
-            message += QString("%1%2")
-                        .arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper()
-                        .arg(spacer);
+        for (int i = 0; i < length; i++) {
+            QString spacer;
+            if ((i + 1) % 16 == 0) {
+                spacer = QStringLiteral("\n");
+            } else if ((i + 1) % 4 == 0) {
+                spacer = QStringLiteral("  ");
+            } else {
+                spacer = QStringLiteral(" ");
+            }
+            message += QString::number(data.at(i), 16)
+                               .toUpper()
+                               .rightJustified(2, QChar('0')) +
+                    spacer;
         }
         controllerDebug(message);
     }

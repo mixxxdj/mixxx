@@ -33,7 +33,7 @@ constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
 // bool kDefaultCloneDeckOnLoad is defined in header file to make it available
 // to playermanager.cpp
-}
+} // namespace
 
 DlgPrefDeck::DlgPrefDeck(QWidget* parent,
         UserSettingsPointer pConfig)

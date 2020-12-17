@@ -215,8 +215,8 @@ void CachingReaderChunkForOwner::removeFromList(
     }
 
     // Disconnect this chunk from the double-linked list
-    const auto pPrev = m_pPrev;
-    const auto pNext = m_pNext;
+    auto* const pPrev = m_pPrev;
+    auto* const pNext = m_pNext;
     m_pPrev = nullptr;
     m_pNext = nullptr;
 

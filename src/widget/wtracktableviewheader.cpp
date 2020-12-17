@@ -151,7 +151,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         }
 
         QString title = model->headerData(i, orientation()).toString();
-        auto action = new QAction(title, &m_menu);
+        auto* action = new QAction(title, &m_menu);
         action->setCheckable(true);
 
         /* If Mixxx starts the first time or the header states have been cleared

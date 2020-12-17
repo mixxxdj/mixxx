@@ -20,7 +20,7 @@ void EngineXfader::getXfadeGains(double xfadePosition,
         bool reverse,
         CSAMPLE_GAIN* gain1,
         CSAMPLE_GAIN* gain2) {
-    if (gain1 == NULL || gain2 == NULL) {
+    if (gain1 == nullptr || gain2 == nullptr) {
         return;
     }
 

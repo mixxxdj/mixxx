@@ -42,7 +42,7 @@ QList<Controller*> BulkEnumerator::queryDevices() {
 
         libusb_get_device_descriptor(device, &desc);
         if (is_interesting(&desc)) {
-            struct libusb_device_handle *handle = NULL;
+            struct libusb_device_handle* handle = nullptr;
             err = libusb_open(device, &handle);
             if (err) {
                 qWarning() << "Error opening a device";
