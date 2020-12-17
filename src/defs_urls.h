@@ -27,6 +27,8 @@
 #define MIXXX_MANUAL_CONTROLLERMANUAL_PREFIX \
     MIXXX_MANUAL_URL "/hardware/controllers/"
 #define MIXXX_MANUAL_CONTROLLERMANUAL_SUFFIX ".html"
+#define MIXXX_MANUAL_CONTROLS_URL \
+    MIXXX_MANUAL_URL "/chapters/advanced_topics.html#mixxx-controls"
 #define MIXXX_MANUAL_SOUND_URL \
     MIXXX_MANUAL_URL "/chapters/preferences.html#sound-hardware"
 #define MIXXX_MANUAL_LIBRARY_URL \
