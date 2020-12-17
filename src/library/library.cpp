@@ -529,7 +529,8 @@ void Library::setFont(const QFont& font) {
 
     m_trackTableFont = font;
     emit setTrackTableFont(font);
-    //  adapt the previous font heigh/row height ratio
+
+    // adapt the previous font height/row height ratio
     int scaledRowHeight = static_cast<int>(std::round(
             (newFontHeight / currFontHeight) * m_iTrackTableRowHeight));
     setRowHeight(scaledRowHeight);
