@@ -14,14 +14,14 @@
 //                 * Jogwheels, Scratching, Bending
 //                 * cycle Temporange
 //                 * Beat Sync
-//                 * Beat Loop Mode
-//                 * Sampler Mode
 //                 * BeatFX (controls Effect Unit 1.  LEFT selects EFFECT1, RIGHT selects EFFECT2, FX_SELECT selects EFFECT3.
 //                   ON/OFF toggles selected effect slot.  SHIFT+ON/OFF disables all three effect slots.
 //                 * Hot Cue Mode
+//                 * Beat Loop Mode
+//                 * Sampler Mode
 //
 //             Partially:
-//                 * Beatjump mode (no lighting, shift mode(adjust jump size))
+//                 * Beatjump mode (no lighting)
 //                 * PAD FX (only slots A-H, Q-P)
 //                 * Output (lights)
 //                 * Loop Section: Loop in / Out, Call, Double, Half
@@ -636,6 +636,26 @@ PioneerDDJ400.beatjumpPadPressed = function(_channel, control, value, _status, g
     }
     engine.setValue(group, "beatjump_size", Math.abs(PioneerDDJ400.beatjumpPad[control]));
     engine.setValue(group, "beatjump", PioneerDDJ400.beatjumpPad[control]);
+};
+
+PioneerDDJ400.beatjumpShiftUp = function(_channel, control, value, _status, group) {
+    if (value === 0 || PioneerDDJ400.beatjumpPad[0x21] * 16 > 16) {
+        return;
+    }
+    Object.keys(PioneerDDJ400.beatjumpPad).forEach(function(pad) {
+        PioneerDDJ400.beatjumpPad[pad] = PioneerDDJ400.beatjumpPad[pad] * 16;
+    });
+    engine.setValue(group, "beatjump_size", PioneerDDJ400.beatjumpPad[0x21]);
+};
+
+PioneerDDJ400.beatjumpShiftDown = function(_channel, control, value, _status, group) {
+    if (value === 0 || PioneerDDJ400.beatjumpPad[0x21] / 16 < 1/16) {
+        return;
+    }
+    Object.keys(PioneerDDJ400.beatjumpPad).forEach(function(pad) {
+        PioneerDDJ400.beatjumpPad[pad] = PioneerDDJ400.beatjumpPad[pad] / 16;
+    });
+    engine.setValue(group, "beatjump_size", PioneerDDJ400.beatjumpPad[0x21]);
 };
 
 //

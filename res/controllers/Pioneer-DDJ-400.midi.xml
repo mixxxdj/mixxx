@@ -1828,10 +1828,10 @@
                 </options>
             </control>
 
-            <!--control>
-                <description>PAD 7 (DECK1) +SHift BEAT JUMP MODE - press - decrease Beatjump Multiplier</description>
+            <control>
+                <description>PAD 7 (DECK1) +SHift BEAT JUMP MODE - press - decrease Beatjump by a factor of 16</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.beatjumpShiftByOne</key>
+                <key>PioneerDDJ400.beatjumpShiftDown</key>
                 <status>0x98</status>
                 <midino>0x26</midino>
                 <options>
@@ -1839,9 +1839,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 7 (DECK2) +Shift BEAT JUMP MODE - press - decrease Beatjump Multiplier</description>
+                <description>PAD 7 (DECK2) +Shift BEAT JUMP MODE - press - decrease Beatjump by a factor of 16</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.beatjumpShiftByOne</key>
+                <key>PioneerDDJ400.beatjumpShiftDown</key>
                 <status>0x9A</status>
                 <midino>0x26</midino>
                 <options>
@@ -1849,9 +1849,9 @@
                 </options>
             </control>
             <control>
-                <description>PAD 8 (DECK1) +SHift BEAT JUMP MODE - press - increase Beatjump Multiplier</description>
+                <description>PAD 8 (DECK1) +SHift BEAT JUMP MODE - press - increase Beatjump by a factor of 16</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.beatjumpShiftByOne</key>
+                <key>PioneerDDJ400.beatjumpShiftUp</key>
                 <status>0x98</status>
                 <midino>0x27</midino>
                 <options>
@@ -1859,15 +1859,15 @@
                 </options>
             </control>
             <control>
-                <description>PAD 8 (DECK2) +Shift BEAT JUMP MODE - press - increase Beatjump Multiplier</description>
+                <description>PAD 8 (DECK2) +Shift BEAT JUMP MODE - press - increase Beatjump by a factor of 16</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.beatjumpShiftByOne</key>
+                <key>PioneerDDJ400.beatjumpShiftUp</key>
                 <status>0x9A</status>
                 <midino>0x27</midino>
                 <options>
                     <Script-Binding/>
                 </options>
-            </control-->
+            </control>
             <!-- BEAT JUMP MODE END -->
 
             <!-- SAMPLER MODE START -->
