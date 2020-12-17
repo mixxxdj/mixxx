@@ -30,7 +30,7 @@ DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     config.stepSize = stepSize;
     config.frameLength = windowSize;
     config.dbRise = 3;
-    config.adaptiveWhitening = 0;
+    config.adaptiveWhitening = false;
     config.whiteningRelaxCoeff = -1;
     config.whiteningFloor = -1;
     return config;

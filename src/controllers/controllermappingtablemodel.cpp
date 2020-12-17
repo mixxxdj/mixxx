@@ -4,8 +4,8 @@
 
 ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent)
         : QAbstractTableModel(pParent),
-          m_pMidiPreset(NULL),
-          m_pHidPreset(NULL) {
+          m_pMidiPreset(nullptr),
+          m_pHidPreset(nullptr) {
 }
 
 ControllerMappingTableModel::~ControllerMappingTableModel() {

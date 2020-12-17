@@ -38,7 +38,7 @@ const QString xmlElementOutput = "output";
 const QString xmlElementInput = "input";
 
 const QRegularExpression kLegacyFormatRegex("((\\d*), )(.*) \\((plug)?(hw:(\\d)+(,(\\d)+))?\\)");
-}
+} // namespace
 
 SoundManagerConfig::SoundManagerConfig(SoundManager* pSoundManager)
     : m_api(kDefaultAPI),
@@ -96,7 +96,9 @@ bool SoundManagerConfig::readFromDisk() {
 
     for (int i = 0; i < devElements.count(); ++i) {
         QDomElement devElement(devElements.at(i).toElement());
-        if (devElement.isNull()) continue;
+        if (devElement.isNull()) {
+            continue;
+        }
         SoundDeviceId deviceIdFromFile;
         deviceIdFromFile.name = devElement.attribute(xmlAttributeDeviceName);
         if (deviceIdFromFile.name.isEmpty()) {
@@ -163,9 +165,13 @@ bool SoundManagerConfig::readFromDisk() {
         QDomNodeList inElements(devElement.elementsByTagName(xmlElementInput));
         for (int j = 0; j < outElements.count(); ++j) {
             QDomElement outElement(outElements.at(j).toElement());
-            if (outElement.isNull()) continue;
+            if (outElement.isNull()) {
+                continue;
+            }
             AudioOutput out(AudioOutput::fromXML(outElement));
-            if (out.getType() == AudioPath::INVALID) continue;
+            if (out.getType() == AudioPath::INVALID) {
+                continue;
+            }
             bool dupe(false);
             for (const AudioOutput& otherOut : qAsConst(m_outputs)) {
                 if (out == otherOut
@@ -174,15 +180,21 @@ bool SoundManagerConfig::readFromDisk() {
                     break;
                 }
             }
-            if (dupe) continue;
+            if (dupe) {
+                continue;
+            }
 
             addOutput(deviceIdFromFile, out);
         }
         for (int j = 0; j < inElements.count(); ++j) {
             QDomElement inElement(inElements.at(j).toElement());
-            if (inElement.isNull()) continue;
+            if (inElement.isNull()) {
+                continue;
+            }
             AudioInput in(AudioInput::fromXML(inElement));
-            if (in.getType() == AudioPath::INVALID) continue;
+            if (in.getType() == AudioPath::INVALID) {
+                continue;
+            }
             bool dupe(false);
             for (const AudioInput& otherIn : qAsConst(m_inputs)) {
                 if (in == otherIn
@@ -191,7 +203,9 @@ bool SoundManagerConfig::readFromDisk() {
                     break;
                 }
             }
-            if (dupe) continue;
+            if (dupe) {
+                continue;
+            }
             addInput(deviceIdFromFile, in);
         }
     }

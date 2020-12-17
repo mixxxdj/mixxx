@@ -779,7 +779,7 @@ void Track::setCuePoint(CuePosition cue) {
             m_cuePoints.push_back(pLoadCue);
         }
     } else if (pLoadCue) {
-        disconnect(pLoadCue.get(), 0, this, 0);
+        disconnect(pLoadCue.get(), nullptr, this, nullptr);
         m_cuePoints.removeOne(pLoadCue);
     }
 
@@ -865,7 +865,7 @@ void Track::removeCue(const CuePointer& pCue) {
 
     QMutexLocker lock(&m_qMutex);
     DEBUG_ASSERT(pCue->getTrackId() == m_record.getId());
-    disconnect(pCue.get(), 0, this, 0);
+    disconnect(pCue.get(), nullptr, this, nullptr);
     m_cuePoints.removeOne(pCue);
     if (pCue->getType() == mixxx::CueType::MainCue) {
         m_record.setCuePoint(CuePosition());
@@ -883,7 +883,7 @@ void Track::removeCuesOfType(mixxx::CueType type) {
         CuePointer pCue = it.next();
         // FIXME: Why does this only work for the Hotcue Type?
         if (pCue->getType() == type) {
-            disconnect(pCue.get(), 0, this, 0);
+            disconnect(pCue.get(), nullptr, this, nullptr);
             pCue->setTrackId(TrackId());
             it.remove();
             dirty = true;
@@ -1037,7 +1037,7 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
             m_pCueInfoImporterPending->isEmpty());
     // disconnect existing cue points
     for (const auto& pCue : qAsConst(m_cuePoints)) {
-        disconnect(pCue.get(), 0, this, 0);
+        disconnect(pCue.get(), nullptr, this, nullptr);
         pCue->setTrackId(TrackId());
     }
     m_cuePoints = cuePoints;

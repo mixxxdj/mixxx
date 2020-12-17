@@ -7,7 +7,7 @@
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
-}
+} // namespace
 
 WaveformSignalColors::WaveformSignalColors()
         : m_dimBrightThreshold(kDefaultDimBrightThreshold) {

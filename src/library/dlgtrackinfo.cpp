@@ -374,8 +374,9 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
 }
 
 void DlgTrackInfo::saveTrack() {
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
@@ -417,8 +418,9 @@ void DlgTrackInfo::saveTrack() {
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     if (save) {
         saveTrack();

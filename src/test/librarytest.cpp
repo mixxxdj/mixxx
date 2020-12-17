@@ -26,7 +26,7 @@ std::unique_ptr<TrackCollectionManager> newTrackCollectionManager(
             deleteTrack);
 }
 
-}
+} // namespace
 
 LibraryTest::LibraryTest()
         : m_mixxxDb(config(), kInMemoryDbConnection),
