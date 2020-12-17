@@ -180,16 +180,17 @@ void ControllerScriptEngineBase::scriptErrorDialog(
     // To prevent multiple windows for the same error
     props->setKey(key);
 
-    // Allow user to suppress further notifications about this particular error
-    if (!bFatalError) {
+    if (bFatalError) {
+        props->addButton(QMessageBox::Close);
+        props->setDefaultButton(QMessageBox::Close);
+        props->setEscapeButton(QMessageBox::Close);
+    } else {
+        // Allow user to suppress further notifications about this particular
+        // error
         props->addButton(QMessageBox::Ignore);
         props->addButton(QMessageBox::Retry);
         props->setDefaultButton(QMessageBox::Ignore);
         props->setEscapeButton(QMessageBox::Ignore);
-    } else {
-        props->addButton(QMessageBox::Close);
-        props->setDefaultButton(QMessageBox::Close);
-        props->setEscapeButton(QMessageBox::Close);
     }
     props->setModal(false);
 
