@@ -1244,17 +1244,7 @@ install(
 
 
 # Font files
-if(UNIX AND NOT APPLE)
-  # Ubuntu and OpenSans are already installed by package manager
-  install(
-    DIRECTORY
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
-    DESTINATION
-      "${MIXXX_INSTALL_DATADIR}"
-    PATTERN "OpenSans*" EXCLUDE
-    PATTERN "Ubuntu*" EXCLUDE
-  )
-else()
+if(APPLE OR WIN32)
   install(
     DIRECTORY
       "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
