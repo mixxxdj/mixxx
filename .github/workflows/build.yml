@@ -108,7 +108,12 @@ jobs:
 
     - name: "[Windows] Install additional build tools"
       if: runner.os == 'Windows'
-      run: python -m pip install ninja git+https://github.com/frerich/clcache.git
+      # TODO: Add ninja, clcache and rsync to the windows buildenv
+      run: |
+        python -m pip install ninja git+https://github.com/frerich/clcache.git
+        $Env:PATH="C:\msys64\usr\bin;$Env:PATH"
+        pacman -S --noconfirm coreutils bash rsync openssh
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
@@ -265,15 +270,18 @@ jobs:
       run: signtool sign /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
       working-directory: build
 
-    - name: "[macOS] Upload build to downloads.mixxx.org"
+    - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
       # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-      if: runner.os == 'macOS' && env.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD != null
-      run: tools/deploy.sh
+      if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_PASSWORD != null
+      run: bash tools/deploy.sh ${{ matrix.artifacts_path }}
       env:
-        FILE_TO_DEPLOY: ${{ matrix.artifacts_path }}
+        DESTDIR: public_html/downloads/builds
         OS: ${{ runner.os }}
-        DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+        SSH_HOST: downloads-hostgator.mixxx.org
         SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
+        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+        SSH_USER: mixxx
+        UPLOAD_ID: ${{ github.run_id }}
 
     - name: "Upload GitHub Actions artifacts"
       uses: actions/upload-artifact@v2
