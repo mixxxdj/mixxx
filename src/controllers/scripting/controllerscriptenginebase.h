@@ -43,8 +43,6 @@ class ControllerScriptEngineBase : public QObject {
 
     void scriptErrorDialog(const QString& detailedError, const QString& key, bool bFatal = false);
 
-    QJSValue wrapArrayBufferCallback(const QJSValue& callback);
-
     bool m_bDisplayingExceptionDialog;
     std::shared_ptr<QJSEngine> m_pJSEngine;
 
@@ -54,9 +52,6 @@ class ControllerScriptEngineBase : public QObject {
 
   protected slots:
     void reload();
-
-  private:
-    QJSValue m_makeArrayBufferWrapperFunction;
 
   private slots:
     void errorDialogButton(const QString& key, QMessageBox::StandardButton button);

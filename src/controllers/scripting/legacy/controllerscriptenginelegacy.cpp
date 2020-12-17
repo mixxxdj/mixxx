@@ -95,6 +95,21 @@ bool ControllerScriptEngineLegacy::initialize() {
         return false;
     }
 
+    // Binary data is passed from the Controller as a QByteArray, which
+    // QJSEngine::toScriptValue converts to an ArrayBuffer in JavaScript.
+    // ArrayBuffer cannot be accessed with the [] operator in JS; it needs
+    // to be converted to a typed array (Uint8Array in this case) first.
+    // This function generates a wrapper function from a JS callback to do
+    // that conversion automatically.
+    m_makeArrayBufferWrapperFunction = m_pJSEngine->evaluate(QStringLiteral(
+            // arg2 is the timestamp for ControllerScriptModuleEngine.
+            // In ControllerScriptEngineLegacy it is the length of the array.
+            "(function(callback) {"
+            "    return function(arrayBuffer, arg2) {"
+            "        callback(new Uint8Array(arrayBuffer), arg2);"
+            "    };"
+            "})"));
+
     // Make this ControllerScriptHandler instance available to scripts as 'engine'.
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
     ControllerScriptInterfaceLegacy* legacyScriptInterface =
@@ -233,4 +248,8 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
     }
 
     return true;
+}
+
+QJSValue ControllerScriptEngineLegacy::wrapArrayBufferCallback(const QJSValue& callback) {
+    return m_makeArrayBufferWrapperFunction.call(QJSValueList{callback});
 }

@@ -35,11 +35,13 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     bool evaluateScriptFile(const QFileInfo& scriptFile);
     void shutdown() override;
 
+    QJSValue wrapArrayBufferCallback(const QJSValue& callback);
     bool callFunctionOnObjects(const QList<QString>& scriptFunctionPrefixes,
             const QString&,
             const QJSValueList& args = QJSValueList(),
             bool bFatalError = false);
 
+    QJSValue m_makeArrayBufferWrapperFunction;
     QList<QString> m_scriptFunctionPrefixes;
     QList<QJSValue> m_incomingDataFunctions;
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;
