@@ -90,7 +90,10 @@ QJSValue ControllerScriptEngineLegacy::wrapFunctionCode(
 }
 
 bool ControllerScriptEngineLegacy::initialize() {
-    ControllerScriptEngineBase::initialize();
+    const bool success = ControllerScriptEngineBase::initialize();
+    if (!success) {
+        return false;
+    }
 
     // Make this ControllerScriptHandler instance available to scripts as 'engine'.
     QJSValue engineGlobalObject = m_pJSEngine->globalObject();
