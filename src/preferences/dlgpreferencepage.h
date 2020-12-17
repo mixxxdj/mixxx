@@ -4,6 +4,9 @@
 #include <QUrl>
 #include <QWidget>
 
+#include "util/color/color.h"
+#include "util/string.h"
+
 /// Interface that all preference pages have to implement.
 class DlgPreferencePage : public QWidget {
     Q_OBJECT
@@ -15,6 +18,9 @@ class DlgPreferencePage : public QWidget {
     /// Subclasses can provide a path to the appropriate manual page by
     /// overriding this. The default implementation returns an invalid QUrl.
     virtual QUrl helpUrl() const;
+
+    QColor m_pLinkColor;
+    LinkFormatter m_stringFormatter;
 
   public slots:
     /// Called when the preference dialog is shown to the user (not necessarily
@@ -43,4 +49,14 @@ class DlgPreferencePage : public QWidget {
 
     /// Called when the preferences dialog is hidden from the user.
     virtual void slotHide() {}
+
+  private:
+    inline void createLinkColor() {
+        // Blend the palette colors for regular text and link text to get a color
+        // that is more likely to be visible with dark OS themes.
+        // https://bugs.launchpad.net/mixxx/+bug/1900201
+        m_pLinkColor = Color::blendColors(palette().link().color(),
+                palette().text().color())
+                               .name();
+    }
 };

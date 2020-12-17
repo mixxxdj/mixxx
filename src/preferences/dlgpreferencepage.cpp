@@ -5,6 +5,7 @@
 
 DlgPreferencePage::DlgPreferencePage(QWidget* pParent)
         : QWidget(pParent) {
+    createLinkColor();
 }
 
 DlgPreferencePage::~DlgPreferencePage() {
