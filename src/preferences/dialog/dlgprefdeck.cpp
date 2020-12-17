@@ -333,11 +333,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     //
 
     // Add "(?)" with a manual link to the label
-    labelCueMode->setText(
-            labelCueMode->text() +
-            " <a href=\"" +
-            MIXXX_MANUAL_URL +
-            "/chapters/user_interface.html#using-cue-modes\">(?)</a>");
+    labelCueMode->setText(labelCueMode->text() + QStringLiteral(" ") +
+            m_stringFormatter.coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_CUE_MODES_URL));
 
     //
     // Ramping Temporary Rate Change configuration

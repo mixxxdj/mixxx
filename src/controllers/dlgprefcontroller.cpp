@@ -234,40 +234,46 @@ QString DlgPrefController::presetAuthor(
     return tr("No Author");
 }
 
-QString DlgPrefController::presetForumLink(
+QString DlgPrefController::presetSupportLinks(
         const ControllerPresetPointer pPreset) const {
-    QString url;
-    if (pPreset) {
-        QString link = pPreset->forumlink();
-        if (link.length() > 0) {
-            url = "<a href=\"" + link + "\">Mixxx Forums</a>";
-        }
+    if (!pPreset) {
+        return QString();
     }
-    return url;
-}
 
-QString DlgPrefController::presetWikiLink(
-        const ControllerPresetPointer pPreset) const {
-    QString url;
-    if (pPreset) {
-        QString link = pPreset->wikilink();
-        if (link.length() > 0) {
-            url = "<a href=\"" + link + "\">Mixxx Wiki</a>";
-        }
-    }
-    return url;
-}
+    QStringList linkList;
 
-QString DlgPrefController::presetManualLink(
-        const ControllerPresetPointer pPreset) const {
-    QString url;
-    if (pPreset) {
-        QString link = pPreset->manualLink();
-        if (!link.isEmpty()) {
-            url = "<a href=\"" + link + "\">Manual</a>";
-        }
+    QString forumLink = pPreset->forumlink();
+    if (!forumLink.isEmpty()) {
+        linkList << m_stringFormatter.coloredLinkString(
+                m_pLinkColor,
+                "Mixxx Forums",
+                forumLink);
     }
-    return url;
+
+    QString wikiLink = pPreset->wikilink();
+    if (!wikiLink.isEmpty()) {
+        linkList << m_stringFormatter.coloredLinkString(
+                m_pLinkColor,
+                "Mixxx Wiki",
+                wikiLink);
+    }
+
+    QString manualLink = pPreset->manualLink();
+    if (!manualLink.isEmpty()) {
+        linkList << m_stringFormatter.coloredLinkString(
+                m_pLinkColor,
+                "Mixxx Manual",
+                manualLink);
+    }
+
+    // There is always at least one support link.
+    // TODO(rryan): This is a horrible general support link for MIDI!
+    linkList << m_stringFormatter.coloredLinkString(
+            m_pLinkColor,
+            tr("Troubleshooting"),
+            MIXXX_WIKI_MIDI_SCRIPTING_URL);
+
+    return QString(linkList.join("&nbsp;&nbsp;"));
 }
 
 QString DlgPrefController::presetFileLinks(
@@ -279,20 +285,20 @@ QString DlgPrefController::presetFileLinks(
     const QString builtinFileSuffix = QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
     QString systemPresetPath = resourcePresetsPath(m_pConfig);
     QStringList linkList;
-    QString xmlFileName = QFileInfo(pPreset->filePath()).fileName();
-    QString xmlFileLink = QStringLiteral("<a href=\"") +
-            pPreset->filePath() + QStringLiteral("\">") +
-            xmlFileName + QStringLiteral("</a>");
+    QString xmlFileLink = m_stringFormatter.coloredLinkString(
+            m_pLinkColor,
+            QFileInfo(pPreset->filePath()).fileName(),
+            pPreset->filePath());
     if (pPreset->filePath().startsWith(systemPresetPath)) {
         xmlFileLink += builtinFileSuffix;
     }
     linkList << xmlFileLink;
 
     for (const auto& script : pPreset->getScriptFiles()) {
-        QString scriptFileLink = QStringLiteral("<a href=\"") +
-                script.file.absoluteFilePath() + QStringLiteral("\">") +
-                script.name + QStringLiteral("</a>");
-
+        QString scriptFileLink = m_stringFormatter.coloredLinkString(
+                m_pLinkColor,
+                script.name,
+                script.file.absoluteFilePath());
         if (!script.file.exists()) {
             scriptFileLink +=
                     QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
@@ -647,35 +653,8 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(presetName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
     m_ui.labelLoadedPresetAuthor->setText(presetAuthor(preset));
-    QStringList supportLinks;
-
-    QString forumLink = presetForumLink(preset);
-    if (forumLink.length() > 0) {
-        supportLinks << forumLink;
-    }
-
-    QString manualLink = presetManualLink(preset);
-    if (manualLink.length() > 0) {
-        supportLinks << manualLink;
-    }
-
-    QString wikiLink = presetWikiLink(preset);
-    if (wikiLink.length() > 0) {
-        supportLinks << wikiLink;
-    }
-
-    // There is always at least one support link.
-    // TODO(rryan): This is a horrible general support link for MIDI!
-    QString troubleShooting = QString(
-        "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">%1</a>")
-            .arg(tr("Troubleshooting"));
-    supportLinks << troubleShooting;
-
-    QString support = supportLinks.join("&nbsp;&nbsp;");
-    m_ui.labelLoadedPresetSupportLinks->setText(support);
-
-    QString mappingFileLinks = presetFileLinks(preset);
-    m_ui.labelLoadedPresetScriptFileLinks->setText(mappingFileLinks);
+    m_ui.labelLoadedPresetSupportLinks->setText(presetSupportLinks(preset));
+    m_ui.labelLoadedPresetScriptFileLinks->setText(presetFileLinks(preset));
 
     // We mutate this preset so keep a reference to it while we are using it.
     // TODO(rryan): Clone it? Technically a waste since nothing else uses this
