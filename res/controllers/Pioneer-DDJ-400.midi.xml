@@ -1667,317 +1667,168 @@
             <!-- BEAT LOOP MODE END -->
 
             <!-- BEAT JUMP MODE START -->
-            <!-- This approach uses the beatjump_*_*ward functions. Missing: SHIFT modifiers, lights. -->
-            <!--channel 1-->
             <control>
+                <description>PAD 1 (DECK1) BEAT JUMP MODE - press - Jump 1 Beat backwards</description>
                 <group>[Channel1]</group>
-                <key>beatjump_1_backward</key>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
                 <status>0x97</status>
                 <midino>0x20</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
-                <group>[Channel1]</group>
-                <key>beatjump_1_forward</key>
-                <status>0x97</status>
-                <midino>0x21</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_2_backward</key>
-                <status>0x97</status>
-                <midino>0x22</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_2_forward</key>
-                <status>0x97</status>
-                <midino>0x23</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_4_backward</key>
-                <status>0x97</status>
-                <midino>0x24</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_4_forward</key>
-                <status>0x97</status>
-                <midino>0x25</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_8_backward</key>
-                <status>0x97</status>
-                <midino>0x26</midino>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Channel1]</group>
-                <key>beatjump_8_forward</key>
-                <status>0x97</status>
-                <midino>0x27</midino>
-                <options>
-                    <normal/>
-                </options>
-              </control>
-            <!--beatjump channel 2-->
-            <control>
+                <description>PAD 1 (DECK2) BEAT JUMP MODE - press - Jump 1 Beat backwards</description>
                 <group>[Channel2]</group>
-                <key>beatjump_1_backward</key>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
                 <status>0x99</status>
                 <midino>0x20</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
+                <description>PAD 2 (DECK1) BEAT JUMP MODE - press - Jump 1 Beat forwards</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
+                <status>0x97</status>
+                <midino>0x21</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 2 (DECK2) BEAT JUMP MODE - press - Jump 1 Beat forwards</description>
                 <group>[Channel2]</group>
-                <key>beatjump_1_forward</key>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
                 <status>0x99</status>
                 <midino>0x21</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
+                <description>PAD 3 (DECK1) BEAT JUMP MODE - press - Jump 2 Beats backwards</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
+                <status>0x97</status>
+                <midino>0x22</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 3 (DECK2) BEAT JUMP MODE - press - Jump 2 Beats backwards</description>
                 <group>[Channel2]</group>
-                <key>beatjump_2_backward</key>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
                 <status>0x99</status>
                 <midino>0x22</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
+                <description>PAD 4 (DECK1) BEAT JUMP MODE - press - Jump 2 Beats forwards</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
+                <status>0x97</status>
+                <midino>0x23</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 4 (DECK2) BEAT JUMP MODE - press - Jump 2 Beats forwards</description>
                 <group>[Channel2]</group>
-                <key>beatjump_2_forward</key>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
                 <status>0x99</status>
                 <midino>0x23</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
+                <description>PAD 5 (DECK1) BEAT JUMP MODE - press - Jump 4 Beats backwards</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
+                <status>0x97</status>
+                <midino>0x24</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 5 (DECK2) BEAT JUMP MODE - press - Jump 4 Beats backwards</description>
                 <group>[Channel2]</group>
-                <key>beatjump_4_backward</key>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
                 <status>0x99</status>
                 <midino>0x24</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
-              </control>
+            </control>
             <control>
+                <description>PAD 6 (DECK1) BEAT JUMP MODE - press - Jump 4 Beats forwards</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
+                <status>0x97</status>
+                <midino>0x25</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 6 (DECK2) BEAT JUMP MODE - press - Jump 4 Beats forwards</description>
                 <group>[Channel2]</group>
-                <key>beatjump_4_forward</key>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
                 <status>0x99</status>
                 <midino>0x25</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
+                <description>PAD 7 (DECK1) BEAT JUMP MODE - press - Jump 8 Beats backwards</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
+                <status>0x97</status>
+                <midino>0x26</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 7 (DECK2) BEAT JUMP MODE - press - Jump 8 Beats backwards</description>
                 <group>[Channel2]</group>
-                <key>beatjump_8_backward</key>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
                 <status>0x99</status>
                 <midino>0x26</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
+                <description>PAD 8 (DECK1) BEAT JUMP MODE - press - Jump 8 Beats forwards</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
+                <status>0x97</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD 8 (DECK2) BEAT JUMP MODE - press - Jump 8 Beats forwards</description>
                 <group>[Channel2]</group>
-                <key>beatjump_8_forward</key>
+                <key>PioneerDDJ400.beatjumpPadPressed</key>
                 <status>0x99</status>
                 <midino>0x27</midino>
                 <options>
-                    <normal/>
+                    <Script-Binding/>
                 </options>
             </control>
 
-            <!--Some prelimary work on beat jumps with shift - not yet working.-->
             <!--control>
-                <description>PAD 1 (DECK1) BEAT JUMP MODE - press - Jump 1 Beat left</description>
-                <group>[Channel1]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x97</status>
-                <midino>0x20</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 1 (DECK2) BEAT JUMP MODE - press - Jump 1 Beat left</description>
-                <group>[Channel2]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x99</status>
-                <midino>0x20</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 2 (DECK1) BEAT JUMP MODE - press - Jump 1 Beat right</description>
-                <group>[Channel1]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x97</status>
-                <midino>0x21</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 2 (DECK2) BEAT JUMP MODE - press - Jump 1 Beat right</description>
-                <group>[Channel2]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x99</status>
-                <midino>0x21</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 3 (DECK1) BEAT JUMP MODE - press - Jump 2 Beats left</description>
-                <group>[Channel1]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x97</status>
-                <midino>0x22</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 3 (DECK2) BEAT JUMP MODE - press - Jump 2 Beats left</description>
-                <group>[Channel2]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x99</status>
-                <midino>0x22</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 4 (DECK1) BEAT JUMP MODE - press - Jump 2 Beats right</description>
-                <group>[Channel1]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x97</status>
-                <midino>0x23</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 4 (DECK2) BEAT JUMP MODE - press - Jump 2 Beats right</description>
-                <group>[Channel2]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x99</status>
-                <midino>0x23</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 5 (DECK1) BEAT JUMP MODE - press - Jump 4 Beats left</description>
-                <group>[Channel1]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x97</status>
-                <midino>0x24</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 5 (DECK2) BEAT JUMP MODE - press - Jump 4 Beats left</description>
-                <group>[Channel2]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x99</status>
-                <midino>0x24</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 6 (DECK1) BEAT JUMP MODE - press - Jump 4 Beats right</description>
-                <group>[Channel1]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x97</status>
-                <midino>0x25</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 6 (DECK2) BEAT JUMP MODE - press - Jump 4 Beats right</description>
-                <group>[Channel2]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x99</status>
-                <midino>0x25</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 7 (DECK1) BEAT JUMP MODE - press - Jump 8 Beats left</description>
-                <group>[Channel1]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x97</status>
-                <midino>0x26</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 7 (DECK2) BEAT JUMP MODE - press - Jump 8 Beats left</description>
-                <group>[Channel2]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x99</status>
-                <midino>0x26</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 8 (DECK1) BEAT JUMP MODE - press - Jump 8 Beats right</description>
-                <group>[Channel1]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x97</status>
-                <midino>0x27</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 8 (DECK2) BEAT JUMP MODE - press - Jump 8 Beats right</description>
-                <group>[Channel2]</group>
-                <key>PioneerDDJ400.beatjumpPadPressed</key>
-                <status>0x99</status>
-                <midino>0x27</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-
-            <control>
                 <description>PAD 7 (DECK1) +SHift BEAT JUMP MODE - press - decrease Beatjump Multiplier</description>
                 <group>[Channel1]</group>
                 <key>PioneerDDJ400.beatjumpShiftByOne</key>

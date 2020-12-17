@@ -1,7 +1,7 @@
 // Pioneer-DDJ-400-script.js
 // ****************************************************************************
 // * Mixxx mapping script file for the Pioneer DDJ-400.
-// * Author: Warker, nschloe, dj3730
+// * Author: Warker, nschloe, dj3730, jusko
 // * Forum: https://mixxx.org/forums/viewtopic.php?f=7&t=12113
 // * Wiki: https://www.mixxx.org/wiki/doku.php/pioneer_ddj-400
 //
@@ -106,9 +106,18 @@ PioneerDDJ400.keyboardHotCuePoint = [0, 0]; // selected HotCue point (eg. PAD) i
 PioneerDDJ400.keyboardModeRefCount = [0, 0]; // count the currently pressed Pads per Deck
 PioneerDDJ400.halftoneToPadMap = [4, 5, 6, 7, 0, 1, 2, 3];
 
-// Beatjump Pads
-PioneerDDJ400.beatjumpPad = [-1, 1, -2, 2, -4, 4, -8, 8]; // < 0 = left; else right
-PioneerDDJ400.beatjumpMultiplier = [1, 1]; // Beatjump Beatcount per Deck
+// Beatjump pad (beatjump_size values)
+PioneerDDJ400.beatjumpPad = {
+    0x20: -1, // PAD 1
+    0x21: 1,  // PAD 2
+    0x22: -2, // PAD 3
+    0x23: 2,  // PAD 4
+    0x24: -4, // PAD 5
+    0x25: 4,  // PAD 6
+    0x26: -8, // PAD 7
+    0x27: 8   // PAD 8
+};
+
 
 // Hotcue Pads saved Loop points
 PioneerDDJ400.hotcueLoopPoints = {
@@ -132,7 +141,6 @@ var ignoreRelease = function(fn) {
         return fn(channel, control, value, status, group);
     };
 };
-
 
 PioneerDDJ400.init = function() {
     // init controller
@@ -616,6 +624,18 @@ PioneerDDJ400.vuMeterUpdate = function(value, group) {
             midi.sendShortMsg(0xB1, 0x02, newVal);
             break;
     }
+};
+
+//
+// BEATJUMP
+//
+
+PioneerDDJ400.beatjumpPadPressed = function(_channel, control, value, _status, group) {
+    if (value === 0) {
+        return;
+    }
+    engine.setValue(group, "beatjump_size", Math.abs(PioneerDDJ400.beatjumpPad[control]));
+    engine.setValue(group, "beatjump", PioneerDDJ400.beatjumpPad[control]);
 };
 
 //
