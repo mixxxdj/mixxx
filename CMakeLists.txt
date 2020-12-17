@@ -1319,11 +1319,11 @@ if(UNIX AND NOT APPLE)
       FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
       DESTINATION
-        "${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d"
+        "lib/udev/rules.d"
     )
     message(WARNING
       " The udev rule file for USB HID and Bulk controller permissions will\n"
-      " be installed to: ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d.\n"
+      " be installed to: ${CMAKE_INSTALL_PREFIX}/lib/udev/rules.d.\n"
       " If you are installing Mixxx from source for your own use, copy\n"
       " mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n"
       " udevadm control --reload-rules && udevadm trigger\n"
