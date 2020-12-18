@@ -109,7 +109,7 @@ void MidiController::createOutputHandlers() {
             qWarning() << errorLog;
 
             int deckNum = 0;
-            if (ControllerDebug::enabled()) {
+            if (ControllerDebug::isEnabled()) {
                 failures.append(errorLog);
             } else if (PlayerManager::isDeckGroup(group, &deckNum)) {
                 int numDecks = PlayerManager::numDecks();

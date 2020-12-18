@@ -13,25 +13,25 @@ class ControllerDebug {
     static constexpr const char kLogMessagePrefix[] = "CDBG";
     static constexpr int kLogMessagePrefixLength = sizeof(kLogMessagePrefix) - 1;
 
-    static bool enabled();
+    static bool isEnabled();
 
     /// Override the command-line argument (for testing)
-    static void enable() {
-        s_enabled = true;
+    static void setEnabled(bool enabled) {
+        s_enabled = enabled;
     }
 
-    /// Override the command-line argument (for testing)
-    static void disable() {
-        s_enabled = false;
+    static void setTesting(bool isTesting) {
+        s_testing = isTesting;
     }
 
-    static void enableTesting() {
-        s_enabled = true;
-        s_testing = true;
-    }
-
-    static ControlFlags shouldAssertForInvalidControlObjects() {
-        if (s_enabled && !s_testing) {
+    /// Return the appropriate flag for ControlProxies in mappings.
+    ///
+    /// Normally, accessing an invalid control from a mapping should *not*
+    /// throw a debug assertion because controller mappings are considered
+    /// user data. If we're testing or controller debugging is enabled, we *do*
+    /// want assertions to prevent overlooking bugs in controller mappings.
+    static ControlFlags controlFlags() {
+        if (s_enabled || s_testing) {
             return ControlFlag::None;
         }
 
@@ -55,7 +55,7 @@ class ControllerDebug {
 // output for mixxx.log with .noquote(), because in qt5 QDebug() is quoted by default.
 #define controllerDebug(stream)                                                           \
     {                                                                                     \
-        if (ControllerDebug::enabled()) {                                                 \
+        if (ControllerDebug::isEnabled()) {                                               \
             QDebug(QtDebugMsg).noquote() << ControllerDebug::kLogMessagePrefix << stream; \
         }                                                                                 \
     }

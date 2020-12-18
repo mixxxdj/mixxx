@@ -121,7 +121,7 @@ void ControllerScriptInterfaceLegacy::setValue(
 
     if (coScript != nullptr) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControllerDebug::shouldAssertForInvalidControlObjects());
+                coScript->getKey(), ControllerDebug::controlFlags());
         if (pControl &&
                 !m_st.ignore(
                         pControl, coScript->getParameterForValue(newValue))) {
@@ -152,7 +152,7 @@ void ControllerScriptInterfaceLegacy::setParameter(
 
     if (coScript != nullptr) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), ControllerDebug::shouldAssertForInvalidControlObjects());
+                coScript->getKey(), ControllerDebug::controlFlags());
         if (pControl && !m_st.ignore(pControl, newParameter)) {
             coScript->setParameter(newParameter);
         }
@@ -498,7 +498,7 @@ void ControllerScriptInterfaceLegacy::timerEvent(QTimerEvent* event) {
 void ControllerScriptInterfaceLegacy::softTakeover(
         const QString& group, const QString& name, bool set) {
     ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControllerDebug::shouldAssertForInvalidControlObjects());
+            ConfigKey(group, name), ControllerDebug::controlFlags());
     if (!pControl) {
         return;
     }
@@ -512,7 +512,7 @@ void ControllerScriptInterfaceLegacy::softTakeover(
 void ControllerScriptInterfaceLegacy::softTakeoverIgnoreNextValue(
         const QString& group, const QString& name) {
     ControlObject* pControl = ControlObject::getControl(
-            ConfigKey(group, name), ControllerDebug::shouldAssertForInvalidControlObjects());
+            ConfigKey(group, name), ControllerDebug::controlFlags());
     if (!pControl) {
         return;
     }

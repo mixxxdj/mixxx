@@ -148,7 +148,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     } else { // m_pController is nullptr in tests.
         args << QJSValue();
     }
-    args << QJSValue(ControllerDebug::enabled());
+    args << QJSValue(ControllerDebug::isEnabled());
     if (!callFunctionOnObjects(m_scriptFunctionPrefixes, "init", args, true)) {
         shutdown();
         return false;

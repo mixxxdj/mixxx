@@ -6,7 +6,7 @@
 #include "moc_controlobjectscript.cpp"
 
 ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
-        : ControlProxy(key, pParent, ControllerDebug::shouldAssertForInvalidControlObjects()) {
+        : ControlProxy(key, pParent, ControllerDebug::controlFlags()) {
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {

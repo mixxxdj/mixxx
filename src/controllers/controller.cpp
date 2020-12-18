@@ -110,7 +110,7 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     triggerActivity();
 
     int length = data.size();
-    if (ControllerDebug::enabled()) {
+    if (ControllerDebug::isEnabled()) {
         // Formatted packet display
         QString message = QString("%1: t:%2, %3 bytes:\n")
                                   .arg(m_sDeviceName,

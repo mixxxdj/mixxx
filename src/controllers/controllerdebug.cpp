@@ -8,6 +8,6 @@ bool ControllerDebug::s_enabled = false;
 bool ControllerDebug::s_testing = false;
 
 //static
-bool ControllerDebug::enabled() {
+bool ControllerDebug::isEnabled() {
     return s_enabled || CmdlineArgs::Instance().getMidiDebug();
 }
