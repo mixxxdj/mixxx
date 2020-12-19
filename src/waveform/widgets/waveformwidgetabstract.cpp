@@ -5,7 +5,6 @@
 
 #include "util/compatibility.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
-#include "waveform/sharedglcontext.h"
 
 WaveformWidgetAbstract::WaveformWidgetAbstract(const QString& group)
         : WaveformWidgetRenderer(group),
@@ -47,9 +46,4 @@ void WaveformWidgetAbstract::resize(int width, int height) {
         devicePixelRatio = getDevicePixelRatioF(m_widget);
     }
     WaveformWidgetRenderer::resize(width, height, static_cast<float>(devicePixelRatio));
-}
-
-GLWaveformWidgetAbstract::GLWaveformWidgetAbstract(const QString& group, QWidget* parent)
-        : WaveformWidgetAbstract(group),
-          QGLWidget(parent, SharedGLContext::getWidget()) {
 }

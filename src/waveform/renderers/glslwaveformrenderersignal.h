@@ -1,14 +1,14 @@
 #pragma once
 
+#include "waveform/renderers/glwaveformrenderer.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-
-#include <QGLFramebufferObject>
-#include <QGLShaderProgram>
-#include <QtOpenGL>
 
 #include "track/track_decl.h"
 #include "util/memory.h"
 #include "waveform/renderers/waveformrenderersignalbase.h"
+
+QT_FORWARD_DECLARE_CLASS(QGLFramebufferObject)
+QT_FORWARD_DECLARE_CLASS(QGLShaderProgram)
 
 class GLSLWaveformRendererSignal : public QObject,
                                    public WaveformRendererSignalBase,
