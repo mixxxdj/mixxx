@@ -1178,6 +1178,169 @@
 
             <!-- PAD Section START -->
 
+            <!-- PAD MODE BUTTONS START-->
+            <control>
+                <description>HOTCUE MODE (DECK1)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x90</status>
+                <midino>0x1B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>HOTCUE MODE (DECK2)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x91</status>
+                <midino>0x1B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>BEATLOOP MODE (DECK1)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x90</status>
+                <midino>0x6D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>BEATLOOP MODE (DECK2)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x91</status>
+                <midino>0x6D</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>BEATJUMP MODE (DECK1)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x90</status>
+                <midino>0x20</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>BEATJUMP MODE (DECK2)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x91</status>
+                <midino>0x20</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>SAMPLER MODE (DECK1)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x90</status>
+                <midino>0x22</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>SAMPLER MODE (DECK2)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x91</status>
+                <midino>0x22</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>KEYBOARD MODE (DECK1)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x90</status>
+                <midino>0x69</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>KEYBOARD MODE (DECK2)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x91</status>
+                <midino>0x69</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD FX1 MODE (DECK1)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x90</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD FX1 MODE (DECK2)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x91</status>
+                <midino>0x1E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD FX2 MODE (DECK1)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x90</status>
+                <midino>0x6B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>PAD FX2 MODE (DECK2)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x91</status>
+                <midino>0x6B</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>KEYSHIFT MODE (DECK1)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x90</status>
+                <midino>0x6F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>KEYSHIFT MODE (DECK2)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.setPadmode</key>
+                <status>0x90</status>
+                <midino>0x6F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <!-- PAD MODE BUTTONS END -->
+
             <!-- HOT CUE MODE START -->
             <control>
                 <description>PAD 1 (DECK1) HOT CUE MODE - press - set hotcue</description>
@@ -1663,10 +1826,9 @@
                     <Normal/>
                 </options>
             </control>
-
             <!-- BEAT LOOP MODE END -->
 
-            <!-- BEAT JUMP MODE START -->
+            <!-- BEAT JUMP MODE START-->
             <control>
                 <description>PAD 1 (DECK1) BEAT JUMP MODE - press - Jump 1 Beat backwards</description>
                 <group>[Channel1]</group>
@@ -1871,7 +2033,6 @@
             <!-- BEAT JUMP MODE END -->
 
             <!-- SAMPLER MODE START -->
-
             <control>
                 <description>PAD 1 (LEFT) SAMPLE MODE - press - Play Sample</description>
                 <group>[Sampler1]</group>

@@ -18,10 +18,10 @@
 //                   ON/OFF toggles selected effect slot.  SHIFT+ON/OFF disables all three effect slots.
 //                 * Hot Cue Mode
 //                 * Beat Loop Mode
+//                 * Beat Jump Mode
 //                 * Sampler Mode
 //
 //             Partially:
-//                 * Beatjump mode (no lighting)
 //                 * PAD FX (only slots A-H, Q-P)
 //                 * Output (lights)
 //                 * Loop Section: Loop in / Out, Call, Double, Half
@@ -85,6 +85,53 @@ var LightsPioneerDDJ400 = {
             data1: 0x48,
         },
     },
+};
+
+// Stores padmode state and encapsulates LED logic
+PioneerDDJ400.performancePads = {
+    modes: {
+        HOTCUE:   0x1B,
+        BEATLOOP: 0x6D,
+        BEATJUMP: 0x20,
+        SAMPLER:  0x22,
+        KEYBOARD: 0x69,
+        PADFX1:   0x1E,
+        PADFX2:   0x6B,
+        KEYSHIFT: 0x6F
+    },
+
+    // Start in hotcue mode
+    state: [
+        0x1B, // Channel 1
+        0x1B  // Channel 2
+    ],
+
+    // Toggles the shift specific lights for the current mode
+    toggleShiftLights: function(channel, value) {
+        if (this.state[channel] === this.modes.BEATJUMP) {
+            midi.sendShortMsg(channel === 0 ? 0x98 : 0x9A,
+                              0x26,
+                              value);
+
+            midi.sendShortMsg(channel === 0 ? 0x98 : 0x9A,
+                              0x27,
+                              value);
+        }
+    },
+
+    // Clear all pad mode lights and reset back to hotcue state
+    reset: function() {
+        for (m in this.modes) {
+            if (this.modes[m] !== this.modes.HOTCUE) {
+                midi.sendShortMsg(0x90, this.modes[m], 0x00);
+                midi.sendShortMsg(0x91, this.modes[m], 0x00);
+            }
+        };
+        this.state[0] = this.state[1] = this.modes.HOTCUE;
+
+        midi.sendShortMsg(0x90, this.modes.HOTCUE, 0x7f);
+        midi.sendShortMsg(0x91, this.modes.HOTCUE, 0x7f);
+    }
 };
 
 // Save the Shift State
@@ -173,6 +220,9 @@ PioneerDDJ400.init = function() {
     // eye candy : play the "track loaded" animation on both decks at startup
     midi.sendShortMsg(0x9F, 0x00, 0x7F);
     midi.sendShortMsg(0x9F, 0x01, 0x7F);
+
+    // resets pad mode to hotcue
+    PioneerDDJ400.performancePads.reset();
 
     // poll the controller for current control positions on startup
     midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x06, 0x00, 0x03, 0x01, 0xf7], 12);
@@ -358,6 +408,13 @@ PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, gr
     }
 };
 
+// Stores the performance pad mode each time it changes
+PioneerDDJ400.setPadmode = function (channel, control, value) {
+    if (value === 0x7F) {
+        PioneerDDJ400.performancePads.state[channel] = control;
+    }
+}
+
 PioneerDDJ400.keyboardMode = function(channel, _control, value, _status, group) {
     if (value > 0) {
         // clear current set hotcue point and refcount for keyboard mode
@@ -458,6 +515,7 @@ PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _
 
 PioneerDDJ400.shiftPressed = function(channel, _control, value) {
     this.shiftState[channel] = value;
+    this.performancePads.toggleShiftLights(channel, value);
 };
 
 PioneerDDJ400.waveFormRotate = function(_channel, _control, value) {
