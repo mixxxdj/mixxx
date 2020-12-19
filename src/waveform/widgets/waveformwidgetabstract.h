@@ -1,6 +1,5 @@
 #pragma once
 
-#include <QGLWidget>
 #include <QString>
 #include <QWidget>
 
@@ -41,22 +40,4 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
     virtual void castToQWidget() = 0;
 
     friend class WaveformWidgetFactory;
-};
-
-/// GLWaveformWidgetAbstract is a WaveformWidgetAbstract & QGLWidget that has
-/// a GLWaveformRenderer member which requires initialization that must be
-/// deferred until Qt calls QGLWidget::initializeGL and cannot be done in the
-/// constructor.
-class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public QGLWidget {
-  public:
-    GLWaveformWidgetAbstract(const QString& group, QWidget* parent);
-
-  protected:
-    void initializeGL() override {
-        if (m_pGlRenderer) {
-            m_pGlRenderer->onInitializeGL();
-        }
-    }
-
-    GLWaveformRenderer* m_pGlRenderer;
 };

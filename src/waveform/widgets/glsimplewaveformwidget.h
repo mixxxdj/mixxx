@@ -2,7 +2,7 @@
 
 #include <QGLWidget>
 
-#include "waveformwidgetabstract.h"
+#include "waveform/widgets/glwaveformwidgetabstract.h"
 
 class GLSimpleWaveformWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
