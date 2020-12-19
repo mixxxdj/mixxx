@@ -437,16 +437,6 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <control>
-                <description>LOOP IN/4 BEAT LONG PRESS (DECK1) - press - Enable Auto 4 Beat loop</description>
-                <group>[Channel1]</group>
-                <key>PioneerDDJ400.loopin4beatPressedLong</key>
-                <status>0x90</status>
-                <midino>0x14</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
 
             <control>
                 <description>LOOP IN/4 BEAT (DECK2) - press - (loop off) set Loop point, (loop on) adjust loop in point
@@ -456,16 +446,6 @@
                 <key>PioneerDDJ400.loopin4beatPressed</key>
                 <status>0x91</status>
                 <midino>0x10</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>LOOP IN/4 BEAT LONG PRESS (DECK2) - press - Enable Auto 4 Beat loop</description>
-                <group>[Channel2]</group>
-                <key>PioneerDDJ400.loopin4beatPressedLong</key>
-                <status>0x91</status>
-                <midino>0x14</midino>
                 <options>
                     <Script-Binding/>
                 </options>

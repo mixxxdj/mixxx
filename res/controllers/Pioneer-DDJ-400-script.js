@@ -24,15 +24,15 @@
 //             Partially:
 //                 * PAD FX (only slots A-H, Q-P)
 //                 * Output (lights)
-//                 * Loop Section: Loop in / Out, Call, Double, Half
-//                   (loop adjust not working, '4 beat loop' doesnt work correctly - see comments in PioneerDDJ400.loopin4beatPressedLong)
 //
 //             Testing:
 //                 * Keyboard Mode (check pitch value)
 //                 * Keyshift Mode (check pitch value)
 //
-//             Not working/implemented:
+//             Not implemented:
 //                 * Channel & Crossfader Start
+//                 * Loop Section:
+//                   * -4BEAT auto loop
 //
 var PioneerDDJ400 = {};
 
@@ -533,16 +533,6 @@ PioneerDDJ400.loopin4beatPressed = function(channel, _control, value, _status, g
 
     if (loopEnabled === 0 && value > 0) {
         engine.setValue(group, "loop_in", 1);
-    }
-};
-
-PioneerDDJ400.loopin4beatPressedLong = function(_channel, _control, value, _status, group) {
-    // problematic - loop gets set to the playback position where the 'long press' was recognized
-    // and not to the point at which the button was initially pressed
-    // as a result, the loop is not set where one would expect
-    var loopEnabled = engine.getValue(group, "loop_enabled");
-    if (!loopEnabled && value > 0) {
-        engine.setValue(group, "beatloop_4_activate", 1);
     }
 };
 
