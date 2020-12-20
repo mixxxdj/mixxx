@@ -3,11 +3,11 @@
 #include <QElapsedTimer>
 #include <QTimerEvent>
 
-#include "controllers/legacycontrollermapping.h"
-#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/controllermappinginfo.h"
 #include "controllers/controllermappingvisitor.h"
 #include "controllers/controllervisitor.h"
+#include "controllers/legacycontrollermapping.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/duration.h"
 

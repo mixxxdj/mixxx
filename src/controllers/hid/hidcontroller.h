@@ -1,8 +1,8 @@
 #pragma once
 
 #include "controllers/controller.h"
-#include "controllers/hid/legacyhidcontrollermapping.h"
 #include "controllers/hid/hiddevice.h"
+#include "controllers/hid/legacyhidcontrollermapping.h"
 #include "util/duration.h"
 
 /// HID controller backend

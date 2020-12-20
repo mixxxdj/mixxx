@@ -1,7 +1,7 @@
 #pragma once
 
-#include "util/xml.h"
 #include "controllers/legacycontrollermapping.h"
+#include "util/xml.h"
 
 /// The LegacyControllerMappingFileHandler is used for serializing/deserializing the
 /// LegacyControllerMapping objects to/from XML files and is also responsible
@@ -11,8 +11,8 @@
 /// elements that are only useful for certain mapping types.
 class LegacyControllerMappingFileHandler {
   public:
-    LegacyControllerMappingFileHandler() {};
-    virtual ~LegacyControllerMappingFileHandler() {};
+    LegacyControllerMappingFileHandler(){};
+    virtual ~LegacyControllerMappingFileHandler(){};
 
     static LegacyControllerMappingPointer loadMapping(const QFileInfo& mappingFile,
             const QDir& systemMappingsPath);
@@ -33,7 +33,7 @@ class LegacyControllerMappingFileHandler {
     QDomElement getControllerNode(const QDomElement& root);
 
     void parseMappingInfo(const QDomElement& root,
-                         LegacyControllerMapping* mapping) const;
+            LegacyControllerMapping* mapping) const;
 
     /// Adds script files from XML to the LegacyControllerMapping.
     ///

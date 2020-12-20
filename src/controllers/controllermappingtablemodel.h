@@ -1,16 +1,16 @@
 #pragma once
 
+#include <QAbstractItemDelegate>
 #include <QAbstractTableModel>
-#include <QVariant>
-#include <QVector>
 #include <QHash>
 #include <QModelIndex>
-#include <QAbstractItemDelegate>
+#include <QVariant>
+#include <QVector>
 
-#include "controllers/legacycontrollermapping.h"
 #include "controllers/controllermappingvisitor.h"
-#include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
+#include "controllers/legacycontrollermapping.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 
 class ControllerMappingTableModel : public QAbstractTableModel,
                                     public LegacyControllerMappingVisitor {

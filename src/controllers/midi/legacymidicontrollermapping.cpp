@@ -34,7 +34,8 @@ void LegacyMidiControllerMapping::removeInputMapping(uint16_t key) {
     setDirty(true);
 }
 
-const QMultiHash<uint16_t, MidiInputMapping>& LegacyMidiControllerMapping::getInputMappings() const {
+const QMultiHash<uint16_t, MidiInputMapping>&
+LegacyMidiControllerMapping::getInputMappings() const {
     return m_inputMappings;
 }
 

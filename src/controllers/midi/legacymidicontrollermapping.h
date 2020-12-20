@@ -2,8 +2,8 @@
 
 #include <QMultiHash>
 
-#include "controllers/legacycontrollermapping.h"
 #include "controllers/controllermappingvisitor.h"
+#include "controllers/legacycontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 
 /// Represents a MIDI controller mapping, containing the data elements that make

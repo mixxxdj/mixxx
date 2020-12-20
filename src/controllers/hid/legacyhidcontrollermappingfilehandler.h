@@ -5,8 +5,8 @@
 
 class LegacyHidControllerMappingFileHandler : public LegacyControllerMappingFileHandler {
   public:
-    LegacyHidControllerMappingFileHandler() {};
-    virtual ~LegacyHidControllerMappingFileHandler() {};
+    LegacyHidControllerMappingFileHandler(){};
+    virtual ~LegacyHidControllerMappingFileHandler(){};
 
     bool save(const LegacyHidControllerMapping& mapping, const QString& fileName) const;
 

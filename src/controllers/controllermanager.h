@@ -4,9 +4,9 @@
 #include <QTimer>
 
 #include "controllers/controllerenumerator.h"
-#include "controllers/legacycontrollermapping.h"
 #include "controllers/controllermappinginfo.h"
 #include "controllers/controllermappinginfoenumerator.h"
+#include "controllers/legacycontrollermapping.h"
 #include "preferences/usersettings.h"
 
 // Forward declaration(s)
@@ -50,7 +50,9 @@ class ControllerManager : public QObject {
   public slots:
     void updateControllerList();
 
-    void slotApplyMapping(Controller* pController, LegacyControllerMappingPointer pMapping, bool bEnabled);
+    void slotApplyMapping(Controller* pController,
+            LegacyControllerMappingPointer pMapping,
+            bool bEnabled);
     void openController(Controller* pController);
     void closeController(Controller* pController);
 

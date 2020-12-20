@@ -1,13 +1,13 @@
-#include <QScopedPointer>
-
 #include <gmock/gmock.h>
 
-#include "test/mixxxtest.h"
-#include "controllers/midi/midicontroller.h"
-#include "controllers/midi/legacymidicontrollermapping.h"
-#include "controllers/midi/midimessage.h"
-#include "control/controlpushbutton.h"
+#include <QScopedPointer>
+
 #include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
+#include "controllers/midi/midicontroller.h"
+#include "controllers/midi/midimessage.h"
+#include "test/mixxxtest.h"
 #include "util/time.h"
 
 class MockMidiController : public MidiController {

@@ -5,10 +5,10 @@
 #include <memory>
 
 #include "controllers/controllerinputmappingtablemodel.h"
-#include "controllers/controlleroutputmappingtablemodel.h"
-#include "controllers/legacycontrollermapping.h"
 #include "controllers/controllermappinginfo.h"
+#include "controllers/controlleroutputmappingtablemodel.h"
 #include "controllers/dlgcontrollerlearning.h"
+#include "controllers/legacycontrollermapping.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
@@ -39,7 +39,9 @@ class DlgPrefController : public DlgPreferencePage {
     void slotResetToDefaults() override;
 
   signals:
-    void applyMapping(Controller* pController, LegacyControllerMappingPointer pMapping, bool bEnabled);
+    void applyMapping(Controller* pController,
+            LegacyControllerMappingPointer pMapping,
+            bool bEnabled);
     void mappingStarted();
     void mappingEnded();
 

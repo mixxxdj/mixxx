@@ -1,14 +1,14 @@
 #pragma once
 
-#include <QString>
-#include <QMap>
-#include <QList>
 #include <QDomElement>
 #include <QFileInfo>
+#include <QList>
+#include <QMap>
+#include <QString>
 
-#include "preferences/usersettings.h"
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
+#include "preferences/usersettings.h"
 
 struct ProductInfo {
     QString protocol;
@@ -35,20 +35,35 @@ class MappingInfo {
     MappingInfo();
     MappingInfo(const QString& path);
 
-
     inline bool isValid() const {
         return m_valid;
     }
 
-    inline const QString getPath() const { return m_path; }
-    inline const QString getDirPath() const { return m_dirPath; }
-    inline const QString getName() const { return m_name; }
-    inline const QString getDescription() const { return m_description; }
-    inline const QString getForumLink() const { return m_forumlink; }
-    inline const QString getWikiLink() const { return m_wikilink; }
-    inline const QString getAuthor() const { return m_author; }
+    inline const QString getPath() const {
+        return m_path;
+    }
+    inline const QString getDirPath() const {
+        return m_dirPath;
+    }
+    inline const QString getName() const {
+        return m_name;
+    }
+    inline const QString getDescription() const {
+        return m_description;
+    }
+    inline const QString getForumLink() const {
+        return m_forumlink;
+    }
+    inline const QString getWikiLink() const {
+        return m_wikilink;
+    }
+    inline const QString getAuthor() const {
+        return m_author;
+    }
 
-    inline const QList<ProductInfo>& getProducts() const { return m_products; }
+    inline const QList<ProductInfo>& getProducts() const {
+        return m_products;
+    }
 
   private:
     ProductInfo parseBulkProduct(const QDomElement& element) const;

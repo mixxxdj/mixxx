@@ -1,8 +1,8 @@
 #pragma once
 
-#include "controllers/legacycontrollermapping.h"
 #include "controllers/controllermappingvisitor.h"
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
+#include "controllers/legacycontrollermapping.h"
 
 /// This class represents a HID or Bulk controller mapping, containing the data
 /// elements that make it up.

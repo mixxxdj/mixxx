@@ -5,7 +5,7 @@
 #include "controllers/defs_controllers.h"
 
 namespace {
-bool mappingInfoNameComparator(const MappingInfo &a, const MappingInfo &b) {
+bool mappingInfoNameComparator(const MappingInfo& a, const MappingInfo& b) {
     if (a.getDirPath() == b.getDirPath()) {
         // FIXME: Mixxx copies every loaded mapping into the user mapping folder
         // with a different file name. This is confusing, especially when developing

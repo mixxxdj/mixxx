@@ -70,15 +70,15 @@ MappingInfo::MappingInfo(const QString& mapping_path)
     if (!devices.isNull()) {
         QDomElement product = devices.firstChildElement("product");
         while (!product.isNull()) {
-            QString protocol = product.attribute("protocol","");
-            if (protocol=="hid") {
+            QString protocol = product.attribute("protocol", "");
+            if (protocol == "hid") {
                 m_products.append(parseHIDProduct(product));
-            } else if (protocol=="bulk") {
+            } else if (protocol == "bulk") {
                 m_products.append(parseBulkProduct(product));
-            } else if (protocol=="midi") {
+            } else if (protocol == "midi") {
                 qDebug("MIDI product info parsing not yet implemented");
                 //m_products.append(parseMIDIProduct(product);
-            } else if (protocol=="osc") {
+            } else if (protocol == "osc") {
                 qDebug("OSC product info parsing not yet implemented");
                 //m_products.append(parseOSCProduct(product);
             } else {
