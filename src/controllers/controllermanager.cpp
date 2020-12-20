@@ -56,6 +56,10 @@ QFileInfo findMappingFile(const QString& pathOrFilename, const QStringList& path
     return QFileInfo();
 }
 
+// Legacy code referred to mappings as "presets", so "[ControllerPreset]" must be
+// kept for backwards compatibility.
+const QString kSettingsGroup = QLatin1String("[ControllerPreset]");
+
 } // anonymous namespace
 
 QString firstAvailableFilename(QSet<QString>& filenames,
@@ -219,7 +223,7 @@ QList<Controller*> ControllerManager::getControllerList(bool bOutputDevices, boo
 }
 
 QString ControllerManager::getConfiguredMappingFileForDevice(const QString& name) {
-    return m_pConfig->getValueString(ConfigKey("[ControllerPreset]", sanitizeDeviceName(name)));
+    return m_pConfig->getValueString(ConfigKey(kSettingsGroup, sanitizeDeviceName(name)));
 }
 
 void ControllerManager::slotSetUpDevices() {
@@ -399,9 +403,7 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         return;
     }
 
-    // Legacy code referred to mappings as "presets", so "[ControllerPreset]" must be
-    // kept for backwards compatibility.
-    ConfigKey key("[ControllerPreset]", sanitizeDeviceName(pController->getName()));
+    ConfigKey key(kSettingsGroup, sanitizeDeviceName(pController->getName()));
     if (!pMapping) {
         closeController(pController);
         // Unset the controller mapping for this controller
