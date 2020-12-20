@@ -86,7 +86,7 @@ EXIT /B 0
         CALL :GENERATE_CMakeSettings_JSON
         echo WARNING: CMakeSettings.json will include an invalid CMAKE_PREFIX_PATH
         echo          for settings other than %CONFIGURATION% .
-        
+
         IF NOT EXIST %BUILD_ROOT% (
             ECHO ### Create subdirectory build ###
             MD %BUILD_ROOT%
