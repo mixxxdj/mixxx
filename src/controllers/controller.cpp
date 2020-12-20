@@ -9,7 +9,7 @@
 #include "util/screensaver.h"
 
 Controller::Controller()
-        : m_pEngine(nullptr),
+        : m_pScriptEngineLegacy(nullptr),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
@@ -29,31 +29,30 @@ ControllerJSProxy* Controller::jsProxy() {
 void Controller::startEngine()
 {
     controllerDebug("  Starting engine");
-    if (m_pEngine != nullptr) {
+    if (m_pScriptEngineLegacy) {
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
-    m_pEngine = new ControllerEngine(this);
+    m_pScriptEngineLegacy = new ControllerScriptEngineLegacy(this);
 }
 
 void Controller::stopEngine() {
     controllerDebug("  Shutting down engine");
-    if (m_pEngine == nullptr) {
+    if (!m_pScriptEngineLegacy) {
         qWarning() << "Controller::stopEngine(): No engine exists!";
         return;
     }
-    m_pEngine->gracefulShutdown();
-    delete m_pEngine;
-    m_pEngine = nullptr;
+    delete m_pScriptEngineLegacy;
+    m_pScriptEngineLegacy = nullptr;
 }
 
-bool Controller::applyPreset(bool initializeScripts) {
+bool Controller::applyPreset() {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
 
     // Load the script code into the engine
-    if (m_pEngine == nullptr) {
+    if (!m_pScriptEngineLegacy) {
         qWarning() << "Controller::applyPreset(): No engine exists!";
         return false;
     }
@@ -64,19 +63,8 @@ bool Controller::applyPreset(bool initializeScripts) {
         return true;
     }
 
-    bool success = m_pEngine->loadScriptFiles(scriptFiles);
-    if (success && initializeScripts) {
-        m_pEngine->initializeScripts(scriptFiles);
-    }
-
-    // QFileInfo does not have a isValid/isEmpty/isNull method to check if it
-    // actually contains a reference, so we check if the filePath is empty as a
-    // workaround.
-    // See https://stackoverflow.com/a/45652741/1455128 for details.
-    if (initializeScripts && !pPreset->moduleFileInfo().filePath().isEmpty()) {
-        m_pEngine->loadModule(pPreset->moduleFileInfo());
-    }
-    return success;
+    m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
+    return m_pScriptEngineLegacy->initialize();
 }
 
 void Controller::startLearning() {
@@ -113,7 +101,7 @@ void Controller::triggerActivity()
     }
 }
 void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
-    if (m_pEngine == nullptr) {
+    if (!m_pScriptEngineLegacy) {
         //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
         //  queued signals flush out
@@ -122,7 +110,7 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     triggerActivity();
 
     int length = data.size();
-    if (ControllerDebug::enabled()) {
+    if (ControllerDebug::isEnabled()) {
         // Formatted packet display
         QString message = QString("%1: t:%2, %3 bytes:\n")
                                   .arg(m_sDeviceName,
@@ -145,14 +133,5 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
         controllerDebug(message);
     }
 
-    foreach (QString function, m_pEngine->getScriptFunctionPrefixes()) {
-        if (function == "") {
-            continue;
-        }
-        function.append(".incomingData");
-        QJSValue incomingDataFunction = m_pEngine->wrapFunctionCode(function, 2);
-        m_pEngine->executeFunction(incomingDataFunction, data);
-    }
-
-    m_pEngine->handleInput(data, timestamp);
+    m_pScriptEngineLegacy->handleIncomingData(data);
 }

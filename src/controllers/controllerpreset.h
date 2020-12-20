@@ -55,14 +55,6 @@ class ControllerPreset {
         return m_scripts;
     }
 
-    void setModuleFileInfo(QFileInfo fileInfo) {
-        m_moduleFileInfo = std::move(fileInfo);
-    }
-
-    QFileInfo moduleFileInfo() const {
-        return m_moduleFileInfo;
-    }
-
     inline void setDirty(bool bDirty) {
         m_bDirty = bDirty;
     }
@@ -203,7 +195,6 @@ class ControllerPreset {
     QString m_mixxxVersion;
 
     QList<ScriptFileInfo> m_scripts;
-    QFileInfo m_moduleFileInfo;
 };
 
 typedef QSharedPointer<ControllerPreset> ControllerPresetPointer;

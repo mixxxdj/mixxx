@@ -1,19 +1,18 @@
 #pragma once
 
 #include <QElapsedTimer>
+#include <QTimerEvent>
 
 #include "controllers/controllerpreset.h"
 #include "controllers/controllerpresetfilehandler.h"
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/controllerpresetvisitor.h"
 #include "controllers/controllervisitor.h"
-#include "controllers/engine/controllerengine.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "util/duration.h"
 
 class ControllerJSProxy;
 
-/// Base class representing a physical (or software) controller.
-///
 /// This is a base class representing a physical (or software) controller.  It
 /// must be inherited by a class that implements it on some API. Note that the
 /// subclass' destructor should call close() at a minimum.
@@ -85,13 +84,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // this if they have an alternate way of handling such data.)
     virtual void receive(const QByteArray& data, mixxx::Duration timestamp);
 
-    /// Apply the preset to the controller.
-    /// Initializes both controller engine and static output mappings.
-    ///
-    /// @param initializeScripts Can be set to false to skip script
-    /// initialization for unit tests.
-    /// @return Returns whether it was successful.
-    virtual bool applyPreset(bool initializeScripts = true);
+    virtual bool applyPreset();
 
     // Puts the controller in and out of learning mode.
     void startLearning();
@@ -108,17 +101,17 @@ class Controller : public QObject, ConstControllerPresetVisitor {
 
     // To be called in sub-class' open() functions after opening the device but
     // before starting any input polling/processing.
-    void startEngine();
+    virtual void startEngine();
 
     // To be called in sub-class' close() functions after stopping any input
     // polling/processing but before closing the device.
-    void stopEngine();
+    virtual void stopEngine();
 
     // To be called when receiving events
     void triggerActivity();
 
-    inline ControllerEngine* getEngine() const {
-        return m_pEngine;
+    inline ControllerScriptEngineLegacy* getScriptEngine() const {
+        return m_pScriptEngineLegacy;
     }
     inline void setDeviceName(const QString& deviceName) {
         m_sDeviceName = deviceName;
@@ -155,7 +148,7 @@ class Controller : public QObject, ConstControllerPresetVisitor {
     // Returns a pointer to the currently loaded controller preset. For internal
     // use only.
     virtual ControllerPreset* preset() = 0;
-    ControllerEngine* m_pEngine;
+    ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
 
     // Verbose and unique device name suitable for display.
     QString m_sDeviceName;

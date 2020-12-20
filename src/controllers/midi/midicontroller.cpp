@@ -51,9 +51,9 @@ bool MidiController::matchPreset(const PresetInfo& preset) {
     return false;
 }
 
-bool MidiController::applyPreset(bool initializeScripts) {
+bool MidiController::applyPreset() {
     // Handles the engine
-    bool result = Controller::applyPreset(initializeScripts);
+    bool result = Controller::applyPreset();
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {
@@ -109,7 +109,7 @@ void MidiController::createOutputHandlers() {
             qWarning() << errorLog;
 
             int deckNum = 0;
-            if (ControllerDebug::enabled()) {
+            if (ControllerDebug::isEnabled()) {
                 failures.append(errorLog);
             } else if (PlayerManager::isDeckGroup(group, &deckNum)) {
                 int numDecks = PlayerManager::numDecks();
@@ -195,20 +195,10 @@ void MidiController::commitTemporaryInputMappings() {
     m_temporaryInputMappings.clear();
 }
 
-void MidiController::receive(unsigned char status, unsigned char control,
-                             unsigned char value, mixxx::Duration timestamp) {
-    QByteArray byteArray;
-    byteArray.append(status);
-    byteArray.append(control);
-    byteArray.append(value);
-
-    ControllerEngine* pEngine = getEngine();
-    // pEngine is nullptr in tests.
-    if (pEngine) {
-        pEngine->handleInput(byteArray, timestamp);
-    }
-    // legacy stuff below
-
+void MidiController::receivedShortMessage(unsigned char status,
+        unsigned char control,
+        unsigned char value,
+        mixxx::Duration timestamp) {
     // The rest of this function is for legacy mappings
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
@@ -256,7 +246,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
     if (mapping.options.script) {
-        ControllerEngine* pEngine = getEngine();
+        ControllerScriptEngineLegacy* pEngine = getScriptEngine();
         if (pEngine == nullptr) {
             return;
         }
@@ -481,8 +471,6 @@ double MidiController::computeValue(
 
 void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) {
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
-    getEngine()->handleInput(data, timestamp);
-    // legacy stuff below
 
     MidiKey mappingKey(data.at(0), 0xFF);
 
@@ -513,15 +501,11 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                                          mixxx::Duration timestamp) {
     // Custom script handler
     if (mapping.options.script) {
-        ControllerEngine* pEngine = getEngine();
+        ControllerScriptEngineLegacy* pEngine = getScriptEngine();
         if (pEngine == nullptr) {
             return;
         }
-        QJSValue function = pEngine->wrapFunctionCode(mapping.control.item, 2);
-        if (!pEngine->executeFunction(function, data)) {
-            qDebug() << "MidiController: Invalid script function"
-                     << mapping.control.item;
-        }
+        pEngine->handleIncomingData(data);
         return;
     }
     qWarning() << "MidiController: No script function specified for"

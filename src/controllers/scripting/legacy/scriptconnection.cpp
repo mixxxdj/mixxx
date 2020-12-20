@@ -1,6 +1,6 @@
-#include "controllers/engine/scriptconnection.h"
+#include "controllers/scripting/legacy/scriptconnection.h"
 
-#include "controllers/engine/controllerengine.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 
 void ScriptConnection::executeCallback(double value) const {
     QJSValueList args;

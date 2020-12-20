@@ -204,7 +204,7 @@ void HidController::sendBytesReport(QByteArray data, unsigned int reportID) {
 
     int result = hid_write(m_pHidDevice, (unsigned char*)data.constData(), data.size());
     if (result == -1) {
-        if (ControllerDebug::enabled()) {
+        if (ControllerDebug::isEnabled()) {
             qWarning() << "Unable to send data to" << getName()
                        << "serial #" << m_deviceInfo.serialNumber() << ":"
                        << mixxx::convertWCStringToQString(

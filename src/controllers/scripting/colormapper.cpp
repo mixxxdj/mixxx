@@ -1,4 +1,4 @@
-#include "controllers/engine/colormapper.h"
+#include "controllers/scripting/colormapper.h"
 
 #include <cmath>
 #include <cstdint>

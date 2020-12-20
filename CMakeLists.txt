@@ -414,12 +414,14 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/dlgprefcontrollerdlg.ui
   src/controllers/dlgprefcontrollers.cpp
   src/controllers/dlgprefcontrollersdlg.ui
-  src/controllers/engine/controllerengine.cpp
-  src/controllers/engine/controllerenginejsproxy.cpp
-  src/controllers/engine/colormapper.cpp
-  src/controllers/engine/colormapperjsproxy.cpp
-  src/controllers/engine/scriptconnection.cpp
-  src/controllers/engine/scriptconnectionjsproxy.cpp
+  src/controllers/scripting/controllerscriptenginebase.cpp
+  src/controllers/scripting/controllerscriptmoduleengine.cpp
+  src/controllers/scripting/colormapper.cpp
+  src/controllers/scripting/colormapperjsproxy.cpp
+  src/controllers/scripting/legacy/controllerscriptenginelegacy.cpp
+  src/controllers/scripting/legacy/controllerscriptinterfacelegacy.cpp
+  src/controllers/scripting/legacy/scriptconnection.cpp
+  src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp
   src/controllers/keyboard/keyboardeventfilter.cpp
   src/controllers/learningutils.cpp
   src/controllers/midi/midicontroller.cpp
@@ -1389,7 +1391,7 @@ add_executable(mixxx-test
   src/test/compatibility_test.cpp
   src/test/configobject_test.cpp
   src/test/controller_preset_validation_test.cpp
-  src/test/controllerengine_test.cpp
+  src/test/controllerscriptenginelegacy_test.cpp
   src/test/controlobjecttest.cpp
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp

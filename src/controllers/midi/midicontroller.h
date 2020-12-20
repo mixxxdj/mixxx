@@ -63,7 +63,8 @@ class MidiController : public Controller {
     }
 
   protected slots:
-    virtual void receive(unsigned char status,
+    virtual void receivedShortMessage(
+            unsigned char status,
             unsigned char control,
             unsigned char value,
             mixxx::Duration timestamp);
@@ -72,27 +73,23 @@ class MidiController : public Controller {
     int close() override;
 
   private slots:
-    /// Apply the preset to the controller.
-    /// Initializes both controller engine and static output mappings.
-    ///
-    /// @param initializeScripts Can be set to false to skip script
-    /// initialization for unit tests.
-    /// @return Returns whether it was successful.
-    bool applyPreset(bool initializeScripts = false) override;
+    bool applyPreset() override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
     void commitTemporaryInputMappings();
 
   private:
-    void processInputMapping(const MidiInputMapping& mapping,
-                             unsigned char status,
-                             unsigned char control,
-                             unsigned char value,
-                             mixxx::Duration timestamp);
-    void processInputMapping(const MidiInputMapping& mapping,
-                             const QByteArray& data,
-                             mixxx::Duration timestamp);
+    void processInputMapping(
+            const MidiInputMapping& mapping,
+            unsigned char status,
+            unsigned char control,
+            unsigned char value,
+            mixxx::Duration timestamp);
+    void processInputMapping(
+            const MidiInputMapping& mapping,
+            const QByteArray& data,
+            mixxx::Duration timestamp);
 
     double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
     void createOutputHandlers();

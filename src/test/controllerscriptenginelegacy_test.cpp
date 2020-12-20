@@ -1,4 +1,4 @@
-#include "controllers/engine/controllerengine.h"
+#include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 
 #include <QScopedPointer>
 #include <QTemporaryFile>
@@ -17,7 +17,7 @@
 
 typedef std::unique_ptr<QTemporaryFile> ScopedTemporaryFile;
 
-class ControllerEngineTest : public MixxxTest {
+class ControllerScriptEngineLegacyTest : public MixxxTest {
   protected:
     static ScopedTemporaryFile makeTemporaryFile(const QString& contents) {
         QByteArray contentsBa = contents.toLocal8Bit();
@@ -32,12 +32,12 @@ class ControllerEngineTest : public MixxxTest {
         mixxx::Time::setTestMode(true);
         mixxx::Time::setTestElapsedTime(mixxx::Duration::fromMillis(10));
         QThread::currentThread()->setObjectName("Main");
-        cEngine = new ControllerEngine(nullptr);
-        ControllerDebug::enable();
+        cEngine = new ControllerScriptEngineLegacy(nullptr);
+        cEngine->initialize();
+        ControllerDebug::setTesting(true);
     }
 
     void TearDown() override {
-        cEngine->gracefulShutdown();
         delete cEngine;
         mixxx::Time::setTestMode(false);
     }
@@ -47,11 +47,11 @@ class ControllerEngineTest : public MixxxTest {
     }
 
     QJSValue evaluate(const QString& code) {
-        return cEngine->evaluateCodeString(code);
+        return cEngine->jsEngine()->evaluate(code);
     }
 
     bool evaluateAndAssert(const QString& code) {
-        return !cEngine->evaluateCodeString(code).isError();
+        return !evaluate(code).isError();
     }
 
     void processEvents() {
@@ -65,50 +65,62 @@ class ControllerEngineTest : public MixxxTest {
         application()->processEvents();
     }
 
-    ControllerEngine* cEngine;
+    ControllerScriptEngineLegacy* cEngine;
 };
 
-TEST_F(ControllerEngineTest, commonScriptHasNoErrors) {
+TEST_F(ControllerScriptEngineLegacyTest, commonScriptHasNoErrors) {
     QFileInfo commonScript("./res/controllers/common-controller-scripts.js");
     EXPECT_TRUE(evaluateScriptFile(commonScript));
 }
 
-TEST_F(ControllerEngineTest, setValue) {
+TEST_F(ControllerScriptEngineLegacyTest, setValue) {
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', 1.0);"));
     EXPECT_DOUBLE_EQ(1.0, co->get());
 }
 
-TEST_F(ControllerEngineTest, getValue_InvalidKey) {
-    ControllerDebug::disable();
+TEST_F(ControllerScriptEngineLegacyTest, getValue_InvalidKey) {
+    ControllerDebug::setEnabled(false);
+    ControllerDebug::setTesting(false);
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('', '');"));
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('', 'invalid');"));
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('[Invalid]', '');"));
-    ControllerDebug::enable();
+    ControllerDebug::setTesting(true);
+    ControllerDebug::setEnabled(true);
 }
 
-TEST_F(ControllerEngineTest, setValue_InvalidControl) {
+TEST_F(ControllerScriptEngineLegacyTest, setValue_InvalidControl) {
+    ControllerDebug::setEnabled(false);
+    ControllerDebug::setTesting(false);
     EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Nothing]', 'nothing', 1.0);"));
+    ControllerDebug::setTesting(true);
+    ControllerDebug::setEnabled(true);
 }
 
-TEST_F(ControllerEngineTest, getValue_InvalidControl) {
+TEST_F(ControllerScriptEngineLegacyTest, getValue_InvalidControl) {
+    ControllerDebug::setEnabled(false);
+    ControllerDebug::setTesting(false);
     EXPECT_TRUE(evaluateAndAssert("engine.getValue('[Nothing]', 'nothing');"));
+    ControllerDebug::setTesting(true);
+    ControllerDebug::setEnabled(true);
 }
 
-TEST_F(ControllerEngineTest, setValue_IgnoresNaN) {
+TEST_F(ControllerScriptEngineLegacyTest, setValue_IgnoresNaN) {
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     co->set(10.0);
     EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', NaN);"));
     EXPECT_DOUBLE_EQ(10.0, co->get());
 }
 
-TEST_F(ControllerEngineTest, getSetValue) {
+TEST_F(ControllerScriptEngineLegacyTest, getSetValue) {
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
-    EXPECT_TRUE(evaluateAndAssert("engine.setValue('[Test]', 'co', engine.getValue('[Test]', 'co') + 1);"));
+    EXPECT_TRUE(
+            evaluateAndAssert("engine.setValue('[Test]', 'co', "
+                              "engine.getValue('[Test]', 'co') + 1);"));
     EXPECT_DOUBLE_EQ(1.0, co->get());
 }
 
-TEST_F(ControllerEngineTest, setParameter) {
+TEST_F(ControllerScriptEngineLegacyTest, setParameter) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
             10.0);
@@ -120,7 +132,7 @@ TEST_F(ControllerEngineTest, setParameter) {
     EXPECT_DOUBLE_EQ(0.0, co->get());
 }
 
-TEST_F(ControllerEngineTest, setParameter_OutOfRange) {
+TEST_F(ControllerScriptEngineLegacyTest, setParameter_OutOfRange) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
             10.0);
@@ -130,7 +142,7 @@ TEST_F(ControllerEngineTest, setParameter_OutOfRange) {
     EXPECT_DOUBLE_EQ(-10.0, co->get());
 }
 
-TEST_F(ControllerEngineTest, setParameter_NaN) {
+TEST_F(ControllerScriptEngineLegacyTest, setParameter_NaN) {
     // Test that NaNs are ignored.
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
@@ -139,7 +151,7 @@ TEST_F(ControllerEngineTest, setParameter_NaN) {
     EXPECT_DOUBLE_EQ(0.0, co->get());
 }
 
-TEST_F(ControllerEngineTest, getSetParameter) {
+TEST_F(ControllerScriptEngineLegacyTest, getSetParameter) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
             10.0);
@@ -149,7 +161,7 @@ TEST_F(ControllerEngineTest, getSetParameter) {
     EXPECT_DOUBLE_EQ(2.0, co->get());
 }
 
-TEST_F(ControllerEngineTest, softTakeover_setValue) {
+TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setValue) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
             10.0);
@@ -181,7 +193,7 @@ TEST_F(ControllerEngineTest, softTakeover_setValue) {
     EXPECT_DOUBLE_EQ(0.0, co->get());
 }
 
-TEST_F(ControllerEngineTest, softTakeover_setParameter) {
+TEST_F(ControllerScriptEngineLegacyTest, softTakeover_setParameter) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
             10.0);
@@ -213,7 +225,7 @@ TEST_F(ControllerEngineTest, softTakeover_setParameter) {
     EXPECT_DOUBLE_EQ(0.0, co->get());
 }
 
-TEST_F(ControllerEngineTest, softTakeover_ignoreNextValue) {
+TEST_F(ControllerScriptEngineLegacyTest, softTakeover_ignoreNextValue) {
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
             10.0);
@@ -236,7 +248,7 @@ TEST_F(ControllerEngineTest, softTakeover_ignoreNextValue) {
     EXPECT_DOUBLE_EQ(0.0, co->get());
 }
 
-TEST_F(ControllerEngineTest, reset) {
+TEST_F(ControllerScriptEngineLegacyTest, reset) {
     // Test that NaNs are ignored.
     auto co = std::make_unique<ControlPotmeter>(ConfigKey("[Test]", "co"),
             -10.0,
@@ -246,11 +258,11 @@ TEST_F(ControllerEngineTest, reset) {
     EXPECT_DOUBLE_EQ(0.0, co->get());
 }
 
-TEST_F(ControllerEngineTest, log) {
+TEST_F(ControllerScriptEngineLegacyTest, log) {
     EXPECT_TRUE(evaluateAndAssert("engine.log('Test that logging works.');"));
 }
 
-TEST_F(ControllerEngineTest, trigger) {
+TEST_F(ControllerScriptEngineLegacyTest, trigger) {
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
 
@@ -271,7 +283,7 @@ TEST_F(ControllerEngineTest, trigger) {
 // depending on how it is invoked, so we need a lot of tests to make sure old scripts
 // do not break.
 
-TEST_F(ControllerEngineTest, connectControl_ByString) {
+TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByString) {
     // Test that connecting and disconnecting by function name works.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
@@ -294,7 +306,7 @@ TEST_F(ControllerEngineTest, connectControl_ByString) {
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest, connectControl_ByStringForbidDuplicateConnections) {
+TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByStringForbidDuplicateConnections) {
     // Test that connecting a control to a callback specified by a string
     // does not make duplicate connections. This behavior is inconsistent
     // with the behavior when specifying a callback as a function, but
@@ -317,7 +329,7 @@ TEST_F(ControllerEngineTest, connectControl_ByStringForbidDuplicateConnections) 
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest,
+TEST_F(ControllerScriptEngineLegacyTest,
         connectControl_ByStringRedundantConnectionObjectsAreNotIndependent) {
     // Test that multiple connections are not allowed when passing
     // the callback to engine.connectControl as a function name string.
@@ -359,7 +371,7 @@ TEST_F(ControllerEngineTest,
     EXPECT_EQ(1.0, counter->get());
 }
 
-TEST_F(ControllerEngineTest, connectControl_ByFunction) {
+TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByFunction) {
     // Test that connecting and disconnecting with a function value works.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
@@ -377,7 +389,7 @@ TEST_F(ControllerEngineTest, connectControl_ByFunction) {
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest, connectControl_ByFunctionAllowDuplicateConnections) {
+TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByFunctionAllowDuplicateConnections) {
     // Test that duplicate connections are allowed when passing callbacks as functions.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
@@ -398,7 +410,7 @@ TEST_F(ControllerEngineTest, connectControl_ByFunctionAllowDuplicateConnections)
     EXPECT_DOUBLE_EQ(2.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest, connectControl_toDisconnectRemovesAllConnections) {
+TEST_F(ControllerScriptEngineLegacyTest, connectControl_toDisconnectRemovesAllConnections) {
     // Test that every connection to a ControlObject is disconnected
     // by calling engine.connectControl(..., true). Individual connections
     // can only be disconnected by storing the connection object returned by
@@ -425,7 +437,7 @@ TEST_F(ControllerEngineTest, connectControl_toDisconnectRemovesAllConnections) {
     EXPECT_DOUBLE_EQ(2.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest, connectControl_ByLambda) {
+TEST_F(ControllerScriptEngineLegacyTest, connectControl_ByLambda) {
     // Test that connecting with an anonymous function works.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
@@ -447,7 +459,7 @@ TEST_F(ControllerEngineTest, connectControl_ByLambda) {
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest, connectionObject_Disconnect) {
+TEST_F(ControllerScriptEngineLegacyTest, connectionObject_Disconnect) {
     // Test that disconnecting using the 'disconnect' method on the connection
     // object returned from connectControl works.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
@@ -471,7 +483,7 @@ TEST_F(ControllerEngineTest, connectionObject_Disconnect) {
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest, connectionObject_reflectDisconnect) {
+TEST_F(ControllerScriptEngineLegacyTest, connectionObject_reflectDisconnect) {
     // Test that checks if disconnecting yields the appropriate feedback
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
     auto pass = std::make_unique<ControlObject>(ConfigKey("[Test]", "passed"));
@@ -494,7 +506,7 @@ TEST_F(ControllerEngineTest, connectionObject_reflectDisconnect) {
     EXPECT_DOUBLE_EQ(4.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest, connectionObject_DisconnectByPassingToConnectControl) {
+TEST_F(ControllerScriptEngineLegacyTest, connectionObject_DisconnectByPassingToConnectControl) {
     // Test that passing a connection object back to engine.connectControl
     // removes the connection
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
@@ -535,7 +547,7 @@ TEST_F(ControllerEngineTest, connectionObject_DisconnectByPassingToConnectContro
     EXPECT_DOUBLE_EQ(1.0, pass->get());
 }
 
-TEST_F(ControllerEngineTest, connectionObject_MakesIndependentConnection) {
+TEST_F(ControllerScriptEngineLegacyTest, connectionObject_MakesIndependentConnection) {
     // Test that multiple connections can be made to the same CO with
     // the same callback function and that calling their 'disconnect' method
     // only disconnects the callback for that object.
@@ -574,7 +586,7 @@ TEST_F(ControllerEngineTest, connectionObject_MakesIndependentConnection) {
     EXPECT_EQ(3.0, counter->get());
 }
 
-TEST_F(ControllerEngineTest, connectionObject_trigger) {
+TEST_F(ControllerScriptEngineLegacyTest, connectionObject_trigger) {
     // Test that triggering using the 'trigger' method on the connection
     // object returned from connectControl works.
     auto co = std::make_unique<ControlObject>(ConfigKey("[Test]", "co"));
@@ -595,7 +607,7 @@ TEST_F(ControllerEngineTest, connectionObject_trigger) {
     EXPECT_DOUBLE_EQ(1.0, counter->get());
 }
 
-TEST_F(ControllerEngineTest, connectionExecutesWithCorrectThisObject) {
+TEST_F(ControllerScriptEngineLegacyTest, connectionExecutesWithCorrectThisObject) {
     // Test that callback functions are executed with JavaScript's
     // 'this' keyword referring to the object in which the connection
     // was created.
