@@ -85,7 +85,7 @@ EXIT /B 0
     ) else (
         CALL :GENERATE_CMakeSettings_JSON
         echo WARNING: CMakeSettings.json will include an invalid CMAKE_PREFIX_PATH
-        echo          for settings other than %CONFIGURATION% . 
+        echo          for settings other than %CONFIGURATION% .
         
         IF NOT EXIST %BUILD_ROOT% (
             ECHO ### Create subdirectory build ###
@@ -140,13 +140,16 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
         REN %CMakeSettings% CMakeSettings__!DateTime:~0,4!-!DateTime:~4,2!-!DateTime:~6,2!_!DateTime:~8,2!-!DateTime:~10,2!-!DateTime:~12,2!.json
     )
     ECHO ### Create new CMakeSettings.json ###
-    CALL :SETUTF8CONSOLE
+
+    CALL :SETANSICONSOLE
     SET OLDCODEPAGE=%RETVAL%
-    REM set byte order mark (BOM) for the file . 
-    REM WARNING: Ensure that the script is saved as ANSI, or these characters will not contain the correct values. Correct values are EF BB BF (&iuml; &raquo; &iquest;)
-    >"%CMakeSettings%" set /p "﻿" <NUL
-    
-    >>%CMakeSettings% echo {
+    REM set byte order mark (BOM) for the file .
+    REM WARNING: Ensure that the script is saved as ANSI, or these characters will not
+    REM contain the correct values. Correct values are EF BB BF (&iuml; &raquo; &iquest;) .
+    REM The last character is an actual character for the file, the start "{"
+    >"%CMakeSettings%" echo ﻿{
+    CALL :SETUTF8CONSOLE
+
     >>%CMakeSettings% echo   "configurations": [
     SET configElementTermination=,
     CALL :Configuration2CMakeSettings_JSON off       Debug
@@ -163,12 +166,12 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
 :Configuration2CMakeSettings_JSON <optimize> <configurationtype>
     >>%CMakeSettings% echo     {
     >>%CMakeSettings% echo       "name": "!PLATFORM!__%1",
-    >>%CMakeSettings% echo       "buildRoot": "${projectDir}\\build\\${name}",
+    >>%CMakeSettings% echo       "buildRoot": "!BUILD_ROOT:\=\\!\\${name}",
     >>%CMakeSettings% echo       "configurationType": "%2",
     >>%CMakeSettings% echo       "enableClangTidyCodeAnalysis": true,
     >>%CMakeSettings% echo       "generator": "Ninja",
     >>%CMakeSettings% echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
-    >>%CMakeSettings% echo       "installRoot": "${projectDir}\\install\\${name}",
+    >>%CMakeSettings% echo       "installRoot": "!INSTALL_ROOT:\=\\!\\${name}",
     >>%CMakeSettings% echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>%CMakeSettings% echo       "variables": [
     SET variableElementTermination=,
@@ -204,14 +207,18 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>%CMakeSettings% echo         }!variableElementTermination!
   GOTO :EOF
 
-:SETUTF8CONSOLE
+:SETANSICONSOLE
     for /f "tokens=2 delims=:" %%I in ('chcp') do set "_codepage=%%I"
 
-    >NUL chcp 65001
+    >NUL chcp 1252
 
-    SET RETVAL=_codepage
+    SET RETVAL=%_codepage%
   GOTO :EOF
-  
+
+:SETUTF8CONSOLE
+    >NUL chcp 65001
+  GOTO :EOF
+
 :RESTORECONSOLE <codepage>
     >NUL chcp %1
   GOTO :EOF
