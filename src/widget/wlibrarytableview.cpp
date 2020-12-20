@@ -132,14 +132,13 @@ void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
     setFont(font);
-    setTrackTableRowHeight(verticalHeader()->defaultSectionSize());
+    QFontMetrics metrics(font);
+    verticalHeader()->setMinimumSectionSize(metrics.height());
 }
 
 void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
-    QFontMetrics metrics(font());
-    int fontHeightPx = metrics.height();
     verticalHeader()->setDefaultSectionSize(math_max(
-                                                rowHeight, fontHeightPx));
+            rowHeight, verticalHeader()->minimumSectionSize()));
 }
 
 void WLibraryTableView::setSelectedClick(bool enable) {

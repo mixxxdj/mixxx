@@ -1,8 +1,9 @@
 #pragma once
 
+#include "waveform/renderers/glwaveformrenderer.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "waveformrenderersignalbase.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 
 class ControlObject;
 
