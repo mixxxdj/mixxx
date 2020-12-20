@@ -1,35 +1,35 @@
-#include "controllers/midi/midicontrollerpresetfilehandler.h"
+#include "controllers/midi/legacymidicontrollermappingfilehandler.h"
+
 #include "controllers/midi/midiutils.h"
 
-#define DEFAULT_OUTPUT_MAX  1.0
-#define DEFAULT_OUTPUT_MIN  0.0    // Anything above 0 is "on"
-#define DEFAULT_OUTPUT_ON   0x7F
-#define DEFAULT_OUTPUT_OFF  0x00
+#define DEFAULT_OUTPUT_MAX 1.0
+#define DEFAULT_OUTPUT_MIN 0.0 // Anything above 0 is "on"
+#define DEFAULT_OUTPUT_ON 0x7F
+#define DEFAULT_OUTPUT_OFF 0x00
 
-ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement& root,
+LegacyControllerMappingPointer LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
         const QString& filePath,
-        const QDir& systemPresetsPath) {
+        const QDir& systemMappingsPath) {
     if (root.isNull()) {
-        return ControllerPresetPointer();
+        return LegacyControllerMappingPointer();
     }
 
     QDomElement controller = getControllerNode(root);
     if (controller.isNull()) {
-        return ControllerPresetPointer();
+        return LegacyControllerMappingPointer();
     }
 
-    MidiControllerPreset* preset = new MidiControllerPreset();
-    preset->setFilePath(filePath);
+    LegacyMidiControllerMapping* mapping = new LegacyMidiControllerMapping();
+    mapping->setFilePath(filePath);
 
     // Superclass handles parsing <info> tag and script files
-    parsePresetInfo(root, preset);
-    addScriptFilesToPreset(controller, preset, systemPresetsPath);
+    parseMappingInfo(root, mapping);
+    addScriptFilesToMapping(controller, mapping, systemMappingsPath);
 
     QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
     // Iterate through each <control> block in the XML
     while (!control.isNull()) {
-
         //Unserialize these objects from the XML
         QString strMidiStatus = control.firstChildElement("status").text();
         QString midiNo = control.firstChildElement("midino").text();
@@ -101,25 +101,24 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement&
             optionsNode = optionsNode.nextSiblingElement();
         }
 
-        // Add the static mapping
-        MidiInputMapping mapping;
-        mapping.control = ConfigKey(controlGroup, controlKey);
-        mapping.description = controlDescription;
-        mapping.options = options;
-        mapping.key = MidiKey(midiStatusByte, midiControl);
+        MidiInputMapping inputMapping;
+        inputMapping.control = ConfigKey(controlGroup, controlKey);
+        inputMapping.description = controlDescription;
+        inputMapping.options = options;
+        inputMapping.key = MidiKey(midiStatusByte, midiControl);
 
-        // qDebug() << "New mapping:" << QString::number(mapping.key.key, 16).toUpper()
-        //          << QString::number(mapping.key.status, 16).toUpper()
-        //          << QString::number(mapping.key.control, 16).toUpper()
-        //          << mapping.control.group << mapping.control.item;
+        // qDebug() << "New inputMapping:" << QString::number(inputMapping.key.key, 16).toUpper()
+        //          << QString::number(inputMapping.key.status, 16).toUpper()
+        //          << QString::number(inputMapping.key.control, 16).toUpper()
+        //          << inputMapping.control.group << inputMapping.control.item;
 
         // Use insertMulti because we support multiple inputs mappings for the
         // same input MidiKey.
-        preset->addInputMapping(mapping.key.key, mapping);
+        mapping->addInputMapping(inputMapping.key.key, inputMapping);
         control = control.nextSiblingElement("control");
     }
 
-    qDebug() << "MidiControllerPresetFileHandler: Input mapping parsing complete.";
+    qDebug() << "LegacyMidiControllerMappingFileHandler: Input mapping parsing complete.";
 
     // Parse static output mappings
 
@@ -137,9 +136,9 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement&
         QString controlDescription = descriptionNode.text();
 
         // Unserialize output message from the XML
-        MidiOutputMapping mapping;
-        mapping.controlKey = ConfigKey(controlGroup, controlKey);
-        mapping.description = controlDescription;
+        MidiOutputMapping outputMapping;
+        outputMapping.controlKey = ConfigKey(controlGroup, controlKey);
+        outputMapping.description = controlDescription;
 
         QString midiStatus = output.firstChildElement("status").text();
         QString midiNo = output.firstChildElement("midino").text();
@@ -149,24 +148,24 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement&
         bool ok = false;
 
         //Use QString with toInt base of 0 to auto convert hex values
-        mapping.output.status = midiStatus.toInt(&ok, 0);
+        outputMapping.output.status = midiStatus.toInt(&ok, 0);
         if (!ok) {
-            mapping.output.status = 0x00;
+            outputMapping.output.status = 0x00;
         }
 
-        mapping.output.control = midiNo.toInt(&ok, 0);
+        outputMapping.output.control = midiNo.toInt(&ok, 0);
         if (!ok) {
-            mapping.output.control = 0x00;
+            outputMapping.output.control = 0x00;
         }
 
-        mapping.output.on = midiOn.toInt(&ok, 0);
+        outputMapping.output.on = midiOn.toInt(&ok, 0);
         if (!ok) {
-            mapping.output.on = DEFAULT_OUTPUT_ON;
+            outputMapping.output.on = DEFAULT_OUTPUT_ON;
         }
 
-        mapping.output.off = midiOff.toInt(&ok, 0);
+        outputMapping.output.off = midiOff.toInt(&ok, 0);
         if (!ok) {
-            mapping.output.off = DEFAULT_OUTPUT_OFF;
+            outputMapping.output.off = DEFAULT_OUTPUT_OFF;
         }
 
         QDomElement minNode = output.firstChildElement("minimum");
@@ -174,58 +173,58 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement&
 
         ok = false;
         if (!minNode.isNull()) {
-            mapping.output.min = minNode.text().toDouble(&ok);
+            outputMapping.output.min = minNode.text().toDouble(&ok);
         } else {
             ok = false;
         }
 
         if (!ok) {
             // If not a double, or node wasn't defined
-            mapping.output.min = DEFAULT_OUTPUT_MIN;
+            outputMapping.output.min = DEFAULT_OUTPUT_MIN;
         }
 
         if (!maxNode.isNull()) {
-            mapping.output.max = maxNode.text().toDouble(&ok);
+            outputMapping.output.max = maxNode.text().toDouble(&ok);
         } else {
             ok = false;
         }
 
         if (!ok) { //If not a double, or node wasn't defined
-            mapping.output.max = DEFAULT_OUTPUT_MAX;
+            outputMapping.output.max = DEFAULT_OUTPUT_MAX;
         }
 
         // END unserialize output
 
         // Add the static output mapping.
         // qDebug() << "New output mapping:"
-        //          << QString::number(mapping.output.status, 16).toUpper()
-        //          << QString::number(mapping.output.control, 16).toUpper()
-        //          << QString::number(mapping.output.on, 16).toUpper()
-        //          << QString::number(mapping.output.off, 16).toUpper()
+        //          << QString::number(outputMapping.output.status, 16).toUpper()
+        //          << QString::number(outputMapping.output.control, 16).toUpper()
+        //          << QString::number(outputMapping.output.on, 16).toUpper()
+        //          << QString::number(outputMapping.output.off, 16).toUpper()
         //          << controlGroup << controlKey;
 
         // Use insertMulti because we support multiple outputs from the same
         // control.
-        preset->addOutputMapping(mapping.controlKey, mapping);
+        mapping->addOutputMapping(outputMapping.controlKey, outputMapping);
 
         output = output.nextSiblingElement("output");
     }
 
-    qDebug() << "MidiPresetFileHandler: Output mapping parsing complete.";
+    qDebug() << "MidiMappingFileHandler: Output mapping parsing complete.";
 
-    return ControllerPresetPointer(preset);
+    return LegacyControllerMappingPointer(mapping);
 }
 
-bool MidiControllerPresetFileHandler::save(const MidiControllerPreset& preset,
+bool LegacyMidiControllerMappingFileHandler::save(const LegacyMidiControllerMapping& mapping,
         const QString& fileName) const {
-    qDebug() << "Saving preset" << preset.name() << "to" << fileName;
-    QDomDocument doc = buildRootWithScripts(preset);
-    addControlsToDocument(preset, &doc);
+    qDebug() << "Saving mapping" << mapping.name() << "to" << fileName;
+    QDomDocument doc = buildRootWithScripts(mapping);
+    addControlsToDocument(mapping, &doc);
     return writeDocument(doc, fileName);
 }
 
-void MidiControllerPresetFileHandler::addControlsToDocument(const MidiControllerPreset& preset,
-                                                            QDomDocument* doc) const {
+void LegacyMidiControllerMappingFileHandler::addControlsToDocument(
+        const LegacyMidiControllerMapping& mapping, QDomDocument* doc) const {
     QDomElement controller = doc->documentElement().firstChildElement("controller");
 
     // The QHash doesn't guarantee iteration order, so first we sort the keys
@@ -233,11 +232,11 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
     QDomElement controls = doc->createElement("controls");
     // We will iterate over all of the values that have the same keys, so we need
     // to remove duplicate keys or else we'll duplicate those values.
-    auto sortedInputKeys = preset.getInputMappings().uniqueKeys();
+    auto sortedInputKeys = mapping.getInputMappings().uniqueKeys();
     std::sort(sortedInputKeys.begin(), sortedInputKeys.end());
     for (const auto& key : sortedInputKeys) {
-        for (auto it = preset.getInputMappings().constFind(key);
-                it != preset.getInputMappings().constEnd() && it.key() == key;
+        for (auto it = mapping.getInputMappings().constFind(key);
+                it != mapping.getInputMappings().constEnd() && it.key() == key;
                 ++it) {
             QDomElement controlNode = inputMappingToXML(doc, it.value());
             controls.appendChild(controlNode);
@@ -245,14 +244,13 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
     }
     controller.appendChild(controls);
 
-
     // Repeat the process for the output mappings.
     QDomElement outputs = doc->createElement("outputs");
-    auto sortedOutputKeys = preset.getOutputMappings().uniqueKeys();
+    auto sortedOutputKeys = mapping.getOutputMappings().uniqueKeys();
     std::sort(sortedOutputKeys.begin(), sortedOutputKeys.end());
     for (const auto& key : sortedOutputKeys) {
-        for (auto it = preset.getOutputMappings().constFind(key);
-                it != preset.getOutputMappings().constEnd() && it.key() == key;
+        for (auto it = mapping.getOutputMappings().constFind(key);
+                it != mapping.getOutputMappings().constEnd() && it.key() == key;
                 ++it) {
             QDomElement outputNode = outputMappingToXML(doc, it.value());
             outputs.appendChild(outputNode);
@@ -261,16 +259,16 @@ void MidiControllerPresetFileHandler::addControlsToDocument(const MidiController
     controller.appendChild(outputs);
 }
 
-QDomElement MidiControllerPresetFileHandler::makeTextElement(QDomDocument* doc,
-                                                             const QString& elementName,
-                                                             const QString& text) const {
+QDomElement LegacyMidiControllerMappingFileHandler::makeTextElement(QDomDocument* doc,
+        const QString& elementName,
+        const QString& text) const {
     QDomElement tagNode = doc->createElement(elementName);
     QDomText textNode = doc->createTextNode(text);
     tagNode.appendChild(textNode);
     return tagNode;
 }
 
-QDomElement MidiControllerPresetFileHandler::inputMappingToXML(
+QDomElement LegacyMidiControllerMappingFileHandler::inputMappingToXML(
         QDomDocument* doc, const MidiInputMapping& mapping) const {
     QDomElement controlNode = doc->createElement("control");
 
@@ -278,17 +276,17 @@ QDomElement MidiControllerPresetFileHandler::inputMappingToXML(
     controlNode.appendChild(makeTextElement(doc, "key", mapping.control.item));
     if (!mapping.description.isEmpty()) {
         controlNode.appendChild(
-            makeTextElement(doc, "description", mapping.description));
+                makeTextElement(doc, "description", mapping.description));
     }
 
     // MIDI status byte
     controlNode.appendChild(makeTextElement(
-        doc, "status", MidiUtils::formatByteAsHex(mapping.key.status)));
+            doc, "status", MidiUtils::formatByteAsHex(mapping.key.status)));
 
     if (mapping.key.control != 0xFF) {
         //MIDI control number
         controlNode.appendChild(makeTextElement(
-            doc, "midino", MidiUtils::formatByteAsHex(mapping.key.control)));
+                doc, "midino", MidiUtils::formatByteAsHex(mapping.key.control)));
     }
 
     //Midi options
@@ -297,7 +295,7 @@ QDomElement MidiControllerPresetFileHandler::inputMappingToXML(
     // "normal" is no options
     if (mapping.options.all == 0) {
         QDomElement singleOption = doc->createElement("normal");
-            optionsNode.appendChild(singleOption);
+        optionsNode.appendChild(singleOption);
     } else {
         if (mapping.options.invert) {
             QDomElement singleOption = doc->createElement("invert");
@@ -365,7 +363,7 @@ QDomElement MidiControllerPresetFileHandler::inputMappingToXML(
     return controlNode;
 }
 
-QDomElement MidiControllerPresetFileHandler::outputMappingToXML(
+QDomElement LegacyMidiControllerMappingFileHandler::outputMappingToXML(
         QDomDocument* doc, const MidiOutputMapping& mapping) const {
     QDomElement outputNode = doc->createElement("output");
 
@@ -373,43 +371,43 @@ QDomElement MidiControllerPresetFileHandler::outputMappingToXML(
     outputNode.appendChild(makeTextElement(doc, "key", mapping.controlKey.item));
     if (!mapping.description.isEmpty()) {
         outputNode.appendChild(
-            makeTextElement(doc, "description", mapping.description));
+                makeTextElement(doc, "description", mapping.description));
     }
 
     // MIDI status byte
     outputNode.appendChild(makeTextElement(
-        doc, "status", MidiUtils::formatByteAsHex(mapping.output.status)));
+            doc, "status", MidiUtils::formatByteAsHex(mapping.output.status)));
 
     if (mapping.output.control != 0xFF) {
         //MIDI control number
         outputNode.appendChild(makeTextElement(
-            doc, "midino", MidiUtils::formatByteAsHex(mapping.output.control)));
+                doc, "midino", MidiUtils::formatByteAsHex(mapping.output.control)));
     }
 
     // Third MIDI byte for turning on the LED
     if (mapping.output.on != DEFAULT_OUTPUT_ON) {
         outputNode.appendChild(makeTextElement(
-            doc, "on", MidiUtils::formatByteAsHex(mapping.output.on)));
+                doc, "on", MidiUtils::formatByteAsHex(mapping.output.on)));
     }
 
     // Third MIDI byte for turning off the LED
     if (mapping.output.off != DEFAULT_OUTPUT_OFF) {
         outputNode.appendChild(makeTextElement(
-            doc, "off", MidiUtils::formatByteAsHex(mapping.output.off)));
+                doc, "off", MidiUtils::formatByteAsHex(mapping.output.off)));
     }
 
     // Upper value, above which the 'off' value is sent
     //  (We don't bother writing it if it's the default value.)
     if (mapping.output.max != DEFAULT_OUTPUT_MAX) {
         outputNode.appendChild(makeTextElement(
-            doc, "maximum", QString::number(mapping.output.max)));
+                doc, "maximum", QString::number(mapping.output.max)));
     }
 
     // Lower value, below which the 'off' value is sent
     //  (We don't bother writing it if it's the default value.)
     if (mapping.output.min != DEFAULT_OUTPUT_MIN) {
         outputNode.appendChild(makeTextElement(
-            doc, "minimum", QString::number(mapping.output.min)));
+                doc, "minimum", QString::number(mapping.output.min)));
     }
 
     return outputNode;

@@ -1,14 +1,14 @@
 #pragma once
 
-#include <QString>
-#include <QMap>
-#include <QList>
 #include <QDomElement>
 #include <QFileInfo>
+#include <QList>
+#include <QMap>
+#include <QString>
 
+#include "controllers/legacycontrollermapping.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 #include "preferences/usersettings.h"
-#include "controllers/controllerpreset.h"
-#include "controllers/controllerpresetfilehandler.h"
 
 struct ProductInfo {
     QString protocol;
@@ -25,30 +25,45 @@ struct ProductInfo {
     QString interface_number;
 };
 
-/// Base class handling enumeration and parsing of preset info headers
+/// Base class handling enumeration and parsing of mapping info headers
 ///
 /// This class handles enumeration and parsing of controller XML description file
 /// <info> header tags. It can be used to match controllers automatically or to
 /// show details for a mapping.
-class PresetInfo {
+class MappingInfo {
   public:
-    PresetInfo();
-    PresetInfo(const QString& path);
-
+    MappingInfo();
+    MappingInfo(const QString& path);
 
     inline bool isValid() const {
         return m_valid;
     }
 
-    inline const QString getPath() const { return m_path; }
-    inline const QString getDirPath() const { return m_dirPath; }
-    inline const QString getName() const { return m_name; }
-    inline const QString getDescription() const { return m_description; }
-    inline const QString getForumLink() const { return m_forumlink; }
-    inline const QString getWikiLink() const { return m_wikilink; }
-    inline const QString getAuthor() const { return m_author; }
+    inline const QString getPath() const {
+        return m_path;
+    }
+    inline const QString getDirPath() const {
+        return m_dirPath;
+    }
+    inline const QString getName() const {
+        return m_name;
+    }
+    inline const QString getDescription() const {
+        return m_description;
+    }
+    inline const QString getForumLink() const {
+        return m_forumlink;
+    }
+    inline const QString getWikiLink() const {
+        return m_wikilink;
+    }
+    inline const QString getAuthor() const {
+        return m_author;
+    }
 
-    inline const QList<ProductInfo>& getProducts() const { return m_products; }
+    inline const QList<ProductInfo>& getProducts() const {
+        return m_products;
+    }
 
   private:
     ProductInfo parseBulkProduct(const QDomElement& element) const;

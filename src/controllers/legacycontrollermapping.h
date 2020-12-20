@@ -9,22 +9,21 @@
 
 #include "defs_urls.h"
 
-class ControllerPresetVisitor;
-class ConstControllerPresetVisitor;
+class LegacyControllerMappingVisitor;
+class ConstLegacyControllerMappingVisitor;
 
-/// This class represents a controller preset, containing the data elements that
+/// This class represents a controller mapping, containing the data elements that
 /// make it up.
-class ControllerPreset {
+class LegacyControllerMapping {
   public:
-    ControllerPreset()
+    LegacyControllerMapping()
             : m_bDirty(false) {
     }
-    virtual ~ControllerPreset() = default;
+    virtual ~LegacyControllerMapping() = default;
 
     struct ScriptFileInfo {
         ScriptFileInfo()
                 : builtin(false) {
-
         }
 
         QString name;
@@ -33,7 +32,7 @@ class ControllerPreset {
         bool builtin;
     };
 
-    /// Adds a script file to the list of controller scripts for this preset.
+    /// Adds a script file to the list of controller scripts for this mapping.
     /// @param filename Name of the script file to add
     /// @param functionprefix The script's function prefix (or empty string)
     /// @param file A FileInfo object pointing to the script file
@@ -171,14 +170,14 @@ class ControllerPreset {
         setDirty(true);
     }
 
-    virtual bool savePreset(const QString& filename) const = 0;
+    virtual bool saveMapping(const QString& filename) const = 0;
 
-    virtual void accept(ControllerPresetVisitor* visitor) = 0;
-    virtual void accept(ConstControllerPresetVisitor* visitor) const = 0;
+    virtual void accept(LegacyControllerMappingVisitor* visitor) = 0;
+    virtual void accept(ConstLegacyControllerMappingVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
     // Optional list of controller device match details
-    QList< QHash<QString,QString> > m_productMatches;
+    QList<QHash<QString, QString> > m_productMatches;
 
   private:
     bool m_bDirty;
@@ -197,4 +196,4 @@ class ControllerPreset {
     QList<ScriptFileInfo> m_scripts;
 };
 
-typedef QSharedPointer<ControllerPreset> ControllerPresetPointer;
+typedef QSharedPointer<LegacyControllerMapping> LegacyControllerMappingPointer;

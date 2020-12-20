@@ -5,7 +5,7 @@
 #include <QJSValue>
 #include <QMessageBox>
 
-#include "controllers/controllerpreset.h"
+#include "controllers/legacycontrollermapping.h"
 #include "controllers/scripting/controllerscriptenginebase.h"
 
 /// ControllerScriptEngineLegacy loads and executes controller scripts for the legacy
@@ -26,7 +26,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QJSValue wrapFunctionCode(const QString& codeSnippet, int numberOfArgs);
 
   public slots:
-    void setScriptFiles(const QList<ControllerPreset::ScriptFileInfo>& scripts) {
+    void setScriptFiles(const QList<LegacyControllerMapping::ScriptFileInfo>& scripts) {
         m_fileWatcher.removePaths(m_fileWatcher.files());
         m_scriptFiles = scripts;
     }
@@ -45,7 +45,7 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
     QList<QString> m_scriptFunctionPrefixes;
     QList<QJSValue> m_incomingDataFunctions;
     QHash<QString, QJSValue> m_scriptWrappedFunctionCache;
-    QList<ControllerPreset::ScriptFileInfo> m_scriptFiles;
+    QList<LegacyControllerMapping::ScriptFileInfo> m_scriptFiles;
 
     QFileSystemWatcher m_fileWatcher;
 

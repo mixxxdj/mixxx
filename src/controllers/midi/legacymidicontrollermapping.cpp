@@ -1,44 +1,45 @@
-#include "controllers/midi/midicontrollerpreset.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 
 #include "controllers/defs_controllers.h"
-#include "controllers/midi/midicontrollerpresetfilehandler.h"
+#include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 
-bool MidiControllerPreset::savePreset(const QString& fileName) const {
-    MidiControllerPresetFileHandler handler;
+bool LegacyMidiControllerMapping::saveMapping(const QString& fileName) const {
+    LegacyMidiControllerMappingFileHandler handler;
     return handler.save(*this, fileName);
 }
 
-void MidiControllerPreset::accept(ControllerPresetVisitor* visitor) {
+void LegacyMidiControllerMapping::accept(LegacyControllerMappingVisitor* visitor) {
     if (visitor) {
         visitor->visit(this);
     }
 }
 
-void MidiControllerPreset::accept(ConstControllerPresetVisitor* visitor) const {
+void LegacyMidiControllerMapping::accept(ConstLegacyControllerMappingVisitor* visitor) const {
     if (visitor) {
         visitor->visit(this);
     }
 }
 
-bool MidiControllerPreset::isMappable() const {
+bool LegacyMidiControllerMapping::isMappable() const {
     return true;
 }
 
-void MidiControllerPreset::addInputMapping(uint16_t key, const MidiInputMapping& mapping) {
+void LegacyMidiControllerMapping::addInputMapping(uint16_t key, const MidiInputMapping& mapping) {
     m_inputMappings.insert(key, mapping);
     setDirty(true);
 }
 
-void MidiControllerPreset::removeInputMapping(uint16_t key) {
+void LegacyMidiControllerMapping::removeInputMapping(uint16_t key) {
     m_inputMappings.remove(key);
     setDirty(true);
 }
 
-const QMultiHash<uint16_t, MidiInputMapping>& MidiControllerPreset::getInputMappings() const {
+const QMultiHash<uint16_t, MidiInputMapping>&
+LegacyMidiControllerMapping::getInputMappings() const {
     return m_inputMappings;
 }
 
-void MidiControllerPreset::setInputMappings(
+void LegacyMidiControllerMapping::setInputMappings(
         const QMultiHash<uint16_t, MidiInputMapping>& mappings) {
     if (m_inputMappings != mappings) {
         m_inputMappings.clear();
@@ -47,23 +48,23 @@ void MidiControllerPreset::setInputMappings(
     }
 }
 
-void MidiControllerPreset::addOutputMapping(
+void LegacyMidiControllerMapping::addOutputMapping(
         const ConfigKey& key, const MidiOutputMapping& mapping) {
     m_outputMappings.insert(key, mapping);
     setDirty(true);
 }
 
-void MidiControllerPreset::removeOutputMapping(const ConfigKey& key) {
+void LegacyMidiControllerMapping::removeOutputMapping(const ConfigKey& key) {
     m_outputMappings.remove(key);
     setDirty(true);
 }
 
 const QMultiHash<ConfigKey, MidiOutputMapping>&
-MidiControllerPreset::getOutputMappings() const {
+LegacyMidiControllerMapping::getOutputMappings() const {
     return m_outputMappings;
 }
 
-void MidiControllerPreset::setOutputMappings(
+void LegacyMidiControllerMapping::setOutputMappings(
         const QMultiHash<ConfigKey, MidiOutputMapping>& mappings) {
     if (m_outputMappings != mappings) {
         m_outputMappings.clear();

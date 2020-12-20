@@ -116,7 +116,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     engineGlobalObject.setProperty(
             "engine", m_pJSEngine->newQObject(legacyScriptInterface));
 
-    for (const ControllerPreset::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
+    for (const LegacyControllerMapping::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
         if (!evaluateScriptFile(script.file)) {
             shutdown();
             return false;

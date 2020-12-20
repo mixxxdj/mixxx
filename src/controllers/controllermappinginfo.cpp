@@ -1,23 +1,23 @@
-#include "controllers/controllerpresetinfo.h"
+#include "controllers/controllermappinginfo.h"
 
 #include "controllers/defs_controllers.h"
 #include "util/xml.h"
 
-PresetInfo::PresetInfo()
+MappingInfo::MappingInfo()
         : m_valid(false) {
 }
 
-PresetInfo::PresetInfo(const QString& preset_path)
+MappingInfo::MappingInfo(const QString& mapping_path)
         : m_valid(false) {
     // Parse <info> header section from a controller description XML file
     // Contents parsed by xml path:
-    // info.name        Preset name, used for drop down menus in dialogs
-    // info.author      Preset author
-    // info.description Preset description
-    // info.forums      Link to mixxx forum discussion for the preset
-    // info.wiki        Link to mixxx wiki for the preset
+    // info.name        Mapping name, used for drop down menus in dialogs
+    // info.author      Mapping author
+    // info.description Mapping description
+    // info.forums      Link to mixxx forum discussion for the mapping
+    // info.wiki        Link to mixxx wiki for the mapping
     // info.devices.product List of device matches, specific to device type
-    QFileInfo fileInfo(preset_path);
+    QFileInfo fileInfo(mapping_path);
     m_path = fileInfo.absoluteFilePath();
     m_dirPath = fileInfo.dir().absolutePath();
     m_name = "";
@@ -70,15 +70,15 @@ PresetInfo::PresetInfo(const QString& preset_path)
     if (!devices.isNull()) {
         QDomElement product = devices.firstChildElement("product");
         while (!product.isNull()) {
-            QString protocol = product.attribute("protocol","");
-            if (protocol=="hid") {
+            QString protocol = product.attribute("protocol", "");
+            if (protocol == "hid") {
                 m_products.append(parseHIDProduct(product));
-            } else if (protocol=="bulk") {
+            } else if (protocol == "bulk") {
                 m_products.append(parseBulkProduct(product));
-            } else if (protocol=="midi") {
+            } else if (protocol == "midi") {
                 qDebug("MIDI product info parsing not yet implemented");
                 //m_products.append(parseMIDIProduct(product);
-            } else if (protocol=="osc") {
+            } else if (protocol == "osc") {
                 qDebug("OSC product info parsing not yet implemented");
                 //m_products.append(parseOSCProduct(product);
             } else {
@@ -89,7 +89,7 @@ PresetInfo::PresetInfo(const QString& preset_path)
     }
 }
 
-ProductInfo PresetInfo::parseBulkProduct(const QDomElement& element) const {
+ProductInfo MappingInfo::parseBulkProduct(const QDomElement& element) const {
     // <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105" in_epaddr="0x82" out_epaddr="0x03">
     ProductInfo product;
     product.protocol = element.attribute("protocol");
@@ -100,7 +100,7 @@ ProductInfo PresetInfo::parseBulkProduct(const QDomElement& element) const {
     return product;
 }
 
-ProductInfo PresetInfo::parseHIDProduct(const QDomElement& element) const {
+ProductInfo MappingInfo::parseHIDProduct(const QDomElement& element) const {
     // HID device <product> element parsing. Example of valid element:
     //   <product protocol="hid" vendor_id="0x1" product_id="0x2" usage_page="0x3" usage="0x4" interface_number="0x3" />
     // All numbers must be hex prefixed with 0x

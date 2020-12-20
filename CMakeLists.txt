@@ -398,11 +398,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/controllerlearningeventfilter.cpp
   src/controllers/controllermanager.cpp
   src/controllers/controllermappingtablemodel.cpp
+  src/controllers/controllermappinginfo.cpp
+  src/controllers/controllermappinginfoenumerator.cpp
   src/controllers/controlleroutputmappingtablemodel.cpp
-  src/controllers/controllerpresetfilehandler.cpp
-  src/controllers/controllerpresetinfo.cpp
-  src/controllers/controllerpresetinfoenumerator.cpp
   src/controllers/controlpickermenu.cpp
+  src/controllers/legacycontrollermappingfilehandler.cpp
   src/controllers/delegates/controldelegate.cpp
   src/controllers/delegates/midibytedelegate.cpp
   src/controllers/delegates/midichanneldelegate.cpp
@@ -424,9 +424,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp
   src/controllers/keyboard/keyboardeventfilter.cpp
   src/controllers/learningutils.cpp
+  src/controllers/midi/legacymidicontrollermapping.cpp
+  src/controllers/midi/legacymidicontrollermappingfilehandler.cpp
   src/controllers/midi/midicontroller.cpp
-  src/controllers/midi/midicontrollerpreset.cpp
-  src/controllers/midi/midicontrollerpresetfilehandler.cpp
   src/controllers/midi/midienumerator.cpp
   src/controllers/midi/midimessage.cpp
   src/controllers/midi/midioutputhandler.cpp
@@ -1390,7 +1390,7 @@ add_executable(mixxx-test
   src/test/colorpalette_test.cpp
   src/test/compatibility_test.cpp
   src/test/configobject_test.cpp
-  src/test/controller_preset_validation_test.cpp
+  src/test/controller_mapping_validation_test.cpp
   src/test/controllerscriptenginelegacy_test.cpp
   src/test/controlobjecttest.cpp
   src/test/coverartcache_test.cpp
@@ -2527,8 +2527,8 @@ if(HID)
     src/controllers/hid/hidcontroller.cpp
     src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp
-    src/controllers/hid/hidcontrollerpreset.cpp
-    src/controllers/hid/hidcontrollerpresetfilehandler.cpp
+    src/controllers/hid/legacyhidcontrollermapping.cpp
+    src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __HID__)
   if(HIDAPI_STATIC)
@@ -2574,8 +2574,8 @@ if(BULK)
   )
   if(NOT HID)
     target_sources(mixxx-lib PRIVATE
-      src/controllers/hid/hidcontrollerpreset.cpp
-      src/controllers/hid/hidcontrollerpresetfilehandler.cpp
+      src/controllers/hid/legacyhidcontrollermapping.cpp
+      src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
     )
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __BULK__)

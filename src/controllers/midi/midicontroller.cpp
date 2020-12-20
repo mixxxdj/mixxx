@@ -25,13 +25,13 @@ ControllerJSProxy* MidiController::jsProxy() {
     return new MidiControllerJSProxy(this);
 }
 
-QString MidiController::presetExtension() {
-    return MIDI_PRESET_EXTENSION;
+QString MidiController::mappingExtension() {
+    return MIDI_MAPPING_EXTENSION;
 }
 
-void MidiController::visit(const MidiControllerPreset* preset) {
-    m_preset = *preset;
-    emit presetLoaded(getPreset());
+void MidiController::visit(const LegacyMidiControllerMapping* mapping) {
+    m_mapping = *mapping;
+    emit mappingLoaded(getMapping());
 }
 
 int MidiController::close() {
@@ -39,21 +39,21 @@ int MidiController::close() {
     return 0;
 }
 
-void MidiController::visit(const HidControllerPreset* preset) {
-    Q_UNUSED(preset);
-    qWarning() << "ERROR: Attempting to load an HidControllerPreset to a MidiController!";
+void MidiController::visit(const LegacyHidControllerMapping* mapping) {
+    Q_UNUSED(mapping);
+    qWarning() << "ERROR: Attempting to load an LegacyHidControllerMapping to a MidiController!";
     // TODO(XXX): throw a hissy fit.
 }
 
-bool MidiController::matchPreset(const PresetInfo& preset) {
+bool MidiController::matchMapping(const MappingInfo& mapping) {
     // Product info mapping not implemented for MIDI devices yet
-    Q_UNUSED(preset);
+    Q_UNUSED(mapping);
     return false;
 }
 
-bool MidiController::applyPreset() {
+bool MidiController::applyMapping() {
     // Handles the engine
-    bool result = Controller::applyPreset();
+    bool result = Controller::applyMapping();
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {
@@ -67,11 +67,11 @@ bool MidiController::applyPreset() {
 }
 
 void MidiController::createOutputHandlers() {
-    if (m_preset.getOutputMappings().isEmpty()) {
+    if (m_mapping.getOutputMappings().isEmpty()) {
         return;
     }
 
-    QHashIterator<ConfigKey, MidiOutputMapping> outIt(m_preset.getOutputMappings());
+    QHashIterator<ConfigKey, MidiOutputMapping> outIt(m_mapping.getOutputMappings());
     QStringList failures;
     while (outIt.hasNext()) {
         outIt.next();
@@ -128,8 +128,9 @@ void MidiController::createOutputHandlers() {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(tr("MixxxControl(s) not found"));
-        props->setText(tr("One or more MixxxControls specified in the "
-                          "outputs section of the loaded preset were invalid."));
+        props->setText(tr(
+                "One or more MixxxControls specified in the "
+                "outputs section of the loaded mapping were invalid."));
         props->setInfoText(tr("Some LEDs or other feedback may not work correctly."));
         QString detailsText = tr("* Check to see that the MixxxControl "
                                  "names are spelled correctly in the mapping "
@@ -177,12 +178,12 @@ void MidiController::clearTemporaryInputMappings() {
 }
 
 void MidiController::commitTemporaryInputMappings() {
-    // We want to replace duplicates that exist in m_preset but allow duplicates
+    // We want to replace duplicates that exist in m_mapping but allow duplicates
     // in m_temporaryInputMappings. To do this, we first remove every key in
-    // m_temporaryInputMappings from m_preset's input mappings.
+    // m_temporaryInputMappings from m_mapping's input mappings.
     for (auto it = m_temporaryInputMappings.constBegin();
          it != m_temporaryInputMappings.constEnd(); ++it) {
-        m_preset.removeInputMapping(it.key());
+        m_mapping.removeInputMapping(it.key());
     }
 
     // Now, we can just use add all mappings from m_temporaryInputMappings
@@ -190,7 +191,7 @@ void MidiController::commitTemporaryInputMappings() {
     for (auto it = m_temporaryInputMappings.constBegin();
             it != m_temporaryInputMappings.constEnd();
             ++it) {
-        m_preset.addInputMapping(it.key(), it.value());
+        m_mapping.addInputMapping(it.key(), it.value());
     }
     m_temporaryInputMappings.clear();
 }
@@ -230,8 +231,8 @@ void MidiController::receivedShortMessage(unsigned char status,
         }
     }
 
-    auto it = m_preset.getInputMappings().constFind(mappingKey.key);
-    for (; it != m_preset.getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
+    auto it = m_mapping.getInputMappings().constFind(mappingKey.key);
+    for (; it != m_mapping.getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
     }
 }
@@ -490,8 +491,8 @@ void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) 
         }
     }
 
-    auto it = m_preset.getInputMappings().constFind(mappingKey.key);
-    for (; it != m_preset.getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
+    auto it = m_mapping.getInputMappings().constFind(mappingKey.key);
+    for (; it != m_mapping.getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), data, timestamp);
     }
 }

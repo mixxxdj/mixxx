@@ -6,7 +6,7 @@
 #include <QMessageBox>
 #include <memory>
 
-#include "controllers/controllerpreset.h"
+#include "controllers/legacycontrollermapping.h"
 #include "util/duration.h"
 
 class Controller;
