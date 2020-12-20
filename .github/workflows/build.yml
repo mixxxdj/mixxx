@@ -87,7 +87,7 @@ jobs:
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
             compiler_cache: clcache
-            compiler_cache_path: ${{ github.workspace }}\clcache
+            compiler_cache_path: 'C:\Users\runneradmin\clcache'
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat
             artifacts_name: Windows Installer
