@@ -1142,15 +1142,11 @@ if (APPLE)
     )
   endif()
 else()
+  set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${MIXXX_INSTALL_BINDIR}")
+  if(MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_INSTALL_DEBUG_LIBRARIES, true)
+  endif()
   include(InstallRequiredSystemLibraries)
-  install(
-    FILES
-        ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-    DESTINATION
-        "${MIXXX_INSTALL_BINDIR}"
-    COMPONENT
-        Libraries
-  )
 endif()
 
 if(WIN32)

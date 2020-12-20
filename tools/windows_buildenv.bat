@@ -1,5 +1,6 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
+REM this í is just to force some editors to recognize this file as ANSI, not UTF8.
 
 CALL :REALPATH %~dp0\..
 SET MIXXX_ROOT=%RETVAL%
@@ -51,20 +52,6 @@ EXIT /B 0
         MD %BUILDENV_BASEPATH%
     )
 
-    IF NOT DEFINED GITHUB_ENV (
-        CALL :GENERATE_CMakeSettings_JSON
-
-        IF NOT EXIST %BUILD_ROOT% (
-            ECHO ### Create subdirectory build ###
-            MD %BUILD_ROOT%
-        )
-
-        IF NOT EXIST %INSTALL_ROOT% (
-            ECHO ### Create subdirectory install ###
-            MD %INSTALL_ROOT%
-        )
-    )
-
     IF NOT EXIST %BUILDENV_PATH% (
         ECHO ### Download prebuild build environment ###
         SET BUILDENV_URL=https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/!BUILDENV_NAME!.zip
@@ -95,6 +82,20 @@ EXIT /B 0
     IF DEFINED GITHUB_ENV (
         ECHO CMAKE_PREFIX_PATH=!CMAKE_PREFIX_PATH!>>!GITHUB_ENV!
         ECHO PATH=!PATH!>>!GITHUB_ENV!
+    ) else (
+        CALL :GENERATE_CMakeSettings_JSON
+        echo WARNING: CMakeSettings.json will include an invalid CMAKE_PREFIX_PATH
+        echo          for settings other than %CONFIGURATION% . 
+        
+        IF NOT EXIST %BUILD_ROOT% (
+            ECHO ### Create subdirectory build ###
+            MD %BUILD_ROOT%
+        )
+
+        IF NOT EXIST %INSTALL_ROOT% (
+            ECHO ### Create subdirectory install ###
+            MD %INSTALL_ROOT%
+        )
     )
     GOTO :EOF
 
@@ -139,6 +140,12 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
         REN %CMakeSettings% CMakeSettings__!DateTime:~0,4!-!DateTime:~4,2!-!DateTime:~6,2!_!DateTime:~8,2!-!DateTime:~10,2!-!DateTime:~12,2!.json
     )
     ECHO ### Create new CMakeSettings.json ###
+    CALL :SETUTF8CONSOLE
+    SET OLDCODEPAGE=%RETVAL%
+    REM set byte order mark (BOM) for the file . 
+    REM WARNING: Ensure that the script is saved as ANSI, or these characters will not contain the correct values. Correct values are EF BB BF (&iuml; &raquo; &iquest;)
+    >"%CMakeSettings%" set /p "ï»¿" <NUL
+    
     >>%CMakeSettings% echo {
     >>%CMakeSettings% echo   "configurations": [
     SET configElementTermination=,
@@ -150,40 +157,41 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :Configuration2CMakeSettings_JSON native    Release
     >>%CMakeSettings% echo   ]
     >>%CMakeSettings% echo }
+    CALL :RESTORECONSOLE %OLDCODEPAGE%
     GOTO :EOF
 
 :Configuration2CMakeSettings_JSON <optimize> <configurationtype>
     >>%CMakeSettings% echo     {
-    >>%CMakeSettings% echo       "buildRoot": "${projectDir}\\build\\!PLATFORM!__%1",
+    >>%CMakeSettings% echo       "name": "!PLATFORM!__%1",
+    >>%CMakeSettings% echo       "buildRoot": "${projectDir}\\build\\${name}",
     >>%CMakeSettings% echo       "configurationType": "%2",
     >>%CMakeSettings% echo       "enableClangTidyCodeAnalysis": true,
     >>%CMakeSettings% echo       "generator": "Ninja",
     >>%CMakeSettings% echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
-    >>%CMakeSettings% echo       "installRoot": "${projectDir}\\install\\!PLATFORM!__%1",
+    >>%CMakeSettings% echo       "installRoot": "${projectDir}\\install\\${name}",
     >>%CMakeSettings% echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
-    >>%CMakeSettings% echo       "name": "!PLATFORM!__%1",
     >>%CMakeSettings% echo       "variables": [
     SET variableElementTermination=,
-    CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "true"
-    CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "true"
-    CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "true"
-    CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_EXPORT_COMPILE_COMMANDS"      "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_EXPORT_COMPILE_COMMANDS"      "BOOL"   "True"
     REM Replace all \ by \\ in CMAKE_PREFIX_PATH
-    CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_PREFIX_PATH"                  "PATH"   "!CMAKE_PREFIX_PATH:\=\\!"
-    CALL :AddCMakeVar2CMakeSettings_JSON "DEBUG_ASSERTIONS_FATAL"             "BOOL"   "true"
-    CALL :AddCMakeVar2CMakeSettings_JSON "HID"                                "BOOL"   "true"
-    CALL :AddCMakeVar2CMakeSettings_JSON "HSS1394"                            "BOOL"   "true"
-    CALL :AddCMakeVar2CMakeSettings_JSON "KEYFINDER"                          "BOOL"   "false"
-    CALL :AddCMakeVar2CMakeSettings_JSON "LOCALECOMPARE"                      "BOOL"   "true"
-    CALL :AddCMakeVar2CMakeSettings_JSON "LILV"                               "BOOL"   "true"
-    CALL :AddCMakeVar2CMakeSettings_JSON "MAD"                                "BOOL"   "true"
-    CALL :AddCMakeVar2CMakeSettings_JSON "MEDIAFOUNDATION"                    "BOOL"   "true"
-    CALL :AddCMakeVar2CMakeSettings_JSON "OPUS"                               "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_PREFIX_PATH"                  "STRING"   "!CMAKE_PREFIX_PATH:\=\\!"
+    CALL :AddCMakeVar2CMakeSettings_JSON "DEBUG_ASSERTIONS_FATAL"             "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "HID"                                "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "HSS1394"                            "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "KEYFINDER"                          "BOOL"   "False"
+    CALL :AddCMakeVar2CMakeSettings_JSON "LOCALECOMPARE"                      "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "LILV"                               "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "MAD"                                "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "MEDIAFOUNDATION"                    "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "OPUS"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
-    CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "true"
-    CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "True"
     SET variableElementTermination=
-    CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "true"
+    CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "True"
     >>%CMakeSettings% echo       ]
     >>%CMakeSettings% echo     }!configElementTermination!
   GOTO :EOF
@@ -191,7 +199,19 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
 :AddCMakeVar2CMakeSettings_JSON <varname> <vartype> <value>
     >>%CMakeSettings% echo         {
     >>%CMakeSettings% echo           "name": %1,
-    >>%CMakeSettings% echo           "type": %2,
-    >>%CMakeSettings% echo           "value": %3
+    >>%CMakeSettings% echo           "value": %3,
+    >>%CMakeSettings% echo           "type": %2
     >>%CMakeSettings% echo         }!variableElementTermination!
+  GOTO :EOF
+
+:SETUTF8CONSOLE
+    for /f "tokens=2 delims=:" %%I in ('chcp') do set "_codepage=%%I"
+
+    >NUL chcp 65001
+
+    SET RETVAL=_codepage
+  GOTO :EOF
+  
+:RESTORECONSOLE <codepage>
+    >NUL chcp %1
   GOTO :EOF
