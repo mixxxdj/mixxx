@@ -2,21 +2,21 @@
 
 #include <QMultiHash>
 
-#include "controllers/controllerpreset.h"
-#include "controllers/controllerpresetvisitor.h"
+#include "controllers/legacycontrollermapping.h"
+#include "controllers/controllermappingvisitor.h"
 #include "controllers/midi/midimessage.h"
 
-/// Represents a MIDI controller preset, containing the data elements that make
+/// Represents a MIDI controller mapping, containing the data elements that make
 /// it up.
-class MidiControllerPreset : public ControllerPreset {
+class LegacyMidiControllerMapping : public LegacyControllerMapping {
   public:
-    MidiControllerPreset(){};
-    virtual ~MidiControllerPreset(){};
+    LegacyMidiControllerMapping(){};
+    virtual ~LegacyMidiControllerMapping(){};
 
-    bool savePreset(const QString& fileName) const override;
+    bool saveMapping(const QString& fileName) const override;
 
-    virtual void accept(ControllerPresetVisitor* visitor) override;
-    virtual void accept(ConstControllerPresetVisitor* visitor) const override;
+    virtual void accept(LegacyControllerMappingVisitor* visitor) override;
+    virtual void accept(ConstLegacyControllerMappingVisitor* visitor) const override;
     virtual bool isMappable() const override;
 
     // Input mappings

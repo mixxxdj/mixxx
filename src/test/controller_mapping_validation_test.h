@@ -1,9 +1,9 @@
 #include <QObject>
 
 #include "controllers/controller.h"
-#include "controllers/controllerpresetinfoenumerator.h"
-#include "controllers/hid/hidcontrollerpreset.h"
-#include "controllers/midi/midicontrollerpreset.h"
+#include "controllers/controllermappinginfoenumerator.h"
+#include "controllers/hid/legacyhidcontrollermapping.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 #include "test/mixxxtest.h"
 
 class FakeControllerJSProxy : public ControllerJSProxy {
@@ -26,7 +26,7 @@ class FakeController : public Controller {
     FakeController();
     ~FakeController() override;
 
-    QString presetExtension() override {
+    QString mappingExtension() override {
         // Doesn't affect anything at the moment.
         return ".test.xml";
     }
@@ -35,20 +35,20 @@ class FakeController : public Controller {
         return new FakeControllerJSProxy();
     }
 
-    ControllerPresetPointer getPreset() const override;
+    LegacyControllerMappingPointer getMapping() const override;
 
-    void visit(const MidiControllerPreset* preset) override {
-        m_bMidiPreset = true;
-        m_bHidPreset = false;
-        m_midiPreset = *preset;
-        m_hidPreset = HidControllerPreset();
+    void visit(const LegacyMidiControllerMapping* mapping) override {
+        m_bMidiMapping = true;
+        m_bHidMapping = false;
+        m_midiMapping = *mapping;
+        m_hidMapping = LegacyHidControllerMapping();
     }
 
-    void visit(const HidControllerPreset* preset) override {
-        m_bMidiPreset = false;
-        m_bHidPreset = true;
-        m_midiPreset = MidiControllerPreset();
-        m_hidPreset = *preset;
+    void visit(const LegacyHidControllerMapping* mapping) override {
+        m_bMidiMapping = false;
+        m_bHidMapping = true;
+        m_midiMapping = LegacyMidiControllerMapping();
+        m_hidMapping = *mapping;
     }
 
     void accept(ControllerVisitor* visitor) override {
@@ -58,9 +58,9 @@ class FakeController : public Controller {
 
     bool isMappable() const override;
 
-    bool matchPreset(const PresetInfo& preset) override {
+    bool matchMapping(const MappingInfo& mapping) override {
         // We're not testing product info matching in this test.
-        Q_UNUSED(preset);
+        Q_UNUSED(mapping);
         return false;
     }
 
@@ -84,20 +84,20 @@ class FakeController : public Controller {
     }
 
   private:
-    ControllerPreset* preset() override;
+    LegacyControllerMapping* mapping() override;
 
-    bool m_bMidiPreset;
-    bool m_bHidPreset;
-    MidiControllerPreset m_midiPreset;
-    HidControllerPreset m_hidPreset;
+    bool m_bMidiMapping;
+    bool m_bHidMapping;
+    LegacyMidiControllerMapping m_midiMapping;
+    LegacyHidControllerMapping m_hidMapping;
 };
 
-class ControllerPresetValidationTest : public MixxxTest {
+class LegacyControllerMappingValidationTest : public MixxxTest {
   protected:
     void SetUp() override;
 
-    bool testLoadPreset(const PresetInfo& preset);
+    bool testLoadMapping(const MappingInfo& mapping);
 
-    QDir m_presetPath;
-    QScopedPointer<PresetInfoEnumerator> m_pEnumerator;
+    QDir m_mappingPath;
+    QScopedPointer<MappingInfoEnumerator> m_pEnumerator;
 };

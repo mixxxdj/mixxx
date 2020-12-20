@@ -7,8 +7,8 @@
 #include <QFileInfo>
 
 #include "preferences/usersettings.h"
-#include "controllers/controllerpreset.h"
-#include "controllers/controllerpresetfilehandler.h"
+#include "controllers/legacycontrollermapping.h"
+#include "controllers/legacycontrollermappingfilehandler.h"
 
 struct ProductInfo {
     QString protocol;
@@ -25,15 +25,15 @@ struct ProductInfo {
     QString interface_number;
 };
 
-/// Base class handling enumeration and parsing of preset info headers
+/// Base class handling enumeration and parsing of mapping info headers
 ///
 /// This class handles enumeration and parsing of controller XML description file
 /// <info> header tags. It can be used to match controllers automatically or to
 /// show details for a mapping.
-class PresetInfo {
+class MappingInfo {
   public:
-    PresetInfo();
-    PresetInfo(const QString& path);
+    MappingInfo();
+    MappingInfo(const QString& path);
 
 
     inline bool isValid() const {

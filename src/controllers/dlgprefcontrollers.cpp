@@ -21,9 +21,9 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     setupUi(this);
     setupControllerWidgets();
 
-    connect(btnOpenUserPresets, &QPushButton::clicked, [=]() {
-        QString presetsPath = userPresetsPath(m_pConfig);
-        openLocalFile(presetsPath);
+    connect(btnOpenUserMappings, &QPushButton::clicked, [=]() {
+        QString mappingsPath = userMappingsPath(m_pConfig);
+        openLocalFile(mappingsPath);
     });
 
     // Connections

@@ -94,24 +94,24 @@ BulkController::~BulkController() {
     }
 }
 
-QString BulkController::presetExtension() {
-    return BULK_PRESET_EXTENSION;
+QString BulkController::mappingExtension() {
+    return BULK_MAPPING_EXTENSION;
 }
 
-void BulkController::visit(const MidiControllerPreset* preset) {
-    Q_UNUSED(preset);
+void BulkController::visit(const LegacyMidiControllerMapping* mapping) {
+    Q_UNUSED(mapping);
     // TODO(XXX): throw a hissy fit.
-    qWarning() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+    qWarning() << "ERROR: Attempting to load a LegacyMidiControllerMapping to an HidController!";
 }
 
-void BulkController::visit(const HidControllerPreset* preset) {
-    m_preset = *preset;
-    // Emit presetLoaded with a clone of the preset.
-    emit presetLoaded(getPreset());
+void BulkController::visit(const LegacyHidControllerMapping* mapping) {
+    m_mapping = *mapping;
+    // Emit mappingLoaded with a clone of the mapping.
+    emit mappingLoaded(getMapping());
 }
 
-bool BulkController::matchPreset(const PresetInfo& preset) {
-    const QList<ProductInfo>& products = preset.getProducts();
+bool BulkController::matchMapping(const MappingInfo& mapping) {
+    const QList<ProductInfo>& products = mapping.getProducts();
     for (const auto& product : products) {
         if (matchProductInfo(product)) {
             return true;

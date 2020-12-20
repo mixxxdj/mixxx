@@ -4,7 +4,7 @@
 
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
-#include "controllers/hid/hidcontrollerpresetfilehandler.h"
+#include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "moc_hidcontroller.cpp"
 #include "util/string.h"
 #include "util/time.h"
@@ -34,24 +34,24 @@ HidController::~HidController() {
     }
 }
 
-QString HidController::presetExtension() {
-    return HID_PRESET_EXTENSION;
+QString HidController::mappingExtension() {
+    return HID_MAPPING_EXTENSION;
 }
 
-void HidController::visit(const MidiControllerPreset* preset) {
-    Q_UNUSED(preset);
+void HidController::visit(const LegacyMidiControllerMapping* mapping) {
+    Q_UNUSED(mapping);
     // TODO(XXX): throw a hissy fit.
-    qWarning() << "ERROR: Attempting to load a MidiControllerPreset to an HidController!";
+    qWarning() << "ERROR: Attempting to load a LegacyMidiControllerMapping to an HidController!";
 }
 
-void HidController::visit(const HidControllerPreset* preset) {
-    m_preset = *preset;
-    // Emit presetLoaded with a clone of the preset.
-    emit presetLoaded(getPreset());
+void HidController::visit(const LegacyHidControllerMapping* mapping) {
+    m_mapping = *mapping;
+    // Emit mappingLoaded with a clone of the mapping.
+    emit mappingLoaded(getMapping());
 }
 
-bool HidController::matchPreset(const PresetInfo& preset) {
-    const QList<ProductInfo>& products = preset.getProducts();
+bool HidController::matchMapping(const MappingInfo& mapping) {
+    const QList<ProductInfo>& products = mapping.getProducts();
     for (const auto& product : products) {
         if (m_deviceInfo.matchProductInfo(product)) {
             return true;

@@ -46,18 +46,18 @@ void Controller::stopEngine() {
     m_pScriptEngineLegacy = nullptr;
 }
 
-bool Controller::applyPreset() {
-    qDebug() << "Applying controller preset...";
+bool Controller::applyMapping() {
+    qDebug() << "Applying controller mapping...";
 
-    const ControllerPreset* pPreset = preset();
+    const LegacyControllerMapping* pMapping = mapping();
 
     // Load the script code into the engine
     if (!m_pScriptEngineLegacy) {
-        qWarning() << "Controller::applyPreset(): No engine exists!";
+        qWarning() << "Controller::applyMapping(): No engine exists!";
         return false;
     }
 
-    QList<ControllerPreset::ScriptFileInfo> scriptFiles = pPreset->getScriptFiles();
+    QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = pMapping->getScriptFiles();
     if (scriptFiles.isEmpty()) {
         qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         return true;
