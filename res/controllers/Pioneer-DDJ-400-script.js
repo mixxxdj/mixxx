@@ -87,6 +87,9 @@ var LightsPioneerDDJ400 = {
     },
 };
 
+// Store timer IDs
+PioneerDDJ400.timers = {};
+
 // Stores padmode state and encapsulates LED logic
 PioneerDDJ400.performancePads = {
     modes: {
@@ -224,10 +227,12 @@ PioneerDDJ400.init = function() {
     PioneerDDJ400.performancePads.reset();
 
     // turn on loop in and out lights
-    [0x10, 0x11, 0x4E, 0x4C].forEach(function(control) {
-        midi.sendShortMsg(0x90, control, 0x7F);
-        midi.sendShortMsg(0x91, control, 0x7F);
-    });
+    PioneerDDJ400.setLoopButtonLights(0x90, 0x7F);
+    PioneerDDJ400.setLoopButtonLights(0x91, 0x7F);
+
+    // handle loop toggle events
+    engine.makeConnection("[Channel1]", "loop_enabled", PioneerDDJ400.loopToggle);
+    engine.makeConnection("[Channel2]", "loop_enabled", PioneerDDJ400.loopToggle);
 
     // poll the controller for current control positions on startup
     midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x06, 0x00, 0x03, 0x01, 0xf7], 12);
@@ -257,7 +262,7 @@ PioneerDDJ400.toggleLoopAdjustIn = function (channel, _control, value, _status, 
     }
     PioneerDDJ400.loopAdjustIn[channel] = !PioneerDDJ400.loopAdjustIn[channel];
     PioneerDDJ400.loopAdjustOut[channel] = false;
-}
+};
 
 PioneerDDJ400.toggleLoopAdjustOut = function (channel, _control, value, _status, group) {
     if (value === 0 || engine.getValue(group, 'loop_enabled' === 0)) {
@@ -265,7 +270,75 @@ PioneerDDJ400.toggleLoopAdjustOut = function (channel, _control, value, _status,
     }
     PioneerDDJ400.loopAdjustOut[channel] = !PioneerDDJ400.loopAdjustOut[channel];
     PioneerDDJ400.loopAdjustIn[channel] = false;
-}
+};
+
+PioneerDDJ400.setReloopLight = function (status, value) {
+    midi.sendShortMsg(status, 0x4D, value);
+    midi.sendShortMsg(status, 0x50, value);
+};
+
+
+PioneerDDJ400.setLoopButtonLights = function(status, value) {
+    [0x10, 0x11, 0x4E, 0x4C].forEach(function(control) {
+        midi.sendShortMsg(status, control, value);
+    });
+};
+
+PioneerDDJ400.startLoopLightsBlink = function (channel, control, status, group) {
+    var blink = 0x7F;
+
+    PioneerDDJ400.stopLoopLightsBlink(group, control, status);
+
+    PioneerDDJ400.timers[group][control] = engine.beginTimer(500, function() {
+        blink = 0x7F - blink;
+
+        // When adjusting the loop out position, turn the loop in light off
+        if (PioneerDDJ400.loopAdjustOut[channel]) {
+            midi.sendShortMsg(status, 0x10, 0x00);
+            midi.sendShortMsg(status, 0x4C, 0x00);
+        }
+        else {
+            midi.sendShortMsg(status, 0x10, blink);
+            midi.sendShortMsg(status, 0x4C, blink);
+        }
+
+        // When adjusting the loop in position, turn the loop out light off
+        if (PioneerDDJ400.loopAdjustIn[channel]) {
+            midi.sendShortMsg(status, 0x11, 0x00);
+            midi.sendShortMsg(status, 0x4E, 0x00);
+        }
+        else {
+            midi.sendShortMsg(status, 0x11, blink);
+            midi.sendShortMsg(status, 0x4E, blink);
+        }
+    });
+
+};
+
+PioneerDDJ400.stopLoopLightsBlink = function (group, control, status) {
+    PioneerDDJ400.timers[group] = PioneerDDJ400.timers[group] || {};
+
+    if (PioneerDDJ400.timers[group][control] !== undefined) {
+        engine.stopTimer(PioneerDDJ400.timers[group][control]);
+    }
+    PioneerDDJ400.timers[group][control] = undefined;
+    PioneerDDJ400.setLoopButtonLights(status, 0x7F);
+};
+
+PioneerDDJ400.loopToggle = function (value, group, control) {
+    var status = group === "[Channel1]" ? 0x90 : 0x91,
+        channel = group === "[Channel1]" ? 0 : 1;
+
+    PioneerDDJ400.setReloopLight(status, value ? 0x7F : 0x00);
+
+    if (value) {
+        PioneerDDJ400.startLoopLightsBlink(channel, control, status, group);
+    }
+    else {
+        PioneerDDJ400.stopLoopLightsBlink(group, control, status);
+        PioneerDDJ400.loopAdjustOut[channel] = PioneerDDJ400.loopAdjustIn[channel] = false;
+    }
+};
 
 //
 // Jog wheels
@@ -813,8 +886,10 @@ PioneerDDJ400.shutdown = function() {
     }
 
     // turn off loop in and out lights
-    [0x10, 0x11, 0x4E, 0x4C].forEach(function(control) {
-        midi.sendShortMsg(0x90, control, 0x00);
-        midi.sendShortMsg(0x91, control, 0x00);
-    });
+    PioneerDDJ400.setLoopButtonLights(0x90, 0x00);
+    PioneerDDJ400.setLoopButtonLights(0x91, 0x00);
+
+    // turn off reloop lights
+    PioneerDDJ400.setReloopLight(0x90, 0x00);
+    PioneerDDJ400.setReloopLight(0x91, 0x00);
 };

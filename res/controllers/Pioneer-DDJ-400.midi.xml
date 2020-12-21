@@ -471,24 +471,13 @@
             <control>
                 <description>RELOOP/EXIT (DECK1) - press - (loop off) Reloop, (loop on) Loop exit</description>
                 <group>[Channel1]</group>
-                <key>reloop_toggle</key> <!-- check if correct -->
+                <key>reloop_toggle</key>
                 <status>0x90</status>
                 <midino>0x4D</midino>
                 <options>
                     <Normal/>
                 </options>
             </control>
-            <control>
-                <description>RELOOP/EXIT +SHIFT (DECK1) - press - Reloop and stop</description>
-                <group>[Channel1]</group>
-                <key>reloop_andstop</key>
-                <status>0x90</status>
-                <midino>0x50</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-
             <control>
                 <description>RELOOP/EXIT (DECK2) - press - (loop off) Reloop, (loop on) Loop exit</description>
                 <group>[Channel2]</group>
@@ -499,6 +488,28 @@
                     <Normal/>
                 </options>
             </control>
+
+            <control>
+                <description>RELOOP/EXIT +SHIFT (DECK1) - press - Reloop and stop</description>
+                <group>[Channel1]</group>
+                <key>reloop_andstop</key>
+                <status>0x90</status>
+                <midino>0x50</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+            <control>
+                <description>RELOOP/EXIT +SHIFT (DECK2) - press - Reloop and stop</description>
+                <group>[Channel2]</group>
+                <key>reloop_andstop</key>
+                <status>0x91</status>
+                <midino>0x50</midino>
+                <options>
+                    <Normal/>
+                </options>
+            </control>
+
             <control>
                 <description>SHIFT + LOOP IN (DECK1) - Loop in adjust (using jog wheel)</description>
                 <group>[Channel1]</group>
