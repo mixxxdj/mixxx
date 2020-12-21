@@ -114,7 +114,7 @@ void EffectChainPresetManager::importPreset() {
 
         EffectChainPresetPointer pPreset(
                 new EffectChainPreset(doc.documentElement()));
-        if (!pPreset->isEmpty()) {
+        if (!pPreset->isEmpty() && !pPreset->name().isEmpty()) {
             if (m_effectChainPresets.contains(pPreset->name())) {
                 bool okay = false;
                 QString newName = QInputDialog::getText(nullptr,
@@ -243,11 +243,12 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
     QString directoryPath = m_pConfig->getSettingsPath() +
             kEffectChainPresetDirectory + kFolderDelimiter;
     QFile file(directoryPath + oldName + kXmlFileExtension);
-    if (!file.rename(directoryPath + newName + kXmlFileExtension)) {
+    if (newName.isEmpty() || !file.rename(directoryPath + newName + kXmlFileExtension)) {
         QMessageBox::critical(
                 nullptr,
                 tr("Could not rename effect chain preset"),
                 tr("Could not rename effect chain preset \"%1\"").arg(oldName));
+        return;
     }
 
     EffectChainPresetPointer pPreset = m_effectChainPresets.take(oldName);
