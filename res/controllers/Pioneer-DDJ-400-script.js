@@ -224,6 +224,12 @@ PioneerDDJ400.init = function() {
     // resets pad mode to hotcue
     PioneerDDJ400.performancePads.reset();
 
+    // turn on loop in and out lights
+    [0x10, 0x11, 0x4E, 0x4C].forEach(function(control) {
+        midi.sendShortMsg(0x90, control, 0x7F);
+        midi.sendShortMsg(0x91, control, 0x7F);
+    });
+
     // poll the controller for current control positions on startup
     midi.sendSysexMsg([0xF0, 0x00, 0x40, 0x05, 0x00, 0x00, 0x02, 0x06, 0x00, 0x03, 0x01, 0xf7], 12);
 };
@@ -782,4 +788,10 @@ PioneerDDJ400.shutdown = function() {
         midi.sendShortMsg(0x99, 0x00 + i, 0x00);    // Deck 2 pads
         midi.sendShortMsg(0x9A, 0x00 + i, 0x00);    // Deck 2 pads with SHIFT
     }
+
+    // turn off loop in and out lights
+    [0x10, 0x11, 0x4E, 0x4C].forEach(function(control) {
+        midi.sendShortMsg(0x90, control, 0x00);
+        midi.sendShortMsg(0x91, control, 0x00);
+    });
 };
