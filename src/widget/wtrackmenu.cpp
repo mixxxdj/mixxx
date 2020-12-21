@@ -240,17 +240,23 @@ void WTrackMenu::createActions() {
                 this,
                 &WTrackMenu::slotExportMetadataIntoFileTags);
 
-        for (const auto& externalTrackCollection :
+        m_updateInExternalTrackCollections.reserve(
+                m_pLibrary->trackCollections()->externalCollections().size());
+        for (auto* const pExternalTrackCollection :
                 m_pLibrary->trackCollections()->externalCollections()) {
             UpdateExternalTrackCollection updateInExternalTrackCollection;
-            updateInExternalTrackCollection.externalTrackCollection = externalTrackCollection;
-            updateInExternalTrackCollection.action = new QAction(externalTrackCollection->name(), m_pMetadataMenu);
-            updateInExternalTrackCollection.action->setToolTip(externalTrackCollection->description());
+            updateInExternalTrackCollection.externalTrackCollection = pExternalTrackCollection;
+            updateInExternalTrackCollection.action = new QAction(
+                    pExternalTrackCollection->name(), m_pMetadataMenu);
+            updateInExternalTrackCollection.action->setToolTip(
+                    pExternalTrackCollection->description());
             m_updateInExternalTrackCollections += updateInExternalTrackCollection;
-            auto externalTrackCollectionPtr = updateInExternalTrackCollection.externalTrackCollection;
-            connect(updateInExternalTrackCollection.action, &QAction::triggered, this, [this, externalTrackCollectionPtr] {
-                slotUpdateExternalTrackCollection(externalTrackCollectionPtr);
-            });
+            connect(updateInExternalTrackCollection.action,
+                    &QAction::triggered,
+                    this,
+                    [this, pExternalTrackCollection] {
+                        slotUpdateExternalTrackCollection(pExternalTrackCollection);
+                    });
         }
     }
 
@@ -423,17 +429,25 @@ void WTrackMenu::setupActions() {
 
         for (const auto& updateInExternalTrackCollection :
                 qAsConst(m_updateInExternalTrackCollections)) {
-            ExternalTrackCollection* externalTrackCollection =
-                    updateInExternalTrackCollection.externalTrackCollection;
-            if (externalTrackCollection) {
-                updateInExternalTrackCollection.action->setEnabled(
-                        externalTrackCollection->isConnected());
-                m_pMetadataUpdateExternalCollectionsMenu->addAction(
-                        updateInExternalTrackCollection.action);
-            }
+            m_pMetadataUpdateExternalCollectionsMenu->addAction(
+                    updateInExternalTrackCollection.action);
         }
         if (!m_pMetadataUpdateExternalCollectionsMenu->isEmpty()) {
             m_pMetadataMenu->addMenu(m_pMetadataUpdateExternalCollectionsMenu);
+            // Enable/disable entries depending on the connection status
+            // that may change at runtime.
+            connect(m_pMetadataUpdateExternalCollectionsMenu,
+                    &QMenu::aboutToShow,
+                    this,
+                    [this] {
+                        for (const auto& updateInExternalTrackCollection :
+                                qAsConst(m_updateInExternalTrackCollections)) {
+                            updateInExternalTrackCollection.action->setEnabled(
+                                    updateInExternalTrackCollection
+                                            .externalTrackCollection
+                                            ->isConnected());
+                        }
+                    });
         }
 
         m_pMetadataMenu->addMenu(m_pCoverMenu);
