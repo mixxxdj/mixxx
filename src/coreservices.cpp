@@ -378,7 +378,7 @@ void CoreServices::initializeKeyboard() {
     m_pKbdConfigEmpty = std::make_shared<ConfigObject<ConfigValueKbd>>(QString());
 
     if (QFile::exists(userKeyboard)) {
-        qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
+        qDebug() << "Found and will use custom keyboard mapping" << userKeyboard;
         m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(userKeyboard);
     } else {
         // Default to the locale for the main input method (e.g. keyboard).
@@ -388,7 +388,7 @@ void CoreServices::initializeKeyboard() {
         QString defaultKeyboard = QString(resourcePath).append("keyboard/");
         defaultKeyboard += locale.name();
         defaultKeyboard += ".kbd.cfg";
-        qDebug() << "Found and will use default keyboard preset" << defaultKeyboard;
+        qDebug() << "Found and will use default keyboard mapping" << defaultKeyboard;
 
         if (!QFile::exists(defaultKeyboard)) {
             qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
