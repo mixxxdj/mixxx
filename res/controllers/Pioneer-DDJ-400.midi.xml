@@ -500,13 +500,44 @@
                 </options>
             </control>
             <control>
-                <description>RELOOP/EXIT +SHIFT (DECK2) - press - Reloop and stop</description>
-                <group>[Channel2]</group>
-                <key>reloop_andstop</key>
-                <status>0x91</status>
-                <midino>0x50</midino>
+                <description>SHIFT + LOOP IN (DECK1) - Loop in adjust (using jog wheel)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.toggleLoopAdjustIn</key>
+                <status>0x90</status>
+                <midino>0x4C</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>SHIFT + LOOP IN (DECK2) - Loop in adjust (using jog wheel)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.toggleLoopAdjustIn</key>
+                <status>0x91</status>
+                <midino>0x4C</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
+                <description>SHIFT + LOOP OUT (DECK1) - Loop out adjust (using jog wheel)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.toggleLoopAdjustOut</key>
+                <status>0x90</status>
+                <midino>0x4E</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>SHIFT + LOOP OUT (DECK2) - Loop out adjust (using jog wheel)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.toggleLoopAdjustOut</key>
+                <status>0x91</status>
+                <midino>0x4E</midino>
+                <options>
+                    <Script-Binding/>
                 </options>
             </control>
 
