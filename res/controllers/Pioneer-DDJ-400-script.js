@@ -527,24 +527,6 @@ PioneerDDJ400.waveFormRotate = function(_channel, _control, value) {
     engine.setValue("[Channel"+deckNum+"]", "waveform_zoom", newVal);
 };
 
-PioneerDDJ400.loopin4beatPressed = function(channel, _control, value, _status, group) {
-    var loopEnabled = engine.getValue(group, "loop_enabled");
-    this.loopin4beat[channel] = (value > 0);
-
-    if (loopEnabled === 0 && value > 0) {
-        engine.setValue(group, "loop_in", 1);
-    }
-};
-
-PioneerDDJ400.loopoutPressed = function(channel, _control, value, _status, group) {
-    var loopEnabled = engine.getValue(group, "loop_enabled");
-    this.loopout[channel] = (value > 0);
-
-    if (loopEnabled === 0 && value > 0) {
-        engine.setValue(group, "loop_out", 1);
-    }
-};
-
 // START BEAT FX
 
 PioneerDDJ400.numFxSlots = 3;

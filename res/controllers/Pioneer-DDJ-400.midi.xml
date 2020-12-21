@@ -426,53 +426,45 @@
             </control>
 
             <control>
-                <description>LOOP IN/4 BEAT (DECK1) - press - (loop off) set Loop point, (loop on) adjust loop in point
-                    with jog wheel
-                </description>
+                <description>LOOP IN/4 BEAT (DECK1) - press - Set loop in</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.loopin4beatPressed</key>
+                <key>loop_in</key>
                 <status>0x90</status>
                 <midino>0x10</midino>
                 <options>
-                    <Script-Binding/>
+                    <Normal/>
                 </options>
             </control>
 
             <control>
-                <description>LOOP IN/4 BEAT (DECK2) - press - (loop off) set Loop point, (loop on) adjust loop in point
-                    with jog wheel
-                </description>
+                <description>LOOP IN/4 BEAT (DECK2) - press - Set loop in</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.loopin4beatPressed</key>
+                <key>loop_in</key>
                 <status>0x91</status>
                 <midino>0x10</midino>
                 <options>
-                    <Script-Binding/>
+                    <Normal/>
                 </options>
             </control>
 
             <control>
-                <description>LOOP OUT (DECK1) - press - (loop off) set Loop out point, (loop on) adjust loop out point
-                    with jog wheel
-                </description>
+                <description>LOOP OUT (DECK1) - press - Set loop out</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.loopoutPressed</key>
+                <key>loop_out</key>
                 <status>0x90</status>
                 <midino>0x11</midino>
                 <options>
-                    <Script-Binding/>
+                    <Normal/>
                 </options>
             </control>
             <control>
-                <description>LOOP OUT (DECK2) - press - (loop off) set Loop out point, (loop on) adjust loop out point
-                    with jog wheel
-                </description>
+                <description>LOOP OUT (DECK2) - press - Set loop out</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.loopoutPressed</key>
+                <key>loop_out</key>
                 <status>0x91</status>
                 <midino>0x11</midino>
                 <options>
-                    <Script-Binding/>
+                    <Normal/>
                 </options>
             </control>
 
@@ -3486,132 +3478,6 @@
                 <key>sync_master</key>
                 <status>0x91</status>
                 <midino>0x60</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-
-            <!-- LOOP IN Ch1 9010 Ch2 9110 -->
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_in</key>
-                <status>0x90</status>
-                <midino>0x10</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_in</key>
-                <status>0x91</status>
-                <midino>0x10</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-              </output>
-
-            <!-- Repeat the output signal for the OFF status (Deck 1: 0x90, Deck 2: 0x91.)
-            This is to ensure that the loop lights don't turn off when pressing the SHIFT button
-            -->
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_in</key>
-                <status>0x90</status>
-                <midino>0x4C</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_in</key>
-                <status>0x91</status>
-                <midino>0x4C</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-
-            <!-- LOOP OUT 9011 Ch2 9111 -->
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_out</key>
-                <status>0x90</status>
-                <midino>0x11</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_out</key>
-                <status>0x91</status>
-                <midino>0x11</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-              </output>
-
-            <!-- Repeat the output signal for the OFF status (Deck 1: 0x90, Deck 2: 0x91.)
-            This is to ensure that the loop lights don't turn off when pressing the SHIFT button
-            -->
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_in</key>
-                <status>0x90</status>
-                <midino>0x4E</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_in</key>
-                <status>0x91</status>
-                <midino>0x4E</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-
-            <!-- RELOOP Ch1 904D Shift 9050 Ch2 914D Shift 9150 -->
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_start_position</key>
-                <status>0x90</status>
-                <midino>0x4D</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_enabled</key>
-                <status>0x90</status>
-                <midino>0x4D</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_start_position</key>
-                <status>0x91</status>
-                <midino>0x4D</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_enabled</key>
-                <status>0x91</status>
-                <midino>0x4D</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>loop_enabled</key>
-                <status>0x90</status>
-                <midino>0x50</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>loop_enabled</key>
-                <status>0x91</status>
-                <midino>0x50</midino>
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
