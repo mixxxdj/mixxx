@@ -83,8 +83,17 @@ endif()
 #
 set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy, fastbuild)")
 message(STATUS "Optimization level: ${OPTIMIZE}")
-if(NOT OPTIMIZE STREQUAL "off")
-  if(MSVC)
+
+if(MSVC)
+  # Microsoft Visual Studio Compiler
+  if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    # Target architecture is x64 -> x64 has alsways SSE and SSE2 instruction sets
+    message(STATUS "x64 Enabling SS2 CPU optimizations (>= Pentium 4)")
+    # Define gcc/clang style defines for SSE and SSE2 for compatibility
+    add_compile_definitions("__SSE__" "__SSE2__")
+  endif()
+
+  if(NOT OPTIMIZE STREQUAL "off")
     # Use the fastest floating point math library
     # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
     # http://msdn.microsoft.com/en-us/library/ms235601.aspx
@@ -96,10 +105,6 @@ if(NOT OPTIMIZE STREQUAL "off")
     # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
     add_compile_options(/Gy)
     add_link_options(/OPT:REF /OPT:ICF)
-
-    # Don't worry about aligning code on 4KB boundaries
-    # ALBERT: NOWIN98 is not supported in MSVC 2010.
-    #add_link_options(mixxx-lib PUBLIC "/OPT:NOWIN98")
 
     # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
     # In general, you should pick /O2 over /Ox
@@ -130,22 +135,39 @@ if(NOT OPTIMIZE STREQUAL "off")
     endif()
 
     if(OPTIMIZE STREQUAL "portable" OR OPTIMIZE STREQUAL "fastbuild")
-      message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
-      # SSE and SSE2 are core instructions on x64
-      # and consequently raise a warning message from compiler with this flag on x64.
       if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+        # Target architecture is x86 with SSE and SSE2
+        message(STATUS "x86 Enabling SS2 CPU optimizations (>= Pentium 4)")
+        # Define gcc/clang style defines for SSE and SSE2 for compatibility
+        add_compile_definitions("__SSE__" "__SSE2__")
+        # Set compiler option for SSE/SSE2
         add_compile_options(/arch:SSE2)
       endif()
-      add_compile_definitions("__SSE__" "__SSE2__")
     elseif(OPTIMIZE STREQUAL "native")
-      message("Enabling native optimizations for ${CMAKE_SYSTEM_PROCESSOR}")
+      message("Enabling optimizations for native system, specified by user")
+      if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
+        # Target architecture is x86 with SSE and SSE2
+        message(STATUS "x86 Enabling SS2 CPU optimizations (>= Pentium 4)")
+        # Define gcc/clang style defines for SSE and SSE2 for compatibility
+        add_compile_definitions("__SSE__" "__SSE2__")
+      endif()
+        # Define the target processor instruction and other compiler optimization flags here:
+        # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
+        # add_compile_options(/arch:AVX512)
+        message(FATAL_ERROR "User need to set the MSVC compiler flags for the native processor here!")
       add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
     elseif(OPTIMIZE STREQUAL "legacy")
-      message("Enabling pure i386 code")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+      message("Enabling pure x64 instruction set (without AVX etc.)")
+    else()
+      message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
+    endif()
     else()
       message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
     endif()
-  elseif(GNU_GCC OR LLVM_CLANG)
+  endif()
+elseif(GNU_GCC OR LLVM_CLANG)
+  if(NOT OPTIMIZE STREQUAL "off")
     # Common flags to all optimizations.
     # -ffast-math will prevent a performance penalty by denormals
     # (floating point values almost Zero are treated as Zero)
@@ -376,11 +398,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/controllerlearningeventfilter.cpp
   src/controllers/controllermanager.cpp
   src/controllers/controllermappingtablemodel.cpp
+  src/controllers/controllermappinginfo.cpp
+  src/controllers/controllermappinginfoenumerator.cpp
   src/controllers/controlleroutputmappingtablemodel.cpp
-  src/controllers/controllerpresetfilehandler.cpp
-  src/controllers/controllerpresetinfo.cpp
-  src/controllers/controllerpresetinfoenumerator.cpp
   src/controllers/controlpickermenu.cpp
+  src/controllers/legacycontrollermappingfilehandler.cpp
   src/controllers/delegates/controldelegate.cpp
   src/controllers/delegates/midibytedelegate.cpp
   src/controllers/delegates/midichanneldelegate.cpp
@@ -392,17 +414,19 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/dlgprefcontrollerdlg.ui
   src/controllers/dlgprefcontrollers.cpp
   src/controllers/dlgprefcontrollersdlg.ui
-  src/controllers/engine/controllerengine.cpp
-  src/controllers/engine/controllerenginejsproxy.cpp
-  src/controllers/engine/colormapper.cpp
-  src/controllers/engine/colormapperjsproxy.cpp
-  src/controllers/engine/scriptconnection.cpp
-  src/controllers/engine/scriptconnectionjsproxy.cpp
+  src/controllers/scripting/controllerscriptenginebase.cpp
+  src/controllers/scripting/controllerscriptmoduleengine.cpp
+  src/controllers/scripting/colormapper.cpp
+  src/controllers/scripting/colormapperjsproxy.cpp
+  src/controllers/scripting/legacy/controllerscriptenginelegacy.cpp
+  src/controllers/scripting/legacy/controllerscriptinterfacelegacy.cpp
+  src/controllers/scripting/legacy/scriptconnection.cpp
+  src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp
   src/controllers/keyboard/keyboardeventfilter.cpp
   src/controllers/learningutils.cpp
+  src/controllers/midi/legacymidicontrollermapping.cpp
+  src/controllers/midi/legacymidicontrollermappingfilehandler.cpp
   src/controllers/midi/midicontroller.cpp
-  src/controllers/midi/midicontrollerpreset.cpp
-  src/controllers/midi/midicontrollerpresetfilehandler.cpp
   src/controllers/midi/midienumerator.cpp
   src/controllers/midi/midimessage.cpp
   src/controllers/midi/midioutputhandler.cpp
@@ -555,6 +579,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dao/playlistdao.cpp
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
+  src/library/dao/trackschema.cpp
   src/library/dlganalysis.cpp
   src/library/dlganalysis.ui
   src/library/dlgcoverartfullsize.cpp
@@ -1130,15 +1155,11 @@ if (APPLE)
     )
   endif()
 else()
+  set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${MIXXX_INSTALL_BINDIR}")
+  if(MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_INSTALL_DEBUG_LIBRARIES true)
+  endif()
   include(InstallRequiredSystemLibraries)
-  install(
-    FILES
-        ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-    DESTINATION
-        "${MIXXX_INSTALL_BINDIR}"
-    COMPONENT
-        Libraries
-  )
 endif()
 
 if(WIN32)
@@ -1365,8 +1386,8 @@ add_executable(mixxx-test
   src/test/colorpalette_test.cpp
   src/test/compatibility_test.cpp
   src/test/configobject_test.cpp
-  src/test/controller_preset_validation_test.cpp
-  src/test/controllerengine_test.cpp
+  src/test/controller_mapping_validation_test.cpp
+  src/test/controllerscriptenginelegacy_test.cpp
   src/test/controlobjecttest.cpp
   src/test/coverartcache_test.cpp
   src/test/coverartutils_test.cpp
@@ -1494,7 +1515,8 @@ if(UNIX AND USE_SYMLINKS)
   )
 else()
   add_custom_target(mixxx-testdata
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/src/test"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
     COMMENT "Copying test data to build directory..."
   )
 endif()
@@ -1520,7 +1542,8 @@ if(UNIX AND USE_SYMLINKS)
   )
 else()
   add_custom_target(mixxx-res
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
+    COMMAND ${CMAKE_COMMAND} -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/res"
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Copying resources to build directory..."
   )
 endif()
@@ -2500,8 +2523,8 @@ if(HID)
     src/controllers/hid/hidcontroller.cpp
     src/controllers/hid/hiddevice.cpp
     src/controllers/hid/hidenumerator.cpp
-    src/controllers/hid/hidcontrollerpreset.cpp
-    src/controllers/hid/hidcontrollerpresetfilehandler.cpp
+    src/controllers/hid/legacyhidcontrollermapping.cpp
+    src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __HID__)
   if(HIDAPI_STATIC)
@@ -2547,8 +2570,8 @@ if(BULK)
   )
   if(NOT HID)
     target_sources(mixxx-lib PRIVATE
-      src/controllers/hid/hidcontrollerpreset.cpp
-      src/controllers/hid/hidcontrollerpresetfilehandler.cpp
+      src/controllers/hid/legacyhidcontrollermapping.cpp
+      src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
     )
   endif()
   target_compile_definitions(mixxx-lib PUBLIC __BULK__)

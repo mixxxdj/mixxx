@@ -1,10 +1,10 @@
 #include "waveform/renderers/glslwaveformrenderersignal.h"
-
-#include "moc_glslwaveformrenderersignal.cpp"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QGLFramebufferObject>
+#include <QGLShaderProgram>
 
+#include "moc_glslwaveformrenderersignal.cpp"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
