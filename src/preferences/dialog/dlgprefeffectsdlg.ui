@@ -20,7 +20,6 @@
    <string>Effects Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-
    <item>
     <widget class="QTabWidget" name="effectsTabs">
      <property name="sizePolicy">
@@ -32,7 +31,6 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-
      <widget class="QWidget" name="chainPresetsTab">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
@@ -43,186 +41,183 @@
       <attribute name="title">
        <string>Effect Chain Presets</string>
       </attribute>
-
-       <layout class="QGridLayout" name="chainPresetGridLayout">
-
-        <item row="0" column="0" colspan="2">
-         <widget class="QLabel" name="chainPresetsTabHeader">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Drag and drop to rearrange lists and move chains between lists.</string>
-          </property>
-         </widget>
-        </item>
-
-        <item row="1" column="0" colspan="2">
-         <widget class="QLabel" name="label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Create and edit chain presets in the effect units in the main window.</string>
-          </property>
-         </widget>
-        </item>
-
-        <item row="2" column="0">
-         <widget class="QLabel" name="chainPresetsLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="topMargin">
-            <number>6</number>
-          </property>
-          <property name="text">
-           <string>Effect Chain Presets</string>
-          </property>
-         </widget>
-        </item>
-
-        <item row="2" column="1">
-         <widget class="QLabel" name="quickEffectChainPresetsLabel">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="font">
-           <font>
-            <weight>75</weight>
-            <bold>true</bold>
-           </font>
-          </property>
-          <property name="topMargin">
-            <number>6</number>
-          </property>
-          <property name="text">
-           <string>QuickEffect Chain Presets</string>
-          </property>
-         </widget>
-        </item>
-
-        <item row="3" column="0">
-         <widget class="QListView" name="chainListView">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
-
-        <item row="3" column="1">
-         <widget class="QListView" name="quickEffectListView">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-         </widget>
-        </item>
-
-        <item row="4" column="0" colspan="2">
-         <layout class="QVBoxLayout" name="chainDetailsVBoxLayout">
-          <item>
-           <widget class="QLabel" name="effectsInChainHeader">
-            <property name="text">
-             <string>Effects in this chain preset:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="effect1Name">
-            <property name="text">
-             <string>effect 1 name</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="effect2Name">
-            <property name="text">
-             <string>effect 2 name</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="effect3Name">
-            <property name="text">
-             <string>effect 3 name</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="chainButtonsTopRow">
-            <item>
-             <widget class="QPushButton" name="chainPresetImportButton">
-              <property name="text">
-               <string>Import</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="chainPresetRenameButton">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Rename</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="chainButtonsBottomRow">
-            <item>
-             <widget class="QPushButton" name="chainPresetExportButton">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Export</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="chainPresetDeleteButton">
-              <property name="enabled">
-               <bool>false</bool>
-              </property>
-              <property name="text">
-               <string>Delete</string>
-              </property>
-             </widget>
-            </item>
-           </layout>
-          </item>
-         </layout>
-        </item>
-
-       </layout>
+      <layout class="QGridLayout" name="chainPresetGridLayout">
+       <item row="5" column="0" colspan="2">
+        <layout class="QVBoxLayout" name="chainDetailsVBoxLayout">
+         <item>
+          <widget class="QLabel" name="effectsInChainHeader">
+           <property name="text">
+            <string>Effects in this chain preset:</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="effect1Name">
+           <property name="text">
+            <string>effect 1 name</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="effect2Name">
+           <property name="text">
+            <string>effect 2 name</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="effect3Name">
+           <property name="text">
+            <string>effect 3 name</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="chainButtonsTopRow">
+           <item>
+            <widget class="QPushButton" name="chainPresetImportButton">
+             <property name="text">
+              <string>Import</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="chainPresetRenameButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Rename</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="chainButtonsBottomRow">
+           <item>
+            <widget class="QPushButton" name="chainPresetExportButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Export</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="chainPresetDeleteButton">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
+             <property name="text">
+              <string>Delete</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QLabel" name="chainPresetsTabHeader">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Drag and drop to rearrange lists and move chains between lists.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QListView" name="quickEffectListView">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QLabel" name="quickEffectChainPresetsLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>QuickEffect Chain Presets</string>
+         </property>
+         <property name="topMargin" stdset="0">
+          <number>6</number>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QListView" name="chainListView">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QLabel" name="chainCreationHintLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string>Create and edit chain presets in the effect units in the main window.</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="chainPresetsLabel">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Effect Chain Presets</string>
+         </property>
+         <property name="topMargin" stdset="0">
+          <number>6</number>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QLabel" name="presetListControllerLabel">
+         <property name="text">
+          <string>Presets from these lists may be loaded from controllers.</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
-
      <widget class="QWidget" name="visibleEffectsTab">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
@@ -236,7 +231,6 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <layout class="QGridLayout" name="effectsTablesGridLayout">
-
          <item row="0" column="0" colspan="2">
           <widget class="QLabel" name="effectsTablesHeaderLabel">
            <property name="text">
@@ -244,7 +238,6 @@
            </property>
           </widget>
          </item>
-
          <item row="1" column="0">
           <widget class="QLabel" name="visibleEffectsTableLabel">
            <property name="font">
@@ -253,15 +246,14 @@
              <bold>true</bold>
             </font>
            </property>
-           <property name="topMargin">
-            <number>6</number>
-           </property>
            <property name="text">
             <string>Visible Effects</string>
            </property>
+           <property name="topMargin" stdset="0">
+            <number>6</number>
+           </property>
           </widget>
          </item>
-
          <item row="1" column="1">
           <widget class="QLabel" name="hiddenEffectsTableLabel">
            <property name="font">
@@ -270,23 +262,20 @@
              <bold>true</bold>
             </font>
            </property>
-           <property name="topMargin">
-            <number>6</number>
-           </property>
            <property name="text">
             <string>Hidden Effects</string>
            </property>
+           <property name="topMargin" stdset="0">
+            <number>6</number>
+           </property>
           </widget>
          </item>
-
          <item row="2" column="0">
           <widget class="QTableView" name="visibleEffectsTableView"/>
          </item>
-
          <item row="2" column="1">
           <widget class="QTableView" name="hiddenEffectsTableView"/>
          </item>
-
          <item row="3" column="0" colspan="2">
           <widget class="QGroupBox" name="groupBox">
            <property name="sizePolicy">
@@ -462,7 +451,6 @@
            </layout>
           </widget>
          </item>
-
         </layout>
        </item>
       </layout>
