@@ -116,18 +116,21 @@ void EffectChainPresetManager::importPreset() {
                 new EffectChainPreset(doc.documentElement()));
         if (!pPreset->isEmpty() && !pPreset->name().isEmpty()) {
             if (m_effectChainPresets.contains(pPreset->name())) {
-                bool okay = false;
-                QString newName = QInputDialog::getText(nullptr,
-                        tr("Rename effect chain preset"),
-                        tr("An effect chain preset with the name") + QStringLiteral(" \"") +
-                                pPreset->name() + QStringLiteral("\" ") +
-                                tr("already exists. Choose a new name for the "
-                                   "imported effect chain preset:"),
-                        QLineEdit::Normal,
-                        QString(),
-                        &okay);
-                if (!okay) {
-                    continue;
+                QString newName = pPreset->name();
+                while (m_effectChainPresets.contains(newName)) {
+                    bool okay = false;
+                    newName = QInputDialog::getText(nullptr,
+                            tr("Rename effect chain preset"),
+                            tr("An effect chain preset with the name") + QStringLiteral(" \"") +
+                                    pPreset->name() + QStringLiteral("\" ") +
+                                    tr("already exists. Choose a new name for the "
+                                       "imported effect chain preset:"),
+                            QLineEdit::Normal,
+                            QString(),
+                            &okay);
+                    if (!okay) {
+                        break;
+                    }
                 }
                 pPreset->setName(newName);
             }
