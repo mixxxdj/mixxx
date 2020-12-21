@@ -72,7 +72,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     /// Update the play counter properties according to the corresponding
     /// aggregated properties obtained from the played history.
     bool updatePlayCounterFromPlayedHistory(
-            const QSet<TrackId>& trackIds) const;
+            const QSet<TrackId>& trackIds,
+            bool tracksChangedSignal = true) const;
 
   signals:
     // Forwarded from Track object

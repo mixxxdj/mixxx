@@ -392,8 +392,8 @@ void TrackDAO::addTracksPrepare() {
             "replaygain,"
             "replaygain_peak,"
             "wavesummaryhex,"
-            "timesplayed,"
-            "last_played_at,"
+            // timesplayed not written programatically (see comment)
+            // last_played_at not written programatically (see comment)
             "played,"
             "mixxx_deleted,"
             "header_parsed,"
@@ -439,8 +439,8 @@ void TrackDAO::addTracksPrepare() {
             ":replaygain,"
             ":replaygain_peak,"
             ":wavesummaryhex,"
-            ":timesplayed,"
-            ":last_played_at,"
+            // timesplayed not written programatically (see comment)
+            // last_played_at not written programatically (see comment)
             ":played,"
             ":mixxx_deleted,"
             ":header_parsed,"
@@ -553,8 +553,17 @@ void bindTrackLibraryValues(
             track.getMetadataSynchronized() ? 1 : 0);
 
     const PlayCounter& playCounter = track.getPlayCounter();
-    pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
-    pTrackLibraryQuery->bindValue(":last_played_at", playCounter.getLastPlayedAt());
+    // The columns timesplayed and last_played_at are both updated
+    // by updatePlayCounterFromPlayedHistory() depending on changes
+    // in the history playlists. Particularly the column last_played_at
+    // MUST NOT be updated programatically, otherwise we end up with
+    // a different textual date/time format that doesn't match that
+    // of PlaylistTracks.pl_datetime_added and sorting is broken!
+    // The value of PlaylistTracks.pl_datetime_added is generated
+    // internally by the SQLite function CURRENT_TIMESTAMP. This
+    // was a bad decision, apparently. SQLite does not have a
+    // separate storage class for DATETIME values. They are stored
+    // as text by default.
     pTrackLibraryQuery->bindValue(":played", playCounter.isPlayed() ? 1 : 0);
 
     const CoverInfoRelative& coverInfo = track.getCoverInfo();
@@ -1584,8 +1593,8 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
             "bpm=:bpm,"
             "replaygain=:replaygain,"
             "replaygain_peak=:replaygain_peak,"
-            "timesplayed=:timesplayed,"
-            "last_played_at=:last_played_at,"
+            // timesplayed not written programatically (see comment)
+            // last_played_at not written programatically (see comment)
             "played=:played,"
             "header_parsed=:header_parsed,"
             "channels=:channels,"
@@ -1624,6 +1633,11 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
         qWarning() << "updateTrack had no effect: trackId" << trackId << "invalid";
         return false;
     }
+
+    // The columns timesplayed and last_played_add are updated
+    // from history playlists instead of programmatically to
+    // prevent inconsistent date/time formats!
+    updatePlayCounterFromPlayedHistory(QSet<TrackId>{trackId}, false);
 
     //qDebug() << "Update track took : " << time.elapsed().formatMillisWithUnit() << "Now updating cues";
     //time.start();
@@ -2174,7 +2188,8 @@ TrackFile TrackDAO::relocateCachedTrack(
 }
 
 bool TrackDAO::updatePlayCounterFromPlayedHistory(
-        const QSet<TrackId>& trackIds) const {
+        const QSet<TrackId>& trackIds,
+        bool emitTracksChangedSignal) const {
     // Update both timesplay and last_played_at according to the
     // corresponding aggregated properties from the played history,
     // i.e. COUNT for the number of times a track has been played
@@ -2212,6 +2227,8 @@ bool TrackDAO::updatePlayCounterFromPlayedHistory(
     // TODO: DAOs should be passive and simply execute queries. They
     // should neither make assumptions about transaction boundaries
     // nor receive or emit any signals.
-    emit mixxx::thisAsNonConst(this)->tracksChanged(trackIds);
+    if (emitTracksChangedSignal) {
+        emit mixxx::thisAsNonConst(this)->tracksChanged(trackIds);
+    }
     return true;
 }
