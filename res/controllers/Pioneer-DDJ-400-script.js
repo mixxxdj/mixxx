@@ -490,6 +490,10 @@ PioneerDDJ400.setPadmode = function (channel, control, value) {
     }
 }
 
+//
+// Keyboard mode
+//
+
 PioneerDDJ400.keyboardMode = function(channel, _control, value, _status, group) {
     if (value > 0) {
         // clear current set hotcue point and refcount for keyboard mode
@@ -564,6 +568,10 @@ PioneerDDJ400.keyboardModePad = function(channel, control, value, _status, group
     }
 };
 
+//
+// Keyshift pads
+//
+
 PioneerDDJ400.keyshiftModePad = function(_channel, control, value, _status, group) {
     if (value === 0) {
         return; // ignore release
@@ -571,19 +579,9 @@ PioneerDDJ400.keyshiftModePad = function(_channel, control, value, _status, grou
     engine.setValue(group, "pitch", this.halftoneToPadMap[control & 0xf]);
 };
 
-PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _status, group) {
-    if (value === 0) {
-        return; // ignore release
-    }
-
-    var playing = engine.getValue(group, "play");
-    // when playing stop and return to start/cue point
-    if (playing > 0) {
-        engine.setValue(group, "cue_gotoandstop", 1);
-    } else { // load selected track
-        engine.setValue(group, "LoadSelectedTrack", 1);
-    }
-};
+//
+// Shift mode
+//
 
 PioneerDDJ400.shiftPressed = function(channel, _control, value) {
     this.shiftState[channel] = value;
@@ -797,7 +795,6 @@ PioneerDDJ400.samplerModePadPressed = function(_channel, _control, value, _statu
         engine.setValue(group, "LoadSelectedTrack", value);
     }
 };
-
 
 PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _status, group) {
     if (engine.getValue(group, "play")) {
