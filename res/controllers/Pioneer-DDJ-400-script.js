@@ -902,4 +902,7 @@ PioneerDDJ400.shutdown = function() {
     // turn off reloop lights
     PioneerDDJ400.setReloopLight(0x90, 0x00);
     PioneerDDJ400.setReloopLight(0x91, 0x00);
+
+    // stop any flashing lights
+    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, false);
 };
