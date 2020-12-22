@@ -206,9 +206,13 @@ PioneerDDJ400.init = function() {
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
 
     // enable soft takeover for rate controls
+    // enable soft takeover for rate controls and FX level/depth
     engine.softTakeover("[Channel1]", "rate", true);
     engine.softTakeover("[Channel2]", "rate", true);
-
+    engine.softTakeover("[EffectRack1_EffectUnit1_Effect1]", "meta", true);
+    engine.softTakeover("[EffectRack1_EffectUnit1_Effect2]", "meta", true);
+    engine.softTakeover("[EffectRack1_EffectUnit1_Effect3]", "meta", true);
+    engine.softTakeover("[EffectRack1_EffectUnit1]", "mix", true);
 
     // Sampler callbacks
     for (var i = 1; i <= 16; ++i) {
@@ -658,8 +662,10 @@ PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
     var effectOn = engine.getValue(PioneerDDJ400.selectedFxGroup, "enabled");
 
     if (effectOn) {
+        engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "mix");
         engine.setValue(PioneerDDJ400.selectedFxGroup, "meta", newVal);
     } else {
+        engine.softTakeoverIgnoreNextValue(PioneerDDJ400.selectedFxGroup, "meta");
         engine.setValue("[EffectRack1_EffectUnit1]", "mix", newVal);
     }
 };
