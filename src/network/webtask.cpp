@@ -287,7 +287,6 @@ void WebTask::slotNetworkReplyFinished() {
     VERIFY_OR_DEBUG_ASSERT(finishedNetworkReply) {
         return;
     }
-    finishedNetworkReply->deleteLater();
     if (kLogger.debugEnabled()) {
         if (finishedNetworkReply->url() == finishedNetworkReply->request().url()) {
             kLogger.debug()
@@ -310,12 +309,20 @@ void WebTask::slotNetworkReplyFinished() {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
         kLogger.debug()
                 << this
-                << "Ignoring obsolete network reply";
+                << "Discarding obsolete network reply";
+        finishedNetworkReply->deleteLater();
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(m_pendingNetworkReply == finishedNetworkReply) {
+        kLogger.debug()
+                << this
+                << "Discarding unexpected network reply";
+        finishedNetworkReply->deleteLater();
         return;
     }
+    // As a side-effect QObject::deleteLater() might reset
+    // QPointer references like m_pendingNetworkReply!
+    finishedNetworkReply->deleteLater();
     m_pendingNetworkReply = nullptr;
 
     VERIFY_OR_DEBUG_ASSERT(m_state == State::Pending) {
