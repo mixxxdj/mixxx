@@ -2,7 +2,7 @@
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="2.2">
     <info>
         <name>Pioneer DDJ-400</name>
-        <author>Warker/nschloe DEV</author>
+        <author>Warker/nschloe/dj3730/jusko</author>
         <description>Midi Mapping for the Pioneer DDJ-400</description>
         <wiki>https://www.mixxx.org/wiki/doku.php/pioneer_ddj-400</wiki>
         <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12113</forums>
@@ -656,11 +656,9 @@
                     <Script-Binding/>
                 </options>
             </control>
-
             <!-- DECK Section END -->
 
             <!-- MIXER Section START -->
-
             <control>
                 <description>CROSSFADER - slider</description>
                 <group>[Master]</group>
@@ -720,6 +718,27 @@
                 <midino>0x13</midino>
                 <options>
                     <fourteen-bit-msb/>
+                </options>
+            </control>
+
+            <control>
+                <description>Shift + Left CUE - Toggle quantize on/off (Deck1)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.toggleQuantize</key>
+                <status>0x90</status>
+                <midino>0x68</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>Shift + Right CUE - Toggle quantize on/off (Deck2)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.toggleQuantize</key>
+                <status>0x91</status>
+                <midino>0x68</midino>
+                <options>
+                    <Script-Binding/>
                 </options>
             </control>
 

@@ -477,6 +477,12 @@ PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, gro
     engine.setValue(group, "rateRange", this.tempoRanges[idx]);
 };
 
+PioneerDDJ400.toggleQuantize = function(_channel, _control, value, _status, group) {
+    if (value) {
+      script.toggleControl(group, 'quantize');
+    }
+};
+
 // Stores the performance pad mode each time it changes
 PioneerDDJ400.setPadmode = function (channel, control, value) {
     if (value === 0x7F) {
@@ -494,7 +500,6 @@ PioneerDDJ400.keyboardMode = function(channel, _control, value, _status, group) 
         this.keyboardModeEnabledOutput(channel, group);
     }
 };
-
 
 PioneerDDJ400.keyboardModeEnabledOutput = function(channel, group) {
     var status = channel === 0 ? 0x97 : 0x99;
@@ -518,7 +523,6 @@ PioneerDDJ400.keyboardModeEnabledOutput = function(channel, group) {
     midi.sendShortMsg(status+1, 0x46, 0x7F);
     midi.sendShortMsg(status+1, 0x47, 0x7F);
 };
-
 
 PioneerDDJ400.keyboardModePad = function(channel, control, value, _status, group) {
     channel = (channel & 0xf) < 10 ? 0 : 1;
@@ -580,7 +584,6 @@ PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _
         engine.setValue(group, "LoadSelectedTrack", 1);
     }
 };
-
 
 PioneerDDJ400.shiftPressed = function(channel, _control, value) {
     this.shiftState[channel] = value;
