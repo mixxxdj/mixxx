@@ -1319,17 +1319,19 @@ if(UNIX AND NOT APPLE)
       FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
       DESTINATION
-        "lib/udev/rules.d"
+        "${MIXXX_INSTALL_DATADIR}/udev/rules.d"
     )
     message(WARNING
       " The udev rule file for USB HID and Bulk controller permissions will\n"
-      " be installed to: ${CMAKE_INSTALL_PREFIX}/lib/udev/rules.d.\n"
+      " be installed to:\n"
+      "     ${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}/udev/rules.d.\n"
       " If you are installing Mixxx from source for your own use, copy\n"
       " mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n"
       " udevadm control --reload-rules && udevadm trigger\n"
       " as root to load the rules.\n"
       " If you are building a package for a distribution, the correct\n"
-      " directory for system rules is /lib/udev/rules.d with an appropriate\n"
+      " directory for system rules is either /lib/udev/rules.d (e.g. Debian, "
+      " Fedora) or /usr/lib/udev/rules.d (e.g. Arch Linux) with an appropriate\n"
       " priority prefix. Adjust your package script accordingly and set\n"
       " -DINSTALL_USER_UDEV_RULES=OFF")
   endif()
