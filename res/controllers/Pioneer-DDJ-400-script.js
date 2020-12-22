@@ -780,47 +780,39 @@ PioneerDDJ400.beatjumpShiftDown = function(_channel, control, value, _status, gr
 // SAMPLERS
 //
 
-// blink pad when sample playback starts
 PioneerDDJ400.samplerPlayOutputCallbackFunction = function(value, group, _control) {
     if (value === 1) {
-        // for some reason, using script.samplerRegEx here results in an error under Linux
         var curPad = group.match(/^\[Sampler(\d+)\]$/)[1];
-        startSamplerBlink((0x97 + (curPad > 8 ? 2 : 0)), (0x30 + ((curPad > 8 ? curPad-8 : curPad)-1)), group);
+        PioneerDDJ400.startSamplerBlink((0x97 + (curPad > 8 ? 2 : 0)), (0x30 + ((curPad > 8 ? curPad-8 : curPad)-1)), group);
     }
 };
 
-PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(_channel, control, _value, status, group) {
     var isLoaded = engine.getValue(group, "track_loaded") === 1;
 
     if (!isLoaded) {
-        return;
+PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(_channel, _control, value, _status, group) {
+    if (engine.getValue(group, "track_loaded")) {
+        engine.setValue(group, "cue_gotoandplay", value);
     }
-    engine.setValue(group, "cue_gotoandplay", 1);
+    else {
+        engine.setValue(group, "LoadSelectedTrack", value);
+    }
 });
 
 
 PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _status, group) {
-    if (value === 0) {
-        return; // ignore release
-    }
-    var playing = engine.getValue(group, 'play');
-    // when playing stop and return to start/cue point
-    if (playing > 0) {
-        engine.setValue(group, 'cue_gotoandstop', 1);
-    } else { // load selected track
-        // engine.setValue(group, 'LoadSelectedTrack', 1);
+    if (engine.getValue(group, "play")) {
+        engine.setValue(group, "cue_gotoandstop", value);
+    } else if (engine.getValue(group, "track_loaded")) {
+        engine.setValue(group, "eject", value);
     }
 };
 
-var TimersPioneerDDJ400 = {};
-
-function startSamplerBlink(channel, control, group) {
+PioneerDDJ400.startSamplerBlink = function (channel, control, group) {
     var val = 0x7f;
 
-    // print('channel ' + channel + ' +1= ' + (channel+1));
-
-    stopSamplerBlink(channel, control);
-    TimersPioneerDDJ400[channel][control] = engine.beginTimer(250, function() {
+    PioneerDDJ400.stopSamplerBlink(channel, control);
+    PioneerDDJ400.timers[channel][control] = engine.beginTimer(250, function() {
         val = 0x7f - val;
 
         // blink the appropriate pad
@@ -832,23 +824,23 @@ function startSamplerBlink(channel, control, group) {
 
         if (!isPlaying) {
             // kill timer
-            stopSamplerBlink(channel, control);
+            PioneerDDJ400.stopSamplerBlink(channel, control);
             // set the pad LED to ON
             midi.sendShortMsg(channel, control, 0x7f);
             // set the pad LED to ON while SHIFT is pressed
             midi.sendShortMsg((channel+1), control, 0x7f);
         }
     });
-}
+};
 
-function stopSamplerBlink(channel, control) {
-    TimersPioneerDDJ400[channel] = TimersPioneerDDJ400[channel] || {};
+PioneerDDJ400.stopSamplerBlink = function(channel, control) {
+    PioneerDDJ400.timers[channel] = PioneerDDJ400.timers[channel] || {};
 
-    if (TimersPioneerDDJ400[channel][control] !== undefined) {
-        engine.stopTimer(TimersPioneerDDJ400[channel][control]);
-        TimersPioneerDDJ400[channel][control] = undefined;
+    if (PioneerDDJ400.timers[channel][control] !== undefined) {
+        engine.stopTimer(PioneerDDJ400.timers[channel][control]);
+        PioneerDDJ400.timers[channel][control] = undefined;
     }
-}
+};
 
 PioneerDDJ400.shutdown = function() {
     // reset vumeter
