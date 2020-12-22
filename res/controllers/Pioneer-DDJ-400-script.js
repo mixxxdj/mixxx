@@ -33,12 +33,12 @@
 //                 * Phrase jump forward & back (Shift + </> CUE/LOOP CALL arrows)
 //
 //             Experimental (not performance ready):
-//                 * PAD FX: Assigned Effect unit 1 & 2
-//                           Pad 1, 2 & 3 toggle effect slot
-//                           Shift + pads 5,6 & 7 select previous effect
-//                           Pads 4 & 8 do nothing.
-//                           - Deck 1, currently clobbers the BeatFX rack
-//                           - PAD FX2, mappings are invalid
+//                 * PAD FX1: Assigned Effect unit 1 & 2
+//                            Pad 1, 2 & 3 toggle effect slot
+//                            Pads 5,6 & 7 select next effect.
+//                            Shift + pads 5,6 & 7 select previous effect
+//                            Pads 4 & 8 do nothing.
+//                            Deck 1, currently clobbers the BeatFX rack
 //
 //                 * Keyboard Mode (check pitch value)
 //                   - Major/minor/chromatic scales?

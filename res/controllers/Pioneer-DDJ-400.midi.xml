@@ -1040,7 +1040,7 @@
             <!-- BEAT FX SECTION START -->
 
             <control>
-                <description>BEAT LEFT - press - select the FX Slot to the left</description>
+                <description>BEAT LEFT - press - select effect unit 1</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxLeftPressed</key>
                 <status>0x94</status>
@@ -1049,20 +1049,19 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <!--
-      <control>
-                <description>BEAT LEFT +SHIFT - press - BPM auto mode for FX on</description>
+            <control>
+                <description>BEAT LEFT + shift - select previous effect for the current unit</description>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key></key>
+                <key>PioneerDDJ400.beatFxSelectPreviousEffect</key>
                 <status>0x94</status>
                 <midino>0x66</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
-            -->
+
             <control>
-                <description>BEAT RIGHT - press - select the FX Slot to the right</description>
+                <description>BEAT RIGHT - press - select effect unit 2</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxRightPressed</key>
                 <status>0x94</status>
@@ -1071,35 +1070,23 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <!--
-      <control>
-                <description>BEAT RIGHT +SHIFT - press - BPM TAP mode for FX on</description>
+            <control>
+                <description>BEAT RIGHT + shift - select next effect for the current unit</description>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key></key>
+                <key>PioneerDDJ400.beatFxSelectNextEffect</key>
                 <status>0x94</status>
                 <midino>0x6B</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-      -->
-
-            <control>
-                <description>BEAT FX SELECT - press - next FX in the selected Slot</description>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJ400.beatFxSelectPressed</key>
-                <status>0x94</status>
-                <midino>0x63</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
+
             <control>
-                <description>BEAT FX SELECT +SHIFT - press - prev FX in the selected Slot</description>
+              <description>BEAT FX SELECT - press once - select effect unit 3 - press again - clear focus back to wet/dry mix </description>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJ400.beatFxSelectShiftPressed</key>
+                <key>PioneerDDJ400.beatFxSelectPressed</key>
                 <status>0x94</status>
-                <midino>0x64</midino>
+                <midino>0x63</midino>
                 <options>
                     <Script-Binding/>
                 </options>
@@ -2740,7 +2727,6 @@
             <!-- KEYBOARD MODE END -->
 
             <!-- PAD FX 1 MODE START -->
-
             <control>
                 <description>PAD 1 (DECK1) PAD FX 1 MODE - press - Effect</description>
                 <group>[EffectRack1_EffectUnit1_Effect1]</group>
@@ -2801,26 +2787,7 @@
                     <Normal/>
                 </options>
             </control>
-            <control>
-                <description>PAD 4 (DECK1) PAD FX 1 MODE - press - Effect</description>
-                <group>[EffectRack1_EffectUnit1_Effect4]</group>
-                <key>enabled</key>
-                <status>0x97</status>
-                <midino>0x13</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 4 (DECK2) PAD FX 1 MODE - press - Effect</description>
-                <group>[EffectRack1_EffectUnit2_Effect4]</group>
-                <key>enabled</key>
-                <status>0x99</status>
-                <midino>0x13</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
+
             <control>
                 <description>PAD 5 (DECK1) PAD FX 1 MODE - press - Effect</description>
                 <group>[EffectRack1_EffectUnit1_Effect5]</group>
@@ -2877,33 +2844,12 @@
                 <key>PioneerDDJ400.padFxBelowPressed</key>
                 <status>0x99</status>
                 <midino>0x16</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 8 (DECK1) PAD FX 1 MODE - press - Effect</description>
-                <group>[EffectRack1_EffectUnit1_Effect8]</group>
-                <key>PioneerDDJ400.padFxBelowPressed</key>
-                <status>0x97</status>
-                <midino>0x17</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 8 (DECK2) PAD FX 1 MODE - press - Effect</description>
-                <group>[EffectRack1_EffectUnit2_Effect8]</group>
-                <key>PioneerDDJ400.padFxBelowPressed</key>
-                <status>0x99</status>
-                <midino>0x17</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
 
             <!-- Shift -->
-
             <control>
                 <description>PAD 5 (DECK1) PAD FX 1 MODE - press - Effect</description>
                 <group>[EffectRack1_EffectUnit1_Effect5]</group>
@@ -2964,194 +2910,9 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <control>
-                <description>PAD 8 (DECK1) PAD FX 1 MODE - press - Effect</description>
-                <group>[EffectRack1_EffectUnit1_Effect8]</group>
-                <key>PioneerDDJ400.padFxShiftBelowPressed</key>
-                <status>0x98</status>
-                <midino>0x17</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 8 (DECK2) PAD FX 1 MODE - press - Effect</description>
-                <group>[EffectRack1_EffectUnit2_Effect8]</group>
-                <key>PioneerDDJ400.padFxShiftBelowPressed</key>
-                <status>0x9A</status>
-                <midino>0x17</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-
             <!-- PAD FX 1 MODE END -->
 
-            <!-- PAD FX 2 MODE START -->
-            <control>
-                <description>PAD 1 (DECK1) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit1_Effect1]</group>
-                <key>enabled</key>
-                <status>0x97</status>
-                <midino>0x50</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 1 (DECK2) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit2_Effect1]</group>
-                <key>enabled</key>
-                <status>0x99</status>
-                <midino>0x50</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 2 (DECK1) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit1_Effect2]</group>
-                <key>enabled</key>
-                <status>0x97</status>
-                <midino>0x51</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 2 (DECK2) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit2_Effect2]</group>
-                <key>enabled</key>
-                <status>0x99</status>
-                <midino>0x51</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 3 (DECK1) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit1_Effect3]</group>
-                <key>enabled</key>
-                <status>0x97</status>
-                <midino>0x52</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 3 (DECK2) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit2_Effect3]</group>
-                <key>enabled</key>
-                <status>0x99</status>
-                <midino>0x52</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 4 (DECK1) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit1_Effect4]</group>
-                <key>enabled</key>
-                <status>0x97</status>
-                <midino>0x53</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 4 (DECK2) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit2_Effect4]</group>
-                <key>enabled</key>
-                <status>0x99</status>
-                <midino>0x53</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 5 (DECK1) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit1_Effect5]</group>
-                <key>enabled</key>
-                <status>0x97</status>
-                <midino>0x54</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 5 (DECK2) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit2_Effect5]</group>
-                <key>enabled</key>
-                <status>0x99</status>
-                <midino>0x54</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 6 (DECK1) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit1_Effect6]</group>
-                <key>enabled</key>
-                <status>0x97</status>
-                <midino>0x55</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 6 (DECK2) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit2_Effect6]</group>
-                <key>enabled</key>
-                <status>0x99</status>
-                <midino>0x55</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 7 (DECK1) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit1_Effect7]</group>
-                <key>enabled</key>
-                <status>0x97</status>
-                <midino>0x56</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 7 (DECK2) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit2_Effect7]</group>
-                <key>enabled</key>
-                <status>0x99</status>
-                <midino>0x56</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 8 (DECK1) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit1_Effect8]</group>
-                <key>enabled</key>
-                <status>0x97</status>
-                <midino>0x57</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <control>
-                <description>PAD 8 (DECK2) PAD FX 2 MODE - press - Effect</description>
-                <group>[EffectRack2_EffectUnit2_Effect8]</group>
-                <key>enabled</key>
-                <status>0x99</status>
-                <midino>0x57</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-            <!-- PAD FX 2 MODE END -->
-
             <!-- KEY SHIFT MODE START -->
-
             <control>
                 <description>PAD 1 (DECK1) KEYSHIFT MODE - press - permanent halftone +4</description>
                 <group>[Channel1]</group>
@@ -4579,266 +4340,6 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
-
-            <!-- PADFX 1 Mode Pads -->
-            <!--output>
-                <group>[EffectRack1_EffectUnit1_Effect1]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x10</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1_Effect2]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x11</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1_Effect3]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x12</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1_Effect4]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x13</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1_Effect5]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x14</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1_Effect6]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x15</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1_Effect7]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x16</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit1_Effect8]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x17</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect1]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x10</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect2]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x11</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect3]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x12</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect4]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x13</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect5]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x14</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect6]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x15</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect7]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x16</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack1_EffectUnit2_Effect8]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x17</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output-->
-
-            <!-- PADFX 2 Mode Pads -->
-            <!--output>
-                <group>[EffectRack2_EffectUnit1_Effect1]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x50</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit1_Effect2]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x51</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit1_Effect3]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x52</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit1_Effect4]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x53</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit1_Effect5]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x54</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit1_Effect6]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x55</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit1_Effect7]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x56</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit1_Effect8]</group>
-                <key>loadaed</key>
-                <status>0x97</status>
-                <midino>0x57</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit2_Effect1]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x50</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit2_Effect2]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x51</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit2_Effect3]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x52</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit2_Effect4]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x53</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit2_Effect5]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x54</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit2_Effect6]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x55</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit2_Effect7]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x56</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[EffectRack2_EffectUnit2_Effect8]</group>
-                <key>loadaed</key>
-                <status>0x99</status>
-                <midino>0x57</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output-->
 
             <!-- Keyshift Mode Pads -->
             <output>
