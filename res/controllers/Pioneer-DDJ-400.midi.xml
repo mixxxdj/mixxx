@@ -553,11 +553,9 @@
             </control>
 
             <control>
-                <description>CUE/LOOP CALL LEFT (DECK1) - press - (loop off) Call stored cue/loop, (loop on) Loop cutter
-                    *2 (half)
-                </description>
+                <description>CUE/LOOP CALL LEFT (DECK1) - press - half active loop</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.cueLoopCallLeft</key> <!-- TODO: cue_gotoandplay or loop_in_goto -->
+                <key>PioneerDDJ400.cueLoopCallLeft</key>
                 <status>0x90</status>
                 <midino>0x51</midino>
                 <options>
@@ -578,9 +576,7 @@
             -->
 
             <control>
-                <description>CUE/LOOP CALL LEFT (DECK2) - press - (loop off) Call stored cue/loop, (loop on) Loop cutter
-                    *2 (half)
-                </description>
+                <description>CUE/LOOP CALL LEFT (DECK2) - press - half active loop</description>
                 <group>[Channel2]</group>
                 <key>PioneerDDJ400.cueLoopCallLeft</key>
                 <status>0x91</status>
@@ -603,9 +599,7 @@
             -->
 
             <control>
-                <description>CUE/LOOP CALL RIGHT (DECK1) - press - (loop off) Call stored cue/loop, (loop on) Loop
-                    double
-                </description>
+                <description>CUE/LOOP CALL LEFT (DECK1) - press - double active loop</description>
                 <group>[Channel1]</group>
                 <key>PioneerDDJ400.cueLoopCallRight</key>
                 <status>0x90</status>
@@ -628,9 +622,7 @@
             -->
 
             <control>
-                <description>CUE/LOOP CALL RIGHT (DECK2) - press - (loop off) Call stored cue/loop, (loop on) Loop
-                    double
-                </description>
+                <description>CUE/LOOP CALL LEFT (DECK2) - press - double active loop</description>
                 <group>[Channel2]</group>
                 <key>PioneerDDJ400.cueLoopCallRight</key>
                 <status>0x91</status>
@@ -1056,7 +1048,7 @@
             <!-- BEAT FX SECTION START -->
 
             <control>
-                <description>BEAT LEFT - press - select effect unit 1</description>
+                <description>BEAT LEFT - press - select the FX Slot to the left</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxLeftPressed</key>
                 <status>0x94</status>
@@ -1065,19 +1057,20 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <control>
-                <description>BEAT LEFT + shift - select previous effect for the current unit</description>
+            <!--
+      <control>
+                <description>BEAT LEFT +SHIFT - press - BPM auto mode for FX on</description>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJ400.beatFxSelectPreviousEffect</key>
+                <key></key>
                 <status>0x94</status>
                 <midino>0x66</midino>
                 <options>
-                    <Script-Binding/>
+                    <Normal/>
                 </options>
             </control>
-
+            -->
             <control>
-                <description>BEAT RIGHT - press - select effect unit 2</description>
+                <description>BEAT RIGHT - press - select the FX Slot to the right</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxRightPressed</key>
                 <status>0x94</status>
@@ -1086,23 +1079,35 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <control>
-                <description>BEAT RIGHT + shift - select next effect for the current unit</description>
+            <!--
+      <control>
+                <description>BEAT RIGHT +SHIFT - press - BPM TAP mode for FX on</description>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJ400.beatFxSelectNextEffect</key>
+                <key></key>
                 <status>0x94</status>
                 <midino>0x6B</midino>
                 <options>
-                    <Script-Binding/>
+                    <Normal/>
                 </options>
             </control>
+      -->
 
             <control>
-              <description>BEAT FX SELECT - press once - select effect unit 3 - press again - clear focus back to wet/dry mix </description>
+                <description>BEAT FX SELECT - press - next FX in the selected Slot</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxSelectPressed</key>
                 <status>0x94</status>
                 <midino>0x63</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>BEAT FX SELECT +SHIFT - press - prev FX in the selected Slot</description>
+                <group>[EffectRack1_EffectUnit1]</group>
+                <key>PioneerDDJ400.beatFxSelectShiftPressed</key>
+                <status>0x94</status>
+                <midino>0x64</midino>
                 <options>
                     <Script-Binding/>
                 </options>

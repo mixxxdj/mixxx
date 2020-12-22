@@ -31,8 +31,10 @@
 //
 //             Not implemented:
 //                 * Channel & Crossfader Start
+//             Not implemented (after discussion and trial attempts):
 //                 * Loop Section:
 //                   * -4BEAT auto loop
+//                   * CUE/LOOP CALL - memory & delete (complex and not useful. Hot cues are sufficient)
 //
 var PioneerDDJ400 = {};
 
@@ -440,77 +442,15 @@ PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, gro
     engine.setValue(group, "rateRange", this.tempoRanges[idx]);
 };
 
-
-var sortAsc = function(a, b) {
-    // returns 1 if a > b, -1 if a < b, and 0 otherwise
-    return (a > b) ? 1 : (b > a ? -1 : 0);
-};
-
-PioneerDDJ400.initCuePointsAndLoops = function(group) {
-    // create a list of positions in the track which can be selected
-    var points = [];
-
-    for (var padNum = 1; padNum <= 8; padNum++) {
-        points.push(engine.getValue(group, "hotcue_"+padNum+"_position"));
-    }
-    points.push(engine.getValue(group, "cue_point"));
-    points.push(engine.getValue(group, "loop_start_position"));
-    points.push(engine.getValue(group, "loop_end_position"));
-    points.sort(sortAsc); // sort asc
-    return points;
-};
-
 PioneerDDJ400.cueLoopCallLeft = function(_channel, _control, value, _status, group) {
-    if (value === 0) {
-        // ignore release
-        return;
-    }
-
-    var loopEnabled = engine.getValue(group, "loop_enabled");
-    if (loopEnabled) {
-        // loop halve
+    if (value && engine.getValue(group, "loop_enabled")) {
         engine.setValue(group, "loop_scale", 0.5);
-    } else {
-        var currentPosition = engine.getValue(group, "playposition") - this.pointJumpSpace;
-        var trackSamples = engine.getValue(group, "track_samples");
-        var points = this.initCuePointsAndLoops(group);
-        var newPosition = currentPosition;
-
-        for (var i = 1; i <= points.length; i++) {
-            if (i === points.length || points[i] >= currentPosition * trackSamples) {
-                newPosition = points[i-1] / trackSamples;
-                break;
-            }
-        }
-        //engine.setValue(group, 'loop_in_goto', 1);
-        engine.setValue(group, "playposition", newPosition);
     }
 };
 
 PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, group) {
-    if (value === 0) {
-        return; // ignore release
-    }
-
-    var loopEnabled = engine.getValue(group, "loop_enabled");
-    if (loopEnabled) {
-        // loop double
+    if (value && engine.getValue(group, "loop_enabled")) {
         engine.setValue(group, "loop_scale", 2.0);
-    } else {
-        // jump through the cue points
-        var currentPosition = engine.getValue(group, "playposition");
-        var trackSamples = engine.getValue(group, "track_samples");
-        var points = this.initCuePointsAndLoops(group);
-
-        var newPosition = currentPosition;
-
-        for (var i = 0; i < points.length; i++) {
-            if (points[i] > currentPosition * trackSamples) {
-                newPosition = points[i] / trackSamples;
-                break;
-            }
-        }
-        engine.setValue(group, "playposition", newPosition);
     }
 };
 
