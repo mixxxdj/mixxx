@@ -673,8 +673,12 @@ PioneerDDJ400.beatFxSelectPressed = ignoreRelease(function() {
     }
 });
 
-PioneerDDJ400.beatFxSelectShiftPressed = function(_channel, _control, _value) {
-    //engine.setValue(PioneerDDJ400.selectedFxGroup, "prev_effect", value);
+PioneerDDJ400.beatFxSelectPreviousEffect = function(_channel, _control, value) {
+    engine.setValue(PioneerDDJ400.selectedFxGroup, "prev_effect", value);
+};
+
+PioneerDDJ400.beatFxSelectNextEffect = function(_channel, _control, value) {
+    engine.setValue(PioneerDDJ400.selectedFxGroup, "next_effect", value);
 };
 
 PioneerDDJ400.beatFxLeftPressed = ignoreRelease(function() {

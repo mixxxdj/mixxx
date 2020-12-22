@@ -1056,7 +1056,7 @@
             <!-- BEAT FX SECTION START -->
 
             <control>
-                <description>BEAT LEFT - press - select the FX Slot to the left</description>
+                <description>BEAT LEFT - press - select effect unit 1</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxLeftPressed</key>
                 <status>0x94</status>
@@ -1065,20 +1065,19 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <!--
-      <control>
-                <description>BEAT LEFT +SHIFT - press - BPM auto mode for FX on</description>
+            <control>
+                <description>BEAT LEFT + shift - select previous effect for the current unit</description>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key></key>
+                <key>PioneerDDJ400.beatFxSelectPreviousEffect</key>
                 <status>0x94</status>
                 <midino>0x66</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
-            -->
+
             <control>
-                <description>BEAT RIGHT - press - select the FX Slot to the right</description>
+                <description>BEAT RIGHT - press - select effect unit 2</description>
                 <group>[EffectRack1_EffectUnit1]</group>
                 <key>PioneerDDJ400.beatFxRightPressed</key>
                 <status>0x94</status>
@@ -1087,35 +1086,23 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <!--
-      <control>
-                <description>BEAT RIGHT +SHIFT - press - BPM TAP mode for FX on</description>
+            <control>
+                <description>BEAT RIGHT + shift - select next effect for the current unit</description>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key></key>
+                <key>PioneerDDJ400.beatFxSelectNextEffect</key>
                 <status>0x94</status>
                 <midino>0x6B</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control>
-      -->
-
-            <control>
-                <description>BEAT FX SELECT - press - next FX in the selected Slot</description>
-                <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJ400.beatFxSelectPressed</key>
-                <status>0x94</status>
-                <midino>0x63</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
+
             <control>
-                <description>BEAT FX SELECT +SHIFT - press - prev FX in the selected Slot</description>
+              <description>BEAT FX SELECT - press once - select effect unit 3 - press again - clear focus back to wet/dry mix </description>
                 <group>[EffectRack1_EffectUnit1]</group>
-                <key>PioneerDDJ400.beatFxSelectShiftPressed</key>
+                <key>PioneerDDJ400.beatFxSelectPressed</key>
                 <status>0x94</status>
-                <midino>0x64</midino>
+                <midino>0x63</midino>
                 <options>
                     <Script-Binding/>
                 </options>
