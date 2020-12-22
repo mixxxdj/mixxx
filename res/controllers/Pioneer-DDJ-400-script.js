@@ -202,16 +202,6 @@ PioneerDDJ400.hotcueLoopPoints = {
 
 PioneerDDJ400.samplerCallbacks = [];
 
-// Wrapper to easily ignore the function when the button is released.
-var ignoreRelease = function(fn) {
-    return function(channel, control, value, status, group) {
-        if (value === 0) { // This means the button is released.
-            return;
-        }
-        return fn(channel, control, value, status, group);
-    };
-};
-
 PioneerDDJ400.init = function() {
     // init controller
 
@@ -644,14 +634,16 @@ PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
     }
 };
 
-PioneerDDJ400.beatFxSelectPressed = ignoreRelease(function() {
+PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value) {
+    if (value === 0) { return; }
+
     // focus Effect Slot 3 in Effect Unit 1, or clear focus if it is currently focused
     if (PioneerDDJ400.selectedFxSlot === 3) {
         PioneerDDJ400.selectedFxSlot = 0;
     } else {
         PioneerDDJ400.selectedFxSlot = 3;
     }
-});
+};
 
 PioneerDDJ400.beatFxSelectPreviousEffect = function(_channel, _control, value) {
     engine.setValue(PioneerDDJ400.selectedFxGroup, "prev_effect", value);
@@ -661,25 +653,31 @@ PioneerDDJ400.beatFxSelectNextEffect = function(_channel, _control, value) {
     engine.setValue(PioneerDDJ400.selectedFxGroup, "next_effect", value);
 };
 
-PioneerDDJ400.beatFxLeftPressed = ignoreRelease(function() {
+PioneerDDJ400.beatFxLeftPressed = function(_channel, _control, value) {
+    if (value === 0) { return; }
+
     // focus Effect Slot 1 in Effect Unit 1, or clear focus if it is currently focused
     if (PioneerDDJ400.selectedFxSlot === 1) {
         PioneerDDJ400.selectedFxSlot = 0;
     } else {
         PioneerDDJ400.selectedFxSlot = 1;
     }
-});
+};
 
-PioneerDDJ400.beatFxRightPressed = ignoreRelease(function() {
+PioneerDDJ400.beatFxRightPressed = function(_channel, _control, value) {
+    if (value === 0) { return; }
+
     // focus Effect Slot 2 in Effect Unit 1, or clear focus if it is currently focused
     if (PioneerDDJ400.selectedFxSlot === 2) {
         PioneerDDJ400.selectedFxSlot = 0;
     } else {
         PioneerDDJ400.selectedFxSlot = 2;
     }
-});
+};
 
-PioneerDDJ400.beatFxOnOffPressed = ignoreRelease(function() {
+PioneerDDJ400.beatFxOnOffPressed = function(_channel, _control, value) {
+    if (value === 0) { return; }
+
     // toggle the currently focused effect slot in Effect Unit 1 (if any)
     var selectedSlot = PioneerDDJ400.selectedFxSlot;
     if (selectedSlot <= 0 || selectedSlot > PioneerDDJ400.numFxSlots) {
@@ -688,29 +686,31 @@ PioneerDDJ400.beatFxOnOffPressed = ignoreRelease(function() {
     var isEnabled = !engine.getValue(PioneerDDJ400.selectedFxGroup, "enabled");
     engine.setValue(PioneerDDJ400.selectedFxGroup, "enabled", isEnabled);
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, isEnabled);
-});
+};
 
-PioneerDDJ400.beatFxOnOffShiftPressed = ignoreRelease(function() {
+PioneerDDJ400.beatFxOnOffShiftPressed = function(_channel, _control, value) {
+    if (value === 0) { return; }
+
     // turn off all three effect slots in Effect Unit 1
     for (var i = 1; i <= PioneerDDJ400.numFxSlots; i += 1) {
         engine.setValue("[EffectRack1_EffectUnit1_Effect" + i + "]", "enabled", 0);
     }
     PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, false);
-});
+};
 
-PioneerDDJ400.beatFxChannel = ignoreRelease(function(_channel, control, _value, _status, group) {
+PioneerDDJ400.beatFxChannel = function(_channel, control, _value, _status, group) {
     var enableChannel1 = control === 0x10 || control === 0x14;
     var enableChannel2 = control === 0x11 || control === 0x14;
 
     engine.setValue(group, "group_[Channel1]_enable", enableChannel1);
     engine.setValue(group, "group_[Channel2]_enable", enableChannel2);
-});
+};
 
 //
 // PAD FX
 //
 
-PioneerDDJ400.padFxBelowPressed = ignoreRelease(function(channel, control, value, status, group) {
+PioneerDDJ400.padFxBelowPressed = function(channel, control, value, status, group) {
     var groupAbove = group.replace(/\[EffectRack1_EffectUnit(\d+)_Effect(\d+)]/, function(all, unit, effect) {
         var effectAbove = parseInt(effect) - 4;
 
@@ -718,9 +718,9 @@ PioneerDDJ400.padFxBelowPressed = ignoreRelease(function(channel, control, value
     });
 
     engine.setValue(groupAbove, "next_effect", value);
-});
+};
 
-PioneerDDJ400.padFxShiftBelowPressed = ignoreRelease(function(channel, control, value, status, group) {
+PioneerDDJ400.padFxShiftBelowPressed = function(channel, control, value, status, group) {
     var groupAbove = group.replace(/\[EffectRack1_EffectUnit(\d+)_Effect(\d+)]/, function(all, unit, effect) {
         var effectAbove = parseInt(effect) - 4;
 
@@ -728,7 +728,7 @@ PioneerDDJ400.padFxShiftBelowPressed = ignoreRelease(function(channel, control, 
     });
 
     engine.setValue(groupAbove, "prev_effect", value);
-});
+};
 
 PioneerDDJ400.vuMeterUpdate = function(value, group) {
     var newVal = value * 150;
@@ -787,17 +787,14 @@ PioneerDDJ400.samplerPlayOutputCallbackFunction = function(value, group, _contro
     }
 };
 
-    var isLoaded = engine.getValue(group, "track_loaded") === 1;
-
-    if (!isLoaded) {
-PioneerDDJ400.samplerModePadPressed = ignoreRelease(function(_channel, _control, value, _status, group) {
+PioneerDDJ400.samplerModePadPressed = function(_channel, _control, value, _status, group) {
     if (engine.getValue(group, "track_loaded")) {
         engine.setValue(group, "cue_gotoandplay", value);
     }
     else {
         engine.setValue(group, "LoadSelectedTrack", value);
     }
-});
+};
 
 
 PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _status, group) {
