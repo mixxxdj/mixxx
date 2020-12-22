@@ -214,8 +214,8 @@ void WebTask::abort() {
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(m_pendingNetworkReply) {
-        return;
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
+        return;
     }
     if (m_timeoutTimerId != kInvalidTimerId) {
         killTimer(m_timeoutTimerId);
