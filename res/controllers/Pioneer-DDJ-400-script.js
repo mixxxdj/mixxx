@@ -1,36 +1,55 @@
 // Pioneer-DDJ-400-script.js
 // ****************************************************************************
 // * Mixxx mapping script file for the Pioneer DDJ-400.
-// * Author: Warker, nschloe, dj3730, jusko
+// * Authors: Warker, nschloe, dj3730, jusko
 // * Forum: https://mixxx.org/forums/viewtopic.php?f=7&t=12113
 // * Wiki: https://www.mixxx.org/wiki/doku.php/pioneer_ddj-400
 //
 // Upstream MIDI spec:
 // * https://www.pioneerdj.com/-/media/pioneerdj/software-info/controller/ddj-400/ddj-400_midi_message_list_e1.pdf
 //
-//             Working:
+//             Working (as per controller spec):
 //                 * Mixer Section (Faders, EQ, Filter, Gain, Cue)
 //                 * Browsing and loading + Waveform zoom (shift)
-//                 * Jogwheels, Scratching, Bending
-//                 * cycle Temporange
+//                 * Jogwheels, Scratching, Bending, Loop adjust
+//                 * Cycle Temporange
 //                 * Beat Sync
-//                 * BeatFX (controls Effect Unit 1.  LEFT selects EFFECT1, RIGHT selects EFFECT2, FX_SELECT selects EFFECT3.
-//                   ON/OFF toggles selected effect slot.  SHIFT+ON/OFF disables all three effect slots.
 //                 * Hot Cue Mode
 //                 * Beat Loop Mode
 //                 * Beat Jump Mode
 //                 * Sampler Mode
 //
-//             Partially:
-//                 * PAD FX (only slots A-H, Q-P)
-//                 * Output (lights)
+//             Custom (Mixxx specific mappings):
+//                 * BeatFX: Assigned Effect Unit 1
+//                           < LEFT selects EFFECT1
+//                           > RIGHT selects EFFECT2
+//                           v FX_SELECT selects EFFECT3.
+//                           v again to get back to wet/dry mix
+//                           ON/OFF toggles selected effect slot
+//                           SHIFT + ON/OFF disables all three effect slots.
+//                           SHIFT + < selects previous effect
+//                           SHIFT + > selects next effect
 //
-//             Testing:
+//                 * Phrase jump forward & back (Shift + </> CUE/LOOP CALL arrows)
+//
+//             Experimental (not performance ready):
+//                 * PAD FX: Assigned Effect unit 1 & 2
+//                           Pad 1, 2 & 3 toggle effect slot
+//                           Shift + pads 5,6 & 7 select previous effect
+//                           Pads 4 & 8 do nothing.
+//                           - Deck 1, currently clobbers the BeatFX rack
+//                           - PAD FX2, mappings are invalid
+//
 //                 * Keyboard Mode (check pitch value)
-//                 * Keyshift Mode (check pitch value)
+//                   - Major/minor/chromatic scales?
+//                   - Lights
+//                   - Selecting cues
+//                   - Allow playback takeover
 //
-//             Not implemented:
-//                 * Channel & Crossfader Start
+//                 * Keyshift Mode
+//                   - Major/minor/chromatic scales?
+//                   - Limit range shifting up or down
+//
 //             Not implemented (after discussion and trial attempts):
 //                 * Loop Section:
 //                   * -4BEAT auto loop
@@ -347,6 +366,34 @@ PioneerDDJ400.loopToggle = function (value, group, control) {
 };
 
 //
+// CUE/LOOP CALL
+//
+
+PioneerDDJ400.cueLoopCallLeft = function(_channel, _control, value, _status, group) {
+    if (value && engine.getValue(group, "loop_enabled")) {
+        engine.setValue(group, "loop_scale", 0.5);
+    }
+};
+
+PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, group) {
+    if (value && engine.getValue(group, "loop_enabled")) {
+        engine.setValue(group, "loop_scale", 2.0);
+    }
+};
+
+PioneerDDJ400.phraseJumpForward = function(_channel, _control, value, _status, group) {
+    if (value) {
+        engine.setValue(group, 'beatjump', 8 * 4);
+    }
+};
+
+PioneerDDJ400.phraseJumpBack = function(_channel, _control, value, _status, group) {
+    if (value) {
+        engine.setValue(group, 'beatjump', -8 * 4);
+    }
+};
+
+//
 // Jog wheels
 //
 
@@ -412,7 +459,6 @@ PioneerDDJ400.highResMSB = {
     '[Channel4]': {}
 };
 
-
 PioneerDDJ400.tempoSliderMSB = function(channel, control, value, status, group) {
     PioneerDDJ400.highResMSB[group].tempoSlider = value;
 };
@@ -440,18 +486,6 @@ PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, gro
         }
     }
     engine.setValue(group, "rateRange", this.tempoRanges[idx]);
-};
-
-PioneerDDJ400.cueLoopCallLeft = function(_channel, _control, value, _status, group) {
-    if (value && engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "loop_scale", 0.5);
-    }
-};
-
-PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, group) {
-    if (value && engine.getValue(group, "loop_enabled")) {
-        engine.setValue(group, "loop_scale", 2.0);
-    }
 };
 
 // Stores the performance pad mode each time it changes
@@ -672,6 +706,10 @@ PioneerDDJ400.beatFxChannel = ignoreRelease(function(_channel, control, _value, 
     engine.setValue(group, "group_[Channel2]_enable", enableChannel2);
 });
 
+//
+// PAD FX
+//
+
 PioneerDDJ400.padFxBelowPressed = ignoreRelease(function(channel, control, value, status, group) {
     var groupAbove = group.replace(/\[EffectRack1_EffectUnit(\d+)_Effect(\d+)]/, function(all, unit, effect) {
         var effectAbove = parseInt(effect) - 4;
@@ -691,8 +729,6 @@ PioneerDDJ400.padFxShiftBelowPressed = ignoreRelease(function(channel, control, 
 
     engine.setValue(groupAbove, "prev_effect", value);
 });
-
-// END BEAT FX
 
 PioneerDDJ400.vuMeterUpdate = function(value, group) {
     var newVal = value * 150;

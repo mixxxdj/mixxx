@@ -562,18 +562,16 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <!-- unused
             <control>
-                <description>CUE/LOOP CALL LEFT +SHIFT (DECK1) - press - delete stored cue/loop</description>
+                <description>CUE/LOOP CALL LEFT + SHIFT (DECK1) - press - jump one phrase back</description>
                 <group>[Channel1]</group>
-                <key>???</key>
+                <key>PioneerDDJ400.phraseJumpBack</key>
                 <status>0x90</status>
                 <midino>0x3E</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
-            -->
 
             <control>
                 <description>CUE/LOOP CALL LEFT (DECK2) - press - half active loop</description>
@@ -585,18 +583,16 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <!-- unused
             <control>
-                <description>CUE/LOOP CALL LEFT +SHIFT (DECK2) - press - delete stored cue/loop</description>
+                <description>CUE/LOOP CALL LEFT + SHIFT (DECK2) - press - jump one phrase back</description>
                 <group>[Channel2]</group>
-                <key>???</key>
+                <key>PioneerDDJ400.phraseJumpBack</key>
                 <status>0x91</status>
                 <midino>0x3E</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
-            -->
 
             <control>
                 <description>CUE/LOOP CALL LEFT (DECK1) - press - double active loop</description>
@@ -608,18 +604,16 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <!-- unused
             <control>
-                <description>CUE/LOOP CALL RIGHT +SHIFT (DECK1) - press - delete stored cue/loop</description>
+                <description>CUE/LOOP CALL RIGHT + SHIFT (DECK1) - press - jump one phrase forwards</description>
                 <group>[Channel1]</group>
-                <key>???</key>
+                <key>PioneerDDJ400.phraseJumpForward</key>
                 <status>0x90</status>
                 <midino>0x3D</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
-            -->
 
             <control>
                 <description>CUE/LOOP CALL LEFT (DECK2) - press - double active loop</description>
@@ -631,18 +625,16 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <!-- unused
             <control>
-                <description>CUE/LOOP CALL RIGHT +SHIFT (DECK2) - press - delete stored cue/loop</description>
+                <description>CUE/LOOP CALL RIGHT + SHIFT (DECK2) - press - jump one phrase forwards</description>
                 <group>[Channel2]</group>
-                <key>???</key>
+                <key>PioneerDDJ400.phraseJumpForward</key>
                 <status>0x91</status>
                 <midino>0x3D</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
-            -->
 
             <control>
                 <description>SHIFT (Deck1) - press - Shift</description>
