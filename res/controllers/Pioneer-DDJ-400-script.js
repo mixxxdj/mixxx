@@ -57,7 +57,7 @@
 //
 var PioneerDDJ400 = {};
 
-var LightsPioneerDDJ400 = {
+PioneerDDJ400.lights = {
     beatFx: {
         status: 0x94,
         data1: 0x47,
@@ -213,10 +213,9 @@ PioneerDDJ400.init = function() {
     engine.makeConnection("[Channel2]", "VuMeter", PioneerDDJ400.vuMeterUpdate);
 
     // reset vumeter
-    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
-    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
+    PioneerDDJ400.toggleLight(PioneerDDJ400.lights.deck1.vuMeter, false);
+    PioneerDDJ400.toggleLight(PioneerDDJ400.lights.deck2.vuMeter, false);
 
-    // enable soft takeover for rate controls
     // enable soft takeover for rate controls and FX level/depth
     engine.softTakeover("[Channel1]", "rate", true);
     engine.softTakeover("[Channel2]", "rate", true);
@@ -611,7 +610,7 @@ Object.defineProperty(PioneerDDJ400, "selectedFxSlot", {
         }
         engine.setValue("[EffectRack1_EffectUnit1]", "focused_effect", value);
         var isEffectEnabled = engine.getValue(PioneerDDJ400.selectedFxGroup, "enabled");
-        PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, isEffectEnabled);
+        PioneerDDJ400.toggleLight(PioneerDDJ400.lights.beatFx, isEffectEnabled);
     },
 });
 
@@ -685,7 +684,7 @@ PioneerDDJ400.beatFxOnOffPressed = function(_channel, _control, value) {
     }
     var isEnabled = !engine.getValue(PioneerDDJ400.selectedFxGroup, "enabled");
     engine.setValue(PioneerDDJ400.selectedFxGroup, "enabled", isEnabled);
-    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, isEnabled);
+    PioneerDDJ400.toggleLight(PioneerDDJ400.lights.beatFx, isEnabled);
 };
 
 PioneerDDJ400.beatFxOnOffShiftPressed = function(_channel, _control, value) {
@@ -695,7 +694,7 @@ PioneerDDJ400.beatFxOnOffShiftPressed = function(_channel, _control, value) {
     for (var i = 1; i <= PioneerDDJ400.numFxSlots; i += 1) {
         engine.setValue("[EffectRack1_EffectUnit1_Effect" + i + "]", "enabled", 0);
     }
-    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, false);
+    PioneerDDJ400.toggleLight(PioneerDDJ400.lights.beatFx, false);
 };
 
 PioneerDDJ400.beatFxChannel = function(_channel, control, _value, _status, group) {
@@ -841,8 +840,8 @@ PioneerDDJ400.stopSamplerBlink = function(channel, control) {
 
 PioneerDDJ400.shutdown = function() {
     // reset vumeter
-    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck1.vuMeter, false);
-    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.deck2.vuMeter, false);
+    PioneerDDJ400.toggleLight(PioneerDDJ400.lights.deck1.vuMeter, false);
+    PioneerDDJ400.toggleLight(PioneerDDJ400.lights.deck2.vuMeter, false);
 
     // housekeeping
     // turn off all Sampler LEDs
@@ -869,5 +868,5 @@ PioneerDDJ400.shutdown = function() {
     PioneerDDJ400.setReloopLight(0x91, 0x00);
 
     // stop any flashing lights
-    PioneerDDJ400.toggleLight(LightsPioneerDDJ400.beatFx, false);
+    PioneerDDJ400.toggleLight(PioneerDDJ400.lights.beatFx, false);
 };
