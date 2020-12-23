@@ -117,7 +117,7 @@ void EffectChainPresetManager::importPreset() {
         if (!pPreset->isEmpty() && !pPreset->name().isEmpty()) {
             if (m_effectChainPresets.contains(pPreset->name())) {
                 QString newName = pPreset->name();
-                while (m_effectChainPresets.contains(newName)) {
+                while (m_effectChainPresets.contains(newName) || newName.isEmpty()) {
                     bool okay = false;
                     newName = QInputDialog::getText(nullptr,
                             tr("Rename effect chain preset"),
