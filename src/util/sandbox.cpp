@@ -381,6 +381,12 @@ QString Sandbox::migrateOldSettings() {
     QString sandboxedPath = sandboxAppSettingsPath + "/Mixxx";
     QDir sandboxedSettings(sandboxedPath);
 
+    QString legacySettingsPath = homePath + QLatin1String("/Library/Application Support/Mixxx");
+    // The user has no settings from Mixxx < 2.3.0, so there is nothing to do.
+    if (!QDir(legacySettingsPath).exists()) {
+        return sandboxedPath;
+    }
+
     // Ensure sandboxed parent directory for application settings exists even when not running
     // in sandbox
     QDir sandboxAppSettings(sandboxAppSettingsPath);
@@ -399,10 +405,6 @@ QString Sandbox::migrateOldSettings() {
     // initialized. There is no need to store the bookmark anyway because this is a
     // one time process.
 #ifdef __APPLE__
-
-    // Because Mixxx cannot test if the old path exists before getting permission to access it
-    // outside the sandbox, unfortunately it is necessary to annoy the user with this popup
-    // even if they are installing Mixxx >= 2.3.0 without having installed an old version of Mixxx.
     QString title = QObject::tr("Upgrading old Mixxx settings");
     QMessageBox::information(nullptr,
             title,
@@ -422,8 +424,6 @@ QString Sandbox::migrateOldSettings() {
                         "If you do not want to grant Mixxx access click Cancel "
                         "on the file picker."));
 
-    // Legacy non-sandboxed mixxx settings path
-    QString legacySettingsPath = homePath + QLatin1String("/Library/Application Support/Mixxx");
     QString result = QFileDialog::getExistingDirectory(
         nullptr,
         title,
