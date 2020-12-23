@@ -335,15 +335,30 @@ void EffectChainPresetManager::savePreset(EffectChainPointer pChainSlot) {
 }
 
 void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
-    bool okay = false;
-    QString name = QInputDialog::getText(nullptr,
-            tr("Save preset for effect chain"),
-            tr("Name for new effect chain preset"),
-            QLineEdit::Normal,
-            pPreset->name(),
-            &okay);
-    if (!okay) {
-        return;
+    QString name;
+    QString errorText;
+    while (name.isEmpty() || m_effectChainPresets.contains(name)) {
+        bool okay = false;
+        name = QInputDialog::getText(nullptr,
+                tr("Save preset for effect chain"),
+                errorText + tr("Name for new effect chain preset:"),
+                QLineEdit::Normal,
+                pPreset->name(),
+                &okay);
+        if (!okay) {
+            return;
+        }
+
+        if (name.isEmpty()) {
+            errorText = tr("Effect chain preset name must not be empty.") + QStringLiteral("\n");
+        } else if (m_effectChainPresets.contains(name)) {
+            errorText =
+                    tr("An effect chain preset named \"%1\" already exists.")
+                            .arg(name) +
+                    QStringLiteral("\n");
+        } else {
+            errorText = QString();
+        }
     }
 
     pPreset->setName(name);
