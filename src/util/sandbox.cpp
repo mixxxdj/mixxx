@@ -406,16 +406,21 @@ QString Sandbox::migrateOldSettings() {
     QString title = QObject::tr("Upgrading old Mixxx settings");
     QMessageBox::information(nullptr,
             title,
-            QObject::tr(
-                    "Existing Mixxx settings directory must be moved to new location."
-                    "\n\n"
-                    "Due to macOS sandboxing, Mixxx needs your permission to access your "
-                    "music library and move settings to the sandbox from Mixxx versions "
-                    "before 2.3.0. After clicking OK, you will see standard file open dialog. "
-                    "\n\n"
-                    "Select Open button in the file open dialog to grant Mixxx access to old files."
-                    "\n\n"
-                    "If you do not want to grant Mixxx access click Cancel on the file picker."));
+            QObject::tr("Existing Mixxx settings directory must be moved to "
+                        "new location."
+                        "\n\n"
+                        "Due to macOS sandboxing, Mixxx needs your permission "
+                        "to access your "
+                        "music library and move settings to the sandbox from "
+                        "Mixxx versions "
+                        "before 2.3.0. After clicking OK, you will see "
+                        "standard file selection dialog. "
+                        "\n\n"
+                        "Select Open button in the file selection dialog to "
+                        "grant Mixxx access to old files."
+                        "\n\n"
+                        "If you do not want to grant Mixxx access click Cancel "
+                        "on the file picker."));
 
     // Legacy non-sandboxed mixxx settings path
     QString legacySettingsPath = homePath + QLatin1String("/Library/Application Support/Mixxx");
