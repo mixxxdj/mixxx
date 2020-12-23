@@ -65,7 +65,7 @@ void WEffectChainPresetButton::populateMenu() {
 
         auto pManifest = pEffectSlot->getManifest();
         if (pManifest == nullptr) {
-            m_pMenu->addAction(tr("Empty Effect Slot %1").arg(effectSlotIndex));
+            m_pMenu->addAction(tr("Empty Effect Slot %1").arg(effectSlotIndex + 1));
             effectSlotIndex++;
             continue;
         }
