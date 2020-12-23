@@ -169,7 +169,7 @@ void BaseTrackTableModel::initHeaderProperties() {
             defaultColumnWidth() * 3);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT,
-            tr("Last Time Played"),
+            tr("Last Played"),
             defaultColumnWidth() * 3);
     setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_DURATION,
