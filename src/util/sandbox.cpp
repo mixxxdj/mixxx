@@ -4,7 +4,6 @@
 #include <QFileInfo>
 #include <QMutexLocker>
 #include <QObject>
-#include <QProcessEnvironment>
 #include <QtDebug>
 
 #include "util/mac.h"
@@ -26,11 +25,7 @@ QSharedPointer<ConfigObject<ConfigValue>> Sandbox::s_pSandboxPermissions;
 QHash<QString, SecurityTokenWeakPointer> Sandbox::s_activeTokens;
 
 // static
-void Sandbox::initialize(const QString& permissionsFile) {
-    QMutexLocker locker(&s_mutex);
-    s_pSandboxPermissions = QSharedPointer<ConfigObject<ConfigValue>>(
-        new ConfigObject<ConfigValue>(permissionsFile));
-
+void Sandbox::checkSandboxed() {
 #ifdef __APPLE__
     SecCodeRef secCodeSelf;
     if (SecCodeCopySelf(kSecCSDefaultFlags, &secCodeSelf) == errSecSuccess) {
@@ -47,6 +42,12 @@ void Sandbox::initialize(const QString& permissionsFile) {
         CFRelease(secCodeSelf);
     }
 #endif
+}
+
+void Sandbox::setPermissionsFilePath(const QString& permissionsFile) {
+    QMutexLocker locker(&s_mutex);
+    s_pSandboxPermissions = QSharedPointer<ConfigObject<ConfigValue>>(
+            new ConfigObject<ConfigValue>(permissionsFile));
 }
 
 // static
@@ -434,15 +435,11 @@ QString Sandbox::migrateOldSettings() {
         return sandboxedPath;
     }
 
-    // Check if Mixxx process is sandboxed
-    QString sandboxContainerId = QProcessEnvironment::systemEnvironment().value(
-            "APP_SANDBOX_CONTAINER_ID", "");
-
     CFURLRef url = CFURLCreateWithFileSystemPath(
             kCFAllocatorDefault, QStringToCFString(legacySettingsPath), kCFURLPOSIXPathStyle, true);
     if (url) {
         CFErrorRef error = NULL;
-        if (!sandboxContainerId.isEmpty()) {
+        if (s_bInSandbox) {
             // Request permissions to the old unsandboxed sandboxed settings path
             // and move the directory into the sandbox
             CFDataRef bookmark = CFURLCreateBookmarkData(
