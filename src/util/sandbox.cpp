@@ -442,8 +442,8 @@ QString Sandbox::migrateOldSettings() {
     if (url) {
         CFErrorRef error = NULL;
         if (!sandboxContainerId.isEmpty()) {
-            // Request permissions to the old sandboxed settings path in sandbox and move the directory
-            // into the sandbox
+            // Request permissions to the old unsandboxed sandboxed settings path
+            // and move the directory into the sandbox
             CFDataRef bookmark = CFURLCreateBookmarkData(
                 kCFAllocatorDefault,
                 url,
