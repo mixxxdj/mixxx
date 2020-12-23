@@ -114,13 +114,13 @@ PioneerDDJ400.timers = {};
 // Stores padmode state and encapsulates LED logic
 PioneerDDJ400.performancePads = {
     modes: {
-        HOTCUE:   0x1B,
+        HOTCUE: 0x1B,
         BEATLOOP: 0x6D,
         BEATJUMP: 0x20,
-        SAMPLER:  0x22,
+        SAMPLER: 0x22,
         KEYBOARD: 0x69,
-        PADFX1:   0x1E,
-        PADFX2:   0x6B,
+        PADFX1: 0x1E,
+        PADFX2: 0x6B,
         KEYSHIFT: 0x6F
     },
 
@@ -133,24 +133,19 @@ PioneerDDJ400.performancePads = {
     // Toggles the shift specific lights for the current mode
     toggleShiftLights: function(channel, value) {
         if (this.state[channel] === this.modes.BEATJUMP) {
-            midi.sendShortMsg(channel === 0 ? 0x98 : 0x9A,
-                              0x26,
-                              value);
-
-            midi.sendShortMsg(channel === 0 ? 0x98 : 0x9A,
-                              0x27,
-                              value);
+            midi.sendShortMsg(channel === 0 ? 0x98 : 0x9A, 0x26, value);
+            midi.sendShortMsg(channel === 0 ? 0x98 : 0x9A, 0x27, value);
         }
     },
 
     // Clear all pad mode lights and reset back to hotcue state
     reset: function() {
-        for (m in this.modes) {
+        for (var m in this.modes) {
             if (this.modes[m] !== this.modes.HOTCUE) {
                 midi.sendShortMsg(0x90, this.modes[m], 0x00);
                 midi.sendShortMsg(0x91, this.modes[m], 0x00);
             }
-        };
+        }
         this.state[0] = this.state[1] = this.modes.HOTCUE;
 
         midi.sendShortMsg(0x90, this.modes.HOTCUE, 0x7f);
@@ -270,23 +265,23 @@ PioneerDDJ400.toggleLight = function(midiIn, active) {
 // Loop IN/OUT ADJUST
 //
 
-PioneerDDJ400.toggleLoopAdjustIn = function (channel, _control, value, _status, group) {
-    if (value === 0 || engine.getValue(group, 'loop_enabled' === 0)) {
+PioneerDDJ400.toggleLoopAdjustIn = function(channel, _control, value, _status, group) {
+    if (value === 0 || engine.getValue(group, "loop_enabled" === 0)) {
         return;
     }
     PioneerDDJ400.loopAdjustIn[channel] = !PioneerDDJ400.loopAdjustIn[channel];
     PioneerDDJ400.loopAdjustOut[channel] = false;
 };
 
-PioneerDDJ400.toggleLoopAdjustOut = function (channel, _control, value, _status, group) {
-    if (value === 0 || engine.getValue(group, 'loop_enabled' === 0)) {
+PioneerDDJ400.toggleLoopAdjustOut = function(channel, _control, value, _status, group) {
+    if (value === 0 || engine.getValue(group, "loop_enabled" === 0)) {
         return;
     }
     PioneerDDJ400.loopAdjustOut[channel] = !PioneerDDJ400.loopAdjustOut[channel];
     PioneerDDJ400.loopAdjustIn[channel] = false;
 };
 
-PioneerDDJ400.setReloopLight = function (status, value) {
+PioneerDDJ400.setReloopLight = function(status, value) {
     midi.sendShortMsg(status, 0x4D, value);
     midi.sendShortMsg(status, 0x50, value);
 };
@@ -298,7 +293,7 @@ PioneerDDJ400.setLoopButtonLights = function(status, value) {
     });
 };
 
-PioneerDDJ400.startLoopLightsBlink = function (channel, control, status, group) {
+PioneerDDJ400.startLoopLightsBlink = function(channel, control, status, group) {
     var blink = 0x7F;
 
     PioneerDDJ400.stopLoopLightsBlink(group, control, status);
@@ -310,8 +305,7 @@ PioneerDDJ400.startLoopLightsBlink = function (channel, control, status, group) 
         if (PioneerDDJ400.loopAdjustOut[channel]) {
             midi.sendShortMsg(status, 0x10, 0x00);
             midi.sendShortMsg(status, 0x4C, 0x00);
-        }
-        else {
+        } else {
             midi.sendShortMsg(status, 0x10, blink);
             midi.sendShortMsg(status, 0x4C, blink);
         }
@@ -320,8 +314,7 @@ PioneerDDJ400.startLoopLightsBlink = function (channel, control, status, group) 
         if (PioneerDDJ400.loopAdjustIn[channel]) {
             midi.sendShortMsg(status, 0x11, 0x00);
             midi.sendShortMsg(status, 0x4E, 0x00);
-        }
-        else {
+        } else {
             midi.sendShortMsg(status, 0x11, blink);
             midi.sendShortMsg(status, 0x4E, blink);
         }
@@ -329,7 +322,7 @@ PioneerDDJ400.startLoopLightsBlink = function (channel, control, status, group) 
 
 };
 
-PioneerDDJ400.stopLoopLightsBlink = function (group, control, status) {
+PioneerDDJ400.stopLoopLightsBlink = function(group, control, status) {
     PioneerDDJ400.timers[group] = PioneerDDJ400.timers[group] || {};
 
     if (PioneerDDJ400.timers[group][control] !== undefined) {
@@ -339,7 +332,7 @@ PioneerDDJ400.stopLoopLightsBlink = function (group, control, status) {
     PioneerDDJ400.setLoopButtonLights(status, 0x7F);
 };
 
-PioneerDDJ400.loopToggle = function (value, group, control) {
+PioneerDDJ400.loopToggle = function(value, group, control) {
     var status = group === "[Channel1]" ? 0x90 : 0x91,
         channel = group === "[Channel1]" ? 0 : 1;
 
@@ -347,8 +340,7 @@ PioneerDDJ400.loopToggle = function (value, group, control) {
 
     if (value) {
         PioneerDDJ400.startLoopLightsBlink(channel, control, status, group);
-    }
-    else {
+    } else {
         PioneerDDJ400.stopLoopLightsBlink(group, control, status);
         PioneerDDJ400.loopAdjustOut[channel] = PioneerDDJ400.loopAdjustIn[channel] = false;
     }
@@ -372,13 +364,13 @@ PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, gr
 
 PioneerDDJ400.phraseJumpForward = function(_channel, _control, value, _status, group) {
     if (value) {
-        engine.setValue(group, 'beatjump', 8 * 4);
+        engine.setValue(group, "beatjump", 8 * 4);
     }
 };
 
 PioneerDDJ400.phraseJumpBack = function(_channel, _control, value, _status, group) {
     if (value) {
-        engine.setValue(group, 'beatjump', -8 * 4);
+        engine.setValue(group, "beatjump", -8 * 4);
     }
 };
 
@@ -442,10 +434,10 @@ PioneerDDJ400.jogTouch = function(channel, _control, value) {
 ///////////////////////////////////////////////////////////////
 
 PioneerDDJ400.highResMSB = {
-    '[Channel1]': {},
-    '[Channel2]': {},
-    '[Channel3]': {},
-    '[Channel4]': {}
+    "[Channel1]": {},
+    "[Channel2]": {},
+    "[Channel3]": {},
+    "[Channel4]": {}
 };
 
 PioneerDDJ400.tempoSliderMSB = function(channel, control, value, status, group) {
@@ -457,7 +449,7 @@ PioneerDDJ400.tempoSliderLSB = function(channel, control, value, status, group) 
 
     engine.setValue(
         group,
-        'rate',
+        "rate",
         ((0x4000 - fullValue) - 0x2000) / 0x2000
     );
 };
@@ -479,16 +471,16 @@ PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, gro
 
 PioneerDDJ400.toggleQuantize = function(_channel, _control, value, _status, group) {
     if (value) {
-      script.toggleControl(group, 'quantize');
+        script.toggleControl(group, "quantize");
     }
 };
 
 // Stores the performance pad mode each time it changes
-PioneerDDJ400.setPadmode = function (channel, control, value) {
+PioneerDDJ400.setPadmode = function(channel, control, value) {
     if (value === 0x7F) {
         PioneerDDJ400.performancePads.state[channel] = control;
     }
-}
+};
 
 //
 // Keyboard mode
@@ -734,13 +726,13 @@ PioneerDDJ400.vuMeterUpdate = function(value, group) {
     var newVal = value * 150;
 
     switch (group) {
-        case "[Channel1]":
-            midi.sendShortMsg(0xB0, 0x02, newVal);
-            break;
+    case "[Channel1]":
+        midi.sendShortMsg(0xB0, 0x02, newVal);
+        break;
 
-        case "[Channel2]":
-            midi.sendShortMsg(0xB1, 0x02, newVal);
-            break;
+    case "[Channel2]":
+        midi.sendShortMsg(0xB1, 0x02, newVal);
+        break;
     }
 };
 
@@ -790,8 +782,7 @@ PioneerDDJ400.samplerPlayOutputCallbackFunction = function(value, group, _contro
 PioneerDDJ400.samplerModePadPressed = function(_channel, _control, value, _status, group) {
     if (engine.getValue(group, "track_loaded")) {
         engine.setValue(group, "cue_gotoandplay", value);
-    }
-    else {
+    } else {
         engine.setValue(group, "LoadSelectedTrack", value);
     }
 };
@@ -804,7 +795,7 @@ PioneerDDJ400.samplerModeShiftPadPressed = function(_channel, _control, value, _
     }
 };
 
-PioneerDDJ400.startSamplerBlink = function (channel, control, group) {
+PioneerDDJ400.startSamplerBlink = function(channel, control, group) {
     var val = 0x7f;
 
     PioneerDDJ400.stopSamplerBlink(channel, control);
@@ -816,7 +807,7 @@ PioneerDDJ400.startSamplerBlink = function (channel, control, group) {
         // also blink the pad while SHIFT is pressed
         midi.sendShortMsg((channel+1), control, val);
 
-        var isPlaying = engine.getValue(group, 'play') === 1;
+        var isPlaying = engine.getValue(group, "play") === 1;
 
         if (!isPlaying) {
             // kill timer
