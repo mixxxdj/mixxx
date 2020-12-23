@@ -1,11 +1,11 @@
 #include "util/sandbox.h"
 
-#include <QtDebug>
-#include <QFileInfo>
 #include <QFileDialog>
-#include <QObject>
+#include <QFileInfo>
 #include <QMutexLocker>
+#include <QObject>
 #include <QProcessEnvironment>
+#include <QtDebug>
 
 #include "util/mac.h"
 
@@ -375,7 +375,7 @@ QString Sandbox::migrateOldSettings() {
 
     // Parent path for Mixxx specific sandboxed macOS applications settings
     QString sandboxAppSettingsPath = homePath +
-        QLatin1String("/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support");
+            QLatin1String("/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support");
 
     // Sandboxed mixxx settings path
     QString sandboxedPath = sandboxAppSettingsPath + "/Mixxx";
@@ -425,9 +425,9 @@ QString Sandbox::migrateOldSettings() {
                         "on the file picker."));
 
     QString result = QFileDialog::getExistingDirectory(
-        nullptr,
-        title,
-        legacySettingsPath);
+            nullptr,
+            title,
+            legacySettingsPath);
     if (result != legacySettingsPath) {
         qInfo() << "Sandbox::migrateOldSettings: User declined to migrate old settings from"
                 << legacySettingsPath << "User selected" << result;
@@ -435,7 +435,8 @@ QString Sandbox::migrateOldSettings() {
     }
 
     // Check if Mixxx process is sandboxed
-    QString sandboxContainerId = QProcessEnvironment::systemEnvironment().value("APP_SANDBOX_CONTAINER_ID", "");
+    QString sandboxContainerId = QProcessEnvironment::systemEnvironment().value(
+            "APP_SANDBOX_CONTAINER_ID", "");
 
     CFURLRef url = CFURLCreateWithFileSystemPath(
             kCFAllocatorDefault, QStringToCFString(legacySettingsPath), kCFURLPOSIXPathStyle, true);
@@ -445,39 +446,41 @@ QString Sandbox::migrateOldSettings() {
             // Request permissions to the old unsandboxed sandboxed settings path
             // and move the directory into the sandbox
             CFDataRef bookmark = CFURLCreateBookmarkData(
-                kCFAllocatorDefault,
-                url,
-                kCFURLBookmarkCreationWithSecurityScope,
-                nil,
-                nil,
-                &error);
+                    kCFAllocatorDefault,
+                    url,
+                    kCFURLBookmarkCreationWithSecurityScope,
+                    nil,
+                    nil,
+                    &error);
             CFRelease(url);
             if (!bookmark) {
                 QFile oldSettings(legacySettingsPath);
                 if (oldSettings.rename(sandboxedPath)) {
                     qInfo() << "Sandbox::migrateOldSettings: Successfully "
-                            "migrated old settings from"
+                               "migrated old settings from"
                             << legacySettingsPath << "to new path" << sandboxedPath;
                 } else {
                     qWarning() << "Sandbox::migrateOldSettings: Failed to migrate "
-                                "old settings from" << legacySettingsPath
-                                << "to new path" << sandboxedPath;
+                                  "old settings from"
+                               << legacySettingsPath
+                               << "to new path" << sandboxedPath;
                 }
                 CFRelease(bookmark);
             } else {
                 qWarning() << "Sandbox::migrateOldSettings: Failed to access old "
-                            "settings path" << legacySettingsPath
-                        << "Cannot migrate to new path" << sandboxedPath;
+                              "settings path"
+                           << legacySettingsPath
+                           << "Cannot migrate to new path" << sandboxedPath;
             }
         } else {
             // Move old sandboxed settings path when not in sandbox to new path
             QFile oldSettings(legacySettingsPath);
             if (oldSettings.rename(sandboxedPath)) {
                 qInfo() << "Sandbox::migrateOldSettings: Successfully migrated old settings from"
-                    << legacySettingsPath << "to new path" << sandboxedPath;
+                        << legacySettingsPath << "to new path" << sandboxedPath;
             } else {
                 qWarning() << "Sandbox::migrateOldSettings: Failed to migrate old settings from"
-                    << legacySettingsPath << "to new path" << sandboxedPath;
+                           << legacySettingsPath << "to new path" << sandboxedPath;
             }
         }
     }
