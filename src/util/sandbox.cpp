@@ -374,38 +374,30 @@ QString Sandbox::migrateOldSettings() {
     // QDir::homePath returns a path inside the sandbox when running sandboxed
     QString homePath = QLatin1String("/Users/") + qgetenv("USER");
 
-    // Parent path for Mixxx specific sandboxed macOS applications settings
-    QString sandboxAppSettingsPath = homePath +
-            QLatin1String("/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support");
-
-    // Sandboxed mixxx settings path
-    QString sandboxedPath = sandboxAppSettingsPath + "/Mixxx";
-    QDir sandboxedSettings(sandboxedPath);
+    // The parent of the sandboxed path needs to be created before the legacySettingsPath
+    // can be moved there. This is not necessary when running in a sandbox because macOS
+    // automatically creates it.
+    QString sandboxedParentPath = homePath +
+            QLatin1String(
+                    "/Library/Containers/org.mixxx.mixxx/Data/Library/"
+                    "Application Support");
+    QString sandboxedPath = sandboxedParentPath + QLatin1String("/Mixxx");
+    QDir sandboxedDir(sandboxedPath);
 
     QString legacySettingsPath = homePath + QLatin1String("/Library/Application Support/Mixxx");
-    // The user has no settings from Mixxx < 2.3.0, so there is nothing to do.
+    // The user has no settings from Mixxx < 2.3.0, so there is no migration to do.
     if (!QDir(legacySettingsPath).exists()) {
         return sandboxedPath;
     }
 
-    // Ensure sandboxed parent directory for application settings exists even when not running
-    // in sandbox
-    QDir sandboxAppSettings(sandboxAppSettingsPath);
-    if (!sandboxAppSettings.exists()) {
-        if (!sandboxAppSettings.mkpath(sandboxAppSettingsPath)) {
-            qWarning() << "ERROR creating sandboxed application data directory"
-                       << sandboxAppSettingsPath;
-        }
-    }
-
-    if (sandboxedSettings.exists() && !sandboxedSettings.isEmpty()) {
+    // The user already has settings in the sandboxed path, so there is no migration to do.
+    if (sandboxedDir.exists() && !sandboxedDir.isEmpty()) {
         return sandboxedPath;
     }
 
     // Sandbox::askForAccess cannot be used here because it depends on settings being
     // initialized. There is no need to store the bookmark anyway because this is a
     // one time process.
-#ifdef __APPLE__
     QString title = QObject::tr("Upgrading old Mixxx settings");
     QMessageBox::information(nullptr,
             title,
@@ -435,6 +427,7 @@ QString Sandbox::migrateOldSettings() {
         return sandboxedPath;
     }
 
+#ifdef __APPLE__
     CFURLRef url = CFURLCreateWithFileSystemPath(
             kCFAllocatorDefault, QStringToCFString(legacySettingsPath), kCFURLPOSIXPathStyle, true);
     if (url) {
@@ -470,11 +463,24 @@ QString Sandbox::migrateOldSettings() {
                            << "Cannot migrate to new path" << sandboxedPath;
             }
         } else {
-            // Move old sandboxed settings path when not in sandbox to new path
+            // Move old unsandboxed settings directory into the sandbox
+
+            // Ensure the parent directory of the destination path exists, otherwise
+            // moving to the new path will fail.
+            QDir sandboxedParentDir(sandboxedParentPath);
+            if (!sandboxedParentDir.exists()) {
+                if (!sandboxedParentDir.mkpath(sandboxedParentPath)) {
+                    qWarning() << "Could not create sandboxed application data directory"
+                               << sandboxedParentPath;
+                }
+            }
+
             QFile oldSettings(legacySettingsPath);
             if (oldSettings.rename(sandboxedPath)) {
-                qInfo() << "Sandbox::migrateOldSettings: Successfully migrated old settings from"
-                        << legacySettingsPath << "to new path" << sandboxedPath;
+                qInfo() << "Sandbox::migrateOldSettings: Successfully "
+                           "migrated old settings from"
+                        << legacySettingsPath << "to new path"
+                        << sandboxedPath;
             } else {
                 qWarning() << "Sandbox::migrateOldSettings: Failed to migrate old settings from"
                            << legacySettingsPath << "to new path" << sandboxedPath;
