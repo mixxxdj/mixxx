@@ -195,6 +195,11 @@ PioneerDDJ400.hotcueLoopPoints = {
     "[Channel2]": []
 };
 
+PioneerDDJ400.highResMSB = {
+    "[Channel1]": {},
+    "[Channel2]": {}
+};
+
 PioneerDDJ400.samplerCallbacks = [];
 
 PioneerDDJ400.init = function() {
@@ -385,6 +390,23 @@ PioneerDDJ400.syncLongPressed = function(channel, control, value, status, group)
     engine.setValue(group, "sync_enabled", value);
     engine.setValue(group, "sync_master", 0x01);
 };
+
+PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, group) {
+    if (value === 0) return; // ignore release
+
+    var currRange = engine.getValue(group, "rateRange");
+    var idx = 0;
+
+    for (var i = 0; i < this.tempoRanges.length; i++) {
+        if (currRange === this.tempoRanges[i]) {
+            idx = (i + 1) % this.tempoRanges.length;
+            break;
+        }
+    }
+    engine.setValue(group, "rateRange", this.tempoRanges[idx]);
+};
+
+//
 // Jog wheels
 //
 
@@ -439,16 +461,9 @@ PioneerDDJ400.jogTouch = function(channel, _control, value) {
     }
 };
 
-///////////////////////////////////////////////////////////////
-//            HIGH RESOLUTION MIDI INPUT HANDLERS            //
-///////////////////////////////////////////////////////////////
-
-PioneerDDJ400.highResMSB = {
-    "[Channel1]": {},
-    "[Channel2]": {},
-    "[Channel3]": {},
-    "[Channel4]": {}
-};
+//
+// Tempo sliders
+//
 
 PioneerDDJ400.tempoSliderMSB = function(channel, control, value, status, group) {
     PioneerDDJ400.highResMSB[group].tempoSlider = value;
@@ -464,28 +479,19 @@ PioneerDDJ400.tempoSliderLSB = function(channel, control, value, status, group) 
     );
 };
 
-PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, group) {
-    if (value === 0) return; // ignore release
+//
+// Shift
+//
 
-    var currRange = engine.getValue(group, "rateRange");
-    var idx = 0;
-
-    for (var i = 0; i < this.tempoRanges.length; i++) {
-        if (currRange === this.tempoRanges[i]) {
-            idx = (i + 1) % this.tempoRanges.length;
-            break;
-        }
-    }
-    engine.setValue(group, "rateRange", this.tempoRanges[idx]);
+PioneerDDJ400.shiftPressed = function(channel, _control, value) {
+    this.shiftState[channel] = value;
+    this.performancePads.toggleShiftLights(channel, value);
 };
 
-PioneerDDJ400.toggleQuantize = function(_channel, _control, value, _status, group) {
-    if (value) {
-        script.toggleControl(group, "quantize");
-    }
-};
+//
+// Pad mode buttons
+//
 
-// Stores the performance pad mode each time it changes
 PioneerDDJ400.setPadmode = function(channel, control, value) {
     if (value === 0x7F) {
         PioneerDDJ400.performancePads.state[channel] = control;
@@ -581,15 +587,6 @@ PioneerDDJ400.keyshiftModePad = function(_channel, control, value, _status, grou
     engine.setValue(group, "pitch", this.halftoneToPadMap[control & 0xf]);
 };
 
-//
-// Shift mode
-//
-
-PioneerDDJ400.shiftPressed = function(channel, _control, value) {
-    this.shiftState[channel] = value;
-    this.performancePads.toggleShiftLights(channel, value);
-};
-
 PioneerDDJ400.waveFormRotate = function(_channel, _control, value) {
     // select the Waveform to zoom left shift = deck1, right shift = deck2
     var deckNum = this.shiftState[0] > 0 ? 1 : 2;
@@ -599,7 +596,9 @@ PioneerDDJ400.waveFormRotate = function(_channel, _control, value) {
     engine.setValue("[Channel"+deckNum+"]", "waveform_zoom", newVal);
 };
 
-// START BEAT FX
+//
+// Sound Effects
+//
 
 PioneerDDJ400.numFxSlots = 3;
 
@@ -838,6 +837,20 @@ PioneerDDJ400.stopSamplerBlink = function(channel, control) {
         PioneerDDJ400.timers[channel][control] = undefined;
     }
 };
+
+//
+// Additional features
+//
+
+PioneerDDJ400.toggleQuantize = function(_channel, _control, value, _status, group) {
+    if (value) {
+        script.toggleControl(group, "quantize");
+    }
+};
+
+//
+// Shutdown
+//
 
 PioneerDDJ400.shutdown = function() {
     // reset vumeter
