@@ -624,25 +624,13 @@ Object.defineProperty(PioneerDDJ400, "selectedFxGroup", {
 
 PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
     var newVal = value === 0 ? 0 : (value / 0x7F);
-    var effectOn = engine.getValue(PioneerDDJ400.selectedFxGroup, "enabled");
 
-    if (effectOn) {
+    if (engine.getValue(PioneerDDJ400.selectedFxGroup, "enabled")) {
         engine.softTakeoverIgnoreNextValue(PioneerDDJ400.selectedFxGroup, "meta");
         engine.setValue("[EffectRack1_EffectUnit1]", "mix", newVal);
     } else {
         engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "mix");
         engine.setValue(PioneerDDJ400.selectedFxGroup, "meta", newVal);
-    }
-};
-
-PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value) {
-    if (value === 0) { return; }
-
-    // focus Effect Slot 3 in Effect Unit 1, or clear focus if it is currently focused
-    if (PioneerDDJ400.selectedFxSlot === 3) {
-        PioneerDDJ400.selectedFxSlot = 0;
-    } else {
-        PioneerDDJ400.selectedFxSlot = 3;
     }
 };
 
@@ -657,23 +645,19 @@ PioneerDDJ400.beatFxSelectNextEffect = function(_channel, _control, value) {
 PioneerDDJ400.beatFxLeftPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    // focus Effect Slot 1 in Effect Unit 1, or clear focus if it is currently focused
-    if (PioneerDDJ400.selectedFxSlot === 1) {
-        PioneerDDJ400.selectedFxSlot = 0;
-    } else {
-        PioneerDDJ400.selectedFxSlot = 1;
-    }
+    PioneerDDJ400.selectedFxSlot = 1;
 };
 
 PioneerDDJ400.beatFxRightPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    // focus Effect Slot 2 in Effect Unit 1, or clear focus if it is currently focused
-    if (PioneerDDJ400.selectedFxSlot === 2) {
-        PioneerDDJ400.selectedFxSlot = 0;
-    } else {
-        PioneerDDJ400.selectedFxSlot = 2;
-    }
+    PioneerDDJ400.selectedFxSlot = 2;
+};
+
+PioneerDDJ400.beatFxSelectPressed = function(_channel, _control, value) {
+    if (value === 0) { return; }
+
+    PioneerDDJ400.selectedFxSlot = 3;
 };
 
 PioneerDDJ400.beatFxOnOffPressed = function(_channel, _control, value) {
@@ -692,10 +676,11 @@ PioneerDDJ400.beatFxOnOffPressed = function(_channel, _control, value) {
 PioneerDDJ400.beatFxOnOffShiftPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    // turn off all three effect slots in Effect Unit 1
+    // turn off all three effect slots in Effect Unit 1 and reset wet/dry mix
     for (var i = 1; i <= PioneerDDJ400.numFxSlots; i += 1) {
         engine.setValue("[EffectRack1_EffectUnit1_Effect" + i + "]", "enabled", 0);
     }
+    script.triggerControl("[EffectRack1_EffectUnit1]", "mix", 0);
     PioneerDDJ400.toggleLight(PioneerDDJ400.lights.beatFx, false);
 };
 
