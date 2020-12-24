@@ -43,26 +43,26 @@ void DlgPrefControllers::slotOpenLocalFile(const QString& file) {
 }
 
 void DlgPrefControllers::slotUpdate() {
-    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
-        pControllerWindows->slotUpdate();
+    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
+        pControllerDlg->slotUpdate();
     }
 }
 
 void DlgPrefControllers::slotCancel() {
-    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
-        pControllerWindows->slotCancel();
+    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
+        pControllerDlg->slotCancel();
     }
 }
 
 void DlgPrefControllers::slotApply() {
-    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
-        pControllerWindows->slotApply();
+    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
+        pControllerDlg->slotApply();
     }
 }
 
 void DlgPrefControllers::slotResetToDefaults() {
-    for (DlgPrefController* pControllerWindows : qAsConst(m_controllerWindows)) {
-        pControllerWindows->slotResetToDefaults();
+    for (DlgPrefController* pControllerDlg : qAsConst(m_controllerPages)) {
+        pControllerDlg->slotResetToDefaults();
     }
 }
 
@@ -73,9 +73,9 @@ QUrl DlgPrefControllers::helpUrl() const {
 bool DlgPrefControllers::handleTreeItemClick(QTreeWidgetItem* clickedItem) {
     int controllerIndex = m_controllerTreeItems.indexOf(clickedItem);
     if (controllerIndex >= 0) {
-        DlgPrefController* controllerWidget = m_controllerWindows.value(controllerIndex);
-        if (controllerWidget) {
-            m_pDlgPreferences->switchToPage(controllerWidget);
+        DlgPrefController* pControllerDlg = m_controllerPages.value(controllerIndex);
+        if (pControllerDlg) {
+            m_pDlgPreferences->switchToPage(pControllerDlg);
         }
         return true;
     } else if (clickedItem == m_pControllersRootItem) {
@@ -93,16 +93,16 @@ void DlgPrefControllers::rescanControllers() {
 }
 
 void DlgPrefControllers::destroyControllerWidgets() {
-    while (!m_controllerWindows.isEmpty()) {
-        DlgPrefController* controllerDlg = m_controllerWindows.takeLast();
-        m_pDlgPreferences->removePageWidget(controllerDlg);
-        delete controllerDlg;
+    while (!m_controllerPages.isEmpty()) {
+        DlgPrefController* pControllerDlg = m_controllerPages.takeLast();
+        m_pDlgPreferences->removePageWidget(pControllerDlg);
+        delete pControllerDlg;
     }
 
     m_controllerTreeItems.clear();
     while (m_pControllersRootItem->childCount() > 0) {
-        QTreeWidgetItem* controllerTreeItem = m_pControllersRootItem->takeChild(0);
-        delete controllerTreeItem;
+        QTreeWidgetItem* pControllerTreeItem = m_pControllersRootItem->takeChild(0);
+        delete pControllerTreeItem;
     }
 }
 
@@ -121,56 +121,55 @@ void DlgPrefControllers::setupControllerWidgets() {
     std::sort(controllerList.begin(), controllerList.end(), controllerCompare);
 
     foreach (Controller* pController, controllerList) {
-        DlgPrefController* controllerDlg = new DlgPrefController(
+        DlgPrefController* pControllerDlg = new DlgPrefController(
                 this, pController, m_pControllerManager, m_pConfig);
-        connect(controllerDlg,
+        connect(pControllerDlg,
                 &DlgPrefController::mappingStarted,
                 m_pDlgPreferences,
                 &DlgPreferences::hide);
-        connect(controllerDlg,
+        connect(pControllerDlg,
                 &DlgPrefController::mappingEnded,
                 m_pDlgPreferences,
                 &DlgPreferences::show);
 
-        m_controllerWindows.append(controllerDlg);
+        m_controllerPages.append(pControllerDlg);
 
         connect(pController,
                 &Controller::openChanged,
-                [this, controllerDlg](bool bOpen) {
-                    slotHighlightDevice(controllerDlg, bOpen);
+                [this, pControllerDlg](bool bOpen) {
+                    slotHighlightDevice(pControllerDlg, bOpen);
                 });
 
-        QTreeWidgetItem* controllerTreeItem = new QTreeWidgetItem(
+        QTreeWidgetItem* pControllerTreeItem = new QTreeWidgetItem(
                 QTreeWidgetItem::Type);
-        m_pDlgPreferences->addPageWidget(controllerDlg,
-                controllerTreeItem,
+        m_pDlgPreferences->addPageWidget(pControllerDlg,
+                pControllerTreeItem,
                 pController->getName(),
                 "controllers.svg");
 
-        m_pControllersRootItem->addChild(controllerTreeItem);
-        m_controllerTreeItems.append(controllerTreeItem);
+        m_pControllersRootItem->addChild(pControllerTreeItem);
+        m_controllerTreeItems.append(pControllerTreeItem);
 
         // If controller is open make controller label bold
-        QFont temp = controllerTreeItem->font(0);
+        QFont temp = pControllerTreeItem->font(0);
         temp.setBold(pController->isOpen());
-        controllerTreeItem->setFont(0, temp);
+        pControllerTreeItem->setFont(0, temp);
     }
 }
 
-void DlgPrefControllers::slotHighlightDevice(DlgPrefController* dialog, bool enabled) {
-    int dialogIndex = m_controllerWindows.indexOf(dialog);
-    if (dialogIndex < 0) {
+void DlgPrefControllers::slotHighlightDevice(DlgPrefController* pControllerDlg, bool enabled) {
+    int controllerPageIndex = m_controllerPages.indexOf(pControllerDlg);
+    if (controllerPageIndex < 0) {
         return;
     }
 
-    QTreeWidgetItem * controllerWindowLink =
-            m_controllerTreeItems.at(dialogIndex);
-
-    if (!controllerWindowLink) {
+    QTreeWidgetItem* pControllerTreeItem =
+            m_controllerTreeItems.at(controllerPageIndex);
+    if (!pControllerTreeItem) {
         return;
     }
 
-    QFont temp = controllerWindowLink->font(0);
+    QFont temp = pControllerTreeItem->font(0);
     temp.setBold(enabled);
-    controllerWindowLink->setFont(0,temp);
+    pControllerTreeItem->setFont(0, temp);
 }

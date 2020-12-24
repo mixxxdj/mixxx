@@ -49,6 +49,6 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     UserSettingsPointer m_pConfig;
     ControllerManager* m_pControllerManager;
     QTreeWidgetItem* m_pControllersRootItem;
-    QList<DlgPrefController*> m_controllerWindows;
+    QList<DlgPrefController*> m_controllerPages;
     QList<QTreeWidgetItem*> m_controllerTreeItems;
 };
