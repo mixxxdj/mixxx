@@ -18,6 +18,7 @@
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/datetime.h"
+#include "util/db/sqlite.h"
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
@@ -618,12 +619,23 @@ QVariant BaseTrackTableModel::roleValue(
             return QString("(%1)").arg(timesPlayed);
         }
         case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
-        case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT:
         case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
             VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
                 return QVariant();
             }
             return mixxx::localDateTimeFromUtc(rawValue.toDateTime());
+        case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
+            QDateTime lastPlayedAt;
+            if (rawValue.type() == QVariant::String) {
+                // column value
+                lastPlayedAt = sqlite::readGeneratedTimestamp(rawValue);
+            } else {
+                // cached in memory (local time)
+                lastPlayedAt = rawValue.toDateTime().toUTC();
+            }
+            DEBUG_ASSERT(lastPlayedAt.timeSpec() == Qt::UTC);
+            return mixxx::localDateTimeFromUtc(lastPlayedAt);
+        }
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             mixxx::Bpm bpm;
             if (!rawValue.isNull()) {
