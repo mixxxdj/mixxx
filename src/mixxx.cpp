@@ -195,7 +195,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         StatsManager::createInstance();
     }
 
-    m_pSettingsManager = std::make_unique<SettingsManager>(args.getSettingsPath());
+    m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 
     initializeKeyboard();
     installEventFilter(m_pKeyboard);
