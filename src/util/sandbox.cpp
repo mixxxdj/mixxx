@@ -450,7 +450,7 @@ QString Sandbox::migrateOldSettings() {
                     nil,
                     &error);
             CFRelease(url);
-            if (!bookmark) {
+            if (bookmark) {
                 QFile oldSettings(legacySettingsPath);
                 if (oldSettings.rename(sandboxedPath)) {
                     qInfo() << "Sandbox::migrateOldSettings: Successfully "
