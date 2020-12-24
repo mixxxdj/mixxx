@@ -375,6 +375,16 @@ PioneerDDJ400.phraseJumpBack = function(_channel, _control, value, _status, grou
 };
 
 //
+// Beat sync
+//
+PioneerDDJ400.syncPressed = function(channel, control, value, status, group) {
+    engine.setValue(group, "sync_enabled", value);
+};
+
+PioneerDDJ400.syncLongPressed = function(channel, control, value, status, group) {
+    engine.setValue(group, "sync_enabled", value);
+    engine.setValue(group, "sync_master", 0x01);
+};
 // Jog wheels
 //
 

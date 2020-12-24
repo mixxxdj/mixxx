@@ -366,21 +366,21 @@
             <control>
                 <description>BEAT SYNC (DECK1) - press - Beat Sync to Master deck</description>
                 <group>[Channel1]</group>
-                <key>sync_enabled</key> <!-- alternative: beatsync -->
+                <key>PioneerDDJ400.syncPressed</key>
                 <status>0x90</status>
                 <midino>0x58</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <description>BEAT SYNC LONG PRESS (DECK1) - press - Set as Master deck</description>
                 <group>[Channel1]</group>
-                <key>sync_master</key>
+                <key>PioneerDDJ400.syncLongPressed</key>
                 <status>0x90</status>
                 <midino>0x5C</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
@@ -397,21 +397,21 @@
             <control>
                 <description>BEAT SYNC (DECK2) - press - Beat Sync to Master deck</description>
                 <group>[Channel2]</group>
-                <key>sync_enabled</key> <!-- alternative: beatsync -->
+                <key>PioneerDDJ400.syncPressed</key>
                 <status>0x91</status>
                 <midino>0x58</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
                 <description>BEAT SYNC LONG PRESS (DECK2) - press - Set as Master deck</description>
                 <group>[Channel2]</group>
-                <key>sync_master</key>
+                <key>PioneerDDJ400.syncLongPressed</key>
                 <status>0x91</status>
                 <midino>0x5C</midino>
                 <options>
-                    <Normal/>
+                    <Script-Binding/>
                 </options>
             </control>
             <control>
