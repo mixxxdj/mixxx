@@ -627,11 +627,11 @@ PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
     var effectOn = engine.getValue(PioneerDDJ400.selectedFxGroup, "enabled");
 
     if (effectOn) {
-        engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "mix");
-        engine.setValue(PioneerDDJ400.selectedFxGroup, "meta", newVal);
-    } else {
         engine.softTakeoverIgnoreNextValue(PioneerDDJ400.selectedFxGroup, "meta");
         engine.setValue("[EffectRack1_EffectUnit1]", "mix", newVal);
+    } else {
+        engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "mix");
+        engine.setValue(PioneerDDJ400.selectedFxGroup, "meta", newVal);
     }
 };
 
