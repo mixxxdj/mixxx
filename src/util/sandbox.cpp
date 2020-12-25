@@ -8,13 +8,11 @@
 
 #include "util/mac.h"
 
-#ifdef Q_OS_MAC
+#ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
 #include <Security/SecCode.h>
 #include <Security/SecRequirement.h>
-#endif
 #endif
 
 const bool sDebug = false;
