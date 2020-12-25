@@ -21,6 +21,7 @@ case "$COMMAND" in
 
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends \
+            g++ \
             ccache \
             cmake \
             debhelper \
