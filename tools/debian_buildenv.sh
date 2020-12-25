@@ -1,4 +1,5 @@
 #!/bin/bash
+# This script works with Debian, Ubuntu, and derivatives.
 set -o pipefail
 
 COMMAND=$1
@@ -12,10 +13,10 @@ case "$COMMAND" in
     setup)
         source /etc/lsb-release 2>/dev/null
         case "${DISTRIB_CODENAME}" in
-            bionic)
+            bionic) # Ubuntu 18.04 LTS
                 PACKAGES_EXTRA="libmp4v2-dev"
                 ;;
-            *)
+            *) # libmp4v2 was removed from Debian 10 & Ubuntu 20.04 due to lack of maintenance, so use FFMPEG instead
                 PACKAGES_EXTRA="libavcodec-dev libavutil-dev"
         esac
 
