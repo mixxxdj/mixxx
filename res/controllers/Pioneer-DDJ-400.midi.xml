@@ -949,27 +949,6 @@
             </control>
 
             <control>
-                <description>MASTER LEVEL - rotate - Master gain</description>
-                <group>[Master]</group>
-                <key>gain</key>
-                <status>0xB6</status>
-                <midino>0x28</midino>
-                <options>
-                    <fourteen-bit-lsb/>
-                </options>
-            </control>
-            <control>
-                <description>MASTER LEVEL - rotate - Master gain</description>
-                <group>[Master]</group>
-                <key>gain</key>
-                <status>0xB6</status>
-                <midino>0x08</midino>
-                <options>
-                    <fourteen-bit-msb/>
-                </options>
-            </control>
-
-            <control>
                 <description>HEADPHONES MIXING - rotate - Monitor Balance</description>
                 <group>[Master]</group>
                 <key>headMix</key>
