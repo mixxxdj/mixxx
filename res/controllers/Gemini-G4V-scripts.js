@@ -5,10 +5,10 @@
 /* global script                                                      */
 /* global print                                                       */
 /* global midi                                                        */
-//////////////////////////////////////////////////////////////////////// 
+////////////////////////////////////////////////////////////////////////
 /**
  * Gemini G4V controller script
- * 
+ *
  * For Mixxx 2.0.0+
  * Written by Javier Vilarroig 2018
  *
@@ -16,7 +16,7 @@
 
 /*
  * Mapping architecture
- * 
+ *
  * Class controller - The full controller
  *     Contains:
  *         - decks
@@ -73,7 +73,7 @@ var Connection = function(group, control, callback) {
             print("Connection::deactivate: control:" + this.groupName + "/" + this.controlName);
         }
 
-        if(this.conn !== 0) {
+        if (this.conn !== 0) {
             this.conn.disconnect();
         }
     };
@@ -83,7 +83,7 @@ var Connection = function(group, control, callback) {
             print("Connection::refresh: control:" + this.groupName + "/" + this.controlName);
         }
 
-        if(this.conn !== 0) {
+        if (this.conn !== 0) {
             this.conn.trigger();
         }
     };
@@ -114,7 +114,7 @@ var Control = function(group, key) {
         if (g4v.debug) {
             print("Control::set - group:" + group + " key:" + this.key + " value:" + value);
         }
-        
+
         engine.setValue(this.group, this.key, value);
     };
 
@@ -122,7 +122,7 @@ var Control = function(group, key) {
         if (g4v.debug) {
             print("Control::get - key:" + this.key);
         }
-        
+
         return engine.getValue(this.group, this.key);
     };
 
@@ -130,7 +130,7 @@ var Control = function(group, key) {
         if (g4v.debug) {
             print("Control::id - key:" + this.key);
         }
-        
+
         return (this.group + "/" + this.key);
     };
 };
@@ -175,9 +175,9 @@ var Led = function(nameP, midiS, midiD, object) {
 
     this.set = function(value) {
         if (this.debug) {
-            print("Led::set - name:" + this.name + ((value == 1) ? " ON " : " OFF ") + " MIDI(status:0x"+midiS.toString(16)+" data:0x"+midiD.toString(16)+")");
+            print("Led::set - name:" + this.name + ((value === 1) ? " ON " : " OFF ") + " MIDI(status:0x"+midiS.toString(16)+" data:0x"+midiD.toString(16)+")");
         }
-        midi.sendShortMsg(this.midiStatus, this.midiData, ((value == 1) ? 0x7F : 0x00));
+        midi.sendShortMsg(this.midiStatus, this.midiData, ((value === 1) ? 0x7F : 0x00));
         this.lit = value;
     };
 
@@ -201,12 +201,12 @@ var Led = function(nameP, midiS, midiD, object) {
         // Clears the off timer
         this.flashTimerOff = 0;
         // Sets the on timer
-        this.flashTimerOn = engine.beginTimer(this.freq, this.objStr + ".flashOnceOn()",true);
+        this.flashTimerOn = engine.beginTimer(this.freq, this.objStr + ".flashOnceOn()", true);
         // If there is a counter decrements, if 0, cancels flashing
-        if(this.counter !== null) {
+        if (this.counter !== null) {
             this.counter--;
         }
-        if(this.counter == 0) {
+        if (this.counter === 0) {
             this.counter = null;
             this.flashOff();
         }
@@ -233,7 +233,7 @@ var Led = function(nameP, midiS, midiD, object) {
         }
 
         // if defined, sets the number of cycles
-        if(flashNo !== undefined) {
+        if (flashNo !== undefined) {
             this.counter = flashNo;
         }
 
@@ -300,7 +300,7 @@ var Deck = function(deckN) {
     ////////////////////////
     // Internal functions //
     ////////////////////////
-    
+
     // Returns true if there is a track loaded on the deck
     this.isLoaded = function() {
         return (engine.getValue(this.group, "track_loaded"));
@@ -313,7 +313,7 @@ var Deck = function(deckN) {
         }
 
         // Insert the led in leds array
-        this.leds[ID]= new Led(ID,((this.deckNum == 1 || this.deckNum == 3) ? 0x90 : 0x91), key, "g4v.decks["+this.deckNum+"].leds.");
+        this.leds[ID]= new Led(ID, ((this.deckNum === 1 || this.deckNum === 3) ? 0x90 : 0x91), key, "g4v.decks["+this.deckNum+"].leds.");
     };
 
     // Facility function for adding control objects
@@ -351,16 +351,16 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("Deck(" + this.deckNum + ").refresh");
         }
-        
+
         var names = Object.keys(this.connections);
 
         // Refreshes all the connected call backs
-        for ( var i = 0; i < names.length; i++) {
+        for (var i = 0; i < names.length; i++) {
             this.connections[names[i]].refresh();
         }
-        
+
         // Shows status only for decks 3 and 4
-        this.leds.deck_select.set((this.deckNum == 3 || this.deckNum == 4) && this.active);
+        this.leds.deck_select.set((this.deckNum === 3 || this.deckNum === 4) && this.active);
 
         // Shows Slip status
         this.leds.slip.set(this.slip);
@@ -377,45 +377,45 @@ var Deck = function(deckN) {
         var names = Object.keys(this.connections);
 
         // Manages connected callbacks
-        for ( var i = 0; i < names.length; i++) {
+        for (var i = 0; i < names.length; i++) {
             var connection = this.connections[names[i]];
             if (flag) {
                 connection.activate();
             } else
                 connection.deactivate();
         }
-        
+
         // Sets status
         this.active = flag;
-        
+
         // Sets pad status
         this.setPadGroup(this.padMode);
-        
+
         // Refreshes the deck
         this.refresh();
     };
-    
+
     // Deactivates scratching if jog wheel is stopped
     this.stopScratch = function() {
         if (g4v.debug) {
             print("Deck(" + this.deckNum + ").stopScratch");
         }
-        
+
         print("Stop? "+(Date.now() - this.lastScratch));
-        if((Date.now() - this.lastScratch) < 20) {
+        if ((Date.now() - this.lastScratch) < 20) {
             return;
         }
-        
+
         engine.scratchDisable(this.deckNum, 1);
         engine.stopTimer(this.scratchTimer);
         this.scratching = false;
         this.scratchTimer = 0;
 
-        if(this.slip == 1) {
+        if (this.slip === 1) {
             this.controls.slip.set(0);
         }
     };
-    
+
     // Set pad group
     // Parameters:
     //    set - Group to set
@@ -423,22 +423,22 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("Deck(" + this.deckNum + ").setPadGroup("+set+")");
         }
-        
-        if(this.parMode == set) {
+
+        if (this.parMode === set) {
             return;
         }
-        
+
         // Sets pad mode led Leds
-        this.leds.hot_cue.set(set == 1 ? 1 : 0);
-        this.leds.auto_loop.set(set == 2 ? 1 : 0);
-        this.leds.sample.set(set == 3 ? 1 : 0);
-        this.leds.loop_roll.set(set == 4 ? 1 : 0);
-        if(set == 5) {
+        this.leds.hot_cue.set(set === 1 ? 1 : 0);
+        this.leds.auto_loop.set(set === 2 ? 1 : 0);
+        this.leds.sample.set(set === 3 ? 1 : 0);
+        this.leds.loop_roll.set(set === 4 ? 1 : 0);
+        if (set === 5) {
             this.leds.loop_roll.flash();
         } else {
             this.leds.loop_roll.flashOff();
         }
-        if(set == 6) {
+        if (set === 6) {
             this.leds.sample.flash();
         } else {
             this.leds.sample.flashOff();
@@ -446,7 +446,7 @@ var Deck = function(deckN) {
 
         // Deactivates old connections
         var sampleGroup;
-        if(this.padMode == 1) {
+        if (this.padMode === 1) {
             this.padConnections.hotcue_1_enabled.deactivate();
             this.padConnections.hotcue_2_enabled.deactivate();
             this.padConnections.hotcue_3_enabled.deactivate();
@@ -456,7 +456,7 @@ var Deck = function(deckN) {
             this.padConnections.hotcue_7_enabled.deactivate();
             this.padConnections.hotcue_8_enabled.deactivate();
         }
-        if(this.padMode == 2) {
+        if (this.padMode === 2) {
             this.padConnections["beatloop_0.125_enabled"].deactivate();
             this.padConnections["beatloop_0.25_enabled"].deactivate();
             this.padConnections["beatloop_0.5_enabled"].deactivate();
@@ -466,7 +466,7 @@ var Deck = function(deckN) {
             this.padConnections.beatloop_8_enabled.deactivate();
             this.padConnections.beatloop_16_enabled.deactivate();
         }
-        if(this.padMode == 3) {
+        if (this.padMode === 3) {
             // Hides Sampler
             this.controls.show_samplers.set(0);
             sampleGroup = 1+(this.deckNum-1)*16;
@@ -480,7 +480,7 @@ var Deck = function(deckN) {
             this.padConnections["s"+(sampleGroup+6)+"_play_indicator"].deactivate();
             this.padConnections["s"+(sampleGroup+7)+"_play_indicator"].deactivate();
         }
-        if(this.padMode == 4) {
+        if (this.padMode === 4) {
             this.padConnections["beatlooproll_0.125_activate"].deactivate();
             this.padConnections["beatlooproll_0.25_activate"].deactivate();
             this.padConnections["beatlooproll_0.5_activate"].deactivate();
@@ -490,14 +490,14 @@ var Deck = function(deckN) {
             this.padConnections.beatlooproll_8_activate.deactivate();
             this.padConnections.beatlooproll_16_activate.deactivate();
         }
-        if(this.padMode == 5) {
+        if (this.padMode === 5) {
             this.padConnections.loop_in.deactivate();
             this.padConnections.loop_out.deactivate();
             this.padConnections.loop_enabled.deactivate();
         }
 
         // Activates pad connections
-        if(set == 1) {    // Hot Cue Mode
+        if (set === 1) {    // Hot Cue Mode
             this.padConnections.hotcue_1_enabled.activate();
             this.padConnections.hotcue_2_enabled.activate();
             this.padConnections.hotcue_3_enabled.activate();
@@ -506,8 +506,8 @@ var Deck = function(deckN) {
             this.padConnections.hotcue_6_enabled.activate();
             this.padConnections.hotcue_7_enabled.activate();
             this.padConnections.hotcue_8_enabled.activate();
-        } 
-        if(set == 2) {    // Auto Loop mode
+        }
+        if (set === 2) {    // Auto Loop mode
             this.padConnections["beatloop_0.125_enabled"].activate();
             this.padConnections["beatloop_0.25_enabled"].activate();
             this.padConnections["beatloop_0.5_enabled"].activate();
@@ -516,8 +516,8 @@ var Deck = function(deckN) {
             this.padConnections.beatloop_4_enabled.activate();
             this.padConnections.beatloop_8_enabled.activate();
             this.padConnections.beatloop_16_enabled.activate();
-        } 
-        if(set == 3) {    // Samples mode
+        }
+        if (set === 3) {    // Samples mode
             // Shows Sampler
             this.controls.show_samplers.set(1);
             sampleGroup = 1+(this.deckNum-1)*16;
@@ -530,8 +530,8 @@ var Deck = function(deckN) {
             this.padConnections["s"+(sampleGroup+5)+"_play_indicator"].activate();
             this.padConnections["s"+(sampleGroup+6)+"_play_indicator"].activate();
             this.padConnections["s"+(sampleGroup+7)+"_play_indicator"].activate();
-        } 
-        if(set == 4) { // Loop Roll mode
+        }
+        if (set === 4) { // Loop Roll mode
             this.padConnections["beatlooproll_0.125_activate"].activate();
             this.padConnections["beatlooproll_0.25_activate"].activate();
             this.padConnections["beatlooproll_0.5_activate"].activate();
@@ -540,13 +540,13 @@ var Deck = function(deckN) {
             this.padConnections.beatlooproll_4_activate.activate();
             this.padConnections.beatlooproll_8_activate.activate();
             this.padConnections.beatlooproll_16_activate.activate();
-        } 
-        if(set == 5) { // Manual loop mode
+        }
+        if (set === 5) { // Manual loop mode
             this.padConnections.loop_in.activate();
             this.padConnections.loop_out.activate();
             this.padConnections.loop_enabled.activate();
-        } 
-        if(set == 6) {    // Beat Jump mode
+        }
+        if (set === 6) {    // Beat Jump mode
             // Leds off - no connections
             this.leds.pad1.set(0);
             this.leds.pad2.set(0);
@@ -556,77 +556,77 @@ var Deck = function(deckN) {
             this.leds.pad6.set(0);
             this.leds.pad7.set(0);
             this.leds.pad8.set(0);
-        } 
+        }
 
         // Sets pad mode
         this.padMode = set;
     };
-    
+
     // Shutdown the deck
     this.shutdown = function() {
         var myObj = this;
-        Object.keys(this.leds).forEach(function(element,key){myObj.leds[element].set(0);});
+        Object.keys(this.leds).forEach(function(element, key) { myObj.leds[element].set(0); });
     };
-    
+
     //////////////////////////////////////////////////////////////////////////////
     // Call back functions for connecting Mixxx controls to controller controls //
     //////////////////////////////////////////////////////////////////////////////
     this.cbPlay = function(value, group, control) {
-        g4v.decks[group.substring(8, 9)].leds.play.set(value == 0 ? 0 : 1);
+        g4v.decks[group.substring(8, 9)].leds.play.set(value === 0 ? 0 : 1);
     };
-    
+
     this.cbCue = function(value, group, control) {
-        g4v.decks[group.substring(8, 9)].leds.cue.set(value == 0 ? 0 : 1);
+        g4v.decks[group.substring(8, 9)].leds.cue.set(value === 0 ? 0 : 1);
     };
-    
+
     this.cbSync = function(value, group, control) {
-        g4v.decks[group.substring(8, 9)].leds.sync.set(value == 0 ? 0 : 1);
+        g4v.decks[group.substring(8, 9)].leds.sync.set(value === 0 ? 0 : 1);
     };
 
     this.cbKeylock = function(value, group, control) {
-        g4v.decks[group.substring(8, 9)].leds.keylock.set(value == 0 ? 0 : 1);
+        g4v.decks[group.substring(8, 9)].leds.keylock.set(value === 0 ? 0 : 1);
     };
 
     this.cbPad1 = function(value, group, control) {
-        g4v.decks[(group.substring(1, 2) == "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9,10) == "]" ? 9 : 10))/16)].leds.pad1.set(value == 0 ? 0 : 1);
+        g4v.decks[(group.substring(1, 2) === "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9, 10) === "]" ? 9 : 10))/16)].leds.pad1.set(value === 0 ? 0 : 1);
     };
 
     this.cbPad2 = function(value, group, control) {
-        g4v.decks[(group.substring(1, 2) == "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9,10) == "]" ? 9 : 10))/16)].leds.pad2.set(value == 0 ? 0 : 1);
+        g4v.decks[(group.substring(1, 2) === "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9, 10) === "]" ? 9 : 10))/16)].leds.pad2.set(value === 0 ? 0 : 1);
     };
 
     this.cbPad3 = function(value, group, control) {
-        g4v.decks[(group.substring(1, 2) == "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9,10) == "]" ? 9 : 10))/16)].leds.pad3.set(value == 0 ? 0 : 1);
+        g4v.decks[(group.substring(1, 2) === "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9, 10) === "]" ? 9 : 10))/16)].leds.pad3.set(value === 0 ? 0 : 1);
     };
 
     this.cbPad4 = function(value, group, control) {
-        g4v.decks[(group.substring(1, 2) == "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9,10) == "]" ? 9 : 10))/16)].leds.pad4.set(value == 0 ? 0 : 1);
+        g4v.decks[(group.substring(1, 2) === "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9, 10) === "]" ? 9 : 10))/16)].leds.pad4.set(value === 0 ? 0 : 1);
     };
 
     this.cbPad5 = function(value, group, control) {
-        g4v.decks[(group.substring(1, 2) == "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9,10) == "]" ? 9 : 10))/16)].leds.pad5.set(value == 0 ? 0 : 1);
+        g4v.decks[(group.substring(1, 2) === "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9, 10) === "]" ? 9 : 10))/16)].leds.pad5.set(value === 0 ? 0 : 1);
     };
 
     this.cbPad6 = function(value, group, control) {
-        g4v.decks[(group.substring(1, 2) == "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9,10) == "]" ? 9 : 10))/16)].leds.pad6.set(value == 0 ? 0 : 1);
+        g4v.decks[(group.substring(1, 2) === "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9, 10) === "]" ? 9 : 10))/16)].leds.pad6.set(value === 0 ? 0 : 1);
     };
 
     this.cbPad7 = function(value, group, control) {
-        g4v.decks[(group.substring(1, 2) == "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9,10) == "]" ? 9 : 10))/16)].leds.pad7.set(value == 0 ? 0 : 1);
+        g4v.decks[(group.substring(1, 2) === "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9, 10) === "]" ? 9 : 10))/16)].leds.pad7.set(value === 0 ? 0 : 1);
     };
 
     this.cbPad8 = function(value, group, control) {
-        g4v.decks[(group.substring(1, 2) == "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9,10) == "]" ? 9 : 10))/16)].leds.pad8.set(value == 0 ? 0 : 1);
+        g4v.decks[(group.substring(1, 2) === "C") ? group.substring(8, 9) : Math.ceil(group.substring(8, (group.substring(9, 10) === "]" ? 9 : 10))/16)].leds.pad8.set(value === 0 ? 0 : 1);
     };
 
     this.cbFx = function(value, group, control) {
-        g4v.decks[group.substring(23, 24)].leds.fx.set(value == 0 ? 0 : 1);
+        g4v.decks[group.substring(23, 24)].leds.fx.set(value === 0 ? 0 : 1);
     };
 
     /////////////////////////////////////////////////////
     // Callback for reacting to deck controller events //
     /////////////////////////////////////////////////////
-    
+
     // Play buttons 0x90/0x01 - 0x91/0x01
     // Simple: Starts playing the deck
     this.evBtnPlay = function(channel, midino, value, status, group) {
@@ -635,14 +635,14 @@ var Deck = function(deckN) {
         }
 
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
         // Toggles control
-        this.controls.play.set(this.controls.play.get() == 1 ? 0 : 1);
+        this.controls.play.set(this.controls.play.get() === 1 ? 0 : 1);
     };
-    
+
     // Cue buttons 0x90/0x02 - 0x91/0x02
     // Simple: CUE press
     this.evBtnCue = function(channel, midino, value, status, group) {
@@ -651,7 +651,7 @@ var Deck = function(deckN) {
         }
 
         // Toggles control
-        this.controls.cue.set(value == 0x7f ? 1 : 0);
+        this.controls.cue.set(value === 0x7f ? 1 : 0);
     };
 
     // Cue buttons 0x90/0x03 - 0x91/0x03
@@ -660,9 +660,9 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evBtnCup - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // Toggles control
-        this.controls.cup.set(value == 0x7f ? 1 : 0);
+        this.controls.cup.set(value === 0x7f ? 1 : 0);
     };
 
     // Sync buttons 0x90/0x04 - 0x91/0x04
@@ -671,22 +671,22 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evBtnSync - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // On release, check if less than a second happened since push deactivates sync
-        if(value == 0x00) {
-            print("Time:"+(Date.now() - this.sync_press_time));
-            if((Date.now() - this.sync_press_time) < 1000) {
+        if (value === 0x00) {
+            print("Time:"+(Date.now() - this.syncPressTime));
+            if ((Date.now() - this.syncPressTime) < 1000) {
                 this.controls.sync.set(0);
             }
-            this.sync_press_time = 0;
+            this.syncPressTime = 0;
             return;
         }
 
         // Activates sync
         this.controls.sync.set(1);
-        
+
         // Saves time
-        this.sync_press_time = Date.now();
+        this.syncPressTime = Date.now();
     };
 
     // Key buttons 0x90/0x05 - 0x91/0x05
@@ -695,14 +695,14 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evBtnKey - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
         // Toggles control
-        this.controls.keylock.set(this.controls.keylock.get() == 0 ? 1 : 0);
+        this.controls.keylock.set(this.controls.keylock.get() === 0 ? 1 : 0);
     };
 
     // Fx buttons 0x90/0x1a - 0x91/0x1a
@@ -711,14 +711,14 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evBtnFx - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
         // Toggles control
-        script.toggleControl("[EffectRack1_EffectUnit"+this.deckNum+"]","enabled");
+        script.toggleControl("[EffectRack1_EffectUnit"+this.deckNum+"]", "enabled");
     };
 
     // Slip buttons 0x90/0x19 - 0x91/0x19
@@ -727,14 +727,14 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evBtnSlip - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
         // Toggles control
-        this.slip = (this.slip == 0 ? 1 : 0);
+        this.slip = (this.slip === 0 ? 1 : 0);
 
         // Set led
         this.leds.slip.set(this.slip);
@@ -748,7 +748,7 @@ var Deck = function(deckN) {
             print("deck::evBtnJog - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
 
-        switch(value) {
+        switch (value) {
         case 0x7f:
             var intervalsPerRev = 250;
             var rpm = 30+1/3;
@@ -756,12 +756,12 @@ var Deck = function(deckN) {
             var beta = (alpha / 32);
             engine.scratchEnable(this.deckNum, intervalsPerRev, rpm, alpha, beta);
             this.scratching = true;
-            if(this.slip == 1) {
+            if (this.slip === 1) {
                 this.controls.slip.set(1);
             }
             break;
         case 0x00:
-            if(this.scratchTimer == 0) {
+            if (this.scratchTimer === 0) {
                 this.scratchTimer = engine.beginTimer(20, "g4v.decks["+this.deckNum+"].stopScratch()");
             }
             break;
@@ -786,11 +786,11 @@ var Deck = function(deckN) {
             print("Deck::evKnoSampleVol - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
 
-        if(g4v.shift) {
+        if (g4v.shift) {
             this.controls.pitch.set(script.absoluteNonLin(value, -6, 0, 6));
         } else {
-            for(var i = 1; i < 65 ; i++) {
-                engine.setValue("[Sampler"+i+"]","volume",value/0x7f);
+            for (var i = 1; i < 65; i++) {
+                engine.setValue("[Sampler"+i+"]", "volume", value/0x7f);
             }
         }
     };
@@ -801,7 +801,7 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("Deck::evKnoMix - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         var mix = ((value/0x7f)*1);
         engine.setValue("[EffectRack1_EffectUnit"+this.deckNum+"]", "mix", mix);
     };
@@ -812,7 +812,7 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evKnoMeta - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         var mix = ((value/0x7f)*1);
         engine.setValue("[EffectRack1_EffectUnit"+this.deckNum+"]", "super1", mix);
     };
@@ -824,13 +824,13 @@ var Deck = function(deckN) {
             print("deck::evEncJog - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
 
-        switch(this.scratching) {
+        switch (this.scratching) {
         case true:    // We are scratching, if shift, fast search
-            engine.scratchTick(this.deckNum,(value > 0x40 ? 1 : -1)*(g4v.shift == 1 ? 10 : 1.4));
+            engine.scratchTick(this.deckNum, (value > 0x40 ? 1 : -1)*(g4v.shift === 1 ? 10 : 1.4));
             this.lastScratch = Date.now();
             break;
         case false:    // We are nuddging, pay attention to multiplier to adjust sensitivity
-            engine.setValue("[Channel"+this.deckNum+"]","jog",(value > 0x40 ? 1 : -1)*0.2);
+            engine.setValue("[Channel"+this.deckNum+"]", "jog", (value > 0x40 ? 1 : -1)*0.2);
             break;
         }
     };
@@ -842,22 +842,22 @@ var Deck = function(deckN) {
             print("deck::evBtnPad - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
 
-        switch(this.padMode) {
+        switch (this.padMode) {
         case 1:    // Hot Cue
-            if(midino >= 0x09 && midino <= 0x10) {
-                this.controls["hot_cue_"+(midino-0x08)].set((value == 0x7f ? 1 : 0));
+            if (midino >= 0x09 && midino <= 0x10) {
+                this.controls["hot_cue_"+(midino-0x08)].set((value === 0x7f ? 1 : 0));
             }
-            if(midino >= 0x10 && midino <= 0x18) {
+            if (midino >= 0x10 && midino <= 0x18) {
                 this.controls["clr_cue_"+(midino-0x10)].set(1);
             }
             break;
         case 2:    // Auto Loop
             // Ignore key off
-            if(value == 0x00) {
+            if (value === 0x00) {
                 break;
             }
             // Sets loop
-            switch(midino) {
+            switch (midino) {
             case 0x09:
                 this.controls["aloop_0.125"].set(1);
                 break;
@@ -886,11 +886,11 @@ var Deck = function(deckN) {
             break;
         case 3:    // Sampler
             // Ingnore key off
-            if(value == 0x00) {
+            if (value === 0x00) {
                 break;
             }
             // Triggers sample
-            switch(midino) {
+            switch (midino) {
             case 0x09:
                 this.controls.s1_play.set(1);
                 break;
@@ -918,39 +918,39 @@ var Deck = function(deckN) {
             }
             break;
         case 4:    // Loop Roll
-            switch(midino) {
+            switch (midino) {
             case 0x09:
-                this.controls["alooproll_0.125"].set(value == 0 ? 0 : 1);
+                this.controls["alooproll_0.125"].set(value === 0 ? 0 : 1);
                 break;
             case 0x0a:
-                this.controls["alooproll_0.25"].set(value == 0 ? 0 : 1);
+                this.controls["alooproll_0.25"].set(value === 0 ? 0 : 1);
                 break;
             case 0x0b:
-                this.controls["alooproll_0.5"].set(value == 0 ? 0 : 1);
+                this.controls["alooproll_0.5"].set(value === 0 ? 0 : 1);
                 break;
             case 0x0c:
-                this.controls.alooproll_1.set(value == 0 ? 0 : 1);
+                this.controls.alooproll_1.set(value === 0 ? 0 : 1);
                 break;
             case 0x0d:
-                this.controls.alooproll_2.set(value == 0 ? 0 : 1);
+                this.controls.alooproll_2.set(value === 0 ? 0 : 1);
                 break;
             case 0x0e:
-                this.controls.alooproll_4.set(value == 0 ? 0 : 1);
+                this.controls.alooproll_4.set(value === 0 ? 0 : 1);
                 break;
             case 0x0f:
-                this.controls.alooproll_8.set(value == 0 ? 0 : 1);
+                this.controls.alooproll_8.set(value === 0 ? 0 : 1);
                 break;
             case 0x10:
-                this.controls.alooproll_16.set(value == 0 ? 0 : 1);
+                this.controls.alooproll_16.set(value === 0 ? 0 : 1);
                 break;
             }
             break;
         case 5: // Manual loop
             // Ignore key off
-            if(value == 0x00) {
+            if (value === 0x00) {
                 break;
             }
-            switch(midino) {
+            switch (midino) {
             case 0x09:
                 this.controls.loop_in.set(1);
                 break;
@@ -976,57 +976,57 @@ var Deck = function(deckN) {
             break;
         case 6: // Beat Jump mode
             // Ignore key off
-            if(value == 0x00) {
+            if (value === 0x00) {
                 break;
             }
-            switch(midino) {
+            switch (midino) {
             case 0x09:
-                this.controls["beatjump_0.125_f"].set(value == 0 ? 0 : 1);
+                this.controls["beatjump_0.125_f"].set(value === 0 ? 0 : 1);
                 break;
             case 0x0a:
-                this.controls["beatjump_0.25_f"].set(value == 0 ? 0 : 1);
+                this.controls["beatjump_0.25_f"].set(value === 0 ? 0 : 1);
                 break;
             case 0x0b:
-                this.controls["beatjump_0.5_f"].set(value == 0 ? 0 : 1);
+                this.controls["beatjump_0.5_f"].set(value === 0 ? 0 : 1);
                 break;
             case 0x0c:
-                this.controls.beatjump_1_f.set(value == 0 ? 0 : 1);
+                this.controls.beatjump_1_f.set(value === 0 ? 0 : 1);
                 break;
             case 0x0d:
-                this.controls.beatjump_2_f.set(value == 0 ? 0 : 1);
+                this.controls.beatjump_2_f.set(value === 0 ? 0 : 1);
                 break;
             case 0x0e:
-                this.controls.beatjump_4_f.set(value == 0 ? 0 : 1);
+                this.controls.beatjump_4_f.set(value === 0 ? 0 : 1);
                 break;
             case 0x0f:
-                this.controls.beatjump_8_f.set(value == 0 ? 0 : 1);
+                this.controls.beatjump_8_f.set(value === 0 ? 0 : 1);
                 break;
             case 0x10:
-                this.controls.beatjump_16_f.set(value == 0 ? 0 : 1);
+                this.controls.beatjump_16_f.set(value === 0 ? 0 : 1);
                 break;
             case 0x11:
-                this.controls["beatjump_0.125_b"].set(value == 0 ? 0 : 1);
+                this.controls["beatjump_0.125_b"].set(value === 0 ? 0 : 1);
                 break;
             case 0x12:
-                this.controls["beatjump_0.25_b"].set(value == 0 ? 0 : 1);
+                this.controls["beatjump_0.25_b"].set(value === 0 ? 0 : 1);
                 break;
             case 0x13:
-                this.controls["beatjump_0.5_b"].set(value == 0 ? 0 : 1);
+                this.controls["beatjump_0.5_b"].set(value === 0 ? 0 : 1);
                 break;
             case 0x14:
-                this.controls.beatjump_1_b.set(value == 0 ? 0 : 1);
+                this.controls.beatjump_1_b.set(value === 0 ? 0 : 1);
                 break;
             case 0x15:
-                this.controls.beatjump_2_b.set(value == 0 ? 0 : 1);
+                this.controls.beatjump_2_b.set(value === 0 ? 0 : 1);
                 break;
             case 0x16:
-                this.controls.beatjump_4_b.set(value == 0 ? 0 : 1);
+                this.controls.beatjump_4_b.set(value === 0 ? 0 : 1);
                 break;
             case 0x17:
-                this.controls.beatjump_8_b.set(value == 0 ? 0 : 1);
+                this.controls.beatjump_8_b.set(value === 0 ? 0 : 1);
                 break;
             case 0x18:
-                this.controls.beatjump_16_b.set(value == 0 ? 0 : 1);
+                this.controls.beatjump_16_b.set(value === 0 ? 0 : 1);
                 break;
             }
             break;
@@ -1039,9 +1039,9 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evBtnHotCue - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
@@ -1055,9 +1055,9 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evBtnAutoLoop - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
@@ -1071,9 +1071,9 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evBtnSample - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
@@ -1087,9 +1087,9 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evBtnLoopRoll - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
@@ -1103,25 +1103,25 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evBtnManualLoop - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
         // Sets Pad mode
         this.setPadGroup(5);
     };
-    
+
     // Loop Roll buttons 0x90/0x21 - 0x91/0x21
     // Shift: Activates Beat Jump pad mode
     this.evBtnBeatJump = function(channel, midino, value, status, group) {
         if (g4v.debug) {
             print("deck::evBtnBeatJump - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
@@ -1135,9 +1135,9 @@ var Deck = function(deckN) {
         if (g4v.debug) {
             print("deck::evBtnFxSelect - channel" + channel + " midino:" + midino + " value:" + value + " status:" + status + " group:" + group);
         }
-        
+
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
@@ -1157,7 +1157,7 @@ var Deck = function(deckN) {
     ///////////////////////////
     // Constructs the object //
     ///////////////////////////
-    
+
     // Creates all the leds
     this.addLed("play", 0x01);
     this.addLed("cue", 0x02);
@@ -1189,8 +1189,8 @@ var Deck = function(deckN) {
     this.addConnection("cue_indicator", this.cbCue);
     this.addConnection("sync_mode", this.cbSync);
     this.addConnection("keylock", this.cbKeylock);
-    this.addConnection("enabled", this.cbFx,"fx","[EffectRack1_EffectUnit"+this.deckNum+"]");
-    
+    this.addConnection("enabled", this.cbFx, "fx", "[EffectRack1_EffectUnit"+this.deckNum+"]");
+
     // Creates connections to pad buttons
     this.addPadConnection("hotcue_1_enabled", this.cbPad1);
     this.addPadConnection("hotcue_2_enabled", this.cbPad2);
@@ -1219,15 +1219,15 @@ var Deck = function(deckN) {
     this.addPadConnection("loop_in", this.cbPad1);
     this.addPadConnection("loop_out", this.cbPad2);
     this.addPadConnection("loop_enabled", this.cbPad3);
-    this.addPadConnection("track_samples", this.cbPad1,"s"+(((this.deckNum-1)*16)+1)+"_play_indicator","[Sampler"+(((this.deckNum-1)*16)+1)+"]");
-    this.addPadConnection("track_samples", this.cbPad2,"s"+(((this.deckNum-1)*16)+2)+"_play_indicator","[Sampler"+(((this.deckNum-1)*16)+2)+"]");
-    this.addPadConnection("track_samples", this.cbPad3,"s"+(((this.deckNum-1)*16)+3)+"_play_indicator","[Sampler"+(((this.deckNum-1)*16)+3)+"]");
-    this.addPadConnection("track_samples", this.cbPad4,"s"+(((this.deckNum-1)*16)+4)+"_play_indicator","[Sampler"+(((this.deckNum-1)*16)+4)+"]");
-    this.addPadConnection("track_samples", this.cbPad5,"s"+(((this.deckNum-1)*16)+5)+"_play_indicator","[Sampler"+(((this.deckNum-1)*16)+5)+"]");
-    this.addPadConnection("track_samples", this.cbPad6,"s"+(((this.deckNum-1)*16)+6)+"_play_indicator","[Sampler"+(((this.deckNum-1)*16)+6)+"]");
-    this.addPadConnection("track_samples", this.cbPad7,"s"+(((this.deckNum-1)*16)+7)+"_play_indicator","[Sampler"+(((this.deckNum-1)*16)+7)+"]");
-    this.addPadConnection("track_samples", this.cbPad8,"s"+(((this.deckNum-1)*16)+8)+"_play_indicator","[Sampler"+(((this.deckNum-1)*16)+8)+"]");
-    
+    this.addPadConnection("track_samples", this.cbPad1, "s"+(((this.deckNum-1)*16)+1)+"_play_indicator", "[Sampler"+(((this.deckNum-1)*16)+1)+"]");
+    this.addPadConnection("track_samples", this.cbPad2, "s"+(((this.deckNum-1)*16)+2)+"_play_indicator", "[Sampler"+(((this.deckNum-1)*16)+2)+"]");
+    this.addPadConnection("track_samples", this.cbPad3, "s"+(((this.deckNum-1)*16)+3)+"_play_indicator", "[Sampler"+(((this.deckNum-1)*16)+3)+"]");
+    this.addPadConnection("track_samples", this.cbPad4, "s"+(((this.deckNum-1)*16)+4)+"_play_indicator", "[Sampler"+(((this.deckNum-1)*16)+4)+"]");
+    this.addPadConnection("track_samples", this.cbPad5, "s"+(((this.deckNum-1)*16)+5)+"_play_indicator", "[Sampler"+(((this.deckNum-1)*16)+5)+"]");
+    this.addPadConnection("track_samples", this.cbPad6, "s"+(((this.deckNum-1)*16)+6)+"_play_indicator", "[Sampler"+(((this.deckNum-1)*16)+6)+"]");
+    this.addPadConnection("track_samples", this.cbPad7, "s"+(((this.deckNum-1)*16)+7)+"_play_indicator", "[Sampler"+(((this.deckNum-1)*16)+7)+"]");
+    this.addPadConnection("track_samples", this.cbPad8, "s"+(((this.deckNum-1)*16)+8)+"_play_indicator", "[Sampler"+(((this.deckNum-1)*16)+8)+"]");
+
     // Creates all the controls for the deck
     this.addControl("cue", "cue_default");
     this.addControl("play", "play");
@@ -1316,9 +1316,9 @@ var Deck = function(deckN) {
     this.addControl("s4_play", "start_play", "[Sampler4]");
     this.addControl("fx_select", "next_chain", "[EffectRack1_EffectUnit"+this.deckNum+"]");
     this.addControl("loop_move", "loop_move");
-    
+
     // Applies effect to channel
-    engine.setValue("[EffectRack1_EffectUnit"+this.deckNum+"]", "group_[Channel"+this.deckNum+"]_enable",1);
+    engine.setValue("[EffectRack1_EffectUnit"+this.deckNum+"]", "group_[Channel"+this.deckNum+"]_enable", 1);
 
     if (g4v.debug) {
         print("Deck created - DeckNum:" + this.deckNum + " group:" + this.group);
@@ -1341,12 +1341,12 @@ var MyController = function() {
     this.shift = 0;
     // Orientation status
     // 2=left, 0=right, 1 = none
-    this.orientation = [2,2,0,0];
+    this.orientation = [2, 2, 0, 0];
     // Active decks (left to right)
-    this.aDecks = [1,2];
+    this.aDecks = [1, 2];
     // Browse mode false = tracks lists = lists
     this.browseMode = false;
-    
+
 
     // Facility function for adding control objects
     this.addControl = function(ID, key) {
@@ -1357,7 +1357,7 @@ var MyController = function() {
         // Insert the control in all the decks controls array
         this.master[ID] = new Control("[Master]", key);
     };
-    
+
     // Facility function for adding connection objects
     this.addConnection = function(group, control, func) {
         if (g4v.debug) {
@@ -1366,7 +1366,7 @@ var MyController = function() {
 
         // Insert the control in all the decks controls array
         g4v.connections[group+control] = engine.makeConnection(group, control, func);
-        
+
         // Triggers the connection to sync
         g4v.connections[group+control].trigger();
     };
@@ -1379,7 +1379,7 @@ var MyController = function() {
 
         this.decks[ID] = new Deck(ID);
     };
-    
+
     // Refreshes decks to ensure control synchronization
     this.refreshDecks = function() {
         this.decks[1].refresh();
@@ -1390,29 +1390,29 @@ var MyController = function() {
 
     // Init the Controller
     this.init = function(id) {
-        if (g4v.debug){
+        if (g4v.debug) {
             print("Init G4V id:" + id);
         }
 
         // //////////////////////////////
         // Creates all the led objects //
         // //////////////////////////////
-        this.leds.LeftOrientation1 = new Led("LeftOrientation1",0x93,0x05);
-        this.leds.LeftOrientation2 = new Led("LeftOrientation2",0x93,0x06);
-        this.leds.LeftOrientation3 = new Led("LeftOrientation3",0x93,0x07);
-        this.leds.LeftOrientation4 = new Led("LeftOrientation4",0x93,0x08);
-        this.leds.RightOrientation1 = new Led("RightOrientation1",0x93,0x09);
-        this.leds.RightOrientation2 = new Led("RightOrientation2",0x93,0x0a);
-        this.leds.RightOrientation3 = new Led("RightOrientation3",0x93,0x0b);
-        this.leds.RightOrientation4 = new Led("RightOrientation4",0x93,0x0c);
-        this.leds.M1Load = new Led("M1Load",0x93,0x01);
-        this.leds.M1Pfl = new Led("M1Pfl",0x93,0x0D);
-        this.leds.M2Load = new Led("M2Load",0x93,0x02);
-        this.leds.M2Pfl = new Led("M2Pfl",0x93,0x0E);
-        this.leds.M3Load = new Led("M3Load",0x93,0x03);
-        this.leds.M3Pfl = new Led("M3Pfl",0x93,0x0F);
-        this.leds.M4Load = new Led("M4Load",0x93,0x04);
-        this.leds.M4Pfl = new Led("M4Pfl",0x93,0x10);
+        this.leds.LeftOrientation1 = new Led("LeftOrientation1", 0x93, 0x05);
+        this.leds.LeftOrientation2 = new Led("LeftOrientation2", 0x93, 0x06);
+        this.leds.LeftOrientation3 = new Led("LeftOrientation3", 0x93, 0x07);
+        this.leds.LeftOrientation4 = new Led("LeftOrientation4", 0x93, 0x08);
+        this.leds.RightOrientation1 = new Led("RightOrientation1", 0x93, 0x09);
+        this.leds.RightOrientation2 = new Led("RightOrientation2", 0x93, 0x0a);
+        this.leds.RightOrientation3 = new Led("RightOrientation3", 0x93, 0x0b);
+        this.leds.RightOrientation4 = new Led("RightOrientation4", 0x93, 0x0c);
+        this.leds.M1Load = new Led("M1Load", 0x93, 0x01);
+        this.leds.M1Pfl = new Led("M1Pfl", 0x93, 0x0D);
+        this.leds.M2Load = new Led("M2Load", 0x93, 0x02);
+        this.leds.M2Pfl = new Led("M2Pfl", 0x93, 0x0E);
+        this.leds.M3Load = new Led("M3Load", 0x93, 0x03);
+        this.leds.M3Pfl = new Led("M3Pfl", 0x93, 0x0F);
+        this.leds.M4Load = new Led("M4Load", 0x93, 0x04);
+        this.leds.M4Pfl = new Led("M4Pfl", 0x93, 0x10);
 
         // Sets soft takeover of linear controls the avoid sudden changes on start
         engine.softTakeover("[Master]", "crossfader", true);
@@ -1455,12 +1455,12 @@ var MyController = function() {
 
         // Connects master controls to call backs to allow the controller to
         // visually react to changes in the system and triggers to synchronize
-        this.addConnection('[Master]', 'VuMeterR', function(value) {midi.sendShortMsg(0xB3, 0x18, value*7);});
-        this.addConnection('[Master]', 'VuMeterL', function(value) {midi.sendShortMsg(0xB3, 0x19, value*7);});
-        this.addConnection('[Channel1]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x14, value*5);});
-        this.addConnection('[Channel2]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x15, value*4);});
-        this.addConnection('[Channel3]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x16, value*5);});
-        this.addConnection('[Channel4]', 'VuMeter', function(value) {midi.sendShortMsg(0xB3, 0x17, value*5);});
+        this.addConnection("[Master]", "VuMeterR", function(value) { midi.sendShortMsg(0xB3, 0x18, value*7); });
+        this.addConnection("[Master]", "VuMeterL", function(value) { midi.sendShortMsg(0xB3, 0x19, value*7); });
+        this.addConnection("[Channel1]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x14, value*5); });
+        this.addConnection("[Channel2]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x15, value*4); });
+        this.addConnection("[Channel3]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x16, value*5); });
+        this.addConnection("[Channel4]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x17, value*5); });
         this.addConnection("[Channel1]", "track_samples", this.cbDeckLoaded);
         this.addConnection("[Channel1]", "pfl", this.cbPfl);
         this.addConnection("[Channel1]", "orientation", this.cbOrientation);
@@ -1485,10 +1485,10 @@ var MyController = function() {
         this.decks[2].activate(1);
         this.decks[3].activate(0);
         this.decks[4].activate(0);
-        
+
         // Refresh decks to ensure proper control defined
         this.refreshDecks();
-        
+
         print("g4v::init - Finished");
     };
 
@@ -1498,12 +1498,12 @@ var MyController = function() {
 
         // Turn off all controller lights at shutdown.
         var myObj = this;
-        Object.keys(this.leds).forEach(function(element){myObj.leds[element].set(0);});
-        
+        Object.keys(this.leds).forEach(function(element) { myObj.leds[element].set(0); });
+
         // Turn off all decks
-        Object.keys(this.decks).forEach(function(element){myObj.decks[element].shutdown();});
-        
-        
+        Object.keys(this.decks).forEach(function(element) { myObj.decks[element].shutdown(); });
+
+
         print("g4v::shutdown - Finished");
     };
 
@@ -1521,9 +1521,9 @@ var MyController = function() {
 
         var sample = group.substring(8, 9);
 
-        this.leds["M" + sample + "Load"].set((value == 0) ? 0 : 1);
+        this.leds["M" + sample + "Load"].set((value === 0) ? 0 : 1);
     };
-    
+
     // When Headphone Cue is activated or deactivated
     // Parameter control can be disregarded, group identifies the deck and value
     // indicates on or off.
@@ -1546,9 +1546,9 @@ var MyController = function() {
         }
 
         var deck = group.substring(8, 9);
-        
-        g4v.leds["LeftOrientation"+deck].set((value == 0 ? 1 : 0));
-        g4v.leds["RightOrientation"+deck].set((value == 2 ? 1 : 0));
+
+        g4v.leds["LeftOrientation"+deck].set((value === 0 ? 1 : 0));
+        g4v.leds["RightOrientation"+deck].set((value === 2 ? 1 : 0));
     };
 
     ////////////////////////////////////////////////////////////////
@@ -1561,45 +1561,45 @@ var MyController = function() {
         }
 
         // Selects the right event to trigger (Check documentation for midi values)
-        if(status == 0x90 || status == 0x91) {
+        if (status === 0x90 || status === 0x91) {
             // Calculates the deck channel
-            if(midino == 0x01) {
-                g4v.decks[g4v.aDecks[channel]].evBtnPlay(channel, midino,value,status,group);
-            } else if(midino == 0x02) {
-                g4v.decks[g4v.aDecks[channel]].evBtnCue(channel, midino,value,status,group);
-            } else if(midino == 0x03) {
-                g4v.decks[g4v.aDecks[channel]].evBtnCup(channel, midino,value,status,group);
-            } else if(midino == 0x04) {
-                g4v.decks[g4v.aDecks[channel]].evBtnSync(channel, midino,value,status,group);
-            } else if(midino == 0x05) {
-                g4v.decks[g4v.aDecks[channel]].evBtnKey(channel, midino,value,status,group);
-            } else if(midino >= 0x09 && midino <= 0x18) {
-                g4v.decks[g4v.aDecks[channel]].evBtnPad(channel, midino,value,status,group);
-            } else if(midino == 0x19) {
-                g4v.decks[g4v.aDecks[channel]].evBtnSlip(channel, midino,value,status,group);
-            } else if(midino == 0x1a) {
-                g4v.decks[g4v.aDecks[channel]].evBtnFx(channel, midino,value,status,group);
-            } else if(midino == 0x1b) {
-                g4v.decks[g4v.aDecks[channel]].evBtnHotCue(channel, midino,value,status,group);
-            } else if(midino == 0x1c) {
-                g4v.decks[g4v.aDecks[channel]].evBtnAutoLoop(channel, midino,value,status,group);
-            } else if(midino == 0x1d) {
-                g4v.decks[g4v.aDecks[channel]].evBtnSample(channel, midino,value,status,group);
-            } else if(midino == 0x1e) {
-                g4v.decks[g4v.aDecks[channel]].evBtnLoopRoll(channel, midino,value,status,group);
-            } else if(midino == 0x21) {
-                g4v.decks[g4v.aDecks[channel]].evBtnBeatJump(channel, midino,value,status,group);
-            } else if(midino == 0x22) {
-                g4v.decks[g4v.aDecks[channel]].evBtnManualLoop(channel, midino,value,status,group);
-            } else if(midino == 0x25) {
-                g4v.decks[g4v.aDecks[channel]].evBtnJog(channel, midino,value,status,group);
-            } else if(midino == 0x26) {
+            if (midino === 0x01) {
+                g4v.decks[g4v.aDecks[channel]].evBtnPlay(channel, midino, value, status, group);
+            } else if (midino === 0x02) {
+                g4v.decks[g4v.aDecks[channel]].evBtnCue(channel, midino, value, status, group);
+            } else if (midino === 0x03) {
+                g4v.decks[g4v.aDecks[channel]].evBtnCup(channel, midino, value, status, group);
+            } else if (midino === 0x04) {
+                g4v.decks[g4v.aDecks[channel]].evBtnSync(channel, midino, value, status, group);
+            } else if (midino === 0x05) {
+                g4v.decks[g4v.aDecks[channel]].evBtnKey(channel, midino, value, status, group);
+            } else if (midino >= 0x09 && midino <= 0x18) {
+                g4v.decks[g4v.aDecks[channel]].evBtnPad(channel, midino, value, status, group);
+            } else if (midino === 0x19) {
+                g4v.decks[g4v.aDecks[channel]].evBtnSlip(channel, midino, value, status, group);
+            } else if (midino === 0x1a) {
+                g4v.decks[g4v.aDecks[channel]].evBtnFx(channel, midino, value, status, group);
+            } else if (midino === 0x1b) {
+                g4v.decks[g4v.aDecks[channel]].evBtnHotCue(channel, midino, value, status, group);
+            } else if (midino === 0x1c) {
+                g4v.decks[g4v.aDecks[channel]].evBtnAutoLoop(channel, midino, value, status, group);
+            } else if (midino === 0x1d) {
+                g4v.decks[g4v.aDecks[channel]].evBtnSample(channel, midino, value, status, group);
+            } else if (midino === 0x1e) {
+                g4v.decks[g4v.aDecks[channel]].evBtnLoopRoll(channel, midino, value, status, group);
+            } else if (midino === 0x21) {
+                g4v.decks[g4v.aDecks[channel]].evBtnBeatJump(channel, midino, value, status, group);
+            } else if (midino === 0x22) {
+                g4v.decks[g4v.aDecks[channel]].evBtnManualLoop(channel, midino, value, status, group);
+            } else if (midino === 0x25) {
+                g4v.decks[g4v.aDecks[channel]].evBtnJog(channel, midino, value, status, group);
+            } else if (midino === 0x26) {
                 // Direct Action: Swap deck
-                if(value == 0x00) {
+                if (value === 0x00) {
                     return;
                 }
                 g4v.decks[g4v.aDecks[channel]].activate(0);
-                switch(g4v.aDecks[channel]) {
+                switch (g4v.aDecks[channel]) {
                 case 1:
                     g4v.aDecks[channel] = 3;
                     break;
@@ -1614,43 +1614,43 @@ var MyController = function() {
                     break;
                 }
                 g4v.decks[g4v.aDecks[channel]].activate(1);
-            } else if(midino == 0x27) {
-                g4v.decks[g4v.aDecks[channel]].evBtnFxSelect(channel, midino,value,status,group);
-            } else if(midino == 0x28) {
+            } else if (midino === 0x27) {
+                g4v.decks[g4v.aDecks[channel]].evBtnFxSelect(channel, midino, value, status, group);
+            } else if (midino === 0x28) {
                 g4v.evBtnShift(channel, midino, value, status, group);
             } else {
                 print("WARNING: No handler for status/midino:" + status + "/" + midino);
             }
-        } else if(status == 0x93) {
-            if(midino == 0x01 || midino == 0x02 || midino == 0x03 || midino == 0x04) {
+        } else if (status === 0x93) {
+            if (midino === 0x01 || midino === 0x02 || midino === 0x03 || midino === 0x04) {
                 g4v.evBtnLoad(channel, midino, value, status, group);
-            } else if(midino >= 0x05 && midino <= 0x0c) {
+            } else if (midino >= 0x05 && midino <= 0x0c) {
                 g4v.evBtnOrientation(channel, midino, value, status, group);
-            } else if (midino == 0x11) {
+            } else if (midino === 0x11) {
                 g4v.evBtnBrowse(channel, midino, value, status, group);
-            } else if (midino == 0x12) {
+            } else if (midino === 0x12) {
                 g4v.evBtnBack(channel, midino, value, status, group);
             } else {
                 print("WARNING: No handler for status/midino:" + status + "/" + midino);
             }
-        } else if(status == 0xb0 || status == 0xb1) {
-            if(midino == 0x01) {
+        } else if (status === 0xb0 || status === 0xb1) {
+            if (midino === 0x01) {
                 g4v.decks[g4v.aDecks[channel]].evSliTempo(channel, midino, value, status, group);
-            } else if(midino == 0x02) {
+            } else if (midino === 0x02) {
                 g4v.decks[g4v.aDecks[channel]].evKnoLoopMove(channel, midino, value, status, group);
-            } else if(midino == 0x03) {
+            } else if (midino === 0x03) {
                 g4v.decks[g4v.aDecks[channel]].evKnoSampleVol(channel, midino, value, status, group);
-            } else if(midino == 0x04) {
+            } else if (midino === 0x04) {
                 g4v.decks[g4v.aDecks[channel]].evKnoMix(channel, midino, value, status, group);
-            } else if(midino == 0x05) {
+            } else if (midino === 0x05) {
                 g4v.decks[g4v.aDecks[channel]].evKnoMeta(channel, midino, value, status, group);
-            } else if(midino == 0x06) {
+            } else if (midino === 0x06) {
                 g4v.decks[g4v.aDecks[channel]].evEncJog(channel, midino, value, status, group);
             } else {
                 print("WARNING: No handler for status/midino:" + status + "/" + midino);
             }
-        } else if (status == 0xb3) {
-            if(midino == 0x1e) {
+        } else if (status === 0xb3) {
+            if (midino === 0x1e) {
                 g4v.evEncBrowse(channel, midino, value, status, group);
             } else {
                 print("WARNING: No handler for status/midino:" + status + "/" + midino);
@@ -1660,7 +1660,7 @@ var MyController = function() {
         }
     };
 
-    
+
     //////////////////////////////////////////////////////////////////
     // Call back functions for reacting to global controller events //
     //////////////////////////////////////////////////////////////////
@@ -1673,7 +1673,7 @@ var MyController = function() {
             print("Controller.evBtnShift - channel:" + channel + " midino:0x" + midino.toString(16) + " value:0x" + value.toString(16) + " status:0x" + status.toString(16) + " group:" + group);
         }
 
-        g4v.shift = ((value == "0x7f") ? 1 : 0);
+        g4v.shift = ((value === "0x7f") ? 1 : 0);
     };
 
     // Load button 0x93/0x01 - 0x93/0x02 - 0x93/0x3 - 0x93/0x4
@@ -1683,12 +1683,12 @@ var MyController = function() {
         if (g4v.debug) {
             print("Controller.evBtnLoad - channel:" + channel + " midino:0x" + midino.toString(16) + " value:0x" + value.toString(16) + " status:0x" + status.toString(16) + " group:" + group);
         }
-        
-        if(value == 0x00) {
+
+        if (value === 0x00) {
             return;
         }
 
-        if(g4v.shift){
+        if (g4v.shift) {
             engine.setValue(group, "eject", 1);
             engine.setValue(group, "eject", 0);
         } else {
@@ -1702,17 +1702,17 @@ var MyController = function() {
         if (g4v.debug) {
             print("Controller.evBtnOrientation - channel:" + channel + " midino:0x" + midino.toString(16) + " value:0x" + value.toString(16) + " status:0x" + status.toString(16) + " group:" + group);
         }
-        
+
         // Ignores key release
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
-        
+
         var deck;
         var orientation;
 
         // Calculates the orientation and the deck
-        switch(midino) {
+        switch (midino) {
         case 0x05:    // Left 1
             deck = 1;
             orientation = 0;
@@ -1747,7 +1747,7 @@ var MyController = function() {
             break;
         }
         // Applies the change
-        engine.setValue("[Channel"+deck+"]","orientation",(engine.getValue("[Channel"+deck+"]","orientation") == orientation ? 1 : orientation));
+        engine.setValue("[Channel"+deck+"]", "orientation", (engine.getValue("[Channel"+deck+"]", "orientation") === orientation ? 1 : orientation));
     };
 
     // Deck Select buttons 0x90/0x26 - 0x91/0x26
@@ -1760,14 +1760,14 @@ var MyController = function() {
         }
 
         // Ignores off event
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
         // Calculates the decks
         var oldDeck = this.aDecks[channel-1];
-        var newDeck = (oldDeck == channel ? channel+1 : channel);
-        
+        var newDeck = (oldDeck === channel ? channel+1 : channel);
+
         this.decks[oldDeck].activate(0);
         this.decks[newDeck].activate(1);
     };
@@ -1780,16 +1780,16 @@ var MyController = function() {
         }
 
         // Ignores off event
-        if(value == 0x00) {
+        if (value === 0x00) {
             return;
         }
 
-        if(engine.getValue("[PreviewDeck1]", "play", 1)) {
-            engine.setValue("[PreviewDeck1]","play", 0);
-            engine.setValue("[PreviewDeck]","show_previewdeck", 0 );
+        if (engine.getValue("[PreviewDeck1]", "play", 1)) {
+            engine.setValue("[PreviewDeck1]", "play", 0);
+            engine.setValue("[PreviewDeck]", "show_previewdeck", 0);
         } else {
-            engine.setValue("[PreviewDeck]","show_previewdeck", 1 );
-            engine.setValue("[PreviewDeck1]","LoadSelectedTrack", 1);
+            engine.setValue("[PreviewDeck]", "show_previewdeck", 1);
+            engine.setValue("[PreviewDeck1]", "LoadSelectedTrack", 1);
             //dealy needed to
             engine.beginTimer(100, "engine.setValue(\"[PreviewDeck1]\",\"play\", 1)", true);
         }
@@ -1801,14 +1801,14 @@ var MyController = function() {
         if (g4v.debug) {
             print("Controller.evBtnBack - channel:" + channel + " midino:0x" + midino.toString(16) + " value:0x" + value.toString(16) + " status:0x" + status.toString(16) + " group:" + group);
         }
-        
-        if(value == 0x00) {
+
+        if (value === 0x00) {
             return;
         }
 
-        this.browseMode = (value == 0x7f ? true : false);
-        
-        engine.setValue("[Library]","MoveFocusForward", 1);
+        this.browseMode = (value === 0x7f);
+
+        engine.setValue("[Library]", "MoveFocusForward", 1);
     };
 
     // Browse Encode 0xb3/0x1e
@@ -1820,13 +1820,13 @@ var MyController = function() {
         }
 
         // If playing preview, beatjump. If not, scroll the Library
-        if(engine.getValue("[PreviewDeck1]", "play")) {
-            engine.setValue("[PreviewDeck1]", (value == 0x41 ? "beatjump_4_forward" : "beatjump_4_backward"), 1);
+        if (engine.getValue("[PreviewDeck1]", "play")) {
+            engine.setValue("[PreviewDeck1]", (value === 0x41 ? "beatjump_4_forward" : "beatjump_4_backward"), 1);
         } else {
-            if(g4v.shift) {
-                engine.setValue("[Library]",(value == 0x41 ? "MoveRight" : "MoveLeft"), 1);
+            if (g4v.shift) {
+                engine.setValue("[Library]", (value === 0x41 ? "MoveRight" : "MoveLeft"), 1);
             } else {
-                engine.setValue("[Library]",(value == 0x41 ? "MoveUp" : "MoveDown"), 1);
+                engine.setValue("[Library]", (value === 0x41 ? "MoveUp" : "MoveDown"), 1);
             }
         }
     };
