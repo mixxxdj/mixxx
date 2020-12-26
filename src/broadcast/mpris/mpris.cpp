@@ -15,7 +15,7 @@ const QString busName = "org.mpris.MediaPlayer2.mixxx";
 }
 
 Mpris::Mpris(MixxxMainWindow* pMixxx,
-        PlayerManager* pPlayerManager,
+        PlayerManagerInterface* pPlayerManager,
         UserSettingsPointer pSettings)
         : m_busConnection(QDBusConnection::connectToBus(QDBusConnection::SessionBus, busName)),
           m_pPlayer(new MediaPlayer2Player(pPlayerManager,

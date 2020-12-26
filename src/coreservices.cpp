@@ -9,6 +9,7 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
+#include "broadcast/scrobblingmanager.h"
 #include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -315,8 +316,7 @@ void CoreServices::initialize(QApplication* pApp, MixxxMainWindow* pMixxx) {
             pConfig,
             m_pSoundManager.get(),
             m_pEffectsManager.get(),
-            m_pEngine.get(),
-            pMixxx);
+            m_pEngine.get());
     // TODO: connect input not configured error dialog slots
     PlayerInfo::create();
 

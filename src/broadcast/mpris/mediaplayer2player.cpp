@@ -6,7 +6,7 @@
 
 #include "moc_mediaplayer2player.cpp"
 
-MediaPlayer2Player::MediaPlayer2Player(PlayerManager* playerManager,
+MediaPlayer2Player::MediaPlayer2Player(PlayerManagerInterface* playerManager,
         QObject* parent,
         MixxxMainWindow* pWindow,
         Mpris* pMpris,
