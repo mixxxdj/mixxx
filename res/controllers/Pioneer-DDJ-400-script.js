@@ -8,53 +8,44 @@
 // Upstream MIDI spec:
 // * https://www.pioneerdj.com/-/media/pioneerdj/software-info/controller/ddj-400/ddj-400_midi_message_list_e1.pdf
 //
-//             Working (as per controller spec):
-//                 * Mixer Section (Faders, EQ, Filter, Gain, Cue)
-//                 * Browsing and loading + Waveform zoom (shift)
-//                 * Jogwheels, Scratching, Bending, Loop adjust
-//                 * Cycle Temporange
-//                 * Beat Sync
-//                 * Hot Cue Mode
-//                 * Beat Loop Mode
-//                 * Beat Jump Mode
-//                 * Sampler Mode
+//  Implemented (as per manufacturer's manual):
+//      * Mixer Section (Faders, EQ, Filter, Gain, Cue)
+//      * Browsing and loading + Waveform zoom (shift)
+//      * Jogwheels, Scratching, Bending, Loop adjust
+//      * Cycle Temporange
+//      * Beat Sync
+//      * Hot Cue Mode
+//      * Beat Loop Mode
+//      * Beat Jump Mode
+//      * Sampler Mode
 //
-//             Custom (Mixxx specific mappings):
-//                 * BeatFX: Assigned Effect Unit 1
-//                           < LEFT selects EFFECT1
-//                           > RIGHT selects EFFECT2
-//                           v FX_SELECT selects EFFECT3.
-//                           v again to get back to wet/dry mix
-//                           ON/OFF toggles selected effect slot
-//                           SHIFT + ON/OFF disables all three effect slots.
-//                           SHIFT + < selects previous effect
-//                           SHIFT + > selects next effect
+//  Custom (Mixxx specific mappings):
+//      * BeatFX: Assigned Effect Unit 1
+//                < LEFT selects EFFECT1
+//                > RIGHT selects EFFECT2
+//                v FX_SELECT selects EFFECT3.
+//                v again to get back to wet/dry mix
+//                ON/OFF toggles selected effect slot
+//                SHIFT + ON/OFF disables all three effect slots.
+//                SHIFT + < selects previous effect
+//                SHIFT + > selects next effect
 //
-//                 * Phrase jump forward & back (Shift + </> CUE/LOOP CALL arrows)
+//      * 32 beat jump forward & back (Shift + </> CUE/LOOP CALL arrows)
+//      * Toggle quantize (Shift + channel cue)
 //
-//             Experimental (not performance ready):
-//                 * PAD FX1: Assigned Effect unit 1 & 2
-//                            Pad 1, 2 & 3 toggle effect slot
-//                            Pads 5,6 & 7 select next effect.
-//                            Shift + pads 5,6 & 7 select previous effect
-//                            Pads 4 & 8 do nothing.
-//                            Deck 1, currently clobbers the BeatFX rack
+//  Not implemented (after discussion and trial attempts):
+//      * Loop Section:
+//        * -4BEAT auto loop (hacky---prefer a clean way to set a 4 beat loop
+//                            from a previous position on long press)
 //
-//                 * Keyboard Mode (check pitch value)
-//                   - Major/minor/chromatic scales?
-//                   - Lights
-//                   - Selecting cues
-//                   - Allow playback takeover
+//        * CUE/LOOP CALL - memory & delete (complex and not useful. Hot cues are sufficient)
 //
-//                 * Keyshift Mode
-//                   - Major/minor/chromatic scales?
-//                   - Limit range shifting up or down
-//
-//             Not implemented (after discussion and trial attempts):
-//                 * Loop Section:
-//                   * -4BEAT auto loop
-//                   * CUE/LOOP CALL - memory & delete (complex and not useful. Hot cues are sufficient)
-//
+//      * Secondary pad modes (trial attempts complex and too experimental)
+//        * Keyboard mode 
+//        * Pad FX1
+//        * Pad FX2
+//        * Keyshift mode
+
 var PioneerDDJ400 = {};
 
 PioneerDDJ400.lights = {
@@ -499,102 +490,6 @@ PioneerDDJ400.setPadmode = function(channel, control, value) {
 };
 
 //
-// Keyboard mode
-//
-
-PioneerDDJ400.keyboardMode = function(channel, _control, value, _status, group) {
-    if (value > 0) {
-        // clear current set hotcue point and refcount for keyboard mode
-        this.keyboardHotCuePoint[channel] = 0;
-        this.keyboardModeRefCount[channel] = 0;
-        // reset pitch
-        engine.setValue(group, "pitch", 0.0);
-        this.keyboardModeEnabledOutput(channel, group);
-    }
-};
-
-PioneerDDJ400.keyboardModeEnabledOutput = function(channel, group) {
-    var status = channel === 0 ? 0x97 : 0x99;
-    var hotcuePad = 1;
-
-    if (this.keyboardHotCuePoint[channel] === 0) {
-        for (hotcuePad = 1; hotcuePad <= 8; hotcuePad++) {
-            var hotcueEnabled = engine.getValue(group, "hotcue_"+hotcuePad+"_enabled");
-
-            midi.sendShortMsg(status, 0x40 + hotcuePad-1, hotcueEnabled > 0 ? 0x7F : 0);
-            // shift lights on if hotcue is set
-            midi.sendShortMsg(status+1, 0x40 + hotcuePad-1, hotcueEnabled > 0 ? 0x7F : 0);
-        }
-    } else {
-        // enable all LEDs
-        for (hotcuePad = 1; hotcuePad <= 8; hotcuePad++) {
-            midi.sendShortMsg(status, 0x40 + hotcuePad-1, 0x7F);
-        }
-    }
-    // shift keyboard Pad 7 and 8 are always enabled
-    midi.sendShortMsg(status+1, 0x46, 0x7F);
-    midi.sendShortMsg(status+1, 0x47, 0x7F);
-};
-
-PioneerDDJ400.keyboardModePad = function(channel, control, value, _status, group) {
-    channel = (channel & 0xf) < 10 ? 0 : 1;
-    var padNum = (control & 0xf) + 1;
-    var hotcuePad = this.keyboardHotCuePoint[channel];
-
-    // if no hotcue is set for keyboard mode set on first press on a pad
-    if (hotcuePad === 0 && value !== 0) {
-        hotcuePad = padNum;
-        this.keyboardHotCuePoint[channel] = hotcuePad;
-        // if there is no hotcue at this pad, set current play position
-        var hotcuePos = engine.getValue(group, "hotcue_"+hotcuePad+"_position");
-
-        if (hotcuePos < 0) {
-            engine.setValue(group, "hotcue_"+hotcuePad+"_set", 1);
-        }
-
-        this.keyboardModeRefCount[channel] = 0; // reset count
-        this.keyboardModeEnabledOutput(channel, group);
-        return;
-    }
-
-    // if hotcue point is set perform coresponding halftone operation
-    if (value > 0) {
-        // count pressed Pad per deck
-        this.keyboardModeRefCount[channel] += 1;
-        var newValue = this.halftoneToPadMap[padNum-1];
-
-        engine.setValue(group, "pitch", newValue);
-        engine.setValue(group, "hotcue_"+hotcuePad+"_gotoandplay", 1);
-    } else {
-        // decrease the number of active Pads, this should minimize unwanted stops
-        this.keyboardModeRefCount[channel] -= 1;
-        if (this.keyboardModeRefCount[channel] <= 0) {
-            engine.setValue(group, "hotcue_"+hotcuePad+"_gotoandstop", 1);
-            engine.setValue(group, "pitch", 0.0); // reset pitch
-            this.keyboardModeRefCount[channel] = 0; // reset refcount to 0
-        }
-    }
-};
-
-//
-// Keyshift pads
-//
-
-PioneerDDJ400.keyshiftModePad = function(_channel, control, value, _status, group) {
-    if (value === 0) {
-        return; // ignore release
-    }
-    engine.setValue(group, "pitch", this.halftoneToPadMap[control & 0xf]);
-};
-
-PioneerDDJ400.waveFormRotate = function(_channel, _control, value) {
-    // select the Waveform to zoom left shift = deck1, right shift = deck2
-    var deckNum = this.shiftState[0] > 0 ? 1 : 2;
-    var oldVal = engine.getValue("[Channel"+deckNum+"]", "waveform_zoom");
-    var newVal = oldVal + (value > 0x64 ? 1 : -1);
-
-    engine.setValue("[Channel"+deckNum+"]", "waveform_zoom", newVal);
-};
 
 //
 // Sound Effects
@@ -692,29 +587,6 @@ PioneerDDJ400.beatFxChannel = function(_channel, control, _value, _status, group
     engine.setValue(group, "group_[Channel2]_enable", enableChannel2);
 };
 
-//
-// PAD FX
-//
-
-PioneerDDJ400.padFxBelowPressed = function(channel, control, value, status, group) {
-    var groupAbove = group.replace(/\[EffectRack1_EffectUnit(\d+)_Effect(\d+)]/, function(all, unit, effect) {
-        var effectAbove = parseInt(effect) - 4;
-
-        return "[EffectRack1_EffectUnit" + unit + "_Effect" + effectAbove + "]";
-    });
-
-    engine.setValue(groupAbove, "next_effect", value);
-};
-
-PioneerDDJ400.padFxShiftBelowPressed = function(channel, control, value, status, group) {
-    var groupAbove = group.replace(/\[EffectRack1_EffectUnit(\d+)_Effect(\d+)]/, function(all, unit, effect) {
-        var effectAbove = parseInt(effect) - 4;
-
-        return "[EffectRack1_EffectUnit" + unit + "_Effect" + effectAbove + "]";
-    });
-
-    engine.setValue(groupAbove, "prev_effect", value);
-};
 
 PioneerDDJ400.vuMeterUpdate = function(value, group) {
     var newVal = value * 150;
