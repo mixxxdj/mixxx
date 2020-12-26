@@ -145,7 +145,7 @@ void DlgPrefControllers::setupControllerWidgets() {
         m_pDlgPreferences->addPageWidget(pControllerDlg,
                 pControllerTreeItem,
                 pController->getName(),
-                "controllers.svg");
+                "ic_preferences_controllers.svg");
 
         m_pControllersRootItem->addChild(pControllerTreeItem);
         m_controllerTreeItems.append(pControllerTreeItem);

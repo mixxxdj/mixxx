@@ -50,6 +50,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixxx.h"
 #include "skin/skinloader.h"
+#include "util/color/color.h"
 #include "util/widgethelper.h"
 
 DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
@@ -78,21 +79,28 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     }
 
     // Construct widgets for use in tabs:
+    // * check the text color of the palette for whether to use dark or light icons
     // * create the tree view button first (important for 'Controllers' page!)
     // * instantiate preferences page
+    if (!Color::isDimColor(palette().text().color())) {
+        m_iconsPath.setPath(":/images/preferences/light/");
+    } else {
+        m_iconsPath.setPath(":/images/preferences/dark/");
+    }
+
     m_pSoundButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_soundPage = new DlgPrefSound(this, soundman, m_pConfig);
     addPageWidget(m_soundPage,
             m_pSoundButton,
             tr("Sound Hardware"),
-            "soundhardware.svg");
+            "ic_preferences_soundhardware.svg");
 
     m_pLibraryButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_libraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     addPageWidget(m_libraryPage,
             m_pLibraryButton,
             tr("Library"),
-            "library.svg");
+            "ic_preferences_library.svg");
     connect(m_libraryPage,
             &DlgPrefLibrary::scanLibrary,
             pLibrary->trackCollections(),
@@ -104,7 +112,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_controllersPage,
             m_pControllersRootButton,
             tr("Controllers"),
-            "controllers.svg");
+            "ic_preferences_controllers.svg");
 
 #ifdef __VINYLCONTROL__
     // It's important for this to be before the connect for wsound.
@@ -114,7 +122,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_vinylControlPage,
             m_pVinylControlButton,
             tr("Vinyl Control"),
-            "vinyl.svg");
+            "ic_preferences_vinyl.svg");
 #else /* __VINYLCONTROL__ */
 
     m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
@@ -122,7 +130,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_noVinylControlPage,
             m_pVinylControlButton,
             tr("Vinyl Control"),
-            "vinyl.svg");
+            "ic_preferences_vinyl.svg");
 #endif
 
     m_pInterfaceButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
@@ -130,49 +138,49 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_interfacePage,
             m_pInterfaceButton,
             tr("Interface"),
-            "interface.svg");
+            "ic_preferences_interface.svg");
 
     m_pWaveformButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_waveformPage = new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary);
     addPageWidget(m_waveformPage,
             m_pWaveformButton,
             tr("Waveforms"),
-            "waveforms.svg");
+            "ic_preferences_waveforms.svg");
 
     m_pDecksButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_deckPage = new DlgPrefDeck(this, m_pConfig);
     addPageWidget(m_deckPage,
             m_pDecksButton,
             tr("Decks"),
-            "decks.svg");
+            "ic_preferences_decks.svg");
 
     m_pColorsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_colorsPage = new DlgPrefColors(this, m_pConfig, pLibrary);
     addPageWidget(m_colorsPage,
             m_pColorsButton,
             tr("Colors"),
-            "colors.svg");
+            "ic_preferences_colors.svg");
 
     m_pEqButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_equalizerPage = new DlgPrefEQ(this, pEffectsManager, m_pConfig);
     addPageWidget(m_equalizerPage,
             m_pEqButton,
             tr("Equalizers"),
-            "equalizers.svg");
+            "ic_preferences_equalizers.svg");
 
     m_pCrossfaderButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_crossfaderPage = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_crossfaderPage,
             m_pCrossfaderButton,
             tr("Crossfader"),
-            "crossfader.svg");
+            "ic_preferences_crossfader.svg");
 
     m_pEffectsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_effectsPage = new DlgPrefEffects(this, m_pConfig, pEffectsManager);
     addPageWidget(m_effectsPage,
             m_pEffectsButton,
             tr("Effects"),
-            "effects.svg");
+            "ic_preferences_effects.svg");
 
 #ifdef __LILV__
     m_pLV2Button = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
@@ -180,7 +188,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_lv2Page,
             m_pLV2Button,
             tr("LV2 Plugins"),
-            "lv2.svg");
+            "ic_preferences_lv2.svg");
 #endif /* __LILV__ */
 
     m_pAutoDJButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
@@ -188,7 +196,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_autoDjPage,
             m_pAutoDJButton,
             tr("Auto DJ"),
-            "autodj.svg");
+            "ic_preferences_autodj.svg");
 
 #ifdef __BROADCAST__
     m_pBroadcastButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
@@ -196,7 +204,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_broadcastingPage,
             m_pBroadcastButton,
             tr("Live Broadcasting"),
-            "broadcast.svg");
+            "ic_preferences_broadcast.svg");
 #endif /* __BROADCAST__ */
 
     m_pRecordingButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
@@ -204,28 +212,28 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_recordingPage,
             m_pRecordingButton,
             tr("Recording"),
-            "recording.svg");
+            "ic_preferences_recording.svg");
 
     m_pBeatDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_beatgridPage = new DlgPrefBeats(this, m_pConfig);
     addPageWidget(m_beatgridPage,
             m_pBeatDetectionButton,
             tr("Beat Detection"),
-            "bpmdetect.svg");
+            "ic_preferences_bpmdetect.svg");
 
     m_pKeyDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_musicalKeyPage = new DlgPrefKey(this, m_pConfig);
     addPageWidget(m_musicalKeyPage,
             m_pKeyDetectionButton,
             tr("Key Detection"),
-            "keydetect.svg");
+            "ic_preferences_keydetect.svg");
 
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_replayGainPage = new DlgPrefReplayGain(this, m_pConfig);
     addPageWidget(m_replayGainPage,
             m_pReplayGainButton,
             tr("Normalization"),
-            "replaygain.svg");
+            "ic_preferences_replaygain.svg");
 
 #ifdef __MODPLUG__
     m_pModplugButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
@@ -233,7 +241,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_modplugPage,
             m_pModplugButton,
             tr("Modplug Decoder"),
-            "modplug.svg");
+            "ic_preferences_modplug.svg");
 #endif /* __MODPLUG__ */
 
     connect(contentsTreeWidget,
@@ -443,7 +451,7 @@ void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget,
         const QString& pageTitle,
         const QString& iconFile) {
     // Configure the tree button linked to the page
-    treeItem->setIcon(0, QIcon(":/images/preferences/ic_preferences_" + iconFile));
+    treeItem->setIcon(0, QIcon(m_iconsPath.filePath(iconFile)));
     treeItem->setText(0, pageTitle);
     treeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     treeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -458,7 +466,7 @@ void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget,
             pWidget,
             &DlgPreferencePage::slotResetToDefaults);
 
-    // Add a new scroll area containing the page to the stacked pages widget
+    // Add a new scroll area to the stacked pages widget containing the page
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);
     sa->setWidget(pWidget);

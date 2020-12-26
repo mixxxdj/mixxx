@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QDialog>
+#include <QDir>
 #include <QEvent>
 #include <QRect>
 #include <QStringList>
@@ -150,4 +151,6 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 #endif /* __MODPLUG__ */
 
     QSize m_pageSizeHint;
+
+    QDir m_iconsPath;
 };
