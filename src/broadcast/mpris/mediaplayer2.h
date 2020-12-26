@@ -1,5 +1,4 @@
-#ifndef MEDIAPLAYER2_H
-#define MEDIAPLAYER2_H
+#pragma once
 
 #include <QStringList>
 #include <QtDBus/QDBusAbstractAdaptor>
@@ -45,5 +44,3 @@ class MediaPlayer2 : public QDBusAbstractAdaptor {
   private:
     MixxxMainWindow* m_pMixxx;
 };
-
-#endif // MEDIAPLAYER2_H

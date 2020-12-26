@@ -9,7 +9,7 @@ TrackTimingInfo::TrackTimingInfo(TrackPointer pTrack)
           m_playedMs(0),
           m_isTrackScrobbable(false),
           m_isTimerPaused(true) {
-    connect(m_pTimer.get(), SIGNAL(timeout()), this, SLOT(slotCheckIfScrobbable()));
+    connect(m_pTimer.get(), &TrackTimers::GUITickTimer::timeout, this, &TrackTimingInfo::slotCheckIfScrobbable);
     m_pElapsedTimer->invalidate();
 }
 
@@ -85,7 +85,7 @@ void TrackTimingInfo::setTrackPointer(TrackPointer pTrack) {
 }
 
 void TrackTimingInfo::slotGuiTick(double timeSinceLastTick) {
-    TrackTimers::GUITickTimer* pTimer =
+    TrackTimers::GUITickTimer* timer =
             qobject_cast<TrackTimers::GUITickTimer*>(m_pTimer.get());
-    pTimer->slotTick(timeSinceLastTick);
+    timer->slotTick(timeSinceLastTick);
 }

@@ -640,4 +640,3 @@ void DlgPrefBroadcast::onSectionResized() {
     // the remaining width, thanks to stretchLastSection set to true.
     sender()->blockSignals(false);
 }
-

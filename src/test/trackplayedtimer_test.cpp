@@ -49,3 +49,4 @@ TEST_F(DISABLED_TrackTimingInfoTest, SendsSignalWhenScrobbable) {
     trackInfo.resetPlayedTime();
     trackInfo.resumePlayedTime();
     ASSERT_TRUE(trackInfo.isScrobbable());
+}

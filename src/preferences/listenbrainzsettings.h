@@ -1,22 +1,22 @@
 #pragma once
 
-#include <QObject>
-#include <QLineEdit>
 #include <QCheckBox>
+#include <QLineEdit>
+#include <QObject>
 
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
+#include "preferences/usersettings.h"
 
 namespace {
-    const ConfigKey kListenBrainzEnabled("[Livemetadata]","ListenBrainzEnabled");
-    const ConfigKey kListenBrainzUserToken("[Livemetadata]","ListenBrainzUserToken");
-    const ConfigKey kListenBrainzSettingsChanged("[Livemetadata]","ListenBrainzSettingsChanged");
-    const bool defaultListenBrainzEnabled = false;
-}
+const ConfigKey kListenBrainzEnabled("[Livemetadata]", "ListenBrainzEnabled");
+const ConfigKey kListenBrainzUserToken("[Livemetadata]", "ListenBrainzUserToken");
+const ConfigKey kListenBrainzSettingsChanged("[Livemetadata]", "ListenBrainzSettingsChanged");
+const bool defaultListenBrainzEnabled = false;
+} // namespace
 
 struct ListenBrainzWidgets {
-    QCheckBox *m_pEnabled;
-    QLineEdit *m_pUserToken;
+    QCheckBox* m_pEnabled;
+    QLineEdit* m_pUserToken;
 };
 
 struct ListenBrainzSettings {
@@ -33,6 +33,7 @@ class ListenBrainzSettingsManager : public QObject {
     void applySettings();
     void cancelSettings();
     void setSettingsToDefault();
+
   private:
     void setUpWidgets();
     bool settingsDifferent();
@@ -40,6 +41,7 @@ class ListenBrainzSettingsManager : public QObject {
     void updateLatestSettingsAndNotify();
     void persistSettings();
     void resetSettingsToDefault();
+
   private:
     ListenBrainzWidgets m_widgets;
     UserSettingsPointer m_pUserSettings;

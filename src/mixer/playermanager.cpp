@@ -3,6 +3,7 @@
 #include <QRegularExpression>
 
 #include "audio/types.h"
+#include "broadcast/metadatabroadcast.h"
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -404,7 +405,6 @@ void PlayerManager::addDeckInner() {
     VERIFY_OR_DEBUG_ASSERT(!m_players.contains(handleGroup.handle())) {
         return;
     }
-
 
     int deckIndex = m_decks.count();
 

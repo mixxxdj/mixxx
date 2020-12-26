@@ -36,7 +36,8 @@ void MetadataBroadcaster::slotAllTracksPaused() {
     }
 }
 
-MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService(const ScrobblingServicePtr& newService) {
+MetadataBroadcasterInterface& MetadataBroadcaster::addNewScrobblingService(
+        const ScrobblingServicePtr& newService) {
     m_scrobblingServices.push_back(newService);
     return *this;
 }

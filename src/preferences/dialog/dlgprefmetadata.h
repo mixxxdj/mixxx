@@ -3,8 +3,8 @@
 #include "broadcast/scrobblingservice.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefmetadatadlg.h"
-#include "preferences/metadatafilesettings.h"
 #include "preferences/listenbrainzsettings.h"
+#include "preferences/metadatafilesettings.h"
 #include "preferences/usersettings.h"
 
 namespace Ui {
@@ -15,7 +15,6 @@ namespace {
 
 const ConfigKey kListenbrainzEnabled =
         ConfigKey("[Livemetadata]", "ListenbrainzEnabled");
-
 };
 
 class DlgPrefMetadata : public DlgPreferencePage, public Ui::DlgPrefMetadataDlg {
@@ -31,8 +30,8 @@ class DlgPrefMetadata : public DlgPreferencePage, public Ui::DlgPrefMetadataDlg 
 
   private:
     UserSettingsPointer m_pSettings;
-    MetadataFileSettings *m_pFileSettings;
-    ListenBrainzSettingsManager *m_pListenBrainzSettings;
+    MetadataFileSettings* m_pFileSettings;
+    ListenBrainzSettingsManager* m_pListenBrainzSettings;
     void setFileSettings();
 
     void setListenBrainzSettings();

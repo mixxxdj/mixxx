@@ -1,4 +1,3 @@
-
 #include "broadcast/mpris/mprisplayer.h"
 
 #include <QCryptographicHash>
@@ -8,9 +7,7 @@
 #include "mixer/deck.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
-#include "mixxxmainwindow.h"
 #include "moc_mprisplayer.cpp"
-#include "mprisplayer.h"
 
 namespace {
 const QString kPlaybackStatusPlaying = "Playing";
@@ -24,7 +21,7 @@ const QString kLoopStatusTrack = "Track";
 // The playback loops through a list of tracks
 const QString kLoopStatusPlaylist = "Playlist";
 const QString playerInterfaceName = "org.mpris.MediaPlayer2.Player";
-}
+} // namespace
 
 MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
         MixxxMainWindow* pWindow,
@@ -83,7 +80,9 @@ QString MprisPlayer::loopStatus() const {
         if (attrib->isRepeat() && attrib->isPlaying())
             return kLoopStatusTrack;
     }
-    return m_pSettings->getValue(ConfigKey("[Auto DJ]", "Requeue"), false) ? kLoopStatusPlaylist : kLoopStatusNone;
+    return m_pSettings->getValue(ConfigKey("[Auto DJ]", "Requeue"), false)
+            ? kLoopStatusPlaylist
+            : kLoopStatusNone;
 }
 
 void MprisPlayer::setLoopStatus(const QString& value) {
@@ -235,7 +234,10 @@ qlonglong MprisPlayer::seek(qlonglong offset, bool& success) {
     return 0;
 }
 
-qlonglong MprisPlayer::setPosition(const QDBusObjectPath& trackId, qlonglong position, bool& success) {
+qlonglong MprisPlayer::setPosition(
+        const QDBusObjectPath& trackId,
+        qlonglong position,
+        bool& success) {
     if (autoDjIdle()) {
         DeckAttributes* playingDeck = findPlayingDeck();
         VERIFY_OR_DEBUG_ASSERT(playingDeck) {
@@ -341,7 +343,10 @@ void MprisPlayer::slotPlayChanged(DeckAttributes* pDeck, bool playing) {
             break;
         }
     }
-    m_pMpris->notifyPropertyChanged(playerInterfaceName, "PlaybackStatus", playing || otherDeckPlaying ? kPlaybackStatusPlaying : kPlaybackStatusPaused);
+    m_pMpris->notifyPropertyChanged(playerInterfaceName,
+            "PlaybackStatus",
+            playing || otherDeckPlaying ? kPlaybackStatusPlaying
+                                        : kPlaybackStatusPaused);
     if (!playing && !otherDeckPlaying) {
         m_pMpris->notifyPropertyChanged(playerInterfaceName, "Metadata", QVariantMap());
     } else if (!playing || !otherDeckPlaying) {
@@ -414,7 +419,7 @@ void MprisPlayer::setRate(double value) {
 }
 
 void MprisPlayer::slotCoverArtFound(const QObject* requestor,
-        const CoverInfo& info,
+        const CoverInfoRelative& info,
         const QPixmap& pixmap) {
     Q_UNUSED(info);
 

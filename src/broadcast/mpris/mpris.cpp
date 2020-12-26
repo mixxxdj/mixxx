@@ -1,6 +1,4 @@
-#include "mpris.h"
-
-#include <track/track.h>
+#include "broadcast/mpris/mpris.h"
 
 #include <QtDBus/QtDBus>
 
@@ -9,6 +7,7 @@
 #include "broadcast/mpris/mediaplayer2playlists.h"
 #include "broadcast/mpris/mediaplayer2tracklist.h"
 #include "moc_mpris.cpp"
+#include "track/track.h"
 
 namespace {
 const QString busName = "org.mpris.MediaPlayer2.mixxx";
