@@ -64,7 +64,7 @@ void VSyncThread::run() {
                 m_timer.elapsed().toIntegerMicros());
             // waiting for interval by sleep
             if (remainingForSwap > 100) {
-                usleep(remainingForSwap);
+                //usleep(remainingForSwap);
             }
 
             // swaps the new waveform to front in case of gl-wf
