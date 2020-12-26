@@ -11,8 +11,14 @@ ListenBrainzService::ListenBrainzService(UserSettingsPointer pSettings)
         : m_request(ListenBrainzAPIURL),
           m_latestSettings(ListenBrainzSettingsManager::getPersistedSettings(pSettings)),
           m_COSettingsChanged(kListenBrainzSettingsChanged) {
-    connect(&m_manager, &QNetworkAccessManager::finished, this, &ListenBrainzService::slotAPICallFinished);
-    connect(&m_COSettingsChanged, &ControlPushButton::valueChanged, this, &ListenBrainzService::slotSettingsChanged);
+    connect(&m_manager,
+            &QNetworkAccessManager::finished,
+            this,
+            &ListenBrainzService::slotAPICallFinished);
+    connect(&m_COSettingsChanged,
+            &ControlPushButton::valueChanged,
+            this,
+            &ListenBrainzService::slotSettingsChanged);
     m_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
     if (m_latestSettings.enabled) {
         m_request.setRawHeader("Authorization", "Token " + m_latestSettings.userToken.toUtf8());
@@ -43,7 +49,9 @@ void ListenBrainzService::slotAllTracksPaused() {
 
 void ListenBrainzService::slotAPICallFinished(QNetworkReply* reply) {
     if (reply->error() != QNetworkReply::NoError) {
-        qWarning() << "API call to ListenBrainz error: " << reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+        qWarning() << "API call to ListenBrainz error: "
+                   << reply->attribute(
+                              QNetworkRequest::HttpStatusCodeAttribute);
     }
     m_currentJSON.clear();
 }

@@ -79,7 +79,10 @@ ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
           m_pTimer(new TrackTimers::GUITickTimer),
           m_scrobbledAtLeastOnce(false),
           m_GuiTickObject(ConfigKey("[Master]", "guiTick50ms")) {
-    connect(m_pTimer.get(), &TrackTimers::RegularTimer::timeout, this, &ScrobblingManager::slotCheckAudibleTracks);
+    connect(m_pTimer.get(),
+            &TrackTimers::RegularTimer::timeout,
+            this,
+            &ScrobblingManager::slotCheckAudibleTracks);
     m_GuiTickObject.connectValueChanged(this, &ScrobblingManager::slotGuiTick);
     m_pTimer->start(1000);
 
@@ -96,7 +99,10 @@ ScrobblingManager::ScrobblingManager(UserSettingsPointer pConfig,
             this,
             &ScrobblingManager::onNumberOfDecksChanged);
 
-    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingTrackChanged(TrackPointer)), m_pBroadcaster.get(), SLOT(slotNowListening(TrackPointer)));
+    connect(&PlayerInfo::instance(),
+            SIGNAL(currentPlayingTrackChanged(TrackPointer)),
+            m_pBroadcaster.get(),
+            SLOT(slotNowListening(TrackPointer)));
 }
 
 void ScrobblingManager::setAudibleStrategy(TrackAudibleStrategy* pStrategy) {
@@ -183,7 +189,6 @@ void ScrobblingManager::slotNewTrackLoaded(TrackPointer pNewTrack, const QString
         }
     }
 }
-
 
 void ScrobblingManager::slotGuiTick(double timeSinceLastTick) {
     for (auto& trackInfo : m_trackInfoHashDict) {

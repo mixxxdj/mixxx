@@ -152,6 +152,7 @@ class Track : public QObject {
     bool trySetBpm(double bpmValue) {
         return trySetBpm(mixxx::Bpm(bpmValue));
     }
+
     bool trySetBpm(mixxx::Bpm bpm);
 
     double getBpm() const;

@@ -8,6 +8,7 @@
 #include "broadcast/mpris/mpris.h"
 #include "control/controlproxy.h"
 #include "library/autodj/autodjprocessor.h"
+#include "mixxxmainwindow.h"
 
 class PlayerManager;
 class MixxxMainWindow;
@@ -50,7 +51,7 @@ class MprisPlayer : public QObject {
     void slotPlayPositionChanged(DeckAttributes* pDeck, double position);
     void slotVolumeChanged(double volume);
     void slotCoverArtFound(const QObject* requestor,
-            const CoverInfo& info,
+            const CoverInfoRelative& info,
             const QPixmap& pixmap);
 
   private:

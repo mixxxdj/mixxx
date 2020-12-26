@@ -1,4 +1,4 @@
-#include "mediaplayer2tracklist.h"
+#include "broadcast/mpris/mediaplayer2tracklist.h"
 
 #include <QApplication>
 

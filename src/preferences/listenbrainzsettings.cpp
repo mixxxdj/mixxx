@@ -14,10 +14,11 @@ ListenBrainzSettingsManager::ListenBrainzSettingsManager(
     setUpWidgets();
 }
 
-ListenBrainzSettings ListenBrainzSettingsManager::getPersistedSettings(UserSettingsPointer pSettings) {
+ListenBrainzSettings ListenBrainzSettingsManager::getPersistedSettings(
+        UserSettingsPointer pSettings) {
     ListenBrainzSettings ret;
-    ret.enabled = pSettings->getValue(kListenBrainzEnabled,defaultListenBrainzEnabled);
-    ret.userToken = pSettings->getValue(kListenBrainzUserToken,QString());
+    ret.enabled = pSettings->getValue(kListenBrainzEnabled, defaultListenBrainzEnabled);
+    ret.userToken = pSettings->getValue(kListenBrainzUserToken, QString());
     return ret;
 }
 
@@ -32,7 +33,6 @@ ListenBrainzSettings ListenBrainzSettingsManager::getLatestSettings() {
     return s_latestSettings;
 }
 
-
 void ListenBrainzSettingsManager::applySettings() {
     if (settingsDifferent() && settingsCorrect()) {
         updateLatestSettingsAndNotify();
@@ -41,7 +41,7 @@ void ListenBrainzSettingsManager::applySettings() {
 }
 
 bool ListenBrainzSettingsManager::settingsDifferent() {
-     return s_latestSettings.enabled != m_widgets.m_pEnabled->isChecked() ||
+    return s_latestSettings.enabled != m_widgets.m_pEnabled->isChecked() ||
             s_latestSettings.userToken != m_widgets.m_pUserToken->text();
 }
 
@@ -52,8 +52,8 @@ void ListenBrainzSettingsManager::updateLatestSettingsAndNotify() {
 }
 
 void ListenBrainzSettingsManager::persistSettings() {
-    m_pUserSettings->setValue(kListenBrainzEnabled,s_latestSettings.enabled);
-    m_pUserSettings->setValue(kListenBrainzUserToken,s_latestSettings.userToken);
+    m_pUserSettings->setValue(kListenBrainzEnabled, s_latestSettings.enabled);
+    m_pUserSettings->setValue(kListenBrainzUserToken, s_latestSettings.userToken);
 }
 
 void ListenBrainzSettingsManager::cancelSettings() {
@@ -72,5 +72,5 @@ void ListenBrainzSettingsManager::resetSettingsToDefault() {
 
 bool ListenBrainzSettingsManager::settingsCorrect() {
     return !m_widgets.m_pEnabled->isChecked() ||
-           !m_widgets.m_pUserToken->text().isEmpty();
+            !m_widgets.m_pUserToken->text().isEmpty();
 }

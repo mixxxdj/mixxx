@@ -1,4 +1,4 @@
-#include "metadatafilesettings.h"
+#include "preferences/metadatafilesettings.h"
 
 #include <QAbstractItemView>
 #include <QApplication>
@@ -7,6 +7,7 @@
 #include <QMouseEvent>
 #include <QObject>
 #include <QTextCodec>
+#include <algorithm>
 
 #include "moc_metadatafilesettings.cpp"
 
@@ -54,7 +55,10 @@ void MetadataFileSettings::setupWidgets() {
 
     m_widgets.filePathLineEdit->setText(s_latestSettings.filePath);
     m_widgets.filePathLineEdit->setStyleSheet("");
-    QObject::connect(m_widgets.changeFilePathButton, SIGNAL(pressed()), this, SLOT(slotFilepathButtonClicked()));
+    QObject::connect(m_widgets.changeFilePathButton,
+            SIGNAL(pressed()),
+            this,
+            SLOT(slotFilepathButtonClicked()));
 }
 
 FileSettings MetadataFileSettings::getLatestSettings() {

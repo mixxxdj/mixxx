@@ -22,11 +22,17 @@ FileListener::FileListener(UserSettingsPointer pConfig)
 
     connect(this, SIGNAL(moveFile(QString)), newWorker, SLOT(slotMoveFile(QString)));
 
-    connect(this, SIGNAL(writeMetadataToFile(QByteArray)), newWorker, SLOT(slotWriteMetadataToFile(QByteArray)));
+    connect(this,
+            SIGNAL(writeMetadataToFile(QByteArray)),
+            newWorker,
+            SLOT(slotWriteMetadataToFile(QByteArray)));
 
     connect(this, SIGNAL(clearFile()), newWorker, SLOT(slotClearFile()));
 
-    connect(&m_COsettingsChanged, SIGNAL(valueChanged(double)), this, SLOT(slotFileSettingsChanged(double)));
+    connect(&m_COsettingsChanged,
+            SIGNAL(valueChanged(double)),
+            this,
+            SLOT(slotFileSettingsChanged(double)));
 
     m_workerThread.start();
 }
@@ -47,7 +53,8 @@ void FileListener::slotBroadcastCurrentTrack(TrackPointer pTrack) {
         m_fileContents.title = pTrack->getTitle();
         m_fileContents.artist = pTrack->getArtist();
         QString writtenString(m_latestSettings.fileFormatString);
-        writtenString.replace("$author", pTrack->getArtist()).replace("$title", pTrack->getTitle()) += '\n';
+        writtenString.replace("$author", pTrack->getArtist())
+                .replace("$title", pTrack->getTitle()) += '\n';
         QTextCodec* codec = QTextCodec::codecForName(m_latestSettings.fileEncoding);
         DEBUG_ASSERT(codec);
         QByteArray fileContents = codec->fromUnicode(writtenString);

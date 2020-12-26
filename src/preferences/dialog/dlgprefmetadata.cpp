@@ -27,7 +27,7 @@ void DlgPrefMetadata::setListenBrainzSettings() {
     ListenBrainzWidgets widgets;
     widgets.m_pEnabled = enableListenbrainzBox;
     widgets.m_pUserToken = listenBrainzUserTokenLineEdit;
-    m_pListenBrainzSettings = new ListenBrainzSettingsManager(m_pSettings,widgets);
+    m_pListenBrainzSettings = new ListenBrainzSettingsManager(m_pSettings, widgets);
 }
 
 void DlgPrefMetadata::slotApply() {

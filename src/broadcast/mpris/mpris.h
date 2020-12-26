@@ -1,5 +1,4 @@
-#ifndef MPRIS_H
-#define MPRIS_H
+#pragma once
 
 #include <QDBusConnection>
 #include <QObject>
@@ -26,5 +25,3 @@ class Mpris : public QObject {
     QDBusConnection m_busConnection;
     MediaPlayer2Player* m_pPlayer;
 };
-
-#endif // MPRIS_H

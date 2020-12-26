@@ -39,7 +39,8 @@ class MediaPlayer2Playlists : public QDBusAbstractAdaptor {
 
   public slots:
     void ActivatePlaylist(const QDBusObjectPath& PlaylistId);
-    QList<Playlist> GetPlaylists(uint index, uint maxCount, const QString& order, bool reverseOrder);
+    QList<Playlist> GetPlaylists(
+            uint index, uint maxCount, const QString& order, bool reverseOrder);
 
   signals:
     void PlaylistChanged(const Playlist& playlist);

@@ -5,6 +5,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "broadcast/listenbrainzlistener/listenbrainzjsonfactory.h"
+
 QByteArray ListenBrainzJSONFactory::getJSONFromTrack(TrackPointer pTrack, JsonType type) {
     QJsonObject jsonObject;
     QString stringType;

@@ -7,7 +7,6 @@
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
-#include "broadcast/mpris/mpris.h"
 #include "broadcast/scrobblingmanager.h"
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
