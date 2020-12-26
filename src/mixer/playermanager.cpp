@@ -3,11 +3,6 @@
 #include <QRegularExpression>
 
 #include "audio/types.h"
-#include "broadcast/filelistener/filelistener.h"
-#include "broadcast/listenbrainzlistener/listenbrainzservice.h"
-#ifdef __MPRIS__
-#include "broadcast/mpris/mprisservice.h"
-#endif
 #include "control/controlobject.h"
 #include "effects/effectsmanager.h"
 #include "engine/channels/enginedeck.h"
@@ -108,15 +103,13 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
         EffectsManager* pEffectsManager,
-        EngineMixer* pEngine,
-        MixxxMainWindow* pWindow)
+        EngineMixer* pEngine)
         : m_mutex(QT_RECURSIVE_MUTEX_INIT),
           m_pConfig(pConfig),
           m_pLibrary(nullptr),
           m_pSoundManager(pSoundManager),
           m_pEffectsManager(pEffectsManager),
           m_pEngine(pEngine),
-          m_scrobblingManager(this),
           // NOTE(XXX) LegacySkinParser relies on these controls being Controls
           // and not ControlProxies.
           m_pCONumDecks(std::make_unique<ControlObject>(
@@ -150,14 +143,6 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
     m_pSamplerBank = new SamplerBank(m_pConfig, this);
 
     m_cloneTimer.start();
-
-    MetadataBroadcaster* broadcaster = new MetadataBroadcaster;
-    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new FileListener(pConfig)));
-    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new ListenBrainzService(pConfig)));
-#ifdef __MPRIS__
-    broadcaster->addNewScrobblingService(ScrobblingServicePtr(new MprisService(pWindow, this, pConfig)));
-#endif
-    m_scrobblingManager.setMetadataBroadcaster(broadcaster);
 }
 
 PlayerManager::~PlayerManager() {
@@ -441,15 +426,6 @@ void PlayerManager::addDeckInner() {
             &BaseTrackPlayer::trackUnloaded,
             this,
             &PlayerManager::slotSaveEjectedTrack);
-
-    connect(pDeck,&Deck::trackPaused,
-            &m_scrobblingManager, &ScrobblingManager::slotTrackPaused);
-    connect(pDeck,&Deck::trackResumed, this,
-            [this,group] (TrackPointer pTrack) -> void
-            {m_scrobblingManager.slotTrackResumed(pTrack,group);});
-    connect(pDeck,&Deck::newTrackLoaded, this,
-            [this,group] (TrackPointer pTrack) -> void
-            {m_scrobblingManager.slotNewTrackLoaded(pTrack,group);});
 
     if (m_pTrackAnalysisScheduler) {
         connect(pDeck,

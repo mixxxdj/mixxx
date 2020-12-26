@@ -8,13 +8,13 @@
 
 class MediaPlayer2Player;
 class MixxxMainWindow;
-class PlayerManager;
+class PlayerManagerInterface;
 
 class Mpris : public QObject {
     Q_OBJECT
   public:
     explicit Mpris(MixxxMainWindow* mixxx,
-            PlayerManager* pPlayerManager,
+            PlayerManagerInterface* pPlayerManager,
             UserSettingsPointer pSettings);
     ~Mpris();
     void broadcastCurrentTrack();

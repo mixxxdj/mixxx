@@ -8,6 +8,7 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
+#include "broadcast/scrobblingmanager.h"
 #include "control/controlindicatortimer.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -293,8 +294,7 @@ void CoreServices::initialize(QApplication* pApp, MixxxMainWindow* pMixxx) {
             pConfig,
             m_pSoundManager.get(),
             m_pEffectsManager.get(),
-            m_pEngine.get(),
-            pMixxx);
+            m_pEngine.get());
     // TODO: connect input not configured error dialog slots
     PlayerInfo::create();
 
@@ -355,6 +355,8 @@ void CoreServices::initialize(QApplication* pApp, MixxxMainWindow* pMixxx) {
     // been created. Otherwise Mixxx might hang when accessing
     // the uninitialized singleton instance!
     m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+
+    m_pScrobblingManager = std::make_shared<ScrobblingManager>(pConfig, m_pPlayerManager, pMixxx);
 
     bool hasChanged_MusicDir = false;
 

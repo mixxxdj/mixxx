@@ -18,6 +18,7 @@
 class BaseTrackPlayer;
 class PlayerManager;
 class PlayerManagerInterface;
+class MixxxMainWindow;
 
 class TrackAudibleStrategy {
   public:
@@ -48,10 +49,11 @@ typedef std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> TrackTimin
 class ScrobblingManager : public QObject {
     Q_OBJECT
   public:
-    explicit ScrobblingManager(PlayerManagerInterface* manager);
+    ScrobblingManager(UserSettingsPointer pConfig,
+            std::shared_ptr<PlayerManager> pPlayerManager,
+            MixxxMainWindow* pWindow);
     ~ScrobblingManager() = default;
     void setAudibleStrategy(TrackAudibleStrategy* pStrategy);
-    void setMetadataBroadcaster(MetadataBroadcasterInterface* pBroadcast);
     void setTimer(TrackTimers::RegularTimer* timer);
     void setTrackInfoFactory(const std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)>& factory);
     bool hasScrobbledAnyTrack() const;
@@ -60,6 +62,7 @@ class ScrobblingManager : public QObject {
     void slotTrackPaused(TrackPointer pPausedTrack);
     void slotTrackResumed(TrackPointer pResumedTrack, const QString& playerGroup);
     void slotNewTrackLoaded(TrackPointer pNewTrack, const QString& playerGroup);
+    void onNumberOfDecksChanged(int i);
 
   private:
     struct TrackInfo {
@@ -81,13 +84,9 @@ class ScrobblingManager : public QObject {
 
     QHash<TrackId, TrackInfo> m_trackInfoHashDict;
 
-    PlayerManagerInterface* m_pManager;
-
+    std::shared_ptr<PlayerManager> m_pPlayerManager;
     std::unique_ptr<MetadataBroadcasterInterface> m_pBroadcaster;
-
-
     std::unique_ptr<TrackAudibleStrategy> m_pAudibleStrategy;
-
     std::unique_ptr<TrackTimers::RegularTimer> m_pTimer;
 
     TrackTimingFactory m_trackInfoFactory;
@@ -95,6 +94,8 @@ class ScrobblingManager : public QObject {
     bool m_scrobbledAtLeastOnce;
 
     ControlProxy m_GuiTickObject;
+
+    QList<QMetaObject::Connection> m_deckConnections;
 
   private slots:
     void slotReadyToBeScrobbled(TrackPointer pTrack);
