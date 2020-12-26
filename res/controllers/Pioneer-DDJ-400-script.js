@@ -371,12 +371,16 @@ PioneerDDJ400.beatFxOnOffShiftPressed = function(_channel, _control, value) {
     PioneerDDJ400.toggleLight(PioneerDDJ400.lights.beatFx, false);
 };
 
-PioneerDDJ400.beatFxChannel = function(_channel, control, _value, _status, group) {
-    var enableChannel1 = control === 0x10 || control === 0x14;
-    var enableChannel2 = control === 0x11 || control === 0x14;
+PioneerDDJ400.beatFxChannel = function(_channel, control, value, _status, group) {
+    if (value === 0x00) { return; }
+
+    var enableChannel1 = control === 0x10 ? 1 : 0,
+        enableChannel2 = control === 0x11 ? 1 : 0,
+        enableMaster = control === 0x14 ? 1 : 0;
 
     engine.setValue(group, "group_[Channel1]_enable", enableChannel1);
     engine.setValue(group, "group_[Channel2]_enable", enableChannel2);
+    engine.setValue(group, "group_[Master]_enable", enableMaster);
 };
 
 //
