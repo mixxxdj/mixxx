@@ -67,6 +67,7 @@ DlgLibraryExport::DlgLibraryExport(
     m_pExportDirectoryTextField->setText(lastExportDirectory);
 
     m_pVersionCombo = make_parented<QComboBox>();
+    m_pVersionCombo->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 
     m_pExistingDatabaseLabel = make_parented<QLabel>();
     m_pExistingDatabaseLabel->setWordWrap(true);
