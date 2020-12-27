@@ -30,10 +30,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_loading(false) {
     setupUi(this);
 
-    connect(m_pSoundManager, &SoundManager::devicesUpdated, this, &DlgPrefSound::refreshDevices);
+    connect(m_pSoundManager,
+            &SoundManager::devicesUpdated,
+            this,
+            &DlgPrefSound::refreshDevices);
 
     apiComboBox->clear();
-    apiComboBox->addItem(tr("None"), "None");
+    apiComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
+            SoundManagerConfig::kDefaultAPI);
     updateAPIs();
     connect(apiComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -611,7 +615,7 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
  * just changes and we need to display new devices.
  */
 void DlgPrefSound::refreshDevices() {
-    if (m_config.getAPI() == "None") {
+    if (m_config.getAPI() == SoundManagerConfig::kDefaultAPI) {
         m_outputDevices.clear();
         m_inputDevices.clear();
     } else {
