@@ -140,7 +140,7 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
                                         int on_hide_select) {
     int index = addWidget(pWidget);
     if (pControl) {
-        auto pListener = new WidgetStackControlListener(this, pControl, index);
+        auto* pListener = new WidgetStackControlListener(this, pControl, index);
         m_listeners[index] = pListener;
         if (pControl->get() > 0) {
             setCurrentIndex(count()-1);

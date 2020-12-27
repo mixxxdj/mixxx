@@ -36,6 +36,26 @@
       <li>Skinnable interface with several skins bundled</li>
     </ul>
   </description>
+  <provides>
+    <!-- Keep these IDs in sync with res/linux/mixxx-usb-uaccess.rules -->
+    <modalias>usb:v22F0p0008d*</modalias>
+    <modalias>usb:v1C75p*</modalias>
+    <modalias>usb:v1397p*</modalias>
+    <modalias>usb:v154Ep*</modalias>
+    <modalias>usb:v1157p*</modalias>
+    <modalias>usb:v23C7p*</modalias>
+    <modalias>usb:v06F8p*</modalias>
+    <modalias>usb:v15E4p*</modalias>
+    <modalias>usb:v0944p*</modalias>
+    <modalias>usb:v17CCp*</modalias>
+    <modalias>usb:v057Ep*</modalias>
+    <modalias>usb:v08E4p*</modalias>
+    <modalias>usb:v2B73p*</modalias>
+    <modalias>usb:v13E5p*</modalias>
+    <modalias>usb:v200Cp*</modalias>
+    <modalias>usb:v0582p*</modalias>
+    <modalias>usb:v054Cp*</modalias>
+  </provides>
   <screenshots>
     <screenshot type="default">
       <image>https://www.mixxx.org/static/images/press_art/mixxx_200_deere_skin.png</image>

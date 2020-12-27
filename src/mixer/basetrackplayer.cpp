@@ -40,7 +40,6 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
         UserSettingsPointer pConfig,
         EngineMaster* pMixingEngine,
         EffectsManager* pEffectsManager,
-        VisualsManager* pVisualsManager,
         EngineChannel::ChannelOrientation defaultOrientation,
         const ChannelHandleAndGroup& handleGroup,
         bool defaultMaster,
@@ -193,8 +192,6 @@ BaseTrackPlayerImpl::BaseTrackPlayerImpl(
 
     m_pRateRatio = make_parented<ControlProxy>(getGroup(), "rate_ratio", this);
     m_pPitchAdjust = make_parented<ControlProxy>(getGroup(), "pitch_adjust", this);
-
-    pVisualsManager->addDeck(getGroup());
 }
 
 BaseTrackPlayerImpl::~BaseTrackPlayerImpl() {
@@ -370,9 +367,9 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
     // WARNING: Never. Ever. call bare disconnect() on an object. Mixxx
     // relies on signals and slots to get tons of things done. Don't
     // randomly disconnect things.
-    disconnect(m_pLoadedTrack.get(), 0, m_pFileBPM.get(), 0);
-    disconnect(m_pLoadedTrack.get(), 0, this, 0);
-    disconnect(m_pLoadedTrack.get(), 0, m_pKey.get(), 0);
+    disconnect(m_pLoadedTrack.get(), nullptr, m_pFileBPM.get(), nullptr);
+    disconnect(m_pLoadedTrack.get(), nullptr, this, nullptr);
+    disconnect(m_pLoadedTrack.get(), nullptr, m_pKey.get(), nullptr);
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {

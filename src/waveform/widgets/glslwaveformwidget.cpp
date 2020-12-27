@@ -18,21 +18,26 @@
 GLSLFilteredWaveformWidget::GLSLFilteredWaveformWidget(
         const QString& group,
         QWidget* parent)
-        : GLSLWaveformWidget(group, parent, false) {
+        : GLSLWaveformWidget(group, parent, GLSLWaveformWidget::GlslType::Filtered) {
 }
 
 GLSLRGBWaveformWidget::GLSLRGBWaveformWidget(
         const QString& group,
         QWidget* parent)
-        : GLSLWaveformWidget(group, parent, true) {
+        : GLSLWaveformWidget(group, parent, GLSLWaveformWidget::GlslType::RGB) {
+}
+
+GLSLRGBStackedWaveformWidget::GLSLRGBStackedWaveformWidget(
+        const QString& group,
+        QWidget* parent)
+        : GLSLWaveformWidget(group, parent, GLSLWaveformWidget::GlslType::RGBStacked) {
 }
 
 GLSLWaveformWidget::GLSLWaveformWidget(
         const QString& group,
         QWidget* parent,
-        bool rgbRenderer)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
-          WaveformWidgetAbstract(group) {
+        GlslType type)
+        : GLWaveformWidgetAbstract(group, parent) {
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
@@ -45,13 +50,15 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-    if (rgbRenderer) {
-        m_signalRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
-    } else {
-        m_signalRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
+    if (type == GlslType::Filtered) {
+        m_pGlRenderer = addRenderer<GLSLWaveformRendererFilteredSignal>();
+    } else if (type == GlslType::RGB) {
+        m_pGlRenderer = addRenderer<GLSLWaveformRendererRGBSignal>();
+    } else if (type == GlslType::RGBStacked) {
+        m_pGlRenderer = addRenderer<GLSLWaveformRendererStackedSignal>();
     }
 #else
-    Q_UNUSED(rgbRenderer);
+    Q_UNUSED(type);
 #endif // QT_NO_OPENGL && !QT_OPENGL_ES_2
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
@@ -81,7 +88,7 @@ mixxx::Duration GLSLWaveformWidget::render() {
     // this may delayed until previous buffer swap finished
     QPainter painter(this);
     t1 = timer.restart();
-    draw(&painter, NULL);
+    draw(&painter, nullptr);
     //t2 = timer.restart();
     //qDebug() << "GLSLWaveformWidget" << t1 << t2;
     return t1; // return timer for painter setup

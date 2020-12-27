@@ -2,7 +2,7 @@
 
 #include <QDebugStateSaver>
 
-#include "controllers/controllerpresetinfo.h"
+#include "controllers/controllermappinginfo.h"
 #include "moc_hiddevice.cpp"
 #include "util/path.h" // for PATH_MAX on Windows
 #include "util/string.h"

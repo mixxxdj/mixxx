@@ -10,9 +10,9 @@
 #include "preferences/dialog/dlgpreferences.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
-                                       UserSettingsPointer pConfig,
-                                       ControllerManager* pControllerManager,
-                                       QTreeWidgetItem* pControllerTreeItem)
+        UserSettingsPointer pConfig,
+        std::shared_ptr<ControllerManager> pControllerManager,
+        QTreeWidgetItem* pControllerTreeItem)
         : DlgPreferencePage(pPreferences),
           m_pDlgPreferences(pPreferences),
           m_pConfig(pConfig),
@@ -21,13 +21,13 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     setupUi(this);
     setupControllerWidgets();
 
-    connect(btnOpenUserPresets, &QPushButton::clicked, [=]() {
-        QString presetsPath = userPresetsPath(m_pConfig);
-        openLocalFile(presetsPath);
+    connect(btnOpenUserMappings, &QPushButton::clicked, [=]() {
+        QString mappingsPath = userMappingsPath(m_pConfig);
+        openLocalFile(mappingsPath);
     });
 
     // Connections
-    connect(m_pControllerManager,
+    connect(m_pControllerManager.get(),
             &ControllerManager::devicesChanged,
             this,
             &DlgPrefControllers::rescanControllers);

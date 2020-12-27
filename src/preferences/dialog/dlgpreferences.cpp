@@ -52,7 +52,17 @@
 #include "skin/skinloader.h"
 #include "util/widgethelper.h"
 
-DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman, PlayerManager* pPlayerManager, ControllerManager* controllers, VinylControlManager* pVCManager, LV2Backend* pLV2Backend, EffectsManager* pEffectsManager, SettingsManager* pSettingsManager, Library* pLibrary)
+DlgPreferences::DlgPreferences(
+        MixxxMainWindow* mixxx,
+        std::shared_ptr<SkinLoader> pSkinLoader,
+        std::shared_ptr<SoundManager> soundman,
+        std::shared_ptr<PlayerManager> pPlayerManager,
+        std::shared_ptr<ControllerManager> pControllerManager,
+        std::shared_ptr<VinylControlManager> pVCManager,
+        LV2Backend* pLV2Backend,
+        std::shared_ptr<EffectsManager> pEffectsManager,
+        std::shared_ptr<SettingsManager> pSettingsManager,
+        std::shared_ptr<Library> pLibrary)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
@@ -95,7 +105,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
     QTreeWidgetItem* pControllersTreeItem = createTreeItem(
             tr("Controllers"),
             QIcon(":/images/preferences/ic_preferences_controllers.svg"));
-    m_pControllersDlg = new DlgPrefControllers(this, m_pConfig, controllers, pControllersTreeItem);
+    m_pControllersDlg = new DlgPrefControllers(
+            this, m_pConfig, pControllerManager, pControllersTreeItem);
     addPageWidget(PreferencesPage(m_pControllersDlg, pControllersTreeItem));
 
 #ifdef __VINYLCONTROL__
@@ -234,8 +245,9 @@ QTreeWidgetItem* DlgPreferences::createTreeItem(const QString& text, const QIcon
 }
 
 void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous) {
-    if (!current)
+    if (!current) {
         current = previous;
+    }
 
     if (m_pControllersDlg->handleTreeItemClick(current)) {
         // Do nothing. m_controllersPage handled this click.
@@ -394,12 +406,12 @@ void DlgPreferences::addPageWidget(PreferencesPage page) {
 DlgPreferencePage* DlgPreferences::currentPage() {
     QObject* pObject = pagesWidget->currentWidget();
     for (int i = 0; i < 2; ++i) {
-        if (pObject == NULL) {
-            return NULL;
+        if (pObject == nullptr) {
+            return nullptr;
         }
         QObjectList children = pObject->children();
         if (children.isEmpty()) {
-            return NULL;
+            return nullptr;
         }
         pObject = children[0];
     }

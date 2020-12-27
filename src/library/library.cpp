@@ -178,10 +178,8 @@ Library::Library(
         addFeature(new SeratoFeature(this, m_pConfig));
     }
 
-    for (const auto& externalTrackCollection :
-            m_pTrackCollectionManager->externalCollections()) {
-        auto feature =
-                externalTrackCollection->newLibraryFeature(this, m_pConfig);
+    for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
+        auto* feature = externalTrackCollection->newLibraryFeature(this, m_pConfig);
         if (feature) {
             kLogger.info() << "Adding library feature for"
                            << externalTrackCollection->name();
@@ -468,7 +466,7 @@ void Library::slotRequestAddDir(const QString& dir) {
     Sandbox::createSecurityToken(directory);
 
     if (!m_pTrackCollectionManager->addDirectory(dir)) {
-        QMessageBox::information(0,
+        QMessageBox::information(nullptr,
                 tr("Add Directory to Library"),
                 tr("Could not add the directory to your library. Either this "
                    "directory is already in your library or you are currently "
@@ -533,8 +531,18 @@ QStringList Library::getDirs() {
 }
 
 void Library::setFont(const QFont& font) {
+    QFontMetrics currMetrics(m_trackTableFont);
+    QFontMetrics newMetrics(font);
+    double currFontHeight = currMetrics.height();
+    double newFontHeight = newMetrics.height();
+
     m_trackTableFont = font;
     emit setTrackTableFont(font);
+
+    // adapt the previous font height/row height ratio
+    int scaledRowHeight = static_cast<int>(std::round(
+            (newFontHeight / currFontHeight) * m_iTrackTableRowHeight));
+    setRowHeight(scaledRowHeight);
 }
 
 void Library::setRowHeight(int rowHeight) {

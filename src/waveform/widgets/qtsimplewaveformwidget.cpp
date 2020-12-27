@@ -23,9 +23,6 @@ QtSimpleWaveformWidget::QtSimpleWaveformWidget(
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
@@ -64,7 +61,7 @@ mixxx::Duration QtSimpleWaveformWidget::render() {
     // this may delayed until previous buffer swap finished
     QPainter painter(this);
     t1 = timer.restart();
-    draw(&painter, NULL);
+    draw(&painter, nullptr);
     //t2 = timer.restart();
     //qDebug() << "QtSimpleWaveformWidget" << t1 << t2;
     return t1; // return timer for painter setup

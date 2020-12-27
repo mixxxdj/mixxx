@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QAtomicInt>
+#include <QThread>
 
 #include "controllers/controller.h"
-#include "controllers/hid/hidcontrollerpreset.h"
-#include "controllers/hid/hidcontrollerpresetfilehandler.h"
+#include "controllers/hid/legacyhidcontrollermapping.h"
+#include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "util/duration.h"
 
 struct libusb_device_handle;
@@ -41,16 +42,16 @@ class BulkController : public Controller {
             struct libusb_device_descriptor* desc);
     ~BulkController() override;
 
-    QString presetExtension() override;
+    QString mappingExtension() override;
 
-    ControllerPresetPointer getPreset() const override {
-        HidControllerPreset* pClone = new HidControllerPreset();
-        *pClone = m_preset;
-        return ControllerPresetPointer(pClone);
+    LegacyControllerMappingPointer getMapping() const override {
+        LegacyHidControllerMapping* pClone = new LegacyHidControllerMapping();
+        *pClone = m_mapping;
+        return LegacyControllerMappingPointer(pClone);
     }
 
-    void visit(const MidiControllerPreset* preset) override;
-    void visit(const HidControllerPreset* preset) override;
+    void visit(const LegacyMidiControllerMapping* mapping) override;
+    void visit(const LegacyHidControllerMapping* mapping) override;
 
     void accept(ControllerVisitor* visitor) override {
         if (visitor) {
@@ -59,10 +60,10 @@ class BulkController : public Controller {
     }
 
     bool isMappable() const override {
-        return m_preset.isMappable();
+        return m_mapping.isMappable();
     }
 
-    bool matchPreset(const PresetInfo& preset) override;
+    bool matchMapping(const MappingInfo& mapping) override;
 
   protected:
     void send(const QList<int>& data, unsigned int length) override;
@@ -76,10 +77,10 @@ class BulkController : public Controller {
     // 0x0.
     void sendBytes(const QByteArray& data) override;
 
-    // Returns a pointer to the currently loaded controller preset. For internal
+    // Returns a pointer to the currently loaded controller mapping. For internal
     // use only.
-    ControllerPreset* preset() override {
-        return &m_preset;
+    LegacyControllerMapping* mapping() override {
+        return &m_mapping;
     }
 
     bool matchProductInfo(const ProductInfo& product);
@@ -98,5 +99,5 @@ class BulkController : public Controller {
 
     QString m_sUID;
     BulkReader* m_pReader;
-    HidControllerPreset m_preset;
+    LegacyHidControllerMapping m_mapping;
 };

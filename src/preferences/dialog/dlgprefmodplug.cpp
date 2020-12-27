@@ -146,16 +146,21 @@ void DlgPrefModplug::applySettings() {
 
     // enabled features flags
     settings.mFlags = 0;
-    if (m_pUi->oversampling->isChecked())
+    if (m_pUi->oversampling->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_OVERSAMPLING;
-    if (m_pUi->noiseReduction->isChecked())
+    }
+    if (m_pUi->noiseReduction->isChecked()) {
         settings.mFlags |=  ModPlug::MODPLUG_ENABLE_NOISE_REDUCTION;
-    if (m_pUi->reverb->isChecked())
+    }
+    if (m_pUi->reverb->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_REVERB;
-    if (m_pUi->megabass->isChecked())
+    }
+    if (m_pUi->megabass->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_MEGABASS;
-    if (m_pUi->surround->isChecked())
+    }
+    if (m_pUi->surround->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_SURROUND;
+    }
 
     switch (m_pUi->resampleMode->currentIndex()) {
     case 0: // nearest neighbor

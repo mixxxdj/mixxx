@@ -29,7 +29,7 @@ namespace {
             return schemaVersion;
         }
     }
-}
+    } // namespace
 
 SchemaManager::SchemaManager(const QSqlDatabase& database)
         : m_database(database),

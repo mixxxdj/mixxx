@@ -48,9 +48,9 @@ inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
 /// Works independent of if the hot cue index is either 0-based
 /// or 1..n-based.
 inline int hotcueIndexToHotcueNumber(int hotcueIndex) {
-    if (hotcueIndex >= Cue::kFirstHotCue) {
+    if (hotcueIndex >= mixxx::kFirstHotCueIndex) {
         DEBUG_ASSERT(hotcueIndex != Cue::kNoHotCue);
-        return (hotcueIndex - Cue::kFirstHotCue) + 1; // to 1-based numbering
+        return (hotcueIndex - mixxx::kFirstHotCueIndex) + 1; // to 1-based numbering
     } else {
         DEBUG_ASSERT(hotcueIndex == Cue::kNoHotCue);
         return kNoHotCueNumber;
@@ -64,7 +64,7 @@ inline int hotcueIndexToHotcueNumber(int hotcueIndex) {
 inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
     if (hotcueNumber >= 1) {
         DEBUG_ASSERT(hotcueNumber != kNoHotCueNumber);
-        return Cue::kFirstHotCue + (hotcueNumber - 1); // from 1-based numbering
+        return mixxx::kFirstHotCueIndex + (hotcueNumber - 1); // from 1-based numbering
     } else {
         DEBUG_ASSERT(hotcueNumber == kNoHotCueNumber);
         return Cue::kNoHotCue;
@@ -415,7 +415,7 @@ void CueControl::detachCue(HotcueControl* pControl) {
         return;
     }
 
-    disconnect(pCue.get(), 0, this, 0);
+    disconnect(pCue.get(), nullptr, this, nullptr);
 
     if (m_pCurrentSavedLoopControl == pControl) {
         m_pCurrentSavedLoopControl = nullptr;
@@ -426,7 +426,7 @@ void CueControl::detachCue(HotcueControl* pControl) {
 void CueControl::trackLoaded(TrackPointer pNewTrack) {
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack) {
-        disconnect(m_pLoadedTrack.get(), 0, this, 0);
+        disconnect(m_pLoadedTrack.get(), nullptr, this, nullptr);
         for (const auto& pControl : qAsConst(m_hotcueControls)) {
             detachCue(pControl);
         }

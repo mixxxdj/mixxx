@@ -10,7 +10,6 @@
 GLWaveformRendererSimpleSignal::GLWaveformRendererSimpleSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererSignalBase(waveformWidgetRenderer) {
-    initializeOpenGLFunctions();
 }
 
 GLWaveformRendererSimpleSignal::~GLWaveformRendererSimpleSignal() {
@@ -26,6 +25,8 @@ inline void setPoint(QPointF& point, qreal x, qreal y) {
 }
 
 void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
+    maybeInitializeGL();
+
     TrackPointer pTrack = m_waveformRenderer->getTrackInfo();
     if (!pTrack) {
         return;
@@ -42,7 +43,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     }
 
     const WaveformData* data = waveform->data();
-    if (data == NULL) {
+    if (data == nullptr) {
         return;
     }
 
@@ -66,7 +67,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     float allGain(1.0);
-    getGains(&allGain, NULL, NULL, NULL);
+    getGains(&allGain, nullptr, nullptr, nullptr);
 
     if (m_alignment == Qt::AlignCenter) {
         glMatrixMode(GL_PROJECTION);
@@ -128,10 +129,11 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
             glRotatef(90.0f, 0.0f, 0.0f, 1.0f);
             glScalef(-1.0f, 1.0f, 1.0f);
         }
-        if (m_alignment == Qt::AlignBottom || m_alignment == Qt::AlignRight)
+        if (m_alignment == Qt::AlignBottom || m_alignment == Qt::AlignRight) {
             glOrtho(firstVisualIndex, lastVisualIndex, 0.0, 255.0, -10.0, 10.0);
-        else
+        } else {
             glOrtho(firstVisualIndex, lastVisualIndex, 255.0, 0.0, -10.0, 10.0);
+        }
 
         glMatrixMode(GL_MODELVIEW);
         glPushMatrix();

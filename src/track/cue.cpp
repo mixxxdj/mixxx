@@ -36,7 +36,7 @@ inline double positionMillisToSamples(
     // Try to avoid rounding errors
     return (*positionMillis * sampleRate * mixxx::kEngineChannelCount) / 1000;
 }
-}
+} // namespace
 
 //static
 void CuePointer::deleteLater(Cue* pCue) {
@@ -96,7 +96,7 @@ Cue::Cue(
                   positionMillisToSamples(
                           cueInfo.getEndPositionMillis(),
                           sampleRate)),
-          m_iHotCue(cueInfo.getHotCueNumber() ? *cueInfo.getHotCueNumber() : kNoHotCue),
+          m_iHotCue(cueInfo.getHotCueIndex() ? *cueInfo.getHotCueIndex() : kNoHotCue),
           m_label(cueInfo.getLabel()),
           m_color(cueInfo.getColor().value_or(mixxx::PredefinedColorPalettes::kDefaultCueColor)) {
     DEBUG_ASSERT(!m_dbId.isValid());

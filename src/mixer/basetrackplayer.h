@@ -57,7 +57,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
-            VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             const ChannelHandleAndGroup& handleGroup,
             bool defaultMaster,

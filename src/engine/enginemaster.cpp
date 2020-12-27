@@ -822,7 +822,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     m_activeTalkoverChannels.reserve(m_channels.size());
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
-    if (pBuffer != NULL) {
+    if (pBuffer != nullptr) {
         pBuffer->bindWorkers(m_pWorkerScheduler);
     }
 }
@@ -834,7 +834,7 @@ EngineChannel* EngineMaster::getChannel(const QString& group) {
             return pChannelInfo->m_pChannel;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
@@ -842,9 +842,10 @@ const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
 }
 
 const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
-    if (i <= EngineChannel::RIGHT)
+    if (i <= EngineChannel::RIGHT) {
         return m_pOutputBusBuffers[i];
-    return NULL;
+    }
+    return nullptr;
 }
 
 const CSAMPLE* EngineMaster::getChannelBuffer(const QString& group) const {
@@ -854,7 +855,7 @@ const CSAMPLE* EngineMaster::getChannelBuffer(const QString& group) const {
             return pChannelInfo->m_pBuffer;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 const CSAMPLE* EngineMaster::buffer(const AudioOutput& output) const {
@@ -878,7 +879,7 @@ const CSAMPLE* EngineMaster::buffer(const AudioOutput& output) const {
         return getSidechainBuffer();
         break;
     default:
-        return NULL;
+        return nullptr;
     }
 }
 

@@ -30,7 +30,7 @@ const char* kSettingsGroupHeader = "Settings for %1";
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
-}
+} // namespace
 
 DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
                                    BroadcastSettingsPointer pBroadcastSettings)
@@ -504,8 +504,9 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
 }
 
 void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return;
+    }
 
     profile->setSecureCredentialStorage(rbPasswordKeychain->isChecked());
 
