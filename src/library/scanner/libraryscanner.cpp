@@ -38,6 +38,34 @@ int execCleanupQuery(FwdSqlQuery& query) {
     return query.numRowsAffected();
 }
 
+/// Clean up the database and fix inconsistencies from previous runs.
+/// See also: https://bugs.launchpad.net/mixxx/+bug/1846945
+void cleanUpDatabase(const QSqlDatabase& database) {
+    kLogger.info()
+            << "Cleaning up database...";
+    PerformanceTimer timer;
+    timer.start();
+    const auto sqlStmt = QStringLiteral(
+            "DELETE FROM LibraryHashes WHERE hash<>:unequalHash "
+            "AND directory_path NOT IN "
+            "(SELECT directory FROM track_locations)");
+    FwdSqlQuery query(database, sqlStmt);
+    query.bindValue(
+            QStringLiteral(":unequalHash"),
+            static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
+    auto numRows = execCleanupQuery(query);
+    if (numRows < 0) {
+        kLogger.warning()
+                << "Failed to delete orphaned directory hashes";
+    } else if (numRows > 0) {
+        kLogger.info()
+                << "Deleted" << numRows << "orphaned directory hashes";
+    }
+    kLogger.info()
+            << "Finished database cleanup:"
+            << timer.elapsed().debugMillisWithUnit();
+}
+
 } // anonymous namespace
 
 LibraryScanner::LibraryScanner(
@@ -132,33 +160,7 @@ void LibraryScanner::slotStartScan() {
     kLogger.debug() << "slotStartScan()";
     DEBUG_ASSERT(m_state == STARTING);
 
-    // Clean up the database and fix inconsistencies from previous runs.
-    // See also: https://bugs.launchpad.net/mixxx/+bug/1846945
-    {
-        kLogger.info()
-                << "Cleaning up database before scanning...";
-        PerformanceTimer timer;
-        timer.start();
-        const auto sqlStmt = QStringLiteral(
-                "DELETE FROM LibraryHashes WHERE hash <> :unequalHash "
-                "AND directory_path NOT IN "
-                "(SELECT directory FROM track_locations)");
-        FwdSqlQuery query(m_libraryHashDao.database(), sqlStmt);
-        query.bindValue(
-                QStringLiteral(":unequalHash"),
-                static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
-        auto numRows = execCleanupQuery(query);
-        if (numRows < 0) {
-            kLogger.warning()
-                    << "Failed to delete orphaned directory hashes";
-        } else if (numRows > 0) {
-            kLogger.info()
-                    << "Deleted" << numRows << "orphaned directory hashes)";
-        }
-        kLogger.info()
-                << "Finished database cleanup:"
-                << timer.elapsed().debugMillisWithUnit();
-    }
+    cleanUpDatabase(m_libraryHashDao.database());
 
     // Recursively scan each directory in the directories table.
     m_libraryRootDirs = m_directoryDao.getDirs();
