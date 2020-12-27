@@ -556,7 +556,7 @@ void bindTrackLibraryValues(
     const PlayCounter& playCounter = track.getPlayCounter();
     pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
     pTrackLibraryQuery->bindValue(":last_played_at",
-            sqlite::writeGeneratedTimestamp(playCounter.getLastPlayedAt()));
+            mixxx::sqlite::writeGeneratedTimestamp(playCounter.getLastPlayedAt()));
     pTrackLibraryQuery->bindValue(":played", playCounter.isPlayed() ? 1 : 0);
 
     const CoverInfoRelative& coverInfo = track.getCoverInfo();
@@ -1173,7 +1173,8 @@ bool setTrackPlayed(const QSqlRecord& record, const int column,
 
 bool setTrackLastPlayedAt(const QSqlRecord& record, const int column, TrackPointer pTrack) {
     auto playCounter = pTrack->getPlayCounter();
-    playCounter.setLastPlayedAt(sqlite::readGeneratedTimestamp(record.value(column)));
+    playCounter.setLastPlayedAt(
+            mixxx::sqlite::readGeneratedTimestamp(record.value(column)));
     pTrack->setPlayCounter(playCounter);
     return false;
 }

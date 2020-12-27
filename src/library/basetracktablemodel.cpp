@@ -628,7 +628,7 @@ QVariant BaseTrackTableModel::roleValue(
             QDateTime lastPlayedAt;
             if (rawValue.type() == QVariant::String) {
                 // column value
-                lastPlayedAt = sqlite::readGeneratedTimestamp(rawValue);
+                lastPlayedAt = mixxx::sqlite::readGeneratedTimestamp(rawValue);
             } else {
                 // cached in memory (local time)
                 lastPlayedAt = rawValue.toDateTime().toUTC();
