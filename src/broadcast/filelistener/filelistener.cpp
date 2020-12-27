@@ -16,23 +16,19 @@ FileListener::FileListener(UserSettingsPointer pConfig)
     MetadataFileWorker* newWorker = new MetadataFileWorker(m_latestSettings.filePath);
     newWorker->moveToThread(&m_workerThread);
 
-    connect(&m_workerThread, SIGNAL(finished()), newWorker, SLOT(deleteLater()));
-
-    connect(this, SIGNAL(deleteFile()), newWorker, SLOT(slotDeleteFile()));
-
-    connect(this, SIGNAL(moveFile(QString)), newWorker, SLOT(slotMoveFile(QString)));
-
-    connect(this,
-            SIGNAL(writeMetadataToFile(QByteArray)),
-            newWorker,
-            SLOT(slotWriteMetadataToFile(QByteArray)));
-
-    connect(this, SIGNAL(clearFile()), newWorker, SLOT(slotClearFile()));
-
+    connect(&m_workerThread, &QThread::finished, newWorker, &MetadataFileWorker::deleteLater);
     connect(&m_COsettingsChanged,
-            SIGNAL(valueChanged(double)),
+            &ControlPushButton::valueChanged,
             this,
-            SLOT(slotFileSettingsChanged(double)));
+            &FileListener::slotFileSettingsChanged);
+
+    connect(this, &FileListener::deleteFile, newWorker, &MetadataFileWorker::slotDeleteFile);
+    connect(this, &FileListener::moveFile, newWorker, &MetadataFileWorker::slotMoveFile);
+    connect(this,
+            &FileListener::writeMetadataToFile,
+            newWorker,
+            &MetadataFileWorker::slotWriteMetadataToFile);
+    connect(this, &FileListener::clearFile, newWorker, &MetadataFileWorker::slotClearFile);
 
     m_workerThread.start();
 }
@@ -76,7 +72,7 @@ void FileListener::slotAllTracksPaused() {
 }
 
 void FileListener::slotFileSettingsChanged(double value) {
-    if (value) {
+    if (value >= 0) {
         FileSettings latestSettings = MetadataFileSettings::getLatestSettings();
         m_filePathChanged = latestSettings.filePath != m_latestSettings.filePath;
         m_latestSettings = latestSettings;

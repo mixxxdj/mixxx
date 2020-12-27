@@ -22,7 +22,7 @@ void FakeNetworkReply::setHttpError(unsigned int error) {
     httpError = error;
 }
 
-void FakeNetworkReply::setContents(QByteArray contents) {
+void FakeNetworkReply::setContents(const QByteArray& contents) {
     this->contents = contents;
 }
 

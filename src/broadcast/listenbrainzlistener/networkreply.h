@@ -22,7 +22,7 @@ class FakeNetworkReply : public NetworkReply {
 
     void setNetworkError(QNetworkReply::NetworkError error);
     void setHttpError(unsigned int error);
-    void setContents(QByteArray contents);
+    void setContents(const QByteArray& contents);
 
   private:
     QByteArray contents;
