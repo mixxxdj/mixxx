@@ -73,7 +73,7 @@ void WEffectSelector::populate() {
     }
 
     //: Displayed when no effect is loaded
-    addItem(tr("None"), QVariant());
+    addItem(EffectsManager::kNoEffectString);
     setItemData(visibleEffectManifests.size(), QVariant(tr("No effect loaded.")),
                 Qt::ToolTipRole);
 

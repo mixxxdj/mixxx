@@ -13,6 +13,8 @@
 #include "moc_effectsmanager.cpp"
 #include "util/assert.h"
 
+const QString EffectsManager::kNoEffectString = QStringLiteral("---");
+
 namespace {
 const QString kEffectGroupSeparator = "_";
 const QString kGroupClose = "]";
