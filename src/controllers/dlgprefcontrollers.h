@@ -2,9 +2,9 @@
 
 #include <QTreeWidgetItem>
 
-#include "preferences/usersettings.h"
 #include "controllers/ui_dlgprefcontrollersdlg.h"
-#include "preferences/dlgpreferencepage.h"
+#include "preferences/dialog/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class DlgPreferences;
 class DlgPrefController;

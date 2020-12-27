@@ -39,8 +39,10 @@ class DlgPreferencePage : public QWidget {
 
     /// Called when the preferences dialog is shown to the user (not necessarily
     /// when this PreferencePage is shown to the user).
-    virtual void slotShow() {}
+    virtual void slotShow() {
+    }
 
     /// Called when the preferences dialog is hidden from the user.
-    virtual void slotHide() {}
+    virtual void slotHide() {
+    }
 };
