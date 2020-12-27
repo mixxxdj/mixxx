@@ -28,6 +28,7 @@ case "$COMMAND" in
             debhelper \
             devscripts \
             docbook-to-man \
+            dput \
             libavformat-dev \
             libchromaprint-dev \
             libdistro-info-perl \
