@@ -55,8 +55,10 @@ class HidController final : public Controller {
     void sendBytesReport(QByteArray data, unsigned int reportID);
     void sendFeatureReport(const QList<int>& dataList, unsigned int reportID);
 
-    // Returns a pointer to the currently loaded controller mapping. For internal
-    // use only.
+    QList<int> getInputReport(unsigned int reportID);
+    QList<int> getFeatureReport(unsigned int reportID);
+
+    // Returns a pointer to the currently loaded controller mapping. For internal    // use only.
     LegacyControllerMapping* mapping() override {
         return &m_mapping;
     }
@@ -91,9 +93,19 @@ class HidControllerJSProxy : public ControllerJSProxy {
         m_pHidController->sendReport(data, length, reportID);
     }
 
+    Q_INVOKABLE QList<int> getInputReport(
+            unsigned int reportID) {
+        return m_pHidController->getInputReport(reportID);
+    }
+
     Q_INVOKABLE void sendFeatureReport(
             const QList<int>& dataList, unsigned int reportID) {
         m_pHidController->sendFeatureReport(dataList, reportID);
+    }
+
+    Q_INVOKABLE QList<int> getFeatureReport(
+            unsigned int reportID) {
+        return m_pHidController->getFeatureReport(reportID);
     }
 
   private:

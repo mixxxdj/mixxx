@@ -137,6 +137,35 @@ int HidController::close() {
     return 0;
 }
 
+QList<int> HidController::getInputReport(unsigned int reportID) {
+    Trace hidRead("HidController getInputReport");
+    unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
+    const int currentBufferIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
+    unsigned char* pCurrentBuffer = m_pPollData[currentBufferIndex];
+    int bytesRead;
+    pCurrentBuffer[0] = reportID;
+    bytesRead = hid_get_input_report(m_pHidDevice, pCurrentBuffer, kBufferSize);
+    controllerDebug(bytesRead << "bytes received by hid_get_input_report" << getName()
+                              << "serial #" << m_deviceInfo.serialNumber()
+                              << "(including report ID of" << reportID << ")");
+    bytesRead -= kReportIdSize;
+
+    if (bytesRead == m_iLastPollSize &&
+            memcmp(pCurrentBuffer, pPreviousBuffer, bytesRead) == 0) {
+    } else {
+        m_iLastPollSize = bytesRead;
+        m_iPollingBufferIndex = currentBufferIndex;
+        auto incomingData = QByteArray::fromRawData(
+                reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
+        receive(incomingData, mixxx::Time::elapsed());
+    }
+    QList<int> dataList;
+    for (int i = 0; i < bytesRead; i++) {
+        dataList.append(pCurrentBuffer[i]);
+    }
+    return dataList;
+}
+
 bool HidController::poll() {
     Trace hidRead("HidController poll");
 
@@ -254,4 +283,31 @@ void HidController::sendFeatureReport(
 
 ControllerJSProxy* HidController::jsProxy() {
     return new HidControllerJSProxy(this);
+}
+
+QList<int> HidController::getFeatureReport(
+        unsigned int reportID) {
+    unsigned char dataRead[kReportIdSize + kBufferSize];
+    dataRead[0] = reportID;
+
+    int bytesRead;
+    bytesRead = hid_get_feature_report(m_pHidDevice,
+            dataRead,
+            kReportIdSize + kBufferSize);
+    if (bytesRead == -1) {
+        qWarning() << "getFeatureReport is unable to get data from" << getName()
+                   << "serial #" << m_deviceInfo.serialNumber() << ":"
+                   << mixxx::convertWCStringToQString(
+                              hid_error(m_pHidDevice),
+                              kMaxHidErrorMessageSize);
+    } else {
+        controllerDebug(bytesRead << "bytes received by getFeatureReport from" << getName()
+                                  << "serial #" << m_deviceInfo.serialNumber()
+                                  << "(including report ID of" << reportID << ")");
+    }
+    QList<int> dataList;
+    for (int i = 0; i < bytesRead; i++) {
+        dataList.append(dataRead[i]);
+    }
+    return dataList;
 }
