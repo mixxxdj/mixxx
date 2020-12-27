@@ -21,6 +21,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_coreservices.cpp"
 #include "preferences/settingsmanager.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
