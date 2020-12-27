@@ -1,26 +1,16 @@
 #pragma once
 
-#include "broadcast/scrobblingservice.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefmetadatadlg.h"
-#include "preferences/listenbrainzsettings.h"
-#include "preferences/metadatafilesettings.h"
 #include "preferences/usersettings.h"
 
-namespace Ui {
-class fileListenerBox;
-}
-
-namespace {
-
-const ConfigKey kListenbrainzEnabled =
-        ConfigKey("[Livemetadata]", "ListenbrainzEnabled");
-};
+class MetadataFileSettings;
+class ListenBrainzSettingsManager;
 
 class DlgPrefMetadata : public DlgPreferencePage, public Ui::DlgPrefMetadataDlg {
     Q_OBJECT
   public:
-    DlgPrefMetadata(QWidget* pParent, UserSettingsPointer pSettings);
+    DlgPrefMetadata(QWidget* pParent, const UserSettingsPointer& pSettings);
     ~DlgPrefMetadata() override;
   public slots:
     void slotApply() override;
