@@ -263,7 +263,14 @@ jobs:
 
     - name: "Package for PPA"
       if: startsWith(matrix.os, 'ubuntu')
-      run: cpack -G External -D DEB_SOURCEPKG=ON
+      run: |
+        if [[ "${{ github.ref }}" == "refs/head/2.3" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
+        else
+          # only build the source DEB, do not upload
+          CPACK_ARGS="-D DEB_SOURCEPKG=ON"
+        fi
+        cpack -G External $CPACK_ARGS
       working-directory: build
 
     - name: "[macOS] Sign Package"
