@@ -18,8 +18,8 @@ class FileListener : public ScrobblingService {
     void slotAllTracksPaused() override;
   signals:
     void deleteFile();
-    void moveFile(QString destination);
-    void writeMetadataToFile(QByteArray contents);
+    void moveFile(const QString& destination);
+    void writeMetadataToFile(const QByteArray& contents);
     void clearFile();
   private slots:
     void slotFileSettingsChanged(double value);

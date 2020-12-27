@@ -9,7 +9,10 @@ TrackTimingInfo::TrackTimingInfo(TrackPointer pTrack)
           m_playedMs(0),
           m_isTrackScrobbable(false),
           m_isTimerPaused(true) {
-    connect(m_pTimer.get(), &TrackTimers::GUITickTimer::timeout, this, &TrackTimingInfo::slotCheckIfScrobbable);
+    connect(m_pTimer.get(),
+            &TrackTimers::RegularTimer::timeout,
+            this,
+            &TrackTimingInfo::slotCheckIfScrobbable);
     m_pElapsedTimer->invalidate();
 }
 

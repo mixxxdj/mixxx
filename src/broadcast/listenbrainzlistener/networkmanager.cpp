@@ -13,7 +13,8 @@ NetworkReply* FakeNetworkManager::post(const NetworkRequest* request, const QByt
     fakeReply->setHttpError(200);
     qDebug() << "Fake network manager sending POST request.";
     qDebug() << "Headers:";
-    for (auto header : request->rawHeaderList()) {
+    const QList<QByteArray> headerList = request->rawHeaderList();
+    for (const auto& header : headerList) {
         qDebug() << header;
     }
     qDebug() << "POST Body:";

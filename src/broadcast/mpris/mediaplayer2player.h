@@ -37,8 +37,6 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor {
 
   public:
     explicit MediaPlayer2Player(PlayerManagerInterface* playerManager,
-            QObject* parent,
-            MixxxMainWindow* pWindow,
             Mpris* pMpris,
             UserSettingsPointer pSettings);
 

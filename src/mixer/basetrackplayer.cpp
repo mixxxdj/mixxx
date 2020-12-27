@@ -817,12 +817,12 @@ void BaseTrackPlayerImpl::slotSetTrackRating(int rating) {
 
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {
     if (value <= 0) {
-        emit(trackPaused(m_pLoadedTrack));
+        emit trackPaused(m_pLoadedTrack);
         if (m_replaygainPending) {
             setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
         }
     } else {
-        emit(trackResumed(m_pLoadedTrack));
+        emit trackResumed(m_pLoadedTrack);
     }
 }
 

@@ -36,8 +36,9 @@ void ListenBrainzService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
 }
 
 void ListenBrainzService::slotScrobbleTrack(TrackPointer pTrack) {
-    if (!pTrack || !m_latestSettings.enabled)
+    if (!pTrack || !m_latestSettings.enabled) {
         return;
+    }
     m_currentJSON =
             ListenBrainzJSONFactory::getJSONFromTrack(
                     pTrack, ListenBrainzJSONFactory::Single);
@@ -57,7 +58,7 @@ void ListenBrainzService::slotAPICallFinished(QNetworkReply* reply) {
 }
 
 void ListenBrainzService::slotSettingsChanged(double value) {
-    if (value) {
+    if (value >= 0) {
         m_latestSettings = ListenBrainzSettingsManager::getLatestSettings();
         if (m_latestSettings.enabled) {
             m_request.setRawHeader("Authorization", "Token " + m_latestSettings.userToken.toUtf8());

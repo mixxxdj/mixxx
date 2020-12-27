@@ -55,10 +55,11 @@ void MetadataFileSettings::setupWidgets() {
 
     m_widgets.filePathLineEdit->setText(s_latestSettings.filePath);
     m_widgets.filePathLineEdit->setStyleSheet("");
-    QObject::connect(m_widgets.changeFilePathButton,
-            SIGNAL(pressed()),
+    QObject::connect(
+            m_widgets.changeFilePathButton,
+            &QPushButton::pressed,
             this,
-            SLOT(slotFilepathButtonClicked()));
+            &MetadataFileSettings::slotFilepathButtonClicked);
 }
 
 FileSettings MetadataFileSettings::getLatestSettings() {

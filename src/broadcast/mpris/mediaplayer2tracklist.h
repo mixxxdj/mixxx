@@ -26,9 +26,9 @@ class MediaPlayer2TrackList : public QDBusAbstractAdaptor {
 
     TrackIds tracks() const;
     bool canEditTracks() const;
+    TrackMetadata GetTracksMetadata(const TrackIds& tracks) const;
 
   public slots:
-    TrackMetadata GetTracksMetadata(const TrackIds& tracks) const;
     void AddTrack(const QString& uri, const QDBusObjectPath& afterTrack, bool setAsCurrent);
     void RemoveTrack(const QDBusObjectPath& trackId);
     void GoTo(const QDBusObjectPath& trackId);
