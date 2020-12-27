@@ -18,6 +18,10 @@ const QChar kGeneratedTimestampDateTimeSeparator = QChar(' ');
 namespace sqlite {
 
 QDateTime readGeneratedTimestamp(const QVariant& value) {
+    DEBUG_ASSERT(kGeneratedTimestampFormat ==
+            kGeneratedTimestampDateFormat +
+                    kGeneratedTimestampDateTimeSeparator +
+                    kGeneratedTimestampTimeFormat);
     const auto timestamp = value.toString();
     if (timestamp.isEmpty()) {
         return QDateTime();
