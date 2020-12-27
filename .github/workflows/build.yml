@@ -24,7 +24,7 @@ jobs:
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/ubuntu_buildenv.sh
+            buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 18.04 DEB
             artifacts_path: build/*.deb
             qt_qpa_platform: offscreen
@@ -43,7 +43,7 @@ jobs:
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/ubuntu_buildenv.sh
+            buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 20.04 DEB
             artifacts_path: build/*.deb
             qt_qpa_platform: offscreen
