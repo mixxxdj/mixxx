@@ -66,8 +66,6 @@ GLSLWaveformWidget::GLSLWaveformWidget(
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    setAutoBufferSwap(false);
-
     m_initSuccess = init();
 }
 

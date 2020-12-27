@@ -55,33 +55,9 @@ void VSyncThread::run() {
         } else { // if (m_vSyncMode == ST_TIMER) {
             emit vsyncRender(); // renders the new waveform.
 
-            // wait until rendering was scheduled. It might be delayed due a
-            // pending swap (depends one driver vSync settings)
             m_semaVsyncSlot.acquire();
 
-            // qDebug() << "ST_TIMER                      " << lastMicros << restMicros;
-            int remainingForSwap = m_waitToSwapMicros - static_cast<int>(
-                m_timer.elapsed().toIntegerMicros());
-            // waiting for interval by sleep
-            if (remainingForSwap > 100) {
-                //usleep(remainingForSwap);
-            }
-
-            // swaps the new waveform to front in case of gl-wf
-            emit vsyncSwap();
-
-            // wait until swap occurred. It might be delayed due to driver vSync
-            // settings.
-            m_semaVsyncSlot.acquire();
-
-            // <- Assume we are VSynced here ->
             int lastSwapTime = static_cast<int>(m_timer.restart().toIntegerMicros());
-            if (remainingForSwap < 0) {
-                // Our swapping call was already delayed
-                // The real swap might happens on the following VSync, depending on driver settings
-                m_droppedFrames++; // Count as Real Time Error
-            }
-            // try to stay in right intervals
             m_waitToSwapMicros = m_syncIntervalTimeMicros +
                     ((m_waitToSwapMicros - lastSwapTime) % m_syncIntervalTimeMicros);
         }

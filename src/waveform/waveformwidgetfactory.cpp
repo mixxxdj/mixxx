@@ -721,7 +721,7 @@ void WaveformWidgetFactory::swap() {
                     if (glw->context() != QGLContext::currentContext()) {
                         glw->makeCurrent();
                     }
-                    glw->swapBuffers();
+                    //glw->swapBuffers();
                 }
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
