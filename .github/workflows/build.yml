@@ -255,6 +255,12 @@ jobs:
       run: cpack -G ${{ matrix.cpack_generator }} -V
       working-directory: build
 
+    - name: "[Ubuntu] Import PPA GPG key"
+      if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+      run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
+      env:
+        RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+
     - name: "Package for PPA"
       if: startsWith(matrix.os, 'ubuntu')
       run: cpack -G External -D DEB_SOURCEPKG=ON
