@@ -190,7 +190,7 @@ void exportMetadata(djinterop::database* pDatabase,
         // We will treat the first bar-aligned beat as beat zero.  Find the
         // number of beats from there until the end of the track in order to
         // correctly assign an index for the last beat.
-        double lastBeatPlayPos = sampleOffsetToPlayPos(beats->findPrevBeat(sampleCount));
+        double lastBeatPlayPos = beats->findPrevBeat(sampleOffsetToPlayPos(sampleCount));
         int numBeats = beats->numBeatsInRange(firstBarAlignedBeatPlayPos, lastBeatPlayPos);
         if (numBeats > 0) {
             std::vector<djinterop::beatgrid_marker> beatgrid{
