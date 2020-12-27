@@ -1,4 +1,3 @@
-
 #include "broadcast/filelistener/metadatafileworker.h"
 
 #include "moc_metadatafileworker.cpp"

@@ -6,6 +6,7 @@
 #include "broadcast/scrobblingservice.h"
 #include "control/controlpushbutton.h"
 #include "preferences/dialog/dlgprefmetadata.h"
+#include "preferences/metadatafilesettings.h"
 
 class FileListener : public ScrobblingService {
     Q_OBJECT
