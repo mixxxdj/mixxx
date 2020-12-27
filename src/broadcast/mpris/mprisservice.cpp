@@ -1,4 +1,3 @@
-
 #include "broadcast/mpris/mprisservice.h"
 
 #include "moc_mprisservice.cpp"
