@@ -633,6 +633,9 @@ QVariant BaseTrackTableModel::roleValue(
                 // cached in memory (local time)
                 lastPlayedAt = rawValue.toDateTime().toUTC();
             }
+            if (!lastPlayedAt.isValid()) {
+                return QVariant();
+            }
             DEBUG_ASSERT(lastPlayedAt.timeSpec() == Qt::UTC);
             return mixxx::localDateTimeFromUtc(lastPlayedAt);
         }
