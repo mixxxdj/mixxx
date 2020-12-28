@@ -275,10 +275,14 @@ jobs:
         cpack -G External $CPACK_ARGS
       working-directory: build
 
-    - name: "[macOS] Sign Package"
+    - name: "[macOS] Sign, Notarize, and Staple Package"
       if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
-      run: codesign --verbose=4 --options runtime --sign "${APPLE_CODESIGN_IDENTITY}" --entitlements ../packaging/macos/entitlements.plist *.dmg
-      working-directory: build
+      run: packaging/macos/sign_notarize_staple.sh build/*.dmg
+      env:
+        APPLE_ID_USERNAME: rryan@mixxx.org
+        APPLE_BUNDLE_ID: org.mixxx.mixxx
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
+        ASC_PROVIDER: FLYL4D545V
 
     - name: "[Windows] Sign Package"
       if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
