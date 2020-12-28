@@ -1,11 +1,11 @@
 #pragma once
 
+#include "waveform/renderers/glwaveformrenderer.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include <QDomNode>
+#include "waveform/renderers/waveformrenderersignalbase.h"
 
-#include "waveformrenderersignalbase.h"
-
+QT_FORWARD_DECLARE_CLASS(QDomNode)
 class ControlObject;
 
 class GLWaveformRendererFilteredSignal : public WaveformRendererSignalBase,

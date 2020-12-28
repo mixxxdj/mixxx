@@ -607,8 +607,8 @@ void ControllerEngine::scriptErrorDialog(
     }
 
     props->setType(DLG_WARNING);
-    props->setTitle(tr("Controller Preset Error"));
-    props->setText(QString(tr("The preset for your controller \"%1\" is not "
+    props->setTitle(tr("Controller Mapping Error"));
+    props->setText(QString(tr("The mapping for your controller \"%1\" is not "
                               "working properly."))
                            .arg(m_pController->getName()));
     props->setInfoText(QStringLiteral("<html>") +
