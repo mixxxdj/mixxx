@@ -371,6 +371,11 @@ QString Sandbox::migrateOldSettings() {
 
     // QDir::homePath returns a path inside the sandbox when running sandboxed
     QString homePath = QLatin1String("/Users/") + qgetenv("USER");
+    QDir homeDir(homePath);
+    if (!homeDir.exists() || !homeDir.isReadable()) {
+        qCritical() << "Cannot read home directory" << homePath;
+        return QString();
+    }
 
     // The parent of the sandboxed path needs to be created before the legacySettingsPath
     // can be moved there. This is not necessary when running in a sandbox because macOS
