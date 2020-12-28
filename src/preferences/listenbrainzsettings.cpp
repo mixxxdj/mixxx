@@ -2,7 +2,18 @@
 
 #include "moc_listenbrainzsettings.cpp"
 
+namespace {
+const ConfigKey kListenBrainzEnabled("[Livemetadata]", "ListenBrainzEnabled");
+const ConfigKey kListenBrainzUserToken("[Livemetadata]", "ListenBrainzUserToken");
+const ConfigKey kListenBrainzSettingsChanged("[Livemetadata]", "ListenBrainzSettingsChanged");
+const bool defaultListenBrainzEnabled = false;
+} // namespace
+
+// static
 ListenBrainzSettings ListenBrainzSettingsManager::s_latestSettings;
+// static
+const ConfigKey ListenBrainzSettingsManager::kListenBrainzSettingsChanged =
+        ConfigKey("[Livemetadata]", "ListenBrainzSettingsChanged");
 
 ListenBrainzSettingsManager::ListenBrainzSettingsManager(
         UserSettingsPointer pSettings,
@@ -14,6 +25,7 @@ ListenBrainzSettingsManager::ListenBrainzSettingsManager(
     setUpWidgets();
 }
 
+// static
 ListenBrainzSettings ListenBrainzSettingsManager::getPersistedSettings(
         UserSettingsPointer pSettings) {
     ListenBrainzSettings ret;

@@ -10,27 +10,6 @@
 #include "control/controlproxy.h"
 #include "preferences/usersettings.h"
 
-namespace {
-const ConfigKey kMetadataFileEnabled =
-        ConfigKey("[Livemetadata]", "MetadataFileEnabled");
-
-const ConfigKey kFileEncoding =
-        ConfigKey("[Livemetadata]", "FileEncoding");
-
-const ConfigKey kFileFormatString =
-        ConfigKey("[Livemetadata]", "FileFormatString");
-
-const ConfigKey kFilePath =
-        ConfigKey("[Livemetadata]", "CustomFormatString");
-const ConfigKey kFileSettingsChanged =
-        ConfigKey("[Livemetadata]", "FileSettingsChanged");
-
-const bool defaultFileMetadataEnabled = false;
-const QByteArray defaultEncoding = "UTF-8";
-const QString defaultFilePath = QDir::currentPath() + "/NowPlaying.txt";
-const QString defaultFileFormatString = "{{ track.artist }} - {{ track.title }}";
-} // namespace
-
 struct FileSettings {
     bool enabled;
     QByteArray fileEncoding;
@@ -57,6 +36,8 @@ class MetadataFileSettings : public QObject {
     void applySettings();
     void cancelSettings();
     void setSettingsToDefault();
+
+    static const ConfigKey kFileSettingsChanged;
 
   private:
     void setupWidgets();

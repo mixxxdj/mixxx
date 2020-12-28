@@ -7,12 +7,6 @@
 #include "control/controlproxy.h"
 #include "preferences/usersettings.h"
 
-namespace {
-const ConfigKey kListenBrainzEnabled("[Livemetadata]", "ListenBrainzEnabled");
-const ConfigKey kListenBrainzUserToken("[Livemetadata]", "ListenBrainzUserToken");
-const ConfigKey kListenBrainzSettingsChanged("[Livemetadata]", "ListenBrainzSettingsChanged");
-const bool defaultListenBrainzEnabled = false;
-} // namespace
 
 struct ListenBrainzWidgets {
     QCheckBox* m_pEnabled;
@@ -33,6 +27,8 @@ class ListenBrainzSettingsManager : public QObject {
     void applySettings();
     void cancelSettings();
     void setSettingsToDefault();
+
+    static const ConfigKey kListenBrainzSettingsChanged;
 
   private:
     void setUpWidgets();
