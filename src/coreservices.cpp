@@ -619,6 +619,9 @@ void CoreServices::finalize() {
     Timer t("CoreServices::~CoreServices");
     t.start();
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ScrobblingManager";
+    CLEAR_AND_CHECK_DELETED(m_pScrobblingManager);
+
 #ifdef MIXXX_USE_QML
     // Delete all the QML singletons in order to prevent controller leaks
     mixxx::qml::QmlEffectsManagerProxy::registerEffectsManager(nullptr);
