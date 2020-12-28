@@ -28,7 +28,7 @@ const ConfigKey kFileSettingsChanged =
 const bool defaultFileMetadataEnabled = false;
 const QByteArray defaultEncoding = "UTF-8";
 const QString defaultFilePath = QDir::currentPath() + "/NowPlaying.txt";
-const QString defaultFileFormatString = "$author - $title";
+const QString defaultFileFormatString = "{{ track.artist }} - {{ track.title }}";
 } // namespace
 
 struct FileSettings {
