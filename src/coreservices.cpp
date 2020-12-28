@@ -557,6 +557,9 @@ void CoreServices::finalize() {
     Timer t("CoreServices::~CoreServices");
     t.start();
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ScrobblingManager";
+    CLEAR_AND_CHECK_DELETED(m_pScrobblingManager);
+
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";
     m_pTrackCollectionManager->stopLibraryScan();
