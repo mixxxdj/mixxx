@@ -264,7 +264,8 @@ jobs:
         RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
 
     - name: "Package for PPA"
-      if: startsWith(matrix.os, 'ubuntu')
+      # No need to do the PPA build for both Ubuntu versions
+      if: matrix.os == ubuntu-20.04
       run: |
         if [[ "${{ github.ref }}" == "refs/heads/2.3" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
           CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
