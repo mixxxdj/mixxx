@@ -8,7 +8,7 @@
 #include "preferences/metadatafilesettings.h"
 
 FileListener::FileListener(UserSettingsPointer pConfig)
-        : m_COsettingsChanged(kFileSettingsChanged),
+        : m_COsettingsChanged(MetadataFileSettings::kFileSettingsChanged),
           m_pConfig(pConfig),
           m_latestSettings(MetadataFileSettings::getPersistedSettings(pConfig)),
           m_filePathChanged(false),

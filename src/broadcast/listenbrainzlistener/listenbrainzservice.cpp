@@ -10,7 +10,7 @@
 ListenBrainzService::ListenBrainzService(UserSettingsPointer pSettings)
         : m_request(ListenBrainzAPIURL),
           m_latestSettings(ListenBrainzSettingsManager::getPersistedSettings(pSettings)),
-          m_COSettingsChanged(kListenBrainzSettingsChanged) {
+          m_COSettingsChanged(ListenBrainzSettingsManager::kListenBrainzSettingsChanged) {
     connect(&m_manager,
             &QNetworkAccessManager::finished,
             this,

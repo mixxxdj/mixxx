@@ -11,7 +11,32 @@
 
 #include "moc_metadatafilesettings.cpp"
 
+namespace {
+
+const ConfigKey kMetadataFileEnabled =
+        ConfigKey("[Livemetadata]", "MetadataFileEnabled");
+
+const ConfigKey kFileEncoding =
+        ConfigKey("[Livemetadata]", "FileEncoding");
+
+const ConfigKey kFileFormatString =
+        ConfigKey("[Livemetadata]", "FileFormatString");
+
+const ConfigKey kFilePath =
+        ConfigKey("[Livemetadata]", "CustomFormatString");
+
+const bool defaultFileMetadataEnabled = false;
+const QByteArray defaultEncoding = "UTF-8";
+const QString defaultFilePath = QDir::currentPath() + "/NowPlaying.txt";
+const QString defaultFileFormatString = "{{ track.artist }} - {{ track.title }}";
+
+} // namespace
+
+// static
 FileSettings MetadataFileSettings::s_latestSettings;
+// static
+const ConfigKey MetadataFileSettings::kFileSettingsChanged =
+        ConfigKey("[Livemetadata]", "FileSettingsChanged");
 
 MetadataFileSettings::MetadataFileSettings(UserSettingsPointer pSettings,
         const FileWidgets& widgets,
@@ -33,6 +58,7 @@ MetadataFileSettings::MetadataFileSettings(UserSettingsPointer pSettings,
     setupWidgets();
 }
 
+// static
 FileSettings MetadataFileSettings::getPersistedSettings(const UserSettingsPointer& pSettings) {
     FileSettings ret;
     ret.enabled =
@@ -62,6 +88,7 @@ void MetadataFileSettings::setupWidgets() {
             &MetadataFileSettings::slotFilepathButtonClicked);
 }
 
+// static
 FileSettings MetadataFileSettings::getLatestSettings() {
     return MetadataFileSettings::s_latestSettings;
 }
