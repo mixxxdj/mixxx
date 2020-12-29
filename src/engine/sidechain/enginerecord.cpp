@@ -316,6 +316,10 @@ bool EngineRecord::openCueFile() {
         return false;
     }
 
+    // Write UTF-8 BOM at the start of the file
+    unsigned char bom[] = { 0xEF,0xBB,0xBF };
+    m_cueFile.write((char*)bom, sizeof(bom));
+
     if (m_baAuthor.length() > 0) {
         m_cueFile.write(QString("PERFORMER \"%1\"\n")
                                 .arg(QString(m_baAuthor).replace(QString("\""), QString("\\\"")))
