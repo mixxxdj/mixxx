@@ -328,11 +328,19 @@ bool EngineRecord::openCueFile() {
                                 .toUtf8());
     }
 
-    m_cueFile.write(QString("FILE \"%1\" %2\n").arg(QFileInfo(m_fileName).fileName()                                                                        //strip path
-                                                               .replace(QString("\""), QString("\\\"")),                                                    // escape doublequote
-                                                       (m_encoding == ENCODING_MP3) ? ENCODING_MP3 : (m_encoding == ENCODING_AIFF) ? ENCODING_AIFF : "WAVE" // MP3 and AIFF are recognized but other formats just use WAVE.
-                                                       )
-                            .toUtf8());
+    m_cueFile.write(
+            QString("FILE \"%1\" %2\n")
+                    .arg(QFileInfo(m_fileName)
+                                    .fileName() //strip path
+                                    .replace(QString("\""),
+                                            QString("\\\"")), // escape doublequote
+                            (m_encoding == ENCODING_MP3)
+                                    ? ENCODING_MP3
+                                    : (m_encoding == ENCODING_AIFF)
+                                            ? ENCODING_AIFF
+                                            : "WAVE" // MP3 and AIFF are recognized but other formats just use WAVE.
+                            )
+                    .toUtf8());
     return true;
 }
 
