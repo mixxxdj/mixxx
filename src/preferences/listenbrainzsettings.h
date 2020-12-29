@@ -7,7 +7,6 @@
 #include "control/controlproxy.h"
 #include "preferences/usersettings.h"
 
-
 struct ListenBrainzWidgets {
     QCheckBox* m_pEnabled;
     QLineEdit* m_pUserToken;
