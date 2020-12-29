@@ -239,7 +239,7 @@ void EngineRecord::writeCueLine() {
     // for the track detection code.
     m_cueFile.write(QString("    INDEX 01 %1:%2\n")
                             .arg(getRecordedDurationStr())
-                            .arg((double)cueFrame, 2, 'f', 0, '0')
+                            .arg(static_cast<double>(cueFrame), 2, 'f', 0, '0')
                             .toUtf8());
 }
 
