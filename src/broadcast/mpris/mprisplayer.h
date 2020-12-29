@@ -86,6 +86,9 @@ class MprisPlayer : public QObject {
         QStringList artists;
         QString title;
         QString coverartUrl;
+        QString album;
+        int userRating;
+        int useCount;
     };
 
     CurrentMetadata m_currentMetadata;
