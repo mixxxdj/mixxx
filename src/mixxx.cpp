@@ -171,6 +171,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     QString settingsPath = args.getSettingsPath();
 #ifdef __APPLE__
+    Sandbox::checkSandboxed();
     if (!args.getSettingsPathSet()) {
         settingsPath = Sandbox::migrateOldSettings();
     }
@@ -194,7 +195,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         StatsManager::createInstance();
     }
 
-    m_pSettingsManager = std::make_unique<SettingsManager>(args.getSettingsPath());
+    m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 
     initializeKeyboard();
     installEventFilter(m_pKeyboard);
@@ -239,7 +240,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
-    Sandbox::initialize(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
+    Sandbox::setPermissionsFilePath(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
 
     QString resourcePath = pConfig->getResourcePath();
 
