@@ -22,13 +22,15 @@ case "$COMMAND" in
 
         sudo apt-get update
         sudo apt-get install -y --no-install-recommends \
-            g++ \
             ccache \
             cmake \
             debhelper \
             devscripts \
             docbook-to-man \
             dput \
+            fonts-open-sans \
+            fonts-ubuntu \
+            g++ \
             libavformat-dev \
             libchromaprint-dev \
             libdistro-info-perl \
