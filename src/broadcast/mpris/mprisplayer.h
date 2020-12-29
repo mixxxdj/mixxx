@@ -49,7 +49,7 @@ class MprisPlayer : public QObject {
     void slotChangeProperties(double enabled);
     void slotPlayChanged(DeckAttributes* pDeck, bool playing);
     void slotPlayPositionChanged(DeckAttributes* pDeck, double position);
-    void slotVolumeChanged(double volume);
+    void slotMasterGainChanged(double volume);
     void slotCoverArtFound(const QObject* requestor,
             const CoverInfoRelative& info,
             const QPixmap& pixmap);
@@ -61,7 +61,6 @@ class MprisPlayer : public QObject {
     void requestCoverartUrl(TrackPointer pTrack);
     void broadcastCurrentMetadata();
     QVariantMap getVariantMapMetadata();
-    double getAverageVolume() const;
     DeckAttributes* findPlayingDeck() const;
     bool autoDjEnabled() const;
     bool autoDjIdle() const;
@@ -74,7 +73,7 @@ class MprisPlayer : public QObject {
     ControlProxy* m_pCPAutoDjEnabled;
     ControlProxy* m_pCPFadeNow;
     ControlProxy* m_pCPAutoDJIdle;
-    QList<ControlProxy*> m_CPDeckVolumes;
+    ControlProxy* m_pCPMasterGain;
     PlayerManagerInterface* m_pPlayerManager;
     bool m_bPropertiesEnabled;
     Mpris* m_pMpris;

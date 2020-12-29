@@ -57,9 +57,6 @@ MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
                 &DeckAttributes::playPositionChanged,
                 this,
                 &MprisPlayer::slotPlayPositionChanged);
-        ControlProxy* volume = new ControlProxy(ConfigKey(attributes->group, "volume"), this);
-        m_CPDeckVolumes.append(volume);
-        volume->connectValueChanged(this, &MprisPlayer::slotVolumeChanged);
     }
 
     m_pCPAutoDjEnabled = new ControlProxy(ConfigKey("[AutoDJ]", "enabled"), this);
@@ -69,6 +66,9 @@ MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,
     m_pCPAutoDJIdle->connectValueChanged(this, &MprisPlayer::slotChangeProperties);
 
     m_pCPFadeNow = new ControlProxy(ConfigKey("[AutoDJ]", "fade_now"), this);
+
+    m_pCPMasterGain = new ControlProxy(ConfigKey("[Master]", "gain"), this);
+    m_pCPMasterGain->connectValueChanged(this, &MprisPlayer::slotMasterGainChanged);
 }
 
 MprisPlayer::~MprisPlayer() {
@@ -123,14 +123,11 @@ QVariantMap MprisPlayer::metadata() {
 }
 
 double MprisPlayer::volume() const {
-    return getAverageVolume();
+    return m_pCPMasterGain->get();
 }
 
 void MprisPlayer::setVolume(double value) {
-    for (DeckAttributes* attrib : qAsConst(m_deckAttributes)) {
-        ControlProxy volume(ConfigKey(attrib->group, "volume"));
-        volume.set(value);
-    }
+    return m_pCPMasterGain->set(value);
 }
 
 qlonglong MprisPlayer::position() const {
@@ -381,24 +378,8 @@ DeckAttributes* MprisPlayer::findPlayingDeck() const {
     return nullptr;
 }
 
-void MprisPlayer::slotVolumeChanged(double volume) {
-    Q_UNUSED(volume);
-    double averageVolume = getAverageVolume();
-    m_pMpris->notifyPropertyChanged(playerInterfaceName, "Volume", averageVolume);
-}
-
-double MprisPlayer::getAverageVolume() const {
-    double averageVolume = 0.0;
-    unsigned int numberOfPlayingDecks = 0;
-    for (DeckAttributes* attrib : qAsConst(m_deckAttributes)) {
-        if (attrib->isPlaying()) {
-            ControlProxy volume(ConfigKey(attrib->group, "volume"));
-            averageVolume += volume.get();
-            ++numberOfPlayingDecks;
-        }
-    }
-    averageVolume /= numberOfPlayingDecks;
-    return averageVolume;
+void MprisPlayer::slotMasterGainChanged(double value) {
+    m_pMpris->notifyPropertyChanged(playerInterfaceName, "Volume", value);
 }
 
 double MprisPlayer::rate() const {
