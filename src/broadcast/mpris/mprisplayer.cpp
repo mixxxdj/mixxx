@@ -214,7 +214,7 @@ void MprisPlayer::play() {
 }
 
 qlonglong MprisPlayer::seek(qlonglong offset, bool& success) {
-    if (autoDjIdle()) {
+    if (canSeek()) {
         DeckAttributes* playingDeck = findPlayingDeck();
         VERIFY_OR_DEBUG_ASSERT(playingDeck) {
             success = false;
@@ -310,6 +310,9 @@ void MprisPlayer::requestMetadataFromTrack(TrackPointer pTrack, bool requestCove
     if (requestCover) {
         requestCoverartUrl(pTrack);
     }
+    m_currentMetadata.album = pTrack->getAlbum();
+    m_currentMetadata.userRating = pTrack->getRating();
+    m_currentMetadata.useCount = pTrack->getTimesPlayed();
 }
 
 void MprisPlayer::requestCoverartUrl(TrackPointer pTrack) {
@@ -450,6 +453,9 @@ QVariantMap MprisPlayer::getVariantMapMetadata() {
     metadata.insert("xesam:artist", m_currentMetadata.artists);
     metadata.insert("xesam:title", m_currentMetadata.title);
     metadata.insert("mpris:artUrl", m_currentMetadata.coverartUrl);
+    metadata.insert("xesam:album", m_currentMetadata.album);
+    metadata.insert("xesam:userRating", m_currentMetadata.userRating);
+    metadata.insert("xesam:useCount", m_currentMetadata.useCount);
     return metadata;
 }
 
