@@ -188,6 +188,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
 }
 
 int PlayerInfo::getCurrentPlayingDeck() {
+    updateCurrentPlayingDeck();
     return m_currentlyPlayingDeck;
 }
 
