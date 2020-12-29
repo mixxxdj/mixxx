@@ -225,19 +225,19 @@ void EngineRecord::writeCueLine() {
 
     m_cueFile.write(QString("  TRACK %1 AUDIO\n")
                     .arg((double)m_cueTrack, 2, 'f', 0, '0')
-                    .toLatin1());
+                    .toUtf8());
 
     m_cueFile.write(QString("    TITLE \"%1\"\n")
-        .arg(m_pCurrentTrack->getTitle()).toLatin1());
+        .arg(m_pCurrentTrack->getTitle()).toUtf8());
     m_cueFile.write(QString("    PERFORMER \"%1\"\n")
-        .arg(m_pCurrentTrack->getArtist()).toLatin1());
+        .arg(m_pCurrentTrack->getArtist()).toUtf8());
 
     // Woefully inaccurate (at the seconds level anyways).
     // We'd need a signal fired state tracker
     // for the track detection code.
     m_cueFile.write(QString("    INDEX 01 %1:%2\n")
                     .arg(getRecordedDurationStr())
-                    .arg((double)cueFrame, 2, 'f', 0, '0').toLatin1());
+                    .arg((double)cueFrame, 2, 'f', 0, '0').toUtf8());
 }
 
 // Encoder calls this method to write compressed audio
@@ -316,13 +316,13 @@ bool EngineRecord::openCueFile() {
     if (m_baAuthor.length() > 0) {
         m_cueFile.write(QString("PERFORMER \"%1\"\n")
                         .arg(QString(m_baAuthor).replace(QString("\""), QString("\\\"")))
-                        .toLatin1());
+                        .toUtf8());
     }
 
     if (m_baTitle.length() > 0) {
         m_cueFile.write(QString("TITLE \"%1\"\n")
                         .arg(QString(m_baTitle).replace(QString("\""), QString("\\\"")))
-                        .toLatin1());
+                        .toUtf8());
     }
 
     m_cueFile.write(QString("FILE \"%1\" %2\n").arg(
@@ -331,7 +331,7 @@ bool EngineRecord::openCueFile() {
             (m_encoding == ENCODING_MP3) ? ENCODING_MP3  :
             (m_encoding == ENCODING_AIFF) ? ENCODING_AIFF :
             "WAVE" // MP3 and AIFF are recognized but other formats just use WAVE.
-        ).toLatin1());
+        ).toUtf8());
     return true;
 }
 
