@@ -1245,17 +1245,14 @@ install(
 
 
 # Font files
-if(UNIX AND NOT APPLE)
-  # Ubuntu and OpenSans are already installed by package manager
-  install(
-    DIRECTORY
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
-    DESTINATION
-      "${MIXXX_INSTALL_DATADIR}"
-    PATTERN "OpenSans*" EXCLUDE
-    PATTERN "Ubuntu*" EXCLUDE
-  )
-else()
+#
+# Font installation is only enabled on Windows and macOS, because on Linux/BSD
+# fonts should be installed via the package manager. Whenever a new font is
+# added to Mixxx, its package name also needs to be added to
+# tools/debian_buildenv.sh. If that font is not packaged on most distros, we
+# need to re-enable font installation on Linux/BSD and exclude the packaged
+# fonts here.
+if(APPLE OR WIN32)
   install(
     DIRECTORY
       "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
@@ -1330,19 +1327,22 @@ if(UNIX AND NOT APPLE)
       FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
       DESTINATION
-        "${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d"
+        "${MIXXX_INSTALL_DATADIR}/udev/rules.d"
     )
-    message(WARNING
-      " The udev rule file for USB HID and Bulk controller permissions will\n"
-      " be installed to: ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d.\n"
-      " If you are installing Mixxx from source for your own use, copy\n"
-      " mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n"
-      " udevadm control --reload-rules && udevadm trigger\n"
-      " as root to load the rules.\n"
-      " If you are building a package for a distribution, the correct\n"
-      " directory for system rules is /lib/udev/rules.d with an appropriate\n"
-      " priority prefix. Adjust your package script accordingly and set\n"
-      " -DINSTALL_USER_UDEV_RULES=OFF")
+    install(CODE "
+    message(STATUS \"Important Note: Installation of udev rules\n\"
+        \"The udev rule file for USB HID and Bulk controller permissions will be\n\"
+        \"installed to:\n\"
+        \"    ${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}/udev/rules.d.\n\"
+        \"If you are installing Mixxx from source for your own use, copy\n\"
+        \"mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n\"
+        \"    udevadm control --reload-rules && udevadm trigger\n\"
+        \"as root to load the rules.\n\"
+        \"If you are building a package for a distribution, the correct directory for\n\"
+        \"system rules is either /lib/udev/rules.d (e.g. Debian, Fedora) or\n\"
+        \"/usr/lib/udev/rules.d (e.g. Arch Linux) with an appropriate priority prefix.\n\"
+        \"Adjust your package script accordingly and set -DINSTALL_USER_UDEV_RULES=OFF\")
+    ")
   endif()
 endif()
 
