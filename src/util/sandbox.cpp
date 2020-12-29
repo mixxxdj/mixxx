@@ -371,6 +371,11 @@ QString Sandbox::migrateOldSettings() {
 
     // QDir::homePath returns a path inside the sandbox when running sandboxed
     QString homePath = QLatin1String("/Users/") + qgetenv("USER");
+    if (qEnvironmentVariableIsEmpty("USER") || qgetenv("USER").contains("/")) {
+        qCritical() << "Cannot find home directory (USER environment variable invalid)";
+        return QString();
+    }
+
     QDir homeDir(homePath);
     if (!homeDir.exists() || !homeDir.isReadable()) {
         qCritical() << "Cannot read home directory" << homePath;
