@@ -50,11 +50,11 @@ class DlgPrefModplug;
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
-    DlgPreferences(MixxxMainWindow* mixxx,
+    DlgPreferences(MixxxMainWindow* pMixxx,
             SkinLoader* pSkinLoader,
-            SoundManager* soundman,
+            SoundManager* pSoundManager,
             PlayerManager* pPlayerManager,
-            ControllerManager* controllers,
+            ControllerManager* pControllerManager,
             VinylControlManager* pVCManager,
             LV2Backend* pLV2Backend,
             EffectsManager* pEffectsManager,
@@ -63,7 +63,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     virtual ~DlgPreferences();
 
     void addPageWidget(DlgPreferencePage* pWidget,
-            QTreeWidgetItem* treeItem,
+            QTreeWidgetItem* pTreeItem,
             const QString& pageTitle,
             const QString& iconFile);
     void removePageWidget(DlgPreferencePage* pWidget);
@@ -71,7 +71,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     void switchToPage(DlgPreferencePage* pWidget);
 
   public slots:
-    void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious);
     void showSoundHardwarePage();
     void slotButtonPressed(QAbstractButton* pButton);
   signals:

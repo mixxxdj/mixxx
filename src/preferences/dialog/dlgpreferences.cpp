@@ -53,15 +53,18 @@
 #include "util/color/color.h"
 #include "util/widgethelper.h"
 
-DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
-                               SoundManager * soundman, PlayerManager* pPlayerManager,
-                               ControllerManager * controllers, VinylControlManager *pVCManager,
-                               LV2Backend* pLV2Backend,
-                               EffectsManager* pEffectsManager,
-                               SettingsManager* pSettingsManager,
-                               Library *pLibrary)
-        : m_pConfig(pSettingsManager->settings()),
-          m_pageSizeHint(QSize(0, 0)) {
+DlgPreferences::DlgPreferences(
+        MixxxMainWindow* pMixxx,
+        SkinLoader* pSkinLoader,
+        SoundManager* pSoundManager,
+        PlayerManager* pPlayerManager,
+        ControllerManager* pControllerManager,
+        VinylControlManager* pVCManager,
+        LV2Backend* pLV2Backend,
+        EffectsManager* pEffectsManager,
+        SettingsManager* pSettingsManager,
+        Library* pLibrary)
+        : m_pConfig(pSettingsManager->settings()), m_pageSizeHint(QSize(0, 0)) {
 #ifndef __LILV__
     Q_UNUSED(pLV2Backend);
 #endif /* __LILV__ */
@@ -89,7 +92,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
     }
 
     m_pSoundButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_soundPage = new DlgPrefSound(this, soundman, m_pConfig);
+    m_soundPage = new DlgPrefSound(this, pSoundManager, m_pConfig);
     addPageWidget(m_soundPage,
             m_pSoundButton,
             tr("Sound Hardware"),
@@ -108,7 +111,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
 
     m_pControllersRootButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_controllersPage = new DlgPrefControllers(
-            this, m_pConfig, controllers, m_pControllersRootButton);
+            this, m_pConfig, pControllerManager, m_pControllersRootButton);
     addPageWidget(m_controllersPage,
             m_pControllersRootButton,
             tr("Controllers"),
@@ -126,7 +129,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
 #else /* __VINYLCONTROL__ */
 
     m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_noVinylControlPage = new DlgPrefNoVinyl(this, soundman, m_pConfig);
+    m_noVinylControlPage = new DlgPrefNoVinyl(this, pSoundManager, m_pConfig);
     addPageWidget(m_noVinylControlPage,
             m_pVinylControlButton,
             tr("Vinyl Control"),
@@ -134,14 +137,14 @@ DlgPreferences::DlgPreferences(MixxxMainWindow * mixxx, SkinLoader* pSkinLoader,
 #endif
 
     m_pInterfaceButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_interfacePage = new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig);
+    m_interfacePage = new DlgPrefInterface(this, pMixxx, pSkinLoader, m_pConfig);
     addPageWidget(m_interfacePage,
             m_pInterfaceButton,
             tr("Interface"),
             "ic_preferences_interface.svg");
 
     m_pWaveformButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_waveformPage = new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary);
+    m_waveformPage = new DlgPrefWaveform(this, pMixxx, m_pConfig, pLibrary);
     addPageWidget(m_waveformPage,
             m_pWaveformButton,
             tr("Waveforms"),
@@ -271,58 +274,58 @@ DlgPreferences::~DlgPreferences() {
     delete m_controllersPage;
 }
 
-void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous) {
-    if (!current) {
-        current = previous;
+void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious) {
+    if (!pCurrent) {
+        pCurrent = pPrevious;
     }
 
-    if (current == m_pSoundButton) {
+    if (pCurrent == m_pSoundButton) {
         switchToPage(m_soundPage);
-    } else if (current == m_pLibraryButton) {
+    } else if (pCurrent == m_pLibraryButton) {
         switchToPage(m_libraryPage);
-    } else if (m_controllersPage->handleTreeItemClick(current)) {
+    } else if (m_controllersPage->handleTreeItemClick(pCurrent)) {
         // Do nothing. m_controllersPage handled this click.
 #ifdef __VINYLCONTROL__
-    } else if (current == m_pVinylControlButton) {
+    } else if (pCurrent == m_pVinylControlButton) {
         switchToPage(m_vinylControlPage);
 #else /* __VINYLCONTROL__ */
-    } else if (current == m_pVinylControlButton) {
+    } else if (pCurrent == m_pVinylControlButton) {
         switchToPage(m_noVinylControlPage);
 #endif
-    } else if (current == m_pInterfaceButton) {
+    } else if (pCurrent == m_pInterfaceButton) {
         switchToPage(m_interfacePage);
-    } else if (current == m_pWaveformButton) {
+    } else if (pCurrent == m_pWaveformButton) {
         switchToPage(m_waveformPage);
-    } else if (current == m_pDecksButton) {
+    } else if (pCurrent == m_pDecksButton) {
         switchToPage(m_deckPage);
-    } else if (current == m_pColorsButton) {
+    } else if (pCurrent == m_pColorsButton) {
         switchToPage(m_colorsPage);
-    } else if (current == m_pEqButton) {
+    } else if (pCurrent == m_pEqButton) {
         switchToPage(m_equalizerPage);
-    } else if (current == m_pCrossfaderButton) {
+    } else if (pCurrent == m_pCrossfaderButton) {
         switchToPage(m_crossfaderPage);
-    } else if (current == m_pEffectsButton) {
+    } else if (pCurrent == m_pEffectsButton) {
         switchToPage(m_effectsPage);
 #ifdef __LILV__
-    } else if (current == m_pLV2Button) {
+    } else if (pCurrent == m_pLV2Button) {
         switchToPage(m_lv2Page);
 #endif /* __LILV__ */
-    } else if (current == m_pAutoDJButton) {
+    } else if (pCurrent == m_pAutoDJButton) {
         switchToPage(m_autoDjPage);
 #ifdef __BROADCAST__
-    } else if (current == m_pBroadcastButton) {
+    } else if (pCurrent == m_pBroadcastButton) {
         switchToPage(m_broadcastingPage);
 #endif /* __BROADCAST__ */
-    } else if (current == m_pRecordingButton) {
+    } else if (pCurrent == m_pRecordingButton) {
         switchToPage(m_recordingPage);
-    } else if (current == m_pBeatDetectionButton) {
+    } else if (pCurrent == m_pBeatDetectionButton) {
         switchToPage(m_beatgridPage);
-    } else if (current == m_pKeyDetectionButton) {
+    } else if (pCurrent == m_pKeyDetectionButton) {
         switchToPage(m_musicalKeyPage);
-    } else if (current == m_pReplayGainButton) {
+    } else if (pCurrent == m_pReplayGainButton) {
         switchToPage(m_replayGainPage);
 #ifdef __MODPLUG__
-    } else if (current == m_pModplugButton) {
+    } else if (pCurrent == m_pModplugButton) {
         switchToPage(m_modplugPage);
 #endif /* __MODPLUG__ */
     }
@@ -447,14 +450,14 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
 }
 
 void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget,
-        QTreeWidgetItem* treeItem,
+        QTreeWidgetItem* pTreeItem,
         const QString& pageTitle,
         const QString& iconFile) {
     // Configure the tree button linked to the page
-    treeItem->setIcon(0, QIcon(m_iconsPath.filePath(iconFile)));
-    treeItem->setText(0, pageTitle);
-    treeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    treeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    pTreeItem->setIcon(0, QIcon(m_iconsPath.filePath(iconFile)));
+    pTreeItem->setText(0, pageTitle);
+    pTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    pTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     connect(this, &DlgPreferences::showDlg, pWidget, &DlgPreferencePage::slotShow);
     connect(this, &DlgPreferences::closeDlg, pWidget, &DlgPreferencePage::slotHide);
