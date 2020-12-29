@@ -11,17 +11,19 @@
 #include "moc_mprisplayer.cpp"
 
 namespace {
-const QString kPlaybackStatusPlaying = "Playing";
-const QString kPlaybackStatusPaused = "Paused";
-const QString kPlaybackStatusStopped = "Stopped";
+
+const QString kPlaybackStatusPlaying = QStringLiteral("Playing");
+const QString kPlaybackStatusPaused = QStringLiteral("Paused");
+const QString kPlaybackStatusStopped = QStringLiteral("Stopped");
 
 // the playback will stop when there are no more tracks to play
-const QString kLoopStatusNone = "None";
+const QString kLoopStatusNone = QStringLiteral("None");
 // The current track will start again from the begining once it has finished playing
-const QString kLoopStatusTrack = "Track";
+const QString kLoopStatusTrack = QStringLiteral("Track");
 // The playback loops through a list of tracks
-const QString kLoopStatusPlaylist = "Playlist";
-const QString playerInterfaceName = "org.mpris.MediaPlayer2.Player";
+const QString kLoopStatusPlaylist = QStringLiteral("Playlist");
+const QString playerInterfaceName = QStringLiteral("org.mpris.MediaPlayer2.Player");
+
 } // namespace
 
 MprisPlayer::MprisPlayer(PlayerManagerInterface* pPlayerManager,

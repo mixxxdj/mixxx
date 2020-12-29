@@ -2,6 +2,7 @@
 
 #include <QApplication>
 #include <QDebug>
+#include <QString>
 #include <QWidget>
 
 #include "mixxxmainwindow.h"
@@ -61,8 +62,12 @@ QStringList MediaPlayer2::supportedUriSchemes() const {
 
 QStringList MediaPlayer2::supportedMimeTypes() const {
     QStringList ret;
-    ret << "audio/mpeg"
-        << "audio/ogg";
+    ret << QStringLiteral("audio/mpeg") // for mp3
+        << QStringLiteral("audio/ogg")  // for ogg and opus
+        << QStringLiteral("audio/flac")
+        << QStringLiteral("audio/x-flac")
+        << QStringLiteral("audio/wav")
+        << QStringLiteral("audio/x-wav");
     return ret;
 }
 
