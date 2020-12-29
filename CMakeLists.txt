@@ -1547,10 +1547,6 @@ if(UNIX AND USE_SYMLINKS)
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Symlinking resources to build directory..."
   )
-  add_custom_target(mixxx-script
-    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
-    COMMENT "Symlinking to build directory..."
-  )
 elseif(WIN32)
   file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/res" CMAKE_CURRENT_SOURCE_RES_DIR_NATIVE)
   file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/res/" CMAKE_CURRENT_BINARY_RES_DIR_NATIVE)
