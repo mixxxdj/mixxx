@@ -59,11 +59,6 @@ void QuantizeControl::setCurrentSample(const double dCurrentSample,
     playPosChanged(dCurrentSample);
 }
 
-void QuantizeControl::notifySeek(double dNewPlaypos) {
-    EngineControl::notifySeek(dNewPlaypos);
-    playPosChanged(dNewPlaypos);
-}
-
 void QuantizeControl::playPosChanged(double dNewPlaypos) {
     // We only need to update the prev or next if the current sample is
     // out of range of the existing beat positions or if we've been forced to
