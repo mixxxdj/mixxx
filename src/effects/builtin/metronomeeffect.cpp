@@ -77,7 +77,7 @@ void MetronomeEffect::processChannel(
         return;
     }
 
-    unsigned int clickSize = kClickSize44100;
+    SINT clickSize = kClickSize44100;
     const CSAMPLE* click = kClick44100;
     if (bufferParameters.sampleRate() >= 96000) {
         clickSize = kClickSize96000;
@@ -87,12 +87,12 @@ void MetronomeEffect::processChannel(
         click = kClick48000;
     }
 
-    unsigned int maxFrames;
+    SINT maxFrames;
     if (m_pSyncParameter->toBool() && groupFeatures.has_beat_length_sec) {
-        maxFrames = static_cast<decltype(maxFrames)>(
+        maxFrames = static_cast<SINT>(
                 bufferParameters.sampleRate() * groupFeatures.beat_length_sec);
         if (groupFeatures.has_beat_fraction) {
-            const auto currentFrame = static_cast<unsigned int>(
+            const auto currentFrame = static_cast<SINT>(
                     maxFrames * groupFeatures.beat_fraction);
             if (maxFrames > clickSize &&
                     currentFrame > clickSize &&
@@ -103,7 +103,7 @@ void MetronomeEffect::processChannel(
             }
         }
     } else {
-        maxFrames = static_cast<decltype(maxFrames)>(
+        maxFrames = static_cast<SINT>(
                 bufferParameters.sampleRate() * 60 / m_pBpmParameter->value());
     }
 
@@ -111,9 +111,9 @@ void MetronomeEffect::processChannel(
 
     if (gs->m_framesSinceClickStart < clickSize) {
         // still in click region, write remaining click frames.
-        const unsigned int copyFrames =
-                math_min(static_cast<unsigned int>(bufferParameters.framesPerBuffer()),
-                         clickSize - gs->m_framesSinceClickStart);
+        const SINT copyFrames =
+                math_min(bufferParameters.framesPerBuffer(),
+                        clickSize - gs->m_framesSinceClickStart);
         SampleUtil::addMonoToStereo(pOutput, &click[gs->m_framesSinceClickStart],
                 copyFrames);
     }

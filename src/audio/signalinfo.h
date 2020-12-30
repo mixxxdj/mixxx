@@ -19,13 +19,13 @@ class SignalInfo final {
   public:
     constexpr SignalInfo() = default;
     constexpr explicit SignalInfo(
-            OptionalSampleLayout sampleLayout)
+            const OptionalSampleLayout& sampleLayout)
             : m_sampleLayout(sampleLayout) {
     }
     SignalInfo(
             ChannelCount channelCount,
             SampleRate sampleRate,
-            OptionalSampleLayout sampleLayout = std::nullopt)
+            const OptionalSampleLayout& sampleLayout = std::nullopt)
             : m_channelCount(channelCount),
               m_sampleRate(sampleRate),
               m_sampleLayout(sampleLayout) {

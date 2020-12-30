@@ -1,5 +1,4 @@
-#ifndef WAVEFORM_H
-#define WAVEFORM_H
+#pragma once
 
 #include <vector>
 
@@ -37,7 +36,7 @@ class Waveform {
         Saved
     };
 
-    explicit Waveform(const QByteArray pData = QByteArray());
+    explicit Waveform(const QByteArray& pData = QByteArray());
     Waveform(int audioSampleRate, int audioSamples,
              int desiredVisualSampleRate, int maxVisualSamples);
 
@@ -58,7 +57,7 @@ class Waveform {
         return m_version;
     }
 
-    void setVersion(QString version) {
+    void setVersion(const QString& version) {
         QMutexLocker locker(&m_mutex);
         m_version = version;
     }
@@ -68,7 +67,7 @@ class Waveform {
         return m_description;
     }
 
-    void setDescription(QString description) {
+    void setDescription(const QString& description) {
         QMutexLocker locker(&m_mutex);
         m_description = description;
     }
@@ -185,5 +184,3 @@ class Waveform {
 
 typedef QSharedPointer<Waveform> WaveformPointer;
 typedef QSharedPointer<const Waveform> ConstWaveformPointer;
-
-#endif // WAVEFORM_H

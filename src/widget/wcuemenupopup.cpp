@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 
 #include "engine/engine.h"
+#include "moc_wcuemenupopup.cpp"
 #include "track/track.h"
 #include "util/color/color.h"
 
@@ -61,9 +62,13 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     pMainLayout->addSpacing(5);
     pMainLayout->addLayout(pRightLayout);
     setLayout(pMainLayout);
+    // we need to update the the layout here since the size is used to
+    // calculate the positioning later
+    layout()->update();
+    layout()->activate();
 }
 
-void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
+void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, const CuePointer& pCue) {
     if (pTrack && pCue) {
         m_pTrack = pTrack;
         m_pCue = pCue;

@@ -11,7 +11,7 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
-class TrackCollectionManager;
+class Library;
 class WTrackMenu;
 
 class WTrackText : public WLabel, public TrackDropTarget {
@@ -20,13 +20,13 @@ class WTrackText : public WLabel, public TrackDropTarget {
     WTrackText(
             QWidget* pParent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             const QString& group);
     ~WTrackText() override;
 
   signals:
-    void trackDropped(QString fileName, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+    void trackDropped(const QString& fileName, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   public slots:
     void slotTrackLoaded(TrackPointer track);

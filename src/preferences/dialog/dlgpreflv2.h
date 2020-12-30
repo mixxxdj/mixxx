@@ -1,5 +1,4 @@
-#ifndef DLGPREFLV2_H
-#define DLGPREFLV2_H
+#pragma once
 
 #include <QWidget>
 #include <QCheckBox>
@@ -14,8 +13,10 @@ class EffectsManager;
 class DlgPrefLV2 : public DlgPreferencePage, public Ui::DlgPrefLV2Dlg  {
     Q_OBJECT
   public:
-    DlgPrefLV2(QWidget *parent, LV2Backend* lv2Backend,
-               UserSettingsPointer pConfig, EffectsManager* pEffectsManager);
+    DlgPrefLV2(QWidget* parent,
+            LV2Backend* lv2Backend,
+            UserSettingsPointer pConfig,
+            std::shared_ptr<EffectsManager> pEffectsManager);
     virtual ~DlgPrefLV2();
 
   public slots:
@@ -35,7 +36,5 @@ class DlgPrefLV2 : public DlgPreferencePage, public Ui::DlgPrefLV2Dlg  {
     QString m_currentEffectId;
     QList<QCheckBox*> m_pluginParameters;
     int m_iCheckedParameters;
-    EffectsManager* m_pEffectsManager;
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
 };
-
-#endif

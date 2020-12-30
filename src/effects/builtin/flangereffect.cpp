@@ -13,7 +13,7 @@ inline CSAMPLE tanh_approx(CSAMPLE input) {
     // return tanhf(input); // 142ns for process;
     return input / (1 + input * input / (3 + input * input / 5)); // 119ns for process
 }
-}
+} // namespace
 
 // static
 QString FlangerEffect::getId() {
@@ -195,10 +195,9 @@ void FlangerEffect::processChannel(const ChannelHandle& handle,
     CSAMPLE* delayLeft = pState->delayLeft;
     CSAMPLE* delayRight = pState->delayRight;
 
-   for (unsigned int i = 0;
-          i < bufferParameters.samplesPerBuffer();
-          i += bufferParameters.channelCount()) {
-
+    for (SINT i = 0;
+            i < bufferParameters.samplesPerBuffer();
+            i += bufferParameters.channelCount()) {
         CSAMPLE_GAIN mix_ramped = mixRamped.getNext();
         CSAMPLE_GAIN regen_ramped = regenRamped.getNext();
         double width_ramped = widthRamped.getNext();

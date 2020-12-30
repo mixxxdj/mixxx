@@ -1,21 +1,5 @@
-/***************************************************************************
-                        playerinfo.h  -  Helper class to have easy access
-                                         to a lot of data (singleton)
-                             -------------------
-    copyright            : (C) 2007 by Wesley Stessens
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef MIXER_PLAYERINFO_H
-#define MIXER_PLAYERINFO_H
+// Helper class to have easy access
+#pragma once
 
 #include <QMap>
 #include <QMutex>
@@ -42,18 +26,18 @@ class PlayerInfo : public QObject {
   signals:
     void currentPlayingDeckChanged(int deck);
     void currentPlayingTrackChanged(TrackPointer pTrack);
-    void trackLoaded(QString group, TrackPointer pTrack);
-    void trackUnloaded(QString group, TrackPointer pTrack);
+    void trackLoaded(const QString& group, TrackPointer pTrack);
+    void trackUnloaded(const QString& group, TrackPointer pTrack);
 
   private:
     class DeckControls {
         public:
-            DeckControls(QString& group)
-                    : m_play(group, "play"),
-                      m_pregain(group, "pregain"),
-                      m_volume(group, "volume"),
-                      m_orientation(group, "orientation") {
-            }
+          DeckControls(const QString& group)
+                  : m_play(group, "play"),
+                    m_pregain(group, "pregain"),
+                    m_volume(group, "volume"),
+                    m_orientation(group, "orientation") {
+          }
 
             ControlProxy m_play;
             ControlProxy m_pregain;
@@ -78,5 +62,3 @@ class PlayerInfo : public QObject {
 
     static PlayerInfo* m_pPlayerinfo;
 };
-
-#endif /* MIXER_PLAYERINFO_H */

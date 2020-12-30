@@ -1,8 +1,9 @@
 #include "library/basetracktablemodel.h"
 
-#include "library/basecoverartdelegate.h"
 #include "library/bpmdelegate.h"
 #include "library/colordelegate.h"
+#include "library/coverartcache.h"
+#include "library/coverartdelegate.h"
 #include "library/dao/trackschema.h"
 #include "library/locationdelegate.h"
 #include "library/previewbuttondelegate.h"
@@ -12,10 +13,12 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_basetracktablemodel.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/datetime.h"
+#include "util/db/sqlite.h"
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
@@ -24,7 +27,8 @@ namespace {
 
 const mixxx::Logger kLogger("BaseTrackTableModel");
 
-const QString kEmptyString = QStringLiteral("");
+constexpr double kRelativeHeightOfCoverartToolTip =
+        0.165; // Height of the image for the cover art tooltip (Relative to the available screen size)
 
 const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_ALBUM,
@@ -51,6 +55,7 @@ const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_REPLAYGAIN,
         LIBRARYTABLE_SAMPLERATE,
         LIBRARYTABLE_TIMESPLAYED,
+        LIBRARYTABLE_LAST_PLAYED_AT,
         LIBRARYTABLE_TITLE,
         LIBRARYTABLE_TRACKNUMBER,
         LIBRARYTABLE_YEAR,
@@ -79,8 +84,6 @@ QSqlDatabase cloneDatabase(
             pTrackCollectionManager->internalCollection()) {
         return QSqlDatabase();
     }
-    const auto connectionName =
-            uuidToStringWithoutBraces(QUuid::createUuid());
     return cloneDatabase(
             pTrackCollectionManager->internalCollection()->database());
 }
@@ -166,6 +169,10 @@ void BaseTrackTableModel::initHeaderProperties() {
             tr("Date Added"),
             defaultColumnWidth() * 3);
     setHeaderProperties(
+            ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT,
+            tr("Last Played"),
+            defaultColumnWidth() * 3);
+    setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_DURATION,
             tr("Duration"),
             defaultColumnWidth());
@@ -225,7 +232,7 @@ void BaseTrackTableModel::initHeaderProperties() {
 
 void BaseTrackTableModel::setHeaderProperties(
         ColumnCache::Column column,
-        QString title,
+        const QString& title,
         int defaultWidth) {
     int section = fieldIndex(column);
     if (section < 0) {
@@ -376,15 +383,15 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
         return new ColorDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART)) {
         auto* pCoverArtDelegate =
-                doCreateCoverArtDelegate(pTableView);
-        // WLibraryTableView -> BaseCoverArtDelegate
+                new CoverArtDelegate(pTableView);
+        // WLibraryTableView -> CoverArtDelegate
         connect(pTableView,
                 &WLibraryTableView::onlyCachedCoverArt,
                 pCoverArtDelegate,
-                &BaseCoverArtDelegate::slotInhibitLazyLoading);
-        // BaseCoverArtDelegate -> BaseTrackTableModel
+                &CoverArtDelegate::slotInhibitLazyLoading);
+        // CoverArtDelegate -> BaseTrackTableModel
         connect(pCoverArtDelegate,
-                &BaseCoverArtDelegate::rowsChanged,
+                &CoverArtDelegate::rowsChanged,
                 this,
                 &BaseTrackTableModel::slotRefreshCoverRows);
         return pCoverArtDelegate;
@@ -400,19 +407,14 @@ QVariant BaseTrackTableModel::data(
     }
 
     if (role == Qt::BackgroundRole) {
-        QModelIndex colorIndex = index.sibling(
-                index.row(),
-                fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR));
-        if (!colorIndex.isValid()) {
+        const auto rgbColorValue = rawSiblingValue(
+                index,
+                ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
+        const auto rgbColor = mixxx::RgbColor::fromQVariant(rgbColorValue);
+        if (!rgbColor) {
             return QVariant();
         }
-        const auto trackColor =
-                mixxx::RgbColor::fromQVariant(
-                        rawValue(colorIndex));
-        if (!trackColor) {
-            return QVariant();
-        }
-        auto bgColor = mixxx::RgbColor::toQColor(trackColor);
+        auto bgColor = mixxx::RgbColor::toQColor(rgbColor);
         DEBUG_ASSERT(bgColor.isValid());
         DEBUG_ASSERT(m_backgroundColorOpacity >= 0.0);
         DEBUG_ASSERT(m_backgroundColorOpacity <= 1.0);
@@ -431,23 +433,69 @@ QVariant BaseTrackTableModel::data(
     return roleValue(index, rawValue(index), role);
 }
 
+QVariant BaseTrackTableModel::rawValue(
+        const QModelIndex& index) const {
+    VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
+        return QVariant();
+    }
+    const auto field = mapColumn(index.column());
+    if (field == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
+        return QVariant();
+    }
+    return rawSiblingValue(index, field);
+}
+
+QVariant BaseTrackTableModel::rawSiblingValue(
+        const QModelIndex& index,
+        ColumnCache::Column siblingField) const {
+    VERIFY_OR_DEBUG_ASSERT(index.isValid()) {
+        return QVariant();
+    }
+    VERIFY_OR_DEBUG_ASSERT(siblingField != ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
+        return QVariant();
+    }
+    const auto siblingColumn = fieldIndex(siblingField);
+    if (siblingColumn < 0) {
+        // Unsupported or unknown column/field
+        // FIXME: This should never happen but it does. But why??
+        return QVariant();
+    }
+    VERIFY_OR_DEBUG_ASSERT(siblingColumn != index.column()) {
+        // Prevent infinite recursion
+        return QVariant();
+    }
+    const auto siblingIndex = index.sibling(index.row(), siblingColumn);
+    return rawValue(siblingIndex);
+}
+
 bool BaseTrackTableModel::setData(
         const QModelIndex& index,
         const QVariant& value,
         int role) {
     const int column = index.column();
-
-    // Override sets to TIMESPLAYED and redirect them to PLAYED
     if (role == Qt::CheckStateRole) {
-        const auto val = value.toInt() > 0;
-        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-            QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED));
-            return setData(playedIndex, val, Qt::EditRole);
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
-            QModelIndex bpmLockindex = index.sibling(index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
-            return setData(bpmLockindex, val, Qt::EditRole);
+        const auto field = mapColumn(index.column());
+        if (field == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
+            return false;
         }
-        return false;
+        const auto checked = value.toInt() > 0;
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED: {
+            // Override sets to TIMESPLAYED and redirect them to PLAYED
+            QModelIndex playedIndex = index.sibling(
+                    index.row(),
+                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED));
+            return setData(playedIndex, checked, Qt::EditRole);
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
+            QModelIndex bpmLockedIndex = index.sibling(
+                    index.row(),
+                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK));
+            return setData(bpmLockedIndex, checked, Qt::EditRole);
+        }
+        default:
+            return false;
+        }
     }
 
     TrackPointer pTrack = getTrack(index);
@@ -461,135 +509,314 @@ bool BaseTrackTableModel::setData(
     return setTrackValueForColumn(pTrack, column, value, role);
 }
 
+QVariant BaseTrackTableModel::composeCoverArtToolTipHtml(
+        const QModelIndex& index) const {
+    // Determine height of the cover art image depending on the screen size
+    const QScreen* primaryScreen = getPrimaryScreen();
+    if (!primaryScreen) {
+        DEBUG_ASSERT(!"Primary screen not found!");
+        return QVariant();
+    }
+    unsigned int absoluteHeightOfCoverartToolTip = static_cast<int>(
+            primaryScreen->availableGeometry().height() *
+            kRelativeHeightOfCoverartToolTip);
+    // Get image from cover art cache
+    CoverArtCache* pCache = CoverArtCache::instance();
+    QPixmap pixmap = QPixmap(absoluteHeightOfCoverartToolTip,
+            absoluteHeightOfCoverartToolTip); // Height also used as default for the width, in assumption that covers are squares
+    pixmap = pCache->tryLoadCover(this,
+            getCoverInfo(index),
+            absoluteHeightOfCoverartToolTip,
+            CoverArtCache::Loading::NoSignal);
+    if (pixmap.isNull()) {
+        // Cache miss -> Don't show a tooltip
+        return QVariant();
+    }
+    QByteArray data;
+    QBuffer buffer(&data);
+    pixmap.save(&buffer, "BMP"); // Binary bitmap format, without compression effort
+    QString html = QString(
+            "<img src='data:image/bmp;base64, %0'>")
+                           .arg(QString::fromLatin1(data.toBase64()));
+    return html;
+}
+
 QVariant BaseTrackTableModel::roleValue(
         const QModelIndex& index,
         QVariant&& rawValue,
         int role) const {
-    const int column = index.column();
-    // Format the value based on whether we are in a tooltip,
-    // display, or edit role
+    const auto field = mapColumn(index.column());
+    if (field == ColumnCache::COLUMN_LIBRARYTABLE_INVALID) {
+        return std::move(rawValue);
+    }
     switch (role) {
     case Qt::ToolTipRole:
-        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_COLOR:
             return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
-            return kEmptyString;
+        case ColumnCache::COLUMN_LIBRARYTABLE_COVERART:
+            return composeCoverArtToolTipHtml(index);
+        case ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW:
+            return QVariant();
+        default:
+            // Same value as for Qt::DisplayRole (see below)
+            break;
         }
         M_FALLTHROUGH_INTENDED;
     case Qt::DisplayRole:
-        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION)) {
-            bool ok;
-            const auto duration = rawValue.toDouble(&ok);
-            if (ok && duration >= 0) {
-                return mixxx::Duration::formatTime(
-                        duration,
-                        mixxx::Duration::Precision::SECONDS);
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_DURATION: {
+            if (rawValue.isNull()) {
+                return QVariant();
+            }
+            double durationInSeconds;
+            if (rawValue.canConvert<mixxx::Duration>()) {
+                const auto duration = rawValue.value<mixxx::Duration>();
+                VERIFY_OR_DEBUG_ASSERT(duration >= mixxx::Duration::empty()) {
+                    return QVariant();
+                }
+                durationInSeconds = duration.toDoubleSeconds();
             } else {
+                VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<double>()) {
+                    return QVariant();
+                }
+                bool ok;
+                durationInSeconds = rawValue.toDouble(&ok);
+                VERIFY_OR_DEBUG_ASSERT(ok && durationInSeconds >= 0) {
+                    return QVariant();
+                }
+            }
+            return mixxx::Duration::formatTime(
+                    durationInSeconds,
+                    mixxx::Duration::Precision::SECONDS);
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_RATING: {
+            if (rawValue.isNull()) {
                 return QVariant();
             }
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert(QMetaType::Int)) {
+            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<int>()) {
                 return QVariant();
             }
-            return QVariant::fromValue(StarRating(rawValue.toInt()));
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED)) {
-            return rawValue.toBool();
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert(QMetaType::Int)) {
-                return QVariant();
-            }
-            return QString("(%1)").arg(rawValue.toInt());
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
-                column == fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-            return mixxx::localDateTimeFromUtc(mixxx::convertVariantToDateTime(rawValue));
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
             bool ok;
-            const auto bpmValue = rawValue.toDouble(&ok);
-            if (ok && bpmValue > 0.0) {
-                return QString("%1").arg(bpmValue, 0, 'f', 1);
+            const auto starCount = rawValue.toInt(&ok);
+            VERIFY_OR_DEBUG_ASSERT(ok && starCount >= StarRating::kMinStarCount) {
+                return QVariant();
+            }
+            return QVariant::fromValue(StarRating(starCount));
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED: {
+            if (rawValue.isNull()) {
+                return QVariant();
+            }
+            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<int>()) {
+                return QVariant();
+            }
+            bool ok;
+            const auto timesPlayed = rawValue.toInt(&ok);
+            VERIFY_OR_DEBUG_ASSERT(ok && timesPlayed >= 0) {
+                return QVariant();
+            }
+            return QString("(%1)").arg(timesPlayed);
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED:
+        case ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED:
+            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QDateTime>()) {
+                return QVariant();
+            }
+            return mixxx::localDateTimeFromUtc(rawValue.toDateTime());
+        case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
+            QDateTime lastPlayedAt;
+            if (rawValue.type() == QVariant::String) {
+                // column value
+                lastPlayedAt = mixxx::sqlite::readGeneratedTimestamp(rawValue);
+            } else {
+                // cached in memory (local time)
+                lastPlayedAt = rawValue.toDateTime().toUTC();
+            }
+            if (!lastPlayedAt.isValid()) {
+                return QVariant();
+            }
+            DEBUG_ASSERT(lastPlayedAt.timeSpec() == Qt::UTC);
+            return mixxx::localDateTimeFromUtc(lastPlayedAt);
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
+            mixxx::Bpm bpm;
+            if (!rawValue.isNull()) {
+                if (rawValue.canConvert<mixxx::Bpm>()) {
+                    bpm = rawValue.value<mixxx::Bpm>();
+                } else {
+                    VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<double>()) {
+                        return QVariant();
+                    }
+                    bool ok;
+                    const auto bpmValue = rawValue.toDouble(&ok);
+                    VERIFY_OR_DEBUG_ASSERT(ok) {
+                        return QVariant();
+                    }
+                    bpm = mixxx::Bpm(bpmValue);
+                }
+            }
+            if (bpm.hasValue()) {
+                return QString("%1").arg(bpm.getValue(), 0, 'f', 1);
             } else {
                 return QChar('-');
             }
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK)) {
-            return rawValue.toBool();
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR)) {
-            return mixxx::TrackMetadata::formatCalendarYear(rawValue.toString());
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER)) {
-            const auto trackNumber = rawValue.toInt(0);
-            if (trackNumber > 0) {
-                return std::move(rawValue);
-            } else {
-                // clear invalid values
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_YEAR: {
+            if (rawValue.isNull()) {
                 return QVariant();
             }
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE)) {
-            int bitrateValue = rawValue.toInt(0);
-            if (bitrateValue > 0) {
-                return std::move(rawValue);
-            } else {
-                // clear invalid values
+            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<QString>()) {
                 return QVariant();
             }
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
+            bool ok;
+            const auto year = mixxx::TrackMetadata::formatCalendarYear(rawValue.toString(), &ok);
+            if (!ok) {
+                return QVariant();
+            }
+            return year;
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_BITRATE: {
+            if (rawValue.isNull()) {
+                return QVariant();
+            }
+            if (rawValue.canConvert<mixxx::audio::Bitrate>()) {
+                // return value as is
+                return std::move(rawValue);
+            } else {
+                VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<int>()) {
+                    return QVariant();
+                }
+                bool ok;
+                const auto bitrateValue = rawValue.toInt(&ok);
+                VERIFY_OR_DEBUG_ASSERT(ok) {
+                    return QVariant();
+                }
+                if (mixxx::audio::Bitrate(bitrateValue).isValid()) {
+                    // return value as is
+                    return std::move(rawValue);
+                } else {
+                    // clear invalid values
+                    return QVariant();
+                }
+            }
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_KEY: {
             // If we know the semantic key via the LIBRARYTABLE_KEY_ID
             // column (as opposed to the string representation of the key
             // currently stored in the DB) then lookup the key and render it
             // using the user's selected notation.
-            int keyIdColumn = fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
-            if (keyIdColumn == -1) {
-                // Otherwise, just use the column value
+            const QVariant keyCodeValue = rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID);
+            if (keyCodeValue.isNull()) {
+                // Otherwise, just use the column value as is
                 return std::move(rawValue);
             }
-            mixxx::track::io::key::ChromaticKey key =
-                    KeyUtils::keyFromNumericValue(
-                            index.sibling(index.row(), keyIdColumn).data().toInt());
-            if (key == mixxx::track::io::key::INVALID) {
-                // clear invalid values
+            // Convert or clear invalid values
+            VERIFY_OR_DEBUG_ASSERT(keyCodeValue.canConvert<int>()) {
                 return QVariant();
             }
-            // Render this key with the user-provided notation.
-            return KeyUtils::keyToString(key);
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN)) {
             bool ok;
-            const auto gainValue = rawValue.toDouble(&ok);
-            return ok ? mixxx::ReplayGain::ratioToString(gainValue) : QString();
+            const auto keyCode = keyCodeValue.toInt(&ok);
+            VERIFY_OR_DEBUG_ASSERT(ok) {
+                return QVariant();
+            }
+            const auto key = KeyUtils::keyFromNumericValue(keyCode);
+            if (key == mixxx::track::io::key::INVALID) {
+                return QVariant();
+            }
+            // Render the key with the user-provided notation
+            return KeyUtils::keyToString(key);
         }
-        // Otherwise, just use the column value
+        case ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN: {
+            if (rawValue.isNull()) {
+                return QVariant();
+            }
+            double rgRatio;
+            if (rawValue.canConvert<mixxx::ReplayGain>()) {
+                rgRatio = rawValue.value<mixxx::ReplayGain>().getRatio();
+            } else {
+                VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<double>()) {
+                    return QVariant();
+                }
+                bool ok;
+                rgRatio = rawValue.toDouble(&ok);
+                VERIFY_OR_DEBUG_ASSERT(ok) {
+                    return QVariant();
+                }
+            }
+            return mixxx::ReplayGain::ratioToString(rgRatio);
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_CHANNELS:
+            // Not yet supported
+            DEBUG_ASSERT(rawValue.isNull());
+            break;
+        case ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE:
+            // Not yet supported
+            DEBUG_ASSERT(rawValue.isNull());
+            break;
+        case ColumnCache::COLUMN_LIBRARYTABLE_URL:
+            // Not yet supported
+            DEBUG_ASSERT(rawValue.isNull());
+            break;
+        default:
+            // Otherwise, just use the column value
+            break;
+        }
         break;
     case Qt::EditRole:
-        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             bool ok;
             const auto bpmValue = rawValue.toDouble(&ok);
-            return ok ? bpmValue : 0.0;
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
+            return ok ? bpmValue : mixxx::Bpm().getValue();
+        }
+        case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
             return index.sibling(
-                                 index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED))
-                            .data()
-                            .toBool();
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING)) {
-            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert(QMetaType::Int)) {
+                                index.row(),
+                                fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED))
+                    .data()
+                    .toBool();
+        case ColumnCache::COLUMN_LIBRARYTABLE_RATING:
+            VERIFY_OR_DEBUG_ASSERT(rawValue.canConvert<int>()) {
                 return QVariant();
             }
             return QVariant::fromValue(StarRating(rawValue.toInt()));
+        default:
+            // Otherwise, just use the column value
+            break;
         }
-        // Otherwise, just use the column value
         break;
-    case Qt::CheckStateRole:
-        if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED)) {
-            bool played = index.sibling(
-                                       index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED))
-                                  .data()
-                                  .toBool();
-            return played ? Qt::Checked : Qt::Unchecked;
-        } else if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
-            bool locked = index.sibling(
-                                       index.row(), fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK))
-                                  .data()
-                                  .toBool();
-            return locked ? Qt::Checked : Qt::Unchecked;
+    case Qt::CheckStateRole: {
+        QVariant boolValue;
+        switch (field) {
+        case ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW:
+            boolValue = rawValue;
+            break;
+        case ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED:
+            boolValue = rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_LIBRARYTABLE_PLAYED);
+            break;
+        case ColumnCache::COLUMN_LIBRARYTABLE_BPM:
+            boolValue = rawSiblingValue(
+                    index,
+                    ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK);
+            break;
+        default:
+            // No check state supported
+            return QVariant();
         }
-        // No check state supported
-        return QVariant();
+        // Flags in the database are stored as integers that are
+        // convertible to bool.
+        if (!boolValue.isNull() && boolValue.canConvert<bool>()) {
+            return boolValue.toBool() ? Qt::Checked : Qt::Unchecked;
+        } else {
+            // Undecidable
+            return Qt::PartiallyChecked;
+        }
+    }
     default:
         DEBUG_ASSERT(!"unexpected role");
         break;
@@ -635,6 +862,7 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) ||
@@ -702,7 +930,7 @@ QMimeData* BaseTrackTableModel::mimeData(
 }
 
 void BaseTrackTableModel::slotTrackLoaded(
-        QString group,
+        const QString& group,
         TrackPointer pTrack) {
     if (group == m_previewDeckGroup) {
         // If there was a previously loaded track, refresh its rows so the
@@ -722,7 +950,7 @@ void BaseTrackTableModel::slotTrackLoaded(
 }
 
 void BaseTrackTableModel::slotRefreshCoverRows(
-        QList<int> rows) {
+        const QList<int>& rows) {
     if (rows.isEmpty()) {
         return;
     }

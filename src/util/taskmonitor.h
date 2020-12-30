@@ -76,11 +76,8 @@ class TaskMonitor
     void slotUnregisterTask();
 
     void slotReportTaskProgress(
-            PercentageOfCompletion estimatedPercentageOfCompletion,
+            mixxx::PercentageOfCompletion estimatedPercentageOfCompletion,
             const QString& progressMessage);
-
-  private slots:
-    void slotCanceled();
 
   private:
     Task* senderTask() const;

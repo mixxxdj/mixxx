@@ -24,7 +24,7 @@ class TrackLoader: public QObject {
 
     // Explicit, thread-safe invocation of the corresponding slot.
     void invokeSlotLoadTrack(
-            TrackRef trackRef,
+            const TrackRef& trackRef,
             Qt::ConnectionType connectionType = Qt::AutoConnection);
 
   public slots:
@@ -35,7 +35,7 @@ class TrackLoader: public QObject {
     // The result of this operation is propagated by the corresponding
     // signal.
     void slotLoadTrack(
-            TrackRef trackRef);
+            const TrackRef& trackRef);
 
   signals:
     // A nullptr indicates failure to load the track. Receivers need to
@@ -43,7 +43,7 @@ class TrackLoader: public QObject {
     // corresponding slot is invoked by multiple signal senders or
     // from different clients!
     void trackLoaded(
-            TrackRef trackRef,
+            const TrackRef& trackRef,
             TrackPointer trackPtr);
 
   private:

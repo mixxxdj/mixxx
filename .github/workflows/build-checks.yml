@@ -1,0 +1,119 @@
+name: build-checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-checks:
+    strategy:
+      matrix:
+        include:
+          - name: clazy
+          - name: clang-tidy
+    runs-on: ubuntu-20.04
+    name: ${{ matrix.name }}
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+    - name: Install build dependencies
+      run: |
+        sudo apt-get update && sudo apt-get install -y --no-install-recommends \
+          libavformat-dev \
+          libchromaprint-dev \
+          libebur128-dev \
+          libfftw3-dev \
+          libflac-dev \
+          libid3tag0-dev \
+          liblilv-dev \
+          libmad0-dev \
+          libmodplug-dev \
+          libmp3lame-dev \
+          libopus-dev \
+          libopusfile-dev \
+          libportmidi-dev \
+          libprotobuf-dev \
+          libqt5opengl5-dev \
+          libqt5sql5-sqlite \
+          libqt5svg5-dev \
+          libqt5x11extras5-dev \
+          librubberband-dev \
+          libshout3-dev \
+          libsndfile1-dev \
+          libsoundtouch-dev \
+          libsqlite3-dev \
+          libtag1-dev \
+          libupower-glib-dev \
+          libusb-1.0-0-dev \
+          libwavpack-dev \
+          portaudio19-dev \
+          protobuf-compiler \
+          qt5-default \
+          qtdeclarative5-dev \
+          qtscript5-dev \
+          qt5keychain-dev \
+          clazy \
+          clang-tidy \
+          cmake
+    - name: Create build directory
+      run: mkdir build
+    - name: Configure (clazy)
+      if: matrix.name == 'clazy'
+      # Disable optimizations as workaround for Clang 9 bug: https://bugs.llvm.org/show_bug.cgi?id=45034
+      run: |
+        cmake \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DWARNINGS_FATAL=ON \
+          -DOPTIMIZE=off \
+          -DBATTERY=ON \
+          -DBROADCAST=ON \
+          -DBULK=ON \
+          -DHID=ON \
+          -DLILV=ON \
+          -DOPUS=ON \
+          -DQTKEYCHAIN=ON \
+          -DVINYLCONTROL=ON \
+          -DFFMPEG=ON \
+          -DKEYFINDER=ON \
+          -DLOCALECOMPARE=ON \
+          -DMAD=ON \
+          -DMODPLUG=ON \
+          -DWAVPACK=ON \
+          ..
+      working-directory: build
+      env:
+        LD: clang++
+        CC: clang
+        CXX: clazy
+    - name: Configure (clang-tidy)
+      if: matrix.name == 'clang-tidy'
+      run: |
+        cmake \
+          -DCMAKE_BUILD_TYPE=Debug \
+          -DCLANG_TIDY=clang-tidy \
+          -DWARNINGS_FATAL=ON \
+          -DBATTERY=ON \
+          -DBROADCAST=ON \
+          -DBULK=ON \
+          -DHID=ON \
+          -DLILV=ON \
+          -DOPUS=ON \
+          -DQTKEYCHAIN=ON \
+          -DVINYLCONTROL=ON \
+          -DFFMPEG=ON \
+          -DKEYFINDER=ON \
+          -DLOCALECOMPARE=ON \
+          -DMAD=ON \
+          -DMODPLUG=ON \
+          -DWAVPACK=ON \
+          ..
+      working-directory: build
+    - name: Set up problem matcher
+      uses: ammaraskar/gcc-problem-matcher@master
+    - name: Build
+      # Do not abort on errors and build/check the whole project
+      run: cmake --build . -j $(nproc) -- --keep-going
+      working-directory: build
+      env:
+        CLAZY_CHECKS: level2,no-rule-of-two-soft,no-non-pod-global-static,no-qproperty-without-notify,no-wrong-qevent-cast,no-qstring-allocations,no-function-args-by-value,no-copyable-polymorphic,no-ctor-missing-parent-argument,no-missing-qobject-macro,no-rule-of-three,no-returning-void-expression,no-missing-typeinfo,no-base-class-event
+        CLAZY_IGNORE_DIRS: lib/.*

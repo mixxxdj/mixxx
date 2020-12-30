@@ -27,7 +27,6 @@
 #include "util/sample.h"
 #include "util/types.h"
 #include "waveform/guitick.h"
-#include "waveform/visualsmanager.h"
 
 using ::testing::Return;
 using ::testing::_;
@@ -63,7 +62,6 @@ class BaseSignalPathTest : public MixxxTest {
         m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
         m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
         m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
-        m_pVisualsManager = new VisualsManager();
         m_pEngineMaster = new TestEngineMaster(m_pConfig,
                 m_sMasterGroup,
                 m_pEffectsManager,
@@ -74,21 +72,18 @@ class BaseSignalPathTest : public MixxxTest {
                 m_pConfig,
                 m_pEngineMaster,
                 m_pEffectsManager,
-                m_pVisualsManager,
                 EngineChannel::CENTER,
                 m_pEngineMaster->registerChannelGroup(m_sGroup1));
         m_pMixerDeck2 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
                 m_pEffectsManager,
-                m_pVisualsManager,
                 EngineChannel::CENTER,
                 m_pEngineMaster->registerChannelGroup(m_sGroup2));
         m_pMixerDeck3 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
                 m_pEffectsManager,
-                m_pVisualsManager,
                 EngineChannel::CENTER,
                 m_pEngineMaster->registerChannelGroup(m_sGroup3));
 
@@ -99,7 +94,6 @@ class BaseSignalPathTest : public MixxxTest {
                 m_pConfig,
                 m_pEngineMaster,
                 m_pEffectsManager,
-                m_pVisualsManager,
                 EngineChannel::CENTER,
                 m_pEngineMaster->registerChannelGroup(m_sPreviewGroup));
         ControlObject::set(ConfigKey(m_sPreviewGroup, "file_bpm"), 2.0);
@@ -134,7 +128,6 @@ class BaseSignalPathTest : public MixxxTest {
         // Deletes all EngineChannels added to it.
         delete m_pEngineMaster;
         delete m_pEffectsManager;
-        delete m_pVisualsManager;
         delete m_pNumDecks;
         PlayerInfo::destroy();
     }
@@ -166,8 +159,10 @@ class BaseSignalPathTest : public MixxxTest {
     // Use tools/AudioPlot.py to look at the reference file and make sure it
     // looks correct.  Each line of the generated file contains the left sample
     // followed by the right sample.
-    void assertBufferMatchesReference(const CSAMPLE* pBuffer, const int iBufferSize,
-                                   QString reference_title, const double delta=.0001) {
+    void assertBufferMatchesReference(const CSAMPLE* pBuffer,
+            const int iBufferSize,
+            const QString& reference_title,
+            const double delta = .0001) {
         QFile f(QDir::currentPath() + "/src/test/reference_buffers/" + reference_title);
         bool pass = true;
         int i = 0;
@@ -228,7 +223,6 @@ class BaseSignalPathTest : public MixxxTest {
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
     std::unique_ptr<GuiTick> m_pGuiTick;
-    VisualsManager* m_pVisualsManager;
     EffectsManager* m_pEffectsManager;
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;

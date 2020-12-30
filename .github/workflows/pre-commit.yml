@@ -8,33 +8,48 @@ jobs:
   pre-commit:
     name: Detecting code style issues
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - name: "Check out repository"
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 2
+
+    - name: "Set up Python"
+      uses: actions/setup-python@v2
+
     - name: Install clang-format
       run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-format-10
-    - uses: pre-commit/action@v2.0.0
+
+    - name: "Detect code style issues (push)"
+      uses: pre-commit/action@v2.0.0
+      if: github.event_name == 'push'
       # There are too many files in the repo that have formatting issues. We'll
       # disable these checks for now when pushing directly (but still run these
       # on Pull Requests!).
       env:
         SKIP: end-of-file-fixer,trailing-whitespace,clang-format,eslint,no-commit-to-branch
-  pre-commit-pr:
-    name: Detecting code style issues
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: 2
-    - uses: actions/setup-python@v2
-    - name: Install clang-format
-      run: sudo apt-get update && sudo apt-get install -y --no-install-recommends clang-format-10
-    - uses: pre-commit/action@v2.0.0
+
+    - name: "Detect code style issues (pull_request)"
+      uses: pre-commit/action@v2.0.0
+      if: github.event_name == 'pull_request'
       env:
         SKIP: no-commit-to-branch
       with:
         # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
         # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
         extra_args: --from-ref HEAD^1 --to-ref HEAD
+
+    - name: "Generate patch file"
+      if: failure()
+      run: |
+        git diff-index -p HEAD > "${PATCH_FILE}"
+        [ -s "${PATCH_FILE}" ] && echo "UPLOAD_PATCH_FILE=${PATCH_FILE}" >> "${GITHUB_ENV}"
+      env:
+        PATCH_FILE: pre-commit.patch
+
+    - name: "Upload patch artifact"
+      if: failure() && env.UPLOAD_PATCH_FILE != null
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.UPLOAD_PATCH_FILE }}
+        path: ${{ env.UPLOAD_PATCH_FILE }}

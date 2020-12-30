@@ -1,5 +1,7 @@
 #include "library/trackset/basetracksetfeature.h"
 
+#include "moc_basetracksetfeature.cpp"
+
 BaseTrackSetFeature::BaseTrackSetFeature(
         Library* pLibrary,
         UserSettingsPointer pConfig,

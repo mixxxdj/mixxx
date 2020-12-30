@@ -1,38 +1,40 @@
 #include "controllers/controllermappingtablemodel.h"
 
+#include "moc_controllermappingtablemodel.cpp"
+
 ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent)
         : QAbstractTableModel(pParent),
-          m_pMidiPreset(NULL),
-          m_pHidPreset(NULL) {
+          m_pMidiMapping(nullptr),
+          m_pHidMapping(nullptr) {
 }
 
 ControllerMappingTableModel::~ControllerMappingTableModel() {
 
 }
 
-void ControllerMappingTableModel::setPreset(ControllerPresetPointer pPreset) {
-    m_pPreset = pPreset;
-    if (m_pPreset) {
+void ControllerMappingTableModel::setMapping(LegacyControllerMappingPointer pMapping) {
+    m_pMapping = pMapping;
+    if (m_pMapping) {
         // This immediately calls one of the two visit() methods below.
-        m_pPreset->accept(this);
+        m_pMapping->accept(this);
     }
 
-    // Notify the child class a preset was loaded.
-    onPresetLoaded();
+    // Notify the child class a mapping was loaded.
+    onMappingLoaded();
 }
 
 void ControllerMappingTableModel::cancel() {
-    // Apply mutates the preset so to revert to the time just before the last
-    // apply, simply call setPreset again.
-    setPreset(m_pPreset);
+    // Apply mutates the mapping so to revert to the time just before the last
+    // apply, simply call setMapping again.
+    setMapping(m_pMapping);
 }
 
-void ControllerMappingTableModel::visit(MidiControllerPreset* pMidiPreset) {
-    m_pMidiPreset = pMidiPreset;
+void ControllerMappingTableModel::visit(LegacyMidiControllerMapping* pMidiMapping) {
+    m_pMidiMapping = pMidiMapping;
 }
 
-void ControllerMappingTableModel::visit(HidControllerPreset* pHidPreset) {
-    m_pHidPreset = pHidPreset;
+void ControllerMappingTableModel::visit(LegacyHidControllerMapping* pHidMapping) {
+    m_pHidMapping = pHidMapping;
 }
 
 bool ControllerMappingTableModel::setHeaderData(int section,

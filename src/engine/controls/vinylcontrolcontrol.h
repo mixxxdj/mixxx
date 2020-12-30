@@ -1,5 +1,4 @@
-#ifndef VINYLCONTROLCONTROL_H
-#define VINYLCONTROLCONTROL_H
+#pragma once
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -11,7 +10,7 @@
 class VinylControlControl : public EngineControl {
     Q_OBJECT
   public:
-    VinylControlControl(QString group, UserSettingsPointer pConfig);
+    VinylControlControl(const QString& group, UserSettingsPointer pConfig);
     virtual ~VinylControlControl();
 
     // If the engine asks for a seek, we may need to disable absolute mode.
@@ -40,5 +39,3 @@ class VinylControlControl : public EngineControl {
 
     bool m_bSeekRequested;
 };
-
-#endif /* VINYLCONTROLCONTROL_H */

@@ -16,7 +16,7 @@ class CrateTableModel final : public TrackSetTableModel {
         return m_selectedCrate;
     }
 
-    bool addTrack(const QModelIndex& index, QString location);
+    bool addTrack(const QModelIndex& index, const QString& location);
 
     void removeTracks(const QModelIndexList& indices) final;
     /// Returns the number of unsuccessful additions.

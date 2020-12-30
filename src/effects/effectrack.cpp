@@ -1,10 +1,10 @@
 #include "effects/effectrack.h"
 
-#include "effects/effectsmanager.h"
 #include "effects/effectchainmanager.h"
 #include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectrack.h"
-
+#include "moc_effectrack.cpp"
 #include "util/assert.h"
 
 EffectRack::EffectRack(EffectsManager* pEffectsManager,
@@ -19,8 +19,7 @@ EffectRack::EffectRack(EffectsManager* pEffectsManager,
           m_group(group),
           m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
           m_controlClearRack(ConfigKey(m_group, "clear")) {
-    connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
-            this, SLOT(slotClearRack(double)));
+    connect(&m_controlClearRack, &ControlObject::valueChanged, this, &EffectRack::slotClearRack);
     m_controlNumEffectChainSlots.setReadOnly();
     addToEngine();
 }
@@ -70,7 +69,7 @@ void EffectRack::removeFromEngine() {
     pRequest->RemoveEffectRack.signalProcessingStage = m_signalProcessingStage;
     pRequest->RemoveEffectRack.pRack = m_pEngineEffectRack;
     m_pEffectsManager->writeRequest(pRequest);
-    m_pEngineEffectRack = NULL;
+    m_pEngineEffectRack = nullptr;
 }
 
 void EffectRack::registerInputChannel(const ChannelHandleAndGroup& handleGroup) {
@@ -204,7 +203,7 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
     rackElement.appendChild(groupElement);
 
     QDomElement chainsElement = doc->createElement("Chains");
-    for (EffectChainSlotPointer pChainSlot : m_effectChainSlots) {
+    for (const EffectChainSlotPointer& pChainSlot : m_effectChainSlots) {
         QDomElement chain = pChainSlot->toXml(doc);
         chainsElement.appendChild(chain);
     }
@@ -213,7 +212,7 @@ QDomElement EffectRack::toXml(QDomDocument* doc) const {
 }
 
 void EffectRack::refresh() {
-    for (const auto& pChainSlot: m_effectChainSlots) {
+    for (const auto& pChainSlot : qAsConst(m_effectChainSlots)) {
         EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
         pChain->refreshAllEffects();
     }
@@ -247,15 +246,11 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
                         getRackNumber(), iChainSlotNumber, i));
     }
 
-    connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainPointer)),
-            this, SLOT(loadNextChain(unsigned int, EffectChainPointer)));
-    connect(pChainSlot, SIGNAL(prevChain(unsigned int, EffectChainPointer)),
-            this, SLOT(loadPrevChain(unsigned int, EffectChainPointer)));
+    connect(pChainSlot, &EffectChainSlot::nextChain, this, &StandardEffectRack::loadNextChain);
+    connect(pChainSlot, &EffectChainSlot::prevChain, this, &StandardEffectRack::loadPrevChain);
 
-    connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(loadNextEffect(unsigned int, unsigned int, EffectPointer)));
-    connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pChainSlot, &EffectChainSlot::nextEffect, this, &StandardEffectRack::loadNextEffect);
+    connect(pChainSlot, &EffectChainSlot::prevEffect, this, &StandardEffectRack::loadPrevEffect);
 
     // Register all the existing channels with the new EffectChain.
     const QSet<ChannelHandleAndGroup>& registeredChannels =
@@ -284,15 +279,11 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
     // Add a single EffectSlot for the master EQ effect
     pChainSlot->addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
 
-    connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainPointer)),
-            this, SLOT(loadNextChain(unsigned int, EffectChainPointer)));
-    connect(pChainSlot, SIGNAL(prevChain(unsigned int, EffectChainPointer)),
-            this, SLOT(loadPrevChain(unsigned int, EffectChainPointer)));
+    connect(pChainSlot, &EffectChainSlot::nextChain, this, &OutputEffectRack::loadNextChain);
+    connect(pChainSlot, &EffectChainSlot::prevChain, this, &OutputEffectRack::loadPrevChain);
 
-    connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(loadNextEffect(unsigned int, unsigned int, EffectPointer)));
-    connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pChainSlot, &EffectChainSlot::nextEffect, this, &OutputEffectRack::loadNextEffect);
+    connect(pChainSlot, &EffectChainSlot::prevEffect, this, &OutputEffectRack::loadPrevEffect);
 
     // Register the master channel.
     const ChannelHandleAndGroup* masterHandleAndGroup = nullptr;

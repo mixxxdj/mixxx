@@ -1,9 +1,9 @@
+#include "preferences/dialog/dlgprefmodplug.h"
 
 #include <QtDebug>
 
-#include "preferences/dialog/dlgprefmodplug.h"
+#include "moc_dlgprefmodplug.cpp"
 #include "preferences/dialog/ui_dlgprefmodplugdlg.h"
-
 #include "preferences/usersettings.h"
 #include "sources/soundsourcemodplug.h"
 
@@ -16,6 +16,19 @@ DlgPrefModplug::DlgPrefModplug(QWidget *parent,
           m_pConfig(_config) {
     m_pUi->setupUi(this);
     m_pUi->advancedSettings->setVisible(m_pUi->showAdvanced->isChecked());
+
+    connect(m_pUi->memoryLimit,
+            &QAbstractSlider::valueChanged,
+            m_pUi->memoryLimitSpin,
+            &QSpinBox::setValue);
+    connect(m_pUi->memoryLimitSpin,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            m_pUi->memoryLimit,
+            &QAbstractSlider::setValue);
+    connect(m_pUi->showAdvanced,
+            &QAbstractButton::toggled,
+            m_pUi->advancedSettings,
+            &QWidget::setVisible);
 }
 
 DlgPrefModplug::~DlgPrefModplug() {
@@ -133,16 +146,21 @@ void DlgPrefModplug::applySettings() {
 
     // enabled features flags
     settings.mFlags = 0;
-    if (m_pUi->oversampling->isChecked())
+    if (m_pUi->oversampling->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_OVERSAMPLING;
-    if (m_pUi->noiseReduction->isChecked())
+    }
+    if (m_pUi->noiseReduction->isChecked()) {
         settings.mFlags |=  ModPlug::MODPLUG_ENABLE_NOISE_REDUCTION;
-    if (m_pUi->reverb->isChecked())
+    }
+    if (m_pUi->reverb->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_REVERB;
-    if (m_pUi->megabass->isChecked())
+    }
+    if (m_pUi->megabass->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_MEGABASS;
-    if (m_pUi->surround->isChecked())
+    }
+    if (m_pUi->surround->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_SURROUND;
+    }
 
     switch (m_pUi->resampleMode->currentIndex()) {
     case 0: // nearest neighbor

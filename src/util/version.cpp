@@ -104,21 +104,26 @@ QStringList Version::dependencyVersions() {
             << QString("Qt: %1").arg(qVersion())
 #ifdef __BROADCAST__
             // Should be accurate.
-            << QString("libshout: %1").arg(shout_version(NULL, NULL, NULL))
+            << QString("libshout: %1")
+                       .arg(shout_version(nullptr, nullptr, nullptr))
 #endif
-            << QString("PortAudio: %1 %2").arg(Pa_GetVersion()).arg(Pa_GetVersionText())
+            << QString("PortAudio: %1 %2")
+                       .arg(Pa_GetVersion())
+                       .arg(Pa_GetVersionText())
             // The version of the RubberBand headers Mixxx was compiled with.
             << QString("RubberBand: %1").arg(RUBBERBAND_VERSION)
             // The version of the SoundTouch headers Mixxx was compiled with.
             << QString("SoundTouch: %1").arg(SOUNDTOUCH_VERSION)
             // The version of the TagLib headers Mixxx was compiled with.
-            << QString("TagLib: %1.%2.%3").arg(QString::number(TAGLIB_MAJOR_VERSION),
-                                               QString::number(TAGLIB_MINOR_VERSION),
-                                               QString::number(TAGLIB_PATCH_VERSION))
+            << QString("TagLib: %1.%2.%3")
+                       .arg(QString::number(TAGLIB_MAJOR_VERSION),
+                               QString::number(TAGLIB_MINOR_VERSION),
+                               QString::number(TAGLIB_PATCH_VERSION))
             // The version of the ChromaPrint headers Mixxx was compiled with.
-            << QString("ChromaPrint: %1.%2.%3").arg(QString::number(CHROMAPRINT_VERSION_MAJOR),
-                                                    QString::number(CHROMAPRINT_VERSION_MINOR),
-                                                    QString::number(CHROMAPRINT_VERSION_PATCH))
+            << QString("ChromaPrint: %1.%2.%3")
+                       .arg(QString::number(CHROMAPRINT_VERSION_MAJOR),
+                               QString::number(CHROMAPRINT_VERSION_MINOR),
+                               QString::number(CHROMAPRINT_VERSION_PATCH))
             // Should be accurate.
             << QString("Vorbis: %1").arg(vorbis_version_string())
             // Should be accurate.

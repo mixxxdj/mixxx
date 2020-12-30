@@ -1,6 +1,4 @@
-
-#ifndef _WSPINNY_H
-#define _WSPINNY_H
+#pragma once
 
 #include <QEvent>
 #include <QGLWidget>
@@ -62,8 +60,8 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
 
 
   signals:
-    void trackDropped(QString filename, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   protected:
     //QWidget:
@@ -127,7 +125,6 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     int m_iStartMouseY;
     int m_iFullRotations;
     double m_dPrevTheta;
-    double m_dTheta;
     // Speed of the vinyl rotation.
     double m_dRotationsPerSecond;
     bool m_bClampFailedWarning;
@@ -137,5 +134,3 @@ class WSpinny : public QGLWidget, public WBaseWidget, public VinylSignalQualityL
     DlgCoverArtFullSize* m_pDlgCoverArt;
     WCoverArtMenu* m_pCoverMenu;
 };
-
-#endif //_WSPINNY_H

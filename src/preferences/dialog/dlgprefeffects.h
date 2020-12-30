@@ -1,5 +1,4 @@
-#ifndef DLGPREFEFFECTS_H
-#define DLGPREFEFFECTS_H
+#pragma once
 
 #include <QButtonGroup>
 
@@ -14,8 +13,8 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     Q_OBJECT
   public:
     DlgPrefEffects(QWidget* pParent,
-                   UserSettingsPointer pConfig,
-                   EffectsManager* pEffectsManager);
+            UserSettingsPointer pConfig,
+            std::shared_ptr<EffectsManager> pEffectsManager);
     virtual ~DlgPrefEffects();
 
     void slotUpdate() override;
@@ -30,8 +29,5 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
 
     EffectSettingsModel m_availableEffectsModel;
     UserSettingsPointer m_pConfig;
-    EffectsManager* m_pEffectsManager;
-    EffectSettingsModel* m_pAvailableEffectsModel;
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
 };
-
-#endif /* DLGPREFEFFECTS_H */

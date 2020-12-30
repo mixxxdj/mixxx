@@ -1,5 +1,7 @@
 #include "skin/tooltips.h"
 
+#include "moc_tooltips.cpp"
+
 Tooltips::Tooltips() {
     addStandardTooltips();
 }
@@ -7,7 +9,7 @@ Tooltips::Tooltips() {
 Tooltips::~Tooltips() {
 }
 
-QString Tooltips::tooltipForId(QString id) const {
+QString Tooltips::tooltipForId(const QString& id) const {
     // We always add a separator at the end.
     QString joined = m_tooltips.value(id, QStringList()).join(tooltipSeparator());
     if (joined.length() > 0) {
@@ -20,7 +22,7 @@ QString Tooltips::tooltipSeparator() const {
     return "\n";
 }
 
-QList<QString>& Tooltips::add(QString id) {
+QList<QString>& Tooltips::add(const QString& id) {
     return m_tooltips[id];
 }
 
@@ -32,6 +34,7 @@ void Tooltips::addStandardTooltips() {
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
     QString scrollWheel = tr("Scroll-wheel");
+    QString shift = tr("Shift-key");
     QString loopActive = "(" + tr("loop active") + ")";
     QString loopInactive = "(" + tr("loop inactive") + ")";
     QString effectsWithinUnit = tr("Effects within the chain must be enabled to hear them.");
@@ -467,16 +470,19 @@ void Tooltips::addStandardTooltips() {
 
     QString whilePlaying = tr("(while playing)");
     QString whileStopped = tr("(while stopped)");
+    QString whilePreviewing = tr("(while previewing)");
     QString cueSet = tr("Places a cue point at the current position on the waveform.");
     QString cueWhilePlaying = tr("Stops track at cue point, OR go to cue point and play after release (CUP mode).");
     QString cueWhileStopped = tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
             "OR preview from it (Denon mode).");
     QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Interface.");
+    QString latchingPlay = tr("Is latching the playing state.");
 
     // Currently used for decks
     add("play_cue_set")
             << tr("Play/Pause")
             << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
+            << QString("%1 %2: %3").arg(leftClick, whilePreviewing, latchingPlay)
             << QString("%1: %2").arg(rightClick, cueSet);
 
     // Currently used for minimal decks
@@ -493,7 +499,8 @@ void Tooltips::addStandardTooltips() {
             << QString("%1 %2: %3").arg(leftClick, whileStopped, cueWhileStopped)
             << cueHint
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."));
+            << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."))
+            << QString("%1 %2: %3").arg(rightClick, whilePreviewing, latchingPlay);
     add("cue_gotoandplay_cue_default")
             << tr("Play")
             << QString("%1: %2").arg(leftClick, tr("Plays track from the cue point."))
@@ -597,12 +604,19 @@ void Tooltips::addStandardTooltips() {
             << tr("Eject")
             << tr("Ejects track from the player.");
 
-    add("hotcue")
-            << tr("Hotcue")
-            << QString("%1: %2").arg(leftClick, tr("If hotcue is set, jumps to the hotcue."))
-            << tr("If hotcue is not set, sets the hotcue to the current play position.")
-            << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("Opens a menu to clear hotcues or edit their labels and colors."));
+    add("hotcue") << tr("Hotcue")
+                  << QString("%1: %2").arg(leftClick,
+                             tr("If hotcue is set, jumps to the hotcue."))
+                  << tr("If hotcue is not set, sets the hotcue to the current "
+                        "play position.")
+                  << quantizeSnap
+                  << QString("%1: %2").arg(rightClick,
+                             tr("Opens a menu to clear hotcues or edit their "
+                                "labels and colors."))
+                  << QString("%1 + %2: %3")
+                             .arg(rightClick,
+                                     shift,
+                                     tr("Delete selected hotcue."));
 
     // Status displays and toggle buttons
     add("toggle_recording")
@@ -622,6 +636,10 @@ void Tooltips::addStandardTooltips() {
                 << tr("Provides visual feedback for Live Broadcasting status:")
                 << tr("disabled, connecting, connected, failure.");
     }
+
+    // AutoDJ status indicator
+    add("autodj_status")
+            << tr("AutoDJ is active");
 
     add("passthrough_enabled")
             << tr("Enable Passthrough")

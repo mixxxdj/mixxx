@@ -1,5 +1,4 @@
-#ifndef WBEATSPINBOX_H
-#define WBEATSPINBOX_H
+#pragma once
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -22,11 +21,11 @@ class WBeatSpinBox : public QDoubleSpinBox, public WBaseWidget {
     void slotSpinboxValueChanged(double newValue);
     void slotControlValueChanged(double newValue);
 
+  private:
     QString textFromValue(double value) const override;
     double valueFromText(const QString& text) const override;
     QValidator::State validate(QString& input, int& pos) const override;
 
-  private:
     void stepBy(int steps) override;
     QString fractionString(int numerator, int denominator) const;
 
@@ -55,7 +54,3 @@ class WBeatLineEdit : public QLineEdit {
     bool event(QEvent* pEvent) override;
     double m_scaleFactor;
 };
-
-
-
-#endif

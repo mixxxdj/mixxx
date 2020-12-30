@@ -3,7 +3,7 @@
 namespace {
 //  Used to avoid gain discontinuities when changing parameters too fast
 constexpr double kMaxGainIncrement = 0.001;
-}
+} // namespace
 
 // static
 QString TremoloEffect::getId() {
@@ -195,7 +195,7 @@ void TremoloEffect::processChannel(const ChannelHandle& handle,
             m_pPhaseParameter->value() * framePerPeriod);
     currentFrame = currentFrame % framePerPeriod;
 
-    for (unsigned int i = 0;
+    for (SINT i = 0;
             i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
         unsigned int positionFrame = (currentFrame - phaseOffsetFrame);

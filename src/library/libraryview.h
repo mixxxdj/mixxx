@@ -4,10 +4,11 @@
 /// LibraryView is an abstract interface that all views to be used with the
 /// Library widget should support.
 
-#ifndef LIBRARYVIEW_H
-#define LIBRARYVIEW_H
+#pragma once
 
 #include <QString>
+
+#include "library/trackmodel.h"
 
 class LibraryView {
   public:
@@ -28,7 +29,7 @@ class LibraryView {
 
     /// If applicable, requests that the LibraryView load the selected track to
     /// the specified group. Does nothing otherwise.
-    virtual void loadSelectedTrackToGroup(QString group, bool play) {
+    virtual void loadSelectedTrackToGroup(const QString& group, bool play) {
         Q_UNUSED(group); Q_UNUSED(play);
     }
 
@@ -37,10 +38,11 @@ class LibraryView {
     /// 1, the view should move to the next selection in the list.
     virtual void moveSelection(int delta) {Q_UNUSED(delta);}
 
+    virtual TrackModel::SortColumnId getColumnIdFromCurrentIndex() {
+        return TrackModel::SortColumnId::Invalid;
+    };
     /// If applicable, requests that the LibraryView changes the track color of
     /// the selected track. Does nothing otherwise.
     virtual void assignPreviousTrackColor(){};
     virtual void assignNextTrackColor(){};
 };
-
-#endif /* LIBRARYVIEW_H */

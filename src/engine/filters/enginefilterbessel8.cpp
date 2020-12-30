@@ -1,6 +1,13 @@
 #include "engine/filters/enginefilterbessel8.h"
+
+#include "moc_enginefilterbessel8.cpp"
 #include "util/math.h"
 
+namespace {
+constexpr char kFidSpecLowPassBessel8[] = "LpBe8";
+constexpr char kFidSpecBandPassBessel8[] = "BpBe8";
+constexpr char kFidSpecHighPassBessel8[] = "HpBe8";
+} // namespace
 
 EngineFilterBessel8Low::EngineFilterBessel8Low(int sampleRate,
                                                double freqCorner1) {
@@ -10,7 +17,7 @@ EngineFilterBessel8Low::EngineFilterBessel8Low(int sampleRate,
 void EngineFilterBessel8Low::setFrequencyCorners(int sampleRate,
                                                  double freqCorner1) {
     // Copy the old coefficients into m_oldCoef
-    setCoefs("LpBe8", sampleRate, freqCorner1);
+    setCoefs(kFidSpecLowPassBessel8, sizeof(kFidSpecLowPassBessel8), sampleRate, freqCorner1);
 }
 
 
@@ -61,7 +68,7 @@ int EngineFilterBessel8Low::setFrequencyCornersForIntDelay(
         quantizedRatio = delayRatioTable[iDelay];
     }
 
-    setCoefs("LpBe8", 1, quantizedRatio);
+    setCoefs(kFidSpecLowPassBessel8, sizeof(kFidSpecLowPassBessel8), 1, quantizedRatio);
     return iDelay;
 }
 
@@ -74,7 +81,11 @@ EngineFilterBessel8Band::EngineFilterBessel8Band(int sampleRate,
 void EngineFilterBessel8Band::setFrequencyCorners(int sampleRate,
                                                   double freqCorner1,
                                                   double freqCorner2) {
-    setCoefs("BpBe8", sampleRate, freqCorner1, freqCorner2);
+    setCoefs(kFidSpecBandPassBessel8,
+            sizeof(kFidSpecBandPassBessel8),
+            sampleRate,
+            freqCorner1,
+            freqCorner2);
 }
 
 
@@ -85,5 +96,5 @@ EngineFilterBessel8High::EngineFilterBessel8High(int sampleRate,
 
 void EngineFilterBessel8High::setFrequencyCorners(int sampleRate,
                                                   double freqCorner1) {
-    setCoefs("HpBe8", sampleRate, freqCorner1);
+    setCoefs(kFidSpecHighPassBessel8, sizeof(kFidSpecHighPassBessel8), sampleRate, freqCorner1);
 }

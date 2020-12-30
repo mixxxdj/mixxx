@@ -6,12 +6,13 @@
 #include "controllers/defs_controllers.h"
 #include "controllers/dlgprefcontroller.h"
 #include "defs_urls.h"
+#include "moc_dlgprefcontrollers.cpp"
 #include "preferences/dialog/dlgpreferences.h"
 
 DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
-                                       UserSettingsPointer pConfig,
-                                       ControllerManager* pControllerManager,
-                                       QTreeWidgetItem* pControllerTreeItem)
+        UserSettingsPointer pConfig,
+        std::shared_ptr<ControllerManager> pControllerManager,
+        QTreeWidgetItem* pControllerTreeItem)
         : DlgPreferencePage(pPreferences),
           m_pDlgPreferences(pPreferences),
           m_pConfig(pConfig),
@@ -20,13 +21,16 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
     setupUi(this);
     setupControllerWidgets();
 
-    connect(btnOpenUserPresets, &QPushButton::clicked, [=]() {
-        QString presetsPath = userPresetsPath(m_pConfig);
-        openLocalFile(presetsPath);
+    connect(btnOpenUserMappings, &QPushButton::clicked, [=]() {
+        QString mappingsPath = userMappingsPath(m_pConfig);
+        openLocalFile(mappingsPath);
     });
 
     // Connections
-    connect(m_pControllerManager, &ControllerManager::devicesChanged, this, &DlgPrefControllers::rescanControllers);
+    connect(m_pControllerManager.get(),
+            &ControllerManager::devicesChanged,
+            this,
+            &DlgPrefControllers::rescanControllers);
 }
 
 DlgPrefControllers::~DlgPrefControllers() {
@@ -125,14 +129,21 @@ void DlgPrefControllers::setupControllerWidgets() {
 
         DlgPrefController* controllerDlg = new DlgPrefController(
                 this, pController, m_pControllerManager, m_pConfig);
-        connect(controllerDlg, &DlgPrefController::mappingStarted, m_pDlgPreferences, &DlgPreferences::hide);
-        connect(controllerDlg, &DlgPrefController::mappingEnded, m_pDlgPreferences, &DlgPreferences::show);
+        connect(controllerDlg,
+                &DlgPrefController::mappingStarted,
+                m_pDlgPreferences,
+                &DlgPreferences::hide);
+        connect(controllerDlg,
+                &DlgPrefController::mappingEnded,
+                m_pDlgPreferences,
+                &DlgPreferences::show);
 
         m_controllerWindows.append(controllerDlg);
         m_pDlgPreferences->addPageWidget(DlgPreferences::PreferencesPage(controllerDlg, controllerWindowLink));
 
         connect(pController,
                 &Controller::openChanged,
+                this,
                 [this, controllerDlg](bool bOpen) {
                     slotHighlightDevice(controllerDlg, bOpen);
                 });

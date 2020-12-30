@@ -1,10 +1,11 @@
 #include "engine/controls/vinylcontrolcontrol.h"
 
+#include "moc_vinylcontrolcontrol.cpp"
 #include "track/track.h"
 #include "util/math.h"
 #include "vinylcontrol/vinylcontrol.h"
 
-VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pConfig)
+VinylControlControl::VinylControlControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_bSeekRequested(false) {
     m_pControlVinylStatus = new ControlObject(ConfigKey(group, "vinylcontrol_status"));
@@ -158,10 +159,10 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
 
 bool VinylControlControl::isEnabled()
 {
-    return m_pControlVinylEnabled->get();
+    return m_pControlVinylEnabled->toBool();
 }
 
 bool VinylControlControl::isScratching()
 {
-    return m_pControlVinylScratching->get();
+    return m_pControlVinylScratching->toBool();
 }

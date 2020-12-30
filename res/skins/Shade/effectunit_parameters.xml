@@ -13,6 +13,15 @@
         <BackPath>style/style_bg_deck_pane.png</BackPath>
         <Layout>horizontal</Layout>
         <Children>
+          <!-- Spacer to position parameters more below the focused effect -->
+          <WidgetGroup>
+            <Size>0me,0min</Size>
+            <Connection>
+              <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+              <Transform><IsEqual>1</IsEqual><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
           <Template src="skin:effect_parameters.xml">
             <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
             <SetVariable name="effectnum">1</SetVariable>
@@ -25,6 +34,15 @@
             <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
             <SetVariable name="effectnum">3</SetVariable>
           </Template>
+          <!-- Spacer to position parameters more below the focused effect -->
+          <WidgetGroup>
+            <Size>0me,0min</Size>
+            <Connection>
+              <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+              <Transform><IsEqual>3</IsEqual><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
         </Children>
       </WidgetGroup>
       <WidgetGroup>
@@ -44,4 +62,3 @@
       </Connection>
   </WidgetGroup>
 </Template>
-

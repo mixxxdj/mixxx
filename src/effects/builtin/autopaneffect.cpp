@@ -147,7 +147,7 @@ void AutoPanEffect::processChannel(
     double sinusoid = 0;
 
     // NOTE: Assuming engine is working in stereo.
-    for (unsigned int i = 0; i + 1 < bufferParameters.samplesPerBuffer(); i += 2) {
+    for (SINT i = 0; i + 1 < bufferParameters.samplesPerBuffer(); i += 2) {
         const auto periodFraction = static_cast<CSAMPLE>(gs.time) / static_cast<CSAMPLE>(period);
 
         // current quarter in the trigonometric circle

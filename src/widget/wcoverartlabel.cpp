@@ -4,6 +4,7 @@
 
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "moc_wcoverartlabel.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "widget/wcoverartmenu.h"
@@ -50,7 +51,7 @@ WCoverArtLabel::WCoverArtLabel(QWidget* parent)
 WCoverArtLabel::~WCoverArtLabel() = default;
 
 void WCoverArtLabel::setCoverArt(const CoverInfo& coverInfo,
-                                 QPixmap px) {
+        const QPixmap& px) {
     m_pCoverMenu->setCoverArt(coverInfo);
     if (px.isNull()) {
         m_loadedCover = px;

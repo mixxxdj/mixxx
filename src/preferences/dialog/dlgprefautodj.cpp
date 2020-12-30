@@ -1,5 +1,7 @@
 #include "preferences/dialog/dlgprefautodj.h"
 
+#include "moc_dlgprefautodj.cpp"
+
 DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
                              UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
@@ -11,18 +13,18 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
             m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "MinimumAvailable"), 20));
     connect(MinimumAvailableSpinBox,
-            SIGNAL(valueChanged(int)),
+            QOverload<int>::of(&QSpinBox::valueChanged),
             this,
-            SLOT(slotSetMinimumAvailable(int)));
+            &DlgPrefAutoDJ::slotSetMinimumAvailable);
 
     // The auto-DJ replay-age for randomly-selected tracks
     RequeueIgnoreCheckBox->setChecked(
             (bool)m_pConfig->getValue(
                     ConfigKey("[Auto DJ]", "UseIgnoreTime"), 0));
     connect(RequeueIgnoreCheckBox,
-            SIGNAL(stateChanged(int)),
+            &QCheckBox::stateChanged,
             this,
-            SLOT(slotToggleRequeueIgnore(int)));
+            &DlgPrefAutoDJ::slotToggleRequeueIgnore);
     RequeueIgnoreTimeEdit->setTime(
             QTime::fromString(
                     m_pConfig->getValue(
@@ -31,9 +33,9 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
     RequeueIgnoreTimeEdit->setEnabled(
             RequeueIgnoreCheckBox->checkState() == Qt::Checked);
     connect(RequeueIgnoreTimeEdit,
-            SIGNAL(timeChanged(const QTime&)),
+            &QTimeEdit::timeChanged,
             this,
-            SLOT(slotSetRequeueIgnoreTime(const QTime&)));
+            &DlgPrefAutoDJ::slotSetRequeueIgnoreTime);
 
     // Auto DJ random enqueue
     RandomQueueCheckBox->setChecked(
@@ -52,13 +54,13 @@ DlgPrefAutoDJ::DlgPrefAutoDJ(QWidget* pParent,
                     ConfigKey("[Auto DJ]", "EnableRandomQueue")));
     // Be ready to enable and modify the minimum number and un/check the checkbox
     connect(RandomQueueCheckBox,
-            SIGNAL(stateChanged(int)),
+            &QCheckBox::stateChanged,
             this,
-            SLOT(slotToggleRandomQueue(int)));
+            &DlgPrefAutoDJ::slotToggleRandomQueue);
     connect(RandomQueueMinimumSpinBox,
-            SIGNAL(valueChanged(int)),
+            QOverload<int>::of(&QSpinBox::valueChanged),
             this,
-            SLOT(slotSetRandomQueueMin(int)));
+            &DlgPrefAutoDJ::slotSetRandomQueueMin);
 }
 
 DlgPrefAutoDJ::~DlgPrefAutoDJ() {
