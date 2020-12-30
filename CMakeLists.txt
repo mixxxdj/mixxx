@@ -680,7 +680,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/audio/types.cpp
   src/broadcast/filelistener/filelistener.cpp
   src/broadcast/filelistener/metadatafileworker.cpp
-  src/broadcast/listenbrainzlistener/listenbrainzjsonfactory.cpp
   src/broadcast/listenbrainzlistener/listenbrainzservice.cpp
   src/broadcast/listenbrainzlistener/networkmanager.cpp
   src/broadcast/listenbrainzlistener/networkreply.cpp

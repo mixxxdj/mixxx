@@ -13,11 +13,7 @@
 
 class NetworkRequest;
 
-namespace {
-const QUrl ListenBrainzAPIURL("https://api.listenbrainz.org/1/submit-listens");
-const QUrl MockServerURL("http://localhost/cgi-bin/mixxxPostDummy.py");
-} // namespace
-
+/// Handles the Network kommunication with Listenbrainz
 class ListenBrainzService : public ScrobblingService {
     Q_OBJECT
   public:
