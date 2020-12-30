@@ -1,14 +1,56 @@
 #include "broadcast/listenbrainzlistener/listenbrainzservice.h"
 
+#include <QJsonArray>
+#include <QJsonDocument>
 #include <QJsonObject>
 
-#include "broadcast/listenbrainzlistener/listenbrainzjsonfactory.h"
 #include "broadcast/listenbrainzlistener/networkmanager.h"
 #include "moc_listenbrainzservice.cpp"
 #include "preferences/listenbrainzsettings.h"
 
+namespace {
+
+enum class JsonType {
+    NowListening,
+    Single
+};
+
+const QString kListenBrainzAPIURL = QStringLiteral("https://api.listenbrainz.org/1/submit-listens");
+//const QString kMockServerURL = QStringLiteral("http://localhost/cgi-bin/mixxxPostDummy.py");
+
+QByteArray getJSONFromTrack(TrackPointer pTrack, JsonType type) {
+    QJsonObject jsonObject;
+    QString stringType;
+    if (type == JsonType::NowListening) {
+        stringType = "playing_now";
+    } else {
+        stringType = "single";
+    }
+
+    QJsonArray payloadArray;
+    QJsonObject payloadObject;
+    QJsonObject metadataObject;
+    QString title = pTrack->getTitle();
+    QString artist = pTrack->getArtist();
+    metadataObject.insert("artist_name", artist);
+    metadataObject.insert("track_name", title);
+    payloadObject.insert("track_metadata", metadataObject);
+    qint64 timeStamp = QDateTime::currentMSecsSinceEpoch() / 1000;
+
+    if (type == JsonType::Single) {
+        payloadObject.insert("listened_at", timeStamp);
+    }
+    payloadArray.append(payloadObject);
+    jsonObject.insert("listen_type", stringType);
+    jsonObject.insert("payload", payloadArray);
+    QJsonDocument doc(jsonObject);
+    return doc.toJson(QJsonDocument::Compact);
+}
+
+} // namespace
+
 ListenBrainzService::ListenBrainzService(UserSettingsPointer pSettings)
-        : m_request(ListenBrainzAPIURL),
+        : m_request(kListenBrainzAPIURL),
           m_latestSettings(ListenBrainzSettingsManager::getPersistedSettings(pSettings)),
           m_COSettingsChanged(ListenBrainzSettingsManager::kListenBrainzSettingsChanged) {
     connect(&m_manager,
@@ -39,9 +81,7 @@ void ListenBrainzService::slotScrobbleTrack(TrackPointer pTrack) {
     if (!pTrack || !m_latestSettings.enabled) {
         return;
     }
-    m_currentJSON =
-            ListenBrainzJSONFactory::getJSONFromTrack(
-                    pTrack, ListenBrainzJSONFactory::Single);
+    m_currentJSON = getJSONFromTrack(pTrack, JsonType::Single);
     m_manager.post(m_request, m_currentJSON);
 }
 

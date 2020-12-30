@@ -988,7 +988,6 @@ add_library(
   src/audio/types.cpp
   src/broadcast/filelistener/filelistener.cpp
   src/broadcast/filelistener/metadatafileworker.cpp
-  src/broadcast/listenbrainzlistener/listenbrainzjsonfactory.cpp
   src/broadcast/listenbrainzlistener/listenbrainzservice.cpp
   src/broadcast/listenbrainzlistener/networkmanager.cpp
   src/broadcast/listenbrainzlistener/networkreply.cpp
