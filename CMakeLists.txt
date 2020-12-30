@@ -681,7 +681,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/broadcast/filelistener/filelistener.cpp
   src/broadcast/filelistener/metadatafileworker.cpp
   src/broadcast/listenbrainzlistener/listenbrainzservice.cpp
-  src/broadcast/listenbrainzlistener/networkreply.cpp
   src/broadcast/listenbrainzlistener/networkrequest.cpp
   src/broadcast/metadatabroadcast.cpp
   src/broadcast/scrobblingmanager.cpp
