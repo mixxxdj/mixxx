@@ -10,13 +10,16 @@
 #include "track/track.h"
 
 namespace {
-const QString busName = "org.mpris.MediaPlayer2.mixxx";
-}
+
+const QString kServiceName = QStringLiteral("org.mpris.MediaPlayer2.mixxx");
+const QString KObjectPath = QStringLiteral("/org/mpris/MediaPlayer2");
+
+} // namespace
 
 Mpris::Mpris(MixxxMainWindow* pMixxx,
         PlayerManagerInterface* pPlayerManager,
         UserSettingsPointer pSettings)
-        : m_busConnection(QDBusConnection::connectToBus(QDBusConnection::SessionBus, busName)),
+        : m_busConnection(QDBusConnection::connectToBus(QDBusConnection::SessionBus, kServiceName)),
           m_pPlayer(new MediaPlayer2Player(pPlayerManager,
                   this,
                   pSettings)) {
@@ -26,19 +29,20 @@ Mpris::Mpris(MixxxMainWindow* pMixxx,
     // they are connected to is also deleted).
     // http://doc.qt.io/qt-5/qdbusabstractadaptor.html
     new MediaPlayer2(pMixxx, this);
-    m_busConnection.registerObject("/org/mpris/MediaPlayer2", this);
-    m_busConnection.registerService("org.mpris.MediaPlayer2.mixxx");
+    m_busConnection.registerObject(KObjectPath, this);
+    m_busConnection.registerService(kServiceName);
 }
 
 Mpris::~Mpris() {
-    m_busConnection.unregisterObject("/org/mpris/MediaPlayer2");
-    m_busConnection.unregisterService("org.mpris.MediaPlayer2.mixxx");
-    QDBusConnection::disconnectFromBus(busName);
+    m_busConnection.unregisterObject(KObjectPath);
+    m_busConnection.unregisterService(kServiceName);
+    QDBusConnection::disconnectFromBus(kServiceName);
 }
 
 void Mpris::broadcastCurrentTrack() {
-    notifyPropertyChanged("org.mpris.MediaPlayer2.Player",
-            "Metadata",
+    notifyPropertyChanged(
+            QStringLiteral("org.mpris.MediaPlayer2.Player"),
+            QStringLiteral("Metadata"),
             m_pPlayer->metadata());
 }
 
@@ -46,9 +50,9 @@ void Mpris::notifyPropertyChanged(const QString& interface,
         const QString& propertyName,
         const QVariant& propertyValue) {
     QDBusMessage signal = QDBusMessage::createSignal(
-            "/org/mpris/MediaPlayer2",
-            "org.freedesktop.DBus.Properties",
-            "PropertiesChanged");
+            KObjectPath,
+            QStringLiteral("org.freedesktop.DBus.Properties"),
+            QStringLiteral("PropertiesChanged"));
     signal << interface;
     QVariantMap changedProps;
     changedProps.insert(propertyName, propertyValue);
