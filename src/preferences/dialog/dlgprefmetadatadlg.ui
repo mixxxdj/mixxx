@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Metadata Broadcast Preferences</string>
+   <string>Metadata Output Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
