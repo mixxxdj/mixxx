@@ -13,16 +13,18 @@
 
 namespace {
 
+// Programmatic status flags (don't translate)
 const QString kPlaybackStatusPlaying = QStringLiteral("Playing");
 const QString kPlaybackStatusPaused = QStringLiteral("Paused");
 const QString kPlaybackStatusStopped = QStringLiteral("Stopped");
 
 // the playback will stop when there are no more tracks to play
 const QString kLoopStatusNone = QStringLiteral("None");
-// The current track will start again from the begining once it has finished playing
+// The current track will start again from the beginning once it has finished playing
 const QString kLoopStatusTrack = QStringLiteral("Track");
 // The playback loops through a list of tracks
 const QString kLoopStatusPlaylist = QStringLiteral("Playlist");
+
 const QString kPlayerInterfaceName = QStringLiteral("org.mpris.MediaPlayer2.Player");
 
 } // namespace
