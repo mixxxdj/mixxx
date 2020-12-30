@@ -317,8 +317,7 @@ bool EngineRecord::openCueFile() {
     }
 
     // Write UTF-8 BOM at the start of the file
-    unsigned char bom[] = { 0xEF,0xBB,0xBF };
-    m_cueFile.write((char*)bom, sizeof(bom));
+    m_cueFile.write(QByteArray("\xef\xbb\xbf"));
 
     if (m_baAuthor.length() > 0) {
         m_cueFile.write(QString("PERFORMER \"%1\"\n")
