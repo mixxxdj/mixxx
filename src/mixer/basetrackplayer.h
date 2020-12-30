@@ -57,7 +57,6 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
             UserSettingsPointer pConfig,
             EngineMaster* pMixingEngine,
             EffectsManager* pEffectsManager,
-            VisualsManager* pVisualsManager,
             EngineChannel::ChannelOrientation defaultOrientation,
             const ChannelHandleAndGroup& handleGroup,
             bool defaultMaster,
@@ -81,9 +80,9 @@ class BaseTrackPlayerImpl : public BaseTrackPlayer {
     void slotCloneFromGroup(const QString& group) final;
     void slotCloneDeck() final;
     void slotTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void slotLoadFailed(TrackPointer pTrack, QString reason);
+    void slotLoadFailed(TrackPointer pTrack, const QString& reason);
     void slotSetReplayGain(mixxx::ReplayGain replayGain);
-    void slotSetTrackColor(mixxx::RgbColor::optional_t color);
+    void slotSetTrackColor(const mixxx::RgbColor::optional_t& color);
     void slotPlayToggled(double);
 
   private slots:

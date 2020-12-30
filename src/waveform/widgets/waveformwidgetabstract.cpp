@@ -1,14 +1,15 @@
 #include "waveformwidgetabstract.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
-#include "util/compatibility.h"
 
-#include <QtDebug>
 #include <QWidget>
+#include <QtDebug>
+
+#include "util/compatibility.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 
 WaveformWidgetAbstract::WaveformWidgetAbstract(const QString& group)
         : WaveformWidgetRenderer(group),
           m_initSuccess(false) {
-    m_widget = NULL;
+    m_widget = nullptr;
 }
 
 WaveformWidgetAbstract::~WaveformWidgetAbstract() {

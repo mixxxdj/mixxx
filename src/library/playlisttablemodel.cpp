@@ -5,6 +5,7 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "moc_playlisttablemodel.cpp"
 
 PlaylistTableModel::PlaylistTableModel(QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
@@ -74,6 +75,9 @@ void PlaylistTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::TimesPlayed)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::LastPlayedAt)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT);
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::Rating)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
@@ -342,7 +346,7 @@ TrackModel::Capabilities PlaylistTableModel::getCapabilities() const {
     return caps;
 }
 
-void PlaylistTableModel::playlistsChanged(QSet<int> playlistIds) {
+void PlaylistTableModel::playlistsChanged(const QSet<int>& playlistIds) {
     if (playlistIds.contains(m_iPlaylistId)) {
         select(); // Repopulate the data model.
     }

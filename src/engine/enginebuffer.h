@@ -183,7 +183,7 @@ class EngineBuffer : public EngineObject {
 
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void trackLoadFailed(TrackPointer pTrack, QString reason);
+    void trackLoadFailed(TrackPointer pTrack, const QString& reason);
     void cueJumpQueued(double samplePos);
 
   private slots:
@@ -191,7 +191,7 @@ class EngineBuffer : public EngineObject {
     void slotTrackLoaded(TrackPointer pTrack,
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
-                             QString reason);
+            const QString& reason);
     // Fired when passthrough mode is enabled or disabled.
     void slotPassthroughChanged(double v);
     void slotUpdatedTrackBeats();
@@ -229,7 +229,7 @@ class EngineBuffer : public EngineObject {
     void processSyncRequests();
     void processSeek(bool paused);
 
-    bool updateIndicatorsAndModifyPlay(bool newPlay);
+    bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay);
     void verifyPlay();
     void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void processTrackLocked(CSAMPLE* pOutput, const int iBufferSize, int sample_rate);

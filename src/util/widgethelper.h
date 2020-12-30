@@ -39,7 +39,7 @@ inline QScreen* getScreen(
     if (!pWindow && widget.parent()) {
         // The window might still be hidden and invisible. Then we
         // try to obtain the screen from its parent recursively.
-        return getScreen(*static_cast<QWidget*>(widget.parent()));
+        return getScreen(*qobject_cast<QWidget*>(widget.parent()));
     }
     if (!pWindow) {
         // This might happen if the widget is not yet displayed

@@ -4,6 +4,7 @@
 
 #include "control/controlobject.h"
 #include "library/trackcollectionmanager.h"
+#include "moc_dlgrecording.cpp"
 #include "util/assert.h"
 #include "widget/wlibrary.h"
 #include "widget/wskincolor.h"
@@ -69,7 +70,7 @@ DlgRecording::DlgRecording(
             this,
             &DlgRecording::slotDurationRecorded);
 
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
@@ -139,7 +140,7 @@ void DlgRecording::slotAddToAutoDJReplace() {
     m_pTrackTableView->slotAddToAutoDJReplace();
 }
 
-void DlgRecording::loadSelectedTrackToGroup(QString group, bool play) {
+void DlgRecording::loadSelectedTrackToGroup(const QString& group, bool play) {
     m_pTrackTableView->loadSelectedTrackToGroup(group, play);
 }
 
@@ -178,7 +179,7 @@ void DlgRecording::slotBytesRecorded(int bytes) {
 }
 
 // gets recorded duration and update label
-void DlgRecording::slotDurationRecorded(QString durationRecorded) {
+void DlgRecording::slotDurationRecorded(const QString& durationRecorded) {
     m_durationRecordedStr = durationRecorded;
     refreshLabels();
 }
@@ -186,9 +187,9 @@ void DlgRecording::slotDurationRecorded(QString durationRecorded) {
 // update label besides start/stop button
 void DlgRecording::refreshLabels() {
     QString recFile = m_pRecordingManager->getRecordingFile();
-    QString recData = QString(QStringLiteral("(") + tr("%1 MiB written in %2") + QStringLiteral(")"))
-            .arg(m_bytesRecordedStr)
-            .arg(m_durationRecordedStr);
+    QString recData = QString(QStringLiteral("(") + tr("%1 MiB written in %2") +
+            QStringLiteral(")"))
+                              .arg(m_bytesRecordedStr, m_durationRecordedStr);
     labelRecFilename->setText(recFile);
     labelRecStatistics->setText(recData);
 }

@@ -1,9 +1,11 @@
-#include <QStylePainter>
+#include "widget/wknobcomposed.h"
+
 #include <QStyleOption>
+#include <QStylePainter>
 #include <QTransform>
 
+#include "moc_wknobcomposed.cpp"
 #include "util/duration.h"
-#include "widget/wknobcomposed.h"
 #include "widget/wskincolor.h"
 
 WKnobComposed::WKnobComposed(QWidget* pParent)
@@ -21,8 +23,10 @@ WKnobComposed::WKnobComposed(QWidget* pParent)
           m_arcPenCap(Qt::FlatCap),
           m_renderTimer(mixxx::Duration::fromMillis(20),
                         mixxx::Duration::fromSeconds(1)) {
-    connect(&m_renderTimer, SIGNAL(update()),
-            this, SLOT(update()));
+    connect(&m_renderTimer,
+            &WidgetRenderTimer::update,
+            this,
+            QOverload<>::of(&QWidget::update));
 }
 
 void WKnobComposed::setup(const QDomNode& node, const SkinContext& context) {
@@ -86,9 +90,9 @@ void WKnobComposed::clear() {
     m_pKnob.clear();
 }
 
-void WKnobComposed::setPixmapBackground(PixmapSource source,
-                                        Paintable::DrawMode mode,
-                                        double scaleFactor) {
+void WKnobComposed::setPixmapBackground(const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
@@ -96,9 +100,9 @@ void WKnobComposed::setPixmapBackground(PixmapSource source,
     }
 }
 
-void WKnobComposed::setPixmapKnob(PixmapSource source,
-                                  Paintable::DrawMode mode,
-                                  double scaleFactor) {
+void WKnobComposed::setPixmapKnob(const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     m_pKnob = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pKnob.isNull() || m_pKnob->isNull()) {
         qDebug() << metaObject()->className()

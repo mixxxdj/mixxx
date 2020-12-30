@@ -22,7 +22,7 @@ class SoundSourceFFmpeg : public SoundSource {
 
   protected:
     ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) override;
+            const WritableSampleFrames& sampleFrames) override;
 
   private:
     OpenResult tryOpen(
@@ -188,14 +188,18 @@ class SoundSourceFFmpeg : public SoundSource {
 
 class SoundSourceProviderFFmpeg : public SoundSourceProvider {
   public:
+    static const QString kDisplayName;
+
     SoundSourceProviderFFmpeg();
 
-    QString getName() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override;
 
     SoundSourceProviderPriority getPriorityHint(
             const QString& supportedFileExtension) const override;
-
-    QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceFFmpeg>(url);

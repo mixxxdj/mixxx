@@ -20,7 +20,8 @@ TEST(CueTest, DefaultCueInfoToCueRoundtrip) {
     const CueInfo cueInfo1;
     const Cue cueObject(
             cueInfo1,
-            audio::SampleRate(44100));
+            audio::SampleRate(44100),
+            true);
     auto cueInfo2 = cueObject.getCueInfo(
             audio::SampleRate(44100));
     cueInfo2.setColor(std::nullopt);
@@ -40,7 +41,8 @@ TEST(CueTest, ConvertCueInfoToCueRoundtrip) {
             RgbColor::optional(0xABCDEF));
     const Cue cueObject(
             cueInfo1,
-            audio::SampleRate(44100));
+            audio::SampleRate(44100),
+            true);
     const auto cueInfo2 = cueObject.getCueInfo(
             audio::SampleRate(44100));
     EXPECT_EQ(cueInfo1, cueInfo2);

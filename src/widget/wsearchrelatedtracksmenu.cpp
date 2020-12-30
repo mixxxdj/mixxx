@@ -2,6 +2,7 @@
 
 #include <QScreen>
 
+#include "moc_wsearchrelatedtracksmenu.cpp"
 #include "track/track.h"
 #include "util/math.h"
 #include "util/qt.h"
@@ -63,7 +64,8 @@ WSearchRelatedTracksMenu::WSearchRelatedTracksMenu(
 
 void WSearchRelatedTracksMenu::addTriggerSearchAction(
         bool* /*in/out*/ pAddSeparatorBeforeNextAction,
-        QString /*!by-value-because-captured-by-lambda!*/ searchQuery,
+        /*!by-value-because-captured-by-lambda!*/
+        QString searchQuery, // clazy:exclude=function-args-by-ref
         const QString& actionTextPrefix,
         const QString& elidableTextSuffix) {
     DEBUG_ASSERT(pAddSeparatorBeforeNextAction);
@@ -78,6 +80,7 @@ void WSearchRelatedTracksMenu::addTriggerSearchAction(
                     elidableTextSuffix);
     addAction(
             mixxx::escapeTextPropertyWithoutShortcuts(elidedActionText),
+            this,
             [this, searchQuery]() {
                 emit triggerSearch(searchQuery);
             });
@@ -95,7 +98,7 @@ QString WSearchRelatedTracksMenu::elideActionText(
         // This should never fail
         return actionTextPrefix;
     }
-    const auto actionTextPrefixWithSeparator =
+    const QString actionTextPrefixWithSeparator =
             actionTextPrefix + kActionTextPrefixSuffixSeparator;
     const auto prefixWidthInPixels =
             fontMetrics().boundingRect(actionTextPrefixWithSeparator).width();
@@ -318,7 +321,7 @@ void WSearchRelatedTracksMenu::addActionsForTrack(
             // also find files in "path/to/folder/subfolder" but not in
             // "path/to/folder copy".
             DEBUG_ASSERT(!locationPath.endsWith(QChar('/')));
-            const auto locationPathWithTerminator =
+            const QString locationPathWithTerminator =
                     locationPath + QChar('/');
             const QString searchQuery =
                     QStringLiteral("location:") +

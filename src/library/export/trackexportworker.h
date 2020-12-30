@@ -1,5 +1,4 @@
-#ifndef TRACKEXPORTWORKER_H
-#define TRACKEXPORTWORKER_H
+#pragma once
 
 #include <QObject>
 #include <QScopedPointer>
@@ -36,7 +35,7 @@ class TrackExportWorker : public QThread {
 
     // Constructor does not validate the destination directory.  Calling classes
     // should do that.
-    TrackExportWorker(QString destDir, TrackPointerList tracks)
+    TrackExportWorker(const QString& destDir, const TrackPointerList& tracks)
             : m_destDir(destDir), m_tracks(tracks) {
     }
     virtual ~TrackExportWorker() { };
@@ -61,9 +60,9 @@ class TrackExportWorker : public QThread {
     // Note that fully qualifying the Answer class name is required for the
     // signal to connect.
     void askOverwriteMode(
-            QString filename,
+            const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
-    void progress(QString filename, int progress, int count);
+    void progress(const QString& filename, int progress, int count);
     void canceled();
 
   private:
@@ -77,7 +76,7 @@ class TrackExportWorker : public QThread {
 
     // Emit a signal requesting overwrite mode, and block until we get an
     // answer.  Updates m_overwriteMode appropriately.
-    OverwriteAnswer makeOverwriteRequest(QString filename);
+    OverwriteAnswer makeOverwriteRequest(const QString& filename);
 
     QAtomicInt m_bStop = false;
     QString m_errorMessage;
@@ -86,5 +85,3 @@ class TrackExportWorker : public QThread {
     const QString m_destDir;
     const TrackPointerList m_tracks;
 };
-
-#endif  // TRACKEXPORTWORKER_H

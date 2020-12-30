@@ -1,10 +1,10 @@
 #include "track/track.h"
 
 #include <QDirIterator>
-#include <QMutexLocker>
 #include <atomic>
 
 #include "engine/engine.h"
+#include "moc_track.cpp"
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
 #include "track/trackref.h"
@@ -140,7 +140,7 @@ void Track::relocate(
 
 void Track::importMetadata(
         mixxx::TrackMetadata importedMetadata,
-        QDateTime metadataSynchronized) {
+        const QDateTime& metadataSynchronized) {
     // Safe some values that are needed after move assignment and unlocking(see below)
     const auto newBpm = importedMetadata.getTrackInfo().getBpm();
     const auto newKey = importedMetadata.getTrackInfo().getKey();
@@ -418,23 +418,23 @@ QDateTime Track::getDateAdded() const {
 
 void Track::setDateAdded(const QDateTime& dateAdded) {
     QMutexLocker lock(&m_qMutex);
-    return m_record.setDateAdded(dateAdded);
+    m_record.setDateAdded(dateAdded);
 }
 
 void Track::setDuration(mixxx::Duration duration) {
     QMutexLocker lock(&m_qMutex);
-    VERIFY_OR_DEBUG_ASSERT(!m_streamInfo ||
-            m_streamInfo->getDuration() <= mixxx::Duration::empty() ||
-            m_streamInfo->getDuration() == duration) {
+    VERIFY_OR_DEBUG_ASSERT(!m_streamInfoFromSource ||
+            m_streamInfoFromSource->getDuration() <= mixxx::Duration::empty() ||
+            m_streamInfoFromSource->getDuration() == duration) {
         kLogger.warning()
                 << "Cannot override stream duration:"
-                << m_streamInfo->getDuration()
+                << m_streamInfoFromSource->getDuration()
                 << "->"
                 << duration;
         return;
     }
     if (compareAndSet(
-                m_record.refMetadata().ptrDuration(),
+                m_record.refMetadata().refStreamInfo().ptrDuration(),
                 duration)) {
         markDirtyAndUnlock(&lock);
     }
@@ -446,25 +446,19 @@ void Track::setDuration(double duration) {
 
 double Track::getDuration(DurationRounding rounding) const {
     QMutexLocker lock(&m_qMutex);
+    const auto durationSeconds =
+            m_record.getMetadata().getStreamInfo().getDuration().toDoubleSeconds();
     switch (rounding) {
     case DurationRounding::SECONDS:
-        return std::round(m_record.getMetadata().getDuration().toDoubleSeconds());
+        return std::round(durationSeconds);
     default:
-        return m_record.getMetadata().getDuration().toDoubleSeconds();
+        return durationSeconds;
     }
 }
 
 QString Track::getDurationText(mixxx::Duration::Precision precision) const {
-    double duration;
-    if (precision == mixxx::Duration::Precision::SECONDS) {
-        // Round to full seconds before formatting for consistency:
-        // getDurationText() should always display the same number
-        // as getDuration(DurationRounding::SECONDS) = getDurationInt()
-        duration = getDuration(DurationRounding::SECONDS);
-    } else {
-        duration = getDuration(DurationRounding::NONE);
-    }
-    return mixxx::Duration::formatTime(duration, precision);
+    QMutexLocker lock(&m_qMutex);
+    return m_record.getMetadata().getDurationText(precision);
 }
 
 QString Track::getTitle() const {
@@ -612,7 +606,7 @@ void Track::setPlayCounter(const PlayCounter& playCounter) {
 void Track::updatePlayCounter(bool bPlayed) {
     QMutexLocker lock(&m_qMutex);
     PlayCounter playCounter(m_record.getPlayCounter());
-    playCounter.setPlayedAndUpdateTimesPlayed(bPlayed);
+    playCounter.updateLastPlayedNowAndTimesPlayed(bPlayed);
     if (compareAndSet(m_record.ptrPlayCounter(), playCounter)) {
         markDirtyAndUnlock(&lock);
     }
@@ -623,7 +617,7 @@ mixxx::RgbColor::optional_t Track::getColor() const {
     return m_record.getColor();
 }
 
-void Track::setColor(mixxx::RgbColor::optional_t color) {
+void Track::setColor(const mixxx::RgbColor::optional_t& color) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(m_record.ptrColor(), color)) {
         markDirtyAndUnlock(&lock);
@@ -657,38 +651,39 @@ void Track::setType(const QString& sType) {
 
 int Track::getSampleRate() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getSampleRate();
+    return m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
 }
 
 int Track::getChannels() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getChannelCount();
+    return m_record.getMetadata().getStreamInfo().getSignalInfo().getChannelCount();
 }
 
 int Track::getBitrate() const {
     QMutexLocker lock(&m_qMutex);
-    return m_record.getMetadata().getBitrate();
+    return m_record.getMetadata().getStreamInfo().getBitrate();
 }
 
 QString Track::getBitrateText() const {
-    return QString("%1").arg(getBitrate());
+    QMutexLocker lock(&m_qMutex);
+    return m_record.getMetadata().getBitrateText();
 }
 
 void Track::setBitrate(int iBitrate) {
     QMutexLocker lock(&m_qMutex);
     const mixxx::audio::Bitrate bitrate(iBitrate);
-    VERIFY_OR_DEBUG_ASSERT(!m_streamInfo ||
-            !m_streamInfo->getBitrate().isValid() ||
-            m_streamInfo->getBitrate() == bitrate) {
+    VERIFY_OR_DEBUG_ASSERT(!m_streamInfoFromSource ||
+            !m_streamInfoFromSource->getBitrate().isValid() ||
+            m_streamInfoFromSource->getBitrate() == bitrate) {
         kLogger.warning()
                 << "Cannot override stream bitrate:"
-                << m_streamInfo->getBitrate()
+                << m_streamInfoFromSource->getBitrate()
                 << "->"
                 << bitrate;
         return;
     }
     if (compareAndSet(
-                m_record.refMetadata().ptrBitrate(),
+                m_record.refMetadata().refStreamInfo().ptrBitrate(),
                 bitrate)) {
         markDirtyAndUnlock(&lock);
     }
@@ -793,7 +788,7 @@ void Track::setCuePoint(CuePosition cue) {
             m_cuePoints.push_back(pLoadCue);
         }
     } else if (pLoadCue) {
-        disconnect(pLoadCue.get(), 0, this, 0);
+        disconnect(pLoadCue.get(), nullptr, this, nullptr);
         m_cuePoints.removeOne(pLoadCue);
     }
 
@@ -804,11 +799,11 @@ void Track::setCuePoint(CuePosition cue) {
 void Track::shiftCuePositionsMillis(double milliseconds) {
     QMutexLocker lock(&m_qMutex);
 
-    VERIFY_OR_DEBUG_ASSERT(m_streamInfo) {
+    VERIFY_OR_DEBUG_ASSERT(m_streamInfoFromSource) {
         return;
     }
-    double frames = m_streamInfo->getSignalInfo().millis2frames(milliseconds);
-    for (const CuePointer& pCue : m_cuePoints) {
+    double frames = m_streamInfoFromSource->getSignalInfo().millis2frames(milliseconds);
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         pCue->shiftPositionFrames(frames);
     }
 
@@ -857,7 +852,7 @@ CuePointer Track::findCueByType(mixxx::CueType type) const {
     return CuePointer();
 }
 
-CuePointer Track::findCueById(int id) const {
+CuePointer Track::findCueById(DbId id) const {
     QMutexLocker lock(&m_qMutex);
     for (const CuePointer& pCue : m_cuePoints) {
         if (pCue->getId() == id) {
@@ -873,7 +868,7 @@ void Track::removeCue(const CuePointer& pCue) {
     }
 
     QMutexLocker lock(&m_qMutex);
-    disconnect(pCue.get(), 0, this, 0);
+    disconnect(pCue.get(), nullptr, this, nullptr);
     m_cuePoints.removeOne(pCue);
     if (pCue->getType() == mixxx::CueType::MainCue) {
         m_record.setCuePoint(CuePosition());
@@ -890,7 +885,7 @@ void Track::removeCuesOfType(mixxx::CueType type) {
         CuePointer pCue = it.next();
         // FIXME: Why does this only work for the Hotcue Type?
         if (pCue->getType() == type) {
-            disconnect(pCue.get(), 0, this, 0);
+            disconnect(pCue.get(), nullptr, this, nullptr);
             it.remove();
             dirty = true;
         }
@@ -925,14 +920,15 @@ Track::ImportStatus Track::importBeats(
     }
     DEBUG_ASSERT(!m_pBeatsImporterPending);
     m_pBeatsImporterPending = pBeatsImporter;
-    if (m_streamInfo) {
+    if (m_pBeatsImporterPending->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
+        m_pBeatsImporterPending.reset();
+        return ImportStatus::Complete;
+    } else if (m_streamInfoFromSource) {
         // Replace existing cue points with imported cue
         // points immediately
         importPendingBeatsMarkDirtyAndUnlock(&lock);
-        return ImportStatus::Complete;
-    } else if (m_pBeatsImporterPending->isEmpty()) {
-        // Just return the current import status without clearing any
-        // existing cue points.
         return ImportStatus::Complete;
     } else {
         kLogger.debug()
@@ -963,14 +959,14 @@ bool Track::importPendingBeatsWhileLocked() {
     }
     // The sample rate can only be trusted after the audio
     // stream has been opened.
-    DEBUG_ASSERT(m_streamInfo);
+    DEBUG_ASSERT(m_streamInfoFromSource);
     // The sample rate is supposed to be consistent
-    DEBUG_ASSERT(m_streamInfo->getSignalInfo().getSampleRate() ==
-            m_record.getMetadata().getSampleRate());
+    DEBUG_ASSERT(m_streamInfoFromSource->getSignalInfo().getSampleRate() ==
+            m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
     mixxx::BeatsPointer pBeats(new mixxx::BeatMap(*this,
-            static_cast<SINT>(m_streamInfo->getSignalInfo().getSampleRate()),
+            static_cast<SINT>(m_streamInfoFromSource->getSignalInfo().getSampleRate()),
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
-                    getLocation(), *m_streamInfo)));
+                    getLocation(), *m_streamInfoFromSource)));
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
     m_pBeatsImporterPending.reset();
     return setBeatsWhileLocked(pBeats);
@@ -999,14 +995,15 @@ Track::ImportStatus Track::importCueInfos(
     }
     DEBUG_ASSERT(!m_pCueInfoImporterPending);
     m_pCueInfoImporterPending = pCueInfoImporter;
-    if (m_streamInfo) {
+    if (m_pCueInfoImporterPending->isEmpty()) {
+        // Just return the current import status without clearing any
+        // existing cue points.
+        m_pCueInfoImporterPending.reset();
+        return ImportStatus::Complete;
+    } else if (m_streamInfoFromSource) {
         // Replace existing cue points with imported cue
         // points immediately
         importPendingCueInfosMarkDirtyAndUnlock(&lock);
-        return ImportStatus::Complete;
-    } else if (m_pCueInfoImporterPending->isEmpty()) {
-        // Just return the current import status without clearing any
-        // existing cue points.
         return ImportStatus::Complete;
     } else {
         kLogger.debug()
@@ -1040,12 +1037,12 @@ bool Track::setCuePointsWhileLocked(const QList<CuePointer>& cuePoints) {
     DEBUG_ASSERT(cuePoints.isEmpty() || !m_pCueInfoImporterPending ||
             m_pCueInfoImporterPending->isEmpty());
     // disconnect existing cue points
-    for (const auto& pCue: m_cuePoints) {
-        disconnect(pCue.get(), 0, this, 0);
+    for (const auto& pCue : qAsConst(m_cuePoints)) {
+        disconnect(pCue.get(), nullptr, this, nullptr);
     }
     m_cuePoints = cuePoints;
     // connect new cue points
-    for (const auto& pCue: m_cuePoints) {
+    for (const auto& pCue : qAsConst(m_cuePoints)) {
         DEBUG_ASSERT(pCue->thread() == thread());
         // Start listening to cue point updatess AFTER setting
         // the track id. Otherwise we would receive unwanted
@@ -1087,17 +1084,19 @@ bool Track::importPendingCueInfosWhileLocked() {
     }
     // The sample rate can only be trusted after the audio
     // stream has been opened.
-    DEBUG_ASSERT(m_streamInfo);
+    DEBUG_ASSERT(m_streamInfoFromSource);
     const auto sampleRate =
-            m_streamInfo->getSignalInfo().getSampleRate();
+            m_streamInfoFromSource->getSignalInfo().getSampleRate();
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(sampleRate ==
-            m_record.getMetadata().getSampleRate());
+            m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
     QList<CuePointer> cuePoints;
     cuePoints.reserve(m_pCueInfoImporterPending->size());
-    for (const auto& cueInfo : m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
-                 getLocation(), m_streamInfo->getSignalInfo())) {
-        CuePointer pCue(new Cue(cueInfo, sampleRate));
+    const auto cueInfos =
+            m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
+                    getLocation(), m_streamInfoFromSource->getSignalInfo());
+    for (const auto& cueInfo : cueInfos) {
+        CuePointer pCue(new Cue(cueInfo, sampleRate, true));
         // While this method could be called from any thread,
         // associated Cue objects should always live on the
         // same thread as their host, namely this->thread().
@@ -1177,18 +1176,19 @@ void Track::setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
     // Unlock before emitting any signals!
     pLock->unlock();
 
-    if (trackId.isValid()) {
-        if (dirtyChanged) {
-            if (bDirty) {
-                emit dirty(trackId);
-            } else {
-                emit clean(trackId);
-            }
-        }
+    if (!trackId.isValid()) {
+        return;
+    }
+    if (dirtyChanged) {
         if (bDirty) {
-            // Emit a changed signal regardless if this attempted to set us dirty.
-            emit changed(trackId);
+            emit dirty(trackId);
+        } else {
+            emit clean(trackId);
         }
+    }
+    if (bDirty) {
+        // Emit a changed signal regardless if this attempted to set us dirty.
+        emit changed(trackId);
     }
 }
 
@@ -1453,48 +1453,45 @@ void Track::setAudioProperties(
         mixxx::audio::SampleRate sampleRate,
         mixxx::audio::Bitrate bitrate,
         mixxx::Duration duration) {
+    setAudioProperties(mixxx::audio::StreamInfo{
+            mixxx::audio::SignalInfo{
+                    channelCount,
+                    sampleRate,
+            },
+            bitrate,
+            duration,
+    });
+}
+
+void Track::setAudioProperties(
+        const mixxx::audio::StreamInfo& streamInfo) {
     QMutexLocker lock(&m_qMutex);
-    DEBUG_ASSERT(!m_streamInfo);
-    bool dirty = false;
+    // These properties are stored separately in the database
+    // and are also imported from file tags. They will be
+    // overriden by the actual properties from the audio
+    // source later.
+    DEBUG_ASSERT(!m_streamInfoFromSource);
     if (compareAndSet(
-                m_record.refMetadata().ptrChannelCount(),
-                channelCount)) {
-        dirty = true;
-    }
-    if (compareAndSet(
-                m_record.refMetadata().ptrSampleRate(),
-                sampleRate)) {
-        dirty = true;
-    }
-    if (compareAndSet(
-                m_record.refMetadata().ptrBitrate(),
-                bitrate)) {
-        dirty = true;
-    }
-    if (compareAndSet(
-                m_record.refMetadata().ptrDuration(),
-                duration)) {
-        dirty = true;
-    }
-    if (dirty) {
+                m_record.refMetadata().ptrStreamInfo(),
+                streamInfo)) {
         markDirtyAndUnlock(&lock);
     }
 }
 
-void Track::updateAudioPropertiesFromStream(
+void Track::updateStreamInfoFromSource(
         mixxx::audio::StreamInfo&& streamInfo) {
     QMutexLocker lock(&m_qMutex);
-    VERIFY_OR_DEBUG_ASSERT(!m_streamInfo ||
-            *m_streamInfo == streamInfo) {
+    VERIFY_OR_DEBUG_ASSERT(!m_streamInfoFromSource ||
+            *m_streamInfoFromSource == streamInfo) {
         kLogger.warning()
                 << "Varying stream properties:"
-                << *m_streamInfo
+                << *m_streamInfoFromSource
                 << "->"
                 << streamInfo;
     }
-    bool updated = m_record.refMetadata().updateAudioPropertiesFromStream(
+    bool updated = m_record.refMetadata().updateStreamInfoFromSource(
             streamInfo);
-    m_streamInfo = std::make_optional(std::move(streamInfo));
+    m_streamInfoFromSource = std::make_optional(std::move(streamInfo));
 
     bool importBeats = m_pBeatsImporterPending && !m_pBeatsImporterPending->isEmpty();
     bool importCueInfos = m_pCueInfoImporterPending && !m_pCueInfoImporterPending->isEmpty();

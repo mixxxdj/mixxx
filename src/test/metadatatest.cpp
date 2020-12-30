@@ -11,7 +11,7 @@ namespace {
 
 class MetadataTest : public testing::Test {
   protected:
-    double parseBpm(QString inputValue, bool expectedResult, double expectedValue) {
+    double parseBpm(const QString& inputValue, bool expectedResult, double expectedValue) {
         //qDebug() << "parseBpm" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;

@@ -3,15 +3,18 @@
 #include <QFuture>
 #include <QtConcurrentRun>
 
+#include "moc_tagfetcher.cpp"
 #include "musicbrainz/chromaprinter.h"
 #include "track/track.h"
 #include "util/thread_affinity.h"
 
 namespace {
 
-constexpr int kAcoustIdTimeoutMillis = 5000; // msec
+// Long timeout to cope with occasional server-side unresponsiveness
+constexpr int kAcoustIdTimeoutMillis = 60000; // msec
 
-constexpr int kMusicBrainzTimeoutMillis = 5000; // msec
+// Long timeout to cope with occasional server-side unresponsiveness
+constexpr int kMusicBrainzTimeoutMillis = 60000; // msec
 
 } // anonymous namespace
 
@@ -142,7 +145,7 @@ void TagFetcher::slotAcoustIdTaskSucceeded(
 }
 
 void TagFetcher::slotAcoustIdTaskFailed(
-        mixxx::network::JsonWebResponse response) {
+        const mixxx::network::JsonWebResponse& response) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(m_pAcoustIdTask.get() ==
             qobject_cast<mixxx::AcoustIdLookupTask*>(sender()));
@@ -170,10 +173,10 @@ void TagFetcher::slotAcoustIdTaskAborted() {
 }
 
 void TagFetcher::slotAcoustIdTaskNetworkError(
-        QUrl requestUrl,
+        const QUrl& requestUrl,
         QNetworkReply::NetworkError errorCode,
-        QString errorString,
-        QByteArray errorContent) {
+        const QString& errorString,
+        const QByteArray& errorContent) {
     Q_UNUSED(requestUrl);
     Q_UNUSED(errorContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -203,10 +206,10 @@ void TagFetcher::slotMusicBrainzTaskAborted() {
 }
 
 void TagFetcher::slotMusicBrainzTaskNetworkError(
-        QUrl requestUrl,
+        const QUrl& requestUrl,
         QNetworkReply::NetworkError errorCode,
-        QString errorString,
-        QByteArray errorContent) {
+        const QString& errorString,
+        const QByteArray& errorContent) {
     Q_UNUSED(requestUrl);
     Q_UNUSED(errorContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
@@ -223,9 +226,9 @@ void TagFetcher::slotMusicBrainzTaskNetworkError(
 }
 
 void TagFetcher::slotMusicBrainzTaskFailed(
-        mixxx::network::WebResponse response,
+        const mixxx::network::WebResponse& response,
         int errorCode,
-        QString errorMessage) {
+        const QString& errorMessage) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(m_pMusicBrainzTask.get() ==
             qobject_cast<mixxx::MusicBrainzRecordingsTask*>(sender()));
@@ -240,7 +243,7 @@ void TagFetcher::slotMusicBrainzTaskFailed(
 }
 
 void TagFetcher::slotMusicBrainzTaskSucceeded(
-        QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases) {
+        const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(m_pMusicBrainzTask.get() ==
             qobject_cast<mixxx::MusicBrainzRecordingsTask*>(sender()));

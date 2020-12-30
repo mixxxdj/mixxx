@@ -12,6 +12,7 @@
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "mixxx.h"
+#include "moc_dlgprefinterface.cpp"
 #include "preferences/usersettings.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
@@ -58,18 +59,20 @@ bool skinFitsScreenSize(
 
 } // namespace
 
-DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
-                                 SkinLoader* pSkinLoader,
-                                 UserSettingsPointer pConfig)
-        :  DlgPreferencePage(parent),
-           m_pConfig(pConfig),
-           m_mixxx(mixxx),
-           m_pSkinLoader(pSkinLoader),
-           m_dScaleFactorAuto(1.0),
-           m_bUseAutoScaleFactor(false),
-           m_dScaleFactor(1.0),
-           m_bStartWithFullScreen(false),
-           m_bRebootMixxxView(false) {
+DlgPrefInterface::DlgPrefInterface(
+        QWidget* parent,
+        MixxxMainWindow* mixxx,
+        std::shared_ptr<SkinLoader> pSkinLoader,
+        UserSettingsPointer pConfig)
+        : DlgPreferencePage(parent),
+          m_pConfig(pConfig),
+          m_mixxx(mixxx),
+          m_pSkinLoader(pSkinLoader),
+          m_dScaleFactorAuto(1.0),
+          m_bUseAutoScaleFactor(false),
+          m_dScaleFactor(1.0),
+          m_bStartWithFullScreen(false),
+          m_bRebootMixxxView(false) {
     setupUi(this);
 
     //
@@ -96,7 +99,7 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         if (lang == "C") { // Ugly hack to remove the non-resolving locales
             continue;
         }
-        lang = QString("%1 (%2)").arg(lang).arg(country);
+        lang = QString("%1 (%2)").arg(lang, country);
         ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
     }
     ComboBoxLocale->model()->sort(0); // Sort languages list
@@ -147,8 +150,14 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
         index++;
     }
 
-    connect(ComboBoxSkinconf, SIGNAL(activated(int)), this, SLOT(slotSetSkin(int)));
-    connect(ComboBoxSchemeconf, SIGNAL(activated(int)), this, SLOT(slotSetScheme(int)));
+    connect(ComboBoxSkinconf,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefInterface::slotSetSkin);
+    connect(ComboBoxSchemeconf,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefInterface::slotSetScheme);
 
     checkBoxScaleFactorAuto->hide();
     spinBoxScaleFactor->hide();
@@ -181,8 +190,13 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
     // Initialize checkboxes to match config
     loadTooltipPreferenceFromConfig();
     slotSetTooltips();  // Update disabled status of "only library" checkbox
-    connect(buttonGroupTooltips, SIGNAL(buttonClicked(QAbstractButton*)),
-            this, SLOT(slotSetTooltips()));
+    connect(buttonGroupTooltips,
+            QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
+            this,
+            [this](QAbstractButton* button) {
+                Q_UNUSED(button);
+                slotSetTooltips();
+            });
 
     slotUpdate();
 }
@@ -210,7 +224,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
-        ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", 0));
+        ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", nullptr));
         ComboBoxSchemeconf->setCurrentIndex(0);
         // clear m_colorScheme so that SkinLoader::getSkinPreview returns the correct preview
         m_colorScheme = QString();
@@ -340,7 +354,7 @@ void DlgPrefInterface::slotSetScheme(int) {
     skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
 }
 
-void DlgPrefInterface::slotSetSkinDescription(QString skin) {
+void DlgPrefInterface::slotSetSkinDescription(const QString& skin) {
     SkinManifest manifest = LegacySkinParser::getSkinManifest(
             LegacySkinParser::openSkin(m_pSkinLoader->getSkinPath(skin)));
     QString description = QString::fromStdString(manifest.description());

@@ -27,9 +27,9 @@ class WTrackProperty : public WLabel, public TrackDropTarget {
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
-signals:
-    void trackDropped(QString filename, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+  signals:
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);
@@ -42,9 +42,9 @@ signals:
     void slotTrackChanged(TrackId);
 
   private:
-    void dragEnterEvent(QDragEnterEvent *event) override;
-    void dropEvent(QDropEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
+    void dragEnterEvent(QDragEnterEvent* event) override;
+    void dropEvent(QDropEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;
 
     void updateLabel();

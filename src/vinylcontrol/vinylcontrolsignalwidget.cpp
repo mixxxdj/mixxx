@@ -1,31 +1,16 @@
-/***************************************************************************
-                          vinylcontrolsignalwidget.cpp
-                             -------------------
-    begin                : July 5, 2008
-    copyright            : (C) 2008 by Albert Santoni
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 
+#include "moc_vinylcontrolsignalwidget.cpp"
+
 VinylControlSignalWidget::VinylControlSignalWidget()
-    : QWidget(),
-      m_iVinylInput(-1),
-      m_iSize(MIXXX_VINYL_SCOPE_SIZE),
-      m_qImage(),
-      m_imageData(NULL),
-      m_iAngle(0),
-      m_fSignalQuality(0.0f),
-      m_bVinylActive(false) {
+        : QWidget(),
+          m_iVinylInput(-1),
+          m_iSize(MIXXX_VINYL_SCOPE_SIZE),
+          m_qImage(),
+          m_imageData(nullptr),
+          m_iAngle(0),
+          m_fSignalQuality(0.0f),
+          m_bVinylActive(false) {
 }
 
 void VinylControlSignalWidget::setSize(int size) {
@@ -47,8 +32,9 @@ VinylControlSignalWidget::~VinylControlSignalWidget() {
 
 void VinylControlSignalWidget::setVinylActive(bool active)
 {
-    if (m_bVinylActive != active && !active)
+    if (m_bVinylActive != active && !active) {
         resetWidget();
+    }
     m_bVinylActive = active;
 }
 
@@ -71,7 +57,7 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
     qual_color.setHsv((int)(120.0 * m_fSignalQuality), 255, 255);
     qual_color.getRgb(&r, &g, &b);
 
-    if (m_imageData == NULL) {
+    if (m_imageData == nullptr) {
         return;
     }
 
@@ -90,7 +76,7 @@ void VinylControlSignalWidget::onVinylSignalQualityUpdate(const VinylSignalQuali
 
 void VinylControlSignalWidget::resetWidget()
 {
-    if (m_imageData != NULL) {
+    if (m_imageData != nullptr) {
         memset(m_imageData, 0, sizeof(uchar) * m_iSize * m_iSize * 4);
     }
 }

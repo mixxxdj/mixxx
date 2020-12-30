@@ -1,15 +1,8 @@
-/**
- * @file portmidicontroller.h
- * @author Albert Santoni alberts@mixxx.org
- * @author Sean M. Pappalardo  spappalardo@mixxx.org
- * @date Thu 15 Mar 2012
- * @brief PortMidi-based MIDI backend
- *
- */
-
-#include "controllers/midi/midiutils.h"
 #include "controllers/midi/portmidicontroller.h"
+
 #include "controllers/controllerdebug.h"
+#include "controllers/midi/midiutils.h"
+#include "moc_portmidicontroller.cpp"
 
 PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
         const PmDeviceInfo* outputDeviceInfo,
@@ -32,7 +25,7 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
             inputDeviceInfo, inputDeviceIndex));
     }
     if (outputDeviceInfo) {
-        if (inputDeviceInfo == NULL) {
+        if (inputDeviceInfo == nullptr) {
             setDeviceName(QString("%1").arg(outputDeviceInfo->name));
         }
         setOutputDevice(outputDeviceInfo->output);
@@ -53,8 +46,9 @@ int PortMidiController::open() {
         return -1;
     }
 
-    if (getName() == MIXXX_PORTMIDI_NO_DEVICE_STRING)
+    if (getName() == MIXXX_PORTMIDI_NO_DEVICE_STRING) {
         return -1;
+    }
 
     m_bInSysex = false;
     m_cReceiveMsg_index = 0;
@@ -149,7 +143,7 @@ bool PortMidiController::poll() {
 
         if ((status & 0xF8) == 0xF8) {
             // Handle real-time MIDI messages at any time
-            receive(status, 0, 0, timestamp);
+            receivedShortMessage(status, 0, 0, timestamp);
             continue;
         }
 
@@ -163,7 +157,7 @@ bool PortMidiController::poll() {
                 //unsigned char channel = status & 0x0F;
                 unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                 unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-                receive(status, note, velocity, timestamp);
+                receivedShortMessage(status, note, velocity, timestamp);
             }
         }
 

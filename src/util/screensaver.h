@@ -1,5 +1,4 @@
-#ifndef MIXXX_SCREENSAVER_H
-#define MIXXX_SCREENSAVER_H
+#pragma once
 
 #ifdef Q_OS_MAC
 #include <IOKit/pwr_mgt/IOPMLib.h>
@@ -35,5 +34,3 @@ private:
 };
 
 }
-
-#endif // MIXXX_SCREENSAVER_H

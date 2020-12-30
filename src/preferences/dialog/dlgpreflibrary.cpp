@@ -1,27 +1,29 @@
+#include "preferences/dialog/dlgpreflibrary.h"
+
+#include <QApplication>
 #include <QDesktopServices>
-#include <QStandardPaths>
 #include <QDir>
 #include <QFileDialog>
-#include <QStringList>
-#include <QUrl>
-#include <QApplication>
 #include <QFontDialog>
 #include <QFontMetrics>
 #include <QMessageBox>
+#include <QStandardPaths>
+#include <QStringList>
+#include <QUrl>
 
-#include "preferences/dialog/dlgpreflibrary.h"
 #include "library/dlgtrackmetadataexport.h"
+#include "moc_dlgpreflibrary.cpp"
 #include "sources/soundsourceproxy.h"
 #include "widget/wsearchlineedit.h"
 
 namespace {
     const ConfigKey kSearchDebouncingTimeoutMillisKey = ConfigKey("[Library]","SearchDebouncingTimeoutMillis");
-}
+    } // namespace
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
         UserSettingsPointer pConfig,
-        Library* pLibrary)
+        std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_dirListModel(),
           m_pConfig(pConfig),
@@ -32,15 +34,15 @@ DlgPrefLibrary::DlgPrefLibrary(
 
     connect(this,
             &DlgPrefLibrary::requestAddDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestAddDir);
     connect(this,
             &DlgPrefLibrary::requestRemoveDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestRemoveDir);
     connect(this,
             &DlgPrefLibrary::requestRelocateDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestRelocateDir);
     connect(PushButtonAddDir,
             &QPushButton::clicked,
@@ -58,8 +60,10 @@ DlgPrefLibrary::DlgPrefLibrary(
     // Set default direction as stored in config file
     int rowHeight = m_pLibrary->getTrackTableRowHeight();
     spinBoxRowHeight->setValue(rowHeight);
-    connect(spinBoxRowHeight, SIGNAL(valueChanged(int)),
-            this, SLOT(slotRowHeightValueChanged(int)));
+    connect(spinBoxRowHeight,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefLibrary::slotRowHeightValueChanged);
 
     searchDebouncingTimeoutSpinBox->setMinimum(WSearchLineEdit::kMinDebouncingTimeoutMillis);
     searchDebouncingTimeoutSpinBox->setMaximum(WSearchLineEdit::kMaxDebouncingTimeoutMillis);
@@ -68,11 +72,12 @@ DlgPrefLibrary::DlgPrefLibrary(
                     ConfigKey("[Library]","SearchDebouncingTimeoutMillis"),
                     WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
     searchDebouncingTimeoutSpinBox->setValue(searchDebouncingTimeoutMillis);
-    connect(searchDebouncingTimeoutSpinBox, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSearchDebouncingTimeoutMillisChanged(int)));
+    connect(searchDebouncingTimeoutSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefLibrary::slotSearchDebouncingTimeoutMillisChanged);
 
-    connect(libraryFontButton, SIGNAL(clicked()),
-            this, SLOT(slotSelectFont()));
+    connect(libraryFontButton, &QAbstractButton::clicked, this, &DlgPrefLibrary::slotSelectFont);
 
     // TODO(XXX) this string should be extracted from the soundsources
     QString builtInFormatsStr = "Ogg Vorbis, FLAC, WAVE, AIFF";
@@ -93,8 +98,10 @@ DlgPrefLibrary::DlgPrefLibrary(
 #endif
     builtInFormats->setText(builtInFormatsStr);
 
-    connect(checkBox_SyncTrackMetadataExport, SIGNAL(toggled(bool)),
-            this, SLOT(slotSyncTrackMetadataExportToggled()));
+    connect(checkBox_SyncTrackMetadataExport,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefLibrary::slotSyncTrackMetadataExportToggled);
 
     // Initialize the controls after all slots have been connected
     slotUpdate();
@@ -378,13 +385,13 @@ void DlgPrefLibrary::setLibraryFont(const QFont& font) {
         font.family(), font.styleName(), QString::number(font.pointSizeF())));
     m_pLibrary->setFont(font);
 
-    // Don't let the row height exceed the library height.
+    // Don't let the font height exceed the row height.
     QFontMetrics metrics(font);
     int fontHeight = metrics.height();
-    if (fontHeight > spinBoxRowHeight->value()) {
-        spinBoxRowHeight->setValue(fontHeight);
-    }
     spinBoxRowHeight->setMinimum(fontHeight);
+    // library.cpp takes care of setting the new row height according to the
+    // previous font height/ row height ratio
+    spinBoxRowHeight->setValue(m_pLibrary->getTrackTableRowHeight());
 }
 
 void DlgPrefLibrary::slotSelectFont() {

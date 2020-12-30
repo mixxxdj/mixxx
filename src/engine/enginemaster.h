@@ -44,7 +44,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
-    const CSAMPLE* buffer(AudioOutput output) const;
+    const CSAMPLE* buffer(const AudioOutput& output) const;
 
     ChannelHandleAndGroup registerChannelGroup(const QString& group) {
         return ChannelHandleAndGroup(
@@ -59,10 +59,10 @@ class EngineMaster : public QObject, public AudioSource {
     // these methods are called the callback is guaranteed to be inactive
     // (SoundManager closes all devices before calling these). This may change
     // in the future.
-    virtual void onOutputConnected(AudioOutput output);
-    virtual void onOutputDisconnected(AudioOutput output);
-    void onInputConnected(AudioInput input);
-    void onInputDisconnected(AudioInput input);
+    virtual void onOutputConnected(const AudioOutput& output);
+    virtual void onOutputDisconnected(const AudioOutput& output);
+    void onInputConnected(const AudioInput& input);
+    void onInputDisconnected(const AudioInput& input);
 
     void process(const int iBufferSize);
 
@@ -96,7 +96,7 @@ class EngineMaster : public QObject, public AudioSource {
     const CSAMPLE* getHeadphoneBuffer() const;
     const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
-    const CSAMPLE* getChannelBuffer(QString name) const;
+    const CSAMPLE* getChannelBuffer(const QString& name) const;
     const CSAMPLE* getSidechainBuffer() const;
 
     EngineSideChain* getSideChain() const {

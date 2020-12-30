@@ -1,5 +1,4 @@
-#ifndef RLIMIT_H
-#define RLIMIT_H
+#pragma once
 
 #ifdef __LINUX__
 
@@ -11,4 +10,3 @@ class RLimit {
 };
 
 #endif // __LINUX__
-#endif // RLIMIT_H_

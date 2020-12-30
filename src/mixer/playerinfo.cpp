@@ -1,19 +1,4 @@
-/***************************************************************************
-                      playerinfo.cpp  -  Helper class to have easy access
-                                         to a lot of data (singleton)
-                             -------------------
-    copyright            : (C) 2007 by Wesley Stessens
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
+// Helper class to have easy access
 #include "mixer/playerinfo.h"
 
 #include <QMutexLocker>
@@ -22,6 +7,7 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
+#include "moc_playerinfo.cpp"
 #include "track/track.h"
 
 namespace {
@@ -30,7 +16,7 @@ const int kPlayingDeckUpdateIntervalMillis = 2000;
 
 PlayerInfo* s_pPlayerInfo = nullptr;
 
-}
+} // namespace
 
 PlayerInfo::PlayerInfo()
         : m_pCOxfader(new ControlProxy("[Master]","crossfader", this)),

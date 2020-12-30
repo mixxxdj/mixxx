@@ -1,29 +1,22 @@
-/**
-  * @file controllermanager.h
-  * @author Sean Pappalardo spappalardo@mixxx.org
-  * @date Sat Apr 30 2011
-  * @brief Manages creation/enumeration/deletion of hardware controllers.
-  */
-
-#ifndef CONTROLLERMANAGER_H
-#define CONTROLLERMANAGER_H
+#pragma once
 
 #include <QSharedPointer>
+#include <QTimer>
 
 #include "controllers/controllerenumerator.h"
-#include "controllers/controllerpreset.h"
-#include "controllers/controllerpresetinfo.h"
-#include "controllers/controllerpresetinfoenumerator.h"
+#include "controllers/controllermappinginfo.h"
+#include "controllers/controllermappinginfoenumerator.h"
+#include "controllers/legacycontrollermapping.h"
 #include "preferences/usersettings.h"
 
-//Forward declaration(s)
+// Forward declaration(s)
 class Controller;
 class ControllerLearningEventFilter;
 
-// Function to sort controllers by name
+/// Function to sort controllers by name
 bool controllerCompare(Controller *a, Controller *b);
 
-/** Manages enumeration/operation/deletion of hardware controllers. */
+/// Manages enumeration/operation/deletion of hardware controllers.
 class ControllerManager : public QObject {
     Q_OBJECT
   public:
@@ -35,18 +28,18 @@ class ControllerManager : public QObject {
     QList<Controller*> getControllers() const;
     QList<Controller*> getControllerList(bool outputDevices=true, bool inputDevices=true);
     ControllerLearningEventFilter* getControllerLearningEventFilter() const;
-    QSharedPointer<PresetInfoEnumerator> getMainThreadUserPresetEnumerator() {
-        return m_pMainThreadUserPresetEnumerator;
+    QSharedPointer<MappingInfoEnumerator> getMainThreadUserMappingEnumerator() {
+        return m_pMainThreadUserMappingEnumerator;
     }
-    QSharedPointer<PresetInfoEnumerator> getMainThreadSystemPresetEnumerator() {
-        return m_pMainThreadSystemPresetEnumerator;
+    QSharedPointer<MappingInfoEnumerator> getMainThreadSystemMappingEnumerator() {
+        return m_pMainThreadSystemMappingEnumerator;
     }
-    QString getConfiguredPresetFileForDevice(QString name);
+    QString getConfiguredMappingFileForDevice(const QString& name);
 
-    // Prevent other parts of Mixxx from having to manually connect to our slots
+    /// Prevent other parts of Mixxx from having to manually connect to our slots
     void setUpDevices() { emit requestSetUpDevices(); };
 
-    static QList<QString> getPresetPaths(UserSettingsPointer pConfig);
+    static QList<QString> getMappingPaths(UserSettingsPointer pConfig);
 
   signals:
     void devicesChanged();
@@ -57,20 +50,22 @@ class ControllerManager : public QObject {
   public slots:
     void updateControllerList();
 
-    void slotApplyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);
+    void slotApplyMapping(Controller* pController,
+            LegacyControllerMappingPointer pMapping,
+            bool bEnabled);
     void openController(Controller* pController);
     void closeController(Controller* pController);
 
   private slots:
-    // Perform initialization that should be delayed until the ControllerManager
-    // thread is started.
+    /// Perform initialization that should be delayed until the ControllerManager
+    /// thread is started.
     void slotInitialize();
-    // Open whatever controllers are selected in the preferences. This currently
-    // only runs on start-up but maybe should instead be signaled by the
-    // preferences dialog on apply, and only open/close changed devices
+    /// Open whatever controllers are selected in the preferences. This currently
+    /// only runs on start-up but maybe should instead be signaled by the
+    /// preferences dialog on apply, and only open/close changed devices
     void slotSetUpDevices();
     void slotShutdown();
-    // Calls poll() on all devices that have isPolling() true.
+    /// Calls poll() on all devices that have isPolling() true.
     void pollDevices();
     void startPolling();
     void stopPolling();
@@ -84,9 +79,7 @@ class ControllerManager : public QObject {
     QList<ControllerEnumerator*> m_enumerators;
     QList<Controller*> m_controllers;
     QThread* m_pThread;
-    QSharedPointer<PresetInfoEnumerator> m_pMainThreadUserPresetEnumerator;
-    QSharedPointer<PresetInfoEnumerator> m_pMainThreadSystemPresetEnumerator;
+    QSharedPointer<MappingInfoEnumerator> m_pMainThreadUserMappingEnumerator;
+    QSharedPointer<MappingInfoEnumerator> m_pMainThreadSystemMappingEnumerator;
     bool m_skipPoll;
 };
-
-#endif  // CONTROLLERMANAGER_H

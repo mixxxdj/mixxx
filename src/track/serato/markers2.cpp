@@ -599,7 +599,9 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
 
     QList<CueInfo> cueInfos;
 
-    for (const auto& pEntry : findEntriesByType(SeratoMarkers2Entry::TypeId::Cue)) {
+    const QList<SeratoMarkers2EntryPointer> cueEntries =
+            findEntriesByType(SeratoMarkers2Entry::TypeId::Cue);
+    for (const auto& pEntry : cueEntries) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }
@@ -619,7 +621,9 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
         cueInfos.append(cueInfo);
     }
 
-    for (const auto& pEntry : findEntriesByType(SeratoMarkers2Entry::TypeId::Loop)) {
+    const QList<SeratoMarkers2EntryPointer> loopEntries =
+            findEntriesByType(SeratoMarkers2Entry::TypeId::Loop);
+    for (const auto& pEntry : loopEntries) {
         VERIFY_OR_DEBUG_ASSERT(pEntry) {
             continue;
         }
@@ -652,12 +656,12 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
     for (const CueInfo& cueInfo : qAsConst(cueInfos)) {
         // All of these check can be debug assertions, as the list should be
         // pre-filtered by the seratoTags class.
-        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueIndex()) {
             continue;
         }
-        int hotcueNumber = *cueInfo.getHotCueNumber();
+        int hotcueIndex = *cueInfo.getHotCueIndex();
 
-        VERIFY_OR_DEBUG_ASSERT(hotcueNumber >= 0) {
+        VERIFY_OR_DEBUG_ASSERT(hotcueIndex >= kFirstHotCueIndex) {
             continue;
         }
         VERIFY_OR_DEBUG_ASSERT(cueInfo.getColor()) {
@@ -669,13 +673,13 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
 
         switch (cueInfo.getType()) {
         case CueType::HotCue:
-            cueMap.insert(hotcueNumber, cueInfo);
+            cueMap.insert(hotcueIndex, cueInfo);
             break;
         case CueType::Loop:
             VERIFY_OR_DEBUG_ASSERT(cueInfo.getEndPositionMillis()) {
                 continue;
             }
-            loopMap.insert(hotcueNumber, cueInfo);
+            loopMap.insert(hotcueIndex, cueInfo);
             break;
         default:
             DEBUG_ASSERT(!"Invalid cue type");
@@ -693,9 +697,10 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
     }
 
     // Append CUE entries
-    for (const auto& cueInfo : cueMap.values()) {
+    for (auto it = cueMap.constBegin(); it != cueMap.constEnd(); ++it) {
+        const CueInfo& cueInfo = it.value();
         auto pEntry = std::make_shared<SeratoMarkers2CueEntry>(
-                *cueInfo.getHotCueNumber(),
+                *cueInfo.getHotCueIndex(),
                 *cueInfo.getStartPositionMillis(),
                 *cueInfo.getColor(),
                 cueInfo.getLabel());
@@ -703,9 +708,10 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
     }
 
     // Append LOOP entries
-    for (const auto& cueInfo : loopMap.values()) {
+    for (auto it = loopMap.constBegin(); it != loopMap.constEnd(); ++it) {
+        const CueInfo& cueInfo = it.value();
         auto pEntry = std::make_shared<SeratoMarkers2LoopEntry>(
-                *cueInfo.getHotCueNumber(),
+                *cueInfo.getHotCueIndex(),
                 *cueInfo.getStartPositionMillis(),
                 *cueInfo.getEndPositionMillis(),
                 *cueInfo.getColor(),

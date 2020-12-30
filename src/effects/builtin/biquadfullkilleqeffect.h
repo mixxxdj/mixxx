@@ -1,5 +1,4 @@
-#ifndef BIQUADFULLKILLEQEFFECT_H
-#define BIQUADFULLKILLEQEFFECT_H
+#pragma once
 
 #include "control/controlproxy.h"
 #include "effects/effect.h"
@@ -96,5 +95,3 @@ class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffect
     std::unique_ptr<ControlProxy> m_pLoFreqCorner;
     std::unique_ptr<ControlProxy> m_pHiFreqCorner;
 };
-
-#endif // BIQUADFULLKILLEQEFFECT_H

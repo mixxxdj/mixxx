@@ -1,10 +1,11 @@
 #include "engine/sidechain/enginesidechain.h"
 
-#include <QtDebug>
 #include <QMutexLocker>
+#include <QtDebug>
 
-#include "engine/sidechain/sidechainworker.h"
 #include "engine/engine.h"
+#include "engine/sidechain/sidechainworker.h"
+#include "moc_enginesidechain.cpp"
 #include "util/counter.h"
 #include "util/event.h"
 #include "util/sample.h"
@@ -55,9 +56,9 @@ void EngineSideChain::addSideChainWorker(SideChainWorker* pWorker) {
     m_workers.append(pWorker);
 }
 
-void EngineSideChain::receiveBuffer(AudioInput input,
-                                    const CSAMPLE* pBuffer,
-                                    unsigned int iFrames) {
+void EngineSideChain::receiveBuffer(const AudioInput& input,
+        const CSAMPLE* pBuffer,
+        unsigned int iFrames) {
     VERIFY_OR_DEBUG_ASSERT(input.getType() == AudioInput::RECORD_BROADCAST) {
         qDebug() << "WARNING: AudioInput type is not RECORD_BROADCAST. Ignoring incoming buffer.";
         return;

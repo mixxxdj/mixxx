@@ -1,34 +1,40 @@
 /* LateNight 2.3 // common layout settings */
 
 /************** font settings *************************************************/
+
 #Mixxx, WWidget,
-WEffect,
-WEffectSelector,
-WKey,
-WLabel, WLibrary QLabel,
+QToolTip,
+WLabel, QLabel,
 WNumber, WNumberPos,
-WPushButton, WLibrary QPushButton, WLibrary QRadioButton,
-WRecordingDuration,
+WPushButton,
+WKey,
 WTime,
 WTrackText,
 WTrackProperty,
-QSpinBox,
-WLibrary QHeaderView,
-WLibrary QHeaderView::item,
-QToolTip,
+WRecordingDuration,
 WOverview #PassthroughLabel,
-#LibraryContainer QMenu,
+WBeatSpinBox QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
+WCueMenuPopup QLabel,
 WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WOverview /* Hotcue labels in the overview */,
+QSpinBox,
 WBeatSpinBox, #spinBoxTransition,
+QComboBox,
+WEffect,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
-#fadeModeCombobox QAbstractScrollArea {
+#fadeModeCombobox QAbstractScrollArea
+#LibraryContainer QPushButton,
+#LibraryContainer QLabel,
+#LibraryContainer QRadioButton,
+#LibraryContainer QHeaderView,
+#LibraryContainer QHeaderView::item,
+#LibraryContainer QMenu {
   font-family: "Open Sans";
   font-weight: 500; /* semi-bold */
   font-style: normal;

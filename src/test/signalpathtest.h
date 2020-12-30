@@ -27,7 +27,6 @@
 #include "util/sample.h"
 #include "util/types.h"
 #include "waveform/guitick.h"
-#include "waveform/visualsmanager.h"
 
 class EngineSync;
 
@@ -65,7 +64,6 @@ class BaseSignalPathTest : public MixxxTest {
               m_pNumDecks(new ControlObject(
                       ConfigKey(m_sMasterGroup, "num_decks"))),
               m_pGuiTick(std::make_unique<GuiTick>()),
-              m_pVisualsManager(new VisualsManager()),
               m_pEffectsManager(new EffectsManager(
                       nullptr, config(), m_pChannelHandleFactory)),
               m_pEngineMaster(new TestEngineMaster(
@@ -78,21 +76,18 @@ class BaseSignalPathTest : public MixxxTest {
                 m_pConfig,
                 m_pEngineMaster,
                 m_pEffectsManager,
-                m_pVisualsManager,
                 EngineChannel::CENTER,
                 m_pEngineMaster->registerChannelGroup(m_sGroup1));
         m_pMixerDeck2 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
                 m_pEffectsManager,
-                m_pVisualsManager,
                 EngineChannel::CENTER,
                 m_pEngineMaster->registerChannelGroup(m_sGroup2));
         m_pMixerDeck3 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
                 m_pEffectsManager,
-                m_pVisualsManager,
                 EngineChannel::CENTER,
                 m_pEngineMaster->registerChannelGroup(m_sGroup3));
 
@@ -103,7 +98,6 @@ class BaseSignalPathTest : public MixxxTest {
                 m_pConfig,
                 m_pEngineMaster,
                 m_pEffectsManager,
-                m_pVisualsManager,
                 EngineChannel::CENTER,
                 m_pEngineMaster->registerChannelGroup(m_sPreviewGroup));
         ControlObject::set(ConfigKey(m_sPreviewGroup, "file_bpm"), 2.0);
@@ -138,7 +132,6 @@ class BaseSignalPathTest : public MixxxTest {
         // Deletes all EngineChannels added to it.
         delete m_pEngineMaster;
         delete m_pEffectsManager;
-        delete m_pVisualsManager;
         delete m_pNumDecks;
         PlayerInfo::destroy();
     }
@@ -178,7 +171,7 @@ class BaseSignalPathTest : public MixxxTest {
     void assertBufferMatchesReference(
             const CSAMPLE* pBuffer,
             const int iBufferSize,
-            QString reference_title,
+            const QString& reference_title,
             const double delta = .0001) {
         QFile f(QDir::currentPath() + "/src/test/reference_buffers/" + reference_title);
         bool pass = true;

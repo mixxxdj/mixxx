@@ -1,13 +1,15 @@
 #include "controllers/controlpickermenu.h"
 
-#include "vinylcontrol/defs_vinylcontrol.h"
-#include "mixer/playermanager.h"
+#include "effects/effectchainslot.h"
+#include "effects/effectparameterslot.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
-#include "effects/effectrack.h"
-#include "effects/effectchainslot.h"
-#include "effects/effectslot.h"
-#include "effects/effectparameterslot.h"
+#include "mixer/playermanager.h"
+#include "moc_controlpickermenu.cpp"
+#include "recording/defs_recording.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
@@ -344,6 +346,22 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     QString hotcueGotoAndStopDescription = tr("Jump to hotcue %1 and stop");
     QString hotcueGotoAndPlayDescription = tr("Jump to hotcue %1 and play");
     QString hotcuePreviewDescription = tr("Preview from hotcue %1");
+    addDeckControl("shift_cues_earlier",
+            tr("Shift cue points earlier"),
+            tr("Shift cue points 10 milliseconds earlier"),
+            hotcueMainMenu);
+    addDeckControl("shift_cues_earlier_small",
+            tr("Shift cue points earlier (fine)"),
+            tr("Shift cue points 1 millisecond earlier"),
+            hotcueMainMenu);
+    addDeckControl("shift_cues_later",
+            tr("Shift cue points later"),
+            tr("Shift cue points 10 milliseconds later"),
+            hotcueMainMenu);
+    addDeckControl("shift_cues_later_small",
+            tr("Shift cue points later (fine)"),
+            tr("Shift cue points 1 millisecond later"),
+            hotcueMainMenu);
     // add menus for hotcues 1-16.
     // though, keep the menu small put additional hotcues in a separate menu,
     // but don't create that submenu for less than 4 additional hotcues.
@@ -728,10 +746,13 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                        tr("Super Knob"),
                        tr("Super Knob (control effects' Meta Knobs)"),
                        effectUnitMenu, true, descriptionPrefix);
-            addControl(effectUnitGroup, "Mix Mode",
-                       tr("Mix Mode Toggle"),
-                       tr("Toggle effect unit between D/W and D+W modes"),
-                       effectUnitMenu, false, descriptionPrefix);
+            addControl(effectUnitGroup,
+                    "mix_mode",
+                    tr("Mix Mode Toggle"),
+                    tr("Toggle effect unit between D/W and D+W modes"),
+                    effectUnitMenu,
+                    false,
+                    descriptionPrefix);
             addControl(effectUnitGroup, "next_chain",
                        tr("Next Chain"),
                        tr("Next chain preset"),
@@ -866,6 +887,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                            tr("Switch to either next or previous effect"),
                            effectSlotMenu, false, slotDescriptionPrefix);
 
+                // Effect parameter knobs
                 const int numParameterSlots = static_cast<int>(ControlObject::get(
                         ConfigKey(effectSlotGroup, "num_parameterslots")));
                 for (int iParameterSlotNumber = 1; iParameterSlotNumber <= numParameterSlots;
@@ -902,6 +924,37 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                                tr("Invert how linked effect parameters change when turning the Meta Knob."),
                                parameterSlotMenu, false,
                                parameterDescriptionPrefix);
+                }
+
+                // Effect parameter buttons
+                const int numButtonParameterSlots = static_cast<int>(ControlObject::get(
+                        ConfigKey(effectSlotGroup, "num_button_parameterslots")));
+                for (int iParameterSlotNumber = 1; iParameterSlotNumber <= numButtonParameterSlots;
+                        ++iParameterSlotNumber) {
+                    // The parameter slot group is the same as the effect slot
+                    // group on a standard effect rack.
+                    const QString parameterSlotGroup =
+                            StandardEffectRack::formatEffectSlotGroupString(
+                                    iRackNumber - 1, iEffectUnitNumber - 1, iEffectSlotNumber - 1);
+                    const QString parameterSlotItemPrefix =
+                            EffectButtonParameterSlot::formatItemPrefix(
+                                    iParameterSlotNumber - 1);
+                    QMenu* parameterSlotMenu = addSubmenu(
+                            m_parameterStr.arg(iParameterSlotNumber),
+                            effectSlotMenu);
+
+                    QString parameterDescriptionPrefix =
+                            QString("%1, %2").arg(slotDescriptionPrefix,
+                                    m_parameterStr.arg(iParameterSlotNumber));
+
+                    // Likely to change soon.
+                    addControl(parameterSlotGroup,
+                            parameterSlotItemPrefix,
+                            tr("Button Parameter Value"),
+                            tr("Button Parameter Value"),
+                            parameterSlotMenu,
+                            true,
+                            parameterDescriptionPrefix);
                 }
             }
         }
@@ -1003,42 +1056,91 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
 
     // Skin Controls
     QMenu* guiMenu = addSubmenu(tr("User Interface"));
-    addControl("[Samplers]", "show_samplers",
-               tr("Samplers Show/Hide"),
-               tr("Show/hide the sampler section"), guiMenu);
-    addControl("[Microphone]", "show_microphone",
-               tr("Microphone Show/Hide"),
-               tr("Show/hide the microphone section"), guiMenu);
-    addControl(VINYL_PREF_KEY, "show_vinylcontrol",
-               tr("Vinyl Control Show/Hide"),
-               tr("Show/hide the vinyl control section"), guiMenu);
-    addControl("[PreviewDeck]", "show_previewdeck",
-               tr("Preview Deck Show/Hide"),
-               tr("Show/hide the preview deck"), guiMenu);
-    addControl("[EffectRack1]", "show",
-               tr("Effect Rack Show/Hide"),
-               tr("Show/hide the effect rack"), guiMenu);
-    addControl("[Library]", "show_coverart",
-               tr("Cover Art Show/Hide"),
-               tr("Show/hide cover art"), guiMenu);
-    addControl("[Master]", "maximize_library",
-               tr("Library Maximize/Restore"),
-               tr("Maximize the track library to take up all the available screen space."), guiMenu);
+    addControl("[Samplers]",
+            "show_samplers",
+            tr("Samplers Show/Hide"),
+            tr("Show/hide the sampler section"),
+            guiMenu);
+    addControl("[Microphone]",
+            "show_microphone",
+            tr("Microphone & Auxiliary Show/Hide"),
+            tr("Show/hide the microphone & auxiliary section"),
+            guiMenu);
+    addControl("[PreviewDeck]",
+            "show_previewdeck",
+            tr("Preview Deck Show/Hide"),
+            tr("Show/hide the preview deck"),
+            guiMenu);
+    addControl("[EffectRack1]",
+            "show",
+            tr("Effect Rack Show/Hide"),
+            tr("Show/hide the effect rack"),
+            guiMenu);
+    addControl("[Skin]",
+            "show_4effectunits",
+            tr("4 Effect Units Show/Hide"),
+            tr("Switches between showing 2 and 4 effect units"),
+            guiMenu);
+    addControl("[Master]",
+            "show_mixer",
+            tr("Mixer Show/Hide"),
+            tr("Show or hide the mixer."),
+            guiMenu);
+    addControl("[Library]",
+            "show_coverart",
+            tr("Cover Art Show/Hide (Library)"),
+            tr("Show/hide cover art in the library"),
+            guiMenu);
+    addControl("[Master]",
+            "maximize_library",
+            tr("Library Maximize/Restore"),
+            tr("Maximize the track library to take up all the available screen "
+               "space."),
+            guiMenu);
 
     guiMenu->addSeparator();
 
-    // TODO(ronso0) Add hint that this currently only affects the Shade skin
+    addControl("[Skin]",
+            "show_4decks",
+            tr("Toggle 4 Decks"),
+            tr("Switches between showing 2 decks and 4 decks."),
+            guiMenu);
+    addControl("[Skin]",
+            "show_coverart",
+            tr("Cover Art Show/Hide (Decks)"),
+            tr("Show/hide cover art in the main decks"),
+            guiMenu);
+    addControl(VINYL_PREF_KEY,
+            "show_vinylcontrol",
+            tr("Vinyl Control Show/Hide"),
+            tr("Show/hide the vinyl control section"),
+            guiMenu);
+
     QString spinnyTitle = tr("Vinyl Spinner Show/Hide");
     QString spinnyDescription = tr("Show/hide spinning vinyl widget");
+    QMenu* spinnyMenu = addSubmenu(spinnyTitle, guiMenu);
+    guiMenu->addSeparator();
+    addControl("[Skin]",
+            "show_spinnies",
+            tr("Vinyl Spinners Show/Hide (All Decks)"),
+            tr("Show/Hide all spinnies"),
+            spinnyMenu);
+    // TODO(ronso0) Add hint that this currently only affects the Shade skin
     for (int i = 1; i <= iNumDecks; ++i) {
-        addControl(QString("[Spinny%1]").arg(i), "show_spinny",
-                   QString("%1: %2").arg(m_deckStr.arg(i), spinnyTitle),
-                   QString("%1: %2").arg(m_deckStr.arg(i), spinnyDescription), guiMenu);
-
+        addControl(QString("[Spinny%1]").arg(i),
+                "show_spinny",
+                QString("%1: %2").arg(m_deckStr.arg(i), spinnyTitle),
+                QString("%1: %2").arg(m_deckStr.arg(i), spinnyDescription),
+                spinnyMenu);
     }
 
     guiMenu->addSeparator();
 
+    addControl("[Skin]",
+            "show_waveforms",
+            tr("Toggle Waveforms"),
+            tr("Show/hide the scrolling waveforms."),
+            guiMenu);
     addDeckControl("waveform_zoom", tr("Waveform Zoom"), tr("Waveform zoom"), guiMenu);
     addDeckControl("waveform_zoom_down", tr("Waveform Zoom In"), tr("Zoom waveform in"), guiMenu);
     addDeckControl("waveform_zoom_up", tr("Waveform Zoom Out"), tr("Zoom waveform out"), guiMenu);
@@ -1050,15 +1152,30 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         tr("Increase the track rating by one star"), guiMenu);
     addDeckAndPreviewDeckControl("stars_down", tr("Star Rating Down"),
         tr("Decrease the track rating by one star"), guiMenu);
+
+    // Misc. controls
+    addControl("[Shoutcast]",
+            "enabled",
+            tr("Start/Stop Live Broadcasting"),
+            tr("Stream your mix over the Internet."),
+            guiMenu);
+    addControl(RECORDING_PREF_KEY,
+            "toggle_recording",
+            tr("Record Mix"),
+            tr("Start/stop recording your mix."),
+            guiMenu);
 }
 
 ControlPickerMenu::~ControlPickerMenu() {
 }
 
-void ControlPickerMenu::addSingleControl(QString group, QString control,
-                                         QString title, QString description,
-                                         QMenu* pMenu, QString prefix,
-                                         QString actionTitle) {
+void ControlPickerMenu::addSingleControl(const QString& group,
+        const QString& control,
+        const QString& title,
+        const QString& description,
+        QMenu* pMenu,
+        const QString& prefix,
+        const QString& actionTitle) {
     int controlIndex;
 
     if (prefix.isEmpty()) {
@@ -1069,21 +1186,19 @@ void ControlPickerMenu::addSingleControl(QString group, QString control,
         controlIndex = addAvailableControl(ConfigKey(group, control), prefixedTitle, prefixedDescription);
     }
 
-    if (actionTitle.isEmpty()) {
-        actionTitle = title;
-    }
-
-    auto pAction = make_parented<QAction>(actionTitle, pMenu);
+    auto pAction = make_parented<QAction>(actionTitle.isEmpty() ? title : actionTitle, pMenu);
     connect(pAction, &QAction::triggered,
             this, [this, controlIndex] { controlChosen(controlIndex); });
     pMenu->addAction(pAction);
 }
 
-void ControlPickerMenu::addControl(QString group, QString control, QString title,
-                                   QString description,
-                                   QMenu* pMenu,
-                                   bool addReset,
-                                   QString prefix) {
+void ControlPickerMenu::addControl(const QString& group,
+        const QString& control,
+        const QString& title,
+        const QString& description,
+        QMenu* pMenu,
+        bool addReset,
+        const QString& prefix) {
     addSingleControl(group, control, title, description, pMenu, prefix);
 
     if (addReset) {
@@ -1095,12 +1210,14 @@ void ControlPickerMenu::addControl(QString group, QString control, QString title
     }
 }
 
-void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
-                                         QString controlDescription,
-                                         QMenu* pMenu,
-                                         bool deckControls, bool samplerControls,
-                                         bool previewdeckControls,
-                                         bool addReset) {
+void ControlPickerMenu::addPlayerControl(const QString& control,
+        const QString& controlTitle,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool deckControls,
+        bool samplerControls,
+        bool previewdeckControls,
+        bool addReset) {
     const int iNumSamplers = static_cast<int>(
             ControlObject::get(ConfigKey("[Master]", "num_samplers")));
     const int iNumDecks = static_cast<int>(ControlObject::get(ConfigKey("[Master]", "num_decks")));
@@ -1135,7 +1252,12 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
 
     for (int i = 1; previewdeckControls && i <= iNumPreviewDecks; ++i) {
         // PlayerManager::groupForPreviewDeck is 0-indexed.
-        QString prefix = m_previewdeckStr.arg(i);
+        QString prefix;
+        if (iNumPreviewDecks == 1) {
+            prefix = m_previewdeckStr.arg("");
+        } else {
+            prefix = m_previewdeckStr.arg(i);
+        }
         QString group = PlayerManager::groupForPreviewDeck(i - 1);
         addSingleControl(group, control, controlTitle, controlDescription,
                          controlMenu, prefix, prefix);
@@ -1183,13 +1305,13 @@ void ControlPickerMenu::addPlayerControl(QString control, QString controlTitle,
     }
 }
 
-void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
-                                                   QString controlTitle,
-                                                   QString controlDescription,
-                                                   QMenu* pMenu,
-                                                   bool microphoneControls,
-                                                   bool auxControls,
-                                                   bool addReset) {
+void ControlPickerMenu::addMicrophoneAndAuxControl(const QString& control,
+        const QString& controlTitle,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool microphoneControls,
+        bool auxControls,
+        bool addReset) {
     parented_ptr<QMenu> controlMenu = make_parented<QMenu>(controlTitle, pMenu);
     pMenu->addMenu(controlMenu);
 
@@ -1238,56 +1360,56 @@ void ControlPickerMenu::addMicrophoneAndAuxControl(QString control,
     }
 }
 
-void ControlPickerMenu::addDeckAndSamplerControl(QString control,
-                                                 QString title,
-                                                 QString controlDescription,
-                                                 QMenu* pMenu,
-                                                 bool addReset) {
+void ControlPickerMenu::addDeckAndSamplerControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, true, true, false, addReset);
 }
 
-void ControlPickerMenu::addDeckAndPreviewDeckControl(QString control,
-                                                     QString title,
-                                                     QString controlDescription,
-                                                     QMenu* pMenu,
-                                                     bool addReset) {
+void ControlPickerMenu::addDeckAndPreviewDeckControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, true, false, true, addReset);
 }
 
-void ControlPickerMenu::addDeckAndSamplerAndPreviewDeckControl(QString control,
-                                                               QString title,
-                                                               QString controlDescription,
-                                                               QMenu* pMenu,
-                                                               bool addReset) {
+void ControlPickerMenu::addDeckAndSamplerAndPreviewDeckControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, true, true, true, addReset);
 }
 
-void ControlPickerMenu::addDeckControl(QString control,
-                                       QString title,
-                                       QString controlDescription,
-                                       QMenu* pMenu,
-                                       bool addReset) {
+void ControlPickerMenu::addDeckControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, true, false, false, addReset);
 }
 
-void ControlPickerMenu::addSamplerControl(QString control,
-                                          QString title,
-                                          QString controlDescription,
-                                          QMenu* pMenu,
-                                          bool addReset) {
+void ControlPickerMenu::addSamplerControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, false, true, false, addReset);
 }
 
-void ControlPickerMenu::addPreviewDeckControl(QString control,
-                                              QString title,
-                                              QString controlDescription,
-                                              QMenu* pMenu,
-                                              bool addReset) {
+void ControlPickerMenu::addPreviewDeckControl(const QString& control,
+        const QString& title,
+        const QString& controlDescription,
+        QMenu* pMenu,
+        bool addReset) {
     addPlayerControl(control, title, controlDescription, pMenu, false, false, true, addReset);
 }
 
 QMenu* ControlPickerMenu::addSubmenu(QString title, QMenu* pParent) {
-    if (pParent == NULL) {
+    if (pParent == nullptr) {
         pParent = this;
     }
     auto subMenu = make_parented<QMenu>(title, pParent);
@@ -1302,9 +1424,9 @@ void ControlPickerMenu::controlChosen(int controlIndex) {
     emit controlPicked(m_controlsAvailable[controlIndex]);
 }
 
-int ControlPickerMenu::addAvailableControl(ConfigKey key,
-                                           QString title,
-                                           QString description) {
+int ControlPickerMenu::addAvailableControl(const ConfigKey& key,
+        const QString& title,
+        const QString& description) {
     m_controlsAvailable.append(key);
     m_descriptionsByKey.insert(key, description);
     m_titlesByKey.insert(key, title);
@@ -1313,14 +1435,14 @@ int ControlPickerMenu::addAvailableControl(ConfigKey key,
     return m_controlsAvailable.size() - 1;
 }
 
-bool ControlPickerMenu::controlExists(ConfigKey key) const {
+bool ControlPickerMenu::controlExists(const ConfigKey& key) const {
     return m_titlesByKey.contains(key);
 }
 
-QString ControlPickerMenu::descriptionForConfigKey(ConfigKey key) const {
+QString ControlPickerMenu::descriptionForConfigKey(const ConfigKey& key) const {
     return m_descriptionsByKey.value(key, QString());
 }
 
-QString ControlPickerMenu::controlTitleForConfigKey(ConfigKey key) const {
+QString ControlPickerMenu::controlTitleForConfigKey(const ConfigKey& key) const {
     return m_titlesByKey.value(key, QString());
 }

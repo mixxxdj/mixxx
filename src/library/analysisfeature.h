@@ -1,9 +1,4 @@
-// analysisfeature.h
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-// Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
-
-#ifndef ANALYSISFEATURE_H
-#define ANALYSISFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QUrl>
@@ -35,8 +30,8 @@ class AnalysisFeature : public LibraryFeature {
         return m_icon;
     }
 
-    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
-    bool dragMoveAccept(QUrl url) override;
+    bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
+    bool dragMoveAccept(const QUrl& url) override;
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
 
@@ -48,7 +43,7 @@ class AnalysisFeature : public LibraryFeature {
 
   public slots:
     void activate() override;
-    void analyzeTracks(QList<TrackId> trackIds);
+    void analyzeTracks(const QList<TrackId>& trackIds);
 
     void suspendAnalysis();
     void resumeAnalysis();
@@ -79,6 +74,3 @@ class AnalysisFeature : public LibraryFeature {
     // The title is dynamic and reflects the current progress
     QString m_title;
 };
-
-
-#endif /* ANALYSISFEATURE_H */

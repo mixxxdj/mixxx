@@ -1,5 +1,4 @@
-#ifndef MIXXX_UTIL_ROTARY_H
-#define MIXXX_UTIL_ROTARY_H
+#pragma once
 
 class Rotary {
   public:
@@ -38,5 +37,3 @@ class Rotary {
     double m_dLastValue;
     int m_iCalibrationCount;
 };
-
-#endif /* MIXXX_UTIL_ROTARY_H */

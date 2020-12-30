@@ -1,9 +1,11 @@
-#include <QList>
+#include "preferences/dialog/dlgprefdeck.h"
+
 #include <QDir>
-#include <QToolTip>
 #include <QDoubleSpinBox>
-#include <QWidget>
+#include <QList>
 #include <QLocale>
+#include <QToolTip>
+#include <QWidget>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -14,7 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "mixxx.h"
-#include "preferences/dialog/dlgprefdeck.h"
+#include "moc_dlgprefdeck.cpp"
 #include "preferences/usersettings.h"
 #include "util/compatibility.h"
 #include "util/duration.h"
@@ -31,15 +33,11 @@ constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
 // bool kDefaultCloneDeckOnLoad is defined in header file to make it available
 // to playermanager.cpp
-}
+} // namespace
 
 DlgPrefDeck::DlgPrefDeck(QWidget* parent,
-        MixxxMainWindow* mixxx,
-        PlayerManager* pPlayerManager,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_mixxx(mixxx),
-          m_pPlayerManager(pPlayerManager),
           m_pConfig(pConfig),
           m_pControlTrackTimeDisplay(std::make_unique<ControlObject>(
                   ConfigKey("[Controls]", "ShowDurationRemaining"))),
@@ -74,10 +72,13 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     const int cueModeIndex = cueDefaultIndexByData(cueDefaultValue);
     ComboBoxCueMode->setCurrentIndex(cueModeIndex);
     slotCueModeCombobox(cueModeIndex);
-    for (ControlProxy* pControl : m_cueControls) {
+    for (ControlProxy* pControl : qAsConst(m_cueControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
-    connect(ComboBoxCueMode, SIGNAL(activated(int)), this, SLOT(slotCueModeCombobox(int)));
+    connect(ComboBoxCueMode,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefDeck::slotCueModeCombobox);
 
     // Track time display configuration
     connect(m_pControlTrackTimeDisplay.get(),
@@ -103,8 +104,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
         m_pControlTrackTimeDisplay->set(
             static_cast<double>(TrackTime::DisplayMode::ELAPSED));
     }
-    connect(buttonGroupTrackTime, SIGNAL(buttonClicked(QAbstractButton*)),
-            this, SLOT(slotSetTrackTimeDisplay(QAbstractButton *)));
+    connect(buttonGroupTrackTime,
+            QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
+            this,
+            QOverload<QAbstractButton*>::of(
+                    &DlgPrefDeck::slotSetTrackTimeDisplay));
 
     // display time format
     connect(m_pControlTrackTimeFormat.get(),
@@ -153,8 +157,10 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     m_bDisallowTrackLoadToPlayingDeck = !m_pConfig->getValue(
             ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck"), false);
     checkBoxDisallowLoadToPlayingDeck->setChecked(m_bDisallowTrackLoadToPlayingDeck);
-    connect(checkBoxDisallowLoadToPlayingDeck, SIGNAL(toggled(bool)),
-            this, SLOT(slotDisallowTrackLoadToPlayingDeckCheckbox(bool)));
+    connect(checkBoxDisallowLoadToPlayingDeck,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotDisallowTrackLoadToPlayingDeckCheckbox);
 
     comboBoxLoadPoint->addItem(tr("Intro start"), static_cast<int>(SeekOnLoadMode::IntroStart));
     comboBoxLoadPoint->addItem(tr("Main cue"), static_cast<int>(SeekOnLoadMode::MainCue));
@@ -199,15 +205,17 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
             ConfigKey("[Controls]", "CloneDeckOnLoadDoubleTap"), true);
     checkBoxCloneDeckOnLoadDoubleTap->setChecked(m_bCloneDeckOnLoadDoubleTap);
     connect(checkBoxCloneDeckOnLoadDoubleTap,
-            SIGNAL(toggled(bool)),
+            &QCheckBox::toggled,
             this,
-            SLOT(slotCloneDeckOnLoadDoubleTapCheckbox(bool)));
+            &DlgPrefDeck::slotCloneDeckOnLoadDoubleTapCheckbox);
 
     m_bRateDownIncreasesSpeed = m_pConfig->getValue(ConfigKey("[Controls]", "RateDir"), true);
     setRateDirectionForAllDecks(m_bRateDownIncreasesSpeed);
     checkBoxInvertSpeedSlider->setChecked(m_bRateDownIncreasesSpeed);
-    connect(checkBoxInvertSpeedSlider, SIGNAL(toggled(bool)),
-            this, SLOT(slotRateInversionCheckbox(bool)));
+    connect(checkBoxInvertSpeedSlider,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefDeck::slotRateInversionCheckbox);
 
     ComboBoxRateRange->clear();
     ComboBoxRateRange->addItem(tr("4%"), 4);
@@ -218,8 +226,10 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     ComboBoxRateRange->addItem(tr("24%"), 24);
     ComboBoxRateRange->addItem(tr("50%"), 50);
     ComboBoxRateRange->addItem(tr("90%"), 90);
-    connect(ComboBoxRateRange, SIGNAL(activated(int)),
-            this, SLOT(slotRateRangeComboBox(int)));
+    connect(ComboBoxRateRange,
+            QOverload<int>::of(&QComboBox::activated),
+            this,
+            &DlgPrefDeck::slotRateRangeComboBox);
 
     // RateRange is the legacy ConfigKey. RateRangePercent is used now.
     if (m_pConfig->exists(ConfigKey("[Controls]", "RateRange")) &&
@@ -244,40 +254,52 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     //
     // Key lock mode
     //
-    connect(buttonGroupKeyLockMode, SIGNAL(buttonClicked(QAbstractButton*)),
-            this, SLOT(slotKeyLockModeSelected(QAbstractButton *)));
+    connect(buttonGroupKeyLockMode,
+            QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
+            this,
+            &DlgPrefDeck::slotKeyLockModeSelected);
 
     m_keylockMode = static_cast<KeylockMode>(
         m_pConfig->getValue(ConfigKey("[Controls]", "keylockMode"),
                             static_cast<int>(KeylockMode::LockOriginalKey)));
-    for (ControlProxy* pControl : m_keylockModeControls) {
+    for (ControlProxy* pControl : qAsConst(m_keylockModeControls)) {
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
     //
     // Key unlock mode
     //
-    connect(buttonGroupKeyUnlockMode, SIGNAL(buttonClicked(QAbstractButton*)),
-            this, SLOT(slotKeyUnlockModeSelected(QAbstractButton *)));
+    connect(buttonGroupKeyUnlockMode,
+            QOverload<QAbstractButton*>::of(&QButtonGroup::buttonClicked),
+            this,
+            &DlgPrefDeck::slotKeyUnlockModeSelected);
 
     m_keyunlockMode = static_cast<KeyunlockMode>(
         m_pConfig->getValue(ConfigKey("[Controls]", "keyunlockMode"),
         static_cast<int>(KeyunlockMode::ResetLockedKey)));
-    for (ControlProxy* pControl : m_keyunlockModeControls) {
+    for (ControlProxy* pControl : qAsConst(m_keyunlockModeControls)) {
         pControl->set(static_cast<int>(m_keyunlockMode));
     }
 
     //
     // Rate buttons configuration
     //
-    connect(spinBoxTemporaryRateCoarse, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateTempCoarseSpinbox(double)));
-    connect(spinBoxTemporaryRateFine, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateTempFineSpinbox(double)));
-    connect(spinBoxPermanentRateCoarse, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRatePermCoarseSpinbox(double)));
-    connect(spinBoxPermanentRateFine, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRatePermFineSpinbox(double)));
+    connect(spinBoxTemporaryRateCoarse,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefDeck::slotRateTempCoarseSpinbox);
+    connect(spinBoxTemporaryRateFine,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefDeck::slotRateTempFineSpinbox);
+    connect(spinBoxPermanentRateCoarse,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefDeck::slotRatePermCoarseSpinbox);
+    connect(spinBoxPermanentRateFine,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefDeck::slotRatePermFineSpinbox);
 
     m_dRateTempCoarse = m_pConfig->getValue(ConfigKey("[Controls]", "RateTempLeft"),
             kDefaultTemporaryRateChangeCoarse);
@@ -301,8 +323,10 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     // Rate Ramp Sensitivity
     m_iRateRampSensitivity = m_pConfig->getValue(ConfigKey("[Controls]", "RateRampSensitivity"), kDefaultRateRampSensitivity);
     SliderRateRampSensitivity->setValue(m_iRateRampSensitivity);
-    connect(SliderRateRampSensitivity, SIGNAL(valueChanged(int)),
-            this, SLOT(slotRateRampSensitivitySlider(int)));
+    connect(SliderRateRampSensitivity,
+            &QSlider::valueChanged,
+            this,
+            &DlgPrefDeck::slotRateRampSensitivitySlider);
 
     //
     // Cue Mode
@@ -320,8 +344,10 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     //
 
     // Set Ramp Rate On or Off
-    connect(radioButtonRateRampModeLinear, SIGNAL(toggled(bool)),
-            this, SLOT(slotRateRampingModeLinearButton(bool)));
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            this,
+            &DlgPrefDeck::slotRateRampingModeLinearButton);
     m_bRateRamping = static_cast<RateControl::RampMode>(
         m_pConfig->getValue(ConfigKey("[Controls]", "RateRamp"),
                             static_cast<int>(kDefaultRampingMode)));
@@ -345,10 +371,41 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     checkBoxResetSpeed->setChecked(m_speedAutoReset);
     checkBoxResetPitch->setChecked(m_pitchAutoReset);
 
-    connect(checkBoxResetSpeed, SIGNAL(toggled(bool)),
-            this, SLOT(slotUpdateSpeedAutoReset(bool)));
-    connect(checkBoxResetPitch, SIGNAL(toggled(bool)),
-            this, SLOT(slotUpdatePitchAutoReset(bool)));
+    connect(checkBoxResetSpeed, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdateSpeedAutoReset);
+    connect(checkBoxResetPitch, &QCheckBox::toggled, this, &DlgPrefDeck::slotUpdatePitchAutoReset);
+
+    connect(SliderRateRampSensitivity,
+            QOverload<int>::of(&QAbstractSlider::valueChanged),
+            SpinBoxRateRampSensitivity,
+            QOverload<int>::of(&QSpinBox::setValue));
+    connect(SpinBoxRateRampSensitivity,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            SliderRateRampSensitivity,
+            QOverload<int>::of(&QAbstractSlider::setValue));
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            labelSpeedRampSensitivity,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            SliderRateRampSensitivity,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeLinear,
+            &QRadioButton::toggled,
+            SpinBoxRateRampSensitivity,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            labelSpeedTemporary,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            spinBoxTemporaryRateCoarse,
+            &QWidget::setEnabled);
+    connect(radioButtonRateRampModeStepping,
+            &QRadioButton::toggled,
+            spinBoxTemporaryRateFine,
+            &QWidget::setEnabled);
 
     slotUpdate();
 }
@@ -480,7 +537,7 @@ void DlgPrefDeck::slotRateRangeComboBox(int index) {
 }
 
 void DlgPrefDeck::setRateRangeForAllDecks(int rangePercent) {
-    for (ControlProxy* pControl : m_rateRangeControls) {
+    for (ControlProxy* pControl : qAsConst(m_rateRangeControls)) {
         pControl->set(rangePercent / 100.0);
     }
 }
@@ -495,14 +552,14 @@ void DlgPrefDeck::setRateDirectionForAllDecks(bool inverted) {
     if (inverted) {
         rateDirectionMultiplier = kRateDirectionInverted;
     }
-    for (ControlProxy* pControl : m_rateDirectionControls) {
+    for (ControlProxy* pControl : qAsConst(m_rateDirectionControls)) {
         pControl->set(rateDirectionMultiplier);
     }
 
     // If the rate slider direction setting has changed,
     // multiply the rate by -1 so the current sound does not change.
     if (rateDirectionMultiplier != oldRateDirectionMultiplier) {
-        for (ControlProxy* pControl : m_rateControls) {
+        for (ControlProxy* pControl : qAsConst(m_rateControls)) {
             pControl->set(-1 * pControl->get());
         }
     }
@@ -612,7 +669,7 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "TimeFormat"), timeFormat);
 
     // Set cue mode for every deck
-    for (ControlProxy* pControl : m_cueControls) {
+    for (ControlProxy* pControl : qAsConst(m_cueControls)) {
         pControl->set(static_cast<int>(m_cueMode));
     }
     m_pConfig->setValue(ConfigKey("[Controls]", "CueDefault"), static_cast<int>(m_cueMode));
@@ -649,14 +706,14 @@ void DlgPrefDeck::slotApply() {
     m_pConfig->setValue(ConfigKey("[Controls]", "keylockMode"),
                         static_cast<int>(m_keylockMode));
     // Set key lock behavior for every group
-    for (ControlProxy* pControl : m_keylockModeControls) {
+    for (ControlProxy* pControl : qAsConst(m_keylockModeControls)) {
         pControl->set(static_cast<double>(m_keylockMode));
     }
 
     m_pConfig->setValue(ConfigKey("[Controls]", "keyunlockMode"),
                         static_cast<int>(m_keyunlockMode));
     // Set key un-lock behavior for every group
-    for (ControlProxy* pControl : m_keyunlockModeControls) {
+    for (ControlProxy* pControl : qAsConst(m_keyunlockModeControls)) {
         pControl->set(static_cast<double>(m_keyunlockMode));
     }
 

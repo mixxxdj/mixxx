@@ -26,6 +26,7 @@
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
+#include "moc_enginebuffer.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
 #include "util/assert.h"
@@ -568,7 +569,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
-                                       QString reason) {
+        const QString& reason) {
     m_iTrackLoading = 0;
     // Loading of a new track failed.
     // eject the currently loaded track (the old Track) as well
@@ -689,7 +690,7 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
     queueNewPlaypos(new_playpos, seekType);
 }
 
-bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
+bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
@@ -703,12 +704,12 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
         playPossible = false;
     }
 
-    return m_pCueControl->updateIndicatorsAndModifyPlay(newPlay, playPossible);
+    return m_pCueControl->updateIndicatorsAndModifyPlay(newPlay, oldPlay, playPossible);
 }
 
 void EngineBuffer::verifyPlay() {
     bool play = m_playButton->toBool();
-    bool verifiedPlay = updateIndicatorsAndModifyPlay(play);
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(play, play);
     if (play != verifiedPlay) {
         m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
     }
@@ -716,7 +717,7 @@ void EngineBuffer::verifyPlay() {
 
 void EngineBuffer::slotControlPlayRequest(double v) {
     bool oldPlay = m_playButton->toBool();
-    bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
 
     if (!oldPlay && verifiedPlay) {
         if (m_pQuantize->toBool()

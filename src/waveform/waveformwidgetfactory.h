@@ -11,6 +11,7 @@
 #include "waveform/waveform.h"
 #include "waveform/widgets/waveformwidgettype.h"
 
+class WVuMeter;
 class WWaveformViewer;
 class WaveformWidgetAbstract;
 class VSyncThread;
@@ -117,7 +118,7 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void destroyWidgets();
 
-    void addTimerListener(QWidget* pWidget);
+    void addTimerListener(WVuMeter* pWidget);
 
     void startVSync(GuiTick* pGuiTick, VisualsManager* pVisualsManager);
     void setVSyncType(int vsType);

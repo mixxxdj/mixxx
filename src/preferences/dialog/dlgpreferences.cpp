@@ -1,34 +1,19 @@
-/***************************************************************************
-                         dlgpreferences.cpp  -  description
-                         ------------------
-   begin                : Sun Jun 30 2002
-   copyright            : (C) 2002 by Tue & Ken Haste Andersen
-   email                : haste@diku.dk
-***************************************************************************/
+#include "preferences/dialog/dlgpreferences.h"
 
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
+#include <QDesktopServices>
 #include <QDialog>
 #include <QEvent>
-#include <QScrollArea>
-#include <QTabBar>
-#include <QTabWidget>
 #include <QMoveEvent>
 #include <QResizeEvent>
 #include <QScreen>
+#include <QScrollArea>
+#include <QTabBar>
+#include <QTabWidget>
 
-#include "preferences/dialog/dlgpreferences.h"
-
-#include "preferences/dialog/dlgprefsound.h"
-#include "preferences/dialog/dlgpreflibrary.h"
 #include "controllers/dlgprefcontrollers.h"
+#include "moc_dlgpreferences.cpp"
+#include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefsound.h"
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
@@ -64,22 +49,34 @@
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
-#include "mixxx.h"
 #include "skin/skinloader.h"
 #include "util/widgethelper.h"
 
-DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman, PlayerManager* pPlayerManager, ControllerManager* controllers, VinylControlManager* pVCManager, LV2Backend* pLV2Backend, EffectsManager* pEffectsManager, SettingsManager* pSettingsManager, Library* pLibrary)
+DlgPreferences::DlgPreferences(
+        MixxxMainWindow* mixxx,
+        std::shared_ptr<SkinLoader> pSkinLoader,
+        std::shared_ptr<SoundManager> soundman,
+        std::shared_ptr<PlayerManager> pPlayerManager,
+        std::shared_ptr<ControllerManager> pControllerManager,
+        std::shared_ptr<VinylControlManager> pVCManager,
+        LV2Backend* pLV2Backend,
+        std::shared_ptr<EffectsManager> pEffectsManager,
+        std::shared_ptr<SettingsManager> pSettingsManager,
+        std::shared_ptr<Library> pLibrary)
         : m_allPages(),
           m_pConfig(pSettingsManager->settings()),
           m_pageSizeHint(QSize(0, 0)) {
 #ifndef __LILV__
     Q_UNUSED(pLV2Backend);
 #endif /* __LILV__ */
+    Q_UNUSED(pPlayerManager);
     setupUi(this);
     contentsTreeWidget->setHeaderHidden(true);
 
-    connect(buttonBox, SIGNAL(clicked(QAbstractButton*)),
-            this, SLOT(slotButtonPressed(QAbstractButton*)));
+    connect(buttonBox,
+            QOverload<QAbstractButton*>::of(&QDialogButtonBox::clicked),
+            this,
+            &DlgPreferences::slotButtonPressed);
 
     connect(contentsTreeWidget,
             &QTreeWidget::currentItemChanged,
@@ -92,7 +89,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
 
     // Construct widgets for use in tabs.
     m_soundPage = PreferencesPage(
-            new DlgPrefSound(this, soundman, pPlayerManager, m_pConfig),
+            new DlgPrefSound(this, soundman, m_pConfig),
             createTreeItem(tr("Sound Hardware"), QIcon(":/images/preferences/ic_preferences_soundhardware.svg")));
     addPageWidget(m_soundPage);
 
@@ -108,7 +105,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
     QTreeWidgetItem* pControllersTreeItem = createTreeItem(
             tr("Controllers"),
             QIcon(":/images/preferences/ic_preferences_controllers.svg"));
-    m_pControllersDlg = new DlgPrefControllers(this, m_pConfig, controllers, pControllersTreeItem);
+    m_pControllersDlg = new DlgPrefControllers(
+            this, m_pConfig, pControllerManager, pControllersTreeItem);
     addPageWidget(PreferencesPage(m_pControllersDlg, pControllersTreeItem));
 
 #ifdef __VINYLCONTROL__
@@ -136,7 +134,7 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
             createTreeItem(tr("Colors"), QIcon(":/images/preferences/ic_preferences_colors.svg"))));
 
     addPageWidget(PreferencesPage(
-            new DlgPrefDeck(this, mixxx, pPlayerManager, m_pConfig),
+            new DlgPrefDeck(this, m_pConfig),
             createTreeItem(tr("Decks"), QIcon(":/images/preferences/ic_preferences_decks.svg"))));
 
     addPageWidget(PreferencesPage(
@@ -190,7 +188,8 @@ DlgPreferences::DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, 
 #endif
 
     // Find accept and apply buttons
-    for (QAbstractButton* button : buttonBox->buttons()) {
+    const auto buttons = buttonBox->buttons();
+    for (QAbstractButton* button : buttons) {
         QDialogButtonBox::ButtonRole role = buttonBox->buttonRole(button);
         if (role == QDialogButtonBox::ButtonRole::ApplyRole) {
             m_pApplyButton = button;
@@ -235,7 +234,7 @@ DlgPreferences::~DlgPreferences() {
     delete m_pControllersDlg;
 }
 
-QTreeWidgetItem* DlgPreferences::createTreeItem(QString text, QIcon icon) {
+QTreeWidgetItem* DlgPreferences::createTreeItem(const QString& text, const QIcon& icon) {
     QTreeWidgetItem* pTreeItem = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     pTreeItem->setIcon(0, icon);
     pTreeItem->setText(0, text);
@@ -246,15 +245,16 @@ QTreeWidgetItem* DlgPreferences::createTreeItem(QString text, QIcon icon) {
 }
 
 void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous) {
-    if (!current)
+    if (!current) {
         current = previous;
+    }
 
     if (m_pControllersDlg->handleTreeItemClick(current)) {
         // Do nothing. m_controllersPage handled this click.
         return;
     }
 
-    for (PreferencesPage page : m_allPages) {
+    for (PreferencesPage page : qAsConst(m_allPages)) {
         if (current == page.pTreeItem) {
             switchToPage(page.pDlg);
             break;
@@ -380,13 +380,16 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
 }
 
 void DlgPreferences::addPageWidget(PreferencesPage page) {
-    connect(this, SIGNAL(showDlg()), page.pDlg, SLOT(slotShow()));
-    connect(this, SIGNAL(closeDlg()), page.pDlg, SLOT(slotHide()));
-    connect(this, SIGNAL(showDlg()), page.pDlg, SLOT(slotUpdate()));
+    connect(this, &DlgPreferences::showDlg, page.pDlg, &DlgPreferencePage::slotShow);
+    connect(this, &DlgPreferences::closeDlg, page.pDlg, &DlgPreferencePage::slotHide);
+    connect(this, &DlgPreferences::showDlg, page.pDlg, &DlgPreferencePage::slotUpdate);
 
-    connect(this, SIGNAL(applyPreferences()), page.pDlg, SLOT(slotApply()));
-    connect(this, SIGNAL(cancelPreferences()), page.pDlg, SLOT(slotCancel()));
-    connect(this, SIGNAL(resetToDefaults()), page.pDlg, SLOT(slotResetToDefaults()));
+    connect(this, &DlgPreferences::applyPreferences, page.pDlg, &DlgPreferencePage::slotApply);
+    connect(this, &DlgPreferences::cancelPreferences, page.pDlg, &DlgPreferencePage::slotCancel);
+    connect(this,
+            &DlgPreferences::resetToDefaults,
+            page.pDlg,
+            &DlgPreferencePage::slotResetToDefaults);
 
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);
@@ -403,16 +406,16 @@ void DlgPreferences::addPageWidget(PreferencesPage page) {
 DlgPreferencePage* DlgPreferences::currentPage() {
     QObject* pObject = pagesWidget->currentWidget();
     for (int i = 0; i < 2; ++i) {
-        if (pObject == NULL) {
-            return NULL;
+        if (pObject == nullptr) {
+            return nullptr;
         }
         QObjectList children = pObject->children();
         if (children.isEmpty()) {
-            return NULL;
+            return nullptr;
         }
         pObject = children[0];
     }
-    return dynamic_cast<DlgPreferencePage*>(pObject);
+    return qobject_cast<DlgPreferencePage*>(pObject);
 }
 
 void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
