@@ -40,6 +40,8 @@ class MediaPlayer2Player : public QDBusAbstractAdaptor {
             Mpris* pMpris,
             UserSettingsPointer pSettings);
 
+    ~MediaPlayer2Player() override = default;
+
     QString playbackStatus() const;
     QString loopStatus() const;
     void setLoopStatus(const QString& value);
