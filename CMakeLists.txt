@@ -201,11 +201,11 @@ elseif(GNU_GCC OR LLVM_CLANG)
         # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
         # we require macOS 10.12.
         # https://stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
-        elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+      elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
         add_compile_options(
           -mflat-abi=hard
           -mfpu=neon
-       )
+      )
       endif()
       # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
       # This should be our default build for distribution
