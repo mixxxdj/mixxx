@@ -525,9 +525,9 @@ void DlgPrefController::savePreset() {
     // If this is a user preset, ask whether to overwrite or save with new name.
     // Optionally, tick checkbox to always overwrite this preset in the current session.
     if (isUserPreset && saveAsNew) {
-        QString overwriteTitle = tr("Preset already exists.");
+        QString overwriteTitle = tr("Mapping already exists.");
         QString overwriteLabel = tr(
-                "<b>%1</b> already exists in user preset folder.<br>"
+                "<b>%1</b> already exists in user mapping folder.<br>"
                 "Overwrite or save with a new name?");
         QString overwriteCheckLabel = tr("Always overwrite during this session");
 
