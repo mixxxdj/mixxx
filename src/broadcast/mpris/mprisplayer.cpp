@@ -23,7 +23,7 @@ const QString kLoopStatusNone = QStringLiteral("None");
 const QString kLoopStatusTrack = QStringLiteral("Track");
 // The playback loops through a list of tracks
 const QString kLoopStatusPlaylist = QStringLiteral("Playlist");
-const QString playerInterfaceName = QStringLiteral("org.mpris.MediaPlayer2.Player");
+const QString kPlayerInterfaceName = QStringLiteral("org.mpris.MediaPlayer2.Player");
 
 } // namespace
 
@@ -179,7 +179,7 @@ void MprisPlayer::pause() {
         attribute->stop();
     }
     if (playingDeckIndex >= 0 && playingDeckIndex < m_deckAttributes.size()) {
-        m_pMpris->notifyPropertyChanged(playerInterfaceName, "Metadata", QVariantMap());
+        m_pMpris->notifyPropertyChanged(kPlayerInterfaceName, "Metadata", QVariantMap());
         m_pPlayableDeck = m_deckAttributes[playingDeckIndex];
     }
 }
@@ -302,7 +302,7 @@ void MprisPlayer::slotChangeProperties(double enabled) {
 
 void MprisPlayer::broadcastPropertiesChange(bool enabled) {
     for (const QString& property : autoDJDependentProperties) {
-        m_pMpris->notifyPropertyChanged(playerInterfaceName,
+        m_pMpris->notifyPropertyChanged(kPlayerInterfaceName,
                 property,
                 enabled);
     }
@@ -355,7 +355,7 @@ void MprisPlayer::requestCoverartUrl(TrackPointer pTrack) {
 void MprisPlayer::slotPlayChanged(DeckAttributes* pDeck, bool playing) {
     Q_UNUSED(pDeck);
     Q_UNUSED(playing);
-    m_pMpris->notifyPropertyChanged(playerInterfaceName,
+    m_pMpris->notifyPropertyChanged(kPlayerInterfaceName,
             "PlaybackStatus",
             playbackStatus());
 }
@@ -365,7 +365,7 @@ void MprisPlayer::slotPlayPositionChanged(DeckAttributes* pDeck, double position
         qlonglong playPosition = static_cast<qlonglong>(position * //Fraction of duration
                 pDeck->getLoadedTrack()->getDuration() *           //Duration in seconds
                 1e6);
-        m_pMpris->notifyPropertyChanged(playerInterfaceName, "Position", playPosition);
+        m_pMpris->notifyPropertyChanged(kPlayerInterfaceName, "Position", playPosition);
     }
 }
 
@@ -379,7 +379,7 @@ DeckAttributes* MprisPlayer::findPlayingDeck() const {
 }
 
 void MprisPlayer::slotMasterGainChanged(double value) {
-    m_pMpris->notifyPropertyChanged(playerInterfaceName, "Volume", value);
+    m_pMpris->notifyPropertyChanged(kPlayerInterfaceName, "Volume", value);
 }
 
 double MprisPlayer::rate() const {
@@ -428,7 +428,7 @@ void MprisPlayer::slotPlayingTrackChanged(TrackPointer pTrack) {
 }
 
 void MprisPlayer::broadcastCurrentMetadata() {
-    m_pMpris->notifyPropertyChanged(playerInterfaceName, "Metadata", getVariantMapMetadata());
+    m_pMpris->notifyPropertyChanged(kPlayerInterfaceName, "Metadata", getVariantMapMetadata());
 }
 
 QVariantMap MprisPlayer::getVariantMapMetadata() {
