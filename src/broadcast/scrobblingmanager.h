@@ -20,12 +20,14 @@ class PlayerManager;
 class PlayerManagerInterface;
 class MixxxMainWindow;
 
+/// Interface for helper class to find audible players.
 class TrackAudibleStrategy {
   public:
     virtual ~TrackAudibleStrategy() = default;
     virtual bool isPlayerAudible(BaseTrackPlayer* pPlayer) const = 0;
 };
 
+/// Helper class to find audible players
 class TotalVolumeThreshold : public TrackAudibleStrategy {
   public:
     TotalVolumeThreshold(QObject* parent, double threshold);
@@ -46,6 +48,7 @@ class TotalVolumeThreshold : public TrackAudibleStrategy {
 
 typedef std::function<std::shared_ptr<TrackTimingInfo>(TrackPointer)> TrackTimingFactory;
 
+/// Manages all metadata scrobbling services.
 class ScrobblingManager : public QObject {
     Q_OBJECT
   public:

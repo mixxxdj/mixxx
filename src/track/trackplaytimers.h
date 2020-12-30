@@ -7,6 +7,8 @@
 #include "control/controlproxy.h"
 
 namespace TrackTimers {
+
+/// Timer counting the time elapsed since start
 class ElapsedTimer {
   public:
     ElapsedTimer() = default;
@@ -17,6 +19,7 @@ class ElapsedTimer {
     virtual qint64 elapsed() const = 0;
 };
 
+/// Countdown timer, emitting a signal at zero
 class RegularTimer : public QObject {
     Q_OBJECT
   public:
@@ -30,6 +33,7 @@ class RegularTimer : public QObject {
     void timeout();
 };
 
+/// A Timer with time out using the GUI Tick as time base.
 class GUITickTimer : public RegularTimer {
     Q_OBJECT
   public:
@@ -48,6 +52,7 @@ class GUITickTimer : public RegularTimer {
     void slotTick(double timeSinceLastTick);
 };
 
+/// Count Up timer based on QElapsedTimer
 class ElapsedTimerQt : public ElapsedTimer {
   public:
     ElapsedTimerQt() = default;
@@ -60,4 +65,5 @@ class ElapsedTimerQt : public ElapsedTimer {
   private:
     QElapsedTimer m_elapsedTimer;
 };
+
 } // namespace TrackTimers

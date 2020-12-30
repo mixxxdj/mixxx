@@ -7,6 +7,7 @@
 class MetadataFileSettings;
 class ListenBrainzSettingsManager;
 
+/// Dialog class for the metadata broadcasting preferences
 class DlgPrefMetadata : public DlgPreferencePage, public Ui::DlgPrefMetadataDlg {
     Q_OBJECT
   public:

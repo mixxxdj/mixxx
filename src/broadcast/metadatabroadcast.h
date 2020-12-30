@@ -9,6 +9,7 @@
 #include "track/trackid.h"
 #include "track/trackplaytimers.h"
 
+/// Interface for MetadataBoadcaster
 class MetadataBroadcasterInterface : public QObject {
     Q_OBJECT
   public slots:
@@ -24,6 +25,8 @@ class MetadataBroadcasterInterface : public QObject {
     virtual void trackUnloaded(TrackPointer pTrack) = 0;
 };
 
+/// Listen to metadata changes of the current track and passes it to
+/// the different scrobbling services.
 class MetadataBroadcaster : public MetadataBroadcasterInterface {
     Q_OBJECT
   private:

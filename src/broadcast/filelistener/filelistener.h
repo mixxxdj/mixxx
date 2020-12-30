@@ -8,6 +8,9 @@
 #include "preferences/dialog/dlgprefmetadata.h"
 #include "preferences/metadatafilesettings.h"
 
+/// Listens to metadata changes and current track and writes them to a
+/// NowPlaying.txt file. This file can be read by third party applications
+/// like RDS generators or such
 class FileListener : public ScrobblingService {
     Q_OBJECT
   public:
