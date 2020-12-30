@@ -205,7 +205,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
         add_compile_options(
           -mflat-abi=hard
           -mfpu=neon
-      )
+        )
       endif()
       # this sets macros __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
       # This should be our default build for distribution
