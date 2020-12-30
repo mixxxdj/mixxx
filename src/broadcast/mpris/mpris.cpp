@@ -39,13 +39,6 @@ Mpris::~Mpris() {
     QDBusConnection::disconnectFromBus(kServiceName);
 }
 
-void Mpris::broadcastCurrentTrack() {
-    notifyPropertyChanged(
-            QStringLiteral("org.mpris.MediaPlayer2.Player"),
-            QStringLiteral("Metadata"),
-            m_pPlayer->metadata());
-}
-
 void Mpris::notifyPropertyChanged(const QString& interface,
         const QString& propertyName,
         const QVariant& propertyValue) {

@@ -16,7 +16,6 @@ class Mpris : public QObject {
             PlayerManagerInterface* pPlayerManager,
             UserSettingsPointer pSettings);
     ~Mpris();
-    void broadcastCurrentTrack();
     void notifyPropertyChanged(const QString& interface,
             const QString& propertyName,
             const QVariant& propertyValue);
