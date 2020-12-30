@@ -24,6 +24,7 @@ struct FileWidgets {
     QPushButton* changeFilePathButton;
 };
 
+/// Holds the settings for writing a NowPlaying.txt file
 class MetadataFileSettings : public QObject {
     Q_OBJECT
   public:

@@ -3,6 +3,8 @@
 #include <QFile>
 #include <QObject>
 
+/// The object, created by this class is intended to run in an extra thread.
+/// This allows non blocking file access.
 class MetadataFileWorker : public QObject {
     Q_OBJECT
   public:

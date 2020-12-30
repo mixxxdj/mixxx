@@ -5,6 +5,8 @@
 #include "track/track.h"
 #include "track/trackplaytimers.h"
 
+/// Manages different timing infos required for the scrobbling
+/// services
 class TrackTimingInfo : public QObject {
     Q_OBJECT
   public:

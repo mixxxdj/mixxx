@@ -17,6 +17,7 @@ struct ListenBrainzSettings {
     QString userToken;
 };
 
+/// Holds the ListenBrainzSettings
 class ListenBrainzSettingsManager : public QObject {
     Q_OBJECT
   public:
