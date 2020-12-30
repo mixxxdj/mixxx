@@ -989,7 +989,6 @@ add_library(
   src/broadcast/filelistener/filelistener.cpp
   src/broadcast/filelistener/metadatafileworker.cpp
   src/broadcast/listenbrainzlistener/listenbrainzservice.cpp
-  src/broadcast/listenbrainzlistener/networkreply.cpp
   src/broadcast/listenbrainzlistener/networkrequest.cpp
   src/broadcast/metadatabroadcast.cpp
   src/broadcast/scrobblingmanager.cpp
