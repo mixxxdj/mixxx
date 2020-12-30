@@ -59,7 +59,7 @@ bool ControlPotmeterBehavior::setFilter(double* dValue) {
 }
 
 double ControlPotmeterBehavior::valueToParameter(double dValue) {
-    if (m_dValueRange == 0.0) {
+    if (m_dValueRange == 0) {
         return 0;
     }
     if (dValue > m_dMaxValue) {
@@ -322,7 +322,7 @@ void ControlPushButtonBehavior::setValueFromMidi(
             timer->start(kPowerWindowTimeMillis);
         } else if (!timer->isActive()) {
             // Disable after releasing a long press
-            pControl->set(0., nullptr);
+            pControl->set(0, nullptr);
         }
     } else if (m_buttonMode == TOGGLE || m_buttonMode == LONGPRESSLATCHING) {
         // This block makes push-buttons act as toggle buttons.
@@ -333,7 +333,7 @@ void ControlPushButtonBehavior::setValueFromMidi(
             // because this is possibly what the user expects if he changes
             // the same control from different devices.
             double value = pControl->get();
-            value = (int)(value + 1.) % m_iNumStates;
+            value = static_cast<int>(value + 1) % m_iNumStates;
             pControl->set(value, nullptr);
             if (m_buttonMode == LONGPRESSLATCHING) {
                 auto* timer = getTimer();
@@ -343,17 +343,17 @@ void ControlPushButtonBehavior::setValueFromMidi(
         } else {
             double value = pControl->get();
             if (m_buttonMode == LONGPRESSLATCHING &&
-                    getTimer()->isActive() && value >= 1.) {
+                    getTimer()->isActive() && value >= 1) {
                 // revert toggle if button is released too early
-                value = (int)(value - 1.) % m_iNumStates;
+                value = static_cast<int>(value - 1) % m_iNumStates;
                 pControl->set(value, nullptr);
             }
         }
     } else { // Not a toggle button (trigger only when button pushed)
         if (pressed) {
-            pControl->set(1., nullptr);
+            pControl->set(1, nullptr);
         } else {
-            pControl->set(0., nullptr);
+            pControl->set(0, nullptr);
         }
     }
 }
