@@ -114,7 +114,6 @@ class WebTask : public QObject {
 
     /// Cancel a pending request from the event loop thread.
     void abort();
-
   public slots:
     void slotStart(
             int timeoutMillis);
@@ -191,12 +190,12 @@ class WebTask : public QObject {
 
     /// All member variables must only be accessed from
     /// the event loop thread!!
-    const QPointer<QNetworkAccessManager> m_networkAccessManager;
+    const QPointer<QNetworkAccessManager> m_networkAccessManagerWeakPtr;
 
     int m_timeoutTimerId;
     State m_state;
 
-    QPointer<QNetworkReply> m_pendingNetworkReply;
+    QPointer<QNetworkReply> m_pendingNetworkReplyWeakPtr;
 };
 
 } // namespace network

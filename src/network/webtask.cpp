@@ -75,11 +75,10 @@ WebTask::WebTask(
         QNetworkAccessManager* networkAccessManager,
         QObject* parent)
         : QObject(parent),
-          m_networkAccessManager(networkAccessManager),
+          m_networkAccessManagerWeakPtr(networkAccessManager),
           m_timeoutTimerId(kInvalidTimerId),
           m_state(State::Idle) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
-    DEBUG_ASSERT(m_networkAccessManager);
     s_instanceCounter.increment(1);
 }
 
@@ -161,10 +160,11 @@ void WebTask::slotStart(int timeoutMillis) {
     VERIFY_OR_DEBUG_ASSERT(m_state != State::Pending) {
         return;
     }
-    DEBUG_ASSERT(!m_pendingNetworkReply);
+    DEBUG_ASSERT(!m_pendingNetworkReplyWeakPtr);
     m_state = State::Idle;
 
-    VERIFY_OR_DEBUG_ASSERT(m_networkAccessManager) {
+    auto* const pNetworkAccessManager = m_networkAccessManagerWeakPtr.data();
+    VERIFY_OR_DEBUG_ASSERT(pNetworkAccessManager) {
         m_state = State::Pending;
         onNetworkError(
                 QUrl(),
@@ -178,14 +178,14 @@ void WebTask::slotStart(int timeoutMillis) {
             << this
             << "Starting...";
 
-    m_pendingNetworkReply = doStartNetworkRequest(
-            m_networkAccessManager,
+    auto* const pPendingNetworkReply = doStartNetworkRequest(
+            pNetworkAccessManager,
             timeoutMillis);
     // Still idle, because we are in the same thread.
     // The callee is not supposed to abort a request
     // before it has beeen started successfully.
     DEBUG_ASSERT(m_state == State::Idle);
-    if (!m_pendingNetworkReply) {
+    if (!pPendingNetworkReply) {
         kLogger.debug()
                 << "Network task has not been started";
         return;
@@ -200,11 +200,13 @@ void WebTask::slotStart(int timeoutMillis) {
 
     // It is not necessary to connect the QNetworkReply::errorOccurred signal.
     // Network errors are also received through the QNetworkReply::finished signal.
-    connect(m_pendingNetworkReply,
+    connect(pPendingNetworkReply,
             &QNetworkReply::finished,
             this,
             &WebTask::slotNetworkReplyFinished,
             Qt::UniqueConnection);
+
+    m_pendingNetworkReplyWeakPtr = pPendingNetworkReply;
 }
 
 void WebTask::abort() {
@@ -213,7 +215,8 @@ void WebTask::abort() {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_pendingNetworkReply) {
+    auto* const pPendingNetworkReply = m_pendingNetworkReplyWeakPtr.data();
+    VERIFY_OR_DEBUG_ASSERT(pPendingNetworkReply) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
         return;
     }
@@ -225,15 +228,15 @@ void WebTask::abort() {
     kLogger.debug()
             << this
             << "Aborting...";
-    if (m_pendingNetworkReply->isRunning()) {
-        m_pendingNetworkReply->abort();
-        doNetworkReplyAborted(m_pendingNetworkReply);
+    if (pPendingNetworkReply->isRunning()) {
+        pPendingNetworkReply->abort();
+        doNetworkReplyAborted(pPendingNetworkReply);
         // Suspend and await finished signal
         return;
     }
-    doNetworkReplyAborted(m_pendingNetworkReply);
+    doNetworkReplyAborted(pPendingNetworkReply);
     m_state = State::Aborted;
-    const auto requestUrl = m_pendingNetworkReply->request().url();
+    const auto requestUrl = pPendingNetworkReply->request().url();
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&WebTask::aborted)) {
         kLogger.warning()
@@ -263,67 +266,67 @@ void WebTask::timerEvent(QTimerEvent* event) {
     VERIFY_OR_DEBUG_ASSERT(m_state == State::Pending) {
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_pendingNetworkReply) {
+    auto* const pPendingNetworkReply = m_pendingNetworkReplyWeakPtr.data();
+    VERIFY_OR_DEBUG_ASSERT(pPendingNetworkReply) {
         return;
     }
-    if (m_pendingNetworkReply->isFinished()) {
+    if (pPendingNetworkReply->isFinished()) {
         // Nothing to do
     }
     kLogger.info()
             << this
             << "Aborting after timed out";
-    DEBUG_ASSERT(m_pendingNetworkReply->isRunning());
-    m_pendingNetworkReply->abort();
-    // Aborting the network reply might finish it
-    // immediately. It will be destroyed when handling
-    // the finished signal, i.e. m_pendingNetworkReply
-    // could be nullptr here!
+    DEBUG_ASSERT(pPendingNetworkReply->isRunning());
+    pPendingNetworkReply->abort();
 }
 
 void WebTask::slotNetworkReplyFinished() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    auto* const finishedNetworkReply = qobject_cast<QNetworkReply*>(sender());
-    VERIFY_OR_DEBUG_ASSERT(finishedNetworkReply) {
+    auto* const pFinishedNetworkReply = qobject_cast<QNetworkReply*>(sender());
+    VERIFY_OR_DEBUG_ASSERT(pFinishedNetworkReply) {
         return;
     }
     if (kLogger.debugEnabled()) {
-        if (finishedNetworkReply->url() == finishedNetworkReply->request().url()) {
+        if (pFinishedNetworkReply->url() == pFinishedNetworkReply->request().url()) {
             kLogger.debug()
                     << this
                     << "Received reply for request"
-                    << finishedNetworkReply->url();
+                    << pFinishedNetworkReply->url();
         } else {
             // Redirected
             kLogger.debug()
                     << this
                     << "Received reply for redirected request"
-                    << finishedNetworkReply->request().url()
+                    << pFinishedNetworkReply->request().url()
                     << "->"
-                    << finishedNetworkReply->url();
+                    << pFinishedNetworkReply->url();
         }
     }
 
-    if (!m_pendingNetworkReply) {
+    // Check correlation between pending and finished reply
+    auto* const pPendingNetworkReply = m_pendingNetworkReplyWeakPtr.data();
+    if (!pPendingNetworkReply) {
+        // No reply is pending
         DEBUG_ASSERT(m_state == State::Aborted || m_state == State::TimedOut);
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
         kLogger.debug()
                 << this
                 << "Discarding obsolete network reply";
-        finishedNetworkReply->deleteLater();
+        pFinishedNetworkReply->deleteLater();
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(m_pendingNetworkReply == finishedNetworkReply) {
+    VERIFY_OR_DEBUG_ASSERT(pPendingNetworkReply == pFinishedNetworkReply) {
+        // Another reply is pending
         kLogger.debug()
                 << this
                 << "Discarding unexpected network reply";
-        finishedNetworkReply->deleteLater();
+        pFinishedNetworkReply->deleteLater();
         return;
     }
-    // As a side-effect QObject::deleteLater() might reset
-    // QPointer references like m_pendingNetworkReply!
-    finishedNetworkReply->deleteLater();
-    m_pendingNetworkReply = nullptr;
+    m_pendingNetworkReplyWeakPtr = nullptr;
+
+    pFinishedNetworkReply->deleteLater();
 
     VERIFY_OR_DEBUG_ASSERT(m_state == State::Pending) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
@@ -335,18 +338,18 @@ void WebTask::slotNetworkReplyFinished() {
         m_timeoutTimerId = kInvalidTimerId;
     }
 
-    if (finishedNetworkReply->error() != QNetworkReply::NetworkError::NoError) {
+    if (pFinishedNetworkReply->error() != QNetworkReply::NetworkError::NoError) {
         onNetworkError(
-                finishedNetworkReply->request().url(),
-                finishedNetworkReply->error(),
-                finishedNetworkReply->errorString(),
-                finishedNetworkReply->readAll());
+                pFinishedNetworkReply->request().url(),
+                pFinishedNetworkReply->error(),
+                pFinishedNetworkReply->errorString(),
+                pFinishedNetworkReply->readAll());
         return;
     }
 
     m_state = State::Finished;
-    const auto statusCode = readStatusCode(finishedNetworkReply);
-    doNetworkReplyFinished(finishedNetworkReply, statusCode);
+    const auto statusCode = readStatusCode(pFinishedNetworkReply);
+    doNetworkReplyFinished(pFinishedNetworkReply, statusCode);
 }
 
 } // namespace network
