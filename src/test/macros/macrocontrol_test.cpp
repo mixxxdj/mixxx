@@ -51,16 +51,17 @@ TEST_F(MacroControlTest, RecordSeek) {
     slotJumpQueued();
     seek(startPos);
     // Jump kAction
-    seek(kAction.getSourcePositionSample());
+    TestMacro testMacro;
+    seek(testMacro.action.getSourcePositionSample());
     slotJumpQueued();
-    seek(kAction.getTargetPositionSample());
+    seek(testMacro.action.getTargetPositionSample());
 
     // Stop recording
     EXPECT_CALL(*this, seekExact(startPos));
     slotRecord(0);
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
     // Check recording result
-    checkMacroAction(getMacro());
+    testMacro.checkMacroAction(getMacro());
     EXPECT_EQ(getMacro()->getActions().first().getTargetPositionSample(), startPos);
     EXPECT_TRUE(pLoadedTrack->isDirty());
     // Check generated label
@@ -127,11 +128,12 @@ TEST_F(MacroControlTest, ControlObjects) {
 
 TEST_F(MacroControlTest, LoadTrackAndPlayAndClear) {
     MacroAction jumpAction(40'000, 0);
+    TestMacro testMacro;
 
     QString label = QStringLiteral("test");
     pLoadedTrack->setMacros({{2,
             std::make_shared<Macro>(
-                    QList{kAction, jumpAction},
+                    QList{testMacro.action, jumpAction},
                     label,
                     Macro::State())}});
     trackLoaded(pLoadedTrack);
@@ -145,15 +147,15 @@ TEST_F(MacroControlTest, LoadTrackAndPlayAndClear) {
 
     // LOOP
     slotLoop(1);
-    EXPECT_CALL(*this, seekExact(kAction.getTargetPositionSample()));
+    EXPECT_CALL(*this, seekExact(testMacro.action.getTargetPositionSample()));
     slotActivate();
     slotActivate();
     // Jump
     EXPECT_CALL(*this, seekExact(jumpAction.getTargetPositionSample()));
     process(0, jumpAction.getSourcePositionSample(), 2);
     // Loop back
-    EXPECT_CALL(*this, seekExact(kAction.getTargetPositionSample()));
-    process(0, kAction.getSourcePositionSample(), 2);
+    EXPECT_CALL(*this, seekExact(testMacro.action.getTargetPositionSample()));
+    process(0, testMacro.action.getSourcePositionSample(), 2);
     // Jump again
     EXPECT_CALL(*this, seekExact(jumpAction.getTargetPositionSample()));
     process(0, jumpAction.getSourcePositionSample(), 2);
