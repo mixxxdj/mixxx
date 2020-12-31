@@ -8,6 +8,7 @@
 
 #include "network/httpstatuscode.h"
 #include "util/optional.h"
+#include "util/qt.h"
 
 namespace mixxx {
 
@@ -200,12 +201,12 @@ class WebTask : public QObject {
 
     /// All member variables must only be accessed from
     /// the event loop thread!!
-    const QPointer<QNetworkAccessManager> m_networkAccessManagerWeakPtr;
+    const SafeQPointer<QNetworkAccessManager> m_networkAccessManagerWeakPtr;
 
     int m_timeoutTimerId;
     State m_state;
 
-    QPointer<QNetworkReply> m_pendingNetworkReplyWeakPtr;
+    SafeQPointer<QNetworkReply> m_pendingNetworkReplyWeakPtr;
 };
 
 } // namespace network

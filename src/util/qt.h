@@ -33,4 +33,47 @@ inline QString escapeTextPropertyWithoutShortcuts(QString text) {
     return text;
 }
 
+/// A safe wrapper for QPointer.
+///
+/// Prevents directly dereferencing the internal pointer. The internal
+/// pointer in QPointer might be reset and become a nullptr at any time
+/// when the referenced QObject lives in a different thread. This
+/// behavior could cause spurious crahses due to race conditions.
+template<typename T>
+class SafeQPointer final {
+  public:
+    SafeQPointer() = default;
+    SafeQPointer(std::nullptr_t) {
+    }
+    template<typename U>
+    explicit SafeQPointer(U* ptr)
+            : m_ptr(ptr) {
+    }
+
+    void clear() const {
+        m_ptr.clear();
+    }
+
+    T* data() const {
+        return m_ptr.data();
+    }
+
+    operator bool() const {
+        return m_ptr;
+    }
+
+    SafeQPointer<T>& operator=(std::nullptr_t) {
+        m_ptr.clear();
+        return *this;
+    }
+    template<typename U>
+    SafeQPointer<T>& operator=(U* ptr) {
+        m_ptr = ptr;
+        return *this;
+    }
+
+  private:
+    QPointer<T> m_ptr;
+};
+
 } // namespace mixxx
