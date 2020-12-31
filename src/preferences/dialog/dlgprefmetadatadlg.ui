@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>668</width>
+    <width>816</width>
     <height>514</height>
    </rect>
   </property>
@@ -23,7 +23,7 @@
       <item>
        <widget class="QCheckBox" name="enableFileListener">
         <property name="text">
-         <string>Enable metadata file</string>
+         <string>Write metadata of current track to a file</string>
         </property>
        </widget>
       </item>
@@ -99,19 +99,19 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_4">
         <item>
+         <widget class="QLineEdit" name="filePathLineEdit">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+        <item>
          <widget class="QPushButton" name="filePathButton">
           <property name="enabled">
            <bool>false</bool>
           </property>
           <property name="text">
            <string>Choose file path</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="filePathLineEdit">
-          <property name="enabled">
-           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -136,7 +136,7 @@
       <item>
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>User token. If you don't have one please register &lt;a href=&quot;https://listenbrainz.org/login/&quot;&gt;here&lt;/a&gt;</string>
+         <string>User token. If you do not have one, &lt;a href=&quot;https://listenbrainz.org/login/&quot;&gt;register a ListenBrainz account&lt;/a&gt;.</string>
         </property>
         <property name="textFormat">
          <enum>Qt::RichText</enum>
@@ -172,4 +172,5 @@
   </layout>
  </widget>
  <resources/>
+ <connections/>
 </ui>
