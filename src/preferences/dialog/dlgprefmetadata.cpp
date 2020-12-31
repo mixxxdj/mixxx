@@ -11,8 +11,6 @@ DlgPrefMetadata::DlgPrefMetadata(QWidget* pParent, const UserSettingsPointer& pS
           m_pFileSettings(nullptr),
           m_pListenBrainzSettings(nullptr) {
     setupUi(this);
-    setFileSettings();
-    setListenBrainzSettings();
 
     connect(enableListenbrainzBox,
             &QCheckBox::toggled,
@@ -22,6 +20,9 @@ DlgPrefMetadata::DlgPrefMetadata(QWidget* pParent, const UserSettingsPointer& pS
     connect(enableFileListener, &QCheckBox::toggled, filePathButton, &QPushButton::setEnabled);
     connect(enableFileListener, &QCheckBox::toggled, filePathLineEdit, &QLineEdit::setEnabled);
     connect(enableFileListener, &QCheckBox::toggled, fileEncodingComboBox, &QComboBox::setEnabled);
+
+    setFileSettings();
+    setListenBrainzSettings();
 }
 
 void DlgPrefMetadata::setFileSettings() {
