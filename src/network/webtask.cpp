@@ -179,14 +179,14 @@ void WebTask::slotStart(int timeoutMillis) {
             << this
             << "Starting...";
 
-    auto* const pPendingNetworkReply = doStartNetworkRequest(
+    m_pendingNetworkReplyWeakPtr = doStartNetworkRequest(
             pNetworkAccessManager,
             timeoutMillis);
     // Still idle, because we are in the same thread.
     // The callee is not supposed to abort a request
     // before it has beeen started successfully.
     DEBUG_ASSERT(m_state == State::Idle);
-    if (!pPendingNetworkReply) {
+    if (!m_pendingNetworkReplyWeakPtr) {
         kLogger.debug()
                 << "Network task has not been started";
         return;
@@ -201,13 +201,11 @@ void WebTask::slotStart(int timeoutMillis) {
 
     // It is not necessary to connect the QNetworkReply::errorOccurred signal.
     // Network errors are also received through the QNetworkReply::finished signal.
-    connect(pPendingNetworkReply,
+    connect(m_pendingNetworkReplyWeakPtr.data(),
             &QNetworkReply::finished,
             this,
             &WebTask::slotNetworkReplyFinished,
             Qt::UniqueConnection);
-
-    m_pendingNetworkReplyWeakPtr = pPendingNetworkReply;
 }
 
 void WebTask::abort() {
