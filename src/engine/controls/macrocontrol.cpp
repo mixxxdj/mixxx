@@ -15,7 +15,7 @@ MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int slot)
         : EngineControl(group, pConfig),
           m_slot(slot),
           m_controlPattern(QString("macro_%1_%2").arg(slot)),
-          m_bJumpPending(false),
+          m_queuedJumpTarget(-1),
           m_recordedActions(kRecordingQueueSize),
           m_iNextAction(0),
           m_COStatus(getConfigKey("status")),
@@ -68,13 +68,13 @@ MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int slot)
 
 void MacroControl::process(const double dRate, const double dCurrentSample, const int iBufferSize) {
     Q_UNUSED(dRate);
-    if (m_bJumpPending) {
-        // if a cue press doesn't change the position, notifySeek isn't called, thus m_bJumpPending isn't reset
+    if (m_queuedJumpTarget >= 0) {
+        // if a cue press doesn't change the position, notifySeek isn't called, thus m_queuedJumpTarget isn't reset
         if (getStatus() == Status::Armed) {
-            // since the source position doesn't matter for the firs
+            // start the recording on a cue press even when there is no jump
             notifySeek(dCurrentSample);
         }
-        m_bJumpPending = false;
+        m_queuedJumpTarget = -1;
     }
     if (getStatus() != Status::Playing) {
         return;
@@ -124,10 +124,11 @@ void MacroControl::trackLoaded(TrackPointer pNewTrack) {
 }
 
 void MacroControl::notifySeek(double dNewPlaypos) {
-    if (!m_bJumpPending) {
+    if (m_queuedJumpTarget < 0) {
         return;
     }
-    m_bJumpPending = false;
+    double originalDestFramePos = m_queuedJumpTarget;
+    m_queuedJumpTarget = -1;
     if (getStatus() == Status::Armed) {
         setStatus(Status::Recording);
     }
@@ -136,11 +137,12 @@ void MacroControl::notifySeek(double dNewPlaypos) {
     }
     double sourceFramePos = getSampleOfTrack().current / mixxx::kEngineChannelCount;
     double destFramePos = dNewPlaypos / mixxx::kEngineChannelCount;
-    m_recordedActions.try_emplace(sourceFramePos, destFramePos);
+    double diff = originalDestFramePos - destFramePos;
+    m_recordedActions.try_emplace(sourceFramePos + diff, originalDestFramePos);
 }
 
-void MacroControl::slotJumpQueued() {
-    m_bJumpPending = true;
+void MacroControl::slotJumpQueued(double samplePos) {
+    m_queuedJumpTarget = samplePos / mixxx::kEngineChannelCount;
 }
 
 MacroControl::Status MacroControl::getStatus() const {

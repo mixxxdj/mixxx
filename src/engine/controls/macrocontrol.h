@@ -40,7 +40,7 @@ class MacroControl : public EngineControl {
     void slotGotoPlay(double value = 1);
     void slotClear(double value = 1);
 
-    void slotJumpQueued();
+    void slotJumpQueued(double samplePos);
 
   private:
     void updateRecording();
@@ -55,7 +55,9 @@ class MacroControl : public EngineControl {
     int m_slot;
     QString m_controlPattern;
 
-    bool m_bJumpPending;
+    /// The unquantized FramePos of a jump that is yet to be processed
+    double m_queuedJumpTarget;
+
     rigtorp::SPSCQueue<MacroAction> m_recordedActions;
     QTimer m_updateRecordingTimer;
 

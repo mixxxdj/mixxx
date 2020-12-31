@@ -48,15 +48,17 @@ TEST_F(MacroControlTest, RecordSeek) {
 
     // Initial jump
     double startPos = 1'008;
-    slotJumpQueued();
+    slotJumpQueued(startPos);
     seek(startPos);
-    // Jump kAction
+    // Jump with quantization adjustment
     TestMacro testMacro;
-    seek(testMacro.action.getSourcePositionSample());
-    slotJumpQueued();
-    seek(testMacro.action.getTargetPositionSample());
+    double diff = 20;
+    seek(testMacro.action.getSourcePositionSample() - diff);
+    slotJumpQueued(testMacro.action.getTargetPositionSample());
+    seek(testMacro.action.getTargetPositionSample() - diff);
 
     // Stop recording
+    seek(testMacro.action.getTargetPositionSample());
     EXPECT_CALL(*this, seekExact(startPos));
     slotRecord(0);
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
@@ -103,7 +105,7 @@ TEST_F(MacroControlTest, ControlObjects) {
     ControlProxy(kChannelGroup, "macro_2_enable").set(0);
     ControlProxy(kChannelGroup, "macro_2_loop").set(1);
     EXPECT_TRUE(getMacro()->isLooped());
-    slotJumpQueued();
+    slotJumpQueued(0);
     notifySeek(0);
     activate.set(1);
     ASSERT_STATUS(MacroControl::Status::Recorded);
