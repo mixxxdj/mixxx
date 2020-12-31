@@ -69,12 +69,13 @@ ListenBrainzService::ListenBrainzService(UserSettingsPointer pSettings)
 
 void ListenBrainzService::slotBroadcastCurrentTrack(TrackPointer pTrack) {
     Q_UNUSED(pTrack);
-    /*if (!pTrack || !m_latestSettings.enabled)
+    if (!pTrack || !m_latestSettings.enabled) {
         return;
-    m_currentJSON = new QByteArray(
-            ListenBrainzJSONFactory::getJSONFromTrack(
-                    pTrack, ListenBrainzJSONFactory::NowListening));
-    m_manager.post(m_request, *m_currentJSON);*/
+    }
+    /* TODO() not tested
+    m_currentJSON = getJSONFromTrack(
+        pTrack, JsonType::NowListening));
+    m_manager.post(m_request, m_currentJSON);*/
 }
 
 void ListenBrainzService::slotScrobbleTrack(TrackPointer pTrack) {
