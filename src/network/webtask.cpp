@@ -173,6 +173,7 @@ void WebTask::slotStart(int timeoutMillis) {
                 QByteArray());
         return;
     }
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(pNetworkAccessManager);
 
     kLogger.debug()
             << this
