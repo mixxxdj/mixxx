@@ -80,7 +80,7 @@ class Macro {
     void addAction(const MacroAction& action);
 
     double getStartSamplePos() const;
-    /// Sets the end of the Macro (relevant for looping)
+    /// Sets the end of the Macro (relevant for looping).
     void setEnd(double framePos);
 
     void clear();

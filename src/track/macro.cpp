@@ -6,8 +6,8 @@
 
 proto::Macro_Action* MacroAction::serialize() const {
     auto serialized = new proto::Macro_Action();
-    serialized->set_sourceframe(sourceFrame);
-    serialized->set_targetframe(targetFrame);
+    serialized->set_sourceframe(static_cast<uint64_t>(sourceFrame));
+    serialized->set_targetframe(static_cast<uint64_t>(targetFrame));
     serialized->set_type(static_cast<uint32_t>(type));
     return serialized;
 }
