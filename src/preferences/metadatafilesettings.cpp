@@ -47,7 +47,7 @@ MetadataFileSettings::MetadataFileSettings(UserSettingsPointer pSettings,
           m_pDialogWidget(dialogWidget),
           m_fileEncodings{
                   "UTF-8",
-                  "latin1",
+                  "ISO-8859-1", // = latin1
                   "Windows-1251",
                   "Windows-1252",
                   "Shift-JIS",
