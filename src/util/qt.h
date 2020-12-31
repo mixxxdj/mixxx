@@ -76,4 +76,21 @@ class SafeQPointer final {
     QPointer<T> m_ptr;
 };
 
+class ScopedDeleteLater final {
+  public:
+    explicit ScopedDeleteLater(QObject* pObject)
+            : m_pObject(pObject) {
+    }
+    ~ScopedDeleteLater() {
+        if (m_pObject) {
+            m_pObject->deleteLater();
+        }
+    }
+    ScopedDeleteLater(ScopedDeleteLater&&) = delete;
+    ScopedDeleteLater(const ScopedDeleteLater&) = delete;
+
+  private:
+    QObject* const m_pObject;
+};
+
 } // namespace mixxx

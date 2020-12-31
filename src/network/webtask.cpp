@@ -288,6 +288,8 @@ void WebTask::slotNetworkReplyFinished() {
     VERIFY_OR_DEBUG_ASSERT(pFinishedNetworkReply) {
         return;
     }
+    const auto deleteFinishedNetworkReply = ScopedDeleteLater(pFinishedNetworkReply);
+
     if (kLogger.debugEnabled()) {
         if (pFinishedNetworkReply->url() == pFinishedNetworkReply->request().url()) {
             kLogger.debug()
@@ -314,7 +316,6 @@ void WebTask::slotNetworkReplyFinished() {
         kLogger.debug()
                 << this
                 << "Discarding obsolete network reply";
-        pFinishedNetworkReply->deleteLater();
         return;
     }
     VERIFY_OR_DEBUG_ASSERT(pPendingNetworkReply == pFinishedNetworkReply) {
@@ -322,12 +323,8 @@ void WebTask::slotNetworkReplyFinished() {
         kLogger.debug()
                 << this
                 << "Discarding unexpected network reply";
-        pFinishedNetworkReply->deleteLater();
         return;
     }
-    m_pendingNetworkReplyWeakPtr = nullptr;
-
-    pFinishedNetworkReply->deleteLater();
 
     VERIFY_OR_DEBUG_ASSERT(m_state == State::Pending) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
