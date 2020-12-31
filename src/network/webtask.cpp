@@ -309,20 +309,13 @@ void WebTask::slotNetworkReplyFinished() {
 
     // Check correlation between pending and finished reply
     auto* const pPendingNetworkReply = m_pendingNetworkReplyWeakPtr.data();
-    if (!pPendingNetworkReply) {
-        // No reply is pending
-        DEBUG_ASSERT(m_state == State::Aborted || m_state == State::TimedOut);
-        DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-        kLogger.debug()
-                << this
-                << "Discarding obsolete network reply";
-        return;
-    }
     VERIFY_OR_DEBUG_ASSERT(pPendingNetworkReply == pFinishedNetworkReply) {
-        // Another reply is pending
-        kLogger.debug()
+        // Another or no reply is pending
+        kLogger.warning()
                 << this
-                << "Discarding unexpected network reply";
+                << "Discarding unexpected network reply:"
+                << "finished =" << pFinishedNetworkReply
+                << "pending =" << pPendingNetworkReply;
         return;
     }
 
