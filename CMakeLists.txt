@@ -205,7 +205,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
         # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
         # we require macOS 10.12.
         # https://stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
-      elseif(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
+      elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
         add_compile_options(
           -mflat-abi=hard
           -mfpu=neon
@@ -228,7 +228,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
       # Note: requires gcc >= 4.2.0
       # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
       # are set automatically
-      if(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
+      if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
         add_compile_options(
           -mfloat-abi=hard
           -mfpu=neon
@@ -804,6 +804,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/db/fwdsqlquery.cpp
   src/util/db/fwdsqlqueryselectresult.cpp
   src/util/db/sqllikewildcardescaper.cpp
+  src/util/db/sqlite.cpp
   src/util/db/sqlqueryfinisher.cpp
   src/util/db/sqlstringformatter.cpp
   src/util/db/sqltransaction.cpp
@@ -1011,7 +1012,7 @@ if(MSVC)
     target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
 else()
-  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion)
+  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion -Werror=return-type)
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC -pedantic)
   endif()
@@ -1254,17 +1255,14 @@ install(
 
 
 # Font files
-if(UNIX AND NOT APPLE)
-  # Ubuntu and OpenSans are already installed by package manager
-  install(
-    DIRECTORY
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
-    DESTINATION
-      "${MIXXX_INSTALL_DATADIR}"
-    PATTERN "OpenSans*" EXCLUDE
-    PATTERN "Ubuntu*" EXCLUDE
-  )
-else()
+#
+# Font installation is only enabled on Windows and macOS, because on Linux/BSD
+# fonts should be installed via the package manager. Whenever a new font is
+# added to Mixxx, its package name also needs to be added to
+# tools/debian_buildenv.sh. If that font is not packaged on most distros, we
+# need to re-enable font installation on Linux/BSD and exclude the packaged
+# fonts here.
+if(APPLE OR WIN32)
   install(
     DIRECTORY
       "${CMAKE_CURRENT_SOURCE_DIR}/res/fonts"
@@ -1331,19 +1329,22 @@ if(UNIX AND NOT APPLE)
       FILES
         "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx-usb-uaccess.rules"
       DESTINATION
-        "${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d"
+        "${MIXXX_INSTALL_DATADIR}/udev/rules.d"
     )
-    message(WARNING
-      " The udev rule file for USB HID and Bulk controller permissions will\n"
-      " be installed to: ${CMAKE_INSTALL_SYSCONFDIR}/udev/rules.d.\n"
-      " If you are installing Mixxx from source for your own use, copy\n"
-      " mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n"
-      " udevadm control --reload-rules && udevadm trigger\n"
-      " as root to load the rules.\n"
-      " If you are building a package for a distribution, the correct\n"
-      " directory for system rules is /lib/udev/rules.d with an appropriate\n"
-      " priority prefix. Adjust your package script accordingly and set\n"
-      " -DINSTALL_USER_UDEV_RULES=OFF")
+    install(CODE "
+    message(STATUS \"Important Note: Installation of udev rules\n\"
+        \"The udev rule file for USB HID and Bulk controller permissions will be\n\"
+        \"installed to:\n\"
+        \"    ${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}/udev/rules.d.\n\"
+        \"If you are installing Mixxx from source for your own use, copy\n\"
+        \"mixxx-usb-uaccess.rules to /etc/udev/rules.d/ and run:\n\"
+        \"    udevadm control --reload-rules && udevadm trigger\n\"
+        \"as root to load the rules.\n\"
+        \"If you are building a package for a distribution, the correct directory for\n\"
+        \"system rules is either /lib/udev/rules.d (e.g. Debian, Fedora) or\n\"
+        \"/usr/lib/udev/rules.d (e.g. Arch Linux) with an appropriate priority prefix.\n\"
+        \"Adjust your package script accordingly and set -DINSTALL_USER_UDEV_RULES=OFF\")
+    ")
   endif()
 endif()
 
@@ -1513,10 +1514,17 @@ if(UNIX AND USE_SYMLINKS)
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
     COMMENT "Symlinking test data to build directory..."
   )
+elseif(WIN32)
+  file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/src/test" CMAKE_CURRENT_SOURCE_TESTDATA_DIR_NATIVE)
+  file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/src/test/" CMAKE_CURRENT_BINARY_TESTDATA_DIR_NATIVE)
+  add_custom_target(mixxx-testdata
+    COMMAND xcopy ${CMAKE_CURRENT_SOURCE_TESTDATA_DIR_NATIVE} ${CMAKE_CURRENT_BINARY_TESTDATA_DIR_NATIVE} /s /d /q /y
+    COMMENT "Copying missing or modified test data files to build directory..."
+  )
 else()
   add_custom_target(mixxx-testdata
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/src/test" "${CMAKE_CURRENT_BINARY_DIR}/src/test"
-    COMMENT "Copying test data to build directory..."
+    COMMENT "Copying all test data files to build directory..."
   )
 endif()
 add_dependencies(mixxx-test mixxx-testdata)
@@ -1539,10 +1547,17 @@ if(UNIX AND USE_SYMLINKS)
     COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
     COMMENT "Symlinking resources to build directory..."
   )
+elseif(WIN32)
+  file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/res" CMAKE_CURRENT_SOURCE_RES_DIR_NATIVE)
+  file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/res/" CMAKE_CURRENT_BINARY_RES_DIR_NATIVE)
+  add_custom_target(mixxx-res
+    COMMAND xcopy ${CMAKE_CURRENT_SOURCE_RES_DIR_NATIVE} ${CMAKE_CURRENT_BINARY_RES_DIR_NATIVE} /s /d /q /y
+    COMMENT "Copying missing or modified resources files to build directory..."
+  )
 else()
   add_custom_target(mixxx-res
     COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
-    COMMENT "Copying resources to build directory..."
+    COMMENT "Copying all resources files to build directory..."
   )
 endif()
 add_dependencies(mixxx-lib mixxx-res)

@@ -211,6 +211,10 @@ class Track : public QObject {
         return getPlayCounter().getTimesPlayed();
     }
 
+    QDateTime getLastPlayedAt() const {
+        return getPlayCounter().getLastPlayedAt();
+    }
+
     // Returns rating
     int getRating() const;
     // Sets rating
