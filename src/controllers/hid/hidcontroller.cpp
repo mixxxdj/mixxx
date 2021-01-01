@@ -160,6 +160,7 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
         receive(incomingData, mixxx::Time::elapsed());
     }
     QList<int> dataList;
+    dataList.reserve(bytesRead);
     for (int i = 0; i < bytesRead; i++) {
         dataList.append(pCurrentBuffer[i]);
     }
@@ -306,6 +307,7 @@ QList<int> HidController::getFeatureReport(
                                   << "(including report ID of" << reportID << ")");
     }
     QList<int> dataList;
+    dataList.reserve(bytesRead);
     for (int i = 0; i < bytesRead; i++) {
         dataList.append(dataRead[i]);
     }
