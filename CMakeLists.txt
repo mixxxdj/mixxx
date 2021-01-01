@@ -2346,7 +2346,7 @@ if(BROADCAST)
     # Check if system lib is at least 2.4.4 and not suffering bug
     # https://bugs.launchpad.net/mixxx/+bug/1833225
     if(Shout_FOUND AND Shout_VERSION VERSION_LESS 2.4.4)
-        message(STATUS "Installed libshout version is suffering from bug lp1833225")
+        message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1833225")
     endif()
     if(NOT Shout_FOUND OR Shout_VERSION VERSION_LESS 2.4.4)
       # Fall back to internal libraray in the lib tree
