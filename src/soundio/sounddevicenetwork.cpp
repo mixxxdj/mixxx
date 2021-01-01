@@ -435,15 +435,9 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
         } else {
              qDebug() << "SSE: Flush to zero mode already enabled";
         }
-        // verify if flush to zero or denormals to zero works
-        // test passes if one of the two flag is set.
-        volatile double doubleMin = DBL_MIN; // the smallest normalized double
-        VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
-            qWarning() << "SSE: Denormals to zero mode is not working. EQs and effects may suffer high CPU load";
-        } else {
-            qDebug() << "SSE: Denormals to zero mode is working";
-        }
-#elif defined(aarch64)
+#endif
+
+#ifdef aarch64
         // Flush-to-zero on aarch64 is controlled by the Floating-point Control Register
         // Load the register into our variable.
         int savedFPCR;
@@ -455,21 +449,17 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
         asm volatile("msr FPCR, %[src]"
                      :
                      : [ src ] "r"(savedFPCR | (1 << 24)));
-
+#endif
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
         VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
-            qWarning() << "aarch64 FPCR: Flush-to-zero mode is not working. "
+            qWarning() << "Network Sound: Denormals to zero mode is not working. "
                           "EQs and effects may suffer high CPU load";
         }
         else {
-            qDebug() << "aarch64 FPCR: Flush-to-zero mode is working";
+            qDebug() << "Network Sound: Denormals to zero mode is working";
         }
-#else
-        qWarning() << "No SSE or aarch64 FPCR: No denormals to zero mode "
-                      "available. EQs and effects may suffer high CPU load";
-#endif
     }
 
     m_pSoundManager->readProcess();
