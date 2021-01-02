@@ -1,5 +1,4 @@
-#ifndef WBEATSPINBOX_H
-#define WBEATSPINBOX_H
+#pragma once
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -55,7 +54,3 @@ class WBeatLineEdit : public QLineEdit {
     bool event(QEvent* pEvent) override;
     double m_scaleFactor;
 };
-
-
-
-#endif

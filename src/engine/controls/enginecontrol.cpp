@@ -1,11 +1,10 @@
-// enginecontrol.cpp
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/controls/enginecontrol.h"
-#include "engine/enginemaster.h"
+
 #include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "engine/sync/enginesync.h"
 #include "mixer/playermanager.h"
+#include "moc_enginecontrol.cpp"
 
 EngineControl::EngineControl(const QString& group,
         UserSettingsPointer pConfig)

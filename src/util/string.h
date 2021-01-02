@@ -1,5 +1,4 @@
-#ifndef MIXXX_STRING_H
-#define MIXXX_STRING_H
+#pragma once
 
 #include <QLocale>
 #include <QCollator>
@@ -25,5 +24,3 @@ class StringCollator {
   private:
     QCollator m_collator;
 };
-
-#endif // MIXXX_STRING_H

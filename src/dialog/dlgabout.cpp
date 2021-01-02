@@ -1,6 +1,9 @@
 #include "dialog/dlgabout.h"
-#include "util/version.h"
+
 #include <QFile>
+
+#include "moc_dlgabout.cpp"
+#include "util/version.h"
 
 DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);
@@ -93,9 +96,19 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Simon Harst"
             << "Harshit Maurya"
             << "Janek Fischer"
+            << "St&eacute;phane Lepin"
+            << "J&eacute;r&ocirc;me Blanchi"
             << "Chris Hills"
             << "David Lowenfels"
-            << "Sanskar Bajpai";
+            << "Matthieu Bouron"
+            << "Nathan Korth"
+            << "Kristiyan Katsarov"
+            << "J&ouml;rg Wartenberg"
+            << "Sanskar Bajpai"
+            << "Edward Millen"
+            << "Frank Breitling"
+            << "Christian"
+            << "Geraldo Nascimento";
 
     QStringList specialThanks;
     specialThanks

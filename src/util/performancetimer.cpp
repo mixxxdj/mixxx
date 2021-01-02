@@ -162,8 +162,9 @@ static int monotonicClockAvailable = false;
 static void unixCheckClockType()
 {
 #if (_POSIX_MONOTONIC_CLOCK-0 == 0)
-    if (is_likely(load_acquire(monotonicClockChecked)))
+    if (is_likely(load_acquire(monotonicClockChecked))) {
         return;
+    }
 
 # if defined(_SC_MONOTONIC_CLOCK)
     // detect if the system support monotonic timers

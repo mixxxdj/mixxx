@@ -1,5 +1,4 @@
-#ifndef NETWORKOUTPUTSTREAMWORKER_H
-#define NETWORKOUTPUTSTREAMWORKER_H
+#pragma once
 
 #include <QSharedPointer>
 
@@ -98,5 +97,3 @@ private:
 };
 
 typedef QSharedPointer<NetworkOutputStreamWorker> NetworkOutputStreamWorkerPtr;
-
-#endif /* NETWORKSTREAMWORKER_H */

@@ -7,18 +7,18 @@
 #undef WIN32
 #endif
 
+#include "broadcast/broadcastmanager.h"
 #include "broadcast/defs_broadcast.h"
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
+#include "moc_broadcastmanager.cpp"
 #include "soundio/soundmanager.h"
 #include "util/logger.h"
 
-#include "broadcast/broadcastmanager.h"
-
 namespace {
 const mixxx::Logger kLogger("BroadcastManager");
-}
+} // namespace
 
 BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
                                    SoundManager* pSoundManager)
@@ -152,8 +152,9 @@ void BroadcastManager::slotProfilesChanged() {
 }
 
 bool BroadcastManager::addConnection(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return false;
+    }
 
     if (findConnectionForProfile(profile).isNull() == false) {
         return false;
@@ -173,8 +174,9 @@ bool BroadcastManager::addConnection(BroadcastProfilePtr profile) {
 }
 
 bool BroadcastManager::removeConnection(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return false;
+    }
 
     ShoutConnectionPtr connection = findConnectionForProfile(profile);
     if (connection) {
@@ -199,8 +201,9 @@ ShoutConnectionPtr BroadcastManager::findConnectionForProfile(BroadcastProfilePt
     QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
     for (const NetworkOutputStreamWorkerPtr& pWorker : workers) {
         ShoutConnectionPtr connection = qSharedPointerCast<ShoutConnection>(pWorker);
-        if (connection.isNull())
+        if (connection.isNull()) {
             continue;
+        }
 
         if (connection->profile() == profile) {
             return connection;

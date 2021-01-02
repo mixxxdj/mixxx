@@ -5,12 +5,13 @@
 #include <QPushButton>
 #include <QStyle>
 
+#include "moc_wcolorpicker.cpp"
 #include "util/color/color.h"
 #include "util/parented_ptr.h"
 
 namespace {
 constexpr int kNumColumnsCandidates[] = {5, 4, 3};
-}
+} // namespace
 
 // Determine the best number of columns for items in a QGridView.
 //

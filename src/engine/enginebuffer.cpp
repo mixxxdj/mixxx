@@ -26,6 +26,7 @@
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
+#include "moc_enginebuffer.cpp"
 #include "preferences/usersettings.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
@@ -1142,7 +1143,7 @@ void EngineBuffer::processSyncRequests() {
 
 void EngineBuffer::processSeek(bool paused) {
     // Check if we are cloning another channel before doing any seeking.
-    EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(NULL);
+    EngineChannel* pChannel = m_pChannelToCloneFrom.fetchAndStoreRelaxed(nullptr);
     if (pChannel) {
         seekCloneBuffer(pChannel->getEngineBuffer());
     }
@@ -1382,13 +1383,13 @@ void EngineBuffer::setScalerForTest(EngineBufferScale* pScaleVinyl,
 }
 
 void EngineBuffer::collectFeatures(GroupFeatureState* pGroupFeatures) const {
-    if (m_pBpmControl != NULL) {
+    if (m_pBpmControl != nullptr) {
         m_pBpmControl->collectFeatures(pGroupFeatures);
     }
 }
 
 double EngineBuffer::getRateRatio() const {
-    if (m_pBpmControl != NULL) {
+    if (m_pBpmControl != nullptr) {
         return m_pBpmControl->getRateRatio();
     }
     return 1.0;

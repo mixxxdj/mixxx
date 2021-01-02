@@ -1,9 +1,7 @@
-// wtime.h
 // WTime is a widget showing the current time
-// In skin.xml, it is represented by a <Time> node.
+// In skins it is represented by a <Time> node.
 
-#ifndef WTIME_H
-#define WTIME_H
+#pragma once
 
 #include <QTimer>
 
@@ -33,5 +31,3 @@ class WTime: public WLabel {
     static const short s_iSecondInterval = 100;
     static const short s_iMinuteInterval = 1000;
 };
-
-#endif /* WTIME_H */

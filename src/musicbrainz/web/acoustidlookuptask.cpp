@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QMetaMethod>
 
+#include "moc_acoustidlookuptask.cpp"
 #include "musicbrainz/gzip.h"
 #include "util/assert.h"
 #include "util/logger.h"

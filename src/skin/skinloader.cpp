@@ -1,6 +1,3 @@
-// skinloader.cpp
-// Created 6/21/2010 by RJ Ryan (rryan@mit.edu)
-
 #include "skin/skinloader.h"
 
 #include <QApplication>
@@ -119,7 +116,7 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
 
     // If we don't have a skin path then fail.
     if (skinPath.isEmpty()) {
-        return NULL;
+        return nullptr;
     }
 
     LegacySkinParser legacy(m_pConfig,

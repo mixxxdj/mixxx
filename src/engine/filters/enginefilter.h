@@ -1,24 +1,6 @@
-/***************************************************************************
- *      enginefilter.h - Wrapper for FidLib Filter Library                 *
- *                      ----------------------                             *
- *   copyright      : (C) 2007 by John Sully                               *
- *   email          : jsully@scs.ryerson.ca                                *
- *                                                                         *
- **************************************************************************/
+// Wrapper for FidLib Filter Library
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEFILTER_H
-#define ENGINEFILTER_H
-
-#define MIXXX
 #include <cstdio>
 #include <fidlib.h>
 
@@ -59,5 +41,3 @@ double processSampleDynamic(void *buf, const double sample);
 double processSampleHp(void *buf, const double sample);
 double processSampleBp(void *buf, const double sample);
 double processSampleLp(void *buf, const double sample);
-
-#endif

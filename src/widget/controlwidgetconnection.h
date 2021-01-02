@@ -1,5 +1,4 @@
-#ifndef CONTROLWIDGETCONNECTION_H
-#define CONTROLWIDGETCONNECTION_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -140,5 +139,3 @@ class ControlWidgetPropertyConnection final : public ControlWidgetConnection {
   private:
     QByteArray m_propertyName;
 };
-
-#endif /* CONTROLWIDGETCONNECTION_H */

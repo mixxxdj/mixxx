@@ -6,6 +6,7 @@
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
 #include "library/trackmodel.h"
+#include "moc_coverartdelegate.cpp"
 #include "track/track.h"
 #include "util/logger.h"
 #include "widget/wlibrarytableview.h"

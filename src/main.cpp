@@ -1,20 +1,3 @@
-/***************************************************************************
-                          main.cpp  -  description
-                             -------------------
-    begin                : Mon Feb 18 09:48:17 CET 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include <QThread>
 #include <QDir>
 #include <QtDebug>
@@ -101,17 +84,8 @@ int main(int argc, char * argv[]) {
     // the main thread. Bug #1748636.
     ErrorDialogHandler::instance();
 
-    mixxx::Logging::initialize(args.getSettingsPath(),
-                               args.getLogLevel(),
-                               args.getLogFlushLevel(),
-                               args.getDebugAssertBreak());
-
     MixxxApplication app(argc, argv);
 
-    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
-        qCritical() << "Failed to register any SoundSource providers";
-        return kFatalErrorOnStartupExitCode;
-    }
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());

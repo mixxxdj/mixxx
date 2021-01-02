@@ -7,6 +7,7 @@
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "mixer/playermanager.h"
+#include "moc_controlpickermenu.cpp"
 #include "recording/defs_recording.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -412,6 +413,57 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     if (moreHotcues) {
         hotcueMainMenu->addSeparator();
         hotcueMainMenu->addMenu(hotcueMoreMenu);
+    }
+
+    // Intro/outro range markers
+    QMenu* introOutroMenu = addSubmenu(tr("Intro / Outro Cues"));
+    QString introStartTitle(tr("Intro Start Cue"));
+    QString introEndTitle(tr("Intro End Cue"));
+    QString outroStartTitle(tr("Outro Start Cue"));
+    QString outroEndTitle(tr("Outro End Cue"));
+    QMenu* introStartMenu = addSubmenu(introStartTitle, introOutroMenu);
+    QMenu* introEndMenu = addSubmenu(introEndTitle, introOutroMenu);
+    QMenu* outroStartMenu = addSubmenu(outroStartTitle, introOutroMenu);
+    QMenu* outroEndMenu = addSubmenu(outroEndTitle, introOutroMenu);
+    QList<QMenu*> introOutroSubmenus = {
+            introStartMenu,
+            introEndMenu,
+            outroStartMenu,
+            outroEndMenu};
+    const QStringList cueTypeTitles = {
+            introStartTitle,
+            introEndTitle,
+            outroStartTitle,
+            outroEndTitle};
+    const QStringList cueTypeNames = {
+            tr("intro start cue"),
+            tr("intro end cue"),
+            tr("outro start cue"),
+            tr("outro end cue")};
+    const QStringList cueTypeCOs = {
+            "intro_start",
+            "intro_end",
+            "outro_start",
+            "outro_end"};
+
+    for (int i = 0; i < introOutroSubmenus.size(); ++i) {
+        addDeckAndSamplerAndPreviewDeckControl(
+                QString("%1_activate").arg(cueTypeCOs[i]),
+                tr("Activate %1").arg(cueTypeTitles[i]),
+                tr("Jump to or set the %1")
+                        .arg(cueTypeNames[i]),
+                introOutroSubmenus[i]);
+        addDeckAndSamplerAndPreviewDeckControl(
+                QString("%1_set").arg(cueTypeCOs[i]),
+                tr("Set %1").arg(cueTypeTitles[i]),
+                tr("Set or jump to the %1")
+                        .arg(cueTypeNames[i]),
+                introOutroSubmenus[i]);
+        addDeckAndSamplerAndPreviewDeckControl(
+                QString("%1_clear").arg(cueTypeCOs[i]),
+                tr("Clear %1").arg(cueTypeTitles[i]),
+                tr("Clear the %1").arg(cueTypeNames[i]),
+                introOutroSubmenus[i]);
     }
 
     // Loops
@@ -1379,7 +1431,7 @@ void ControlPickerMenu::addPreviewDeckControl(const QString& control,
 }
 
 QMenu* ControlPickerMenu::addSubmenu(QString title, QMenu* pParent) {
-    if (pParent == NULL) {
+    if (pParent == nullptr) {
         pParent = this;
     }
     auto subMenu = make_parented<QMenu>(title, pParent);

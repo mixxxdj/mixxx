@@ -1,5 +1,4 @@
-#ifndef QUERYUTIL_H
-#define QUERYUTIL_H
+#pragma once
 
 #include <QtDebug>
 #include <QtSql>
@@ -97,5 +96,3 @@ class FieldEscaper final {
     QSqlDatabase m_database;
     mutable QSqlField m_stringField;
 };
-
-#endif /* QUERYUTIL_H */

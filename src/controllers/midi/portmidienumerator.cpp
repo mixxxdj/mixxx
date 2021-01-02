@@ -1,16 +1,11 @@
-/**
-* @file portmidienumerator.cpp
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Thu 15 Mar 2012
-* @brief This class handles discovery and enumeration of DJ controller devices that appear under the PortMIDI cross-platform API.
-*/
-
-#include <portmidi.h>
-#include <QRegExp>
-
 #include "controllers/midi/portmidienumerator.h"
 
+#include <portmidi.h>
+
+#include <QRegExp>
+
 #include "controllers/midi/portmidicontroller.h"
+#include "moc_portmidienumerator.cpp"
 #include "util/cmdlineargs.h"
 
 namespace {
@@ -208,8 +203,8 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
 
     m_devices.clear();
 
-    const PmDeviceInfo* inputDeviceInfo = NULL;
-    const PmDeviceInfo* outputDeviceInfo = NULL;
+    const PmDeviceInfo* inputDeviceInfo = nullptr;
+    const PmDeviceInfo* outputDeviceInfo = nullptr;
     int inputDevIndex = -1;
     int outputDevIndex = -1;
     QMap<int, QString> unassignedOutputDevices;

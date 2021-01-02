@@ -1,5 +1,4 @@
-#ifndef BANSHEEPLAYLISTMODEL_H
-#define BANSHEEPLAYLISTMODEL_H
+#pragma once
 
 #include <QHash>
 #include <QtSql>
@@ -39,5 +38,3 @@ class BansheePlaylistModel final : public BaseSqlTableModel {
     int m_playlistId;
     QString m_tempTableName;
 };
-
-#endif // BANSHEEPLAYLISTMODEL_H

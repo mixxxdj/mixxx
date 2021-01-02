@@ -1,15 +1,14 @@
-// broadcastsettingsmodel.cpp
-// Created on August 7th by Stéphane Lepin (Palakis)
-
-#include <preferences/broadcastsettingsmodel.h>
+#include "preferences/broadcastsettingsmodel.h"
 
 #include <preferences/broadcastsettings.h>
+
+#include "moc_broadcastsettingsmodel.cpp"
 
 namespace {
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const int kColumnStatus = 2;
-}
+} // namespace
 
 BroadcastSettingsModel::BroadcastSettingsModel() {
 }
@@ -42,8 +41,9 @@ void BroadcastSettingsModel::resetFromSettings(BroadcastSettingsPointer pSetting
 }
 
 bool BroadcastSettingsModel::addProfileToModel(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return false;
+    }
 
     int position = m_profiles.size();
     beginInsertRows(QModelIndex(), position, position);
@@ -68,8 +68,9 @@ bool BroadcastSettingsModel::addProfileToModel(BroadcastProfilePtr profile) {
 }
 
 void BroadcastSettingsModel::deleteProfileFromModel(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return;
+    }
 
     QString name = profile->getProfileName();
     int position = 0;
@@ -99,8 +100,9 @@ int BroadcastSettingsModel::columnCount(const QModelIndex& parent) const {
 
 QVariant BroadcastSettingsModel::data(const QModelIndex& index, int role) const {
     int rowIndex = index.row();
-    if (!index.isValid() || rowIndex >= m_profiles.size())
+    if (!index.isValid() || rowIndex >= m_profiles.size()) {
         return QVariant();
+    }
 
     auto it = m_profiles.constBegin() + rowIndex;
     if (it != m_profiles.constEnd()) {
@@ -150,11 +152,13 @@ QVariant BroadcastSettingsModel::headerData(int section, Qt::Orientation orienta
 }
 
 Qt::ItemFlags BroadcastSettingsModel::flags(const QModelIndex& index) const {
-    if (index.column() == kColumnEnabled)
+    if (index.column() == kColumnEnabled) {
         return QAbstractItemModel::flags(index) | Qt::ItemIsUserCheckable;
+    }
 
-    if (index.column() == kColumnName)
+    if (index.column() == kColumnName) {
         return QAbstractItemModel::flags(index) | Qt::ItemIsSelectable;
+    }
 
     return QAbstractItemModel::flags(index) | Qt::ItemIsEnabled;
 }
@@ -171,8 +175,9 @@ bool BroadcastSettingsModel::setData(const QModelIndex& index, const QVariant& v
                 QString newName = value.toString();
                 newName = newName.trimmed();
 
-                if (!newName.isNull() && !newName.isEmpty())
+                if (!newName.isNull() && !newName.isEmpty()) {
                     profile->setProfileName(newName);
+                }
             }
         }
     }
@@ -219,8 +224,9 @@ QColor BroadcastSettingsModel::connectionStatusBgColor(BroadcastProfilePtr profi
 }
 
 void BroadcastSettingsModel::onProfileNameChanged(const QString& oldName, const QString& newName) {
-    if (!m_profiles.contains(oldName))
+    if (!m_profiles.contains(oldName)) {
         return;
+    }
 
     BroadcastProfilePtr profile = m_profiles.take(oldName);
     if (profile) {

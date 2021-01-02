@@ -12,6 +12,7 @@
 #include "library/treeitem.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_setlogfeature.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "widget/wlibrary.h"

@@ -1,5 +1,4 @@
-#ifndef KEYFACTORY_H
-#define KEYFACTORY_H
+#pragma once
 
 #include <QHash>
 #include <QString>
@@ -30,5 +29,3 @@ class KeyFactory {
         const QHash<QString, QString>& extraVersionInfo,
         const int iSampleRate, const int iTotalSamples);
 };
-
-#endif /* KEYFACTORY_H */

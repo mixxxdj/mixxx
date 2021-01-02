@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "moc_weffectpushbutton.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectPushButton::WEffectPushButton(QWidget* pParent, EffectsManager* pEffectsManager)
@@ -121,11 +122,11 @@ void WEffectPushButton::parameterUpdated() {
     }
     double value = getControlParameterLeft();
 
-    auto actionGroup = new QActionGroup(m_pButtonMenu);
+    auto* actionGroup = new QActionGroup(m_pButtonMenu);
     actionGroup->setExclusive(true);
     for (const auto& option : qAsConst(options)) {
         // action is added automatically to actionGroup
-        auto action = new QAction(actionGroup);
+        auto* action = new QAction(actionGroup);
         // qDebug() << options[i].first;
         action->setText(option.first);
         action->setData(option.second);

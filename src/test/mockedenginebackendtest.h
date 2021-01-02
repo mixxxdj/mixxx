@@ -1,5 +1,4 @@
-#ifndef MOCKENGINEBACKENDTEST_H_
-#define MOCKENGINEBACKENDTEST_H_
+#pragma once
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -96,5 +95,3 @@ class MockedEngineBackendTest : public BaseSignalPathTest {
     MockScaler *m_pMockScaleKeylock1, *m_pMockScaleKeylock2, *m_pMockScaleKeylock3;
     TrackPointer m_pTrack1, m_pTrack2, m_pTrack3;
 };
-
-#endif /* MOCKEDENGINEBACKENDTEST_H_ */

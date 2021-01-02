@@ -1,7 +1,8 @@
 #include "control/controleffectknob.h"
 
-#include "util/math.h"
 #include "effects/effectmanifestparameter.h"
+#include "moc_controleffectknob.cpp"
+#include "util/math.h"
 
 ControlEffectKnob::ControlEffectKnob(const ConfigKey& key, double dMinValue, double dMaxValue)
         : ControlPotmeter(key, dMinValue, dMaxValue) {
@@ -9,7 +10,7 @@ ControlEffectKnob::ControlEffectKnob(const ConfigKey& key, double dMinValue, dou
 
 void ControlEffectKnob::setBehaviour(EffectManifestParameter::ControlHint type,
                                      double dMinValue, double dMaxValue) {
-    if (m_pControl == NULL) {
+    if (m_pControl == nullptr) {
         return;
     }
 

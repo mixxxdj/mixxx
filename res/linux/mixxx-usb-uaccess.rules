@@ -8,6 +8,8 @@
 # Note that the udev rule must match on the USB device level; matching the USB interface
 # descriptor with bInterfaceClass does not work.
 
+# New IDs must be also added to res/linux/mixxx.appdata.xml
+
 # Install and execute before 70-uaccess.rules, e.g. .../udev/rules.d/69-mixxx-usb-uaccess.rules
 
 # Allen + Heath Ltd.

@@ -5,6 +5,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "moc_baseexternalplaylistmodel.cpp"
 #include "track/track.h"
 
 BaseExternalPlaylistModel::BaseExternalPlaylistModel(QObject* parent,

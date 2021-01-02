@@ -1,5 +1,4 @@
-#ifndef TREE_ITEM_MODEL_H
-#define TREE_ITEM_MODEL_H
+#pragma once
 
 #include <QAbstractItemModel>
 #include <QModelIndex>
@@ -48,5 +47,3 @@ class TreeItemModel : public QAbstractItemModel {
   private:
     std::unique_ptr<TreeItem> m_pRootItem;
 };
-
-#endif

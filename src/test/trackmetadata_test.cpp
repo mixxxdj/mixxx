@@ -66,10 +66,15 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     // Existing track metadata (stored in the database) without extra properties
     mixxx::TrackRecord oldTrackRecord;
     mixxx::TrackMetadata* pOldTrackMetadata = oldTrackRecord.ptrMetadata();
-    pOldTrackMetadata->setBitrate(mixxx::audio::Bitrate(100));
-    pOldTrackMetadata->setChannelCount(mixxx::audio::ChannelCount(1));
-    pOldTrackMetadata->setDuration(mixxx::Duration::fromSeconds(60));
-    pOldTrackMetadata->setSampleRate(mixxx::audio::SampleRate(10000));
+    pOldTrackMetadata->setStreamInfo(
+            mixxx::audio::StreamInfo{
+                    mixxx::audio::SignalInfo{
+                            mixxx::audio::ChannelCount(1),
+                            mixxx::audio::SampleRate(10000),
+                    },
+                    mixxx::audio::Bitrate(100),
+                    mixxx::Duration::fromSeconds(60),
+            });
     mixxx::TrackInfo* pOldTrackInfo = pOldTrackMetadata->ptrTrackInfo();
     pOldTrackInfo->setArtist("old artist");
     pOldTrackInfo->setBpm(mixxx::Bpm(100));
@@ -89,10 +94,15 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
 
     // Imported track metadata (from file tags) with extra properties
     mixxx::TrackMetadata newTrackMetadata;
-    newTrackMetadata.setBitrate(mixxx::audio::Bitrate(200));
-    newTrackMetadata.setChannelCount(mixxx::audio::ChannelCount(2));
-    newTrackMetadata.setDuration(mixxx::Duration::fromSeconds(120));
-    newTrackMetadata.setSampleRate(mixxx::audio::SampleRate(20000));
+    newTrackMetadata.setStreamInfo(
+            mixxx::audio::StreamInfo{
+                    mixxx::audio::SignalInfo{
+                            mixxx::audio::ChannelCount(2),
+                            mixxx::audio::SampleRate(20000),
+                    },
+                    mixxx::audio::Bitrate(200),
+                    mixxx::Duration::fromSeconds(120),
+            });
     mixxx::TrackInfo* pNewTrackInfo = newTrackMetadata.ptrTrackInfo();
     pNewTrackInfo->setArtist("new artist");
     pNewTrackInfo->setBpm(mixxx::Bpm(200));
@@ -149,10 +159,7 @@ TEST_F(TrackMetadataTest, mergeImportedMetadata) {
     mergedTrackRecord.mergeImportedMetadata(newTrackMetadata);
 
     mixxx::TrackMetadata* pMergedTrackMetadata = mergedTrackRecord.ptrMetadata();
-    EXPECT_EQ(pOldTrackMetadata->getBitrate(), pMergedTrackMetadata->getBitrate());
-    EXPECT_EQ(pOldTrackMetadata->getChannelCount(), pMergedTrackMetadata->getChannelCount());
-    EXPECT_EQ(pOldTrackMetadata->getDuration(), pMergedTrackMetadata->getDuration());
-    EXPECT_EQ(pOldTrackMetadata->getSampleRate(), pMergedTrackMetadata->getSampleRate());
+    EXPECT_EQ(pOldTrackMetadata->getStreamInfo(), pMergedTrackMetadata->getStreamInfo());
     mixxx::TrackInfo* pMergedTrackInfo = pMergedTrackMetadata->ptrTrackInfo();
     EXPECT_EQ(pOldTrackInfo->getArtist(), pMergedTrackInfo->getArtist());
     EXPECT_EQ(pOldTrackInfo->getBpm(), pMergedTrackInfo->getBpm());

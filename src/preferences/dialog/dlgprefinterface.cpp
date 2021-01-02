@@ -12,6 +12,7 @@
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "mixxx.h"
+#include "moc_dlgprefinterface.cpp"
 #include "preferences/usersettings.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
@@ -78,29 +79,56 @@ DlgPrefInterface::DlgPrefInterface(QWidget * parent, MixxxMainWindow * mixxx,
 
     // Iterate through the available locales and add them to the combobox
     // Borrowed following snippet from http://qt-project.org/wiki/How_to_create_a_multi_language_application
-    QString translationsFolder = m_pConfig->getResourcePath() + "translations/";
+    const auto translationsDir = QDir(
+            m_pConfig->getResourcePath() +
+            QStringLiteral("translations/"));
+    DEBUG_ASSERT(translationsDir.exists());
 
-    QDir translationsDir(translationsFolder);
     QStringList fileNames = translationsDir.entryList(QStringList("mixxx_*.qm"));
-    fileNames.push_back("mixxx_en_US.qm"); // add source language as a fake value
+    // Add source language as a fake value
+    DEBUG_ASSERT(!fileNames.contains(QStringLiteral("mixxx_en_US.qm")));
+    fileNames.push_back(QStringLiteral("mixxx_en_US.qm"));
 
-    for (int i = 0; i < fileNames.size(); ++i) {
-        // Extract locale from filename
-        QString locale = fileNames[i];
-        locale.truncate(locale.lastIndexOf('.'));
-        locale.remove(0, locale.indexOf('_') + 1);
-        QLocale qlocale = QLocale(locale);
+    for (const auto& fileName : qAsConst(fileNames)) {
+        // Extract locale name from file name
+        QString localeName = fileName;
+        // Strip prefix
+        DEBUG_ASSERT(localeName.startsWith(QStringLiteral("mixxx_")));
+        localeName.remove(0, QStringLiteral("mixxx_").length());
+        // Strip file extension
+        localeName.truncate(localeName.lastIndexOf('.'));
+        // Convert to QLocale name format. Unfortunately the translation files
+        // use inconsistent language/country separators, i.e. both '-' and '_'.
+        auto localeNameFixed = localeName;
+        localeNameFixed.replace('-', '_');
+        const auto locale = QLocale(localeNameFixed);
 
-        QString lang = QLocale::languageToString(qlocale.language());
-        QString country = QLocale::countryToString(qlocale.country());
-        if (lang == "C") { // Ugly hack to remove the non-resolving locales
+        const QString languageName = QLocale::languageToString(locale.language());
+        // Ugly hack to skip non-resolvable locales
+        if (languageName == QStringLiteral("C")) {
+            qWarning() << "Unsupported locale" << localeNameFixed;
             continue;
         }
-        lang = QString("%1 (%2)").arg(lang, country);
-        ComboBoxLocale->addItem(lang, locale); // locale as userdata (for storing to config)
+        QString countryName;
+        // Ugly hack to detect locales with an explicitly specified country.
+        // https://doc.qt.io/qt-5/qlocale.html#QLocale-1
+        // "If country is not present, or is not a valid ISO 3166 code, the most
+        // appropriate country is chosen for the specified language."
+        if (localeNameFixed.contains('_')) {
+            countryName = QLocale::countryToString(locale.country());
+            DEBUG_ASSERT(!countryName.isEmpty());
+        }
+        QString displayName = languageName;
+        if (!countryName.isEmpty()) {
+            displayName += QStringLiteral(" (") + countryName + ')';
+        }
+        // The locale name is stored in the config
+        ComboBoxLocale->addItem(displayName, localeName);
     }
-    ComboBoxLocale->model()->sort(0); // Sort languages list
-    ComboBoxLocale->insertItem(0, "System", ""); // System default locale - insert at the top
+    // Sort languages list...
+    ComboBoxLocale->model()->sort(0);
+    // ...and then insert entry for default system locale at the top
+    ComboBoxLocale->insertItem(0, QStringLiteral("System"), "");
 
     // Skin configurations
     QString sizeWarningString =
@@ -221,7 +249,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
-        ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", 0));
+        ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", nullptr));
         ComboBoxSchemeconf->setCurrentIndex(0);
         // clear m_colorScheme so that SkinLoader::getSkinPreview returns the correct preview
         m_colorScheme = QString();
@@ -335,17 +363,11 @@ void DlgPrefInterface::slotSetTooltips() {
     }
 }
 
-void DlgPrefInterface::notifyLocaleRebootNecessary() {
+void DlgPrefInterface::notifyRebootNecessary() {
     // make the fact that you have to restart mixxx more obvious
     QMessageBox::information(
         this, tr("Information"),
         tr("Mixxx must be restarted before the new locale setting will take effect."));
-}
-
-void DlgPrefInterface::notifySkinRebootNecessary() {
-    // make the fact that you have to restart mixxx more obvious
-    QMessageBox::information(
-            this, tr("Information"), tr("Mixxx must be restarted to load the new skin."));
 }
 
 void DlgPrefInterface::slotSetScheme(int) {
@@ -420,21 +442,15 @@ void DlgPrefInterface::slotApply() {
     }
 
     if (locale != m_localeOnUpdate) {
-        notifyLocaleRebootNecessary();
+        notifyRebootNecessary();
         // hack to prevent showing the notification when pressing "Okay" after "Apply"
         m_localeOnUpdate = locale;
     }
 
     if (m_bRebootMixxxView) {
-        // Require restarting Mixxx to apply the new skin in order to work around
-        // macOS skin change crash. https://bugs.launchpad.net/mixxx/+bug/1877487
-#ifdef __APPLE__
-        notifySkinRebootNecessary();
-#else
         m_mixxx->rebootMixxxView();
         // Allow switching skins multiple times without closing the dialog
         m_skinOnUpdate = m_skin;
-#endif
     }
     m_bRebootMixxxView = false;
 }
