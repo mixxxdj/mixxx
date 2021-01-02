@@ -1126,15 +1126,15 @@ QMap<int, MacroPointer> Track::getMacros() const {
     return m_macros;
 }
 
-void Track::setMacros(QMap<int, MacroPointer> macros) {
+void Track::setMacros(const QMap<int, MacroPointer>& macros) {
     QMutexLocker lock(&m_qMutex);
     m_macros = macros;
 }
 
-void Track::addMacro(int slot, MacroPointer macro) {
+void Track::addMacro(int slot, const MacroPointer& pMacro) {
     QMutexLocker lock(&m_qMutex);
-    m_macros.insert(slot, macro);
-    if (macro->isDirty()) {
+    m_macros.insert(slot, pMacro);
+    if (pMacro->isDirty()) {
         markDirtyAndUnlock(&lock);
     }
 }
@@ -1144,8 +1144,8 @@ bool Track::isDirty() {
     if (m_bDirty) {
         return true;
     }
-    for (MacroPointer macro : m_macros) {
-        if (macro->isDirty()) {
+    for (const MacroPointer& pMacro : qAsConst(m_macros)) {
+        if (pMacro->isDirty()) {
             return true;
         }
     }

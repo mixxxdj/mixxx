@@ -7,11 +7,11 @@ constexpr uint kRecordingTimerInterval = 100;
 constexpr size_t kRecordingQueueSize = kRecordingTimerInterval / 10;
 } // namespace
 
-ConfigKey MacroControl::getConfigKey(QString name) {
+ConfigKey MacroControl::getConfigKey(const QString& name) {
     return ConfigKey(m_group, m_controlPattern.arg(name));
 }
 
-MacroControl::MacroControl(QString group, UserSettingsPointer pConfig, int slot)
+MacroControl::MacroControl(const QString& group, UserSettingsPointer pConfig, int slot)
         : EngineControl(group, pConfig),
           m_slot(slot),
           m_controlPattern(QString("macro_%1_%2").arg(slot)),

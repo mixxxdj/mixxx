@@ -43,7 +43,7 @@ bool MacroDAO::saveMacro(TrackId trackId, Macro* macro, int slot) const {
     }
 }
 
-void MacroDAO::saveMacros(TrackId trackId, QMap<int, MacroPointer> macros) const {
+void MacroDAO::saveMacros(TrackId trackId, const QMap<int, MacroPointer>& macros) const {
     for (auto it = macros.constBegin(); it != macros.constEnd(); ++it) {
         auto pMacro = it.value();
         // Don't save placeholder Macros

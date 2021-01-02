@@ -57,8 +57,8 @@ class Macro {
     };
     Q_DECLARE_FLAGS(State, StateFlag);
 
-    explicit Macro(QList<MacroAction> actions = {},
-            QString label = "",
+    explicit Macro(const QList<MacroAction>& actions = {},
+            const QString& label = "",
             State state = State(StateFlag::Enabled),
             int dbId = DbId::s_invalidValue);
 
@@ -66,7 +66,7 @@ class Macro {
     int getId() const;
 
     QString getLabel() const;
-    void setLabel(QString);
+    void setLabel(const QString&);
 
     bool isEnabled() const;
     bool isLooped() const;

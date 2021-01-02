@@ -12,7 +12,7 @@ proto::Macro_Action* MacroAction::serialize() const {
     return serialized;
 }
 
-Macro::Macro(QList<MacroAction> actions, QString label, State state, int dbId)
+Macro::Macro(const QList<MacroAction>& actions, const QString& label, State state, int dbId)
         : m_bDirty(false),
           m_iId(dbId),
           m_actions(actions),
@@ -55,7 +55,7 @@ QString Macro::getLabel() const {
     return m_label;
 }
 
-void Macro::setLabel(QString label) {
+void Macro::setLabel(const QString& label) {
     m_bDirty = true;
     m_label = label;
 }
