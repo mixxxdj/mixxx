@@ -67,6 +67,12 @@ class WTrackTableViewHeader : public QHeaderView {
 
   private slots:
     void showOrHideColumn(int);
+    void slotOrderChanged(int logicalIndex, Qt::SortOrder order) {
+        Q_UNUSED(logicalIndex);
+        Q_UNUSED(order);
+        m_orderChanged = true;
+    }
+    void slotDeleteHeaderState();
 
   private:
     int hiddenCount();
@@ -74,5 +80,7 @@ class WTrackTableViewHeader : public QHeaderView {
     TrackModel* getTrackModel();
 
     QMenu m_menu;
+    bool m_orderChanged;
     QMap<int, QAction*> m_columnActions;
+    QAction* m_actionForget;
 };

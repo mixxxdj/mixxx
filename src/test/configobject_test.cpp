@@ -122,6 +122,17 @@ TEST_F(ConfigObjectTest, GetValueString) {
     EXPECT_QSTRING_EQ("6", config()->getValue(ck2, "6"));
 }
 
+TEST_F(ConfigObjectTest, RemoveValue) {
+    auto ck = ConfigKey("[Test]", "testDelete");
+
+    // Check if delete works
+    EXPECT_EQ(1, config()->getValue(ck, 1));
+    config()->setValue(ck, 2);
+    EXPECT_EQ(2, config()->getValue(ck, 3));
+    config()->remove(ck);
+    EXPECT_EQ(3, config()->getValue(ck, 3));
+}
+
 TEST_F(ConfigObjectTest, Save) {
     for (int i = 0; i < 10; ++i) {
         config()->setValue(ConfigKey(QString("[Test%1]").arg(i),

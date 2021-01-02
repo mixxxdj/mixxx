@@ -77,3 +77,22 @@ bool SettingsDAO::setValue(const QString& name, const QVariant& value) const {
     }
     return true;
 }
+
+bool SettingsDAO::deleteValue(const QString& name) const {
+    const QString statement =
+            QStringLiteral("DELETE FROM ") +
+            kTable +
+            QStringLiteral(" WHERE name = :name");
+    QSqlQuery query(m_database);
+    VERIFY_OR_DEBUG_ASSERT(query.prepare(statement)) {
+        return false;
+    }
+    query.bindValue(QStringLiteral(":name"), name);
+    VERIFY_OR_DEBUG_ASSERT(query.exec()) {
+        kLogger.warning()
+                << "Failed to delete" << name
+                << query.lastError();
+        return false;
+    }
+    return true;
+}

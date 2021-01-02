@@ -173,6 +173,12 @@ class TrackModel {
         return settings.setValue(key, value);
     }
 
+    virtual bool deleteModelSetting(const QString& name) {
+        SettingsDAO settings(m_db);
+        QString key = m_settingsNamespace + "." + name;
+        return settings.deleteValue(key);
+    }
+
     virtual int defaultSortColumn() const {
         return m_iDefaultSortColumn;
     }
