@@ -101,15 +101,23 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
         QWidget* parent)
         : QHeaderView(orientation, parent),
           m_menu(tr("Show or hide columns."), this),
-          m_actionEnableSaveState(tr("Save sorting order"), this),
-          m_actionForget(QAction(tr("Forget sorting order"), this)),
-          m_orderChanged(false) {
+          m_actionEnableSaveState(tr("Remember table state"), this),
+          m_actionForget(QAction(tr("Forget current state"), this)),
+          m_headerChanged(false) {
     m_actionEnableSaveState.setCheckable(true);
     m_actionEnableSaveState.setChecked(true);
     connect(this,
             &WTrackTableViewHeader::sortIndicatorChanged,
-            this,
-            &WTrackTableViewHeader::slotOrderChanged);
+            [this](int logicalIndex, Qt::SortOrder order) {
+                Q_UNUSED(logicalIndex);
+                Q_UNUSED(order);
+                m_headerChanged = true;
+            });
+    connect(this,
+            &WTrackTableViewHeader::geometriesChanged,
+            [this]() {
+                m_headerChanged = true;
+            });
     connect(&m_actionForget,
             &QAction::triggered,
             this,
@@ -141,13 +149,6 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     // Now set the header view to show the new model
     QHeaderView::setModel(model);
 
-    // Now build actions for the new TrackModel
-    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
-
-    if (!trackModel) {
-        return;
-    }
-
     // Restore saved header state to get sizes, column positioning, etc. back.
     restoreHeaderState();
 
@@ -158,6 +159,31 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     setCascadingSectionResizes(false);
 
     setMinimumSectionSize(WTTVH_MINIMUM_SECTION_SIZE);
+
+    ensureColumnsAreVisible();
+}
+
+void WTrackTableViewHeader::ensureColumnsAreVisible() {
+    // Safety check against someone getting stuck with all columns hidden
+    // (produces an empty library table). Just re-show them all.
+    int columns = model()->columnCount();
+    if (hiddenCount() == columns) {
+        for (int i = 0; i < columns; ++i) {
+            showSection(i);
+        }
+    }
+}
+
+void WTrackTableViewHeader::buildMenu() {
+    // Now build actions for the new TrackModel
+    clearActions();
+
+    QAbstractItemModel* model = QHeaderView::model();
+    TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
+
+    if (!trackModel) {
+        return;
+    }
 
     m_menu.addAction(&m_actionEnableSaveState);
 
@@ -203,14 +229,6 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
             resizeSection(i,WTTVH_MINIMUM_SECTION_SIZE);
         }
     }
-
-    // Safety check against someone getting stuck with all columns hidden
-    // (produces an empty library table). Just re-show them all.
-    if (hiddenCount() == columns) {
-        for (int i = 0; i < columns; ++i) {
-            showSection(i);
-        }
-    }
 }
 
 void WTrackTableViewHeader::saveHeaderState() {
@@ -218,8 +236,7 @@ void WTrackTableViewHeader::saveHeaderState() {
     if (!track_model) {
         return;
     }
-    qDebug() << "saveHeaderState()" << m_orderChanged;
-    if (!m_orderChanged) {
+    if (!m_headerChanged) {
         return;
     }
 
@@ -262,6 +279,8 @@ void WTrackTableViewHeader::restoreHeaderState() {
             view_state.restoreState(this);
         }
     }
+    ensureColumnsAreVisible();
+    buildMenu();
 }
 
 void WTrackTableViewHeader::slotDeleteHeaderState() {
@@ -271,7 +290,7 @@ void WTrackTableViewHeader::slotDeleteHeaderState() {
     }
     track_model->deleteModelSetting(
             QStringLiteral("header_state_pb.") + track_model->modelKey());
-    m_orderChanged = false;
+    m_headerChanged = false;
 }
 
 void WTrackTableViewHeader::loadDefaultHeaderState() {
