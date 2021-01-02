@@ -9,7 +9,7 @@ void RecordingManagerBase::slotSetRecording(bool recording) {
 }
 
 void RecordingManagerBase::slotToggleRecording(double value) {
-    if (!value) {
+    if (value == 0) {
         return;
     }
     if (isRecordingActive()) {

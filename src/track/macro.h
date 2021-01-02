@@ -86,7 +86,7 @@ class Macro {
     void clear();
 
   private:
-    void setDirty(bool dirty);
+    void setDirty(bool dirty = true);
     void setId(int id);
 
     bool m_bDirty;

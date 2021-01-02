@@ -56,7 +56,7 @@ QString Macro::getLabel() const {
 }
 
 void Macro::setLabel(const QString& label) {
-    m_bDirty = true;
+    setDirty();
     m_label = label;
 }
 
@@ -74,7 +74,7 @@ const Macro::State& Macro::getState() const {
 
 void Macro::setState(StateFlag flag, bool enable) {
     if (m_state.testFlag(flag) != enable) {
-        m_bDirty = true;
+        setDirty();
         m_state.setFlag(flag, enable);
     }
 }
@@ -92,7 +92,7 @@ const QList<MacroAction>& Macro::getActions() const {
 }
 
 void Macro::addAction(const MacroAction& action) {
-    m_bDirty = true;
+    setDirty();
     m_actions.append(action);
 }
 
@@ -113,7 +113,7 @@ void Macro::setEnd(double framePos) {
 }
 
 void Macro::clear() {
-    m_bDirty = true;
+    setDirty();
     m_actions.clear();
 }
 

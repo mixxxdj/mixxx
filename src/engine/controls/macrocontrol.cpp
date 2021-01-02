@@ -259,16 +259,17 @@ void MacroControl::slotPlay(double value) {
 }
 
 void MacroControl::slotEnable(double value) {
-    m_pMacro->setState(Macro::StateFlag::Enabled, static_cast<bool>(value));
+    m_pMacro->setState(Macro::StateFlag::Enabled, value != 0);
 }
 
 void MacroControl::slotLoop(double value) {
-    m_pMacro->setState(Macro::StateFlag::Looped, static_cast<bool>(value));
+    m_pMacro->setState(Macro::StateFlag::Looped, value != 0);
 }
 
 void MacroControl::slotClear(double value) {
-    if (value == 0)
+    if (value == 0) {
         return;
+    }
     if (getStatus() == Status::Recorded) {
         qCDebug(macroLoggingCategory) << "Clearing" << m_slot;
         m_pMacro->clear();
@@ -280,8 +281,9 @@ void MacroControl::slotClear(double value) {
 }
 
 void MacroControl::slotActivate(double value) {
-    if (value == 0)
+    if (value == 0) {
         return;
+    }
     if (getStatus() < Status::Recorded) {
         slotRecord(!isRecording());
     } else if (getStatus() == Status::Playing) {
