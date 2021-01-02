@@ -29,13 +29,15 @@ TEST_F(MacroControlTest, Dirty) {
     getMacro()->setLabel("hello");
     EXPECT_TRUE(getMacro()->isDirty());
     EXPECT_TRUE(pLoadedTrack->isDirty());
+    // TODO test interrupt label
+    // TODO test automatic reassignment
 }
 
 TEST_F(MacroControlTest, RecordSeek) {
     // Start recording
     slotRecord(1);
     EXPECT_TRUE(isRecording());
-    EXPECT_EQ(getMacro()->getLabel(), "[Recording]");
+    EXPECT_EQ(getMacro()->getLabel(), " [Recording]");
     // Prepare recording
     int frameRate = 1'000;
     auto seek = [this, frameRate](double position) {
@@ -87,7 +89,7 @@ TEST_F(MacroControlTest, ControlObjects) {
     ControlProxy record(kChannelGroup, "macro_2_record");
     record.set(1);
     ASSERT_STATUS(MacroControl::Status::Armed);
-    EXPECT_EQ(getMacro()->getLabel(), "Intro[Recording]");
+    EXPECT_EQ(getMacro()->getLabel(), "Intro [Recording]");
     record.set(0);
     ASSERT_STATUS(MacroControl::Status::Empty);
     EXPECT_EQ(getMacro()->getLabel(), label);
@@ -99,7 +101,7 @@ TEST_F(MacroControlTest, ControlObjects) {
     ASSERT_STATUS(MacroControl::Status::Empty);
     activate.set(1);
     ASSERT_STATUS(MacroControl::Status::Armed);
-    EXPECT_EQ(getMacro()->getLabel(), "Intro[Recording]");
+    EXPECT_EQ(getMacro()->getLabel(), "Intro [Recording]");
 
     // Record
     ControlProxy(kChannelGroup, "macro_2_enable").set(0);

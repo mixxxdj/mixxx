@@ -5,6 +5,9 @@
 namespace {
 constexpr uint kRecordingTimerInterval = 100;
 constexpr size_t kRecordingQueueSize = kRecordingTimerInterval / 10;
+
+const QString recordingSuffix = QStringLiteral(" [Recording]");
+const QString interruptedSuffix = QStringLiteral(" [Interrupted]");
 } // namespace
 
 ConfigKey MacroControl::getConfigKey(const QString& name) {
@@ -102,7 +105,7 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
 void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     if (isRecording()) {
         stopRecording();
-        m_pMacro->setLabel(QString("%1 [Interrupted]").arg(m_pMacro->getLabel()));
+        m_pMacro->setLabel(m_pMacro->getLabel().append(interruptedSuffix));
     }
     if (!pNewTrack) {
         m_pMacro = nullptr;
@@ -201,7 +204,7 @@ void MacroControl::stopRecording() {
     }
     m_updateRecordingTimer.stop();
     updateRecording();
-    m_pMacro->setLabel(m_pMacro->getLabel().split("[Recording]")[0]);
+    m_pMacro->setLabel(m_pMacro->getLabel().remove(recordingSuffix));
     if (getStatus() == Status::Armed) {
         setStatus(Status::Empty);
     } else {
@@ -236,7 +239,7 @@ void MacroControl::slotRecord(double value) {
         }
         DEBUG_ASSERT(m_updateRecordingTimer.thread() == QThread::currentThread());
         m_updateRecordingTimer.start(kRecordingTimerInterval);
-        m_pMacro->setLabel(m_pMacro->getLabel().append("[Recording]"));
+        m_pMacro->setLabel(m_pMacro->getLabel().append(recordingSuffix));
     } else {
         if (isRecording()) {
             stopRecording();
@@ -269,7 +272,7 @@ void MacroControl::slotClear(double value) {
     if (getStatus() == Status::Recorded) {
         qCDebug(macroLoggingCategory) << "Clearing" << m_slot;
         m_pMacro->clear();
-        if (m_pMacro->getLabel().contains(QRegExp("^[0-9.]+$"))) {
+        if (QRegExp("[0-9. ]+(\\[\\w*\\])?").exactMatch(m_pMacro->getLabel())) {
             m_pMacro->setLabel("");
         }
         setStatus(Status::Empty);
