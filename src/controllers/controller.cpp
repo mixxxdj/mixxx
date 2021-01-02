@@ -125,7 +125,8 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
             } else {
                 spacer = QStringLiteral(" ");
             }
-            message += QString::number(data.at(i), 16)
+            // QByteArray is an array of signed 8 bit chars, but QString::number needs an unsigned 8 bit integer
+            message += QString::number(static_cast<quint8>(data.at(i)), 16)
                                .toUpper()
                                .rightJustified(2, QChar('0')) +
                     spacer;
