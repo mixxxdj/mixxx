@@ -281,6 +281,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     }
     ensureColumnsAreVisible();
     buildMenu();
+    emit sortIndicatorChanged(sortIndicatorSection(), sortIndicatorOrder());
 }
 
 void WTrackTableViewHeader::slotDeleteHeaderState() {
