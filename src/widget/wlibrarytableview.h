@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QCache>
 #include <QDateTime>
 #include <QFont>
 #include <QItemSelectionModel>
@@ -20,13 +21,11 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
         int verticalScrollPosition;
         QModelIndexList selectionIndex;
         QModelIndex currentIndex;
-        qint64 lastChange;
     };
 
   public:
     WLibraryTableView(QWidget* parent,
-            UserSettingsPointer pConfig,
-            const ConfigKey& vScrollBarPosKey);
+            UserSettingsPointer pConfig);
     ~WLibraryTableView() override;
 
     void moveSelection(int delta) override;
@@ -41,7 +40,6 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     /// @param key unique for trackmodel
     void restoreTrackModelState(const QAbstractItemModel* model, const QString& key);
     /// @brief clears the state cache until it's size is = kClearModelStatesLowWatermark
-    void clearStateCache();
     void saveCurrentViewState() override;
     void restoreCurrentViewState() override;
 
@@ -63,8 +61,7 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
 
   private:
     const UserSettingsPointer m_pConfig;
-    const ConfigKey m_vScrollBarPosKey;
 
     // saves scrollposition/selection/etc
-    QMap<QString, ModelState*> m_vModelState;
+    QCache<QString, ModelState> m_modelStateCache;
 };

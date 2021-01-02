@@ -15,19 +15,15 @@
 #include "widget/wwidget.h"
 
 namespace {
-// number of items to stop purging
-constexpr int kClearModelStatesLowWatermark = 1000;
-// number of items to start purging
-constexpr int kClearModelStatesHighWatermark = 1100;
+// number of entries in the model cache
+constexpr int kModelCacheSize = 1000;
 } // namespace
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
-        UserSettingsPointer pConfig,
-        const ConfigKey& vScrollBarPosKey)
+        UserSettingsPointer pConfig)
         : QTableView(parent),
           m_pConfig(pConfig),
-          m_vScrollBarPosKey(vScrollBarPosKey) {
-
+          m_modelStateCache(kModelCacheSize) {
     // Setup properties for table
 
     // Editing starts when clicking on an already selected item.
@@ -61,8 +57,7 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 }
 
 WLibraryTableView::~WLibraryTableView() {
-    qDeleteAll(m_vModelState);
-    m_vModelState.clear();
+    m_modelStateCache.clear();
 }
 
 
@@ -124,13 +119,10 @@ void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, con
     VERIFY_OR_DEBUG_ASSERT(!key.isEmpty()) {
         return;
     }
-    ModelState* state;
-    if (m_vModelState.contains(key)) {
-        state = m_vModelState[key];
-    } else {
+    ModelState* state = m_modelStateCache[key];
+    if (!state) {
         state = new ModelState();
     }
-    state->lastChange = QDateTime::currentSecsSinceEpoch();
     // qDebug() << "save: saveTrackModelState:" << key << model << verticalScrollBar()->value() << " | ";
     state->verticalScrollPosition = verticalScrollBar()->value();
     state->horizontalScrollPosition = horizontalScrollBar()->value();
@@ -141,15 +133,11 @@ void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, con
         state->selectionIndex = QModelIndexList();
     }
     state->currentIndex = selectionModel()->currentIndex();
-    m_vModelState[key] = state;
+    m_modelStateCache.insert(key, state, 1);
 
     WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (pHeader) {
         pHeader->saveHeaderState();
-    }
-
-    if (m_vModelState.size() > kClearModelStatesHighWatermark) {
-        clearStateCache();
     }
 }
 
@@ -166,10 +154,10 @@ void WLibraryTableView::restoreTrackModelState(
         pHeader->restoreHeaderState();
     }
 
-    if (!m_vModelState.contains(key)) {
+    ModelState* state = m_modelStateCache[key];
+    if (!state) {
         return;
     }
-    ModelState* state = m_vModelState[key];
 
     verticalScrollBar()->setValue(state->verticalScrollPosition);
     horizontalScrollBar()->setValue(state->horizontalScrollPosition);
@@ -221,28 +209,6 @@ void WLibraryTableView::restoreCurrentViewState() {
         return;
     }
     restoreTrackModelState(currentModel, key);
-}
-
-void WLibraryTableView::clearStateCache() {
-    auto lru = QMultiMap<qint64, QString>();
-
-    auto i = m_vModelState.constBegin();
-    while (i != m_vModelState.constEnd()) {
-        lru.insert(i.value()->lastChange, i.key());
-        i++;
-    }
-    QList sortKeys = lru.keys();
-    std::sort(sortKeys.begin(),
-            sortKeys.end(),
-            [](const qint64 a, const qint64 b) { return a < b; });
-
-    while (m_vModelState.size() > kClearModelStatesLowWatermark) {
-        const QStringList keys = lru.values(sortKeys.takeFirst());
-        for (const auto& key : keys) {
-            auto m = m_vModelState.take(key);
-            delete m;
-        }
-    }
 }
 
 void WLibraryTableView::focusInEvent(QFocusEvent* event) {
