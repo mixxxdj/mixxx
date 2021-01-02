@@ -209,11 +209,7 @@ class TrackModel {
     virtual void select() {
     }
 
-    virtual QString modelKey() const {
-        return pointerToQString(this) +
-                QLatin1String("#") +
-                currentSearch();
-    }
+    virtual QString modelKey() const = 0;
 
   private:
     QSqlDatabase m_db;
