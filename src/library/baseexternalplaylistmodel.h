@@ -31,9 +31,9 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     CapabilitiesFlags getCapabilities() const override;
     QString modelKey() const override {
-        return QLatin1String("external/") +
+        return QStringLiteral("external/") +
                 QString::number(m_currentPlaylistId) +
-                QLatin1String("#") +
+                QStringLiteral("#") +
                 currentSearch();
     }
 

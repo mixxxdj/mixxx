@@ -72,8 +72,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
             ColumnCache::Column column) const final;
 
     virtual QString modelKey() const override {
-        return QLatin1String("table:") + m_tableName +
-                QLatin1String("#") +
+        return QStringLiteral("table:") + m_tableName +
+                QStringLiteral("#") +
                 currentSearch();
     }
 

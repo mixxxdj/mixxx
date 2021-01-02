@@ -22,8 +22,8 @@ class MissingTableModel final : public BaseSqlTableModel {
     CapabilitiesFlags getCapabilities() const final;
 
     virtual QString modelKey() const override {
-        return QLatin1String("missing:") + m_tableName +
-                QLatin1String("#") +
+        return QStringLiteral("missing:") + m_tableName +
+                QStringLiteral("#") +
                 currentSearch();
     }
 };

@@ -73,9 +73,9 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) override;
     int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
     QString modelKey() const override {
-        return QLatin1String("browse/") +
+        return QStringLiteral("browse/") +
                 m_current_directory.dir().path() +
-                QLatin1String("#") +
+                QStringLiteral("#") +
                 currentSearch();
     }
   signals:

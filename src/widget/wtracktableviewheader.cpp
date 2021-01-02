@@ -220,7 +220,7 @@ void WTrackTableViewHeader::saveHeaderState() {
     // Convert the QByteArray to a Base64 string and save it.
     HeaderViewState view_state(*this);
     track_model->setModelSetting(
-            QLatin1String("header_state_pb.") + track_model->modelKey(),
+            QStringLiteral("header_state_pb.") + track_model->modelKey(),
             view_state.saveState());
     //qDebug() << "Saving old header state:" << result << headerState;
 }
@@ -234,7 +234,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     }
 
     QString headerStateString = track_model->getModelSetting(
-            QLatin1String("header_state_pb.") + track_model->modelKey());
+            QStringLiteral("header_state_pb.") + track_model->modelKey());
     if (headerStateString.isNull() || headerStateString.isEmpty()) {
         loadDefaultHeaderState();
         if (sql_model) {
@@ -261,7 +261,7 @@ void WTrackTableViewHeader::slotDeleteHeaderState() {
         return;
     }
     track_model->deleteModelSetting(
-            QLatin1String("header_state_pb.") + track_model->modelKey());
+            QStringLiteral("header_state_pb.") + track_model->modelKey());
     m_orderChanged = false;
 }
 

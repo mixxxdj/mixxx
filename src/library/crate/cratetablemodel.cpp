@@ -196,12 +196,12 @@ void CrateTableModel::removeTracks(const QModelIndexList& indices) {
 
 QString CrateTableModel::modelKey() const {
     if (this->m_selectedCrate.isValid()) {
-        return QLatin1String("crate/") +
+        return QStringLiteral("crate/") +
                 QString::number(m_selectedCrate.value()) +
-                QLatin1String("#") +
+                QStringLiteral("#") +
                 currentSearch();
     } else {
-        return QLatin1String("crate#") +
+        return QStringLiteral("crate#") +
                 currentSearch();
     }
 }

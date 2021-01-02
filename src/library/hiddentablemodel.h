@@ -17,8 +17,8 @@ class HiddenTableModel final : public BaseSqlTableModel {
     CapabilitiesFlags getCapabilities() const final;
 
     virtual QString modelKey() const override {
-        return QLatin1String("hidden:") + m_tableName +
-                QLatin1String("#") +
+        return QStringLiteral("hidden:") + m_tableName +
+                QStringLiteral("#") +
                 currentSearch();
     }
 };
