@@ -1020,8 +1020,9 @@ void SeratoFeature::activate() {
 }
 
 void SeratoFeature::activateChild(const QModelIndex& index) {
-    if (!index.isValid())
+    if (!index.isValid()) {
         return;
+    }
 
     //access underlying TreeItem object
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());

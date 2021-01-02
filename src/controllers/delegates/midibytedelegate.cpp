@@ -31,7 +31,7 @@ void MidiByteDelegate::setEditorData(QWidget* editor,
                                      const QModelIndex& index) const {
     int control = index.data(Qt::EditRole).toInt();
     HexSpinBox* pSpinBox = qobject_cast<HexSpinBox*>(editor);
-    if (pSpinBox == NULL) {
+    if (pSpinBox == nullptr) {
         return;
     }
     pSpinBox->setValue(control);
@@ -41,7 +41,7 @@ void MidiByteDelegate::setModelData(QWidget* editor,
                                     QAbstractItemModel* model,
                                     const QModelIndex& index) const {
     HexSpinBox* pSpinBox = qobject_cast<HexSpinBox*>(editor);
-    if (pSpinBox == NULL) {
+    if (pSpinBox == nullptr) {
         return;
     }
     model->setData(index, pSpinBox->value(), Qt::EditRole);

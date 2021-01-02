@@ -49,7 +49,7 @@ void QtVSyncTestRenderer::draw(QPainter* pPainter, QPaintEvent* /*event*/) {
     }
 
     const WaveformData* data = waveform->data();
-    if (data == NULL) {
+    if (data == nullptr) {
         return;
     }
 

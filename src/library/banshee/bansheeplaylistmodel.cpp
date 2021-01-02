@@ -39,7 +39,7 @@ namespace {
 
 QAtomicInt sTableNumber;
 
-}
+} // namespace
 
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager, BansheeDbConnection* pConnection)
         : BaseSqlTableModel(pParent, pTrackCollectionManager, "mixxx.db.model.banshee_playlist"),

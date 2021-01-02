@@ -63,11 +63,11 @@ QList<QString> ParserCsv::parse(const QString& sFilename) {
 
         file.close();
 
-        if(m_sLocations.count() != 0)
+        if (m_sLocations.count() != 0) {
             return m_sLocations;
-        else
+        } else {
             return QList<QString>(); // NULL pointer returned when no locations were found
-
+        }
     }
 
     file.close();
@@ -129,8 +129,9 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
 
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
-                             tr("Could not create file")+" "+file_str);
+        QMessageBox::warning(nullptr,
+                tr("Playlist Export Failed"),
+                tr("Could not create file") + " " + file_str);
         return false;
     }
     //Base folder of file
@@ -201,8 +202,9 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
 
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(NULL,tr("Readable text Export Failed"),
-                             tr("Could not create file")+" "+file_str);
+        QMessageBox::warning(nullptr,
+                tr("Readable text Export Failed"),
+                tr("Could not create file") + " " + file_str);
         return false;
     }
 

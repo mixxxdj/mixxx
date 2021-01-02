@@ -364,7 +364,7 @@ QList<TreeItem*> getRemovableDevices() {
 #endif
     return ret;
 }
-}
+} // namespace
 
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.

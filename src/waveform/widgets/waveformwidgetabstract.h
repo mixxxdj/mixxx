@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QWidget>
 #include <QString>
+#include <QWidget>
 
+#include "util/duration.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveformwidgettype.h"
-#include "util/duration.h"
 
 class VSyncThread;
 

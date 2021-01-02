@@ -147,12 +147,13 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
     if (!db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
         if (!db.exists()) {
-            return NULL;
+            return nullptr;
         }
     }
 
-    if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
-        return NULL;
+    if (!db.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return nullptr;
+    }
 
     //Delete all table entries of Traktor feature
     ScopedTransaction transaction(m_database);
@@ -187,12 +188,12 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
         // do error handling
         qDebug() << "Cannot process Rhythmbox music collection";
         qDebug() << "XML ERROR: " << xml.errorString();
-        return NULL;
+        return nullptr;
     }
 
     db.close();
     if (m_cancelImport) {
-        return NULL;
+        return nullptr;
     }
     return importPlaylists();
 }
@@ -202,12 +203,13 @@ TreeItem* RhythmboxFeature::importPlaylists() {
     if (!db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/playlists.xml");
         if (!db.exists()) {
-            return NULL;
+            return nullptr;
         }
     }
     //Open file
-     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
-        return NULL;
+    if (!db.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return nullptr;
+    }
 
     QSqlQuery query_insert_to_playlists(m_database);
     query_insert_to_playlists.prepare("INSERT INTO rhythmbox_playlists (id, name) "

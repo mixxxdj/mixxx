@@ -1,10 +1,10 @@
 #include "waveform/renderers/glslwaveformrenderersignal.h"
-
-#include "moc_glslwaveformrenderersignal.cpp"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
 #include <QGLFramebufferObject>
+#include <QGLShaderProgram>
 
+#include "moc_glslwaveformrenderersignal.cpp"
 #include "track/track.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
@@ -19,7 +19,6 @@ GLSLWaveformRendererSignal::GLSLWaveformRendererSignal(WaveformWidgetRenderer* w
           m_bDumpPng(false),
           m_shadersValid(false),
           m_rgbShader(rgbShader) {
-    initializeOpenGLFunctions();
 }
 
 GLSLWaveformRendererSignal::~GLSLWaveformRendererSignal() {
@@ -191,7 +190,8 @@ void GLSLWaveformRendererSignal::createFrameBuffers() {
     }
 }
 
-bool GLSLWaveformRendererSignal::onInit() {
+void GLSLWaveformRendererSignal::onInitializeGL() {
+    initializeOpenGLFunctions();
     m_textureRenderedWaveformCompletion = 0;
 
     if (!m_frameShaderProgram) {
@@ -199,14 +199,13 @@ bool GLSLWaveformRendererSignal::onInit() {
     }
 
     if (!loadShaders()) {
-        return false;
+        return;
     }
+    createFrameBuffers();
     createGeometry();
     if (!loadTexture()) {
-        return false;
+        return;
     }
-
-    return true;
 }
 
 void GLSLWaveformRendererSignal::onSetup(const QDomNode& node) {
@@ -240,19 +239,23 @@ void GLSLWaveformRendererSignal::onSetTrack() {
 }
 
 void GLSLWaveformRendererSignal::onResize() {
+    // onInitializeGL not called yet
+    if (!m_frameShaderProgram) {
+        return;
+    }
     createFrameBuffers();
 }
 
 void GLSLWaveformRendererSignal::slotWaveformUpdated() {
     m_textureRenderedWaveformCompletion = 0;
+    // onInitializeGL not called yet
+    if (!m_frameShaderProgram) {
+        return;
+    }
     loadTexture();
 }
 
 void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
-    if (!m_framebuffer || !m_framebuffer->isValid() || !m_shadersValid) {
-        return;
-    }
-
     TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
     if (!trackInfo) {
         return;
@@ -272,6 +275,8 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
     if (data == nullptr) {
         return;
     }
+
+    maybeInitializeGL();
 
     // save the GL state set for QPainter
     painter->beginNativePainting();
