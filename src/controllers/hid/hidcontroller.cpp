@@ -139,30 +139,32 @@ int HidController::close() {
 
 QList<int> HidController::getInputReport(unsigned int reportID) {
     Trace hidRead("HidController getInputReport");
-    unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
-    const int currentBufferIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
-    unsigned char* pCurrentBuffer = m_pPollData[currentBufferIndex];
+    unsigned char CurrentBuffer[kBufferSize];
     int bytesRead;
-    pCurrentBuffer[0] = reportID;
-    bytesRead = hid_get_input_report(m_pHidDevice, pCurrentBuffer, kBufferSize);
+    CurrentBuffer[0] = reportID;
+    bytesRead = hid_get_input_report(m_pHidDevice, CurrentBuffer, kBufferSize);
     controllerDebug(bytesRead << "bytes received by hid_get_input_report" << getName()
                               << "serial #" << m_deviceInfo.serialNumber()
                               << "(including report ID of" << reportID << ")");
     bytesRead -= kReportIdSize;
 
-    if (bytesRead == m_iLastPollSize &&
-            memcmp(pCurrentBuffer, pPreviousBuffer, bytesRead) == 0) {
-    } else {
-        m_iLastPollSize = bytesRead;
-        m_iPollingBufferIndex = currentBufferIndex;
-        auto incomingData = QByteArray::fromRawData(
-                reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
-        receive(incomingData, mixxx::Time::elapsed());
+    if (bytesRead < 0) {
+        // -1 is the only error value according to hidapi documentation. Otherwise minimum possible value is 1, because 1 byte is for the reportID.
+        DEBUG_ASSERT(bytesRead < 0);
+        return QList<int>();
     }
+
+    // Execute callback function in JavaScript mapping
+    // and print to stdout in case of --controllerDebug
+    auto incomingData = QByteArray::fromRawData(
+            reinterpret_cast<char*>(CurrentBuffer), bytesRead);
+    receive(incomingData, mixxx::Time::elapsed());
+
+    // Convert array of bytes read in a JavaScript compatible return type
     QList<int> dataList;
     dataList.reserve(bytesRead);
     for (int i = 0; i < bytesRead; i++) {
-        dataList.append(pCurrentBuffer[i]);
+        dataList.append(CurrentBuffer[i]);
     }
     return dataList;
 }
@@ -306,6 +308,8 @@ QList<int> HidController::getFeatureReport(
                                   << "serial #" << m_deviceInfo.serialNumber()
                                   << "(including report ID of" << reportID << ")");
     }
+
+    // Convert array of bytes read in a JavaScript compatible return type
     QList<int> dataList;
     dataList.reserve(bytesRead);
     for (int i = 0; i < bytesRead; i++) {
