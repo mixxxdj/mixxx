@@ -119,20 +119,23 @@ void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, con
     VERIFY_OR_DEBUG_ASSERT(!key.isEmpty()) {
         return;
     }
-    ModelState* state = m_modelStateCache[key];
+    ModelState* state = m_modelStateCache.take(key);
     if (!state) {
         state = new ModelState();
     }
     // qDebug() << "save: saveTrackModelState:" << key << model << verticalScrollBar()->value() << " | ";
     state->verticalScrollPosition = verticalScrollBar()->value();
     state->horizontalScrollPosition = horizontalScrollBar()->value();
-    const QModelIndexList selectedIndexes = selectionModel()->selectedIndexes();
-    if (!selectedIndexes.isEmpty()) {
-        state->selectionIndex = selectedIndexes;
+    if (!selectionModel()->selectedIndexes().isEmpty()) {
+        state->selectionIndex = selectionModel()->selectedIndexes();
     } else {
         state->selectionIndex = QModelIndexList();
     }
-    state->currentIndex = selectionModel()->currentIndex();
+    if (selectionModel()->currentIndex().isValid()) {
+        state->currentIndex = selectionModel()->currentIndex();
+    } else {
+        state->currentIndex = QModelIndex();
+    }
     m_modelStateCache.insert(key, state, 1);
 
     WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
@@ -154,7 +157,7 @@ void WLibraryTableView::restoreTrackModelState(
         pHeader->restoreHeaderState();
     }
 
-    ModelState* state = m_modelStateCache[key];
+    ModelState* state = m_modelStateCache.take(key);
     if (!state) {
         return;
     }
@@ -172,6 +175,8 @@ void WLibraryTableView::restoreTrackModelState(
     if (state->currentIndex.isValid()) {
         selection->setCurrentIndex(state->currentIndex, QItemSelectionModel::NoUpdate);
     }
+    // reinsert the state into the cache
+    m_modelStateCache.insert(key, state, 1);
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
