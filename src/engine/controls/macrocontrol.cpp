@@ -226,32 +226,32 @@ void MacroControl::stopRecording() {
 }
 
 void MacroControl::slotRecord(double value) {
-    if (value) {
-        switch (getStatus()) {
-        case Status::Empty:
-            setStatus(Status::Armed);
-            break;
-        case Status::Recorded:
-            setStatus(Status::Recording);
-            break;
-        default:
-            return;
-        }
-        DEBUG_ASSERT(m_updateRecordingTimer.thread() == QThread::currentThread());
-        m_updateRecordingTimer.start(kRecordingTimerInterval);
-        m_pMacro->setLabel(m_pMacro->getLabel().append(recordingSuffix));
-    } else {
+    if (value == 0) {
         if (isRecording()) {
             stopRecording();
         }
+        return;
     }
+    switch (getStatus()) {
+    case Status::Empty:
+        setStatus(Status::Armed);
+        break;
+    case Status::Recorded:
+        setStatus(Status::Recording);
+        break;
+    default:
+        return;
+    }
+    DEBUG_ASSERT(m_updateRecordingTimer.thread() == QThread::currentThread());
+    m_updateRecordingTimer.start(kRecordingTimerInterval);
+    m_pMacro->setLabel(m_pMacro->getLabel().append(recordingSuffix));
 }
 
 void MacroControl::slotPlay(double value) {
     if (static_cast<bool>(value) == (getStatus() == Status::Playing)) {
         return;
     }
-    if (value) {
+    if (value > 0) {
         play();
     } else {
         stop();
@@ -259,15 +259,15 @@ void MacroControl::slotPlay(double value) {
 }
 
 void MacroControl::slotEnable(double value) {
-    m_pMacro->setState(Macro::StateFlag::Enabled, value);
+    m_pMacro->setState(Macro::StateFlag::Enabled, static_cast<bool>(value));
 }
 
 void MacroControl::slotLoop(double value) {
-    m_pMacro->setState(Macro::StateFlag::Looped, value);
+    m_pMacro->setState(Macro::StateFlag::Looped, static_cast<bool>(value));
 }
 
 void MacroControl::slotClear(double value) {
-    if (!value)
+    if (value == 0)
         return;
     if (getStatus() == Status::Recorded) {
         qCDebug(macroLoggingCategory) << "Clearing" << m_slot;
@@ -280,7 +280,7 @@ void MacroControl::slotClear(double value) {
 }
 
 void MacroControl::slotActivate(double value) {
-    if (!value)
+    if (value == 0)
         return;
     if (getStatus() < Status::Recorded) {
         slotRecord(!isRecording());
@@ -292,7 +292,7 @@ void MacroControl::slotActivate(double value) {
 }
 
 void MacroControl::slotGotoPlay(double value) {
-    if (value && getStatus() > Status::Recording) {
+    if (value > 0 && getStatus() > Status::Recording) {
         seekExact(m_pMacro->getStartSamplePos());
         play();
     }
