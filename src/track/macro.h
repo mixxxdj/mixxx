@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtCore>
+#include <memory>
 
 #include "engine/engine.h"
 #include "proto/macro.pb.h"

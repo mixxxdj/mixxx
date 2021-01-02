@@ -232,14 +232,14 @@ EngineBuffer::EngineBuffer(const QString& group,
     addControl(m_pCueControl);
 
     for (int i = 1; i <= kMacrosPerChannel; ++i) {
-        auto control = new MacroControl(group, pConfig, i);
+        auto* pMacroControl = new MacroControl(group, pConfig, i);
         connect(this,
                 &EngineBuffer::cueJumpQueued,
-                control,
+                pMacroControl,
                 &MacroControl::slotJumpQueued,
                 Qt::DirectConnection);
-        m_macroControls.append(control);
-        addControl(control);
+        m_macroControls.append(pMacroControl);
+        addControl(pMacroControl);
     }
     DEBUG_ASSERT(m_macroControls.size() == kMacrosPerChannel);
 
