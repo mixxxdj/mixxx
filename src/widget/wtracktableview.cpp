@@ -150,8 +150,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
         return;
     }
 
-    TrackModel* newModel = nullptr;
-
     /* If the model has not changed
      * there's no need to exchange the headers
      * this will cause a small GUI freeze
@@ -166,10 +164,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
             restoreCurrentViewState();
         }
         return;
-    } else {
-        newModel = trackModel;
-        // we can't save the state here, becaus the model might already be
-        // associated with different data and this would override the wrong state
     }
 
     setVisible(false);
