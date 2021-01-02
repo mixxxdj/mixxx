@@ -2531,7 +2531,7 @@ find_package(LibUSB)
 find_package(HIDAPI)
 option(HID "USB HID controller support" ON)
 
-if(CMAKE_VERSION VERSION_LESS "0.10.0")
+if(HIDAPI_VERSION VERSION_LESS "0.10.0")
   set(HIDAPI_STATIC ON)
 else()
   cmake_dependent_option(HIDAPI_STATIC "Link HIDAPI library statically" OFF "HIDAPI_FOUND" ON)
