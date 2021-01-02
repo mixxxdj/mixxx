@@ -377,8 +377,8 @@ QString Sandbox::migrateOldSettings() {
     }
 
     QDir homeDir(homePath);
-    if (!homeDir.exists() || !homeDir.isReadable()) {
-        qCritical() << "Cannot read home directory" << homePath;
+    if (!homeDir.exists()) {
+        qCritical() << "Home directory does not exist" << homePath;
         return QString();
     }
 
