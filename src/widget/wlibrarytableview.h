@@ -16,7 +16,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
 
     struct ModelState {
-        int scrollPosition;
+        int horizontalScrollPosition;
+        int verticalScrollPosition;
         QModelIndexList selectionIndex;
         QModelIndex currentIndex;
         qint64 lastChange;

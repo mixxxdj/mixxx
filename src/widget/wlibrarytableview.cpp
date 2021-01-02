@@ -15,7 +15,9 @@
 #include "widget/wwidget.h"
 
 namespace {
+// number of items to stop purging
 constexpr int kClearModelStatesLowWatermark = 1000;
+// number of items to start purging
 constexpr int kClearModelStatesHighWatermark = 1100;
 } // namespace
 
@@ -76,8 +78,6 @@ void WLibraryTableView::moveSelection(int delta) {
     QModelIndex newIndex;
     while (delta != 0) {
         QModelIndex currentIndex = currentSelection->currentIndex();
-        //clearSelection();
-        //currentSelection->clearSelection();
         if (currentIndex.isValid()) {
             int row = currentIndex.row();
             if (delta > 0) {
@@ -101,19 +101,17 @@ void WLibraryTableView::moveSelection(int delta) {
         } else {
             // no selection, so select the first or last element depending on delta
             if (delta > 0) {
-                //selectRow(0);
                 newIndex = pModel->index(0, 0);
                 delta--;
             } else {
-                //selectRow(pModel->rowCount() - 1);
                 newIndex = pModel->index(pModel->rowCount() - 1, 0);
                 delta++;
             }
         }
-        // this wired combination works when switching between
+        // this wired combination works when switching between models
         setCurrentIndex(newIndex);
         currentSelection->select(newIndex, QItemSelectionModel::ClearAndSelect);
-        // does not work, why ?
+        // why does scrollTo not work ?
         // scrollTo(newIndex);
         selectRow(newIndex.row());
     }
@@ -134,7 +132,8 @@ void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, con
     }
     state->lastChange = QDateTime::currentSecsSinceEpoch();
     // qDebug() << "save: saveTrackModelState:" << key << model << verticalScrollBar()->value() << " | ";
-    state->scrollPosition = verticalScrollBar()->value();
+    state->verticalScrollPosition = verticalScrollBar()->value();
+    state->horizontalScrollPosition = horizontalScrollBar()->value();
     const QModelIndexList selectedIndexes = selectionModel()->selectedIndexes();
     if (!selectedIndexes.isEmpty()) {
         state->selectionIndex = selectedIndexes;
@@ -172,7 +171,8 @@ void WLibraryTableView::restoreTrackModelState(
     }
     ModelState* state = m_vModelState[key];
 
-    verticalScrollBar()->setValue(state->scrollPosition);
+    verticalScrollBar()->setValue(state->verticalScrollPosition);
+    horizontalScrollBar()->setValue(state->horizontalScrollPosition);
 
     auto selection = selectionModel();
     selection->clearSelection();
