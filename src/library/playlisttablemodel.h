@@ -34,8 +34,7 @@ class PlaylistTableModel final : public BaseSqlTableModel {
     bool isLocked() final;
     CapabilitiesFlags getCapabilities() const final;
     virtual QString modelKey() const override {
-        return pointerToQString(this) +
-                QLatin1String("/") +
+        return QLatin1String("playlist/") +
                 QString::number(m_iPlaylistId) +
                 QLatin1String("#") +
                 currentSearch();

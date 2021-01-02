@@ -15,4 +15,10 @@ class HiddenTableModel final : public BaseSqlTableModel {
     void unhideTracks(const QModelIndexList& indices) final;
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     CapabilitiesFlags getCapabilities() const final;
+
+    virtual QString modelKey() const override {
+        return QLatin1String("hidden:") + m_tableName +
+                QLatin1String("#") +
+                currentSearch();
+    }
 };

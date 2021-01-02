@@ -20,4 +20,10 @@ class MissingTableModel final : public BaseSqlTableModel {
     void purgeTracks(const QModelIndexList& indices) final;
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     CapabilitiesFlags getCapabilities() const final;
+
+    virtual QString modelKey() const override {
+        return QLatin1String("missing:") + m_tableName +
+                QLatin1String("#") +
+                currentSearch();
+    }
 };

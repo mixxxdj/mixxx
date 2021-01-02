@@ -11,6 +11,7 @@
 #include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
 #include "widget/wskincolor.h"
+#include "widget/wtracktableviewheader.h"
 #include "widget/wwidget.h"
 
 namespace {
