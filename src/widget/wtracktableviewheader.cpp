@@ -101,11 +101,19 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
         QWidget* parent)
         : QHeaderView(orientation, parent),
           m_menu(tr("Show or hide columns."), this),
+          m_actionEnableSaveState(tr("Save sorting order"), this),
+          m_actionForget(QAction(tr("Forget sorting order"), this)),
           m_orderChanged(false) {
+    m_actionEnableSaveState.setCheckable(true);
+    m_actionEnableSaveState.setChecked(true);
     connect(this,
             &WTrackTableViewHeader::sortIndicatorChanged,
             this,
             &WTrackTableViewHeader::slotOrderChanged);
+    connect(&m_actionForget,
+            &QAction::triggered,
+            this,
+            &WTrackTableViewHeader::slotDeleteHeaderState);
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
@@ -151,15 +159,12 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
 
     setMinimumSectionSize(WTTVH_MINIMUM_SECTION_SIZE);
 
+    m_menu.addAction(&m_actionEnableSaveState);
+
     if (hasPersistedHeaderState()) {
-        m_actionForget = new QAction(tr("Forget sorting order"), &m_menu);
-        connect(m_actionForget,
-                &QAction::triggered,
-                this,
-                &WTrackTableViewHeader::slotDeleteHeaderState);
-        m_menu.addAction(m_actionForget);
-        m_menu.addSeparator();
+        m_menu.addAction(&m_actionForget);
     }
+    m_menu.addSeparator();
     // Map this action's signals
 
     int columns = model->columnCount();
@@ -215,6 +220,10 @@ void WTrackTableViewHeader::saveHeaderState() {
     }
     qDebug() << "saveHeaderState()" << m_orderChanged;
     if (!m_orderChanged) {
+        return;
+    }
+
+    if (!m_actionEnableSaveState.isChecked()) {
         return;
     }
     // Convert the QByteArray to a Base64 string and save it.
@@ -282,7 +291,7 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
     if (!track_model) {
         return false;
     }
-    QString headerStateString = track_model->getModelSetting("header_state_pb");
+    QString headerStateString = QStringLiteral("header_state_pb.") + track_model->modelKey();
     return !headerStateString.isNull();
 }
 
@@ -292,7 +301,6 @@ void WTrackTableViewHeader::clearActions() {
     // mapper.
     m_columnActions.clear();
     m_menu.clear();
-    m_actionForget = nullptr;
 }
 
 void WTrackTableViewHeader::showOrHideColumn(int column) {

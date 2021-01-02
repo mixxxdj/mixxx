@@ -64,6 +64,12 @@ class WTrackTableViewHeader : public QHeaderView {
     void loadDefaultHeaderState();
      /** returns false if the header state is stored in the database (on first time usgae) **/
     bool hasPersistedHeaderState();
+    bool getEnableSaveState() {
+        return m_actionEnableSaveState.isChecked();
+    }
+    void setEnableSaveState(bool enable) {
+        m_actionEnableSaveState.setChecked(enable);
+    }
 
   private slots:
     void showOrHideColumn(int);
@@ -80,7 +86,8 @@ class WTrackTableViewHeader : public QHeaderView {
     TrackModel* getTrackModel();
 
     QMenu m_menu;
-    bool m_orderChanged;
     QMap<int, QAction*> m_columnActions;
-    QAction* m_actionForget;
+    QAction m_actionEnableSaveState;
+    QAction m_actionForget;
+    bool m_orderChanged;
 };
