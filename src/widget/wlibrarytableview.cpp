@@ -144,6 +144,11 @@ void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, con
     state->currentIndex = selectionModel()->currentIndex();
     m_vModelState[key] = state;
 
+    WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
+    if (pHeader) {
+        pHeader->saveHeaderState();
+    }
+
     if (m_vModelState.size() > kClearModelStatesHighWatermark) {
         clearStateCache();
     }
@@ -152,9 +157,14 @@ void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, con
 void WLibraryTableView::restoreTrackModelState(
         const QAbstractItemModel* model, const QString& key) {
     updateGeometries();
-    // qDebug() << "restoreTrackModelState:" << key << model << m_vModelState.keys();
+    //qDebug() << "restoreTrackModelState:" << key << model << m_vModelState.keys();
     if (model == nullptr) {
         return;
+    }
+
+    WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
+    if (pHeader) {
+        pHeader->restoreHeaderState();
     }
 
     if (!m_vModelState.contains(key)) {

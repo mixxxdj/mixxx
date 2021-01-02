@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "library/basesqltablemodel.h"
 #include "library/trackmodel.h"
 #include "moc_wtracktableviewheader.cpp"
 #include "util/math.h"
@@ -197,27 +198,36 @@ void WTrackTableViewHeader::saveHeaderState() {
     }
     // Convert the QByteArray to a Base64 string and save it.
     HeaderViewState view_state(*this);
-    track_model->setModelSetting("header_state_pb", view_state.saveState());
+    track_model->setModelSetting(
+            QLatin1String("header_state_pb.") + track_model->modelKey(),
+            view_state.saveState());
     //qDebug() << "Saving old header state:" << result << headerState;
 }
 
 void WTrackTableViewHeader::restoreHeaderState() {
     TrackModel* track_model = getTrackModel();
+    BaseSqlTableModel* sql_model = dynamic_cast<BaseSqlTableModel*>(track_model);
 
     if (!track_model) {
         return;
     }
 
-    QString headerStateString = track_model->getModelSetting("header_state_pb");
+    QString headerStateString = track_model->getModelSetting(
+            QLatin1String("header_state_pb.") + track_model->modelKey());
     if (headerStateString.isNull()) {
         loadDefaultHeaderState();
+        if (sql_model) {
+            sql_model->setSort(sql_model->defaultSortColumn(), sql_model->defaultSortOrder());
+        }
     } else {
         // Load the previous header state (stored as serialized protobuf).
         // Decode it and restore it.
-        //qDebug() << "Restoring header state from proto" << headerStateString;
         HeaderViewState view_state(headerStateString);
         if (!view_state.healthy()) {
             loadDefaultHeaderState();
+            if (sql_model) {
+                sql_model->setSort(sql_model->defaultSortColumn(), sql_model->defaultSortOrder());
+            }
         } else {
             view_state.restoreState(this);
         }
