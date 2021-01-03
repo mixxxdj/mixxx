@@ -544,7 +544,7 @@ void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
             }
 
             m_trackSourceOrderBy.append(first ? "ORDER BY " : ", ");
-            m_trackSourceOrderBy.append(mixxx::DbConnection::collateLexicographically(sort_field));
+            m_trackSourceOrderBy.append(sort_field);
             m_trackSourceOrderBy.append((sc.m_order == Qt::AscendingOrder) ? " ASC" : " DESC");
             //qDebug() << m_trackSourceOrderBy;
             first = false;

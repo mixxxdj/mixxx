@@ -14,6 +14,10 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
         : TrackSetTableModel(parent, pTrackCollectionManager, settingsNamespace),
           m_iPlaylistId(-1),
           m_keepDeletedTracks(keepDeletedTracks) {
+    connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
+            &PlaylistDAO::tracksChanged,
+            this,
+            &PlaylistTableModel::playlistsChanged);
 }
 
 void PlaylistTableModel::initSortColumnMapping() {
@@ -160,11 +164,6 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     setSearch("");
     setDefaultSort(fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
-
-    connect(&m_pTrackCollectionManager->internalCollection()->getPlaylistDAO(),
-            &PlaylistDAO::tracksChanged,
-            this,
-            &PlaylistTableModel::playlistsChanged);
 }
 
 int PlaylistTableModel::addTracks(const QModelIndex& index,
