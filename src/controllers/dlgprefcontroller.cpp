@@ -61,7 +61,7 @@ DlgPrefController::DlgPrefController(QWidget* parent,
 
     // When the user picks a preset, load it.
     connect(m_ui.comboBoxPreset,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefController::slotPresetSelected);
 
@@ -433,7 +433,7 @@ void DlgPrefController::slotApply() {
     }
     m_ui.chkEnabledDevice->setChecked(bEnabled);
 
-    // The shouldn't be dirty at this pint because we already tried to save
+    // The shouldn't be dirty at this point because we already tried to save
     // it. If that failed, don't apply the preset.
     if (m_pPreset && m_pPreset->isDirty()) {
         return;
