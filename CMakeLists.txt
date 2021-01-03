@@ -1645,7 +1645,7 @@ if(ENGINEPRIME)
     set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
     ExternalProject_Add(libdjinterop
       GIT_REPOSITORY https://github.com/xsco/libdjinterop.git
-      GIT_TAG tags/0.14.4
+      GIT_TAG tags/0.14.5
       GIT_SHALLOW TRUE
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       CMAKE_ARGS
