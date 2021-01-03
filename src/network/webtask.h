@@ -1,14 +1,13 @@
 #pragma once
 
-#include <QMetaMethod>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QPointer>
 #include <QUrl>
 
 #include "network/httpstatuscode.h"
+#include "network/networktask.h"
 #include "util/optional.h"
-#include "util/qt.h"
 
 namespace mixxx {
 
@@ -87,74 +86,24 @@ QDebug operator<<(QDebug dbg, const CustomWebResponse& arg);
 
 /// A transient task for performing a single HTTP network request
 /// asynchronously.
-///
-/// The results are transmitted by emitting signals. At least one
-/// of the signal receivers is responsible for destroying the task
-/// by invoking QObject::deleteLater(). If no receiver is connected
-/// at the time the finalization signal is emitted then the task
-/// will destroy itself.
-///
-/// All pointers to tasks should be wrapped into QPointer. Otherwise
-/// plain pointers might become dangling upon deletion!
-class WebTask : public QObject {
+class WebTask : public NetworkTask {
     Q_OBJECT
 
   public:
     explicit WebTask(
             QNetworkAccessManager* networkAccessManager,
             QObject* parent = nullptr);
-    ~WebTask() override;
-
-    /// Start a new task by sending a network request.
-    ///
-    /// timeoutMillis <= 0: No timeout (unlimited)
-    /// timeoutMillis > 0: Implicitly aborted after timeout expired
-    ///
-    /// This function is thread-safe and could be invoked from any thread.
-    void invokeStart(
-            int timeoutMillis = 0);
-
-    /// Cancel the task by aborting the pending network request.
-    ///
-    /// This function is thread-safe and could be invoked from any thread.
-    void invokeAbort();
+    ~WebTask() override = default;
 
   public slots:
     void slotStart(
-            int timeoutMillis);
-    void slotAbort();
+            int timeoutMillis) override;
+    void slotAbort() override;
 
   private slots:
     void slotNetworkReplyFinished();
 
-  signals:
-    /// The receiver is responsible for deleting the task in the
-    /// corresponding slot handler!! Otherwise the task will remain
-    /// in memory as a dysfunctional zombie until its parent object
-    /// is finally deleted. If no receiver is connected the task
-    /// will be deleted implicitly.
-    void aborted(
-            const QUrl& requestUrl);
-    void networkError(
-            const QUrl& requestUrl,
-            QNetworkReply::NetworkError errorCode,
-            const QString& errorString,
-            const QByteArray& errorContent);
-
   protected:
-    /// Cancel the task by aborting the pending network request.
-    ///
-    /// This function is NOT thread-safe and must only be called from
-    /// the event loop thread.
-    void abort();
-
-    template<typename S>
-    bool isSignalFuncConnected(
-            S signalFunc) {
-        const QMetaMethod signal = QMetaMethod::fromSignal(signalFunc);
-        return isSignalConnected(signal);
-    }
-
     void timerEvent(QTimerEvent* event) final;
 
     enum class State {
@@ -201,7 +150,6 @@ class WebTask : public QObject {
 
     /// All member variables must only be accessed from
     /// the event loop thread!!
-    const SafeQPointer<QNetworkAccessManager> m_networkAccessManagerWeakPtr;
 
     int m_timeoutTimerId;
     State m_state;

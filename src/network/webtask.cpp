@@ -4,8 +4,6 @@
 #include <mutex> // std::once_flag
 
 #include "moc_webtask.cpp"
-#include "util/assert.h"
-#include "util/counter.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
 
@@ -18,10 +16,6 @@ namespace {
 const Logger kLogger("mixxx::network::WebTask");
 
 constexpr int kInvalidTimerId = -1;
-
-// count = even number (ctor + dtor)
-// sum = 0 (no memory leaks)
-Counter s_instanceCounter(QStringLiteral("mixxx::network::WebTask"));
 
 std::once_flag registerMetaTypesOnceFlag;
 
@@ -74,16 +68,10 @@ QDebug operator<<(QDebug dbg, const CustomWebResponse& arg) {
 WebTask::WebTask(
         QNetworkAccessManager* networkAccessManager,
         QObject* parent)
-        : QObject(parent),
-          m_networkAccessManagerWeakPtr(networkAccessManager),
+        : NetworkTask(networkAccessManager, parent),
           m_timeoutTimerId(kInvalidTimerId),
           m_state(State::Idle) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
-    s_instanceCounter.increment(1);
-}
-
-WebTask::~WebTask() {
-    s_instanceCounter.increment(-1);
 }
 
 void WebTask::onNetworkError(
@@ -108,51 +96,11 @@ void WebTask::onNetworkError(
         m_state = State::Failed;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(
-            isSignalFuncConnected(&WebTask::networkError)) {
-        kLogger.warning()
-                << this
-                << "Unhandled network error:"
-                << requestUrl
-                << errorCode
-                << errorString
-                << errorContent;
-        deleteLater();
-        return;
-    }
-    emit networkError(
+    emitNetworkError(
             std::move(requestUrl),
             errorCode,
             std::move(errorString),
             std::move(errorContent));
-}
-
-void WebTask::invokeStart(int timeoutMillis) {
-    QMetaObject::invokeMethod(
-            this,
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-            "slotStart",
-            Qt::AutoConnection,
-            Q_ARG(int, timeoutMillis)
-#else
-            [this, timeoutMillis] {
-                this->slotStart(timeoutMillis);
-            }
-#endif
-    );
-}
-
-void WebTask::invokeAbort() {
-    QMetaObject::invokeMethod(
-            this,
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-            "slotAbort"
-#else
-            [this] {
-                this->slotAbort();
-            }
-#endif
-    );
 }
 
 void WebTask::slotStart(int timeoutMillis) {
@@ -194,7 +142,8 @@ void WebTask::slotStart(int timeoutMillis) {
     m_state = State::Pending;
 
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-    if (timeoutMillis > 0) {
+    if (timeoutMillis != kNoTimeout) {
+        DEBUG_ASSERT(timeoutMillis > 0);
         m_timeoutTimerId = startTimer(timeoutMillis);
         DEBUG_ASSERT(m_timeoutTimerId != kInvalidTimerId);
     }
@@ -208,7 +157,7 @@ void WebTask::slotStart(int timeoutMillis) {
             Qt::UniqueConnection);
 }
 
-void WebTask::abort() {
+void WebTask::slotAbort() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_state != State::Pending) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
@@ -236,21 +185,7 @@ void WebTask::abort() {
     doNetworkReplyAborted(pPendingNetworkReply);
     m_state = State::Aborted;
     const auto requestUrl = pPendingNetworkReply->request().url();
-    VERIFY_OR_DEBUG_ASSERT(
-            isSignalFuncConnected(&WebTask::aborted)) {
-        kLogger.warning()
-                << this
-                << "Unhandled abort signal"
-                << requestUrl;
-        deleteLater();
-        return;
-    }
-    emit aborted(
-            std::move(requestUrl));
-}
-
-void WebTask::slotAbort() {
-    abort();
+    emitAborted(requestUrl);
 }
 
 void WebTask::timerEvent(QTimerEvent* event) {
