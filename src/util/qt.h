@@ -3,6 +3,7 @@
 /// Common utility functions and helpers that are needed for
 /// all Qt versions.
 
+#include <QPointer>
 #include <QString>
 
 namespace mixxx {
