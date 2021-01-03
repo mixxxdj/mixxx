@@ -60,9 +60,11 @@ class CoreServices : public QObject {
         return m_pRecordingManager;
     }
 
+#ifdef __BROADCAST__
     std::shared_ptr<BroadcastManager> getBroadcastManager() const {
         return m_pBroadcastManager;
     }
+#endif
 
     std::shared_ptr<ControllerManager> getControllerManager() const {
         return m_pControllerManager;
