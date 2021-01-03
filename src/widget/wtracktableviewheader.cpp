@@ -9,6 +9,10 @@
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 
+namespace {
+const auto kHeaderStateKey = QStringLiteral("header_state_pb");
+}
+
 HeaderViewState::HeaderViewState(const QHeaderView& headers)
 {
     QAbstractItemModel* model = headers.model();
@@ -102,8 +106,8 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
         : QHeaderView(orientation, parent),
           m_menu(tr("Show or hide columns."), this),
           m_actionUseIndependentState(tr("Use independent state"), this),
-          m_actionDeleteIndependentState(QAction(tr("Forget independent state"), this)),
           m_headerChanged(false) {
+    m_actionUseIndependentState.setCheckable(true);
     connect(this,
             &WTrackTableViewHeader::sortIndicatorChanged,
             [this](int logicalIndex, Qt::SortOrder order) {
@@ -116,14 +120,10 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
             [this]() {
                 m_headerChanged = true;
             });
-    connect(&m_actionDeleteIndependentState,
-            &QAction::triggered,
-            this,
-            &WTrackTableViewHeader::slotDeleteIndependentState);
     connect(&m_actionUseIndependentState,
-            &QAction::triggered,
+            &QAction::toggled,
             this,
-            &WTrackTableViewHeader::slotSaveIndependentState);
+            &WTrackTableViewHeader::slotIndependentStateChanged);
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
@@ -187,11 +187,7 @@ void WTrackTableViewHeader::buildMenu() {
         return;
     }
 
-    if (m_independentState) {
-        m_menu.addAction(&m_actionDeleteIndependentState);
-    } else {
-        m_menu.addAction(&m_actionUseIndependentState);
-    }
+    m_menu.addAction(&m_actionUseIndependentState);
     m_menu.addSeparator();
     // Map this action's signals
 
@@ -244,13 +240,13 @@ void WTrackTableViewHeader::saveHeaderState() {
 
     // Convert the QByteArray to a Base64 string and save it.
     HeaderViewState view_state(*this);
-    if (m_independentState) {
+    if (m_actionUseIndependentState.isChecked()) {
         track_model->setModelSetting(
-                QStringLiteral("header_state_pb.") + track_model->modelKey(true),
+                getHeaderKey(*track_model),
                 view_state.saveState());
     } else {
         track_model->setModelSetting(
-                QStringLiteral("header_state_pb"),
+                kHeaderStateKey,
                 view_state.saveState());
     }
     //qDebug() << "Saving old header state:" << result << headerState;
@@ -264,16 +260,17 @@ void WTrackTableViewHeader::restoreHeaderState() {
         return;
     }
 
-    QString headerStateString = track_model->getModelSetting(
-            QStringLiteral("header_state_pb.") + track_model->modelKey(true));
+    QString headerStateString = track_model->getModelSetting(getHeaderKey(*track_model));
 
     // if there is no indepentent state, try
+    m_actionUseIndependentState.blockSignals(true);
     if (headerStateString.isNull() || headerStateString.isEmpty()) {
-        headerStateString = track_model->getModelSetting(QStringLiteral("header_state_pb"));
-        m_independentState = false;
+        headerStateString = track_model->getModelSetting(kHeaderStateKey);
+        m_actionUseIndependentState.setChecked(false);
     } else {
-        m_independentState = true;
+        m_actionUseIndependentState.setChecked(true);
     }
+    m_actionUseIndependentState.blockSignals(false);
 
     if (headerStateString.isNull() || headerStateString.isEmpty()) {
         loadDefaultHeaderState();
@@ -298,28 +295,38 @@ void WTrackTableViewHeader::restoreHeaderState() {
     emit sortIndicatorChanged(sortIndicatorSection(), sortIndicatorOrder());
 }
 
-void WTrackTableViewHeader::slotDeleteIndependentState() {
-    TrackModel* track_model = getTrackModel();
-    if (!track_model) {
-        return;
+void WTrackTableViewHeader::slotIndependentStateChanged(bool checked) {
+    if (checked) {
+        saveIndependentState();
+    } else {
+        deleteIndependentState();
     }
-    track_model->deleteModelSetting(
-            QStringLiteral("header_state_pb.") + track_model->modelKey(true));
-    m_independentState = false;
-    m_headerChanged = false;
-    buildMenu();
 }
 
-void WTrackTableViewHeader::slotSaveIndependentState() {
+QString WTrackTableViewHeader::getHeaderKey(TrackModel& track_model) {
+    return kHeaderStateKey + QStringLiteral(".") + track_model.modelKey(true);
+}
+
+void WTrackTableViewHeader::deleteIndependentState() {
     TrackModel* track_model = getTrackModel();
     if (!track_model) {
         return;
     }
-    track_model->deleteModelSetting(
-            QStringLiteral("header_state_pb.") + track_model->modelKey(true));
-    m_independentState = true;
+    track_model->deleteModelSetting(getHeaderKey(*track_model));
     m_headerChanged = false;
-    buildMenu();
+    restoreHeaderState();
+}
+
+void WTrackTableViewHeader::saveIndependentState() {
+    TrackModel* track_model = getTrackModel();
+    if (!track_model) {
+        return;
+    }
+    HeaderViewState view_state(*this);
+    track_model->setModelSetting(
+            getHeaderKey(*track_model),
+            view_state.saveState());
+    m_headerChanged = false;
 }
 
 void WTrackTableViewHeader::loadDefaultHeaderState() {
@@ -339,7 +346,7 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
     if (!track_model) {
         return false;
     }
-    QString headerStateString = QStringLiteral("header_state_pb.") + track_model->modelKey(true);
+    QString headerStateString = track_model->getModelSetting(getHeaderKey(*track_model));
     return !headerStateString.isNull();
 }
 

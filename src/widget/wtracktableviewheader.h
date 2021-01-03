@@ -67,8 +67,7 @@ class WTrackTableViewHeader : public QHeaderView {
 
   private slots:
     void showOrHideColumn(int);
-    void slotDeleteIndependentState();
-    void slotSaveIndependentState();
+    void slotIndependentStateChanged(bool checked);
 
   private:
     int hiddenCount();
@@ -76,11 +75,12 @@ class WTrackTableViewHeader : public QHeaderView {
     TrackModel* getTrackModel();
     void buildMenu();
     void ensureColumnsAreVisible();
+    void deleteIndependentState();
+    void saveIndependentState();
+    QString getHeaderKey(TrackModel& track_model);
 
     QMenu m_menu;
     QMap<int, QAction*> m_columnActions;
     QAction m_actionUseIndependentState;
-    QAction m_actionDeleteIndependentState;
     bool m_headerChanged;
-    bool m_independentState;
 };
