@@ -1,10 +1,6 @@
-// skinloader.cpp
-// Created 6/21/2010 by RJ Ryan (rryan@mit.edu)
-
 #include "skin/skinloader.h"
 
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QDir>
 #include <QString>
 #include <QtDebug>
@@ -25,7 +21,7 @@ SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
 }
 
 SkinLoader::~SkinLoader() {
-    LegacySkinParser::freeChannelStrings();
+    LegacySkinParser::clearSharedGroupStrings();
 }
 
 QList<QDir> SkinLoader::getSkinSearchPaths() const {
@@ -50,7 +46,8 @@ QList<QDir> SkinLoader::getSkinSearchPaths() const {
 }
 
 QString SkinLoader::getSkinPath(const QString& skinName) const {
-    for (QDir dir : getSkinSearchPaths()) {
+    const QList<QDir> skinSearchPaths = getSkinSearchPaths();
+    for (QDir dir : skinSearchPaths) {
         if (dir.cd(skinName)) {
             return dir.absolutePath();
         }
@@ -59,7 +56,6 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
 }
 
 QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schemeName) const {
-    qDebug() << "schemeName =" << schemeName;
     QPixmap preview;
     if (!schemeName.isEmpty()) {
         QString schemeNameUnformatted = schemeName;
@@ -103,28 +99,35 @@ QString SkinLoader::getConfiguredSkinPath() const {
 }
 
 QString SkinLoader::getDefaultSkinName() const {
-    return "Deere";
+    return "LateNight";
 }
 
 QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
-                                        KeyboardEventFilter* pKeyboard,
-                                        PlayerManager* pPlayerManager,
-                                        ControllerManager* pControllerManager,
-                                        Library* pLibrary,
-                                        VinylControlManager* pVCMan,
-                                        EffectsManager* pEffectsManager,
-                                        RecordingManager* pRecordingManager) {
+        QSet<ControlObject*>* pSkinCreatedControls,
+        KeyboardEventFilter* pKeyboard,
+        PlayerManager* pPlayerManager,
+        ControllerManager* pControllerManager,
+        Library* pLibrary,
+        VinylControlManager* pVCMan,
+        EffectsManager* pEffectsManager,
+        RecordingManager* pRecordingManager) {
     ScopedTimer timer("SkinLoader::loadConfiguredSkin");
     QString skinPath = getConfiguredSkinPath();
 
     // If we don't have a skin path then fail.
     if (skinPath.isEmpty()) {
-        return NULL;
+        return nullptr;
     }
 
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager,
-                            pControllerManager, pLibrary, pVCMan,
-                            pEffectsManager, pRecordingManager);
+    LegacySkinParser legacy(m_pConfig,
+            pSkinCreatedControls,
+            pKeyboard,
+            pPlayerManager,
+            pControllerManager,
+            pLibrary,
+            pVCMan,
+            pEffectsManager,
+            pRecordingManager);
     return legacy.parseSkin(skinPath, pParent);
 }
 
@@ -139,7 +142,7 @@ LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) {
     return pLaunchImage;
 }
 
-QString SkinLoader::pickResizableSkin(QString oldSkin) const {
+QString SkinLoader::pickResizableSkin(const QString& oldSkin) const {
     if (oldSkin.contains("latenight", Qt::CaseInsensitive)) {
         return "LateNight";
     }

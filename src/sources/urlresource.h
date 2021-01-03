@@ -1,5 +1,4 @@
-#ifndef MIXXX_URLRESOURCE_H
-#define MIXXX_URLRESOURCE_H
+#pragma once
 
 #include "util/assert.h"
 
@@ -9,8 +8,7 @@ namespace mixxx {
 
 class UrlResource {
   public:
-    virtual ~UrlResource() {
-    }
+    virtual ~UrlResource() = default;
 
     QUrl getUrl() const {
         return m_url;
@@ -20,7 +18,7 @@ class UrlResource {
     }
 
   protected:
-    explicit UrlResource(QUrl url)
+    explicit UrlResource(const QUrl& url)
             : m_url(url) {
     }
 
@@ -42,5 +40,3 @@ class UrlResource {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_URLRESOURCE_H

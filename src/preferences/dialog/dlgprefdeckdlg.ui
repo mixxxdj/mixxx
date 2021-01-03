@@ -464,9 +464,6 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           <property name="text">
            <string>Speed/Tempo</string>
           </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedPitchReset</string>
-          </attribute>
          </widget>
         </item>
         <item row="1" column="1">
@@ -474,9 +471,6 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
           <property name="text">
            <string>Key/Pitch</string>
           </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroupSpeedPitchReset</string>
-          </attribute>
          </widget>
         </item>
         <item row="6" column="0">
@@ -648,10 +642,14 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>ComboBoxCueMode</tabstop>
+  <tabstop>checkBoxIntroStartMove</tabstop>
   <tabstop>radioButtonElapsed</tabstop>
   <tabstop>radioButtonRemaining</tabstop>
   <tabstop>radioButtonElapsedAndRemaining</tabstop>
+  <tabstop>comboBoxTimeFormat</tabstop>
+  <tabstop>comboBoxLoadPoint</tabstop>
   <tabstop>checkBoxDisallowLoadToPlayingDeck</tabstop>
+  <tabstop>checkBoxCloneDeckOnLoadDoubleTap</tabstop>
   <tabstop>ComboBoxRateRange</tabstop>
   <tabstop>checkBoxInvertSpeedSlider</tabstop>
   <tabstop>checkBoxResetPitch</tabstop>
@@ -670,145 +668,10 @@ You can always drag-and-drop tracks on screen to clone a deck.</string>
   <tabstop>spinBoxTemporaryRateFine</tabstop>
  </tabstops>
  <resources/>
- <connections>
-  <connection>
-   <sender>SliderRateRampSensitivity</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SpinBoxRateRampSensitivity</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>372</x>
-     <y>442</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>437</x>
-     <y>445</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>SpinBoxRateRampSensitivity</sender>
-   <signal>valueChanged(int)</signal>
-   <receiver>SliderRateRampSensitivity</receiver>
-   <slot>setValue(int)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>437</x>
-     <y>445</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>372</x>
-     <y>442</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeLinear</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>labelSpeedRampSensitivity</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>438</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>117</x>
-     <y>446</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeLinear</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SliderRateRampSensitivity</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>438</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>372</x>
-     <y>442</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeLinear</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>SpinBoxRateRampSensitivity</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>438</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>437</x>
-     <y>445</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeStepping</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>labelSpeedTemporary</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>263</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>438</x>
-     <y>467</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeStepping</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>spinBoxTemporaryRateCoarse</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>263</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>438</x>
-     <y>493</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>radioButtonRateRampModeStepping</sender>
-   <signal>toggled(bool)</signal>
-   <receiver>spinBoxTemporaryRateFine</receiver>
-   <slot>setEnabled(bool)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>263</x>
-     <y>417</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>438</x>
-     <y>521</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
  <buttongroups>
   <buttongroup name="buttonGroupTrackTime"/>
   <buttongroup name="buttonGroupKeyUnlockMode"/>
   <buttongroup name="buttonGroupKeyLockMode"/>
   <buttongroup name="buttonGroupSpeedBendBehavior"/>
-  <buttongroup name="buttonGroupSpeedPitchReset">
-   <property name="exclusive">
-    <bool>false</bool>
-   </property>
-  </buttongroup>
  </buttongroups>
 </ui>

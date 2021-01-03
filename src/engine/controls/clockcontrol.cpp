@@ -1,11 +1,13 @@
 #include "engine/controls/clockcontrol.h"
 
 #include "control/controlobject.h"
-#include "preferences/usersettings.h"
-#include "engine/controls/enginecontrol.h"
 #include "control/controlproxy.h"
+#include "engine/controls/enginecontrol.h"
+#include "moc_clockcontrol.cpp"
+#include "preferences/usersettings.h"
+#include "track/track.h"
 
-ClockControl::ClockControl(QString group, UserSettingsPointer pConfig)
+ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     m_pCOBeatActive = new ControlObject(ConfigKey(group, "beat_active"));
     m_pCOBeatActive->set(0.0);
@@ -19,31 +21,17 @@ ClockControl::~ClockControl() {
 
 // called from an engine worker thread
 void ClockControl::trackLoaded(TrackPointer pNewTrack) {
-    // Clear on-beat control
-    m_pCOBeatActive->set(0.0);
-
-    // Disconnect any previously loaded track/beats
-    if (m_pTrack) {
-        disconnect(m_pTrack.get(), &Track::beatsUpdated,
-                   this, &ClockControl::slotBeatsUpdated);
-    }
+    mixxx::BeatsPointer pBeats;
     if (pNewTrack) {
-        m_pTrack = pNewTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.get(), &Track::beatsUpdated,
-                this, &ClockControl::slotBeatsUpdated);
-    } else {
-        m_pBeats.clear();
-        m_pTrack.reset();
+        pBeats = pNewTrack->getBeats();
     }
-
+    trackBeatsUpdated(pBeats);
 }
 
-void ClockControl::slotBeatsUpdated() {
-    TrackPointer pTrack = m_pTrack;
-    if(pTrack) {
-        m_pBeats = pTrack->getBeats();
-    }
+void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    // Clear on-beat control
+    m_pCOBeatActive->set(0.0);
+    m_pBeats = pBeats;
 }
 
 void ClockControl::process(const double dRate,
@@ -59,7 +47,7 @@ void ClockControl::process(const double dRate,
     // by the rate.
     const double blinkIntervalSamples = 2.0 * samplerate * (1.0 * dRate) * blinkSeconds;
 
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         double closestBeat = pBeats->findClosestBeat(currentSample);
         double distanceToClosestBeat = fabs(currentSample - closestBeat);

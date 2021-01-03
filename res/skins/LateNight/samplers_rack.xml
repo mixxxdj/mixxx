@@ -1,276 +1,57 @@
 <Template>
-  <SetVariable name="btn_type">embedded</SetVariable>
+  <SetVariable name="BtnType"><Variable name="SubRegion_BtnType"/></SetVariable>
 
+  <!-- Create Singletons for samplers 1-4 because they're needed when
+    showing 4 or 8 samplers... -->
+  <Template src="skin:/samplers/singletons.xml"/>
+  <!-- ...the create a singleton for samplers_8decks.xml because it's used
+    when showing 8 or 16 samplers. -->
   <SingletonDefinition>
-    <ObjectName>SamplerExpandbutton_Singleton</ObjectName>
+    <ObjectName>Samplers_1-8</ObjectName>
     <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <WidgetGroup>
-            <ObjectName>SamplerExpandButtonBox</ObjectName>
-            <SizePolicy>min,me</SizePolicy>
-            <Layout>vertical</Layout>
-            <Children>
-              <PushButton>
-                <TooltipId>show_samplers</TooltipId>
-                <ObjectName>FxExpandCollapseButton</ObjectName>
-                <Size>26f,26f</Size>
-                <NumberStates>2</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square.svg</Unpressed>
-                  <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
-                </State>
-                <Connection>
-                  <ConfigKey>[Skin],expand_samplers</ConfigKey>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-              </PushButton>
-            </Children>
-          </WidgetGroup>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini1_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum">1</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini2_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum">2</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini3_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum">3</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini4_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum">4</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini5_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum">5</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini6_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum">6</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini7_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum">7</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>SamplerMini8_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler_mini.xml">
-            <SetVariable name="samplernum">8</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>Sampler1_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum">1</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>Sampler2_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum">2</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>Sampler3_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum">3</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
-    </Children>
-  </SingletonDefinition>
-
-  <SingletonDefinition>
-    <ObjectName>Sampler4_Singleton</ObjectName>
-    <Children>
-      <WidgetGroup>
-        <ObjectName>AlignCenterTop</ObjectName>
-        <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
-        <Children>
-          <Template src="skin:sampler.xml">
-            <SetVariable name="samplernum">4</SetVariable>
-          </Template>
-        </Children>
-      </WidgetGroup>
+      <Template src="skin:/samplers/samplers_8decks.xml"/>
     </Children>
   </SingletonDefinition>
 
   <WidgetGroup>
     <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
+    <Children>
+
+      <WidgetStack currentpage="[LateNight],sampler_rows" persist="true">
+        <Children>
+
+          <!--4 Samplers -->
+          <Template trigger="[LateNight],show_4samplers"  on_hide_select="1" src="skin:/samplers/samplers_4decks.xml"/>
+
+          <!--8 Samplers -->
+          <WidgetGroup trigger="[LateNight],show_8samplers" on_hide_select="0">
+            <Layout>vertical</Layout>
+            <Children>
+              <SingletonContainer trigger="[LateNight],show_8samplers">
+                <ObjectName>Samplers_1-8</ObjectName>
+              </SingletonContainer>
+            </Children>
+          </WidgetGroup>
+
+          <!--16 Samplers -->
+          <WidgetGroup trigger="[LateNight],show_16samplers" on_hide_select="1">
+            <Layout>vertical</Layout>
+            <Children>
+              <SingletonContainer>
+                <ObjectName>Samplers_1-8</ObjectName>
+              </SingletonContainer>
+              <Template src="skin:/samplers/samplers_16decks.xml"/>
+            </Children>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetStack>
+
+    </Children>
     <Connection>
       <ConfigKey>[Samplers],show_samplers</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
-    <Children>
-
-      <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
-
-      <WidgetGroup>
-        <Layout>horizontal</Layout>
-        <Children>
-          <WidgetStack currentpage="[Skin],8_samplers">
-            <Children>
-
-              <!--only 4 Sampler but big -->
-              <Template src="skin:samplers_4decks.xml"/>
-
-              <!--8 Sampler -->
-              <Template trigger="[Skin],8_samplers" on_hide_select="0" src="skin:samplers_8decks.xml"/>
-
-            </Children>
-          </WidgetStack>
-        </Children>
-      </WidgetGroup>
-
-      <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
-
-      <WidgetGroup>
-        <Size>2f,1min</Size>
-        <Connection>
-          <ConfigKey>[Master],skin_settings</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
-    </Children>
   </WidgetGroup>
 </Template>

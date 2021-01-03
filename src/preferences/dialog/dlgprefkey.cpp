@@ -1,20 +1,3 @@
-/***************************************************************************
-                          dlgprefkey.cpp  -  description
-                             -------------------
-    begin                : Thu Jun 7 2012
-    copyright            : (C) 2012 by Keith Salisbury
-    email                : keithsalisbury@gmail.com
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "preferences/dialog/dlgprefkey.h"
 
 #include <QLineEdit>
@@ -22,6 +5,7 @@
 
 #include "analyzer/analyzerkey.h"
 #include "control/controlproxy.h"
+#include "moc_dlgprefkey.cpp"
 #include "util/compatibility.h"
 #include "util/xml.h"
 
@@ -60,7 +44,7 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
     m_keyLineEdits.insert(mixxx::track::io::key::B_MINOR, b_minor_edit);
 
     m_availablePlugins = AnalyzerKey::availablePlugins();
-    for (const auto& info : m_availablePlugins) {
+    for (const auto& info : qAsConst(m_availablePlugins)) {
         plugincombo->addItem(info.name, info.id);
     }
 
@@ -93,6 +77,10 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
 }
 
 DlgPrefKey::~DlgPrefKey() {
+}
+
+QUrl DlgPrefKey::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_KEY_URL);
 }
 
 void DlgPrefKey::loadSettings() {
@@ -266,6 +254,7 @@ void DlgPrefKey::slotUpdate() {
             const auto& info = m_availablePlugins.at(i);
             if (info.id == m_selectedAnalyzerId) {
                 plugincombo->setCurrentIndex(i);
+                found = true;
                 break;
             }
         }

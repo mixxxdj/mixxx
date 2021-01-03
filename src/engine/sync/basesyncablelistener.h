@@ -1,5 +1,4 @@
-#ifndef BASESYNCABLELISTENER_H
-#define BASESYNCABLELISTENER_H
+#pragma once
 
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
@@ -7,6 +6,11 @@
 class InternalClock;
 class EngineChannel;
 
+/// BaseSyncableListener is a SyncableListener used by EngineSync.
+/// It provides some foundational functionality for distributing
+/// various sync updates.
+// TODO(owilliams): This class is only inherited by EngineSync. It should
+// be merged into that class.
 class BaseSyncableListener : public SyncableListener {
   public:
     BaseSyncableListener(UserSettingsPointer pConfig);
@@ -19,20 +23,13 @@ class BaseSyncableListener : public SyncableListener {
 
     // Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);
-    Syncable* getMasterSyncable() {
+    Syncable* getMasterSyncable() override {
         return m_pMasterSyncable;
     }
 
   protected:
-    // Choices about master selection can hinge on if any decks have sync
-    // mode enabled.  This utility method returns true if it finds a deck
-    // not in SYNC_NONE mode.
+    // This utility method returns true if it finds a deck not in SYNC_NONE mode.
     bool syncDeckExists() const;
-
-    // Choices about master selection can hinge on how many decks are playing
-    // back. This utility method counts the number of decks not in SYNC_NONE
-    // mode that are playing.
-    int playingSyncDeckCount() const;
 
     // Return the current BPM of the master Syncable. If no master syncable is
     // set then returns the BPM of the internal clock.
@@ -42,8 +39,9 @@ class BaseSyncableListener : public SyncableListener {
     // Syncable is set, then returns the beat distance of the internal clock.
     double masterBeatDistance() const;
 
-    // Returns the current BPM of the master Syncable if it were playing
-    // at 1.0 rate.
+    // Returns the overall average BPM of the master Syncable if it were playing
+    // at 1.0 rate. This is used to calculate half/double multipliers and whether
+    // the master has a bpm at all.
     double masterBaseBpm() const;
 
     // Set the BPM on every sync-enabled Syncable except pSource.
@@ -52,10 +50,6 @@ class BaseSyncableListener : public SyncableListener {
     // Set the master instantaneous BPM on every sync-enabled Syncable except
     // pSource.
     void setMasterInstantaneousBpm(Syncable* pSource, double bpm);
-
-    // Set the master base bpm, which is what the bpm would be if the syncable
-    // were playing at 1.0x speed
-    void setMasterBaseBpm(Syncable* pSource, double bpm);
 
     // Set the master beat distance on every sync-enabled Syncable except
     // pSource.
@@ -76,5 +70,3 @@ class BaseSyncableListener : public SyncableListener {
     // addSyncableDeck.
     QList<Syncable*> m_syncables;
 };
-
-#endif /* BASESYNCABLELISTENER_H */

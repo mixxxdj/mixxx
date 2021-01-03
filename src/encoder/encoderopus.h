@@ -1,8 +1,4 @@
-// encoderopus.h
-// Create on August 15th 2017 by Palakis
-
-#ifndef ENCODER_ENCODEROPUS_H
-#define ENCODER_ENCODEROPUS_H
+#pragma once
 
 #include <QMap>
 #include <QString>
@@ -26,7 +22,7 @@ class EncoderOpus: public Encoder {
     explicit EncoderOpus(EncoderCallback* pCallback = nullptr);
     ~EncoderOpus() override;
 
-    int initEncoder(int samplerate, QString errorMessage) override;
+    int initEncoder(int samplerate, QString& errorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
@@ -56,5 +52,3 @@ class EncoderOpus: public Encoder {
     ogg_int64_t m_granulePos;
     QMap<QString, QString> m_opusComments;
 };
-
-#endif // ENCODER_ENCODEROPUS_H

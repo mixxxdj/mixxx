@@ -1,0 +1,44 @@
+<!--
+  Description:
+    A mono meter for all channel VU levels
+
+  Variables:
+    Group
+    ChannelType   channel | sampler | microphone | ...
+    StyleScheme
+    VuSize        deck | sampler | small
+    VuColor       dark | light
+            In PaleMoon theme there are different Vu meters:
+            * in mixer: dark BackPath
+            * in between compact decks: light BackPath
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>VuMeterBox</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <StatusLight>
+        <TooltipId><Variable name="ChannelType"/>_PeakIndicator</TooltipId>
+        <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_<Variable name="VuSize"/>_clipping_bg_<Variable name="VuColor"/>.png</PathBack>
+        <PathStatusLight>skin:/<Variable name="StyleScheme"/>/style/vu_<Variable name="VuSize"/>_clipping_active.png</PathStatusLight>
+        <Connection>
+          <ConfigKey><Variable name="Group"/>,PeakIndicator</ConfigKey>
+        </Connection>
+      </StatusLight>
+      <VuMeter>
+        <TooltipId><Variable name="ChannelType"/>_VuMeter</TooltipId>
+        <PathBack>skin:/<Variable name="StyleScheme"/>/style/vu_<Variable name="VuSize"/>_level_bg_<Variable name="VuColor"/>.png</PathBack>
+        <PathVu>skin:/<Variable name="StyleScheme"/>/style/vu_<Variable name="VuSize"/>_level_active.png</PathVu>
+        <Horizontal>false</Horizontal>
+        <PeakHoldSize>4</PeakHoldSize>
+        <PeakHoldTime>500</PeakHoldTime>
+        <PeakFallTime>10</PeakFallTime>
+        <PeakFallStep>2</PeakFallStep>
+        <Connection>
+          <ConfigKey><Variable name="Group"/>,VuMeter</ConfigKey>
+        </Connection>
+      </VuMeter>
+    </Children>
+  </WidgetGroup>
+</Template>

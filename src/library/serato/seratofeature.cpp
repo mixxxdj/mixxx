@@ -1,6 +1,3 @@
-// seratofeature.cpp
-// Created 2020-01-31 by Jan Holthuis
-
 #include "library/serato/seratofeature.h"
 
 #include <QMap>
@@ -9,15 +6,13 @@
 #include <QStandardPaths>
 #include <QtDebug>
 
-#include "engine/engine.h"
 #include "library/dao/trackschema.h"
 #include "library/library.h"
-#include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_seratofeature.cpp"
 #include "track/beatfactory.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
@@ -25,16 +20,13 @@
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
-#include "util/file.h"
-#include "util/sandbox.h"
-#include "waveform/waveform.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 
 namespace {
 
 // Serato Database Field IDs
-// The "magic" value is the short 4 byte ascii code intepreted as quint32, so
+// The "magic" value is the short 4 byte ascii code interpreted as quint32, so
 // that we can use the value in a switch statement instead of going through
 // a strcmp if/else ladder.
 enum class FieldId : quint32 {
@@ -450,9 +442,24 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
     databaseRootDir.cdUp();
 
 #if defined(__WINDOWS__)
-    // Find drive letter (paths are relative to drive root on Windows)
+    // On Windows, all paths are relative to drive root of the database (e.g.
+    // "C:\"). Qt doesn't seem to provide a way to find it for a specific path,
+    // so we just call cdUp() until it stops working.
     while (databaseRootDir.cdUp()) {
         // Nothing to do here
+    }
+#else
+    // If the file is on an external drive, the database path are relative to
+    // its mountpoint, i.e. the parent directory of the _Serato_
+    // directory. This means we can just use the path as-is.
+    //
+    // If the file is not on an external drive, the paths are all relative to
+    // the file system's root directory ("/").
+    //
+    // Serato does not exist on Linux, if it did, it would probably just mirror
+    // the way paths are handled on OSX.
+    if (databaseRootDir.canonicalPath().startsWith(QDir::homePath())) {
+        databaseRootDir = QDir::root();
     }
 #endif
 
@@ -823,7 +830,7 @@ bool createPlaylistTracksTable(QSqlDatabase& database, const QString& tableName)
     return true;
 }
 
-bool dropTable(QSqlDatabase& database, QString tableName) {
+bool dropTable(QSqlDatabase& database, const QString& tableName) {
     qDebug() << "Dropping Serato table: " << tableName;
 
     QSqlQuery query(database);
@@ -931,7 +938,7 @@ void SeratoFeature::bindLibraryWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)), this, SLOT(htmlLinkClicked(const QUrl)));
+    connect(edit, &WLibraryTextBrowser::anchorClicked, this, &SeratoFeature::htmlLinkClicked);
     libraryWidget->registerView("SERATOHOME", edit);
 }
 
@@ -943,7 +950,7 @@ void SeratoFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-BaseSqlTableModel* SeratoFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* SeratoFeature::getPlaylistModelForPlaylist(const QString& playlist) {
     SeratoPlaylistModel* model = new SeratoPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
     model->setPlaylist(playlist);
     return model;
@@ -978,7 +985,7 @@ QString SeratoFeature::formatRootViewHtml() const {
     html.append(QString("<h2>%1</h2>").arg(title));
     html.append(QString("<p>%1</p>").arg(summary));
     html.append(QString("<ul>"));
-    for (const auto& item : items) {
+    for (const auto& item : qAsConst(items)) {
         html.append(QString("<li>%1</li>").arg(item));
     }
     html.append(QString("</ul>"));
@@ -1009,8 +1016,9 @@ void SeratoFeature::activate() {
 }
 
 void SeratoFeature::activateChild(const QModelIndex& index) {
-    if (!index.isValid())
+    if (!index.isValid()) {
         return;
+    }
 
     //access underlying TreeItem object
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());

@@ -1,10 +1,104 @@
 #include "track/trackmetadata.h"
 
+#include "audio/streaminfo.h"
+#include "util/logger.h"
+
 namespace mixxx {
+
+namespace {
+
+const Logger kLogger("TrackMetadata");
+
+} // anonymous namespace
 
 /*static*/ constexpr int TrackMetadata::kCalendarYearInvalid;
 
-int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
+bool TrackMetadata::updateStreamInfoFromSource(
+        const audio::StreamInfo& streamInfo) {
+    bool changed = false;
+    const auto streamChannelCount =
+            streamInfo.getSignalInfo().getChannelCount();
+    if (streamChannelCount.isValid() &&
+            streamChannelCount != getStreamInfo().getSignalInfo().getChannelCount()) {
+        if (getStreamInfo().getSignalInfo().getChannelCount().isValid()) {
+            kLogger.debug()
+                    << "Modifying channel count:"
+                    << getStreamInfo().getSignalInfo().getChannelCount()
+                    << "->"
+                    << streamChannelCount;
+        }
+        refStreamInfo().refSignalInfo().setChannelCount(streamChannelCount);
+        changed = true;
+    }
+    const auto streamSampleRate =
+            streamInfo.getSignalInfo().getSampleRate();
+    if (streamSampleRate.isValid() &&
+            streamSampleRate != getStreamInfo().getSignalInfo().getSampleRate()) {
+        if (getStreamInfo().getSignalInfo().getSampleRate().isValid()) {
+            kLogger.debug()
+                    << "Modifying sample rate:"
+                    << getStreamInfo().getSignalInfo().getSampleRate()
+                    << "->"
+                    << streamSampleRate;
+        }
+        refStreamInfo().refSignalInfo().setSampleRate(streamSampleRate);
+        changed = true;
+    }
+    const auto streamBitrate =
+            streamInfo.getBitrate();
+    if (streamBitrate.isValid() &&
+            streamBitrate != getStreamInfo().getBitrate()) {
+        if (getStreamInfo().getSignalInfo().isValid()) {
+            kLogger.debug()
+                    << "Modifying bitrate:"
+                    << getStreamInfo().getSignalInfo()
+                    << "->"
+                    << streamBitrate;
+        }
+        refStreamInfo().setBitrate(streamBitrate);
+        changed = true;
+    }
+    const auto streamDuration =
+            streamInfo.getDuration();
+    if (streamDuration > Duration::empty() &&
+            streamDuration != getStreamInfo().getDuration()) {
+        if (getStreamInfo().getDuration() > Duration::empty()) {
+            kLogger.debug()
+                    << "Modifying duration:"
+                    << getStreamInfo().getDuration()
+                    << "->"
+                    << streamDuration;
+        }
+        refStreamInfo().setDuration(streamDuration);
+        changed = true;
+    }
+    return changed;
+}
+
+QString TrackMetadata::getBitrateText() const {
+    if (!getStreamInfo().getBitrate().isValid()) {
+        return QString();
+    }
+    return QString::number(getStreamInfo().getBitrate()) +
+            QChar(' ') +
+            audio::Bitrate::unit();
+}
+
+QString TrackMetadata::getDurationText(
+        Duration::Precision precision) const {
+    double durationSeconds;
+    if (precision == Duration::Precision::SECONDS) {
+        // Round to full seconds before formatting for consistency
+        // getDurationText() should always display the same number
+        // as getDurationSecondsRounded()
+        durationSeconds = getDurationSecondsRounded();
+    } else {
+        durationSeconds = getStreamInfo().getDuration().toDoubleSeconds();
+    }
+    return Duration::formatTime(durationSeconds, precision);
+}
+
+int TrackMetadata::parseCalendarYear(const QString& year, bool* pValid) {
     const QDateTime dateTime(parseDateTime(year));
     if (0 < dateTime.date().year()) {
         if (pValid) {
@@ -32,7 +126,7 @@ int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
     }
 }
 
-QString TrackMetadata::formatCalendarYear(QString year, bool* pValid) {
+QString TrackMetadata::formatCalendarYear(const QString& year, bool* pValid) {
     bool calendarYearValid = false;
     int calendarYear = parseCalendarYear(year, &calendarYearValid);
     if (pValid) {
@@ -45,7 +139,7 @@ QString TrackMetadata::formatCalendarYear(QString year, bool* pValid) {
     }
 }
 
-QString TrackMetadata::reformatYear(QString year) {
+QString TrackMetadata::reformatYear(const QString& year) {
     const QDateTime dateTime(parseDateTime(year));
     if (dateTime.isValid()) {
         // date/time
@@ -67,8 +161,8 @@ QString TrackMetadata::reformatYear(QString year) {
 }
 
 void TrackMetadata::normalizeBeforeExport() {
-    refAlbumInfo().normalizeBeforeExport();
-    refTrackInfo().normalizeBeforeExport();
+    m_albumInfo.normalizeBeforeExport();
+    m_trackInfo.normalizeBeforeExport();
 }
 
 bool TrackMetadata::anyFileTagsModified(
@@ -83,24 +177,18 @@ bool TrackMetadata::anyFileTagsModified(
 }
 
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
-    return (lhs.getAlbumInfo() == rhs.getAlbumInfo()) &&
-            (lhs.getTrackInfo() == rhs.getTrackInfo()) &&
-            (lhs.getBitrate() == rhs.getBitrate()) &&
-            (lhs.getChannels() == rhs.getChannels()) &&
-            (lhs.getDuration() == rhs.getDuration()) &&
-            (lhs.getSampleRate() == rhs.getSampleRate());
+    return lhs.getStreamInfo() == rhs.getStreamInfo() &&
+            lhs.getAlbumInfo() == rhs.getAlbumInfo() &&
+            lhs.getTrackInfo() == rhs.getTrackInfo();
 }
 
 QDebug operator<<(QDebug dbg, const TrackMetadata& arg) {
-    dbg << '{';
+    dbg << "TrackMetadata{";
+    arg.dbgStreamInfo(dbg);
     arg.dbgTrackInfo(dbg);
     arg.dbgAlbumInfo(dbg);
-    arg.dbgBitrate(dbg);
-    arg.dbgChannels(dbg);
-    arg.dbgDuration(dbg);
-    arg.dbgSampleRate(dbg);
     dbg << '}';
     return dbg;
 }
 
-} //namespace mixxx
+} // namespace mixxx

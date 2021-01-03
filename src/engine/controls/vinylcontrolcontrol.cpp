@@ -1,10 +1,11 @@
 #include "engine/controls/vinylcontrolcontrol.h"
 
-#include "vinylcontrol/vinylcontrol.h"
-#include "track/cue.h"
+#include "moc_vinylcontrolcontrol.cpp"
+#include "track/track.h"
 #include "util/math.h"
+#include "vinylcontrol/vinylcontrol.h"
 
-VinylControlControl::VinylControlControl(QString group, UserSettingsPointer pConfig)
+VinylControlControl::VinylControlControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_bSeekRequested(false) {
     m_pControlVinylStatus = new ControlObject(ConfigKey(group, "vinylcontrol_status"));
@@ -117,7 +118,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
         }
 
         double shortest_distance = 0;
-        int nearest_playpos = -1;
+        double nearest_playpos = -1;
 
         const QList<CuePointer> cuePoints(pTrack->getCuePoints());
         QListIterator<CuePointer> it(cuePoints);
@@ -127,7 +128,7 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
                 continue;
             }
 
-            int cue_position = pCue->getPosition();
+            double cue_position = pCue->getPosition();
             // pick cues closest to new_playpos
             if ((nearest_playpos == -1) ||
                 (fabs(new_playpos - cue_position) < shortest_distance)) {
@@ -158,10 +159,10 @@ void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
 
 bool VinylControlControl::isEnabled()
 {
-    return m_pControlVinylEnabled->get();
+    return m_pControlVinylEnabled->toBool();
 }
 
 bool VinylControlControl::isScratching()
 {
-    return m_pControlVinylScratching->get();
+    return m_pControlVinylScratching->toBool();
 }

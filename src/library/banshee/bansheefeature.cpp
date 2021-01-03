@@ -1,16 +1,17 @@
-#include <QMessageBox>
-#include <QtDebug>
-#include <QList>
-
 #include "library/banshee/bansheefeature.h"
 
+#include <QList>
+#include <QMessageBox>
+#include <QtDebug>
+
 #include "library/banshee/bansheedbconnection.h"
+#include "library/banshee/bansheeplaylistmodel.h"
+#include "library/baseexternalplaylistmodel.h"
+#include "library/dao/settingsdao.h"
 #include "library/library.h"
 #include "library/trackcollectionmanager.h"
-#include "library/dao/settingsdao.h"
-#include "library/baseexternalplaylistmodel.h"
-#include "library/banshee/bansheeplaylistmodel.h"
-
+#include "moc_bansheefeature.cpp"
+#include "track/track.h"
 
 const QString BansheeFeature::BANSHEE_MOUNT_KEY = "mixxx.BansheeFeature.mount";
 QString BansheeFeature::m_databaseFile;
@@ -71,19 +72,19 @@ void BansheeFeature::activate() {
 
         if (!QFile::exists(m_databaseFile)) {
             QMessageBox::warning(
-                    NULL,
+                    nullptr,
                     tr("Error loading Banshee database"),
                     tr("Banshee database file not found at\n") +
-                    m_databaseFile);
+                            m_databaseFile);
             qDebug() << m_databaseFile << "does not exist";
         }
 
         if (!m_connection.open(m_databaseFile)) {
             QMessageBox::warning(
-                    NULL,
+                    nullptr,
                     tr("Error loading Banshee database"),
                     tr("There was an error loading your Banshee database at\n") +
-                    m_databaseFile);
+                            m_databaseFile);
             return;
         }
 

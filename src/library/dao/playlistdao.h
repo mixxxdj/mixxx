@@ -1,5 +1,4 @@
-#ifndef PLAYLISTDAO_H
-#define PLAYLISTDAO_H
+#pragma once
 
 #include <QHash>
 #include <QObject>
@@ -49,7 +48,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     };
 
     PlaylistDAO();
-    ~PlaylistDAO() override {}
+    ~PlaylistDAO() override = default;
 
     void initialize(const QSqlDatabase& database) override;
 
@@ -59,6 +58,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     int createUniquePlaylist(QString* pName, const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
     void deletePlaylist(const int playlistId);
+    /// Delete Playlists with fewer entries then "length"
+    /// Needs to be called inside a transaction.
+    /// @return number of deleted playlists, -1 on error
+    int deleteAllPlaylistsWithFewerTracks(PlaylistDAO::HiddenType type, int minNumberOfTracks);
     // Rename a playlist
     void renamePlaylist(const int playlistId, const QString& newName);
     // Lock or unlock a playlist
@@ -92,7 +95,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void removeHiddenTracks(const int playlistId);
     // Remove a track from a playlist
     void removeTrackFromPlaylist(int playlistId, int position);
-    void removeTracksFromPlaylist(int playlistId, QList<int> positions);
+    void removeTracksFromPlaylist(int playlistId, const QList<int>& positions);
     void removeTracksFromPlaylistById(int playlistId, TrackId trackId);
     // Insert a track into a specific position in a playlist
     bool insertTrackIntoPlaylist(TrackId trackId, int playlistId, int position);
@@ -123,11 +126,12 @@ class PlaylistDAO : public QObject, public virtual DAO {
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
-    void renamed(int playlistId, QString newName);
+    void renamed(int playlistId, const QString& newName);
     void lockChanged(int playlistId);
     void trackAdded(int playlistId, TrackId trackId, int position);
     void trackRemoved(int playlistId, TrackId trackId, int position);
-    void tracksChanged(QSet<int> playlistIds); // added/removed/reordered
+    void tracksChanged(const QSet<int>& playlistIds); // added/removed/reordered
+    void tracksRemovedFromPlayedHistory(const QSet<TrackId>& playedTrackIds);
 
   private:
     bool removeTracksFromPlaylist(int playlistId, int startIndex);
@@ -142,10 +146,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
                                  int* pTrackDistance);
     void populatePlaylistMembershipCache();
 
-    QSqlDatabase m_database;
     QMultiHash<TrackId, int> m_playlistsTrackIsIn;
     AutoDJProcessor* m_pAutoDJProcessor;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };
-
-#endif //PLAYLISTDAO_H

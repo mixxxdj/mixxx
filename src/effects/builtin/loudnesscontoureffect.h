@@ -1,4 +1,5 @@
 #pragma once
+
 #include "control/controlproxy.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -22,10 +23,10 @@ class LoudnessContourEffectGroupState final : public EffectState {
     CSAMPLE* m_pBuf;
     double m_oldGainKnob;
     double m_oldLoudness;
-    double m_oldGain;
+    CSAMPLE_GAIN m_oldGain;
     double m_oldFilterGainDb;
     bool m_oldUseGain;
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 };
 
 class LoudnessContourEffect

@@ -1,7 +1,8 @@
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include "test/librarytest.h"
+#include "track/track.h"
 
 using ::testing::UnorderedElementsAre;
 
@@ -44,7 +45,7 @@ TEST_F(TrackDAOTest, detectMovedTracks) {
 
     QSet<TrackId> updatedTrackIds;
     QSet<TrackId> removedTrackIds;
-    for (const auto& relocatedTrack : relocatedTracks) {
+    for (const auto& relocatedTrack : qAsConst(relocatedTracks)) {
         updatedTrackIds.insert(relocatedTrack.updatedTrackRef().getId());
         removedTrackIds.insert(relocatedTrack.deletedTrackId());
     }

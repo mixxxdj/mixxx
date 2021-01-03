@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_BEATDETECTIONSETTINGS_H
-#define PREFERENCES_BEATDETECTIONSETTINGS_H
+#pragma once
 
 #include "preferences/usersettings.h"
 
@@ -17,11 +16,11 @@
 #define BPM_FIXED_TEMPO_ASSUMPTION "BeatDetectionFixedTempoAssumption"
 #define BPM_FIXED_TEMPO_OFFSET_CORRECTION "FixedTempoOffsetCorrection"
 #define BPM_REANALYZE_WHEN_SETTINGS_CHANGE "ReanalyzeWhenSettingsChange"
+#define BPM_REANALYZE_IMPORTED "ReanalyzeImported"
 #define BPM_FAST_ANALYSIS_ENABLED "FastAnalysisEnabled"
 
 #define BPM_RANGE_START "BPMRangeStart"
 #define BPM_RANGE_END "BPMRangeEnd"
-#define BPM_ABOVE_RANGE_ENABLED "BPMAboveRangeEnabled"
 
 class BeatDetectionSettings {
   public:
@@ -29,9 +28,6 @@ class BeatDetectionSettings {
 
     DEFINE_PREFERENCE_HELPERS(BpmDetectionEnabled, bool,
                               BPM_CONFIG_KEY, BPM_DETECTION_ENABLED, true);
-
-    DEFINE_PREFERENCE_HELPERS(AllowBpmAboveRange, bool,
-                              BPM_CONFIG_KEY, BPM_ABOVE_RANGE_ENABLED, true);
 
     DEFINE_PREFERENCE_HELPERS(BpmRangeStart, int, BPM_CONFIG_KEY, BPM_RANGE_START, 70);
 
@@ -45,6 +41,8 @@ class BeatDetectionSettings {
 
     DEFINE_PREFERENCE_HELPERS(ReanalyzeWhenSettingsChange, bool,
                               BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE, false);
+
+    DEFINE_PREFERENCE_HELPERS(ReanalyzeImported, bool, BPM_CONFIG_KEY, BPM_REANALYZE_WHEN_SETTINGS_CHANGE, false);
 
     DEFINE_PREFERENCE_HELPERS(FastAnalysis, bool,
                               BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED, false);
@@ -62,5 +60,3 @@ class BeatDetectionSettings {
   private:
     UserSettingsPointer m_pConfig;
 };
-
-#endif /* PREFERENCES_BEATDETECTIONSETTINGS_H */

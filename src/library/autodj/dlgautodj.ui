@@ -48,6 +48,9 @@
      </property>
      <item>
       <widget class="QPushButton" name="pushButtonAutoDJ">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -77,6 +80,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonFadeNow">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -87,6 +93,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonSkipNext">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -99,7 +108,8 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="fadeModeCombobox"/>
+      <widget class="QComboBox" name="fadeModeCombobox">
+      </widget>
      </item>
      <item>
       <widget class="QSpinBox" name="spinBoxTransition">
@@ -145,6 +155,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonShuffle">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -157,7 +170,10 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButtonAddRandom">
+      <widget class="QPushButton" name="pushButtonAddRandomTrack">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -168,6 +184,9 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonRepeatPlaylist">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>

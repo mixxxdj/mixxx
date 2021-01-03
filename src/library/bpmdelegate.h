@@ -1,5 +1,4 @@
-#ifndef BPMDELEGATE_H
-#define BPMDELEGATE_H
+#pragma once
 
 #include <QCheckBox>
 #include <QModelIndex>
@@ -22,5 +21,3 @@ class BPMDelegate : public TableItemDelegate {
     QCheckBox* m_pCheckBox;
     QItemEditorFactory* m_pFactory;
 };
-
-#endif // BPMDELEGATE_H

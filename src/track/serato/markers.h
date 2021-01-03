@@ -6,7 +6,8 @@
 #include <QList>
 #include <memory>
 
-#include "util/color/rgbcolor.h"
+#include "track/cueinfo.h"
+#include "track/taglib/trackmetadata_file.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -16,10 +17,15 @@ typedef std::shared_ptr<SeratoMarkersEntry> SeratoMarkersEntryPointer;
 
 class SeratoMarkersEntry {
   public:
-    enum class TypeId {
-        Unknown,
-        Cue,
-        Loop,
+    /// We didn't encounter other type IDs as those listed here (e.g. "2") yet.
+    /// Apparently these are not used.
+    enum class TypeId : int {
+        /// Used for unset cue points
+        Unknown = 0,
+        /// Used for set cue points
+        Cue = 1,
+        /// Used for saved loops (both set and unset ones)
+        Loop = 3,
     };
 
     SeratoMarkersEntry(
@@ -40,8 +46,11 @@ class SeratoMarkersEntry {
     }
     ~SeratoMarkersEntry() = default;
 
-    QByteArray dump() const;
-    static SeratoMarkersEntryPointer parse(const QByteArray& data);
+    QByteArray dumpID3() const;
+    QByteArray dumpMP4() const;
+
+    static SeratoMarkersEntryPointer parseID3(const QByteArray& data);
+    static SeratoMarkersEntryPointer parseMP4(const QByteArray& data);
 
     int type() const {
         return m_type;
@@ -49,12 +58,13 @@ class SeratoMarkersEntry {
 
     SeratoMarkersEntry::TypeId typeId() const {
         SeratoMarkersEntry::TypeId typeId = SeratoMarkersEntry::TypeId::Unknown;
-        switch (type()) {
-        case 0: // This seems to be an unset Hotcue (i.e. without a position)
-        case 1: // Hotcue
+        switch (static_cast<SeratoMarkersEntry::TypeId>(type())) {
+        case SeratoMarkersEntry::TypeId::Unknown:
+            // This seems to be an unset Hotcue (i.e. without a position)
+        case SeratoMarkersEntry::TypeId::Cue:
             typeId = SeratoMarkersEntry::TypeId::Cue;
             break;
-        case 3: // Saved Loop
+        case SeratoMarkersEntry::TypeId::Loop:
             typeId = SeratoMarkersEntry::TypeId::Loop;
             break;
         }
@@ -91,14 +101,13 @@ class SeratoMarkersEntry {
     bool m_hasEndPosition;
     ;
     bool m_isLocked;
-    bool m_isSet;
     quint32 m_startPosition;
     quint32 m_endPosition;
     int m_type;
 };
 
 inline bool operator==(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& rhs) {
-    return (lhs.dump() == rhs.dump());
+    return (lhs.dumpID3() == rhs.dumpID3());
 }
 
 inline bool operator!=(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& rhs) {
@@ -117,25 +126,30 @@ inline QDebug operator<<(QDebug dbg, const SeratoMarkersEntry& arg) {
                << "isLocked =" << arg.isLocked();
 }
 
-// DTO for storing information from the SeratoMarkers_ tags used by the Serato
-// DJ Pro software.
-//
-// Parsing & Formatting
-// --------------------
-// This class includes functions for formatting and parsing SeratoMarkers_
-// metadata according to the specification:
-// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md
-//
+/// DTO for storing information from the SeratoMarkers_ tags used by the Serato
+/// DJ Pro software.
+///
+/// This class includes functions for formatting and parsing SeratoMarkers_
+/// metadata according to the specification:
+/// https://github.com/Holzhaus/serato-tags/blob/master/docs/serato_markers_.md
 class SeratoMarkers final {
   public:
     SeratoMarkers() = default;
-    explicit SeratoMarkers(QList<SeratoMarkersEntryPointer> entries)
-            : m_entries(std::move(entries)) {
-    }
 
-    static bool parse(SeratoMarkers* seratoMarkers, const QByteArray& data);
+    /// Parse a binary Serato representation of the "Markers_" data from a
+    /// `QByteArray` and write the results to the `SeratoMarkers` instance.
+    /// The `fileType` parameter determines the exact format of the data being
+    /// used.
+    static bool parse(
+            SeratoMarkers* seratoMarkers,
+            const QByteArray& data,
+            taglib::FileType fileType);
 
-    QByteArray dump() const;
+    /// Create a binary Serato representation of the "Markers_" data suitable
+    /// for `fileType` and dump it into a `QByteArray`. The content of that
+    /// byte array can be used for round-trip tests or written to the
+    /// appropriate tag to make it accessible to Serato.
+    QByteArray dump(taglib::FileType fileType) const;
 
     bool isEmpty() const {
         return m_entries.isEmpty() && !m_trackColor;
@@ -144,18 +158,31 @@ class SeratoMarkers final {
     const QList<SeratoMarkersEntryPointer>& getEntries() const {
         return m_entries;
     }
-    void setEntries(QList<SeratoMarkersEntryPointer> entries) {
+    void setEntries(const QList<SeratoMarkersEntryPointer>& entries) {
         m_entries = entries;
     }
 
-    RgbColor::optional_t getTrackColor() const {
+    const RgbColor::optional_t& getTrackColor() const {
         return m_trackColor;
     }
-    void setTrackColor(RgbColor::optional_t color) {
+    void setTrackColor(const RgbColor::optional_t& color) {
         m_trackColor = color;
     }
 
+    QList<CueInfo> getCues() const;
+    void setCues(const QList<CueInfo>& cueInfos);
+
   private:
+    static bool parseID3(
+            SeratoMarkers* seratoMarkers,
+            const QByteArray& data);
+    static bool parseMP4(
+            SeratoMarkers* seratoMarkers,
+            const QByteArray& base64EncodedData);
+
+    QByteArray dumpID3() const;
+    QByteArray dumpMP4() const;
+
     QList<SeratoMarkersEntryPointer> m_entries;
     RgbColor::optional_t m_trackColor;
 };

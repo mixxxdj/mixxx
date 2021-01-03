@@ -6,9 +6,7 @@
 #include <QString>
 #include <QDomNode>
 #include <QDomElement>
-#include <QScriptEngine>
 #include <QDir>
-#include <QScriptEngineDebugger>
 #include <QtDebug>
 #include <QRegExp>
 
@@ -30,9 +28,9 @@ class SkinContext {
             const QString& xmlPath);
     SkinContext(
             const SkinContext* parent);
-    virtual ~SkinContext();
+    virtual ~SkinContext() = default;
 
-    // Not copyable
+    // Not copiable
     SkinContext(const SkinContext&) = delete;
     SkinContext& operator=(const SkinContext&) = delete;
 
@@ -101,16 +99,16 @@ class SkinContext {
         return nodeToString(child);
     }
 
-    inline float selectFloat(const QDomNode& node, const QString& nodeName) const {
+    inline float selectFloat(const QDomNode& node, const QString& nodeName, float defaultValue = 0.0) const {
         bool ok = false;
         float conv = nodeToString(selectElement(node, nodeName)).toFloat(&ok);
-        return ok ? conv : 0.0f;
+        return ok ? conv : defaultValue;
     }
 
-    inline double selectDouble(const QDomNode& node, const QString& nodeName) const {
+    inline double selectDouble(const QDomNode& node, const QString& nodeName, double defaultValue = 0.0) const {
         bool ok = false;
         double conv = nodeToString(selectElement(node, nodeName)).toDouble(&ok);
-        return ok ? conv : 0.0;
+        return ok ? conv : defaultValue;
     }
 
     inline int selectInt(const QDomNode& node, const QString& nodeName,
@@ -174,7 +172,7 @@ class SkinContext {
         QDomNode child = selectNode(node, nodeName);
         if (!child.isNull()) {
             bool ok = false;
-            double result = nodeToString(child).toInt(&ok);
+            int result = nodeToString(child).toInt(&ok);
             if (ok) {
                 *value = result;
                 return true;
@@ -228,22 +226,13 @@ class SkinContext {
         return defaultDrawMode;
     }
 
-    QScriptValue evaluateScript(const QString& expression,
-                                const QString& filename=QString(),
-                                int lineNumber=1) const;
-    QScriptValue importScriptExtension(const QString& extensionName);
-    bool hasUncaughtScriptException() const {
-        return m_pSharedState->scriptEngine.hasUncaughtException();
-    }
-    void enableDebugger(bool state) const;
-
     QDebug logWarning(const char* file, const int line, const QDomNode& node) const;
 
-    void defineSingleton(QString objectName, QWidget* widget) {
-        return m_pSharedState->singletons.insertSingleton(objectName, widget);
+    void defineSingleton(const QString& objectName, QWidget* widget) {
+        m_pSharedState->singletons.insertSingleton(objectName, widget);
     }
 
-    QWidget* getSingletonWidget(QString objectName) const {
+    QWidget* getSingletonWidget(const QString& objectName) const {
         return m_pSharedState->singletons.getSingletonWidget(objectName);
     }
 
@@ -266,10 +255,6 @@ class SkinContext {
 
     QDomElement loadSvg(const QString& filename) const;
 
-    // If our parent global isValid() then we were constructed with a
-    // parent. Otherwise we are a root SkinContext.
-    bool isRoot() const { return !m_parentGlobal.isValid(); }
-
     QString variableNodeToText(const QDomElement& element) const;
 
     UserSettingsPointer m_pConfig;
@@ -282,8 +267,6 @@ class SkinContext {
         SharedState(const SharedState&) = delete;
         SharedState(SharedState&&) = delete;
 
-        QScriptEngine scriptEngine;
-        QScriptEngineDebugger scriptDebugger;
         QHash<QString, QDomElement> svgCache;
         // The SingletonContainer map is passed to child SkinContexts, so that all
         // templates in the tree can share a single map.
@@ -294,7 +277,6 @@ class SkinContext {
     std::shared_ptr<SharedState> m_pSharedState;
 
     QHash<QString, QString> m_variables;
-    QScriptValue m_parentGlobal;
     QRegExp m_hookRx;
 
     double m_scaleFactor;

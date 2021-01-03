@@ -6,10 +6,11 @@
 #include "control/controlpotmeter.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmessenger.h"
-#include "effects/presets/effectpresetmanager.h"
 #include "effects/effectxmlelements.h"
+#include "effects/presets/effectpresetmanager.h"
 #include "effects/visibleeffectslist.h"
 #include "engine/effects/engineeffectsmanager.h"
+#include "moc_effectsmanager.cpp"
 #include "util/assert.h"
 
 namespace {
@@ -25,7 +26,7 @@ const QString kEffectsXmlFile = QStringLiteral("effects.xml");
 
 EffectsManager::EffectsManager(
         UserSettingsPointer pConfig,
-        ChannelHandleFactory* pChannelHandleFactory)
+        std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory)
         : m_pConfig(pConfig),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_loEqFreq(ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040),

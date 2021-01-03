@@ -1,5 +1,4 @@
-#ifndef DLGPREFBROADCAST_H
-#define DLGPREFBROADCAST_H
+#pragma once
 
 #include <QModelIndex>
 #include <QWidget>
@@ -21,11 +20,13 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
                      BroadcastSettingsPointer pBroadcastSettings);
     virtual ~DlgPrefBroadcast();
 
+    QUrl helpUrl() const override;
+
   public slots:
     /** Apply changes to widget */
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
     void broadcastEnabledChanged(double value);
     void checkBoxEnableReconnectChanged(int value);
     void checkBoxLimitReconnectsChanged(int value);
@@ -46,7 +47,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void applyModel();
     void updateModel();
     void selectConnectionRow(int row);
-    void selectConnectionRowByName(QString rowName);
+    void selectConnectionRowByName(const QString& rowName);
     void getValuesFromProfile(BroadcastProfilePtr profile);
     void setValuesToProfile(BroadcastProfilePtr profile);
 
@@ -55,5 +56,3 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     ControlProxy* m_pBroadcastEnabled;
     BroadcastProfilePtr m_pProfileListSelection;
 };
-
-#endif

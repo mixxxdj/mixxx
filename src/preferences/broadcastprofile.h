@@ -1,8 +1,4 @@
-// broadcastprofile.h
-// Created June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
-#ifndef BROADCASTPROFILE_H
-#define BROADCASTPROFILE_H
+#pragma once
 
 #include <QSharedPointer>
 #include <QObject>
@@ -139,7 +135,7 @@ class BroadcastProfile : public QObject {
     void setOggDynamicUpdate(bool value);
 
   signals:
-    void profileNameChanged(QString oldName, QString newName);
+    void profileNameChanged(const QString& oldName, const QString& newName);
     void statusChanged(bool newStatus);
     void connectionStatusChanged(int newConnectionStatus);
 
@@ -199,5 +195,3 @@ class BroadcastProfile : public QObject {
 
     QAtomicInt m_connectionStatus;
 };
-
-#endif // BROADCASTPROFILE_H

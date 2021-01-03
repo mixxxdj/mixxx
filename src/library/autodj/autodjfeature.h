@@ -1,26 +1,21 @@
-// AutoDJfeature.h
-// FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+#pragma once
 
-#ifndef AUTODJFEATURE_H
-#define AUTODJFEATURE_H
-
-#include <QObject>
-#include <QStringListModel>
-#include <QVariant>
+#include <QAction>
 #include <QIcon>
-#include <QUrl>
 #include <QList>
 #include <QModelIndex>
+#include <QObject>
 #include <QPoint>
-#include <QAction>
 #include <QPointer>
+#include <QStringListModel>
+#include <QUrl>
+#include <QVariant>
 
-#include "library/libraryfeature.h"
-#include "preferences/usersettings.h"
-#include "library/treeitemmodel.h"
-#include "library/crate/crate.h"
 #include "library/dao/autodjcratesdao.h"
+#include "library/libraryfeature.h"
+#include "library/trackset/crate/crate.h"
+#include "library/treeitemmodel.h"
+#include "preferences/usersettings.h"
 
 class DlgAutoDJ;
 class Library;
@@ -41,8 +36,8 @@ class AutoDJFeature : public LibraryFeature {
     QVariant title() override;
     QIcon getIcon() override;
 
-    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
-    bool dragMoveAccept(QUrl url) override;
+    bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
+    bool dragMoveAccept(const QUrl& url) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard) override;
@@ -58,7 +53,7 @@ class AutoDJFeature : public LibraryFeature {
     void activate() override;
 
     // Temporary, until WCrateTableView can be written.
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
 
   private:
     TrackCollection* const m_pTrackCollection;
@@ -107,6 +102,3 @@ class AutoDJFeature : public LibraryFeature {
     // of tracks in the playlist
     void slotRandomQueue(int numTracksToAdd);
 };
-
-
-#endif /* AUTODJFEATURE_H */

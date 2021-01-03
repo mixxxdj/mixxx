@@ -1,14 +1,4 @@
-/****************************************************************************
-                   encoder.h  - encoder API for mixxx
-                             -------------------
-    copyright            : (C) 2009 by Phillip Whelan
-    copyright            : (C) 2010 by Tobias Rafreider
-    copyright            : (C) 2017 by Josep Maria Antolín
- ***************************************************************************/
-
-
-#ifndef ENCODER_H
-#define ENCODER_H
+#pragma once
 
 #include "util/memory.h"
 #include "util/types.h"
@@ -21,17 +11,18 @@ class Encoder {
   public:
         class Format {
             public:
-            Format(QString labelIn, QString nameIn, bool losslessIn) :
-                label(labelIn), internalName(nameIn), lossless(losslessIn) {}
+              Format(const QString& labelIn, const QString& nameIn, bool losslessIn)
+                      : label(labelIn), internalName(nameIn), lossless(losslessIn) {
+              }
             QString label;
             QString internalName;
             bool lossless;
         };
 
     Encoder() {}
-    virtual ~Encoder() {}
+    virtual ~Encoder() = default;
 
-    virtual int initEncoder(int samplerate, QString errorMessage) = 0;
+    virtual int initEncoder(int samplerate, QString& errorMessage) = 0;
     // encodes the provided buffer of audio.
     virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
     // Adds metadata to the encoded audio, i.e., the ID3 tag. Currently only used
@@ -53,10 +44,10 @@ class EncoderFactory {
 
     const QList<Encoder::Format> getFormats() const;
     Encoder::Format getSelectedFormat(UserSettingsPointer pConfig) const;
-    Encoder::Format getFormatFor(QString format) const;
+    Encoder::Format getFormatFor(const QString& format) const;
     EncoderPointer createRecordingEncoder(
-            Encoder::Format format,
-            UserSettingsPointer pConfig, 
+            const Encoder::Format& format,
+            UserSettingsPointer pConfig,
             EncoderCallback* pCallback) const;
     EncoderPointer createEncoder(
             EncoderSettingsPointer pSettings,
@@ -68,5 +59,3 @@ class EncoderFactory {
     static EncoderFactory factory;
     QList<Encoder::Format> m_formats;
 };
-
-#endif // ENCODER_H

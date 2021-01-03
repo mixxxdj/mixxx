@@ -1,5 +1,4 @@
-#ifndef ANALYZER_ANALYZERKEY_H
-#define ANALYZER_ANALYZERKEY_H
+#pragma once
 
 #include <QHash>
 #include <QList>
@@ -9,15 +8,16 @@
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 #include "util/memory.h"
 
 class AnalyzerKey : public Analyzer {
   public:
-    explicit AnalyzerKey(KeyDetectionSettings keySettings);
+    explicit AnalyzerKey(const KeyDetectionSettings& keySettings);
     ~AnalyzerKey() override = default;
 
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
+    static mixxx::AnalyzerPluginInfo defaultPlugin();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool processSamples(const CSAMPLE *pIn, const int iLen) override;
@@ -26,7 +26,7 @@ class AnalyzerKey : public Analyzer {
 
   private:
     static QHash<QString, QString> getExtraVersionInfo(
-            QString pluginId, bool bPreferencesFastAnalysis);
+            const QString& pluginId, bool bPreferencesFastAnalysis);
 
     bool shouldAnalyze(TrackPointer tio) const;
 
@@ -42,5 +42,3 @@ class AnalyzerKey : public Analyzer {
     bool m_bPreferencesFastAnalysisEnabled;
     bool m_bPreferencesReanalyzeEnabled;
 };
-
-#endif /* ANALYZER_ANALYZERKEY_H */

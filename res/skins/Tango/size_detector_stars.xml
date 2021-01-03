@@ -121,17 +121,8 @@ Controls:
         <Size>0me,20f</Size>
         <Children>
 
-          <!-- Play button -->
-          <WidgetGroup><Size>50f,20f</Size></WidgetGroup>
-
-          <!-- Separate Cue button -->
-          <WidgetGroup>
-            <Size>24f,20f</Size>
-            <Connection>
-              <ConfigKey persist="true">[Tango],separate_cue_button</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup>
+          <!-- Play + Cue button -->
+          <WidgetGroup><Size>75f,20f</Size></WidgetGroup>
 
           <!-- HotCues -->
           <WidgetGroup>

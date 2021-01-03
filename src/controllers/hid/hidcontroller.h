@@ -1,40 +1,29 @@
-/**
-  * @file hidcontroller.h
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Sun May 1 2011
-  * @brief HID controller backend
-  */
-
-#ifndef HIDCONTROLLER_H
-#define HIDCONTROLLER_H
-
-#include <hidapi.h>
-
-#include <QAtomicInt>
+#pragma once
 
 #include "controllers/controller.h"
-#include "controllers/hid/hidcontrollerpreset.h"
-#include "controllers/hid/hidcontrollerpresetfilehandler.h"
+#include "controllers/hid/hiddevice.h"
+#include "controllers/hid/legacyhidcontrollermapping.h"
 #include "util/duration.h"
 
+/// HID controller backend
 class HidController final : public Controller {
     Q_OBJECT
   public:
-    HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig);
+    explicit HidController(
+            mixxx::hid::DeviceInfo&& deviceInfo);
     ~HidController() override;
 
-    QString presetExtension() override;
+    ControllerJSProxy* jsProxy() override;
 
-    ControllerPresetPointer getPreset() const override {
-        HidControllerPreset* pClone = new HidControllerPreset();
-        *pClone = m_preset;
-        return ControllerPresetPointer(pClone);
+    QString mappingExtension() override;
+
+    LegacyControllerMappingPointer getMapping() const override {
+        return LegacyControllerMappingPointer(
+                new LegacyHidControllerMapping(m_mapping));
     }
 
-    bool savePreset(const QString fileName) const override;
-
-    void visit(const MidiControllerPreset* preset) override;
-    void visit(const HidControllerPreset* preset) override;
+    void visit(const LegacyMidiControllerMapping* mapping) override;
+    void visit(const LegacyHidControllerMapping* mapping) override;
 
     void accept(ControllerVisitor* visitor) override {
         if (visitor) {
@@ -43,55 +32,70 @@ class HidController final : public Controller {
     }
 
     bool isMappable() const override {
-        return m_preset.isMappable();
+        return m_mapping.isMappable();
     }
 
-    bool matchPreset(const PresetInfo& preset) override;
-
-    static QString safeDecodeWideString(const wchar_t* pStr, size_t max_length);
+    bool matchMapping(const MappingInfo& mapping) override;
 
   protected:
-    Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID = 0);
+    void sendReport(QList<int> data, unsigned int length, unsigned int reportID);
 
   private slots:
     int open() override;
     int close() override;
 
     bool poll() override;
-    bool isPolling() const override;
 
   private:
+    bool isPolling() const override;
+
     // For devices which only support a single report, reportID must be set to
     // 0x0.
-    void send(QByteArray data) override;
-    void virtual send(QByteArray data, unsigned int reportID);
+    void sendBytes(const QByteArray& data) override;
+    void sendBytesReport(QByteArray data, unsigned int reportID);
+    void sendFeatureReport(const QList<int>& dataList, unsigned int reportID);
 
-    // Returns a pointer to the currently loaded controller preset. For internal
+    // Returns a pointer to the currently loaded controller mapping. For internal
     // use only.
-    ControllerPreset* preset() override {
-        return &m_preset;
+    LegacyControllerMapping* mapping() override {
+        return &m_mapping;
     }
 
-    bool matchProductInfo(const ProductInfo& product);
-    void guessDeviceCategory();
+    const mixxx::hid::DeviceInfo m_deviceInfo;
 
-    // Local copies of things we need from hid_device_info
-    int hid_interface_number;
-    unsigned short hid_vendor_id;
-    unsigned short hid_product_id;
-    unsigned short hid_usage_page;
-    unsigned short hid_usage;
-    char* hid_path;
-    wchar_t* hid_serial_raw;
-    QString hid_serial;
-    QString hid_manufacturer;
-    QString hid_product;
-
-    QString m_sUID;
     hid_device* m_pHidDevice;
-    HidControllerPreset m_preset;
+    LegacyHidControllerMapping m_mapping;
 
-    unsigned char m_pPollData[255];
+    static constexpr int kNumBuffers = 2;
+    static constexpr int kBufferSize = 255;
+    unsigned char m_pPollData[kNumBuffers][kBufferSize];
+    int m_iLastPollSize;
+    int m_iPollingBufferIndex;
+
+    friend class HidControllerJSProxy;
 };
 
-#endif
+class HidControllerJSProxy : public ControllerJSProxy {
+    Q_OBJECT
+  public:
+    HidControllerJSProxy(HidController* m_pController)
+            : ControllerJSProxy(m_pController),
+              m_pHidController(m_pController) {
+    }
+
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0) override {
+        m_pHidController->send(data, length);
+    }
+
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length, unsigned int reportID) {
+        m_pHidController->sendReport(data, length, reportID);
+    }
+
+    Q_INVOKABLE void sendFeatureReport(
+            const QList<int>& dataList, unsigned int reportID) {
+        m_pHidController->sendFeatureReport(dataList, reportID);
+    }
+
+  private:
+    HidController* m_pHidController;
+};

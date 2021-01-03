@@ -1,9 +1,4 @@
-//  Created on: 28/apr/2011
-//      Author: vittorio
-
-
-#ifndef DLGPREFBEATS_H
-#define DLGPREFBEATS_H
+#pragma once
 
 #include <QWidget>
 #include <QString>
@@ -21,11 +16,13 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     DlgPrefBeats(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefBeats();
 
+    QUrl helpUrl() const override;
+
   public slots:
     // Apply changes to widget
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
 
   private slots:
     void pluginSelected(int i);
@@ -36,6 +33,7 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     void minBpmRangeChanged(int value);
     void maxBpmRangeChanged(int value);
     void slotReanalyzeChanged(int value);
+    void slotReanalyzeImportedChanged(int value);
 
   private:
     void loadSettings();
@@ -45,11 +43,10 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     QString m_selectedAnalyzerId;
     int m_minBpm;
     int m_maxBpm;
-    bool m_banalyzerEnabled;
-    bool m_bfixedtempoEnabled;
-    bool m_boffsetEnabled;
-    bool m_FastAnalysisEnabled;
+    bool m_bAnalyzerEnabled;
+    bool m_bFixedTempoEnabled;
+    bool m_bOffsetEnabled;
+    bool m_bFastAnalysisEnabled;
     bool m_bReanalyze;
+    bool m_bReanalyzeImported;
 };
-
-#endif // DLGPREFBEATS_H

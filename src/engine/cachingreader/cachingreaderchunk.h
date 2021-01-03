@@ -1,5 +1,4 @@
-#ifndef ENGINE_CACHINGREADERCHUNK_H
-#define ENGINE_CACHINGREADERCHUNK_H
+#pragma once
 
 #include "sources/audiosource.h"
 
@@ -16,7 +15,7 @@
 // and the worker.
 class CachingReaderChunk {
 public:
-    static const mixxx::AudioSignal::ChannelCount kChannels;
+    static const mixxx::audio::ChannelCount kChannels;
     static const SINT kFrames;
     static const SINT kSamples;
 
@@ -142,6 +141,3 @@ private:
     CachingReaderChunkForOwner* m_pPrev; // previous item in double-linked list
     CachingReaderChunkForOwner* m_pNext; // next item in double-linked list
 };
-
-
-#endif // ENGINE_CACHINGREADERCHUNK_H

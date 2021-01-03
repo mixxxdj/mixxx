@@ -1,27 +1,14 @@
-/**
- * @file dlgprefsound.h
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100625
- */
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+#include <memory>
 
-#ifndef DLGPREFSOUND_H
-#define DLGPREFSOUND_H
-
+#include "defs_urls.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
-#include "preferences/usersettings.h"
-#include "soundio/soundmanagerconfig.h"
-#include "soundio/sounddeviceerror.h"
 #include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
+#include "soundio/sounddeviceerror.h"
+#include "soundio/soundmanagerconfig.h"
 
 class SoundManager;
 class PlayerManager;
@@ -42,9 +29,12 @@ class ControlProxy;
 class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
   public:
-    DlgPrefSound(QWidget *parent, SoundManager *soundManager,
-                 UserSettingsPointer pSettings);
+    DlgPrefSound(QWidget* parent,
+            std::shared_ptr<SoundManager> soundManager,
+            UserSettingsPointer pSettings);
     virtual ~DlgPrefSound();
+
+    QUrl helpUrl() const override;
 
   signals:
     void loadPaths(const SoundManagerConfig &config);
@@ -55,9 +45,9 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void updatedAPI();
 
   public slots:
-    void slotUpdate(); // called on show
-    void slotApply();  // called on ok button
-    void slotResetToDefaults();
+    void slotUpdate() override; // called on show
+    void slotApply() override;  // called on ok button
+    void slotResetToDefaults() override;
     void bufferUnderflow(double count);
     void masterLatencyChanged(double latency);
     void latencyCompensationSpinboxChanged(double value);
@@ -71,8 +61,8 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void micMonitorModeComboBoxChanged(int value);
 
   private slots:
-    void addPath(AudioOutput output);
-    void addPath(AudioInput input);
+    void addPath(const AudioOutput& output);
+    void addPath(const AudioInput& input);
     void loadSettings();
     void apiChanged(int index);
     void updateAPIs();
@@ -92,8 +82,9 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     void loadSettings(const SoundManagerConfig &config);
     void insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout);
     void checkLatencyCompensation();
+    bool eventFilter(QObject* object, QEvent* event) override;
 
-    SoundManager* m_pSoundManager;
+    std::shared_ptr<SoundManager> m_pSoundManager;
     UserSettingsPointer m_pSettings;
     SoundManagerConfig m_config;
     ControlProxy* m_pMasterAudioLatencyOverloadCount;
@@ -113,5 +104,3 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool m_bSkipConfigClear;
     bool m_loading;
 };
-
-#endif

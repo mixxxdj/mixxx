@@ -1,14 +1,15 @@
 #pragma once
 
-#include <QList>
-#include <QObject>
 #include <QAbstractItemModel>
 #include <QFont>
+#include <QList>
+#include <QObject>
 #include <QPointer>
 
 #include "analyzer/analyzerprogress.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/db/dbconnectionpool.h"
 #include "util/parented_ptr.h"
 
@@ -77,8 +78,8 @@ class Library: public QObject {
 
     //static Library* buildDefaultLibrary();
 
-    enum RemovalType {
-        LeaveTracksUnchanged = 0,
+    enum class RemovalType {
+        KeepTracks,
         HideTracks,
         PurgeTracks
     };
@@ -89,25 +90,29 @@ class Library: public QObject {
     void setRowHeight(int rowHeight);
     void setEditMedatataSelectedClick(bool enable);
 
+    /// Triggers a new search in the internal track collection
+    /// and shows the results by switching the view.
+    void searchTracksInCollection(const QString& query);
+
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
-    void slotLoadLocationToPlayer(QString location, QString group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+    void slotLoadLocationToPlayer(const QString& location, const QString& group);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
-    void slotRequestAddDir(QString directory);
-    void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
-    void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
+    void slotRequestAddDir(const QString& directory);
+    void slotRequestRemoveDir(const QString& directory, Library::RemovalType removalType);
+    void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
     void onSkinLoadFinished();
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
     void restoreSearch(const QString&);
     void search(const QString& text);
     void disableSearch();

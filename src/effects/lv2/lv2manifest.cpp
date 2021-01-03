@@ -40,11 +40,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             if (lilv_port_is_a(m_pLV2plugin, port, properties["input_port"])) {
                 audioPortIndices.append(i);
                 inputPorts++;
-                info = lilv_port_get_name(m_pLV2plugin, port);
             } else if (lilv_port_is_a(m_pLV2plugin, port, properties["output_port"])) {
                 audioPortIndices.append(i);
                 outputPorts++;
-                info = lilv_port_get_name(m_pLV2plugin, port);
             }
         }
 
@@ -155,9 +153,9 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 }
 
 LV2Manifest::~LV2Manifest() {
-    delete m_minimum;
-    delete m_maximum;
-    delete m_default;
+    delete[] m_minimum;
+    delete[] m_maximum;
+    delete[] m_default;
 }
 
 QList<int> LV2Manifest::getAudioPortIndices() {
@@ -189,10 +187,10 @@ void LV2Manifest::buildEnumerationOptions(const LilvPort* port,
         const LilvNode* value = lilv_scale_point_get_value(option);
         QString strDescription(lilv_node_as_string(description));
         param->appendStep(qMakePair(
-                strDescription, (double)lilv_node_as_float(value)));
+                strDescription, static_cast<double>(lilv_node_as_float(value))));
     }
 
-    if (options != NULL) {
+    if (options != nullptr) {
         lilv_scale_points_free(options);
     }
 }

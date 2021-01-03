@@ -123,7 +123,7 @@
                 undefined !== this.outKey &&
                 undefined !== this.output &&
                 typeof this.output === "function") {
-                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output);
+                this.connections[0] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
             }
         },
         disconnect: function() {
@@ -193,7 +193,7 @@
                     this.longPressTimer = engine.beginTimer(this.longPressTimeout, function() {
                         this.isLongPressed = true;
                         this.longPressTimer = 0;
-                    }, true);
+                    }.bind(this), true);
                 } else {
                     if (this.isLongPressed) {
                         this.inToggle();
@@ -349,11 +349,11 @@
         connect: function() {
             Button.prototype.connect.call(this); // call parent connect
             if (undefined !== this.group && this.colorKey !== undefined) {
-                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(id) {
+                this.connections[1] = engine.makeConnection(this.group, this.colorKey, function(color) {
                     if (engine.getValue(this.group, this.outKey)) {
-                        this.outputColor(id);
+                        this.outputColor(color);
                     }
-                });
+                }.bind(this));
             }
         },
     });
@@ -422,12 +422,12 @@
             }
         },
         connect: function() {
-            this.connections[0] = engine.makeConnection(this.group, "track_loaded", this.output);
+            this.connections[0] = engine.makeConnection(this.group, "track_loaded", this.output.bind(this));
             if (this.playing !== undefined) {
-                this.connections[1] = engine.makeConnection(this.group, "play", this.output);
+                this.connections[1] = engine.makeConnection(this.group, "play", this.output.bind(this));
             }
             if (this.looping !== undefined) {
-                this.connections[2] = engine.connectControl(this.group, "repeat", this.output);
+                this.connections[2] = engine.makeConnection(this.group, "repeat", this.output.bind(this));
             }
         },
         outKey: null, // hack to get Component constructor to call connect()
@@ -664,22 +664,19 @@
     };
 
     var Deck = function(deckNumbers) {
-        if (deckNumbers !== undefined) {
-            if (Array.isArray(deckNumbers)) {
-                // These must be unique to each instance,
-                // so they cannot be in the prototype.
-                this.currentDeck = "[Channel" + deckNumbers[0] + "]";
-                this.deckNumbers = deckNumbers;
-            } else if (typeof deckNumbers === "number" &&
-                      Math.floor(deckNumbers) === deckNumbers &&
-                      isFinite(deckNumbers)) {
-                this.currentDeck = "[Channel" + deckNumbers + "]";
-                this.deckNumbers = [deckNumbers];
-            }
+        if (deckNumbers !== undefined && Array.isArray(deckNumbers)) {
+            // These must be unique to each instance,
+            // so they cannot be in the prototype.
+            this.deckNumbers = deckNumbers;
+        } else if (deckNumbers !== undefined && typeof deckNumbers === "number" &&
+                Math.floor(deckNumbers) === deckNumbers &&
+                isFinite(deckNumbers)) {
+            this.deckNumbers = [deckNumbers];
         } else {
             print("ERROR! new Deck() called without specifying any deck numbers");
             return;
         }
+        this.currentDeck = "[Channel" + this.deckNumbers[0] + "]";
     };
     Deck.prototype = new ComponentContainer({
         setCurrentDeck: function(newGroup) {
@@ -751,6 +748,8 @@
 
         this.setCurrentUnit = function(newNumber) {
             this.currentUnitNumber = newNumber;
+            this.group = "[EffectRack1_EffectUnit" + newNumber + "]";
+
             if (allowFocusWhenParametersHidden) {
                 engine.setValue(this.group, "show_focus", 0);
             } else {
@@ -759,8 +758,7 @@
                 }
                 delete this.previouslyFocusedEffect;
             }
-
-            this.group = "[EffectRack1_EffectUnit" + newNumber + "]";
+            engine.setValue(this.group, "controller_input_active", 0);
 
             if (allowFocusWhenParametersHidden) {
                 engine.setValue(this.group, "show_focus", 1);
@@ -771,9 +769,10 @@
                 // presses the skin button for show_parameters.
                 this.showParametersConnection = engine.makeConnection(this.group,
                     "show_parameters",
-                    this.onShowParametersChange);
+                    this.onShowParametersChange.bind(this));
                 this.showParametersConnection.trigger();
             }
+            engine.setValue(this.group, "controller_input_active", 1);
 
             // Do not enable soft takeover upon EffectUnit construction
             // so initial values can be loaded from knobs.
@@ -816,20 +815,19 @@
             this.setCurrentUnit(this.unitNumbers[index]);
         };
 
-        if (unitNumbers !== undefined) {
-            if (Array.isArray(unitNumbers)) {
-                this.unitNumbers = unitNumbers;
-                this.setCurrentUnit(unitNumbers[0]);
-            } else if (typeof unitNumbers === "number" &&
-                      Math.floor(unitNumbers) === unitNumbers &&
-                      isFinite(unitNumbers)) {
-                this.unitNumbers = [unitNumbers];
-                this.setCurrentUnit(unitNumbers);
-            }
+        if (unitNumbers !== undefined && Array.isArray(unitNumbers)) {
+            this.unitNumbers = unitNumbers;
+        } else if (unitNumbers !== undefined && typeof unitNumbers === "number" &&
+                  Math.floor(unitNumbers) === unitNumbers &&
+                  isFinite(unitNumbers)) {
+            this.unitNumbers = [unitNumbers];
         } else {
             print("ERROR! new EffectUnit() called without specifying any unit numbers!");
             return;
         }
+
+        this.group = "[EffectRack1_EffectUnit" + this.unitNumbers[0] + "]";
+        this.setCurrentUnit(this.unitNumbers[0]);
 
         this.dryWetKnob = new Pot({
             group: this.group,
@@ -869,6 +867,7 @@
         };
         this.EffectUnitKnob.prototype = new Pot({
             group: this.group,
+            number: this.currentUnitNumber,
             unshift: function() {
                 this.input = function(channel, control, value, _status, _group) {
                     if (this.MSB !== undefined) {
@@ -916,7 +915,7 @@
             outKey: "focused_effect",
             connect: function() {
                 this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                    this.onFocusChange);
+                    this.onFocusChange.bind(this));
             },
             disconnect: function() {
                 engine.softTakeoverIgnoreNextValue(this.group, this.inKey);
@@ -979,11 +978,11 @@
 
                 this.connect = function() {
                     this.connections[0] = engine.makeConnection(eu.group, "focused_effect",
-                        this.onFocusChange);
+                        this.onFocusChange.bind(this));
                     // this.onFocusChange sets this.group and this.outKey, so trigger it
                     // before making the connection for LED output
                     this.connections[0].trigger();
-                    this.connections[1] = engine.makeConnection(this.group, this.outKey, this.output);
+                    this.connections[1] = engine.makeConnection(this.group, this.outKey, this.output.bind(this));
                 };
 
                 this.unshift = function() {
@@ -1027,7 +1026,7 @@
                     // Component.prototype.trigger() triggering the disconnected connection.
                     this.connections = [engine.makeConnection(eu.group,
                         "focused_effect",
-                        this.output)];
+                        this.output.bind(this))];
                 };
             },
         });
@@ -1069,7 +1068,7 @@
                     var showParameters = engine.getValue(this.group, "show_parameters");
                     if (this.isPress(channel, control, value, status)) {
                         this.longPressTimer = engine.beginTimer(this.longPressTimeout,
-                            this.startEffectFocusChooseMode,
+                            this.startEffectFocusChooseMode.bind(this),
                             true);
                         if (!showParameters) {
                             if (!allowFocusWhenParametersHidden) {

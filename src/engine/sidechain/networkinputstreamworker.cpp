@@ -1,12 +1,6 @@
-// networkinputstreamworker.cpp
-// Create on August 11, 2017 by Palakis
-
 #include <engine/sidechain/networkinputstreamworker.h>
 
 NetworkInputStreamWorker::NetworkInputStreamWorker() {
-}
-
-NetworkInputStreamWorker::~NetworkInputStreamWorker() {
 }
 
 void NetworkInputStreamWorker::setSourceFifo(FIFO<CSAMPLE>* pFifo) {

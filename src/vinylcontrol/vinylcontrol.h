@@ -1,5 +1,4 @@
-#ifndef VINYLCONTROL_H
-#define VINYLCONTROL_H
+#pragma once
 
 #include <QString>
 
@@ -11,7 +10,7 @@ class ControlProxy;
 
 class VinylControl : public QObject {
   public:
-    VinylControl(UserSettingsPointer pConfig, QString group);
+    VinylControl(UserSettingsPointer pConfig, const QString& group);
     virtual ~VinylControl();
 
     virtual void toggleVinylControl(bool enable);
@@ -23,7 +22,7 @@ class VinylControl : public QObject {
     virtual float getAngle() = 0;
 
     UserSettingsPointer m_pConfig;
-    QString m_group;
+    const QString m_group;
 
     // The VC input gain preference.
     ControlProxy* m_pVinylControlInputGain;
@@ -79,5 +78,3 @@ class VinylControl : public QObject {
     // Whether this VinylControl instance is enabled.
     bool m_bIsEnabled;
 };
-
-#endif

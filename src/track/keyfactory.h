@@ -1,13 +1,11 @@
-#ifndef KEYFACTORY_H
-#define KEYFACTORY_H
+#pragma once
 
 #include <QHash>
-#include <QVector>
 #include <QString>
+#include <QVector>
 
-#include "track/keys.h"
 #include "proto/keys.pb.h"
-#include "track/track.h"
+#include "track/keys.h"
 
 class KeyFactory {
   public:
@@ -31,5 +29,3 @@ class KeyFactory {
         const QHash<QString, QString>& extraVersionInfo,
         const int iSampleRate, const int iTotalSamples);
 };
-
-#endif /* KEYFACTORY_H */

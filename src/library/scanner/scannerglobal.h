@@ -1,17 +1,18 @@
-#ifndef SCANNERGLOBAL_H
-#define SCANNERGLOBAL_H
+#pragma once
 
-#include <QSet>
+#include <QDir>
 #include <QHash>
-#include <QRegExp>
-#include <QStringList>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QRegExp>
+#include <QSet>
 #include <QSharedPointer>
+#include <QStringList>
 
 #include "util/cache.h"
-#include "util/task.h"
 #include "util/performancetimer.h"
+#include "util/sandbox.h"
+#include "util/task.h"
 
 class DirInfo {
   public:
@@ -221,5 +222,3 @@ class ScannerGlobal {
 };
 
 typedef QSharedPointer<ScannerGlobal> ScannerGlobalPointer;
-
-#endif /* SCANNERGLOBAL_H */

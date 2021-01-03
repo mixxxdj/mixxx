@@ -5,14 +5,15 @@
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
-#include "preferences/usersettings.h"
-#include "library/crate/cratestorage.h"
-#include "library/dao/trackdao.h"
-#include "library/dao/cuedao.h"
-#include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
+#include "library/dao/cuedao.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
+#include "library/dao/playlistdao.h"
+#include "library/dao/trackdao.h"
+#include "library/trackset/crate/cratestorage.h"
+#include "preferences/usersettings.h"
+#include "util/thread_affinity.h"
 
 // forward declaration(s)
 class BaseTrackCache;
@@ -29,30 +30,36 @@ class TrackCollection : public QObject,
     ~TrackCollection() override;
 
     void repairDatabase(
-            QSqlDatabase database) override;
+            const QSqlDatabase& database) override;
 
     void connectDatabase(
-            QSqlDatabase database) override;
+            const QSqlDatabase& database) override;
     void disconnectDatabase() override;
 
     QSqlDatabase database() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_database;
     }
 
     const CrateStorage& crates() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_crates;
     }
 
     TrackDAO& getTrackDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_trackDao;
     }
     PlaylistDAO& getPlaylistDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_playlistDao;
     }
     DirectoryDAO& getDirectoryDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_directoryDao;
     }
     AnalysisDao& getAnalysisDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_analysisDao;
     }
 
@@ -60,6 +67,7 @@ class TrackCollection : public QObject,
     QWeakPointer<BaseTrackCache> disconnectTrackSource();
 
     QSharedPointer<BaseTrackCache> getTrackSource() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_pTrackSource;
     }
 
@@ -99,6 +107,17 @@ class TrackCollection : public QObject,
             bool unremove);
 
   signals:
+    // Forwarded signals from LibraryScanner
+    void scanTrackAdded(TrackPointer pTrack);
+
+    // Forwarded signals from TrackDAO
+    void trackClean(TrackId trackId);
+    void trackDirty(TrackId trackId);
+    void tracksAdded(const QSet<TrackId>& trackIds);
+    void tracksChanged(const QSet<TrackId>& trackIds);
+    void tracksRemoved(const QSet<TrackId>& trackIds);
+    void multipleTracksChanged();
+
     void crateInserted(CrateId id);
     void crateUpdated(CrateId id);
     void crateDeleted(CrateId id);
@@ -128,7 +147,7 @@ class TrackCollection : public QObject,
 
     bool addDirectory(const QString& dir);
     bool removeDirectory(const QString& dir);
-    void relocateDirectory(QString oldDir, QString newDir);
+    void relocateDirectory(const QString& oldDir, const QString& newDir);
 
     void saveTrack(Track* pTrack);
 

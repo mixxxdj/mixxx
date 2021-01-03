@@ -9,8 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef WNUMBERRATE_H
-#define WNUMBERRATE_H
+#pragma once
 
 #include "widget/wnumber.h"
 
@@ -19,7 +18,7 @@ class ControlProxy;
 class WNumberRate final : public WNumber {
     Q_OBJECT
   public:
-    explicit WNumberRate(const char *group, QWidget *parent=nullptr);
+    explicit WNumberRate(const QString& group, QWidget* parent = nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
@@ -29,5 +28,3 @@ class WNumberRate final : public WNumber {
   private:
     ControlProxy* m_pRateRatio;
 };
-
-#endif

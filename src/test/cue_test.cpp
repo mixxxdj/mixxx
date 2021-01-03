@@ -11,7 +11,7 @@ namespace mixxx {
 TEST(CueTest, DefaultCueToCueInfoTest) {
     const Cue cueObject;
     auto cueInfo = cueObject.getCueInfo(
-            AudioSignal::SampleRate(44100));
+            audio::SampleRate(44100));
     cueInfo.setColor(std::nullopt);
     EXPECT_EQ(CueInfo(), cueInfo);
 }
@@ -20,9 +20,10 @@ TEST(CueTest, DefaultCueInfoToCueRoundtrip) {
     const CueInfo cueInfo1;
     const Cue cueObject(
             cueInfo1,
-            AudioSignal::SampleRate(44100));
+            audio::SampleRate(44100),
+            true);
     auto cueInfo2 = cueObject.getCueInfo(
-            AudioSignal::SampleRate(44100));
+            audio::SampleRate(44100));
     cueInfo2.setColor(std::nullopt);
     EXPECT_EQ(cueInfo1, cueInfo2);
 }
@@ -40,9 +41,10 @@ TEST(CueTest, ConvertCueInfoToCueRoundtrip) {
             RgbColor::optional(0xABCDEF));
     const Cue cueObject(
             cueInfo1,
-            AudioSignal::SampleRate(44100));
+            audio::SampleRate(44100),
+            true);
     const auto cueInfo2 = cueObject.getCueInfo(
-            AudioSignal::SampleRate(44100));
+            audio::SampleRate(44100));
     EXPECT_EQ(cueInfo1, cueInfo2);
 }
 

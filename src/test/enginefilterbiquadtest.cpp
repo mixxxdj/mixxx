@@ -19,4 +19,4 @@ TEST_F(EngineFilterBiquadTest, fidspecLengthIsLongEnough) {
     ASSERT_TRUE(FIDSPEC_LENGTH > strlen("LsBq/1.2200000000/-12.0000000000"));
 }
 
-}
+} // namespace

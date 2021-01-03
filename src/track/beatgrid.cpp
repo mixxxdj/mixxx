@@ -1,7 +1,9 @@
+#include "track/beatgrid.h"
+
 #include <QMutexLocker>
 #include <QtDebug>
 
-#include "track/beatgrid.h"
+#include "track/track.h"
 #include "util/math.h"
 
 static const int kFrameSize = 2;
@@ -11,6 +13,8 @@ struct BeatGridData {
     double firstBeat;
 };
 
+namespace mixxx {
+
 class BeatGridIterator : public BeatIterator {
   public:
     BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample)
@@ -19,11 +23,11 @@ class BeatGridIterator : public BeatIterator {
               m_dEndSample(dEndSample) {
     }
 
-    virtual bool hasNext() const {
+    bool hasNext() const override {
         return m_dBeatLength > 0 && m_dCurrentSample <= m_dEndSample;
     }
 
-    virtual double next() {
+    double next() override {
         double beat = m_dCurrentSample;
         m_dCurrentSample += m_dBeatLength;
         return beat;
@@ -70,7 +74,8 @@ void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
 
     QMutexLocker lock(&m_mutex);
     m_grid.mutable_bpm()->set_bpm(dBpm);
-    m_grid.mutable_first_beat()->set_frame_position(dFirstBeatSample / kFrameSize);
+    m_grid.mutable_first_beat()->set_frame_position(
+            static_cast<google::protobuf::int32>(dFirstBeatSample / kFrameSize));
     // Calculate beat length as sample offsets
     m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
 }
@@ -79,7 +84,7 @@ QByteArray BeatGrid::toByteArray() const {
     QMutexLocker locker(&m_mutex);
     std::string output;
     m_grid.SerializeToString(&output);
-    return QByteArray(output.data(), output.length());
+    return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
 BeatsPointer BeatGrid::clone() const {
@@ -124,7 +129,7 @@ QString BeatGrid::getSubVersion() const {
     return m_subVersion;
 }
 
-void BeatGrid::setSubVersion(QString subVersion) {
+void BeatGrid::setSubVersion(const QString& subVersion) {
     m_subVersion = subVersion;
 }
 
@@ -318,7 +323,8 @@ void BeatGrid::translate(double dNumSamples) {
         return;
     }
     double newFirstBeatFrames = (firstBeatSample() + dNumSamples) / kFrameSize;
-    m_grid.mutable_first_beat()->set_frame_position(newFirstBeatFrames);
+    m_grid.mutable_first_beat()->set_frame_position(
+            static_cast<google::protobuf::int32>(newFirstBeatFrames));
     locker.unlock();
     emit updated();
 }
@@ -362,3 +368,5 @@ void BeatGrid::setBpm(double dBpm) {
     locker.unlock();
     emit updated();
 }
+
+} // namespace mixxx

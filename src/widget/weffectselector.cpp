@@ -4,6 +4,7 @@
 
 #include "effects/effectsmanager.h"
 #include "effects/visibleeffectslist.h"
+#include "moc_weffectselector.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectSelector::WEffectSelector(QWidget* pParent, EffectsManager* pEffectsManager)
@@ -62,13 +63,14 @@ void WEffectSelector::populate() {
                                                        width() - 2);
         addItem(elidedDisplayName, QVariant(pManifest->uniqueId()));
 
-        // NOTE(Be): Using \n instead of : as the separator does not work in
-        // QComboBox item tooltips.
-        QString description = tr("%1: %2").arg(pManifest->name(),
-                                               pManifest->description());
-        // The <span/> is a hack to get Qt to treat the string as rich text so
-        // it automatically wraps long lines.
-        setItemData(i, QVariant("<span/>" + description), Qt::ToolTipRole);
+        QString name = pManifest->name();
+        QString description = pManifest->description();
+        // <b> makes the effect name bold. Also, like <span> it serves as hack
+        // to get Qt to treat the string as rich text so it automatically wraps long lines.
+        setItemData(i,
+                QVariant(QStringLiteral("<b>") + name +
+                        QStringLiteral("</b><br/>") + description),
+                Qt::ToolTipRole);
     }
 
     //: Displayed when no effect is loaded
@@ -114,4 +116,15 @@ void WEffectSelector::slotEffectUpdated() {
         setCurrentIndex(newIndex);
         setBaseTooltip(itemData(newIndex, Qt::ToolTipRole).toString());
     }
+}
+
+bool WEffectSelector::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    } else if (pEvent->type() == QEvent::Wheel && !hasFocus()) {
+        // don't change effect by scrolling hovered effect selector
+        return true;
+    }
+
+    return QComboBox::event(pEvent);
 }

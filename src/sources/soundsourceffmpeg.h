@@ -8,9 +8,8 @@ extern "C" {
 
 } // extern "C"
 
+#include "sources/readaheadframebuffer.h"
 #include "sources/soundsourceprovider.h"
-
-#include "util/readaheadsamplebuffer.h"
 
 namespace mixxx {
 
@@ -23,7 +22,7 @@ class SoundSourceFFmpeg : public SoundSource {
 
   protected:
     ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) override;
+            const WritableSampleFrames& sampleFrames) override;
 
   private:
     OpenResult tryOpen(
@@ -31,21 +30,16 @@ class SoundSourceFFmpeg : public SoundSource {
             const OpenParams& params) override;
 
     bool initResampling(
-            ChannelCount* pResampledChannelCount,
-            SampleRate* pResampledSampleRate);
-    const CSAMPLE* resampleDecodedFrame();
-
-    // Consume as many buffered sample frames as possible and return
-    // the remaining range that could not be filled from the  buffer.
-    WritableSampleFrames consumeSampleBuffer(
-            WritableSampleFrames writableSampleFrames);
+            audio::ChannelCount* pResampledChannelCount,
+            audio::SampleRate* pResampledSampleRate);
+    const CSAMPLE* resampleDecodedAVFrame();
 
     // Seek to the requested start index (if needed) or return false
     // upon seek errors.
     bool adjustCurrentPosition(
             SINT startIndex);
 
-    bool consumeNextPacket(
+    bool consumeNextAVPacket(
             AVPacket* pavPacket,
             AVPacket** ppavNextPacket);
 
@@ -187,23 +181,25 @@ class SoundSourceFFmpeg : public SoundSource {
     AVFrame* m_pavDecodedFrame;
     AVFrame* m_pavResampledFrame;
 
-    ReadAheadSampleBuffer m_sampleBuffer;
+    FrameCount m_seekPrerollFrameCount;
 
-    SINT m_seekPrerollFrameCount;
-
-    SINT m_curFrameIndex;
+    ReadAheadFrameBuffer m_frameBuffer;
 };
 
 class SoundSourceProviderFFmpeg : public SoundSourceProvider {
   public:
+    static const QString kDisplayName;
+
     SoundSourceProviderFFmpeg();
 
-    QString getName() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override;
 
     SoundSourceProviderPriority getPriorityHint(
             const QString& supportedFileExtension) const override;
-
-    QStringList getSupportedFileExtensions() const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceFFmpeg>(url);

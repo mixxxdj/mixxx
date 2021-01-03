@@ -1,4 +1,3 @@
-
 #include "skin/colorschemeparser.h"
 
 #include "widget/wpixmapstore.h"
@@ -13,10 +12,10 @@
 #include "skin/legacyskinparser.h"
 #include "skin/skincontext.h"
 
-void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
-                                                UserSettingsPointer pConfig,
-                                                QString* pStyle,
-                                                SkinContext* pContext) {
+void ColorSchemeParser::setupLegacyColorSchemes(const QDomElement& docElem,
+        UserSettingsPointer pConfig,
+        QString* pStyle,
+        SkinContext* pContext) {
     QDomNode schemesNode = docElem.namedItem("Schemes");
 
     bool bSelectedColorSchemeFound = false;
@@ -39,6 +38,12 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             }
         }
 
+        if (!bSelectedColorSchemeFound) {
+            // If we didn't find a matching color scheme, pick the first one
+            schemeNode = schemesNode.firstChild();
+            bSelectedColorSchemeFound = !schemeNode.isNull();
+        }
+
         if (bSelectedColorSchemeFound) {
             QSharedPointer<ImgSource> imsrc =
                     QSharedPointer<ImgSource>(parseFilters(schemeNode.namedItem("Filters")));
@@ -50,12 +55,12 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             // iterates over all <SetVariable> nodes in the selected color scheme node
             pContext->updateVariables(schemeNode);
 
-
             if (pStyle) {
                 *pStyle = LegacySkinParser::getStyleFromNode(schemeNode);
             }
         }
     }
+
     if (!bSelectedColorSchemeFound) {
         QSharedPointer<ImgSource> imsrc =
                 QSharedPointer<ImgSource>(new ImgLoader());
@@ -65,7 +70,7 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
     }
 }
 
-ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
+ImgSource* ColorSchemeParser::parseFilters(const QDomNode& filt) {
     ImgSource* ret = new ImgLoader();
 
     if (!filt.hasChildNodes()) {

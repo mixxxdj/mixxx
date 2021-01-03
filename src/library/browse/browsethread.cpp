@@ -2,16 +2,19 @@
  * browsethread.cpp         (C) 2011 Tobias Rafreider
  */
 
-#include <QtDebug>
-#include <QStringList>
+#include "library/browse/browsethread.h"
+
 #include <QDateTime>
 #include <QDirIterator>
+#include <QStringList>
+#include <QtDebug>
 
 #include "library/browse/browsetablemodel.h"
-
+#include "moc_browsethread.cpp"
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
+#include "util/datetime.h"
 #include "util/trace.h"
-
 
 QWeakPointer<BrowseThread> BrowseThread::m_weakInstanceRef;
 static QMutex s_Mutex;
@@ -30,7 +33,7 @@ static QMutex s_Mutex;
 BrowseThread::BrowseThread(QObject *parent)
         : QThread(parent) {
     m_bStopThread = false;
-    m_model_observer = NULL;
+    m_model_observer = nullptr;
     //start Thread
     start(QThread::LowPriority);
 
@@ -93,24 +96,23 @@ namespace {
 
 class YearItem: public QStandardItem {
 public:
-    explicit YearItem(QString year):
-        QStandardItem(year) {
-    }
+  explicit YearItem(const QString& year)
+          : QStandardItem(year) {
+  }
 
-    QVariant data(int role) const {
-        switch (role) {
-        case Qt::DisplayRole:
-        {
-            const QString year(QStandardItem::data(role).toString());
-            return mixxx::TrackMetadata::formatCalendarYear(year);
-        }
-        default:
-            return QStandardItem::data(role);
-        }
-    }
+  QVariant data(int role) const override {
+      switch (role) {
+      case Qt::DisplayRole: {
+          const QString year(QStandardItem::data(role).toString());
+          return mixxx::TrackMetadata::formatCalendarYear(year);
+      }
+      default:
+          return QStandardItem::data(role);
+      }
+  }
 };
 
-}
+} // namespace
 
 void BrowseThread::populateModel() {
     m_path_mutex.lock();
@@ -142,7 +144,8 @@ void BrowseThread::populateModel() {
 
         if (thisPath.dir() != newPath.dir()) {
             qDebug() << "Abort populateModel()";
-            return populateModel();
+            populateModel();
+            return;
         }
 
         QList<QStandardItem*> row_data;
@@ -178,11 +181,6 @@ void BrowseThread::populateModel() {
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_ALBUM, item);
 
-            item = new QStandardItem(pTrack->getAlbumArtist());
-            item->setToolTip(item->text());
-            item->setData(item->text(), Qt::UserRole);
-            row_data.insert(COLUMN_ALBUMARTIST, item);
-
             item = new QStandardItem(pTrack->getTrackNumber());
             item->setToolTip(item->text());
             item->setData(item->text().toInt(), Qt::UserRole);
@@ -204,11 +202,6 @@ void BrowseThread::populateModel() {
             item->setToolTip(item->text());
             item->setData(item->text(), Qt::UserRole);
             row_data.insert(COLUMN_COMPOSER, item);
-
-            item = new QStandardItem(pTrack->getGrouping());
-            item->setToolTip(item->text());
-            item->setData(item->text(), Qt::UserRole);
-            row_data.insert(COLUMN_GROUPING, item);
 
             item = new QStandardItem(pTrack->getComment());
             item->setToolTip(item->text());
@@ -248,16 +241,30 @@ void BrowseThread::populateModel() {
             item->setData(location, Qt::UserRole);
             row_data.insert(COLUMN_NATIVELOCATION, item);
 
-            QDateTime modifiedTime = pTrack->getFileInfo().fileLastModified().toLocalTime();
-            item = new QStandardItem(modifiedTime.toString(Qt::DefaultLocaleShortDate));
+            item = new QStandardItem(pTrack->getAlbumArtist());
             item->setToolTip(item->text());
-            item->setData(modifiedTime, Qt::UserRole);
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_ALBUMARTIST, item);
+
+            item = new QStandardItem(pTrack->getGrouping());
+            item->setToolTip(item->text());
+            item->setData(item->text(), Qt::UserRole);
+            row_data.insert(COLUMN_GROUPING, item);
+
+            const auto fileLastModified =
+                    pTrack->getFileInfo().fileLastModified();
+            item = new QStandardItem(
+                    mixxx::displayLocalDateTime(fileLastModified));
+            item->setToolTip(item->text());
+            item->setData(fileLastModified, Qt::UserRole);
             row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
-            QDateTime creationTime = pTrack->getFileInfo().fileCreated().toLocalTime();
-            item = new QStandardItem(creationTime.toString(Qt::DefaultLocaleShortDate));
+            const auto fileCreated =
+                    pTrack->getFileInfo().fileCreated();
+            item = new QStandardItem(
+                    mixxx::displayLocalDateTime(fileCreated));
             item->setToolTip(item->text());
-            item->setData(creationTime, Qt::UserRole);
+            item->setData(fileCreated, Qt::UserRole);
             row_data.insert(COLUMN_FILE_CREATION_TIME, item);
 
             const mixxx::ReplayGain replayGain(pTrack->getReplayGain());

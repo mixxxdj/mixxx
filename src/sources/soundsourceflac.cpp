@@ -13,7 +13,7 @@ const Logger kLogger("SoundSourceFLAC");
 // The maximum number of retries to fix seek errors. On a seek error
 // the next seek will start one (or more) sample blocks before the
 // position of the preceding seek operation that has failed.
-const int kSeekErrorMaxRetryCount = 3;
+constexpr int kSeekErrorMaxRetryCount = 3;
 
 // begin callbacks (have to be regular functions because normal libFLAC isn't C++-aware)
 
@@ -67,12 +67,28 @@ void FLAC_error_cb(const FLAC__StreamDecoder*,
 
 // end callbacks
 
-const unsigned kBitsPerSampleDefault = 0;
+const SINT kBitsPerSampleDefault = 0;
 
 } // namespace
 
+//static
+const QString SoundSourceProviderFLAC::kDisplayName = QStringLiteral("Xiph.org libFLAC");
+
+//static
+const QStringList SoundSourceProviderFLAC::kSupportedFileExtensions = {
+        QStringLiteral("flac"),
+};
+
+SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::Higher;
+}
+
 SoundSourceFLAC::SoundSourceFLAC(const QUrl& url)
-        : SoundSource(url, "flac"),
+        : SoundSource(url),
           m_file(getLocalFileName()),
           m_decoder(nullptr),
           m_maxBlocksize(0),
@@ -143,7 +159,7 @@ void SoundSourceFLAC::close() {
 }
 
 ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {
@@ -232,7 +248,9 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
     }
     DEBUG_ASSERT(m_curFrameIndex == firstFrameIndex);
 
-    const SINT numberOfSamplesTotal = frames2samples(writableSampleFrames.frameLength());
+    const SINT numberOfSamplesTotal =
+            getSignalInfo().frames2samples(
+                    writableSampleFrames.frameLength());
 
     SINT numberOfSamplesRemaining = numberOfSamplesTotal;
     SINT outputSampleOffset = 0;
@@ -299,7 +317,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
                     readableSlice.length());
             outputSampleOffset += numberOfSamplesRead;
         }
-        m_curFrameIndex += samples2frames(numberOfSamplesRead);
+        m_curFrameIndex += getSignalInfo().samples2frames(numberOfSamplesRead);
         numberOfSamplesRemaining -= numberOfSamplesRead;
     }
 
@@ -307,7 +325,7 @@ ReadableSampleFrames SoundSourceFLAC::readSampleFramesClamped(
     DEBUG_ASSERT(numberOfSamplesTotal >= numberOfSamplesRemaining);
     const SINT numberOfSamples = numberOfSamplesTotal - numberOfSamplesRemaining;
     return ReadableSampleFrames(
-            IndexRange::forward(firstFrameIndex, samples2frames(numberOfSamples)),
+            IndexRange::forward(firstFrameIndex, getSignalInfo().samples2frames(numberOfSamples)),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
                     std::min(writableSampleFrames.writableLength(), numberOfSamples)));
@@ -398,18 +416,18 @@ inline CSAMPLE convertDecodedSample(FLAC__int32 decodedSample, int bitsPerSample
 FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
         const FLAC__Frame* frame, const FLAC__int32* const buffer[]) {
     const SINT numChannels = frame->header.channels;
-    if (channelCount() > numChannels) {
+    if (getSignalInfo().getChannelCount() > numChannels) {
         kLogger.warning()
                 << "Corrupt or unsupported FLAC file:"
                 << "Invalid number of channels in FLAC frame header"
-                << frame->header.channels << "<>" << channelCount();
+                << frame->header.channels << "<>" << getSignalInfo().getChannelCount();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
-    if (sampleRate() != SINT(frame->header.sample_rate)) {
+    if (getSignalInfo().getSampleRate() != SINT(frame->header.sample_rate)) {
         kLogger.warning()
                 << "Corrupt or unsupported FLAC file:"
                 << "Invalid sample rate in FLAC frame header"
-                << frame->header.sample_rate << "<>" << sampleRate();
+                << frame->header.sample_rate << "<>" << getSignalInfo().getSampleRate();
         return FLAC__STREAM_DECODER_WRITE_STATUS_ABORT;
     }
     const SINT numReadableFrames = frame->header.blocksize;
@@ -429,9 +447,11 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     // Decode buffer should be empty before decoding the next frame
     DEBUG_ASSERT(m_sampleBuffer.empty());
     const SampleBuffer::WritableSlice writableSlice(
-            m_sampleBuffer.growForWriting(frames2samples(numReadableFrames)));
+            m_sampleBuffer.growForWriting(
+                    getSignalInfo().frames2samples(numReadableFrames)));
 
-    const SINT numWritableFrames = samples2frames(writableSlice.length());
+    const SINT numWritableFrames =
+            getSignalInfo().samples2frames(writableSlice.length());
     DEBUG_ASSERT(numWritableFrames <= numReadableFrames);
     if (numWritableFrames < numReadableFrames) {
         kLogger.warning()
@@ -440,8 +460,8 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     }
 
     CSAMPLE* pSampleBuffer = writableSlice.data();
-    DEBUG_ASSERT(channelCount() <= numChannels);
-    switch (channelCount()) {
+    DEBUG_ASSERT(getSignalInfo().getChannelCount() <= numChannels);
+    switch (getSignalInfo().getChannelCount()) {
     case 1: {
         // optimized code for 1 channel (mono)
         for (SINT i = 0; i < numWritableFrames; ++i) {
@@ -460,7 +480,7 @@ FLAC__StreamDecoderWriteStatus SoundSourceFLAC::flacWrite(
     default: {
         // generic code for multiple channels
         for (SINT i = 0; i < numWritableFrames; ++i) {
-            for (SINT j = 0; j < channelCount(); ++j) {
+            for (SINT j = 0; j < getSignalInfo().getChannelCount(); ++j) {
                 *pSampleBuffer++ = convertDecodedSample(buffer[j][i], m_bitsPerSample);
             }
         }
@@ -477,14 +497,15 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
     // "...always before the first audio frame (i.e. write callback)."
     switch (metadata->type) {
     case FLAC__METADATA_TYPE_STREAMINFO: {
-        setChannelCount(metadata->data.stream_info.channels);
-        setSampleRate(metadata->data.stream_info.sample_rate);
+        initChannelCountOnce(metadata->data.stream_info.channels);
+        initSampleRateOnce(metadata->data.stream_info.sample_rate);
         initFrameIndexRangeOnce(
                 IndexRange::forward(
                         0,
                         metadata->data.stream_info.total_samples));
 
-        const unsigned bitsPerSample = metadata->data.stream_info.bits_per_sample;
+        const SINT bitsPerSample = metadata->data.stream_info.bits_per_sample;
+        DEBUG_ASSERT(bitsPerSample > 0);
         DEBUG_ASSERT(kBitsPerSampleDefault != bitsPerSample);
         if (kBitsPerSampleDefault == m_bitsPerSample) {
             // not set before
@@ -503,15 +524,19 @@ void SoundSourceFLAC::flacMetadata(const FLAC__StreamMetadata* metadata) {
                         << bitsPerSample << " <> " << m_bitsPerSample;
             }
         }
-        m_maxBlocksize = metadata->data.stream_info.max_blocksize;
-        if (0 >= m_maxBlocksize) {
+        DEBUG_ASSERT(m_maxBlocksize >= 0);
+        m_maxBlocksize = math_max(
+                m_maxBlocksize,
+                static_cast<SINT>(metadata->data.stream_info.max_blocksize));
+        if (m_maxBlocksize > 0) {
+            const SINT sampleBufferCapacity =
+                    m_maxBlocksize * getSignalInfo().getChannelCount();
+            if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
+                m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
+            }
+        } else {
             kLogger.warning()
                     << "Invalid max. blocksize" << m_maxBlocksize;
-        }
-        const SINT sampleBufferCapacity =
-                m_maxBlocksize * channelCount();
-        if (m_sampleBuffer.capacity() < sampleBufferCapacity) {
-            m_sampleBuffer.adjustCapacity(sampleBufferCapacity);
         }
         break;
     }
@@ -545,23 +570,6 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
     // not much else to do here... whatever function that initiated whatever
     // decoder method resulted in this error will return an error, and the caller
     // will bail. libFLAC docs say to not close the decoder here -- bkgood
-}
-
-QString SoundSourceProviderFLAC::getName() const {
-    return "Xiph.org libFLAC";
-}
-
-QStringList SoundSourceProviderFLAC::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("flac");
-    return supportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderFLAC::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
-    // This reference decoder is supposed to produce more accurate
-    // and reliable results than any other DEFAULT provider.
-    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx

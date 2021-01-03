@@ -21,7 +21,7 @@ class EngineEffectsManager;
 class EffectsManager {
   public:
     EffectsManager(UserSettingsPointer pConfig,
-            ChannelHandleFactory* pChannelHandleFactory);
+            std::shared_ptr<ChannelHandleFactory> pChannelHandleFactory);
     virtual ~EffectsManager();
 
     void setup();
@@ -92,7 +92,8 @@ class EffectsManager {
     QHash<QString, QuickEffectChainPointer> m_quickEffectChains;
 
     EffectsBackendManagerPointer m_pBackendManager;
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    std::shared_ptr<ChannelHandleFactory> m_pChannelHandleFactory;
+
     EngineEffectsManager* m_pEngineEffectsManager;
     EffectsMessengerPointer m_pMessenger;
     VisibleEffectsListPointer m_pVisibleEffectsList;

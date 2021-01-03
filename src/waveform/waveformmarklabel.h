@@ -16,9 +16,14 @@ class WaveformMarkLabel {
     WaveformMarkLabel() {};
 
     // Render the label to an internal QPixmap buffer
-    void prerender(QPointF bottomLeft, QPixmap icon, QString text,
-            QFont font, QColor textColor, QColor backgroundColor,
-            float widgetWidth, double scaleFactor);
+    void prerender(QPointF bottomLeft,
+            const QPixmap& icon,
+            QString text,
+            const QFont& font,
+            QColor textColor,
+            QColor backgroundColor,
+            float widgetWidth,
+            double scaleFactor);
 
     // Draw the prerendered pixmap
     void draw(QPainter* pPainter);
@@ -26,6 +31,10 @@ class WaveformMarkLabel {
     QRectF area() const {
         return m_areaRect;
     };
+
+    void setAreaRect(const QRectF& areaRect) {
+        m_areaRect = areaRect;
+    }
 
     bool intersects(const QRectF& other) const {
         return m_areaRect.intersects(other);

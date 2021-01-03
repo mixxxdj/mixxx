@@ -1,11 +1,13 @@
-#include <QStyle>
 #include "widget/controlwidgetconnection.h"
 
-#include "widget/wbasewidget.h"
+#include <QStyle>
+
 #include "control/controlproxy.h"
+#include "moc_controlwidgetconnection.cpp"
+#include "util/assert.h"
 #include "util/debug.h"
 #include "util/valuetransformer.h"
-#include "util/assert.h"
+#include "widget/wbasewidget.h"
 
 ControlWidgetConnection::ControlWidgetConnection(
         WBaseWidget* pBaseWidget,
@@ -13,7 +15,7 @@ ControlWidgetConnection::ControlWidgetConnection(
         ValueTransformer* pTransformer)
         : m_pWidget(pBaseWidget),
           m_pValueTransformer(pTransformer) {
-    m_pControl = new ControlProxy(key, this);
+    m_pControl = new ControlProxy(key, this, ControlFlag::NoAssertIfMissing);
     m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
 
@@ -123,8 +125,10 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
     }
 
     if (!pWidget->setProperty(m_propertyName.constData(),parameter)) {
-        qDebug() << "Setting property" << m_propertyName
-                << "to widget failed. Value:" << parameter;
+        qWarning() << "Property" << m_propertyName
+                   << "was not defined for widget" << pWidget->objectName()
+                   << "of type" << pWidget->metaObject()->className()
+                   << "(parameter:" << parameter << ")";
     }
 
     // According to http://stackoverflow.com/a/3822243 this is the least

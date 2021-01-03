@@ -2,21 +2,30 @@
 
 #include "library/missingtablemodel.h"
 #include "library/trackcollectionmanager.h"
-#include "widget/wtracktableview.h"
+#include "moc_dlgmissing.cpp"
 #include "util/assert.h"
+#include "widget/wlibrary.h"
+#include "widget/wtracktableview.h"
 
-DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
-                       Library* pLibrary,
-                       KeyboardEventFilter* pKeyboard)
-         : QWidget(parent),
-           Ui::DlgMissing(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pLibrary->trackCollections(), false)) {
+DlgMissing::DlgMissing(
+        WLibrary* parent,
+        UserSettingsPointer pConfig,
+        Library* pLibrary,
+        KeyboardEventFilter* pKeyboard)
+        : QWidget(parent),
+          Ui::DlgMissing(),
+          m_pTrackTableView(
+                  new WTrackTableView(
+                          this,
+                          pConfig,
+                          pLibrary,
+                          parent->getTrackTableBackgroundColorOpacity(),
+                          false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     // Install our own trackTable
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
@@ -81,5 +90,5 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
 }
 
 bool DlgMissing::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pTrackTableView->hasFocus();
 }

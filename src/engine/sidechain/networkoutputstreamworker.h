@@ -1,5 +1,4 @@
-#ifndef NETWORKOUTPUTSTREAMWORKER_H
-#define NETWORKOUTPUTSTREAMWORKER_H
+#pragma once
 
 #include <QSharedPointer>
 
@@ -44,7 +43,7 @@ enum NetworkOutputStreamWorkerStates {
 class NetworkOutputStreamWorker {
   public:
     NetworkOutputStreamWorker();
-    virtual ~NetworkOutputStreamWorker();
+    virtual ~NetworkOutputStreamWorker() = default;
 
     virtual void process(const CSAMPLE* pBuffer, const int iBufferSize) = 0;
     virtual void shutdown() = 0;
@@ -98,5 +97,3 @@ private:
 };
 
 typedef QSharedPointer<NetworkOutputStreamWorker> NetworkOutputStreamWorkerPtr;
-
-#endif /* NETWORKSTREAMWORKER_H */

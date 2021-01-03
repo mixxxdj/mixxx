@@ -2,6 +2,7 @@
 
 #include <QDomNode>
 #include <QMouseEvent>
+#include <QString>
 #include <QWidget>
 
 #include "skin/skincontext.h"
@@ -12,30 +13,36 @@
 class WHotcueButton : public WPushButton {
     Q_OBJECT
   public:
-    WHotcueButton(QWidget* pParent);
+    WHotcueButton(const QString& group, QWidget* pParent);
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
-    Q_PROPERTY(bool light MEMBER m_isCueColorLight);
-    Q_PROPERTY(bool dark MEMBER m_isCueColorDark);
+    Q_PROPERTY(bool light MEMBER m_bCueColorIsLight);
+    Q_PROPERTY(bool dark MEMBER m_bCueColorIsDark);
+    Q_PROPERTY(QString type MEMBER m_type);
 
   protected:
     void mousePressEvent(QMouseEvent* e) override;
+    void mouseReleaseEvent(QMouseEvent* e) override;
     void restyleAndRepaint() override;
 
   private slots:
     void slotColorChanged(double color);
+    void slotTypeChanged(double type);
 
   private:
     ConfigKey createConfigKey(const QString& name);
     void updateStyleSheet();
 
-    QString m_group;
+    const QString m_group;
     int m_hotcue;
     bool m_hoverCueColor;
     parented_ptr<ControlProxy> m_pCoColor;
+    parented_ptr<ControlProxy> m_pCoType;
     parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
-    bool m_cueColorDimmed;
-    bool m_isCueColorLight;
-    bool m_isCueColorDark;
+    int m_cueColorDimThreshold;
+    bool m_bCueColorDimmed;
+    bool m_bCueColorIsLight;
+    bool m_bCueColorIsDark;
+    QString m_type;
 };

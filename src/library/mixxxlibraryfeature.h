@@ -1,8 +1,4 @@
-// mixxxlibraryfeature.h
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef MIXXXLIBRARYFEATURE_H
-#define MIXXXLIBRARYFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QUrl>
@@ -34,8 +30,8 @@ class MixxxLibraryFeature final : public LibraryFeature {
 
     QVariant title() override;
     QIcon getIcon() override;
-    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
-    bool dragMoveAccept(QUrl url) override;
+    bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
+    bool dragMoveAccept(const QUrl& url) override;
     TreeItemModel* getChildModel() override;
     void bindLibraryWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard) override;
@@ -43,6 +39,8 @@ class MixxxLibraryFeature final : public LibraryFeature {
     bool hasTrackTable() override {
         return true;
     }
+
+    void searchAndActivate(const QString& query);
 
   public slots:
     void activate() override;
@@ -63,5 +61,3 @@ class MixxxLibraryFeature final : public LibraryFeature {
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;
 };
-
-#endif /* MIXXXLIBRARYFEATURE_H */

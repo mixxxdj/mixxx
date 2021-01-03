@@ -1,24 +1,22 @@
-// autodjfeature.cpp
-// FORK FORK FORK on 11/1/2009 by Albert Santoni (alberts@mixxx.org)
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-
-#include <QtDebug>
-#include <QMetaObject>
-#include <QMenu>
-
 #include "library/autodj/autodjfeature.h"
+
+#include <QMenu>
+#include <QMetaObject>
+#include <QtDebug>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
-#include "library/crate/cratestorage.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/cratestorage.h"
 #include "library/treeitem.h"
 #include "mixer/playermanager.h"
+#include "moc_autodjfeature.cpp"
 #include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
@@ -28,7 +26,7 @@ namespace {
 
 const QString kViewName = QStringLiteral("Auto DJ");
 
-}
+} // namespace
 
 namespace {
     const int kMaxRetrieveAttempts = 3;
@@ -122,8 +120,7 @@ void AutoDJFeature::bindLibraryWidget(
             m_pConfig,
             m_pLibrary,
             m_pAutoDJProcessor,
-            keyboard,
-            libraryWidget->getShowButtonText());
+            keyboard);
     libraryWidget->registerView(kViewName, m_pAutoDJView);
     connect(m_pAutoDJView,
             &DlgAutoDJ::loadTrack,
@@ -145,7 +142,7 @@ void AutoDJFeature::bindLibraryWidget(
             this,
             &AutoDJFeature::slotRandomQueue);
     connect(m_pAutoDJView,
-            &DlgAutoDJ::addRandomButton,
+            &DlgAutoDJ::addRandomTrackButton,
             this,
             &AutoDJFeature::slotAddRandomTrack);
 }
@@ -166,7 +163,7 @@ void AutoDJFeature::activate() {
     emit enableCoverArtDisplay(true);
 }
 
-bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
+bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     // If a track is dropped onto the Auto DJ tree node, but the track isn't in the
     // library, then add the track to the library before adding it to the
     // Auto DJ playlist.
@@ -182,7 +179,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     return m_playlistDao.appendTracksToPlaylist(trackIds, m_iAutoDJPlaylistId);
 }
 
-bool AutoDJFeature::dragMoveAccept(QUrl url) {
+bool AutoDJFeature::dragMoveAccept(const QUrl& url) {
     return SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
@@ -289,7 +286,7 @@ void AutoDJFeature::constructCrateChildModel() {
 }
 
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
-                                      QModelIndex index) {
+        const QModelIndex& index) {
     TreeItem* pClickedItem = static_cast<TreeItem*>(index.internalPointer());
     QMenu menu(m_pSidebarWidget);
     if (m_pCratesTreeItem == pClickedItem) {

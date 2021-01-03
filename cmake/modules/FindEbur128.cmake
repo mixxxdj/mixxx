@@ -45,7 +45,7 @@ The following cache variables may also be set:
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PC_Ebur128 QUIET libebur128)
+  pkg_check_modules(PC_Ebur128 QUIET libebur128>=1.2.4)
 endif()
 
 find_path(Ebur128_INCLUDE_DIR

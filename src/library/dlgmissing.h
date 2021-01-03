@@ -8,6 +8,7 @@
 #include "library/libraryview.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 
+class WLibrary;
 class WTrackTableView;
 class MissingTableModel;
 
@@ -15,7 +16,7 @@ class DlgMissing : public QWidget, public Ui::DlgMissing, public LibraryView {
     Q_OBJECT
 
   public:
-    DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
+    DlgMissing(WLibrary* parent, UserSettingsPointer pConfig,
                Library* pLibrary,
                KeyboardEventFilter* pKeyboard);
     ~DlgMissing() override;

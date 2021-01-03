@@ -1,11 +1,11 @@
-#ifndef KEYCONTROL_H
-#define KEYCONTROL_H
+#pragma once
 
 #include "engine/controls/enginecontrol.h"
 #include "control/controlvalue.h"
 #include "util/parented_ptr.h"
 
 class ControlObject;
+class ControlProxy;
 class ControlPotmeter;
 class ControlPushButton;
 
@@ -25,7 +25,7 @@ class KeyControl : public EngineControl {
         bool keylock;
     };
 
-    KeyControl(QString group, UserSettingsPointer pConfig);
+    KeyControl(const QString& group, UserSettingsPointer pConfig);
     ~KeyControl() override;
 
     // Returns a struct, with the results of the last pitch and tempo calculations
@@ -77,5 +77,3 @@ class KeyControl : public EngineControl {
     QAtomicInt m_updatePitchAdjustRequest;
     QAtomicInt m_updateRateRequest;
 };
-
-#endif // KEYCONTROL_H

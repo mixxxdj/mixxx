@@ -10,6 +10,7 @@
 #include "engine/effects/engineeffectchain.h"
 #include "engine/engine.h"
 #include "mixer/playermanager.h"
+#include "moc_effectchain.cpp"
 #include "util/defs.h"
 #include "util/math.h"
 #include "util/sample.h"

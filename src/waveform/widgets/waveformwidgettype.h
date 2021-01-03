@@ -1,5 +1,4 @@
-#ifndef WAVEFORMWIDGETTYPE_H
-#define WAVEFORMWIDGETTYPE_H
+#pragma once
 
 class WaveformWidgetType {
   public:
@@ -22,8 +21,7 @@ class WaveformWidgetType {
         QtVSyncTest,
         QtHSVWaveform,
         QtRGBWaveform,
+        GLSLRGBStackedWaveform,
         Count_WaveformwidgetType // Also used as invalid value
     };
 };
-
-#endif // WAVEFORMWIDGETTYPE_H

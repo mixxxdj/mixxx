@@ -19,8 +19,10 @@
 #include "broadcast/defs_broadcast.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "preferences/dialog/dlgprefbroadcast.h"
 #include "encoder/encodersettings.h"
+#include "moc_dlgprefbroadcast.cpp"
+#include "preferences/dialog/dlgprefbroadcast.h"
+#include "recording/defs_recording.h"
 #include "util/logger.h"
 
 namespace {
@@ -28,7 +30,7 @@ const char* kSettingsGroupHeader = "Settings for %1";
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
-}
+} // namespace
 
 DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
                                    BroadcastSettingsPointer pBroadcastSettings)
@@ -63,25 +65,35 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
     stream_ICQ->setVisible(false);
 #endif
 
-    connect(connectionList->horizontalHeader(), SIGNAL(sectionResized(int, int, int)),
-            this, SLOT(onSectionResized()));
+    connect(connectionList->horizontalHeader(),
+            &QHeaderView::sectionResized,
+            this,
+            &DlgPrefBroadcast::onSectionResized);
 
     updateModel();
     connectionList->setModel(m_pSettingsModel);
+    connectionList->setTabKeyNavigation(false);
 
     connect(connectionList->selectionModel(),
-            SIGNAL(currentRowChanged(const QModelIndex&, const QModelIndex&)),
+            &QItemSelectionModel::currentRowChanged,
             this,
-            SLOT(connectionListItemSelected(const QModelIndex&)));
-    connect(btnRemoveConnection, SIGNAL(clicked(bool)),
-            this, SLOT(btnRemoveConnectionClicked()));
-    connect(btnRenameConnection, SIGNAL(clicked(bool)),
-            this, SLOT(btnRenameConnectionClicked()));
-    connect(btnCreateConnection, SIGNAL(clicked(bool)),
-            this, SLOT(btnCreateConnectionClicked()));
-
-    connect(btnDisconnectAll, SIGNAL(clicked(bool)),
-            this, SLOT(btnDisconnectAllClicked()));
+            &DlgPrefBroadcast::connectionListItemSelected);
+    connect(btnRemoveConnection,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefBroadcast::btnRemoveConnectionClicked);
+    connect(btnRenameConnection,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefBroadcast::btnRenameConnectionClicked);
+    connect(btnCreateConnection,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefBroadcast::btnCreateConnectionClicked);
+    connect(btnDisconnectAll,
+            &QPushButton::clicked,
+            this,
+            &DlgPrefBroadcast::btnDisconnectAllClicked);
 
     // Highlight first row
     connectionList->selectRow(0);
@@ -117,10 +129,10 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      }
 
      // Encoding format combobox
-     comboBoxEncodingFormat->addItem(tr("MP3"), BROADCAST_FORMAT_MP3);
-     comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), BROADCAST_FORMAT_OV);
+     comboBoxEncodingFormat->addItem(tr("MP3"), ENCODING_MP3);
+     comboBoxEncodingFormat->addItem(tr("Ogg Vorbis"), ENCODING_OGG);
 #ifdef __OPUS__
-     comboBoxEncodingFormat->addItem(tr("Opus"), BROADCAST_FORMAT_OPUS);
+     comboBoxEncodingFormat->addItem(tr("Opus"), ENCODING_OPUS);
 #endif
 
      // Encoding channels combobox
@@ -131,14 +143,18 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
      comboBoxEncodingChannels->addItem(tr("Stereo"),
              static_cast<int>(EncoderSettings::ChannelMode::STEREO));
 
-     connect(checkBoxEnableReconnect, SIGNAL(stateChanged(int)),
-             this, SLOT(checkBoxEnableReconnectChanged(int)));
-
-     connect(checkBoxLimitReconnects, SIGNAL(stateChanged(int)),
-             this, SLOT(checkBoxLimitReconnectsChanged(int)));
-
-     connect(enableCustomMetadata, SIGNAL(stateChanged(int)),
-             this, SLOT(enableCustomMetadataChanged(int)));
+     connect(checkBoxEnableReconnect,
+             &QCheckBox::stateChanged,
+             this,
+             &DlgPrefBroadcast::checkBoxEnableReconnectChanged);
+     connect(checkBoxLimitReconnects,
+             &QCheckBox::stateChanged,
+             this,
+             &DlgPrefBroadcast::checkBoxLimitReconnectsChanged);
+     connect(enableCustomMetadata,
+             &QCheckBox::stateChanged,
+             this,
+             &DlgPrefBroadcast::enableCustomMetadataChanged);
 }
 
 DlgPrefBroadcast::~DlgPrefBroadcast() {
@@ -168,6 +184,10 @@ void DlgPrefBroadcast::slotUpdate() {
     btnDisconnectAll->setEnabled(enabled);
 }
 
+QUrl DlgPrefBroadcast::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_BROADCAST_URL);
+}
+
 void DlgPrefBroadcast::applyModel() {
     if (m_pProfileListSelection) {
         setValuesToProfile(m_pProfileListSelection);
@@ -183,7 +203,8 @@ void DlgPrefBroadcast::slotApply() {
 
     // Check for Icecast connections with identical mountpoints on the same host
     QMap<QString, QString> mountpoints;
-    for(BroadcastProfilePtr profile : m_pSettingsModel->profiles()) {
+    const QList<BroadcastProfilePtr> broadcastProfiles = m_pSettingsModel->profiles();
+    for (const auto& profile : broadcastProfiles) {
         if (profile->getServertype() != BROADCAST_SERVER_ICECAST2) {
             continue;
         }
@@ -202,11 +223,13 @@ void DlgPrefBroadcast::slotApply() {
                     == profile->getHost().toLower()
                     && profileWithSameMountpoint->getPort()
                     == profile->getPort() ) {
-                    QMessageBox::warning(
-                        this, tr("Action failed"),
-                        tr("'%1' has the same Icecast mountpoint as '%2'.\n"
-                           "Two source connections to the same server can't have the same mountpoint.")
-                        .arg(profileName).arg(profileNameWithSameMountpoint));
+                    QMessageBox::warning(this,
+                            tr("Action failed"),
+                            tr("'%1' has the same Icecast mountpoint as '%2'.\n"
+                               "Two source connections to the same server "
+                               "can't have the same mountpoint.")
+                                    .arg(profileName,
+                                            profileNameWithSameMountpoint));
                     return;
                 }
             }
@@ -337,7 +360,7 @@ void DlgPrefBroadcast::selectConnectionRow(int row) {
     connectionListItemSelected(newSelection);
 }
 
-void DlgPrefBroadcast::selectConnectionRowByName(QString rowName) {
+void DlgPrefBroadcast::selectConnectionRowByName(const QString& rowName) {
     int row = -1;
     for (int i = 0; i < m_pSettingsModel->rowCount(); i++) {
         QModelIndex index = m_pSettingsModel->index(i, kColumnName);
@@ -481,8 +504,9 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
 }
 
 void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return;
+    }
 
     profile->setSecureCredentialStorage(rbPasswordKeychain->isChecked());
 
@@ -573,9 +597,10 @@ void DlgPrefBroadcast::btnRenameConnectionClicked() {
                 getValuesFromProfile(m_pProfileListSelection);
             } else {
                 // Requested name different from current name but already used
-                QMessageBox::warning(this, tr("Action failed"),
+                QMessageBox::warning(this,
+                        tr("Action failed"),
                         tr("Can't rename '%1' to '%2': name already in use")
-                        .arg(profileName).arg(newName));
+                                .arg(profileName, newName));
             }
         }
     }
@@ -598,7 +623,7 @@ void DlgPrefBroadcast::onSectionResized() {
 
     sender()->blockSignals(true);
     connectionList->setColumnWidth(kColumnEnabled, 100);
-    connectionList->setColumnWidth(kColumnName, width * 0.65);
+    connectionList->setColumnWidth(kColumnName, static_cast<int>(width * 0.65));
     // The last column is automatically resized to fill
     // the remaining width, thanks to stretchLastSection set to true.
     sender()->blockSignals(false);

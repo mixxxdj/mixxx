@@ -21,7 +21,7 @@ class AcoustIdLookupTask : public network::JsonWebTask {
 
   signals:
     void succeeded(
-            QList<QUuid> recordingIds);
+            const QList<QUuid>& recordingIds);
 
   protected:
     QNetworkReply* sendNetworkRequest(

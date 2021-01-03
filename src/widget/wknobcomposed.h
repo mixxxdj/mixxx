@@ -1,5 +1,4 @@
-#ifndef WKNOBCOMPOSED_H
-#define WKNOBCOMPOSED_H
+#pragma once
 
 #include <QWidget>
 #include <QPaintEvent>
@@ -38,16 +37,14 @@ class WKnobComposed : public WWidget {
     void inputActivity();
     void clear();
     void setPixmapBackground(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
     void setPixmapKnob(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
-    void drawArc(
-            const QRectF& targetRect,
-            QPainter* pPainter);
+    void drawArc(QPainter* pPainter);
 
     double m_dCurrentAngle;
     PaintablePointer m_pKnob;
@@ -57,12 +54,15 @@ class WKnobComposed : public WWidget {
     double m_dMaxAngle;
     double m_dKnobCenterXOffset;
     double m_dKnobCenterYOffset;
+    double m_dArcRadius;
     double m_dArcThickness;
+    double m_dArcBgThickness;
     QColor m_arcColor;
+    QColor m_arcBgColor;
     bool m_arcUnipolar;
+    bool m_arcReversed;
+    Qt::PenCapStyle m_arcPenCap;
     WidgetRenderTimer m_renderTimer;
 
     friend class KnobEventHandler<WKnobComposed>;
 };
-
-#endif /* WKNOBCOMPOSED_H */

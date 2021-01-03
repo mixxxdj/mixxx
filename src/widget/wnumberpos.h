@@ -1,7 +1,4 @@
-// Tue Haste Andersen <haste@diku.dk>, (C) 2003
-
-#ifndef WNUMBERPOS_H
-#define WNUMBERPOS_H
+#pragma once
 
 #include <QMouseEvent>
 
@@ -14,7 +11,7 @@ class WNumberPos : public WNumber {
     Q_OBJECT
 
   public:
-    explicit WNumberPos(const char *group, QWidget *parent=nullptr);
+    explicit WNumberPos(const QString& group, QWidget* parent = nullptr);
 
   protected:
     void mousePressEvent(QMouseEvent* pEvent) override;
@@ -37,5 +34,3 @@ class WNumberPos : public WNumber {
     ControlProxy* m_pShowTrackTimeRemaining;
     ControlProxy* m_pTimeFormat;
 };
-
-#endif

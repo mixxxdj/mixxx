@@ -1,22 +1,4 @@
-/***************************************************************************
-                          enginechannel.h  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINECHANNEL_H
-#define ENGINECHANNEL_H
+#pragma once
 
 #include "control/controlproxy.h"
 #include "effects/effectsmanager.h"
@@ -39,10 +21,11 @@ class EngineChannel : public EngineObject {
         RIGHT,
     };
 
-    EngineChannel(const ChannelHandleAndGroup& handle_group,
-                  ChannelOrientation defaultOrientation = CENTER,
-                  EffectsManager* pEffectsManager = nullptr,
-                  bool isTalkoverChannel = false);
+    EngineChannel(const ChannelHandleAndGroup& handleGroup,
+            ChannelOrientation defaultOrientation,
+            EffectsManager* pEffectsManager,
+            bool isTalkoverChannel,
+            bool isPrimaryDeck);
     virtual ~EngineChannel();
 
     virtual ChannelOrientation getOrientation() const;
@@ -63,6 +46,9 @@ class EngineChannel : public EngineObject {
     void setTalkover(bool enabled);
     virtual bool isTalkoverEnabled() const;
     inline bool isTalkoverChannel() { return m_bIsTalkoverChannel; };
+    inline bool isPrimaryDeck() {
+        return m_bIsPrimaryDeck;
+    };
 
     virtual void process(CSAMPLE* pOut, const int iBufferSize) = 0;
     virtual void collectFeatures(GroupFeatureState* pGroupFeatures) const = 0;
@@ -81,6 +67,10 @@ class EngineChannel : public EngineObject {
     ControlProxy* m_pSampleRate;
     const CSAMPLE* volatile m_sampleBuffer;
 
+    // If set to true, this engine channel represents one of the primary playback decks.
+    // It is used to check for valid bpm targets by the sync code.
+    const bool m_bIsPrimaryDeck;
+
   private slots:
     void slotOrientationLeft(double v);
     void slotOrientationRight(double v);
@@ -96,5 +86,3 @@ class EngineChannel : public EngineObject {
     ControlPushButton* m_pTalkover;
     bool m_bIsTalkoverChannel;
 };
-
-#endif

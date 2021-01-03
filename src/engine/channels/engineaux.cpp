@@ -1,20 +1,19 @@
-// engineaux.cpp
-// created 4/8/2011 by Bill Good (bkgood@gmail.com)
-// shameless stolen from enginemicrophone.cpp (from RJ)
-
 #include "engine/channels/engineaux.h"
 
 #include <QtDebug>
 
 #include "control/control.h"
-#include "preferences/usersettings.h"
 #include "control/controlaudiotaperpot.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
+#include "moc_engineaux.cpp"
+#include "preferences/usersettings.h"
 #include "util/sample.h"
 
-EngineAux::EngineAux(const ChannelHandleAndGroup& handle_group, EffectsManager* pEffectsManager)
-        : EngineChannel(handle_group, EngineChannel::CENTER, pEffectsManager),
+EngineAux::EngineAux(const ChannelHandleAndGroup& handleGroup, EffectsManager* pEffectsManager)
+        : EngineChannel(handleGroup, EngineChannel::CENTER, pEffectsManager,
+                  /*isTalkoverChannel*/ false,
+                  /*isPrimaryDeck*/ false),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPregain(new ControlAudioTaperPot(ConfigKey(getGroup(), "pregain"), -12, 12, 0.5)),
           m_wasActive(false) {
@@ -44,28 +43,28 @@ bool EngineAux::isActive() {
     return m_wasActive;
 }
 
-void EngineAux::onInputConfigured(AudioInput input) {
+void EngineAux::onInputConfigured(const AudioInput& input) {
     if (input.getType() != AudioPath::AUXILIARY) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
     }
-    m_sampleBuffer = NULL;
+    m_sampleBuffer = nullptr;
     m_pInputConfigured->forceSet(1.0);
 }
 
-void EngineAux::onInputUnconfigured(AudioInput input) {
+void EngineAux::onInputUnconfigured(const AudioInput& input) {
     if (input.getType() != AudioPath::AUXILIARY) {
         // This is an error!
         qDebug() << "WARNING: EngineAux connected to AudioInput for a non-auxiliary type!";
         return;
     }
-    m_sampleBuffer = NULL;
+    m_sampleBuffer = nullptr;
     m_pInputConfigured->forceSet(0.0);
 }
 
-void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                              unsigned int nFrames) {
+void EngineAux::receiveBuffer(
+        const AudioInput& input, const CSAMPLE* pBuffer, unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
     m_sampleBuffer = pBuffer;
@@ -73,16 +72,17 @@ void EngineAux::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
 
 void EngineAux::process(CSAMPLE* pOut, const int iBufferSize) {
     const CSAMPLE* sampleBuffer = m_sampleBuffer; // save pointer on stack
-    double pregain = m_pPregain->get();
+    CSAMPLE_GAIN pregain = static_cast<CSAMPLE_GAIN>(m_pPregain->get());
     if (sampleBuffer) {
         SampleUtil::copyWithGain(pOut, sampleBuffer, pregain, iBufferSize);
         EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
         if (pEngineEffectsManager != nullptr) {
             pEngineEffectsManager->processPreFaderInPlace(
-                m_group.handle(), m_pEffectsManager->getMasterHandle(),
-                pOut, iBufferSize, m_pSampleRate->get());
+                    m_group.handle(), m_pEffectsManager->getMasterHandle(), pOut, iBufferSize,
+                    // TODO(jholthuis): Use mixxx::audio::SampleRate instead
+                    static_cast<unsigned int>(m_pSampleRate->get()));
         }
-        m_sampleBuffer = NULL;
+        m_sampleBuffer = nullptr;
     } else {
         SampleUtil::clear(pOut, iBufferSize);
     }

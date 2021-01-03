@@ -1,5 +1,4 @@
-#ifndef ANALYZER_ANALYZEREBUR128_H_
-#define ANALYZER_ANALYZEREBUR128_H_
+#pragma once
 
 #include <ebur128.h>
 
@@ -9,7 +8,7 @@
 class AnalyzerEbur128 : public Analyzer {
   public:
     AnalyzerEbur128(UserSettingsPointer pConfig);
-    virtual ~AnalyzerEbur128();
+    ~AnalyzerEbur128() override;
 
     static bool isEnabled(const ReplayGainSettings& rgSettings) {
         return rgSettings.isAnalyzerEnabled(2);
@@ -24,5 +23,3 @@ class AnalyzerEbur128 : public Analyzer {
     ReplayGainSettings m_rgSettings;
     ebur128_state* m_pState;
 };
-
-#endif /* ANALYZER_ANALYZEREBUR128_H_ */

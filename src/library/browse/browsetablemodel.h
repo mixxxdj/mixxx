@@ -1,5 +1,4 @@
-#ifndef BROWSETABLEMODEL_H
-#define BROWSETABLEMODEL_H
+#pragma once
 
 #include <QStandardItemModel>
 #include <QMimeData>
@@ -52,11 +51,12 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
 
     TrackPointer getTrack(const QModelIndex& index) const override;
     TrackPointer getTrackByRef(const TrackRef& trackRef) const override;
-    TrackModel::CapabilitiesFlags getCapabilities() const override;
+    TrackModel::Capabilities getCapabilities() const override;
 
     QString getTrackLocation(const QModelIndex& index) const override;
     TrackId getTrackId(const QModelIndex& index) const override;
-    const QLinkedList<int> getTrackRows(TrackId trackId) const override;
+    CoverInfo getCoverInfo(const QModelIndex& index) const override;
+    const QVector<int> getTrackRows(TrackId trackId) const override;
     void search(const QString& searchText,const QString& extraFilter = QString()) override;
     void removeTracks(const QModelIndexList& indices) override;
     QMimeData* mimeData(const QModelIndexList &indexes) const override;
@@ -76,7 +76,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
   public slots:
     void slotClear(BrowseTableModel*);
     void slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*);
-    void trackLoaded(QString group, TrackPointer pTrack);
+    void trackLoaded(const QString& group, TrackPointer pTrack);
 
   private:
     void addSearchColumn(int index);
@@ -88,9 +88,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     RecordingManager* m_pRecordingManager;
     BrowseThreadPointer m_pBrowseThread;
     QString m_previewDeckGroup;
-    int m_columnIndexBySortColumnId[TrackModel::SortColumnId::NUM_SORTCOLUMNIDS];
+    int m_columnIndexBySortColumnId[static_cast<int>(TrackModel::SortColumnId::IdMax)];
     QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
 
 };
-
-#endif

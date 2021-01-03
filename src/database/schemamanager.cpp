@@ -13,7 +13,7 @@ const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_c
 namespace {
     mixxx::Logger kLogger("SchemaManager");
 
-    int readCurrentSchemaVersion(SettingsDAO& settings) {
+    int readCurrentSchemaVersion(const SettingsDAO& settings) {
         QString settingsValue = settings.getValue(SchemaManager::SETTINGS_VERSION_STRING);
         // May be a null string if the schema has not been created. We default the
         // startVersion to 0 so that we automatically try to upgrade to revision 1.
@@ -29,12 +29,12 @@ namespace {
             return schemaVersion;
         }
     }
-}
+    } // namespace
 
 SchemaManager::SchemaManager(const QSqlDatabase& database)
-    : m_database(database),
-      m_settingsDao(database),
-      m_currentVersion(readCurrentSchemaVersion(m_settingsDao)) {
+        : m_database(database),
+          m_settingsDao(m_database),
+          m_currentVersion(readCurrentSchemaVersion(m_settingsDao)) {
 }
 
 bool SchemaManager::isBackwardsCompatibleWithVersion(int targetVersion) const {
@@ -47,26 +47,22 @@ bool SchemaManager::isBackwardsCompatibleWithVersion(int targetVersion) const {
     // settings table, assume the current schema version is only backwards
     // compatible with itself.
     if (backwardsCompatibleVersion.isNull() || !ok) {
-        // rryan 11/2010 We just added the backwards compatible flags, and some
-        // people using the Mixxx trunk are already on schema version 7. This
-        // special case is for them. Schema version 7 is backwards compatible
-        // with schema version 3.
         if (m_currentVersion == 7) {
+            // We only added the backwards compatible flags in November 2010,
+            // and some people using the Mixxx trunk are already on schema
+            // version 7 by then. This special case is for them. Schema version
+            // 7 is backwards compatible with schema version 3.
             iBackwardsCompatibleVersion = 3;
         } else {
             iBackwardsCompatibleVersion = m_currentVersion;
         }
     }
 
-    // If the target version is greater than the minimum compatible version of
-    // the current schema, then the current schema is backwards compatible with
-    // targetVersion.
     return iBackwardsCompatibleVersion <= targetVersion;
 }
 
 SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
-        const QString& schemaFilename,
-        int targetVersion) {
+        int targetVersion, const QString& schemaFilename) {
     VERIFY_OR_DEBUG_ASSERT(m_currentVersion >= 0) {
         return Result::UpgradeFailed;
     }
@@ -76,12 +72,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
                 << "Database schema is up-to-date"
                 << "at version" << m_currentVersion;
         return Result::CurrentVersion;
-    } else if (m_currentVersion < targetVersion) {
-        kLogger.info()
-                << "Upgrading database schema"
-                << "from version" << m_currentVersion
-                << "to version" << targetVersion;
-    } else {
+    } else if (m_currentVersion > targetVersion) {
         if (isBackwardsCompatibleWithVersion(targetVersion)) {
             kLogger.info()
                     << "Current database schema is newer"
@@ -98,6 +89,10 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
             return Result::NewerVersionIncompatible;
         }
     }
+    kLogger.info()
+            << "Upgrading database schema"
+            << "from version" << m_currentVersion
+            << "to version" << targetVersion;
 
     if (kLogger.debugEnabled()) {
         kLogger.debug()
@@ -129,14 +124,8 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         revisionMap[iVersion] = revision;
     }
 
-    // The checks above guarantee that currentVersion < targetVersion when we
-    // get here.
     while (m_currentVersion < targetVersion) {
         int nextVersion = m_currentVersion + 1;
-
-        // Now that we bake the schema.xml into the binary it is a programming
-        // error if we include a schema.xml that does not have information on
-        // how to get all the way to targetVersion.
         VERIFY_OR_DEBUG_ASSERT(revisionMap.contains(nextVersion)) {
             kLogger.critical()
                      << "Migration path for upgrading database schema"
@@ -149,8 +138,8 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         QDomElement revision = revisionMap[nextVersion];
         QDomElement eDescription = revision.firstChildElement("description");
         QDomElement eSql = revision.firstChildElement("sql");
-        QString minCompatibleVersion = revision.attribute("min_compatible");
 
+        QString minCompatibleVersion = revision.attribute("min_compatible");
         // Default the min-compatible version to the current version string if
         // it's not in the schema.xml
         if (minCompatibleVersion.isNull()) {
@@ -168,7 +157,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         QString sql = eSql.text();
 
         kLogger.info()
-                << "Upgrading to database schema to version"
+                << "Upgrading database schema to version"
                 << nextVersion << ":"
                 << description.trimmed();
 
@@ -196,11 +185,11 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
                 // New columns may have already been added during a previous
                 // migration to a different (= preceding) schema version. This
                 // is a very common situation during development when switching
-                // between schema versions. Since SQLite does not allow to add
-                // new columns only if they do not yet exist we need to account
-                // for and handle those errors here after they occurred. If the
-                // remaining migration finishes without other errors this is
-                // probably ok.
+                // between schema versions. Since SQLite only allows to add new
+                // columns if they do not yet exist, we need to account for and
+                // handle those errors here after they occurred.
+                // If the remaining migration finishes without other errors this
+                // is probably ok.
                 kLogger.warning()
                         << "Ignoring failed statement"
                         << statement

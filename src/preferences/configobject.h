@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_CONFIGOBJECT_H
-#define PREFERENCES_CONFIGOBJECT_H
+#pragma once
 
 #include <QString>
 #include <QKeySequence>
@@ -24,12 +23,8 @@ class ConfigKey final {
 
     static ConfigKey parseCommaSeparated(const QString& key);
 
-    bool isEmpty() const {
-        return group.isEmpty() && item.isEmpty();
-    }
-
-    bool isNull() const {
-        return group.isNull() && item.isNull();
+    bool isValid() const {
+        return !group.isEmpty() && !item.isEmpty();
     }
 
     QString group;
@@ -64,8 +59,11 @@ inline QDebug operator<<(QDebug stream, const ConfigKey& configKey) {
 }
 
 // QHash hash function for ConfigKey objects.
-inline uint qHash(const ConfigKey& key) {
-    return qHash(key.group) ^ qHash(key.item);
+inline uint qHash(
+        const ConfigKey& key,
+        uint seed = 0) {
+    return qHash(key.group, seed) ^
+            qHash(key.item, seed);
 }
 
 // The value corresponding to a key. The basic value is a string, but can be
@@ -97,8 +95,10 @@ inline bool operator!=(const ConfigValue& lhs, const ConfigValue& rhs) {
     return !(lhs == rhs);
 }
 
-inline uint qHash(const ConfigValue& key) {
-    return qHash(key.value.toUpper());
+inline uint qHash(
+        const ConfigValue& key,
+        uint seed = 0) {
+    return qHash(key.value.toUpper(), seed);
 }
 
 class ConfigValueKbd : public ConfigValue {
@@ -106,7 +106,7 @@ class ConfigValueKbd : public ConfigValue {
     ConfigValueKbd() = default;
     ~ConfigValueKbd() override = default;
     explicit ConfigValueKbd(const QKeySequence& keys);
-    explicit ConfigValueKbd(const QDomNode) {
+    explicit ConfigValueKbd(const QDomNode&) {
         reportFatalErrorAndQuit("ConfigValueKbd from QDomNode not implemented here");
     }
 
@@ -173,7 +173,7 @@ template <class ValueType> class ConfigObject {
     QMultiHash<ValueType, ConfigKey> transpose() const;
 
     void reopen(const QString& file);
-    void save();
+    bool save();
 
     // Returns the resource path -- the path where controller presets, skins,
     // library schema, keyboard mappings, and more are stored.
@@ -188,7 +188,7 @@ template <class ValueType> class ConfigObject {
     }
 
     QSet<QString> getGroups();
-    QList<ConfigKey> getKeysWithGroup(QString group) const;
+    QList<ConfigKey> getKeysWithGroup(const QString& group) const;
 
   protected:
     // We use QMap because we want a sorted list in mixxx.cfg
@@ -202,5 +202,3 @@ template <class ValueType> class ConfigObject {
     // not be opened; otherwise true.
     bool parse();
 };
-
-#endif // PREFERENCES_CONFIGOBJECT_H

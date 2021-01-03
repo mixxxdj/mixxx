@@ -1,7 +1,7 @@
-#ifndef DLGPREFDECK_H
-#define DLGPREFDECK_H
+#pragma once
 
 #include <QWidget>
+#include <memory>
 
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/ratecontrol.h"
@@ -9,6 +9,7 @@
 #include "preferences/dialog/ui_dlgprefdeckdlg.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class ControlProxy;
 class ControlPotmeter;
@@ -48,21 +49,17 @@ enum class KeyunlockMode {
     KeepLockedKey
 };
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
 class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     Q_OBJECT
   public:
-    DlgPrefDeck(QWidget *parent, MixxxMainWindow *mixxx,
-                    UserSettingsPointer pConfig);
-    virtual ~DlgPrefDeck();
+    DlgPrefDeck(QWidget* parent,
+            UserSettingsPointer pConfig);
+    ~DlgPrefDeck() override;
 
   public slots:
-    void slotUpdate();
-    void slotApply();
-    void slotResetToDefaults();
+    void slotUpdate() override;
+    void slotApply() override;
+    void slotResetToDefaults() override;
 
     void slotMoveIntroStartCheckbox(bool checked);
     void slotRateRangeComboBox(int index);
@@ -100,18 +97,20 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     void setRateRangeForAllDecks(int rangePercent);
     void setRateDirectionForAllDecks(bool inverted);
 
-    UserSettingsPointer m_pConfig;
-    ControlObject* m_pControlTrackTimeDisplay;
-    ControlObject* m_pControlTrackTimeFormat;
-    ControlProxy* m_pNumDecks;
-    ControlProxy* m_pNumSamplers;
+    const UserSettingsPointer m_pConfig;
+
+    const std::unique_ptr<ControlObject> m_pControlTrackTimeDisplay;
+    const std::unique_ptr<ControlObject> m_pControlTrackTimeFormat;
+
+    const parented_ptr<ControlProxy> m_pNumDecks;
+    const parented_ptr<ControlProxy> m_pNumSamplers;
+
     QList<ControlProxy*> m_cueControls;
     QList<ControlProxy*> m_rateControls;
     QList<ControlProxy*> m_rateDirectionControls;
     QList<ControlProxy*> m_rateRangeControls;
     QList<ControlProxy*> m_keylockModeControls;
     QList<ControlProxy*> m_keyunlockModeControls;
-    MixxxMainWindow* m_mixxx;
 
     int m_iNumConfiguredDecks;
     int m_iNumConfiguredSamplers;
@@ -123,10 +122,9 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     bool m_bSetIntroStartAtMainCue;
     bool m_bDisallowTrackLoadToPlayingDeck;
     bool m_bCloneDeckOnLoadDoubleTap;
-    bool m_bAssignHotcueColors;
 
     int m_iRateRangePercent;
-    bool m_bRateInverted;
+    bool m_bRateDownIncreasesSpeed;
 
     bool m_speedAutoReset;
     bool m_pitchAutoReset;
@@ -141,5 +139,3 @@ class DlgPrefDeck : public DlgPreferencePage, public Ui::DlgPrefDeckDlg  {
     double m_dRatePermCoarse;
     double m_dRatePermFine;
 };
-
-#endif

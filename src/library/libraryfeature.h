@@ -1,24 +1,21 @@
-// libraryfeature.h
-// Created 8/17/2009 by RJ Ryan (rryan@mit.edu)
+#pragma once
 
-#ifndef LIBRARYFEATURE_H
-#define LIBRARYFEATURE_H
-
-#include <QtDebug>
+#include <QAbstractItemModel>
+#include <QDesktopServices>
+#include <QFileDialog>
 #include <QIcon>
+#include <QList>
 #include <QModelIndex>
 #include <QObject>
 #include <QString>
-#include <QVariant>
-#include <QAbstractItemModel>
 #include <QUrl>
-#include <QDesktopServices>
-#include <QFileDialog>
+#include <QVariant>
+#include <QtDebug>
 
-#include "track/track.h"
-#include "library/treeitemmodel.h"
 #include "library/coverartcache.h"
 #include "library/dao/trackdao.h"
+#include "library/treeitemmodel.h"
+#include "track/track_decl.h"
 
 class KeyboardEventFilter;
 class Library;
@@ -38,23 +35,24 @@ class LibraryFeature : public QObject {
     virtual QVariant title() = 0;
     virtual QIcon getIcon() = 0;
 
-    virtual bool dropAccept(QList<QUrl> urls, QObject* pSource) {
+    virtual bool dropAccept(const QList<QUrl>& urls, QObject* pSource) {
         Q_UNUSED(urls);
         Q_UNUSED(pSource);
         return false;
     }
     virtual bool dropAcceptChild(const QModelIndex& index,
-                                 QList<QUrl> urls, QObject* pSource) {
+            const QList<QUrl>& urls,
+            QObject* pSource) {
         Q_UNUSED(index);
         Q_UNUSED(urls);
         Q_UNUSED(pSource);
         return false;
     }
-    virtual bool dragMoveAccept(QUrl url) {
+    virtual bool dragMoveAccept(const QUrl& url) {
         Q_UNUSED(url);
         return false;
     }
-    virtual bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+    virtual bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
         Q_UNUSED(index);
         Q_UNUSED(url);
         return false;
@@ -99,7 +97,7 @@ class LibraryFeature : public QObject {
         Q_UNUSED(globalPos);
     }
     // called when you right click on a child item, e.g., a concrete playlist or crate
-    virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+    virtual void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
         Q_UNUSED(globalPos);
         Q_UNUSED(index);
     }
@@ -112,7 +110,7 @@ class LibraryFeature : public QObject {
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
     void restoreSearch(const QString&);
     void disableSearch();
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
@@ -126,8 +124,14 @@ class LibraryFeature : public QObject {
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
 
+  protected:
+    // TODO: Move common crate/playlist functions into
+    // a separate base class
+    static bool exportPlaylistItemsIntoFile(
+            QString playlistFilePath,
+            const QList<QString>& playlistItemLocations,
+            bool useRelativePath);
+
   private:
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
 };
-
-#endif /* LIBRARYFEATURE_H */

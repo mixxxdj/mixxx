@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QButtonGroup>
+
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
 #include "preferences/dlgpreferencepage.h"
 #include "preferences/effectmanifesttablemodel.h"
@@ -11,8 +13,8 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     Q_OBJECT
   public:
     DlgPrefEffects(QWidget* pParent,
-                   UserSettingsPointer pConfig,
-                   EffectsManager* pEffectsManager);
+            UserSettingsPointer pConfig,
+            std::shared_ptr<EffectsManager> pEffectsManager);
     virtual ~DlgPrefEffects();
 
     void slotUpdate() override;

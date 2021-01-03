@@ -1,26 +1,64 @@
-// mixxxlibraryfeature.cpp
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+#include "library/mixxxlibraryfeature.h"
 
 #include <QtDebug>
 
-#include "library/mixxxlibraryfeature.h"
-
-#include "library/parser.h"
-#include "library/library.h"
 #include "library/basetrackcache.h"
-#include "library/librarytablemodel.h"
-#include "library/missingtablemodel.h"
-#include "library/hiddentablemodel.h"
-#include "library/queryutil.h"
 #include "library/dao/trackschema.h"
-#include "library/trackcollection.h"
-#include "library/trackcollectionmanager.h"
-#include "treeitem.h"
-#include "sources/soundsourceproxy.h"
-#include "widget/wlibrary.h"
-#include "util/dnd.h"
 #include "library/dlghidden.h"
 #include "library/dlgmissing.h"
+#include "library/hiddentablemodel.h"
+#include "library/library.h"
+#include "library/librarytablemodel.h"
+#include "library/missingtablemodel.h"
+#include "library/parser.h"
+#include "library/queryutil.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
+#include "moc_mixxxlibraryfeature.cpp"
+#include "sources/soundsourceproxy.h"
+#include "util/dnd.h"
+#include "widget/wlibrary.h"
+
+namespace {
+
+const QStringList DEFAULT_COLUMNS = {
+        LIBRARYTABLE_ID,
+        LIBRARYTABLE_PLAYED,
+        LIBRARYTABLE_TIMESPLAYED,
+        LIBRARYTABLE_LAST_PLAYED_AT,
+        //has to be up here otherwise Played and TimesPlayed are not shown
+        LIBRARYTABLE_ALBUMARTIST,
+        LIBRARYTABLE_ALBUM,
+        LIBRARYTABLE_ARTIST,
+        LIBRARYTABLE_TITLE,
+        LIBRARYTABLE_YEAR,
+        LIBRARYTABLE_RATING,
+        LIBRARYTABLE_GENRE,
+        LIBRARYTABLE_COMPOSER,
+        LIBRARYTABLE_GROUPING,
+        LIBRARYTABLE_TRACKNUMBER,
+        LIBRARYTABLE_KEY,
+        LIBRARYTABLE_KEY_ID,
+        LIBRARYTABLE_BPM,
+        LIBRARYTABLE_BPM_LOCK,
+        LIBRARYTABLE_DURATION,
+        LIBRARYTABLE_BITRATE,
+        LIBRARYTABLE_REPLAYGAIN,
+        LIBRARYTABLE_FILETYPE,
+        LIBRARYTABLE_DATETIMEADDED,
+        TRACKLOCATIONSTABLE_LOCATION,
+        TRACKLOCATIONSTABLE_FSDELETED,
+        LIBRARYTABLE_COMMENT,
+        LIBRARYTABLE_MIXXXDELETED,
+        LIBRARYTABLE_COLOR,
+        LIBRARYTABLE_COVERART_SOURCE,
+        LIBRARYTABLE_COVERART_TYPE,
+        LIBRARYTABLE_COVERART_LOCATION,
+        LIBRARYTABLE_COVERART_DIGEST,
+        LIBRARYTABLE_COVERART_HASH};
+
+} // namespace
 
 MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
                                          UserSettingsPointer pConfig)
@@ -32,60 +70,23 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
           m_pLibraryTableModel(nullptr),
           m_pMissingView(nullptr),
           m_pHiddenView(nullptr) {
-    QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID
-            << "library." + LIBRARYTABLE_PLAYED
-            << "library." + LIBRARYTABLE_TIMESPLAYED
-            //has to be up here otherwise Played and TimesPlayed are not show
-            << "library." + LIBRARYTABLE_ALBUMARTIST
-            << "library." + LIBRARYTABLE_ALBUM
-            << "library." + LIBRARYTABLE_ARTIST
-            << "library." + LIBRARYTABLE_TITLE
-            << "library." + LIBRARYTABLE_YEAR
-            << "library." + LIBRARYTABLE_RATING
-            << "library." + LIBRARYTABLE_GENRE
-            << "library." + LIBRARYTABLE_COMPOSER
-            << "library." + LIBRARYTABLE_GROUPING
-            << "library." + LIBRARYTABLE_TRACKNUMBER
-            << "library." + LIBRARYTABLE_KEY
-            << "library." + LIBRARYTABLE_KEY_ID
-            << "library." + LIBRARYTABLE_BPM
-            << "library." + LIBRARYTABLE_BPM_LOCK
-            << "library." + LIBRARYTABLE_DURATION
-            << "library." + LIBRARYTABLE_BITRATE
-            << "library." + LIBRARYTABLE_REPLAYGAIN
-            << "library." + LIBRARYTABLE_FILETYPE
-            << "library." + LIBRARYTABLE_DATETIMEADDED
-            << "track_locations.location"
-            << "track_locations.fs_deleted"
-            << "library." + LIBRARYTABLE_COMMENT
-            << "library." + LIBRARYTABLE_MIXXXDELETED
-            << "library." + LIBRARYTABLE_COLOR
-            << "library." + LIBRARYTABLE_COVERART_SOURCE
-            << "library." + LIBRARYTABLE_COVERART_TYPE
-            << "library." + LIBRARYTABLE_COVERART_LOCATION
-            << "library." + LIBRARYTABLE_COVERART_HASH;
+    QStringList columns = DEFAULT_COLUMNS;
+    QStringList qualifiedTableColumns;
+    for (const auto& col : columns) {
+        qualifiedTableColumns.append(mixxx::trackschema::tableForColumn(col) +
+                QLatin1Char('.') + col);
+    }
 
     QSqlQuery query(m_pTrackCollection->database());
     QString tableName = "library_cache_view";
     QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM library "
-        "INNER JOIN track_locations ON library.location = track_locations.id")
-            .arg(tableName, columns.join(","));
+            "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+            "SELECT %2 FROM library "
+            "INNER JOIN track_locations ON library.location = track_locations.id")
+                                  .arg(tableName, qualifiedTableColumns.join(","));
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-    }
-
-    // Strip out library. and track_locations.
-    for (QStringList::iterator it = columns.begin();
-         it != columns.end(); ++it) {
-        if (it->startsWith("library.")) {
-            *it = it->replace("library.", "");
-        } else if (it->startsWith("track_locations.")) {
-            *it = it->replace("track_locations.", "");
-        }
     }
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
@@ -146,8 +147,15 @@ void MixxxLibraryFeature::refreshLibraryModels() {
     }
 }
 
+void MixxxLibraryFeature::searchAndActivate(const QString& query) {
+    VERIFY_OR_DEBUG_ASSERT(m_pLibraryTableModel) {
+        return;
+    }
+    m_pLibraryTableModel->search(query);
+    activate();
+}
+
 void MixxxLibraryFeature::activate() {
-    qDebug() << "MixxxLibraryFeature::activate()";
     emit showTrackModel(m_pLibraryTableModel);
     emit enableCoverArtDisplay(true);
 }
@@ -163,7 +171,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     emit enableCoverArtDisplay(true);
 }
 
-bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
+bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {
@@ -173,7 +181,7 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     }
 }
 
-bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
+bool MixxxLibraryFeature::dragMoveAccept(const QUrl& url) {
     return SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }

@@ -27,6 +27,27 @@ CmdlineArgs::CmdlineArgs()
 #endif
 }
 
+namespace {
+    bool parseLogLevel(
+        QLatin1String logLevel,
+        mixxx::LogLevel *pLogLevel) {
+        if (logLevel == QLatin1String("trace")) {
+            *pLogLevel = mixxx::LogLevel::Trace;
+        } else if (logLevel == QLatin1String("debug")) {
+            *pLogLevel = mixxx::LogLevel::Debug;
+        } else if (logLevel == QLatin1String("info")) {
+            *pLogLevel = mixxx::LogLevel::Info;
+        } else if (logLevel == QLatin1String("warning")) {
+            *pLogLevel = mixxx::LogLevel::Warning;
+        } else if (logLevel == QLatin1String("critical")) {
+            *pLogLevel = mixxx::LogLevel::Critical;
+        } else {
+            return false;
+        }
+        return true;
+    }
+}
+
 bool CmdlineArgs::Parse(int &argc, char **argv) {
     bool logLevelSet = false;
     for (int i = 0; i < argc; ++i) {
@@ -61,34 +82,14 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
         } else if (argv[i] == QString("--logLevel") && i+1 < argc) {
             logLevelSet = true;
             auto level = QLatin1String(argv[i+1]);
-            if (level == "trace") {
-                m_logLevel = mixxx::LogLevel::Trace;
-            } else if (level == "debug") {
-                m_logLevel = mixxx::LogLevel::Debug;
-            } else if (level == "info") {
-                m_logLevel = mixxx::LogLevel::Info;
-            } else if (level == "warning") {
-                m_logLevel = mixxx::LogLevel::Warning;
-            } else if (level == "critical") {
-                m_logLevel = mixxx::LogLevel::Critical;
-            } else {
+            if (!parseLogLevel(level, &m_logLevel)) {
                 fputs("\nlogLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only output\n\
 warnings and errors to the console unless this is set properly.\n", stdout);
             }
             i++;
         } else if (argv[i] == QString("--logFlushLevel") && i+1 < argc) {
             auto level = QLatin1String(argv[i+1]);
-            if (level == "trace") {
-                m_logFlushLevel = mixxx::LogLevel::Trace;
-            } else if (level == "debug") {
-                m_logFlushLevel = mixxx::LogLevel::Debug;
-            } else if (level == "info") {
-                m_logFlushLevel = mixxx::LogLevel::Info;
-            } else if (level == "warning") {
-                m_logFlushLevel = mixxx::LogLevel::Warning;
-            } else if (level == "critical") {
-                m_logFlushLevel = mixxx::LogLevel::Critical;
-            } else {
+            if (!parseLogLevel(level, &m_logFlushLevel)) {
                 fputs("\nlogFushLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only flush messages to mixxx.log\n\
 when a critical error occurs unless this is set properly.\n", stdout);
             }
@@ -102,7 +103,8 @@ when a critical error occurs unless this is set properly.\n", stdout);
             m_safeMode = true;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
             m_debugAssertBreak = true;
-        } else {
+        } else if (i > 0) {
+            // Don't try to load the program name to a deck
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
     }

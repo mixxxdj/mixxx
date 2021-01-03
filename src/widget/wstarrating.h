@@ -1,17 +1,15 @@
-#ifndef WSTARRATING_H
-#define WSTARRATING_H
+#pragma once
 
 #include <QEvent>
 #include <QMouseEvent>
 #include <QStylePainter>
 
-#include "skin/skincontext.h"
-#include "track/track.h"
-
-#include "library/starrating.h"
-#include "widget/wwidget.h"
-
 #include "control/controlpushbutton.h"
+#include "library/starrating.h"
+#include "skin/skincontext.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+#include "widget/wwidget.h"
 
 class ControlObject;
 class ControlPushButton;
@@ -19,7 +17,7 @@ class ControlPushButton;
 class WStarRating : public WWidget {
     Q_OBJECT
   public:
-    WStarRating(QString group, QWidget* pParent);
+    WStarRating(const QString& group, QWidget* pParent);
 
     virtual void setup(const QDomNode& node, const SkinContext& context);
     QSize sizeHint() const override;
@@ -40,7 +38,7 @@ class WStarRating : public WWidget {
     void fillDebugTooltip(QStringList* debug) override;
 
     StarRating m_starRating;
-    QString m_pGroup;
+    const QString m_group;
     TrackPointer m_pCurrentTrack;
     bool m_focused;
     mutable QRect m_contentRect;
@@ -51,5 +49,3 @@ class WStarRating : public WWidget {
     std::unique_ptr<ControlPushButton> m_pStarsUp;
     std::unique_ptr<ControlPushButton> m_pStarsDown;
 };
-
-#endif /* WSTARRATING_H */

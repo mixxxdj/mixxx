@@ -1,5 +1,4 @@
-#ifndef EFFECTWIDGETUTILS_H
-#define EFFECTWIDGETUTILS_H
+#pragma once
 
 #include <QDomNode>
 
@@ -105,5 +104,3 @@ class EffectWidgetUtils {
   private:
     EffectWidgetUtils() = default;
 };
-
-#endif /* EFFECTWIDGETUTILS_H */

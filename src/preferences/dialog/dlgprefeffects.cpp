@@ -7,11 +7,12 @@
 #include "effects/effectsbackend.h"
 #include "effects/effectsmanager.h"
 #include "effects/visibleeffectslist.h"
+#include "moc_dlgprefeffects.cpp"
 #include "preferences/effectchainpresetlistmodel.h"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         UserSettingsPointer pConfig,
-        EffectsManager* pEffectsManager)
+        std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_pVisibleEffectsList(pEffectsManager->getVisibleEffectsList()),
@@ -95,11 +96,19 @@ void DlgPrefEffects::slotUpdate() {
     chainPresetDeleteButton->setEnabled(false);
 
     loadChainPresetLists();
+
+    bool effectAdoptMetaknobValue = m_pConfig->getValue(
+            ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
+    radioButtonKeepMetaknobPosition->setChecked(effectAdoptMetaknobValue);
+    radioButtonMetaknobLoadDefault->setChecked(!effectAdoptMetaknobValue);
 }
 
 void DlgPrefEffects::slotApply() {
     m_pVisibleEffectsList->setList(m_pVisibleEffectsModel->getList());
     saveChainPresetLists();
+
+    m_pConfig->set(ConfigKey("[Effects]", "AdoptMetaknobValue"),
+            ConfigValue(radioButtonKeepMetaknobPosition->isChecked()));
 }
 
 void DlgPrefEffects::saveChainPresetLists() {
@@ -111,6 +120,8 @@ void DlgPrefEffects::saveChainPresetLists() {
 }
 
 void DlgPrefEffects::slotResetToDefaults() {
+    radioButtonKeepMetaknobPosition->setChecked(true);
+
     slotUpdate();
 }
 

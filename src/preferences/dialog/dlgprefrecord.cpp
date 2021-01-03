@@ -1,14 +1,19 @@
+#include "preferences/dialog/dlgprefrecord.h"
+
 #include <QFileDialog>
 #include <QStandardPaths>
 
-#include "preferences/dialog/dlgprefrecord.h"
-#include "recording/defs_recording.h"
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encodermp3settings.h"
-#include "control/controlproxy.h"
+#include "moc_dlgprefrecord.cpp"
+#include "recording/defs_recording.h"
 #include "util/sandbox.h"
 
+namespace {
+constexpr bool kDefaultCueEnabled = true;
+} // anonymous namespace
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
@@ -27,16 +32,18 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         recordingsPath = recordDir.absolutePath();
     }
     LineEditRecordings->setText(recordingsPath);
-    connect(PushButtonBrowseRecordings, SIGNAL(clicked()),
-            this, SLOT(slotBrowseRecordingsDir()));
+    connect(PushButtonBrowseRecordings,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefRecord::slotBrowseRecordingsDir);
 
     // Setting Encoder
     bool found = false;
     QString prefformat = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
-    for ( const Encoder::Format format : EncoderFactory::getFactory().getFormats()) {
+    for (const Encoder::Format& format : EncoderFactory::getFactory().getFormats()) {
         QRadioButton* button = new QRadioButton(format.label, this);
         button->setObjectName(format.internalName);
-        connect(button, SIGNAL(clicked()), this, SLOT(slotFormatChanged()));
+        connect(button, &QAbstractButton::clicked, this, &DlgPrefRecord::slotFormatChanged);
         if (format.lossless) {
             LosslessEncLayout->addWidget(button);
         } else {
@@ -67,8 +74,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     loadMetaData();
 
     // Setting miscellaneous
-    CheckBoxRecordCueFile->setChecked(
-            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
+    CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
+            ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     // Setting split
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -93,25 +100,31 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     }
 
     // Do the one-time connection of signals here.
-    connect(SliderQuality, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSliderQuality()));
-    connect(SliderQuality, SIGNAL(sliderMoved(int)),
-            this, SLOT(slotSliderQuality()));
-    connect(SliderQuality, SIGNAL(sliderReleased()),
-            this, SLOT(slotSliderQuality()));
-    connect(SliderCompression, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSliderCompression()));
-    connect(SliderCompression, SIGNAL(sliderMoved(int)),
-            this, SLOT(slotSliderCompression()));
-    connect(SliderCompression, SIGNAL(sliderReleased()),
-            this, SLOT(slotSliderCompression()));
+    connect(SliderQuality, &QAbstractSlider::valueChanged, this, &DlgPrefRecord::slotSliderQuality);
+    connect(SliderQuality, &QAbstractSlider::sliderMoved, this, &DlgPrefRecord::slotSliderQuality);
+    connect(SliderQuality,
+            &QAbstractSlider::sliderReleased,
+            this,
+            &DlgPrefRecord::slotSliderQuality);
+    connect(SliderCompression,
+            &QAbstractSlider::valueChanged,
+            this,
+            &DlgPrefRecord::slotSliderCompression);
+    connect(SliderCompression,
+            &QAbstractSlider::sliderMoved,
+            this,
+            &DlgPrefRecord::slotSliderCompression);
+    connect(SliderCompression,
+            &QAbstractSlider::sliderReleased,
+            this,
+            &DlgPrefRecord::slotSliderCompression);
 }
 
 DlgPrefRecord::~DlgPrefRecord()
 {
     // Note: I don't disconnect signals, since that's supposedly done automatically
     // when the object is deleted
-    for (QRadioButton* button : m_formatButtons) {
+    for (QRadioButton* button : qAsConst(m_formatButtons)) {
         if (LosslessEncLayout->indexOf(button) != -1) {
             LosslessEncLayout->removeWidget(button);
         } else {
@@ -119,7 +132,7 @@ DlgPrefRecord::~DlgPrefRecord()
         }
         button->deleteLater();
     }
-    for (QAbstractButton* widget : m_optionWidgets) {
+    for (QAbstractButton* widget : qAsConst(m_optionWidgets)) {
         OptionGroupsLayout->removeWidget(widget);
         widget->deleteLater();
     }
@@ -154,7 +167,7 @@ void DlgPrefRecord::slotUpdate()
     LineEditRecordings->setText(recordingsPath);
 
     QString prefformat = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
-    for ( const Encoder::Format format : EncoderFactory::getFactory().getFormats()) {
+    for (const Encoder::Format& format : EncoderFactory::getFactory().getFormats()) {
         if (prefformat == format.internalName) {
             m_selFormat = format;
             break;
@@ -165,8 +178,8 @@ void DlgPrefRecord::slotUpdate()
     loadMetaData();
 
      // Setting miscellaneous
-    CheckBoxRecordCueFile->setChecked(
-            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
+    CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
+            ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
@@ -191,8 +204,7 @@ void DlgPrefRecord::slotResetToDefaults()
 
     // 4GB splitting is the default
     comboBoxSplitting->setCurrentIndex(4);
-    CheckBoxRecordCueFile->setChecked(false);
-
+    CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
 }
 
 
@@ -253,10 +265,10 @@ void DlgPrefRecord::setupEncoderUI() {
         TextCompression->setVisible(false);
     }
 
-    for (QAbstractButton* widget : m_optionWidgets) {
+    for (QAbstractButton* widget : qAsConst(m_optionWidgets)) {
         optionsgroup.removeButton(widget);
         OptionGroupsLayout->removeWidget(widget);
-        disconnect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
+        disconnect(widget, &QAbstractButton::clicked, this, &DlgPrefRecord::slotGroupChanged);
         widget->deleteLater();
     }
     m_optionWidgets.clear();
@@ -272,7 +284,7 @@ void DlgPrefRecord::setupEncoderUI() {
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         labelOptionGroup->setText(group.groupName);
         int controlIdx = settings->getSelectedOption(group.groupCode);
-        for (const QString& name : group.controlNames) {
+        for (const QString& name : qAsConst(group.controlNames)) {
             QAbstractButton* widget;
             if (group.controlNames.size() == 1) {
                 QCheckBox* button = new QCheckBox(name, this);
@@ -281,7 +293,7 @@ void DlgPrefRecord::setupEncoderUI() {
                 QRadioButton* button = new QRadioButton(name, this);
                 widget = button;
             }
-            connect(widget, SIGNAL(clicked()), this, SLOT(slotGroupChanged()));
+            connect(widget, &QAbstractButton::clicked, this, &DlgPrefRecord::slotGroupChanged);
             widget->setObjectName(group.groupCode);
             OptionGroupsLayout->addWidget(widget);
             optionsgroup.addButton(widget);
@@ -317,7 +329,7 @@ void DlgPrefRecord::updateTextQuality() {
     if (m_selFormat.internalName == ENCODING_MP3) {
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         int i=0;
-        for (const QAbstractButton* widget : m_optionWidgets) {
+        for (const QAbstractButton* widget : qAsConst(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked && widget->text() == "VBR") {
                     isVbr = true;
@@ -406,7 +418,7 @@ void DlgPrefRecord::saveEncoding() {
         // The concept is already there for multiple groups
         EncoderSettings::OptionsGroup group = settings->getOptionGroups().first();
         int i=0;
-        for (const QAbstractButton* widget : m_optionWidgets) {
+        for (const QAbstractButton* widget : qAsConst(m_optionWidgets)) {
             if (widget->objectName() == group.groupCode) {
                 if (widget->isChecked() != Qt::Unchecked) {
                     settings->setGroupOption(group.groupCode, i);

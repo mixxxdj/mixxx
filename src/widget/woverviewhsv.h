@@ -1,12 +1,11 @@
-#ifndef WOVERVIEWHSV_H
-#define WOVERVIEWHSV_H
+#pragma once
 
 #include "widget/woverview.h"
 
 class WOverviewHSV : public WOverview {
   public:
     WOverviewHSV(
-            const char* group,
+            const QString& group,
             PlayerManager* pPlayerManager,
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);
@@ -14,5 +13,3 @@ class WOverviewHSV : public WOverview {
   private:
     bool drawNextPixmapPart() override;
 };
-
-#endif // WOVERVIEWHSV_H

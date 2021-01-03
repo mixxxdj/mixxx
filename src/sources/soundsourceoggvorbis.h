@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCEOGGVORBIS_H
-#define MIXXX_SOUNDSOURCEOGGVORBIS_H
+#pragma once
 
 #include "sources/soundsourceprovider.h"
 #include "util/memory.h"
@@ -7,7 +6,7 @@
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
 
-class QFile;
+QT_FORWARD_DECLARE_CLASS(QFile);
 
 namespace mixxx {
 
@@ -20,7 +19,7 @@ class SoundSourceOggVorbis final : public SoundSource {
 
   protected:
     ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) override;
+            const WritableSampleFrames& sampleFrames) override;
 
   private:
     OpenResult tryOpen(
@@ -42,9 +41,16 @@ class SoundSourceOggVorbis final : public SoundSource {
 
 class SoundSourceProviderOggVorbis : public SoundSourceProvider {
   public:
-    QString getName() const override;
+    static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
-    QStringList getSupportedFileExtensions() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
 
     SoundSourceProviderPriority getPriorityHint(
             const QString& supportedFileExtension) const override;
@@ -55,5 +61,3 @@ class SoundSourceProviderOggVorbis : public SoundSourceProvider {
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEOGGVORBIS_H

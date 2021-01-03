@@ -1,17 +1,17 @@
-#ifndef DLGPREFKEY_H
-#define DLGPREFKEY_H
+#pragma once
 
 #include <QList>
-#include <QWidget>
 #include <QMap>
+#include <QWidget>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "control/controlproxy.h"
+#include "defs_urls.h"
 #include "preferences/dialog/ui_dlgprefkeydlg.h"
+#include "preferences/dlgpreferencepage.h"
 #include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
 #include "track/keyutils.h"
-#include "preferences/dlgpreferencepage.h"
 
 class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     Q_OBJECT
@@ -19,11 +19,13 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     DlgPrefKey(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefKey();
 
+    QUrl helpUrl() const override;
+
   public slots:
     // Apply changes to widget
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
 
   private slots:
     void pluginSelected(int i);
@@ -51,5 +53,3 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyzeEnabled;
 };
-
-#endif

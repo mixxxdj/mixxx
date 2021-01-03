@@ -1,5 +1,4 @@
-#ifndef DLGPREFREPLAYGAIN_H
-#define DLGPREFREPLAYGAIN_H
+#pragma once
 
 #include <QButtonGroup>
 #include <QWidget>
@@ -24,9 +23,9 @@ class DlgPrefReplayGain: public DlgPreferencePage,
     void slotSetRGAnalyzerChanged();
     void slotSetReanalyze();
 
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
 
   signals:
     void apply(const QString &);
@@ -45,5 +44,3 @@ class DlgPrefReplayGain: public DlgPreferencePage,
 
     QButtonGroup m_analysisButtonGroup;
 };
-
-#endif /* DLGPREFREPLAYGAIN_H */

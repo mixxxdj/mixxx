@@ -1,5 +1,4 @@
 #include "effects/effectslot.h"
-#include "effects/effectxmlelements.h"
 
 #include <QDebug>
 
@@ -10,6 +9,7 @@
 #include "effects/effectsmessenger.h"
 #include "effects/presets/effectpresetmanager.h"
 #include "effects/visibleeffectslist.h"
+#include "moc_effectslot.cpp"
 #include "util/defs.h"
 #include "util/math.h"
 
@@ -189,7 +189,7 @@ void EffectSlot::updateEngineState() {
 void EffectSlot::fillEffectStatesMap(EffectStatesMap* pStatesMap) const {
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
-            mixxx::AudioSignal::SampleRate(96000),
+            mixxx::audio::SampleRate(96000),
             MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
 
     if (isLoaded()) {

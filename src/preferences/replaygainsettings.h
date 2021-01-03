@@ -1,8 +1,7 @@
-#ifndef PREFERENCES_REPLAYGAINSETTINGS_H
-#define PREFERENCES_REPLAYGAINSETTINGS_H
+#pragma once
 
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
 
 class ReplayGainSettings {
   public:
@@ -28,5 +27,3 @@ class ReplayGainSettings {
     // Pointer to config object
     UserSettingsPointer m_pConfig;
 };
-
-#endif /* PREFERENCES_REPLAYGAINSETTINGS_H */

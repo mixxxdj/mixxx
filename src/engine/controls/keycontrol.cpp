@@ -1,20 +1,22 @@
-#include <QtDebug>
-#include <QPair>
-
 #include "engine/controls/keycontrol.h"
 
+#include <QPair>
+#include <QtDebug>
+
 #include "control/controlobject.h"
-#include "control/controlpushbutton.h"
 #include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
+#include "moc_keycontrol.cpp"
 #include "track/keyutils.h"
 
 //static const double kLockOriginalKey = 0;
 static const double kLockCurrentKey = 1;
 static const double kKeepUnlockedKey = 1;
 
-KeyControl::KeyControl(QString group,
-                       UserSettingsPointer pConfig)
+KeyControl::KeyControl(const QString& group,
+        UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     m_pitchRateInfo.pitchRatio = 1.0;
     m_pitchRateInfo.tempoRatio = 1.0;
@@ -348,7 +350,8 @@ bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
     double dKey = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
     mixxx::track::io::key::ChromaticKey otherKey =
             KeyUtils::keyFromNumericValue(dKey);
-    double otherDistance = ControlObject::get(ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
+    double otherDistance = ControlObject::get(
+            ConfigKey(pOtherEngineBuffer->getGroup(), "visual_key_distance"));
 
     if (thisFileKey == mixxx::track::io::key::INVALID ||
         otherKey == mixxx::track::io::key::INVALID) {

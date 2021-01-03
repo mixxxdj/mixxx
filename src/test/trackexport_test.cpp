@@ -6,17 +6,20 @@
 #include <QDebug>
 #include <QScopedPointer>
 
+#include "moc_trackexport_test.cpp"
+#include "track/track.h"
+
 FakeOverwriteAnswerer::~FakeOverwriteAnswerer() { }
 
-void FakeOverwriteAnswerer::slotProgress(QString filename, int progress, int count) {
+void FakeOverwriteAnswerer::slotProgress(const QString& filename, int progress, int count) {
     m_progress_filename = filename;
     m_progress = progress;
     m_progress_count = count;
 }
 
 void FakeOverwriteAnswerer::slotAskOverwriteMode(
-            QString filename,
-            std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
+        const QString& filename,
+        std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
     auto it = m_answers.find(filename);
     // Make sure this filename is in the map, and then remove it.
     // The ASSERT_EQ macro has trouble with this comparison.
@@ -45,7 +48,7 @@ TEST_F(TrackExporterTest, SimpleListExport) {
 
     // An initializer list would be prettier here, but it doesn't compile
     // on MSVC or OSX.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     tracks.append(track3);
@@ -83,7 +86,7 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -129,7 +132,7 @@ TEST_F(TrackExporterTest, OverwriteAll) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -170,7 +173,7 @@ TEST_F(TrackExporterTest, SkipAll) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -209,7 +212,7 @@ TEST_F(TrackExporterTest, Cancel) {
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -240,7 +243,7 @@ TEST_F(TrackExporterTest, DedupeList) {
     TrackPointer track2(Track::newTemporary(fileinfo1));
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -277,7 +280,7 @@ TEST_F(TrackExporterTest, MungeFilename) {
     TrackPointer track2(Track::newTemporary(fileinfo2));
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);

@@ -1,11 +1,13 @@
+#include "effects/effectbuttonparameterslot.h"
+
 #include <QtDebug>
 
-#include "effects/effectslot.h"
-#include "effects/effectbuttonparameterslot.h"
 #include "control/controleffectknob.h"
-#include "effects/effectxmlelements.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "effects/effectslot.h"
+#include "effects/effectxmlelements.h"
+#include "moc_effectbuttonparameterslot.cpp"
 #include "util/math.h"
 #include "util/xml.h"
 
@@ -21,8 +23,10 @@ EffectButtonParameterSlot::EffectButtonParameterSlot(const QString& group,
     m_pControlType = new ControlObject(
             ConfigKey(m_group, itemPrefix + QString("_type")));
 
-    connect(m_pControlValue, &ControlObject::valueChanged,
-            this, &EffectButtonParameterSlot::slotValueChanged);
+    connect(m_pControlValue,
+            &ControlObject::valueChanged,
+            this,
+            &EffectButtonParameterSlot::slotValueChanged);
 
     // Read-only controls.
     m_pControlType->setReadOnly();

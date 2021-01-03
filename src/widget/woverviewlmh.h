@@ -1,12 +1,11 @@
-#ifndef WOVERVIEWLMH_H
-#define WOVERVIEWLMH_H
+#pragma once
 
 #include "widget/woverview.h"
 
 class WOverviewLMH : public WOverview {
   public:
     WOverviewLMH(
-            const char* group,
+            const QString& group,
             PlayerManager* pPlayerManager,
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);
@@ -14,5 +13,3 @@ class WOverviewLMH : public WOverview {
   private:
     bool drawNextPixmapPart() override;
 };
-
-#endif // WOVERVIEWLMH_H

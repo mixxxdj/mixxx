@@ -1,20 +1,22 @@
 #include "library/scanner/libraryscanner.h"
 
-#include "sources/soundsourceproxy.h"
-#include "library/scanner/recursivescandirectorytask.h"
-#include "library/scanner/libraryscannerdlg.h"
-#include "library/scanner/scannertask.h"
-#include "library/queryutil.h"
 #include "library/coverartutils.h"
-#include "util/logger.h"
-#include "util/trace.h"
-#include "util/file.h"
-#include "util/timer.h"
-#include "util/performancetimer.h"
+#include "library/queryutil.h"
+#include "library/scanner/libraryscannerdlg.h"
+#include "library/scanner/recursivescandirectorytask.h"
+#include "library/scanner/scannertask.h"
 #include "library/scanner/scannerutil.h"
-#include "util/db/dbconnectionpooler.h"
+#include "moc_libraryscanner.cpp"
+#include "sources/soundsourceproxy.h"
+#include "track/track.h"
 #include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
 #include "util/db/fwdsqlquery.h"
+#include "util/file.h"
+#include "util/logger.h"
+#include "util/performancetimer.h"
+#include "util/timer.h"
+#include "util/trace.h"
 
 namespace {
 
@@ -34,6 +36,34 @@ int execCleanupQuery(FwdSqlQuery& query) {
         return -1;
     }
     return query.numRowsAffected();
+}
+
+/// Clean up the database and fix inconsistencies from previous runs.
+/// See also: https://bugs.launchpad.net/mixxx/+bug/1846945
+void cleanUpDatabase(const QSqlDatabase& database) {
+    kLogger.info()
+            << "Cleaning up database...";
+    PerformanceTimer timer;
+    timer.start();
+    const auto sqlStmt = QStringLiteral(
+            "DELETE FROM LibraryHashes WHERE hash<>:unequalHash "
+            "AND directory_path NOT IN "
+            "(SELECT directory FROM track_locations)");
+    FwdSqlQuery query(database, sqlStmt);
+    query.bindValue(
+            QStringLiteral(":unequalHash"),
+            static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
+    auto numRows = execCleanupQuery(query);
+    if (numRows < 0) {
+        kLogger.warning()
+                << "Failed to delete orphaned directory hashes";
+    } else if (numRows > 0) {
+        kLogger.info()
+                << "Deleted" << numRows << "orphaned directory hashes";
+    }
+    kLogger.info()
+            << "Finished database cleanup:"
+            << timer.elapsed().debugMillisWithUnit();
 }
 
 } // anonymous namespace
@@ -111,34 +141,6 @@ void LibraryScanner::run() {
             return;
         }
 
-        // Clean up the database and fix inconsistencies from previous runs.
-        // See also: https://bugs.launchpad.net/mixxx/+bug/1846945
-        {
-            kLogger.info()
-                    << "Cleaning up database...";
-            PerformanceTimer timer;
-            timer.start();
-            const auto sqlStmt = QStringLiteral(
-                "DELETE FROM LibraryHashes WHERE hash <> :unequalHash "
-                        "AND directory_path NOT IN "
-                        "(SELECT directory FROM track_locations)");
-            FwdSqlQuery query(dbConnection, sqlStmt);
-            query.bindValue(
-                QStringLiteral(":unequalHash"),
-                static_cast<mixxx::cache_key_signed_t>(mixxx::invalidCacheKey()));
-            auto numRows = execCleanupQuery(query);
-            if (numRows < 0) {
-                kLogger.warning()
-                        << "Failed to delete orphaned directory hashes";
-            } else if (numRows > 0) {
-                kLogger.info()
-                        << "Deleted" << numRows << "orphaned directory hashes)";
-            }
-            kLogger.info()
-                    << "Finished database cleanup:"
-                    << timer.elapsed().debugMillisWithUnit();
-        }
-
         m_libraryHashDao.initialize(dbConnection);
         m_cueDao.initialize(dbConnection);
         m_trackDao.initialize(dbConnection);
@@ -157,6 +159,8 @@ void LibraryScanner::run() {
 void LibraryScanner::slotStartScan() {
     kLogger.debug() << "slotStartScan()";
     DEBUG_ASSERT(m_state == STARTING);
+
+    cleanUpDatabase(m_libraryHashDao.database());
 
     // Recursively scan each directory in the directories table.
     m_libraryRootDirs = m_directoryDao.getDirs();
@@ -427,7 +431,7 @@ void LibraryScanner::cancelAndQuit() {
     changeScannerState(CANCELING);
     cancel();
     // Quit the event loop gracefully and stay in CANCELING state until all
-    // pendig signals are processed
+    // pending signals are processed
     quit();
     wait();
     changeScannerState(IDLE);
@@ -537,6 +541,7 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     // For statistics tracking and to detect moved tracks
     TrackPointer pTrack(m_trackDao.addTracksAddFile(trackPath, false));
     if (pTrack) {
+        DEBUG_ASSERT(!pTrack->isDirty());
         // The track's actual location might differ from the
         // given trackPath
         const QString trackLocation(pTrack->getLocation());

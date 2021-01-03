@@ -1,22 +1,4 @@
-/***************************************************************************
-                          enginedeck.h  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEDECK_H
-#define ENGINEDECK_H
+#pragma once
 
 #include <QScopedPointer>
 
@@ -40,9 +22,13 @@ class ControlPushButton;
 class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
-    EngineDeck(const ChannelHandleAndGroup& handle_group, UserSettingsPointer pConfig,
-               EngineMaster* pMixingEngine, EffectsManager* pEffectsManager,
-               EngineChannel::ChannelOrientation defaultOrientation = CENTER);
+    EngineDeck(
+            const ChannelHandleAndGroup& handleGroup,
+            UserSettingsPointer pConfig,
+            EngineMaster* pMixingEngine,
+            EffectsManager* pEffectsManager,
+            EngineChannel::ChannelOrientation defaultOrientation,
+            bool primaryDeck);
     virtual ~EngineDeck();
 
     virtual void process(CSAMPLE* pOutput, const int iBufferSize);
@@ -59,16 +45,17 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     // the soundcard this AudioDestination was registered for! Beware, in the
     // case of multiple soundcards, this method is not re-entrant but it may be
     // concurrent with EngineMaster processing.
-    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                               unsigned int nFrames);
+    virtual void receiveBuffer(const AudioInput& input,
+            const CSAMPLE* pBuffer,
+            unsigned int nFrames);
 
     // Called by SoundManager whenever the passthrough input is connected to a
     // soundcard input.
-    virtual void onInputConfigured(AudioInput input);
+    virtual void onInputConfigured(const AudioInput& input);
 
     // Called by SoundManager whenever the passthrough input is disconnected
     // from a soundcard input.
-    virtual void onInputUnconfigured(AudioInput input);
+    virtual void onInputUnconfigured(const AudioInput& input);
 
     // Return whether or not passthrough is active
     bool isPassthroughActive() const;
@@ -92,5 +79,3 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     bool m_bPassthroughWasActive;
     bool m_wasActive;
 };
-
-#endif

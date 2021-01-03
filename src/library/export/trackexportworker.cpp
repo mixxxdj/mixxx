@@ -1,8 +1,11 @@
 #include "library/export/trackexportworker.h"
 
+#include <QDebug>
 #include <QFileInfo>
 #include <QMessageBox>
-#include <QDebug>
+
+#include "moc_trackexportworker.cpp"
+#include "track/track.h"
 
 namespace {
 
@@ -10,8 +13,7 @@ QString rewriteFilename(const QFileInfo& fileinfo, int index) {
     // We don't have total control over the inputs, so definitely
     // don't use .arg().arg().arg().
     const QString index_str = QString("%1").arg(index, 4, 10, QChar('0'));
-    return QString("%1-%2.%3").arg(fileinfo.baseName(), index_str,
-                                   fileinfo.completeSuffix());
+    return QString("%1-%2.%3").arg(fileinfo.baseName(), index_str, fileinfo.completeSuffix());
 }
 
 // Iterate over a list of tracks and generate a minimal set of files to copy.
@@ -19,7 +21,7 @@ QString rewriteFilename(const QFileInfo& fileinfo, int index) {
 // and skips if they refer to the same disk location.  Returns a map from
 // QString (the destination possibly-munged filenames) to QFileinfo (the source
 // file information).
-QMap<QString, TrackFile> createCopylist(const QList<TrackPointer>& tracks) {
+QMap<QString, TrackFile> createCopylist(const TrackPointerList& tracks) {
     // QMap is a non-obvious return value, but it's easy for callers to use
     // in practice and is the best object for producing the final list
     // efficiently.
@@ -146,7 +148,7 @@ void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,
 }
 
 TrackExportWorker::OverwriteAnswer TrackExportWorker::makeOverwriteRequest(
-        QString filename) {
+        const QString& filename) {
     // QT's QFuture is not quite right for this type of threaded question-and-answer.
     // std::future works fine, even with signals and slots.
     QScopedPointer<std::promise<OverwriteAnswer>> mode_promise(

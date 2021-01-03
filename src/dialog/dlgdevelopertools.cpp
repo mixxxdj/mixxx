@@ -3,9 +3,10 @@
 #include <QDateTime>
 
 #include "control/control.h"
+#include "moc_dlgdevelopertools.cpp"
 #include "util/cmdlineargs.h"
-#include "util/statsmanager.h"
 #include "util/logging.h"
+#include "util/statsmanager.h"
 
 DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                      UserSettingsPointer pConfig)
@@ -13,9 +14,9 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
           m_pConfig(pConfig) {
     setupUi(this);
 
-    QList<QSharedPointer<ControlDoublePrivate> > controlsList;
-    ControlDoublePrivate::getControls(&controlsList);
-    QHash<ConfigKey, ConfigKey> controlAliases =
+    const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
+            ControlDoublePrivate::getAllInstances();
+    const QHash<ConfigKey, ConfigKey> controlAliases =
             ControlDoublePrivate::getControlAliases();
 
     for (auto it = controlsList.constBegin();
@@ -26,7 +27,7 @@ DlgDeveloperTools::DlgDeveloperTools(QWidget* pParent,
                                       pControl->description());
 
             ConfigKey aliasKey = controlAliases[pControl->getKey()];
-            if (!aliasKey.isNull()) {
+            if (aliasKey.isValid()) {
                 m_controlModel.addControl(aliasKey, pControl->name(),
                                           "Alias for " + pControl->getKey().group + pControl->getKey().item);
             }
@@ -144,8 +145,8 @@ void DlgDeveloperTools::slotControlDump() {
         return;
     }
 
-    QList<QSharedPointer<ControlDoublePrivate> > controlsList;
-    ControlDoublePrivate::getControls(&controlsList);
+    const QList<QSharedPointer<ControlDoublePrivate>> controlsList =
+            ControlDoublePrivate::getAllInstances();
     for (auto it = controlsList.constBegin(); it != controlsList.constEnd(); ++it) {
         const QSharedPointer<ControlDoublePrivate>& pControl = *it;
         if (pControl) {

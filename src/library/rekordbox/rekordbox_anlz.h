@@ -1,5 +1,4 @@
-#ifndef REKORDBOX_ANLZ_H_
-#define REKORDBOX_ANLZ_H_
+#pragma once
 
 // This is a generated file! Please edit source .ksy file and use kaitai-struct-compiler to rebuild
 
@@ -20,7 +19,7 @@
  * inside variable bit-rate audio streams, and lists of memory cues
  * and loop points. They are used by Pioneer professional DJ
  * equipment.
- * 
+ *
  * The format has been reverse-engineered to facilitate sophisticated
  * integrations with light and laser shows, videos, and other musical
  * instruments, by supporting deep knowledge of what is playing and
@@ -63,7 +62,8 @@ public:
 
     enum phrase_style_t {
         PHRASE_STYLE_UP_DOWN = 1,
-        PHRASE_STYLE_VERSE_BRIDGE = 2
+        PHRASE_STYLE_VERSE_BRIDGE = 2,
+        PHRASE_STYLE_VERSE_BRIDGE_2 = 3
     };
 
     enum cue_entry_type_t {
@@ -194,6 +194,12 @@ public:
         uint32_t m_len_preview;
         uint32_t m__unnamed1;
         std::string m_data;
+        bool n_data;
+
+    public:
+        bool _is_null_data() { data(); return n_data; };
+
+    private:
         rekordbox_anlz_t* m__root;
         rekordbox_anlz_t::tagged_section_t* m__parent;
 
@@ -369,7 +375,7 @@ public:
     };
 
     /**
-     * Stores the song structure, also known as phrases (intro, verse, 
+     * Stores the song structure, also known as phrases (intro, verse,
      * bridge, chorus, up, down, outro).
      */
 
@@ -388,7 +394,7 @@ public:
     private:
         uint32_t m_len_entry_bytes;
         uint16_t m_len_entries;
-        phrase_style_t m_style;
+        uint16_t m_style;
         std::string m__unnamed3;
         uint16_t m_end_beat;
         std::string m__unnamed5;
@@ -417,7 +423,7 @@ public:
          * bridge-verse style except verses 1-3 are labeled VERSE1 and verses
          * 4-6 are labeled VERSE2 in rekordbox.
          */
-        phrase_style_t style() const { return m_style; }
+        uint16_t style() const { return m_style; }
         std::string _unnamed3() const { return m__unnamed3; }
 
         /**
@@ -458,9 +464,22 @@ public:
         std::string m__unnamed5;
         uint32_t m_time;
         uint32_t m_loop_time;
-        std::string m__unnamed8;
+        uint8_t m_color_id;
+        std::string m__unnamed9;
         uint32_t m_len_comment;
+        bool n_len_comment;
+
+    public:
+        bool _is_null_len_comment() { len_comment(); return n_len_comment; };
+
+    private:
         std::string m_comment;
+        bool n_comment;
+
+    public:
+        bool _is_null_comment() { comment(); return n_comment; };
+
+    private:
         uint8_t m_color_code;
         bool n_color_code;
 
@@ -489,11 +508,11 @@ public:
         bool _is_null_color_blue() { color_blue(); return n_color_blue; };
 
     private:
-        std::string m__unnamed15;
-        bool n__unnamed15;
+        std::string m__unnamed16;
+        bool n__unnamed16;
 
     public:
-        bool _is_null__unnamed15() { _unnamed15(); return n__unnamed15; };
+        bool _is_null__unnamed16() { _unnamed16(); return n__unnamed16; };
 
     private:
         rekordbox_anlz_t* m__root;
@@ -527,7 +546,13 @@ public:
          * back to the cue time if this is a loop.
          */
         uint32_t loop_time() const { return m_loop_time; }
-        std::string _unnamed8() const { return m__unnamed8; }
+
+        /**
+         * References a row in the colors table if the memory cue or loop
+         * has been assigned a color
+         */
+        uint8_t color_id() const { return m_color_id; }
+        std::string _unnamed9() const { return m__unnamed9; }
         uint32_t len_comment() const { return m_len_comment; }
 
         /**
@@ -554,7 +579,7 @@ public:
          * The blue component of the color to be displayed.
          */
         uint8_t color_blue() const { return m_color_blue; }
-        std::string _unnamed15() const { return m__unnamed15; }
+        std::string _unnamed16() const { return m__unnamed16; }
         rekordbox_anlz_t* _root() const { return m__root; }
         rekordbox_anlz_t::cue_extended_tag_t* _parent() const { return m__parent; }
     };
@@ -953,7 +978,8 @@ public:
 
     private:
         cue_list_type_t m_type;
-        uint32_t m_len_cues;
+        std::string m__unnamed1;
+        uint16_t m_len_cues;
         uint32_t m_memory_count;
         std::vector<cue_entry_t*>* m_cues;
         rekordbox_anlz_t* m__root;
@@ -965,11 +991,12 @@ public:
          * Identifies whether this tag stores ordinary or hot cues.
          */
         cue_list_type_t type() const { return m_type; }
+        std::string _unnamed1() const { return m__unnamed1; }
 
         /**
          * The length of the cue list.
          */
-        uint32_t len_cues() const { return m_len_cues; }
+        uint16_t len_cues() const { return m_len_cues; }
 
         /**
          * Unsure what this means.
@@ -1011,5 +1038,3 @@ public:
     rekordbox_anlz_t* _root() const { return m__root; }
     kaitai::kstruct* _parent() const { return m__parent; }
 };
-
-#endif  // REKORDBOX_ANLZ_H_

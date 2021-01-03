@@ -1,16 +1,34 @@
-#include <QtSql>
+#include "library/dao/directorydao.h"
+
 #include <QDir>
 #include <QtDebug>
-#include <QRegExp>
 
-#include "library/dao/directorydao.h"
 #include "library/queryutil.h"
-
-#include "util/db/sqllikewildcards.h"
 #include "util/db/sqllikewildcardescaper.h"
+#include "util/db/sqllikewildcards.h"
 
+namespace {
 
-int DirectoryDAO::addDirectory(const QString& newDir) {
+bool isChildDir(const QString& testDir, const QString& dirStr) {
+    QDir test = QDir(testDir);
+    QDir dir = QDir(dirStr);
+    bool child = dir == test;
+    while (test.cdUp()) {
+        if (dir == test) {
+            child = true;
+        }
+    }
+    // qDebug() << "--- test related function ---";
+    // qDebug() << "testDir " << testDir;
+    // qDebug() << "dir" << dirStr;
+    // qDebug() << "child = " << child;
+    // qDebug() << "-----------------------------";
+    return child;
+}
+
+} // anonymous namespace
+
+int DirectoryDAO::addDirectory(const QString& newDir) const {
     // Do nothing if the dir to add is a child of a directory that is already in
     // the db.
     QStringList dirs = getDirs();
@@ -47,24 +65,7 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
     return ALL_FINE;
 }
 
-bool DirectoryDAO::isChildDir(QString testDir, QString dirStr) {
-    QDir test = QDir(testDir);
-    QDir dir = QDir(dirStr);
-    bool child = dir == test;
-    while (test.cdUp()) {
-        if (dir == test) {
-            child = true;
-        }
-    }
-    // qDebug() << "--- test related function ---";
-    // qDebug() << "testDir " << testDir;
-    // qDebug() << "dir" << dirStr;
-    // qDebug() << "child = " << child;
-    // qDebug() << "-----------------------------";
-    return child;
-}
-
-int DirectoryDAO::removeDirectory(const QString& dir) {
+int DirectoryDAO::removeDirectory(const QString& dir) const {
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE  % " WHERE "
                    % DIRECTORYDAO_DIR % "= :dir");
@@ -76,10 +77,9 @@ int DirectoryDAO::removeDirectory(const QString& dir) {
     return ALL_FINE;
 }
 
-
 QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
         const QString& oldFolder,
-        const QString& newFolder) {
+        const QString& newFolder) const {
     // TODO(rryan): This method could use error reporting. It can fail in
     // mysterious ways for example if a track in the oldFolder also has a zombie
     // track location in newFolder then the replace query will fail because the
@@ -147,7 +147,7 @@ QList<RelocatedTrack> DirectoryDAO::relocateDirectory(
     return relocatedTracks;
 }
 
-QStringList DirectoryDAO::getDirs() {
+QStringList DirectoryDAO::getDirs() const {
     QSqlQuery query(m_database);
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     if (!query.exec()) {

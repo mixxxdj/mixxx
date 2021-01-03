@@ -1,5 +1,4 @@
-#ifndef SYNCCONTROL_H
-#define SYNCCONTROL_H
+#pragma once
 
 #include <QScopedPointer>
 #include <gtest/gtest_prod.h>
@@ -14,6 +13,7 @@ class ControlObject;
 class ControlProxy;
 class ControlPushButton;
 
+/// SyncControl is the Master Sync object for playback decks.
 class SyncControl : public EngineControl, public Syncable {
     Q_OBJECT
   public:
@@ -43,7 +43,7 @@ class SyncControl : public EngineControl, public Syncable {
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     void setMasterBeatDistance(double beatDistance) override;
-    void setMasterBaseBpm(double) override;
+
     // Must never result in a call to
     // SyncableListener::notifyBpmChanged or signal loops could occur.
     void setMasterBpm(double bpm) override;
@@ -60,6 +60,7 @@ class SyncControl : public EngineControl, public Syncable {
     void reportPlayerSpeed(double speed, bool scratching);
     void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private slots:
     // Fired by changes in play.
@@ -77,9 +78,6 @@ class SyncControl : public EngineControl, public Syncable {
     // Fired by changes in rate, rate_dir, rateRange.
     void slotRateChanged();
 
-    // Fired by changes in file_bpm.
-    void slotFileBpmChanged();
-
     // Change request handlers for sync properties.
     void slotSyncModeChangeRequest(double state);
     void slotSyncEnabledChangeRequest(double enabled);
@@ -92,6 +90,7 @@ class SyncControl : public EngineControl, public Syncable {
     // best factor for multiplying the master bpm to get a bpm this syncable
     // should match against.
     double determineBpmMultiplier(double myBpm, double targetBpm) const;
+    double fileBpm() const;
 
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the
@@ -125,14 +124,13 @@ class SyncControl : public EngineControl, public Syncable {
     ControlProxy* m_pPlayButton;
     ControlProxy* m_pBpm;
     ControlProxy* m_pLocalBpm;
-    ControlProxy* m_pFileBpm;
     ControlProxy* m_pRateRatio;
     ControlProxy* m_pVCEnabled;
     ControlProxy* m_pPassthroughEnabled;
     ControlProxy* m_pEjectButton;
     ControlProxy* m_pSyncPhaseButton;
     ControlProxy* m_pQuantize;
+
+    // m_pBeats is written from an engine worker thread
+    mixxx::BeatsPointer m_pBeats;
 };
-
-
-#endif /* SYNCCONTROL_H */

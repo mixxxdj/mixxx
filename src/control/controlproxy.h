@@ -1,5 +1,4 @@
-#ifndef CONTROLPROXY_H
-#define CONTROLPROXY_H
+#pragma once
 
 #include <QObject>
 #include <QSharedPointer>
@@ -19,13 +18,20 @@
 class ControlProxy : public QObject {
     Q_OBJECT
   public:
-    ControlProxy(QObject* pParent = NULL);
-    ControlProxy(const QString& g, const QString& i, QObject* pParent = NULL);
-    ControlProxy(const char* g, const char* i, QObject* pParent = NULL);
-    ControlProxy(const ConfigKey& key, QObject* pParent = NULL);
+    ControlProxy(const QString& g,
+            const QString& i,
+            QObject* pParent = nullptr,
+            ControlFlags flags = ControlFlag::None);
+    ControlProxy(const char* g,
+            const char* i,
+            QObject* pParent = nullptr,
+            ControlFlags flags = ControlFlag::None);
+    ControlProxy(const ConfigKey& key,
+            QObject* pParent = nullptr,
+            ControlFlags flags = ControlFlag::None);
     virtual ~ControlProxy();
 
-    void initialize(const ConfigKey& key, bool warn = true);
+    void initialize(ControlFlags flags = ControlFlag::None);
 
     const ConfigKey& getKey() const {
         return m_key;
@@ -108,7 +114,7 @@ class ControlProxy : public QObject {
     }
 
     inline bool valid() const {
-        return m_pControl != NULL;
+        return m_pControl != nullptr;
     }
 
     // Returns the value of the object. Thread safe, non-blocking.
@@ -159,7 +165,7 @@ class ControlProxy : public QObject {
             // NOTE(rryan): This is important. The originator of this action does
             // not know the resulting value so it makes sense that we should emit a
             // general valueChanged() signal even though the change originated from
-            // us. For this reason, we provide NULL here so that the change is
+            // us. For this reason, we provide nullptr here so that the change is
             // not filtered in valueChanged()
             m_pControl->reset();
         }
@@ -200,5 +206,3 @@ class ControlProxy : public QObject {
     // Pointer to connected control.
     QSharedPointer<ControlDoublePrivate> m_pControl;
 };
-
-#endif // CONTROLPROXY_H

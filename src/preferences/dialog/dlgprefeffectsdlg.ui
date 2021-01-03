@@ -483,5 +483,13 @@
   </layout>
  </widget>
  <resources/>
+ <tabstops>
+  <tabstop>radioButtonKeepMetaknobPosition</tabstop>
+  <tabstop>radioButtonMetaknobLoadDefault</tabstop>
+  <tabstop>availableEffectsList</tabstop>
+ </tabstops>
  <connections/>
+ <buttongroups>
+  <buttongroup name="rbGroupMetaKnob"/>
+ </buttongroups>
 </ui>

@@ -1,26 +1,47 @@
+#include "library/previewbuttondelegate.h"
+
 #include <QPainter>
 #include <QPushButton>
 #include <QTableView>
 
 #include "control/controlproxy.h"
-#include "library/previewbuttondelegate.h"
 #include "library/trackmodel.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_previewbuttondelegate.cpp"
 #include "track/track.h"
 #include "widget/wlibrarytableview.h"
 
-PreviewButtonDelegate::PreviewButtonDelegate(WLibraryTableView* parent, int column)
-        : TableItemDelegate(parent),
-          m_pTableView(parent),
-          m_isOneCellInEditMode(false),
-          m_column(column) {
-    m_pPreviewDeckPlay = new ControlProxy(
-            PlayerManager::groupForPreviewDeck(0), "play", this);
-    m_pPreviewDeckPlay->connectValueChanged(this, &PreviewButtonDelegate::previewDeckPlayChanged);
+namespace {
 
-    m_pCueGotoAndPlay = new ControlProxy(
-            PlayerManager::groupForPreviewDeck(0), "cue_gotoandplay", this);
+constexpr int kPreviewDeckIndex = 0;
+
+const QString kPreviewDeckGroup = PlayerManager::groupForPreviewDeck(kPreviewDeckIndex);
+
+inline TrackModel* trackModel(QTableView* pTableView) {
+    VERIFY_OR_DEBUG_ASSERT(pTableView) {
+        return nullptr;
+    }
+    return dynamic_cast<TrackModel*>(pTableView->model());
+}
+
+} // namespace
+
+PreviewButtonDelegate::PreviewButtonDelegate(
+        WLibraryTableView* parent,
+        int column)
+        : TableItemDelegate(parent),
+          m_column(column),
+          m_pPreviewDeckPlay(make_parented<ControlProxy>(
+                  kPreviewDeckGroup, QStringLiteral("play"), this)),
+          m_pCueGotoAndPlay(make_parented<ControlProxy>(
+                  kPreviewDeckGroup, QStringLiteral("cue_gotoandplay"), this)),
+          m_pButton(make_parented<LibraryPreviewButton>(parent)) {
+    DEBUG_ASSERT(m_column >= 0);
+
+    m_pPreviewDeckPlay->connectValueChanged(
+            this,
+            &PreviewButtonDelegate::previewDeckPlayChanged);
 
     // This assumes that the parent is wtracktableview
     connect(this,
@@ -29,17 +50,33 @@ PreviewButtonDelegate::PreviewButtonDelegate(WLibraryTableView* parent, int colu
             &WLibraryTableView::loadTrackToPlayer);
 
     // The button needs to be parented to receive the parent styles.
-    m_pButton = make_parented<LibraryPreviewButton>(m_pTableView);
     m_pButton->setCheckable(true);
     m_pButton->setChecked(false);
 
     // We need to hide the button that it is not painted by the QObject tree
     m_pButton->hide();
 
-    connect(m_pTableView, &QTableView::entered, this, &PreviewButtonDelegate::cellEntered);
+    connect(parentTableView(),
+            &QTableView::entered,
+            this,
+            &PreviewButtonDelegate::cellEntered);
 }
 
-PreviewButtonDelegate::~PreviewButtonDelegate() {
+PreviewButtonDelegate::~PreviewButtonDelegate() = default;
+
+bool PreviewButtonDelegate::isPreviewDeckPlaying() const {
+    DEBUG_ASSERT(m_pPreviewDeckPlay);
+    return m_pPreviewDeckPlay->toBool();
+}
+
+bool PreviewButtonDelegate::isTrackLoadedInPreviewDeck(
+        const QModelIndex& index) const {
+    DEBUG_ASSERT(index.isValid());
+    DEBUG_ASSERT(index.column() == m_column);
+    const QVariant previewData = index.data();
+    DEBUG_ASSERT(!previewData.isNull());
+    DEBUG_ASSERT(previewData.canConvert<bool>());
+    return previewData.toBool();
 }
 
 QWidget* PreviewButtonDelegate::createEditor(QWidget* parent,
@@ -47,16 +84,13 @@ QWidget* PreviewButtonDelegate::createEditor(QWidget* parent,
                                              const QModelIndex& index) const {
     Q_UNUSED(option);
     QPushButton* btn = new LibraryPreviewButton(parent);
-    btn->setCheckable(true);
     // Prevent being focused by Tab key or emulated Tab sent by library controls
     // Avoids a Tab loop caused by setLibraryFocus() when the mouse pointer
     // is above the button (Prev.btn > Table > Prev.btn > ...) and also
     // keeps the table focus border when the hovered button's row is selected
     btn->setFocusPolicy(Qt::NoFocus);
-    bool playing = m_pPreviewDeckPlay->toBool();
-    // Check-state is whether the track is loaded (index.data()) and whether
-    // it's playing.
-    btn->setChecked(index.data().toBool() && playing);
+    btn->setCheckable(true);
+    btn->setChecked(isTrackLoadedInPreviewDeckAndPlaying(index));
     connect(btn,
             &QPushButton::clicked,
             this,
@@ -104,9 +138,8 @@ void PreviewButtonDelegate::paintItem(QPainter* painter,
         m_pButton->setFixedSize(option.rect.size());
     }
 
-    // Check-state is whether the track is loaded (index.data()) and whether
-    // it's playing.
-    m_pButton->setChecked(index.data().toBool() && m_pPreviewDeckPlay->toBool());
+    // Update check state
+    m_pButton->setChecked(isTrackLoadedInPreviewDeckAndPlaying(index));
 
     // Render button at the desired position.
     painter->translate(option.rect.topLeft());
@@ -134,64 +167,62 @@ QSize PreviewButtonDelegate::sizeHint(const QStyleOptionViewItem& option,
 }
 
 void PreviewButtonDelegate::cellEntered(const QModelIndex& index) {
-    if (!m_pTableView) {
+    DEBUG_ASSERT(index.isValid());
+    VERIFY_OR_DEBUG_ASSERT(parentTableView()) {
         return;
     }
     // this slot is called if the mouse pointer enters ANY cell on
     // the QTableView but the code should only be executed on a button
     if (index.column() == m_column) {
-        if (m_isOneCellInEditMode) {
-            m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+        DEBUG_ASSERT(index != m_currentEditedCellIndex);
+        if (m_currentEditedCellIndex.isValid()) {
+            // Close the editor in the other cell
+            parentTableView()->closePersistentEditor(m_currentEditedCellIndex);
         }
-        m_pTableView->openPersistentEditor(index);
-        m_isOneCellInEditMode = true;
+        parentTableView()->openPersistentEditor(index);
         m_currentEditedCellIndex = index;
-    } else if (m_isOneCellInEditMode) { // close editor if the mouse leaves the button
-        m_isOneCellInEditMode = false;
-        m_pTableView->closePersistentEditor(m_currentEditedCellIndex);
+    } else if (m_currentEditedCellIndex.isValid()) {
+        // Close editor if the mouse leaves the button
+        parentTableView()->closePersistentEditor(m_currentEditedCellIndex);
         m_currentEditedCellIndex = QModelIndex();
     }
 }
 
 void PreviewButtonDelegate::buttonClicked() {
-    if (!m_pTableView) {
+    VERIFY_OR_DEBUG_ASSERT(m_currentEditedCellIndex.isValid()) {
+        return;
+    }
+    TrackModel* const pTrackModel = trackModel(parentTableView());
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
         return;
     }
 
-    TrackModel *pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
-    if (!pTrackModel) {
-        return;
-    }
-
-    QString group = PlayerManager::groupForPreviewDeck(0);
-    TrackPointer pOldTrack = PlayerInfo::instance().getTrackInfo(group);
-    bool playing = m_pPreviewDeckPlay->toBool();
+    TrackPointer pOldTrack = PlayerInfo::instance().getTrackInfo(kPreviewDeckGroup);
 
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
     if (pTrack && pTrack != pOldTrack) {
-        emit loadTrackToPlayer(pTrack, group, true);
-    } else if (pTrack == pOldTrack && !playing) {
+        emit loadTrackToPlayer(pTrack, kPreviewDeckGroup, true);
+    } else if (pTrack == pOldTrack && !isPreviewDeckPlaying()) {
         // Since the Preview deck might be hidden
         // Starting at cue is a predictable behavior
         m_pCueGotoAndPlay->set(1.0);
     } else {
         m_pPreviewDeckPlay->set(0.0);
-
     }
 }
 
 void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
-    m_pTableView->update();
-    if (m_isOneCellInEditMode) {
-        TrackModel *pTrackModel = dynamic_cast<TrackModel*>(m_pTableView->model());
-        if (!pTrackModel) {
-            return;
-        }
-        QString group = PlayerManager::groupForPreviewDeck(0);
-        TrackPointer pPreviewTrack = PlayerInfo::instance().getTrackInfo(group);
-        TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
-        if (pTrack && pTrack == pPreviewTrack) {
-            emit buttonSetChecked(v > 0.0);
-        }
+    parentTableView()->update();
+    if (!m_currentEditedCellIndex.isValid()) {
+        return;
+    }
+    TrackModel* const pTrackModel = trackModel(parentTableView());
+    VERIFY_OR_DEBUG_ASSERT(pTrackModel) {
+        return;
+    }
+    TrackPointer pPreviewTrack = PlayerInfo::instance().getTrackInfo(kPreviewDeckGroup);
+    TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
+    if (pTrack && pTrack == pPreviewTrack) {
+        emit buttonSetChecked(v > 0.0);
     }
 }

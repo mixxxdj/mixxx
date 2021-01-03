@@ -5,99 +5,22 @@
 #include <QList>
 #include <QScreen>
 #include <QUuid>
-#include <QWindow>
 #include <QWidget>
 
 #include "util/assert.h"
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 7, 0)
-
-// this adds const to non-const objects (like std::as_const)
-template <typename T>
-struct QAddConst { typedef const T Type; };
-template <typename T>
-constexpr typename QAddConst<T>::Type &qAsConst(T &t) { return t; }
-// prevent rvalue arguments:
-template <typename T>
-void qAsConst(const T &&) = delete;
-
-template <typename... Args>
-struct QNonConstOverload
-{
-    template <typename R, typename T>
-    Q_DECL_CONSTEXPR auto operator()(R (T::*ptr)(Args...)) const Q_DECL_NOTHROW -> decltype(ptr)
-    { return ptr; }
-
-    template <typename R, typename T>
-    static Q_DECL_CONSTEXPR auto of(R (T::*ptr)(Args...)) Q_DECL_NOTHROW -> decltype(ptr)
-    { return ptr; }
-};
-
-template <typename... Args>
-struct QConstOverload
-{
-    template <typename R, typename T>
-    Q_DECL_CONSTEXPR auto operator()(R (T::*ptr)(Args...) const) const Q_DECL_NOTHROW -> decltype(ptr)
-    { return ptr; }
-
-    template <typename R, typename T>
-    static Q_DECL_CONSTEXPR auto of(R (T::*ptr)(Args...) const) Q_DECL_NOTHROW -> decltype(ptr)
-    { return ptr; }
-};
-
-template <typename... Args>
-struct QOverload : QConstOverload<Args...>, QNonConstOverload<Args...>
-{
-    using QConstOverload<Args...>::of;
-    using QConstOverload<Args...>::operator();
-    using QNonConstOverload<Args...>::of;
-    using QNonConstOverload<Args...>::operator();
-
-    template <typename R>
-    Q_DECL_CONSTEXPR auto operator()(R (*ptr)(Args...)) const Q_DECL_NOTHROW -> decltype(ptr)
-    { return ptr; }
-
-    template <typename R>
-    static Q_DECL_CONSTEXPR auto of(R (*ptr)(Args...)) Q_DECL_NOTHROW -> decltype(ptr)
-    { return ptr; }
-};
-
-#endif
-
-
 inline qreal getDevicePixelRatioF(const QWidget* widget) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     return widget->devicePixelRatioF();
-#endif
-
-    // Crawl up to the window and return qreal value
-    QWindow* window = widget->window()->windowHandle();
-    if (window) {
-        return window->devicePixelRatio();
-    }
-
-    // return integer value as last resort
-    return widget->devicePixelRatio();
 }
 
 inline QScreen* getPrimaryScreen() {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 6, 0)
     QGuiApplication* app = static_cast<QGuiApplication*>(QCoreApplication::instance());
     VERIFY_OR_DEBUG_ASSERT(app) {
         qWarning() << "Unable to get applications QCoreApplication instance, cannot determine primary screen!";
-    } else {
-        return app->primaryScreen();
+        // All attempts to find primary screen failed, return nullptr
+        return nullptr;
     }
-#endif
-    const QList<QScreen*> screens = QGuiApplication::screens();
-    VERIFY_OR_DEBUG_ASSERT(!screens.isEmpty()) {
-        qWarning() << "No screens found, cannot determine primary screen!";
-    } else {
-        return screens.first();
-    }
-
-    // All attempts to find primary screen failed, return nullptr
-    return nullptr;
+    return app->primaryScreen();
 }
 
 inline
@@ -128,7 +51,7 @@ inline T atomicLoadAcquire(const QAtomicInteger<T>& atomicInt) {
     // TODO: QBasicAtomicInteger<T>::load() is deprecated and should be
     // replaced with QBasicAtomicInteger<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
-    // minimum required Qt version of Mixx is increased, we need a version
+    // minimum required Qt version of Mixxx is increased, we need a version
     // check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     return atomicInt.loadAcquire();
@@ -142,7 +65,7 @@ inline T* atomicLoadAcquire(const QAtomicPointer<T>& atomicPtr) {
     // TODO: QBasicAtomicPointer<T>::load() is deprecated and should be
     // replaced with QBasicAtomicPointer<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
-    // minimum required Qt version of Mixx is increased, we need a version
+    // minimum required Qt version of Mixxx is increased, we need a version
     // check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     return atomicPtr.loadAcquire();
@@ -156,7 +79,7 @@ inline T atomicLoadRelaxed(const QAtomicInteger<T>& atomicInt) {
     // TODO: QBasicAtomicInteger<T>::load() is deprecated and should be
     // replaced with QBasicAtomicInteger<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
-    // minimum required Qt version of Mixx is increased, we need a version
+    // minimum required Qt version of Mixxx is increased, we need a version
     // check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     return atomicInt.loadRelaxed();
@@ -170,7 +93,7 @@ inline T* atomicLoadRelaxed(const QAtomicPointer<T>& atomicPtr) {
     // TODO: QBasicAtomicPointer<T>::load() is deprecated and should be
     // replaced with QBasicAtomicPointer<T>::loadRelaxed() However, the
     // proposed alternative has just been introduced in Qt 5.14. Until the
-    // minimum required Qt version of Mixx is increased, we need a version
+    // minimum required Qt version of Mixxx is increased, we need a version
     // check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     return atomicPtr.loadRelaxed();
@@ -184,7 +107,7 @@ inline void atomicStoreRelaxed(QAtomicInteger<T>& atomicInt, T newValue) {
     // TODO: QBasicAtomicInteger<T>::store(T newValue) is deprecated and should
     // be replaced with QBasicAtomicInteger<T>::storeRelaxed(T newValue)
     // However, the proposed alternative has just been introduced in Qt 5.14.
-    // Until the minimum required Qt version of Mixx is increased, we need a
+    // Until the minimum required Qt version of Mixxx is increased, we need a
     // version check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     atomicInt.storeRelaxed(newValue);
@@ -198,7 +121,7 @@ inline void atomicStoreRelaxed(QAtomicPointer<T>& atomicPtr, T* newValue) {
     // TODO: QBasicAtomicPointer<T>::store(T* newValue) is deprecated and
     // should be replaced with QBasicAtomicPointer<T>::storeRelaxed(T*
     // newValue) However, the proposed alternative has just been introduced in
-    // Qt 5.14. Until the minimum required Qt version of Mixx is increased, we
+    // Qt 5.14. Until the minimum required Qt version of Mixxx is increased, we
     // need a version check here
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
     atomicPtr.storeRelaxed(newValue);
@@ -207,13 +130,21 @@ inline void atomicStoreRelaxed(QAtomicPointer<T>& atomicPtr, T* newValue) {
 #endif
 }
 
-#if QT_VERSION < QT_VERSION_CHECK(5, 6, 0)
+/// Helper to insert values into a QList with specific indices.
+///
+/// *For legacy code only - Do not use for new code!*
 template<typename T>
-inline uint qHash(const QList<T>& key, uint seed = 0) {
-    uint hash = 0;
-    for (const auto& elem : key) {
-        hash ^= qHash(elem, seed);
+inline void listAppendOrReplaceAt(QList<T>* pList, int index, const T& value) {
+    VERIFY_OR_DEBUG_ASSERT(index <= pList->size()) {
+        qWarning() << "listAppendOrReplaceAt: Padding list with"
+                   << (index - pList->size()) << "default elements";
+        while (index > pList->size()) {
+            pList->append(T());
+        }
     }
-    return hash;
+    VERIFY_OR_DEBUG_ASSERT(index == pList->size()) {
+        pList->replace(index, value);
+        return;
+    }
+    pList->append(value);
 }
-#endif

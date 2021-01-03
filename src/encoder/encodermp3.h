@@ -1,5 +1,4 @@
-#ifndef ENCODERMP3_H
-#define ENCODERMP3_H
+#pragma once
 
 #include <lame/lame.h>
 
@@ -13,9 +12,9 @@ class EncoderMp3 final : public Encoder {
     static const int MONO_VBR_OFFSET;
 
     EncoderMp3(EncoderCallback* callback=nullptr);
-    virtual ~EncoderMp3();
+    ~EncoderMp3() override;
 
-    int initEncoder(int samplerate, QString errorMessage) override;
+    int initEncoder(int samplerate, QString& errorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
@@ -42,5 +41,3 @@ class EncoderMp3 final : public Encoder {
 
     EncoderCallback* m_pCallback;
 };
-
-#endif

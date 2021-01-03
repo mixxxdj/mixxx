@@ -1,5 +1,4 @@
-#ifndef ENGINEBUFFERSCALELINEAR_H
-#define ENGINEBUFFERSCALELINEAR_H
+#pragma once
 
 #include "engine/bufferscalers/enginebufferscale.h"
 #include "engine/readaheadmanager.h"
@@ -24,6 +23,8 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
                              double* pPitchRatio) override;
 
   private:
+    void onSampleRateChanged() override {}
+
     SINT do_scale(CSAMPLE* buf, SINT buf_size);
     SINT do_copy(CSAMPLE* buf, SINT buf_size);
 
@@ -43,5 +44,3 @@ class EngineBufferScaleLinear : public EngineBufferScale  {
     double m_dCurrentFrame;
     double m_dNextFrame;
 };
-
-#endif

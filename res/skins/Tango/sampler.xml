@@ -18,29 +18,28 @@ Variables:
         <Layout>stacked</Layout>
         <Children>
           <Template src="skin:button_2state_right_display.xml">
-            <SetVariable name="ObjectName">SamplerPlayCue</SetVariable>
+            <SetVariable name="ObjectName">PlayCue</SetVariable>
             <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
             <SetVariable name="Size">34f,34f</SetVariable>
             <SetVariable name="state_0_icon">play_sampler.svg</SetVariable>
             <SetVariable name="state_1_icon">pause_sampler.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
-            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_indicator</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_latched</SetVariable>
           </Template>
-      <!-- Second layer is CoverArt. DefaultCover is transparent, bg-color #333 -->
+          <!-- Preview indicator, indicates previewing from Cue or Hotcue -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
+            <SetVariable name="Size">34f,34f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+          </Template>
+          <!-- DefaultCover is transparent, bg-color #333 -->
           <CoverArt>
             <ObjectName>SamplerCover</ObjectName>
             <Size>34f,34f</Size>
             <Group><Variable name="group"/></Group>
             <DefaultCover>graphics/blank_1x1.svg</DefaultCover>
           </CoverArt>
-      <!-- Background turns Orange when playing preview from Cue/HotCue.
-          Only visible when play_indicator=0 -->
-          <Template src="skin:button_2state.xml">
-            <SetVariable name="ObjectName">SamplerPlayCueUnderlay</SetVariable>
-            <SetVariable name="Size">34f,34f</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
-          </Template>
         </Children>
       </WidgetGroup>
     </Children>
@@ -74,7 +73,7 @@ Variables:
             <TooltipId>text</TooltipId>
             <Size>i,14f</Size>
             <Group><Variable name="group"/></Group>
-            <Property>title</Property>
+            <Property>titleInfo</Property>
           </TrackProperty>
 
           <WidgetGroup><!-- Sync, CF assign, Volume -->
@@ -172,7 +171,7 @@ Variables:
                 <TooltipId>text</TooltipId>
                 <Size>i,18f</Size>
                 <Group><Variable name="group"/></Group>
-                <Property>title</Property>
+                <Property>titleInfo</Property>
                 <Elide>right</Elide>
               </TrackProperty>
 
@@ -235,7 +234,7 @@ Variables:
 
             </Children>
           </WidgetGroup><!-- /Title + [Play / Overview] -->
-    
+
           <SliderComposed>
             <ObjectName>SamplerPitchSlider</ObjectName>
             <TooltipId>rate</TooltipId>
@@ -283,12 +282,8 @@ Variables:
             <Size>20f,20f</Size>
             <Layout>stacked</Layout>
             <Children>
-              <!-- index 0 due to bug -->
-              <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
               <!-- Greyed out if no headphone device is configured -->
               <Template src="skin:pfl_cover.xml"/>
-
               <Template src="skin:button_2state.xml">
                 <SetVariable name="TooltipId">pfl</SetVariable>
                 <SetVariable name="ObjectName">PflButton</SetVariable>

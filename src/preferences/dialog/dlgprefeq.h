@@ -1,22 +1,4 @@
-/***************************************************************************
-                          dlgprefeq.h  -  description
-                             -------------------
-    begin                : Thu Jun 7 2007
-    copyright            : (C) 2007 by John Sully
-    email                : jsully@scs.ryerson.ca
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFEQ_H
-#define DLGPREFEQ_H
+#pragma once
 
 #include <functional>
 
@@ -29,23 +11,24 @@
 #include "preferences/dlgpreferencepage.h"
 #include "effects/effectsmanager.h"
 
-/**
-  *@author John Sully
-  */
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
-    DlgPrefEQ(QWidget *parent, EffectsManager* pEffectsManager,
-              UserSettingsPointer _config);
+    DlgPrefEQ(
+            QWidget* parent,
+            std::shared_ptr<EffectsManager> pEffectsManager,
+            UserSettingsPointer _config);
     virtual ~DlgPrefEQ();
+
+    QUrl helpUrl() const override;
 
     QString getEQEffectGroupForDeck(int deck) const;
 
   public slots:
     // Apply changes to widget
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
 
   private slots:
     void slotEffectChangedOnDeck(int effectIndex);
@@ -57,6 +40,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotUpdateHiEQ();
     // Update Lo EQ
     void slotUpdateLoEQ();
+
     void slotUpdateEqAutoReset(int);
     void slotUpdateGainAutoReset(int);
     void slotBypass(int state);
@@ -90,8 +74,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     UserSettingsPointer m_pConfig;
     double m_lowEqFreq, m_highEqFreq;
 
-    // Members needed for changing the effects loaded on the EQ Effect Rack
-    EffectsManager* m_pEffectsManager;
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
     EffectsBackendManagerPointer m_pBackendManager;
     QLabel* m_firstSelectorLabel;
     QList<QComboBox*> m_deckEqEffectSelectors;
@@ -110,5 +93,3 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     QList<int> m_eqIndiciesOnUpdate;
 };
-
-#endif

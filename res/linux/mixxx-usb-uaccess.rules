@@ -8,10 +8,15 @@
 # Note that the udev rule must match on the USB device level; matching the USB interface
 # descriptor with bInterfaceClass does not work.
 
+# New IDs must be also added to res/linux/mixxx.appdata.xml
+
 # Install and execute before 70-uaccess.rules, e.g. .../udev/rules.d/69-mixxx-usb-uaccess.rules
 
 # Allen + Heath Ltd.
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="22f0", TAG+="uaccess"
+# Allen + Heath Xone 23C hardware mixer with USB audio interface
+# This is required so all 4 input and all 4 output channels of the audio interface are available.
+ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="22f0", ATTR{idProduct}=="0008", ATTR{bConfigurationValue}="2"
 # Arturia
 SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTRS{idVendor}=="1c75", TAG+="uaccess"
 # BEHRINGER International GmbH

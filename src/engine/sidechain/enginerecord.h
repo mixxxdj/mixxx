@@ -1,21 +1,14 @@
-/***************************************************************************
-                          enginerecord.h  -  description
-                             -------------------
-    copyright            : (C) 2007 by John Sully
-    email                :
- ***************************************************************************/
-
-#ifndef ENGINERECORD_H
-#define ENGINERECORD_H
+#pragma once
 
 #include <QDataStream>
 #include <QFile>
 
-#include "preferences/usersettings.h"
-#include "encoder/encodercallback.h"
+#include "audio/types.h"
 #include "encoder/encoder.h"
+#include "encoder/encodercallback.h"
 #include "engine/sidechain/sidechainworker.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class ConfigKey;
 class ControlProxy;
@@ -24,7 +17,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     Q_OBJECT
   public:
     EngineRecord(UserSettingsPointer pConfig);
-    virtual ~EngineRecord();
+    ~EngineRecord() override;
 
     void process(const CSAMPLE* pBuffer, const int iBufferSize) override;
     void shutdown() override {}
@@ -82,7 +75,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     ControlProxy* m_pRecReady;
     ControlProxy* m_pSamplerate;
     quint64 m_frames;
-    quint64 m_sampleRate;
+    mixxx::audio::SampleRate m_sampleRate;
     quint64 m_recordedDuration;
     QString getRecordedDurationStr();
 
@@ -93,5 +86,3 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     quint64 m_cueTrack;
     bool m_bCueIsEnabled;
 };
-
-#endif

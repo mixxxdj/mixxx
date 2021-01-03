@@ -36,7 +36,7 @@ class FwdSqlQuery: protected QSqlQuery {
 
   public:
     FwdSqlQuery(
-            QSqlDatabase database,
+            const QSqlDatabase& database,
             const QString& statement);
 
     bool isPrepared() const {
@@ -51,22 +51,17 @@ class FwdSqlQuery: protected QSqlQuery {
         return QSqlQuery::lastError();
     }
 
-    static const int BOOLEAN_FALSE = 0;
-    static const int BOOLEAN_TRUE = 1;
-
-    // Generic function for type QVariant
     void bindValue(const QString& placeholder, const QVariant& value) {
         QSqlQuery::bindValue(placeholder, value);
-    }
-
-    // Overloaded function for type bool
-    void bindValue(const QString& placeholder, bool value) {
-        bindValue(placeholder, value ? QVariant(BOOLEAN_TRUE) : QVariant(BOOLEAN_FALSE));
     }
 
     // Overloaded function for type DbId
     void bindValue(const QString& placeholder, const DbId& value) {
         bindValue(placeholder, value.toVariant());
+    }
+
+    QString executedQuery() const {
+        return QSqlQuery::executedQuery();
     }
 
     // Execute the prepared query and log errors on failure.

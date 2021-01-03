@@ -3,6 +3,8 @@
 #include <QTreeWidget>
 #include <QtDebug>
 
+#include "moc_dlgtagfetcher.cpp"
+#include "track/track.h"
 #include "track/tracknumbers.h"
 
 namespace {
@@ -54,9 +56,13 @@ void addTrack(
 
 } // anonymous namespace
 
-DlgTagFetcher::DlgTagFetcher(QWidget* parent)
-        : QDialog(parent),
-          m_tagFetcher(parent),
+DlgTagFetcher::DlgTagFetcher(
+        const TrackModel* pTrackModel)
+        // No parent because otherwise it inherits the style parent's
+        // style which can make it unreadable. Bug #673411
+        : QDialog(nullptr),
+          m_pTrackModel(pTrackModel),
+          m_tagFetcher(this),
           m_networkResult(NetworkResult::Ok) {
     init();
 }
@@ -64,10 +70,15 @@ DlgTagFetcher::DlgTagFetcher(QWidget* parent)
 void DlgTagFetcher::init() {
     setupUi(this);
 
+    if (m_pTrackModel) {
+        connect(btnPrev, &QPushButton::clicked, this, &DlgTagFetcher::slotPrev);
+        connect(btnNext, &QPushButton::clicked, this, &DlgTagFetcher::slotNext);
+    } else {
+        btnNext->hide();
+        btnPrev->hide();
+    }
     connect(btnApply, &QPushButton::clicked, this, &DlgTagFetcher::apply);
     connect(btnQuit, &QPushButton::clicked, this, &DlgTagFetcher::quit);
-    connect(btnPrev, &QPushButton::clicked, this, &DlgTagFetcher::previous);
-    connect(btnNext, &QPushButton::clicked, this, &DlgTagFetcher::next);
     connect(results, &QTreeWidget::currentItemChanged, this, &DlgTagFetcher::resultSelected);
 
     connect(&m_tagFetcher, &TagFetcher::resultAvailable, this, &DlgTagFetcher::fetchTagFinished);
@@ -83,7 +94,25 @@ void DlgTagFetcher::init() {
     results->setColumnWidth(5, 160); // Artist column
 }
 
-void DlgTagFetcher::loadTrack(const TrackPointer& track) {
+void DlgTagFetcher::slotNext() {
+    QModelIndex nextRow = m_currentTrackIndex.sibling(
+            m_currentTrackIndex.row() + 1, m_currentTrackIndex.column());
+    if (nextRow.isValid()) {
+        loadTrack(nextRow);
+        emit next();
+    }
+}
+
+void DlgTagFetcher::slotPrev() {
+    QModelIndex prevRow = m_currentTrackIndex.sibling(
+            m_currentTrackIndex.row() - 1, m_currentTrackIndex.column());
+    if (prevRow.isValid()) {
+        loadTrack(prevRow);
+        emit previous();
+    }
+}
+
+void DlgTagFetcher::loadTrackInternal(const TrackPointer& track) {
     if (!track) {
         return;
     }
@@ -105,6 +134,22 @@ void DlgTagFetcher::loadTrack(const TrackPointer& track) {
     m_tagFetcher.startFetch(m_track);
 
     updateStack();
+}
+
+void DlgTagFetcher::loadTrack(const TrackPointer& track) {
+    VERIFY_OR_DEBUG_ASSERT(!m_pTrackModel) {
+        return;
+    }
+    loadTrackInternal(track);
+}
+
+void DlgTagFetcher::loadTrack(const QModelIndex& index) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
+        return;
+    }
+    TrackPointer pTrack = m_pTrackModel->getTrack(index);
+    m_currentTrackIndex = index;
+    loadTrackInternal(pTrack);
 }
 
 void DlgTagFetcher::slotTrackChanged(TrackId trackId) {
@@ -190,14 +235,14 @@ void DlgTagFetcher::quit() {
     accept();
 }
 
-void DlgTagFetcher::fetchTagProgress(QString text) {
+void DlgTagFetcher::fetchTagProgress(const QString& text) {
     QString status = tr("Status: %1");
     loadingStatus->setText(status.arg(text));
 }
 
 void DlgTagFetcher::fetchTagFinished(
         TrackPointer pTrack,
-        QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases) {
+        const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases) {
     VERIFY_OR_DEBUG_ASSERT(pTrack == m_track) {
         return;
     }
@@ -207,7 +252,8 @@ void DlgTagFetcher::fetchTagFinished(
     updateStack();
 }
 
-void DlgTagFetcher::slotNetworkResult(int httpError, QString app, QString message, int code) {
+void DlgTagFetcher::slotNetworkResult(
+        int httpError, const QString& app, const QString& message, int code) {
     m_networkResult = httpError == 0 ? NetworkResult::UnknownError : NetworkResult::HttpError;
     m_data.m_pending = false;
     QString strError = tr("HTTP Status: %1");
@@ -285,8 +331,9 @@ void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* parent) const {
 }
 
 void DlgTagFetcher::resultSelected() {
-    if (!results->currentItem())
+    if (!results->currentItem()) {
         return;
+    }
 
     const int resultIndex = results->currentItem()->data(0, Qt::UserRole).toInt();
     m_data.m_selectedResult = resultIndex;

@@ -1,55 +1,47 @@
-// library.cpp
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+#include "library/library.h"
 
+#include <QDir>
 #include <QItemSelectionModel>
 #include <QMessageBox>
-#include <QTranslator>
-#include <QDir>
 #include <QPointer>
+#include <QTranslator>
 
+#include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
-
-#include "library/library.h"
-#include "library/library_preferences.h"
-#include "library/librarycontrol.h"
-#include "library/libraryfeature.h"
-#include "library/librarytablemodel.h"
-#include "library/sidebarmodel.h"
-#include "library/trackcollection.h"
-#include "library/externaltrackcollection.h"
-#include "library/trackcollectionmanager.h"
-#include "library/trackmodel.h"
-
 #include "library/analysisfeature.h"
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
-#include "library/crate/cratefeature.h"
+#include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
+#include "library/library_preferences.h"
+#include "library/librarycontrol.h"
+#include "library/libraryfeature.h"
+#include "library/librarytablemodel.h"
 #include "library/mixxxlibraryfeature.h"
-#include "library/playlistfeature.h"
 #include "library/recording/recordingfeature.h"
 #include "library/rekordbox/rekordboxfeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
 #include "library/serato/seratofeature.h"
-#include "library/setlogfeature.h"
+#include "library/sidebarmodel.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "library/trackmodel.h"
+#include "library/trackset/crate/cratefeature.h"
+#include "library/trackset/playlistfeature.h"
+#include "library/trackset/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
-
 #include "mixer/playermanager.h"
-
+#include "moc_library.cpp"
 #include "recording/recordingmanager.h"
-
-#include "util/db/dbconnectionpooled.h"
-#include "util/sandbox.h"
-#include "util/logger.h"
 #include "util/assert.h"
-
-#include "widget/wtracktableview.h"
+#include "util/db/dbconnectionpooled.h"
+#include "util/logger.h"
+#include "util/sandbox.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
-
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "widget/wtracktableview.h"
 
 namespace {
 
@@ -74,17 +66,16 @@ Library::Library(
         TrackCollectionManager* pTrackCollectionManager,
         PlayerManager* pPlayerManager,
         RecordingManager* pRecordingManager)
-    : QObject(parent),
-      m_pConfig(pConfig),
-      m_pDbConnectionPool(std::move(pDbConnectionPool)),
-      m_pTrackCollectionManager(pTrackCollectionManager),
-      m_pSidebarModel(make_parented<SidebarModel>(this)),
-      m_pLibraryControl(make_parented<LibraryControl>(this)),
-      m_pMixxxLibraryFeature(nullptr),
-      m_pPlaylistFeature(nullptr),
-      m_pCrateFeature(nullptr),
-      m_pAnalysisFeature(nullptr) {
-
+        : QObject(parent),
+          m_pConfig(pConfig),
+          m_pDbConnectionPool(std::move(pDbConnectionPool)),
+          m_pTrackCollectionManager(pTrackCollectionManager),
+          m_pSidebarModel(make_parented<SidebarModel>(this)),
+          m_pLibraryControl(make_parented<LibraryControl>(this)),
+          m_pMixxxLibraryFeature(nullptr),
+          m_pPlaylistFeature(nullptr),
+          m_pCrateFeature(nullptr),
+          m_pAnalysisFeature(nullptr) {
     qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
     m_pKeyNotation.reset(new ControlObject(ConfigKey(kConfigGroup, "key_notation")));
@@ -108,7 +99,7 @@ Library::Library(
     addFeature(m_pCrateFeature);
 
     BrowseFeature* browseFeature = new BrowseFeature(
-        this, m_pConfig, pRecordingManager);
+            this, m_pConfig, pRecordingManager);
     connect(browseFeature,
             &BrowseFeature::scanLibrary,
             m_pTrackCollectionManager,
@@ -127,64 +118,76 @@ Library::Library(
     addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig)));
 
     m_pAnalysisFeature = new AnalysisFeature(this, m_pConfig);
-    connect(m_pPlaylistFeature, &PlaylistFeature::analyzeTracks,
-            m_pAnalysisFeature, &AnalysisFeature::analyzeTracks);
-    connect(m_pCrateFeature, &CrateFeature::analyzeTracks,
-            m_pAnalysisFeature, &AnalysisFeature::analyzeTracks);
+    connect(m_pPlaylistFeature,
+            &PlaylistFeature::analyzeTracks,
+            m_pAnalysisFeature,
+            &AnalysisFeature::analyzeTracks);
+    connect(m_pCrateFeature,
+            &CrateFeature::analyzeTracks,
+            m_pAnalysisFeature,
+            &AnalysisFeature::analyzeTracks);
     addFeature(m_pAnalysisFeature);
     // Suspend a batch analysis while an ad-hoc analysis of
     // loaded tracks is in progress and resume it afterwards.
-    connect(pPlayerManager, &PlayerManager::trackAnalyzerProgress,
-            this, &Library::onPlayerManagerTrackAnalyzerProgress);
-    connect(pPlayerManager, &PlayerManager::trackAnalyzerIdle,
-            this, &Library::onPlayerManagerTrackAnalyzerIdle);
+    connect(pPlayerManager,
+            &PlayerManager::trackAnalyzerProgress,
+            this,
+            &Library::onPlayerManagerTrackAnalyzerProgress);
+    connect(pPlayerManager,
+            &PlayerManager::trackAnalyzerIdle,
+            this,
+            &Library::onPlayerManagerTrackAnalyzerIdle);
 
-    //iTunes and Rhythmbox should be last until we no longer have an obnoxious
-    //messagebox popup when you select them. (This forces you to reach for your
-    //mouse or keyboard if you're using MIDI control and you scroll through them...)
+    // iTunes and Rhythmbox should be last until we no longer have an obnoxious
+    // messagebox popup when you select them. (This forces you to reach for your
+    // mouse or keyboard if you're using MIDI control and you scroll through them...)
     if (RhythmboxFeature::isSupported() &&
-        m_pConfig->getValue(ConfigKey(kConfigGroup,"ShowRhythmboxLibrary"), true)) {
+            m_pConfig->getValue(
+                    ConfigKey(kConfigGroup, "ShowRhythmboxLibrary"), true)) {
         addFeature(new RhythmboxFeature(this, m_pConfig));
     }
-    if (m_pConfig->getValue(ConfigKey(kConfigGroup,"ShowBansheeLibrary"), true)) {
+    if (m_pConfig->getValue(
+                ConfigKey(kConfigGroup, "ShowBansheeLibrary"), true)) {
         BansheeFeature::prepareDbPath(m_pConfig);
         if (BansheeFeature::isSupported()) {
             addFeature(new BansheeFeature(this, m_pConfig));
         }
     }
     if (ITunesFeature::isSupported() &&
-        m_pConfig->getValue(ConfigKey(kConfigGroup,"ShowITunesLibrary"), true)) {
+            m_pConfig->getValue(
+                    ConfigKey(kConfigGroup, "ShowITunesLibrary"), true)) {
         addFeature(new ITunesFeature(this, m_pConfig));
     }
     if (TraktorFeature::isSupported() &&
-        m_pConfig->getValue(ConfigKey(kConfigGroup,"ShowTraktorLibrary"), true)) {
+            m_pConfig->getValue(
+                    ConfigKey(kConfigGroup, "ShowTraktorLibrary"), true)) {
         addFeature(new TraktorFeature(this, m_pConfig));
     }
 
     // TODO(XXX) Rekordbox feature added persistently as the only way to enable it to
     // dynamically appear/disappear when correctly prepared removable devices
     // are mounted/unmounted would be to have some form of timed thread to check
-    // periodically. Not ideal perfomance wise.
-    if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
+    // periodically. Not ideal performance wise.
+    if (m_pConfig->getValue(
+                ConfigKey(kConfigGroup, "ShowRekordboxLibrary"), true)) {
         addFeature(new RekordboxFeature(this, m_pConfig));
     }
 
-    if (m_pConfig->getValue(ConfigKey(kConfigGroup, "ShowSeratoLibrary"), true)) {
+    if (m_pConfig->getValue(
+                ConfigKey(kConfigGroup, "ShowSeratoLibrary"), true)) {
         addFeature(new SeratoFeature(this, m_pConfig));
     }
 
     for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
-        auto feature = externalTrackCollection->newLibraryFeature(this, m_pConfig);
+        auto* feature = externalTrackCollection->newLibraryFeature(this, m_pConfig);
         if (feature) {
-            kLogger.info()
-                    << "Adding library feature for"
-                    << externalTrackCollection->name();
+            kLogger.info() << "Adding library feature for"
+                           << externalTrackCollection->name();
             addFeature(feature);
         } else {
-            kLogger.info()
-                    << "Library feature for"
-                    << externalTrackCollection->name()
-                    << "is not available";
+            kLogger.info() << "Library feature for"
+                           << externalTrackCollection->name()
+                           << "is not available";
         }
     }
 
@@ -195,12 +198,14 @@ Library::Library(
     foreach (QString directoryPath, getDirs()) {
         QFileInfo directory(directoryPath);
         bool hasAccess = Sandbox::askForAccess(directory.canonicalFilePath());
-        qDebug() << "Checking for access to" << directoryPath << ":" << hasAccess;
+        qDebug() << "Checking for access to" << directoryPath << ":"
+                 << hasAccess;
     }
 
     m_iTrackTableRowHeight = m_pConfig->getValue(
             ConfigKey(kConfigGroup, "RowHeight"), kDefaultRowHeightPx);
-    QString fontStr = m_pConfig->getValueString(ConfigKey(kConfigGroup, "Font"));
+    QString fontStr =
+            m_pConfig->getValueString(ConfigKey(kConfigGroup, "Font"));
     if (!fontStr.isEmpty()) {
         m_trackTableFont.fromString(fontStr);
     } else {
@@ -236,16 +241,17 @@ void Library::bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget) {
     connect(this,
             &Library::disableSearch,
             pSearchboxWidget,
-            &WSearchLineEdit::disableSearch);
+            &WSearchLineEdit::slotDisableSearch);
     connect(this,
             &Library::restoreSearch,
             pSearchboxWidget,
-            &WSearchLineEdit::restoreSearch);
+            &WSearchLineEdit::slotRestoreSearch);
     connect(this,
             &Library::setTrackTableFont,
             pSearchboxWidget,
             &WSearchLineEdit::slotSetFont);
     emit setTrackTableFont(m_trackTableFont);
+    m_pLibraryControl->bindSearchboxWidget(pSearchboxWidget);
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -282,20 +288,18 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
 
-
-    for (const auto& feature : m_features) {
+    for (const auto& feature : qAsConst(m_features)) {
         feature->bindSidebarWidget(pSidebarWidget);
     }
 }
 
-void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
-                         KeyboardEventFilter* pKeyboard) {
-    WTrackTableView* pTrackTableView =
-            new WTrackTableView(
-                    pLibraryWidget,
-                    m_pConfig,
-                    m_pTrackCollectionManager,
-                    true);
+void Library::bindLibraryWidget(
+        WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
+    WTrackTableView* pTrackTableView = new WTrackTableView(pLibraryWidget,
+            m_pConfig,
+            this,
+            pLibraryWidget->getTrackTableBackgroundColorOpacity(),
+            true);
     pTrackTableView->installEventFilter(pKeyboard);
     connect(this,
             &Library::showTrackModel,
@@ -336,7 +340,7 @@ void Library::bindLibraryWidget(WLibrary* pLibraryWidget,
 
     m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
 
-    for (const auto& feature : m_features) {
+    for (const auto& feature : qAsConst(m_features)) {
         feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
     }
 
@@ -388,7 +392,7 @@ void Library::addFeature(LibraryFeature* feature) {
 }
 
 void Library::onPlayerManagerTrackAnalyzerProgress(
-        TrackId /*trackId*/,AnalyzerProgress /*analyzerProgress*/) {
+        TrackId /*trackId*/, AnalyzerProgress /*analyzerProgress*/) {
     if (m_pAnalysisFeature) {
         m_pAnalysisFeature->suspendAnalysis();
     }
@@ -420,7 +424,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit loadTrack(pTrack);
 }
 
-void Library::slotLoadLocationToPlayer(QString location, QString group) {
+void Library::slotLoadLocationToPlayer(const QString& location, const QString& group) {
     auto trackRef = TrackRef::fromFileInfo(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
@@ -428,13 +432,14 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
     }
 }
 
-void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+void Library::slotLoadTrackToPlayer(
+        TrackPointer pTrack, const QString& group, bool play) {
     emit loadTrackToPlayer(pTrack, group, play);
 }
 
 void Library::slotRefreshLibraryModels() {
-   m_pMixxxLibraryFeature->refreshLibraryModels();
-   m_pAnalysisFeature->refreshLibraryModels();
+    m_pMixxxLibraryFeature->refreshLibraryModels();
+    m_pAnalysisFeature->refreshLibraryModels();
 }
 
 void Library::slotCreatePlaylist() {
@@ -450,7 +455,7 @@ void Library::onSkinLoadFinished() {
     m_pSidebarModel->activateDefaultSelection();
 }
 
-void Library::slotRequestAddDir(QString dir) {
+void Library::slotRequestAddDir(const QString& dir) {
     // We only call this method if the user has picked a new directory via a
     // file dialog. This means the system sandboxer (if we are sandboxed) has
     // granted us permission to this folder. Create a security bookmark while we
@@ -461,10 +466,11 @@ void Library::slotRequestAddDir(QString dir) {
     Sandbox::createSecurityToken(directory);
 
     if (!m_pTrackCollectionManager->addDirectory(dir)) {
-        QMessageBox::information(0, tr("Add Directory to Library"),
+        QMessageBox::information(nullptr,
+                tr("Add Directory to Library"),
                 tr("Could not add the directory to your library. Either this "
-                    "directory is already in your library or you are currently "
-                    "rescanning your library."));
+                   "directory is already in your library or you are currently "
+                   "rescanning your library."));
     }
     // set at least one directory in the config file so that it will be possible
     // to downgrade from 1.12
@@ -473,21 +479,21 @@ void Library::slotRequestAddDir(QString dir) {
     }
 }
 
-void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
+void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) {
     switch (removalType) {
-        case Library::HideTracks:
-            // Mark all tracks in this directory as deleted but DON'T purge them
-            // in case the user re-adds them manually.
-            m_pTrackCollectionManager->hideAllTracks(dir);
-            break;
-        case Library::PurgeTracks:
-            // The user requested that we purge all metadata.
-            m_pTrackCollectionManager->purgeAllTracks(dir);
-            break;
-        case Library::LeaveTracksUnchanged:
-        default:
-            break;
-
+    case RemovalType::KeepTracks:
+        break;
+    case RemovalType::HideTracks:
+        // Mark all tracks in this directory as deleted but DON'T purge them
+        // in case the user re-adds them manually.
+        m_pTrackCollectionManager->hideAllTracks(dir);
+        break;
+    case RemovalType::PurgeTracks:
+        // The user requested that we purge all metadata.
+        m_pTrackCollectionManager->purgeAllTracks(dir);
+        break;
+    default:
+        DEBUG_ASSERT(!"unreachable");
     }
 
     // Remove the directory from the directory list.
@@ -509,7 +515,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
     }
 }
 
-void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
+void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDir) {
     m_pTrackCollectionManager->relocateDirectory(oldDir, newDir);
 
     // also update the config file if necessary so that downgrading is still
@@ -525,8 +531,18 @@ QStringList Library::getDirs() {
 }
 
 void Library::setFont(const QFont& font) {
+    QFontMetrics currMetrics(m_trackTableFont);
+    QFontMetrics newMetrics(font);
+    double currFontHeight = currMetrics.height();
+    double newFontHeight = newMetrics.height();
+
     m_trackTableFont = font;
     emit setTrackTableFont(font);
+
+    // adapt the previous font height/row height ratio
+    int scaledRowHeight = static_cast<int>(std::round(
+            (newFontHeight / currFontHeight) * m_iTrackTableRowHeight));
+    setRowHeight(scaledRowHeight);
 }
 
 void Library::setRowHeight(int rowHeight) {
@@ -543,4 +559,13 @@ TrackCollection& Library::trackCollection() {
     DEBUG_ASSERT(m_pTrackCollectionManager);
     DEBUG_ASSERT(m_pTrackCollectionManager->internalCollection());
     return *m_pTrackCollectionManager->internalCollection();
+}
+
+void Library::searchTracksInCollection(const QString& query) {
+    VERIFY_OR_DEBUG_ASSERT(m_pMixxxLibraryFeature) {
+        return;
+    }
+    m_pMixxxLibraryFeature->searchAndActivate(query);
+    emit switchToView(m_sTrackViewName);
+    m_pSidebarModel->activateDefaultSelection();
 }

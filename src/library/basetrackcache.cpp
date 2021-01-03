@@ -1,15 +1,14 @@
-// basetrackcache.cpp
-// Created 7/3/2011 by RJ Ryan (rryan@mit.edu)
-
 #include "library/basetrackcache.h"
 
-#include "library/trackcollection.h"
-#include "library/searchqueryparser.h"
 #include "library/queryutil.h"
-#include "track/keyutils.h"
+#include "library/searchqueryparser.h"
+#include "library/trackcollection.h"
+#include "moc_basetrackcache.cpp"
 #include "track/globaltrackcache.h"
-#include "util/performancetimer.h"
+#include "track/keyutils.h"
+#include "track/track.h"
 #include "util/compatibility.h"
+#include "util/performancetimer.h"
 
 namespace {
 
@@ -74,25 +73,21 @@ QString BaseTrackCache::columnSortForFieldIndex(int index) const {
     return m_columnCache.columnSortForFieldIndex(index);
 }
 
-void BaseTrackCache::slotTracksAdded(QSet<TrackId> trackIds) {
+void BaseTrackCache::slotTracksAddedOrChanged(const QSet<TrackId>& trackIds) {
     if (sDebug) {
-        qDebug() << this << "slotTracksAdded" << trackIds.size();
+        qDebug() << this << "slotTracksAddedOrChanged" << trackIds.size();
     }
-    QSet<TrackId> updateTrackIds;
-    for (const auto& trackId: qAsConst(trackIds)) {
-        updateTrackIds.insert(trackId);
-    }
-    updateTracksInIndex(updateTrackIds);
+    updateTracksInIndex(trackIds);
 }
 
-void BaseTrackCache::slotDbTrackAdded(TrackPointer pTrack) {
+void BaseTrackCache::slotScanTrackAdded(TrackPointer pTrack) {
     if (sDebug) {
-        qDebug() << this << "slotDbTrackAdded";
+        qDebug() << this << "slotScanTrackAdded";
     }
-    updateIndexWithTrackpointer(pTrack);
+    updateTrackInIndex(pTrack);
 }
 
-void BaseTrackCache::slotTracksRemoved(QSet<TrackId> trackIds) {
+void BaseTrackCache::slotTracksRemoved(const QSet<TrackId>& trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksRemoved" << trackIds.size();
     }
@@ -109,20 +104,12 @@ void BaseTrackCache::slotTrackDirty(TrackId trackId) {
     m_dirtyTracks.insert(trackId);
 }
 
-void BaseTrackCache::slotTrackChanged(TrackId trackId) {
-    if (sDebug) {
-        qDebug() << this << "slotTrackChanged" << trackId;
-    }
-    QSet<TrackId> trackIds;
-    trackIds.insert(trackId);
-    emit tracksChanged(trackIds);
-}
-
 void BaseTrackCache::slotTrackClean(TrackId trackId) {
     if (sDebug) {
         qDebug() << this << "slotTrackClean" << trackId;
     }
     m_dirtyTracks.remove(trackId);
+    // The track might have been reloaded from the database
     updateTrackInIndex(trackId);
 }
 
@@ -134,7 +121,7 @@ void BaseTrackCache::ensureCached(TrackId trackId) {
     updateTrackInIndex(trackId);
 }
 
-void BaseTrackCache::ensureCached(QSet<TrackId> trackIds) {
+void BaseTrackCache::ensureCached(const QSet<TrackId>& trackIds) {
     updateTracksInIndex(trackIds);
 }
 
@@ -219,13 +206,13 @@ void BaseTrackCache::resetRecentTrack() const {
     m_recentTrackPtr.reset();
 }
 
-bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
-    if (sDebug) {
-        qDebug() << "updateIndexWithTrackpointer:" << pTrack->getFileInfo();
-    }
-
-    if (!pTrack) {
+bool BaseTrackCache::updateTrackInIndex(
+        const TrackPointer& pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
         return false;
+    }
+    if (sDebug) {
+        qDebug() << "updateTrackInIndex:" << pTrack->getFileInfo();
     }
 
     int numColumns = columnCount();
@@ -381,6 +368,8 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getYear());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) == column) {
         trackValue.setValue(pTrack->getDateAdded());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT) == column) {
+        trackValue.setValue(pTrack->getLastPlayedAt());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE) == column) {
         trackValue.setValue(pTrack->getGenre());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) == column) {
@@ -419,11 +408,16 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getColor()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
-               fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
+    } else if (
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column ||
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column) {
         // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
-        // the cover hash.
-        trackValue.setValue(pTrack->getCoverHash());
+        // the cover digest.
+        trackValue.setValue(pTrack->getCoverInfo().imageDigest());
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR) == column) {
+        trackValue.setValue(mixxx::RgbColor::toQVariant(pTrack->getCoverInfo().color));
+    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST) == column) {
+        trackValue.setValue(pTrack->getCoverInfo().imageDigest());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) == column) {
         trackValue.setValue(static_cast<int>(pTrack->getCoverInfo().source));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) == column) {
@@ -687,8 +681,10 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
     return min;
 }
 
-int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
-                                        QVariant val1, QVariant val2) const {
+int BaseTrackCache::compareColumnValues(int sortColumn,
+        Qt::SortOrder sortOrder,
+        const QVariant& val1,
+        const QVariant& val2) const {
     int result = 0;
 
     if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR) ||
@@ -706,12 +702,13 @@ int BaseTrackCache::compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
 
-        if (fabs(delta) < .00001)
+        if (fabs(delta) < .00001) {
             result = 0;
-        else if (delta > 0.0)
+        } else if (delta > 0.0) {
             result = 1;
-        else
+        } else {
             result = -1;
+        }
     } else if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
         KeyUtils::KeyNotation keyNotation = m_columnCache.keyNotation();
 

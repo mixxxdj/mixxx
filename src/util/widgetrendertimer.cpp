@@ -1,5 +1,6 @@
 #include "util/widgetrendertimer.h"
 
+#include "moc_widgetrendertimer.cpp"
 #include "util/time.h"
 
 WidgetRenderTimer::WidgetRenderTimer(mixxx::Duration renderFrequency,
@@ -7,8 +8,7 @@ WidgetRenderTimer::WidgetRenderTimer(mixxx::Duration renderFrequency,
         : m_renderFrequency(renderFrequency),
           m_inactivityTimeout(inactivityTimeout),
           m_guiTickTimer(this) {
-    connect(&m_guiTickTimer, SIGNAL(timeout()),
-            this, SLOT(guiTick()));
+    connect(&m_guiTickTimer, &GuiTickTimer::timeout, this, &WidgetRenderTimer::guiTick);
 }
 
 void WidgetRenderTimer::guiTick() {

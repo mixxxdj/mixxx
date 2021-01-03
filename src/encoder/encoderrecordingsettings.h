@@ -5,8 +5,6 @@
 
 class EncoderRecordingSettings : public EncoderSettings {
   public:
-    ~EncoderRecordingSettings() override = default;
-
     // Indicates that it uses the quality slider section of the preferences
     virtual bool usesQualitySlider() const {
         return false;
@@ -28,9 +26,9 @@ class EncoderRecordingSettings : public EncoderSettings {
         DEBUG_ASSERT(!"unimplemented");
     }
 
-    // Selects the option by its index. If it is a single-element option, 
+    // Selects the option by its index. If it is a single-element option,
     // index 0 means disabled and 1 enabled.
-    virtual void setGroupOption(QString groupCode, int optionIndex) {
+    virtual void setGroupOption(const QString& groupCode, int optionIndex) {
         Q_UNUSED(groupCode);
         Q_UNUSED(optionIndex);
         DEBUG_ASSERT(!"unimplemented");
@@ -38,4 +36,3 @@ class EncoderRecordingSettings : public EncoderSettings {
 };
 
 typedef std::shared_ptr<EncoderRecordingSettings> EncoderRecordingSettingsPointer;
-

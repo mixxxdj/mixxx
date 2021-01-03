@@ -1,5 +1,4 @@
-#ifndef QTRGBWAVEFORMWIDGET_H
-#define QTRGBWAVEFORMWIDGET_H
+#pragma once
 
 #include <QGLWidget>
 
@@ -24,8 +23,6 @@ class QtRGBWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     virtual mixxx::Duration render();
 
   private:
-    QtRGBWaveformWidget(const char* group, QWidget* parent);
+    QtRGBWaveformWidget(const QString& group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
-
-#endif // QTRGBWAVEFORMWIDGET_H

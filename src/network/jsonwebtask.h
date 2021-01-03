@@ -57,14 +57,11 @@ class JsonWebTask : public WebTask {
             const QUrl& baseUrl,
             JsonWebRequest&& request,
             QObject* parent = nullptr);
-    ~JsonWebTask() override;
+    ~JsonWebTask() override = default;
 
   signals:
     void failed(
-            network::JsonWebResponse response);
-
-  private slots:
-    void slotNetworkReplyFinished();
+            const network::JsonWebResponse& response);
 
   protected:
     // Customizable in derived classes
@@ -86,18 +83,17 @@ class JsonWebTask : public WebTask {
     virtual void onFinishedCustom(
             CustomWebResponse&& response);
 
-    bool doStart(
+    QNetworkReply* doStartNetworkRequest(
             QNetworkAccessManager* networkAccessManager,
             int parentTimeoutMillis) override;
-    QUrl doAbort() override;
-    QUrl doTimeOut() override;
+    void doNetworkReplyFinished(
+            QNetworkReply* finishedNetworkReply,
+            HttpStatusCode statusCode) override;
 
     // All member variables must only be accessed from
     // the event loop thread!!
     const QUrl m_baseUrl;
     const JsonWebRequest m_request;
-
-    QPointer<QNetworkReply> m_pendingNetworkReply;
 };
 
 } // namespace network

@@ -1,12 +1,12 @@
-#ifndef WAVEFORMRENDERERABSTRACT_H
-#define WAVEFORMRENDERERABSTRACT_H
+#pragma once
 
-#include <QDomNode>
-#include <QPaintEvent>
-#include <QPainter>
+#include <qglobal.h>
 
-#include "skin/skincontext.h"
+QT_FORWARD_DECLARE_CLASS(QDomNode)
+QT_FORWARD_DECLARE_CLASS(QPaintEvent)
+QT_FORWARD_DECLARE_CLASS(QPainter)
 
+class SkinContext;
 class WaveformWidgetRenderer;
 
 class WaveformRendererAbstract {
@@ -46,5 +46,3 @@ class WaveformRendererAbstract {
 
     friend class WaveformWidgetRenderer;
 };
-
-#endif // WAVEFORMRENDERERABSTRACT_H

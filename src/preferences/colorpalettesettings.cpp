@@ -44,15 +44,23 @@ ColorPalette ColorPaletteSettings::getColorPalette(
     // Read colors from configuration
     const QString group = kColorPaletteGroupStart + name + kColorPaletteGroupEnd;
     QList<mixxx::RgbColor> colorList;
-    QList<unsigned int> hotcueIndices;
-    for (const ConfigKey& key : m_pConfig->getKeysWithGroup(group)) {
+    QList<int> hotcueIndices;
+    const QList<ConfigKey> keys = m_pConfig->getKeysWithGroup(group);
+    for (const auto& key : keys) {
         if (key.item == kColorPaletteHotcueIndicesConfigItem) {
-            for (const QString& stringIndex :
-                    m_pConfig->getValueString(key).split(kColorPaletteHotcueIndicesConfigSeparator, QString::SkipEmptyParts)) {
+            const QStringList stringIndices =
+                    m_pConfig->getValueString(key).split(
+                            kColorPaletteHotcueIndicesConfigSeparator,
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+                            Qt::SkipEmptyParts);
+#else
+                            QString::SkipEmptyParts);
+#endif
+            for (const auto& stringIndex : stringIndices) {
                 bool ok;
                 int index = stringIndex.toInt(&ok);
                 if (ok && index >= 0) {
-                    hotcueIndices << static_cast<unsigned int>(index);
+                    hotcueIndices << index;
                 }
             }
         } else {
@@ -91,7 +99,8 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
     }
 
     QStringList stringIndices;
-    for (const unsigned int index : colorPalette.getHotcueIndices()) {
+    const QList<int> intIndices = colorPalette.getIndicesByHotcue();
+    for (const int index : intIndices) {
         stringIndices << QString::number(index);
     }
     if (!stringIndices.isEmpty()) {
@@ -103,14 +112,22 @@ void ColorPaletteSettings::setColorPalette(const QString& name, const ColorPalet
 
 void ColorPaletteSettings::removePalette(const QString& name) {
     const QString group = kColorPaletteGroupStart + name + kColorPaletteGroupEnd;
-    for (const ConfigKey& key : m_pConfig->getKeysWithGroup(group)) {
+    const QList<ConfigKey> keys = m_pConfig->getKeysWithGroup(group);
+    for (const ConfigKey& key : keys) {
         m_pConfig->remove(key);
     }
 }
 
 ColorPalette ColorPaletteSettings::getHotcueColorPalette() const {
     QString name = m_pConfig->getValueString(kHotcueColorPaletteConfigKey);
-    return getColorPalette(name, mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
+    return getHotcueColorPalette(name);
+}
+
+ColorPalette ColorPaletteSettings::getHotcueColorPalette(
+        const QString& name) const {
+    return getColorPalette(
+            name,
+            mixxx::PredefinedColorPalettes::kDefaultHotcueColorPalette);
 }
 
 void ColorPaletteSettings::setHotcueColorPalette(const ColorPalette& colorPalette) {
@@ -123,9 +140,16 @@ void ColorPaletteSettings::setHotcueColorPalette(const ColorPalette& colorPalett
     setColorPalette(name, colorPalette);
 }
 
+ColorPalette ColorPaletteSettings::getTrackColorPalette(
+        const QString& name) const {
+    return getColorPalette(
+            name,
+            mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette);
+}
+
 ColorPalette ColorPaletteSettings::getTrackColorPalette() const {
     QString name = m_pConfig->getValueString(kTrackColorPaletteConfigKey);
-    return getColorPalette(name, mixxx::PredefinedColorPalettes::kDefaultTrackColorPalette);
+    return getTrackColorPalette(name);
 }
 
 void ColorPaletteSettings::setTrackColorPalette(const ColorPalette& colorPalette) {
@@ -140,7 +164,8 @@ void ColorPaletteSettings::setTrackColorPalette(const ColorPalette& colorPalette
 
 QSet<QString> ColorPaletteSettings::getColorPaletteNames() const {
     QSet<QString> names;
-    for (const QString& group : m_pConfig->getGroups()) {
+    const QSet<QString> groups = m_pConfig->getGroups();
+    for (const auto& group : groups) {
         int pos = kColorPaletteGroupNameRegex.indexIn(group);
         if (pos > -1) {
             names.insert(kColorPaletteGroupNameRegex.cap(1));

@@ -5,8 +5,7 @@
  *      Author: Vittorio Colao
  *       */
 
-#ifndef ANALYZER_ANALYZERGAIN_H
-#define ANALYZER_ANALYZERGAIN_H
+#pragma once
 
 #include "analyzer/analyzer.h"
 #include "preferences/replaygainsettings.h"
@@ -16,7 +15,7 @@ class ReplayGain;
 class AnalyzerGain : public Analyzer {
   public:
     AnalyzerGain(UserSettingsPointer pConfig);
-    virtual ~AnalyzerGain();
+    ~AnalyzerGain() override;
 
     static bool isEnabled(const ReplayGainSettings& rgSettings) {
         return rgSettings.isAnalyzerEnabled(1);
@@ -34,5 +33,3 @@ class AnalyzerGain : public Analyzer {
     ReplayGain* m_pReplayGain;
     int m_iBufferSize;
 };
-
-#endif /* ANALYZER_ANALYZERGAIN_H */

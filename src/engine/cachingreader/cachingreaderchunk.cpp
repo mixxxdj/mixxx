@@ -25,7 +25,7 @@ const SINT kInvalidChunkIndex = -1;
 // easier memory alignment.
 // TODO(XXX): The optimum value of the "constant" kFrames depends
 // on the properties of the AudioSource as the remarks above suggest!
-const mixxx::AudioSignal::ChannelCount CachingReaderChunk::kChannels = mixxx::kEngineChannelCount;
+const mixxx::audio::ChannelCount CachingReaderChunk::kChannels = mixxx::kEngineChannelCount;
 const SINT CachingReaderChunk::kFrames = 8192; // ~ 170 ms at 48 kHz
 const SINT CachingReaderChunk::kSamples =
         CachingReaderChunk::frames2samples(CachingReaderChunk::kFrames);
@@ -66,14 +66,16 @@ mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
     mixxx::AudioSourceStereoProxy audioSourceProxy(
             pAudioSource,
             tempOutputBuffer);
-    DEBUG_ASSERT(audioSourceProxy.channelCount() == kChannels);
+    DEBUG_ASSERT(
+            audioSourceProxy.getSignalInfo().getChannelCount() ==
+            kChannels);
     m_bufferedSampleFrames =
             audioSourceProxy.readSampleFrames(
                     mixxx::WritableSampleFrames(
                             sourceFrameIndexRange,
                             mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
     DEBUG_ASSERT(m_bufferedSampleFrames.frameIndexRange().empty() ||
-            m_bufferedSampleFrames.frameIndexRange() <= sourceFrameIndexRange);
+            m_bufferedSampleFrames.frameIndexRange().isSubrangeOf(sourceFrameIndexRange));
     return m_bufferedSampleFrames.frameIndexRange();
 }
 
@@ -213,8 +215,8 @@ void CachingReaderChunkForOwner::removeFromList(
     }
 
     // Disconnect this chunk from the double-linked list
-    const auto pPrev = m_pPrev;
-    const auto pNext = m_pNext;
+    auto* const pPrev = m_pPrev;
+    auto* const pNext = m_pNext;
     m_pPrev = nullptr;
     m_pNext = nullptr;
 

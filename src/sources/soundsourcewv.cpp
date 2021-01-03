@@ -1,7 +1,6 @@
-#include <wavpack/wavpack.h>
-#include <QFile>
-
 #include "sources/soundsourcewv.h"
+
+#include <wavpack/wavpack.h>
 
 #include "util/logger.h"
 
@@ -23,8 +22,28 @@ static WavpackStreamReader s_streamReader = {
 
 } // anonymous namespace
 
+//static
+const QString SoundSourceProviderWV::kDisplayName = QStringLiteral("WavPack");
+
+//static
+const QStringList SoundSourceProviderWV::kSupportedFileExtensions = {
+        QStringLiteral("wv"),
+};
+
+SoundSourceProviderPriority SoundSourceProviderWV::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::Higher;
+}
+
+SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
+    return newSoundSourceFromUrl<SoundSourceWV>(url);
+}
+
 SoundSourceWV::SoundSourceWV(const QUrl& url)
-        : SoundSource(url, "wv"),
+        : SoundSource(url),
           m_wpc(nullptr),
           m_sampleScaleFactor(CSAMPLE_ZERO),
           m_pWVFile(nullptr),
@@ -42,8 +61,8 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
     DEBUG_ASSERT(!m_wpc);
     char msg[80]; // hold possible error message
     int openFlags = OPEN_WVC | OPEN_NORMALIZE;
-    if ((params.channelCount() == 1) ||
-            (params.channelCount() == 2)) {
+    if ((params.getSignalInfo().getChannelCount() == 1) ||
+            (params.getSignalInfo().getChannelCount() == 2)) {
         openFlags |= OPEN_2CH_MAX;
     }
 
@@ -64,8 +83,8 @@ SoundSource::OpenResult SoundSourceWV::tryOpen(
         return OpenResult::Failed;
     }
 
-    setChannelCount(WavpackGetReducedChannels(static_cast<WavpackContext*>(m_wpc)));
-    setSampleRate(WavpackGetSampleRate(static_cast<WavpackContext*>(m_wpc)));
+    initChannelCountOnce(WavpackGetReducedChannels(static_cast<WavpackContext*>(m_wpc)));
+    initSampleRateOnce(WavpackGetSampleRate(static_cast<WavpackContext*>(m_wpc)));
     initFrameIndexRangeOnce(
             mixxx::IndexRange::forward(
                     0,
@@ -112,7 +131,7 @@ void SoundSourceWV::close() {
 }
 
 ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {
@@ -140,7 +159,7 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
     DEBUG_ASSERT(unpackCount <= numberOfFramesTotal);
     if (!(WavpackGetMode(static_cast<WavpackContext*>(m_wpc)) & MODE_FLOAT)) {
         // signed integer -> float
-        const SINT sampleCount = frames2samples(unpackCount);
+        const SINT sampleCount = getSignalInfo().frames2samples(unpackCount);
         for (SINT i = 0; i < sampleCount; ++i) {
             const int32_t sampleValue =
                     *reinterpret_cast<int32_t*>(pOutputBuffer);
@@ -153,11 +172,7 @@ ReadableSampleFrames SoundSourceWV::readSampleFramesClamped(
             resultRange,
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    frames2samples(unpackCount)));
-}
-
-QString SoundSourceProviderWV::getName() const {
-    return "WavPack";
+                    getSignalInfo().frames2samples(unpackCount)));
 }
 
 //static
@@ -241,23 +256,6 @@ int32_t SoundSourceWV::WriteBytesCallback(void* id, void* data, int32_t bcount) 
         return 0;
     }
     return (int32_t)pFile->write((char*)data, bcount);
-}
-
-QStringList SoundSourceProviderWV::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("wv");
-    return supportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderWV::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
-    // This reference decoder is supposed to produce more accurate
-    // and reliable results than any other DEFAULT provider.
-    return SoundSourceProviderPriority::HIGHER;
-}
-
-SoundSourcePointer SoundSourceProviderWV::newSoundSource(const QUrl& url) {
-    return newSoundSourceFromUrl<SoundSourceWV>(url);
 }
 
 } // namespace mixxx

@@ -1,5 +1,4 @@
-#ifndef ENGINEFILTERDELAY_H
-#define ENGINEFILTERDELAY_H
+#pragma once
 
 #include "engine/engineobject.h"
 #include "util/assert.h"
@@ -90,8 +89,8 @@ class EngineFilterDelay : public EngineObjectConstIn {
                     // the same in the IIR filter to wait for settling
                     pOutput[i] = m_buf[oldDelaySourcePos];
                 } else {
-                    pOutput[i] = m_buf[oldDelaySourcePos] * (1.0 - cross_mix);
-                    pOutput[i] += m_buf[delaySourcePos] * cross_mix;
+                    pOutput[i] = static_cast<CSAMPLE>(m_buf[oldDelaySourcePos] * (1.0 - cross_mix));
+                    pOutput[i] += static_cast<CSAMPLE>(m_buf[delaySourcePos] * cross_mix);
                     delaySourcePos = (delaySourcePos + 1) % SIZE;
                     cross_mix += cross_inc;
                 }
@@ -108,7 +107,7 @@ class EngineFilterDelay : public EngineObjectConstIn {
     // it is an alternative for using pauseFillter() calls
     void processAndPauseFilter(const CSAMPLE* pIn, CSAMPLE* pOutput,
                        const int iBufferSize) {
-        double oldDelay = m_delaySamples;
+        int oldDelay = m_delaySamples;
         m_delaySamples = 0;
         process(pIn, pOutput, iBufferSize);
         m_delaySamples = oldDelay;
@@ -119,8 +118,6 @@ class EngineFilterDelay : public EngineObjectConstIn {
     int m_delaySamples;
     int m_oldDelaySamples;
     int m_delayPos;
-    double m_buf[SIZE];
+    CSAMPLE m_buf[SIZE];
     bool m_doStart;
 };
-
-#endif // ENGINEFILTERDELAY_H

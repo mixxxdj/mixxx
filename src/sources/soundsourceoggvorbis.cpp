@@ -1,6 +1,6 @@
-#include <QFile>
-
 #include "sources/soundsourceoggvorbis.h"
+
+#include <QFile>
 
 #include "util/logger.h"
 
@@ -12,11 +12,11 @@ const Logger kLogger("SoundSourceOggVorbis");
 
 // Parameter for ov_info()
 // See also: https://xiph.org/vorbis/doc/vorbisfile/ov_info.html
-const int kCurrentBitstreamLink = -1; // retrieve ... for the current bitstream
+constexpr int kCurrentBitstreamLink = -1; // retrieve ... for the current bitstream
 
 // Parameter for ov_pcm_total()
 // See also: https://xiph.org/vorbis/doc/vorbisfile/ov_pcm_total.html
-const int kEntireBitstreamLink = -1; // retrieve ... for the entire physical bitstream
+constexpr int kEntireBitstreamLink = -1; // retrieve ... for the entire physical bitstream
 
 } // anonymous namespace
 
@@ -27,8 +27,24 @@ ov_callbacks SoundSourceOggVorbis::s_callbacks = {
         SoundSourceOggVorbis::CloseCallback,
         SoundSourceOggVorbis::TellCallback};
 
+//static
+const QString SoundSourceProviderOggVorbis::kDisplayName = QStringLiteral("Xiph.org OggVorbis");
+
+//static
+const QStringList SoundSourceProviderOggVorbis::kSupportedFileExtensions = {
+        QStringLiteral("ogg"),
+};
+
+SoundSourceProviderPriority SoundSourceProviderOggVorbis::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // This reference decoder is supposed to produce more accurate
+    // and reliable results than any other DEFAULT provider.
+    return SoundSourceProviderPriority::Higher;
+}
+
 SoundSourceOggVorbis::SoundSourceOggVorbis(const QUrl& url)
-        : SoundSource(url, "ogg"),
+        : SoundSource(url),
           m_curFrameIndex(0) {
     memset(&m_vf, 0, sizeof(m_vf));
 }
@@ -82,8 +98,8 @@ SoundSource::OpenResult SoundSourceOggVorbis::tryOpen(
                 << getUrlString();
         return OpenResult::Failed;
     }
-    setChannelCount(vi->channels);
-    setSampleRate(vi->rate);
+    initChannelCountOnce(vi->channels);
+    initSampleRateOnce(vi->rate);
     if (0 < vi->bitrate_nominal) {
         initBitrateOnce(vi->bitrate_nominal / 1000);
     } else {
@@ -114,7 +130,7 @@ void SoundSourceOggVorbis::close() {
 }
 
 ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {
@@ -154,7 +170,7 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
         if (0 < readResult) {
             m_curFrameIndex += readResult;
             if (pSampleBuffer) {
-                switch (channelCount()) {
+                switch (getSignalInfo().getChannelCount()) {
                 case 1:
                     for (long i = 0; i < readResult; ++i) {
                         *pSampleBuffer++ = pcmChannels[0][i];
@@ -168,7 +184,7 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
                     break;
                 default:
                     for (long i = 0; i < readResult; ++i) {
-                        for (SINT j = 0; j < channelCount(); ++j) {
+                        for (SINT j = 0; j < getSignalInfo().getChannelCount(); ++j) {
                             *pSampleBuffer++ = pcmChannels[j][i];
                         }
                     }
@@ -188,7 +204,9 @@ ReadableSampleFrames SoundSourceOggVorbis::readSampleFramesClamped(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    std::min(writableSampleFrames.writableLength(), frames2samples(numberOfFrames))));
+                    std::min(
+                            writableSampleFrames.writableLength(),
+                            getSignalInfo().frames2samples(numberOfFrames))));
 }
 
 //static
@@ -242,23 +260,6 @@ long SoundSourceOggVorbis::TellCallback(void* datasource) {
         return 0;
     }
     return pFile->pos();
-}
-
-QString SoundSourceProviderOggVorbis::getName() const {
-    return "Xiph.org OggVorbis";
-}
-
-QStringList SoundSourceProviderOggVorbis::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("ogg");
-    return supportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderOggVorbis::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
-    // This reference decoder is supposed to produce more accurate
-    // and reliable results than any other DEFAULT provider.
-    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx

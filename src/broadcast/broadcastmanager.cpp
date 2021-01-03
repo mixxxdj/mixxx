@@ -7,18 +7,18 @@
 #undef WIN32
 #endif
 
+#include "broadcast/broadcastmanager.h"
 #include "broadcast/defs_broadcast.h"
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
+#include "moc_broadcastmanager.cpp"
 #include "soundio/soundmanager.h"
 #include "util/logger.h"
 
-#include "broadcast/broadcastmanager.h"
-
 namespace {
 const mixxx::Logger kLogger("BroadcastManager");
-}
+} // namespace
 
 BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
                                    SoundManager* pSoundManager)
@@ -43,7 +43,7 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
 
     // Initialize connections list from the current state of BroadcastSettings
     QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
-    for(BroadcastProfilePtr profile : profiles) {
+    for (const BroadcastProfilePtr& profile : profiles) {
         addConnection(profile);
     }
 
@@ -92,15 +92,14 @@ void BroadcastManager::slotControlEnabled(double v) {
         // Wrap around manually .
         // Wrapping around in WPushbutton does not work
         // since the status button has 4 states, but this CO is bool
-        v = 0.0;
-        m_pBroadcastEnabled->set(v);
-        emit broadcastEnabled(v);
+        m_pBroadcastEnabled->set(0.0);
+        emit broadcastEnabled(false);
     }
 
     if (v > 0.0) {
         bool atLeastOneEnabled = false;
         QList<BroadcastProfilePtr> profiles = m_pBroadcastSettings->profiles();
-        for(BroadcastProfilePtr profile : profiles) {
+        for (const BroadcastProfilePtr& profile : profiles) {
             if (profile->getEnabled()) {
                 atLeastOneEnabled = true;
                 break;
@@ -139,7 +138,7 @@ void BroadcastManager::slotProfileRemoved(BroadcastProfilePtr profile) {
 
 void BroadcastManager::slotProfilesChanged() {
     QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
-    for(NetworkOutputStreamWorkerPtr pWorker : workers) {
+    for (const NetworkOutputStreamWorkerPtr& pWorker : workers) {
         ShoutConnectionPtr connection = qSharedPointerCast<ShoutConnection>(pWorker);
         if (connection) {
             BroadcastProfilePtr profile = connection->profile();
@@ -153,8 +152,9 @@ void BroadcastManager::slotProfilesChanged() {
 }
 
 bool BroadcastManager::addConnection(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return false;
+    }
 
     if (findConnectionForProfile(profile).isNull() == false) {
         return false;
@@ -174,8 +174,9 @@ bool BroadcastManager::addConnection(BroadcastProfilePtr profile) {
 }
 
 bool BroadcastManager::removeConnection(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return false;
+    }
 
     ShoutConnectionPtr connection = findConnectionForProfile(profile);
     if (connection) {
@@ -198,10 +199,11 @@ bool BroadcastManager::removeConnection(BroadcastProfilePtr profile) {
 
 ShoutConnectionPtr BroadcastManager::findConnectionForProfile(BroadcastProfilePtr profile) {
     QVector<NetworkOutputStreamWorkerPtr> workers = m_pNetworkStream->outputWorkers();
-    for(NetworkOutputStreamWorkerPtr pWorker : workers) {
+    for (const NetworkOutputStreamWorkerPtr& pWorker : workers) {
         ShoutConnectionPtr connection = qSharedPointerCast<ShoutConnection>(pWorker);
-        if (connection.isNull())
+        if (connection.isNull()) {
             continue;
+        }
 
         if (connection->profile() == profile) {
             return connection;

@@ -1,47 +1,23 @@
-/***************************************************************************
-                          sounddeviceportaudio.cpp
-                             -------------------
-    begin                : Sun Aug 15, 2007 (Stardate -315378.5417935057)
-    copyright            : (C) 2007 Albert Santoni
-    email                : gamegod \a\t users.sf.net
- ***************************************************************************/
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef SOUNDDEVICEPORTAUDIO_H
-#define SOUNDDEVICEPORTAUDIO_H
 
 #include <portaudio.h>
-
 #include <QString>
-#include "util/performancetimer.h"
 
 #include "soundio/sounddevice.h"
 #include "util/duration.h"
-#include "util/fifo.h"
-
-#define CPU_USAGE_UPDATE_RATE 30 // in 1/s, fits to display frame rate
+#include "util/performancetimer.h"
 
 class SoundManager;
 class ControlProxy;
 
-/** Dynamically resolved function which allows us to enable a realtime-priority callback
-    thread from ALSA/PortAudio. This must be dynamically resolved because PortAudio can't
-    tell us if ALSA is compiled into it or not. */
-typedef int (*EnableAlsaRT)(PaStream* s, int enable);
-
 class SoundDevicePortAudio : public SoundDevice {
   public:
     SoundDevicePortAudio(UserSettingsPointer config,
-                         SoundManager* sm, const PaDeviceInfo* deviceInfo,
-                         unsigned int devIndex, QHash<PaHostApiIndex, PaHostApiTypeId> apiIndexToTypeId);
+            SoundManager* sm,
+            const PaDeviceInfo* deviceInfo,
+            PaHostApiTypeId deviceTypeId,
+            unsigned int devIndex);
     ~SoundDevicePortAudio() override;
 
     SoundDeviceError open(bool isClkRefDevice, int syncBuffers) override;
@@ -82,6 +58,7 @@ class SoundDevicePortAudio : public SoundDevice {
     // Struct containing information about this device. Don't free() it, it
     // belongs to PortAudio.
     const PaDeviceInfo* m_deviceInfo;
+    const PaHostApiTypeId m_deviceTypeId;
     // Description of the output stream going to the soundcard.
     PaStreamParameters m_outputParams;
     // Description of the input stream coming from the soundcard.
@@ -103,5 +80,3 @@ class SoundDevicePortAudio : public SoundDevice {
     PerformanceTimer m_clkRefTimer;
     PaTime m_lastCallbackEntrytoDacSecs;
 };
-
-#endif

@@ -1,19 +1,17 @@
-// enginecontrol.h
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef ENGINECONTROL_H
-#define ENGINECONTROL_H
-
-#include <QObject>
-#include <QList>
+#pragma once
 
 #include <gtest/gtest_prod.h>
 
-#include "preferences/usersettings.h"
-#include "track/track.h"
+#include <QList>
+#include <QObject>
+
 #include "control/controlvalue.h"
-#include "engine/effects/groupfeaturestate.h"
 #include "engine/cachingreader/cachingreader.h"
+#include "engine/effects/groupfeaturestate.h"
+#include "engine/sync/syncable.h"
+#include "preferences/usersettings.h"
+#include "track/beats.h"
+#include "track/track_decl.h"
 
 class EngineMaster;
 class EngineBuffer;
@@ -36,8 +34,8 @@ const int kNoTrigger = -1;
 class EngineControl : public QObject {
     Q_OBJECT
   public:
-    EngineControl(QString group,
-                  UserSettingsPointer pConfig);
+    EngineControl(const QString& group,
+            UserSettingsPointer pConfig);
     ~EngineControl() override;
 
     // Called by EngineBuffer::process every latency period. See the above
@@ -59,6 +57,9 @@ class EngineControl : public QObject {
             const double dTotalSamples, const double dTrackSampleRate);
     QString getGroup() const;
 
+    void setBeatLoop(double startPosition, bool enabled);
+    void setLoop(double startPosition, double endPosition, bool enabled);
+
     // Called to collect player features for effects processing.
     virtual void collectFeatureState(GroupFeatureState* pGroupFeatures) const {
         Q_UNUSED(pGroupFeatures);
@@ -67,6 +68,7 @@ class EngineControl : public QObject {
     // Called whenever a seek occurs to allow the EngineControl to respond.
     virtual void notifySeek(double dNewPlaypos);
     virtual void trackLoaded(TrackPointer pNewTrack);
+    virtual void trackBeatsUpdated(mixxx::BeatsPointer pBeats);
 
   protected:
     struct SampleOfTrack {
@@ -82,13 +84,14 @@ class EngineControl : public QObject {
     void seekAbs(double sample);
     // Seek to an exact sample and don't allow quantizing adjustment.
     void seekExact(double sample);
+    // Returns an EngineBuffer to target for syncing. Returns nullptr if none found
     EngineBuffer* pickSyncTarget();
 
     UserSettingsPointer getConfig();
     EngineMaster* getEngineMaster();
     EngineBuffer* getEngineBuffer();
 
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
 
   private:
@@ -105,5 +108,3 @@ class EngineControl : public QObject {
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
     FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
 };
-
-#endif /* ENGINECONTROL_H */

@@ -74,8 +74,8 @@ bool TrackInfo::compareEq(
             (getRemixer() == trackInfo.getRemixer()) &&
 #endif // __EXTRA_METADATA__
             (getReplayGain() == trackInfo.getReplayGain()) &&
-#if defined(__EXTRA_METADATA__)
             (getSeratoTags() == trackInfo.getSeratoTags()) &&
+#if defined(__EXTRA_METADATA__)
             (getSubtitle() == trackInfo.getSubtitle()) &&
 #endif // __EXTRA_METADATA__
             (getTitle() == trackInfo.getTitle()) &&
@@ -88,7 +88,7 @@ bool TrackInfo::compareEq(
 }
 
 QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
-    dbg << '{';
+    dbg << "TrackInfo{";
     arg.dbgArtist(dbg);
     arg.dbgBpm(dbg);
     arg.dbgComment(dbg);
@@ -118,8 +118,8 @@ QDebug operator<<(QDebug dbg, const TrackInfo& arg) {
     arg.dbgRemixer(dbg);
 #endif // __EXTRA_METADATA__
     arg.dbgReplayGain(dbg);
-#if defined(__EXTRA_METADATA__)
     arg.dbgSeratoTags(dbg);
+#if defined(__EXTRA_METADATA__)
     arg.dbgSubtitle(dbg);
 #endif // __EXTRA_METADATA__
     arg.dbgTitle(dbg);

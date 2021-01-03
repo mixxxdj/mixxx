@@ -4,8 +4,8 @@
 #include <QList>
 #include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/relocatedtrack.h"
+#include "preferences/usersettings.h"
 
 class Library;
 class LibraryFeature;
@@ -58,7 +58,7 @@ Q_OBJECT
         Disconnected,
     };
 
-    // Check if the connection to the extenal track collection
+    // Check if the connection to the external track collection
     // has been established, i.e. if the synchronization is active.
     virtual ConnectionState connectionState() const = 0;
 
@@ -116,7 +116,7 @@ Q_OBJECT
     }
 
   signals:
-    void connectionStateChanged(ConnectionState state);
+    void connectionStateChanged(ExternalTrackCollection::ConnectionState state);
 
   protected:
     explicit ExternalTrackCollection(QObject* parent = nullptr)

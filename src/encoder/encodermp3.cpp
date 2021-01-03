@@ -36,12 +36,15 @@ EncoderMp3::~EncoderMp3() {
         lame_close(m_lameFlags);
     }
     // free requested buffers
-    if (m_bufferIn[0] != nullptr)
+    if (m_bufferIn[0] != nullptr) {
         free(m_bufferIn[0]);
-    if (m_bufferIn[1] != nullptr)
+    }
+    if (m_bufferIn[1] != nullptr) {
         free(m_bufferIn[1]);
-    if (m_bufferOut != nullptr)
+    }
+    if (m_bufferOut != nullptr) {
         free(m_bufferOut);
+    }
 }
 
 void EncoderMp3::setEncoderSettings(const EncoderSettings& settings) {
@@ -118,14 +121,19 @@ void EncoderMp3::flush() {
     // end encoded audio to broadcast or file
     m_pCallback->write(nullptr, m_bufferOut, 0, rc);
 
-    // Write the lame/xing header.
-    rc = lame_get_lametag_frame(m_lameFlags, m_bufferOut, m_bufferOutSize);
-    if (rc != m_bufferOutSize) {
-        bufferOutGrow(rc);
-        rc = lame_get_lametag_frame(m_lameFlags, m_bufferOut, m_bufferOutSize);
+    // `lame_get_lametag_frame` returns the number of bytes copied into buffer,
+    // or the required buffer size, if the provided buffer is too small.
+    // Function failed, if the return value is larger than `m_bufferOutSize`!
+    int numBytes = static_cast<int>(
+            lame_get_lametag_frame(m_lameFlags, m_bufferOut, m_bufferOutSize));
+    if (numBytes > m_bufferOutSize) {
+        bufferOutGrow(numBytes);
+        numBytes = static_cast<int>(lame_get_lametag_frame(
+                m_lameFlags, m_bufferOut, m_bufferOutSize));
     }
+    // Write the lame/xing header.
     m_pCallback->seek(0);
-    m_pCallback->write(nullptr, m_bufferOut, 0, rc);
+    m_pCallback->write(nullptr, m_bufferOut, 0, numBytes);
 }
 
 void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
@@ -164,7 +172,7 @@ void EncoderMp3::initStream() {
     m_bufferIn[1] = (float *)malloc(m_bufferOutSize * sizeof(float));
 }
 
-int EncoderMp3::initEncoder(int samplerate, QString errorMessage) {
+int EncoderMp3::initEncoder(int samplerate, QString& errorMessage) {
     unsigned long samplerate_in = samplerate;
     // samplerate_out 0 means "let LAME pick the appropriate one"
     unsigned long samplerate_out = (samplerate_in > 48000 ? 48000 : 0);

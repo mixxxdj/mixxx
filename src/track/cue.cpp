@@ -1,12 +1,10 @@
-// cue.cpp
-// Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "track/cue.h"
 
 #include <QMutexLocker>
 #include <QtDebug>
 
 #include "engine/engine.h"
+#include "moc_cue.cpp"
 #include "util/assert.h"
 #include "util/color/color.h"
 #include "util/color/predefinedcolorpalettes.h"
@@ -15,8 +13,8 @@ namespace {
 
 inline std::optional<double> positionSamplesToMillis(
         double positionSamples,
-        mixxx::AudioSignal::SampleRate sampleRate) {
-    VERIFY_OR_DEBUG_ASSERT(sampleRate.valid()) {
+        mixxx::audio::SampleRate sampleRate) {
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid()) {
         return Cue::kNoPosition;
     }
     if (positionSamples == Cue::kNoPosition) {
@@ -28,8 +26,8 @@ inline std::optional<double> positionSamplesToMillis(
 
 inline double positionMillisToSamples(
         std::optional<double> positionMillis,
-        mixxx::AudioSignal::SampleRate sampleRate) {
-    VERIFY_OR_DEBUG_ASSERT(sampleRate.valid()) {
+        mixxx::audio::SampleRate sampleRate) {
+    VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid()) {
         return Cue::kNoPosition;
     }
     if (!positionMillis) {
@@ -38,7 +36,7 @@ inline double positionMillisToSamples(
     // Try to avoid rounding errors
     return (*positionMillis * sampleRate * mixxx::kEngineChannelCount) / 1000;
 }
-}
+} // namespace
 
 //static
 void CuePointer::deleteLater(Cue* pCue) {
@@ -49,32 +47,31 @@ void CuePointer::deleteLater(Cue* pCue) {
 
 Cue::Cue()
         : m_bDirty(false),
-          m_iId(-1),
           m_type(mixxx::CueType::Invalid),
           m_sampleStartPosition(Cue::kNoPosition),
           m_sampleEndPosition(Cue::kNoPosition),
           m_iHotCue(Cue::kNoHotCue),
           m_color(mixxx::PredefinedColorPalettes::kDefaultCueColor) {
+    DEBUG_ASSERT(!m_dbId.isValid());
 }
 
 Cue::Cue(
-        int id,
-        TrackId trackId,
+        DbId id,
         mixxx::CueType type,
         double position,
         double length,
         int hotCue,
-        QString label,
+        const QString& label,
         mixxx::RgbColor color)
-        : m_bDirty(false),
-          m_iId(id),
-          m_trackId(trackId),
+        : m_bDirty(false), // clear flag after loading from database
+          m_dbId(id),
           m_type(type),
           m_sampleStartPosition(position),
           m_iHotCue(hotCue),
           m_label(label),
           m_color(color) {
-    if (length) {
+    DEBUG_ASSERT(m_dbId.isValid());
+    if (length != 0) {
         if (position != Cue::kNoPosition) {
             m_sampleEndPosition = position + length;
         } else {
@@ -87,9 +84,9 @@ Cue::Cue(
 
 Cue::Cue(
         const mixxx::CueInfo& cueInfo,
-        mixxx::AudioSignal::SampleRate sampleRate)
-        : m_bDirty(false),
-          m_iId(-1),
+        mixxx::audio::SampleRate sampleRate,
+        bool setDirty)
+        : m_bDirty(setDirty),
           m_type(cueInfo.getType()),
           m_sampleStartPosition(
                   positionMillisToSamples(
@@ -99,13 +96,14 @@ Cue::Cue(
                   positionMillisToSamples(
                           cueInfo.getEndPositionMillis(),
                           sampleRate)),
-          m_iHotCue(cueInfo.getHotCueNumber() ? *cueInfo.getHotCueNumber() : kNoHotCue),
+          m_iHotCue(cueInfo.getHotCueIndex() ? *cueInfo.getHotCueIndex() : kNoHotCue),
           m_label(cueInfo.getLabel()),
           m_color(cueInfo.getColor().value_or(mixxx::PredefinedColorPalettes::kDefaultCueColor)) {
+    DEBUG_ASSERT(!m_dbId.isValid());
 }
 
 mixxx::CueInfo Cue::getCueInfo(
-        mixxx::AudioSignal::SampleRate sampleRate) const {
+        mixxx::audio::SampleRate sampleRate) const {
     QMutexLocker lock(&m_mutex);
     return mixxx::CueInfo(
             m_type,
@@ -116,30 +114,20 @@ mixxx::CueInfo Cue::getCueInfo(
             m_color);
 }
 
-int Cue::getId() const {
+DbId Cue::getId() const {
     QMutexLocker lock(&m_mutex);
-    return m_iId;
+    return m_dbId;
 }
 
-void Cue::setId(int cueId) {
+void Cue::setId(DbId cueId) {
     QMutexLocker lock(&m_mutex);
-    m_iId = cueId;
-    m_bDirty = true;
-    lock.unlock();
-    emit updated();
-}
-
-TrackId Cue::getTrackId() const {
-    QMutexLocker lock(&m_mutex);
-    return m_trackId;
-}
-
-void Cue::setTrackId(TrackId trackId) {
-    QMutexLocker lock(&m_mutex);
-    m_trackId = trackId;
-    m_bDirty = true;
-    lock.unlock();
-    emit updated();
+    m_dbId = cueId;
+    // Neither mark as dirty nor do emit the updated() signal.
+    // This function is only called after adding the Cue object
+    // to the database. The id is not visible for anyone else.
+    // Unintended side effects with the LibraryScanner occur
+    // when adding new tracks that have their cue points stored
+    // in Serato marker tags!!
 }
 
 mixxx::CueType Cue::getType() const {
@@ -149,6 +137,9 @@ mixxx::CueType Cue::getType() const {
 
 void Cue::setType(mixxx::CueType type) {
     QMutexLocker lock(&m_mutex);
+    if (m_type == type) {
+        return;
+    }
     m_type = type;
     m_bDirty = true;
     lock.unlock();
@@ -162,6 +153,9 @@ double Cue::getPosition() const {
 
 void Cue::setStartPosition(double samplePosition) {
     QMutexLocker lock(&m_mutex);
+    if (m_sampleStartPosition == samplePosition) {
+        return;
+    }
     m_sampleStartPosition = samplePosition;
     m_bDirty = true;
     lock.unlock();
@@ -170,7 +164,23 @@ void Cue::setStartPosition(double samplePosition) {
 
 void Cue::setEndPosition(double samplePosition) {
     QMutexLocker lock(&m_mutex);
+    if (m_sampleEndPosition == samplePosition) {
+        return;
+    }
     m_sampleEndPosition = samplePosition;
+    m_bDirty = true;
+    lock.unlock();
+    emit updated();
+}
+
+void Cue::shiftPositionFrames(double frameOffset) {
+    QMutexLocker lock(&m_mutex);
+    if (m_sampleStartPosition != kNoPosition) {
+        m_sampleStartPosition += frameOffset * mixxx::kEngineChannelCount;
+    }
+    if (m_sampleEndPosition != kNoPosition) {
+        m_sampleEndPosition += frameOffset * mixxx::kEngineChannelCount;
+    }
     m_bDirty = true;
     lock.unlock();
     emit updated();
@@ -195,6 +205,9 @@ int Cue::getHotCue() const {
 void Cue::setHotCue(int hotCue) {
     QMutexLocker lock(&m_mutex);
     // TODO(XXX) enforce uniqueness?
+    if (m_iHotCue == hotCue) {
+        return;
+    }
     m_iHotCue = hotCue;
     m_bDirty = true;
     lock.unlock();
@@ -206,8 +219,11 @@ QString Cue::getLabel() const {
     return m_label;
 }
 
-void Cue::setLabel(const QString label) {
+void Cue::setLabel(const QString& label) {
     QMutexLocker lock(&m_mutex);
+    if (m_label == label) {
+        return;
+    }
     m_label = label;
     m_bDirty = true;
     lock.unlock();
@@ -221,6 +237,9 @@ mixxx::RgbColor Cue::getColor() const {
 
 void Cue::setColor(mixxx::RgbColor color) {
     QMutexLocker lock(&m_mutex);
+    if (m_color == color) {
+        return;
+    }
     m_color = color;
     m_bDirty = true;
     lock.unlock();

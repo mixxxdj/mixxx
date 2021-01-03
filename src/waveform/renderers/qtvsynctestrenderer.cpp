@@ -1,10 +1,11 @@
 #include "waveform/renderers/qtvsynctestrenderer.h"
 
+#include "track/track.h"
+#include "util/painterscope.h"
+#include "util/performancetimer.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
-#include "util/painterscope.h"
-#include "util/performancetimer.h"
 
 QtVSyncTestRenderer::QtVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -48,7 +49,7 @@ void QtVSyncTestRenderer::draw(QPainter* pPainter, QPaintEvent* /*event*/) {
     }
 
     const WaveformData* data = waveform->data();
-    if (data == NULL) {
+    if (data == nullptr) {
         return;
     }
 

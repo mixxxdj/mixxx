@@ -2,7 +2,7 @@
 
 #include "sources/metadatasource.h"
 
-#include "track/trackmetadatataglib.h"
+#include "track/taglib/trackmetadata.h"
 
 namespace mixxx {
 
@@ -10,12 +10,12 @@ namespace mixxx {
 class MetadataSourceTagLib : public MetadataSource {
   public:
     explicit MetadataSourceTagLib(
-            QString fileName)
+            const QString& fileName)
             : m_fileName(fileName),
               m_fileType(taglib::getFileTypeFromFileName(fileName)) {
     }
     MetadataSourceTagLib(
-            QString fileName,
+            const QString& fileName,
             taglib::FileType fileType)
             : m_fileName(fileName),
               m_fileType(fileType) {
@@ -36,4 +36,4 @@ class MetadataSourceTagLib : public MetadataSource {
     taglib::FileType m_fileType;
 };
 
-} //namespace mixxx
+} // namespace mixxx

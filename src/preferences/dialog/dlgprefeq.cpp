@@ -1,34 +1,17 @@
-/***************************************************************************
-                          dlgprefeq.cpp  -  description
-                             -------------------
-    begin                : Thu Jun 7 2007
-    copyright            : (C) 2007 by John Sully
-    email                : jsully@scs.ryerson.ca
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include <QWidget>
-#include <QString>
-#include <QHBoxLayout>
-
 #include "preferences/dialog/dlgprefeq.h"
-#include "effects/builtin/biquadfullkilleqeffect.h"
-#include "effects/builtin/filtereffect.h"
-#include "effects/effectslot.h"
-#include "engine/filters/enginefilterbessel4.h"
+
+#include <QHBoxLayout>
+#include <QString>
+#include <QWidget>
+
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
-#include "util/math.h"
-#include "mixer/playermanager.h"
+#include "defs_urls.h"
+#include "effects/builtin/biquadfullkilleqeffect.h"
+#include "effects/effectslot.h"
 #include "effects/specialeffectchains.h"
+#include "mixer/playermanager.h"
+#include "moc_dlgprefeq.cpp"
 
 namespace {
 const QString kConfigKey = "[Mixer Profile]";
@@ -51,7 +34,10 @@ static bool isMasterEQ(EffectManifest* pManifest) {
 }
 } // anonymous namespace
 
-DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager, UserSettingsPointer pConfig)
+DlgPrefEQ::DlgPrefEQ(
+        QWidget* pParent,
+        std::shared_ptr<EffectsManager> pEffectsManager,
+        UserSettingsPointer pConfig)
         : DlgPreferencePage(pParent),
           m_COLoFreq(kConfigKey, "LoEQFrequency"),
           m_COHiFreq(kConfigKey, "HiEQFrequency"),
@@ -60,20 +46,20 @@ DlgPrefEQ::DlgPrefEQ(QWidget* pParent, EffectsManager* pEffectsManager, UserSett
           m_highEqFreq(0.0),
           m_pEffectsManager(pEffectsManager),
           m_pBackendManager(pEffectsManager->getBackendManager()),
-          m_firstSelectorLabel(NULL),
-          m_pNumDecks(NULL),
+          m_firstSelectorLabel(nullptr),
+          m_pNumDecks(nullptr),
           m_inSlotPopulateDeckEffectSelectors(false),
           m_bEqAutoReset(false),
           m_bGainAutoReset(false) {
     setupUi(this);
     // Connection
-    connect(SliderHiEQ, &QSlider::valueChanged, this, &DlgPrefEQ::slotUpdateHiEQ);
-    connect(SliderHiEQ, &QSlider::sliderMoved, this, &DlgPrefEQ::slotUpdateHiEQ);
-    connect(SliderHiEQ, &QSlider::sliderReleased, this, &DlgPrefEQ::slotUpdateHiEQ);
+    connect(SliderHiEQ, &QAbstractSlider::valueChanged, this, &DlgPrefEQ::slotUpdateHiEQ);
+    connect(SliderHiEQ, &QAbstractSlider::sliderMoved, this, &DlgPrefEQ::slotUpdateHiEQ);
+    connect(SliderHiEQ, &QAbstractSlider::sliderReleased, this, &DlgPrefEQ::slotUpdateHiEQ);
 
-    connect(SliderLoEQ, &QSlider::valueChanged, this, &DlgPrefEQ::slotUpdateLoEQ);
-    connect(SliderLoEQ, &QSlider::sliderMoved, this, &DlgPrefEQ::slotUpdateLoEQ);
-    connect(SliderLoEQ, &QSlider::sliderReleased, this, &DlgPrefEQ::slotUpdateLoEQ);
+    connect(SliderLoEQ, &QAbstractSlider::valueChanged, this, &DlgPrefEQ::slotUpdateLoEQ);
+    connect(SliderLoEQ, &QAbstractSlider::sliderMoved, this, &DlgPrefEQ::slotUpdateLoEQ);
+    connect(SliderLoEQ, &QAbstractSlider::sliderReleased, this, &DlgPrefEQ::slotUpdateLoEQ);
 
     connect(CheckBoxEqAutoReset, &QCheckBox::stateChanged, this, &DlgPrefEQ::slotUpdateEqAutoReset);
     connect(CheckBoxGainAutoReset,
@@ -238,7 +224,7 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
         }
     }
 
-    if (m_firstSelectorLabel != NULL) {
+    if (m_firstSelectorLabel != nullptr) {
         if (do_hide) {
             m_firstSelectorLabel->setText(QObject::tr("EQ Effect"));
         } else {
@@ -247,6 +233,10 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
     }
 
     applySelections();
+}
+
+QUrl DlgPrefEQ::helpUrl() const {
+    return QUrl(MIXXX_MANUAL_EQ_URL);
 }
 
 void DlgPrefEQ::loadSettings() {
@@ -470,7 +460,7 @@ int DlgPrefEQ::getSliderPosition(double eqFreq, int minValue, int maxValue) {
     }
     double dsliderPos = (eqFreq - kFrequencyLowerLimit) / (kFrequencyUpperLimit-kFrequencyLowerLimit);
     dsliderPos = pow(dsliderPos, 1.0 / 4.0) * (maxValue - minValue) + minValue;
-    return dsliderPos;
+    return static_cast<int>(dsliderPos);
 }
 
 void DlgPrefEQ::slotApply() {
@@ -534,7 +524,7 @@ void DlgPrefEQ::slotBypass(int state) {
 }
 
 void DlgPrefEQ::setUpMasterEQ() {
-    connect(pbResetMasterEq, &QPushButton::clicked, this, &DlgPrefEQ::slotMasterEQToDefault);
+    connect(pbResetMasterEq, &QAbstractButton::clicked, this, &DlgPrefEQ::slotMasterEQToDefault);
 
     connect(comboBoxMasterEq,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -628,17 +618,17 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                     slidersGridLayout->addWidget(centerFreqLabel, 0, i + 1, Qt::AlignCenter);
 
                     QSlider* slider = new QSlider(this);
-                    slider->setMinimum(pManifestParameter->getMinimum() * 100);
-                    slider->setMaximum(pManifestParameter->getMaximum() * 100);
+                    slider->setMinimum(static_cast<int>(pManifestParameter->getMinimum() * 100));
+                    slider->setMaximum(static_cast<int>(pManifestParameter->getMaximum() * 100));
                     slider->setSingleStep(1);
-                    slider->setValue(pManifestParameter->getDefault() * 100);
+                    slider->setValue(static_cast<int>(pManifestParameter->getDefault() * 100));
                     slider->setMinimumHeight(90);
                     // Set the index as a property because we need it inside slotUpdateFilter()
                     slider->setProperty("index", QVariant(i));
                     slidersGridLayout->addWidget(slider, 1, i + 1, Qt::AlignCenter);
                     m_masterEQSliders.append(slider);
                     connect(slider,
-                            &QSlider::sliderMoved,
+                            &QAbstractSlider::sliderMoved,
                             this,
                             &DlgPrefEQ::slotUpdateMasterEQParameter);
 
@@ -716,7 +706,7 @@ void DlgPrefEQ::setMasterEQParameter(int i, double value) {
 
         if (pParameterSlot->isLoaded()) {
             pParameterSlot->slotParameterValueChanged(value);
-            m_masterEQSliders[i]->setValue(value * 100);
+            m_masterEQSliders[i]->setValue(static_cast<int>(value * 100));
 
             QLabel* valueLabel = m_masterEQValues[i];
             QString valueText = QString::number(value);

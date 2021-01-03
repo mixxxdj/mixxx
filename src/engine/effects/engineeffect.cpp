@@ -32,7 +32,7 @@ EngineEffect::EngineEffect(EffectManifestPointer pManifest,
 
     //TODO: get actual configuration of engine
     const mixxx::EngineParameters bufferParameters(
-            mixxx::AudioSignal::SampleRate(96000),
+            mixxx::audio::SampleRate(96000),
             MAX_BUFFER_LEN / mixxx::kEngineChannelCount);
     m_pProcessor->initialize(activeInputChannels, registeredOutputChannels, bufferParameters);
     m_effectRampsFromDry = pManifest->effectRampsFromDry();
@@ -178,8 +178,8 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
     if (effectiveEffectEnableState != EffectEnableState::Disabled) {
         //TODO: refactor rest of audio engine to use mixxx::AudioParameters
         const mixxx::EngineParameters bufferParameters(
-              mixxx::AudioSignal::SampleRate(sampleRate),
-              numSamples / mixxx::kEngineChannelCount);
+                mixxx::audio::SampleRate(sampleRate),
+                numSamples / mixxx::kEngineChannelCount);
 
         m_pProcessor->process(inputHandle, outputHandle, pInput, pOutput,
                               bufferParameters,
@@ -192,16 +192,16 @@ bool EngineEffect::process(const ChannelHandle& inputHandle,
             if (effectiveEffectEnableState == EffectEnableState::Disabling) {
                 DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
                 // Fade out (fade to dry signal)
-                SampleUtil::copy2WithRampingGain(pOutput,
-                        pInput, 0.0, 1.0,
-                        pOutput, 1.0, 0.0,
+                SampleUtil::linearCrossfadeBuffersOut(
+                        pOutput,
+                        pInput,
                         numSamples);
             } else if (effectiveEffectEnableState == EffectEnableState::Enabling) {
                 DEBUG_ASSERT(pInput != pOutput); // Fade to dry only works if pInput is not touched by pOutput
                 // Fade in (fade to wet signal)
-                SampleUtil::copy2WithRampingGain(pOutput,
-                        pInput, 1.0, 0.0,
-                        pOutput, 0.0, 1.0,
+                SampleUtil::linearCrossfadeBuffersIn(
+                        pOutput,
+                        pInput,
                         numSamples);
             }
         }

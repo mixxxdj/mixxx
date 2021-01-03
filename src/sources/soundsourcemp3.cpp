@@ -10,17 +10,17 @@ namespace mixxx {
 
 namespace {
 
-const Logger kLogger("SoundSourceMP3");
+const Logger kLogger("SoundSourceMp3");
 
 // MP3 does only support 1 or 2 channels
-const SINT kChannelCountMax = 2;
+constexpr SINT kChannelCountMax = 2;
 
-const SINT kMaxBytesPerMp3Frame = 1441;
+constexpr SINT kMaxBytesPerMp3Frame = 1441;
 
 // mp3 supports 9 different sample rates
-const int kSampleRateCount = 9;
+constexpr int kSampleRateCount = 9;
 
-int getIndexBySampleRate(AudioSignal::SampleRate sampleRate) {
+int getIndexBySampleRate(audio::SampleRate sampleRate) {
     switch (sampleRate) {
     case 8000:
         return 0;
@@ -46,43 +46,44 @@ int getIndexBySampleRate(AudioSignal::SampleRate sampleRate) {
     }
 }
 
-AudioSignal::SampleRate getSampleRateByIndex(int sampleRateIndex) {
+audio::SampleRate getSampleRateByIndex(int sampleRateIndex) {
     switch (sampleRateIndex) {
     case 0:
-        return AudioSignal::SampleRate(8000);
+        return audio::SampleRate(8000);
     case 1:
-        return AudioSignal::SampleRate(11025);
+        return audio::SampleRate(11025);
     case 2:
-        return AudioSignal::SampleRate(12000);
+        return audio::SampleRate(12000);
     case 3:
-        return AudioSignal::SampleRate(16000);
+        return audio::SampleRate(16000);
     case 4:
-        return AudioSignal::SampleRate(22050);
+        return audio::SampleRate(22050);
     case 5:
-        return AudioSignal::SampleRate(24000);
+        return audio::SampleRate(24000);
     case 6:
-        return AudioSignal::SampleRate(32000);
+        return audio::SampleRate(32000);
     case 7:
-        return AudioSignal::SampleRate(44100);
+        return audio::SampleRate(44100);
     case 8:
-        return AudioSignal::SampleRate(48000);
+        return audio::SampleRate(48000);
     default:
         // index out of range
-        return AudioSignal::SampleRate();
+        return audio::SampleRate();
     }
 }
 
-const CSAMPLE kMadScale = CSAMPLE_PEAK / CSAMPLE(MAD_F_ONE);
+constexpr CSAMPLE kMadScale = CSAMPLE_PEAK / CSAMPLE(MAD_F_ONE);
 
 inline CSAMPLE madScaleSampleValue(mad_fixed_t sampleValue) {
     return sampleValue * kMadScale;
 }
 
 // Optimization: Reserve initial capacity for seek frame list
-const SINT kMinutesPerFile = 10;        // enough for the majority of files (tunable)
-const SINT kSecondsPerMinute = 60;      // fixed
-const SINT kMaxMp3FramesPerSecond = 39; // fixed: 1 MP3 frame = 26 ms -> ~ 1000 / 26
-const SINT kSeekFrameListCapacity = kMinutesPerFile * kSecondsPerMinute * kMaxMp3FramesPerSecond;
+constexpr SINT kMinutesPerFile = 10;        // enough for the majority of files (tunable)
+constexpr SINT kSecondsPerMinute = 60;      // fixed
+constexpr SINT kMaxMp3FramesPerSecond = 39; // fixed: 1 MP3 frame = 26 ms -> ~ 1000 / 26
+constexpr SINT kSeekFrameListCapacity =
+        kMinutesPerFile * kSecondsPerMinute * kMaxMp3FramesPerSecond;
 
 inline QString formatHeaderFlags(int headerFlags) {
     return QString("0x%1").arg(headerFlags, 4, 16, QLatin1Char('0'));
@@ -158,8 +159,16 @@ bool decodeFrameHeader(
 
 } // anonymous namespace
 
+//static
+const QString SoundSourceProviderMp3::kDisplayName = QStringLiteral("MAD: MPEG Audio Decoder");
+
+//static
+const QStringList SoundSourceProviderMp3::kSupportedFileExtensions = {
+        QStringLiteral("mp3"),
+};
+
 SoundSourceMp3::SoundSourceMp3(const QUrl& url)
-        : SoundSource(url, "mp3"),
+        : SoundSource(url),
           m_file(getLocalFileName()),
           m_fileSize(0),
           m_pFileData(nullptr),
@@ -192,9 +201,6 @@ void SoundSourceMp3::finishDecoding() {
 SoundSource::OpenResult SoundSourceMp3::tryOpen(
         OpenMode /*mode*/,
         const OpenParams& /*config*/) {
-    DEBUG_ASSERT(!channelCount().valid());
-    DEBUG_ASSERT(!sampleRate().valid());
-
     DEBUG_ASSERT(!m_file.isOpen());
     if (!m_file.open(QIODevice::ReadOnly)) {
         kLogger.warning() << "Failed to open file:" << m_file.fileName();
@@ -238,7 +244,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     mad_header madHeader;
     mad_header_init(&madHeader);
 
-    ChannelCount maxChannelCount = channelCount();
+    auto maxChannelCount = audio::ChannelCount();
     do {
         if (!decodeFrameHeader(&madHeader, &m_madStream, true)) {
             if (isStreamValid(m_madStream)) {
@@ -267,9 +273,9 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
             continue;
         }
 
-        const ChannelCount madChannelCount(MAD_NCHANNELS(&madHeader));
-        if (madChannelCount.valid()) {
-            if (maxChannelCount.valid() && (madChannelCount != maxChannelCount)) {
+        const audio::ChannelCount madChannelCount(MAD_NCHANNELS(&madHeader));
+        if (madChannelCount.isValid()) {
+            if (maxChannelCount.isValid() && (madChannelCount != maxChannelCount)) {
                 kLogger.warning()
                         << "Differing number of channels"
                         << madChannelCount << "<>" << maxChannelCount
@@ -283,7 +289,8 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
                     << m_file.fileName();
         }
 
-        const int sampleRateIndex = getIndexBySampleRate(SampleRate(madSampleRate));
+        const int sampleRateIndex = getIndexBySampleRate(
+                audio::SampleRate(madSampleRate));
         if (sampleRateIndex >= kSampleRateCount) {
             kLogger.warning() << "Invalid sample rate:" << m_file.fileName()
                               << madSampleRate;
@@ -297,7 +304,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         addSeekFrame(m_curFrameIndex, m_madStream.this_frame);
 
         // Accumulate data from the header
-        if (Bitrate(madHeader.bitrate).valid()) {
+        if (audio::Bitrate(madHeader.bitrate).isValid()) {
             // Accumulate the bitrate per decoded sample frame to calculate
             // a weighted average for the whole file (see below)
             sumBitrateFrames += static_cast<quint64>(madHeader.bitrate) * static_cast<quint64>(madFrameLength);
@@ -360,15 +367,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     }
 
     // Initialize the AudioSource
-    if (mostCommonSampleRateIndex > kSampleRateCount) {
-        kLogger.warning()
-                << "Unknown sample rate in MP3 file:"
-                << m_file.fileName();
-        // Abort
-        return OpenResult::Failed;
-    }
-    setSampleRate(getSampleRateByIndex(mostCommonSampleRateIndex));
-    if (!maxChannelCount.valid() || (maxChannelCount > kChannelCountMax)) {
+    if (!maxChannelCount.isValid() || (maxChannelCount > kChannelCountMax)) {
         kLogger.warning()
                 << "Invalid number of channels"
                 << maxChannelCount
@@ -377,10 +376,18 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
         // Abort
         return OpenResult::Failed;
     }
-    setChannelCount(maxChannelCount);
+    initChannelCountOnce(maxChannelCount);
+    if (mostCommonSampleRateIndex > kSampleRateCount) {
+        kLogger.warning()
+                << "Unknown sample rate in MP3 file:"
+                << m_file.fileName();
+        // Abort
+        return OpenResult::Failed;
+    }
+    initSampleRateOnce(getSampleRateByIndex(mostCommonSampleRateIndex));
     initFrameIndexRangeOnce(IndexRange::forward(0, m_curFrameIndex));
 
-    // Calculate average values
+    // Calculate average bitrate values
     DEBUG_ASSERT(m_seekFrameList.size() > 0); // see above
     m_avgSeekFrameCount = frameLength() / m_seekFrameList.size();
     if (cntBitrateFrames > 0) {
@@ -391,7 +398,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     }
 
     // Terminate m_seekFrameList
-    addSeekFrame(m_curFrameIndex, 0);
+    addSeekFrame(m_curFrameIndex, nullptr);
     DEBUG_ASSERT(m_seekFrameList.back().frameIndex == frameIndexMax());
 
     // Restart decoding at the beginning of the audio stream
@@ -523,7 +530,7 @@ SINT SoundSourceMp3::findSeekFrameIndex(
 }
 
 ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if ((m_curFrameIndex != firstFrameIndex)) {
@@ -678,9 +685,9 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
 
 #ifndef QT_NO_DEBUG_OUTPUT
             const SINT madFrameChannelCount = MAD_NCHANNELS(&m_madFrame.header);
-            if (madFrameChannelCount != channelCount()) {
+            if (madFrameChannelCount != getSignalInfo().getChannelCount()) {
                 kLogger.warning() << "MP3 frame header with mismatching number of channels"
-                                  << madFrameChannelCount << "<>" << channelCount()
+                                  << madFrameChannelCount << "<>" << getSignalInfo().getChannelCount()
                                   << " - aborting";
                 abortReading = true;
             }
@@ -690,9 +697,9 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             mad_synth_frame(&m_madSynth, &m_madFrame);
 #ifndef QT_NO_DEBUG_OUTPUT
             const SINT madSynthSampleRate = m_madSynth.pcm.samplerate;
-            if (madSynthSampleRate != sampleRate()) {
+            if (madSynthSampleRate != getSignalInfo().getSampleRate()) {
                 kLogger.warning() << "Reading MP3 data with different sample rate"
-                                  << madSynthSampleRate << "<>" << sampleRate()
+                                  << madSynthSampleRate << "<>" << getSignalInfo().getSampleRate()
                                   << " - aborting";
                 abortReading = true;
             }
@@ -716,14 +723,14 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             DEBUG_ASSERT(madSynthOffset < m_madSynth.pcm.length);
             const SINT madSynthChannelCount = m_madSynth.pcm.channels;
             DEBUG_ASSERT(0 < madSynthChannelCount);
-            DEBUG_ASSERT(madSynthChannelCount <= channelCount());
-            if (madSynthChannelCount != channelCount()) {
+            DEBUG_ASSERT(madSynthChannelCount <= getSignalInfo().getChannelCount());
+            if (madSynthChannelCount != getSignalInfo().getChannelCount()) {
                 kLogger.warning() << "Reading MP3 data with different number of channels"
-                                  << madSynthChannelCount << "<>" << channelCount();
+                                  << madSynthChannelCount << "<>" << getSignalInfo().getChannelCount();
             }
             if (madSynthChannelCount == 1) {
                 // MP3 frame contains a mono signal
-                if (channelCount() == 2) {
+                if (getSignalInfo().getChannelCount() == 2) {
                     // The reader explicitly requested a stereo signal
                     // or the AudioSource itself provides a stereo signal.
                     // Mono -> Stereo: Copy 1st channel twice
@@ -747,7 +754,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
                 // If the MP3 frame contains a stereo signal then the whole
                 // AudioSource must also provide 2 channels, because the
                 // maximum channel count of all MP3 frames is used.
-                DEBUG_ASSERT(channelCount() == 2);
+                DEBUG_ASSERT(getSignalInfo().getChannelCount() == 2);
                 // Stereo -> Stereo: Copy 1st + 2nd channel
                 for (SINT i = 0; i < synthReadCount; ++i) {
                     *pSampleBuffer++ = madScaleSampleValue(
@@ -770,17 +777,7 @@ ReadableSampleFrames SoundSourceMp3::readSampleFramesClamped(
             IndexRange::forward(firstFrameIndex, numberOfFrames),
             SampleBuffer::ReadableSlice(
                     writableSampleFrames.writableData(),
-                    std::min(writableSampleFrames.writableLength(), frames2samples(numberOfFrames))));
-}
-
-QString SoundSourceProviderMp3::getName() const {
-    return "MAD: MPEG Audio Decoder";
-}
-
-QStringList SoundSourceProviderMp3::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("mp3");
-    return supportedFileExtensions;
+                    std::min(writableSampleFrames.writableLength(), getSignalInfo().frames2samples(numberOfFrames))));
 }
 
 } // namespace mixxx

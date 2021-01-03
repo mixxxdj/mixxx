@@ -1,5 +1,7 @@
-#include "widget/effectwidgetutils.h"
 #include "widget/weffectparameterknob.h"
+
+#include "moc_weffectparameterknob.cpp"
+#include "widget/effectwidgetutils.h"
 
 void WEffectParameterKnob::setup(const QDomNode& node, const SkinContext& context) {
     WKnob::setup(node, context);

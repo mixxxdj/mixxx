@@ -46,7 +46,7 @@ class EffectManifestParameter {
         BEATS,      /// multiples of a beat
     };
 
-    enum class LinkType {
+    enum class LinkType : int {
         NONE = 0,          /// Not controlled by the meta knob
         LINKED,            /// Controlled by the meta knob as it is
         LINKED_LEFT,       /// Controlled by the left side of the meta knob

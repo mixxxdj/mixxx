@@ -45,7 +45,7 @@ class TrackUpdateTest: public MixxxTest {
         auto coverInfo = pTrack->getCoverInfo();
         coverInfo.type = CoverInfo::FILE;
         coverInfo.source = CoverInfo::USER_SELECTED;
-        coverInfo.hash = coverInfo.hash + 1;
+        coverInfo.setImage(QImage(1, 1, QImage::Format_Mono));
         pTrack->setCoverInfo(coverInfo);
         EXPECT_TRUE(pTrack->isDirty());
         return pTrack;

@@ -1,5 +1,7 @@
 #include "control/controlmodel.h"
 
+#include "moc_controlmodel.cpp"
+
 ControlModel::ControlModel(QObject* pParent)
         : QAbstractTableModel(pParent) {
 
@@ -21,8 +23,7 @@ void ControlModel::addControl(const ConfigKey& key,
     info.key = key;
     info.title = title;
     info.description = description;
-    info.pControl = new ControlProxy(this);
-    info.pControl->initialize(info.key);
+    info.pControl = new ControlProxy(info.key, this);
 
     beginInsertRows(QModelIndex(), m_controls.size(),
                     m_controls.size());

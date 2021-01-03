@@ -9,8 +9,7 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#ifndef WOVERVIEW_H
-#define WOVERVIEW_H
+#pragma once
 
 #include <QColor>
 #include <QList>
@@ -20,12 +19,14 @@
 
 #include "analyzer/analyzerprogress.h"
 #include "skin/skincontext.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "util/color/color.h"
 #include "util/parented_ptr.h"
 #include "waveform/renderers/waveformmarkrange.h"
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformsignalcolors.h"
+#include "waveform/waveform.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wcuemenupopup.h"
 #include "widget/wwidget.h"
@@ -46,12 +47,12 @@ class WOverview : public WWidget, public TrackDropTarget {
             AnalyzerProgress analyzerProgress);
 
   signals:
-    void trackDropped(QString filename, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   protected:
     WOverview(
-            const char* group,
+            const QString& group,
             PlayerManager* pPlayerManager,
             UserSettingsPointer pConfig,
             QWidget* parent = nullptr);
@@ -88,7 +89,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_pixmapDone;
     float m_waveformPeak;
 
-    int m_diffGain;
+    float m_diffGain;
     qreal m_devicePixelRatio;
 
   private slots:
@@ -110,6 +111,8 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawEndOfTrackBackground(QPainter* pPainter);
     void drawAxis(QPainter* pPainter);
     void drawWaveformPixmap(QPainter* pPainter);
+    void drawPlayedOverlay(QPainter* pPainter);
+    void drawPlayPosition(QPainter* pPainter);
     void drawEndOfTrackFrame(QPainter* pPainter);
     void drawAnalyzerProgress(QPainter* pPainter);
     void drawRangeMarks(QPainter* pPainter, const float& offset, const float& gain);
@@ -117,6 +120,7 @@ class WOverview : public WWidget, public TrackDropTarget {
     void drawPickupPosition(QPainter* pPainter);
     void drawTimeRuler(QPainter* pPainter);
     void drawMarkLabels(QPainter* pPainter, const float offset, const float gain);
+    void drawPassthroughOverlay(QPainter* pPainter);
     void paintText(const QString& text, QPainter* pPainter);
     double samplePositionToSeconds(double sample);
     inline int valueToPosition(double value) const {
@@ -155,7 +159,6 @@ class WOverview : public WWidget, public TrackDropTarget {
     int m_iPlayPos;
 
     WaveformMarkPointer m_pHoveredMark;
-    bool m_bHotcueMenuShowing;
     bool m_bTimeRulerActive;
     QPointF m_timeRulerPos;
     WaveformMarkLabel m_timeRulerPositionLabel;
@@ -165,11 +168,18 @@ class WOverview : public WWidget, public TrackDropTarget {
 
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
-    QColor m_qColorBackground;
+    QColor m_backgroundColor;
     int m_iLabelFontSize;
     QColor m_labelTextColor;
     QColor m_labelBackgroundColor;
+    QColor m_axesColor;
+    QColor m_playPosColor;
     QColor m_endOfTrackColor;
+    QColor m_passthroughOverlayColor;
+    QColor m_playedOverlayColor;
+    QColor m_lowColor;
+    int m_dimBrightThreshold;
+    QLabel* m_pPassthroughLabel;
 
     // All WaveformMarks
     WaveformMarkSet m_marks;
@@ -187,5 +197,3 @@ class WOverview : public WWidget, public TrackDropTarget {
     bool m_trackLoaded;
     double m_scaleFactor;
 };
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef WKEY_H
-#define WKEY_H
+#pragma once
 
 #include <QLabel>
 
@@ -9,7 +8,7 @@
 class WKey : public WLabel  {
     Q_OBJECT
   public:
-    explicit WKey(const char* group, QWidget* pParent=nullptr);
+    explicit WKey(const QString& group, QWidget* pParent = nullptr);
 
     void onConnectedControlChanged(double dParameter, double dValue) override;
     void setup(const QDomNode& node, const SkinContext& context) override;
@@ -26,5 +25,3 @@ class WKey : public WLabel  {
     ControlProxy m_keyNotation;
     ControlProxy m_engineKeyDistance;
 };
-
-#endif /* WKEY_H */

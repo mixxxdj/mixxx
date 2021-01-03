@@ -1,12 +1,9 @@
-// Created 03/26/2011 by Tobias Rafreider
+#include "recording/recordingmanager.h"
 
-#include <QMutex>
 #include <QDir>
-#include <QtDebug>
-#include <QDebug>
 #include <QMessageBox>
+#include <QMutex>
 #include <QStorageInfo>
-
 #include <climits>
 
 #include "control/controlproxy.h"
@@ -15,11 +12,10 @@
 #include "engine/sidechain/enginerecord.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "errordialoghandler.h"
+#include "moc_recordingmanager.cpp"
 #include "recording/defs_recording.h"
-#include "recording/recordingmanager.h"
 
-// one gibibyte
-#define MIN_DISK_FREE 1024 * 1024 * 1024ll
+#define MIN_DISK_FREE 1024 * 1024 * 1024ll // one gibibyte
 
 RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine)
         : m_pConfig(pConfig),
@@ -36,25 +32,32 @@ RecordingManager::RecordingManager(UserSettingsPointer pConfig, EngineMaster* pE
           m_secondsRecorded(0),
           m_secondsRecordedSplit(0) {
     m_pToggleRecording = new ControlPushButton(ConfigKey(RECORDING_PREF_KEY, "toggle_recording"));
-    connect(m_pToggleRecording, SIGNAL(valueChanged(double)),
-            this, SLOT(slotToggleRecording(double)));
+    connect(m_pToggleRecording,
+            &ControlPushButton::valueChanged,
+            this,
+            &RecordingManager::slotToggleRecording);
     m_recReadyCO = new ControlObject(ConfigKey(RECORDING_PREF_KEY, "status"));
     m_recReady = new ControlProxy(m_recReadyCO->getKey(), this);
 
     m_split_size = getFileSplitSize();
     m_split_time = getFileSplitSeconds();
 
-
     // Register EngineRecord with the engine sidechain.
     EngineSideChain* pSidechain = pEngine->getSideChain();
     if (pSidechain) {
         EngineRecord* pEngineRecord = new EngineRecord(m_pConfig);
-        connect(pEngineRecord, SIGNAL(isRecording(bool, bool)),
-                this, SLOT(slotIsRecording(bool, bool)));
-        connect(pEngineRecord, SIGNAL(bytesRecorded(int)),
-                this, SLOT(slotBytesRecorded(int)));
-        connect(pEngineRecord, SIGNAL(durationRecorded(quint64)),
-                this, SLOT(slotDurationRecorded(quint64)));
+        connect(pEngineRecord,
+                &EngineRecord::isRecording,
+                this,
+                &RecordingManager::slotIsRecording);
+        connect(pEngineRecord,
+                &EngineRecord::bytesRecorded,
+                this,
+                &RecordingManager::slotBytesRecorded);
+        connect(pEngineRecord,
+                &EngineRecord::durationRecorded,
+                this,
+                &RecordingManager::slotDurationRecorded);
         pSidechain->addSideChainWorker(pEngineRecord);
     }
 }
@@ -66,7 +69,7 @@ RecordingManager::~RecordingManager() {
     delete m_pToggleRecording;
 }
 
-QString RecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
+QString RecordingManager::formatDateTimeForFilename(const QDateTime& dateTime) const {
     // Use a format based on ISO 8601. Windows does not support colons in
     // filenames so we can't use them anywhere.
     QString formatted = dateTime.toString("yyyy-MM-dd_hh'h'mm'm'ss's'");
@@ -81,8 +84,9 @@ void RecordingManager::slotSetRecording(bool recording) {
     }
 }
 
-void RecordingManager::slotToggleRecording(double v) {
-    if (v > 0) {
+void RecordingManager::slotToggleRecording(double value) {
+    bool toggle = static_cast<bool>(value);
+    if (toggle) {
         if (isRecordingActive()) {
             stopRecording();
         } else {
@@ -110,7 +114,7 @@ void RecordingManager::startRecording() {
     m_secondsRecordedSplit=0;
     m_iNumberOfBytesRecorded = 0;
     m_secondsRecorded=0;
-    m_dfSilence=0;
+    m_dfSilence = false;
     m_dfCounter=0;
     m_split_size = getFileSplitSize();
     m_split_time = getFileSplitSeconds();
@@ -308,38 +312,40 @@ const QString& RecordingManager::getRecordingLocation() const {
 quint64 RecordingManager::getFileSplitSize()
 {
      QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
-     if(fileSizeStr == SPLIT_650MB)
+     if (fileSizeStr == SPLIT_650MB) {
          return SIZE_650MB;
-     else if(fileSizeStr == SPLIT_700MB)
+     } else if (fileSizeStr == SPLIT_700MB) {
          return SIZE_700MB;
-     else if(fileSizeStr == SPLIT_1024MB)
+     } else if (fileSizeStr == SPLIT_1024MB) {
          return SIZE_1GB;
-     else if(fileSizeStr == SPLIT_2048MB)
+     } else if (fileSizeStr == SPLIT_2048MB) {
          return SIZE_2GB;
-     else if(fileSizeStr == SPLIT_4096MB)
+     } else if (fileSizeStr == SPLIT_4096MB) {
          return SIZE_4GB;
-     else if(fileSizeStr == SPLIT_60MIN)
+     } else if (fileSizeStr == SPLIT_60MIN) {
          return SIZE_4GB; //Ignore size limit. use time limit
-     else if(fileSizeStr == SPLIT_74MIN)
+     } else if (fileSizeStr == SPLIT_74MIN) {
          return SIZE_4GB; //Ignore size limit. use time limit
-     else if(fileSizeStr == SPLIT_80MIN)
+     } else if (fileSizeStr == SPLIT_80MIN) {
          return SIZE_4GB; //Ignore size limit. use time limit
-     else if(fileSizeStr == SPLIT_120MIN)
+     } else if (fileSizeStr == SPLIT_120MIN) {
          return SIZE_4GB; //Ignore size limit. use time limit
-     else
+     } else {
          return SIZE_650MB;
+     }
 }
 unsigned int RecordingManager::getFileSplitSeconds()
 {
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
-    if(fileSizeStr == SPLIT_60MIN)
+    if (fileSizeStr == SPLIT_60MIN) {
         return 60*60;
-    else if(fileSizeStr == SPLIT_74MIN)
+    } else if (fileSizeStr == SPLIT_74MIN) {
         return 74*60;
-    else if(fileSizeStr == SPLIT_80MIN)
+    } else if (fileSizeStr == SPLIT_80MIN) {
         return 80*60;
-    else if(fileSizeStr == SPLIT_120MIN)
+    } else if (fileSizeStr == SPLIT_120MIN) {
         return 120*60;
-    else // Do not limit by time for the rest.
+    } else { // Do not limit by time for the rest.
         return INT_MAX;
+    }
 }

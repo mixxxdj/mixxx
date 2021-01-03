@@ -1,19 +1,4 @@
-/***************************************************************************
-                      playerinfo.cpp  -  Helper class to have easy access
-                                         to a lot of data (singleton)
-                             -------------------
-    copyright            : (C) 2007 by Wesley Stessens
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
+// Helper class to have easy access
 #include "mixer/playerinfo.h"
 
 #include <QMutexLocker>
@@ -22,6 +7,8 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginexfader.h"
 #include "mixer/playermanager.h"
+#include "moc_playerinfo.cpp"
+#include "track/track.h"
 
 namespace {
 
@@ -29,7 +16,7 @@ const int kPlayingDeckUpdateIntervalMillis = 2000;
 
 PlayerInfo* s_pPlayerInfo = nullptr;
 
-}
+} // namespace
 
 PlayerInfo::PlayerInfo()
         : m_pCOxfader(new ControlProxy("[Master]","crossfader", this)),
@@ -42,9 +29,17 @@ PlayerInfo::~PlayerInfo() {
     clearControlCache();
 }
 
+PlayerInfo& PlayerInfo::create() {
+    VERIFY_OR_DEBUG_ASSERT(!s_pPlayerInfo) {
+        return *s_pPlayerInfo;
+    }
+    s_pPlayerInfo = new PlayerInfo();
+    return *s_pPlayerInfo;
+}
+
 // static
 PlayerInfo& PlayerInfo::instance() {
-    if (!s_pPlayerInfo) {
+    VERIFY_OR_DEBUG_ASSERT(s_pPlayerInfo) {
         s_pPlayerInfo = new PlayerInfo();
     }
     return *s_pPlayerInfo;
@@ -72,6 +67,11 @@ void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& track) {
         emit trackUnloaded(group, pOld);
     }
     emit trackLoaded(group, track);
+
+    if (m_currentlyPlayingDeck >= 0 &&
+            group == PlayerManager::groupForDeck(m_currentlyPlayingDeck)) {
+        emit currentPlayingTrackChanged(track);
+    }
 }
 
 bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
@@ -118,6 +118,17 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     double maxVolume = 0;
     int maxDeck = -1;
 
+    CSAMPLE_GAIN xfl, xfr;
+    // TODO: supply correct parameters to the function. If the hamster style
+    // for the crossfader is enabled, the result is currently wrong.
+    EngineXfader::getXfadeGains(m_pCOxfader->get(),
+            1.0,
+            0.0,
+            MIXXX_XFADER_ADDITIVE,
+            false,
+            &xfl,
+            &xfr);
+
     for (int i = 0; i < (int)PlayerManager::numDecks(); ++i) {
         DeckControls* pDc = getDeckControls(i);
 
@@ -134,13 +145,7 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             continue;
         }
 
-        double xfl, xfr;
-        // TODO: supply correct parameters to the function. If the hamster style
-        // for the crossfader is enabled, the result is currently wrong.
-        EngineXfader::getXfadeGains(m_pCOxfader->get(), 1.0, 0.0, MIXXX_XFADER_ADDITIVE, false,
-                                    &xfl, &xfr);
-
-        int orient = pDc->m_orientation.get();
+        const auto orient = static_cast<int>(pDc->m_orientation.get());
         double xfvol;
         if (orient == EngineChannel::LEFT) {
             xfvol = xfl;
@@ -156,16 +161,16 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             maxVolume = dvol;
         }
     }
-    if (maxDeck != m_currentlyPlayingDeck) {
-        m_currentlyPlayingDeck = maxDeck;
-        locker.unlock();
+    locker.unlock();
+
+    int oldDeck = m_currentlyPlayingDeck.fetchAndStoreRelease(maxDeck);
+    if (maxDeck != oldDeck) {
         emit currentPlayingDeckChanged(maxDeck);
         emit currentPlayingTrackChanged(getCurrentPlayingTrack());
     }
 }
 
 int PlayerInfo::getCurrentPlayingDeck() {
-    QMutexLocker locker(&m_mutex);
     return m_currentlyPlayingDeck;
 }
 

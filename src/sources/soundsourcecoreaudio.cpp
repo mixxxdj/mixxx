@@ -1,6 +1,7 @@
 #include "sources/soundsourcecoreaudio.h"
 #include "sources/mp3decoding.h"
 
+#include "engine/engine.h"
 #include "util/logger.h"
 #include "util/math.h"
 
@@ -11,7 +12,7 @@ namespace {
 const Logger kLogger("SoundSourceCoreAudio");
 
 // The maximum number of samples per MP3 frame
-const SINT kMp3MaxFrameSize = 1152;
+constexpr SINT kMp3MaxFrameSize = 1152;
 
 // NOTE(rryan): For every MP3 seek we jump back kMp3MaxSeekPrefetchFrames frames from
 // the seek position and read forward to allow the decoder to stabilize. The
@@ -20,10 +21,31 @@ const SINT kMp3MaxFrameSize = 1152;
 // appropriate amount to pre-fetch from the ExtAudioFile API. Oddly, the "prime"
 // information -- which AIUI is supposed to tell us this information -- is zero
 // for this file. We use the same frame pre-fetch count from SoundSourceMp3.
-const SINT kMp3MaxSeekPrefetchFrames =
+constexpr SINT kMp3MaxSeekPrefetchFrames =
         kMp3SeekFramePrefetchCount * kMp3MaxFrameSize;
 
 } // namespace
+
+//static
+const QString SoundSourceProviderCoreAudio::kDisplayName = QStringLiteral("Apple Core Audio");
+
+//static
+const QStringList SoundSourceProviderCoreAudio::kSupportedFileExtensions = {
+        QStringLiteral("m4a"),
+        QStringLiteral("mp4"),
+        QStringLiteral("mp3"),
+        QStringLiteral("mp2"),
+        // Can add mp3, mp2, ac3, and others here if you want:
+        // http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
+};
+
+SoundSourceProviderPriority SoundSourceProviderCoreAudio::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    Q_UNUSED(supportedFileExtension)
+    // On macOS SoundSourceCoreAudio is the preferred decoder for all
+    // supported audio formats.
+    return SoundSourceProviderPriority::Higher;
+}
 
 SoundSourceCoreAudio::SoundSourceCoreAudio(QUrl url)
         : SoundSource(url),
@@ -88,7 +110,9 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
 
     // create the output format
     const UInt32 numChannels =
-            params.channelCount().valid() ? params.channelCount() : 2;
+            params.getSignalInfo().getChannelCount().isValid() ?
+            params.getSignalInfo().getChannelCount() :
+            mixxx::kEngineChannelCount;
     m_outputFormat = CAStreamBasicDescription(m_inputFormat.mSampleRate,
             numChannels,
             CAStreamBasicDescription::kPCMFormatFloat32,
@@ -160,8 +184,9 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
         return OpenResult::Failed;
     }
 
-    setChannelCount(m_outputFormat.NumberChannels());
-    setSampleRate(m_inputFormat.mSampleRate);
+    initChannelCountOnce(m_outputFormat.NumberChannels());
+    DEBUG_ASSERT(std::round(m_inputFormat.mSampleRate) == m_inputFormat.mSampleRate);
+    initSampleRateOnce(static_cast<SINT>(m_inputFormat.mSampleRate));
     // TODO(XXX): Reduce totalFrameCount by m_leadingFrames???
     initFrameIndexRangeOnce(IndexRange::forward(m_leadingFrames, totalFrameCount));
 
@@ -172,7 +197,7 @@ SoundSource::OpenResult SoundSourceCoreAudio::tryOpen(
     } else {
         m_seekPrefetchFrames = m_leadingFrames;
     }
-    m_seekPrefetchBuffer.resize(frames2samples(m_seekPrefetchFrames));
+    m_seekPrefetchBuffer.resize(getSignalInfo().frames2samples(m_seekPrefetchFrames));
 
     // Seek to the first position, skipping over all header frames
     seekSampleFrame(frameIndexMin());
@@ -199,7 +224,7 @@ SINT SoundSourceCoreAudio::seekSampleFrame(SINT frameIndex) {
     }
     // Decode and discard prefetched frames
     if (prefetchFrames > 0) {
-        DEBUG_ASSERT(frames2samples(prefetchFrames) <= SINT(m_seekPrefetchBuffer.size()));
+        DEBUG_ASSERT(getSignalInfo().frames2samples(prefetchFrames) <= SINT(m_seekPrefetchBuffer.size()));
         const auto prefetchedFrames = readSampleFrames(prefetchFrames, m_seekPrefetchBuffer.data());
         DEBUG_ASSERT(prefetchedFrames <= prefetchFrames);
         if (prefetchedFrames < prefetchFrames) {
@@ -246,9 +271,9 @@ SINT SoundSourceCoreAudio::readSampleFrames(
 
         AudioBufferList fillBufList;
         fillBufList.mNumberBuffers = 1;
-        fillBufList.mBuffers[0].mNumberChannels = channelCount();
-        fillBufList.mBuffers[0].mDataByteSize = frames2samples(numFramesToRead) * sizeof(sampleBuffer[0]);
-        fillBufList.mBuffers[0].mData = sampleBuffer + frames2samples(numFramesRead);
+        fillBufList.mBuffers[0].mNumberChannels = getSignalInfo().getChannelCount();
+        fillBufList.mBuffers[0].mDataByteSize = getSignalInfo().frames2samples(numFramesToRead) * sizeof(sampleBuffer[0]);
+        fillBufList.mBuffers[0].mData = sampleBuffer + getSignalInfo().frames2samples(numFramesRead);
 
         UInt32 numFramesToReadInOut = numFramesToRead; // input/output parameter
         OSStatus err = ExtAudioFileRead(m_audioFile, &numFramesToReadInOut, &fillBufList);
@@ -261,29 +286,6 @@ SINT SoundSourceCoreAudio::readSampleFrames(
         numFramesRead += numFramesToReadInOut;
     }
     return numFramesRead;
-}
-
-QString SoundSourceProviderCoreAudio::getName() const {
-    return "Apple Core Audio";
-}
-
-QStringList SoundSourceProviderCoreAudio::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("m4a");
-    supportedFileExtensions.append("mp3");
-    supportedFileExtensions.append("mp2");
-    // Can add mp3, mp2, ac3, and others here if you want:
-    // http://developer.apple.com/library/mac/documentation/MusicAudio/Reference/AudioFileConvertRef/Reference/reference.html#//apple_ref/doc/c_ref/AudioFileTypeID
-    return supportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderCoreAudio::getPriorityHint(
-        const QString& /*supportedFileExtension*/) const {
-    // On macOS CoreAudio is used both for decoding MP3 and M4A files. Neither
-    // FFmpeg nor libMAD are enabled in the release builds. In order to avoid
-    // priority conflicts with libMAD when enabled in the future the priority
-    // of this SoundSource is set to HIGHER.
-    return SoundSourceProviderPriority::HIGHER;
 }
 
 } // namespace mixxx

@@ -5,12 +5,13 @@
 #include <QPushButton>
 #include <QStyle>
 
+#include "moc_wcolorpicker.cpp"
 #include "util/color/color.h"
 #include "util/parented_ptr.h"
 
 namespace {
 constexpr int kNumColumnsCandidates[] = {5, 4, 3};
-}
+} // namespace
 
 // Determine the best number of columns for items in a QGridView.
 //
@@ -46,6 +47,9 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
     pLayout->setMargin(0);
     pLayout->setContentsMargins(0, 0, 0, 0);
 
+    pLayout->setSizeConstraint(QLayout::SetFixedSize);
+    setSizePolicy(QSizePolicy());
+
     // Unfortunately, not all styles supported by Qt support setting a
     // background color for QPushButtons (see
     // https://bugreports.qt.io/browse/QTBUG-11089). For example, when using
@@ -57,7 +61,10 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
     // from the rest of the application (when not styled via QSS), but that's
     // better than having buttons without any colors (which would make the
     // color picker unusable).
-    m_pStyle = QStyleFactory::create(QString("fusion"));
+    QStyle* pStyle = QStyleFactory::create(QString("fusion"));
+    pStyle->setParent(this);
+    m_pStyle = parented_ptr<QStyle>(pStyle);
+
     setLayout(pLayout);
     addColorButtons();
 
@@ -68,7 +75,7 @@ WColorPicker::WColorPicker(Options options, const ColorPalette& palette, QWidget
 }
 
 void WColorPicker::removeColorButtons() {
-    QGridLayout* pLayout = static_cast<QGridLayout*>(layout());
+    QGridLayout* pLayout = qobject_cast<QGridLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(pLayout) {
         qWarning() << "Color Picker has no layout!";
         return;
@@ -77,6 +84,7 @@ void WColorPicker::removeColorButtons() {
     if (m_pCustomColorButton) {
         pLayout->removeWidget(m_pCustomColorButton);
         delete m_pCustomColorButton;
+        m_pCustomColorButton = nullptr;
     }
 
     while (!m_colorButtons.isEmpty()) {
@@ -88,11 +96,12 @@ void WColorPicker::removeColorButtons() {
     if (m_pNoColorButton) {
         pLayout->removeWidget(m_pNoColorButton);
         delete m_pNoColorButton;
+        m_pNoColorButton = nullptr;
     }
 }
 
 void WColorPicker::addColorButtons() {
-    QGridLayout* pLayout = static_cast<QGridLayout*>(layout());
+    QGridLayout* pLayout = qobject_cast<QGridLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(pLayout) {
         qWarning() << "Color Picker has no layout!";
         return;
@@ -128,6 +137,8 @@ void WColorPicker::addColorButtons() {
         addCustomColorButton(pLayout, row, column);
         column++;
     }
+
+    adjustSize();
 }
 
 void WColorPicker::addColorButton(mixxx::RgbColor color, QGridLayout* pLayout, int row, int column) {
@@ -199,7 +210,7 @@ void WColorPicker::addCustomColorButton(QGridLayout* pLayout, int row, int colum
     pLayout->addWidget(pButton, row, column);
 }
 
-void WColorPicker::setColorButtonChecked(mixxx::RgbColor::optional_t color, bool checked) {
+void WColorPicker::setColorButtonChecked(const mixxx::RgbColor::optional_t& color, bool checked) {
     // Unset currently selected color
     QPushButton* pButton = nullptr;
     if (color) {
@@ -225,7 +236,7 @@ void WColorPicker::resetSelectedColor() {
     setColorButtonChecked(m_selectedColor, false);
 }
 
-void WColorPicker::setSelectedColor(mixxx::RgbColor::optional_t color) {
+void WColorPicker::setSelectedColor(const mixxx::RgbColor::optional_t& color) {
     resetSelectedColor();
 
     m_selectedColor = color;
@@ -243,6 +254,6 @@ void WColorPicker::setColorPalette(const ColorPalette& palette) {
     addColorButtons();
 }
 
-void WColorPicker::slotColorPicked(mixxx::RgbColor::optional_t color) {
+void WColorPicker::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
     setSelectedColor(color);
 }

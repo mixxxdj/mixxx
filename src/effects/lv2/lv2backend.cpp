@@ -1,6 +1,8 @@
 #include "effects/lv2/lv2backend.h"
-#include "effects/lv2/lv2manifest.h"
+
 #include "effects/lv2/lv2effectprocessor.h"
+#include "effects/lv2/lv2manifest.h"
+#include "moc_lv2backend.cpp"
 
 LV2Backend::LV2Backend() {
     m_pWorld = lilv_world_new();

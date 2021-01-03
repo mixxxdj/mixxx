@@ -1,20 +1,3 @@
-/***************************************************************************
-                          enginedeck.cpp  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "engine/channels/enginedeck.h"
 
 #include "control/controlpushbutton.h"
@@ -23,15 +6,20 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginepregain.h"
 #include "engine/enginevumeter.h"
+#include "moc_enginedeck.cpp"
 #include "util/sample.h"
 #include "waveform/waveformwidgetfactory.h"
 
-EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
-                       UserSettingsPointer pConfig,
-                       EngineMaster* pMixingEngine,
-                       EffectsManager* pEffectsManager,
-                       EngineChannel::ChannelOrientation defaultOrientation)
-        : EngineChannel(handle_group, defaultOrientation, pEffectsManager),
+EngineDeck::EngineDeck(
+        const ChannelHandleAndGroup& handleGroup,
+        UserSettingsPointer pConfig,
+        EngineMaster* pMixingEngine,
+        EffectsManager* pEffectsManager,
+        EngineChannel::ChannelOrientation defaultOrientation,
+        bool primaryDeck)
+        : EngineChannel(handleGroup, defaultOrientation, pEffectsManager,
+                  /*isTalkoverChannel*/ false,
+                  primaryDeck),
           m_pConfig(pConfig),
           m_pInputConfigured(new ControlObject(ConfigKey(getGroup(), "input_configured"))),
           m_pPassing(new ControlPushButton(ConfigKey(getGroup(), "passthrough"))),
@@ -50,11 +38,6 @@ EngineDeck::EngineDeck(const ChannelHandleAndGroup& handle_group,
             &EngineDeck::slotPassthroughChangeRequest,
             Qt::DirectConnection);
 
-    // Set up passthrough toggle button
-    connect(m_pPassing, &ControlObject::valueChanged,
-            this, &EngineDeck::slotPassingToggle,
-            Qt::DirectConnection);
-
     m_pPregain = new EnginePregain(getGroup());
     m_pBuffer = new EngineBuffer(getGroup(), pConfig, this, pMixingEngine);
 }
@@ -71,7 +54,7 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
     if (isPassthroughActive() && sampleBuffer) {
         SampleUtil::copy(pOut, sampleBuffer, iBufferSize);
         m_bPassthroughWasActive = true;
-        m_sampleBuffer = NULL;
+        m_sampleBuffer = nullptr;
         m_pPregain->setSpeedAndScratching(1, false);
     } else {
         // If passthrough is no longer enabled, zero out the buffer
@@ -92,9 +75,12 @@ void EngineDeck::process(CSAMPLE* pOut, const int iBufferSize) {
 
     EngineEffectsManager* pEngineEffectsManager = m_pEffectsManager->getEngineEffectsManager();
     if (pEngineEffectsManager != nullptr) {
-        pEngineEffectsManager->processPreFaderInPlace(
-            m_group.handle(), m_pEffectsManager->getMasterHandle(),
-            pOut, iBufferSize, m_pSampleRate->get());
+        pEngineEffectsManager->processPreFaderInPlace(m_group.handle(),
+                m_pEffectsManager->getMasterHandle(),
+                pOut,
+                iBufferSize,
+                // TODO(jholthuis): Use mixxx::audio::SampleRate instead
+                static_cast<unsigned int>(m_pSampleRate->get()));
     }
 
     // Update VU meter
@@ -130,36 +116,37 @@ bool EngineDeck::isActive() {
     return active;
 }
 
-void EngineDeck::receiveBuffer(AudioInput input, const CSAMPLE* pBuffer, unsigned int nFrames) {
+void EngineDeck::receiveBuffer(
+        const AudioInput& input, const CSAMPLE* pBuffer, unsigned int nFrames) {
     Q_UNUSED(input);
     Q_UNUSED(nFrames);
     // Skip receiving audio input if passthrough is not active
     if (!m_bPassthroughIsActive) {
-        m_sampleBuffer = NULL;
+        m_sampleBuffer = nullptr;
         return;
     } else {
         m_sampleBuffer = pBuffer;
     }
 }
 
-void EngineDeck::onInputConfigured(AudioInput input) {
+void EngineDeck::onInputConfigured(const AudioInput& input) {
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
     m_pInputConfigured->forceSet(1.0);
-    m_sampleBuffer =  NULL;
+    m_sampleBuffer = nullptr;
 }
 
-void EngineDeck::onInputUnconfigured(AudioInput input) {
+void EngineDeck::onInputUnconfigured(const AudioInput& input) {
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!
         qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
         return;
     }
     m_pInputConfigured->forceSet(0.0);
-    m_sampleBuffer = NULL;
+    m_sampleBuffer = nullptr;
 }
 
 bool EngineDeck::isPassthroughActive() const {
@@ -173,6 +160,11 @@ void EngineDeck::slotPassingToggle(double v) {
 void EngineDeck::slotPassthroughChangeRequest(double v) {
     if (v <= 0 || m_pInputConfigured->get() > 0) {
         m_pPassing->setAndConfirm(v);
+
+        // Pass confirmed value to slotPassingToggle. We cannot use the
+        // valueChanged signal for this, because the change originates from the
+        // same ControlObject instance.
+        slotPassingToggle(v);
     } else {
         emit noPassthroughInputConfigured();
     }

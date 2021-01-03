@@ -1,5 +1,4 @@
-#ifndef ANALYZER_PLUGINS_ANALYZERQUEENMARYBEATS_H
-#define ANALYZER_PLUGINS_ANALYZERQUEENMARYBEATS_H
+#pragma once
 
 #include <vector>
 
@@ -49,10 +48,10 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
     std::unique_ptr<DetectionFunction> m_pDetectionFunction;
     DownmixAndOverlapHelper m_helper;
     int m_iSampleRate;
+    int m_windowSize;
+    int m_stepSize;
     std::vector<double> m_detectionResults;
     QVector<double> m_resultBeats;
 };
 
 } // namespace mixxx
-
-#endif /* ANALYZER_PLUGINS_ANALYZERQUEENMARYBEATS_H */

@@ -18,7 +18,7 @@ bool operator==(const AlbumInfo& lhs, const AlbumInfo& rhs) {
 }
 
 QDebug operator<<(QDebug dbg, const AlbumInfo& arg) {
-    dbg << '{';
+    dbg << "AlbumInfo{";
     arg.dbgArtist(dbg);
 #if defined(__EXTRA_METADATA__)
     arg.dbgCopyright(dbg);

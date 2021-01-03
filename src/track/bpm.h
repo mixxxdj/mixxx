@@ -1,5 +1,4 @@
-#ifndef MIXXX_BPM_H
-#define MIXXX_BPM_H
+#pragma once
 
 #include <QtDebug>
 
@@ -55,7 +54,7 @@ public:
     static double valueFromString(const QString& str, bool* pValid = nullptr);
     static QString valueToString(double value);
     static int valueToInteger(double value) {
-        return std::round(value);
+        return static_cast<int>(std::round(value));
     }
 
     enum class Comparison {
@@ -101,5 +100,3 @@ QDebug operator<<(QDebug dbg, const Bpm& arg) {
 
 Q_DECLARE_TYPEINFO(mixxx::Bpm, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::Bpm)
-
-#endif // MIXXX_BPM_H

@@ -1,5 +1,7 @@
 #include "preferences/colorpaletteeditormodel.h"
 
+#include "moc_colorpaletteeditormodel.cpp"
+
 namespace {
 
 QIcon toQIcon(const QColor& color) {
@@ -16,6 +18,7 @@ ColorPaletteEditorModel::ColorPaletteEditorModel(QObject* parent)
           m_bDirty(false) {
     connect(this,
             &ColorPaletteEditorModel::rowsRemoved,
+            this,
             [this] {
                 if (rowCount() == 0) {
                     m_bEmpty = true;
@@ -25,6 +28,7 @@ ColorPaletteEditorModel::ColorPaletteEditorModel(QObject* parent)
             });
     connect(this,
             &ColorPaletteEditorModel::rowsInserted,
+            this,
             [this] {
                 if (m_bEmpty && rowCount() != 0) {
                     m_bEmpty = false;
@@ -34,6 +38,7 @@ ColorPaletteEditorModel::ColorPaletteEditorModel(QObject* parent)
             });
     connect(this,
             &ColorPaletteEditorModel::rowsMoved,
+            this,
             [this] {
                 setDirty(true);
             });
@@ -102,9 +107,9 @@ void ColorPaletteEditorModel::setColorPalette(const ColorPalette& palette) {
 
     // Make a map of hotcue indices
     QMap<int, int> hotcueColorIndicesMap;
-    QList<unsigned int> hotcueColorIndices = palette.getHotcueIndices();
-    for (int i = 0; i < hotcueColorIndices.size(); i++) {
-        int colorIndex = hotcueColorIndices.at(i);
+    QList<int> colorIndicesByHotcue = palette.getIndicesByHotcue();
+    for (int i = 0; i < colorIndicesByHotcue.size(); i++) {
+        int colorIndex = colorIndicesByHotcue.at(i);
         hotcueColorIndicesMap.insert(colorIndex, i);
     }
 
@@ -119,7 +124,7 @@ void ColorPaletteEditorModel::setColorPalette(const ColorPalette& palette) {
 
 ColorPalette ColorPaletteEditorModel::getColorPalette(const QString& name) const {
     QList<mixxx::RgbColor> colors;
-    QMap<int, unsigned int> hotcueColorIndices;
+    QMap<int, int> hotcueColorIndices;
     for (int i = 0; i < rowCount(); i++) {
         QStandardItem* pColorItem = item(i, 0);
         QStandardItem* pHotcueIndexItem = item(i, 1);
@@ -134,5 +139,7 @@ ColorPalette ColorPaletteEditorModel::getColorPalette(const QString& name) const
             }
         }
     }
+    // If we have a non consequitive list of hotcue indexes, indexes are shifted down
+    // due to the sorting nature of QMap. This is intended, this way we have a color for every hotcue.
     return ColorPalette(name, colors, hotcueColorIndices.values());
 }

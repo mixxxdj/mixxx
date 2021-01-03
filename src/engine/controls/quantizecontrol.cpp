@@ -1,18 +1,16 @@
-// QuantizeControl.cpp
-// Created on Sat 5, 2011
-// Author: pwhelan
+#include "engine/controls/quantizecontrol.h"
 
 #include <QtDebug>
 
 #include "control/controlobject.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
-#include "engine/controls/quantizecontrol.h"
 #include "engine/controls/enginecontrol.h"
-#include "util/assert.h"
+#include "moc_quantizecontrol.cpp"
+#include "preferences/usersettings.h"
+#include "track/track.h"
 
-QuantizeControl::QuantizeControl(QString group,
-                                 UserSettingsPointer pConfig)
+QuantizeControl::QuantizeControl(const QString& group,
+        UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     // Turn quantize OFF by default. See Bug #898213
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true);
@@ -33,22 +31,13 @@ QuantizeControl::~QuantizeControl() {
 }
 
 void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
-    if (m_pTrack) {
-        disconnect(m_pTrack.get(), &Track::beatsUpdated,
-                this, &QuantizeControl::slotBeatsUpdated);
-    }
-
     if (pNewTrack) {
-        m_pTrack = pNewTrack;
-        m_pBeats = m_pTrack->getBeats();
-        connect(m_pTrack.get(), &Track::beatsUpdated,
-                this, &QuantizeControl::slotBeatsUpdated);
+        m_pBeats = pNewTrack->getBeats();
         // Initialize prev and next beat as if current position was zero.
         // If there is a cue point, the value will be updated.
         lookupBeatPositions(0.0);
         updateClosestBeat(0.0);
     } else {
-        m_pTrack.reset();
         m_pBeats.clear();
         m_pCOPrevBeat->set(-1);
         m_pCONextBeat->set(-1);
@@ -56,14 +45,11 @@ void QuantizeControl::trackLoaded(TrackPointer pNewTrack) {
     }
 }
 
-void QuantizeControl::slotBeatsUpdated() {
-    TrackPointer pTrack = m_pTrack;
-    if (pTrack) {
-        m_pBeats = pTrack->getBeats();
-        double current = getSampleOfTrack().current;
-        lookupBeatPositions(current);
-        updateClosestBeat(current);
-    }
+void QuantizeControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
+    m_pBeats = pBeats;
+    double current = getSampleOfTrack().current;
+    lookupBeatPositions(current);
+    updateClosestBeat(current);
 }
 
 void QuantizeControl::setCurrentSample(const double dCurrentSample,
@@ -91,7 +77,7 @@ void QuantizeControl::playPosChanged(double dNewPlaypos) {
 }
 
 void QuantizeControl::lookupBeatPositions(double dCurrentSample) {
-    BeatsPointer pBeats = m_pBeats;
+    mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         double prevBeat, nextBeat;
         pBeats->findPrevNextBeats(dCurrentSample, &prevBeat, &nextBeat);

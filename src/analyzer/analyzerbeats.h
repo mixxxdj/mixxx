@@ -5,8 +5,7 @@
  *      Author: Vittorio Colao
  */
 
-#ifndef ANALYZER_ANALYZERBEATS_H
-#define ANALYZER_ANALYZERBEATS_H
+#pragma once
 
 #include <QHash>
 #include <QList>
@@ -25,6 +24,7 @@ class AnalyzerBeats : public Analyzer {
     ~AnalyzerBeats() override = default;
 
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
+    static mixxx::AnalyzerPluginInfo defaultPlugin();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
     bool processSamples(const CSAMPLE *pIn, const int iLen) override;
@@ -34,13 +34,14 @@ class AnalyzerBeats : public Analyzer {
   private:
     bool shouldAnalyze(TrackPointer tio) const;
     static QHash<QString, QString> getExtraVersionInfo(
-            QString pluginId, bool bPreferencesFastAnalysis);
+            const QString& pluginId, bool bPreferencesFastAnalysis);
 
     BeatDetectionSettings m_bpmSettings;
     std::unique_ptr<mixxx::AnalyzerBeatsPlugin> m_pPlugin;
     const bool m_enforceBpmDetection;
     QString m_pluginId;
     bool m_bPreferencesReanalyzeOldBpm;
+    bool m_bPreferencesReanalyzeImported;
     bool m_bPreferencesFixedTempo;
     bool m_bPreferencesOffsetCorrection;
     bool m_bPreferencesFastAnalysis;
@@ -51,5 +52,3 @@ class AnalyzerBeats : public Analyzer {
     int m_iCurrentSample;
     int m_iMinBpm, m_iMaxBpm;
 };
-
-#endif /* ANALYZER_ANALYZERBEATS_H */

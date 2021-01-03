@@ -1,5 +1,4 @@
-#ifndef QTVSYNCTESTWIDGET_H
-#define QTVSYNCTESTWIDGET_H
+#pragma once
 
 #include <QGLWidget>
 
@@ -8,7 +7,7 @@
 class QtVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
     Q_OBJECT
   public:
-    QtVSyncTestWidget(const char* group, QWidget* parent);
+    QtVSyncTestWidget(const QString& group, QWidget* parent);
     virtual ~QtVSyncTestWidget();
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::QtVSyncTest; }
@@ -27,5 +26,3 @@ class QtVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
   private:
     friend class WaveformWidgetFactory;
 };
-
-#endif // QTVSYNCTESTWIDGET_H

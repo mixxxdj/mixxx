@@ -265,7 +265,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
             components.Pot.prototype.input.call(this, channel, control, value, status, group);
         },
         connect: function() {
-            this.focus_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
+            this.focus_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange.bind(this));
             this.focus_connection.trigger();
         },
         disconnect: function() {
@@ -367,7 +367,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
         },
         connect: function() {
             components.Button.prototype.connect.call(this);
-            this.fx_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange);
+            this.fx_connection = engine.makeConnection(eu.group, "focused_effect", this.onFocusChange.bind(this));
         },
         disconnect: function() {
             components.Button.prototype.disconnect.call(this);
@@ -405,7 +405,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
                     button.send(button.off);
                     button.flash_state = true;
                 }
-            });
+            }.bind(this));
         },
         stopFlash: function() {
             engine.stopTimer(this.flash_timer);
@@ -426,7 +426,7 @@ MixtrackPlatinum.EffectUnit = function (unitNumbers) {
                 engine.setValue(eu.group, "show_parameters", 1);
             }
         }
-    });
+    }.bind(this));
     this.show_focus_connection.trigger();
 
     this.touch_strip = new this.EffectUnitTouchStrip();
@@ -563,7 +563,7 @@ MixtrackPlatinum.Deck = function(number, midi_chan, effects_unit) {
         type: components.Button.prototype.types.toggle,
         connect: function() {
             components.Button.prototype.connect.call(this);
-            this.connections[1] = engine.makeConnection(this.group, this.outKey, MixtrackPlatinum.pflToggle);
+            this.connections[1] = engine.makeConnection(this.group, this.outKey, MixtrackPlatinum.pflToggle.bind(this));
         },
     });
 

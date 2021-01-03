@@ -1,5 +1,4 @@
-#ifndef VSYNCTHREAD_H
-#define VSYNCTHREAD_H
+#pragma once
 
 #include <QTime>
 #include <QThread>
@@ -57,6 +56,3 @@ class VSyncThread : public QThread {
     double m_displayFrameRate;
     int m_vSyncPerRendering;
 };
-
-
-#endif // VSYNCTHREAD_H

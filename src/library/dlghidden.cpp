@@ -2,21 +2,30 @@
 
 #include "library/hiddentablemodel.h"
 #include "library/trackcollectionmanager.h"
-#include "widget/wtracktableview.h"
+#include "moc_dlghidden.cpp"
 #include "util/assert.h"
+#include "widget/wlibrary.h"
+#include "widget/wtracktableview.h"
 
-DlgHidden::DlgHidden(QWidget* parent, UserSettingsPointer pConfig,
-                     Library* pLibrary,
-                     KeyboardEventFilter* pKeyboard)
-         : QWidget(parent),
-           Ui::DlgHidden(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pLibrary->trackCollections(), false)) {
+DlgHidden::DlgHidden(
+        WLibrary* parent,
+        UserSettingsPointer pConfig,
+        Library* pLibrary,
+        KeyboardEventFilter* pKeyboard)
+        : QWidget(parent),
+          Ui::DlgHidden(),
+          m_pTrackTableView(
+                  new WTrackTableView(
+                          this,
+                          pConfig,
+                          pLibrary,
+                          parent->getTrackTableBackgroundColorOpacity(),
+                          false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     // Install our own trackTable
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
@@ -112,5 +121,5 @@ void DlgHidden::selectionChanged(const QItemSelection &selected,
 }
 
 bool DlgHidden::hasFocus() const {
-    return QWidget::hasFocus();
+    return m_pTrackTableView->hasFocus();
 }

@@ -1,5 +1,4 @@
-#ifndef WEFFECTKNOB_H
-#define WEFFECTKNOB_H
+#pragma once
 
 #include "widget/wknob.h"
 #include "effects/effectknobparameterslot.h"
@@ -29,5 +28,3 @@ class WEffectParameterKnob : public WKnob {
     EffectsManager* m_pEffectsManager;
     EffectParameterSlotBasePointer m_pEffectParameterSlot;
 };
-
-#endif // WEFFECTKNOB_H

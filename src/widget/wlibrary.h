@@ -1,8 +1,4 @@
-// wlibrary.h
-// Created 8/28/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef WLIBRARY_H
-#define WLIBRARY_H
+#pragma once
 
 #include <QMap>
 #include <QMutex>
@@ -29,9 +25,18 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
     // the view and is in charge of deleting it. Returns whether or not the
     // registration was successful. Registered widget must implement the
     // LibraryView interface.
-    bool registerView(QString name, QWidget* view);
+    bool registerView(const QString& name, QWidget* view);
 
     LibraryView* getActiveView() const;
+
+    // Alpha value for row color background
+    static constexpr double kDefaultTrackTableBackgroundColorOpacity = 0.125; // 12.5% opacity
+    static constexpr double kMinTrackTableBackgroundColorOpacity = 0.0; // 0% opacity
+    static constexpr double kMaxTrackTableBackgroundColorOpacity = 1.0; // 100% opacity
+
+    double getTrackTableBackgroundColorOpacity() const {
+        return m_trackTableBackgroundColorOpacity;
+    }
 
     bool getShowButtonText() const {
         return m_bShowButtonText;
@@ -51,8 +56,6 @@ class WLibrary : public QStackedWidget, public WBaseWidget {
   private:
     QMutex m_mutex;
     QMap<QString, QWidget*> m_viewMap;
+    double m_trackTableBackgroundColorOpacity;
     bool m_bShowButtonText;
 };
-
-#endif /* WLIBRARY_H */
-

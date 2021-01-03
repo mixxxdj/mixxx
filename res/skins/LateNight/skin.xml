@@ -1,7 +1,8 @@
   <!--
-  LateNight, Resizable skin for Mixxx 2.1.x
+  LateNight, Resizable skin for Mixxx 2.3.x
   www.mixxx.org
-  Copyright (C) 2010-2013 jus <s.brandt@mixxx.org>, 2014 Owen Williams <owilliams@mixxx.org>
+  Copyright (C) 2010-2013 jus <s.brandt@mixxx.org>, 2014 Owen Williams <owilliams@mixxx.org>,
+  2019-2020 ronso0 <ronso0@mixxx.org>
   "LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
   http://creativecommons.org/licenses/by-sa/3.0/
 
@@ -31,45 +32,70 @@
     <title>LateNight</title>
     <author>owilliams</author>
     <version>2.3.0.01</version>
-    <description>A nighttime-compatible skin</description>
+    <description>A wide nighttime skin with stacked waveforms, 4 decks and 8 samplers.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
-      <!-- Set skin defaults. -->
+    <!-- Set skin defaults -->
       <attribute config_key="[Master],num_decks">4</attribute>
-      <attribute config_key="[Master],num_samplers">8</attribute>
-      <!-- Decks -->
+      <attribute config_key="[Master],num_samplers">16</attribute>
+      <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
+      <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
+      <attribute config_key="[Master],skin_settings">0</attribute>
+
+    <!-- Decks -->
+      <!-- general -->
       <attribute persist="true" config_key="[Skin],show_4decks">0</attribute>
-      <attribute persist="true" config_key="[Skin],show_8_hotcues">0</attribute>
+      <attribute persist="true" config_key="[Skin],show_hotcues">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_8_hotcues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_intro_outro_cues">1</attribute>
       <attribute persist="true" config_key="[Skin],show_spinnies">1</attribute>
       <attribute persist="true" config_key="[Skin],show_coverart">1</attribute>
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
-      <attribute persist="true" config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+      <!-- ToDo: deck-independent vinyl controls? -->
+      <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
+      <!-- Deck variant that is shown as soon as the mixer is hidden, see deck.xm
+          and /helpers/skin_helper_deck_size.xml
+          0=mini 1=compact (default) 2=full deck -->
+      <attribute persist="true" config_key="[LateNight],deck_size_without_mixer">1</attribute>
+      <!-- Full deck -->
       <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
       <attribute persist="true" config_key="[Skin],show_rate_control_buttons">1</attribute>
-      <!-- Mixer -->
+      <attribute persist="true" config_key="[Skin],show_beatgrid_controls">1</attribute>
+      <!-- Compact deck -->
+      <attribute persist="true" config_key="[Skin],show_rate_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_loopjump_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_sync_button_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_key_controls">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_key_controls_compact">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_vumeters_compact">1</attribute>
+
+    <!-- Mixer -->
       <attribute persist="true" config_key="[Master],show_mixer">1</attribute>
-      <attribute persist="true" config_key="[Skin],show_master_head_mixer">1</attribute>
+      <attribute persist="true" config_key="[Skin],show_main_head_mixer">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
-      <!-- Effects -->
+      <attribute persist="true" config_key="[LateNight],show_vumeters_compact">1</attribute>
+    <!-- Effects -->
       <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
       <attribute persist="true" config_key="[Skin],show_superknobs">0</attribute>
-      <!-- Samplers -->
-      <attribute persist="true" config_key="[Samplers],show_samplers">1</attribute>
-      <attribute persist="true" config_key="[Skin],8_samplers">1</attribute>
-      <attribute persist="true" config_key="[Skin],expand_samplers">0</attribute>
-      <!-- Library -->
+    <!-- Samplers -->
+      <attribute persist="true" config_key="[Samplers],show_samplers">0</attribute>
+      <attribute persist="true" config_key="[LateNight],sampler_rows">1</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_1-4">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_1-8">0</attribute>
+      <attribute persist="true" config_key="[LateNight],expand_samplers_9-16">0</attribute>
+    <!-- Mic / Aux -->
+      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
+    <!-- Library -->
       <attribute config_key="[Master],maximize_library">0</attribute>
+      <attribute persist="true" config_key="[LateNight],max_lib_show_decks">1</attribute>
       <attribute persist="true" config_key="[PreviewDeck],show_previewdeck">0</attribute>
       <attribute persist="true" config_key="[Library],show_coverart">1</attribute>
 
-      <attribute persist="true" config_key="[Microphone],show_microphone">0</attribute>
-      <attribute config_key="[Master],skin_settings">0</attribute>
-      <!--Disable hidden effect routing Buttons-->
+    <!-- Disable hidden effect routing Buttons -->
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[MasterOutput]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusLeft]_enable">0</attribute>
       <attribute persist="false" config_key="[EffectRack1_EffectUnit1],group_[BusCenter]_enable">0</attribute>
@@ -92,125 +118,175 @@
       <attribute persist="false" config_key="[EffectRack1_EffectUnit4],group_[BusTalkover]_enable">0</attribute>
     </attributes>
   </manifest>
+
   <Schemes>
     <Scheme>
-      <Name>Classic</Name>
-      <!-- Optional: add stylesheet to complement and/or override the main
-      'Mixxx' widget's stylesheet style.qss -->
-      <!-- Mix any of the existing btn_, knob_, slider_ or style_ schemes.
-            btn_scheme    all borders & icons for pushbuttons, spinboxes,
-                          effect selector, AutoDJ fade mode selector
-            knob_scheme   guess what
-            slider_scheme ...exactly!
-            style_scheme  icons & backgrounds for library, splitters, spinnies,
-                          covers, vinyl control, toolbar
-            bg_tile       allows to experiment with the background tile of recessed
-                          areas without having to creat a new style_scheme folder
-            Note:   button borders and icons are set in style_[SCHEME].qss, too
-                    so do a mass-find-and-replace there, as well. -->
-      <SetVariable name="btn_scheme">classic</SetVariable>
-      <SetVariable name="knob_scheme">classic</SetVariable>
-      <SetVariable name="slider_scheme">classic</SetVariable>
-      <SetVariable name="style_scheme">classic</SetVariable>
-      <!--  For no background tile leave empty.
-            To override the <BackPath> tile it's sufficient [in most cases :]
-            to assign the respective containers a background-color in qss.
-            Good to know:
-            <BackPath> suppresses qss borders -->
-      <SetVariable name="bg_tile">classic</SetVariable>
+      <Name>PaleMoon</Name>
+      <!-- Mix any of the existing button, knob, slider or style theme subsets.
+        The button templates for example link to skin:/BtnTheme/buttons/btn_...
 
-      <!-- Set the '3D button mode'
-          * elevated: buttons stand out, 3D border, drop shadow
-          * embedded: buttons are kind of leveled with surface, surrounding groove -->
-      <!-- Buttons in mixer, rate controls, collapsed Fx / Mic / Aux units etc. -->
-      <SetVariable name="TopRegion_btn_type">embedded</SetVariable>
-      <!-- Buttons in transport row, mic / aux units, sampler hotcue row etc. -->
-      <SetVariable name="SubRegion_btn_type">elevated</SetVariable>
-
-      <!--  Some widget sizes that are scheme specific -->
-      <!--  Here, the goal was to avoid 'spinny eggs'.
-            Just guarantee 1:1 x/y ratio for both spinny and cover art widgets in every situation.
-            The small spinny containers in decks have a top border included to separate them from
-            artist/title, therefore the containers are 1px taller than 1:1 -->
-      <SetVariable name="SmallSpinnySize">55f,56f</SetVariable>
-      <!--  Big spinnies are borderless = 1:1, borders are created by separator_*.xml
-            Size spinnies so they force-expand the decks to match the mixer's max height
-            in order to avoid the decks expand vertically when the mixer is shown
-            (would screw up the layout).
-            +1px margin-bottom -->
-      <SetVariable name="BigSpinnySize">107f,108f</SetVariable>
-      <!--  In small decks there's 2px margin-right before overview -->
-      <SetVariable name="MiniDeckSpinnySize">48f,46f</SetVariable>
-
-      <!-- Classic scheme uses black lines to separate certain areas; those are 1px wide/tall -->
-      <SetVariable name="SeparatorSize">1f</SetVariable>
+        BtnScheme     borders / background images for pushbuttons, spinboxes,
+                      effect selector, AutoDJ fade mode selector.
+                      If 'BtnSize' variable is undefined it links to transparent
+                      dummy icons like btn_embedded__active.svg
+              Note:   Icons for buttons that have images set in xml already are set
+                      in the respective style-[theme].qss
+        KnobScheme    guess what
+        SliderScheme  ...exactly!
+        StyleScheme   icons & backgrounds for library, splitters, spinnies,
+                      VU meter, default cover art etc. -->
+      <Style src="skin:style_palemoon.qss"/>
+      <SetVariable name="BtnScheme">palemoon</SetVariable>
+      <SetVariable name="KnobScheme">palemoon</SetVariable>
+      <SetVariable name="SliderScheme">palemoon</SetVariable>
+      <SetVariable name="StyleScheme">palemoon</SetVariable>
 
       <!-- Waveform & Overview colors -->
-      <SetVariable name="SignalBgColor_12">#0f0f0f</SetVariable>
-      <SetVariable name="SignalBgColor_34">#012322</SetVariable>
-      <SetVariable name="SignalBgColor_SamplerPreview">#0f0f0f</SetVariable>
-      <SetVariable name="SignalColor_12">#E7C413</SetVariable>
-      <SetVariable name="SignalColor_34">#09B2AE</SetVariable>
-      <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
-      <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
-      <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
-      <SetVariable name="BeatColor">#ffffff</SetVariable>
-      <SetVariable name="AxesColor">#ffffff</SetVariable>
-      <SetVariable name="PlayPosColor">#00FF00</SetVariable>
-      <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
-      <SetVariable name="EndOfTrackColor">#F856E7</SetVariable>
+      <!-- This is a hack to have a grey background in empty decks.
+          When a track is laoded the bg gets darker for better contrast -->
+      <SetVariable name="BgColorOverview_12">#19191a</SetVariable>
+      <SetVariable name="BgColorOverview_34">#001b23</SetVariable>
+      <SetVariable name="BgColorOverview_SamPre">rgba(15, 15, 15, 20)</SetVariable>
+      <SetVariable name="BgColorWaveform_12">#0f0f0e</SetVariable>
+      <SetVariable name="BgColorWaveform_34">#001b23</SetVariable>
+      <SetVariable name="SignalColor_12">#d9b28c</SetVariable>
+      <SetVariable name="SignalColor_34">#7bc6c3</SetVariable>
 
-    </Scheme>
+      <!-- Only named colors are accepted, see w3 color chart
+          https://www.w3.org/wiki/CSS/Properties/color/keywords -->
+      <SetVariable name="SignalHighColor">mediumblue</SetVariable><!-- #0000cd -->
+      <SetVariable name="SignalMidColor">darkgreen</SetVariable><!-- #006400 -->
+      <SetVariable name="SignalLowColor">orangered</SetVariable><!-- #ff4500 -->
+
+      <SetVariable name="DimBrightThresholdOverview">127</SetVariable>
+      <SetVariable name="DimBrightThresholdWaveform">105</SetVariable>
+      <SetVariable name="DimBrightThresholdHotcueBtn">105</SetVariable>
+
+      <SetVariable name="AxesColor">#999</SetVariable>
+      <SetVariable name="BeatColor">#999</SetVariable>
+      <SetVariable name="PlayPosColor">#00c6ff</SetVariable>
+      <SetVariable name="CueColor">#ff7a01</SetVariable>
+      <SetVariable name="LoopColor">#00b400</SetVariable>
+      <SetVariable name="IntroOutroColor">#2c5c9a</SetVariable>
+      <SetVariable name="PlayedOverlayColor">#dd151515</SetVariable>
+      <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
+      <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
+      <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
+      <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
+      <SetVariable name="OverviewFontSizePreview">9</SetVariable>
+
+      <!-- Set the button icons used by templates in LateNight/controls/button...xml
+           There, those border icons are stacked on top of the additional icons set in css.
+           Other buttons that use text (like vinyl controls and Fx assign button) are styled
+           in css via
+              border-width: 2px;
+              border-image: url(skin:/path/to/btn_icon.svg) 2 2 2 2;
+        Example themes: (in PaleMoon only the embedded style is used)
+        * elevated: domed buttons that stand out, with a 3D border and a drop shadow
+        * embedded: slightly domed buttons that seem leveled with surface and a surrounding groove
+       -->
+      <!-- Buttons in top-level containers like mixer, rate controls, collapsed FxUnits etc. -->
+      <SetVariable name="TopRegion_BtnType">embedded</SetVariable>
+      <!-- Buttons in subregions like transport row, mic/aux units etc. -->
+      <SetVariable name="SubRegion_BtnType">embedded</SetVariable>
+
+      <!-- Knob settings -->
+      <SetVariable name="PotiMinAngle">-130</SetVariable>
+      <SetVariable name="PotiMaxAngle">130</SetVariable>
+      <!-- Arc Settings -->
+      <SetVariable name="ArcRadiusBig">14.5</SetVariable>
+      <SetVariable name="ArcRadiusCompact">12.5</SetVariable>
+      <SetVariable name="ArcRadiusSmall">12.0</SetVariable>
+      <SetVariable name="ArcThicknessBig">2</SetVariable>
+      <SetVariable name="ArcRoundCaps">true</SetVariable>
+      <!-- Arc Colors -->
+      <SetVariable name="ArcColorEq">#858585</SetVariable>
+      <SetVariable name="ArcColorGain">#b96300</SetVariable>
+      <SetVariable name="ArcColorFx12Quick">#518f00</SetVariable>
+      <SetVariable name="ArcColorFx34">#028392</SetVariable>
+      <SetVariable name="ArcColorFxParameter">#6d6d6d</SetVariable>
+      <SetVariable name="ArcColorGainLow">#8d3b11</SetVariable>
+      <SetVariable name="ArcColorMstBal">#a00000</SetVariable>
+      <SetVariable name="ArcColorFxMix">#a00000</SetVariable>
+      <!-- Knob pointers = suffix for indicator image url -->
+      <SetVariable name="KnobColorEq">grey</SetVariable>
+      <SetVariable name="KnobColorQuickEffect">green</SetVariable>
+      <SetVariable name="KnobColorFx12">green</SetVariable>
+      <SetVariable name="KnobColorFx34">blue</SetVariable>
+      <SetVariable name="KnobColorFxParameter">grey</SetVariable>
+      <!-- Size of the small EQ kill indicators:
+          svg is 6x6 px, set size to '0f,0f' to hide them -->
+      <SetVariable name="EqKillDotSize">9f,9f</SetVariable>
+
+      <!-- Slider bar settings -->
+      <SetVariable name="BarBgColor">#020202</SetVariable>
+      <SetVariable name="BarColorVolume">#257b82</SetVariable>
+      <SetVariable name="BarColorCrossfader">#257b82</SetVariable>
+      <SetVariable name="BarColorPitch">#888</SetVariable>
+      <SetVariable name="BarWidth">2</SetVariable>
+      <SetVariable name="BarMarginVolume">8,8</SetVariable>
+      <SetVariable name="BarMarginPitch">7,8</SetVariable>
+      <SetVariable name="BarMarginPitchSampler">5,5</SetVariable>
+      <SetVariable name="BarMarginCrossfader">7,7</SetVariable>
+    </Scheme><!-- PaleMoon -->
 
     <Scheme>
-      <Name>Flip</Name>
-      <Style src="skin:style_flip.qss"/>
-      <!-- btn_theme actually only changes color of deck control icons: keylock, ... -->
-      <SetVariable name="btn_scheme">flip</SetVariable>
-      <SetVariable name="knob_scheme">classic</SetVariable>
-      <SetVariable name="slider_scheme">flip</SetVariable>
-      <SetVariable name="style_scheme">flip</SetVariable>
-      <SetVariable name="TopRegion_btn_type">embedded</SetVariable>
-      <SetVariable name="SubRegion_btn_type">embedded</SetVariable>
+      <Name>Classic</Name>
+      <Style src="skin:style_classic.qss"/>
+      <SetVariable name="BtnScheme">classic</SetVariable>
+      <SetVariable name="KnobScheme">classic</SetVariable>
+      <SetVariable name="SliderScheme">classic</SetVariable>
+      <SetVariable name="StyleScheme">classic</SetVariable>
 
-      <!-- Small spinnies in regular decks are square, no margin -->
-      <SetVariable name="SmallSpinnySize">57f,57f</SetVariable>
-      <!-- Big spinnies in decks are square (110 x 110px)
-           + 1px border on all sides
-           + 1px margin-right (overview)
-           + 1px margin-bottom (transport row)
-           If you want pixel-sharp indicators size for the big spinnies, size
-              /style_[scheme]/spinny_indicator.svg according to effective size in
-              skin at 100% and make sure the white indicator's width in px is an integer -->
-      <SetVariable name="BigSpinnySize">116f,116f</SetVariable>
-      <!-- In small decks there's a 2px margin before the overview -->
-      <SetVariable name="MiniDeckSpinnySize">48f,46f</SetVariable>
+      <SetVariable name="TopRegion_BtnType">embedded</SetVariable>
+      <SetVariable name="SubRegion_BtnType">elevated</SetVariable>
 
-      <SetVariable name="SeparatorSize">0f</SetVariable>
+      <!-- Knob settings -->
+      <SetVariable name="PotiMinAngle">-135</SetVariable>
+      <SetVariable name="PotiMaxAngle">135</SetVariable>
+      <SetVariable name="KnobColorEq">red</SetVariable>
+      <SetVariable name="KnobColorQuickEffect">green</SetVariable>
+      <SetVariable name="KnobColorFx12">green</SetVariable>
+      <SetVariable name="KnobColorFx34">blue</SetVariable>
+      <SetVariable name="KnobColorFxParameter">white</SetVariable>
+      <!-- EQ kill dots conflict with arcs in Classic knob backgrounds.
+        Leaving it blank could cause users to accidentially click it
+        without having a 'kill' indicator, so we 'remove' it. -->
+      <SetVariable name="EqKillDotSize">0f,0f</SetVariable>
 
-      <SetVariable name="SignalBgColor_12">#0f0f0e</SetVariable>
-      <SetVariable name="SignalBgColor_34">#001b23</SetVariable>
-      <SetVariable name="SignalBgColor_SamplerPreview">#080807</SetVariable>
+      <!-- Waveform & Overview colors -->
+      <SetVariable name="BgColorOverview_12">rgba(15, 15, 15, 20)</SetVariable>
+      <SetVariable name="BgColorOverview_34">rgba(0, 27, 35, 120)</SetVariable>
+      <SetVariable name="BgColorOverview_SamPre">#0f0f0f</SetVariable>
+      <SetVariable name="BgColorWaveform_12">#0f0f0e</SetVariable>
+      <SetVariable name="BgColorWaveform_34">#001b23</SetVariable>
       <SetVariable name="SignalColor_12">#e7c413</SetVariable>
-      <SetVariable name="SignalColor_34">#0893b2</SetVariable>
-      <SetVariable name="SignalRGBLowColor">#ff2a00</SetVariable>
-      <SetVariable name="SignalRGBMidColor">#33f600</SetVariable>
-      <SetVariable name="SignalRGBHighColor">#332acc</SetVariable>
-      <SetVariable name="BeatColor">#ffffff</SetVariable>
+      <SetVariable name="SignalColor_34">#09b2ae</SetVariable>
+      <!-- default colors -->
+      <SetVariable name="SignalHighColor">blue</SetVariable>
+      <SetVariable name="SignalMidColor">green</SetVariable>
+      <SetVariable name="SignalLowColor">red</SetVariable>
       <SetVariable name="AxesColor">#ffffff</SetVariable>
-      <SetVariable name="PlayPosColor">#00ff00</SetVariable>
+      <SetVariable name="BeatColor">#ffffff</SetVariable>
+      <SetVariable name="PlayPosColor">#00c8ff</SetVariable>
+      <SetVariable name="CueColor">#ff001c</SetVariable>
+      <SetVariable name="LoopColor">#00ff00</SetVariable>
+      <SetVariable name="IntroOutroColor">#0000ff</SetVariable>
       <SetVariable name="PlayedOverlayColor">#bb000000</SetVariable>
-      <SetVariable name="EndOfTrackColor">#ff00ff</SetVariable>
-
-    </Scheme>
+      <SetVariable name="EndOfTrackColor">#f856e7</SetVariable>
+      <SetVariable name="OverviewFontSizeDeck">13</SetVariable>
+      <SetVariable name="OverviewFontSizeDeckMini">11</SetVariable>
+      <SetVariable name="OverviewFontSizeSampler">10</SetVariable>
+      <SetVariable name="OverviewFontSizePreview">9</SetVariable>
+    </Scheme><!-- Classic -->
   </Schemes>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss" src-mac="skin:style-mac.qss"/>
+  <Style src="skin:style.qss"/>
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen.
   https://www.mixxx.org/wiki/doku.php/skin_guidelines#the_optimal_size_for_skins -->
-  <MinimumSize>1270,550</MinimumSize>
+  <MinimumSize>1280,668</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
   <LaunchImageStyle>
@@ -218,9 +294,10 @@
       background-color: #0f0f0f;
     }
     QLabel {
-      <!-- ToDo ronso0 :: Unfortunately, variables are not considered here. Yet ;)
+      <!-- ToDo ronso0 :: Unfortunately, variables are not considered here, yet ;)
+          because the launch screen appears while the skin is parsed.
       image: url(skin:/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
-      image: url(skin:/style_classic/mixxx_logo.svg);
+      image: url(skin:/palemoon/style/mixxx_logo.svg);
       padding: 0;
       margin: 0px 2px 0px 2px;
       border: none;
@@ -230,7 +307,7 @@
       max-height: 40px;
     }
     QProgressBar {
-      background: url(skin:/style_classic/progressbar_bg.svg);
+      background: url(skin:/palemoon/style/progressbar_bg.svg);
       border: none;
       min-width: 164px;
       min-height: 5px;
@@ -238,107 +315,80 @@
       max-height: 5px;
     }
     QProgressBar::chunk {
-      background: url(skin:/style_classic/progressbar.svg);
+      background: url(skin:/palemoon/style/progressbar.svg);
     }
   </LaunchImageStyle>
 
   <Children>
-    <SetVariable name="BgTile">skin:/style_<Variable name="bg_tile"/>/background_tile.png</SetVariable>
 
     <SetVariable name="Align">center</SetVariable>
-    
-    <SetVariable name="PotiMinAngle">-135</SetVariable>
-    <SetVariable name="PotiMaxAngle">135</SetVariable>
-    <!-- Define singletons as early in the skin as possible.  Note that the
-    library doesn't actually appear here, it's just instantiated and configured.
-    -->
 
+    <!-- Define singletons as early in the skin as possible.
+    Note that Singletons don't actually appear here, they are just instantiated
+    and configured. -->
     <SingletonDefinition>
-      <ObjectName>WaveformsSingleton</ObjectName>
+      <ObjectName>Deck1_Src</ObjectName>
       <Children>
-        <Template src="skin:waveforms_container.xml"/>
+      <Template src="skin:/decks/deck.xml">
+        <SetVariable name="ChanNum">1</SetVariable>
+        <SetVariable name="DeckGroup">12</SetVariable>
+        <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
+        <SetVariable name="BgColor"><Variable name="BgColorOverview_12"/></SetVariable>
+      </Template>
       </Children>
     </SingletonDefinition>
 
     <SingletonDefinition>
-      <ObjectName>SpinnyCoverart1</ObjectName>
+      <ObjectName>Deck2_Src</ObjectName>
       <Children>
-        <Template src="skin:spinny_coverart.xml">
-          <SetVariable name="channum">1</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>SpinnyCoverart2</ObjectName>
-      <Children>
-        <Template src="skin:spinny_coverart.xml">
-          <SetVariable name="channum">2</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>SpinnyCoverart3</ObjectName>
-      <Children>
-        <Template src="skin:spinny_coverart.xml">
-          <SetVariable name="channum">3</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>SpinnyCoverart4</ObjectName>
-      <Children>
-        <Template src="skin:spinny_coverart.xml">
-          <SetVariable name="channum">4</SetVariable>
-        </Template>
-      </Children>
-    </SingletonDefinition>
-
-    <SingletonDefinition>
-      <ObjectName>DeckOverview1</ObjectName>
-      <Children>
-        <Template src="skin:deck_overview.xml">
-          <SetVariable name="channum">1</SetVariable>
+        <Template src="skin:/decks/deck.xml">
+          <SetVariable name="ChanNum">2</SetVariable>
+          <SetVariable name="DeckGroup">12</SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
-          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
+          <SetVariable name="BgColor"><Variable name="BgColorOverview_12"/></SetVariable>
         </Template>
       </Children>
     </SingletonDefinition>
 
     <SingletonDefinition>
-      <ObjectName>DeckOverview2</ObjectName>
+      <ObjectName>Deck3_Src</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
-          <SetVariable name="channum">2</SetVariable>
-          <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
-          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
-        </Template>
+      <Template src="skin:/decks/deck.xml">
+        <SetVariable name="ChanNum">3</SetVariable>
+        <SetVariable name="DeckGroup">34</SetVariable>
+        <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+        <SetVariable name="BgColor"><Variable name="BgColorOverview_34"/></SetVariable>
+      </Template>
       </Children>
     </SingletonDefinition>
 
     <SingletonDefinition>
-      <ObjectName>DeckOverview3</ObjectName>
+      <ObjectName>Deck4_Src</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
-          <SetVariable name="channum">3</SetVariable>
-          <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
-          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
-        </Template>
+      <Template src="skin:/decks/deck.xml">
+        <SetVariable name="ChanNum">4</SetVariable>
+        <SetVariable name="DeckGroup">34</SetVariable>
+        <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
+        <SetVariable name="BgColor"><Variable name="BgColorOverview_34"/></SetVariable>
+      </Template>
       </Children>
     </SingletonDefinition>
 
     <SingletonDefinition>
-      <ObjectName>DeckOverview4</ObjectName>
+      <ObjectName>DecksLeft_Struct</ObjectName>
       <Children>
-        <Template src="skin:deck_overview.xml">
-          <SetVariable name="channum">4</SetVariable>
-          <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
-          <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
-        </Template>
+        <Template src="skin:/decks/decks_left.xml"/>
       </Children>
     </SingletonDefinition>
+
+    <SingletonDefinition>
+      <ObjectName>DecksRight_Struct</ObjectName>
+      <Children>
+        <Template src="skin:/decks/decks_right.xml"/>
+      </Children>
+    </SingletonDefinition>
+
+    <Template src="skin:/mixer/singletons.xml"/>
 
     <SingletonDefinition>
       <ObjectName>LibrarySingleton</ObjectName>
@@ -352,7 +402,18 @@
       <Layout>vertical</Layout>
       <SizePolicy>me,me</SizePolicy>
       <Children>
-        <!-- regular/maximized libary + skin settings menu -->
+
+      <!-- Some helpers to show widgets and switch layouts
+          depending on the skin configuration.
+          Appearantly putting those here keeps i.e. the deck
+          size when [Master],maximize_library is toggled. -->
+        <Template src="skin:/helpers/skin_helper_deck_size.xml"/>
+        <Template src="skin:/helpers/skin_helper_mic_ducking.xml"/>
+        <Template src="skin:/helpers/skin_helper_spinny-cover.xml"/>
+
+        <Template src="skin:toolbar.xml"/>
+
+        <!-- regular/maximized library  |  skin settings menu -->
         <WidgetGroup>
           <Layout>horizontal</Layout>
           <SizePolicy>me,me</SizePolicy>
@@ -362,40 +423,62 @@
             <WidgetStack currentpage="[Master],maximize_library">
               <Children>
 
-                <!-- Waveforms, Decks, Effects... /  Library -->
+                <!-- Waveforms, Decks, Effects... /  Library
+                This view needs to be set up first because it instantiates
+                the mini deck Singletons we need in maximized library view. -->
                 <Splitter>
-                  <ObjectName>HorizontalSplitter</ObjectName>
+                  <ObjectName>WaveformSplitter</ObjectName>
                   <Orientation>vertical</Orientation>
                   <SizePolicy>me,min</SizePolicy>
+                  <SplitSizes>100,550</SplitSizes>
                   <SplitSizesConfigKey>[Skin],stackedWaveforms_splitSize</SplitSizesConfigKey>
-                  <Collapsible>1,0</Collapsible>
-                  <Connection>
-                    <ConfigKey>[Master],maximize_library</ConfigKey>
-                    <Transform><Not/></Transform>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
+                  <Collapsible>0,0</Collapsible>
                   <Children>
-
-                    <SingletonContainer>
-                      <ObjectName>WaveformsSingleton</ObjectName>
-                    </SingletonContainer>
 
                     <WidgetGroup>
                       <Layout>vertical</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Children>
+                        <Template src="skin:waveforms_container.xml"/>
+                      </Children>
+                      <Connection>
+                        <ConfigKey persist="true">[Skin],show_waveforms</ConfigKey>
+                        <BindProperty>visible</BindProperty>
+                      </Connection>
+                    </WidgetGroup>
+
+                    <WidgetGroup>
+                      <ObjectName>DecksMixerContainer</ObjectName>
+                      <Layout>vertical</Layout>
                       <SizePolicy>me,me</SizePolicy>
                       <Children>
+                        <WidgetGroup><!-- Top spacer when waveforms are hidden -->
+                          <ObjectName>ToolbarDeckSpacer</ObjectName>
+                          <Connection>
+                            <ConfigKey persist="true">[Skin],show_waveforms</ConfigKey>
+                            <Transform><Not/></Transform>
+                            <BindProperty>visible</BindProperty>
+                          </Connection>
+                        </WidgetGroup><!-- ToolbarDeckSpacer -->
+
                         <WidgetGroup>
                           <Layout>horizontal</Layout>
                           <SizePolicy>me,max</SizePolicy>
                           <Children>
-                            <Template src="skin:decks_left.xml"/>
+                            <SingletonContainer>
+                              <ObjectName>DecksLeft_Struct</ObjectName>
+                            </SingletonContainer>
                             <Template src="skin:mixer.xml"/>
-                            <Template src="skin:decks_right.xml"/>
+                            <SingletonContainer>
+                              <ObjectName>DecksRight_Struct</ObjectName>
+                            </SingletonContainer>
                           </Children>
                         </WidgetGroup>
+
                         <Template src="skin:fx_rack.xml"/>
                         <Template src="skin:samplers_rack.xml"/>
                         <Template src="skin:mic_aux_rack.xml"/>
+
                         <SingletonContainer>
                           <ObjectName>LibrarySingleton</ObjectName>
                         </SingletonContainer>
@@ -403,33 +486,41 @@
                     </WidgetGroup>
 
                   </Children>
-                </Splitter><!-- Decks, Effects ... Library -->
+                </Splitter>
+                <!-- Decks, Effects, Samplers, Mic/Aux, Library -->
 
-                <!-- Maximized Library -->
-                <WidgetGroup>
+                <!-- Maximized Library & mini decks only -->
+                <WidgetGroup trigger="[Master],maximize_library" on_hide_select="0">
                   <Layout>vertical</Layout>
                   <SizePolicy>me,me</SizePolicy>
-                  <Connection>
-                    <ConfigKey>[Master],maximize_library</ConfigKey>
-                    <BindProperty>visible</BindProperty>
-                  </Connection>
                   <Children>
-                    <Template src="skin:decks_mini.xml"/>
+
+                    <WidgetGroup>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <Children>
+                        <SingletonContainer>
+                          <ObjectName>DecksLeft_Struct</ObjectName>
+                        </SingletonContainer>
+                        <SingletonContainer>
+                          <ObjectName>DecksRight_Struct</ObjectName>
+                        </SingletonContainer>
+                      </Children>
+                    </WidgetGroup>
+
                     <SingletonContainer>
                       <ObjectName>LibrarySingleton</ObjectName>
                     </SingletonContainer>
                   </Children>
-                </WidgetGroup><!-- Maximized Library -->
+                </WidgetGroup><!-- Maximized Library & mini decks only -->
 
               </Children>
             </WidgetStack>
-            <Template src="skin:skin_settings.xml"/>
+            <Template src="skin:/skin_settings.xml"/>
 
           </Children>
-        </WidgetGroup><!-- regular/maximized libary + skin settings menu -->
+        </WidgetGroup><!-- regular/maximized library + skin settings menu -->
 
-        <Template src="skin:toolbar.xml"/>
-        <Template src="skin:screen_h-size_detection.xml"/>
       </Children>
     </WidgetGroup>
   </Children>
