@@ -143,10 +143,14 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
     int bytesRead;
     CurrentBuffer[0] = reportID;
     bytesRead = hid_get_input_report(m_pHidDevice, CurrentBuffer, kBufferSize);
+
+    // This does not match to the HIDAPI documentation, but without the decrement, I get no data consistent with HidController::poll() (tested only on Windows7)
+    bytesRead -= 1;
+
     controllerDebug(bytesRead << "bytes received by hid_get_input_report" << getName()
-                              << "serial #" << m_deviceInfo.serialNumber()
-                              << "(including report ID of" << reportID << ")");
-    bytesRead -= kReportIdSize;
+                              << "serial #" << m_deviceInfo.serialNumber() 
+                              << "(including one byte for the report ID:" << QString::number(static_cast<quint8>(reportID), 16).toUpper().rightJustified(2, QChar('0')) << ")"
+    )
 
     if (bytesRead < 0) {
         // -1 is the only error value according to hidapi documentation. Otherwise minimum possible value is 1, because 1 byte is for the reportID.
@@ -189,6 +193,7 @@ bool HidController::poll() {
             DEBUG_ASSERT(bytesRead == -1);
             return false;
         } else if (bytesRead == 0) {
+            // No packet was available to be read
             return true;
         }
 
@@ -306,7 +311,7 @@ QList<int> HidController::getFeatureReport(
     } else {
         controllerDebug(bytesRead << "bytes received by getFeatureReport from" << getName()
                                   << "serial #" << m_deviceInfo.serialNumber()
-                                  << "(including report ID of" << reportID << ")");
+                                  << "(including one byte for the report ID:" << QString::number(static_cast<quint8>(reportID), 16).toUpper().rightJustified(2, QChar('0')) << ")")
     }
 
     // Convert array of bytes read in a JavaScript compatible return type
