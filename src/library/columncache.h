@@ -110,6 +110,7 @@ class ColumnCache : public QObject {
         if (index < 0) {
             return;
         }
+        DEBUG_ASSERT(!m_columnSortByIndex.contains(index));
         m_columnSortByIndex.insert(index, sortFormat);
     }
 
