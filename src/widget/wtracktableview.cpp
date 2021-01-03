@@ -154,13 +154,15 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
      * this will cause a small GUI freeze
      */
     if (getTrackModel() == trackModel) {
-        // Re-sort the table even if the track model is the same. This triggers
-        // a select() if the table is dirty.
-        doSortByColumn(horizontalHeader()->sortIndicatorSection(),
-                horizontalHeader()->sortIndicatorOrder());
-
         if (restoreState) {
-            restoreCurrentViewState();
+            if (!restoreCurrentViewState()) {
+                // the restore will cause a resort of the data, so we can skip this
+                // select here
+                // Re-sort the table even if the track model is the same. This triggers
+                // a select() if the table is dirty.
+                doSortByColumn(horizontalHeader()->sortIndicatorSection(),
+                        horizontalHeader()->sortIndicatorOrder());
+            }
         }
         return;
     }

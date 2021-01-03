@@ -36,8 +36,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void saveCurrentViewState() override {
         m_pTrackTableView->saveCurrentViewState();
     };
-    void restoreCurrentViewState() override {
-        m_pTrackTableView->restoreCurrentViewState();
+    bool restoreCurrentViewState() override {
+        return m_pTrackTableView->restoreCurrentViewState();
     };
 
   public slots:

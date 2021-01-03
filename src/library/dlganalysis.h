@@ -37,8 +37,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     void saveCurrentViewState() override {
         m_pAnalysisLibraryTableView->saveCurrentViewState();
     };
-    void restoreCurrentViewState() override {
-        m_pAnalysisLibraryTableView->restoreCurrentViewState();
+    bool restoreCurrentViewState() override {
+        return m_pAnalysisLibraryTableView->restoreCurrentViewState();
     };
 
   public slots:

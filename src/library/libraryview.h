@@ -27,7 +27,9 @@ class LibraryView {
     virtual void slotAddToAutoDJTop() {};
     virtual void slotAddToAutoDJReplace() {};
     virtual void saveCurrentViewState(){};
-    virtual void restoreCurrentViewState(){};
+    virtual bool restoreCurrentViewState() {
+        return false;
+    };
 
     /// If applicable, requests that the LibraryView load the selected track to
     /// the specified group. Does nothing otherwise.
