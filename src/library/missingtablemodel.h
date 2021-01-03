@@ -21,7 +21,10 @@ class MissingTableModel final : public BaseSqlTableModel {
     Qt::ItemFlags flags(const QModelIndex &index) const final;
     CapabilitiesFlags getCapabilities() const final;
 
-    virtual QString modelKey() const override {
+    virtual QString modelKey(bool noSearch = false) const override {
+        if (noSearch) {
+            return QStringLiteral("missing:") + m_tableName;
+        }
         return QStringLiteral("missing:") + m_tableName +
                 QStringLiteral("#") +
                 currentSearch();

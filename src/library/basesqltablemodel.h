@@ -71,7 +71,10 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     int fieldIndex(
             ColumnCache::Column column) const final;
 
-    virtual QString modelKey() const override {
+    virtual QString modelKey(bool noSearch = false) const override {
+        if (noSearch) {
+            return QStringLiteral("table:") + m_tableName;
+        }
         return QStringLiteral("table:") + m_tableName +
                 QStringLiteral("#") +
                 currentSearch();

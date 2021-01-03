@@ -78,8 +78,6 @@ WTrackTableView::~WTrackTableView() {
             qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (pHeader) {
         pHeader->saveHeaderState();
-        m_pConfig->setValue(kConfigKeySaveLibraryState,
-                pHeader->getEnableSaveState());
     }
 }
 
@@ -174,8 +172,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
             qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (oldHeader) {
         oldHeader->saveHeaderState();
-        m_pConfig->setValue(kConfigKeySaveLibraryState,
-                oldHeader->getEnableSaveState());
     }
 
     // rryan 12/2009 : Due to a bug in Qt, in order to switch to a model with
@@ -184,7 +180,6 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model, bool restoreStat
     // else problems occur. Since we parent the WtrackTableViewHeader's to the
     // WTrackTableView, they are automatically deleted.
     auto* header = new WTrackTableViewHeader(Qt::Horizontal, this);
-    header->setEnableSaveState(m_pConfig->getValue(kConfigKeySaveLibraryState, 1) == 1);
 
     // WTF(rryan) The following saves on unnecessary work on the part of
     // WTrackTableHeaderView. setHorizontalHeader() calls setModel() on the

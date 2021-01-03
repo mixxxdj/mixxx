@@ -33,7 +33,11 @@ class PlaylistTableModel final : public BaseSqlTableModel {
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     bool isLocked() final;
     CapabilitiesFlags getCapabilities() const final;
-    virtual QString modelKey() const override {
+    virtual QString modelKey(bool noSearch = false) const override {
+        if (noSearch) {
+            return QStringLiteral("playlist/") +
+                    QString::number(m_iPlaylistId);
+        }
         return QStringLiteral("playlist/") +
                 QString::number(m_iPlaylistId) +
                 QStringLiteral("#") +

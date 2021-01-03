@@ -214,8 +214,10 @@ class TrackModel {
 
     virtual void select() {
     }
-
-    virtual QString modelKey() const = 0;
+    /// @brief modelKey returns a unique identifier for the model
+    /// @param noSearch don't include the current search in the key
+    /// @param baseOnly return only a identifier for the whole subsystem
+    virtual QString modelKey(bool noSearch = false) const = 0;
 
   private:
     QSqlDatabase m_db;

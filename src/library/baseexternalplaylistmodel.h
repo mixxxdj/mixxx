@@ -30,7 +30,11 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     bool isColumnInternal(int column) override;
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     CapabilitiesFlags getCapabilities() const override;
-    QString modelKey() const override {
+    QString modelKey(bool noSearch = false) const override {
+        if (noSearch) {
+            return QStringLiteral("external/") +
+                    QString::number(m_currentPlaylistId);
+        }
         return QStringLiteral("external/") +
                 QString::number(m_currentPlaylistId) +
                 QStringLiteral("#") +

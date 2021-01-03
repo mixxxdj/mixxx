@@ -46,7 +46,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
 
     // Inherited from QAbstractItemModel
     void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) final;
-    QString modelKey() const override;
+    QString modelKey(bool noSearch = false) const override;
 
   private:
     TrackModel* m_pTrackModel;
