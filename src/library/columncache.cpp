@@ -5,6 +5,15 @@
 #include "moc_columncache.cpp"
 #include "util/db/dbconnection.h"
 
+namespace {
+
+const QString kSortInt = QStringLiteral("cast(%1 as integer)");
+const QString kSortNoCase = QStringLiteral("lower(%1)");
+const QString kSortNoCaseLex = mixxx::DbConnection::collateLexicographically(
+        QStringLiteral("lower(%1)"));
+
+} // namespace
+
 ColumnCache::ColumnCache(const QStringList& columns) {
     m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
     m_pKeyNotationCP->connectValueChanged(this, &ColumnCache::slotSetKeySortOrder);
@@ -91,33 +100,28 @@ void ColumnCache::setColumns(const QStringList& columns) {
         m_columnIndexByEnum[it.key()] = fieldIndex(it.value());
     }
 
-    const QString sortInt = QStringLiteral("cast(%1 as integer)");
-    const QString sortNoCase = QStringLiteral("lower(%1)");
-    const QString sortNoCaseLex = mixxx::DbConnection::collateLexicographically(
-            QStringLiteral("lower(%1)"));
-
     m_columnSortByIndex.clear();
     // Add the columns that requires a special sort
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_ARTIST, sortNoCaseLex);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TITLE, sortNoCaseLex);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_ALBUM, sortNoCaseLex);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_ALBUMARTIST, sortNoCaseLex);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_YEAR, sortNoCase);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_GENRE, sortNoCaseLex);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COMPOSER, sortNoCaseLex);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_GROUPING, sortNoCaseLex);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TRACKNUMBER, sortInt);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_FILETYPE, sortNoCase);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_NATIVELOCATION, sortNoCase);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COMMENT, sortNoCaseLex);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_BITRATE, sortInt);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_BPM, sortInt);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_SAMPLERATE, sortInt);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TIMESPLAYED, sortInt);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_ARTIST, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TITLE, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_ALBUM, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_ALBUMARTIST, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_YEAR, kSortNoCase);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_GENRE, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COMPOSER, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_GROUPING, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TRACKNUMBER, kSortInt);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_FILETYPE, kSortNoCase);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_NATIVELOCATION, kSortNoCase);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COMMENT, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_BITRATE, kSortInt);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_BPM, kSortInt);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_SAMPLERATE, kSortInt);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TIMESPLAYED, kSortInt);
 
-    insertColumnSortByEnum(COLUMN_PLAYLISTTRACKSTABLE_LOCATION, sortNoCase);
-    insertColumnSortByEnum(COLUMN_PLAYLISTTRACKSTABLE_ARTIST, sortNoCase);
-    insertColumnSortByEnum(COLUMN_PLAYLISTTRACKSTABLE_TITLE, sortNoCase);
+    insertColumnSortByEnum(COLUMN_PLAYLISTTRACKSTABLE_LOCATION, kSortNoCase);
+    insertColumnSortByEnum(COLUMN_PLAYLISTTRACKSTABLE_ARTIST, kSortNoCase);
+    insertColumnSortByEnum(COLUMN_PLAYLISTTRACKSTABLE_TITLE, kSortNoCase);
 
     slotSetKeySortOrder(m_pKeyNotationCP->get());
 }
