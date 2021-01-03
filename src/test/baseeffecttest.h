@@ -1,18 +1,16 @@
 #pragma once
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 #include <QScopedPointer>
 
+#include "effects/effectinstantiator.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectprocessor.h"
+#include "effects/effectsbackend.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmanager.h"
-#include "effects/effectmanifest.h"
-#include "effects/effectsbackend.h"
-#include "effects/effectinstantiator.h"
-#include "effects/effectprocessor.h"
-
-
 #include "test/mixxxtest.h"
 
 class TestEffectBackend : public EffectsBackend {
@@ -32,9 +30,10 @@ class MockEffectProcessor : public EffectProcessor {
   public:
     MockEffectProcessor() {}
 
-    MOCK_METHOD3(initialize, void(const QSet<ChannelHandleAndGroup>& activeInputChannels,
-                                  const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
-                                  const mixxx::EngineParameters& bufferParameters));
+    MOCK_METHOD3(initialize,
+            void(const QSet<ChannelHandleAndGroup>& activeInputChannels,
+                    const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
+                    const mixxx::EngineParameters& bufferParameters));
     MOCK_METHOD1(createState, EffectState*(const mixxx::EngineParameters& bufferParameters));
     MOCK_METHOD2(loadStatesForInputChannel, bool(const ChannelHandle* inputChannel,
           const EffectStatesMap* pStatesMap));

@@ -131,7 +131,6 @@ class EffectSlot : public QObject {
 
     void setEnabled(bool enabled);
 
-
   public slots:
     void setMetaParameter(double v, bool force = false);
 

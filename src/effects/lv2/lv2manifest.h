@@ -1,10 +1,11 @@
 #pragma once
 
+#include <lilv-0/lilv/lilv.h>
+
 #include <QSharedPointer>
 
-#include "effects/effectmanifest.h"
 #include "effects/defs.h"
-#include <lilv-0/lilv/lilv.h>
+#include "effects/effectmanifest.h"
 
 /// Refer to EffectManifest for documentation
 class LV2Manifest : public EffectManifest {

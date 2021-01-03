@@ -141,7 +141,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         int selectedEQEffectIndex = 0;
         if (pEQManifest) {
             selectedEQEffectIndex = m_deckEqEffectSelectors[i]->findData(
-                QVariant(pEQManifest->uniqueId()));
+                    QVariant(pEQManifest->uniqueId()));
         } else {
             // Select "None"
             selectedEQEffectIndex = m_deckEqEffectSelectors[i]->count() - 1;
@@ -188,7 +188,7 @@ void DlgPrefEQ::populateDeckBoxList(
         for (const auto& pManifest : pManifestList) {
             box->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
             if (pCurrentlySelectedManifest &&
-                pCurrentlySelectedManifest.data() == pManifest.data()) {
+                    pCurrentlySelectedManifest.data() == pManifest.data()) {
                 currentIndex = i;
             }
             ++i;
@@ -201,7 +201,7 @@ void DlgPrefEQ::populateDeckBoxList(
             // current selection is not part of the new list
             // So we need to add it
             box->addItem(pCurrentlySelectedManifest->shortName(),
-                         QVariant(pCurrentlySelectedManifest->uniqueId()));
+                    QVariant(pCurrentlySelectedManifest->uniqueId()));
             currentIndex = i + 1;
         }
         box->setCurrentIndex(currentIndex);
@@ -215,7 +215,7 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
     int deck1EQIndex = m_deckEqEffectSelectors.at(0)->currentIndex();
     for (int i = 2; i < m_deckEqEffectSelectors.size() + 1; ++i) {
         if (do_hide) {
-            m_deckEqEffectSelectors.at(i-1)->setCurrentIndex(deck1EQIndex);
+            m_deckEqEffectSelectors.at(i - 1)->setCurrentIndex(deck1EQIndex);
             gridLayout_3->itemAtPosition(i, 0)->widget()->hide();
             gridLayout_3->itemAtPosition(i, 1)->widget()->hide();
         } else {
@@ -532,7 +532,8 @@ void DlgPrefEQ::setUpMasterEQ() {
             &DlgPrefEQ::slotMasterEqEffectChanged);
 
     const QString configuredEffectId = m_pConfig->getValue(ConfigKey(kConfigKey,
-            "EffectForGroup_[Master]"), kDefaultMasterEqId);
+                                                                   "EffectForGroup_[Master]"),
+            kDefaultMasterEqId);
     const EffectManifestPointer configuredEffectManifest =
             m_pBackendManager->getManifestFromUniqueId(configuredEffectId);
 
@@ -608,7 +609,8 @@ void DlgPrefEQ::slotMasterEqEffectChanged(int effectIndex) {
                         EffectManifestParameter::ParameterType::KNOB, i);
 
                 if (pParameterSlot->isLoaded()) {
-                    EffectManifestParameterPointer pManifestParameter = pParameterSlot->getManifest();
+                    EffectManifestParameterPointer pManifestParameter =
+                            pParameterSlot->getManifest();
 
                     // Setup Label
                     QLabel* centerFreqLabel = new QLabel(this);
@@ -689,7 +691,8 @@ void DlgPrefEQ::slotMasterEQToDefault() {
     if (!pEffectSlot.isNull()) {
         int knobNum = pEffectSlot->numParameters(EffectManifestParameter::ParameterType::KNOB);
         for (int i = 0; i < knobNum; i++) {
-            auto pParameterSlot = pEffectSlot->getEffectParameterSlot(EffectManifestParameter::ParameterType::KNOB, i);
+            auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
+                    EffectManifestParameter::ParameterType::KNOB, i);
             if (pParameterSlot->isLoaded()) {
                 double defaultValue = pParameterSlot->getManifest()->getDefault();
                 setMasterEQParameter(i, defaultValue);

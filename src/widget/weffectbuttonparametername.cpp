@@ -1,6 +1,7 @@
+#include "widget/weffectbuttonparametername.h"
+
 #include <QtDebug>
 
-#include "widget/weffectbuttonparametername.h"
 #include "effects/effectsmanager.h"
 #include "widget/effectwidgetutils.h"
 

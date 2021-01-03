@@ -49,7 +49,8 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
 
     void processChannel(
             ParametricEQEffectGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;

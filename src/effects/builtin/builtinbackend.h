@@ -9,7 +9,9 @@ class BuiltInBackend : public EffectsBackend {
     BuiltInBackend();
     virtual ~BuiltInBackend();
 
-    EffectBackendType getType() const { return EffectBackendType::BuiltIn; };
+    EffectBackendType getType() const {
+        return EffectBackendType::BuiltIn;
+    };
 
     const QList<QString> getEffectIds() const;
     EffectManifestPointer getManifest(const QString& effectId) const;

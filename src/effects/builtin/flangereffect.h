@@ -59,7 +59,8 @@ class FlangerEffect : public EffectProcessorImpl<FlangerGroupState> {
 
     void processChannel(
             FlangerGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;

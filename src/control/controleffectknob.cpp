@@ -9,17 +9,18 @@ ControlEffectKnob::ControlEffectKnob(const ConfigKey& key, double dMinValue, dou
 }
 
 void ControlEffectKnob::setBehaviour(EffectManifestParameter::ValueScaler type,
-                                     double dMinValue, double dMaxValue) {
+        double dMinValue,
+        double dMaxValue) {
     if (m_pControl == nullptr) {
         return;
     }
 
     if (type == EffectManifestParameter::ValueScaler::LINEAR) {
-            m_pControl->setBehavior(new ControlLinPotmeterBehavior(
-                    dMinValue, dMaxValue, false));
+        m_pControl->setBehavior(new ControlLinPotmeterBehavior(
+                dMinValue, dMaxValue, false));
     } else if (type == EffectManifestParameter::ValueScaler::LINEAR_INVERSE) {
-            m_pControl->setBehavior(new ControlLinInvPotmeterBehavior(
-                    dMinValue, dMaxValue, false));
+        m_pControl->setBehavior(new ControlLinInvPotmeterBehavior(
+                dMinValue, dMaxValue, false));
     } else if (type == EffectManifestParameter::ValueScaler::LOGARITHMIC) {
         if (dMinValue == 0) {
             if (dMaxValue == 1.0) {

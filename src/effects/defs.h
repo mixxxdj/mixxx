@@ -1,9 +1,10 @@
 #pragma once
-#include "util/memory.h"
-#include "engine/channelhandle.h"
-#include <array>
 #include <QSharedPointer>
+#include <array>
 #include <memory>
+
+#include "engine/channelhandle.h"
+#include "util/memory.h"
 
 enum class EffectEnableState {
     Disabled,

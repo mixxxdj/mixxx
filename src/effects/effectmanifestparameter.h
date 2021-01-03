@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QVariant>
-#include <QString>
-#include <QtDebug>
 #include <QSharedPointer>
+#include <QString>
+#include <QVariant>
+#include <QtDebug>
 
-#include "util/assert.h"
 #include "effects/defs.h"
+#include "util/assert.h"
 
 class EffectManifestParameter;
 typedef QSharedPointer<EffectManifestParameter> EffectManifestParameterPointer;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "widget/wknobcomposed.h"
 #include "effects/effectknobparameterslot.h"
+#include "widget/wknobcomposed.h"
 
 class EffectsManager;
 

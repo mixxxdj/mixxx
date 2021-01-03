@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QObject>
-#include <QVariant>
 #include <QString>
+#include <QVariant>
 
 #include "control/controlobject.h"
 #include "effects/effectparameterslotbase.h"

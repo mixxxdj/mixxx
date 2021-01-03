@@ -53,7 +53,8 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
 
     void processChannel(
             ThreeBandBiquadEQEffectGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatureState) override;

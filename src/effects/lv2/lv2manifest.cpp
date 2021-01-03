@@ -3,7 +3,7 @@
 #include "util/math.h"
 
 LV2Manifest::LV2Manifest(const LilvPlugin* plug,
-                         QHash<QString, LilvNode*>& properties)
+        QHash<QString, LilvNode*>& properties)
         : EffectManifest(),
           m_status(AVAILABLE) {
     m_pLV2plugin = plug;
@@ -82,7 +82,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
                 param->setValueScaler(EffectManifestParameter::ValueScaler::INTEGRAL);
             } else {
-                 param->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
+                param->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
             }
         }
     }

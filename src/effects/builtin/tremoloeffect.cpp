@@ -42,10 +42,10 @@ EffectManifestPointer TremoloEffect::getManifest() {
         "4 beats - 1/8 beat if tempo is detected\n"
         "1/4 Hz - 8 Hz if no tempo is detected"));
     rate->setValueScaler(
-        EffectManifestParameter::ValueScaler::LOGARITHMIC);
+            EffectManifestParameter::ValueScaler::LOGARITHMIC);
     rate->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     rate->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
-    rate->setRange(1.0/4, 1, 8);
+    rate->setRange(1.0 / 4, 1, 8);
 
     EffectManifestParameterPointer width = pManifest->addParameter();
     width->setId("width");
@@ -68,7 +68,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
         "Fully left: Square wave\n"
         "Fully right: Sine wave"));
     waveform->setValueScaler(
-        EffectManifestParameter::ValueScaler::LOGARITHMIC);
+            EffectManifestParameter::ValueScaler::LOGARITHMIC);
     waveform->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     waveform->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     waveform->setRange(0.005, 0.5, 1);
@@ -82,7 +82,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
         "Fully left: beginning of the effect period\n"
         "Fully right: end of the effect period"));
     phase->setValueScaler(
-        EffectManifestParameter::ValueScaler::LINEAR);
+            EffectManifestParameter::ValueScaler::LINEAR);
     phase->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     phase->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     phase->setRange(0, 0, 1);
@@ -94,7 +94,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
     quantize->setDescription(QObject::tr(
         "Round the Rate parameter to the nearest whole division of a beat."));
     quantize->setValueScaler(
-        EffectManifestParameter::ValueScaler::TOGGLE);
+            EffectManifestParameter::ValueScaler::TOGGLE);
     quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     quantize->setRange(0, 1, 1);
@@ -106,7 +106,7 @@ EffectManifestPointer TremoloEffect::getManifest() {
     triplet->setDescription(QObject::tr(
         "When the Quantize parameter is enabled, divide the effect period by 3."));
     triplet->setValueScaler(
-        EffectManifestParameter::ValueScaler::TOGGLE);
+            EffectManifestParameter::ValueScaler::TOGGLE);
     triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     triplet->setRange(0, 0, 1);
@@ -127,7 +127,8 @@ void TremoloEffect::loadEngineEffectParameters(
 
 void TremoloEffect::processChannel(
         TremoloState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {

@@ -111,10 +111,13 @@ bool EngineEffectChain::processEffectsRequest(EffectsRequest& message,
             break;
         case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
             if (kEffectDebugOutput) {
-                qDebug() << debugString() << this << "SET_EFFECT_CHAIN_PARAMETERS"
-                         << "enabled" << message.SetEffectChainParameters.enabled
-                         << "mix" << message.SetEffectChainParameters.mix
-                         << "mix_mode" << static_cast<int>(message.SetEffectChainParameters.mix_mode);
+                qDebug() << debugString() << this
+                         << "SET_EFFECT_CHAIN_PARAMETERS"
+                         << "enabled"
+                         << message.SetEffectChainParameters.enabled << "mix"
+                         << message.SetEffectChainParameters.mix << "mix_mode"
+                         << static_cast<int>(
+                                    message.SetEffectChainParameters.mix_mode);
             }
             response.success = updateParameters(message);
             break;

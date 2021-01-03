@@ -42,7 +42,8 @@ EffectParameterPreset::EffectParameterPreset(const EffectParameterPointer pParam
     m_bHidden = hidden;
 }
 
-EffectParameterPreset::EffectParameterPreset(const EffectManifestParameterPointer pManifestParameter) {
+EffectParameterPreset::EffectParameterPreset(
+        const EffectManifestParameterPointer pManifestParameter) {
     m_id = pManifestParameter->id();
     m_dValue = pManifestParameter->getDefault();
     m_linkType = pManifestParameter->defaultLinkType();

@@ -39,7 +39,8 @@ class FilterEffect : public EffectProcessorImpl<FilterGroupState> {
 
     void processChannel(
             FilterGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE *pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;

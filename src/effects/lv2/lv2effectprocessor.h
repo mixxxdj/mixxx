@@ -1,14 +1,15 @@
 #pragma once
 
+#include <lilv-0/lilv/lilv.h>
+
+#include "effects/defs.h"
 #include "effects/effectprocessor.h"
 #include "effects/lv2/lv2manifest.h"
 #include "engine/effects/engineeffectparameter.h"
-#include <lilv-0/lilv/lilv.h>
-#include "effects/defs.h"
 #include "engine/engine.h"
 
 // Refer to EffectProcessor for documentation
-class LV2EffectGroupState final: public EffectState {
+class LV2EffectGroupState final : public EffectState {
   public:
     LV2EffectGroupState(const mixxx::EngineParameters& bufferParameters)
             : EffectState(bufferParameters),
@@ -44,14 +45,15 @@ class LV2EffectProcessor final : public EffectProcessorImpl<LV2EffectGroupState>
 
     void processChannel(
             LV2EffectGroupState* channelState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;
 
   private:
     LV2EffectGroupState* createSpecificState(
-        const mixxx::EngineParameters& bufferParameters) override;
+            const mixxx::EngineParameters& bufferParameters) override;
 
     LV2EffectManifestPointer m_pManifest;
     QList<EngineEffectParameterPointer> m_engineEffectParameters;

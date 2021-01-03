@@ -125,10 +125,11 @@ class EffectProcessorImpl : public EffectProcessor {
 
     /// This is the only non-static method that subclasses need to implement.
     virtual void processChannel(EffectSpecificState* channelState,
-                                const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                const mixxx::EngineParameters& bufferParameters,
-                                const EffectEnableState enableState,
-                                const GroupFeatureState& groupFeatures) = 0;
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
+            const mixxx::EngineParameters& bufferParameters,
+            const EffectEnableState enableState,
+            const GroupFeatureState& groupFeatures) = 0;
 
     void process(const ChannelHandle& inputHandle, const ChannelHandle& outputHandle,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
@@ -147,8 +148,7 @@ class EffectProcessorImpl : public EffectProcessor {
             pState = createSpecificState(bufferParameters);
             m_channelStateMatrix[inputHandle][outputHandle] = pState;
         }
-        processChannel(pState, pInput, pOutput,
-                       bufferParameters, enableState, groupFeatures);
+        processChannel(pState, pInput, pOutput, bufferParameters, enableState, groupFeatures);
     }
 
     void initialize(const QSet<ChannelHandleAndGroup>& activeInputChannels,

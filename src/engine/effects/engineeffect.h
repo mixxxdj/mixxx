@@ -1,20 +1,19 @@
 #pragma once
 
-#include <QMap>
-#include <QString>
 #include <QList>
-#include <QVector>
+#include <QMap>
 #include <QSet>
+#include <QString>
+#include <QVector>
 #include <QtDebug>
 
-#include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
+#include "effects/effectsmanager.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "engine/effects/message.h"
 #include "engine/effects/groupfeaturestate.h"
-
+#include "engine/effects/message.h"
 #include "util/memory.h"
 
 class EngineEffect : public EffectsRequestHandler {

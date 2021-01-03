@@ -1,15 +1,14 @@
 #include "effects/lv2/lv2effectprocessor.h"
 
 #include "control/controlobject.h"
-#include "util/sample.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
 LV2EffectProcessor::LV2EffectProcessor(LV2EffectManifestPointer pManifest)
-            : m_pManifest(pManifest),
-              m_pPlugin(pManifest->getPlugin()),
-              m_audioPortIndices(pManifest->getAudioPortIndices()),
-              m_controlPortIndices(pManifest->getControlPortIndices()) {
+        : m_pManifest(pManifest),
+          m_pPlugin(pManifest->getPlugin()),
+          m_audioPortIndices(pManifest->getAudioPortIndices()),
+          m_controlPortIndices(pManifest->getControlPortIndices()) {
     m_inputL = new float[MAX_BUFFER_LEN];
     m_inputR = new float[MAX_BUFFER_LEN];
     m_outputL = new float[MAX_BUFFER_LEN];
@@ -17,7 +16,7 @@ LV2EffectProcessor::LV2EffectProcessor(LV2EffectManifestPointer pManifest)
 }
 
 void LV2EffectProcessor::loadEngineEffectParameters(
-            const QMap<QString, EngineEffectParameterPointer>& parameters) {
+        const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_LV2parameters = new float[parameters.size()];
 
     // EngineEffect passes the EngineEffectParameters indexed by ID string, which
@@ -42,7 +41,8 @@ LV2EffectProcessor::~LV2EffectProcessor() {
 
 void LV2EffectProcessor::processChannel(
         LV2EffectGroupState* channelState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
@@ -95,7 +95,8 @@ LV2EffectGroupState* LV2EffectProcessor::createSpecificState(
         for (int i = 0; i < m_engineEffectParameters.size(); i++) {
             m_LV2parameters[i] = static_cast<float>(m_engineEffectParameters[i]->value());
             lilv_instance_connect_port(pInstance,
-                    m_controlPortIndices[i], &m_LV2parameters[i]);
+                    m_controlPortIndices[i],
+                    &m_LV2parameters[i]);
         }
 
         // We assume the audio ports are in the following order:

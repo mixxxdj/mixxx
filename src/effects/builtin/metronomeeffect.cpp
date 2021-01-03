@@ -34,7 +34,6 @@ EffectManifestPointer MetronomeEffect::getManifest() {
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     period->setRange(40, 120, 208);
 
-
     // Period unit
     EffectManifestParameterPointer periodUnit = pManifest->addParameter();
     periodUnit->setId("sync");

@@ -83,12 +83,12 @@ AutoPanEffect::~AutoPanEffect() {
 }
 
 void AutoPanEffect::processChannel(
-          AutoPanGroupState* pGroupState,
-          const CSAMPLE* pInput, CSAMPLE* pOutput,
-          const mixxx::EngineParameters& bufferParameters,
-          const EffectEnableState enableState,
-          const GroupFeatureState& groupFeatures) {
-
+        AutoPanGroupState* pGroupState,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
+        const mixxx::EngineParameters& bufferParameters,
+        const EffectEnableState enableState,
+        const GroupFeatureState& groupFeatures) {
     if (enableState == EffectEnableState::Disabled) {
         return;
     }

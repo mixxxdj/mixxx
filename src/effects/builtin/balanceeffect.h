@@ -39,7 +39,8 @@ class BalanceEffect : public EffectProcessorImpl<BalanceGroupState> {
 
     void processChannel(
             BalanceGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;

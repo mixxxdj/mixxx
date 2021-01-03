@@ -22,7 +22,8 @@ EffectPreset::EffectPreset(const QDomElement& effectElement) {
                     EffectXml::EffectBackendType));
     m_dMetaParameter = XmlParse::selectNodeDouble(effectElement, EffectXml::EffectMetaParameter);
 
-    QDomElement parametersElement = XmlParse::selectElement(effectElement, EffectXml::ParametersRoot);
+    QDomElement parametersElement =
+            XmlParse::selectElement(effectElement, EffectXml::ParametersRoot);
     QDomNodeList parametersList = parametersElement.childNodes();
 
     for (int i = 0; i < parametersList.count(); ++i) {

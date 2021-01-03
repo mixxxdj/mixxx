@@ -89,7 +89,8 @@ class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
 
     void processChannel(
             AutoPanGroupState* pState,
-            const CSAMPLE* pInput, CSAMPLE* pOutput,
+            const CSAMPLE* pInput,
+            CSAMPLE* pOutput,
             const mixxx::EngineParameters& bufferParameters,
             const EffectEnableState enableState,
             const GroupFeatureState& groupFeatures) override;

@@ -102,7 +102,8 @@ BalanceEffect::~BalanceEffect() {
 
 void BalanceEffect::processChannel(
         BalanceGroupState* pGroupState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {

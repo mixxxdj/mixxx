@@ -107,7 +107,7 @@ bool EngineEffect::processEffectsRequest(EffectsRequest& message,
                          << "value" << message.value;
             }
             pParameter = m_parameters.value(
-                message.SetParameterParameters.iParameter, EngineEffectParameterPointer());
+                    message.SetParameterParameters.iParameter, EngineEffectParameterPointer());
             if (pParameter) {
                 pParameter->setValue(message.value);
                 response.success = true;

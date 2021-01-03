@@ -1,15 +1,14 @@
 #pragma once
 
+#include <QComboBox>
+#include <QWidget>
 #include <functional>
 
-#include <QWidget>
-#include <QComboBox>
-
-#include "preferences/dialog/ui_dlgprefeqdlg.h"
-#include "preferences/usersettings.h"
 #include "control/controlproxy.h"
-#include "preferences/dlgpreferencepage.h"
 #include "effects/effectsmanager.h"
+#include "preferences/dialog/ui_dlgprefeqdlg.h"
+#include "preferences/dlgpreferencepage.h"
+#include "preferences/usersettings.h"
 
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT

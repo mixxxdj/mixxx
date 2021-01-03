@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QObject>
-#include <QVariant>
 #include <QString>
+#include <QVariant>
 
 #include "control/controlobject.h"
 #include "effects/effectmanifest.h"
@@ -22,7 +22,9 @@ class EffectSlot;
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT
   public:
-    EffectParameterSlotBase(const QString& group, const unsigned int iParameterSlotNumber, const EffectParameterType parameterType);
+    EffectParameterSlotBase(const QString& group,
+            const unsigned int iParameterSlotNumber,
+            const EffectParameterType parameterType);
 
     virtual ~EffectParameterSlotBase();
 
@@ -33,7 +35,7 @@ class EffectParameterSlotBase : public QObject {
 
     virtual void syncSofttakeover();
 
-    virtual void onEffectMetaParameterChanged(double parameter, bool force=false);
+    virtual void onEffectMetaParameterChanged(double parameter, bool force = false);
 
     QString name() const;
     QString shortName() const;

@@ -106,9 +106,9 @@ EffectManifestPointer ParametricEQEffect::getManifest() {
 }
 
 ParametricEQEffectGroupState::ParametricEQEffectGroupState(
-      const mixxx::EngineParameters& bufferParameters)
-      : EffectState(bufferParameters),
-        m_oldSampleRate(44100) {
+        const mixxx::EngineParameters& bufferParameters)
+        : EffectState(bufferParameters),
+          m_oldSampleRate(44100) {
     for (int i = 0; i < kBandCount; i++) {
         m_oldGain.append(1.0);
         m_oldQ.append(1.75);
@@ -146,7 +146,8 @@ ParametricEQEffect::~ParametricEQEffect() {
 
 void ParametricEQEffect::processChannel(
         ParametricEQEffectGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {

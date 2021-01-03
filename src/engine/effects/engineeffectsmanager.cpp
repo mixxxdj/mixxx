@@ -23,71 +23,70 @@ void EngineEffectsManager::onCallbackStart() {
         EffectsResponse response(*request);
         bool processed = false;
         switch (request->type) {
-            case EffectsRequest::ADD_EFFECT_CHAIN:
-            case EffectsRequest::REMOVE_EFFECT_CHAIN:
-                if (processEffectsRequest(*request, m_pResponsePipe.data())) {
-                    processed = true;
+        case EffectsRequest::ADD_EFFECT_CHAIN:
+        case EffectsRequest::REMOVE_EFFECT_CHAIN:
+            if (processEffectsRequest(*request, m_pResponsePipe.data())) {
+                processed = true;
+            }
+            break;
+        case EffectsRequest::ADD_EFFECT_TO_CHAIN:
+        case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
+        case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
+        case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
+        case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL: {
+            bool chainExists = false;
+            for (const auto& chains : std::as_const(m_chainsByStage)) {
+                if (chains.contains(request->pTargetChain)) {
+                    chainExists = true;
                 }
-                break;
-            case EffectsRequest::ADD_EFFECT_TO_CHAIN:
-            case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
-            case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
-            case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
-            case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL:
-                {
-                    bool chainExists = false;
-                    for (const auto& chains : std::as_const(m_chainsByStage)) {
-                        if (chains.contains(request->pTargetChain)) {
-                            chainExists = true;
-                        }
-                    }
+            }
 
-                    VERIFY_OR_DEBUG_ASSERT(chainExists) {
-                        response.success = false;
-                        response.status = EffectsResponse::NO_SUCH_CHAIN;
-                        break;
-                    }
-                }
-                processed = request->pTargetChain->processEffectsRequest(
-                    *request, m_pResponsePipe.data());
-                if (processed) {
-                    // When an effect becomes active (part of a chain), keep
-                    // it in our master list so that we can respond to
-                    // requests about it.
-                    if (request->type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
-                        m_effects.append(request->AddEffectToChain.pEffect);
-                    } else if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
-                        m_effects.removeAll(request->RemoveEffectFromChain.pEffect);
-                    }
-                } else {
-                    // If we got here, the message was not handled for
-                    // an unknown reason.
-                    response.success = false;
-                    response.status = EffectsResponse::INVALID_REQUEST;
-                }
-                break;
-            case EffectsRequest::SET_EFFECT_PARAMETERS:
-            case EffectsRequest::SET_PARAMETER_PARAMETERS:
-                VERIFY_OR_DEBUG_ASSERT(m_effects.contains(request->pTargetEffect)) {
-                    response.success = false;
-                    response.status = EffectsResponse::NO_SUCH_EFFECT;
-                    break;
-                }
-
-                processed = request->pTargetEffect
-                        ->processEffectsRequest(*request, m_pResponsePipe.data());
-
-                if (!processed) {
-                    // If we got here, the message was not handled for an
-                    // unknown reason.
-                    response.success = false;
-                    response.status = EffectsResponse::INVALID_REQUEST;
-                }
-                break;
-            default:
+            VERIFY_OR_DEBUG_ASSERT(chainExists) {
                 response.success = false;
-                response.status = EffectsResponse::UNHANDLED_MESSAGE_TYPE;
+                response.status = EffectsResponse::NO_SUCH_CHAIN;
                 break;
+            }
+        }
+            processed = request->pTargetChain->processEffectsRequest(
+                    *request, m_pResponsePipe.data());
+            if (processed) {
+                // When an effect becomes active (part of a chain), keep
+                // it in our master list so that we can respond to
+                // requests about it.
+                if (request->type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
+                    m_effects.append(request->AddEffectToChain.pEffect);
+                } else if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+                    m_effects.removeAll(request->RemoveEffectFromChain.pEffect);
+                }
+            } else {
+                // If we got here, the message was not handled for
+                // an unknown reason.
+                response.success = false;
+                response.status = EffectsResponse::INVALID_REQUEST;
+            }
+            break;
+        case EffectsRequest::SET_EFFECT_PARAMETERS:
+        case EffectsRequest::SET_PARAMETER_PARAMETERS:
+            VERIFY_OR_DEBUG_ASSERT(m_effects.contains(request->pTargetEffect)) {
+                response.success = false;
+                response.status = EffectsResponse::NO_SUCH_EFFECT;
+                break;
+            }
+
+            processed = request->pTargetEffect
+                                ->processEffectsRequest(*request, m_pResponsePipe.data());
+
+            if (!processed) {
+                // If we got here, the message was not handled for an
+                // unknown reason.
+                response.success = false;
+                response.status = EffectsResponse::INVALID_REQUEST;
+            }
+            break;
+        default:
+            response.success = false;
+            response.status = EffectsResponse::UNHANDLED_MESSAGE_TYPE;
+            break;
         }
 
         if (!processed) {
@@ -155,7 +154,6 @@ void EngineEffectsManager::processInner(
     const GroupFeatureState& groupFeatures,
     const CSAMPLE_GAIN oldGain,
     const CSAMPLE_GAIN newGain) {
-
     const QList<EngineEffectChain*>& chains = m_chainsByStage.value(stage);
 
     if (pIn == pOut) {
@@ -164,9 +162,13 @@ void EngineEffectsManager::processInner(
         SampleUtil::applyRampingGain(pIn, oldGain, newGain, numSamples);
         for (EngineEffectChain* pChain : chains) {
             if (pChain) {
-                if (pChain->process(inputHandle, outputHandle,
-                                    pIn, pOut,
-                                    numSamples, sampleRate, groupFeatures)) {
+                if (pChain->process(inputHandle,
+                            outputHandle,
+                            pIn,
+                            pOut,
+                            numSamples,
+                            sampleRate,
+                            groupFeatures)) {
                 }
             }
         }
@@ -198,9 +200,13 @@ void EngineEffectsManager::processInner(
                     pIntermediateOutput = m_buffer1.data();
                 }
 
-                if (pChain->process(inputHandle, outputHandle,
-                                    pIntermediateInput, pIntermediateOutput,
-                                    numSamples, sampleRate, groupFeatures)) {
+                if (pChain->process(inputHandle,
+                            outputHandle,
+                            pIntermediateInput,
+                            pIntermediateOutput,
+                            numSamples,
+                            sampleRate,
+                            groupFeatures)) {
                     // Output of this chain becomes the input of the next chain.
                     pIntermediateInput = pIntermediateOutput;
                 }
@@ -235,24 +241,24 @@ bool EngineEffectsManager::processEffectsRequest(EffectsRequest& message,
                                                  EffectsResponsePipe* pResponsePipe) {
     EffectsResponse response(message);
     switch (message.type) {
-        case EffectsRequest::ADD_EFFECT_CHAIN:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "ADD_EFFECT_CHAIN"
-                         << message.AddEffectChain.pChain;
-            }
-            response.success = addEffectChain(message.AddEffectChain.pChain,
-                    message.AddEffectChain.signalProcessingStage);
-            break;
-        case EffectsRequest::REMOVE_EFFECT_CHAIN:
-            if (kEffectDebugOutput) {
-                qDebug() << debugString() << "REMOVE_EFFECT_CHAIN"
-                         << message.RemoveEffectChain.pChain;
-            }
-            response.success = removeEffectChain(message.RemoveEffectChain.pChain,
-                    message.RemoveEffectChain.signalProcessingStage);
-            break;
-        default:
-            return false;
+    case EffectsRequest::ADD_EFFECT_CHAIN:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "ADD_EFFECT_CHAIN"
+                     << message.AddEffectChain.pChain;
+        }
+        response.success = addEffectChain(message.AddEffectChain.pChain,
+                message.AddEffectChain.signalProcessingStage);
+        break;
+    case EffectsRequest::REMOVE_EFFECT_CHAIN:
+        if (kEffectDebugOutput) {
+            qDebug() << debugString() << "REMOVE_EFFECT_CHAIN"
+                     << message.RemoveEffectChain.pChain;
+        }
+        response.success = removeEffectChain(message.RemoveEffectChain.pChain,
+                message.RemoveEffectChain.signalProcessingStage);
+        break;
+    default:
+        return false;
     }
     pResponsePipe->writeMessage(response);
     return true;

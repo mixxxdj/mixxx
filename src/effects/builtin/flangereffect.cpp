@@ -119,11 +119,11 @@ FlangerEffect::~FlangerEffect() {
 
 void FlangerEffect::processChannel(
         FlangerGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {
-
     double lfoPeriodParameter = m_pSpeedParameter->value();
     double lfoPeriodFrames;
     if (groupFeatures.has_beat_length_sec) {

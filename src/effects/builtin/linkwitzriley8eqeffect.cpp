@@ -71,7 +71,6 @@ LinkwitzRiley8EQEffect::LinkwitzRiley8EQEffect() {
     m_pHiFreqCorner = new ControlProxy("[Mixer Profile]", "HiEQFrequency");
 }
 
-
 void LinkwitzRiley8EQEffect::loadEngineEffectParameters(
         const QMap<QString, EngineEffectParameterPointer>& parameters) {
     m_pPotLow = parameters.value("low");
@@ -89,7 +88,8 @@ LinkwitzRiley8EQEffect::~LinkwitzRiley8EQEffect() {
 
 void LinkwitzRiley8EQEffect::processChannel(
         LinkwitzRiley8EQEffectGroupState* pState,
-        const CSAMPLE* pInput, CSAMPLE* pOutput,
+        const CSAMPLE* pInput,
+        CSAMPLE* pOutput,
         const mixxx::EngineParameters& bufferParameters,
         const EffectEnableState enableState,
         const GroupFeatureState& groupFeatures) {

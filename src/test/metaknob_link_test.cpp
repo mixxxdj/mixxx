@@ -1,17 +1,17 @@
 #include <gtest/gtest.h>
 
-#include <QtDebug>
 #include <QScopedPointer>
+#include <QtDebug>
 
+#include "control/controlproxy.h"
 #include "controllers/softtakeover.h"
-#include "effects/effectknobparameterslot.h"
 #include "effects/effectchainslot.h"
-#include "effects/specialeffectchainslots.h"
+#include "effects/effectknobparameterslot.h"
 #include "effects/effectslot.h"
+#include "effects/specialeffectchainslots.h"
 #include "mixxxtest.h"
 #include "test/baseeffecttest.h"
 #include "util/time.h"
-#include "control/controlproxy.h"
 
 class MetaLinkTest : public BaseEffectTest {
   protected:
@@ -32,7 +32,7 @@ class MetaLinkTest : public BaseEffectTest {
         m_pEffectSlot = m_pChainSlot->getEffectSlot(iEffectNumber);
 
         QString group = StandardEffectChainSlot::formatEffectSlotGroup(
-            iChainNumber, iEffectNumber);
+                iChainNumber, iEffectNumber);
 
         EffectManifestPointer pManifest(new EffectManifest());
         pManifest->setId("org.mixxx.test.effect");
@@ -53,8 +53,10 @@ class MetaLinkTest : public BaseEffectTest {
 
         registerTestEffect(pManifest, false);
 
-        m_pEffectsManager->loadEffect(m_pChainSlot, iEffectNumber,
-                pManifest->id(), EffectBackendType::Unknown);
+        m_pEffectsManager->loadEffect(m_pChainSlot,
+                iEffectNumber,
+                pManifest->id(),
+                EffectBackendType::Unknown);
 
         QString itemPrefix = EffectKnobParameterSlot::formatItemPrefix(0);
 
