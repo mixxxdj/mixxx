@@ -163,6 +163,20 @@ double EngineBufferScaleRubberBand::scaleBuffer(
         return 0.0;
     }
 
+    if (m_dTempoRatio == 1.0 && m_dPitchRatio == 1.0) {
+        qDebug() << "Rubberband: tempo slider is at 0.00";
+
+        SINT samples_copied;
+
+        samples_copied = do_copy(pOutputBuffer, iOutputBufferSize);
+
+        double framesReadOrig = m_dBaseRate * getOutputSignal().samples2frames(samples_copied);
+        //double framesRead = getOutputSignal().samples2frames(samples_copied);
+
+        qDebug() << framesReadOrig;
+        return framesReadOrig;
+    }
+
     SINT total_received_frames = 0;
     SINT total_read_frames = 0;
 
@@ -246,4 +260,39 @@ double EngineBufferScaleRubberBand::scaleBuffer(
     double framesRead = m_dBaseRate * m_dTempoRatio * total_received_frames;
 
     return framesRead;
+}
+
+SINT EngineBufferScaleRubberBand::do_copy(CSAMPLE* buf, SINT buf_size) {
+    SINT samples_needed = buf_size;
+    CSAMPLE* write_buf = buf;
+
+    // Protection against infinite read loops when (for example) we are
+    // reading from a broken file.
+    int read_failed_count = 0;
+    // We need to repeatedly call the RAMAN because the RAMAN does not bend
+    // over backwards to satisfy our request. It assumes you will continue
+    // to call getNextSamples until you receive the number of samples you
+    // wanted.
+    while (samples_needed > 0) {
+        SINT read_size = m_pReadAheadManager->getNextSamples(
+                (m_bBackwards ? -1.0 : 1.0),
+                write_buf,
+                samples_needed);
+        if (read_size == 0) {
+            if (++read_failed_count > 1) {
+                break;
+            } else {
+                continue;
+            }
+        }
+        samples_needed -= read_size;
+        write_buf += read_size;
+    }
+    // Instead of counting how many samples we got from the internal buffer
+    // and the RAMAN calls, just measure the difference between what we
+    // requested and what we still need.
+    SINT read_samples = buf_size - samples_needed;
+    // Zero the remaining samples if we didn't fill them.
+    SampleUtil::clear(write_buf, samples_needed);
+    return read_samples;
 }

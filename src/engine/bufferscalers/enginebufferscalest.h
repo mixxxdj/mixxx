@@ -44,4 +44,8 @@ class EngineBufferScaleST : public EngineBufferScale {
 
     // Holds the playback direction.
     bool m_bBackwards;
+
+    // Needed for special case when tempo slider is set to 0.0
+    // Just copies the samples over
+    SINT do_copy(CSAMPLE* buf, SINT buf_size);
 };
