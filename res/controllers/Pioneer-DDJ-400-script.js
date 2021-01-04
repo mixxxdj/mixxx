@@ -254,24 +254,6 @@ PioneerDDJ400.vuMeterUpdate = function(value, group) {
 };
 
 //
-// Tempo sliders
-//
-
-PioneerDDJ400.tempoSliderMSB = function(channel, control, value, status, group) {
-    PioneerDDJ400.highResMSB[group].tempoSlider = value;
-};
-
-PioneerDDJ400.tempoSliderLSB = function(channel, control, value, status, group) {
-    var fullValue = (PioneerDDJ400.highResMSB[group].tempoSlider << 7) + value;
-
-    engine.setValue(
-        group,
-        "rate",
-        ((0x4000 - fullValue) - 0x2000) / 0x2000
-    );
-};
-
-//
 // Effects
 //
 
@@ -569,6 +551,28 @@ PioneerDDJ400.setPadmode = function(channel, control, value) {
     if (value === 0x7F) {
         PioneerDDJ400.performancePads.state[channel] = control;
     }
+};
+
+//
+// Tempo sliders
+//
+// The tempo option in Mixxx's deck preferences determine whether down/up
+// increases/decreases the rate. Therefore it must be inverted here so that the
+// UI and the control sliders always move in the same direction.
+//
+
+PioneerDDJ400.tempoSliderMSB = function(channel, control, value, status, group) {
+    PioneerDDJ400.highResMSB[group].tempoSlider = value;
+};
+
+PioneerDDJ400.tempoSliderLSB = function(channel, control, value, status, group) {
+    var fullValue = (PioneerDDJ400.highResMSB[group].tempoSlider << 7) + value;
+
+    engine.setValue(
+        group,
+        "rate",
+        1 - (fullValue / 0x2000)
+    );
 };
 
 //
