@@ -278,14 +278,12 @@ Object.defineProperty(PioneerDDJ400, "focusedFxGroup", {
 });
 
 PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
-    var newVal = value === 0 ? 0 : (value / 0x7F);
-
     if (engine.getValue(PioneerDDJ400.focusedFxGroup, "enabled")) {
         engine.softTakeoverIgnoreNextValue(PioneerDDJ400.focusedFxGroup, "meta");
-        engine.setValue("[EffectRack1_EffectUnit1]", "mix", newVal);
+        engine.setParameter("[EffectRack1_EffectUnit1]", "mix", value / 0x7F);
     } else {
         engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "mix");
-        engine.setValue(PioneerDDJ400.focusedFxGroup, "meta", newVal);
+        engine.setParameter(PioneerDDJ400.focusedFxGroup, "meta", value / 0x7F);
     }
 };
 
