@@ -467,8 +467,8 @@ PioneerDDJ400.syncPressed = function(channel, control, value, status, group) {
 };
 
 PioneerDDJ400.syncLongPressed = function(channel, control, value, status, group) {
-    engine.setValue(group, "sync_enabled", value);
-    engine.setValue(group, "sync_master", 0x01);
+    engine.setValue(group, "sync_enabled", value); // reimplements short press
+    engine.setValue(group, "sync_enabled", 0x01);  // ensures sync lock
 };
 
 PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, group) {
