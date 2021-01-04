@@ -120,8 +120,8 @@ void ColumnCache::setColumns(const QStringList& columns) {
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TIMESPLAYED, kSortInt);
 
     insertColumnSortByEnum(COLUMN_PLAYLISTTRACKSTABLE_LOCATION, kSortNoCase);
-    insertColumnSortByEnum(COLUMN_PLAYLISTTRACKSTABLE_ARTIST, kSortNoCase);
-    insertColumnSortByEnum(COLUMN_PLAYLISTTRACKSTABLE_TITLE, kSortNoCase);
+    insertColumnSortByEnum(COLUMN_PLAYLISTTRACKSTABLE_ARTIST, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_PLAYLISTTRACKSTABLE_TITLE, kSortNoCaseLex);
 
     slotSetKeySortOrder(m_pKeyNotationCP->get());
 }
