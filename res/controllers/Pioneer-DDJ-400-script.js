@@ -179,13 +179,11 @@ PioneerDDJ400.highResMSB = {
 };
 
 PioneerDDJ400.trackLoadedLED = function(value, group, _control) {
-    if (value) {
-        value = 0x7F;
-    } else {
-        value = 0x00;
-    }
-    var channel = group.match(script.channelRegEx)[1];
-    midi.sendShortMsg(0x9F, 0x00+(channel-1), value);
+    midi.sendShortMsg(
+        0x9F,
+        group.match(script.channelRegEx)[1] - 1,
+        value > 0 ? 0x7F : 0x00
+    );
 };
 
 PioneerDDJ400.toggleLight = function(midiIn, active) {
