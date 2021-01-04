@@ -80,7 +80,7 @@ DlgPrefController::DlgPrefController(
 
     // When the user picks a mapping, load it.
     connect(m_ui.comboBoxMapping,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefController::slotMappingSelected);
 
@@ -452,7 +452,7 @@ void DlgPrefController::slotApply() {
     }
     m_ui.chkEnabledDevice->setChecked(bEnabled);
 
-    // The shouldn't be dirty at this pint because we already tried to save
+    // The shouldn't be dirty at this point because we already tried to save
     // it. If that failed, don't apply the mapping.
     if (m_pMapping && m_pMapping->isDirty()) {
         return;

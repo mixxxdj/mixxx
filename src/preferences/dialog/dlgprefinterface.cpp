@@ -75,10 +75,7 @@ DlgPrefInterface::DlgPrefInterface(
           m_bRebootMixxxView(false) {
     setupUi(this);
 
-    //
     // Locale setting
-    //
-
     // Iterate through the available locales and add them to the combobox
     // Borrowed following snippet from http://qt-project.org/wiki/How_to_create_a_multi_language_application
     const auto translationsDir = QDir(
@@ -178,11 +175,11 @@ DlgPrefInterface::DlgPrefInterface(
     }
 
     connect(ComboBoxSkinconf,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefInterface::slotSetSkin);
     connect(ComboBoxSchemeconf,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefInterface::slotSetScheme);
 
@@ -190,15 +187,11 @@ DlgPrefInterface::DlgPrefInterface(
     spinBoxScaleFactor->hide();
     labelScaleFactor->hide();
 
-    //
     // Start in fullscreen mode
-    //
     checkBoxStartFullScreen->setChecked(m_pConfig->getValueString(
                     ConfigKey("[Config]", "StartInFullscreen")).toInt()==1);
 
-    //
     // Screensaver mode
-    //
     comboBoxScreensaver->clear();
     comboBoxScreensaver->addItem(tr("Allow screensaver to run"),
             static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_OFF));
@@ -210,10 +203,7 @@ DlgPrefInterface::DlgPrefInterface(
     int inhibitsettings = static_cast<int>(mixxx->getInhibitScreensaver());
     comboBoxScreensaver->setCurrentIndex(comboBoxScreensaver->findData(inhibitsettings));
 
-    //
     // Tooltip configuration
-    //
-
     // Initialize checkboxes to match config
     loadTooltipPreferenceFromConfig();
     slotSetTooltips();  // Update disabled status of "only library" checkbox

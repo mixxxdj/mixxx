@@ -311,6 +311,28 @@ MixxxMainWindow::~MixxxMainWindow() {
         mixxx::ScreenSaverHelper::uninhibit();
     }
 
+    // Save the current window state (position, maximized, etc)
+    // Note(ronso0): Unfortunately saveGeometry() also stores the fullscreen state.
+    // On next start restoreGeometry would enable fullscreen mode even though that
+    // might not be requested (no '--fullscreen' command line arg and
+    // [Config],StartInFullscreen is '0'.
+    // https://bugs.launchpad.net/mixxx/+bug/1882474
+    // https://bugs.launchpad.net/mixxx/+bug/1909485
+    // So let's quit fullscreen if StartInFullscreen is not checked in Preferences.
+    bool fullscreenPref = m_pCoreServices->getSettingsManager()->settings()->getValue<bool>(
+            ConfigKey("[Config]", "StartInFullscreen"));
+    if (isFullScreen() && !fullscreenPref) {
+        slotViewFullScreen(false);
+        // After returning from fullscreen the main window incl. window decoration
+        // may be too large for the screen.
+        // Maximize the window so we can store a geometry that fits the screen.
+        showMaximized();
+    }
+    m_pCoreServices->getSettingsManager()->settings()->set(ConfigKey("[MainWindow]", "geometry"),
+            QString(saveGeometry().toBase64()));
+    m_pCoreServices->getSettingsManager()->settings()->set(ConfigKey("[MainWindow]", "state"),
+            QString(saveState().toBase64()));
+
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
     m_pCentralWidget = nullptr;
