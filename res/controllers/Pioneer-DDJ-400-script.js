@@ -582,6 +582,10 @@ PioneerDDJ400.tempoSliderLSB = function(channel, control, value, status, group) 
 //
 // Beat Jump mode
 //
+// Note that when we increase/decrease the sizes on the pad buttons, we use the
+// value of the first pad (0x21) as an upper/lower limit beyond which we don't
+// allow further increasing/decreasing of all the values.
+//
 
 PioneerDDJ400.beatjumpPadPressed = function(_channel, control, value, _status, group) {
     if (value === 0) {
