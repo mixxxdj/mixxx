@@ -5,12 +5,10 @@
         <author>Warker/nschloe/dj3730/jusko</author>
         <description>Midi Mapping for the Pioneer DDJ-400</description>
         <wiki>https://www.mixxx.org/wiki/doku.php/pioneer_ddj-400</wiki>
-        <forums>https://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=12113</forums>
+        <forums>https://mixxx.discourse.group/t/pioneer-ddj-400/17476</forums>
     </info>
     <controller id="DDJ-400">
         <scriptfiles>
-            <file filename="lodash.mixxx.js"/>
-            <file filename="midi-components-0.0.js"/>
             <file functionprefix="PioneerDDJ400" filename="Pioneer-DDJ-400-script.js"/>
         </scriptfiles>
         <controls>
@@ -25,16 +23,6 @@
                 <midino>0x40</midino>
                 <options>
                     <SelectKnob/>
-                </options>
-            </control>
-            <control>
-                <description>BROWSE +SHIFT - rotate - Zoom in/out of enlarged waveforms</description>
-                <group>[Master]</group>
-                <key>PioneerDDJ400.waveFormRotate</key>
-                <status>0xB6</status>
-                <midino>0x64</midino>
-                <options>
-                    <Script-Binding/>
                 </options>
             </control>
             <control>
