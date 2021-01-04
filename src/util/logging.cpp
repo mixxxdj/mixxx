@@ -40,7 +40,7 @@ const QString kDefaultMessagePattern = QStringLiteral("%{type} [") +
 const QString kDefaultMessagePatternColor =
         QStringLiteral(
                 "%{if-category}\033[35m %{category}:\033[35m%{endif}"
-                "%{if-debug}\033[34m%{type} \033[36m%{function}%{endif}"
+                "%{if-debug}\033[34m%{type}%{endif}"
                 "%{if-info}\033[32m%{type}%{endif}"
                 "%{if-warning}\033[93m%{type}%{endif}"
                 "%{if-critical}\033[91m%{type}%{endif}"
