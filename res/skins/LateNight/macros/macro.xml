@@ -60,13 +60,25 @@
                 <Elide>right</Elide>
               </TrackProperty>
 
-              <Template src="skin:/controls/button_1state.xml">
+              <PushButton>
                 <!--<SetVariable name="TooltipId">macro_clear</SetVariable>-->
-                <SetVariable name="ObjectName">EjectButton12</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="MacroPrefix"/>clear</SetVariable>
-                <SetVariable name="Size">21f,18f</SetVariable>
-              </Template>
-
+                <ObjectName>EjectButton12</ObjectName>
+                <Size>21f,18f</Size>
+                <NumberStates>1</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>.svg</Unpressed>
+                  <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_<Variable name="BtnSize"/>_active.svg</Pressed>
+                </State>
+                <Connection>
+                  <ConfigKey><Variable name="MacroPrefix"/>clear</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="MacroPrefix"/>status</ConfigKey>
+                  <Transform><IsEqual>3</IsEqual></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </PushButton>
             </Children>
             <Connection>
               <ConfigKey><Variable name="Group"/>,track_loaded</ConfigKey>
