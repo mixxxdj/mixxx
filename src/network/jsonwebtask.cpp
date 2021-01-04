@@ -123,11 +123,11 @@ QDebug operator<<(QDebug dbg, const JsonWebResponse& arg) {
 
 JsonWebTask::JsonWebTask(
         QNetworkAccessManager* networkAccessManager,
-        const QUrl& baseUrl,
+        QUrl baseUrl,
         JsonWebRequest&& request,
         QObject* parent)
         : WebTask(networkAccessManager, parent),
-          m_baseUrl(baseUrl),
+          m_baseUrl(std::move(baseUrl)),
           m_request(std::move(request)) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
     DEBUG_ASSERT(!m_baseUrl.isEmpty());
@@ -244,12 +244,24 @@ QNetworkReply* JsonWebTask::doStartNetworkRequest(
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(networkAccessManager);
 
-    DEBUG_ASSERT(m_baseUrl.isValid());
+    VERIFY_OR_DEBUG_ASSERT(m_baseUrl.isValid()) {
+        kLogger.warning() << "Invalid base URL" << m_baseUrl;
+        return nullptr;
+    }
     QUrl url = m_baseUrl;
     url.setPath(m_request.path);
+    VERIFY_OR_DEBUG_ASSERT(url.isValid()) {
+        kLogger.warning() << "Invalid request path" << m_request.path;
+        return nullptr;
+    }
     if (!m_request.query.isEmpty()) {
         url.setQuery(m_request.query);
+        VERIFY_OR_DEBUG_ASSERT(url.isValid()) {
+            kLogger.warning() << "Invalid query string" << m_request.query.toString();
+            return nullptr;
+        }
     }
+    // Already validated while composing (see above)
     DEBUG_ASSERT(url.isValid());
 
     return sendNetworkRequest(

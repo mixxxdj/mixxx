@@ -54,7 +54,7 @@ class JsonWebTask : public WebTask {
   public:
     JsonWebTask(
             QNetworkAccessManager* networkAccessManager,
-            const QUrl& baseUrl,
+            QUrl baseUrl,
             JsonWebRequest&& request,
             QObject* parent = nullptr);
     ~JsonWebTask() override = default;
