@@ -16,7 +16,9 @@ class EngineMaster;
 class SoundManager;
 class PlayerManager;
 class RecordingManager;
+#ifdef __BROADCAST__
 class BroadcastManager;
+#endif
 class ControllerManager;
 class VinylControlManager;
 class TrackCollectionManager;
