@@ -22,9 +22,6 @@ const QString PLAYLISTTABLE_DATEMODIFIED = "date_modified";
 const QString PLAYLISTTRACKSTABLE_TRACKID = "track_id";
 const QString PLAYLISTTRACKSTABLE_POSITION = "position";
 const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
-const QString PLAYLISTTRACKSTABLE_LOCATION = "location";
-const QString PLAYLISTTRACKSTABLE_ARTIST = "artist";
-const QString PLAYLISTTRACKSTABLE_TITLE = "title";
 const QString PLAYLISTTRACKSTABLE_DATETIMEADDED = "pl_datetime_added";
 
 #define AUTODJ_TABLE "Auto DJ"
