@@ -464,6 +464,31 @@ P32.Deck = function(deckNumbers, channel) {
         off: P32.padColors.blue,
     });
 
+    this.syncKey = new components.Button({
+        midi: [0x90 + channel, 0x53],
+        key: "sync_key",
+        on: P32.padColors.red,
+        off: P32.padColors.purple,
+    });
+    this.pitchUp = new components.Button({
+        midi: [0x90 + channel, 0x4F],
+        key: "pitch_up",
+        on: P32.padColors.blue,
+        off: P32.padColors.purple,
+    });
+    this.pitchDown = new components.Button({
+        midi: [0x90 + channel, 0x4B],
+        key: "pitch_down",
+        on: P32.padColors.blue,
+        off: P32.padColors.purple,
+    });
+    this.resetKey = new components.Button({
+        midi: [0x90 + channel, 0x47],
+        key: "reset_key",
+        on: P32.padColors.red,
+        off: P32.padColors.purple,
+    });
+
     // SLICER layer
     this.enableEffectUnitButtons = [0x40, 0x41, 0x3C, 0x3D].map(
         function(midiByte, index) {
