@@ -563,9 +563,9 @@
                 </options>
             </control>
             <control>
-                <description>CUE/LOOP CALL LEFT + SHIFT (DECK1) - press - jump one phrase back</description>
+                <description>CUE/LOOP CALL LEFT + SHIFT (DECK1) - press - quick jump back</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.phraseJumpBack</key>
+                <key>PioneerDDJ400.quickJumpBack</key>
                 <status>0x90</status>
                 <midino>0x3E</midino>
                 <options>
@@ -584,9 +584,9 @@
                 </options>
             </control>
             <control>
-                <description>CUE/LOOP CALL LEFT + SHIFT (DECK2) - press - jump one phrase back</description>
+                <description>CUE/LOOP CALL LEFT + SHIFT (DECK2) - press - quick jump back</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.phraseJumpBack</key>
+                <key>PioneerDDJ400.quickJumpBack</key>
                 <status>0x91</status>
                 <midino>0x3E</midino>
                 <options>
@@ -605,9 +605,9 @@
                 </options>
             </control>
             <control>
-                <description>CUE/LOOP CALL RIGHT + SHIFT (DECK1) - press - jump one phrase forwards</description>
+                <description>CUE/LOOP CALL RIGHT + SHIFT (DECK1) - press - quick jump forwards</description>
                 <group>[Channel1]</group>
-                <key>PioneerDDJ400.phraseJumpForward</key>
+                <key>PioneerDDJ400.quickJumpForward</key>
                 <status>0x90</status>
                 <midino>0x3D</midino>
                 <options>
@@ -626,9 +626,9 @@
                 </options>
             </control>
             <control>
-                <description>CUE/LOOP CALL RIGHT + SHIFT (DECK2) - press - jump one phrase forwards</description>
+                <description>CUE/LOOP CALL RIGHT + SHIFT (DECK2) - press - quick jump forwards</description>
                 <group>[Channel2]</group>
-                <key>PioneerDDJ400.phraseJumpForward</key>
+                <key>PioneerDDJ400.quickJumpForward</key>
                 <status>0x91</status>
                 <midino>0x3D</midino>
                 <options>

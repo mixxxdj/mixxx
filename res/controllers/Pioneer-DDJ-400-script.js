@@ -172,6 +172,8 @@ PioneerDDJ400.beatjumpSizeForPad = {
     0x27: 8   // PAD 8
 };
 
+PioneerDDJ400.quickJumpSize = 32;
+
 // Used for tempo slider
 PioneerDDJ400.highResMSB = {
     "[Channel1]": {},
@@ -683,15 +685,15 @@ PioneerDDJ400.toggleQuantize = function(_channel, _control, value, _status, grou
     }
 };
 
-PioneerDDJ400.phraseJumpForward = function(_channel, _control, value, _status, group) {
+PioneerDDJ400.quickJumpForward = function(_channel, _control, value, _status, group) {
     if (value) {
-        engine.setValue(group, "beatjump", 8 * 4);
+        engine.setValue(group, "beatjump", PioneerDDJ400.quickJumpSize);
     }
 };
 
-PioneerDDJ400.phraseJumpBack = function(_channel, _control, value, _status, group) {
+PioneerDDJ400.quickJumpBack = function(_channel, _control, value, _status, group) {
     if (value) {
-        engine.setValue(group, "beatjump", -8 * 4);
+        engine.setValue(group, "beatjump", -PioneerDDJ400.quickJumpSize);
     }
 };
 
