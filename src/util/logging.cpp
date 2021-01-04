@@ -334,12 +334,10 @@ void Logging::initialize(
 
     s_debugAssertBreak = debugAssertBreak;
 
-    if (qEnvironmentVariableIsEmpty("QT_MESSAGE_PATTERN")) {
-        if (CmdlineArgs::Instance().useColors()) {
-            qSetMessagePattern(kDefaultMessagePatternColor);
-        } else {
-            qSetMessagePattern(kDefaultMessagePattern);
-        }
+    if (CmdlineArgs::Instance().useColors()) {
+        qSetMessagePattern(kDefaultMessagePatternColor);
+    } else {
+        qSetMessagePattern(kDefaultMessagePattern);
     }
 
     // Install the Qt message handler.
