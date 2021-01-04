@@ -11,7 +11,9 @@
 #include <QUrl>
 #include <QtDebug>
 
+#ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
+#endif
 #include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"

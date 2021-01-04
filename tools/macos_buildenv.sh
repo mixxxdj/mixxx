@@ -38,26 +38,15 @@ case "$COMMAND" in
         ;;
 
     setup)
-        if [[ "$BUILDENV_NAME" =~ .*macosminimum([0-9]*\.[0-9]*).* ]]; then
-            # bash and zsh have different ways of getting the matched string
-            # zsh's BASH_REMATCH option is not actually compatible with bash
-            # shellcheck disable=SC2154
-            if [ -n "${BASH_REMATCH[1]}" ]; then
-                export MACOSX_DEPLOYMENT_TARGET="${BASH_REMATCH[1]}"
-            elif [ -n "$match" ]; then
-                export MACOSX_DEPLOYMENT_TARGET="${match[1]}"
-            fi
-        else
-            echo "Build environment did not match expected pattern. Check ${MIXXX_ROOT}/packaging/macos/build_environment file." >&2
-            return
-        fi
+        # Minimum required by Qt 5.12
+        MACOSX_DEPLOYMENT_TARGET=10.12
 
         BUILDENV_PATH="${BUILDENV_BASEPATH}/${BUILDENV_NAME}"
         mkdir -p "${BUILDENV_BASEPATH}"
         if [ ! -d "${BUILDENV_PATH}" ]; then
             if [ "$1" != "--profile" ]; then
                 echo "Build environment $BUILDENV_NAME not found in mixxx repository, downloading it..."
-                curl "https://downloads.mixxx.org/builds/buildserver/2.3.x-unix/${BUILDENV_NAME}.tar.gz" -o "${BUILDENV_PATH}.tar.gz"
+                curl "https://downloads.mixxx.org/builds/buildserver/2.3.x-macosx/${BUILDENV_NAME}.tar.gz" -o "${BUILDENV_PATH}.tar.gz"
                 OBSERVED_SHA256=$(shasum -a 256 "${BUILDENV_PATH}.tar.gz"|cut -f 1 -d' ')
                 if [[ "$OBSERVED_SHA256" == "$BUILDENV_SHA256" ]]; then
                     echo "Download matched expected SHA256 sum $BUILDENV_SHA256"

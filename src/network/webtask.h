@@ -8,6 +8,7 @@
 
 #include "network/httpstatuscode.h"
 #include "util/optional.h"
+#include "util/qt.h"
 
 namespace mixxx {
 
@@ -104,16 +105,19 @@ class WebTask : public QObject {
             QObject* parent = nullptr);
     ~WebTask() override;
 
+    /// Start a new task by sending a network request.
+    ///
     /// timeoutMillis <= 0: No timeout (unlimited)
     /// timeoutMillis > 0: Implicitly aborted after timeout expired
+    ///
+    /// This function is thread-safe and could be invoked from any thread.
     void invokeStart(
             int timeoutMillis = 0);
 
-    /// Cancel a pending request.
+    /// Cancel the task by aborting the pending network request.
+    ///
+    /// This function is thread-safe and could be invoked from any thread.
     void invokeAbort();
-
-    /// Cancel a pending request from the event loop thread.
-    void abort();
 
   public slots:
     void slotStart(
@@ -138,6 +142,12 @@ class WebTask : public QObject {
             const QByteArray& errorContent);
 
   protected:
+    /// Cancel the task by aborting the pending network request.
+    ///
+    /// This function is NOT thread-safe and must only be called from
+    /// the event loop thread.
+    void abort();
+
     template<typename S>
     bool isSignalFuncConnected(
             S signalFunc) {
@@ -191,12 +201,12 @@ class WebTask : public QObject {
 
     /// All member variables must only be accessed from
     /// the event loop thread!!
-    const QPointer<QNetworkAccessManager> m_networkAccessManager;
+    const SafeQPointer<QNetworkAccessManager> m_networkAccessManagerWeakPtr;
 
     int m_timeoutTimerId;
     State m_state;
 
-    QPointer<QNetworkReply> m_pendingNetworkReply;
+    SafeQPointer<QNetworkReply> m_pendingNetworkReplyWeakPtr;
 };
 
 } // namespace network
