@@ -369,6 +369,7 @@ PioneerDDJ400.toggleLoopAdjustOut = function(channel, _control, value, _status, 
     PioneerDDJ400.loopAdjustIn[channel] = false;
 };
 
+// Two signals are sent here so that the light stays lit/unlit in its shift state too
 PioneerDDJ400.setReloopLight = function(status, value) {
     midi.sendShortMsg(status, 0x4D, value);
     midi.sendShortMsg(status, 0x50, value);
@@ -454,12 +455,17 @@ PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, gr
 //
 // BEAT SYNC
 //
+// Note that the controller sends different signals for a short press and a long
+// press of the same button (which means we have to reimplement any short press
+// logic on the long press function).
+//
+
 PioneerDDJ400.syncPressed = function(channel, control, value, status, group) {
     engine.setValue(group, "sync_enabled", value);
 };
 
 PioneerDDJ400.syncLongPressed = function(channel, control, value, status, group) {
-    engine.setValue(group, "sync_enabled", value); // syncPressed is ignored on long press
+    engine.setValue(group, "sync_enabled", value);
     engine.setValue(group, "sync_master", 0x01);
 };
 
