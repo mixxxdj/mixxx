@@ -122,6 +122,15 @@ class ColumnCache : public QObject {
         m_columnNameByEnum.insert(column, name);
     }
 
+    KeyUtils::KeyNotation keyNotation() const {
+        return KeyUtils::keyNotationFromNumericValue(
+                m_pKeyNotationCP->get());
+    }
+
+  private slots:
+    void slotSetKeySortOrder(double);
+
+  private:
     QStringList m_columnsByIndex;
     QMap<int, QString> m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
@@ -129,14 +138,5 @@ class ColumnCache : public QObject {
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
 
-    KeyUtils::KeyNotation keyNotation() const {
-        return KeyUtils::keyNotationFromNumericValue(
-                m_pKeyNotationCP->get());
-    }
-
-  private:
     ControlProxy* m_pKeyNotationCP;
-
-  private slots:
-    void slotSetKeySortOrder(double);
 };
