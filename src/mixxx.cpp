@@ -319,7 +319,7 @@ MixxxMainWindow::~MixxxMainWindow() {
     // https://bugs.launchpad.net/mixxx/+bug/1882474
     // https://bugs.launchpad.net/mixxx/+bug/1909485
     // So let's quit fullscreen if StartInFullscreen is not checked in Preferences.
-    bool fullscreenPref = m_pCoreServices->getSettingsManager()->settings()->getValue<bool>(
+    bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
             ConfigKey("[Config]", "StartInFullscreen"));
     if (isFullScreen() && !fullscreenPref) {
         slotViewFullScreen(false);
@@ -328,9 +328,9 @@ MixxxMainWindow::~MixxxMainWindow() {
         // Maximize the window so we can store a geometry that fits the screen.
         showMaximized();
     }
-    m_pCoreServices->getSettingsManager()->settings()->set(ConfigKey("[MainWindow]", "geometry"),
+    m_pCoreServices->getSettings()->set(ConfigKey("[MainWindow]", "geometry"),
             QString(saveGeometry().toBase64()));
-    m_pCoreServices->getSettingsManager()->settings()->set(ConfigKey("[MainWindow]", "state"),
+    m_pCoreServices->getSettings()->set(ConfigKey("[MainWindow]", "state"),
             QString(saveState().toBase64()));
 
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
