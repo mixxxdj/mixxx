@@ -71,10 +71,18 @@ void WTrackProperty::slotTrackChanged(TrackId trackId) {
 
 void WTrackProperty::updateLabel() {
     if (m_pCurrentTrack) {
-        QVariant property = m_pCurrentTrack->property(m_property.toUtf8().constData());
-        if (property.isValid() && property.canConvert(QMetaType::QString)) {
-            setText(property.toString());
-            return;
+        if (m_macroSlot > 0) {
+            MacroPointer macro = m_pCurrentTrack->getMacros().value(m_macroSlot);
+            if (macro) {
+                setText(macro->getLabel());
+                return;
+            }
+        } else {
+            QVariant property = m_pCurrentTrack->property(m_property.toUtf8().constData());
+            if (property.isValid() && property.canConvert(QMetaType::QString)) {
+                setText(property.toString());
+                return;
+            }
         }
     }
     setText("");
