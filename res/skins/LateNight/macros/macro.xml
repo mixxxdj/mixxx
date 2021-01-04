@@ -1,5 +1,5 @@
 <Template>
-  <SetVariable name="MacroPrefix"><Variable name="Group"/>,macro_<Variable name="MacroSlot"/></SetVariable>
+  <SetVariable name="MacroPrefix"><Variable name="Group"/>,macro_<Variable name="MacroSlot"/>_</SetVariable>
 
   <WidgetGroup>
     <ObjectName>Macro</ObjectName>
@@ -18,9 +18,9 @@
             <SetVariable name="Size">34f,34f</SetVariable>
             <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
             <SetVariable name="BtnSize">square_big</SetVariable>
-            <SetVariable name="ConfigKey"><Variable name="MacroPrefix"/>_activate</SetVariable>
-            <SetVariable name="ConfigKeyRight"><Variable name="MacroPrefix"/>_play</SetVariable>
-            <SetVariable name="ConfigKeyDisp"><Variable name="MacroPrefix"/>_play</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="MacroPrefix"/>activate</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="MacroPrefix"/>play</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="MacroPrefix"/>play</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>
@@ -63,7 +63,7 @@
               <Template src="skin:/controls/button_1state.xml">
                 <!--<SetVariable name="TooltipId">macro_clear</SetVariable>-->
                 <SetVariable name="ObjectName">EjectButton12</SetVariable>
-                <SetVariable name="ConfigKey"><Variable name="MacroPrefix"/>_clear</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="MacroPrefix"/>clear</SetVariable>
                 <SetVariable name="Size">21f,18f</SetVariable>
               </Template>
 
