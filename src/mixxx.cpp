@@ -23,7 +23,9 @@
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
 #endif
+#ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
+#endif
 #include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
