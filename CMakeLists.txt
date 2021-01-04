@@ -478,7 +478,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/effectslot.cpp
   src/effects/effectsmanager.cpp
   src/encoder/encoder.cpp
-  src/encoder/encoderbroadcastsettings.cpp
   src/encoder/encoderflacsettings.cpp
   src/encoder/encodermp3.cpp
   src/encoder/encodermp3settings.cpp
@@ -676,10 +675,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/musicbrainz/web/musicbrainzrecordingstask.cpp
   src/network/jsonwebtask.cpp
   src/network/webtask.cpp
-  src/preferences/broadcastprofile.cpp
-  src/preferences/broadcastsettings.cpp
-  src/preferences/broadcastsettings_legacy.cpp
-  src/preferences/broadcastsettingsmodel.cpp
   src/preferences/configobject.cpp
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
@@ -2408,6 +2403,11 @@ if(BROADCAST)
     src/preferences/dialog/dlgprefbroadcast.cpp
     src/broadcast/broadcastmanager.cpp
     src/engine/sidechain/shoutconnection.cpp
+    src/preferences/broadcastprofile.cpp
+    src/preferences/broadcastsettings.cpp
+    src/preferences/broadcastsettings_legacy.cpp
+    src/preferences/broadcastsettingsmodel.cpp
+    src/encoder/encoderbroadcastsettings.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
 endif()
