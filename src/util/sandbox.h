@@ -28,7 +28,8 @@ typedef QWeakPointer<SandboxSecurityToken> SecurityTokenWeakPointer;
 
 class Sandbox {
   public:
-    static void initialize(const QString& permissionsFile);
+    static void checkSandboxed();
+    static void setPermissionsFilePath(const QString& permissionsFile);
     static void shutdown();
 
     static QString migrateOldSettings();

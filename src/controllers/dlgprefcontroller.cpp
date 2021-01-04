@@ -61,7 +61,7 @@ DlgPrefController::DlgPrefController(QWidget* parent,
 
     // When the user picks a preset, load it.
     connect(m_ui.comboBoxPreset,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefController::slotPresetSelected);
 
@@ -433,7 +433,7 @@ void DlgPrefController::slotApply() {
     }
     m_ui.chkEnabledDevice->setChecked(bEnabled);
 
-    // The shouldn't be dirty at this pint because we already tried to save
+    // The shouldn't be dirty at this point because we already tried to save
     // it. If that failed, don't apply the preset.
     if (m_pPreset && m_pPreset->isDirty()) {
         return;
@@ -525,9 +525,9 @@ void DlgPrefController::savePreset() {
     // If this is a user preset, ask whether to overwrite or save with new name.
     // Optionally, tick checkbox to always overwrite this preset in the current session.
     if (isUserPreset && saveAsNew) {
-        QString overwriteTitle = tr("Preset already exists.");
+        QString overwriteTitle = tr("Mapping already exists.");
         QString overwriteLabel = tr(
-                "<b>%1</b> already exists in user preset folder.<br>"
+                "<b>%1</b> already exists in user mapping folder.<br>"
                 "Overwrite or save with a new name?");
         QString overwriteCheckLabel = tr("Always overwrite during this session");
 

@@ -24,7 +24,7 @@ jobs:
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/ubuntu_buildenv.sh
+            buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 18.04 DEB
             artifacts_path: build/*.deb
             qt_qpa_platform: offscreen
@@ -43,7 +43,7 @@ jobs:
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/ubuntu_buildenv.sh
+            buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 20.04 DEB
             artifacts_path: build/*.deb
             qt_qpa_platform: offscreen
@@ -98,6 +98,8 @@ jobs:
     steps:
     - name: "Check out repository"
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: "Set up cmake"
       uses: jwlawson/actions-setup-cmake@v1.4
@@ -255,15 +257,33 @@ jobs:
       run: cpack -G ${{ matrix.cpack_generator }} -V
       working-directory: build
 
+    - name: "[Ubuntu] Import PPA GPG key"
+      if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+      run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
+      env:
+        RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+
     - name: "Package for PPA"
-      if: startsWith(matrix.os, 'ubuntu')
-      run: cpack -G External -D DEB_SOURCEPKG=ON
+      # No need to do the PPA build for both Ubuntu versions
+      if: matrix.os == 'ubuntu-20.04'
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/2.3" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
+        else
+          # only build the source DEB, do not upload
+          CPACK_ARGS="-D DEB_SOURCEPKG=ON"
+        fi
+        cpack -G External $CPACK_ARGS
       working-directory: build
 
-    - name: "[macOS] Sign Package"
+    - name: "[macOS] Sign, Notarize, and Staple Package"
       if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
-      run: codesign --verbose=4 --options runtime --sign "${APPLE_CODESIGN_IDENTITY}" --entitlements ../packaging/macos/entitlements.plist *.dmg
-      working-directory: build
+      run: packaging/macos/sign_notarize_staple.sh build/*.dmg
+      env:
+        APPLE_ID_USERNAME: rryan@mixxx.org
+        APPLE_BUNDLE_ID: org.mixxx.mixxx
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
+        ASC_PROVIDER: FLYL4D545V
 
     - name: "[Windows] Sign Package"
       if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
