@@ -34,7 +34,7 @@ DlgPrefModplug::DlgPrefModplug(QWidget *parent,
     m_pUi->modplugSettingsHint->setText(
             tr("All settings take effect on next track load. Currently loaded tracks "
                "are not affected. For an explanation of these settings, see the %1")
-                    .arg(m_stringFormatter.coloredLinkString(
+                    .arg(coloredLinkString(
                             m_pLinkColor,
                             "OpenMPT manual",
                             "http://wiki.openmpt.org/Manual:_Setup/Player")));

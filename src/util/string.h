@@ -26,17 +26,14 @@ class StringCollator {
     QCollator m_collator;
 };
 
-class LinkFormatter {
-  public:
-    // Helper to create html link strings to be used for ui files, mostly in
-    // Preferences dialogs.
-    QString coloredLinkString(
-            const QColor& color,
-            const QString& text,
-            const QString& baseUrl,
-            const QString& extUrl = nullptr) const {
-        return QStringLiteral("<a style=\"color:") + color.name() +
-                QStringLiteral(";\" href=\"") + baseUrl + extUrl +
-                QStringLiteral("\">") + text + QStringLiteral("</a>");
-    }
-};
+// Helper to create html link strings to be used for ui files, mostly in
+// Preferences dialogs.
+inline QString coloredLinkString(
+        const QColor& color,
+        const QString& text,
+        const QString& baseUrl,
+        const QString& extUrl = nullptr) {
+    return QStringLiteral("<a style=\"color:") + color.name() +
+            QStringLiteral(";\" href=\"") + baseUrl + extUrl +
+            QStringLiteral("\">") + text + QStringLiteral("</a>");
+}

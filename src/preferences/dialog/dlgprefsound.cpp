@@ -241,7 +241,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     realtimeHint->setText(
             tr("To enable Realtime scheduling (currently disabled), see the %1.")
-                    .arg(m_stringFormatter.coloredLinkString(
+                    .arg(coloredLinkString(
                             m_pLinkColor,
                             QStringLiteral("Mixxx Wiki"),
                             MIXXX_WIKI_AUDIO_LATENCY_URL)));
@@ -249,7 +249,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     hardwareGuide->setText(
             tr("The %1 lists sound cards and controllers you may want to "
                "consider for using Mixxx.")
-                    .arg(m_stringFormatter.coloredLinkString(
+                    .arg(coloredLinkString(
                             m_pLinkColor,
                             tr("Mixxx DJ Hardware Guide"),
                             MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));

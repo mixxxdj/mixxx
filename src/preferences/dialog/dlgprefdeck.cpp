@@ -334,7 +334,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
 
     // Add "(?)" with a manual link to the label
     labelCueMode->setText(labelCueMode->text() + QStringLiteral(" ") +
-            m_stringFormatter.coloredLinkString(
+            coloredLinkString(
                     m_pLinkColor,
                     QStringLiteral("(?)"),
                     MIXXX_MANUAL_CUE_MODES_URL));

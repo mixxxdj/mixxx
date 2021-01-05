@@ -20,7 +20,6 @@ class DlgPreferencePage : public QWidget {
     virtual QUrl helpUrl() const;
 
     QColor m_pLinkColor;
-    LinkFormatter m_stringFormatter;
 
   public slots:
     /// Called when the preference dialog is shown to the user (not necessarily

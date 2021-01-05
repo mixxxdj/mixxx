@@ -42,27 +42,27 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
             "Folder\" then restart Mixxx. If you download a mapping in a ZIP file, "
             "extract the XML and Javascript file(s) from the ZIP file to your "
             "\"User Mapping Folder\" then restart Mixxx.")
-                                        .arg(m_stringFormatter.coloredLinkString(
+                                        .arg(coloredLinkString(
                                                 m_pLinkColor,
                                                 QStringLiteral("Mixxx Controller Forums"),
                                                 MIXXX_CONTROLLER_FORUMS_URL)));
 
-    txtHardwareCompatibility->setText(m_stringFormatter.coloredLinkString(
+    txtHardwareCompatibility->setText(coloredLinkString(
             m_pLinkColor,
             tr("Mixxx DJ Hardware Guide"),
             MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL));
 
-    txtControllerForums->setText(m_stringFormatter.coloredLinkString(
+    txtControllerForums->setText(coloredLinkString(
             m_pLinkColor,
             tr("MIDI Mapping File Format"),
             MIXXX_WIKI_CONTROLLER_PRESET_FORMAT_URL));
 
-    txtControllerPresetFormat->setText(m_stringFormatter.coloredLinkString(
+    txtControllerPresetFormat->setText(coloredLinkString(
             m_pLinkColor,
             QStringLiteral("Mixxx Controller Forums"),
             MIXXX_CONTROLLER_FORUMS_URL));
 
-    txtControllerScripting->setText(m_stringFormatter.coloredLinkString(
+    txtControllerScripting->setText(coloredLinkString(
             m_pLinkColor,
             tr("MIDI Scripting with Javascript"),
             MIXXX_WIKI_MIDI_SCRIPTING_URL));

@@ -244,7 +244,7 @@ QString DlgPrefController::presetSupportLinks(
 
     QString forumLink = pPreset->forumlink();
     if (!forumLink.isEmpty()) {
-        linkList << m_stringFormatter.coloredLinkString(
+        linkList << coloredLinkString(
                 m_pLinkColor,
                 "Mixxx Forums",
                 forumLink);
@@ -252,7 +252,7 @@ QString DlgPrefController::presetSupportLinks(
 
     QString wikiLink = pPreset->wikilink();
     if (!wikiLink.isEmpty()) {
-        linkList << m_stringFormatter.coloredLinkString(
+        linkList << coloredLinkString(
                 m_pLinkColor,
                 "Mixxx Wiki",
                 wikiLink);
@@ -260,7 +260,7 @@ QString DlgPrefController::presetSupportLinks(
 
     QString manualLink = pPreset->manualLink();
     if (!manualLink.isEmpty()) {
-        linkList << m_stringFormatter.coloredLinkString(
+        linkList << coloredLinkString(
                 m_pLinkColor,
                 "Mixxx Manual",
                 manualLink);
@@ -268,7 +268,7 @@ QString DlgPrefController::presetSupportLinks(
 
     // There is always at least one support link.
     // TODO(rryan): This is a horrible general support link for MIDI!
-    linkList << m_stringFormatter.coloredLinkString(
+    linkList << coloredLinkString(
             m_pLinkColor,
             tr("Troubleshooting"),
             MIXXX_WIKI_MIDI_SCRIPTING_URL);
@@ -285,7 +285,7 @@ QString DlgPrefController::presetFileLinks(
     const QString builtinFileSuffix = QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
     QString systemPresetPath = resourcePresetsPath(m_pConfig);
     QStringList linkList;
-    QString xmlFileLink = m_stringFormatter.coloredLinkString(
+    QString xmlFileLink = coloredLinkString(
             m_pLinkColor,
             QFileInfo(pPreset->filePath()).fileName(),
             pPreset->filePath());
@@ -295,7 +295,7 @@ QString DlgPrefController::presetFileLinks(
     linkList << xmlFileLink;
 
     for (const auto& script : pPreset->getScriptFiles()) {
-        QString scriptFileLink = m_stringFormatter.coloredLinkString(
+        QString scriptFileLink = coloredLinkString(
                 m_pLinkColor,
                 script.name,
                 script.file.absoluteFilePath());

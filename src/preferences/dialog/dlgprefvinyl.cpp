@@ -77,7 +77,7 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     LeadinTime3->setSuffix(" s");
     LeadinTime4->setSuffix(" s");
 
-    TroubleshootingLink->setText(m_stringFormatter.coloredLinkString(
+    TroubleshootingLink->setText(coloredLinkString(
             m_pLinkColor,
             QStringLiteral("Troubleshooting"),
             MIXXX_MANUAL_VINYL_TROUBLESHOOTING_URL));
