@@ -1,6 +1,6 @@
 #pragma once
-// cueinfo.h
-// Created 2020-02-28 by Jan Holthuis
+
+#include <QFlags>
 
 #include "audio/signalinfo.h"
 #include "util/color/rgbcolor.h"
@@ -21,6 +21,14 @@ enum class CueType {
                       // sound; not shown to user
 };
 
+enum class CueFlag {
+    None = 0,
+    /// Currently only used when importing locked loops from Serato Metadata.
+    Locked = 1,
+};
+Q_DECLARE_FLAGS(CueFlags, CueFlag);
+Q_DECLARE_OPERATORS_FOR_FLAGS(CueFlags);
+
 /// Hot cues are sequentially indexed starting with kFirstHotCueIndex (inclusive)
 static constexpr int kFirstHotCueIndex = 0;
 
@@ -33,7 +41,8 @@ class CueInfo {
             std::optional<double> endPositionMillis,
             const std::optional<int> hotCueIndex,
             const QString& label,
-            RgbColor::optional_t color);
+            RgbColor::optional_t color,
+            CueFlags flags = CueFlag::None);
 
     CueType getType() const;
     void setType(CueType type);
@@ -58,6 +67,13 @@ class CueInfo {
     void setColor(
             mixxx::RgbColor::optional_t color = std::nullopt);
 
+    CueFlags flags() const {
+        return m_flags;
+    }
+    void setFlags(CueFlags flags) {
+        m_flags = flags;
+    }
+
   private:
     CueType m_type;
     std::optional<double> m_startPositionMillis;
@@ -65,6 +81,7 @@ class CueInfo {
     std::optional<int> m_hotCueIndex;
     QString m_label;
     RgbColor::optional_t m_color;
+    CueFlags m_flags;
 };
 
 bool operator==(
