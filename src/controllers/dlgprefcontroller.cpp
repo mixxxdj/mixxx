@@ -38,6 +38,8 @@ DlgPrefController::DlgPrefController(QWidget* parent,
           m_pOutputProxyModel(nullptr),
           m_bDirty(false) {
     m_ui.setupUi(this);
+    // Create text color for the file and wiki links
+    createLinkColor();
 
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);

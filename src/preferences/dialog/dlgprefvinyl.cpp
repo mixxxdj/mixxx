@@ -20,6 +20,8 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     m_pNumDecks->connectValueChanged(this, &DlgPrefVinyl::slotNumDecksChanged);
 
     setupUi(this);
+    // Create text color for the Troubleshooting link
+    createLinkColor();
 
     delete groupBoxSignalQuality->layout();
     QHBoxLayout *layout = new QHBoxLayout;

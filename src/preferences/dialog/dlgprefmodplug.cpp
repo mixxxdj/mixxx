@@ -16,6 +16,8 @@ DlgPrefModplug::DlgPrefModplug(QWidget *parent,
           m_pUi(new Ui::DlgPrefModplug),
           m_pConfig(_config) {
     m_pUi->setupUi(this);
+    // Create text color for the OpenMTP manual link
+    createLinkColor();
     m_pUi->advancedSettings->setVisible(m_pUi->showAdvanced->isChecked());
 
     connect(m_pUi->memoryLimit,

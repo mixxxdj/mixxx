@@ -19,6 +19,8 @@ DlgPrefControllers::DlgPrefControllers(DlgPreferences* pPreferences,
           m_pControllerManager(pControllerManager),
           m_pControllerTreeItem(pControllerTreeItem) {
     setupUi(this);
+    // Create text color for the cue mode link "?" to the manual
+    createLinkColor();
     setupControllerWidgets();
 
     const QString presetsPath = userPresetsPath(m_pConfig);

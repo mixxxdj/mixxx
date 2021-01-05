@@ -49,7 +49,7 @@ class DlgPreferencePage : public QWidget {
     /// Called when the preferences dialog is hidden from the user.
     virtual void slotHide() {}
 
-  private:
+    // Supply a readable text color for all file and website links
     inline void createLinkColor() {
         // Blend the palette colors for regular text and link text to get a color
         // that is more likely to be visible with dark OS themes.

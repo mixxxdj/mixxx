@@ -29,6 +29,8 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_bSkipConfigClear(true),
           m_loading(false) {
     setupUi(this);
+    // Create text color for the wiki links
+    createLinkColor();
 
     connect(m_pSoundManager, &SoundManager::devicesUpdated, this, &DlgPrefSound::refreshDevices);
 
