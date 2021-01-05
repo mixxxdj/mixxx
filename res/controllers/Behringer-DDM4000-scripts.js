@@ -5,6 +5,9 @@
 var DDM4000 = new components.extension.GenericMidiController({
     configurationProvider: function() {
 
+        var DEFAULT_LONGPRESS_DURATION = 500;
+        var DEFAULT_BLINK_DURATION = 425;
+
         /* Shortcut variables */
         var c    = components;
         var e    = components.extension;
@@ -77,13 +80,55 @@ var DDM4000 = new components.extension.GenericMidiController({
         };
         CrossfaderUnit.prototype = e.deriveFrom(c.ComponentContainer);
 
+        /**
+         * Button for Crossfader Reverse Tap.
+         *
+         * Reverses the crossfader orientation as long as the button in pressed.
+         * `xFaderReverse` is inverted, not toggled, so that this button may be used in combination
+         * with the Reverse Hold button. The LED shows if this button is pressed.
+         *
+         * @constructor
+         * @extends {components.Button}
+         * @param {number} options Options object
+         * @public
+         */
+        var CrossfaderReverseTapButton = function(options) {
+            options = options || {};
+            options.inKey = options.inKey || "xFaderReverse";
+            c.Button.call(this, options);
+        };
+        CrossfaderReverseTapButton.prototype = e.deriveFrom(c.Button, {
+            input: function(channel, control, value, _status, _group) {
+                this.inToggle();
+                this.output(value);
+            },
+        });
+
+        var Blinker = function(target, blinkDuration, outValueScale) {
+            this.target = target;
+            this.outValueScale = outValueScale || components.Component.prototype.outValueScale;
+
+            this.blinkAction = function() {
+                this.target.send(this.outValueScale.call(this.target, this.flash = !this.flash));
+            };
+            this.blinkTimer = new e.Timer({timeout: blinkDuration || 500, action: this.blinkAction, owner: this});
+        };
+        Blinker.prototype = {
+            flash: false,
+            handle: function(value) {
+                this.blinkTimer.setState(this.flash = value);
+                this.target.send(this.outValueScale.call(this.target, value));
+            },
+        };
+
         var SamplerBank = function(bankOptions) {
             c.ComponentContainer.call(this);
             var bank = this;
 
             var PlayButton = function(options) {
                 options = options || {};
-                options.key = options.key || "cue_gotoandplay";
+                options.inKey = options.inKey || "cue_gotoandplay";
+                options.outKey = options.outKey || "track_loaded";
                 if (options.sendShifted === undefined) {
                     options.sendShifted = true;
                 }
@@ -97,7 +142,30 @@ var DDM4000 = new components.extension.GenericMidiController({
                     }
                 },
             });
-            this.playButton = new PlayButton({midi: bankOptions.play, group: bankOptions.group});
+            this.playButton = new PlayButton({
+                midi: bankOptions.play,
+                group: bankOptions.group,
+            });
+
+            var PlayIndicatorLED = function(options) {
+                options = options || {};
+                options.outKey = options.outKey || "play_indicator";
+                this.blinker = new Blinker(this, options.blinkDuration);
+                c.Component.call(this, options);
+            };
+            PlayIndicatorLED.prototype = e.deriveFrom(c.Component, {
+                output: function(value, _group, _control) {
+                    this.blinker.handle(value);
+                    if (!value) {
+                        bank.playButton.trigger();
+                    }
+                },
+            });
+            this.playIndicator = new PlayIndicatorLED({
+                midi: bankOptions.play,
+                group: bankOptions.group,
+                blinkDuration: DEFAULT_BLINK_DURATION,
+            });
 
             var ReverseMode = function(options) {
                 options = options || {};
@@ -140,11 +208,11 @@ var DDM4000 = new components.extension.GenericMidiController({
                     this.setBlue(false);
                 },
                 setBlue: function(value) {
-                    midi.sendShortMsg(this.midi[0], this.midi[1] + 1, this.outValueScale(value));
+                    midi.sendShortMsg(cc, this.midi[1] + 1, this.outValueScale(value));
                 },
             });
             this.modeButton = new ModeButton(
-                {midi: bankOptions.mode, group: bankOptions.group, longPressTimeout: 750});
+                {midi: bankOptions.mode, group: bankOptions.group, longPressTimeout: DEFAULT_LONGPRESS_DURATION});
         };
         SamplerBank.prototype = e.deriveFrom(c.ComponentContainer);
 
@@ -299,7 +367,7 @@ var DDM4000 = new components.extension.GenericMidiController({
                     defaultDefinition: {type: c.Button, options: {group: "[Mixer Profile]"}},
                     components: [
                         {options: {midi: [cc,   0x14]}, type: e.CrossfaderCurvePot}, // Crossfader: Curve
-                        {options: {midi: [note, 0x28], key: "xFaderReverse", sendShifted: true}}, // Crossfader: Reverse Tap
+                        {options: {midi: [note, 0x28], sendShifted: true}, type: CrossfaderReverseTapButton}, // Crossfader: Reverse Tap
                         {options: {midi: [note, 0x29], key: "xFaderReverse", type: toggle, sendShifted: true}}, // Crossfader: Reverse Hold
                     ]
                 },
@@ -320,10 +388,6 @@ var DDM4000 = new components.extension.GenericMidiController({
                                 button: {midi: [note, 0x1F], sendShifted: true},
                                 crossfader: {midi: [cc, 0x15]}
                             },
-                            components: [ // Idee: in registerComponents nicht über def schleifen, sondern über impl, und fehlende defs ignorieren.
-                                {},
-                                {},
-                            ],
                         },
                         {options: {midi: [note, 0x2A],    key: "", sendShifted: true}}, // Crossfader: Bounce to MIDI Clock
                         {options: {midi: [note, 0x2B],  inKey: ""}}, // Crossfader: Beat (Left)
@@ -386,9 +450,11 @@ var DDM4000 = new components.extension.GenericMidiController({
                          *   void ControllerEngineJSProxy::brake(int deck, bool activate, double factor = 1.0, double rate = 1.0)
                          * Thus we toggle effect unit 1 for the sampler instead.
                          */
+                            type: e.BlinkingButton,
                             options: {
                                 midi: [note, 0x78], type: toggle, sendShifted: true,
                                 group: "[EffectRack1_EffectUnit1]", key: "group_[Sampler1]_enable",
+                                blinkDuration: DEFAULT_BLINK_DURATION,
                             }
                         },
                         {options: {midi: [note, 0x79],    key: "", sendShifted: true}}, // Sampler: Select
