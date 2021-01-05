@@ -384,13 +384,32 @@ void DlgPrefRecord::loadMetaData() {
 
 void DlgPrefRecord::saveRecordingFolder()
 {
-    if (LineEditRecordings->text() == "") {
-        qDebug() << "Recordings path was empty in dialog";
-        return;
-    }
-    if (LineEditRecordings->text() != m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"))) {
-        qDebug() << "Saved recordings path" << LineEditRecordings->text();
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Directory"), LineEditRecordings->text());
+    QString newPath = LineEditRecordings->text();
+    if (newPath != m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"))) {
+        QFileInfo fileInfo(newPath);
+        if (!fileInfo.exists()) {
+            QMessageBox::warning(
+                    this,
+                    tr("Recordings directory invalid"),
+                    tr("Recordings directory must be set to an existing directory."));
+            return;
+        }
+        if (!fileInfo.isDir()) {
+            QMessageBox::warning(
+                    this,
+                    tr("Recordings directory invalid"),
+                    tr("Recordings directory must be set to a directory."));
+            return;
+        }
+        if (!fileInfo.isWritable()) {
+            QMessageBox::warning(this,
+                    tr("Recordings directory not writable"),
+                    tr("You do not have write access to %1. Choose a "
+                       "recordings directory you have write access to.")
+                            .arg(newPath));
+            return;
+        }
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Directory"), newPath);
     }
 }
 void DlgPrefRecord::saveMetaData()
