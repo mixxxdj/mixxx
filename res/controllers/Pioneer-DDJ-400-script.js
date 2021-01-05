@@ -319,11 +319,12 @@ PioneerDDJ400.beatFxOnOffPressed = function(_channel, _control, value) {
 PioneerDDJ400.beatFxOnOffShiftPressed = function(_channel, _control, value) {
     if (value === 0) { return; }
 
-    // turn off all three effect slots in Effect Unit 1 and reset wet/dry mix
+    engine.setParameter("[EffectRack1_EffectUnit1]", "mix", 0);
+    engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "mix");
+
     for (var i = 1; i <= 3; i++) {
         engine.setValue("[EffectRack1_EffectUnit1_Effect" + i + "]", "enabled", 0);
     }
-    script.triggerControl("[EffectRack1_EffectUnit1]", "mix", 0);
     PioneerDDJ400.toggleLight(PioneerDDJ400.lights.beatFx, false);
 };
 
