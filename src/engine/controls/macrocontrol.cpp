@@ -104,8 +104,9 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
 
 void MacroControl::trackLoaded(TrackPointer pNewTrack) {
     if (isRecording()) {
-        stopRecording();
-        m_pMacro->setLabel(m_pMacro->getLabel().append(interruptedSuffix));
+        if (stopRecording()) {
+            m_pMacro->setLabel(m_pMacro->getLabel().append(interruptedSuffix));
+        }
     }
     if (!pNewTrack) {
         m_pMacro = nullptr;
@@ -180,10 +181,10 @@ void MacroControl::stop() {
     m_pMacro->setState(Macro::StateFlag::Enabled, false);
 }
 
-void MacroControl::updateRecording() {
+bool MacroControl::updateRecording() {
     //qCDebug(macroLoggingCategory) << QThread::currentThread() << QTime::currentTime() << "Update recording status:" << getStatus() << "recording:" << isRecording();
     VERIFY_OR_DEBUG_ASSERT(isRecording()) {
-        return;
+        return false;
     }
     bool actionsRecorded = false;
     while (MacroAction* action = m_recordedActions.front()) {
@@ -194,17 +195,19 @@ void MacroControl::updateRecording() {
     if (actionsRecorded && getStatus() == Status::Armed) {
         setStatus(Status::Recording);
     }
+    return actionsRecorded;
 }
 
-void MacroControl::stopRecording() {
+bool MacroControl::stopRecording() {
     VERIFY_OR_DEBUG_ASSERT(isRecording()) {
-        return;
+        return false;
     }
     m_updateRecordingTimer.stop();
     updateRecording();
     m_pMacro->setLabel(m_pMacro->getLabel().remove(recordingSuffix));
     if (getStatus() == Status::Armed) {
         setStatus(Status::Empty);
+        return false;
     } else {
         // This will still be the position of the previous track when called from trackLoaded
         // since trackLoaded is invoked before the SampleOfTrack of the controls is updated.
@@ -220,6 +223,7 @@ void MacroControl::stopRecording() {
         if (m_pMacro->isEnabled()) {
             slotGotoPlay();
         }
+        return true;
     }
 }
 

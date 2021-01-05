@@ -43,8 +43,10 @@ class MacroControl : public EngineControl {
     void slotJumpQueued(double samplePos);
 
   private:
-    void updateRecording();
-    void stopRecording();
+    /// Returns whether a new action was recorded
+    bool updateRecording();
+    /// Returns whether the macro was recorded
+    bool stopRecording();
 
     void play();
     void stop();
