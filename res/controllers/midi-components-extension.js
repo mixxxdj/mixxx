@@ -177,28 +177,29 @@
      * Use `start(action)` to start and `reset()` to reset.
      *
      * @constructor
-     * @param {number} timeout Duration between start and action
-     * @param {boolean} oneShot If `true`, the action is run once;
+     * @param {number} options.timeout Duration between start and action
+     * @param {boolean} options.oneShot If `true`, the action is run once;
      *                          otherwise, it is run periodically until the timer is reset.
+     * @param {function} options.action Function that is executed whenever the timer expires
+     * @param {object} options.owner Owner object of the `action` function (assigned to `this`)
      * @public
      * @see https://github.com/mixxxdj/mixxx/wiki/Script-Timers
      */
-    var Timer = function(timeout, oneShot) {
-        this.timeout = timeout;
-        this.oneShot = oneShot;
+    var Timer = function(options) {
+        _.assign(this, options);
         this.disable();
     };
     Timer.prototype = {
         disable: function() { this.id = 0; },
         isEnabled: function() { return this.id !== 0; },
-        start: function(action) {
+        start: function() {
             this.reset();
             var timer = this;
             this.id = engine.beginTimer(this.timeout, function() {
                 if (timer.oneShot) {
                     timer.disable();
                 }
-                action();
+                timer.action.call(timer.owner);
             }, this.oneShot);
         },
         reset: function() {
@@ -207,6 +208,13 @@
                 this.disable();
             }
         },
+        setState: function(active) {
+            if (active) {
+                this.start();
+            } else {
+                this.reset();
+            }
+        }
     };
 
     /**
@@ -219,7 +227,12 @@
      */
     var LongPressButton = function(options) {
         components.Button.call(this, options);
-        this.longPressTimer = new Timer(this.longPressTimeout, true);
+        var action = function() {
+            this.isLongPressed = true;
+            this.onLongPress();
+        };
+        this.longPressTimer = new Timer(
+            {timeout: this.longPressTimeout, oneShot: true, action: action, owner: this});
     };
     LongPressButton.prototype = deriveFrom(components.Button, {
         isLongPressed: false,
@@ -232,11 +245,7 @@
         },
         handlePress: function() {
             this.onShortPress();
-            var button = this;
-            this.longPressTimer.start(function() {
-                button.isLongPressed = true;
-                button.onLongPress();
-            });
+            this.longPressTimer.start();
         },
         handleRelease: function() {
             this.longPressTimer.reset();
@@ -246,6 +255,32 @@
         onShortPress: function(_value) {},
         onLongPress: function(_value)  {},
         onRelease: function(_value)  {},
+    });
+
+    /**
+     * A button that blinks when `on`.
+     *
+     * @constructor
+     * @extends {components.Button}
+     * @param {number} options.blinkDuration Blink duration in ms; optional, default: 500
+     * @public
+     */
+    var BlinkingButton = function(options) {
+        options = options || {};
+        var blinkAction = function() {
+            this.send(components.Button.prototype.outValueScale.call(
+                this, this.flashing = !this.flashing));
+        };
+        this.blinkTimer = new Timer(
+            {timeout: options.blinkDuration || 500, action: blinkAction, owner: this});
+        components.Button.call(this, options);
+    };
+    BlinkingButton.prototype = deriveFrom(components.Button, {
+        flashing: false,
+        outValueScale: function(value) {
+            this.blinkTimer.setState(this.flashing = value);
+            return components.Button.prototype.outValueScale.call(this, value);
+        },
     });
 
     /**
@@ -1349,6 +1384,7 @@
     exports.CustomButton = CustomButton;
     exports.Timer = Timer;
     exports.LongPressButton = LongPressButton;
+    exports.BlinkingButton = BlinkingButton;
     exports.DirectionEncoder = DirectionEncoder;
     exports.RangeAwareEncoder = RangeAwareEncoder;
     exports.EnumToggleButton = EnumToggleButton;
