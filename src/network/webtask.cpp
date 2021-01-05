@@ -252,14 +252,26 @@ void WebTask::slotNetworkReplyFinished() {
         return;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(m_state == State::Pending) {
-        DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-        return;
-    }
-
     if (m_timeoutTimerId != kInvalidTimerId) {
         killTimer(m_timeoutTimerId);
         m_timeoutTimerId = kInvalidTimerId;
+    }
+
+    if (m_state != State::Pending) {
+        kLogger.debug()
+                << this
+                << "Discarding obsolete network reply"
+                << pFinishedNetworkReply;
+        if (m_state == State::Aborting) {
+            const auto requestUrl = pPendingNetworkReply->request().url();
+            emitAborted(requestUrl);
+        } else {
+            // Might have been aborted or timed out in the meantime
+            DEBUG_ASSERT(
+                    m_state == State::Aborted ||
+                    m_state == State::TimedOut);
+        }
+        return;
     }
 
     if (pFinishedNetworkReply->error() != QNetworkReply::NetworkError::NoError) {
@@ -268,6 +280,7 @@ void WebTask::slotNetworkReplyFinished() {
                 pFinishedNetworkReply->error(),
                 pFinishedNetworkReply->errorString(),
                 pFinishedNetworkReply->readAll());
+        DEBUG_ASSERT(m_state != State::Pending);
         return;
     }
 
