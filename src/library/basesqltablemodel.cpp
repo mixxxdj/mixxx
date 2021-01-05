@@ -373,7 +373,7 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_bInitialized = true;
 }
 
-int BaseSqlTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
+int BaseSqlTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) const {
     if (column == TrackModel::SortColumnId::Invalid) {
         return -1;
     }
@@ -381,7 +381,7 @@ int BaseSqlTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId colu
     return m_columnIndexBySortColumnId[static_cast<int>(column)];
 }
 
-TrackModel::SortColumnId BaseSqlTableModel::sortColumnIdFromColumnIndex(int index) {
+TrackModel::SortColumnId BaseSqlTableModel::sortColumnIdFromColumnIndex(int index) const {
     return m_sortColumnIdByColumnIndex.value(index, TrackModel::SortColumnId::Invalid);
 }
 

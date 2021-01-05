@@ -15,7 +15,7 @@ inline std::optional<double> positionSamplesToMillis(
         double positionSamples,
         mixxx::audio::SampleRate sampleRate) {
     VERIFY_OR_DEBUG_ASSERT(sampleRate.isValid()) {
-        return Cue::kNoPosition;
+        return std::nullopt;
     }
     if (positionSamples == Cue::kNoPosition) {
         return std::nullopt;
