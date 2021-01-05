@@ -51,7 +51,7 @@ class SafeQPointer final {
             : m_ptr(ptr) {
     }
 
-    void clear() const {
+    void clear() {
         m_ptr.clear();
     }
 
