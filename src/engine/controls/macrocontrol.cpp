@@ -169,7 +169,7 @@ bool MacroControl::isRecording() const {
 
 void MacroControl::play() {
     DEBUG_ASSERT(m_pMacro && !m_pMacro->isEmpty() && !isRecording());
-    m_iNextAction = 1;
+    m_iNextAction = m_pMacro->size() > 1 ? 1 : 0;
     setStatus(Status::Playing);
     m_pMacro->setState(Macro::StateFlag::Enabled);
 }
