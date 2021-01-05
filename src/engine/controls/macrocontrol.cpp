@@ -156,8 +156,6 @@ void MacroControl::setStatus(Status status) {
     m_COStatus.forceSet(static_cast<int>(status));
     m_COPlay.set(status == Status::Playing ? 1 : 0);
     m_CORecord.set(isRecording() ? 1 : 0);
-    // add blinking for Status::Recording & Status::Playing
-    //m_COIndicator.forceSet(status > Status::Empty ? 1 : 0);
 }
 
 MacroPointer MacroControl::getMacro() const {
@@ -272,7 +270,7 @@ void MacroControl::slotClear(double value) {
         return;
     }
     if (getStatus() == Status::Recorded) {
-        qCDebug(macroLoggingCategory) << "Clearing" << m_slot;
+        qCDebug(macroLoggingCategory) << "Clearing macro" << m_slot;
         m_pMacro->clear();
         if (QRegExp("[0-9. ]+(\\[\\w*\\])?").exactMatch(m_pMacro->getLabel())) {
             m_pMacro->setLabel("");
@@ -285,12 +283,15 @@ void MacroControl::slotActivate(double value) {
     if (value == 0) {
         return;
     }
-    if (getStatus() < Status::Recorded) {
-        slotRecord(!isRecording());
-    } else if (getStatus() == Status::Playing) {
-        slotGotoPlay();
-    } else {
+    switch (getStatus()) {
+    case Status::Recorded:
         play();
+        break;
+    case Status::Playing:
+        slotGotoPlay();
+        break;
+    default:
+        slotRecord(!isRecording());
     }
 }
 
