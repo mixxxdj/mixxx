@@ -1642,7 +1642,8 @@ WPushButton#Reverse[pressed="true"],
 #VinylButton[displayValue="1"],
 #PassthroughButton[displayValue="1"],
 QPushButton#pushButtonAutoDJ:checked,
-#DlgAnalysis > QPushButton:checked {
+#DlgAnalysis > QPushButton:checked,
+#MacroActivate[value="4"] {
   background-color: #b24c12;
   }
   /* Orange border for Play buttons when previewing from
@@ -1669,7 +1670,8 @@ WPushButton#LoopOut[pressed="true"],
 /* Red */
 #EQKillButtonBox WPushButton[displayValue="1"],
 QPushButton#pushButtonRecording:checked,
-#RecFeedback[displayValue="2"] {
+#RecFeedback[displayValue="2"],
+#MacroActivate[value="2"] {
   background-color: #a80000;
 }
 
@@ -1772,7 +1774,8 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 
 /* Yellow */
 #RecFeedback[displayValue="1"],   /* initialize recording */
-#BroadcastButton[displayValue="1"]   /* connecting */ {
+#BroadcastButton[displayValue="1"],   /* connecting */
+#MacroActivate[value="1"] {
   background-color: #d09300;
 }
 
@@ -1823,13 +1826,13 @@ WPushButton#CrossfaderButton[displayValue="0"],
 WPushButton#CrossfaderButton[displayValue="1"],
 WPushButton#RecButton[displayValue="0"],
 WPushButton#RecButton[displayValue="1"],
-#RecDot {
+#RecDot,
+#MacroActivate {
   background-color: transparent;
 }
 
-
-
 /************** Button icons **************************************************/
+
 WPushButton#PlayDeck[value="0"] {
   image: url(skin:/palemoon/buttons/btn__play_deck.svg) no-repeat center center;
   }
@@ -1843,10 +1846,12 @@ WPushButton#PlayDeck[value="0"] {
   #PlayDeckMini[value="1"] {
     image: url(skin:/palemoon/buttons/btn__pause_deck_mini.svg) no-repeat center center;
   }
+#MacroActivate[value="3"],
 #PlaySampler[value="0"],
 #PlayPreview[displayValue="0"] {
   image: url(skin:/palemoon/buttons/btn__play_sampler.svg) no-repeat center center;
   }
+  #MacroActivate[value="4"],
   #PlaySampler[value="1"],
   #PlayPreview[displayValue="1"] {
     image: url(skin:/palemoon/buttons/btn__pause_sampler.svg) no-repeat center center;
@@ -2371,15 +2376,17 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skin:/palemoon/buttons/btn__mic_duck_manual.svg) no-repeat center center;
   }
 
+#MacroActivate[value="0"],
 #RecDot[highlight="0"] {
   image: url(skin:/palemoon/buttons/btn__rec_dot.svg) no-repeat center center;
   }
+  #MacroActivate[value="1"], #MacroActivate[value="2"],
   #RecDot[highlight="1"], #RecDot[highlight="2"] {
     image: url(skin:/palemoon/buttons/btn__rec_dot_active.svg) no-repeat center center;
   }
 
 #BroadcastButton[displayValue="0"] {
-  /* for some reason the alignment isn't rescpected, so the icons
+  /* for some reason the alignment isn't respected, so the icons
     have to be sized like available area (button size - margin) */
   image: url(skin:/palemoon/buttons/btn__broadcast_off.svg) no-repeat left top;
   }
