@@ -1,9 +1,9 @@
-#ifndef MIXXX_TRACKSCHEMA_H
-#define MIXXX_TRACKSCHEMA_H
+#pragma once
 
 #include <QString>
 
 #define LIBRARY_TABLE "library"
+#define TRACKLOCATIONS_TABLE "track_locations"
 
 const QString LIBRARYTABLE_ID = "id";
 const QString LIBRARYTABLE_ARTIST = "artist";
@@ -54,4 +54,9 @@ const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
 
-#endif //MIXXX_TRACKSCHEMA_H
+namespace mixxx {
+namespace trackschema {
+// TableForColumn returns the name of the table that contains the named column.
+QString tableForColumn(const QString& columnName);
+} // namespace trackschema
+} // namespace mixxx

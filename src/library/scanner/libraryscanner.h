@@ -1,5 +1,4 @@
-#ifndef MIXXX_LIBRARYSCANNER_H
-#define MIXXX_LIBRARYSCANNER_H
+#pragma once
 
 #include <gtest/gtest.h>
 
@@ -123,5 +122,3 @@ class LibraryScanner : public QThread {
     QStringList m_libraryRootDirs;
     QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
 };
-
-#endif // MIXXX_LIBRARYSCANNER_H

@@ -8,6 +8,7 @@
 #include "library/trackmodel.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_previewbuttondelegate.cpp"
 #include "track/track.h"
 #include "widget/wlibrarytableview.h"
 

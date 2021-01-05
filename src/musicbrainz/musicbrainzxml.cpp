@@ -379,23 +379,22 @@ QPair<QList<TrackRelease>, bool> readElementRecording(QXmlStreamReader& reader) 
     while (continueReading(reader)) {
         const QXmlStreamReader::TokenType type = reader.readNext();
         if (type == QXmlStreamReader::StartElement) {
-            const QStringRef name = reader.name();
-            if (name == QLatin1String("title")) {
+            if (reader.name() == QLatin1String("title")) {
                 DEBUG_ASSERT(recordingTitle.isNull());
                 recordingTitle = reader.readElementText();
-            } else if (name == QLatin1String("length")) {
+            } else if (reader.name() == QLatin1String("length")) {
                 DEBUG_ASSERT(recordingDuration == Duration::empty());
                 parseDuration(reader.readElementText(), &recordingDuration);
-            } else if (name == QLatin1String("artist-credit")) {
+            } else if (reader.name() == QLatin1String("artist-credit")) {
                 readElementArtistCredit(reader, recordingArtist, recordingArtistId);
-            } else if (name == QLatin1String("release-list")) {
+            } else if (reader.name() == QLatin1String("release-list")) {
                 // Consume release-list
                 while (continueReading(reader)) {
                     const QXmlStreamReader::TokenType type = reader.readNext();
                     if (type == QXmlStreamReader::StartElement) {
-                        if (name == QLatin1String("release")) {
+                        if (reader.name() == QLatin1String("release")) {
                             trackReleases.append(readElementRelease(reader));
-                        } else if (name == QLatin1String("release-group")) {
+                        } else if (reader.name() == QLatin1String("release-group")) {
                             DEBUG_ASSERT(releaseGroupId.isNull());
                             releaseGroupId = QUuid(reader.attributes().value(QStringLiteral("id")).toString());
                             DEBUG_ASSERT(!releaseGroupId.isNull());
@@ -455,11 +454,10 @@ Error::Error(
         : Error() {
     while (continueReading(reader)) {
         if (reader.readNext() == QXmlStreamReader::StartElement) {
-            const QStringRef name = reader.name();
-            if (name == QLatin1String("message")) {
+            if (reader.name() == QLatin1String("message")) {
                 DEBUG_ASSERT(message == Error().message);
                 message = reader.readElementText();
-            } else if (name == QLatin1String("code")) {
+            } else if (reader.name() == QLatin1String("code")) {
                 DEBUG_ASSERT(code == Error().code);
                 bool ok;
                 int val = reader.readElementText().toInt(&ok);
@@ -472,19 +470,12 @@ Error::Error(
 }
 
 QPair<QList<TrackRelease>, bool> parseRecordings(QXmlStreamReader& reader) {
-    QStringRef codecName;
     QList<TrackRelease> trackReleases;
     while (continueReading(reader)) {
         switch (reader.readNext()) {
         case QXmlStreamReader::Invalid:
         {
             return qMakePair(trackReleases, false);
-        }
-        case QXmlStreamReader::StartDocument:
-        {
-            // The character encoding is always an ASCII string
-            codecName = reader.documentEncoding();
-            break;
         }
         case QXmlStreamReader::StartElement:
         {

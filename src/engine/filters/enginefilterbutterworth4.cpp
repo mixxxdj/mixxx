@@ -1,5 +1,7 @@
 #include "engine/filters/enginefilterbutterworth4.h"
 
+#include "moc_enginefilterbutterworth4.cpp"
+
 namespace {
 constexpr char kFidSpecLowPassButterworth4[] = "LpBu4";
 constexpr char kFidSpecBandPassButterworth4[] = "BpBu4";

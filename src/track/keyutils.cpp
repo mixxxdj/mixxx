@@ -306,8 +306,9 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         // Now apply sharps and flats to the letter key.
         QString adjustments = keyMatcher.cap(2);
         int steps = 0;
-        for (auto it = adjustments.constBegin();
-             it != adjustments.constEnd(); ++it) {
+        for (const auto* it = adjustments.constBegin();
+                it != adjustments.constEnd();
+                ++it) {
             steps += (*it == '#' || *it == s_sharpSymbol[0]) ? 1 : -1;
         }
 

@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_BEATDETECTIONSETTINGS_H
-#define PREFERENCES_BEATDETECTIONSETTINGS_H
+#pragma once
 
 #include "preferences/usersettings.h"
 
@@ -61,5 +60,3 @@ class BeatDetectionSettings {
   private:
     UserSettingsPointer m_pConfig;
 };
-
-#endif /* PREFERENCES_BEATDETECTIONSETTINGS_H */

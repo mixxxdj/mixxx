@@ -2,11 +2,12 @@
 
 #include <QFileInfo>
 #include <QHeaderView>
+#include <QMimeData>
 #include <QUrl>
 #include <QtDebug>
-#include <QMimeData>
 
 #include "library/sidebarmodel.h"
+#include "moc_wlibrarysidebar.cpp"
 #include "util/dnd.h"
 
 const int expand_time = 250;
@@ -211,7 +212,7 @@ void WLibrarySidebar::keyPressEvent(QKeyEvent* event) {
 }
 
 void WLibrarySidebar::selectIndex(const QModelIndex& index) {
-    auto pModel = new QItemSelectionModel(model());
+    auto* pModel = new QItemSelectionModel(model());
     pModel->select(index, QItemSelectionModel::Select);
     setSelectionModel(pModel);
 

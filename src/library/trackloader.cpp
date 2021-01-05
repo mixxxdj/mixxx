@@ -2,12 +2,11 @@
 
 #include <QMetaMethod>
 #include <QThread>
-
 #include <mutex>
 
 #include "library/trackcollectionmanager.h"
+#include "moc_trackloader.cpp"
 #include "util/logger.h"
-
 
 namespace mixxx {
 

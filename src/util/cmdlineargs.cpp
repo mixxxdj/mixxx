@@ -102,7 +102,8 @@ when a critical error occurs unless this is set properly.\n", stdout);
             m_safeMode = true;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
             m_debugAssertBreak = true;
-        } else {
+        } else if (i > 0) {
+            // Don't try to load the program name to a deck
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
     }

@@ -1,12 +1,5 @@
-/****************************************************************************
-                   encoder.cpp  - encoder API for mixxx
-                             -------------------
-    copyright            : (C) 2009 by Phillip Whelan
-    copyright            : (C) 2010 by Tobias Rafreider
-    copyright            : (C) 2017 by Josep Maria Antolín
- ***************************************************************************/
-
 #include "encoder/encoder.h"
+
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 // TODO(XXX): __FFMPEGFILE_ENCODERS__ is currently undefined because

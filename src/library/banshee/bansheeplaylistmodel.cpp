@@ -8,6 +8,7 @@
 #include "library/starrating.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "moc_bansheeplaylistmodel.cpp"
 #include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/track.h"
@@ -38,7 +39,7 @@ namespace {
 
 QAtomicInt sTableNumber;
 
-}
+} // namespace
 
 BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollectionManager* pTrackCollectionManager, BansheeDbConnection* pConnection)
         : BaseSqlTableModel(pParent, pTrackCollectionManager, "mixxx.db.model.banshee_playlist"),

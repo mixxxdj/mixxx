@@ -1,21 +1,8 @@
-/**
- * @file dlgprefsounditem.cpp
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100704
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+#include "preferences/dialog/dlgprefsounditem.h"
 
 #include <QPoint>
 
-#include "preferences/dialog/dlgprefsounditem.h"
+#include "moc_dlgprefsounditem.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanagerconfig.h"
 #include "util/compatibility.h"
@@ -93,7 +80,9 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevicePointer>& devices) 
         deviceComboBox->removeItem(deviceComboBox->count() - 1);
     }
     for (const auto& pDevice: qAsConst(m_devices)) {
-        if (!hasSufficientChannels(*pDevice)) continue;
+        if (!hasSufficientChannels(*pDevice)) {
+            continue;
+        }
         deviceComboBox->addItem(pDevice->getDisplayName(), QVariant::fromValue(pDevice->getDeviceId()));
     }
     int newIndex = deviceComboBox->findData(QVariant::fromValue(oldDev));

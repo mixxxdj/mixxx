@@ -123,7 +123,7 @@ QByteArray Waveform::toByteArray() const {
 
     std::string output;
     waveform.SerializeToString(&output);
-    return QByteArray(output.data(), output.length());
+    return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
 void Waveform::readByteArray(const QByteArray& data) {

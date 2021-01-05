@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_EFFECTSETTINGSMODEL_H
-#define PREFERENCES_EFFECTSETTINGSMODEL_H
+#pragma once
 
 #include <QAbstractTableModel>
 #include <QAbstractItemDelegate>
@@ -49,5 +48,3 @@ class EffectSettingsModel : public QAbstractTableModel {
   private:
     QList<EffectProfilePtr> m_profiles;
 };
-
-#endif // PREFERENCES_EFFECTSETTINGSMODEL_H

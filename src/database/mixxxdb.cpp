@@ -1,10 +1,9 @@
 #include "database/mixxxdb.h"
 
 #include "database/schemamanager.h"
-
+#include "moc_mixxxdb.cpp"
 #include "util/assert.h"
 #include "util/logger.h"
-
 
 // The schema XML is baked into the binary via Qt resources.
 //static
@@ -86,29 +85,30 @@ bool MixxxDb::initDatabaseSchema(
         case SchemaManager::Result::NewerVersionBackwardsCompatible:
             return true; // done
         case SchemaManager::Result::UpgradeFailed:
-            QMessageBox::warning(
-                    0, upgradeFailed,
+            QMessageBox::warning(nullptr,
+                    upgradeFailed,
                     upgradeToVersionFailed + "\n" +
-                    tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
-                    tr("Try renaming it and restarting Mixxx.") + "\n" +
-                    helpEmail + "\n\n" + okToExit,
+                            tr("Your mixxxdb.sqlite file may be corrupt.") +
+                            "\n" + tr("Try renaming it and restarting Mixxx.") +
+                            "\n" + helpEmail + "\n\n" + okToExit,
                     QMessageBox::Ok);
             return false; // abort
         case SchemaManager::Result::NewerVersionIncompatible:
-            QMessageBox::warning(
-                    0, upgradeFailed,
+            QMessageBox::warning(nullptr,
+                    upgradeFailed,
                     upgradeToVersionFailed + "\n" +
-                    tr("Your mixxxdb.sqlite file was created by a newer "
-                       "version of Mixxx and is incompatible.") +
-                    "\n\n" + okToExit,
+                            tr("Your mixxxdb.sqlite file was created by a "
+                               "newer "
+                               "version of Mixxx and is incompatible.") +
+                            "\n\n" + okToExit,
                     QMessageBox::Ok);
             return false; // abort
         case SchemaManager::Result::SchemaError:
-            QMessageBox::warning(
-                    0, upgradeFailed,
+            QMessageBox::warning(nullptr,
+                    upgradeFailed,
                     upgradeToVersionFailed + "\n" +
-                    tr("The database schema file is invalid.") + "\n" +
-                    helpEmail + "\n\n" + okToExit,
+                            tr("The database schema file is invalid.") + "\n" +
+                            helpEmail + "\n\n" + okToExit,
                     QMessageBox::Ok);
             return false; // abort
     }

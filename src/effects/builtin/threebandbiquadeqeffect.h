@@ -1,5 +1,4 @@
-#ifndef THREEBANDBIQUADEQEFFECT_H
-#define THREEBANDBIQUADEQEFFECT_H
+#pragma once
 
 #include "control/controlproxy.h"
 #include "effects/effect.h"
@@ -79,5 +78,3 @@ class ThreeBandBiquadEQEffect : public EffectProcessorImpl<ThreeBandBiquadEQEffe
     std::unique_ptr<ControlProxy> m_pLoFreqCorner;
     std::unique_ptr<ControlProxy> m_pHiFreqCorner;
 };
-
-#endif // THREEBANDBIQUADEQEFFECT_H

@@ -24,9 +24,9 @@ jobs:
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/ubuntu_buildenv.sh
+            buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 18.04 DEB
-            artifacts_path: cmake_build/*.deb
+            artifacts_path: build/*.deb
             qt_qpa_platform: offscreen
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
@@ -43,9 +43,9 @@ jobs:
             compiler_cache_path: ~/.ccache
             cpack_generator: DEB
             buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/ubuntu_buildenv.sh
+            buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 20.04 DEB
-            artifacts_path: cmake_build/*.deb
+            artifacts_path: build/*.deb
             qt_qpa_platform: offscreen
           - name: macOS 10.15
             os: macos-10.15
@@ -62,7 +62,7 @@ jobs:
             buildenv_basepath: /Users/runner/buildenv
             buildenv_script: tools/macos_buildenv.sh
             artifacts_name: macOS DMG
-            artifacts_path: cmake_build/*.dmg
+            artifacts_path: build/*.dmg
             qt_qpa_platform: offscreen
           - name: Windows 2019 (MSVC)
             os: windows-2019
@@ -84,7 +84,7 @@ jobs:
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat
             artifacts_name: Windows Installer
-            artifacts_path: cmake_build/*.msi
+            artifacts_path: build/*.msi
             qt_qpa_platform: windows
 
     env:
@@ -98,6 +98,8 @@ jobs:
     steps:
     - name: "Check out repository"
       uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
 
     - name: "Set up cmake"
       uses: jwlawson/actions-setup-cmake@v1.4
@@ -108,7 +110,16 @@ jobs:
 
     - name: "[Windows] Install additional build tools"
       if: runner.os == 'Windows'
-      run: python -m pip install ninja git+https://github.com/frerich/clcache.git
+      # TODO: Add ninja, clcache and rsync to the windows buildenv
+      run: |
+        python -m pip install ninja git+https://github.com/frerich/clcache.git
+        $Env:PATH="C:\msys64\usr\bin;$Env:PATH"
+        pacman -S --noconfirm coreutils bash rsync openssh
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
+
+    - name: "[Windows] Set up MSVC Developer Command Prompt"
+      if: runner.os == 'Windows'
+      uses: seanmiddleditch/gha-setup-vsdevenv@v3
 
     - name: "[macOS/Windows] Get build environment name"
       if: runner.os != 'Linux'
@@ -129,7 +140,7 @@ jobs:
         # Decrypt the certificate
         openssl enc -aes-256-cbc -d -md sha512 \
           -k "${MACOS_CODESIGN_OPENSSL_PASSWORD}" \
-          -in /Users/runner/work/mixxx/mixxx/cmake/macos_developer_id_codesign_certificate.p12.enc \
+          -in /Users/runner/work/mixxx/mixxx/packaging/certificates/macos_developer_id_codesign_certificate.p12.enc \
           -out ~/certificate.p12
 
         # Create a temporary keychain for the certificate and import it.
@@ -142,9 +153,21 @@ jobs:
         security list-keychains -s Mixxx.keychain
         # Prevent keychain access from timing out
         security set-keychain-settings Mixxx.keychain
+        echo "CMAKE_ARGS_EXTRA=${CMAKE_ARGS_EXTRA} -DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}" >> "${GITHUB_ENV}"
 
-        CMAKE_ARGS="-DAPPLE_CODESIGN_IDENTITY=${APPLE_CODESIGN_IDENTITY}"
-        echo "::set-output name=cmake_args::${CMAKE_ARGS}"
+    - name: "[Windows] Set up Windows code signing"
+      env:
+        WINDOWS_CODESIGN_CERTIFICATE_PATH: ${{ github.workspace }}\packaging\certificates\windows_sectigo_codesign_certificate.pfx
+        WINDOWS_CODESIGN_CERTIFICATE_PASSWORD: ${{ secrets.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD }}
+        WINDOWS_CODESIGN_SECURE_FILE_SALT: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SALT }}
+        WINDOWS_CODESIGN_SECURE_FILE_SECRET: ${{ secrets.WINDOWS_CODESIGN_SECURE_FILE_SECRET }}
+      if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_SECURE_FILE_SALT != null && env.WINDOWS_CODESIGN_SECURE_FILE_SECRET != null
+      run: |
+        iex ((New-Object Net.WebClient).DownloadString('https://raw.githubusercontent.com/appveyor/secure-file/master/install.ps1'))
+        appveyor-tools/secure-file -decrypt "$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH.enc" -secret "$Env:WINDOWS_CODESIGN_SECURE_FILE_SECRET" -salt "$Env:WINDOWS_CODESIGN_SECURE_FILE_SALT"
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PATH=$Env:WINDOWS_CODESIGN_CERTIFICATE_PATH"
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "WINDOWS_CODESIGN_CERTIFICATE_PASSWORD=$Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD"
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "CMAKE_ARGS_EXTRA=-DWINDOWS_CODESIGN=ON"
 
     - name: "Set up build environment"
       id: buildenv
@@ -166,13 +189,7 @@ jobs:
           ${{ matrix.os }}-${{ matrix.compiler_cache }}
 
     - name: "Create build directory"
-      run: mkdir cmake_build
-
-    - name: "[Windows] Set up MSVC Developer Command Prompt"
-      if: runner.os == 'Windows'
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        toolset: 14.16
+      run: mkdir build
 
     - name: "Configure"
       run: >-
@@ -181,7 +198,7 @@ jobs:
         -DCMAKE_BUILD_TYPE=Release
         "-DCMAKE_PREFIX_PATH=${{ env.CMAKE_PREFIX_PATH }}"
         -DDEBUG_ASSERTIONS_FATAL=ON
-        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ steps.apple_codesign.outputs.cmake_args }}
+        -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DBATTERY=ON
         -DBROADCAST=ON
         -DBULK=ON
@@ -191,7 +208,7 @@ jobs:
         -DQTKEYCHAIN=ON
         -DVINYLCONTROL=ON
         ..
-      working-directory: cmake_build
+      working-directory: build
       env:
         CC: ${{ matrix.cc }}
         CXX: ${{ matrix.cxx }}
@@ -206,7 +223,7 @@ jobs:
 
     - name: "Build"
       run: cmake --build .
-      working-directory: cmake_build
+      working-directory: build
       env:
         CC: ${{ matrix.cc }}
         CXX: ${{ matrix.cxx }}
@@ -221,7 +238,7 @@ jobs:
 
     - name: "Test"
       run: ctest --timeout 45 ${{ matrix.ctest_args }}
-      working-directory: cmake_build
+      working-directory: build
       env:
         # Render analyzer waveform tests to an offscreen buffer
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
@@ -231,29 +248,60 @@ jobs:
 
     - name: Benchmark
       run: cmake --build . --target mixxx-benchmark
-      working-directory: cmake_build
+      working-directory: build
       env:
         # Render analyzer waveform tests to an offscreen buffer
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
 
     - name: "Package"
       run: cpack -G ${{ matrix.cpack_generator }} -V
-      working-directory: cmake_build
+      working-directory: build
 
-    - name: "[macOS] Sign Package"
-      if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
-      run: codesign --verbose=4 --options runtime --sign "${APPLE_CODESIGN_IDENTITY}" --entitlements ../build/osx/entitlements.plist *.dmg
-      working-directory: cmake_build
-
-    - name: "[macOS] Upload build to downloads.mixxx.org"
-      # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-      if: runner.os == 'macOS' && env.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD != null
-      run: tools/deploy.sh
+    - name: "[Ubuntu] Import PPA GPG key"
+      if: startsWith(matrix.os, 'ubuntu') && env.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY != null
+      run: gpg --import <(echo "${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}")
       env:
-        FILE_TO_DEPLOY: ${{ matrix.artifacts_path }}
+        RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY: ${{ secrets.RRYAN_AT_MIXXX_DOT_ORG_GPG_PRIVATE_KEY }}
+
+    - name: "Package for PPA"
+      # No need to do the PPA build for both Ubuntu versions
+      if: matrix.os == 'ubuntu-20.04'
+      run: |
+        if [[ "${{ github.ref }}" == "refs/heads/2.3" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxxbetas"
+        else
+          # only build the source DEB, do not upload
+          CPACK_ARGS="-D DEB_SOURCEPKG=ON"
+        fi
+        cpack -G External $CPACK_ARGS
+      working-directory: build
+
+    - name: "[macOS] Sign, Notarize, and Staple Package"
+      if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
+      run: packaging/macos/sign_notarize_staple.sh build/*.dmg
+      env:
+        APPLE_ID_USERNAME: rryan@mixxx.org
+        APPLE_BUNDLE_ID: org.mixxx.mixxx
+        APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.MACOS_NOTARIZATION_APP_SPECIFIC_PASSWORD }}
+        ASC_PROVIDER: FLYL4D545V
+
+    - name: "[Windows] Sign Package"
+      if: runner.os == 'Windows' && env.WINDOWS_CODESIGN_CERTIFICATE_PATH != null && env.WINDOWS_CODESIGN_CERTIFICATE_PASSWORD != null
+      run: signtool sign /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
+      working-directory: build
+
+    - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
+      # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
+      if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_PASSWORD != null
+      run: bash tools/deploy.sh ${{ matrix.artifacts_path }}
+      env:
+        DESTDIR: public_html/downloads/builds
         OS: ${{ runner.os }}
-        DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
-        SSH_KEY: build/certificates/downloads-hostgator.mixxx.org.key
+        SSH_HOST: downloads-hostgator.mixxx.org
+        SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
+        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+        SSH_USER: mixxx
+        UPLOAD_ID: ${{ github.run_id }}
 
     - name: "Upload GitHub Actions artifacts"
       uses: actions/upload-artifact@v2

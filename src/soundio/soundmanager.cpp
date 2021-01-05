@@ -1,26 +1,10 @@
-/**
- * @file soundmanager.cpp
- * @author Albert Santoni <gamegod at users dot sf dot net>
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20070815
- */
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "soundio/soundmanager.h"
 
-#include <QtDebug>
-#include <cstring> // for memcpy and strcmp
+#include <portaudio.h>
 
 #include <QLibrary>
-#include <portaudio.h>
+#include <QtDebug>
+#include <cstring> // for memcpy and strcmp
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -28,13 +12,14 @@
 #include "engine/enginemaster.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "engine/sidechain/enginesidechain.h"
+#include "moc_soundmanager.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddevicenetwork.h"
 #include "soundio/sounddevicenotfound.h"
 #include "soundio/sounddeviceportaudio.h"
 #include "soundio/soundmanagerutil.h"
-#include "util/compatibility.h"
 #include "util/cmdlineargs.h"
+#include "util/compatibility.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/sleep.h"
@@ -59,12 +44,12 @@ const unsigned int kSleepSecondsAfterClosingDevice = 5;
 } // anonymous namespace
 
 SoundManager::SoundManager(UserSettingsPointer pConfig,
-                           EngineMaster *pMaster)
+        EngineMaster* pMaster)
         : m_pMaster(pMaster),
           m_pConfig(pConfig),
           m_paInitialized(false),
           m_config(this),
-          m_pErrorDevice(NULL),
+          m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
@@ -206,7 +191,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
 
     while (!m_inputBuffers.isEmpty()) {
         CSAMPLE* pBuffer = m_inputBuffers.takeLast();
-        if (pBuffer != NULL) {
+        if (pBuffer != nullptr) {
             SampleUtil::free(pBuffer);
         }
     }
@@ -425,14 +410,16 @@ SoundDeviceError SoundManager::setupDevices() {
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
             const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out);
-            if (pBuffer == NULL) {
+            if (pBuffer == nullptr) {
                 qDebug() << "AudioSource returned null for" << out.getString();
                 continue;
             }
 
             AudioOutputBuffer aob(out, pBuffer);
             err = pDevice->addOutput(aob);
-            if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
+            if (err != SOUNDDEVICE_ERROR_OK) {
+                goto closeAndError;
+            }
 
             if (!m_config.getForceNetworkClock()) {
                 if (out.getType() == AudioOutput::MASTER) {
@@ -480,7 +467,9 @@ SoundDeviceError SoundManager::setupDevices() {
             syncBuffers = 2;
         }
         err = pDevice->open(pNewMasterClockRef == pDevice, syncBuffers);
-        if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
+        if (err != SOUNDDEVICE_ERROR_OK) {
+            goto closeAndError;
+        }
         devicesNotFound.remove(pDevice->getDeviceId());
         if (mode.isOutput) {
             ++outputDevicesOpened;
@@ -674,7 +663,9 @@ void SoundManager::setJACKName() const {
             // need to make sure it will last forever so we intentionally leak
             // this string.
             char* jackNameCopy = strdup(Version::applicationName().toLocal8Bit().constData());
-            if (!func(jackNameCopy)) qDebug() << "JACK client name set";
+            if (!func(jackNameCopy)) {
+                qDebug() << "JACK client name set";
+            }
         } else {
             qWarning() << "failed to resolve JACK name method";
         }

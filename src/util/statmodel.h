@@ -1,5 +1,4 @@
-#ifndef STATMODEL_H
-#define STATMODEL_H
+#pragma once
 
 #include <QAbstractTableModel>
 #include <QVariant>
@@ -50,5 +49,3 @@ class StatModel final : public QAbstractTableModel {
     QList<Stat> m_stats;
     QHash<QString, int> m_statNameToRow;
 };
-
-#endif /* STATMODEL_H */

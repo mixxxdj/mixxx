@@ -1,5 +1,4 @@
-#ifndef AUTOPANEFFECT_H
-#define AUTOPANEFFECT_H
+#pragma once
 
 #include <QMap>
 
@@ -106,5 +105,3 @@ class AutoPanEffect : public EffectProcessorImpl<AutoPanGroupState> {
 
     DISALLOW_COPY_AND_ASSIGN(AutoPanEffect);
 };
-
-#endif /* AUTOPANEFFECT_H */

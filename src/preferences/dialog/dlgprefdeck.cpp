@@ -1,9 +1,11 @@
-#include <QList>
+#include "preferences/dialog/dlgprefdeck.h"
+
 #include <QDir>
-#include <QToolTip>
 #include <QDoubleSpinBox>
-#include <QWidget>
+#include <QList>
 #include <QLocale>
+#include <QToolTip>
+#include <QWidget>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
@@ -14,7 +16,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "mixxx.h"
-#include "preferences/dialog/dlgprefdeck.h"
+#include "moc_dlgprefdeck.cpp"
 #include "preferences/usersettings.h"
 #include "util/compatibility.h"
 #include "util/duration.h"
@@ -31,15 +33,11 @@ constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
 // bool kDefaultCloneDeckOnLoad is defined in header file to make it available
 // to playermanager.cpp
-}
+} // namespace
 
 DlgPrefDeck::DlgPrefDeck(QWidget* parent,
-        MixxxMainWindow* mixxx,
-        PlayerManager* pPlayerManager,
         UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
-          m_mixxx(mixxx),
-          m_pPlayerManager(pPlayerManager),
           m_pConfig(pConfig),
           m_pControlTrackTimeDisplay(std::make_unique<ControlObject>(
                   ConfigKey("[Controls]", "ShowDurationRemaining"))),
@@ -78,7 +76,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
         pControl->set(static_cast<int>(m_cueMode));
     }
     connect(ComboBoxCueMode,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefDeck::slotCueModeCombobox);
 
@@ -229,7 +227,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     ComboBoxRateRange->addItem(tr("50%"), 50);
     ComboBoxRateRange->addItem(tr("90%"), 90);
     connect(ComboBoxRateRange,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefDeck::slotRateRangeComboBox);
 

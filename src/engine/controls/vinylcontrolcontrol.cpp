@@ -1,5 +1,6 @@
 #include "engine/controls/vinylcontrolcontrol.h"
 
+#include "moc_vinylcontrolcontrol.cpp"
 #include "track/track.h"
 #include "util/math.h"
 #include "vinylcontrol/vinylcontrol.h"

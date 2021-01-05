@@ -1,9 +1,4 @@
-// analysisfeature.h
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-// Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
-
-#ifndef ANALYSISFEATURE_H
-#define ANALYSISFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QUrl>
@@ -79,6 +74,3 @@ class AnalysisFeature : public LibraryFeature {
     // The title is dynamic and reflects the current progress
     QString m_title;
 };
-
-
-#endif /* ANALYSISFEATURE_H */
