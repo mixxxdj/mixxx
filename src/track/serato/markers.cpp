@@ -639,9 +639,6 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
         VERIFY_OR_DEBUG_ASSERT(hotcueIndex >= kFirstHotCueIndex) {
             continue;
         }
-        VERIFY_OR_DEBUG_ASSERT(cueInfo.getColor()) {
-            continue;
-        }
         VERIFY_OR_DEBUG_ASSERT(cueInfo.getStartPositionMillis()) {
             continue;
         }
@@ -667,7 +664,7 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
         const CueInfo cueInfo = cueMap.value(i);
 
         SeratoMarkersEntryPointer pEntry;
-        if (cueInfo.getStartPositionMillis()) {
+        if (cueInfo.getStartPositionMillis() && cueInfo.getColor()) {
             pEntry = std::make_shared<SeratoMarkersEntry>(
                     true,
                     static_cast<int>(*cueInfo.getStartPositionMillis()),
@@ -699,7 +696,11 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     static_cast<int>(*cueInfo.getStartPositionMillis()),
                     true,
                     static_cast<int>(*cueInfo.getEndPositionMillis()),
-                    *cueInfo.getColor(),
+                    // TODO: In Serato, saved loops always have a fixed color.
+                    // We *could* export the actual color here if we also
+                    // import the blue-ish default color in the code above, but
+                    // it will not be used by Serato.
+                    SeratoTags::kFixedLoopColor,
                     static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
                     false);
         } else {

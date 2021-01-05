@@ -2,6 +2,7 @@
 
 #include <QtEndian>
 
+#include "track/serato/tags.h"
 #include "util/logger.h"
 
 namespace {
@@ -714,7 +715,7 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
                 *cueInfo.getHotCueIndex(),
                 *cueInfo.getStartPositionMillis(),
                 *cueInfo.getEndPositionMillis(),
-                *cueInfo.getColor(),
+                SeratoTags::kFixedLoopColor,
                 false,
                 cueInfo.getLabel());
         newEntries.append(pEntry);
