@@ -57,44 +57,48 @@ QMimeType readContentType(
     return contentType;
 }
 
-bool readJsonContent(
+/// Returns std::nullopt on success and the raw payload otherwise.
+/// The JSON content is assigned to the output parameter jsonContent.
+std::optional<std::pair<QMimeType, QByteArray>> readJsonContent(
         QNetworkReply* reply,
         QJsonDocument* jsonContent) {
     DEBUG_ASSERT(reply);
     DEBUG_ASSERT(jsonContent);
     DEBUG_ASSERT(JSON_MIME_TYPE.isValid());
+    QByteArray contentBytes = reply->readAll();
     const auto contentType = readContentType(reply);
     if (contentType != JSON_MIME_TYPE) {
         kLogger.warning()
                 << "Unexpected content type"
                 << contentType;
-        return false;
+        return std::make_pair(contentType, contentBytes);
     }
-    QByteArray jsonData = reply->readAll();
-    if (jsonData.isEmpty()) {
-        kLogger.warning()
-                << "Empty reply";
-        return false;
+    if (contentBytes.isEmpty()) {
+        VERIFY_OR_DEBUG_ASSERT(jsonContent->isEmpty()) {
+            *jsonContent = QJsonDocument{};
+        }
+        kLogger.info() << "Empty JSON network reply";
+        return std::nullopt;
     }
     QJsonParseError parseError;
-    const auto jsonDoc = QJsonDocument::fromJson(
-            jsonData,
+    const auto jsonDocument = QJsonDocument::fromJson(
+            contentBytes,
             &parseError);
     // QJsonDocument::fromJson() returns a non-null document
     // if parsing succeeds and otherwise null on error. The
     // parse error must only be evaluated if the returned
     // document is null!
-    if (jsonDoc.isNull() &&
+    if (jsonDocument.isNull() &&
             parseError.error != QJsonParseError::NoError) {
         kLogger.warning()
                 << "Failed to parse JSON data:"
                 << parseError.errorString()
                 << "at offset"
                 << parseError.offset;
-        return false;
+        return std::make_pair(contentType, contentBytes);
     }
-    *jsonContent = jsonDoc;
-    return true;
+    *jsonContent = jsonDocument;
+    return std::nullopt;
 }
 
 // TODO: Allow to customize headers and attributes?
@@ -270,23 +274,27 @@ QNetworkReply* JsonWebTask::doStartNetworkRequest(
 void JsonWebTask::doNetworkReplyFinished(
         QNetworkReply* finishedNetworkReply,
         HttpStatusCode statusCode) {
-    QJsonDocument content;
+    DEBUG_ASSERT(finishedNetworkReply);
+    QJsonDocument jsonContent;
+    auto webResponse = WebResponse{
+            finishedNetworkReply->url(),
+            statusCode};
     if (statusCode != kHttpStatusCodeInvalid &&
-            finishedNetworkReply->bytesAvailable() > 0 &&
-            !readJsonContent(finishedNetworkReply, &content)) {
-        onFinishedCustom(CustomWebResponse{
-                WebResponse{
-                        finishedNetworkReply->url(),
-                        statusCode},
-                readContentType(finishedNetworkReply),
-                finishedNetworkReply->readAll()});
-    } else {
-        onFinished(JsonWebResponse{
-                WebResponse{
-                        finishedNetworkReply->url(),
-                        statusCode},
-                std::move(content)});
+            finishedNetworkReply->bytesAvailable() > 0) {
+        auto contentTypeAndBytes = readJsonContent(finishedNetworkReply, &jsonContent);
+        if (contentTypeAndBytes) {
+            // Failed to read JSON content
+            DEBUG_ASSERT(jsonContent.isEmpty()); // still empty
+            onFinishedCustom(CustomWebResponse{
+                    std::move(webResponse),
+                    std::move(contentTypeAndBytes->first),
+                    std::move(contentTypeAndBytes->second)});
+            return;
+        }
     }
+    onFinished(JsonWebResponse{
+            std::move(webResponse),
+            std::move(jsonContent)});
 }
 
 void JsonWebTask::emitFailed(
