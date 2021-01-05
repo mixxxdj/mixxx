@@ -76,7 +76,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
         pControl->set(static_cast<int>(m_cueMode));
     }
     connect(ComboBoxCueMode,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefDeck::slotCueModeCombobox);
 
@@ -227,7 +227,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     ComboBoxRateRange->addItem(tr("50%"), 50);
     ComboBoxRateRange->addItem(tr("90%"), 90);
     connect(ComboBoxRateRange,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefDeck::slotRateRangeComboBox);
 

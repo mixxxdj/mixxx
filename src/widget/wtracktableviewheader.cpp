@@ -262,7 +262,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
 
     QString headerStateString = track_model->getModelSetting(getHeaderKey(*track_model));
 
-    // if there is no indepentent state, try
+    // if there is no indepentent state, try the common one
     m_actionUseIndependentState.blockSignals(true);
     if (headerStateString.isNull() || headerStateString.isEmpty()) {
         headerStateString = track_model->getModelSetting(kHeaderStateKey);
