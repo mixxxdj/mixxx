@@ -169,14 +169,14 @@ bool MacroControl::isRecording() const {
 }
 
 void MacroControl::play() {
-    DEBUG_ASSERT(m_pMacro);
+    DEBUG_ASSERT(m_pMacro && !m_pMacro->isEmpty() && !isRecording());
     m_iNextAction = 1;
     setStatus(Status::Playing);
     m_pMacro->setState(Macro::StateFlag::Enabled);
 }
 
 void MacroControl::stop() {
-    DEBUG_ASSERT(m_pMacro);
+    DEBUG_ASSERT(m_pMacro && !m_pMacro->isEmpty() && !isRecording());
     m_iNextAction = INT_MAX;
     setStatus(Status::Recorded);
     m_pMacro->setState(Macro::StateFlag::Enabled, false);
@@ -248,13 +248,14 @@ void MacroControl::slotRecord(double value) {
 }
 
 void MacroControl::slotPlay(double value) {
-    if (static_cast<bool>(value) == (getStatus() == Status::Playing)) {
-        return;
-    }
     if (value > 0) {
-        play();
+        if (getStatus() == Status::Recorded) {
+            play();
+        }
     } else {
-        stop();
+        if (getStatus() == Status::Playing) {
+            stop();
+        }
     }
 }
 
