@@ -13,7 +13,6 @@
 class ColumnCache : public QObject {
   Q_OBJECT
   public:
-
     enum Column {
         COLUMN_LIBRARYTABLE_INVALID = -1,
         COLUMN_LIBRARYTABLE_ID = 0,
@@ -27,7 +26,6 @@ class ColumnCache : public QObject {
         COLUMN_LIBRARYTABLE_GROUPING,
         COLUMN_LIBRARYTABLE_TRACKNUMBER,
         COLUMN_LIBRARYTABLE_FILETYPE,
-        COLUMN_LIBRARYTABLE_NATIVELOCATION,
         COLUMN_LIBRARYTABLE_COMMENT,
         COLUMN_LIBRARYTABLE_DURATION,
         COLUMN_LIBRARYTABLE_BITRATE,
@@ -55,14 +53,12 @@ class ColumnCache : public QObject {
         COLUMN_LIBRARYTABLE_COVERART_LOCATION,
         COLUMN_LIBRARYTABLE_COVERART_HASH,
 
+        COLUMN_TRACKLOCATIONSTABLE_LOCATION,
         COLUMN_TRACKLOCATIONSTABLE_FSDELETED,
 
         COLUMN_PLAYLISTTRACKSTABLE_TRACKID,
         COLUMN_PLAYLISTTRACKSTABLE_POSITION,
         COLUMN_PLAYLISTTRACKSTABLE_PLAYLISTID,
-        COLUMN_PLAYLISTTRACKSTABLE_LOCATION,
-        COLUMN_PLAYLISTTRACKSTABLE_ARTIST,
-        COLUMN_PLAYLISTTRACKSTABLE_TITLE,
         COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED,
 
         COLUMN_REKORDBOX_ANALYZE_PATH,
@@ -122,6 +118,15 @@ class ColumnCache : public QObject {
         m_columnNameByEnum.insert(column, name);
     }
 
+    KeyUtils::KeyNotation keyNotation() const {
+        return KeyUtils::keyNotationFromNumericValue(
+                m_pKeyNotationCP->get());
+    }
+
+  private slots:
+    void slotSetKeySortOrder(double);
+
+  private:
     QStringList m_columnsByIndex;
     QMap<int, QString> m_columnSortByIndex;
     QMap<QString, int> m_columnIndexByName;
@@ -129,14 +134,5 @@ class ColumnCache : public QObject {
     // A mapping from column enum to logical index.
     int m_columnIndexByEnum[NUM_COLUMNS];
 
-    KeyUtils::KeyNotation keyNotation() const {
-        return KeyUtils::keyNotationFromNumericValue(
-                m_pKeyNotationCP->get());
-    }
-
-  private:
     ControlProxy* m_pKeyNotationCP;
-
-  private slots:
-    void slotSetKeySortOrder(double);
 };

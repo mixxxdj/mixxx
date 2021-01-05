@@ -1696,10 +1696,10 @@ if(KEYFINDER)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
-    ExternalProject_Add(libKeyFinder
-      URL "https://github.com/mixxxdj/libKeyFinder/archive/v2.2.3.zip"
-      URL_HASH SHA256=56887e7b51834223d4264f4ea9acf16f0b6a0c706c218478afbaf89ad1f9c6ea
-      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libKeyFinder"
+    ExternalProject_Add(libkeyfinder
+      URL "https://github.com/mixxxdj/libkeyfinder/archive/v2.2.3.zip"
+      URL_HASH SHA256=ad43ca006e3bbed0810ff62e170d04522a64f8606c2166bfa5a9b9158b7ebc11
+      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libkeyfinder"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
         -DBUILD_STATIC_LIBS=ON
@@ -1723,7 +1723,7 @@ if(KEYFINDER)
     file(MAKE_DIRECTORY "${KeyFinder_INSTALL_DIR}/include")
 
     add_library(mixxx-keyfinder STATIC IMPORTED)
-    add_dependencies(mixxx-keyfinder libKeyFinder)
+    add_dependencies(mixxx-keyfinder libkeyfinder)
     set_target_properties(mixxx-keyfinder PROPERTIES IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}")
     target_link_libraries(mixxx-keyfinder INTERFACE FFTW::FFTW)
     target_include_directories(mixxx-keyfinder INTERFACE "${KeyFinder_INSTALL_DIR}/include")

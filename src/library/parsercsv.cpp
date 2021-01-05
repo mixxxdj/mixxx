@@ -181,7 +181,10 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
             }
             out << "\"";
             QString field = pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();
-            if (useRelativePath && i == pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_LOCATION)) {
+            if (useRelativePath &&
+                    i ==
+                            pPlaylistTableModel->fieldIndex(ColumnCache::
+                                            COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
                 field = base_dir.relativeFilePath(field);
             }
             out << field.replace('\"', "\"\"");  // escape "
@@ -236,12 +239,12 @@ bool ParserCsv::writeReadableTextFile(const QString &file_str, BaseSqlTableModel
             }
         }
 
-        i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_ARTIST);
+        i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
         if (i >= 0) {
             out << " ";
             out << pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();
         }
-        i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_TITLE);
+        i = pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
         if (i >= 0) {
             out << " - ";
             out << pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();;
