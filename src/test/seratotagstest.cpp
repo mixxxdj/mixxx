@@ -230,3 +230,38 @@ TEST_F(SeratoTagsTest, MarkersParseDumpRoundtrip) {
         }
     }
 }
+
+TEST_F(SeratoTagsTest, Markers2RoundTrip) {
+    const auto filetype = mixxx::taglib::FileType::MP3;
+    QDir dir(QStringLiteral("src/test/serato/data/mp3/markers2/"));
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << "*.octet-stream");
+    const QFileInfoList fileList = dir.entryInfoList();
+    for (const QFileInfo& fileInfo : fileList) {
+        mixxx::SeratoTags seratoTags;
+        EXPECT_TRUE(seratoTags.getCueInfos().isEmpty());
+
+        auto file = QFile(fileInfo.filePath());
+        const bool openOk = file.open(QIODevice::ReadOnly);
+        EXPECT_TRUE(openOk);
+        const QByteArray inputData = file.readAll();
+        const bool parseOk = seratoTags.parseMarkers2(inputData, filetype);
+        EXPECT_TRUE(parseOk);
+
+        const auto bpmLocked = seratoTags.isBpmLocked();
+        const auto trackColor = seratoTags.getTrackColor();
+        const auto cueInfos = seratoTags.getCueInfos();
+        seratoTags.setBpmLocked(bpmLocked);
+        seratoTags.setTrackColor(trackColor);
+        seratoTags.setCueInfos(cueInfos);
+
+        const QByteArray outputData = seratoTags.dumpMarkers2(filetype);
+        EXPECT_EQ(inputData, outputData);
+        if (inputData != outputData) {
+            qWarning() << "parsed" << cueInfos;
+            EXPECT_TRUE(dumpToFile(
+                    file.fileName() + QStringLiteral(".seratotagstest.actual"),
+                    outputData));
+        }
+    }
+}
