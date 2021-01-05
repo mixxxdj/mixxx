@@ -1424,7 +1424,10 @@ WPushButton#Reverse[pressed="true"],
 #MicTalk[value="1"], #AuxPlay[value="1"],
 #MicDucking[value="1"], #MicDucking[value="2"],
 #RecFeedback[displayValue="2"],
-QPushButton#pushButtonRecording:checked {
+QPushButton#pushButtonRecording:checked,
+#MacroActivate[value="2"],
+#MacroActivate[value="4"]
+{
   background-color: #db0000;
   }
   /* Red border for Play buttons when previewing from
@@ -1480,6 +1483,7 @@ QPushButton#pushButtonRepeatPlaylist:checked {
 #GuiToggleButton[displayValue="2"],
 #BroadcastButton[displayValue="1"],   /* connecting: yellow */
 #RecFeedback[displayValue="1"],   /* initialize recording */
+#MacroActivate[value="1"],
 #SkinSettingsToggle[displayValue="1"],
 QPushButton#pushButtonAutoDJ:checked,
 QPushButton#pushButtonAnalyze:checked {
@@ -1577,7 +1581,9 @@ WPushButton#FxExpandOverlay[displayValue="0"],
 WPushButton#SamplerExpand[displayValue="0"],
 #BeatgridControlsToggle,
 #SamplerControlsMini WPushButton,
-#RecDot {
+#RecDot,
+#MacroActivate
+{
   background-color: transparent;
 }
 
@@ -1593,10 +1599,12 @@ WPushButton#SamplerExpand[displayValue="0"],
   #PlayDeckMini[value="1"] {
     image: url(skin:/classic/buttons/btn__pause_deck_mini.svg) no-repeat center center;
   }
+#MacroActivate[value="3"],
 #PlaySampler[value="0"],
 #PlayPreview[displayValue="0"] {
   image: url(skin:/classic/buttons/btn__play_sampler.svg) no-repeat center center;
   }
+  #MacroActivate[value="4"],
   #PlaySampler[value="1"],
   #PlayPreview[displayValue="1"] {
     image: url(skin:/classic/buttons/btn__pause_sampler.svg) no-repeat center center;
@@ -1896,16 +1904,17 @@ WPushButton#SamplerExpand[displayValue="0"],
     image: url(skin:/classic/buttons/btn__mic_duck_manual.svg) no-repeat center center;
   }
 
+#MacroActivate[value="0"],
 #RecDot[highlight="0"] {
   image: url(skin:/classic/buttons/btn__rec_dot.svg) no-repeat center center;
   }
-  #RecDot[highlight="1"],
-  #RecDot[highlight="2"] {
+  #MacroActivate[value="1"], #MacroActivate[value="2"],
+  #RecDot[highlight="1"], #RecDot[highlight="2"] {
     image: url(skin:/classic/buttons/btn__rec_dot_active.svg) no-repeat center center;
   }
 
 #BroadcastButton[displayValue="0"] {
-  /* for some reason the alignment isn't rescpected, so the icons
+  /* for some reason the alignment isn't respected, so the icons
     have to be sized like available area (button size - margin) */
   image: url(skin:/classic/buttons/btn__broadcast_off.svg) no-repeat left top;
   }
