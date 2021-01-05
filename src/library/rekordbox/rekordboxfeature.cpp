@@ -858,29 +858,28 @@ void setHotCue(TrackPointer track,
         const QString& label,
         mixxx::RgbColor::optional_t color) {
     CuePointer pCue;
-    bool hotCueFound = false;
-
     const QList<CuePointer> cuePoints = track->getCuePoints();
     for (const CuePointer& trackCue : cuePoints) {
         if (trackCue->getHotCue() == id) {
             pCue = trackCue;
-            hotCueFound = true;
             break;
         }
     }
 
-    if (!hotCueFound) {
-        pCue = CuePointer(track->createAndAddCue());
+    mixxx::CueType type = mixxx::CueType::HotCue;
+    if (endPosition != Cue::kNoPosition) {
+        type = mixxx::CueType::Loop;
     }
 
-    pCue->setStartPosition(startPosition);
-    if (endPosition == Cue::kNoPosition) {
-        pCue->setType(mixxx::CueType::HotCue);
+    if (pCue) {
+        pCue->setStartAndEndPosition(startPosition, endPosition);
     } else {
-        pCue->setType(mixxx::CueType::Loop);
-        pCue->setEndPosition(endPosition);
+        pCue = track->createAndAddCue(
+                type,
+                id,
+                startPosition,
+                endPosition);
     }
-    pCue->setHotCue(id);
     pCue->setLabel(label);
     if (color) {
         pCue->setColor(*color);
