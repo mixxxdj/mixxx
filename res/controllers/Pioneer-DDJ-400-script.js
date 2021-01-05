@@ -446,17 +446,21 @@ PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, gr
 // BEAT SYNC
 //
 // Note that the controller sends different signals for a short press and a long
-// press of the same button (which means we have to reimplement any short press
-// logic on the long press function).
+// press of the same button.
 //
 
 PioneerDDJ400.syncPressed = function(channel, control, value, status, group) {
-    engine.setValue(group, "sync_enabled", value);
+    if (engine.getValue(group, "sync_enabled")) {
+        engine.setValue(group, "sync_enabled", 0);
+    } else {
+        engine.setValue(group, "beatsync", value);
+    }
 };
 
 PioneerDDJ400.syncLongPressed = function(channel, control, value, status, group) {
-    engine.setValue(group, "sync_enabled", value); // reimplements short press
-    engine.setValue(group, "sync_enabled", 0x01);  // ensures sync lock
+    if (value) {
+        engine.setValue(group, "sync_enabled", 1);
+    }
 };
 
 PioneerDDJ400.cycleTempoRange = function(_channel, _control, value, _status, group) {
