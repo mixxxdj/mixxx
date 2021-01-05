@@ -588,7 +588,8 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         std::nullopt,
                         cueIndex,
                         QString(),
-                        pEntry->getColor());
+                        pEntry->getColor(),
+                        pEntry->isLocked() ? CueFlag::Locked : CueFlag::None);
                 cueInfos.append(cueInfo);
             }
             cueIndex++;
@@ -609,7 +610,8 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         pEntry->getEndPosition(),
                         loopIndex,
                         QString(),
-                        std::nullopt);
+                        std::nullopt,
+                        pEntry->isLocked() ? CueFlag::Locked : CueFlag::None);
                 cueInfos.append(loopInfo);
                 // TODO: Add support for the "locked" attribute
             }
@@ -672,7 +674,7 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     0,
                     *cueInfo.getColor(),
                     static_cast<int>(SeratoMarkersEntry::TypeId::Cue),
-                    false);
+                    cueInfo.flags().testFlag(CueFlag::Locked));
         } else {
             pEntry = std::make_shared<SeratoMarkersEntry>(
                     false,
@@ -702,7 +704,7 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     // it will not be used by Serato.
                     SeratoTags::kFixedLoopColor,
                     static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
-                    false);
+                    cueInfo.flags().testFlag(CueFlag::Locked));
         } else {
             pEntry = std::make_shared<SeratoMarkersEntry>(
                     false,
