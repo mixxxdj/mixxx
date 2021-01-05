@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QMimeType>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QPointer>
@@ -13,76 +14,90 @@ namespace mixxx {
 
 namespace network {
 
-struct WebResponse {
+class WebResponse final {
   public:
     static void registerMetaType();
 
     WebResponse()
-            : statusCode(kHttpStatusCodeInvalid) {
+            : m_statusCode(kHttpStatusCodeInvalid) {
     }
     explicit WebResponse(
             QUrl replyUrl,
             HttpStatusCode statusCode = kHttpStatusCodeInvalid)
-            : replyUrl(std::move(replyUrl)),
-              statusCode(statusCode) {
+            : m_replyUrl(std::move(replyUrl)),
+              m_statusCode(statusCode) {
     }
     WebResponse(const WebResponse&) = default;
     WebResponse(WebResponse&&) = default;
-    virtual ~WebResponse() = default;
 
     WebResponse& operator=(const WebResponse&) = default;
     WebResponse& operator=(WebResponse&&) = default;
 
-    bool isStatusCodeValid() const {
-        return HttpStatusCode_isValid(statusCode);
-    }
     bool isStatusCodeSuccess() const {
-        return HttpStatusCode_isSuccess(statusCode);
-    }
-    bool isStatusCodeRedirection() const {
-        return HttpStatusCode_isRedirection(statusCode);
-    }
-    bool isStatusCodeClientError() const {
-        return HttpStatusCode_isClientError(statusCode);
-    }
-    bool isStatusCodeServerError() const {
-        return HttpStatusCode_isServerError(statusCode);
-    }
-    bool isStatusCodeCustomError() const {
-        return HttpStatusCode_isCustomError(statusCode);
-    }
-    bool isStatusCodeError() const {
-        return HttpStatusCode_isError(statusCode);
+        return HttpStatusCode_isSuccess(m_statusCode);
     }
 
-    QUrl replyUrl;
-    HttpStatusCode statusCode;
+    HttpStatusCode statusCode() const {
+        return m_statusCode;
+    }
+
+    const QUrl& replyUrl() const {
+        return m_replyUrl;
+    }
+
+    friend QDebug operator<<(QDebug dbg, const WebResponse& arg);
+
+  private:
+    QUrl m_replyUrl;
+    HttpStatusCode m_statusCode;
 };
 
-QDebug operator<<(QDebug dbg, const WebResponse& arg);
-
-struct CustomWebResponse : public WebResponse {
+class CustomWebResponse final {
   public:
     static void registerMetaType();
 
     CustomWebResponse() = default;
     CustomWebResponse(
-            WebResponse response,
-            QByteArray content)
-            : WebResponse(std::move(response)),
-              content(std::move(content)) {
+            WebResponse&& response,
+            QMimeType&& contentType,
+            QByteArray&& contentBytes)
+            : m_response(std::move(response)),
+              m_contentType(std::move(contentType)),
+              m_contentBytes(std::move(contentBytes)) {
     }
     CustomWebResponse(const CustomWebResponse&) = default;
     CustomWebResponse(CustomWebResponse&&) = default;
-    ~CustomWebResponse() override = default;
 
     CustomWebResponse& operator=(const CustomWebResponse&) = default;
     CustomWebResponse& operator=(CustomWebResponse&&) = default;
 
-    QByteArray content;
-};
+    bool isStatusCodeSuccess() const {
+        return m_response.isStatusCodeSuccess();
+    }
 
-QDebug operator<<(QDebug dbg, const CustomWebResponse& arg);
+    HttpStatusCode statusCode() const {
+        return m_response.statusCode();
+    }
+
+    const QUrl& replyUrl() const {
+        return m_response.replyUrl();
+    }
+
+    const QMimeType& contentType() const {
+        return m_contentType;
+    }
+
+    const QByteArray& contentBytes() const {
+        return m_contentBytes;
+    }
+
+    friend QDebug operator<<(QDebug dbg, const CustomWebResponse& arg);
+
+  private:
+    WebResponse m_response;
+    QMimeType m_contentType;
+    QByteArray m_contentBytes;
+};
 
 /// A transient task for performing a single HTTP network request
 /// asynchronously.

@@ -25,28 +25,45 @@ struct JsonWebRequest final {
     QJsonDocument content;
 };
 
-struct JsonWebResponse : public WebResponse {
+class JsonWebResponse final {
   public:
     static void registerMetaType();
 
     JsonWebResponse() = default;
     JsonWebResponse(
-            WebResponse response,
-            QJsonDocument content)
-            : WebResponse(std::move(response)),
-              content(std::move(content)) {
+            WebResponse&& response,
+            QJsonDocument&& content)
+            : m_response(std::move(response)),
+              m_content(std::move(content)) {
     }
     JsonWebResponse(const JsonWebResponse&) = default;
     JsonWebResponse(JsonWebResponse&&) = default;
-    ~JsonWebResponse() override = default;
 
     JsonWebResponse& operator=(const JsonWebResponse&) = default;
     JsonWebResponse& operator=(JsonWebResponse&&) = default;
 
-    QJsonDocument content;
-};
+    bool isStatusCodeSuccess() const {
+        return m_response.isStatusCodeSuccess();
+    }
 
-QDebug operator<<(QDebug dbg, const JsonWebResponse& arg);
+    HttpStatusCode statusCode() const {
+        return m_response.statusCode();
+    }
+
+    const QUrl& replyUrl() const {
+        return m_response.replyUrl();
+    }
+
+    const QJsonDocument& content() const {
+        return m_content;
+    }
+
+    friend QDebug operator<<(QDebug dbg, const JsonWebResponse& arg);
+
+  private:
+    WebResponse m_response;
+    QJsonDocument m_content;
+};
 
 class JsonWebTask : public WebTask {
     Q_OBJECT

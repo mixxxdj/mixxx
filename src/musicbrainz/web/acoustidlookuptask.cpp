@@ -117,26 +117,26 @@ void AcoustIdLookupTask::onFinished(
     if (!response.isStatusCodeSuccess()) {
         kLogger.warning()
                 << "Request failed with HTTP status code"
-                << response.statusCode;
+                << response.statusCode();
         emitFailed(std::move(response));
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(response.statusCode == network::kHttpStatusCodeOk) {
+    VERIFY_OR_DEBUG_ASSERT(response.statusCode() == network::kHttpStatusCodeOk) {
         kLogger.warning()
                 << "Unexpected HTTP status code"
-                << response.statusCode;
+                << response.statusCode();
         emitFailed(std::move(response));
         return;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(response.content.isObject()) {
+    VERIFY_OR_DEBUG_ASSERT(response.content().isObject()) {
         kLogger.warning()
                 << "Invalid JSON content"
-                << response.content;
+                << response.content();
         emitFailed(std::move(response));
         return;
     }
-    const auto jsonObject = response.content.object();
+    const auto jsonObject = response.content().object();
 
     const auto statusText = jsonObject.value(QStringLiteral("status")).toString();
     if (statusText != QStringLiteral("ok")) {

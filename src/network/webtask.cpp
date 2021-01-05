@@ -48,8 +48,8 @@ int readStatusCode(
 QDebug operator<<(QDebug dbg, const WebResponse& arg) {
     return dbg
             << "WebResponse{"
-            << arg.replyUrl
-            << arg.statusCode
+            << arg.m_replyUrl
+            << arg.m_statusCode
             << '}';
 }
 
@@ -60,8 +60,9 @@ QDebug operator<<(QDebug dbg, const WebResponse& arg) {
 QDebug operator<<(QDebug dbg, const CustomWebResponse& arg) {
     return dbg
             << "CustomWebResponse{"
-            << static_cast<const WebResponse&>(arg)
-            << arg.content
+            << arg.m_response
+            << arg.m_contentType
+            << arg.m_contentBytes
             << '}';
 }
 
@@ -221,7 +222,7 @@ void WebTask::slotNetworkReplyFinished() {
     VERIFY_OR_DEBUG_ASSERT(pFinishedNetworkReply) {
         return;
     }
-    const auto deleteFinishedNetworkReply = ScopedDeleteLater(pFinishedNetworkReply);
+    const auto finishedNetworkReplyDeleter = ScopedDeleteLater(pFinishedNetworkReply);
 
     if (kLogger.debugEnabled()) {
         if (pFinishedNetworkReply->url() == pFinishedNetworkReply->request().url()) {

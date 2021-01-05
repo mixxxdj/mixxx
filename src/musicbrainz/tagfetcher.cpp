@@ -153,9 +153,9 @@ void TagFetcher::slotAcoustIdTaskFailed(
     cancel();
 
     emit networkError(
-            response.statusCode,
+            response.statusCode(),
             "AcoustID",
-            response.content.toJson(),
+            response.content().toJson(),
             -1);
 }
 
@@ -236,7 +236,7 @@ void TagFetcher::slotMusicBrainzTaskFailed(
     cancel();
 
     emit networkError(
-            response.statusCode,
+            response.statusCode(),
             "MusicBrainz",
             errorMessage,
             errorCode);

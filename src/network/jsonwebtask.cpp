@@ -115,10 +115,10 @@ QNetworkRequest newRequest(
 
 QDebug operator<<(QDebug dbg, const JsonWebResponse& arg) {
     return dbg
-        << "CustomWebResponse{"
-        << static_cast<const WebResponse&>(arg)
-        << arg.content
-        << '}';
+            << "CustomWebResponse{"
+            << arg.m_response
+            << arg.m_content
+            << '}';
 }
 
 JsonWebTask::JsonWebTask(
@@ -134,24 +134,20 @@ JsonWebTask::JsonWebTask(
 }
 
 void JsonWebTask::onFinished(
-        JsonWebResponse&& response) {
+        JsonWebResponse&& jsonResponse) {
     kLogger.info()
             << this
-            << "Response received"
-            << response.replyUrl
-            << response.statusCode
-            << response.content;
+            << "Received JSON response"
+            << jsonResponse;
     deleteLater();
 }
 
 void JsonWebTask::onFinishedCustom(
-        CustomWebResponse&& response) {
+        CustomWebResponse&& customResponse) {
     kLogger.info()
             << this
-            << "Custom response received"
-            << response.replyUrl
-            << response.statusCode
-            << response.content;
+            << "Received custom response"
+            << customResponse;
     deleteLater();
 }
 
@@ -282,6 +278,7 @@ void JsonWebTask::doNetworkReplyFinished(
                 WebResponse{
                         finishedNetworkReply->url(),
                         statusCode},
+                readContentType(finishedNetworkReply),
                 finishedNetworkReply->readAll()});
     } else {
         onFinished(JsonWebResponse{
