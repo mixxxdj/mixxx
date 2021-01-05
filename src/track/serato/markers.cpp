@@ -148,6 +148,13 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     stream >> colorSerato32 >> type >> isLocked;
 
+    if (isLocked && type != static_cast<quint8>(TypeId::Loop)) {
+        kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
+                          << "isLocked field is not false for non-loop type"
+                          << static_cast<quint8>(TypeId::Loop);
+        return nullptr;
+    }
+
     const RgbColor color = RgbColor(serato32toUint24(colorSerato32));
 
     // Parse Start Position
@@ -246,6 +253,14 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
     }
 
     stream >> colorRed >> colorGreen >> colorBlue >> type >> isLocked;
+
+    if (isLocked && type != static_cast<quint8>(TypeId::Loop)) {
+        kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
+                          << "isLocked field is not false for non-loop type"
+                          << static_cast<quint8>(TypeId::Loop);
+        return nullptr;
+    }
+
     const RgbColor color = RgbColor(qRgb(colorRed, colorGreen, colorBlue));
 
     // Make sure that the unknown (and probably unused) bytes have the expected value
@@ -589,7 +604,7 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         cueIndex,
                         QString(),
                         pEntry->getColor(),
-                        pEntry->isLocked() ? CueFlag::Locked : CueFlag::None);
+                        CueFlag::None);
                 cueInfos.append(cueInfo);
             }
             cueIndex++;
@@ -674,7 +689,7 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     0,
                     *cueInfo.getColor(),
                     static_cast<int>(SeratoMarkersEntry::TypeId::Cue),
-                    cueInfo.flags().testFlag(CueFlag::Locked));
+                    false);
         } else {
             pEntry = std::make_shared<SeratoMarkersEntry>(
                     false,
