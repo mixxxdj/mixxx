@@ -211,8 +211,10 @@ void WebTask::timerEvent(QTimerEvent* event) {
     kLogger.info()
             << this
             << "Aborting after timed out";
-    DEBUG_ASSERT(pPendingNetworkReply->isRunning());
-    pPendingNetworkReply->abort();
+    // Triggering the regular abort workflow guarantees that
+    // the internal state is switch into the intermediate state
+    // State::Aborting when the request is still running!
+    slotAbort();
 }
 
 void WebTask::slotNetworkReplyFinished() {
