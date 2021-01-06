@@ -217,5 +217,8 @@ void CmdlineArgs::printUsage() {
 -h, --help              Display this help message and exit",
             stdout);
 
-    fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
+    fputs("\n\n(For more information, see "
+          "https://manual.mixxx.org/2.3/chapters/"
+          "appendix.html#command-line-options)\n",
+            stdout);
 }
