@@ -13,10 +13,12 @@ TEST_F(MacroPlaybackTest, Playback) {
 
     loadTrack(m_pMixerDeck1, pTrack);
     EngineBuffer* pEngineBuffer = m_pMixerDeck1->getEngineDeck()->getEngineBuffer();
-    EXPECT_EQ(pEngineBuffer->getExactPlayPos() / mixxx::kEngineChannelCount, action.sourceFrame);
+    EXPECT_EQ(pEngineBuffer->getExactPlayPos() / mixxx::kEngineChannelCount,
+            action.getSourcePosition());
 
     ProcessBuffer();
     // We have to do a second call: First one only queues the seek
     ProcessBuffer();
-    EXPECT_EQ(pEngineBuffer->getExactPlayPos() / mixxx::kEngineChannelCount, action.targetFrame);
+    EXPECT_EQ(pEngineBuffer->getExactPlayPos() / mixxx::kEngineChannelCount,
+            action.getTargetPosition());
 }

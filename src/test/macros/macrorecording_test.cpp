@@ -62,7 +62,7 @@ TEST_F(MacroRecordingTest, RecordSeekAndPlay) {
 
     MacroAction action2(1'000, 9'000);
     getMacro()->addAction(action2);
-    MacroAction action3(action2.targetFrame + 100, 14'000);
+    MacroAction action3(action2.getTargetPosition() + 100, 14'000);
     getMacro()->addAction(action3);
     EXPECT_EQ(getMacro()->size(), 4);
 

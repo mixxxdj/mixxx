@@ -32,7 +32,7 @@ TEST_F(MacroDAOTest, SaveAndLoadMacro) {
     EXPECT_FALSE(macro->isEnabled());
     EXPECT_TRUE(macro->isLooped());
     EXPECT_EQ(macro->size(), 1);
-    EXPECT_EQ(macro->getActions().first().targetFrame, action.targetFrame);
+    EXPECT_EQ(macro->getActions().first().getTargetPosition(), action.getTargetPosition());
     EXPECT_EQ(macro->getLabel(), "Test");
 
     // Change Macro slot

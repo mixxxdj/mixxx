@@ -5,46 +5,12 @@
 
 #include "engine/engine.h"
 #include "proto/macro.pb.h"
+#include "track/macroaction.h"
 #include "util/db/dbid.h"
 namespace proto = mixxx::track::io;
 
 const QLoggingCategory macroLoggingCategory("macros");
 constexpr int kMacrosPerChannel = 16;
-
-/// A MacroAction is the building block of a Macro.
-/// It contains a position as well as the action to be taken at that position.
-///
-/// Note that currently only jumps to a target position are available, but that
-/// is subject to change.
-struct MacroAction {
-    enum class Type : uint32_t {
-        Jump = 0
-    };
-
-    // use FramePos once https://github.com/mixxxdj/mixxx/pull/2961 is merged
-    const double sourceFrame;
-    const double targetFrame;
-    const Type type;
-
-    MacroAction(double sourceFramePos, double targetFramePos)
-            : sourceFrame(sourceFramePos), targetFrame(targetFramePos), type(Type::Jump){};
-
-    double getSourcePositionSample() const {
-        return sourceFrame * mixxx::kEngineChannelCount;
-    }
-    double getTargetPositionSample() const {
-        return targetFrame * mixxx::kEngineChannelCount;
-    }
-
-    bool operator==(const MacroAction& other) const {
-        return sourceFrame == other.sourceFrame && targetFrame == other.targetFrame;
-    }
-    inline bool operator!=(const MacroAction& other) const {
-        return !operator==(other);
-    }
-
-    proto::Macro_Action* serialize() const;
-};
 
 /// A Macro stores a list of MacroActions as well as its current state and label.
 class Macro {
@@ -108,5 +74,5 @@ bool operator==(const Macro& m1, const Macro& m2);
 inline bool operator!=(const Macro& m1, const Macro& m2) {
     return !(m1 == m2);
 }
-QDebug operator<<(QDebug debug, const MacroAction& action);
+
 QDebug operator<<(QDebug debug, const Macro& macro);

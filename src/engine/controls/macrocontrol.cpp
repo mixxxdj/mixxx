@@ -91,7 +91,7 @@ void MacroControl::process(const double dRate, const double dCurrentSample, cons
     }
     double framePos = dCurrentSample / mixxx::kEngineChannelCount;
     const MacroAction& nextAction = m_pMacro->getActions().at(m_iNextAction);
-    double nextActionPos = nextAction.sourceFrame;
+    double nextActionPos = nextAction.getSourcePosition();
     int bufFrames = iBufferSize / 2;
     // The process method is called roughly every iBufferSize/2 samples, the
     // tolerance range is double that to be safe. It is ahead of the position

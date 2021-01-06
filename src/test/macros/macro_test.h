@@ -18,9 +18,9 @@ struct TestMacro {
     /// including the extra first loop action.
     void checkMacroAction(MacroPointer macro) {
         ASSERT_EQ(macro->size(), 2);
-        EXPECT_EQ(macro->getActions().last().sourceFrame, action.sourceFrame);
-        EXPECT_EQ(macro->getActions().last().targetFrame, action.targetFrame);
+        EXPECT_EQ(macro->getActions().last().getSourcePosition(), action.getSourcePosition());
+        EXPECT_EQ(macro->getActions().last().getTargetPosition(), action.getTargetPosition());
         // Loopback action
-        EXPECT_EQ(macro->getActions().first().sourceFrame, action.targetFrame);
+        EXPECT_EQ(macro->getActions().first().getSourcePosition(), action.getTargetPosition());
     }
 };

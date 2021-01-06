@@ -145,7 +145,7 @@ TEST_F(MacroControlTest, LoadTrackAndPlayAndClear) {
 
     slotActivate();
     EXPECT_EQ(getStatus(), MacroControl::Status::Playing);
-    EXPECT_CALL(*this, seekExact(jumpAction.targetFrame));
+    EXPECT_CALL(*this, seekExact(jumpAction.getTargetPosition()));
     process(0, jumpAction.getSourcePositionSample(), 2);
     EXPECT_EQ(getStatus(), MacroControl::Status::Recorded);
 

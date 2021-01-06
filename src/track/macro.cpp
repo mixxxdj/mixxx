@@ -4,22 +4,6 @@
 
 #include "util/assert.h"
 
-proto::Macro_Action* MacroAction::serialize() const {
-    auto serialized = new proto::Macro_Action();
-    serialized->set_sourceframe(static_cast<uint64_t>(sourceFrame));
-    serialized->set_targetframe(static_cast<uint64_t>(targetFrame));
-    serialized->set_type(static_cast<uint32_t>(type));
-    return serialized;
-}
-
-Macro::Macro(const QList<MacroAction>& actions, const QString& label, State state, int dbId)
-        : m_bDirty(false),
-          m_iId(dbId),
-          m_actions(actions),
-          m_label(label),
-          m_state(state) {
-}
-
 // static
 QList<MacroAction> Macro::deserialize(const QByteArray& serialized) {
     proto::Macro macroProto = proto::Macro();
@@ -41,6 +25,14 @@ QByteArray Macro::serialize(const QList<MacroAction>& actions) {
     }
     auto string = macroProto.SerializeAsString();
     return QByteArray(string.data(), string.length());
+}
+
+Macro::Macro(const QList<MacroAction>& actions, const QString& label, State state, int dbId)
+        : m_bDirty(false),
+          m_iId(dbId),
+          m_actions(actions),
+          m_label(label),
+          m_state(state) {
 }
 
 bool Macro::isDirty() const {
@@ -108,7 +100,7 @@ void Macro::setEnd(double framePos) {
         return;
     }
     // can't use replace because MacroAction is immutable
-    m_actions.insert(0, MacroAction(framePos, m_actions.first().targetFrame));
+    m_actions.insert(0, MacroAction(framePos, m_actions.first().getTargetPosition()));
     m_actions.removeAt(1);
 }
 
@@ -132,10 +124,6 @@ bool operator==(const Macro& m1, const Macro& m2) {
             m1.getActions() == m2.getActions();
 }
 
-QDebug operator<<(QDebug debug, const MacroAction& action) {
-    debug << "Jump from" << action.sourceFrame << "to" << action.targetFrame;
-    return debug;
-}
 QDebug operator<<(QDebug debug, const Macro& macro) {
     debug << "Macro '" << macro.getLabel();
     debug << macro.getActions();
