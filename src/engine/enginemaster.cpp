@@ -23,6 +23,7 @@
 #include "mixer/playermanager.h"
 #include "moc_enginemaster.cpp"
 #include "preferences/usersettings.h"
+#include "util/cpupinning.h"
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/timer.h"
@@ -381,11 +382,25 @@ void EngineMaster::processChannels(int iBufferSize) {
     }
 }
 
+void EngineMaster::finishStartup() {
+    QThread::currentThread()->setObjectName("Engine");
+#ifdef __LINUX__
+    const auto cpuSet = CmdlineArgs::Instance().getEngineCpuSet();
+    if (!cpuSet.isNull() && !cpuSet.isEmpty()) {
+        mixxx::CpuPinning::moveThreadToCpuset(cpuSet);
+    }
+#endif
+    auto cpuId = CmdlineArgs::Instance().getEngineCpuId();
+    if (cpuId != -1) {
+        mixxx::CpuPinning::pinThreadToCpu(cpuId);
+    }
+}
+
 void EngineMaster::process(const int iBufferSize) {
-    static bool haveSetName = false;
-    if (!haveSetName) {
-        QThread::currentThread()->setObjectName("Engine");
-        haveSetName = true;
+    static bool fullyInitialized = false;
+    if (!fullyInitialized) {
+        finishStartup();
+        fullyInitialized = true;
     }
     //Trace t("EngineMaster::process");
 
