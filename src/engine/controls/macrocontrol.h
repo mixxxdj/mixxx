@@ -36,8 +36,10 @@ class MacroControl : public EngineControl {
     void slotPlay(double value);
     void slotEnable(double value);
     void slotLoop(double value);
-    void slotActivate(double value = 1);
+
     void slotGotoPlay(double value = 1);
+    void slotActivate(double value = 1);
+    void slotToggle(double value = 1);
     void slotClear(double value = 1);
 
     void slotJumpQueued(double samplePos);
@@ -74,5 +76,6 @@ class MacroControl : public EngineControl {
     ControlPushButton m_COLoop;
 
     ControlPushButton m_activate;
+    ControlPushButton m_toggle;
     ControlPushButton m_clear;
 };

@@ -27,6 +27,7 @@ MacroControl::MacroControl(const QString& group, UserSettingsPointer pConfig, in
           m_COEnable(getConfigKey("enable")),
           m_COLoop(getConfigKey("loop")),
           m_activate(getConfigKey("activate")),
+          m_toggle(getConfigKey("toggle")),
           m_clear(getConfigKey("clear")) {
     m_COStatus.setReadOnly();
     setStatus(Status::NoTrack);
@@ -57,16 +58,22 @@ MacroControl::MacroControl(const QString& group, UserSettingsPointer pConfig, in
             &ControlObject::valueChanged,
             this,
             &MacroControl::slotLoop);
-    m_clear.setButtonMode(ControlPushButton::TRIGGER);
-    connect(&m_clear,
-            &ControlObject::valueChanged,
-            this,
-            &MacroControl::slotClear);
+
     m_activate.setButtonMode(ControlPushButton::TRIGGER);
     connect(&m_activate,
             &ControlObject::valueChanged,
             this,
             &MacroControl::slotActivate);
+    m_toggle.setButtonMode(ControlPushButton::TRIGGER);
+    connect(&m_toggle,
+            &ControlObject::valueChanged,
+            this,
+            &MacroControl::slotToggle);
+    m_clear.setButtonMode(ControlPushButton::TRIGGER);
+    connect(&m_clear,
+            &ControlObject::valueChanged,
+            this,
+            &MacroControl::slotClear);
 }
 
 void MacroControl::process(const double dRate, const double dCurrentSample, const int iBufferSize) {
@@ -293,6 +300,22 @@ void MacroControl::slotActivate(double value) {
         break;
     case Status::Playing:
         slotGotoPlay();
+        break;
+    default:
+        slotRecord(!isRecording());
+    }
+}
+
+void MacroControl::slotToggle(double value) {
+    if (value == 0) {
+        return;
+    }
+    switch (getStatus()) {
+    case Status::Recorded:
+        play();
+        break;
+    case Status::Playing:
+        stop();
         break;
     default:
         slotRecord(!isRecording());

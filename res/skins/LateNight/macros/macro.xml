@@ -17,7 +17,7 @@
           <ButtonState>LeftButton</ButtonState>
         </Connection>
         <Connection>
-          <ConfigKey><Variable name="MacroPrefix"/>play</ConfigKey>
+          <ConfigKey><Variable name="MacroPrefix"/>toggle</ConfigKey>
           <ConnectValueToWidget>false</ConnectValueToWidget>
           <ButtonState>RightButton</ButtonState>
         </Connection>
