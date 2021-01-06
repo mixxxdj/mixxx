@@ -56,19 +56,6 @@
                     <Normal/>
                 </options>
             </control>
-            <!--TODO reactivate for 2.3.0-->
-            <!--control>
-                In Rekordbox LOAD+Shift (DECK1) function is related tracks, since we have no equivalent function in MIXXX
-                and doubleclick would map to instant double we are mapping this to CloneFromDeck
-                <description>LOAD +SHIFT (DECK1) - press - Clone Track from playing Deck</description>
-                <group>[Channel1]</group>
-                <key>CloneFromDeck</key> This is new in 2.3.0
-                <status>0x96</status>
-                <midino>0x68</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control-->
 
             <control>
                 <description>LOAD (DECK2) - press - Load a Track into Deck 2</description>
@@ -80,19 +67,6 @@
                     <Normal/>
                 </options>
             </control>
-            <!--TODO reactivate for 2.3.0-->
-            <!--control>
-                In Rekordbox LOAD+Shift (DECK2) function is browse view, since we have no equivalent function(?) in MIXXX
-                and doubleclick would map to instant double we are mapping this to CloneFromDeck
-                <description>LOAD +SHIFT (DECK2) - press - Clone Track from playing Deck</description>
-                <group>[Channel2]</group>
-                <key>CloneFromDeck</key> <This is new in 2.3.0>
-                <status>0x96</status>
-                <midino>0x7A</midino>
-                <options>
-                    <Normal/>
-                </options>
-            </control-->
             <!-- BROWSER Section END -->
 
             <!--
@@ -2142,50 +2116,6 @@
             <!-- PAD Section END -->
         </controls>
         <outputs>
-            <!--
-                OK:
-                Play/Pause Ch1 900B Shift 9047 Ch2 910B Shift 9147
-                Cue Ch1 900C Shift 9048 Ch2 910C Shift 9148
-                CH CUE Ch1 9054 Shift 9068 Ch2 9154 Shift 9168
-                VuLevel Ch1 B002 Ch2 B102
-                BEAT SYNC Ch1 9058 Shift 9060 Ch2 9158 Shift 9160
-
-
-                TEST:
-                LOOP IN Ch1 9010 Shift 904C Ch2 9110 Shift 914C
-                LOOP OUT 9011 Shift 904E Ch2 9111 Shift 914E
-                RELOOP Ch1 904D Shift 9050 Ch2 914D Shift 9150
-                BEAT FX 9447 Shift 9443
-                Hotcue PAD 1-8 ch1 970N ch2 990N (N = PADNUM -1)
-                Beatloop PAD 1-8 ch1 976N ch2 996N
-                Beatjump PAD 1-8 ch1 972N ch2 992N
-                Sampler PAD 1-8 Ch1 973N Shift 983N Ch2 993N Shift 9A3N
-                Keyboard PAD 1-8 Ch1 974N Shift 984N Ch2 994N Shift 9A4N
-                Pad FX1 Pad 1-8 Ch1 971N Ch2 991N
-                Pad FX2 Pad 1-8 Ch1 975N Ch2 995N
-                KeyShift Pad 1-8 Ch1 977N Shift 987N Ch2 997N Shift 9A7N
-
-                OPEN:
-                **HOT CUE Ch1 901B Shift 9069 Ch2 911B Shift 9169
-                **BEATLOOP Ch1 906D Shift 901E Ch2 916D Shift 911E
-                **BEATJUMP Ch1 9020 Shift 906B Ch2 9120 Shift 916B
-                **SAMPLER Ch1 9022 Shift 906F Ch2 9122 Shift 916F
-                **Master Cue 9663 Shift 9678
-
-
-                ???
-                LOADED Ch1 9F007F ch2 9F017F
-                LEVEL METER SETTING 9F4B
-                VINYL MODE ON/OFF 9F17
-                FADER START SETTING 9F42
-                CROSSFADER REV. SETTING 9F43
-                CUT LAG SETTING BF41
-                BACK SPIN LENGTH BF45
-
-                * = not implemented (yet?)
-                ** = builtin
-            -->
-
             <!-- PLAY -->
             <output>
                 <group>[Channel1]</group>
