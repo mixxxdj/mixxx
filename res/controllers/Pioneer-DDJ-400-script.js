@@ -99,8 +99,6 @@ PioneerDDJ400.lights = {
 // Store timer IDs
 PioneerDDJ400.timers = {};
 
-PioneerDDJ400.shiftState = [0, 0];
-
 // Jog wheel constants
 PioneerDDJ400.vinylMode = true;
 PioneerDDJ400.alpha = 1.0/8;
@@ -484,14 +482,6 @@ PioneerDDJ400.jogTouch = function(channel, _control, value) {
     } else {
         engine.scratchDisable(deckNum);
     }
-};
-
-//
-// SHIFT
-//
-
-PioneerDDJ400.shiftPressed = function(channel, _control, value) {
-    this.shiftState[channel] = value;
 };
 
 //

@@ -623,27 +623,6 @@
                     <Script-Binding/>
                 </options>
             </control>
-
-            <control>
-                <description>SHIFT (Deck1) - press - Shift</description>
-                <group>[Channel1]</group>
-                <key>PioneerDDJ400.shiftPressed</key>
-                <status>0x90</status>
-                <midino>0x3F</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
-                <description>SHIFT (Deck2) - press - Shift</description>
-                <group>[Channel2]</group>
-                <key>PioneerDDJ400.shiftPressed</key>
-                <status>0x91</status>
-                <midino>0x3F</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
             <!-- DECK Section END -->
 
             <!-- MIXER Section START -->
@@ -2297,6 +2276,7 @@
             <output>
                 <group>[Channel1]</group>
                 <key>sync_master</key>
+
                 <status>0x90</status>
                 <midino>0x60</midino>
                 <on>0x7F</on>
