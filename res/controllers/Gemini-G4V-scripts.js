@@ -13,6 +13,15 @@
  * Written by Javier Vilarroig 2018
  *
  **/
+ 
+ // Utility functions
+ 
+ // Prints the contents of an object for debugging
+ function printObj(object) {
+ 	for (key in object) {
+ 		print(key+":"+object[key]);
+	 }
+ }
 
 /*
  * Mapping architecture
@@ -149,22 +158,19 @@ var Control = function(group, key) {
 // counter:            Counter for limited flashing. null if no blinking
 //
 // Methods:
-// set(value):        Sets light status.
-//                    value: 1-on, 2-off
+// set(value):		Sets light status.
+//						value: 1-on, 2-off
 // flashOn(cycles): Starts blinking.
-//                     cycles: Number of cycles before stop flashing. Forever if 0
-// flashOff():        Stops flashing. Allows to define if the light must be left on or off
-// (P)flashOnceOn:    Sets light to on in the flash cycle
-// (P)flashOnceOff:    Sets the light to off in the flash cycle
+//						cycles: Number of cycles before stop flashing. Forever if 0
+// flashOff():		Stops flashing. Allows to define if the light must be left on or off
+// (P)flashOnce:	Manages one flash cycle.
 var Led = function(nameP, midiS, midiD, object) {
     this.name = nameP;
     this.midiStatus = midiS;
     this.midiData = midiD;
-    this.objStr = ((object === undefined) ? "g4v.leds." : object)+ nameP;
     this.lit = false;
     this.freq = 600;
-    this.flashTimerOn = 0;
-    this.flashTimerOff = 0;
+    this.flashTimer = 0;
     this.counter = null;
     this.debug = g4v.debug;
 
@@ -175,56 +181,37 @@ var Led = function(nameP, midiS, midiD, object) {
 
     this.set = function(value) {
         if (this.debug) {
-            print("Led::set - name:" + this.name + ((value === 1) ? " ON " : " OFF ") + " MIDI(status:0x"+midiS.toString(16)+" data:0x"+midiD.toString(16)+")");
+            print("Led::set - name:" + this.name + ((value == 1) ? " ON " : " OFF "));
         }
-        midi.sendShortMsg(this.midiStatus, this.midiData, ((value === 1) ? 0x7F : 0x00));
+        midi.sendShortMsg(this.midiStatus, this.midiData, ((value == 1) ? 0x7F : 0x00));
         this.lit = value;
     };
 
-    this.flashOnceOn = function() {
+    this.flashOnce = function() {
         if (this.debug) {
-            print("Led::flashOnceOn");
+            print("Led::flashOnce");
         }
-        print(this.objStr);
-        this.set(1);
-        // Clears the on timer
-        this.flashTimerOn = 0;
-        // Set the next cycle off
-        this.flashTimerOff = engine.beginTimer(this.freq, this.objStr + ".flashOnceOff()", true);
-    };
 
-    this.flashOnceOff = function() {
-        if (this.debug) {
-            print("Led::flashOnceOff");
-        }
-        this.set(0);
-        // Clears the off timer
-        this.flashTimerOff = 0;
-        // Sets the on timer
-        this.flashTimerOn = engine.beginTimer(this.freq, this.objStr + ".flashOnceOn()", true);
-        // If there is a counter decrements, if 0, cancels flashing
+        this.set(!this.lit);
+        
         if (this.counter !== null) {
-            this.counter--;
-        }
-        if (this.counter === 0) {
-            this.counter = null;
-            this.flashOff();
-        }
+        	if(--this.counter == 0) {
+        		this.flashOff();
+    		}
+    	}	
     };
 
     this.flashOff = function() {
         if (this.debug) {
             print("Led::Flash Off - name:" + this.name);
         }
-        // Destroys the timers
-        if (this.flashTimerOn !== 0) {
-            engine.stopTimer(this.flashTimerOn);
-            this.flashTimerOn = 0;
+
+        // Destroys the timer
+        if (this.flashTimer !== 0) {
+            engine.stopTimer(this.flashTimer);
+            this.flashTimer = 0;
         }
-        if (this.flashTimerOff !== 0) {
-            engine.stopTimer(this.flashTimerOff);
-            this.flashTimerOff = 0;
-        }
+        this.counter = null;
     };
 
     this.flash = function(flashNo) {
@@ -240,8 +227,11 @@ var Led = function(nameP, midiS, midiD, object) {
         // Stop flashing in case the led was already flashing
         this.flashOff();
 
-        // Starts Flash cycle
-        this.flashOnceOn();
+		// First blink
+		this.set(!this.lite);
+		
+        // Set the cycle
+        this.flashTimer = engine.beginTimer(this.freq, this.flashOnce.bind(this), false);
     };
 };
 
@@ -316,10 +306,10 @@ var Deck = function(deckN) {
         this.leds[ID]= new Led(ID, ((this.deckNum === 1 || this.deckNum === 3) ? 0x90 : 0x91), key, "g4v.decks["+this.deckNum+"].leds.");
     };
 
-    // Facility function for adding control objects
-    this.addControl = function(ID, key, group) {
+    // Facility function for adding control objects to a deck
+    this.addDeckControl = function(ID, key, group) {
         if (g4v.debug) {
-            print("Deck.addControl - ID:" + ID + " key:" + key + " group:" + group);
+            print("Deck.addDeckControl - ID:" + ID + " key:" + key + " group:" + group);
         }
 
         // Insert the control in all the decks controls array
@@ -1229,93 +1219,93 @@ var Deck = function(deckN) {
     this.addPadConnection("track_samples", this.cbPad8, "s"+(((this.deckNum-1)*16)+8)+"_play_indicator", "[Sampler"+(((this.deckNum-1)*16)+8)+"]");
 
     // Creates all the controls for the deck
-    this.addControl("cue", "cue_default");
-    this.addControl("play", "play");
-    this.addControl("sync", "sync_enabled");
-    this.addControl("sync_master", "sync_master");
-    this.addControl("cup", "cue_gotoandplay");
-    this.addControl("keylock", "keylock");
-    this.addControl("slip", "slip_enabled");
-    this.addControl("hot_cue_1", "hotcue_1_activate");
-    this.addControl("hot_cue_2", "hotcue_2_activate");
-    this.addControl("hot_cue_3", "hotcue_3_activate");
-    this.addControl("hot_cue_4", "hotcue_4_activate");
-    this.addControl("hot_cue_5", "hotcue_5_activate");
-    this.addControl("hot_cue_6", "hotcue_6_activate");
-    this.addControl("hot_cue_7", "hotcue_7_activate");
-    this.addControl("hot_cue_8", "hotcue_8_activate");
-    this.addControl("clr_cue_1", "hotcue_1_clear");
-    this.addControl("clr_cue_2", "hotcue_2_clear");
-    this.addControl("clr_cue_3", "hotcue_3_clear");
-    this.addControl("clr_cue_4", "hotcue_4_clear");
-    this.addControl("clr_cue_5", "hotcue_5_clear");
-    this.addControl("clr_cue_6", "hotcue_6_clear");
-    this.addControl("clr_cue_7", "hotcue_7_clear");
-    this.addControl("clr_cue_8", "hotcue_8_clear");
-    this.addControl("aloop_0.125", "beatloop_0.125_toggle");
-    this.addControl("aloop_0.25", "beatloop_0.25_toggle");
-    this.addControl("aloop_0.5", "beatloop_0.5_toggle");
-    this.addControl("aloop_1", "beatloop_1_toggle");
-    this.addControl("aloop_2", "beatloop_2_toggle");
-    this.addControl("aloop_4", "beatloop_4_toggle");
-    this.addControl("aloop_8", "beatloop_8_toggle");
-    this.addControl("aloop_16", "beatloop_16_toggle");
-    this.addControl("aloop_0.125_en", "beatloop_0.125_enabled");
-    this.addControl("aloop_0.25_en", "beatloop_0.25_enabled");
-    this.addControl("aloop_0.5_en", "beatloop_0.5_enabled");
-    this.addControl("aloop_1_en", "beatloop_1_enabled");
-    this.addControl("aloop_2_en", "beatloop_2_enabled");
-    this.addControl("aloop_4_en", "beatloop_4_enabled");
-    this.addControl("aloop_8_en", "beatloop_8_enabled");
-    this.addControl("aloop_16_en", "beatloop_16_enabled");
-    this.addControl("alooproll_0.125", "beatlooproll_0.125_activate");
-    this.addControl("alooproll_0.25", "beatlooproll_0.25_activate");
-    this.addControl("alooproll_0.5", "beatlooproll_0.5_activate");
-    this.addControl("alooproll_1", "beatlooproll_1_activate");
-    this.addControl("alooproll_2", "beatlooproll_2_activate");
-    this.addControl("alooproll_4", "beatlooproll_4_activate");
-    this.addControl("alooproll_8", "beatlooproll_8_activate");
-    this.addControl("alooproll_16", "beatlooproll_16_activate");
-    this.addControl("alooproll_0.125_en", "beatlooproll_0.125_activate");
-    this.addControl("alooproll_0.25_en", "beatlooproll_0.25_activate");
-    this.addControl("alooproll_0.5_en", "beatlooproll_0.5_activate");
-    this.addControl("alooproll_1_en", "beatlooproll_1_activate");
-    this.addControl("alooproll_2_en", "beatlooproll_2_activate");
-    this.addControl("alooproll_4_en", "beatlooproll_4_activate");
-    this.addControl("alooproll_8_en", "beatlooproll_8_activate");
-    this.addControl("alooproll_16_en", "beatlooproll_16_activate");
-    this.addControl("loop_in", "loop_in");
-    this.addControl("loop_out", "loop_out");
-    this.addControl("reloop_exit", "reloop_exit");
-    this.addControl("loop_halve", "loop_halve");
-    this.addControl("loop_double", "loop_double");
-    this.addControl("beatjump_0.125_f", "beatjump_0.125_forward");
-    this.addControl("beatjump_0.25_f", "beatjump_0.25_forward");
-    this.addControl("beatjump_0.5_f", "beatjump_0.5_forward");
-    this.addControl("beatjump_1_f", "beatjump_1_forward");
-    this.addControl("beatjump_2_f", "beatjump_2_forward");
-    this.addControl("beatjump_4_f", "beatjump_4_forward");
-    this.addControl("beatjump_8_f", "beatjump_8_forward");
-    this.addControl("beatjump_16_f", "beatjump_16_forward");
-    this.addControl("beatjump_0.125_b", "beatjump_0.125_backward");
-    this.addControl("beatjump_0.25_b", "beatjump_0.25_backward");
-    this.addControl("beatjump_0.5_b", "beatjump_0.5_backward");
-    this.addControl("beatjump_1_b", "beatjump_1_backward");
-    this.addControl("beatjump_2_b", "beatjump_2_backward");
-    this.addControl("beatjump_4_b", "beatjump_4_backward");
-    this.addControl("beatjump_8_b", "beatjump_8_backward");
-    this.addControl("beatjump_16_b", "beatjump_16_backward");
-    this.addControl("rate", "rate");
-    this.addControl("pitch", "pitch");
-    this.addControl("loop_move_f", "loop_move_1_forward");
-    this.addControl("loop_move_b", "loop_move_1_backward");
-    this.addControl("show_samplers", "show_samplers", "[Samplers]");
-    this.addControl("s1_play", "start_play", "[Sampler1]");
-    this.addControl("s2_play", "start_play", "[Sampler2]");
-    this.addControl("s3_play", "start_play", "[Sampler3]");
-    this.addControl("s4_play", "start_play", "[Sampler4]");
-    this.addControl("fx_select", "next_chain", "[EffectRack1_EffectUnit"+this.deckNum+"]");
-    this.addControl("loop_move", "loop_move");
+    this.addDeckControl("cue", "cue_default");
+    this.addDeckControl("play", "play");
+    this.addDeckControl("sync", "sync_enabled");
+    this.addDeckControl("sync_master", "sync_master");
+    this.addDeckControl("cup", "cue_gotoandplay");
+    this.addDeckControl("keylock", "keylock");
+    this.addDeckControl("slip", "slip_enabled");
+    this.addDeckControl("hot_cue_1", "hotcue_1_activate");
+    this.addDeckControl("hot_cue_2", "hotcue_2_activate");
+    this.addDeckControl("hot_cue_3", "hotcue_3_activate");
+    this.addDeckControl("hot_cue_4", "hotcue_4_activate");
+    this.addDeckControl("hot_cue_5", "hotcue_5_activate");
+    this.addDeckControl("hot_cue_6", "hotcue_6_activate");
+    this.addDeckControl("hot_cue_7", "hotcue_7_activate");
+    this.addDeckControl("hot_cue_8", "hotcue_8_activate");
+    this.addDeckControl("clr_cue_1", "hotcue_1_clear");
+    this.addDeckControl("clr_cue_2", "hotcue_2_clear");
+    this.addDeckControl("clr_cue_3", "hotcue_3_clear");
+    this.addDeckControl("clr_cue_4", "hotcue_4_clear");
+    this.addDeckControl("clr_cue_5", "hotcue_5_clear");
+    this.addDeckControl("clr_cue_6", "hotcue_6_clear");
+    this.addDeckControl("clr_cue_7", "hotcue_7_clear");
+    this.addDeckControl("clr_cue_8", "hotcue_8_clear");
+    this.addDeckControl("aloop_0.125", "beatloop_0.125_toggle");
+    this.addDeckControl("aloop_0.25", "beatloop_0.25_toggle");
+    this.addDeckControl("aloop_0.5", "beatloop_0.5_toggle");
+    this.addDeckControl("aloop_1", "beatloop_1_toggle");
+    this.addDeckControl("aloop_2", "beatloop_2_toggle");
+    this.addDeckControl("aloop_4", "beatloop_4_toggle");
+    this.addDeckControl("aloop_8", "beatloop_8_toggle");
+    this.addDeckControl("aloop_16", "beatloop_16_toggle");
+    this.addDeckControl("aloop_0.125_en", "beatloop_0.125_enabled");
+    this.addDeckControl("aloop_0.25_en", "beatloop_0.25_enabled");
+    this.addDeckControl("aloop_0.5_en", "beatloop_0.5_enabled");
+    this.addDeckControl("aloop_1_en", "beatloop_1_enabled");
+    this.addDeckControl("aloop_2_en", "beatloop_2_enabled");
+    this.addDeckControl("aloop_4_en", "beatloop_4_enabled");
+    this.addDeckControl("aloop_8_en", "beatloop_8_enabled");
+    this.addDeckControl("aloop_16_en", "beatloop_16_enabled");
+    this.addDeckControl("alooproll_0.125", "beatlooproll_0.125_activate");
+    this.addDeckControl("alooproll_0.25", "beatlooproll_0.25_activate");
+    this.addDeckControl("alooproll_0.5", "beatlooproll_0.5_activate");
+    this.addDeckControl("alooproll_1", "beatlooproll_1_activate");
+    this.addDeckControl("alooproll_2", "beatlooproll_2_activate");
+    this.addDeckControl("alooproll_4", "beatlooproll_4_activate");
+    this.addDeckControl("alooproll_8", "beatlooproll_8_activate");
+    this.addDeckControl("alooproll_16", "beatlooproll_16_activate");
+    this.addDeckControl("alooproll_0.125_en", "beatlooproll_0.125_activate");
+    this.addDeckControl("alooproll_0.25_en", "beatlooproll_0.25_activate");
+    this.addDeckControl("alooproll_0.5_en", "beatlooproll_0.5_activate");
+    this.addDeckControl("alooproll_1_en", "beatlooproll_1_activate");
+    this.addDeckControl("alooproll_2_en", "beatlooproll_2_activate");
+    this.addDeckControl("alooproll_4_en", "beatlooproll_4_activate");
+    this.addDeckControl("alooproll_8_en", "beatlooproll_8_activate");
+    this.addDeckControl("alooproll_16_en", "beatlooproll_16_activate");
+    this.addDeckControl("loop_in", "loop_in");
+    this.addDeckControl("loop_out", "loop_out");
+    this.addDeckControl("reloop_exit", "reloop_exit");
+    this.addDeckControl("loop_halve", "loop_halve");
+    this.addDeckControl("loop_double", "loop_double");
+    this.addDeckControl("beatjump_0.125_f", "beatjump_0.125_forward");
+    this.addDeckControl("beatjump_0.25_f", "beatjump_0.25_forward");
+    this.addDeckControl("beatjump_0.5_f", "beatjump_0.5_forward");
+    this.addDeckControl("beatjump_1_f", "beatjump_1_forward");
+    this.addDeckControl("beatjump_2_f", "beatjump_2_forward");
+    this.addDeckControl("beatjump_4_f", "beatjump_4_forward");
+    this.addDeckControl("beatjump_8_f", "beatjump_8_forward");
+    this.addDeckControl("beatjump_16_f", "beatjump_16_forward");
+    this.addDeckControl("beatjump_0.125_b", "beatjump_0.125_backward");
+    this.addDeckControl("beatjump_0.25_b", "beatjump_0.25_backward");
+    this.addDeckControl("beatjump_0.5_b", "beatjump_0.5_backward");
+    this.addDeckControl("beatjump_1_b", "beatjump_1_backward");
+    this.addDeckControl("beatjump_2_b", "beatjump_2_backward");
+    this.addDeckControl("beatjump_4_b", "beatjump_4_backward");
+    this.addDeckControl("beatjump_8_b", "beatjump_8_backward");
+    this.addDeckControl("beatjump_16_b", "beatjump_16_backward");
+    this.addDeckControl("rate", "rate");
+    this.addDeckControl("pitch", "pitch");
+    this.addDeckControl("loop_move_f", "loop_move_1_forward");
+    this.addDeckControl("loop_move_b", "loop_move_1_backward");
+    this.addDeckControl("show_samplers", "show_samplers", "[Samplers]");
+    this.addDeckControl("s1_play", "start_play", "[Sampler1]");
+    this.addDeckControl("s2_play", "start_play", "[Sampler2]");
+    this.addDeckControl("s3_play", "start_play", "[Sampler3]");
+    this.addDeckControl("s4_play", "start_play", "[Sampler4]");
+    this.addDeckControl("fx_select", "next_chain", "[EffectRack1_EffectUnit"+this.deckNum+"]");
+    this.addDeckControl("loop_move", "loop_move");
 
     // Applies effect to channel
     engine.setValue("[EffectRack1_EffectUnit"+this.deckNum+"]", "group_[Channel"+this.deckNum+"]_enable", 1);
@@ -1348,24 +1338,15 @@ var MyController = function() {
     this.browseMode = false;
 
 
-    // Facility function for adding control objects
-    this.addControl = function(ID, key) {
-        if (g4v.debug) {
-            print("Controller::addControl - ID:" + ID + " key:" + key);
-        }
-
-        // Insert the control in all the decks controls array
-        this.master[ID] = new Control("[Master]", key);
-    };
 
     // Facility function for adding connection objects
-    this.addConnection = function(group, control, func) {
+    this.addControllerConnection = function(group, control, func) {
         if (g4v.debug) {
             print("Controller::addConnection - group:" + group + " control:" + control);
         }
 
         // Insert the control in all the decks controls array
-        g4v.connections[group+control] = engine.makeConnection(group, control, func);
+        g4v.connections[group+control] = engine.makeConnection(group, control, func.bind(this));
 
         // Triggers the connection to sync
         g4v.connections[group+control].trigger();
@@ -1455,30 +1436,30 @@ var MyController = function() {
 
         // Connects master controls to call backs to allow the controller to
         // visually react to changes in the system and triggers to synchronize
-        this.addConnection("[Master]", "VuMeterR", function(value) { midi.sendShortMsg(0xB3, 0x18, value*7); });
-        this.addConnection("[Master]", "VuMeterL", function(value) { midi.sendShortMsg(0xB3, 0x19, value*7); });
-        this.addConnection("[Channel1]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x14, value*5); });
-        this.addConnection("[Channel2]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x15, value*4); });
-        this.addConnection("[Channel3]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x16, value*5); });
-        this.addConnection("[Channel4]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x17, value*5); });
-        this.addConnection("[Channel1]", "track_samples", this.cbDeckLoaded);
-        this.addConnection("[Channel1]", "pfl", this.cbPfl);
-        this.addConnection("[Channel1]", "orientation", this.cbOrientation);
-        this.addConnection("[Channel2]", "track_samples", this.cbDeckLoaded);
-        this.addConnection("[Channel2]", "pfl", this.cbPfl);
-        this.addConnection("[Channel2]", "orientation", this.cbOrientation);
-        this.addConnection("[Channel3]", "track_samples", this.cbDeckLoaded);
-        this.addConnection("[Channel3]", "pfl", this.cbPfl);
-        this.addConnection("[Channel3]", "orientation", this.cbOrientation);
-        this.addConnection("[Channel4]", "track_samples", this.cbDeckLoaded);
-        this.addConnection("[Channel4]", "pfl", this.cbPfl);
-        this.addConnection("[Channel4]", "orientation", this.cbOrientation);
+        this.addControllerConnection("[Master]", "VuMeterR", function(value) { midi.sendShortMsg(0xB3, 0x18, value*7); });
+        this.addControllerConnection("[Master]", "VuMeterL", function(value) { midi.sendShortMsg(0xB3, 0x19, value*7); });
+        this.addControllerConnection("[Channel1]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x14, value*5); });
+        this.addControllerConnection("[Channel2]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x15, value*4); });
+        this.addControllerConnection("[Channel3]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x16, value*5); });
+        this.addControllerConnection("[Channel4]", "VuMeter", function(value) { midi.sendShortMsg(0xB3, 0x17, value*5); });
+        this.addControllerConnection("[Channel1]", "track_samples", this.cbDeckLoaded);
+        this.addControllerConnection("[Channel1]", "pfl", this.cbPfl);
+        this.addControllerConnection("[Channel1]", "orientation", this.cbOrientation);
+        this.addControllerConnection("[Channel2]", "track_samples", this.cbDeckLoaded);
+        this.addControllerConnection("[Channel2]", "pfl", this.cbPfl);
+        this.addControllerConnection("[Channel2]", "orientation", this.cbOrientation);
+        this.addControllerConnection("[Channel3]", "track_samples", this.cbDeckLoaded);
+        this.addControllerConnection("[Channel3]", "pfl", this.cbPfl);
+        this.addControllerConnection("[Channel3]", "orientation", this.cbOrientation);
+        this.addControllerConnection("[Channel4]", "track_samples", this.cbDeckLoaded);
+        this.addControllerConnection("[Channel4]", "pfl", this.cbPfl);
+        this.addControllerConnection("[Channel4]", "orientation", this.cbOrientation);
 
         // Creating the deck objects.
-        this.addDeck("1");
-        this.addDeck("2");
-        this.addDeck("3");
-        this.addDeck("4");
+        this.addDeck(1);
+        this.addDeck(2);
+        this.addDeck(3);
+        this.addDeck(4);
 
         // Sets the active decks by default
         this.decks[1].activate(1);
