@@ -10,8 +10,8 @@
 
 // Each color has 8 brightnesses, so these values can be between 0 and 7.
 var LedOff    = 0x00;
-var LedDimmed = 0x02;
-var LedBright = 0x07;
+var LedDimmed = 0x20;
+var LedBright = 0x7F;
 
 var TraktorZ2 = new function() {
     this.controller = new HIDController();
@@ -824,142 +824,142 @@ TraktorZ2.debugLights = function() {
     // bytes do what).
     var dataA = [
         /* 0x80 */
-        0x00,  // 0x01 3 bits (0x40, 0x20, 0x10) control Warning Symbol on top left brightness (orange)
-        0x00,  // 0x02 3 bits (0x40, 0x20, 0x10) control Timecode-Vinyl Symbol on top right brightness (orange)
-        0x00,  // 0x03 3 bits (0x40, 0x20, 0x10) control Snap-Button S brightness (blue)
-        0x00,  // 0x04 3 bits (0x40, 0x20, 0x10) control Quantize-Button Q brightness (blue)
-        0x00,  // 0x05 3 bits (0x40, 0x20, 0x10) control Settings-Button (Gear-Wheel-Symbol) brightness (orange)
-        0x00,  // 0x06 3 bits (0x40, 0x20, 0x10) control SHIFT-Button brightness (white)
-        0x00,  // 0x07 3 bits (0x40, 0x20, 0x10) control Deck A button brightness (blue)
-        0x00,  // 0x08 3 bits (0x40, 0x20, 0x10) control Deck B button brightness (blue)
-        0x00,  // 0x09 3 bits (0x40, 0x20, 0x10) control Deck C button brightness (white)
-        0x00,  // 0x0A 3 bits (0x40, 0x20, 0x10) control Deck D button brightness (white)
+        0x00,  // 0x01 7 bits control Warning Symbol on top left brightness (orange)
+        0x00,  // 0x02 7 bits control Timecode-Vinyl Symbol on top right brightness (orange)
+        0x00,  // 0x03 7 bits control Snap-Button S brightness (blue)
+        0x00,  // 0x04 7 bits control Quantize-Button Q brightness (blue)
+        0x00,  // 0x05 7 bits control Settings-Button (Gear-Wheel-Symbol) brightness (orange)
+        0x00,  // 0x06 7 bits control SHIFT-Button brightness (white)
+        0x00,  // 0x07 7 bits control Deck A button brightness (blue)
+        0x00,  // 0x08 7 bits control Deck B button brightness (blue)
+        0x00,  // 0x09 7 bits control Deck C button brightness (white)
+        0x00,  // 0x0A 7 bits control Deck D button brightness (white)
 
-        0x00,  // 0x0B 3 bits (0x40, 0x20, 0x10) control Deck C volume text label backlight brightness (white)
-        0x00,  // 0x0C 3 bits (0x40, 0x20, 0x10) control Deck D volume text label backlight brightness (white)
+        0x00,  // 0x0B 7 bits control Deck C volume text label backlight brightness (white)
+        0x00,  // 0x0C 7 bits control Deck D volume text label backlight brightness (white)
 
-        0x00,  // 0x0D 3 bits (0x40, 0x20, 0x10) control Macro FX1 On button brightness (orange)
-        0x00,  // 0x0E 3 bits (0x40, 0x20, 0x10) control Deck 1 Flux button brightness (orange)
-        0x00,  // 0x0F 3 bits (0x40, 0x20, 0x10) control Channel 1 FX1 select button brightness (orange)
-        0x00,  // 0x10 3 bits (0x40, 0x20, 0x10) control Channel 1 FX2 select button brightness (orange)
-        0x00,  // 0x11 3 bits (0x40, 0x20, 0x10) control Load A button brightness (orange)
-        0x70,  // 0x12 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl A button brightness (orange)
-        0x00,  // 0x13 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl A button brightness (green)
-        0x00,  // 0x14 3 bits (0x40, 0x20, 0x10) control vinylcontrol Sync A button brightness (orange)
+        0x00,  // 0x0D 7 bits control Macro FX1 On button brightness (orange)
+        0x00,  // 0x0E 7 bits control Deck 1 Flux button brightness (orange)
+        0x00,  // 0x0F 7 bits control Channel 1 FX1 select button brightness (orange)
+        0x00,  // 0x10 7 bits control Channel 1 FX2 select button brightness (orange)
+        0x00,  // 0x11 7 bits control Load A button brightness (orange)
+        0x70,  // 0x12 7 bits control vinylcontrol Rel/Intl A button brightness (orange)
+        0x00,  // 0x13 7 bits control vinylcontrol Rel/Intl A button brightness (green)
+        0x00,  // 0x14 7 bits control vinylcontrol Sync A button brightness (orange)
 
-        0x00,  // 0x15 3 bits (0x40, 0x20, 0x10) control Macro FX2 On button brightness (orange)
-        0x00,  // 0x16 3 bits (0x40, 0x20, 0x10) control Deck 2 Flux button brightness (orange)
-        0x00,  // 0x17 3 bits (0x40, 0x20, 0x10) control Channel 2 FX1 select button brightness (orange)
-        0x00,  // 0x18 3 bits (0x40, 0x20, 0x10) control Channel 2 FX2 select button brightness (orange)
-        0x00,  // 0x19 3 bits (0x40, 0x20, 0x10) control Load B button brightness (orange)
-        0x70,  // 0x1A 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl B button brightness (orange)
-        0x30,  // 0x1B 3 bits (0x40, 0x20, 0x10) control vinylcontrol Rel/Intl B button brightness (green)
-        0x00,  // 0x1C 3 bits (0x40, 0x20, 0x10) control vinylcontrol Sync B button brightness (orange)
-        0x00, 0x00, 0x00, // 0x1D HotCue 1 Deck 1 RGB
-        0x00, 0x00, 0x00, // 0x20 HotCue 2 Deck 1 RGB
-        0x00, 0x00, 0x00, // 0x23 HotCue 3 Deck 1 RGB
-        0x00, 0x00, 0x00, // 0x26 HotCue 4 Deck 1 RGB
+        0x00,  // 0x15 7 bits control Macro FX2 On button brightness (orange)
+        0x00,  // 0x16 7 bits control Deck 2 Flux button brightness (orange)
+        0x00,  // 0x17 7 bits control Channel 2 FX1 select button brightness (orange)
+        0x00,  // 0x18 7 bits control Channel 2 FX2 select button brightness (orange)
+        0x00,  // 0x19 7 bits control Load B button brightness (orange)
+        0x70,  // 0x1A 7 bits control vinylcontrol Rel/Intl B button brightness (orange)
+        0x30,  // 0x1B 7 bits control vinylcontrol Rel/Intl B button brightness (green)
+        0x00,  // 0x1C 7 bits control vinylcontrol Sync B button brightness (orange)
+        0x00, 0x10, 0x00, // 0x1D HotCue 1 Deck 1 RGB
+        0x00, 0x1F, 0x00, // 0x20 HotCue 2 Deck 1 RGB
+        0x00, 0x20, 0x00, // 0x23 HotCue 3 Deck 1 RGB
+        0x00, 0x2F, 0x00, // 0x26 HotCue 4 Deck 1 RGB
         0x00, 0x00, 0x00, // 0x29 HotCue 2 Deck 2 RGB
         0x00, 0x00, 0x00, // 0x2C HotCue 2 Deck 2 RGB
         0x00, 0x00, 0x00, // 0x2F HotCue 3 Deck 2 RGB
         0x00, 0x00, 0x00, // 0x32 HotCue 4 Deck 2 RGB
 
-        0x00,  // 0x35 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment center horizontal bar brightness (orange)
-        0x00,  // 0x36 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment lower right vertical bar brightness (orange)
-        0x00,  // 0x37 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment upper right vertical bar brightness (orange)
-        0x00,  // 0x38 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment upper horizontal bar brightness (orange)
-        0x00,  // 0x39 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment upper left vertical bar brightness (orange)
-        0x00,  // 0x3A 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment lower left vertical bar brightness (orange)
-        0x00,  // 0x3B 3 bits (0x40, 0x20, 0x10) control Deck 1 1st 7 segment lower horizontal bar brightness (orange)
+        0x00,  // 0x35 7 bits control Deck 1 1st 7 segment center horizontal bar brightness (orange)
+        0x00,  // 0x36 7 bits control Deck 1 1st 7 segment lower right vertical bar brightness (orange)
+        0x00,  // 0x37 7 bits control Deck 1 1st 7 segment upper right vertical bar brightness (orange)
+        0x00,  // 0x38 7 bits control Deck 1 1st 7 segment upper horizontal bar brightness (orange)
+        0x00,  // 0x39 7 bits control Deck 1 1st 7 segment upper left vertical bar brightness (orange)
+        0x00,  // 0x3A 7 bits control Deck 1 1st 7 segment lower left vertical bar brightness (orange)
+        0x00,  // 0x3B 7 bits control Deck 1 1st 7 segment lower horizontal bar brightness (orange)
 
-        0x00,  // 0x3C 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment center horizontal bar brightness (orange)
-        0x00,  // 0x3D 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment lower right vertical bar brightness (orange)
-        0x00,  // 0x3E 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment upper right vertical bar brightness (orange)
-        0x00,  // 0x3F 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment upper horizontal bar brightness (orange)
-        0x00,  // 0x40 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment upper left vertical bar brightness (orange)
-        0x00,  // 0x41 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment lower left vertical bar brightness (orange)
-        0x00,  // 0x42 3 bits (0x40, 0x20, 0x10) control Deck 1 2nd 7 segment lower horizontal bar brightness (orange)
+        0x00,  // 0x3C 7 bits control Deck 1 2nd 7 segment center horizontal bar brightness (orange)
+        0x00,  // 0x3D 7 bits control Deck 1 2nd 7 segment lower right vertical bar brightness (orange)
+        0x00,  // 0x3E 7 bits control Deck 1 2nd 7 segment upper right vertical bar brightness (orange)
+        0x00,  // 0x3F 7 bits control Deck 1 2nd 7 segment upper horizontal bar brightness (orange)
+        0x00,  // 0x40 7 bits control Deck 1 2nd 7 segment upper left vertical bar brightness (orange)
+        0x00,  // 0x41 7 bits control Deck 1 2nd 7 segment lower left vertical bar brightness (orange)
+        0x00,  // 0x42 7 bits control Deck 1 2nd 7 segment lower horizontal bar brightness (orange)
 
-        0x00,  // 0x43 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment center horizontal bar brightness (orange)
-        0x00,  // 0x44 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower right vertical bar brightness (orange)
-        0x00,  // 0x45 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper right vertical bar brightness (orange)
-        0x00,  // 0x46 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper horizontal bar brightness (orange)
-        0x00,  // 0x47 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper left vertical bar brightness (orange)
-        0x00,  // 0x48 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower left vertical bar brightness (orange)
-        0x00,  // 0x49 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower horizontal bar brightness (orange)
+        0x00,  // 0x43 7 bits control Deck 1 3rd 7 segment center horizontal bar brightness (orange)
+        0x00,  // 0x44 7 bits control Deck 1 3rd 7 segment lower right vertical bar brightness (orange)
+        0x00,  // 0x45 7 bits control Deck 1 3rd 7 segment upper right vertical bar brightness (orange)
+        0x00,  // 0x46 7 bits control Deck 1 3rd 7 segment upper horizontal bar brightness (orange)
+        0x00,  // 0x47 7 bits control Deck 1 3rd 7 segment upper left vertical bar brightness (orange)
+        0x00,  // 0x48 7 bits control Deck 1 3rd 7 segment lower left vertical bar brightness (orange)
+        0x00,  // 0x49 7 bits control Deck 1 3rd 7 segment lower horizontal bar brightness (orange)
 
-        0x00,  // 0x4A 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment center horizontal bar brightness (orange)
-        0x00,  // 0x4B 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment lower right vertical bar brightness (orange)
-        0x00,  // 0x4C 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment upper right vertical bar brightness (orange)
-        0x00,  // 0x4D 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment upper horizontal bar brightness (orange)
-        0x00,  // 0x4E 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment upper left vertical bar brightness (orange)
-        0x00,  // 0x4F 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment lower left vertical bar brightness (orange)
-        0x00,  // 0x50 3 bits (0x40, 0x20, 0x10) control Deck 2 1st 7 segment lower horizontal bar brightness (orange)
+        0x00,  // 0x4A 7 bits control Deck 2 1st 7 segment center horizontal bar brightness (orange)
+        0x00,  // 0x4B 7 bits control Deck 2 1st 7 segment lower right vertical bar brightness (orange)
+        0x00,  // 0x4C 7 bits control Deck 2 1st 7 segment upper right vertical bar brightness (orange)
+        0x00,  // 0x4D 7 bits control Deck 2 1st 7 segment upper horizontal bar brightness (orange)
+        0x00,  // 0x4E 7 bits control Deck 2 1st 7 segment upper left vertical bar brightness (orange)
+        0x00,  // 0x4F 7 bits control Deck 2 1st 7 segment lower left vertical bar brightness (orange)
+        0x00,  // 0x50 7 bits control Deck 2 1st 7 segment lower horizontal bar brightness (orange)
 
-        0x00,  // 0x51 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment center horizontal bar brightness (orange)
-        0x00,  // 0x52 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment lower right vertical bar brightness (orange)
-        0x00,  // 0x53 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment upper right vertical bar brightness (orange)
-        0x00,  // 0x54 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment upper horizontal bar brightness (orange)
-        0x00,  // 0x55 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment upper left vertical bar brightness (orange)
-        0x00,  // 0x56 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment lower left vertical bar brightness (orange)
-        0x00,  // 0x57 3 bits (0x40, 0x20, 0x10) control Deck 2 2nd 7 segment lower horizontal bar brightness (orange)
+        0x00,  // 0x51 7 bits control Deck 2 2nd 7 segment center horizontal bar brightness (orange)
+        0x00,  // 0x52 7 bits control Deck 2 2nd 7 segment lower right vertical bar brightness (orange)
+        0x00,  // 0x53 7 bits control Deck 2 2nd 7 segment upper right vertical bar brightness (orange)
+        0x00,  // 0x54 7 bits control Deck 2 2nd 7 segment upper horizontal bar brightness (orange)
+        0x00,  // 0x55 7 bits control Deck 2 2nd 7 segment upper left vertical bar brightness (orange)
+        0x00,  // 0x56 7 bits control Deck 2 2nd 7 segment lower left vertical bar brightness (orange)
+        0x00,  // 0x57 7 bits control Deck 2 2nd 7 segment lower horizontal bar brightness (orange)
 
-        0x00,  // 0x58 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment center horizontal bar brightness (orange)
-        0x00,  // 0x59 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment lower right vertical bar brightness (orange)
-        0x00,  // 0x5A 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment upper right vertical bar brightness (orange)
-        0x00,  // 0x5B 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment upper horizontal bar brightness (orange)
-        0x00,  // 0x5C 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment upper left vertical bar brightness (orange)
-        0x00,  // 0x5D 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment lower left vertical bar brightness (orange)
-        0x00   // 0x5E 3 bits (0x40, 0x20, 0x10) control Deck 2 3rd 7 segment lower horizontal bar brightness (orange)
+        0x00,  // 0x58 7 bits control Deck 2 3rd 7 segment center horizontal bar brightness (orange)
+        0x00,  // 0x59 7 bits control Deck 2 3rd 7 segment lower right vertical bar brightness (orange)
+        0x00,  // 0x5A 7 bits control Deck 2 3rd 7 segment upper right vertical bar brightness (orange)
+        0x00,  // 0x5B 7 bits control Deck 2 3rd 7 segment upper horizontal bar brightness (orange)
+        0x00,  // 0x5C 7 bits control Deck 2 3rd 7 segment upper left vertical bar brightness (orange)
+        0x00,  // 0x5D 7 bits control Deck 2 3rd 7 segment lower left vertical bar brightness (orange)
+        0x00   // 0x5E 7 bits control Deck 2 3rd 7 segment lower horizontal bar brightness (orange)
     ];
     controller.send(dataA, dataA.length, 0x80);
 
     var dataB = [
         /* 0x81 */
-        0x00,  // 0x01 3 bits (0x40, 0x20, 0x10) control VU meter label "A"  (white)
-        0x00,  // 0x02 3 bits (0x40, 0x20, 0x10) control VU meter -15dBa ChA (blue)
-        0x00,  // 0x03 3 bits (0x40, 0x20, 0x10) control VU meter  -6dBa ChA (blue)
-        0x00,  // 0x04 3 bits (0x40, 0x20, 0x10) control VU meter  -3dBa ChA (blue)
-        0x00,  // 0x05 3 bits (0x40, 0x20, 0x10) control VU meter   0dBa ChA (blue)
-        0x00,  // 0x06 3 bits (0x40, 0x20, 0x10) control VU meter  +3dBa ChA (orange)
-        0x00,  // 0x07 3 bits (0x40, 0x20, 0x10) control VU meter  +6dBa ChA (orange)
-        0x00,  // 0x08 3 bits (0x40, 0x20, 0x10) control VU meter   CLIP ChA (orange)
+        0x00,  // 0x01 7 bits control VU meter label "A"  (white)
+        0x00,  // 0x02 7 bits control VU meter -15dBa ChA (blue)
+        0x00,  // 0x03 7 bits control VU meter  -6dBa ChA (blue)
+        0x00,  // 0x04 7 bits control VU meter  -3dBa ChA (blue)
+        0x00,  // 0x05 7 bits control VU meter   0dBa ChA (blue)
+        0x00,  // 0x06 7 bits control VU meter  +3dBa ChA (orange)
+        0x00,  // 0x07 7 bits control VU meter  +6dBa ChA (orange)
+        0x00,  // 0x08 7 bits control VU meter   CLIP ChA (orange)
 
-        0x00,  // 0x09 3 bits (0x40, 0x20, 0x10) control VU meter label "B"  (white)
-        0x00,  // 0x0A 3 bits (0x40, 0x20, 0x10) control VU meter -15dBa ChB (blue)
-        0x00,  // 0x0B 3 bits (0x40, 0x20, 0x10) control VU meter  -6dBa ChB (blue)
-        0x00,  // 0x0C 3 bits (0x40, 0x20, 0x10) control VU meter  -3dBa ChB (blue)
-        0x00,  // 0x0D 3 bits (0x40, 0x20, 0x10) control VU meter   0dBa ChB (blue)
-        0x00,  // 0x0E 3 bits (0x40, 0x20, 0x10) control VU meter  +3dBa ChB (orange)
-        0x00,  // 0x0F 3 bits (0x40, 0x20, 0x10) control VU meter  +6dBa ChB (orange)
-        0x00,  // 0x10 3 bits (0x40, 0x20, 0x10) control VU meter   CLIP ChB (orange)
+        0x00,  // 0x09 7 bits control VU meter label "B"  (white)
+        0x00,  // 0x0A 7 bits control VU meter -15dBa ChB (blue)
+        0x00,  // 0x0B 7 bits control VU meter  -6dBa ChB (blue)
+        0x00,  // 0x0C 7 bits control VU meter  -3dBa ChB (blue)
+        0x00,  // 0x0D 7 bits control VU meter   0dBa ChB (blue)
+        0x00,  // 0x0E 7 bits control VU meter  +3dBa ChB (orange)
+        0x00,  // 0x0F 7 bits control VU meter  +6dBa ChB (orange)
+        0x00,  // 0x10 7 bits control VU meter   CLIP ChB (orange)
 
-        0x00,  // 0x11 3 bits (0x40, 0x20, 0x10) control VU meter label "C"  (white)
-        0x00,  // 0x12 3 bits (0x40, 0x20, 0x10) control VU meter -15dBa ChC/MasterLeft (blue)
-        0x00,  // 0x13 3 bits (0x40, 0x20, 0x10) control VU meter  -6dBa ChC/MasterLeft (blue)
-        0x00,  // 0x14 3 bits (0x40, 0x20, 0x10) control VU meter  -3dBa ChC/MasterLeft (blue)
-        0x00,  // 0x15 3 bits (0x40, 0x20, 0x10) control VU meter   0dBa ChC/MasterLeft (blue)
-        0x00,  // 0x16 3 bits (0x40, 0x20, 0x10) control VU meter  +3dBa ChC/MasterLeft (orange)
-        0x00,  // 0x17 3 bits (0x40, 0x20, 0x10) control VU meter  +6dBa ChC/MasterLeft (orange)
-        0x00,  // 0x18 3 bits (0x40, 0x20, 0x10) control VU meter   CLIP ChC/MasterLeft (orange)
+        0x00,  // 0x11 7 bits control VU meter label "C"  (white)
+        0x00,  // 0x12 7 bits control VU meter -15dBa ChC/MasterLeft (blue)
+        0x00,  // 0x13 7 bits control VU meter  -6dBa ChC/MasterLeft (blue)
+        0x00,  // 0x14 7 bits control VU meter  -3dBa ChC/MasterLeft (blue)
+        0x00,  // 0x15 7 bits control VU meter   0dBa ChC/MasterLeft (blue)
+        0x00,  // 0x16 7 bits control VU meter  +3dBa ChC/MasterLeft (orange)
+        0x00,  // 0x17 7 bits control VU meter  +6dBa ChC/MasterLeft (orange)
+        0x00,  // 0x18 7 bits control VU meter   CLIP ChC/MasterLeft (orange)
 
-        0x00,  // 0x19 3 bits (0x40, 0x20, 0x10) control VU meter label "D"  (white)
-        0x00,  // 0x1A 3 bits (0x40, 0x20, 0x10) control VU meter -15dBa ChD/MasterRight (blue)
-        0x00,  // 0x1B 3 bits (0x40, 0x20, 0x10) control VU meter  -6dBa ChD/MasterRight (blue)
-        0x00,  // 0x1C 3 bits (0x40, 0x20, 0x10) control VU meter  -3dBa ChD/MasterRight (blue)
-        0x00,  // 0x1D 3 bits (0x40, 0x20, 0x10) control VU meter   0dBa ChD/MasterRight (blue)
-        0x00,  // 0x1E 3 bits (0x40, 0x20, 0x10) control VU meter  +3dBa ChD/MasterRight (orange)
-        0x00,  // 0x1F 3 bits (0x40, 0x20, 0x10) control VU meter  +6dBa ChD/MasterRight (orange)
-        0x00,  // 0x20 3 bits (0x40, 0x20, 0x10) control VU meter   CLIP ChD/MasterRight (orange)
+        0x00,  // 0x19 7 bits control VU meter label "D"  (white)
+        0x00,  // 0x1A 7 bits control VU meter -15dBa ChD/MasterRight (blue)
+        0x00,  // 0x1B 7 bits control VU meter  -6dBa ChD/MasterRight (blue)
+        0x00,  // 0x1C 7 bits control VU meter  -3dBa ChD/MasterRight (blue)
+        0x00,  // 0x1D 7 bits control VU meter   0dBa ChD/MasterRight (blue)
+        0x00,  // 0x1E 7 bits control VU meter  +3dBa ChD/MasterRight (orange)
+        0x00,  // 0x1F 7 bits control VU meter  +6dBa ChD/MasterRight (orange)
+        0x00,  // 0x20 7 bits control VU meter   CLIP ChD/MasterRight (orange)
 
-        0x00,  // 0x21 3 bits (0x40, 0x20, 0x10) control VU meter label "MST"  (white)
-        0x00,  // 0x22 3 bits (0x40, 0x20, 0x10) control Microphone-Button (orange)
-        0x00,  // 0x23 3 bits (0x40, 0x20, 0x10) control Headphone-Button A (blue)
-        0x00,  // 0x24 3 bits (0x40, 0x20, 0x10) control Headphone-Button B (blue)
-        0x00,  // 0x25 3 bits (0x40, 0x20, 0x10) control Traktor-Button ChA (orange)
-        0x00,  // 0x26 3 bits (0x40, 0x20, 0x10) control Traktor-Button ChB (orange)
-        0x00,  // 0x27 3 bits (0x40, 0x20, 0x10) control USB-symbol on top (orange)
-        0x00   // 0x28 3 bits (0x40, 0x20, 0x10) control VU meter label "XF REVERSE" (orange)
+        0x00,  // 0x21 7 bits control VU meter label "MST"  (white)
+        0x00,  // 0x22 7 bits control Microphone-Button (orange)
+        0x00,  // 0x23 7 bits control Headphone-Button A (blue)
+        0x00,  // 0x24 7 bits control Headphone-Button B (blue)
+        0x00,  // 0x25 7 bits control Traktor-Button ChA (orange)
+        0x00,  // 0x26 7 bits control Traktor-Button ChB (orange)
+        0x00,  // 0x27 7 bits control USB-symbol on top (orange)
+        0x00   // 0x28 7 bits control VU meter label "XF REVERSE" (orange)
     ];
     controller.send(dataB, dataB.length, 0x81);
 
@@ -1020,16 +1020,16 @@ TraktorZ2.hotcueOutputHandler = function() {
 
             var colorCode = engine.getValue(sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_color");
             if (engine.getValue(sideChannel[chidx], "hotcue_" + (sideOffset[chidx] + i) + "_enabled") === 0) colorCode = 0;
-            var red =   ((colorCode & 0xFF0000) >> 16) / 0x20;
-            var green = ((colorCode & 0x00FF00) >>  8) / 0x20;
-            var blue =  ((colorCode & 0x0000FF)) / 0x20;
+            var red =   ((colorCode & 0xFF0000) >> 16);
+            var green = ((colorCode & 0x00FF00) >>  8);
+            var blue =  ((colorCode & 0x0000FF));
             // Scale color up to 100% brightness
             if ((red > green) && (red > blue)) {
-                var brightnessCorrectionFactor = 0x07 / red;
+                var brightnessCorrectionFactor = LedBright / red;
             } else if ((green > red) && (green > blue)) {
-                brightnessCorrectionFactor = 0x07 / green;
+                brightnessCorrectionFactor = LedBright / green;
             } else if ((blue > red) && (blue > green)) {
-                brightnessCorrectionFactor = 0x07 / blue;
+                brightnessCorrectionFactor = LedBright / blue;
             }
             red *= brightnessCorrectionFactor;
             green *= brightnessCorrectionFactor;
@@ -1071,14 +1071,14 @@ TraktorZ2.displayBeatLeds = function(group, now) {
             if ((TraktorZ2.beatLoopFractionCounter[group] <= 0) || (TraktorZ2.beatLoopFractionCounter[group] > beatPeriodMillis / 20) || (timeSinceLastBeatMillis >= beatPeriodMillis)) {
                 TraktorZ2.beatLoopFractionCounter[group] = beatPeriodMillis / 20;
                 TraktorZ2.lastBeatTimestamp[group] = Date.now();
-                if (TraktorZ2.displayBrightness[group] !== 7) {
-                    TraktorZ2.displayBrightness[group] = 7;
+                if (TraktorZ2.displayBrightness[group] !== LedBright) {
+                    TraktorZ2.displayBrightness[group] = LedBright;
                 } else {
-                    TraktorZ2.displayBrightness[group] = 0;
+                    TraktorZ2.displayBrightness[group] = LedOff;
                 }
             } else {
                 TraktorZ2.beatLoopFractionCounter[group]--;
-                TraktorZ2.displayBrightness[group] = (1 - (timeSinceLastBeatMillis / beatPeriodMillis * 2)) * 5 + 2;
+                TraktorZ2.displayBrightness[group] = (1 - (timeSinceLastBeatMillis / beatPeriodMillis * 2)) * 0x50 + 0x2F;
                 //HIDDebug("TraktorZ2.beatLoopFractionCounter[group] " + TraktorZ2.beatLoopFractionCounter[group] + "     TraktorZ2.lastBeatTimestamp[group] " + TraktorZ2.lastBeatTimestamp[group] + "   beatPeriodMillis " + beatPeriodMillis + "   TraktorZ2.displayBrightness[group] " + TraktorZ2.displayBrightness[group] + "   timeSinceLastBeatMillis " + timeSinceLastBeatMillis);
 
             }
@@ -1087,15 +1087,15 @@ TraktorZ2.displayBeatLeds = function(group, now) {
 
     } else {
         // No loop or beatloop_size >=1, than TraktorZ2.lastBeatTimestamp[group] is reliable
-        TraktorZ2.displayBrightness[group] = (1 - (timeSinceLastBeatMillis / beatPeriodMillis * 2)) * 5 + 2;
+        TraktorZ2.displayBrightness[group] = (1 - (timeSinceLastBeatMillis / beatPeriodMillis * 2)) * 0x50 + 0x2F;
         //HIDDebug("now " + now + "     TraktorZ2.lastBeatTimestamp[group] " + TraktorZ2.lastBeatTimestamp[group] + "   beatPeriodMillis " + beatPeriodMillis + "   TraktorZ2.displayBrightness[group] " + TraktorZ2.displayBrightness[group] + "   timeSinceLastBeatMillis " + timeSinceLastBeatMillis);
     }
 
-    if (TraktorZ2.displayBrightness[group] < 2) {
-        TraktorZ2.displayBrightness[group] = 2;
+    if (TraktorZ2.displayBrightness[group] < LedDimmed) {
+        TraktorZ2.displayBrightness[group] = LedDimmed;
     }
-    if (TraktorZ2.displayBrightness[group] > 7) {
-        TraktorZ2.displayBrightness[group] = 7;
+    if (TraktorZ2.displayBrightness[group] > LedBright) {
+        TraktorZ2.displayBrightness[group] = LedBright;
     }
 
     if ((group === "[Channel1]") || (group === "[Channel2]")) {
@@ -1259,33 +1259,33 @@ TraktorZ2.registerOutputPackets = function() {
         group = "[Channel" + ch + "]";
         for (hotcue = 1; hotcue <= 4; hotcue++) {
             var address = 0x1D + ((ch-1) * 4 * 3) + ((hotcue-1) * 3);
-            outputA.addOutput(group, "Hotcue" + hotcue + "Red",   address,   "B", 0x70);
-            outputA.addOutput(group, "Hotcue" + hotcue + "Green", address+1, "B", 0x70);
-            outputA.addOutput(group, "Hotcue" + hotcue + "Blue",  address+2, "B", 0x70);
+            outputA.addOutput(group, "Hotcue" + hotcue + "Red",   address,   "B", 0x7F);
+            outputA.addOutput(group, "Hotcue" + hotcue + "Green", address+1, "B", 0x7F);
+            outputA.addOutput(group, "Hotcue" + hotcue + "Blue",  address+2, "B", 0x7F);
         }
     }
 
 
-    outputA.addOutput("[Channel1]", "quantize", 0x03, "B", 0x70);
+    outputA.addOutput("[Channel1]", "quantize", 0x03, "B", 0x7F);
     engine.makeConnection("[Channel1]", "quantize", TraktorZ2.basicOutputHandler);
-    outputA.addOutput("[Channel2]", "quantize", 0x04, "B", 0x70);
+    outputA.addOutput("[Channel2]", "quantize", 0x04, "B", 0x7F);
     engine.makeConnection("[Channel2]", "quantize", TraktorZ2.basicOutputHandler);
 
-    outputA.addOutput("[Master]", "skin_settings", 0x05, "B", 0x70);
+    outputA.addOutput("[Master]", "skin_settings", 0x05, "B", 0x7F);
     engine.makeConnection("[Master]", "skin_settings", TraktorZ2.basicOutputHandler);
-    outputA.addOutput("[Master]", "shift", 0x06, "B", 0x70);
+    outputA.addOutput("[Master]", "shift", 0x06, "B", 0x7F);
 
-    outputA.addOutput("[Channel1]", "!deck", 0x07, "B", 0x70);
-    outputA.addOutput("[Channel2]", "!deck", 0x08, "B", 0x70);
-    outputA.addOutput("[Channel3]", "!deck", 0x09, "B", 0x70);
-    outputA.addOutput("[Channel4]", "!deck", 0x0A, "B", 0x70);
+    outputA.addOutput("[Channel1]", "!deck", 0x07, "B", 0x7F);
+    outputA.addOutput("[Channel2]", "!deck", 0x08, "B", 0x7F);
+    outputA.addOutput("[Channel3]", "!deck", 0x09, "B", 0x7F);
+    outputA.addOutput("[Channel4]", "!deck", 0x0A, "B", 0x7F);
 
-    outputA.addOutput("[Channel1]", "!beatIndicator", 0x11, "B", 0x70); // Load/Duplicate ChA
-    outputA.addOutput("[Channel2]", "!beatIndicator", 0x19, "B", 0x70); // Load/Duplicate ChB
-    outputA.addOutput("[Channel3]", "!beatIndicator", 0x0B, "B", 0x70); // Text label Deck C
-    outputA.addOutput("[Channel4]", "!beatIndicator", 0x0C, "B", 0x70); // Text label Deck D
+    outputA.addOutput("[Channel1]", "!beatIndicator", 0x11, "B", 0x7F); // Load/Duplicate ChA
+    outputA.addOutput("[Channel2]", "!beatIndicator", 0x19, "B", 0x7F); // Load/Duplicate ChB
+    outputA.addOutput("[Channel3]", "!beatIndicator", 0x0B, "B", 0x7F); // Text label Deck C
+    outputA.addOutput("[Channel4]", "!beatIndicator", 0x0C, "B", 0x7F); // Text label Deck D
 
-    outputA.addOutput("[EffectRack1_EffectUnit1]", "!On", 0x0D, "B", 0x70);
+    outputA.addOutput("[EffectRack1_EffectUnit1]", "!On", 0x0D, "B", 0x7F);
     engine.makeConnection("[EffectRack1_EffectUnit1_Effect1]", "enabled", this.fxOnLedHandler);
     engine.makeConnection("[EffectRack1_EffectUnit1_Effect1]", "loaded", this.fxOnLedHandler);
     engine.makeConnection("[EffectRack1_EffectUnit1_Effect2]", "enabled", this.fxOnLedHandler);
@@ -1293,12 +1293,12 @@ TraktorZ2.registerOutputPackets = function() {
     engine.makeConnection("[EffectRack1_EffectUnit1_Effect3]", "enabled", this.fxOnLedHandler);
     engine.makeConnection("[EffectRack1_EffectUnit1_Effect3]", "loaded", this.fxOnLedHandler);
 
-    outputA.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x0F, "B", 0x70);
+    outputA.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x0F, "B", 0x7F);
     engine.makeConnection("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", TraktorZ2.basicOutputHandler);
-    outputA.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x10, "B", 0x70);
+    outputA.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x10, "B", 0x7F);
     engine.makeConnection("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", TraktorZ2.basicOutputHandler);
 
-    outputA.addOutput("[EffectRack1_EffectUnit2]", "!On", 0x15, "B", 0x70);
+    outputA.addOutput("[EffectRack1_EffectUnit2]", "!On", 0x15, "B", 0x7F);
     engine.makeConnection("[EffectRack1_EffectUnit2_Effect1]", "enabled", this.fxOnLedHandler);
     engine.makeConnection("[EffectRack1_EffectUnit2_Effect1]", "loaded", this.fxOnLedHandler);
     engine.makeConnection("[EffectRack1_EffectUnit2_Effect2]", "enabled", this.fxOnLedHandler);
@@ -1306,25 +1306,25 @@ TraktorZ2.registerOutputPackets = function() {
     engine.makeConnection("[EffectRack1_EffectUnit2_Effect3]", "enabled", this.fxOnLedHandler);
     engine.makeConnection("[EffectRack1_EffectUnit2_Effect3]", "loaded", this.fxOnLedHandler);
 
-    outputA.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x17, "B", 0x70);
+    outputA.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x17, "B", 0x7F);
     engine.makeConnection("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", TraktorZ2.basicOutputHandler);
-    outputA.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x18, "B", 0x70);
+    outputA.addOutput("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x18, "B", 0x7F);
     engine.makeConnection("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", TraktorZ2.basicOutputHandler);
 
-    outputA.addOutput("[Channel1]", "slip_enabled", 0x0E, "B", 0x70);
+    outputA.addOutput("[Channel1]", "slip_enabled", 0x0E, "B", 0x7F);
     engine.makeConnection("[Channel1]", "slip_enabled", TraktorZ2.basicOutputHandler);
-    outputA.addOutput("[Channel1]", "!vinylcontrol_orange", 0x12, "B", 0x70);
-    outputA.addOutput("[Channel1]", "!vinylcontrol_green", 0x13, "B", 0x70);
+    outputA.addOutput("[Channel1]", "!vinylcontrol_orange", 0x12, "B", 0x7F);
+    outputA.addOutput("[Channel1]", "!vinylcontrol_green", 0x13, "B", 0x7F);
     engine.makeConnection("[Channel1]", "vinylcontrol_status", TraktorZ2.vinylcontrolOutputHandler);
-    outputA.addOutput("[Channel1]", "sync_enabled", 0x14, "B", 0x70);
+    outputA.addOutput("[Channel1]", "sync_enabled", 0x14, "B", 0x7F);
     engine.makeConnection("[Channel1]", "sync_enabled", TraktorZ2.basicOutputHandler);
 
-    outputA.addOutput("[Channel2]", "slip_enabled", 0x16, "B", 0x70);
+    outputA.addOutput("[Channel2]", "slip_enabled", 0x16, "B", 0x7F);
     engine.makeConnection("[Channel2]", "slip_enabled", TraktorZ2.basicOutputHandler);
-    outputA.addOutput("[Channel2]", "!vinylcontrol_orange", 0x1A, "B", 0x70);
-    outputA.addOutput("[Channel2]", "!vinylcontrol_green", 0x1B, "B", 0x70);
+    outputA.addOutput("[Channel2]", "!vinylcontrol_orange", 0x1A, "B", 0x7F);
+    outputA.addOutput("[Channel2]", "!vinylcontrol_green", 0x1B, "B", 0x7F);
     engine.makeConnection("[Channel2]", "vinylcontrol_status", TraktorZ2.vinylcontrolOutputHandler);
-    outputA.addOutput("[Channel2]", "sync_enabled", 0x1C, "B", 0x70);
+    outputA.addOutput("[Channel2]", "sync_enabled", 0x1C, "B", 0x7F);
     engine.makeConnection("[Channel2]", "sync_enabled", TraktorZ2.basicOutputHandler);
 
     engine.makeConnection("[Channel1]", "beat_active", TraktorZ2.beatOutputHandler);
@@ -1344,35 +1344,35 @@ TraktorZ2.registerOutputPackets = function() {
 
     for (ch in ledChannelOffsets) {
         for (var digit in ledDigitOffsets) {
-            outputA.addOutput(ch + digit, "segment_g", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x00, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment center horizontal bar brightness (orange)
-            outputA.addOutput(ch + digit, "segment_c", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x01, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower right vertical bar brightness (orange)
-            outputA.addOutput(ch + digit, "segment_b", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x02, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper right vertical bar brightness (orange)
-            outputA.addOutput(ch + digit, "segment_a", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x03, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper horizontal bar brightness (orange)
-            outputA.addOutput(ch + digit, "segment_f", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x04, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment upper left vertical bar brightness (orange)
-            outputA.addOutput(ch + digit, "segment_e", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x05, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower left vertical bar brightness (orange)
-            outputA.addOutput(ch + digit, "segment_d", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x06, "B", 0x70); // 3 bits (0x40, 0x20, 0x10) control Deck 1 3rd 7 segment lower horizontal bar brightness (orange)
+            outputA.addOutput(ch + digit, "segment_g", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x00, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment center horizontal bar brightness (orange)
+            outputA.addOutput(ch + digit, "segment_c", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x01, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment lower right vertical bar brightness (orange)
+            outputA.addOutput(ch + digit, "segment_b", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x02, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment upper right vertical bar brightness (orange)
+            outputA.addOutput(ch + digit, "segment_a", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x03, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment upper horizontal bar brightness (orange)
+            outputA.addOutput(ch + digit, "segment_f", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x04, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment upper left vertical bar brightness (orange)
+            outputA.addOutput(ch + digit, "segment_e", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x05, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment lower left vertical bar brightness (orange)
+            outputA.addOutput(ch + digit, "segment_d", ledChannelOffsets[ch] + ledDigitOffsets[digit] + 0x06, "B", 0x7F); // 7 bits control Deck 1 3rd 7 segment lower horizontal bar brightness (orange)
         }
     }
 
     this.controller.registerOutputPacket(outputA);
 
     // Headphone buttons
-    outputB.addOutput("[Channel1]", "pfl", 0x23, "B", 0x70);
+    outputB.addOutput("[Channel1]", "pfl", 0x23, "B", 0x7F);
     engine.makeConnection("[Channel1]", "pfl", TraktorZ2.basicOutputHandler);
 
-    outputB.addOutput("[Channel2]", "pfl", 0x24, "B", 0x70);
+    outputB.addOutput("[Channel2]", "pfl", 0x24, "B", 0x7F);
     engine.makeConnection("[Channel2]", "pfl", TraktorZ2.basicOutputHandler);
 
-    outputB.addOutput("[Channel1]", "traktorbutton", 0x25, "B", 0x70);
+    outputB.addOutput("[Channel1]", "traktorbutton", 0x25, "B", 0x7F);
     // engine.makeConnection("[Channel1]", "passthrough", TraktorZ2.basicOutputHandler);
 
-    outputB.addOutput("[Channel2]", "traktorbutton", 0x26, "B", 0x70);
+    outputB.addOutput("[Channel2]", "traktorbutton", 0x26, "B", 0x7F);
     // engine.makeConnection("[Channel2]", "passthrough", TraktorZ2.basicOutputHandler);
 
-    outputB.addOutput("[Master]", "!usblight", 0x27, "B", 0x70);
+    outputB.addOutput("[Master]", "!usblight", 0x27, "B", 0x7F);
 
-    outputB.addOutput("[Master]", "!VuLabelMst", 0x21, "B", 0x70);
-    outputB.addOutput("[Master]", "!crossfaderReverse", 0x28, "B", 0x70);
+    outputB.addOutput("[Master]", "!VuLabelMst", 0x21, "B", 0x7F);
+    outputB.addOutput("[Master]", "!crossfaderReverse", 0x28, "B", 0x7F);
 
 
     var VuOffsets = {
@@ -1388,11 +1388,11 @@ TraktorZ2.registerOutputPackets = function() {
     engine.makeConnection("[Master]", "PeakIndicatorR", TraktorZ2.displayPeakIndicator);
 
     for (ch in VuOffsets) {
-        outputB.addOutput(ch, "!VuLabel", VuOffsets[ch], "B", 0x70);
+        outputB.addOutput(ch, "!VuLabel", VuOffsets[ch], "B", 0x7F);
         for (var i = 0; i < 6; i++) {
-            outputB.addOutput(ch, "!VuMeter" + i, VuOffsets[ch] + i + 0x01, "B", 0x70);
+            outputB.addOutput(ch, "!VuMeter" + i, VuOffsets[ch] + i + 0x01, "B", 0x7F);
         }
-        outputB.addOutput(ch, "!PeakIndicator", VuOffsets[ch] + 0x07, "B", 0x70);
+        outputB.addOutput(ch, "!PeakIndicator", VuOffsets[ch] + 0x07, "B", 0x7F);
         engine.makeConnection(ch, "VuMeter", TraktorZ2.displayVuValue);
         engine.makeConnection(ch, "PeakIndicator", TraktorZ2.displayPeakIndicator);
     }
@@ -1428,12 +1428,12 @@ TraktorZ2.displayVuValue = function(value, group, key) {
     }
 
     for (var i = 0; i < 6; i++) {
-        var brightness = ((value * 6) - i) * 3;
+        var brightness = ((value * 6) - i) * 0x30;
         if (brightness < LedOff) {
             brightness = LedOff;
         }
-        if (brightness > 3) {
-            brightness = 3;
+        if (brightness > 0x30) {
+            brightness = 0x30;
         }
         TraktorZ2.controller.setOutput(ch, "!VuMeter" + i, brightness, false);
     }
@@ -1513,6 +1513,8 @@ TraktorZ2.init = function(_id) {
     // 0xF1 9n 40  -> Bit 0x04 of n means  MasterCh (internal) mixing
     // 0xF1 9n 40  -> Bit 0x08 of n means  Mic/Aux (internal) mixing
 
+    //HIDDebug(controller.getFeatureReport(0xF1));
+    //HIDDebug(controller.getFeatureReport(0xF3));
     var data;
     data = [0xFF, 0x40];
     controller.sendFeatureReport(data, 0xF1);
@@ -1543,6 +1545,9 @@ TraktorZ2.init = function(_id) {
 
     TraktorZ2.hotcueOutputHandler();
     HIDDebug("TraktorZ2: Init done!");
+
+    //HIDDebug(controller.getInputReport(0x01));
+    //HIDDebug(controller.getInputReport(0x02));
 
     engine.beginTimer(20, this.displayLEDs);
 };
