@@ -1,8 +1,8 @@
 #pragma once
 
 #include "controllers/controller.h"
-#include "controllers/midi/midicontrollerpreset.h"
-#include "controllers/midi/midicontrollerpresetfilehandler.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
+#include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
@@ -23,16 +23,16 @@ class MidiController : public Controller {
 
     ControllerJSProxy* jsProxy() override;
 
-    QString presetExtension() override;
+    QString mappingExtension() override;
 
-    ControllerPresetPointer getPreset() const override {
-        MidiControllerPreset* pClone = new MidiControllerPreset();
-        *pClone = m_preset;
-        return ControllerPresetPointer(pClone);
+    LegacyControllerMappingPointer getMapping() const override {
+        LegacyMidiControllerMapping* pClone = new LegacyMidiControllerMapping();
+        *pClone = m_mapping;
+        return LegacyControllerMappingPointer(pClone);
     }
 
-    void visit(const MidiControllerPreset* preset) override;
-    void visit(const HidControllerPreset* preset) override;
+    void visit(const LegacyMidiControllerMapping* mapping) override;
+    void visit(const LegacyHidControllerMapping* mapping) override;
 
     void accept(ControllerVisitor* visitor) override {
         if (visitor) {
@@ -41,10 +41,10 @@ class MidiController : public Controller {
     }
 
     bool isMappable() const override {
-        return m_preset.isMappable();
+        return m_mapping.isMappable();
     }
 
-    bool matchPreset(const PresetInfo& preset) override;
+    bool matchMapping(const MappingInfo& mapping) override;
 
   signals:
     void messageReceived(unsigned char status, unsigned char control, unsigned char value);
@@ -73,7 +73,7 @@ class MidiController : public Controller {
     int close() override;
 
   private slots:
-    bool applyPreset() override;
+    bool applyMapping() override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
@@ -96,15 +96,15 @@ class MidiController : public Controller {
     void updateAllOutputs();
     void destroyOutputHandlers();
 
-    /// Returns a pointer to the currently loaded controller preset. For internal
+    /// Returns a pointer to the currently loaded controller mapping. For internal
     /// use only.
-    ControllerPreset* preset() override {
-        return &m_preset;
+    LegacyControllerMapping* mapping() override {
+        return &m_mapping;
     }
 
     QHash<uint16_t, MidiInputMapping> m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
-    MidiControllerPreset m_preset;
+    LegacyMidiControllerMapping m_mapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
 

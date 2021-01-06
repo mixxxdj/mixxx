@@ -21,6 +21,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_coreservices.cpp"
 #include "preferences/settingsmanager.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
@@ -107,6 +108,7 @@ CoreServices::CoreServices(const CmdlineArgs& args)
 void CoreServices::initializeSettings() {
     QString settingsPath = m_cmdlineArgs.getSettingsPath();
 #ifdef __APPLE__
+    Sandbox::checkSandboxed();
     if (!m_cmdlineArgs.getSettingsPathSet()) {
         settingsPath = Sandbox::migrateOldSettings();
     }
@@ -153,7 +155,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
-    Sandbox::initialize(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
+    Sandbox::setPermissionsFilePath(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
 
     QString resourcePath = pConfig->getResourcePath();
 
@@ -396,7 +398,7 @@ void CoreServices::initializeKeyboard() {
     m_pKbdConfigEmpty = std::make_shared<ConfigObject<ConfigValueKbd>>(QString());
 
     if (QFile::exists(userKeyboard)) {
-        qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
+        qDebug() << "Found and will use custom keyboard mapping" << userKeyboard;
         m_pKbdConfig = std::make_shared<ConfigObject<ConfigValueKbd>>(userKeyboard);
     } else {
         // Default to the locale for the main input method (e.g. keyboard).
@@ -406,7 +408,7 @@ void CoreServices::initializeKeyboard() {
         QString defaultKeyboard = QString(resourcePath).append("keyboard/");
         defaultKeyboard += locale.name();
         defaultKeyboard += ".kbd.cfg";
-        qDebug() << "Found and will use default keyboard preset" << defaultKeyboard;
+        qDebug() << "Found and will use default keyboard mapping" << defaultKeyboard;
 
         if (!QFile::exists(defaultKeyboard)) {
             qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";

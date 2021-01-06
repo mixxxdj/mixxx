@@ -31,6 +31,7 @@
 #include "util/compatibility.h"
 #include "util/datetime.h"
 #include "util/db/fwdsqlquery.h"
+#include "util/db/sqlite.h"
 #include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqllikewildcards.h"
 #include "util/db/sqlstringformatter.h"
@@ -554,7 +555,8 @@ void bindTrackLibraryValues(
 
     const PlayCounter& playCounter = track.getPlayCounter();
     pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
-    pTrackLibraryQuery->bindValue(":last_played_at", playCounter.getLastPlayedAt());
+    pTrackLibraryQuery->bindValue(":last_played_at",
+            mixxx::sqlite::writeGeneratedTimestamp(playCounter.getLastPlayedAt()));
     pTrackLibraryQuery->bindValue(":played", playCounter.isPlayed() ? 1 : 0);
 
     const CoverInfoRelative& coverInfo = track.getCoverInfo();
@@ -1170,8 +1172,9 @@ bool setTrackPlayed(const QSqlRecord& record, const int column,
 }
 
 bool setTrackLastPlayedAt(const QSqlRecord& record, const int column, TrackPointer pTrack) {
-    PlayCounter playCounter(pTrack->getPlayCounter());
-    playCounter.setLastPlayedAt(record.value(column).toDateTime());
+    auto playCounter = pTrack->getPlayCounter();
+    playCounter.setLastPlayedAt(
+            mixxx::sqlite::readGeneratedTimestamp(record.value(column)));
     pTrack->setPlayCounter(playCounter);
     return false;
 }

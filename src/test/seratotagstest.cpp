@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "track/serato/tags.h"
+#include "util/color/predefinedcolorpalettes.h"
 
 class SeratoTagsTest : public testing::Test {
   protected:
@@ -160,4 +161,23 @@ TEST_F(SeratoTagsTest, SetCueInfos) {
     seratoTags.setCueInfos(cueInfos);
     EXPECT_EQ(seratoTags.getCueInfos().size(), cueInfos.size());
     EXPECT_EQ(seratoTags.getCueInfos(), cueInfos);
+}
+
+TEST_F(SeratoTagsTest, CueColorConversionRoundtrip) {
+    for (const auto color : mixxx::PredefinedColorPalettes::
+                    kSeratoTrackMetadataHotcueColorPalette) {
+        const auto displayedColor = mixxx::SeratoTags::storedToDisplayedSeratoDJProCueColor(color);
+        const auto storedColor =
+                mixxx::SeratoTags::displayedToStoredSeratoDJProCueColor(
+                        displayedColor);
+        EXPECT_EQ(color, storedColor);
+    }
+
+    for (const auto color : mixxx::PredefinedColorPalettes::kSeratoDJProHotcueColorPalette) {
+        const auto storedColor = mixxx::SeratoTags::displayedToStoredSeratoDJProCueColor(color);
+        const auto displayedColor =
+                mixxx::SeratoTags::storedToDisplayedSeratoDJProCueColor(
+                        storedColor);
+        EXPECT_EQ(color, displayedColor);
+    }
 }

@@ -7,6 +7,7 @@
 #include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_controllerscriptenginelegacy.cpp"
 
 ControllerScriptEngineLegacy::ControllerScriptEngineLegacy(Controller* controller)
         : ControllerScriptEngineBase(controller) {
@@ -116,7 +117,7 @@ bool ControllerScriptEngineLegacy::initialize() {
     engineGlobalObject.setProperty(
             "engine", m_pJSEngine->newQObject(legacyScriptInterface));
 
-    for (const ControllerPreset::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
+    for (const LegacyControllerMapping::ScriptFileInfo& script : std::as_const(m_scriptFiles)) {
         if (!evaluateScriptFile(script.file)) {
             shutdown();
             return false;

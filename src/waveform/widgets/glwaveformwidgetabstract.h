@@ -7,8 +7,6 @@
 #include "waveform/sharedglcontext.h"
 #include "waveform/widgets/waveformwidgetabstract.h"
 
-#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-
 QT_FORWARD_DECLARE_CLASS(QString)
 
 /// GLWaveformWidgetAbstract is a WaveformWidgetAbstract & QGLWidget that has
@@ -19,11 +17,16 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public QGLWidget
   public:
     GLWaveformWidgetAbstract(const QString& group, QWidget* parent)
             : WaveformWidgetAbstract(group),
-              QGLWidget(parent, SharedGLContext::getWidget()),
-              m_pGlRenderer(nullptr) {
+              QGLWidget(parent, SharedGLContext::getWidget())
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+              ,
+              m_pGlRenderer(nullptr)
+#endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+    {
     }
 
   protected:
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     void initializeGL() override {
         if (m_pGlRenderer) {
             m_pGlRenderer->onInitializeGL();
@@ -31,6 +34,5 @@ class GLWaveformWidgetAbstract : public WaveformWidgetAbstract, public QGLWidget
     }
 
     GLWaveformRenderer* m_pGlRenderer;
-};
-
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+};

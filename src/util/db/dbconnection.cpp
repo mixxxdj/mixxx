@@ -189,7 +189,7 @@ int sqliteStringCompareUTF16(void* pArg,
     return pCollator->compare(string1, string2);
 }
 
-const char* const kLexicographicalCollationFunc = "mixxxLexicographicalCollationFunc";
+const char kLexicographicalCollationFunc[] = "mixxxLexicographicalCollationFunc";
 
 // This implements the like() SQL function. This is used by the LIKE operator.
 // The SQL statement 'A LIKE B' is implemented as 'like(B, A)', and if there is
@@ -374,7 +374,7 @@ void DbConnection::close() {
 //static
 QString DbConnection::collateLexicographically(const QString& orderByQuery) {
 #ifdef __SQLITE3__
-        return orderByQuery + QString(" COLLATE %1").arg(kLexicographicalCollationFunc);
+    return orderByQuery + QStringLiteral(" COLLATE ") + kLexicographicalCollationFunc;
 #else
         return orderByQuery;
 #endif //  __SQLITE3__

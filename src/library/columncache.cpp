@@ -3,6 +3,16 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackschema.h"
 #include "moc_columncache.cpp"
+#include "util/db/dbconnection.h"
+
+namespace {
+
+const QString kSortInt = QStringLiteral("cast(%1 as integer)");
+const QString kSortNoCase = QStringLiteral("lower(%1)");
+const QString kSortNoCaseLex = mixxx::DbConnection::collateLexicographically(
+        QStringLiteral("lower(%1)"));
+
+} // namespace
 
 ColumnCache::ColumnCache(const QStringList& columns) {
     m_pKeyNotationCP = new ControlProxy("[Library]", "key_notation", this);
@@ -38,7 +48,6 @@ void ColumnCache::setColumns(const QStringList& columns) {
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_GROUPING, LIBRARYTABLE_GROUPING);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_TRACKNUMBER, LIBRARYTABLE_TRACKNUMBER);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_FILETYPE, LIBRARYTABLE_FILETYPE);
-    insertColumnNameByEnum(COLUMN_LIBRARYTABLE_NATIVELOCATION, LIBRARYTABLE_LOCATION);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_COMMENT, LIBRARYTABLE_COMMENT);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_DURATION, LIBRARYTABLE_DURATION);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_BITRATE, LIBRARYTABLE_BITRATE);
@@ -53,6 +62,7 @@ void ColumnCache::setColumns(const QStringList& columns) {
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_DATETIMEADDED, LIBRARYTABLE_DATETIMEADDED);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_HEADERPARSED, LIBRARYTABLE_HEADERPARSED);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_TIMESPLAYED, LIBRARYTABLE_TIMESPLAYED);
+    insertColumnNameByEnum(COLUMN_LIBRARYTABLE_LAST_PLAYED_AT, LIBRARYTABLE_LAST_PLAYED_AT);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_PLAYED, LIBRARYTABLE_PLAYED);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_RATING, LIBRARYTABLE_RATING);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_KEY, LIBRARYTABLE_KEY);
@@ -67,14 +77,13 @@ void ColumnCache::setColumns(const QStringList& columns) {
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_COVERART_DIGEST, LIBRARYTABLE_COVERART_DIGEST);
     insertColumnNameByEnum(COLUMN_LIBRARYTABLE_COVERART_HASH, LIBRARYTABLE_COVERART_HASH);
 
+    insertColumnNameByEnum(COLUMN_TRACKLOCATIONSTABLE_LOCATION, TRACKLOCATIONSTABLE_LOCATION);
     insertColumnNameByEnum(COLUMN_TRACKLOCATIONSTABLE_FSDELETED, TRACKLOCATIONSTABLE_FSDELETED);
 
     insertColumnNameByEnum(COLUMN_PLAYLISTTRACKSTABLE_TRACKID, PLAYLISTTRACKSTABLE_TRACKID);
     insertColumnNameByEnum(COLUMN_PLAYLISTTRACKSTABLE_POSITION, PLAYLISTTRACKSTABLE_POSITION);
     insertColumnNameByEnum(COLUMN_PLAYLISTTRACKSTABLE_PLAYLISTID, PLAYLISTTRACKSTABLE_PLAYLISTID);
-    insertColumnNameByEnum(COLUMN_PLAYLISTTRACKSTABLE_LOCATION, PLAYLISTTRACKSTABLE_LOCATION);
-    insertColumnNameByEnum(COLUMN_PLAYLISTTRACKSTABLE_ARTIST, PLAYLISTTRACKSTABLE_ARTIST);
-    insertColumnNameByEnum(COLUMN_PLAYLISTTRACKSTABLE_TITLE, PLAYLISTTRACKSTABLE_TITLE);
+
     insertColumnNameByEnum(
             COLUMN_PLAYLISTTRACKSTABLE_DATETIMEADDED,
             PLAYLISTTRACKSTABLE_DATETIMEADDED);
@@ -91,27 +100,25 @@ void ColumnCache::setColumns(const QStringList& columns) {
         m_columnIndexByEnum[it.key()] = fieldIndex(it.value());
     }
 
-    const QString sortInt("cast(%1 as integer)");
-    const QString sortNoCase("lower(%1)");
-
     m_columnSortByIndex.clear();
     // Add the columns that requires a special sort
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_ARTIST, sortNoCase);
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_TITLE, sortNoCase);
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_ALBUM, sortNoCase);
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_ALBUMARTIST, sortNoCase);
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_YEAR, sortNoCase);
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_GENRE, sortNoCase);
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_COMPOSER, sortNoCase);
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_GROUPING, sortNoCase);
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_TRACKNUMBER, sortInt);
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_FILETYPE, sortNoCase);
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_NATIVELOCATION, sortNoCase);
-    insertColumnSortByIndex(COLUMN_LIBRARYTABLE_COMMENT, sortNoCase);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_ARTIST, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TITLE, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_ALBUM, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_ALBUMARTIST, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_YEAR, kSortNoCase);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_GENRE, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COMPOSER, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_GROUPING, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TRACKNUMBER, kSortInt);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_FILETYPE, kSortNoCase);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COMMENT, kSortNoCaseLex);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_BITRATE, kSortInt);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_BPM, kSortInt);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_SAMPLERATE, kSortInt);
+    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TIMESPLAYED, kSortInt);
 
-    insertColumnSortByIndex(COLUMN_PLAYLISTTRACKSTABLE_LOCATION, sortNoCase);
-    insertColumnSortByIndex(COLUMN_PLAYLISTTRACKSTABLE_ARTIST, sortNoCase);
-    insertColumnSortByIndex(COLUMN_PLAYLISTTRACKSTABLE_TITLE, sortNoCase);
+    insertColumnSortByEnum(COLUMN_TRACKLOCATIONSTABLE_LOCATION, kSortNoCase);
 
     slotSetKeySortOrder(m_pKeyNotationCP->get());
 }

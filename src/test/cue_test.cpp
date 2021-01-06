@@ -8,14 +8,6 @@
 
 namespace mixxx {
 
-TEST(CueTest, DefaultCueToCueInfoTest) {
-    const Cue cueObject;
-    auto cueInfo = cueObject.getCueInfo(
-            audio::SampleRate(44100));
-    cueInfo.setColor(std::nullopt);
-    EXPECT_EQ(CueInfo(), cueInfo);
-}
-
 TEST(CueTest, DefaultCueInfoToCueRoundtrip) {
     const CueInfo cueInfo1;
     const Cue cueObject(
