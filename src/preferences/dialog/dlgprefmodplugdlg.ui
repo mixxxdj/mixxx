@@ -398,10 +398,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="label_12">
-        <property name="text">
-         <string>All settings take effect on next track load. Currently loaded tracks are not affected. For an explanation of these settings, see the &lt;a href=&quot;http://wiki.openmpt.org/Manual:_Setup/Player&quot;&gt;OpenMPT manual&lt;/a&gt;.</string>
-        </property>
+       <widget class="QLabel" name="modplugSettingsHint">
         <property name="wordWrap">
          <bool>true</bool>
         </property>

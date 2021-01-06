@@ -39,6 +39,8 @@ DlgPrefController::DlgPrefController(
           m_pOutputProxyModel(nullptr),
           m_bDirty(false) {
     m_ui.setupUi(this);
+    // Create text color for the file and wiki links
+    createLinkColor();
 
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
@@ -253,40 +255,46 @@ QString DlgPrefController::mappingAuthor(
     return tr("No Author");
 }
 
-QString DlgPrefController::mappingForumLink(
+QString DlgPrefController::mappingSupportLinks(
         const LegacyControllerMappingPointer pMapping) const {
-    QString url;
-    if (pMapping) {
-        QString link = pMapping->forumlink();
-        if (link.length() > 0) {
-            url = "<a href=\"" + link + "\">Mixxx Forums</a>";
-        }
+    if (!pMapping) {
+        return QString();
     }
-    return url;
-}
 
-QString DlgPrefController::mappingWikiLink(
-        const LegacyControllerMappingPointer pMapping) const {
-    QString url;
-    if (pMapping) {
-        QString link = pMapping->wikilink();
-        if (link.length() > 0) {
-            url = "<a href=\"" + link + "\">Mixxx Wiki</a>";
-        }
-    }
-    return url;
-}
+    QStringList linkList;
 
-QString DlgPrefController::mappingManualLink(
-        const LegacyControllerMappingPointer pMapping) const {
-    QString url;
-    if (pMapping) {
-        QString link = pMapping->manualLink();
-        if (!link.isEmpty()) {
-            url = "<a href=\"" + link + "\">Manual</a>";
-        }
+    QString forumLink = pMapping->forumlink();
+    if (!forumLink.isEmpty()) {
+        linkList << coloredLinkString(
+                m_pLinkColor,
+                "Mixxx Forums",
+                forumLink);
     }
-    return url;
+
+    QString wikiLink = pMapping->wikilink();
+    if (!wikiLink.isEmpty()) {
+        linkList << coloredLinkString(
+                m_pLinkColor,
+                "Mixxx Wiki",
+                wikiLink);
+    }
+
+    QString manualLink = pMapping->manualLink();
+    if (!manualLink.isEmpty()) {
+        linkList << coloredLinkString(
+                m_pLinkColor,
+                "Mixxx Manual",
+                manualLink);
+    }
+
+    // There is always at least one support link.
+    // TODO(rryan): This is a horrible general support link for MIDI!
+    linkList << coloredLinkString(
+            m_pLinkColor,
+            tr("Troubleshooting"),
+            MIXXX_WIKI_MIDI_SCRIPTING_URL);
+
+    return QString(linkList.join("&nbsp;&nbsp;"));
 }
 
 QString DlgPrefController::mappingFileLinks(
@@ -298,20 +306,20 @@ QString DlgPrefController::mappingFileLinks(
     const QString builtinFileSuffix = QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
     QString systemMappingPath = resourceMappingsPath(m_pConfig);
     QStringList linkList;
-    QString xmlFileName = QFileInfo(pMapping->filePath()).fileName();
-    QString xmlFileLink = QStringLiteral("<a href=\"") +
-            pMapping->filePath() + QStringLiteral("\">") +
-            xmlFileName + QStringLiteral("</a>");
+    QString xmlFileLink = coloredLinkString(
+            m_pLinkColor,
+            QFileInfo(pMapping->filePath()).fileName(),
+            pMapping->filePath());
     if (pMapping->filePath().startsWith(systemMappingPath)) {
         xmlFileLink += builtinFileSuffix;
     }
     linkList << xmlFileLink;
 
     for (const auto& script : pMapping->getScriptFiles()) {
-        QString scriptFileLink = QStringLiteral("<a href=\"") +
-                script.file.absoluteFilePath() + QStringLiteral("\">") +
-                script.name + QStringLiteral("</a>");
-
+        QString scriptFileLink = coloredLinkString(
+                m_pLinkColor,
+                script.name,
+                script.file.absoluteFilePath());
         if (!script.file.exists()) {
             scriptFileLink +=
                     QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
@@ -666,35 +674,8 @@ void DlgPrefController::slotShowMapping(LegacyControllerMappingPointer mapping) 
     m_ui.labelLoadedMapping->setText(mappingName(mapping));
     m_ui.labelLoadedMappingDescription->setText(mappingDescription(mapping));
     m_ui.labelLoadedMappingAuthor->setText(mappingAuthor(mapping));
-    QStringList supportLinks;
-
-    QString forumLink = mappingForumLink(mapping);
-    if (forumLink.length() > 0) {
-        supportLinks << forumLink;
-    }
-
-    QString manualLink = mappingManualLink(mapping);
-    if (manualLink.length() > 0) {
-        supportLinks << manualLink;
-    }
-
-    QString wikiLink = mappingWikiLink(mapping);
-    if (wikiLink.length() > 0) {
-        supportLinks << wikiLink;
-    }
-
-    // There is always at least one support link.
-    // TODO(rryan): This is a horrible general support link for MIDI!
-    QString troubleShooting = QString(
-        "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">%1</a>")
-            .arg(tr("Troubleshooting"));
-    supportLinks << troubleShooting;
-
-    QString support = supportLinks.join("&nbsp;&nbsp;");
-    m_ui.labelLoadedMappingSupportLinks->setText(support);
-
-    QString fileLinks = mappingFileLinks(mapping);
-    m_ui.labelLoadedMappingScriptFileLinks->setText(fileLinks);
+    m_ui.labelLoadedMappingSupportLinks->setText(mappingSupportLinks(mapping));
+    m_ui.labelLoadedMappingScriptFileLinks->setText(mappingFileLinks(mapping));
 
     // We mutate this mapping so keep a reference to it while we are using it.
     // TODO(rryan): Clone it? Technically a waste since nothing else uses this
