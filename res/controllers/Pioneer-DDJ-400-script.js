@@ -451,7 +451,7 @@ PioneerDDJ400.cueLoopCallRight = function(_channel, _control, value, _status, gr
 //
 
 PioneerDDJ400.syncPressed = function(channel, control, value, status, group) {
-    if (engine.getValue(group, "sync_enabled")) {
+    if (engine.getValue(group, "sync_enabled") && value > 0) {
         engine.setValue(group, "sync_enabled", 0);
     } else {
         engine.setValue(group, "beatsync", value);
