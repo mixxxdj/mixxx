@@ -2273,23 +2273,6 @@
                 <on>0x7F</on>
                 <minimum>0.5</minimum>
             </output>
-            <output>
-                <group>[Channel1]</group>
-                <key>sync_master</key>
-
-                <status>0x90</status>
-                <midino>0x60</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
-            <output>
-                <group>[Channel2]</group>
-                <key>sync_master</key>
-                <status>0x91</status>
-                <midino>0x60</midino>
-                <on>0x7F</on>
-                <minimum>0.5</minimum>
-            </output>
 
             <!-- CH CUE Ch1 9054 Ch2 9154 -->
             <output>
