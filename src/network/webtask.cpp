@@ -208,6 +208,7 @@ void WebTask::timerEvent(QTimerEvent* event) {
     }
     if (pPendingNetworkReply->isFinished()) {
         // Nothing to do
+        return;
     }
     kLogger.info()
             << this
