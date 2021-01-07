@@ -175,10 +175,8 @@ void TagFetcher::slotAcoustIdTaskAborted() {
 void TagFetcher::slotAcoustIdTaskNetworkError(
         const QUrl& requestUrl,
         QNetworkReply::NetworkError errorCode,
-        const QString& errorString,
-        const QByteArray& errorContent) {
+        const QString& errorString) {
     Q_UNUSED(requestUrl);
-    Q_UNUSED(errorContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(m_pAcoustIdTask.get() ==
             qobject_cast<mixxx::AcoustIdLookupTask*>(sender()));
@@ -208,10 +206,8 @@ void TagFetcher::slotMusicBrainzTaskAborted() {
 void TagFetcher::slotMusicBrainzTaskNetworkError(
         const QUrl& requestUrl,
         QNetworkReply::NetworkError errorCode,
-        const QString& errorString,
-        const QByteArray& errorContent) {
+        const QString& errorString) {
     Q_UNUSED(requestUrl);
-    Q_UNUSED(errorContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(m_pMusicBrainzTask.get() ==
             qobject_cast<mixxx::MusicBrainzRecordingsTask*>(sender()));

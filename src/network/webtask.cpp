@@ -78,8 +78,7 @@ WebTask::WebTask(
 void WebTask::onNetworkError(
         QUrl&& requestUrl,
         QNetworkReply::NetworkError errorCode,
-        QString&& errorString,
-        QByteArray&& errorContent) {
+        QString&& errorString) {
     DEBUG_ASSERT(m_state == State::Pending);
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
 
@@ -104,8 +103,7 @@ void WebTask::onNetworkError(
         emitNetworkError(
                 std::move(requestUrl),
                 errorCode,
-                std::move(errorString),
-                std::move(errorContent));
+                std::move(errorString));
     }
 }
 
@@ -128,8 +126,7 @@ void WebTask::slotStart(int timeoutMillis) {
         onNetworkError(
                 QUrl(),
                 QNetworkReply::NetworkSessionFailedError,
-                tr("No network access"),
-                QByteArray());
+                tr("No network access"));
         return;
     }
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(pNetworkAccessManager);
@@ -317,8 +314,7 @@ void WebTask::slotNetworkReplyFinished() {
         onNetworkError(
                 pFinishedNetworkReply->request().url(),
                 pFinishedNetworkReply->error(),
-                pFinishedNetworkReply->errorString(),
-                pFinishedNetworkReply->readAll());
+                pFinishedNetworkReply->errorString());
         DEBUG_ASSERT(hasTerminated());
         return;
     }

@@ -171,8 +171,7 @@ class WebTask : public NetworkTask {
     void onNetworkError(
             QUrl&& requestUrl,
             QNetworkReply::NetworkError errorCode,
-            QString&& errorString,
-            QByteArray&& errorContent);
+            QString&& errorString);
 
     /// All member variables must only be accessed from
     /// the event loop thread!!

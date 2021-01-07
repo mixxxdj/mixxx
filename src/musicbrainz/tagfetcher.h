@@ -50,8 +50,7 @@ class TagFetcher : public QObject {
     void slotAcoustIdTaskNetworkError(
             const QUrl& requestUrl,
             QNetworkReply::NetworkError errorCode,
-            const QString& errorString,
-            const QByteArray& errorContent);
+            const QString& errorString);
 
     void slotMusicBrainzTaskSucceeded(
             const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
@@ -63,8 +62,7 @@ class TagFetcher : public QObject {
     void slotMusicBrainzTaskNetworkError(
             const QUrl& requestUrl,
             QNetworkReply::NetworkError errorCode,
-            const QString& errorString,
-            const QByteArray& errorContent);
+            const QString& errorString);
 
   private:
     QNetworkAccessManager m_network;

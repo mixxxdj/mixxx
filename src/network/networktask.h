@@ -57,8 +57,7 @@ class NetworkTask : public QObject {
     void emitNetworkError(
             QUrl&& requestUrl,
             QNetworkReply::NetworkError errorCode,
-            QString&& errorString,
-            QByteArray&& errorContent);
+            QString&& errorString);
 
     /// All member variables must only be accessed from
     /// the event loop thread!!
@@ -101,8 +100,7 @@ class NetworkTask : public QObject {
     void networkError(
             const QUrl& requestUrl,
             QNetworkReply::NetworkError errorCode,
-            const QString& errorString,
-            const QByteArray& errorContent);
+            const QString& errorString);
 };
 
 } // namespace network

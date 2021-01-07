@@ -81,8 +81,7 @@ void NetworkTask::emitAborted(
 void NetworkTask::emitNetworkError(
         QUrl&& requestUrl,
         QNetworkReply::NetworkError errorCode,
-        QString&& errorString,
-        QByteArray&& errorContent) {
+        QString&& errorString) {
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&NetworkTask::networkError)) {
         kLogger.warning()
@@ -90,16 +89,14 @@ void NetworkTask::emitNetworkError(
                 << "Unhandled network error signal"
                 << requestUrl
                 << errorCode
-                << errorString
-                << errorContent;
+                << errorString;
         deleteLater();
         return;
     }
     emit networkError(
             std::move(requestUrl),
             errorCode,
-            std::move(errorString),
-            std::move(errorContent));
+            std::move(errorString));
 }
 
 } // namespace network
