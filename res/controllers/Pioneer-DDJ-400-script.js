@@ -50,6 +50,10 @@ PioneerDDJ400.lights = {
         status: 0x94,
         data1: 0x47,
     },
+    shiftBeatFx: {
+        status: 0x94,
+        data1: 0x43,
+    },
     deck1: {
         vuMeter: {
             status: 0xB0,
@@ -221,6 +225,7 @@ PioneerDDJ400.toggleFxLight = function(_value, _group, _control) {
     var enabled = engine.getValue(PioneerDDJ400.focusedFxGroup(), "enabled");
 
     PioneerDDJ400.toggleLight(PioneerDDJ400.lights.beatFx, enabled);
+    PioneerDDJ400.toggleLight(PioneerDDJ400.lights.shiftBeatFx, enabled);
 };
 
 PioneerDDJ400.focusedFxGroup = function() {
@@ -281,6 +286,7 @@ PioneerDDJ400.beatFxOnOffShiftPressed = function(_channel, _control, value) {
         engine.setValue("[EffectRack1_EffectUnit1_Effect" + i + "]", "enabled", 0);
     }
     PioneerDDJ400.toggleLight(PioneerDDJ400.lights.beatFx, false);
+    PioneerDDJ400.toggleLight(PioneerDDJ400.lights.shiftBeatFx, false);
 };
 
 PioneerDDJ400.beatFxChannel = function(_channel, control, value, _status, group) {
@@ -674,4 +680,5 @@ PioneerDDJ400.shutdown = function() {
 
     // stop any flashing lights
     PioneerDDJ400.toggleLight(PioneerDDJ400.lights.beatFx, false);
+    PioneerDDJ400.toggleLight(PioneerDDJ400.lights.shiftBeatFx, false);
 };
