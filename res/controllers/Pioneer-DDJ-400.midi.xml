@@ -73,6 +73,27 @@
             DECK Section START
             -->
             <control>
+                <description>Shift (DECK1)</description>
+                <group>[Channel1]</group>
+                <key>PioneerDDJ400.shiftPressed</key>
+                <status>0x90</status>
+                <midino>0x3F</midino>
+                <options>
+                  <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <description>Shift (DECK2)</description>
+                <group>[Channel2]</group>
+                <key>PioneerDDJ400.shiftPressed</key>
+                <status>0x91</status>
+                <midino>0x3F</midino>
+                <options>
+                  <Script-Binding/>
+                </options>
+            </control>
+
+            <control>
                 <description>PLAY/PAUSE (DECK1) - press - Play/Pause</description>
                 <group>[Channel1]</group>
                 <key>play</key>

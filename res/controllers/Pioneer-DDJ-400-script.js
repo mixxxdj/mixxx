@@ -108,7 +108,9 @@ PioneerDDJ400.beta = PioneerDDJ400.alpha/32;
 PioneerDDJ400.fastSeekScale = 150;
 PioneerDDJ400.bendScale = 0.9;
 
-PioneerDDJ400.tempoRanges = [0.06, 0.10, 0.16, 0.25]; // WIDE = 25%?
+PioneerDDJ400.tempoRanges = [0.06, 0.10, 0.16, 0.25];
+
+PioneerDDJ400.shiftButtonDown = [false, false];
 
 // Jog wheel loop adjust
 PioneerDDJ400.loopAdjustIn = [false, false];
@@ -227,12 +229,12 @@ PioneerDDJ400.focusedFxGroup = function() {
 };
 
 PioneerDDJ400.beatFxLevelDepthRotate = function(_channel, _control, value) {
-    if (engine.getValue(PioneerDDJ400.focusedFxGroup(), "enabled")) {
-        engine.softTakeoverIgnoreNextValue(PioneerDDJ400.focusedFxGroup(), "meta");
-        engine.setParameter("[EffectRack1_EffectUnit1]", "mix", value / 0x7F);
-    } else {
+    if (PioneerDDJ400.shiftButtonDown[0] || PioneerDDJ400.shiftButtonDown[1]) {
         engine.softTakeoverIgnoreNextValue("[EffectRack1_EffectUnit1]", "mix");
         engine.setParameter(PioneerDDJ400.focusedFxGroup(), "meta", value / 0x7F);
+    } else {
+        engine.softTakeoverIgnoreNextValue(PioneerDDJ400.focusedFxGroup(), "meta");
+        engine.setParameter("[EffectRack1_EffectUnit1]", "mix", value / 0x7F);
     }
 };
 
@@ -483,6 +485,15 @@ PioneerDDJ400.jogTouch = function(channel, _control, value) {
         engine.scratchDisable(deckNum);
     }
 };
+
+//
+// Shift button
+//
+
+PioneerDDJ400.shiftPressed = function(channel, _control, value, _status, _group) {
+    PioneerDDJ400.shiftButtonDown[channel] = value === 0x7F;
+};
+
 
 //
 // Tempo sliders
