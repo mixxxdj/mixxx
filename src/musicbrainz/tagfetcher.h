@@ -65,6 +65,9 @@ class TagFetcher : public QObject {
             const QString& errorString);
 
   private:
+    bool onAcoustIdTaskTerminated();
+    bool onMusicBrainzTaskTerminated();
+
     QNetworkAccessManager m_network;
 
     QFutureWatcher<QString> m_fingerprintWatcher;
