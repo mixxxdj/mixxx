@@ -65,7 +65,7 @@ void NetworkTask::abort() {
 }
 
 void NetworkTask::emitAborted(
-        const QUrl& requestUrl) {
+        QUrl&& requestUrl) {
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&NetworkTask::networkError)) {
         kLogger.warning()

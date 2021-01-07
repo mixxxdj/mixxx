@@ -49,8 +49,11 @@ class NetworkTask : public QObject {
         return isSignalConnected(signal);
     }
 
+    /// Send an aborted signal with the optional request URL if available.
     void emitAborted(
-            const QUrl& requestUrl);
+            QUrl&& requestUrl = QUrl{});
+
+    /// Send a signal after an aborted/timed out/failed network response.
     void emitNetworkError(
             QUrl&& requestUrl,
             QNetworkReply::NetworkError errorCode,
@@ -89,8 +92,12 @@ class NetworkTask : public QObject {
     /// in memory as a dysfunctional zombie until its parent object
     /// is finally deleted. If no receiver is connected the task
     /// will be deleted implicitly.
+
+    /// Client-side abort
     void aborted(
             const QUrl& requestUrl);
+
+    /// Network or server-side abort/timeout/failure
     void networkError(
             const QUrl& requestUrl,
             QNetworkReply::NetworkError errorCode,

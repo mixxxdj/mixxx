@@ -138,6 +138,8 @@ void WebTask::slotStart(int timeoutMillis) {
     if (!m_pendingNetworkReplyWeakPtr) {
         kLogger.debug()
                 << "Network task has not been started";
+        m_state = State::Aborted;
+        emitAborted();
         return;
     }
     m_state = State::Pending;
@@ -185,8 +187,7 @@ void WebTask::slotAbort() {
     }
     doNetworkReplyAborted(pPendingNetworkReply);
     m_state = State::Aborted;
-    const auto requestUrl = pPendingNetworkReply->request().url();
-    emitAborted(requestUrl);
+    emitAborted(pPendingNetworkReply->request().url());
 }
 
 void WebTask::timerEvent(QTimerEvent* event) {
@@ -266,8 +267,7 @@ void WebTask::slotNetworkReplyFinished() {
                 << "Discarding obsolete network reply"
                 << pFinishedNetworkReply;
         if (m_state == State::Aborting) {
-            const auto requestUrl = pPendingNetworkReply->request().url();
-            emitAborted(requestUrl);
+            emitAborted(pPendingNetworkReply->request().url());
         } else {
             // The request might have been aborted or timed out in the meantime.
             // The task is supposed to be in a final state at this point and a
