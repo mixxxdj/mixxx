@@ -999,7 +999,7 @@
      *     |     +- equalizerUnit: Equalizer unit definition (optional)
      *     |        +- components: An object of component definitions for the unit.
      *     |        |              Each definition is a key-value pair for a component of
-     *     |        |              {components.extension.EqualizerUnit} where `key` is the name of
+     *     |        |              `EqualizerUnit` where `key` is the name of
      *     |        |              the component and `value` is the MIDI address.
      *     |        |              Example: `super1: [0xB0, 0x29]`
      *     |        +- feedback: Enable controller feedback (boolean, optional)
@@ -1016,10 +1016,9 @@
      *     |
      *     +- effectUnits: An array of effect unit definitions (may be empty or omitted)
      *     |  +- effectUnit
-     *     |     +- unitNumbers: As defined by {components.EffectUnit}.
-     *     |     +- components: As described for equalizer unit using
-     *     |     |              {components.EffectUnit} instead of
-     *     |     |              {components.extension.EqualizerUnit}.
+     *     |     +- unitNumbers: As defined by `components.EffectUnit`.
+     *     |     +- components: As described for equalizer unit using `components.EffectUnit`
+     *     |     |              instead of `EqualizerUnit`.
      *     |     |              Example: `effectFocusButton: [0xB0, 0x15]`
      *     |     +- feedback: As described for equalizer unit
      *     |     +- output: As described for equalizer unit
@@ -1122,13 +1121,13 @@
          * @param {object} effectUnitDefinitions Definition of effect units
          * @param {object} containerDefinitions Definition of additional component containers
          * @return {object} Layer manager
-         * @see `components.extension.LayerManager`
+         * @see `LayerManager`
          * @private
          */
         createLayerManager: function(target,
             deckDefinitions, effectUnitDefinitions, containerDefinitions) {
 
-            var layerManager = new components.extension.LayerManager({debug: this.debug});
+            var layerManager = new LayerManager({debug: this.debug});
             var controller = this;
             var registerComponents = function(definition, implementation) {
                 controller.registerComponents(layerManager, definition, implementation);
@@ -1228,11 +1227,11 @@
          *
          * @param {components.Component} source Source component of the publisher
          * @param {Array} publisherStorage Storage for the publisher component
-         * @yields {components.extension.Publisher} Publisher
+         * @yields {Publisher} Publisher
          * @private
          */
         createPublisher: function(source, publisherStorage) {
-            var publisher = new components.extension.Publisher({source: source});
+            var publisher = new Publisher({source: source});
             publisherStorage.push(publisher);
             return publisher;
         },
@@ -1360,7 +1359,7 @@
         /**
          * Register a component with all its child components in the layer manager.
          *
-         * @param {components.extension.LayerManager} layerManager Layer manager
+         * @param {LayerManager} layerManager Layer manager
          * @param {object} definition Definition of a component
          * @param {components.Component|components.ComponentContainer} Implementation of a component
          * @private
@@ -1396,5 +1395,5 @@
     exports.Publisher = Publisher;
     exports.LayerManager = LayerManager;
     exports.GenericMidiController = GenericMidiController;
-    global.components.extension = exports;
+    global.behringer = _.assign(global.behringer, {extension: exports});
 })(this);

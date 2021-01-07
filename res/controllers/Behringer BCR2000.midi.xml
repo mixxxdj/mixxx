@@ -9,7 +9,7 @@
     <scriptfiles>
       <file filename="lodash.mixxx.js"/>
       <file filename="midi-components-0.0.js"/>
-      <file filename="midi-components-extension.js" />
+      <file filename="Behringer-Extension-scripts.js" />
       <file filename="Behringer-BCR2000-preset-scripts.js" />
       <file filename="Behringer-BCR2000-scripts.js" functionprefix="BCR2000" />
     </scriptfiles>

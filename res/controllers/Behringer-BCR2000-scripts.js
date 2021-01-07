@@ -3,14 +3,14 @@
  */
 
 /* Globally available objects are declared as variables to avoid linter errors */
-var BCR2000Preset = BCR2000Preset;
+var behringer = behringer, BCR2000Preset = BCR2000Preset;
 
-var BCR2000 = new components.extension.GenericMidiController({
+var BCR2000 = new behringer.extension.GenericMidiController({
     configurationProvider: function() {
 
         /* Shortcut variables */
         var c = components;
-        var e = components.extension;
+        var e = behringer.extension;
         var p = BCR2000Preset;
         var cc = p.STATUS_CONTROL_CHANGE;
 
