@@ -269,7 +269,9 @@ void WebTask::slotNetworkReplyFinished() {
             const auto requestUrl = pPendingNetworkReply->request().url();
             emitAborted(requestUrl);
         } else {
-            // Might have been aborted or timed out in the meantime
+            // The request might have been aborted or timed out in the meantime.
+            // The task is supposed to be in a final state at this point and a
+            // signal has already been emitted!
             DEBUG_ASSERT(
                     m_state == State::Aborted ||
                     m_state == State::TimedOut);
