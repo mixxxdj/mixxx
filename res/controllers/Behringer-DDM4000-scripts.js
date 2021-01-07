@@ -2,7 +2,10 @@
  * Mixxx controller mapping for a Behringer DDM4000 mixer.
  */
 
-var DDM4000 = new components.extension.GenericMidiController({
+/* Globally available objects are declared as variables to avoid linter errors */
+var behringer = behringer;
+
+var DDM4000 = new behringer.extension.GenericMidiController({
     configurationProvider: function() {
 
         var DEFAULT_LONGPRESS_DURATION = 500;
@@ -10,7 +13,7 @@ var DDM4000 = new components.extension.GenericMidiController({
 
         /* Shortcut variables */
         var c    = components;
-        var e    = components.extension;
+        var e    = behringer.extension;
         var cc   = 0xB0;
         var note = 0x90;
         var toggle = c.Button.prototype.types.toggle;

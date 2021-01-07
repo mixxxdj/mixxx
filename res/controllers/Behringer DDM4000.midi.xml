@@ -9,7 +9,7 @@
     <scriptfiles>
       <file filename="lodash.mixxx.js" />
       <file filename="midi-components-0.0.js" />
-      <file filename="midi-components-extension.js" />
+      <file filename="Behringer-Extension-scripts.js" />
       <file filename="Behringer-DDM4000-scripts.js" functionprefix="DDM4000" />
     </scriptfiles>
     <controls>
