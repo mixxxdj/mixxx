@@ -9,6 +9,7 @@
 #include "network/httpstatuscode.h"
 #include "network/networktask.h"
 #include "util/optional.h"
+#include "util/performancetimer.h"
 
 namespace mixxx {
 
@@ -122,26 +123,27 @@ class WebTask : public NetworkTask {
     void timerEvent(QTimerEvent* event) final;
 
     enum class State {
+        // Initial state
         Idle,
+        // Pending state
         Pending,
-        Aborting,
+        // Terminal states
         Aborted,
         TimedOut,
         Failed,
         Finished,
     };
+
     State state() const {
         return m_state;
     }
 
-    /// Handle the abort and ensure that the task eventually
-    /// gets deleted. The default implementation logs a warning
-    /// and deletes the task.
-    virtual void onNetworkError(
-            QUrl&& requestUrl,
-            QNetworkReply::NetworkError errorCode,
-            QString&& errorString,
-            QByteArray&& errorContent);
+    bool hasTerminated() const {
+        return state() == State::Aborted ||
+                state() == State::TimedOut ||
+                state() == State::Failed ||
+                state() == State::Finished;
+    }
 
   private:
     QUrl abortPendingNetworkReply();
@@ -163,11 +165,23 @@ class WebTask : public NetworkTask {
             QNetworkReply* finishedNetworkReply,
             HttpStatusCode statusCode) = 0;
 
+    /// Handle the abort and ensure that the task eventually
+    /// gets deleted. The default implementation logs a warning
+    /// and deletes the task.
+    void onNetworkError(
+            QUrl&& requestUrl,
+            QNetworkReply::NetworkError errorCode,
+            QString&& errorString,
+            QByteArray&& errorContent);
+
     /// All member variables must only be accessed from
     /// the event loop thread!!
 
-    int m_timeoutTimerId;
     State m_state;
+
+    PerformanceTimer m_timer;
+
+    int m_timeoutTimerId;
 
     SafeQPointer<QNetworkReply> m_pendingNetworkReplyWeakPtr;
 };

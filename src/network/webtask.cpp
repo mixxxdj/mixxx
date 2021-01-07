@@ -70,8 +70,8 @@ WebTask::WebTask(
         QNetworkAccessManager* networkAccessManager,
         QObject* parent)
         : NetworkTask(networkAccessManager, parent),
-          m_timeoutTimerId(kInvalidTimerId),
-          m_state(State::Idle) {
+          m_state(State::Idle),
+          m_timeoutTimerId(kInvalidTimerId) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
 }
 
@@ -80,36 +80,46 @@ void WebTask::onNetworkError(
         QNetworkReply::NetworkError errorCode,
         QString&& errorString,
         QByteArray&& errorContent) {
+    DEBUG_ASSERT(m_state == State::Pending);
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-    VERIFY_OR_DEBUG_ASSERT(m_state == State::Pending) {
-        return;
-    }
 
     DEBUG_ASSERT(errorCode != QNetworkReply::NoError);
     switch (errorCode) {
     case QNetworkReply::OperationCanceledError:
+        // Client-side abort or timeout
         m_state = State::Aborted;
         break;
     case QNetworkReply::TimeoutError:
+        // Network or server-side timeout
         m_state = State::TimedOut;
         break;
     default:
         m_state = State::Failed;
     }
+    DEBUG_ASSERT(hasTerminated());
 
-    emitNetworkError(
-            std::move(requestUrl),
-            errorCode,
-            std::move(errorString),
-            std::move(errorContent));
+    if (m_state == State::Aborted) {
+        emitAborted(std::move(requestUrl));
+    } else {
+        emitNetworkError(
+                std::move(requestUrl),
+                errorCode,
+                std::move(errorString),
+                std::move(errorContent));
+    }
 }
 
 void WebTask::slotStart(int timeoutMillis) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    VERIFY_OR_DEBUG_ASSERT(m_state != State::Pending) {
+    if (m_state == State::Pending) {
+        kLogger.warning()
+                << "Task is still busy and cannot be started again";
         return;
     }
+
+    // Reset state
     DEBUG_ASSERT(!m_pendingNetworkReplyWeakPtr);
+    DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
     m_state = State::Idle;
 
     auto* const pNetworkAccessManager = m_networkAccessManagerWeakPtr.data();
@@ -127,21 +137,26 @@ void WebTask::slotStart(int timeoutMillis) {
     kLogger.debug()
             << this
             << "Starting...";
+    m_timer.start();
 
     m_pendingNetworkReplyWeakPtr = doStartNetworkRequest(
             pNetworkAccessManager,
             timeoutMillis);
     // Still idle, because we are in the same thread.
-    // The callee is not supposed to abort a request
-    // before it has beeen started successfully.
+    // The derived class is not allowed to abort a request
+    // during the callback before it has beeen started
+    // successfully. Instead it should return nullptr
+    // to abort the task immediately.
     DEBUG_ASSERT(m_state == State::Idle);
     if (!m_pendingNetworkReplyWeakPtr) {
         kLogger.debug()
-                << "Network task has not been started";
+                << this
+                << "Network request has not been started";
         m_state = State::Aborted;
         emitAborted();
         return;
     }
+
     m_state = State::Pending;
 
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
@@ -164,30 +179,61 @@ void WebTask::slotAbort() {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (m_state != State::Pending) {
         DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
+        if (m_state == State::Idle) {
+            kLogger.debug()
+                    << this
+                    << "Cannot abort idle task";
+        } else {
+            DEBUG_ASSERT(hasTerminated());
+            kLogger.debug()
+                    << this
+                    << "Cannot abort terminated task";
+        }
         return;
     }
-    auto* const pPendingNetworkReply = m_pendingNetworkReplyWeakPtr.data();
-    VERIFY_OR_DEBUG_ASSERT(pPendingNetworkReply) {
-        DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
-        return;
-    }
+
+    kLogger.debug()
+            << this
+            << "Aborting...";
+
     if (m_timeoutTimerId != kInvalidTimerId) {
         killTimer(m_timeoutTimerId);
         m_timeoutTimerId = kInvalidTimerId;
     }
-    m_state = State::Aborting;
-    kLogger.debug()
-            << this
-            << "Aborting...";
-    if (pPendingNetworkReply->isRunning()) {
-        pPendingNetworkReply->abort();
+
+    auto* const pPendingNetworkReply = m_pendingNetworkReplyWeakPtr.data();
+    QUrl requestUrl;
+    if (pPendingNetworkReply) {
+        if (pPendingNetworkReply->isRunning()) {
+            kLogger.debug()
+                    << this
+                    << "Aborting pending network reply after"
+                    << m_timer.elapsed().toIntegerMillis()
+                    << "ms";
+            pPendingNetworkReply->abort();
+            // Aborting a pending reply will immediately emit a network
+            // error signal that gets handled in this thread before
+            // continuing with the next statements.
+            DEBUG_ASSERT(hasTerminated());
+            DEBUG_ASSERT(!m_pendingNetworkReplyWeakPtr);
+            return;
+        }
+        kLogger.debug()
+                << this
+                << "Aborted pending network reply after"
+                << m_timer.elapsed().toIntegerMillis()
+                << "ms";
+        // Save the request URL for emitting the signal (see below)
+        requestUrl = pPendingNetworkReply->request().url();
+        // Ensure that the aborted reply is scheduled for deletion when leaving
+        // this scope.
+        const auto pendingNetworkReplyDeleter = ScopedDeleteLater(pPendingNetworkReply);
+        m_pendingNetworkReplyWeakPtr.clear();
         doNetworkReplyAborted(pPendingNetworkReply);
-        // Suspend and await finished signal
-        return;
     }
-    doNetworkReplyAborted(pPendingNetworkReply);
+
     m_state = State::Aborted;
-    emitAborted(pPendingNetworkReply->request().url());
+    emitAborted(std::move(requestUrl));
 }
 
 void WebTask::timerEvent(QTimerEvent* event) {
@@ -197,25 +243,21 @@ void WebTask::timerEvent(QTimerEvent* event) {
     VERIFY_OR_DEBUG_ASSERT(timerId == m_timeoutTimerId) {
         return;
     }
+
     killTimer(m_timeoutTimerId);
     m_timeoutTimerId = kInvalidTimerId;
-    VERIFY_OR_DEBUG_ASSERT(m_state == State::Pending) {
+
+    if (hasTerminated()) {
+        DEBUG_ASSERT(!m_pendingNetworkReplyWeakPtr);
         return;
     }
-    auto* const pPendingNetworkReply = m_pendingNetworkReplyWeakPtr.data();
-    VERIFY_OR_DEBUG_ASSERT(pPendingNetworkReply) {
-        return;
-    }
-    if (pPendingNetworkReply->isFinished()) {
-        // Nothing to do
-        return;
-    }
+    DEBUG_ASSERT(m_state == State::Pending);
+
     kLogger.info()
             << this
             << "Aborting after timed out";
-    // Triggering the regular abort workflow guarantees that
-    // the internal state is switch into the intermediate state
-    // State::Aborting when the request is still running!
+    // Trigger the regular abort workflow after a client-side
+    // timeout occurred
     slotAbort();
 }
 
@@ -226,6 +268,7 @@ void WebTask::slotNetworkReplyFinished() {
     VERIFY_OR_DEBUG_ASSERT(pFinishedNetworkReply) {
         return;
     }
+    // Ensure that the received reply gets deleted eventually
     const auto finishedNetworkReplyDeleter = ScopedDeleteLater(pFinishedNetworkReply);
 
     if (kLogger.debugEnabled()) {
@@ -256,28 +299,18 @@ void WebTask::slotNetworkReplyFinished() {
                 << "pending =" << pPendingNetworkReply;
         return;
     }
+    m_pendingNetworkReplyWeakPtr.clear();
+
+    DEBUG_ASSERT(m_state == State::Pending);
+    kLogger.debug()
+            << this
+            << "Received network reply after"
+            << m_timer.elapsed().toIntegerMillis()
+            << "ms";
 
     if (m_timeoutTimerId != kInvalidTimerId) {
         killTimer(m_timeoutTimerId);
         m_timeoutTimerId = kInvalidTimerId;
-    }
-
-    if (m_state != State::Pending) {
-        kLogger.debug()
-                << this
-                << "Discarding obsolete network reply"
-                << pFinishedNetworkReply;
-        if (m_state == State::Aborting) {
-            emitAborted(pPendingNetworkReply->request().url());
-        } else {
-            // The request might have been aborted or timed out in the meantime.
-            // The task is supposed to be in a final state at this point and a
-            // signal has already been emitted!
-            DEBUG_ASSERT(
-                    m_state == State::Aborted ||
-                    m_state == State::TimedOut);
-        }
-        return;
     }
 
     if (pFinishedNetworkReply->error() != QNetworkReply::NetworkError::NoError) {
@@ -286,7 +319,7 @@ void WebTask::slotNetworkReplyFinished() {
                 pFinishedNetworkReply->error(),
                 pFinishedNetworkReply->errorString(),
                 pFinishedNetworkReply->readAll());
-        DEBUG_ASSERT(m_state != State::Pending);
+        DEBUG_ASSERT(hasTerminated());
         return;
     }
 
