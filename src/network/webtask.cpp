@@ -1,5 +1,6 @@
 #include "network/webtask.h"
 
+#include <QMimeDatabase>
 #include <QTimerEvent>
 #include <mutex> // std::once_flag
 
@@ -21,7 +22,7 @@ std::once_flag registerMetaTypesOnceFlag;
 
 void registerMetaTypesOnce() {
     WebResponse::registerMetaType();
-    CustomWebResponse::registerMetaType();
+    WebResponseWithContent::registerMetaType();
 }
 
 int readStatusCode(
@@ -48,22 +49,52 @@ int readStatusCode(
 QDebug operator<<(QDebug dbg, const WebResponse& arg) {
     return dbg
             << "WebResponse{"
+            << arg.m_requestUrl
             << arg.m_replyUrl
             << arg.m_statusCode
             << '}';
 }
 
-/*static*/ void CustomWebResponse::registerMetaType() {
-    qRegisterMetaType<CustomWebResponse>("mixxx::network::CustomWebResponse");
+/*static*/ void WebResponseWithContent::registerMetaType() {
+    qRegisterMetaType<WebResponseWithContent>("mixxx::network::WebResponseWithContent");
 }
 
-QDebug operator<<(QDebug dbg, const CustomWebResponse& arg) {
+QDebug operator<<(QDebug dbg, const WebResponseWithContent& arg) {
     return dbg
-            << "CustomWebResponse{"
+            << "WebResponseWithContent{"
             << arg.m_response
             << arg.m_contentType
-            << arg.m_contentBytes
+            << arg.m_contentData
             << '}';
+}
+
+//static
+QMimeType WebTask::readContentType(
+        const QNetworkReply& reply) {
+    const QVariant contentTypeHeader = reply.header(QNetworkRequest::ContentTypeHeader);
+    if (!contentTypeHeader.isValid() || contentTypeHeader.isNull()) {
+        kLogger.warning()
+                << "Missing content type header";
+        return QMimeType();
+    }
+    const QString contentTypeString = contentTypeHeader.toString();
+    const QString contentTypeWithoutParams = contentTypeString.left(contentTypeString.indexOf(';'));
+    const QMimeType contentType = QMimeDatabase().mimeTypeForName(contentTypeWithoutParams);
+    if (!contentType.isValid()) {
+        kLogger.warning()
+                << "Unknown content type"
+                << contentTypeWithoutParams;
+    }
+    return contentType;
+}
+
+//static
+std::optional<QByteArray> WebTask::readContentData(
+        QNetworkReply* reply) {
+    if (!reply->isReadable()) {
+        return std::nullopt;
+    }
+    return reply->readAll();
 }
 
 WebTask::WebTask(
@@ -76,9 +107,9 @@ WebTask::WebTask(
 }
 
 void WebTask::onNetworkError(
-        QUrl&& requestUrl,
         QNetworkReply::NetworkError errorCode,
-        QString&& errorString) {
+        const QString& errorString,
+        const WebResponseWithContent& responseWithContent) {
     DEBUG_ASSERT(m_state == State::Pending);
     DEBUG_ASSERT(m_timeoutTimerId == kInvalidTimerId);
 
@@ -98,13 +129,34 @@ void WebTask::onNetworkError(
     DEBUG_ASSERT(hasTerminated());
 
     if (m_state == State::Aborted) {
-        emitAborted(std::move(requestUrl));
+        emitAborted(responseWithContent.replyUrl());
     } else {
         emitNetworkError(
-                std::move(requestUrl),
                 errorCode,
-                std::move(errorString));
+                errorString,
+                responseWithContent);
     }
+}
+
+void WebTask::emitNetworkError(
+        QNetworkReply::NetworkError errorCode,
+        const QString& errorString,
+        const WebResponseWithContent& responseWithContent) {
+    VERIFY_OR_DEBUG_ASSERT(
+            isSignalFuncConnected(&WebTask::networkError)) {
+        kLogger.warning()
+                << this
+                << "Unhandled network error signal"
+                << errorCode
+                << errorString
+                << responseWithContent;
+        deleteLater();
+        return;
+    }
+    emit networkError(
+            errorCode,
+            errorString,
+            responseWithContent);
 }
 
 void WebTask::slotStart(int timeoutMillis) {
@@ -124,9 +176,9 @@ void WebTask::slotStart(int timeoutMillis) {
     VERIFY_OR_DEBUG_ASSERT(pNetworkAccessManager) {
         m_state = State::Pending;
         onNetworkError(
-                QUrl(),
                 QNetworkReply::NetworkSessionFailedError,
-                tr("No network access"));
+                tr("No network access"),
+                WebResponseWithContent{});
         return;
     }
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(pNetworkAccessManager);
@@ -230,7 +282,7 @@ void WebTask::slotAbort() {
     }
 
     m_state = State::Aborted;
-    emitAborted(std::move(requestUrl));
+    emitAborted(requestUrl);
 }
 
 void WebTask::timerEvent(QTimerEvent* event) {
@@ -310,17 +362,24 @@ void WebTask::slotNetworkReplyFinished() {
         m_timeoutTimerId = kInvalidTimerId;
     }
 
+    const auto statusCode = readStatusCode(pFinishedNetworkReply);
     if (pFinishedNetworkReply->error() != QNetworkReply::NetworkError::NoError) {
         onNetworkError(
-                pFinishedNetworkReply->request().url(),
                 pFinishedNetworkReply->error(),
-                pFinishedNetworkReply->errorString());
+                pFinishedNetworkReply->errorString(),
+                WebResponseWithContent{
+                        WebResponse{
+                                pFinishedNetworkReply->url(),
+                                pFinishedNetworkReply->request().url(),
+                                statusCode},
+                        readContentType(*pFinishedNetworkReply),
+                        readContentData(pFinishedNetworkReply).value_or(QByteArray{}),
+                });
         DEBUG_ASSERT(hasTerminated());
         return;
     }
 
     m_state = State::Finished;
-    const auto statusCode = readStatusCode(pFinishedNetworkReply);
     doNetworkReplyFinished(pFinishedNetworkReply, statusCode);
 }
 

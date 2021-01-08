@@ -37,26 +37,6 @@ const QString JSON_CONTENT_TYPE = "application/json";
 
 const QMimeType JSON_MIME_TYPE = QMimeDatabase().mimeTypeForName(JSON_CONTENT_TYPE);
 
-QMimeType readContentType(
-        const QNetworkReply* reply) {
-    DEBUG_ASSERT(reply);
-    const QVariant contentTypeHeader = reply->header(QNetworkRequest::ContentTypeHeader);
-    if (!contentTypeHeader.isValid() || contentTypeHeader.isNull()) {
-        kLogger.warning()
-                << "Missing content type header";
-        return QMimeType();
-    }
-    const QString contentTypeString = contentTypeHeader.toString();
-    const QString contentTypeWithoutParams = contentTypeString.left(contentTypeString.indexOf(';'));
-    const QMimeType contentType = QMimeDatabase().mimeTypeForName(contentTypeWithoutParams);
-    if (!contentType.isValid()) {
-        kLogger.warning()
-                << "Unknown content type"
-                << contentTypeWithoutParams;
-    }
-    return contentType;
-}
-
 /// If parsing fails the functions returns std::nullopt and optionally
 /// the response content in pInvalidResponseContent for further processing.
 std::optional<QJsonDocument> readJsonContent(
@@ -64,24 +44,28 @@ std::optional<QJsonDocument> readJsonContent(
         std::pair<QMimeType, QByteArray>* pInvalidResponseContent = nullptr) {
     DEBUG_ASSERT(reply);
     DEBUG_ASSERT(JSON_MIME_TYPE.isValid());
-    QByteArray contentBytes = reply->readAll();
-    const auto contentType = readContentType(reply);
+    auto contentType = WebTask::readContentType(*reply);
+    auto optContentData = WebTask::readContentData(reply);
     if (contentType != JSON_MIME_TYPE) {
-        kLogger.warning()
-                << "Unexpected content type"
-                << contentType;
+        kLogger.debug()
+                << "Received content type"
+                << contentType
+                << "instead of"
+                << JSON_MIME_TYPE;
         if (pInvalidResponseContent) {
-            *pInvalidResponseContent = std::make_pair(contentType, contentBytes);
+            *pInvalidResponseContent = std::make_pair(
+                    std::move(contentType),
+                    optContentData.value_or(QByteArray{}));
         }
         return std::nullopt;
     }
-    if (contentBytes.isEmpty()) {
-        kLogger.info() << "Empty JSON network reply";
+    if (!optContentData || optContentData->isEmpty()) {
+        kLogger.debug() << "Empty JSON network reply";
         return QJsonDocument{};
     }
     QJsonParseError parseError;
-    const auto jsonDocument = QJsonDocument::fromJson(
-            contentBytes,
+    auto jsonDocument = QJsonDocument::fromJson(
+            *optContentData,
             &parseError);
     // QJsonDocument::fromJson() returns a non-null document
     // if parsing succeeds and otherwise null on error. The
@@ -95,7 +79,9 @@ std::optional<QJsonDocument> readJsonContent(
                 << "at offset"
                 << parseError.offset;
         if (pInvalidResponseContent) {
-            *pInvalidResponseContent = std::make_pair(contentType, contentBytes);
+            *pInvalidResponseContent = std::make_pair(
+                    std::move(contentType),
+                    std::move(*optContentData));
         }
         return std::nullopt;
     }
@@ -120,7 +106,7 @@ QNetworkRequest newRequest(
 
 QDebug operator<<(QDebug dbg, const JsonWebResponse& arg) {
     return dbg
-            << "CustomWebResponse{"
+            << "WebResponseWithContent{"
             << arg.m_response
             << arg.m_content
             << '}';
@@ -148,7 +134,7 @@ void JsonWebTask::onFinished(
 }
 
 void JsonWebTask::onFinishedCustom(
-        CustomWebResponse&& customResponse) {
+        WebResponseWithContent&& customResponse) {
     kLogger.info()
             << this
             << "Received custom response"
@@ -279,14 +265,14 @@ void JsonWebTask::doNetworkReplyFinished(
     std::optional<QJsonDocument> optJsonContent;
     auto webResponse = WebResponse{
             finishedNetworkReply->url(),
+            finishedNetworkReply->request().url(),
             statusCode};
-    if (statusCode != kHttpStatusCodeInvalid &&
-            finishedNetworkReply->bytesAvailable() > 0) {
+    if (statusCode != kHttpStatusCodeInvalid) {
         std::pair<QMimeType, QByteArray> contentTypeAndBytes;
         optJsonContent = readJsonContent(finishedNetworkReply, &contentTypeAndBytes);
         if (!optJsonContent) {
             // Failed to read JSON content
-            onFinishedCustom(CustomWebResponse{
+            onFinishedCustom(WebResponseWithContent{
                     std::move(webResponse),
                     std::move(contentTypeAndBytes.first),
                     std::move(contentTypeAndBytes.second)});

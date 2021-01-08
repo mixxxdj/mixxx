@@ -98,7 +98,7 @@ class JsonWebTask : public WebTask {
     virtual void onFinished(
             JsonWebResponse&& response);
     virtual void onFinishedCustom(
-            CustomWebResponse&& response);
+            WebResponseWithContent&& response);
 
     QNetworkReply* doStartNetworkRequest(
             QNetworkAccessManager* networkAccessManager,

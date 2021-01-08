@@ -65,7 +65,7 @@ void NetworkTask::abort() {
 }
 
 void NetworkTask::emitAborted(
-        QUrl&& requestUrl) {
+        const QUrl& requestUrl) {
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&NetworkTask::aborted)) {
         kLogger.warning()
@@ -76,27 +76,6 @@ void NetworkTask::emitAborted(
         return;
     }
     emit aborted(requestUrl);
-}
-
-void NetworkTask::emitNetworkError(
-        QUrl&& requestUrl,
-        QNetworkReply::NetworkError errorCode,
-        QString&& errorString) {
-    VERIFY_OR_DEBUG_ASSERT(
-            isSignalFuncConnected(&NetworkTask::networkError)) {
-        kLogger.warning()
-                << this
-                << "Unhandled network error signal"
-                << requestUrl
-                << errorCode
-                << errorString;
-        deleteLater();
-        return;
-    }
-    emit networkError(
-            std::move(requestUrl),
-            errorCode,
-            std::move(errorString));
 }
 
 } // namespace network

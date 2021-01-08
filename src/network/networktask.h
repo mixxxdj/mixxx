@@ -51,13 +51,7 @@ class NetworkTask : public QObject {
 
     /// Send an aborted signal with the optional request URL if available.
     void emitAborted(
-            QUrl&& requestUrl = QUrl{});
-
-    /// Send a signal after an aborted/timed out/failed network response.
-    void emitNetworkError(
-            QUrl&& requestUrl,
-            QNetworkReply::NetworkError errorCode,
-            QString&& errorString);
+            const QUrl& requestUrl = QUrl{});
 
     /// All member variables must only be accessed from
     /// the event loop thread!!
@@ -95,12 +89,6 @@ class NetworkTask : public QObject {
     /// Client-side abort
     void aborted(
             const QUrl& requestUrl);
-
-    /// Network or server-side abort/timeout/failure
-    void networkError(
-            const QUrl& requestUrl,
-            QNetworkReply::NetworkError errorCode,
-            const QString& errorString);
 };
 
 } // namespace network

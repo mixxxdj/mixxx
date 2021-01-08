@@ -189,10 +189,10 @@ void TagFetcher::slotAcoustIdTaskAborted() {
 }
 
 void TagFetcher::slotAcoustIdTaskNetworkError(
-        const QUrl& requestUrl,
         QNetworkReply::NetworkError errorCode,
-        const QString& errorString) {
-    Q_UNUSED(requestUrl);
+        const QString& errorString,
+        const mixxx::network::WebResponseWithContent& responseWithContent) {
+    Q_UNUSED(responseWithContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (!onAcoustIdTaskTerminated()) {
         return;
@@ -231,10 +231,10 @@ void TagFetcher::slotMusicBrainzTaskAborted() {
 }
 
 void TagFetcher::slotMusicBrainzTaskNetworkError(
-        const QUrl& requestUrl,
         QNetworkReply::NetworkError errorCode,
-        const QString& errorString) {
-    Q_UNUSED(requestUrl);
+        const QString& errorString,
+        const mixxx::network::WebResponseWithContent& responseWithContent) {
+    Q_UNUSED(responseWithContent);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     if (!onMusicBrainzTaskTerminated()) {
         return;

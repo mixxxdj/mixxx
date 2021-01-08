@@ -126,6 +126,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
         emitFailed(
                 network::WebResponse(
                         finishedNetworkReply->url(),
+                        finishedNetworkReply->request().url(),
                         statusCode),
                 error.code,
                 std::move(error.message));
@@ -147,6 +148,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
         emitFailed(
                 network::WebResponse(
                         finishedNetworkReply->url(),
+                        finishedNetworkReply->request().url(),
                         statusCode),
                 -1,
                 "Failed to parse XML response");
