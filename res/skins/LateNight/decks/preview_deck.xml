@@ -4,7 +4,7 @@
 
   <!-- This wrapper makes the PreviewDeck borders work correctly -->
   <WidgetGroup>
-    <Layout>vertical</Layout>
+    <Layout>horizontal</Layout>
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
@@ -164,6 +164,12 @@
 
         </Children>
       </WidgetGroup><!-- PreviewDeck -->
+
+      <WidgetGroup>
+        <ObjectName>PreviewDeckRightSpacer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Children/>
+      </WidgetGroup>
 
     </Children>
     <Connection>
