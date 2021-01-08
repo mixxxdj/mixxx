@@ -70,6 +70,11 @@ class CueInfo {
     CueFlags flags() const {
         return m_flags;
     }
+
+    /// Set flags for the cue.
+    ///
+    /// These flags are currently only set during Serato cue import and *not*
+    /// saved in the Database (only used for roundtrip testing purposes).
     void setFlags(CueFlags flags) {
         m_flags = flags;
     }
