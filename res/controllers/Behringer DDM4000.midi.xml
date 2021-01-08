@@ -117,7 +117,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 2: CF Assign</description>     
+        <description>Channel 2: CF Assign</description>
         <status>0x90</status>
         <midino>0x05</midino>
         <options>
@@ -162,7 +162,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 2: Pot High</description>        
+        <description>Channel 2: Pot High</description>
         <status>0xB0</status>
         <midino>0x0A</midino>
         <options>
@@ -171,7 +171,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 2: Button P3 (Low)</description> 
+        <description>Channel 2: Button P3 (Low)</description>
         <status>0xB0</status>
         <midino>0x0B</midino>
         <options>
@@ -180,7 +180,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 2: Button P2 (Mid)</description> 
+        <description>Channel 2: Button P2 (Mid)</description>
         <status>0x90</status>
         <midino>0x22</midino>
         <options>
@@ -209,7 +209,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 3: CF Assign</description>     
+        <description>Channel 3: CF Assign</description>
         <status>0x90</status>
         <midino>0x09</midino>
         <options>
@@ -254,7 +254,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 3: Pot High</description>        
+        <description>Channel 3: Pot High</description>
         <status>0xB0</status>
         <midino>0x0E</midino>
         <options>
@@ -263,7 +263,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 3: Button P3 (Low)</description> 
+        <description>Channel 3: Button P3 (Low)</description>
         <status>0xB0</status>
         <midino>0x0F</midino>
         <options>
@@ -272,7 +272,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 3: Button P2 (Mid)</description> 
+        <description>Channel 3: Button P2 (Mid)</description>
         <status>0x90</status>
         <midino>0x24</midino>
         <options>
@@ -301,7 +301,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 4: CF Assign</description>     
+        <description>Channel 4: CF Assign</description>
         <status>0x90</status>
         <midino>0x0D</midino>
         <options>
@@ -346,7 +346,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 4: Pot High</description>        
+        <description>Channel 4: Pot High</description>
         <status>0xB0</status>
         <midino>0x12</midino>
         <options>
@@ -355,7 +355,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 4: Button P3 (Low)</description> 
+        <description>Channel 4: Button P3 (Low)</description>
         <status>0xB0</status>
         <midino>0x13</midino>
         <options>
@@ -364,7 +364,7 @@
         <key>DDM4000.input</key>
       </control>
       <control>
-        <description>Channel 4: Button P2 (Mid)</description> 
+        <description>Channel 4: Button P2 (Mid)</description>
         <status>0x90</status>
         <midino>0x26</midino>
         <options>
