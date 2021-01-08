@@ -20,6 +20,8 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     m_pNumDecks->connectValueChanged(this, &DlgPrefVinyl::slotNumDecksChanged);
 
     setupUi(this);
+    // Create text color for the Troubleshooting link
+    createLinkColor();
 
     delete groupBoxSignalQuality->layout();
     QHBoxLayout *layout = new QHBoxLayout;
@@ -77,10 +79,10 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     LeadinTime3->setSuffix(" s");
     LeadinTime4->setSuffix(" s");
 
-    TroubleshootingLink->setText(
-            QString("<a href='%1%2'>Troubleshooting</a>")
-                    .arg(MIXXX_MANUAL_URL,
-                            "/chapters/vinyl_control.html#troubleshooting"));
+    TroubleshootingLink->setText(coloredLinkString(
+            m_pLinkColor,
+            QStringLiteral("Troubleshooting"),
+            MIXXX_MANUAL_VINYL_TROUBLESHOOTING_URL));
 
     connect(VinylGain, &QSlider::sliderReleased, this, &DlgPrefVinyl::slotVinylGainApply);
     connect(VinylGain,

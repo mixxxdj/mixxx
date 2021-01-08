@@ -34,7 +34,7 @@ void WEffectParameterBase::parameterUpdated() {
                        m_pEffectParameterSlot->name(),
                        m_pEffectParameterSlot->description()));
     } else {
-        setText(tr("None"));
+        setText(EffectsManager::kNoEffectString);
         setBaseTooltip(tr("No effect loaded."));
     }
 }

@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 
+#include "defs_urls.h"
 #include "moc_dlgprefmodplug.cpp"
 #include "preferences/dialog/ui_dlgprefmodplugdlg.h"
 #include "preferences/usersettings.h"
@@ -15,6 +16,8 @@ DlgPrefModplug::DlgPrefModplug(QWidget *parent,
           m_pUi(new Ui::DlgPrefModplug),
           m_pConfig(_config) {
     m_pUi->setupUi(this);
+    // Create text color for the OpenMTP manual link
+    createLinkColor();
     m_pUi->advancedSettings->setVisible(m_pUi->showAdvanced->isChecked());
 
     connect(m_pUi->memoryLimit,
@@ -29,6 +32,14 @@ DlgPrefModplug::DlgPrefModplug(QWidget *parent,
             &QAbstractButton::toggled,
             m_pUi->advancedSettings,
             &QWidget::setVisible);
+
+    m_pUi->modplugSettingsHint->setText(
+            tr("All settings take effect on next track load. Currently loaded tracks "
+               "are not affected. For an explanation of these settings, see the %1")
+                    .arg(coloredLinkString(
+                            m_pLinkColor,
+                            "OpenMPT manual",
+                            "http://wiki.openmpt.org/Manual:_Setup/Player")));
 }
 
 DlgPrefModplug::~DlgPrefModplug() {
