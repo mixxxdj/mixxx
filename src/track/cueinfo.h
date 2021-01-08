@@ -79,6 +79,11 @@ class CueInfo {
         m_flags = flags;
     }
 
+    /// Checks if the `CueFlag::Locked` flag is set for this cue.
+    bool isLocked() const {
+        return m_flags.testFlag(CueFlag::Locked);
+    }
+
   private:
     CueType m_type;
     std::optional<double> m_startPositionMillis;

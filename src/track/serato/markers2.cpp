@@ -718,7 +718,7 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
                 *cueInfo.getStartPositionMillis(),
                 *cueInfo.getEndPositionMillis(),
                 SeratoTags::kFixedLoopColor,
-                cueInfo.flags().testFlag(CueFlag::Locked),
+                cueInfo.isLocked(),
                 cueInfo.getLabel());
         newEntries.append(pEntry);
     }

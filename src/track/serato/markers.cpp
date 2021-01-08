@@ -763,7 +763,7 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     // it will not be used by Serato.
                     SeratoTags::kFixedLoopColor,
                     static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
-                    cueInfo.flags().testFlag(CueFlag::Locked));
+                    cueInfo.isLocked());
         } else {
             pEntry = std::make_shared<SeratoMarkersEntry>(
                     false,
