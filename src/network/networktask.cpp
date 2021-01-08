@@ -67,7 +67,7 @@ void NetworkTask::abort() {
 void NetworkTask::emitAborted(
         QUrl&& requestUrl) {
     VERIFY_OR_DEBUG_ASSERT(
-            isSignalFuncConnected(&NetworkTask::networkError)) {
+            isSignalFuncConnected(&NetworkTask::aborted)) {
         kLogger.warning()
                 << this
                 << "Unhandled abort signal"
