@@ -73,8 +73,10 @@ QMimeType WebTask::readContentType(
         const QNetworkReply& reply) {
     const QVariant contentTypeHeader = reply.header(QNetworkRequest::ContentTypeHeader);
     if (!contentTypeHeader.isValid() || contentTypeHeader.isNull()) {
-        kLogger.warning()
-                << "Missing content type header";
+        if (reply.isReadable() && reply.bytesAvailable() > 0) {
+            kLogger.warning()
+                    << "Missing content type header";
+        }
         return QMimeType();
     }
     const QString contentTypeString = contentTypeHeader.toString();
