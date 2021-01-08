@@ -6,7 +6,7 @@ m4_define(libshout_minor, 4)
 m4_define(libshout_micro, 1)
 m4_define(libshout_version, libshout_major.libshout_minor.libshout_micro)
 
-AC_INIT([libshout], libshout_version, [icecast-dev@xiph.org])
+AC_INIT([libshout-idjc], libshout_version, [www.sourceforge.net/projects/idjc])
 AC_PREREQ([2.54])
 AC_CONFIG_SRCDIR([src/shout.c])
 AM_CONFIG_HEADER(config.h)
@@ -21,7 +21,7 @@ AC_DEFINE([LIBSHOUT_MICRO], libshout_micro, [Shout library patch version])
 
 VERSION=libshout_version
 
-AM_INIT_AUTOMAKE([libshout], libshout_version)
+AM_INIT_AUTOMAKE
 AM_MAINTAINER_MODE
 
 dnl create our name mangling macro
@@ -74,7 +74,7 @@ dnl Checks for programs.
 dnl Checks for header files.
 AC_HEADER_STDC
 AC_HEADER_TIME
-AC_CHECK_HEADERS([strings.h sys/timeb.h])
+AC_CHECK_HEADERS([strings.h sys/timeb.h arpa/inet.h])
 
 dnl Checks for typedefs, structures, and compiler characteristics.
 AC_C_CONST
@@ -224,7 +224,7 @@ AC_SUBST(XIPH_CFLAGS)
 AC_SUBST(XIPH_CPPFLAGS)
 AC_SUBST(XIPH_LIBS)
 
-AC_OUTPUT([Makefile include/Makefile include/shout/Makefile
-  include/shout/shout.h src/Makefile src/common/net/Makefile src/common/timing/Makefile
+AC_OUTPUT([Makefile include/Makefile include/shoutidjc/Makefile
+  include/shoutidjc/shout.h src/Makefile src/common/net/Makefile src/common/timing/Makefile
   src/common/thread/Makefile src/common/avl/Makefile src/common/httpp/Makefile doc/Makefile
-  examples/Makefile win32/Makefile shout.pc])
+  examples/Makefile win32/Makefile shout-idjc.pc])

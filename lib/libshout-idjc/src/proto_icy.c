@@ -22,50 +22,52 @@
  */
 
 #ifdef HAVE_CONFIG_H
- #include <config.h>
+#   include <config.h>
 #endif
 
-#include <shout/shout.h>
+#include <shoutidjc/shout.h>
 #include "shout_private.h"
 
 int shout_create_icy_request(shout_t *self)
 {
-	const char *bitrate;
-	const char *val;
-	int ret;
+    const char *bitrate;
+    const char *val;
+    int         ret;
 
-	bitrate = shout_get_audio_info(self, SHOUT_AI_BITRATE);
+    bitrate = shout_get_audio_info(self, SHOUT_AI_BITRATE);
 	if (!bitrate)
-		bitrate = "0";
+        bitrate = "0";
 
-	ret = SHOUTERR_MALLOC;
-	do {
+    ret = SHOUTERR_MALLOC;
+    do {
 		if (shout_queue_printf(self, "%s\n", self->password))
-			break;
+            break;
+        if (shout_queue_printf(self, "content-type:%s\n", shout_get_mimetype(self)))
+            break;
 		if (shout_queue_printf(self, "icy-name:%s\n", shout_get_meta(self, "name")))
-			break;
-		val = shout_get_meta(self, "url");
+            break;
+        val = shout_get_meta(self, "url");
 		if (shout_queue_printf(self, "icy-url:%s\n", val ? val : "http://www.icecast.org/"))
-			break;
-		val = shout_get_meta(self, "irc");
+            break;
+        val = shout_get_meta(self, "irc");
 		if (shout_queue_printf(self, "icy-irc:%s\n", val ? val : ""))
-			break;
-		val = shout_get_meta(self, "aim");
+            break;
+        val = shout_get_meta(self, "aim");
 		if (shout_queue_printf(self, "icy-aim:%s\n", val ? val : ""))
-			break;
-		val = shout_get_meta(self, "icq");
+            break;
+        val = shout_get_meta(self, "icq");
 		if (shout_queue_printf(self, "icy-icq:%s\n", val ? val : ""))
-			break;
+            break;
 		if (shout_queue_printf(self, "icy-pub:%i\n", self->public))
-			break;
-		val = shout_get_meta(self, "genre");
+            break;
+        val = shout_get_meta(self, "genre");
 		if (shout_queue_printf(self, "icy-genre:%s\n", val ? val : "icecast"))
-			break;
+            break;
 		if (shout_queue_printf(self, "icy-br:%s\n\n", bitrate))
-			break;
+            break;
 
-		ret = SHOUTERR_SUCCESS;
-	} while (0);
+        ret = SHOUTERR_SUCCESS;
+    } while (0);
 
-	return ret;
+    return ret;
 }

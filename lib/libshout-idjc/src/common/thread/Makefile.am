@@ -10,7 +10,7 @@ noinst_HEADERS = thread.h
 libicethread_la_SOURCES = thread.c
 libicethread_la_CFLAGS = @XIPH_CFLAGS@
 
-INCLUDES = -I$(srcdir)/..
+AM_CPPFLAGS = -I$(srcdir)/..
 
 debug:
 	$(MAKE) all CFLAGS="@DEBUG@"

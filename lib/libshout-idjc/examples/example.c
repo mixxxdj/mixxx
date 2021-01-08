@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <shout/shout.h>
+#include <shoutidjc/shout.h>
 
 int main()
 {

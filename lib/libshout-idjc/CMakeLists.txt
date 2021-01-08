@@ -27,7 +27,7 @@ add_library(shout_mixxx STATIC
   src/proto_roaraudio.c
   src/format_ogg.c
   src/format_webm.c
-  src/format_mp3.c
+  src/format_mpeg.c
   src/codec_vorbis.c
   src/codec_opus.c
   src/tls.c

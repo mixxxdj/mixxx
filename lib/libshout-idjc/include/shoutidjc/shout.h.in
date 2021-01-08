@@ -27,53 +27,55 @@
 #include <os.h>
 #endif
 
-#define SHOUTERR_SUCCESS		(0) /* No error */
-#define SHOUTERR_INSANE			(-1) /* Nonsensical arguments e.g. self being NULL */ 
-#define SHOUTERR_NOCONNECT		(-2) /* Couldn't connect */
-#define SHOUTERR_NOLOGIN		(-3) /* Login failed */
-#define SHOUTERR_SOCKET			(-4) /* Socket error */
-#define SHOUTERR_MALLOC			(-5) /* Out of memory */
-#define SHOUTERR_METADATA		(-6)
-#define SHOUTERR_CONNECTED		(-7) /* Cannot set parameter while connected */
-#define SHOUTERR_UNCONNECTED		(-8) /* Not connected */
-#define SHOUTERR_UNSUPPORTED		(-9) /* This libshout doesn't support the requested option */
-#define SHOUTERR_BUSY			(-10) /* Socket is busy */
-#define SHOUTERR_NOTLS                  (-11) /* TLS requested but not supported by peer */
-#define SHOUTERR_TLSBADCERT             (-12) /* TLS connection can not be established because of bad certificate */
-#define SHOUTERR_RETRY                  (-13) /* Retry last operation. */
+#define SHOUTERR_SUCCESS            (  0) /* No error */
+#define SHOUTERR_INSANE             ( -1) /* Nonsensical arguments e.g. self being NULL */ 
+#define SHOUTERR_NOCONNECT          ( -2) /* Couldn't connect */
+#define SHOUTERR_NOLOGIN            ( -3) /* Login failed */
+#define SHOUTERR_SOCKET             ( -4) /* Socket error */
+#define SHOUTERR_MALLOC             ( -5) /* Out of memory */
+#define SHOUTERR_METADATA           ( -6)
+#define SHOUTERR_CONNECTED          ( -7) /* Cannot set parameter while connected */
+#define SHOUTERR_UNCONNECTED        ( -8) /* Not connected */
+#define SHOUTERR_UNSUPPORTED        ( -9) /* This libshout doesn't support the requested option */
+#define SHOUTERR_BUSY               (-10) /* Socket is busy */
+#define SHOUTERR_NOTLS              (-11) /* TLS requested but not supported by peer */
+#define SHOUTERR_TLSBADCERT         (-12) /* TLS connection can not be established because of bad certificate */
+#define SHOUTERR_RETRY              (-13) /* Retry last operation. */
 
-#define SHOUT_FORMAT_OGG		(0) /* application/ogg */
-#define SHOUT_FORMAT_MP3		(1) /* audio/mpeg */
-#define SHOUT_FORMAT_WEBM		(2) /* video/webm */
-#define SHOUT_FORMAT_WEBMAUDIO		(3) /* audio/webm audio only */
+#define SHOUT_FORMAT_OGG            (  0) /* application/ogg */
+#define SHOUT_FORMAT_MP3            (  1) /* audio/mpeg */
+#define SHOUT_FORMAT_WEBM           (  2) /* video/webm */
+#define SHOUT_FORMAT_WEBMAUDIO      (  3) /* audio/webm audio only */
+#define SHOUT_FORMAT_AAC            ( 10) /* audio/aac */
+#define SHOUT_FORMAT_AACPLUS        ( 11) /* audio/aacp */
 
 /* backward-compatibility alias */
-#define SHOUT_FORMAT_VORBIS	SHOUT_FORMAT_OGG
+#define SHOUT_FORMAT_VORBIS         SHOUT_FORMAT_OGG
 
-#define SHOUT_PROTOCOL_HTTP		(0)
-#define SHOUT_PROTOCOL_XAUDIOCAST	(1)
-#define SHOUT_PROTOCOL_ICY		(2)
-#define SHOUT_PROTOCOL_ROARAUDIO	(3)
+#define SHOUT_PROTOCOL_HTTP         (  0)
+#define SHOUT_PROTOCOL_XAUDIOCAST   (  1)
+#define SHOUT_PROTOCOL_ICY          (  2)
+#define SHOUT_PROTOCOL_ROARAUDIO    (  3)
 
 /* Possible TLS modes */
-#define SHOUT_TLS_DISABLED              (0)  /* Do not use TLS at all */
-#define SHOUT_TLS_AUTO                  (1)  /* Autodetect which TLS mode to use if any */
-#define SHOUT_TLS_AUTO_NO_PLAIN         (2)  /* Like SHOUT_TLS_AUTO_NO_PLAIN but does not allow plain connections */
-#define SHOUT_TLS_RFC2818               (11) /* Use TLS for transport layer like HTTPS [RFC2818] does. */
-#define SHOUT_TLS_RFC2817               (12) /* Use TLS via HTTP Upgrade:-header [RFC2817]. */
+#define SHOUT_TLS_DISABLED          (  0) /* Do not use TLS at all */
+#define SHOUT_TLS_AUTO              (  1) /* Autodetect which TLS mode to use if any */
+#define SHOUT_TLS_AUTO_NO_PLAIN     (  2) /* Like SHOUT_TLS_AUTO_NO_PLAIN but does not allow plain connections */
+#define SHOUT_TLS_RFC2818           ( 11) /* Use TLS for transport layer like HTTPS [RFC2818] does. */
+#define SHOUT_TLS_RFC2817           ( 12) /* Use TLS via HTTP Upgrade:-header [RFC2817]. */
 
-#define SHOUT_AI_BITRATE	"bitrate"
-#define SHOUT_AI_SAMPLERATE	"samplerate"
-#define SHOUT_AI_CHANNELS	"channels"
-#define SHOUT_AI_QUALITY	"quality"
+#define SHOUT_AI_BITRATE            "bitrate"
+#define SHOUT_AI_SAMPLERATE         "samplerate"
+#define SHOUT_AI_CHANNELS           "channels"
+#define SHOUT_AI_QUALITY            "quality"
 
-#define SHOUT_META_NAME         "name"
-#define SHOUT_META_URL          "url"
-#define SHOUT_META_GENRE        "genre"
-#define SHOUT_META_DESCRIPTION  "description"
-#define SHOUT_META_IRC          "irc"
-#define SHOUT_META_AIM          "aim"
-#define SHOUT_META_ICQ          "icq"
+#define SHOUT_META_NAME             "name"
+#define SHOUT_META_URL              "url"
+#define SHOUT_META_GENRE            "genre"
+#define SHOUT_META_DESCRIPTION      "description"
+#define SHOUT_META_IRC              "irc"
+#define SHOUT_META_AIM              "aim"
+#define SHOUT_META_ICQ              "icq"
 
 typedef struct shout shout_t;
 typedef struct _util_dict shout_metadata_t;
@@ -199,6 +201,12 @@ unsigned int shout_get_format(shout_t *self);
 int shout_set_protocol(shout_t *self, unsigned int protocol);
 unsigned int shout_get_protocol(shout_t *self);
 
+/* Explicitly sets the mimetype. Set to NULL to revert back to the default.
+   The default value is dependent on the format setting. */
+int shout_set_mimetype(shout_t *self, const char *mimetype);
+
+const char *shout_get_mimetype(shout_t *self);
+
 /* Instructs libshout to use nonblocking I/O. Must be called before
  * shout_open (no switching back and forth midstream at the moment). */
 int shout_set_nonblocking(shout_t* self, unsigned int nonblocking);
@@ -259,7 +267,7 @@ int shout_metadata_add(shout_metadata_t *self, const char *name, const char *val
 
 /* --- Compiled features --- */
 
-#define SHOUT_THREADSAFE 1
-#define SHOUT_TLS        1
+#define SHOUT_THREADSAFE @SHOUT_THREADSAFE@
+#define SHOUT_TLS        @SHOUT_TLS@
 
 #endif /* __LIBSHOUT_SHOUT_H__ */

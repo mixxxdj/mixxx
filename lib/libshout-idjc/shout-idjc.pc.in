@@ -1,4 +1,4 @@
-# libshout pkg-config source file
+# libshout-idjc pkg-config source file
 
 prefix=@prefix@
 exec_prefix=@exec_prefix@
@@ -7,9 +7,9 @@ includedir=@includedir@
 cppflags=@SHOUT_CPPFLAGS@
 cflags_only=@SHOUT_CFLAGS@
 
-Name: Shout
-Description: Audio streaming library for icecast encoders
+Name: Shout-idjc
+Description: Audio streaming library for shoutcast/icecast encoders
 Version: @VERSION@
 Requires.private: @SHOUT_REQUIRES@
-Libs: -L${libdir} -lshout
+Libs: -L${libdir} -lshout-idjc
 Cflags: -I${includedir} @PTHREAD_CPPFLAGS@ @SHOUT_CFLAGS@

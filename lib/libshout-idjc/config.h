@@ -4,6 +4,9 @@
 #ifndef __CONFIG_H__
 #define __CONFIG_H__ 1
 
+/* Define to 1 if you have the <arpa/inet.h> header file. */
+#define HAVE_ARPA_INET_H 1
+
 /* Define if you have the C99 integer types */
 #define HAVE_C99_INTTYPES 1
 
@@ -115,27 +118,26 @@
 /* Shout library minor version */
 #define LIBSHOUT_MINOR 4
 
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 
 /* Define if you don't want to use the thread library */
 /* #undef NO_THREAD */
 
 /* Name of package */
-#define PACKAGE "libshout"
+#define PACKAGE "libshout-idjc"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "icecast-dev@xiph.org"
+#define PACKAGE_BUGREPORT "www.sourceforge.net/projects/idjc"
 
 /* Define to the full name of this package. */
-#define PACKAGE_NAME "libshout"
+#define PACKAGE_NAME "libshout-idjc"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libshout 2.4.1"
+#define PACKAGE_STRING "libshout-idjc 2.4.1"
 
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME "libshout"
+#define PACKAGE_TARNAME "libshout-idjc"
 
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""

@@ -2,6 +2,6 @@
 
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = shout
+SUBDIRS = shoutidjc
 
 EXTRA_DIST = os.h

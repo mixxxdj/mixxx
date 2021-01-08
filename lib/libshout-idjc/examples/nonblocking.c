@@ -8,7 +8,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <shout/shout.h>
+#include <shoutidjc/shout.h>
 
 int main()
 {

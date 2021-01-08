@@ -10,7 +10,7 @@ noinst_HEADERS = avl.h
 libiceavl_la_SOURCES = avl.c
 libiceavl_la_CFLAGS = @XIPH_CFLAGS@
 
-INCLUDES = -I$(srcdir)/..
+AM_CPPFLAGS = -I$(srcdir)/..
 
 debug:
 	$(MAKE) all CFLAGS="@DEBUG@"

@@ -1,7 +1,7 @@
 #ckport(1) database for libshout -- A Cross-platform library for media streaming:
-!NAME: libshout
+!NAME: libshout-idjc
 !TYPE: func
-!TARGET: libshout3
+!TARGET: libshout-idjc3
 
 # Global libshout management:
 shout_init			ok

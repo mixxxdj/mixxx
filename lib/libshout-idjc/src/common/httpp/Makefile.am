@@ -7,9 +7,7 @@ noinst_HEADERS = httpp.h encoding.h
 
 libicehttpp_la_SOURCES = httpp.c encoding.c
 libicehttpp_la_CFLAGS = @XIPH_CFLAGS@
-AM_CPPFLAGS = @XIPH_CPPFLAGS@
-
-INCLUDES = -I$(srcdir)/..
+AM_CPPFLAGS = -I$(srcdir)/.. @XIPH_CPPFLAGS@
 
 # SCCS stuff (for BitKeeper)
 GET = true
