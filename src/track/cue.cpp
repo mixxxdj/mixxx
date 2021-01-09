@@ -74,9 +74,8 @@ Cue::Cue(
 
 Cue::Cue(
         const mixxx::CueInfo& cueInfo,
-        mixxx::audio::SampleRate sampleRate,
-        bool setDirty)
-        : m_bDirty(setDirty),
+        mixxx::audio::SampleRate sampleRate)
+        : m_bDirty(true),
           m_type(cueInfo.getType()),
           m_sampleStartPosition(
                   positionMillisToSamples(
@@ -98,7 +97,7 @@ Cue::Cue(
         int hotCueIndex,
         double sampleStartPosition,
         double sampleEndPosition)
-        : m_bDirty(false), // not yet in database
+        : m_bDirty(true),
           m_type(type),
           m_sampleStartPosition(sampleStartPosition),
           m_sampleEndPosition(sampleEndPosition),

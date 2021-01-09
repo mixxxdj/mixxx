@@ -35,8 +35,7 @@ class Cue : public QObject {
     /// For roundtrips during tests
     Cue(
             const mixxx::CueInfo& cueInfo,
-            mixxx::audio::SampleRate sampleRate,
-            bool setDirty);
+            mixxx::audio::SampleRate sampleRate);
 
     /// Load entity from database.
     Cue(
