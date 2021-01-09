@@ -40,6 +40,7 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     QString libname = "";
 #ifdef __LINUX__
     libnames << "fdk-aac";
+    libnames << "libfdk-aac.so.1";
 #elif __WINDOWS__
     // Give top priority to libfdk-aac copied
     // into Mixxx's installation folder
@@ -65,9 +66,9 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
 #endif
 
     for (const auto& libname : libnames) {
-        m_library = new QLibrary(libname, 0);
+        m_library = new QLibrary(libname);
         if (m_library->load()) {
-            kLogger.debug() << "Successfully loaded encoder library " << libname;
+            kLogger.debug() << "Successfully loaded encoder library " << m_library->fileName();
             break;
         } else {
             kLogger.warning() << "Failed to load " << libname << ", " << m_library->errorString();
