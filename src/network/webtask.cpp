@@ -26,14 +26,24 @@ void registerMetaTypesOnce() {
 }
 
 int readStatusCode(
-        const QNetworkReply* networkReply) {
+        const QNetworkReply& networkReply) {
     const QVariant statusCodeAttr =
-            networkReply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+            networkReply.attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    if (!statusCodeAttr.isValid()) {
+        // No status code available
+        return kHttpStatusCodeInvalid;
+    }
+    VERIFY_OR_DEBUG_ASSERT(statusCodeAttr.canConvert<int>()) {
+        kLogger.warning()
+                << "Invalid status code attribute"
+                << statusCodeAttr;
+        return kHttpStatusCodeInvalid;
+    }
     bool statusCodeValid = false;
     const int statusCode = statusCodeAttr.toInt(&statusCodeValid);
     VERIFY_OR_DEBUG_ASSERT(statusCodeValid && HttpStatusCode_isValid(statusCode)) {
         kLogger.warning()
-                << "Invalid or missing status code attribute"
+                << "Failed to read status code attribute"
                 << statusCodeAttr;
         return kHttpStatusCodeInvalid;
     }
@@ -364,7 +374,7 @@ void WebTask::slotNetworkReplyFinished() {
         m_timeoutTimerId = kInvalidTimerId;
     }
 
-    const auto statusCode = readStatusCode(pFinishedNetworkReply);
+    const auto statusCode = readStatusCode(*pFinishedNetworkReply);
     if (pFinishedNetworkReply->error() != QNetworkReply::NetworkError::NoError) {
         onNetworkError(
                 pFinishedNetworkReply->error(),
