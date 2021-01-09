@@ -208,12 +208,8 @@ void CueDAO::saveTrackCues(
     QStringList cueIds;
     cueIds.reserve(cueList.size());
     for (const auto& pCue : cueList) {
-        // New cues (without an id) must always be marked as dirty
-        VERIFY_OR_DEBUG_ASSERT(pCue->getId().isValid() || pCue->isDirty()) {
-            pCue->setDirty(true);
-        }
         // Update or save cue
-        if (pCue->isDirty()) {
+        if (!pCue->getId().isValid() || pCue->isDirty()) {
             saveCue(trackId, pCue.get());
         }
         // After saving each cue must have a valid id
