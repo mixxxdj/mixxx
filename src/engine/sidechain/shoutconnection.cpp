@@ -10,7 +10,7 @@
 #ifdef WIN64
 #define WIN32
 #endif
-#include <shout/shout.h>
+#include <shoutidjc/shout.h>
 #ifdef WIN64
 #undef WIN32
 #endif
