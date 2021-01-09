@@ -37,7 +37,6 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     // Load shared library
     // Code import from encodermp3.cpp
     QStringList libnames;
-    QString libname = "";
 #ifdef __LINUX__
     libnames << "fdk-aac";
     libnames << "libfdk-aac.so.1";
@@ -65,7 +64,7 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     libnames << "/opt/local/lib/libfdk-aac.dylib";
 #endif
 
-    for (const auto& libname : libnames) {
+    for (const auto& libname : qAsConst(libnames)) {
         m_library = new QLibrary(libname);
         if (m_library->load()) {
             kLogger.debug() << "Successfully loaded encoder library " << m_library->fileName();
@@ -73,7 +72,6 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
         } else {
             kLogger.warning() << "Failed to load " << libname << ", " << m_library->errorString();
         }
-
         delete m_library;
         m_library = nullptr;
     }
@@ -178,7 +176,7 @@ QString EncoderFdkAac::buttWindowsFdkAac() {
 
     // Try to find a butt installation in one of the
     // potential paths above
-    for (QString topPath : searchPaths) {
+    for (const auto& topPath : qAsConst(searchPaths)) {
         QDir folder(topPath);
         if (!folder.exists()) {
             continue;
@@ -192,7 +190,7 @@ QString EncoderFdkAac::buttWindowsFdkAac() {
 
         // If a butt installation is found, try
         // to find libfdk-aac in it
-        for (QString subName : subfolders) {
+        for (const auto& subName : qAsConst(subfolders)) {
             if (!folder.cd(subName)) {
                 continue;
             }
