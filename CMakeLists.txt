@@ -2344,26 +2344,19 @@ endif()
 option(BROADCAST "Live Broadcasting (Shoutcast) support" ON)
 if(BROADCAST)
   find_package(Shoutidjc)
-  if(UNIX AND NOT APPLE)
-    # Check if system lib is at least 2.4.4 and not suffering bug
-    # https://bugs.launchpad.net/mixxx/+bug/1833225
-    if(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.4)
-        message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from bug lp1833225")
-    endif()
-    if(NOT Shoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.4)
-      # Fall back to internal libraray in the lib tree
-      message(STATUS "Using internal libshout-idjc")
-      add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout-idjc")
-      target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout-idjc/include)
-      target_link_libraries(mixxx-lib PUBLIC shout_mixxx)
-    else()
-      target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
-    endif()
+  # Check if system lib is at least 2.4.4 and not suffering bug
+  # https://bugs.launchpad.net/mixxx/+bug/1833225
+  if(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.4)
+      message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from bug lp1833225")
+  endif()
+  if(NOT Shoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.4)
+    # Fall back to internal libraray in the lib tree
+    message(STATUS "Using internal libshout-idjc")
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout-idjc")
+    target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout-idjc/include)
+    target_link_libraries(mixxx-lib PUBLIC shout_mixxx)
   else()
-    if(NOT Shout_FOUND)
-      message(FATAL_ERROR "Live Broadcasting support requires the libshout-idjc and its development headers.")
-    endif()
-    target_link_libraries(mixxx-lib PUBLIC Shoutidjc::Shoutidjc)
+    target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
   endif()
   target_sources(mixxx-lib PRIVATE
     src/preferences/dialog/dlgprefbroadcastdlg.ui
