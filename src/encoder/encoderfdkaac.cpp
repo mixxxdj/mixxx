@@ -386,7 +386,8 @@ void EncoderFdkAac::processFIFO() {
     }
 }
 
-void EncoderFdkAac::updateMetaData(const QString& artist, const QString& title, const QString& album) {
+void EncoderFdkAac::updateMetaData(
+        const QString& artist, const QString& title, const QString& album) {
     (void)artist, (void)title, (void)album;
 }
 
