@@ -209,7 +209,9 @@ void CueDAO::saveTrackCues(
     cueIds.reserve(cueList.size());
     for (const auto& pCue : cueList) {
         // New cues (without an id) must always be marked as dirty
-        DEBUG_ASSERT(pCue->getId().isValid() || pCue->isDirty());
+        VERIFY_OR_DEBUG_ASSERT(pCue->getId().isValid() || pCue->isDirty()) {
+            pCue->setDirty(true);
+        }
         // Update or save cue
         if (pCue->isDirty()) {
             saveCue(trackId, pCue.get());
@@ -221,18 +223,16 @@ void CueDAO::saveTrackCues(
         cueIds.append(pCue->getId().toString());
     }
 
-    // Delete orphaned cues
+    // Purge orphaned cues
     FwdSqlQuery query(
             m_database,
             QStringLiteral("DELETE FROM " CUE_TABLE " WHERE track_id=:track_id AND id NOT IN (%1)")
                     .arg(cueIds.join(QChar(','))));
-    DEBUG_ASSERT(
-            query.isPrepared() &&
-            !query.hasError());
+    DEBUG_ASSERT(query.isPrepared() && !query.hasError());
     query.bindValue(":track_id", trackId.toVariant());
     VERIFY_OR_DEBUG_ASSERT(query.execPrepared()) {
         kLogger.warning()
-                << "Failed to delete orphaned cues of track"
+                << "Failed to purge orphaned cues of track"
                 << trackId;
         return;
     }
