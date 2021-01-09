@@ -71,7 +71,7 @@ MusicBrainzRecordingsTask::MusicBrainzRecordingsTask(
         : network::WebTask(
                   networkAccessManager,
                   parent),
-          m_queuedRecordingIds(std::move(recordingIds)),
+          m_queuedRecordingIds(recordingIds),
           m_parentTimeoutMillis(0) {
     musicbrainz::registerMetaTypesOnce();
 }
@@ -129,7 +129,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
                         finishedNetworkReply->request().url(),
                         statusCode),
                 error.code,
-                std::move(error.message));
+                error.message);
         return;
     }
 
@@ -151,7 +151,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
                         finishedNetworkReply->request().url(),
                         statusCode),
                 -1,
-                "Failed to parse XML response");
+                QStringLiteral("Failed to parse XML response"));
         return;
     }
 
@@ -160,7 +160,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
         m_finishedRecordingIds.clear();
         auto trackReleases = m_trackReleases.values();
         m_trackReleases.clear();
-        emitSucceeded(std::move(trackReleases));
+        emitSucceeded(trackReleases);
         return;
     }
 
@@ -170,7 +170,7 @@ void MusicBrainzRecordingsTask::doNetworkReplyFinished(
 }
 
 void MusicBrainzRecordingsTask::emitSucceeded(
-        QList<musicbrainz::TrackRelease>&& trackReleases) {
+        const QList<musicbrainz::TrackRelease>& trackReleases) {
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&MusicBrainzRecordingsTask::succeeded)) {
         kLogger.warning()
@@ -178,14 +178,13 @@ void MusicBrainzRecordingsTask::emitSucceeded(
         deleteLater();
         return;
     }
-    emit succeeded(
-            std::move(trackReleases));
+    emit succeeded(trackReleases);
 }
 
 void MusicBrainzRecordingsTask::emitFailed(
-        network::WebResponse&& response,
+        const network::WebResponse& response,
         int errorCode,
-        QString&& errorMessage) {
+        const QString& errorMessage) {
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&MusicBrainzRecordingsTask::failed)) {
         kLogger.warning()
@@ -197,9 +196,9 @@ void MusicBrainzRecordingsTask::emitFailed(
         return;
     }
     emit failed(
-            std::move(response),
+            response,
             errorCode,
-            std::move(errorMessage));
+            errorMessage);
 }
 
 } // namespace mixxx

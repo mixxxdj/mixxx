@@ -119,13 +119,13 @@ JsonWebTask::JsonWebTask(
         QObject* parent)
         : WebTask(networkAccessManager, parent),
           m_baseUrl(std::move(baseUrl)),
-          m_request(std::move(request)) {
+          m_request(request) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
     DEBUG_ASSERT(!m_baseUrl.isEmpty());
 }
 
 void JsonWebTask::onFinished(
-        JsonWebResponse&& jsonResponse) {
+        const JsonWebResponse& jsonResponse) {
     kLogger.info()
             << this
             << "Received JSON response"
@@ -134,7 +134,7 @@ void JsonWebTask::onFinished(
 }
 
 void JsonWebTask::onFinishedCustom(
-        WebResponseWithContent&& customResponse) {
+        const WebResponseWithContent& customResponse) {
     kLogger.info()
             << this
             << "Received custom response"
@@ -285,7 +285,7 @@ void JsonWebTask::doNetworkReplyFinished(
 }
 
 void JsonWebTask::emitFailed(
-        network::JsonWebResponse&& response) {
+        const network::JsonWebResponse& response) {
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&JsonWebTask::failed)) {
         kLogger.warning()
@@ -295,7 +295,7 @@ void JsonWebTask::emitFailed(
         deleteLater();
         return;
     }
-    emit failed(std::move(response));
+    emit failed(response);
 }
 
 } // namespace network

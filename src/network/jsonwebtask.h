@@ -33,8 +33,8 @@ class JsonWebResponse final {
     JsonWebResponse(
             WebResponse&& response,
             QJsonDocument&& content)
-            : m_response(std::move(response)),
-              m_content(std::move(content)) {
+            : m_response(response),
+              m_content(content) {
     }
     JsonWebResponse(const JsonWebResponse&) = default;
     JsonWebResponse(JsonWebResponse&&) = default;
@@ -89,16 +89,18 @@ class JsonWebTask : public WebTask {
             const QJsonDocument& content);
 
     void emitFailed(
-            network::JsonWebResponse&& response);
+            const network::JsonWebResponse& response);
 
   private:
-    // Handle the response and ensure that the task eventually
-    // gets deleted. The default implementation discards the
-    // response and deletes the task.
+    /// Handle the response and ensure that the task eventually
+    /// gets deleted.
+    ///
+    /// Could be overridden by derived classes. The default
+    /// implementation discards the response and deletes the task.
     virtual void onFinished(
-            JsonWebResponse&& response);
+            const JsonWebResponse& jsonResponse);
     virtual void onFinishedCustom(
-            WebResponseWithContent&& response);
+            const WebResponseWithContent& customResponse);
 
     QNetworkReply* doStartNetworkRequest(
             QNetworkAccessManager* networkAccessManager,

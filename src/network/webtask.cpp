@@ -141,7 +141,7 @@ void WebTask::onNetworkError(
     DEBUG_ASSERT(hasTerminated());
 
     if (m_state == State::Aborted) {
-        emitAborted(responseWithContent.replyUrl());
+        emitAborted(responseWithContent.requestUrl());
     } else {
         emitNetworkError(
                 errorCode,
@@ -214,7 +214,7 @@ void WebTask::slotStart(int timeoutMillis) {
                 << this
                 << "Network request has not been started";
         m_state = State::Aborted;
-        emitAborted();
+        emitAborted(/*request URL is unknown*/);
         return;
     }
 
