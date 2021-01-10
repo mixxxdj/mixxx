@@ -19,7 +19,7 @@ class Encoder {
                         internalName(nameIn),
                         lossless(losslessIn),
                         fileExtension(fileExtIn) {
-                  if (fileExtension == QString::null) {
+                  if (fileExtension.isEmpty()) {
                       fileExtension = label;
                   }
               }

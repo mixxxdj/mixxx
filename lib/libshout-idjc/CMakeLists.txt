@@ -33,6 +33,9 @@ target_compile_definitions(${PROJECT_NAME}
         LIBSHOUT_MICRO=${PROJECT_VERSION_PATCH}
 )
 
+target_compile_options(${PROJECT_NAME} PRIVATE -pthread -Wall)
+target_link_libraries(${PROJECT_NAME} PRIVATE pthread)
+
 # Configure shout.h
 set(SHOUT_THREADSAFE 1)
 set(SHOUT_TLS 1)
