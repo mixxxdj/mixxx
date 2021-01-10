@@ -313,24 +313,29 @@ void EncoderFdkAac::encodeBuffer(const CSAMPLE* samples, const int sampleCount) 
     if (!m_pInputFifo) {
         return;
     }
-
-    int writeRequired = sampleCount;
+    int writeCount = sampleCount;
     int writeAvailable = m_pInputFifo->writeAvailable();
-    if (writeRequired > writeAvailable) {
+    if (writeCount > writeAvailable) {
         kLogger.warning() << "FIFO buffer too small, loosing samples!"
-                          << "required:" << writeRequired
+                          << "required:" << writeCount
                           << "; available: " << writeAvailable;
+        writeCount = writeAvailable;
     }
-
-    int writeCount = math_min(writeRequired, writeAvailable);
     if (writeCount > 0) {
+        SAMPLE* dataPtr1;
+        ring_buffer_size_t size1;
+        SAMPLE* dataPtr2;
+        ring_buffer_size_t size2;
+        // We use size1 and size2, so we can ignore the return value
+        (void)m_pInputFifo->aquireWriteRegions(writeCount, &dataPtr1, &size1, &dataPtr2, &size2);
         // fdk-aac doesn't support float samples, so convert
         // to integers instead
-        SAMPLE convertedSamples[writeCount];
-        SampleUtil::convertFloat32ToS16(convertedSamples, samples, writeCount);
-        m_pInputFifo->write(convertedSamples, writeCount);
+        SampleUtil::convertFloat32ToS16(dataPtr1, samples, size1);
+        if (size2 > 0) {
+            SampleUtil::convertFloat32ToS16(dataPtr2, samples + size1, size2);
+        }
+        m_pInputFifo->releaseWriteRegions(writeCount);
     }
-
     processFIFO();
 }
 
