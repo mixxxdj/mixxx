@@ -39,10 +39,12 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     QStringList libnames;
 #ifdef __LINUX__
     libnames << "fdk-aac";
+    libnames << "libfdk-aac.so.2";
     libnames << "libfdk-aac.so.1";
 #elif __WINDOWS__
     // Give top priority to libfdk-aac copied
     // into Mixxx's installation folder
+    libnames << "libfdk-aac-2.dll";
     libnames << "libfdk-aac-1.dll";
 
     // Fallback and user-friendly method: use libfdk-aac
@@ -60,8 +62,12 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
 #elif __APPLE__
     // Using Homebrew ('brew install fdk-aac' command):
     libnames << "/usr/local/lib/libfdk-aac.dylib";
+    libnames << "/usr/local/lib/libfdk-aac.2.dylib";
+    libnames << "/usr/local/lib/libfdk-aac.1.dylib";
     // Using MacPorts ('sudo port install libfdk-aac' command):
     libnames << "/opt/local/lib/libfdk-aac.dylib";
+    libnames << "/opt/local/lib/libfdk-aac.2.dylib";
+    libnames << "/opt/local/lib/libfdk-aac.1.dylib";
 #endif
 
     for (const auto& libname : qAsConst(libnames)) {
