@@ -99,11 +99,6 @@ if(HAVE_STDINT_H)
     target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_STDINT_H)
 endif()
 
-check_include_file(strings.h HAVE_STRINGS_H)
-if(HAVE_STRINGS_H)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_STRINGS_H)
-endif()
-
 check_include_file(sys/select.h HAVE_SYS_SELECT_H)
 if(HAVE_SYS_SELECT_H)
     target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_SYS_SELECT_H)
