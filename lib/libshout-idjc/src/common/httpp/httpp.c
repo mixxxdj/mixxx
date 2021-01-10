@@ -38,6 +38,10 @@
 #include <avl/avl.h>
 #include "httpp.h"
 
+#if _WIN32
+#include <os.h>
+#endif
+
 #define MAX_HEADERS 32
 
 /* internal functions */

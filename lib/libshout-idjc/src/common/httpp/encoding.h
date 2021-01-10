@@ -27,6 +27,10 @@
 
 #include <sys/types.h>
 
+#if _WIN32
+#include <os.h>
+#endif
+
 /* known encodings */
 #define HTTPP_ENCODING_IDENTITY "identity" /* RFC2616 */
 #define HTTPP_ENCODING_CHUNKED  "chunked"  /* RFC2616 */
