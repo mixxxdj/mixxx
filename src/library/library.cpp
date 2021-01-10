@@ -112,12 +112,12 @@ Library::Library(
     connect(m_pCrateFeature,
             &CrateFeature::exportAllCrates,
             this,
-            &Library::exportLibrary,
+            &Library::exportLibrary, // signal-to-signal
             Qt::DirectConnection);
     connect(m_pCrateFeature,
             &CrateFeature::exportCrate,
             this,
-            &Library::exportCrate,
+            &Library::exportCrate, // signal-to-signal
             Qt::DirectConnection);
 #endif
 

@@ -77,14 +77,14 @@ inline double sampleOffsetToPlayPos(double sampleOffset) {
 QString exportFile(const EnginePrimeExportRequest& request,
         TrackPointer pTrack) {
     if (!request.engineLibraryDbDir.exists()) {
-        auto msg = QStringLiteral(
+        const auto msg = QStringLiteral(
                 "Engine Library DB directory %1 has been removed from disk!")
-                           .arg(request.engineLibraryDbDir.absolutePath());
+                                 .arg(request.engineLibraryDbDir.absolutePath());
         throw std::runtime_error{msg.toStdString()};
     } else if (!request.musicFilesDir.exists()) {
-        auto msg = QStringLiteral(
+        const auto msg = QStringLiteral(
                 "Music file export directory %1 has been removed from disk!")
-                           .arg(request.musicFilesDir.absolutePath());
+                                 .arg(request.musicFilesDir.absolutePath());
         throw std::runtime_error{msg.toStdString()};
     }
 
@@ -93,12 +93,12 @@ QString exportFile(const EnginePrimeExportRequest& request,
     // chance of filename clashes, and to keep things simple, we will prefix
     // the destination files with the DB track identifier.
     TrackFile srcFileInfo = pTrack->getFileInfo();
-    auto trackId = pTrack->getId().value();
+    const auto trackId = pTrack->getId().value();
     QString dstFilename = QString::number(trackId) + " - " + srcFileInfo.fileName();
     QString dstPath = request.musicFilesDir.filePath(dstFilename);
     if (!QFile::exists(dstPath) ||
             srcFileInfo.fileLastModified() > QFileInfo{dstPath}.lastModified()) {
-        auto srcPath = srcFileInfo.location();
+        const auto srcPath = srcFileInfo.location();
         QFile::copy(srcPath, dstPath);
     }
 
@@ -107,7 +107,7 @@ QString exportFile(const EnginePrimeExportRequest& request,
 
 djinterop::track getTrackByRelativePath(
         djinterop::database* pDatabase, const QString& relativePath) {
-    auto trackCandidates = pDatabase->tracks_by_relative_path(relativePath.toStdString());
+    const auto trackCandidates = pDatabase->tracks_by_relative_path(relativePath.toStdString());
     switch (trackCandidates.size()) {
     case 0:
         return pDatabase->create_track(relativePath.toStdString());
@@ -153,7 +153,7 @@ void exportMetadata(djinterop::database* pDatabase,
     externalTrack.set_bitrate(pTrack->getBitrate());
 
     // Frames used interchangeably with "samples" here.
-    auto sampleCount = static_cast<int64_t>(pTrack->getDuration() * pTrack->getSampleRate());
+    const auto sampleCount = static_cast<int64_t>(pTrack->getDuration() * pTrack->getSampleRate());
     externalTrack.set_sampling({static_cast<double>(pTrack->getSampleRate()), sampleCount});
 
     // Set track loudness.
@@ -208,7 +208,7 @@ void exportMetadata(djinterop::database* pDatabase,
                 << "(" << pTrack->getFileInfo().fileName() << ")";
     }
 
-    auto cues = pTrack->getCuePoints();
+    const auto cues = pTrack->getCuePoints();
     for (const CuePointer& pCue : cues) {
         // We are only interested in hot cues.
         if (pCue->getType() != CueType::HotCue) {
@@ -251,7 +251,7 @@ void exportMetadata(djinterop::database* pDatabase,
         std::vector<djinterop::waveform_entry> externalWaveform;
         externalWaveform.reserve(externalWaveformSize);
         for (int64_t i = 0; i < externalWaveformSize; ++i) {
-            auto j = pWaveform->getDataSize() * i / externalWaveformSize;
+            int64_t j = pWaveform->getDataSize() * i / externalWaveformSize;
             externalWaveform.push_back({{pWaveform->getLow(j), kDefaultWaveformOpacity},
                     {pWaveform->getMid(j), kDefaultWaveformOpacity},
                     {pWaveform->getHigh(j), kDefaultWaveformOpacity}});
@@ -278,7 +278,7 @@ void exportTrack(
     }
 
     // Copy the file, if required.
-    auto musicFileRelativePath = exportFile(request, pTrack);
+    const auto musicFileRelativePath = exportFile(request, pTrack);
 
     // Export meta-data.
     exportMetadata(pDatabase,
@@ -297,8 +297,8 @@ void exportCrate(
     auto extCrate = pExtRootCrate->create_sub_crate(crate.getName().toStdString());
 
     // Loop through all track ids in this crate and add.
-    for (auto trackId : trackIds) {
-        auto extTrackId = mixxxToEnginePrimeTrackIdMap[trackId];
+    for (const auto trackId : trackIds) {
+        const auto extTrackId = mixxxToEnginePrimeTrackIdMap[trackId];
         extCrate.add_track(extTrackId);
     }
 }
@@ -330,15 +330,15 @@ void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
         // of unique track refs from all directories in the library.
         qDebug() << "Loading all track refs and crate ids...";
         QSet<TrackRef> trackRefs;
-        auto dirs = m_pTrackCollectionManager->internalCollection()
-                            ->getDirectoryDAO()
-                            .getDirs();
-        for (auto& dir : dirs) {
-            auto trackRefsFromDir = m_pTrackCollectionManager
-                                            ->internalCollection()
-                                            ->getTrackDAO()
-                                            .getAllTrackRefs(dir);
-            for (auto& trackRef : trackRefsFromDir) {
+        const auto dirs = m_pTrackCollectionManager->internalCollection()
+                                  ->getDirectoryDAO()
+                                  .getDirs();
+        for (const auto& dir : dirs) {
+            const auto trackRefsFromDir = m_pTrackCollectionManager
+                                                  ->internalCollection()
+                                                  ->getTrackDAO()
+                                                  .getAllTrackRefs(dir);
+            for (const auto& trackRef : trackRefsFromDir) {
                 trackRefs.insert(trackRef);
             }
         }
@@ -352,7 +352,7 @@ void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
         // Convert a list of track refs to a list of track ids, and use that
         // to identify all crates that contain those tracks.
         QList<TrackId> trackIds;
-        for (auto& trackRef : trackRefs) {
+        for (const auto& trackRef : trackRefs) {
             trackIds.append(trackRef.getId());
         }
         crateIds = m_pTrackCollectionManager->internalCollection()
@@ -374,16 +374,16 @@ void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
 
         // Identify track refs from the specified crates.
         m_trackRefs.clear();
-        for (auto& crateId : crateIds) {
+        for (const auto& crateId : crateIds) {
             auto result = m_pTrackCollectionManager->internalCollection()
                                   ->crates()
                                   .selectCrateTracksSorted(crateId);
             while (result.next()) {
-                auto trackId = result.trackId();
-                auto location = m_pTrackCollectionManager->internalCollection()
-                                        ->getTrackDAO()
-                                        .getTrackLocation(trackId);
-                auto trackFile = TrackFile(location);
+                const auto trackId = result.trackId();
+                const auto location = m_pTrackCollectionManager->internalCollection()
+                                              ->getTrackDAO()
+                                              .getTrackLocation(trackId);
+                const auto trackFile = TrackFile(location);
                 m_trackRefs.append(TrackRef::fromFileInfo(trackFile, trackId));
             }
         }
@@ -398,10 +398,10 @@ void EnginePrimeExportJob::loadTrack(TrackRef trackRef) {
 
     // Load high-resolution waveform from analysis info.
     auto& analysisDao = m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
-    auto waveformAnalyses = analysisDao.getAnalysesForTrackByType(
+    const auto waveformAnalyses = analysisDao.getAnalysesForTrackByType(
             m_pLastLoadedTrack->getId(), AnalysisDao::TYPE_WAVEFORM);
     if (!waveformAnalyses.isEmpty()) {
-        auto& waveformAnalysis = waveformAnalyses.first();
+        const auto& waveformAnalysis = waveformAnalyses.first();
         m_pLastLoadedWaveform.reset(
                 WaveformFactory::loadWaveformFromAnalysis(waveformAnalysis));
     }
@@ -464,7 +464,7 @@ void EnginePrimeExportJob::run() {
     // We will build up a map from Mixxx track id to EL track id during export.
     QHash<TrackId, int64_t> mixxxToEnginePrimeTrackIdMap;
 
-    for (auto& trackRef : m_trackRefs) {
+    for (const auto& trackRef : m_trackRefs) {
         // Load each track.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
@@ -508,7 +508,7 @@ void EnginePrimeExportJob::run() {
     // underneath this crate.
     std::unique_ptr<djinterop::crate> pExtRootCrate;
     try {
-        auto optionalExtRootCrate = pDb->root_crate_by_name(kMixxxRootCrateName);
+        const auto optionalExtRootCrate = pDb->root_crate_by_name(kMixxxRootCrateName);
         pExtRootCrate = std::make_unique<djinterop::crate>(optionalExtRootCrate
                         ? *optionalExtRootCrate
                         : pDb->create_root_crate(kMixxxRootCrateName));
@@ -526,7 +526,7 @@ void EnginePrimeExportJob::run() {
             continue;
         }
 
-        auto extTrackId = mixxxToEnginePrimeTrackIdMap.value(
+        const auto extTrackId = mixxxToEnginePrimeTrackIdMap.value(
                 trackRef.getId());
         try {
             pExtRootCrate->add_track(extTrackId);

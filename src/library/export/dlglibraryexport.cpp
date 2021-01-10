@@ -23,6 +23,7 @@ namespace mixxx {
 
 namespace {
 const QString kDefaultMixxxExportDirName = QStringLiteral("mixxx-export");
+const QString kLastDirConfigItemName = QStringLiteral("LastLibraryExportDirectory");
 
 void populateCrates(
         QListWidget* pListWidget,
@@ -58,7 +59,7 @@ DlgLibraryExport::DlgLibraryExport(
     QString fallbackExportDirectory =
             QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     QString lastExportDirectory =
-            m_pConfig->getValue(ConfigKey("[Library]", "LastLibraryExportDirectory"),
+            m_pConfig->getValue(ConfigKey("[Library]", kLastDirConfigItemName),
                     fallbackExportDirectory);
     if (!QDir{lastExportDirectory}.exists()) {
         lastExportDirectory = fallbackExportDirectory;
@@ -151,7 +152,7 @@ void DlgLibraryExport::setSelectedCrate(std::optional<CrateId> crateId) {
     m_pCratesList->setEnabled(true);
     for (auto i = 0; i < m_pCratesList->count(); ++i) {
         auto* pItem = m_pCratesList->item(i);
-        auto currCrateId = pItem->data(Qt::UserRole).toInt();
+        const auto currCrateId = pItem->data(Qt::UserRole).toInt();
         if (currCrateId == crateId->value()) {
             m_pCratesList->setCurrentItem(pItem);
             return;
@@ -161,15 +162,15 @@ void DlgLibraryExport::setSelectedCrate(std::optional<CrateId> crateId) {
 
 void DlgLibraryExport::browseExportDirectory() {
     QString lastExportDirectory =
-            m_pConfig->getValue(ConfigKey("[Library]", "LastLibraryExportDirectory"),
+            m_pConfig->getValue(ConfigKey("[Library]", kLastDirConfigItemName),
                     QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation));
-    auto exportDirectory = QFileDialog::getExistingDirectory(
+    const auto exportDirectory = QFileDialog::getExistingDirectory(
             nullptr, tr("Export Library To"), lastExportDirectory);
     if (exportDirectory.isEmpty()) {
         return;
     }
     m_pConfig->set(
-            ConfigKey("[Library]", "LastLibraryExportDirectory"), ConfigValue(exportDirectory));
+            ConfigKey("[Library]", kLastDirConfigItemName), ConfigValue(exportDirectory));
 
     m_pExportDirectoryTextField->setText(exportDirectory);
 
@@ -179,7 +180,7 @@ void DlgLibraryExport::browseExportDirectory() {
 
 void DlgLibraryExport::exportRequested() {
     // Check a base export directory has been chosen
-    if (m_pExportDirectoryTextField->text() == "") {
+    if (m_pExportDirectoryTextField->text().trimmed().isEmpty()) {
         QMessageBox::information(this,
                 tr("No Export Directory Chosen"),
                 tr("No export directory was chosen. Please choose a directory "
@@ -190,9 +191,9 @@ void DlgLibraryExport::exportRequested() {
     }
 
     QDir baseExportDirectory{m_pExportDirectoryTextField->text()};
-    auto databaseDirectory = baseExportDirectory.filePath(
+    const auto databaseDirectory = baseExportDirectory.filePath(
             el::default_database_dir_name);
-    auto musicDirectory = baseExportDirectory.filePath(kDefaultMixxxExportDirName);
+    const auto musicDirectory = baseExportDirectory.filePath(kDefaultMixxxExportDirName);
 
     // Work out what version was requested.
     // If there is an existing database, the version does not matter.
@@ -201,14 +202,11 @@ void DlgLibraryExport::exportRequested() {
             versionIndex == -1 ? el::version_latest_firmware : el::all_versions[versionIndex];
 
     // Construct a request to export the library/crates.
-    // Assumed to always be an Engine Prime export in this iteration of the
-    // dialog.
     EnginePrimeExportRequest request;
     request.engineLibraryDbDir = QDir{databaseDirectory};
     request.musicFilesDir = QDir{musicDirectory};
     request.exportVersion = exportVersion;
-    request.exportSelectedCrates = m_pCratesList->isEnabled();
-    if (request.exportSelectedCrates) {
+    if (m_pCratesList->isEnabled()) {
         for (auto* pItem : m_pCratesList->selectedItems()) {
             CrateId id{pItem->data(Qt::UserRole).value<int>()};
             request.crateIdsToExport.insert(id);
@@ -221,7 +219,7 @@ void DlgLibraryExport::exportRequested() {
 
 void DlgLibraryExport::checkExistingDatabase() {
     QDir baseExportDirectory{m_pExportDirectoryTextField->text()};
-    auto databaseDirectory = baseExportDirectory.filePath(
+    const auto databaseDirectory = baseExportDirectory.filePath(
             el::default_database_dir_name);
 
     try {
@@ -251,9 +249,9 @@ void DlgLibraryExport::checkExistingDatabase() {
         // version widget accordingly.  Changing the schema version of existing
         // databases is not currently supported.
         djinterop::database db = el::load_database(databaseDirectory.toStdString());
-        auto version = db.version();
+        const auto version = db.version();
 
-        auto result = std::find(el::all_versions.begin(), el::all_versions.end(), version);
+        const auto* result = std::find(el::all_versions.begin(), el::all_versions.end(), version);
         if (result == el::all_versions.end()) {
             // Unknown database version.
             m_pExistingDatabaseLabel->setText(
