@@ -927,28 +927,28 @@ const char *shout_get_mimetype(shout_t *self)
     if (self->mimetype)
         return self->mimetype;
         
-	switch (self->format) {
-	case SHOUT_FORMAT_OGG:
-		mimetype = "application/ogg";
-		break;
-	case SHOUT_FORMAT_MP3:
-		mimetype = "audio/mpeg";
-		break;
-	case SHOUT_FORMAT_WEBM:
-		mimetype = "video/webm";
-		break;
-	case SHOUT_FORMAT_WEBMAUDIO:
-		mimetype = "audio/webm";
-		break;
+    switch (self->format) {
+    case SHOUT_FORMAT_OGG:
+        mimetype = "application/ogg";
+        break;
+    case SHOUT_FORMAT_MP3:
+        mimetype = "audio/mpeg";
+        break;
+    case SHOUT_FORMAT_WEBM:
+        mimetype = "video/webm";
+        break;
+    case SHOUT_FORMAT_WEBMAUDIO:
+        mimetype = "audio/webm";
+        break;
     case SHOUT_FORMAT_AAC:
         mimetype = "audio/aac";
         break;
     case SHOUT_FORMAT_AACPLUS:
         mimetype = "audio/aacp";
         break;
-	default:
-		mimetype = NULL;
-	}
+    default:
+    mimetype = NULL;
+    }
     return mimetype;
 }
 

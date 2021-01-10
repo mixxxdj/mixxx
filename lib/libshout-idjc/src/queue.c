@@ -135,7 +135,7 @@ ssize_t shout_queue_collect(shout_buf_t *queue, char **buf)
     for (node = queue; node; node = node->next)
         len += node->len;
 
-	if (!(*buf = malloc(len)))
+    if (!(*buf = malloc(len)))
         return SHOUTERR_MALLOC;
 
     for (node = queue; node; node = node->next) {
