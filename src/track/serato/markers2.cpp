@@ -2,6 +2,7 @@
 
 #include <QtEndian>
 
+#include "track/serato/tags.h"
 #include "util/logger.h"
 
 namespace {
@@ -617,7 +618,8 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
                 std::nullopt,
                 pCueEntry->getIndex(),
                 pCueEntry->getLabel(),
-                pCueEntry->getColor());
+                pCueEntry->getColor(),
+                CueFlag::None);
         cueInfos.append(cueInfo);
     }
 
@@ -639,7 +641,8 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
                 pLoopEntry->getEndPosition(),
                 pLoopEntry->getIndex(),
                 pLoopEntry->getLabel(),
-                std::nullopt); // Serato's Loops don't have a color
+                std::nullopt, // Serato's Loops don't have a color
+                pLoopEntry->isLocked() ? CueFlag::Locked : CueFlag::None);
         // TODO: Add support for "locked" loops
         cueInfos.append(loopInfo);
     }
@@ -714,8 +717,8 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
                 *cueInfo.getHotCueIndex(),
                 *cueInfo.getStartPositionMillis(),
                 *cueInfo.getEndPositionMillis(),
-                *cueInfo.getColor(),
-                false,
+                SeratoTags::kFixedLoopColor,
+                cueInfo.isLocked(),
                 cueInfo.getLabel());
         newEntries.append(pEntry);
     }
