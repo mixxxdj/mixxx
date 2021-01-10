@@ -416,54 +416,40 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     }
 
     // Intro/outro range markers
-    QMenu* introOutroMenu = addSubmenu(tr("Intro / Outro Cues"));
-    QString introStartTitle(tr("Intro Start Cue"));
-    QString introEndTitle(tr("Intro End Cue"));
-    QString outroStartTitle(tr("Outro Start Cue"));
-    QString outroEndTitle(tr("Outro End Cue"));
-    QMenu* introStartMenu = addSubmenu(introStartTitle, introOutroMenu);
-    QMenu* introEndMenu = addSubmenu(introEndTitle, introOutroMenu);
-    QMenu* outroStartMenu = addSubmenu(outroStartTitle, introOutroMenu);
-    QMenu* outroEndMenu = addSubmenu(outroEndTitle, introOutroMenu);
-    QList<QMenu*> introOutroSubmenus = {
-            introStartMenu,
-            introEndMenu,
-            outroStartMenu,
-            outroEndMenu};
-    const QStringList cueTypeTitles = {
-            introStartTitle,
-            introEndTitle,
-            outroStartTitle,
-            outroEndTitle};
-    const QStringList cueTypeNames = {
-            tr("intro start cue"),
-            tr("intro end cue"),
-            tr("outro start cue"),
-            tr("outro end cue")};
-    const QStringList cueTypeCOs = {
+    QMenu* introOutroMenu = addSubmenu(tr("Intro / Outro Markers"));
+    const QStringList markerTitles = {
+            tr("Intro Start Marker"),
+            tr("Intro End Marker"),
+            tr("Outro Start Marker"),
+            tr("Outro End Marker")};
+    const QStringList markerNames = {
+            tr("intro start marker"),
+            tr("intro end marker"),
+            tr("outro start marker"),
+            tr("outro end marker")};
+    const QStringList markerCOs = {
             "intro_start",
             "intro_end",
             "outro_start",
             "outro_end"};
 
-    for (int i = 0; i < introOutroSubmenus.size(); ++i) {
+    for (int i = 0; i < markerTitles.size(); ++i) {
+        QMenu* tempMenu = addSubmenu(markerTitles[i], introOutroMenu);
         addDeckAndSamplerAndPreviewDeckControl(
-                QString("%1_activate").arg(cueTypeCOs[i]),
-                tr("Activate %1").arg(cueTypeTitles[i]),
-                tr("Jump to or set the %1")
-                        .arg(cueTypeNames[i]),
-                introOutroSubmenus[i]);
+                QString("%1_activate").arg(markerCOs[i]),
+                tr("Activate %1", "[intro/outro marker").arg(markerTitles[i]),
+                tr("Jump to or set the %1", "[intro/outro marker").arg(markerNames[i]),
+                tempMenu);
         addDeckAndSamplerAndPreviewDeckControl(
-                QString("%1_set").arg(cueTypeCOs[i]),
-                tr("Set %1").arg(cueTypeTitles[i]),
-                tr("Set or jump to the %1")
-                        .arg(cueTypeNames[i]),
-                introOutroSubmenus[i]);
+                QString("%1_set").arg(markerCOs[i]),
+                tr("Set %1", "[intro/outro marker").arg(markerTitles[i]),
+                tr("Set or jump to the %1", "[intro/outro marker").arg(markerNames[i]),
+                tempMenu);
         addDeckAndSamplerAndPreviewDeckControl(
-                QString("%1_clear").arg(cueTypeCOs[i]),
-                tr("Clear %1").arg(cueTypeTitles[i]),
-                tr("Clear the %1").arg(cueTypeNames[i]),
-                introOutroSubmenus[i]);
+                QString("%1_clear").arg(markerCOs[i]),
+                tr("Clear %1", "[intro/outro marker").arg(markerTitles[i]),
+                tr("Clear the %1", "[intro/outro marker").arg(markerNames[i]),
+                tempMenu);
     }
 
     // Loops

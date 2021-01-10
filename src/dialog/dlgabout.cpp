@@ -2,7 +2,9 @@
 
 #include <QFile>
 
+#include "defs_urls.h"
 #include "moc_dlgabout.cpp"
+#include "util/color/color.h"
 #include "util/version.h"
 
 DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
@@ -108,7 +110,8 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Edward Millen"
             << "Frank Breitling"
             << "Christian"
-            << "Geraldo Nascimento";
+            << "Geraldo Nascimento"
+            << "Albert Aparicio";
 
     QStringList specialThanks;
     specialThanks
@@ -335,6 +338,14 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
              << sectionTemplate.arg(s_specialThanks,
                                     specialThanks.join("<br>"));
     textBrowser->setHtml(sections.join(""));
+
+    textWebsiteLink->setText(
+            QString("<a style=\"color:%1;\" href=\"%2\">%3</a>")
+                    .arg(Color::blendColors(palette().link().color(),
+                                 palette().text().color())
+                                    .name(),
+                            MIXXX_WEBSITE_URL,
+                            tr("Official Website")));
 
     connect(buttonBox, &QDialogButtonBox::accepted, this, &DlgAbout::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &DlgAbout::reject);

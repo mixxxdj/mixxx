@@ -858,29 +858,28 @@ void setHotCue(TrackPointer track,
         const QString& label,
         mixxx::RgbColor::optional_t color) {
     CuePointer pCue;
-    bool hotCueFound = false;
-
     const QList<CuePointer> cuePoints = track->getCuePoints();
     for (const CuePointer& trackCue : cuePoints) {
         if (trackCue->getHotCue() == id) {
             pCue = trackCue;
-            hotCueFound = true;
             break;
         }
     }
 
-    if (!hotCueFound) {
-        pCue = CuePointer(track->createAndAddCue());
+    mixxx::CueType type = mixxx::CueType::HotCue;
+    if (endPosition != Cue::kNoPosition) {
+        type = mixxx::CueType::Loop;
     }
 
-    pCue->setStartPosition(startPosition);
-    if (endPosition == Cue::kNoPosition) {
-        pCue->setType(mixxx::CueType::HotCue);
+    if (pCue) {
+        pCue->setStartAndEndPosition(startPosition, endPosition);
     } else {
-        pCue->setType(mixxx::CueType::Loop);
-        pCue->setEndPosition(endPosition);
+        pCue = track->createAndAddCue(
+                type,
+                id,
+                startPosition,
+                endPosition);
     }
-    pCue->setHotCue(id);
     pCue->setLabel(label);
     if (color) {
         pCue->setColor(*color);
@@ -1167,7 +1166,7 @@ void RekordboxPlaylistModel::initSortColumnMapping() {
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::NativeLocation)] =
-            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
+            fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::Comment)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
@@ -1333,7 +1332,7 @@ RekordboxFeature::RekordboxFeature(
             << LIBRARYTABLE_YEAR
             << LIBRARYTABLE_GENRE
             << LIBRARYTABLE_TRACKNUMBER
-            << LIBRARYTABLE_LOCATION
+            << TRACKLOCATIONSTABLE_LOCATION
             << LIBRARYTABLE_COMMENT
             << LIBRARYTABLE_RATING
             << LIBRARYTABLE_DURATION
@@ -1352,7 +1351,7 @@ RekordboxFeature::RekordboxFeature(
             << LIBRARYTABLE_YEAR
             << LIBRARYTABLE_GENRE
             << LIBRARYTABLE_TRACKNUMBER
-            << LIBRARYTABLE_LOCATION
+            << TRACKLOCATIONSTABLE_LOCATION
             << LIBRARYTABLE_COMMENT
             << LIBRARYTABLE_DURATION
             << LIBRARYTABLE_BITRATE

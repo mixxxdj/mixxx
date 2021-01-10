@@ -751,20 +751,22 @@ void Track::setCuePoint(CuePosition cue) {
         return;
     }
 
-    // Store the cue point in a load cue
+    // Store the cue point as main cue
     CuePointer pLoadCue = findCueByType(mixxx::CueType::MainCue);
     double position = cue.getPosition();
     if (position != -1.0) {
         if (pLoadCue) {
             pLoadCue->setStartPosition(position);
         } else {
-            pLoadCue = CuePointer(new Cue());
+            pLoadCue = CuePointer(new Cue(
+                    mixxx::CueType::MainCue,
+                    Cue::kNoHotCue,
+                    position,
+                    Cue::kNoPosition));
             // While this method could be called from any thread,
             // associated Cue objects should always live on the
             // same thread as their host, namely this->thread().
             pLoadCue->moveToThread(thread());
-            pLoadCue->setType(mixxx::CueType::MainCue);
-            pLoadCue->setStartPosition(position);
             connect(pLoadCue.get(),
                     &Cue::updated,
                     this,
@@ -808,9 +810,16 @@ void Track::slotCueUpdated() {
     emit cuesUpdated();
 }
 
-CuePointer Track::createAndAddCue() {
-    QMutexLocker lock(&m_qMutex);
-    CuePointer pCue(new Cue());
+CuePointer Track::createAndAddCue(
+        mixxx::CueType type,
+        int hotCueIndex,
+        double sampleStartPosition,
+        double sampleEndPosition) {
+    CuePointer pCue(new Cue(
+            type,
+            hotCueIndex,
+            sampleStartPosition,
+            sampleEndPosition));
     // While this method could be called from any thread,
     // associated Cue objects should always live on the
     // same thread as their host, namely this->thread().
@@ -819,6 +828,7 @@ CuePointer Track::createAndAddCue() {
             &Cue::updated,
             this,
             &Track::slotCueUpdated);
+    QMutexLocker lock(&m_qMutex);
     m_cuePoints.push_back(pCue);
     markDirtyAndUnlock(&lock);
     emit cuesUpdated();
