@@ -1,20 +1,18 @@
 #include "util/sandbox.h"
 
-#include <QtDebug>
-#include <QFileInfo>
 #include <QFileDialog>
-#include <QObject>
+#include <QFileInfo>
 #include <QMutexLocker>
+#include <QObject>
+#include <QtDebug>
 
 #include "util/mac.h"
 
-#ifdef Q_OS_MAC
+#ifdef __APPLE__
 #include <CoreFoundation/CoreFoundation.h>
 #include <CoreServices/CoreServices.h>
-#if __MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
 #include <Security/SecCode.h>
 #include <Security/SecRequirement.h>
-#endif
 #endif
 
 const bool sDebug = false;
@@ -25,11 +23,7 @@ QSharedPointer<ConfigObject<ConfigValue>> Sandbox::s_pSandboxPermissions;
 QHash<QString, SecurityTokenWeakPointer> Sandbox::s_activeTokens;
 
 // static
-void Sandbox::initialize(const QString& permissionsFile) {
-    QMutexLocker locker(&s_mutex);
-    s_pSandboxPermissions = QSharedPointer<ConfigObject<ConfigValue>>(
-        new ConfigObject<ConfigValue>(permissionsFile));
-
+void Sandbox::checkSandboxed() {
 #ifdef __APPLE__
     SecCodeRef secCodeSelf;
     if (SecCodeCopySelf(kSecCSDefaultFlags, &secCodeSelf) == errSecSuccess) {
@@ -46,6 +40,12 @@ void Sandbox::initialize(const QString& permissionsFile) {
         CFRelease(secCodeSelf);
     }
 #endif
+}
+
+void Sandbox::setPermissionsFilePath(const QString& permissionsFile) {
+    QMutexLocker locker(&s_mutex);
+    s_pSandboxPermissions = QSharedPointer<ConfigObject<ConfigValue>>(
+            new ConfigObject<ConfigValue>(permissionsFile));
 }
 
 // static
@@ -369,80 +369,130 @@ QString Sandbox::migrateOldSettings() {
     // Otherwise, developers would need to run with --settingsPath every time or symlink
     // to use the same settings directory with signed and unsigned builds.
 
-    // QDir::homePath returns a path inside the sandbox.
+    // QDir::homePath returns a path inside the sandbox when running sandboxed
     QString homePath = QLatin1String("/Users/") + qgetenv("USER");
+    if (qEnvironmentVariableIsEmpty("USER") || qgetenv("USER").contains("/")) {
+        qCritical() << "Cannot find home directory (USER environment variable invalid)";
+        return QString();
+    }
 
-    QString sandboxedPath = homePath +
+    QDir homeDir(homePath);
+    if (!homeDir.exists()) {
+        qCritical() << "Home directory does not exist" << homePath;
+        return QString();
+    }
+
+    // The parent of the sandboxed path needs to be created before the legacySettingsPath
+    // can be moved there. This is not necessary when running in a sandbox because macOS
+    // automatically creates it.
+    QString sandboxedParentPath = homePath +
             QLatin1String(
-                    "/Library/Containers/org.mixxx.mixxx/Data/Library/Application Support/Mixxx");
-    QDir sandboxedSettings(sandboxedPath);
+                    "/Library/Containers/org.mixxx.mixxx/Data/Library/"
+                    "Application Support");
+    QString sandboxedPath = sandboxedParentPath + QLatin1String("/Mixxx");
+    QDir sandboxedDir(sandboxedPath);
 
-    if (sandboxedSettings.exists() && !sandboxedSettings.isEmpty()) {
+    QString legacySettingsPath = homePath + QLatin1String("/Library/Application Support/Mixxx");
+    // The user has no settings from Mixxx < 2.3.0, so there is no migration to do.
+    if (!QDir(legacySettingsPath).exists()) {
         return sandboxedPath;
     }
 
-    // Because Mixxx cannot test if the old path exists before getting permission to access it
-    // outside the sandbox, unfortunately it is necessary to annoy the user with this popup
-    // even if they are installing Mixxx >= 2.3.0 without having installed an old version of Mixxx.
-    QString title = QObject::tr("Upgrading old Mixxx settings");
-    QString oldPath = homePath + QLatin1String("/Library/Application Support/Mixxx");
-    QMessageBox::information(nullptr,
-            title,
-            QObject::tr(
-                    "Due to Mac sandboxing, Mixxx needs your permission to "
-                    "access your music library "
-                    "and settings from Mixxx versions before 2.3.0. After "
-                    "clicking OK, you will see a file picker. "
-                    "To give Mixxx permission, press the Ok button in the file "
-                    "picker."
-                    "\n\n"
-                    "If you do not want to grant Mixxx access click Cancel on "
-                    "the file picker."));
-    QString result = QFileDialog::getExistingDirectory(
-            nullptr,
-            title,
-            oldPath);
-    if (result != oldPath) {
-        qInfo() << "Sandbox::migrateOldSettings: User declined to migrate "
-                   "old settings from"
-                << oldPath << "User selected" << result;
+    // The user already has settings in the sandboxed path, so there is no migration to do.
+    if (sandboxedDir.exists() && !sandboxedDir.isEmpty()) {
         return sandboxedPath;
     }
 
     // Sandbox::askForAccess cannot be used here because it depends on settings being
     // initialized. There is no need to store the bookmark anyway because this is a
     // one time process.
+    QString title = QObject::tr("Upgrading old Mixxx settings");
+    QMessageBox::information(nullptr,
+            title,
+            QObject::tr(
+                    "Due to macOS sandboxing, Mixxx needs your permission "
+                    "to access your music library and settings from Mixxx "
+                    "versions before 2.3.0. After clicking OK, you will see a "
+                    "file selection dialog. "
+                    "\n\n"
+                    "To allow Mixxx to use your old library and settings, "
+                    "click the Open button in the file selection dialog. "
+                    "Mixxx will then move your old settings into the sandbox. "
+                    "This only needs to be done once."
+                    "\n\n"
+                    "If you do not want to grant Mixxx access, click Cancel "
+                    "on the file picker. Mixxx will create a new music library"
+                    "and use default settings."));
+
+    QString result = QFileDialog::getExistingDirectory(
+            nullptr,
+            title,
+            legacySettingsPath);
+    if (result != legacySettingsPath) {
+        qInfo() << "Sandbox::migrateOldSettings: User declined to migrate old settings from"
+                << legacySettingsPath << "User selected" << result;
+        return sandboxedPath;
+    }
+
 #ifdef __APPLE__
     CFURLRef url = CFURLCreateWithFileSystemPath(
-            kCFAllocatorDefault, QStringToCFString(oldPath), kCFURLPOSIXPathStyle, true);
+            kCFAllocatorDefault, QStringToCFString(legacySettingsPath), kCFURLPOSIXPathStyle, true);
     if (url) {
         CFErrorRef error = NULL;
-        CFDataRef bookmark = CFURLCreateBookmarkData(
-                kCFAllocatorDefault,
-                url,
-                kCFURLBookmarkCreationWithSecurityScope,
-                nil,
-                nil,
-                &error);
-        CFRelease(url);
-        if (bookmark) {
-            QFile oldSettings(oldPath);
+        if (s_bInSandbox) {
+            // Request permissions to the old unsandboxed sandboxed settings path
+            // and move the directory into the sandbox
+            CFDataRef bookmark = CFURLCreateBookmarkData(
+                    kCFAllocatorDefault,
+                    url,
+                    kCFURLBookmarkCreationWithSecurityScope,
+                    nil,
+                    nil,
+                    &error);
+            CFRelease(url);
+            if (bookmark) {
+                QFile oldSettings(legacySettingsPath);
+                if (oldSettings.rename(sandboxedPath)) {
+                    qInfo() << "Sandbox::migrateOldSettings: Successfully "
+                               "migrated old settings from"
+                            << legacySettingsPath << "to new path" << sandboxedPath;
+                } else {
+                    qWarning() << "Sandbox::migrateOldSettings: Failed to migrate "
+                                  "old settings from"
+                               << legacySettingsPath
+                               << "to new path" << sandboxedPath;
+                }
+                CFRelease(bookmark);
+            } else {
+                qWarning() << "Sandbox::migrateOldSettings: Failed to access old "
+                              "settings path"
+                           << legacySettingsPath
+                           << "Cannot migrate to new path" << sandboxedPath;
+            }
+        } else {
+            // Move old unsandboxed settings directory into the sandbox
+
+            // Ensure the parent directory of the destination path exists, otherwise
+            // moving to the new path will fail.
+            QDir sandboxedParentDir(sandboxedParentPath);
+            if (!sandboxedParentDir.exists()) {
+                if (!sandboxedParentDir.mkpath(sandboxedParentPath)) {
+                    qWarning() << "Could not create sandboxed application data directory"
+                               << sandboxedParentPath;
+                }
+            }
+
+            QFile oldSettings(legacySettingsPath);
             if (oldSettings.rename(sandboxedPath)) {
                 qInfo() << "Sandbox::migrateOldSettings: Successfully "
                            "migrated old settings from"
-                        << oldPath << "to new path" << sandboxedPath;
+                        << legacySettingsPath << "to new path"
+                        << sandboxedPath;
             } else {
-                qWarning() << "Sandbox::migrateOldSettings: Failed to migrate "
-                              "old settings from"
-                           << oldPath << "to new path" << sandboxedPath;
+                qWarning() << "Sandbox::migrateOldSettings: Failed to migrate old settings from"
+                           << legacySettingsPath << "to new path" << sandboxedPath;
             }
-        } else {
-            qWarning() << "Sandbox::migrateOldSettings: Failed to access old "
-                          "settings path"
-                       << oldPath << "Cannot migrate to new path"
-                       << sandboxedPath;
         }
-        CFRelease(bookmark);
     }
 #endif
     return sandboxedPath;

@@ -33,7 +33,7 @@ QVariant getTrackValueForColumn(const TrackPointer& pTrack, const QString& colum
         return pTrack->getType();
     } else if (column == LIBRARYTABLE_TRACKNUMBER) {
         return pTrack->getTrackNumber();
-    } else if (column == LIBRARYTABLE_LOCATION) {
+    } else if (column == TRACKLOCATIONSTABLE_LOCATION) {
         return QDir::toNativeSeparators(pTrack->getLocation());
     } else if (column == LIBRARYTABLE_COMMENT) {
         return pTrack->getComment();
