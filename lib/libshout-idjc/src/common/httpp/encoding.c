@@ -69,7 +69,7 @@ static ssize_t __enc_chunked_write(httpp_encoding_t *self, const void *buf, size
 /* function to move some data out of our buffers */
 ssize_t __copy_buffer(void *dst, void **src, size_t *boffset, size_t *blen, size_t len)
 {
-    void *p;
+    char *p;
     size_t have_len;
     size_t todo;
 
@@ -80,7 +80,7 @@ ssize_t __copy_buffer(void *dst, void **src, size_t *boffset, size_t *blen, size
         return -1;
 
     have_len = *blen - *boffset;
-    p = *src + *boffset;
+    p = (char *)*src + *boffset;
 
     todo = len < have_len ? len : have_len;
 
@@ -103,7 +103,7 @@ static inline void __flush_output(httpp_encoding_t *self, ssize_t (*cb)(void*, c
 {
     if (cb && self->buf_write_encoded) {
         ssize_t ret = cb(userdata,
-                         self->buf_write_encoded + self->buf_write_encoded_offset,
+                         (char *)self->buf_write_encoded + self->buf_write_encoded_offset,
                          self->buf_write_encoded_len - self->buf_write_encoded_offset);
         if (ret > 0) {
             self->buf_write_encoded_offset += ret;
@@ -236,10 +236,11 @@ int               httpp_encoding_release(httpp_encoding_t *self)
 /* Read data from backend.
  * if cb is NULL this will read from the internal buffer.
  */
-ssize_t           httpp_encoding_read(httpp_encoding_t *self, void *buf, size_t len, ssize_t (*cb)(void*, void*, size_t), void *userdata)
+ssize_t           httpp_encoding_read(httpp_encoding_t *self, void *vbuf, size_t len, ssize_t (*cb)(void*, void*, size_t), void *userdata)
 {
     ssize_t done = 0;
     ssize_t ret;
+    char *buf = vbuf;
 
     if (!self || !buf)
         return -1;
@@ -529,7 +530,7 @@ static ssize_t __enc_chunked_read(httpp_encoding_t *self, void *buf, size_t len,
 
     self->buf_read_raw = bufptr;
 
-    ret = cb(userdata, self->buf_read_raw + self->buf_read_raw_len, buflen);
+    ret = cb(userdata, (char *)self->buf_read_raw + self->buf_read_raw_len, buflen);
     if (ret < 1) {
         if (!self->buf_read_raw_len) {
             free(self->buf_read_raw);
@@ -585,7 +586,7 @@ static ssize_t __enc_chunked_read(httpp_encoding_t *self, void *buf, size_t len,
     offset_extentions = -1;
     offset_CR = -1;
     offset_LF = -1;
-    for (i = self->buf_read_raw_offset, c = self->buf_read_raw + self->buf_read_raw_offset;
+    for (i = self->buf_read_raw_offset, c = (char *)self->buf_read_raw + self->buf_read_raw_offset;
          i < self->buf_read_raw_len;
          i++, c++) {
         if (in_quote) {
@@ -619,21 +620,21 @@ static ssize_t __enc_chunked_read(httpp_encoding_t *self, void *buf, size_t len,
      * First pass the extentions to extention parser if any.
      */
     if (offset_extentions != -1)
-        __enc_chunked_read_extentions(self, self->buf_read_raw + offset_extentions, offset_CR - offset_extentions);
+        __enc_chunked_read_extentions(self, (char *)self->buf_read_raw + offset_extentions, offset_CR - offset_extentions);
 
     /* ok. Next we parse the body length.
      * We just replace whatever comes after the length by \0
      * and try to parse the hex value.
      */
     if (offset_extentions != -1) {
-        c = self->buf_read_raw + offset_extentions;
+        c = (char *)self->buf_read_raw + offset_extentions;
     } else {
-        c = self->buf_read_raw + offset_CR;
+        c = (char *)self->buf_read_raw + offset_CR;
     }
     *c = 0;
 
     /* we hope that will work... */
-    if (sscanf(self->buf_read_raw + self->buf_read_raw_offset, "%llx", &bodylen) != 1)
+    if (sscanf((char *)self->buf_read_raw + self->buf_read_raw_offset, "%llx", &bodylen) != 1)
         return -1;
 
     /* ok, Now we move the offset forward to the body. */
@@ -680,7 +681,7 @@ static ssize_t __enc_chunked_read(httpp_encoding_t *self, void *buf, size_t len,
         return -1;
     self->buf_read_decoded_offset = 0;
     self->buf_read_decoded_len = bodylen;
-    memcpy(self->buf_read_decoded, self->buf_read_raw + self->buf_read_raw_offset, bodylen);
+    memcpy(self->buf_read_decoded, (char *)self->buf_read_raw + self->buf_read_raw_offset, bodylen);
     self->buf_read_raw_offset += bodylen;
     self->read_bytes_till_header = 2; /* tailing "\r\n" */
 
@@ -826,8 +827,8 @@ static ssize_t __enc_chunked_write(httpp_encoding_t *self, const void *buf, size
     self->buf_write_encoded_offset = 0;
     self->buf_write_encoded_len = total_chunk_size;
     snprintf(self->buf_write_encoded, total_chunk_size, "%s%s\r\n", encoded_length, extensions ? extensions : "");
-    memcpy(self->buf_write_encoded + header_length, buf, len);
-    memcpy(self->buf_write_encoded + header_length + len, "\r\n\r\n", buf ? 2 : 4);
+    memcpy((char *)self->buf_write_encoded + header_length, buf, len);
+    memcpy((char *)self->buf_write_encoded + header_length + len, "\r\n\r\n", buf ? 2 : 4);
 
     if (extensions)
         free(extensions);
