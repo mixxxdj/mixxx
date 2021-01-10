@@ -8,10 +8,11 @@
 /* global HIDController, HIDDebug, HIDPacket, controller                         */
 ///////////////////////////////////////////////////////////////////////////////////
 
-// Each color has 8 brightnesses, so these values can be between 0 and 7.
-var LedOff    = 0x00;
-var LedDimmed = 0x20;
-var LedBright = 0x7F;
+// Each color has 7Bit brightnesses, so these values can be between 0 and 128.
+var kLedOff               = 0x00;
+var kLedDimmed            = 0x20;
+var kLedVuMeterBrightness = 0x37;
+var kLedBright            = 0x7F;
 
 var TraktorZ2 = new function() {
     this.controller = new HIDController();
@@ -41,7 +42,7 @@ var TraktorZ2 = new function() {
     for (var chidx = 1; chidx <= 4; chidx++) {
         this.lastBeatTimestamp["[Channel" + chidx + "]"] = 0;
         this.beatLoopFractionCounter["[Channel" + chidx + "]"] = 0;
-        this.displayBrightness["[Channel" + chidx + "]"] = LedDimmed;
+        this.displayBrightness["[Channel" + chidx + "]"] = kLedDimmed;
     }
 };
 
@@ -92,11 +93,11 @@ TraktorZ2.fxOnLedHandler = function() {
             }
         }
         if (numOfLoadedandEnabledEffects === 0) {
-            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx +"]", "!On", LedOff,    macroFxUnitIdx === 2);
+            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx +"]", "!On", kLedOff,    macroFxUnitIdx === 2);
         } else if (numOfLoadedandEnabledEffects > 0 && numOfLoadedButDisabledEffects > 0) {
-            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx +"]", "!On", LedDimmed, macroFxUnitIdx === 2);
+            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx +"]", "!On", kLedDimmed, macroFxUnitIdx === 2);
         } else {
-            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx +"]", "!On", LedBright, macroFxUnitIdx === 2);
+            TraktorZ2.controller.setOutput("[EffectRack1_EffectUnit" + macroFxUnitIdx +"]", "!On", kLedBright, macroFxUnitIdx === 2);
         }
     }
 };
@@ -147,26 +148,26 @@ TraktorZ2.deckSwitchHandler = function(field) {
     HIDDebug("TraktorZ2: deckSwitchHandler: "+field.group + " " +field.value);
     if (field.value === 1) {
         if (field.group === "[Channel1]") {
-            TraktorZ2.controller.setOutput("[Channel3]", "!deck", LedOff,       true);
+            TraktorZ2.controller.setOutput("[Channel3]", "!deck", kLedOff,       true);
             TraktorZ2.deckSwitchHandler["[Channel3]"] = 0;
         } else if (field.group === "[Channel2]") {
-            TraktorZ2.controller.setOutput("[Channel4]", "!deck", LedOff,       true);
+            TraktorZ2.controller.setOutput("[Channel4]", "!deck", kLedOff,       true);
             TraktorZ2.deckSwitchHandler["[Channel4]"] = 0;
         } else if (field.group === "[Channel3]") {
-            TraktorZ2.controller.setOutput("[Channel1]", "!deck", LedOff,       true);
+            TraktorZ2.controller.setOutput("[Channel1]", "!deck", kLedOff,       true);
             TraktorZ2.deckSwitchHandler["[Channel1]"] = 0;
         } else if (field.group === "[Channel4]") {
-            TraktorZ2.controller.setOutput("[Channel2]", "!deck", LedOff,       true);
+            TraktorZ2.controller.setOutput("[Channel2]", "!deck", kLedOff,       true);
             TraktorZ2.deckSwitchHandler["[Channel2]"] = 0;
         }
 
         if (TraktorZ2.deckSwitchHandler[field.group] !== 1) {
             TraktorZ2.deckSwitchHandler[field.group] = 1;
-            TraktorZ2.controller.setOutput(field.group, "!deck", LedBright,       true);
+            TraktorZ2.controller.setOutput(field.group, "!deck", kLedBright,       true);
 
         } else if (engine.getValue("[Skin]", "show_8_hotcues")) {
             TraktorZ2.deckSwitchHandler[field.group] = 2;
-            TraktorZ2.controller.setOutput(field.group, "!deck", LedDimmed,       true);
+            TraktorZ2.controller.setOutput(field.group, "!deck", kLedDimmed,       true);
         }
         TraktorZ2.hotcueOutputHandler(); // Set new hotcue button colors
     }
@@ -232,45 +233,80 @@ TraktorZ2.Deck.prototype.fluxHandler = function(field) {
 };
 
 TraktorZ2.Deck.prototype.vinylcontrolHandler = function(field) {
-    HIDDebug("TraktorZ2: vinylcontrolHandler" + " this.activeChannel:" + this.activeChannel + " field:" + field);
-    var vinylControlMode = engine.getValue(this.activeChannel, "vinylcontrol_mode");
-    var ch = this.activeChannel; // Use global variable in timer function, because this.activeChannel can change until the timer is active
-    TraktorZ2.vinylcontrolTimer = engine.beginTimer(300, function() {
-        if (vinylControlMode >= 2) {
-            vinylControlMode = 0;
+    HIDDebug("TraktorZ2: vinylcontrolHandler" + " this.activeChannel:" + this.activeChannel + " field.value:" + field.value);
+    if (field.value === 0 || (engine.getValue(this.activeChannel, "passthrough") === 1)) {
+        return;
+    }
+
+    if ((TraktorZ2.shiftState & 0x01) === 0x01) {
+        // Shift button hold down -> Toggle between Internal Playback mode / Vinyl Control
+        script.toggleControl(this.activeChannel, "vinylcontrol_enabled");
+    } else {
+        if (engine.getValue(this.activeChannel, "vinylcontrol_enabled") === 0) {
+            // Internal Playback mode -> Vinyl Control Off -> Orange
+            if ((TraktorZ2.shiftState & 0x02) !== 0x02) {
+                // Shift mode isn't locked -> Mapped to PLAY button
+                script.toggleControl(this.activeChannel, "play");
+            } else {
+                // Shift mode isn't locked -> Mapped to CUE button
+                script.toggleControl(this.activeChannel, "cue_default");
+            }
         } else {
+            var vinylControlMode = engine.getValue(this.activeChannel, "vinylcontrol_mode");
             vinylControlMode++;
+            if (vinylControlMode > 2) {
+                vinylControlMode = 0;
+            }
+            engine.setValue(this.activeChannel, "vinylcontrol_mode", vinylControlMode);
         }
-        engine.setValue(ch, "vinylcontrol_mode", vinylControlMode);
-        // Reset vinylcontrol button timer state if active
-        if (TraktorZ2.vinylcontrolTimer !== 0) {
-            TraktorZ2.vinylcontrolTimer = 0;
-        }
-    }, true);
+    }
+
 };
 
 
-TraktorZ2.vinylcontrolOutputHandler = function() {
-    HIDDebug("TraktorZ2: vinylcontrolOutputHandler");
-    for (var chidx = 1; chidx <= 2; chidx++) {
-        var ch = "[Channel" + chidx + "]";
-        if (engine.getValue(ch, "vinylcontrol_status") === 0) {
-            // Vinyl control disabled
-            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_green", LedOff, chidx === 2);
-            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_orange", LedOff, chidx === 2);
-        } else if (engine.getValue(ch, "vinylcontrol_status") === 1) {
-            // Vinyl control signal
-            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_green", LedBright, chidx === 2);
-            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_orange", LedOff, chidx === 2);
-        } else if (engine.getValue(ch, "vinylcontrol_status") === 2) {
-            // Track end section of control vinyl
-            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_green", LedOff, chidx === 2);
-            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_orange", LedBright, chidx === 2);
+TraktorZ2.vinylcontrolOutputHandler = function(value, group, key) {
+    HIDDebug("TraktorZ2: vinylcontrolOutputHandler" + " group:" + group + " key:" + key);
+    if (engine.getValue(group, "passthrough") === 1) {
+    // REL /INTL button has no function in Passthrough mode -> LED Off
+        TraktorZ2.controller.setOutput(group, "!vinylcontrol_green", kLedOff, false);
+        TraktorZ2.controller.setOutput(group, "!vinylcontrol_orange", kLedOff, true);
+        return;
+    }
+
+    if (engine.getValue(group, "vinylcontrol_enabled") === 0) {
+        // Internal Playback mode -> Vinyl Control Off -> Orange
+        TraktorZ2.controller.setOutput(group, "!vinylcontrol_green", kLedOff);
+        if ((TraktorZ2.shiftState & 0x02) !== 0x02) {
+            // Shift mode isn't locked -> Show PLAY indicator
+            if (engine.getValue(group, "play_indicator") === 0) {
+                // Dim only to signal visualize Internal Playback mode by Orange color
+                TraktorZ2.controller.setOutput(group, "!vinylcontrol_orange", kLedDimmed, true);
+            } else  {
+                TraktorZ2.controller.setOutput(group, "!vinylcontrol_orange", kLedBright, true);
+            }
         } else {
-            // Passthrough
-            // Track end section of control vinyl
-            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_green", LedDimmed, chidx === 2);
-            TraktorZ2.controller.setOutput(ch, "!vinylcontrol_orange", LedDimmed, chidx === 2);
+            // Shift mode is locked -> Show CUE indicator
+            if (engine.getValue(group, "cue_indicator") === 0) {
+                // Dim only to signal visualize Internal Playback mode by Orange color
+                TraktorZ2.controller.setOutput(group, "!vinylcontrol_orange", kLedDimmed, true);
+            } else  {
+                TraktorZ2.controller.setOutput(group, "!vinylcontrol_orange", kLedBright, true);
+            }
+        }
+    } else {
+        if (engine.getValue(group, "vinylcontrol_mode") === 0) {
+            // Absolute Mode (track position equals needle position and speed)
+            TraktorZ2.controller.setOutput(group, "!vinylcontrol_green", kLedBright, false);
+            TraktorZ2.controller.setOutput(group, "!vinylcontrol_orange", kLedOff, true);
+        } else if (engine.getValue(group, "vinylcontrol_mode") === 1) {
+            // Relative Mode (track tempo equals needle speed regardless of needle position)
+            TraktorZ2.controller.setOutput(group, "!vinylcontrol_green", kLedDimmed, false);
+            TraktorZ2.controller.setOutput(group, "!vinylcontrol_orange", kLedOff, true);
+        } else if (engine.getValue(group, "vinylcontrol_mode") === 2) {
+            // Constant Mode (track tempo equals last known-steady tempo regardless of needle input
+            // Both LEDs on -> Values result in a dirty yellow
+            TraktorZ2.controller.setOutput(group, "!vinylcontrol_green", 0x37, false);
+            TraktorZ2.controller.setOutput(group, "!vinylcontrol_orange", 0x57, true);
         }
     }
 };
@@ -279,7 +315,7 @@ TraktorZ2.Deck.prototype.syncHandler = function(field) {
     HIDDebug("TraktorZ2: syncHandler" + " this.activeChannel:" + this.activeChannel + " field:" + field);
     if (TraktorZ2.shiftState & 0x01) {
         engine.setValue(this.activeChannel, "beatsync_phase", field.value);
-        // Light LED while pressed
+        // Light LED while Shift pressed
         //this.colorOutput(field.value, "sync_enabled");
         return;
     }
@@ -427,14 +463,14 @@ TraktorZ2.Deck.prototype.activateLoopHandler = function(field) {
 TraktorZ2.crossfaderReverseHandler = function(field) {
     HIDDebug("TraktorZ2: LibraryFocusHandler");
     if (field.value) {
-        TraktorZ2.controller.setOutput("[Master]", "!crossfaderReverse", LedBright,  true);
+        TraktorZ2.controller.setOutput("[Master]", "!crossfaderReverse", kLedBright,  true);
         if (engine.getValue("[Channel1]", "orientation") === 0) { engine.setValue("[Channel1]", "orientation", 2); }
         if (engine.getValue("[Channel3]", "orientation") === 0) { engine.setValue("[Channel3]", "orientation", 2); }
         if (engine.getValue("[Channel2]", "orientation") === 2) { engine.setValue("[Channel2]", "orientation", 0); }
         if (engine.getValue("[Channel4]", "orientation") === 2) { engine.setValue("[Channel4]", "orientation", 0); }
 
     } else {
-        TraktorZ2.controller.setOutput("[Master]", "!crossfaderReverse", LedOff,  true);
+        TraktorZ2.controller.setOutput("[Master]", "!crossfaderReverse", kLedOff,  true);
         if (engine.getValue("[Channel1]", "orientation") === 2) { engine.setValue("[Channel1]", "orientation", 0); }
         if (engine.getValue("[Channel3]", "orientation") === 2) { engine.setValue("[Channel3]", "orientation", 0); }
         if (engine.getValue("[Channel2]", "orientation") === 0) { engine.setValue("[Channel2]", "orientation", 2); }
@@ -488,9 +524,9 @@ TraktorZ2.pflButtonHandler = function(field) {
 TraktorZ2.traktorbuttonHandler = function(field) {
     HIDDebug("TraktorZ2: traktorbuttonHandler" + " field: " + field + " field.value: " + field.value);
     if (field.value === 1) {
-        TraktorZ2.controller.setOutput(field.group, "traktorbutton", LedBright,  true); // Controller internal state ON -> Switch LED to represent this state
+        TraktorZ2.controller.setOutput(field.group, "traktorbutton", kLedBright,  true); // Controller internal state ON -> Switch LED to represent this state
     } else {
-        TraktorZ2.controller.setOutput(field.group, "traktorbutton", LedOff,     true); // Controller internal state OFF -> Switch LED to represent this state
+        TraktorZ2.controller.setOutput(field.group, "traktorbutton", kLedOff,     true); // Controller internal state OFF -> Switch LED to represent this state
     }
 };
 
@@ -632,7 +668,7 @@ TraktorZ2.shiftHandler = function(field) {
     if (TraktorZ2.shiftPressed === false && field.value === 1) {
         TraktorZ2.shiftPressed = true;
         TraktorZ2.shiftState |= 0x01;
-        TraktorZ2.controller.setOutput("[Master]", "shift",  LedBright,  true);
+        TraktorZ2.controller.setOutput("[Master]", "shift",  kLedBright,  true);
 
         TraktorZ2.shiftPressedTimer = engine.beginTimer(200, function() {
             // Reset sync button timer state if active
@@ -655,10 +691,14 @@ TraktorZ2.shiftHandler = function(field) {
             if (TraktorZ2.shiftState & 0x02) {
                 // Timer still running -> stop it and set LED depending on previous lock state
                 TraktorZ2.shiftState = 0x00;
-                TraktorZ2.controller.setOutput("[Master]", "shift",  LedOff,  true);
+                TraktorZ2.controller.setOutput("[Master]", "shift",  kLedOff,  false);
+                TraktorZ2.vinylcontrolOutputHandler(0, "[Channel1]", "Shift");
+                TraktorZ2.vinylcontrolOutputHandler(0, "[Channel2]", "Shift");
             } else {
                 TraktorZ2.shiftState = 0x02;
-                TraktorZ2.controller.setOutput("[Master]", "shift",  LedDimmed,  true);
+                TraktorZ2.controller.setOutput("[Master]", "shift",  kLedDimmed,  true);
+                TraktorZ2.vinylcontrolOutputHandler(1, "[Channel1]", "Shift");
+                TraktorZ2.vinylcontrolOutputHandler(1, "[Channel2]", "Shift");
             }
             engine.stopTimer(TraktorZ2.shiftPressedTimer);
             // Change display values beatjumpsize / beatloopsize
@@ -668,10 +708,10 @@ TraktorZ2.shiftHandler = function(field) {
         } else {
             if (TraktorZ2.shiftState & 0x02) {
                 TraktorZ2.shiftState = 0x02;
-                TraktorZ2.controller.setOutput("[Master]", "shift",  LedDimmed,  true);
+                TraktorZ2.controller.setOutput("[Master]", "shift",  kLedDimmed,  true);
             } else {
                 TraktorZ2.shiftState = 0x00;
-                TraktorZ2.controller.setOutput("[Master]", "shift",  LedOff,  true);
+                TraktorZ2.controller.setOutput("[Master]", "shift",  kLedOff,  true);
             }
             HIDDebug("TraktorZ2: back to static shift state: " + TraktorZ2.shiftState);
         }
@@ -800,6 +840,7 @@ TraktorZ2.messageCallback = function(_packet, data) {
 };
 
 TraktorZ2.incomingData = function(data, length) {
+    // HIDDebug("TraktorZ2: incomingData data:" + data + "   length:" + length);
     TraktorZ2.controller.parsePacket(data, length);
 };
 
@@ -812,7 +853,7 @@ TraktorZ2.shutdown = function() {
     data = [0xFF, 0x40];
     controller.sendFeatureReport(data, 0xF3);
 
-    TraktorZ2.controller.setOutput("[Master]", "!usblight", LedBright, true);
+    TraktorZ2.controller.setOutput("[Master]", "!usblight", kLedBright, true);
 
     HIDDebug("TraktorZ2: Shutdown done!");
 };
@@ -971,10 +1012,10 @@ TraktorZ2.basicOutputHandler = function(value, group, key) {
     var ledValue = value;
     if (value === 0 || value === false) {
         // Off value
-        ledValue = LedOff;
+        ledValue = kLedOff;
     } else if (value === 1 || value === true) {
         // On value
-        ledValue = LedBright;
+        ledValue = kLedBright;
     }
 
     TraktorZ2.controller.setOutput(group, key, ledValue, true);
@@ -1025,11 +1066,11 @@ TraktorZ2.hotcueOutputHandler = function() {
             var blue =  ((colorCode & 0x0000FF));
             // Scale color up to 100% brightness
             if ((red > green) && (red > blue)) {
-                var brightnessCorrectionFactor = LedBright / red;
+                var brightnessCorrectionFactor = kLedBright / red;
             } else if ((green > red) && (green > blue)) {
-                brightnessCorrectionFactor = LedBright / green;
+                brightnessCorrectionFactor = kLedBright / green;
             } else if ((blue > red) && (blue > green)) {
-                brightnessCorrectionFactor = LedBright / blue;
+                brightnessCorrectionFactor = kLedBright / blue;
             }
             red *= brightnessCorrectionFactor;
             green *= brightnessCorrectionFactor;
@@ -1071,10 +1112,10 @@ TraktorZ2.displayBeatLeds = function(group, now) {
             if ((TraktorZ2.beatLoopFractionCounter[group] <= 0) || (TraktorZ2.beatLoopFractionCounter[group] > beatPeriodMillis / 20) || (timeSinceLastBeatMillis >= beatPeriodMillis)) {
                 TraktorZ2.beatLoopFractionCounter[group] = beatPeriodMillis / 20;
                 TraktorZ2.lastBeatTimestamp[group] = Date.now();
-                if (TraktorZ2.displayBrightness[group] !== LedBright) {
-                    TraktorZ2.displayBrightness[group] = LedBright;
+                if (TraktorZ2.displayBrightness[group] !== kLedBright) {
+                    TraktorZ2.displayBrightness[group] = kLedBright;
                 } else {
-                    TraktorZ2.displayBrightness[group] = LedOff;
+                    TraktorZ2.displayBrightness[group] = kLedOff;
                 }
             } else {
                 TraktorZ2.beatLoopFractionCounter[group]--;
@@ -1091,18 +1132,18 @@ TraktorZ2.displayBeatLeds = function(group, now) {
         //HIDDebug("now " + now + "     TraktorZ2.lastBeatTimestamp[group] " + TraktorZ2.lastBeatTimestamp[group] + "   beatPeriodMillis " + beatPeriodMillis + "   TraktorZ2.displayBrightness[group] " + TraktorZ2.displayBrightness[group] + "   timeSinceLastBeatMillis " + timeSinceLastBeatMillis);
     }
 
-    if (TraktorZ2.displayBrightness[group] < LedDimmed) {
-        TraktorZ2.displayBrightness[group] = LedDimmed;
+    if (TraktorZ2.displayBrightness[group] < kLedDimmed) {
+        TraktorZ2.displayBrightness[group] = kLedDimmed;
     }
-    if (TraktorZ2.displayBrightness[group] > LedBright) {
-        TraktorZ2.displayBrightness[group] = LedBright;
+    if (TraktorZ2.displayBrightness[group] > kLedBright) {
+        TraktorZ2.displayBrightness[group] = kLedBright;
     }
 
     if ((group === "[Channel1]") || (group === "[Channel2]")) {
         TraktorZ2.displayLoopCount(group, false);
     }
     if (engine.getValue(group, "track_loaded") === 0) {
-        TraktorZ2.controller.setOutput(group, "!beatIndicator", LedOff, group === "[Channel4]");
+        TraktorZ2.controller.setOutput(group, "!beatIndicator", kLedOff, group === "[Channel4]");
     } else {
         TraktorZ2.controller.setOutput(group, "!beatIndicator", TraktorZ2.displayBrightness[group], group === "[Channel4]");
     }
@@ -1133,7 +1174,7 @@ TraktorZ2.displayLoopCount = function(group, sendMessage) {
     var displayBrightness;
 
     if (engine.getValue(group, "track_loaded") === 0) {
-        displayBrightness = LedOff;
+        displayBrightness = kLedOff;
     } else if (engine.getValue(group, "loop_enabled") && !(TraktorZ2.shiftState & 0x02)) {
         var playposition = engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
         if (
@@ -1142,10 +1183,10 @@ TraktorZ2.displayLoopCount = function(group, sendMessage) {
         ) {
             displayBrightness = TraktorZ2.displayBrightness[group];
         } else {
-            displayBrightness = LedDimmed;
+            displayBrightness = kLedDimmed;
         }
     } else {
-        displayBrightness = LedBright;
+        displayBrightness = kLedBright;
     }
 
     if (numberToDisplay < 1) {
@@ -1196,49 +1237,49 @@ TraktorZ2.displayLoopCountDigit = function(group, digit, brightness, sendMessage
     if (digit === 0 || digit === 2 || digit === 3 || digit === 5 || digit === 6 || digit === 7  || digit === 8  || digit === 9) {
         TraktorZ2.controller.setOutput(group, "segment_a", brightness, false); // ON
     } else {
-        TraktorZ2.controller.setOutput(group, "segment_a", LedOff,       false); // OFF
+        TraktorZ2.controller.setOutput(group, "segment_a", kLedOff,       false); // OFF
     }
 
     // Segment b (upper right vertical bar)
     if (digit === 0 || digit === 1 || digit === 2 || digit === 3 || digit === 4 || digit === 7  || digit === 8  || digit === 9 || digit === -1) {
         TraktorZ2.controller.setOutput(group, "segment_b", brightness, false); // ON
     } else {
-        TraktorZ2.controller.setOutput(group, "segment_b", LedOff,       false); // OFF
+        TraktorZ2.controller.setOutput(group, "segment_b", kLedOff,       false); // OFF
     }
 
     // Segment c (lower right vertical bar)
     if (digit === 0 || digit === 1 || digit === 3 || digit === 4  || digit === 5  || digit === 6  || digit === 7  || digit === 8  || digit === 9) {
         TraktorZ2.controller.setOutput(group, "segment_c", brightness, false); // ON
     } else {
-        TraktorZ2.controller.setOutput(group, "segment_c", LedOff,       false); // OFF
+        TraktorZ2.controller.setOutput(group, "segment_c", kLedOff,       false); // OFF
     }
 
     // Segment d (lower horizontal bar)
     if (digit === 0 || digit === 2 || digit === 3 || digit === 5  || digit === 6 || digit === 8  || digit === 9) {
         TraktorZ2.controller.setOutput(group, "segment_d", brightness, false); // ON
     } else {
-        TraktorZ2.controller.setOutput(group, "segment_d", LedOff,     false); // OFF
+        TraktorZ2.controller.setOutput(group, "segment_d", kLedOff,     false); // OFF
     }
 
     // Segment e (lower left vertical bar)
     if (digit === 0 || digit === 2 || digit === 6 || digit === 8 || digit === -1) {
         TraktorZ2.controller.setOutput(group, "segment_e", brightness, false); // ON
     } else {
-        TraktorZ2.controller.setOutput(group, "segment_e", LedOff,     false); // OFF
+        TraktorZ2.controller.setOutput(group, "segment_e", kLedOff,     false); // OFF
     }
 
     // Segment f (upper left vertical bar)
     if (digit === 0 || digit === 4 || digit === 5 || digit === 6 || digit === 8  || digit === 9 || digit === -1) {
         TraktorZ2.controller.setOutput(group, "segment_f", brightness, false); // ON
     } else {
-        TraktorZ2.controller.setOutput(group, "segment_f", LedOff,     false); // OFF
+        TraktorZ2.controller.setOutput(group, "segment_f", kLedOff,     false); // OFF
     }
 
     // Segment g (center horizontal bar)
     if (digit === 2 || digit === 3  || digit === 4 || digit === 5 || digit === 6 || digit === 8 || digit === 9) {
         TraktorZ2.controller.setOutput(group, "segment_g", brightness, sendMessage); // ON
     } else {
-        TraktorZ2.controller.setOutput(group, "segment_g", LedOff,     sendMessage); // OFF
+        TraktorZ2.controller.setOutput(group, "segment_g", kLedOff,     sendMessage); // OFF
     }
 };
 
@@ -1286,12 +1327,12 @@ TraktorZ2.registerOutputPackets = function() {
     outputA.addOutput("[Channel4]", "!beatIndicator", 0x0C, "B", 0x7F); // Text label Deck D
 
     outputA.addOutput("[EffectRack1_EffectUnit1]", "!On", 0x0D, "B", 0x7F);
-    engine.makeConnection("[EffectRack1_EffectUnit1_Effect1]", "enabled", this.fxOnLedHandler);
-    engine.makeConnection("[EffectRack1_EffectUnit1_Effect1]", "loaded", this.fxOnLedHandler);
-    engine.makeConnection("[EffectRack1_EffectUnit1_Effect2]", "enabled", this.fxOnLedHandler);
-    engine.makeConnection("[EffectRack1_EffectUnit1_Effect2]", "loaded", this.fxOnLedHandler);
-    engine.makeConnection("[EffectRack1_EffectUnit1_Effect3]", "enabled", this.fxOnLedHandler);
-    engine.makeConnection("[EffectRack1_EffectUnit1_Effect3]", "loaded", this.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit1_Effect1]", "enabled", TraktorZ2.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit1_Effect1]", "loaded", TraktorZ2.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit1_Effect2]", "enabled", TraktorZ2.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit1_Effect2]", "loaded", TraktorZ2.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit1_Effect3]", "enabled", TraktorZ2.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit1_Effect3]", "loaded", TraktorZ2.fxOnLedHandler);
 
     outputA.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x0F, "B", 0x7F);
     engine.makeConnection("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", TraktorZ2.basicOutputHandler);
@@ -1299,12 +1340,12 @@ TraktorZ2.registerOutputPackets = function() {
     engine.makeConnection("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", TraktorZ2.basicOutputHandler);
 
     outputA.addOutput("[EffectRack1_EffectUnit2]", "!On", 0x15, "B", 0x7F);
-    engine.makeConnection("[EffectRack1_EffectUnit2_Effect1]", "enabled", this.fxOnLedHandler);
-    engine.makeConnection("[EffectRack1_EffectUnit2_Effect1]", "loaded", this.fxOnLedHandler);
-    engine.makeConnection("[EffectRack1_EffectUnit2_Effect2]", "enabled", this.fxOnLedHandler);
-    engine.makeConnection("[EffectRack1_EffectUnit2_Effect2]", "loaded", this.fxOnLedHandler);
-    engine.makeConnection("[EffectRack1_EffectUnit2_Effect3]", "enabled", this.fxOnLedHandler);
-    engine.makeConnection("[EffectRack1_EffectUnit2_Effect3]", "loaded", this.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit2_Effect1]", "enabled", TraktorZ2.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit2_Effect1]", "loaded", TraktorZ2.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit2_Effect2]", "enabled", TraktorZ2.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit2_Effect2]", "loaded", TraktorZ2.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit2_Effect3]", "enabled", TraktorZ2.fxOnLedHandler);
+    engine.makeConnection("[EffectRack1_EffectUnit2_Effect3]", "loaded", TraktorZ2.fxOnLedHandler);
 
     outputA.addOutput("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x17, "B", 0x7F);
     engine.makeConnection("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", TraktorZ2.basicOutputHandler);
@@ -1315,7 +1356,11 @@ TraktorZ2.registerOutputPackets = function() {
     engine.makeConnection("[Channel1]", "slip_enabled", TraktorZ2.basicOutputHandler);
     outputA.addOutput("[Channel1]", "!vinylcontrol_orange", 0x12, "B", 0x7F);
     outputA.addOutput("[Channel1]", "!vinylcontrol_green", 0x13, "B", 0x7F);
-    engine.makeConnection("[Channel1]", "vinylcontrol_status", TraktorZ2.vinylcontrolOutputHandler);
+    //engine.makeConnection("[Channel1]", "vinylcontrol_status", TraktorZ2.vinylcontrolOutputHandler);
+    engine.makeConnection("[Channel1]", "vinylcontrol_mode", TraktorZ2.vinylcontrolOutputHandler);
+    engine.makeConnection("[Channel1]", "cue_indicator", TraktorZ2.vinylcontrolOutputHandler);
+    engine.makeConnection("[Channel1]", "play_indicator", TraktorZ2.vinylcontrolOutputHandler);
+    engine.makeConnection("[Channel1]", "vinylcontrol_enabled", TraktorZ2.vinylcontrolOutputHandler);
     outputA.addOutput("[Channel1]", "sync_enabled", 0x14, "B", 0x7F);
     engine.makeConnection("[Channel1]", "sync_enabled", TraktorZ2.basicOutputHandler);
 
@@ -1323,7 +1368,11 @@ TraktorZ2.registerOutputPackets = function() {
     engine.makeConnection("[Channel2]", "slip_enabled", TraktorZ2.basicOutputHandler);
     outputA.addOutput("[Channel2]", "!vinylcontrol_orange", 0x1A, "B", 0x7F);
     outputA.addOutput("[Channel2]", "!vinylcontrol_green", 0x1B, "B", 0x7F);
-    engine.makeConnection("[Channel2]", "vinylcontrol_status", TraktorZ2.vinylcontrolOutputHandler);
+    //  engine.makeConnection("[Channel2]", "vinylcontrol_status", TraktorZ2.vinylcontrolOutputHandler);
+    engine.makeConnection("[Channel2]", "vinylcontrol_mode", TraktorZ2.vinylcontrolOutputHandler);
+    engine.makeConnection("[Channel2]", "cue_indicator", TraktorZ2.vinylcontrolOutputHandler);
+    engine.makeConnection("[Channel2]", "play_indicator", TraktorZ2.vinylcontrolOutputHandler);
+    engine.makeConnection("[Channel2]", "vinylcontrol_enabled", TraktorZ2.vinylcontrolOutputHandler);
     outputA.addOutput("[Channel2]", "sync_enabled", 0x1C, "B", 0x7F);
     engine.makeConnection("[Channel2]", "sync_enabled", TraktorZ2.basicOutputHandler);
 
@@ -1364,10 +1413,10 @@ TraktorZ2.registerOutputPackets = function() {
     engine.makeConnection("[Channel2]", "pfl", TraktorZ2.basicOutputHandler);
 
     outputB.addOutput("[Channel1]", "traktorbutton", 0x25, "B", 0x7F);
-    // engine.makeConnection("[Channel1]", "passthrough", TraktorZ2.basicOutputHandler);
+    engine.makeConnection("[Channel1]", "passthrough", TraktorZ2.vinylcontrolOutputHandler);
 
     outputB.addOutput("[Channel2]", "traktorbutton", 0x26, "B", 0x7F);
-    // engine.makeConnection("[Channel2]", "passthrough", TraktorZ2.basicOutputHandler);
+    engine.makeConnection("[Channel2]", "passthrough", TraktorZ2.vinylcontrolOutputHandler);
 
     outputB.addOutput("[Master]", "!usblight", 0x27, "B", 0x7F);
 
@@ -1428,12 +1477,12 @@ TraktorZ2.displayVuValue = function(value, group, key) {
     }
 
     for (var i = 0; i < 6; i++) {
-        var brightness = ((value * 6) - i) * 0x30;
-        if (brightness < LedOff) {
-            brightness = LedOff;
+        var brightness = ((value * 6) - i) * kLedVuMeterBrightness;
+        if (brightness < kLedOff) {
+            brightness = kLedOff;
         }
-        if (brightness > 0x30) {
-            brightness = 0x30;
+        if (brightness > kLedVuMeterBrightness) {
+            brightness = kLedVuMeterBrightness;
         }
         TraktorZ2.controller.setOutput(ch, "!VuMeter" + i, brightness, false);
     }
@@ -1452,31 +1501,31 @@ TraktorZ2.displayPeakIndicator = function(value, group, key) {
     } else if  ((group === "[Channel1]") && (key === "PeakIndicator") && (TraktorZ2.pregainCh3Timer === 0)) {
         // ChA
         ch = "[Channel1]";
-        TraktorZ2.controller.setOutput("[Channel1]", "!VuLabel", LedBright, false);
-        TraktorZ2.controller.setOutput("[Channel3]", "!VuLabel", LedOff, false);
+        TraktorZ2.controller.setOutput("[Channel1]", "!VuLabel", kLedVuMeterBrightness, false);
+        TraktorZ2.controller.setOutput("[Channel3]", "!VuLabel", kLedOff, false);
     } else if  ((group === "[Channel3]") && (key === "PeakIndicator") && (TraktorZ2.pregainCh3Timer !== 0)) {
         // ChC
         ch = "[Channel1]";
-        TraktorZ2.controller.setOutput("[Channel1]", "!VuLabel", LedOff, false);
-        TraktorZ2.controller.setOutput("[Channel3]", "!VuLabel", LedBright, false);
+        TraktorZ2.controller.setOutput("[Channel1]", "!VuLabel", kLedOff, false);
+        TraktorZ2.controller.setOutput("[Channel3]", "!VuLabel", kLedVuMeterBrightness, false);
     } else if  ((group === "[Channel2]") && (key === "PeakIndicator") && (TraktorZ2.pregainCh4Timer === 0)) {
         // ChB
         ch = "[Channel2]";
-        TraktorZ2.controller.setOutput("[Channel2]", "!VuLabel", LedBright, false);
-        TraktorZ2.controller.setOutput("[Channel4]", "!VuLabel", LedOff, false);
+        TraktorZ2.controller.setOutput("[Channel2]", "!VuLabel", kLedVuMeterBrightness, false);
+        TraktorZ2.controller.setOutput("[Channel4]", "!VuLabel", kLedOff, false);
     } else if  ((group === "[Channel4]") && (key === "PeakIndicator") && (TraktorZ2.pregainCh4Timer !== 0)) {
         // ChD
         ch = "[Channel2]";
-        TraktorZ2.controller.setOutput("[Channel2]", "!VuLabel", LedOff, false);
-        TraktorZ2.controller.setOutput("[Channel4]", "!VuLabel", LedBright, false);
+        TraktorZ2.controller.setOutput("[Channel2]", "!VuLabel", kLedOff, false);
+        TraktorZ2.controller.setOutput("[Channel4]", "!VuLabel", kLedVuMeterBrightness, false);
     } else {
         return; // Hidden Channel of the pairs A/C or B/D
     }
 
     if (value !== 0) {
-        TraktorZ2.controller.setOutput(ch, "!PeakIndicator", LedBright, false);
+        TraktorZ2.controller.setOutput(ch, "!PeakIndicator", kLedBright, false);
     } else {
-        TraktorZ2.controller.setOutput(ch, "!PeakIndicator", LedOff,    false);
+        TraktorZ2.controller.setOutput(ch, "!PeakIndicator", kLedOff,    false);
     }
 };
 
@@ -1496,7 +1545,7 @@ TraktorZ2.displayLEDs = function() {
 
         TraktorZ2.displayBeatLeds(ch, now);
     }
-    TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", LedBright, true);
+    TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", kLedVuMeterBrightness, true);
 };
 
 TraktorZ2.init = function(_id) {
@@ -1526,18 +1575,18 @@ TraktorZ2.init = function(_id) {
     TraktorZ2.registerInputPackets();
     TraktorZ2.registerOutputPackets();
 
-    TraktorZ2.controller.setOutput("[Master]", "!usblight", LedDimmed, true);
+    TraktorZ2.controller.setOutput("[Master]", "!usblight", kLedDimmed, false);
 
     TraktorZ2.deckSwitchHandler["[Channel1]"] = 1;
-    TraktorZ2.controller.setOutput("[Channel1]", "!deck", LedBright,       true);
+    TraktorZ2.controller.setOutput("[Channel1]", "!deck", kLedBright,   false);
     TraktorZ2.deckSwitchHandler["[Channel2]"] = 1;
-    TraktorZ2.controller.setOutput("[Channel2]", "!deck", LedBright,       true);
+    TraktorZ2.controller.setOutput("[Channel2]", "!deck", kLedBright,   false);
     TraktorZ2.deckSwitchHandler["[Channel3]"] = 0;
-    TraktorZ2.controller.setOutput("[Channel3]", "!deck", LedOff,       true);
+    TraktorZ2.controller.setOutput("[Channel3]", "!deck", kLedOff,      false);
     TraktorZ2.deckSwitchHandler["[Channel4]"] = 0;
-    TraktorZ2.controller.setOutput("[Channel4]", "!deck", LedOff,       true);
+    TraktorZ2.controller.setOutput("[Channel4]", "!deck", kLedOff,      false);
 
-    TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", LedBright, false);
+    TraktorZ2.controller.setOutput("[Master]", "!VuLabelMst", kLedVuMeterBrightness, true);
 
     // Initialize VU-Labels A and B
     TraktorZ2.displayPeakIndicator(engine.getValue("[Channel1]", "PeakIndicator"), "[Channel1]", "PeakIndicator");
