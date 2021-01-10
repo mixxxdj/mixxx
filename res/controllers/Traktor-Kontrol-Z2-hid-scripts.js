@@ -310,7 +310,20 @@ TraktorZ2.vinylcontrolOutputHandler = function(value, group, key) {
         }
     }
 };
-
+TraktorZ2.vinylcontrolStatusOutputHandler = function(vfalue, group, key) {
+    HIDDebug("TraktorZ2: vinylcontrolOutputHandler" + " group:" + group + " key:" + key);
+    // Z2 has only one vinylcontrol status LED for both channels -> merge information of both
+    if ((engine.getValue("[Channel1]", "vinylcontrol_status") === 3) ||
+         (engine.getValue("[Channel2]", "vinylcontrol_status") === 3) ||
+         (engine.getValue("[Channel1]", "vinylcontrol_status") === 2) ||
+         (engine.getValue("[Channel2]", "vinylcontrol_status") === 2)) {
+        TraktorZ2.controller.setOutput("[Master]", "!vinylcontrolstatus", kLedBright, true);
+    } else if ((engine.getValue("[Channel1]", "vinylcontrol_status") === 1) || (engine.getValue("[Channel2]", "vinylcontrol_status") === 1)) {
+        TraktorZ2.controller.setOutput("[Master]", "!vinylcontrolstatus", kLedDimmed, true);
+    } else {
+        TraktorZ2.controller.setOutput("[Master]", "!vinylcontrolstatus", kLedOff, true);
+    }
+};
 TraktorZ2.Deck.prototype.syncHandler = function(field) {
     HIDDebug("TraktorZ2: syncHandler" + " this.activeChannel:" + this.activeChannel + " field:" + field);
     if (TraktorZ2.shiftState & 0x01) {
@@ -846,14 +859,14 @@ TraktorZ2.incomingData = function(data, length) {
 
 TraktorZ2.shutdown = function() {
 
+    TraktorZ2.controller.setOutput("[Master]", "!usblight", kLedBright, true);
+
     // Switch software mixing mode of and given LED control to mixer hardware
     var data = [0x00, 0x40];
     controller.sendFeatureReport(data, 0xF1);
 
     data = [0xFF, 0x40];
     controller.sendFeatureReport(data, 0xF3);
-
-    TraktorZ2.controller.setOutput("[Master]", "!usblight", kLedBright, true);
 
     HIDDebug("TraktorZ2: Shutdown done!");
 };
@@ -886,7 +899,7 @@ TraktorZ2.debugLights = function() {
         0x00,  // 0x11 7 bits control Load A button brightness (orange)
         0x70,  // 0x12 7 bits control vinylcontrol Rel/Intl A button brightness (orange)
         0x00,  // 0x13 7 bits control vinylcontrol Rel/Intl A button brightness (green)
-        0x00,  // 0x14 7 bits control vinylcontrol Sync A button brightness (orange)
+        0x00,  // 0x14 7 bits control Sync A button brightness (orange)
 
         0x00,  // 0x15 7 bits control Macro FX2 On button brightness (orange)
         0x00,  // 0x16 7 bits control Deck 2 Flux button brightness (orange)
@@ -895,7 +908,7 @@ TraktorZ2.debugLights = function() {
         0x00,  // 0x19 7 bits control Load B button brightness (orange)
         0x70,  // 0x1A 7 bits control vinylcontrol Rel/Intl B button brightness (orange)
         0x30,  // 0x1B 7 bits control vinylcontrol Rel/Intl B button brightness (green)
-        0x00,  // 0x1C 7 bits control vinylcontrol Sync B button brightness (orange)
+        0x00,  // 0x1C 7 bits control Sync B button brightness (orange)
         0x00, 0x10, 0x00, // 0x1D HotCue 1 Deck 1 RGB
         0x00, 0x1F, 0x00, // 0x20 HotCue 2 Deck 1 RGB
         0x00, 0x20, 0x00, // 0x23 HotCue 3 Deck 1 RGB
@@ -1306,6 +1319,7 @@ TraktorZ2.registerOutputPackets = function() {
         }
     }
 
+    outputA.addOutput("[Master]", "!vinylcontrolstatus", 0x02, "B", 0x7F);
 
     outputA.addOutput("[Channel1]", "quantize", 0x03, "B", 0x7F);
     engine.makeConnection("[Channel1]", "quantize", TraktorZ2.basicOutputHandler);
@@ -1356,7 +1370,7 @@ TraktorZ2.registerOutputPackets = function() {
     engine.makeConnection("[Channel1]", "slip_enabled", TraktorZ2.basicOutputHandler);
     outputA.addOutput("[Channel1]", "!vinylcontrol_orange", 0x12, "B", 0x7F);
     outputA.addOutput("[Channel1]", "!vinylcontrol_green", 0x13, "B", 0x7F);
-    //engine.makeConnection("[Channel1]", "vinylcontrol_status", TraktorZ2.vinylcontrolOutputHandler);
+    engine.makeConnection("[Channel1]", "vinylcontrol_status", TraktorZ2.vinylcontrolStatusOutputHandler);
     engine.makeConnection("[Channel1]", "vinylcontrol_mode", TraktorZ2.vinylcontrolOutputHandler);
     engine.makeConnection("[Channel1]", "cue_indicator", TraktorZ2.vinylcontrolOutputHandler);
     engine.makeConnection("[Channel1]", "play_indicator", TraktorZ2.vinylcontrolOutputHandler);
@@ -1368,7 +1382,7 @@ TraktorZ2.registerOutputPackets = function() {
     engine.makeConnection("[Channel2]", "slip_enabled", TraktorZ2.basicOutputHandler);
     outputA.addOutput("[Channel2]", "!vinylcontrol_orange", 0x1A, "B", 0x7F);
     outputA.addOutput("[Channel2]", "!vinylcontrol_green", 0x1B, "B", 0x7F);
-    //  engine.makeConnection("[Channel2]", "vinylcontrol_status", TraktorZ2.vinylcontrolOutputHandler);
+    engine.makeConnection("[Channel2]", "vinylcontrol_status", TraktorZ2.vinylcontrolStatusOutputHandler);
     engine.makeConnection("[Channel2]", "vinylcontrol_mode", TraktorZ2.vinylcontrolOutputHandler);
     engine.makeConnection("[Channel2]", "cue_indicator", TraktorZ2.vinylcontrolOutputHandler);
     engine.makeConnection("[Channel2]", "play_indicator", TraktorZ2.vinylcontrolOutputHandler);
