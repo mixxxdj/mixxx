@@ -1,5 +1,6 @@
 #!/bin/bash
 # This script works with Debian, Ubuntu, and derivatives.
+# shellcheck disable=SC1091
 set -o pipefail
 
 COMMAND=$1
@@ -14,14 +15,19 @@ case "$COMMAND" in
         source /etc/lsb-release 2>/dev/null
         case "${DISTRIB_CODENAME}" in
             bionic) # Ubuntu 18.04 LTS
-                PACKAGES_EXTRA="libmp4v2-dev"
+                PACKAGES_EXTRA=(
+                    libmp4v2-dev
+                )
                 ;;
             *) # libmp4v2 was removed from Debian 10 & Ubuntu 20.04 due to lack of maintenance, so use FFMPEG instead
-                PACKAGES_EXTRA="libavcodec-dev libavutil-dev"
+                PACKAGES_EXTRA=(
+                    libavcodec-dev
+                    libavutil-dev
+                )
         esac
 
         sudo apt-get update
-        sudo apt-get install -y --no-install-recommends \
+        sudo apt-get install -y --no-install-recommends -- \
             ccache \
             cmake \
             debhelper \
@@ -67,5 +73,5 @@ case "$COMMAND" in
             qt5-default \
             qt5keychain-dev \
             qtscript5-dev \
-            ${PACKAGES_EXTRA}
+            "${PACKAGES_EXTRA[@]}"
 esac

@@ -201,7 +201,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
         # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
         # we require macOS 10.12.
         # https://stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
-      elseif(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
+      elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
         add_compile_options(
           -mflat-abi=hard
           -mfpu=neon
@@ -224,7 +224,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
       # Note: requires gcc >= 4.2.0
       # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
       # are set automatically
-      if(CMAKE_SYSTEM_PROCESSOR EQUAL "arm")
+      if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
         add_compile_options(
           -mfloat-abi=hard
           -mfpu=neon
@@ -650,6 +650,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/musicbrainz/web/acoustidlookuptask.cpp
   src/musicbrainz/web/musicbrainzrecordingstask.cpp
   src/network/jsonwebtask.cpp
+  src/network/networktask.cpp
   src/network/webtask.cpp
   src/preferences/broadcastprofile.cpp
   src/preferences/broadcastsettings.cpp
@@ -985,7 +986,7 @@ if(MSVC)
     target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
 else()
-  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Wfloat-conversion)
+  target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion -Werror=return-type)
   if(WARNINGS_PEDANTIC)
     target_compile_options(mixxx-lib PUBLIC -pedantic)
   endif()
@@ -1708,10 +1709,10 @@ if(KEYFINDER)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
-    ExternalProject_Add(libKeyFinder
-      URL "https://github.com/mixxxdj/libKeyFinder/archive/v2.2.3.zip"
-      URL_HASH SHA256=56887e7b51834223d4264f4ea9acf16f0b6a0c706c218478afbaf89ad1f9c6ea
-      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libKeyFinder"
+    ExternalProject_Add(libkeyfinder
+      URL "https://github.com/mixxxdj/libkeyfinder/archive/v2.2.3.zip"
+      URL_HASH SHA256=ad43ca006e3bbed0810ff62e170d04522a64f8606c2166bfa5a9b9158b7ebc11
+      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libkeyfinder"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
         -DBUILD_STATIC_LIBS=ON
@@ -1735,7 +1736,7 @@ if(KEYFINDER)
     file(MAKE_DIRECTORY "${KeyFinder_INSTALL_DIR}/include")
 
     add_library(mixxx-keyfinder STATIC IMPORTED)
-    add_dependencies(mixxx-keyfinder libKeyFinder)
+    add_dependencies(mixxx-keyfinder libkeyfinder)
     set_target_properties(mixxx-keyfinder PROPERTIES IMPORTED_LOCATION "${KeyFinder_INSTALL_DIR}/${KeyFinder_LIBRARY}")
     target_link_libraries(mixxx-keyfinder INTERFACE FFTW::FFTW)
     target_include_directories(mixxx-keyfinder INTERFACE "${KeyFinder_INSTALL_DIR}/include")
@@ -2346,7 +2347,7 @@ if(BROADCAST)
     # Check if system lib is at least 2.4.4 and not suffering bug
     # https://bugs.launchpad.net/mixxx/+bug/1833225
     if(Shout_FOUND AND Shout_VERSION VERSION_LESS 2.4.4)
-        message(STATUS "Installed libshout version is suffering from bug lp1833225")
+        message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1833225")
     endif()
     if(NOT Shout_FOUND OR Shout_VERSION VERSION_LESS 2.4.4)
       # Fall back to internal libraray in the lib tree

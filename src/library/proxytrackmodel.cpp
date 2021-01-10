@@ -21,14 +21,14 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
 ProxyTrackModel::~ProxyTrackModel() {
 }
 
-TrackModel::SortColumnId ProxyTrackModel::sortColumnIdFromColumnIndex(int index) {
+TrackModel::SortColumnId ProxyTrackModel::sortColumnIdFromColumnIndex(int index) const {
     return (m_pTrackModel ? m_pTrackModel->sortColumnIdFromColumnIndex(index)
-            : TrackModel::sortColumnIdFromColumnIndex(index));
+                          : TrackModel::SortColumnId::Invalid);
 }
 
-int ProxyTrackModel::columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) {
+int ProxyTrackModel::columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const {
     return (m_pTrackModel ? m_pTrackModel->columnIndexFromSortColumnId(sortColumn)
-            : TrackModel::columnIndexFromSortColumnId(sortColumn));
+                          : -1);
 }
 
 TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
