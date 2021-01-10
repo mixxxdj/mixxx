@@ -41,7 +41,7 @@
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #elif _WIN32
-#include <compat.h>
+#include <os.h>
 #endif
 
 #if !defined(HAVE_INET_ATON) && defined(HAVE_INET_PTON)
