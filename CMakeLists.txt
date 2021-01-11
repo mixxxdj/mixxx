@@ -26,6 +26,7 @@ if(POLICY CMP0071)
 endif()
 
 project(mixxx VERSION 2.3.0)
+set(MIXXX_VERSION_PRERELEASE "beta") # set to "alpha-pre" "beta" or ""
 
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
@@ -1627,23 +1628,22 @@ set_target_properties(mixxx PROPERTIES AUTORCC ON)
 target_sources(mixxx-test PRIVATE res/mixxx.qrc)
 set_target_properties(mixxx-test PROPERTIES AUTORCC ON)
 
-file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
-string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
-# a dummy configure to force a reconfigure when the version changes
-configure_file(src/_version.h src/_version.h)
+if (MIXXX_VERSION_PRERELEASE STREQUAL "")
+   set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}")
+else()
+   set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}-${MIXXX_VERSION_PRERELEASE}")
+endif()
+configure_file(src/_version.h.in src/_version.h @ONLY)
 
 # Windows-only resource file
 if(WIN32)
   string(TIMESTAMP MIXXX_YEAR "%Y")
 
-  # Remove anything after ~ or - in the version number and replace the dots with commas
-  string(REGEX REPLACE "^([^~-]+).*$" "\\1" MIXXX_FILEVERSION "${MIXXX_VERSION}")
-  string(REPLACE "." "," MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  set(MIXXX_PRODUCTVERSION "${CMAKE_PROJECT_VERSION_MAJOR},${CMAKE_PROJECT_VERSION_MINOR},${CMAKE_PROJECT_VERSION_PATCH}")
   if(NOT GIT_COMMIT_COUNT STREQUAL "unknown")
-    set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMIT_COUNT}")
+    set(MIXXX_PRODUCTVERSION "${MIXXX_PRODUCTVERSION},${GIT_COMMIT_COUNT}")
     string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
   endif()
-  set(MIXXX_PRODUCTVERSION "${MIXXX_FILEVERSION}")
 
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(MIXXX_DEBUG 1)
@@ -1651,8 +1651,7 @@ if(WIN32)
     set(MIXXX_DEBUG 0)
   endif()
 
-  string(FIND "${MIXXX_VERSION}" "pre" MIXXX_PRERELEASE_POSITION)
-  if(MIXXX_PRERELEASE_POSITION EQUAL -1)
+  if (MIXXX_VERSION_PRERELEASE STREQUAL "")
     set(MIXXX_PRERELEASE 0)
   else()
     set(MIXXX_PRERELEASE 1)
