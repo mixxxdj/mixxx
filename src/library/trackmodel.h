@@ -85,6 +85,7 @@ class TrackModel {
         FileCreationTime = 28,
         SampleRate = 29,
         Color = 30,
+        LastPlayedAt = 31,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,
@@ -183,20 +184,14 @@ class TrackModel {
         m_eDefaultSortOrder = sortOrder;
     }
 
-    virtual bool isColumnSortable(int column) {
+    virtual bool isColumnSortable(int column) const {
         Q_UNUSED(column);
         return true;
     }
 
-    virtual SortColumnId sortColumnIdFromColumnIndex(int index) {
-        Q_UNUSED(index);
-        return TrackModel::SortColumnId::Invalid;
-    }
+    virtual SortColumnId sortColumnIdFromColumnIndex(int index) const = 0;
 
-    virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) {
-        Q_UNUSED(sortColumn);
-        return -1;
-    }
+    virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const = 0;
 
     virtual int fieldIndex(const QString& fieldName) const {
         Q_UNUSED(fieldName);

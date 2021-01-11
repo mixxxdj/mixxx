@@ -195,8 +195,7 @@ void DlgPrefEQ::populateDeckBoxList(
             }
             ++i;
         }
-        //: Displayed when no effect is selected
-        box->addItem(tr("None"), QVariant());
+        box->addItem(kNoEffectString, QVariant());
         if (pCurrentlySelectedManifest == nullptr) {
             currentIndex = box->count() - 1; // selects "None"
         } else if (currentIndex < 0) {
@@ -546,8 +545,8 @@ void DlgPrefEQ::setUpMasterEQ() {
     for (const auto& pManifest : availableMasterEQEffects) {
         comboBoxMasterEq->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
     }
-    //: Displayed when no effect is selected
-    comboBoxMasterEq->addItem(tr("None"), QVariant());
+    // Add empty item, no effect
+    comboBoxMasterEq->addItem(kNoEffectString);
 
     int masterEqIndex = availableMasterEQEffects.size(); // selects "None" by default
     if (configuredEffectManifest) {

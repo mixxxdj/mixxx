@@ -71,10 +71,9 @@ void WEffectSelector::populate() {
                         QStringLiteral("</b><br/>") + description),
                 Qt::ToolTipRole);
     }
-
-    //: Displayed when no effect is loaded
-    addItem(tr("None"), QVariant());
-    setItemData(visibleEffectManifests.size(), QVariant(tr("No effect loaded.")), Qt::ToolTipRole);
+    addItem(kNoEffectString);
+    setItemData(visibleEffectManifests.size(), QVariant(tr("No effect loaded.")),
+                Qt::ToolTipRole);
 
     slotEffectUpdated();
     blockSignals(false);

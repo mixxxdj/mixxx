@@ -6,6 +6,7 @@
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
 #include "controllers/scripting/legacy/scriptconnectionjsproxy.h"
 #include "mixer/playermanager.h"
+#include "moc_controllerscriptinterfacelegacy.cpp"
 #include "util/math.h"
 #include "util/time.h"
 

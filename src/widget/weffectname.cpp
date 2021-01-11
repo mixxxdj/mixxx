@@ -44,7 +44,7 @@ void WEffectName::effectUpdated() {
         //: %1 = effect name; %2 = effect description
         description = tr("%1: %2").arg(pManifest->name(), pManifest->description());
     } else {
-        name = tr("None");
+        name = kNoEffectString;
         description = tr("No effect loaded.");
     }
     setText(name);

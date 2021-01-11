@@ -26,6 +26,7 @@ const QStringList DEFAULT_COLUMNS = {
         LIBRARYTABLE_ID,
         LIBRARYTABLE_PLAYED,
         LIBRARYTABLE_TIMESPLAYED,
+        LIBRARYTABLE_LAST_PLAYED_AT,
         //has to be up here otherwise Played and TimesPlayed are not shown
         LIBRARYTABLE_ALBUMARTIST,
         LIBRARYTABLE_ALBUM,
