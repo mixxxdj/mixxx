@@ -1,11 +1,12 @@
 #include "dialog/dlgabout.h"
 
+#include <util/versionstore.h>
+
 #include <QFile>
 
 #include "defs_urls.h"
 #include "moc_dlgabout.cpp"
 #include "util/color/color.h"
-#include "util/version.h"
 
 DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);
@@ -13,9 +14,9 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     mixxx_icon->load(QString(":/images/mixxx_icon.svg"));
     mixxx_logo->load(QString(":/images/mixxx_logo.svg"));
 
-    QString mixxxVersion = Version::version();
-    QString buildBranch = Version::developmentBranch();
-    QString buildRevision = Version::developmentRevision();
+    QString mixxxVersion = VersionStore::version();
+    QString buildBranch = VersionStore::developmentBranch();
+    QString buildRevision = VersionStore::developmentRevision();
 
     QStringList version;
     version.append(mixxxVersion);

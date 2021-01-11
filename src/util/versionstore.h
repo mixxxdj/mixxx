@@ -2,7 +2,7 @@
 
 #include <QString>
 
-class Version {
+class VersionStore {
   public:
     // Returns the current Mixxx version (e.g. 1.12.0-alpha)
     static QString version();

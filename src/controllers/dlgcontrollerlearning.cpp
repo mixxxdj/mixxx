@@ -1,12 +1,13 @@
 #include "controllers/dlgcontrollerlearning.h"
 
+#include <util/versionstore.h>
+
 #include <QCompleter>
 
 #include "control/controlobject.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
 #include "moc_dlgcontrollerlearning.cpp"
-#include "util/version.h"
 
 namespace {
 typedef QPair<QString, ConfigKey> NamedControl;
@@ -504,7 +505,7 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
                       "learnable control " << key.group << " " << key.item;
         QMessageBox::warning(
                 this,
-                Version::applicationName(),
+                VersionStore::applicationName(),
                 tr("The control you clicked in Mixxx is not learnable.\n"
                    "This could be because you are either using an old skin"
                    " and this control is no longer supported, "
