@@ -1,7 +1,9 @@
+#include "widget/weffectchain.h"
+
 #include <QtDebug>
 
-#include "widget/weffectchain.h"
 #include "effects/effectsmanager.h"
+#include "moc_weffectchain.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectChain::WEffectChain(QWidget* pParent, EffectsManager* pEffectsManager)
@@ -37,7 +39,7 @@ void WEffectChain::setEffectChainSlot(EffectChainSlotPointer pEffectChainSlot) {
 }
 
 void WEffectChain::chainUpdated() {
-    QString name = tr("None");
+    QString name = EffectsManager::kNoEffectString;
     QString description = tr("No effect chain loaded.");
     if (m_pEffectChainSlot) {
         EffectChainPointer pChain = m_pEffectChainSlot->getEffectChain();

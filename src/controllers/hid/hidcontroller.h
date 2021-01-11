@@ -1,12 +1,4 @@
-/**
-  * @file hidcontroller.h
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Sun May 1 2011
-  * @brief HID controller backend
-  */
-
-#ifndef HIDCONTROLLER_H
-#define HIDCONTROLLER_H
+#pragma once
 
 #include <hidapi.h>
 
@@ -17,6 +9,7 @@
 #include "controllers/hid/hidcontrollerpresetfilehandler.h"
 #include "util/duration.h"
 
+/// HID controller backend
 class HidController final : public Controller {
     Q_OBJECT
   public:
@@ -96,5 +89,3 @@ class HidController final : public Controller {
     int m_iLastPollSize;
     int m_iPollingBufferIndex;
 };
-
-#endif

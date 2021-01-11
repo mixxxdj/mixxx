@@ -1,19 +1,14 @@
-//  Created on: 28/apr/2011
-//      Author: vittorio
+#pragma once
 
-
-#ifndef DLGPREFBEATS_H
-#define DLGPREFBEATS_H
-
-#include <QWidget>
-#include <QString>
 #include <QList>
+#include <QString>
+#include <QWidget>
 
 #include "analyzer/plugins/analyzerplugin.h"
 #include "preferences/beatdetectionsettings.h"
-#include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbeatsdlg.h"
+#include "preferences/usersettings.h"
 
 class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     Q_OBJECT
@@ -55,5 +50,3 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     bool m_bReanalyze;
     bool m_bReanalyzeImported;
 };
-
-#endif // DLGPREFBEATS_H

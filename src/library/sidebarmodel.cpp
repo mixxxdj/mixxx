@@ -1,11 +1,13 @@
-#include <QtDebug>
-#include <QUrl>
-#include <QApplication>
-
-#include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
-#include "library/treeitem.h"
+
+#include <QApplication>
+#include <QUrl>
+#include <QtDebug>
+
 #include "library/browse/browsefeature.h"
+#include "library/libraryfeature.h"
+#include "library/treeitem.h"
+#include "moc_sidebarmodel.cpp"
 #include "util/assert.h"
 
 namespace {
@@ -79,8 +81,9 @@ void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
 }
 
 QModelIndex SidebarModel::getDefaultSelection() {
-    if (m_sFeatures.size() == 0)
+    if (m_sFeatures.size() == 0) {
         return QModelIndex();
+    }
     return createIndex(m_iDefaultSelectedIndex, 0, (void*)this);
 }
 
@@ -142,8 +145,9 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
             return QModelIndex();
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
-            if (tree_item == NULL)
+            if (tree_item == nullptr) {
                 return QModelIndex();
+            }
             TreeItem* tree_item_parent = tree_item->parent();
             // if we have selected an item at the first level of a childnode
 
@@ -384,7 +388,7 @@ QModelIndex SidebarModel::translateSourceIndex(const QModelIndex& index) {
      */
 
     const QAbstractItemModel* model = qobject_cast<QAbstractItemModel*>(sender());
-    VERIFY_OR_DEBUG_ASSERT(model != NULL) {
+    VERIFY_OR_DEBUG_ASSERT(model != nullptr) {
         return QModelIndex();
     }
 

@@ -1,8 +1,4 @@
-// recordingfeature.h
-// Created 03/26/2010 by Tobias Rafreider
-
-#ifndef RECORDING_FEATURE_H
-#define RECORDING_FEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QSortFilterProxyModel>
@@ -45,5 +41,3 @@ class RecordingFeature final : public LibraryFeature {
 
     FolderTreeModel m_childModel;
 };
-
-#endif

@@ -1,9 +1,10 @@
 #include "library/export/trackexportdlg.h"
 
-#include <QFileInfo>
 #include <QDesktopServices>
+#include <QFileInfo>
 #include <QMessageBox>
 
+#include "moc_trackexportdlg.cpp"
 #include "util/assert.h"
 
 TrackExportDlg::TrackExportDlg(QWidget *parent,
@@ -105,9 +106,11 @@ void TrackExportDlg::finish() {
     m_worker->wait();
     if (m_worker->errorMessage().length()) {
         QMessageBox::warning(
-                NULL,
-                tr("Export Error"), m_worker->errorMessage(),
-                QMessageBox::Ok, QMessageBox::Ok);
+                nullptr,
+                tr("Export Error"),
+                m_worker->errorMessage(),
+                QMessageBox::Ok,
+                QMessageBox::Ok);
     }
     hide();
     accept();

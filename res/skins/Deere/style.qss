@@ -96,13 +96,6 @@
   padding: 3px;
   qproperty-layoutAlignment: 'AlignBottom';
 }
-#PlayGutterSmall {
-  padding: 3px;
-  background-color: none;
-  qproperty-layoutAlignment: 'AlignBottom'; /*
-  border-left: 1px solid #222;
-  background-color: #664988;  */
-}
 
 #MixerBorder {
   background-color: #222;
@@ -213,34 +206,46 @@
 #LibraryContainer QTableView,
 #LibraryContainer QTreeView {
   color: #d2d2d2;
-  background-color: #1F1F1F;
-  selection-background-color: #006596;
-  selection-color: #D6D6D6;
   border: 1px solid #1A1A1A;
-  gridline-color: red;
-  /* Suppresses that selected sidebar item's branch indicator shows wrong color
-     when out of focus, see lp:880588 */
-  show-decoration-selected: 1;
-}
-#LibraryContainer QTableView {
+  background-color: #1F1F1F;
   alternate-background-color: #1A1A1A;
+/* In selected library rows this sets the color of
+  * shapes in star rating delegate
+  * focus border of Cover Art and Color delegates
+   > See src/library/coverartdelegate.cpp: "option.palette.highlightedText().color();" */
+  selection-color: #D6D6D6;
+  /* background of Color delegate in selected row */
+  selection-background-color: #006596;
+}
+
+/* Selected rows in Tree and Tracks table */
+#LibraryContainer QTableView::item:selected,
+#LibraryContainer QTreeView::item:selected,
+#LibraryBPMButton::item:selected {
+  color: #D6D6D6;
+  background-color: #006596;
+}
+#LibraryContainer QTreeView::item:focus {
+  outline: none;
+}
+/* Use the native focus decoration */
+/* This is for all cells including Played and Location */
+#LibraryContainer QTableView,
+/* This is for the BPM cell */
+#LibraryContainer QTableView QCheckBox:focus {
+  outline: 1px solid #D6D6D6;
+}
+/* This uses a custom qproperty to set the focus border
+  for Color and Cover Art cells, 1px solid, sharp corners.
+  See src/library/tableitemdelegate.cpp */
+WTrackTableView {
+  qproperty-focusBorderColor: #D6D6D6;
 }
 
 #LibraryContainer QTableView:focus,
 #LibraryContainer QTreeView:focus,
 #LibraryContainer QTextBrowser:focus {
   border: 1px solid #FF6600;
-}
-
-/* Colors aren't applied to selected items, define them manually */
-#LibraryContainer QTableView::item:selected,
-#LibraryContainer QTreeView::item:selected,
-#LibraryBPMButton::item:selected,
-#LibraryContainer QTreeView::branch:selected,
-/* This won't style the Preview button */
-#LibraryPreviewButton::item:selected {
-  color: #D6D6D6;
-  background-color: #006596;
 }
 
 /* Table cell in edit mode */
@@ -414,8 +419,10 @@ WSearchLineEdit {
   qproperty-layoutSpacing: 0;
 }
 
+#LibraryContainer QTreeView,
+#LibraryContainer QTreeView::item:focus {
+  outline: none;
 /* Spacing between treeview and preview deck/search bar */
-#LibraryContainer QTreeView {
   margin: 0px;
 }
 
@@ -1630,12 +1637,24 @@ WPushButton[value="2"]:hover,
   border: 1px solid transparent;
 }
 
-#PlayToggle[value="0"] {
+WPushButton#PlayToggle[value="0"] {
   image: url(skin:/icon/ic_play_48px.svg) no-repeat center center;
+  background-color: transparent;
 }
 
-#PlayToggle[value="1"] {
+WPushButton#PlayToggle[value="1"] {
   image: url(skin:/icon/ic_pause_48px.svg) no-repeat center center;
+}
+WPushButton#PreviewIndicator {
+  background-color: transparent;
+}
+/* Blue border for Play buttons when previewing from
+  Cue or Hotcue */
+WPushButton#PreviewIndicator[value="1"] {
+  border: 2px solid #0080BE;
+}
+WPushButton#PreviewIndicator[value="0"] {
+  border: none;
 }
 
 #ToolbarButton[value="1"] {
@@ -1857,10 +1876,12 @@ do not highlight either state. */
 
 #EffectSlotParameterLinkInversionButton[value="1"] {
     background-color: #b90505;
+    border: 1px solid #b90505;
 }
 
 #EffectSlotParameterLinkInversionButton[value="1"]:hover {
     background-color: #e80808;
+    border: 1px solid #FF0808;
 }
 
 /* Special case "hide/show" button

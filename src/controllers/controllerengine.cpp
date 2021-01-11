@@ -6,14 +6,16 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
-#include "controllers/colormapperjsproxy.h"
 #include "controllers/controllerengine.h"
-#include "controllers/controller.h"
-#include "controllers/controllerdebug.h"
+
 #include "control/controlobject.h"
 #include "control/controlobjectscript.h"
+#include "controllers/colormapperjsproxy.h"
+#include "controllers/controller.h"
+#include "controllers/controllerdebug.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_controllerengine.cpp"
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
 #include "util/time.h"
@@ -605,8 +607,8 @@ void ControllerEngine::scriptErrorDialog(
     }
 
     props->setType(DLG_WARNING);
-    props->setTitle(tr("Controller Preset Error"));
-    props->setText(QString(tr("The preset for your controller \"%1\" is not "
+    props->setTitle(tr("Controller Mapping Error"));
+    props->setText(QString(tr("The mapping for your controller \"%1\" is not "
                               "working properly."))
                            .arg(m_pController->getName()));
     props->setInfoText(QStringLiteral("<html>") +

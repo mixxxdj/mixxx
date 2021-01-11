@@ -10,12 +10,13 @@
 #include <QStandardItemModel>
 #include <QTableView>
 
+#include "moc_colorpaletteeditor.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "util/color/predefinedcolorpalettes.h"
 
 namespace {
 const QColor kDefaultPaletteColor(0, 0, 0);
-}
+} // namespace
 
 ColorPaletteEditor::ColorPaletteEditor(QWidget* parent, bool showHotcueNumbers)
         : QDialog(parent),

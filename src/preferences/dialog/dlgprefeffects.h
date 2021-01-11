@@ -1,10 +1,9 @@
-#ifndef DLGPREFEFFECTS_H
-#define DLGPREFEFFECTS_H
+#pragma once
 
 #include <QButtonGroup>
 
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/effectsettingsmodel.h"
 #include "preferences/usersettings.h"
 
@@ -31,7 +30,4 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     EffectSettingsModel m_availableEffectsModel;
     UserSettingsPointer m_pConfig;
     EffectsManager* m_pEffectsManager;
-    EffectSettingsModel* m_pAvailableEffectsModel;
 };
-
-#endif /* DLGPREFEFFECTS_H */

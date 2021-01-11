@@ -1,5 +1,4 @@
-// browsefeature.cpp
-// Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
+#include "library/browse/browsefeature.h"
 
 #include <QAction>
 #include <QDirModel>
@@ -11,16 +10,16 @@
 #include <QTreeView>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/browse/browsefeature.h"
 #include "library/library.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_browsefeature.cpp"
 #include "track/track.h"
 #include "util/memory.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarytextbrowser.h"
 
 namespace {
 
@@ -359,7 +358,7 @@ QList<TreeItem*> getRemovableDevices() {
 #endif
     return ret;
 }
-}
+} // namespace
 
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.

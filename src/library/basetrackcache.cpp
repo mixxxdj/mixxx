@@ -1,11 +1,9 @@
-// basetrackcache.cpp
-// Created 7/3/2011 by RJ Ryan (rryan@mit.edu)
-
 #include "library/basetrackcache.h"
 
 #include "library/queryutil.h"
 #include "library/searchqueryparser.h"
 #include "library/trackcollection.h"
+#include "moc_basetrackcache.cpp"
 #include "track/globaltrackcache.h"
 #include "track/keyutils.h"
 #include "track/track.h"
@@ -275,13 +273,12 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         record.resize(numColumns);
 
         for (int i = 0; i < numColumns; ++i) {
-            if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) == i) {
+            if (fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) == i) {
                 // Database stores all locations with Qt separators: "/"
                 // Here we want to cache the display string with native separators.
                 QString location = query.value(i).toString();
                 record[i] = QDir::toNativeSeparators(location);
-            }
-            else {
+            } else {
                 record[i] = query.value(i);
             }
         }
@@ -380,7 +377,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getType());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) == column) {
         trackValue.setValue(pTrack->getTrackNumber());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) == column) {
         trackValue.setValue(QDir::toNativeSeparators(pTrack->getLocation()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
         trackValue.setValue(pTrack->getComment());
@@ -409,7 +406,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
-               fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
         // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
         // the cover hash.
         trackValue.setValue(pTrack->getCoverHash());
@@ -697,12 +694,13 @@ int BaseTrackCache::compareColumnValues(int sortColumn,
         // Sort as floats.
         double delta = val1.toDouble() - val2.toDouble();
 
-        if (fabs(delta) < .00001)
+        if (fabs(delta) < .00001) {
             result = 0;
-        else if (delta > 0.0)
+        } else if (delta > 0.0) {
             result = 1;
-        else
+        } else {
             result = -1;
+        }
     } else if (sortColumn == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY)) {
         KeyUtils::KeyNotation keyNotation = m_columnCache.keyNotation();
 

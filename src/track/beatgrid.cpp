@@ -23,11 +23,11 @@ class BeatGridIterator : public BeatIterator {
               m_dEndSample(dEndSample) {
     }
 
-    virtual bool hasNext() const {
+    bool hasNext() const override {
         return m_dBeatLength > 0 && m_dCurrentSample <= m_dEndSample;
     }
 
-    virtual double next() {
+    double next() override {
         double beat = m_dCurrentSample;
         m_dCurrentSample += m_dBeatLength;
         return beat;
@@ -84,7 +84,7 @@ QByteArray BeatGrid::toByteArray() const {
     QMutexLocker locker(&m_mutex);
     std::string output;
     m_grid.SerializeToString(&output);
-    return QByteArray(output.data(), output.length());
+    return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
 BeatsPointer BeatGrid::clone() const {

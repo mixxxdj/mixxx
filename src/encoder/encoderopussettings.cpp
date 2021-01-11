@@ -1,6 +1,3 @@
-// encoderopussettings.cpp
-// Create on August 15th 2017 by Palakis
-
 #include <QMap>
 
 #include "encoder/encoderopussettings.h"
@@ -12,7 +9,7 @@ namespace {
 const int kDefaultQualityIndex = 6;
 const char* kQualityKey = "Opus_Quality";
 const mixxx::Logger kLogger("EncoderOpusSettings");
-}
+} // namespace
 
 const QString EncoderOpusSettings::BITRATE_MODE_GROUP = "Opus_BitrateMode";
 

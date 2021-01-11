@@ -3,7 +3,7 @@
 namespace {
 //  Used to avoid gain discontinuities when changing parameters too fast
 constexpr double kMaxGainIncrement = 0.001;
-}
+} // namespace
 
 // static
 QString TremoloEffect::getId() {

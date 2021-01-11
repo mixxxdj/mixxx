@@ -1,10 +1,4 @@
-/// @file dlgprefcontroller.h
-/// @author Sean M. Pappalardo  spappalardo@mixxx.org
-/// @date Mon May 2 2011
-/// @brief Configuration dialog for a single DJ controller
-
-#ifndef DLGPREFCONTROLLER_H
-#define DLGPREFCONTROLLER_H
+#pragma once
 
 #include <QHash>
 #include <QSortFilterProxyModel>
@@ -15,14 +9,15 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 
 // Forward declarations
 class Controller;
 class ControllerManager;
 class PresetInfoEnumerator;
 
+/// Configuration dialog for a single DJ controller
 class DlgPrefController : public DlgPreferencePage {
     Q_OBJECT
   public:
@@ -71,10 +66,8 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetName(const ControllerPresetPointer pPreset) const;
     QString presetAuthor(const ControllerPresetPointer pPreset) const;
     QString presetDescription(const ControllerPresetPointer pPreset) const;
-    QString presetForumLink(const ControllerPresetPointer pPreset) const;
-    QString presetManualLink(const ControllerPresetPointer pPreset) const;
-    QString presetWikiLink(const ControllerPresetPointer pPreset) const;
-    QString presetScriptFileLinks(const ControllerPresetPointer pPreset) const;
+    QString presetSupportLinks(const ControllerPresetPointer pPreset) const;
+    QString presetFileLinks(const ControllerPresetPointer pPreset) const;
     void applyPresetChanges();
     void savePreset();
     void initTableView(QTableView* pTable);
@@ -110,15 +103,15 @@ class DlgPrefController : public DlgPreferencePage {
 
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;
+    const QString m_pUserDir;
     ControllerManager* m_pControllerManager;
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
     ControllerPresetPointer m_pPreset;
+    QMap<QString, bool> m_pOverwritePresets;
     ControllerInputMappingTableModel* m_pInputTableModel;
     QSortFilterProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
     QSortFilterProxyModel* m_pOutputProxyModel;
     bool m_bDirty;
 };
-
-#endif /*DLGPREFCONTROLLER_H*/

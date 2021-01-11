@@ -1,24 +1,8 @@
-/**
- * @file dlgprefsound.h
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100625
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFSOUND_H
-#define DLGPREFSOUND_H
+#pragma once
 
 #include "defs_urls.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceerror.h"
@@ -44,7 +28,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     Q_OBJECT;
   public:
     DlgPrefSound(QWidget *parent, SoundManager *soundManager,
-                 PlayerManager* pPlayerManager,
                  UserSettingsPointer pSettings);
     virtual ~DlgPrefSound();
 
@@ -99,7 +82,6 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool eventFilter(QObject* object, QEvent* event) override;
 
     SoundManager *m_pSoundManager;
-    PlayerManager *m_pPlayerManager;
     UserSettingsPointer m_pSettings;
     SoundManagerConfig m_config;
     ControlProxy* m_pMasterAudioLatencyOverloadCount;
@@ -119,5 +101,3 @@ class DlgPrefSound : public DlgPreferencePage, public Ui::DlgPrefSoundDlg  {
     bool m_bSkipConfigClear;
     bool m_loading;
 };
-
-#endif

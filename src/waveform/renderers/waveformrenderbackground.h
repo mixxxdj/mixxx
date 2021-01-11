@@ -1,5 +1,4 @@
-#ifndef WAVEFORMRENDERBACKGROUND_H
-#define WAVEFORMRENDERBACKGROUND_H
+#pragma once
 
 #include <QColor>
 #include <QDomNode>
@@ -29,5 +28,3 @@ class WaveformRenderBackground : public WaveformRendererAbstract {
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBackground);
 };
-
-#endif /* WAVEFORMRENDERBACKGROUND_H */

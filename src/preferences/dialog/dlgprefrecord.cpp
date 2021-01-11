@@ -1,14 +1,19 @@
+#include "preferences/dialog/dlgprefrecord.h"
+
 #include <QFileDialog>
 #include <QStandardPaths>
 
-#include "preferences/dialog/dlgprefrecord.h"
-#include "recording/defs_recording.h"
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "encoder/encodermp3settings.h"
-#include "control/controlproxy.h"
+#include "moc_dlgprefrecord.cpp"
+#include "recording/defs_recording.h"
 #include "util/sandbox.h"
 
+namespace {
+constexpr bool kDefaultCueEnabled = true;
+} // anonymous namespace
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
@@ -19,12 +24,13 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
 
     // Setting recordings path.
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
-    if (recordingsPath == "") {
+    if (recordingsPath.isEmpty()) {
         // Initialize recordings path in config to old default path.
         // Do it here so we show current value in UI correctly.
         QString musicDir = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
         QDir recordDir(musicDir + "/Mixxx/Recordings");
         recordingsPath = recordDir.absolutePath();
+        m_pConfig->setValue(ConfigKey(RECORDING_PREF_KEY, "Directory"), recordingsPath);
     }
     LineEditRecordings->setText(recordingsPath);
     connect(PushButtonBrowseRecordings,
@@ -69,8 +75,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
     loadMetaData();
 
     // Setting miscellaneous
-    CheckBoxRecordCueFile->setChecked(
-            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
+    CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
+            ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     // Setting split
     comboBoxSplitting->addItem(SPLIT_650MB);
@@ -173,8 +179,8 @@ void DlgPrefRecord::slotUpdate()
     loadMetaData();
 
      // Setting miscellaneous
-    CheckBoxRecordCueFile->setChecked(
-            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
+    CheckBoxRecordCueFile->setChecked(m_pConfig->getValue<bool>(
+            ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), kDefaultCueEnabled));
 
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
@@ -199,8 +205,7 @@ void DlgPrefRecord::slotResetToDefaults()
 
     // 4GB splitting is the default
     comboBoxSplitting->setCurrentIndex(4);
-    CheckBoxRecordCueFile->setChecked(false);
-
+    CheckBoxRecordCueFile->setChecked(kDefaultCueEnabled);
 }
 
 
@@ -379,13 +384,32 @@ void DlgPrefRecord::loadMetaData() {
 
 void DlgPrefRecord::saveRecordingFolder()
 {
-    if (LineEditRecordings->text() == "") {
-        qDebug() << "Recordings path was empty in dialog";
-        return;
-    }
-    if (LineEditRecordings->text() != m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"))) {
-        qDebug() << "Saved recordings path" << LineEditRecordings->text();
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Directory"), LineEditRecordings->text());
+    QString newPath = LineEditRecordings->text();
+    if (newPath != m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"))) {
+        QFileInfo fileInfo(newPath);
+        if (!fileInfo.exists()) {
+            QMessageBox::warning(
+                    this,
+                    tr("Recordings directory invalid"),
+                    tr("Recordings directory must be set to an existing directory."));
+            return;
+        }
+        if (!fileInfo.isDir()) {
+            QMessageBox::warning(
+                    this,
+                    tr("Recordings directory invalid"),
+                    tr("Recordings directory must be set to a directory."));
+            return;
+        }
+        if (!fileInfo.isWritable()) {
+            QMessageBox::warning(this,
+                    tr("Recordings directory not writable"),
+                    tr("You do not have write access to %1. Choose a "
+                       "recordings directory you have write access to.")
+                            .arg(newPath));
+            return;
+        }
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Directory"), newPath);
     }
 }
 void DlgPrefRecord::saveMetaData()

@@ -1,5 +1,4 @@
-#ifndef VISUALPLAYPOSITION_H
-#define VISUALPLAYPOSITION_H
+#pragma once
 
 #include <QMutex>
 #include <QTime>
@@ -78,5 +77,3 @@ class VisualPlayPosition : public QObject {
     // Time stamp for m_timeInfo in main CPU time
     static PerformanceTimer m_timeInfoTime;
 };
-
-#endif // VISUALPLAYPOSITION_H

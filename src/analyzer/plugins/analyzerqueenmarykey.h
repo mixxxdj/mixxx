@@ -1,5 +1,4 @@
-#ifndef ANALYZER_PLUGINS_ANALYZERQUEENMARYKEY_H
-#define ANALYZER_PLUGINS_ANALYZERQUEENMARYKEY_H
+#pragma once
 
 #include <vector>
 
@@ -50,5 +49,3 @@ class AnalyzerQueenMaryKey : public AnalyzerKeyPlugin {
 };
 
 } // namespace mixxx
-
-#endif /* ANALYZER_PLUGINS_ANALYZERQUEENMARYKEY_H */

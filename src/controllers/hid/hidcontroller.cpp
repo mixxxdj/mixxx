@@ -1,20 +1,20 @@
-/**
-  * @file hidcontroller.cpp
-  * @author Sean M. Pappalardo  spappalardo@mixxx.org
-  * @date Sun May 1 2011
-  * @brief HID controller backend
-  *
-  */
-
-#include <wchar.h>
-#include <string.h>
-
-#include "util/path.h" // for PATH_MAX on Windows
 #include "controllers/hid/hidcontroller.h"
-#include "controllers/defs_controllers.h"
-#include "util/trace.h"
+
+#include <cstring>
+#include <cwchar>
+
 #include "controllers/controllerdebug.h"
+#include "controllers/defs_controllers.h"
+#include "moc_hidcontroller.cpp"
+#include "util/path.h" // for PATH_MAX on Windows
 #include "util/time.h"
+#include "util/trace.h"
+
+namespace {
+constexpr size_t kHidPathBufferSize = PATH_MAX + 1;
+constexpr size_t kHidSerialMaxLength = 512;
+constexpr size_t kHidSerialBufferSize = kHidSerialMaxLength + 1;
+} // namespace
 
 HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPointer pConfig)
         : Controller(pConfig),
@@ -37,16 +37,15 @@ HidController::HidController(const hid_device_info& deviceInfo, UserSettingsPoin
     }
 
     // Don't trust path to be null terminated.
-    hid_path = new char[PATH_MAX + 1];
-    strncpy(hid_path, deviceInfo.path, PATH_MAX);
-    hid_path[PATH_MAX] = 0;
+    hid_path = new char[kHidPathBufferSize];
+    std::strncpy(hid_path, deviceInfo.path, PATH_MAX);
+    hid_path[PATH_MAX] = '\0';
 
-    hid_serial_raw = NULL;
-    if (deviceInfo.serial_number != NULL) {
-        size_t serial_max_length = 512;
-        hid_serial_raw = new wchar_t[serial_max_length+1];
-        wcsncpy(hid_serial_raw, deviceInfo.serial_number, serial_max_length);
-        hid_serial_raw[serial_max_length] = 0;
+    hid_serial_raw = nullptr;
+    if (deviceInfo.serial_number != nullptr) {
+        hid_serial_raw = new wchar_t[kHidSerialBufferSize];
+        std::wcsncpy(hid_serial_raw, deviceInfo.serial_number, kHidSerialMaxLength);
+        hid_serial_raw[kHidSerialMaxLength] = '\0';
     }
 
     hid_serial = safeDecodeWideString(deviceInfo.serial_number, 512);
@@ -104,8 +103,9 @@ void HidController::visit(const HidControllerPreset* preset) {
 bool HidController::matchPreset(const PresetInfo& preset) {
     const QList<ProductInfo>& products = preset.getProducts();
     for (const auto& product : products) {
-        if (matchProductInfo(product))
+        if (matchProductInfo(product)) {
             return true;
+        }
     }
     return false;
 }
@@ -115,20 +115,30 @@ bool HidController::matchProductInfo(const ProductInfo& product) {
     bool ok;
     // Product and vendor match is always required
     value = product.vendor_id.toInt(&ok,16);
-    if (!ok || hid_vendor_id!=value) return false;
+    if (!ok || hid_vendor_id != value) {
+        return false;
+    }
     value = product.product_id.toInt(&ok,16);
-    if (!ok || hid_product_id!=value) return false;
+    if (!ok || hid_product_id != value) {
+        return false;
+    }
 
     // Optionally check against interface_number / usage_page && usage
     if (hid_interface_number!=-1) {
         value = product.interface_number.toInt(&ok,16);
-        if (!ok || hid_interface_number!=value) return false;
+        if (!ok || hid_interface_number != value) {
+            return false;
+        }
     } else {
         value = product.usage_page.toInt(&ok,16);
-        if (!ok || hid_usage_page!=value) return false;
+        if (!ok || hid_usage_page != value) {
+            return false;
+        }
 
         value = product.usage.toInt(&ok,16);
-        if (!ok || hid_usage!=value) return false;
+        if (!ok || hid_usage != value) {
+            return false;
+        }
     }
     // Match found
     return true;
@@ -188,7 +198,7 @@ int HidController::open() {
     m_pHidDevice = hid_open_path(hid_path);
 
     // If that fails, try to open device with vendor/product/serial #
-    if (m_pHidDevice == NULL) {
+    if (m_pHidDevice == nullptr) {
         controllerDebug("Failed. Trying to open with make, model & serial no:"
                 << hid_vendor_id << hid_product_id << hid_serial);
         m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, hid_serial_raw);
@@ -196,15 +206,15 @@ int HidController::open() {
 
     // If it does fail, try without serial number WARNING: This will only open
     // one of multiple identical devices
-    if (m_pHidDevice == NULL) {
+    if (m_pHidDevice == nullptr) {
         qWarning() << "Unable to open specific HID device" << getName()
                    << "Trying now with just make and model."
                    << "(This may only open the first of multiple identical devices.)";
-        m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, NULL);
+        m_pHidDevice = hid_open(hid_vendor_id, hid_product_id, nullptr);
     }
 
     // If that fails, we give up!
-    if (m_pHidDevice == NULL) {
+    if (m_pHidDevice == nullptr) {
         qWarning()  << "Unable to open HID device" << getName();
         return -1;
     }
@@ -330,7 +340,7 @@ void HidController::send(QByteArray data, unsigned int reportID) {
 
 //static
 QString HidController::safeDecodeWideString(const wchar_t* pStr, size_t max_length) {
-    if (pStr == NULL) {
+    if (pStr == nullptr) {
         return QString();
     }
     // find a terminating 0 or take all chars

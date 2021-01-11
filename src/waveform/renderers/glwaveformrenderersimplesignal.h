@@ -1,14 +1,15 @@
 #pragma once
 
-#include <QOpenGLFunctions_2_1>
+#include "waveform/renderers/glwaveformrenderer.h"
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "waveformrenderersignalbase.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 
 class ControlObject;
 
-class GLWaveformRendererSimpleSignal : public WaveformRendererSignalBase, protected QOpenGLFunctions_2_1 {
-public:
+class GLWaveformRendererSimpleSignal : public WaveformRendererSignalBase,
+                                       public GLWaveformRenderer {
+  public:
     explicit GLWaveformRendererSimpleSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererSimpleSignal();
 

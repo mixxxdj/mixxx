@@ -1,5 +1,4 @@
-#ifndef ENGINE_CACHINGREADERWORKER_H
-#define ENGINE_CACHINGREADERWORKER_H
+#pragma once
 
 #include <QMutex>
 #include <QSemaphore>
@@ -147,6 +146,3 @@ class CachingReaderWorker : public EngineWorker {
 
     QAtomicInt m_stop;
 };
-
-
-#endif /* ENGINE_CACHINGREADERWORKER_H */

@@ -112,21 +112,41 @@
                 <Size>27f,36f</Size>
                 <BackPath>style/style_bg_sampler_mid.png</BackPath>
                 <Children>
+                  <!-- Preview indicator -->
+                  <PushButton>
+                    <Pos>3,7</Pos>
+                    <NumberStates>2</NumberStates>
+                    <RightClickIsPushButton>true</RightClickIsPushButton>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_play_sampler.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_play_sampler_preview.png</Pressed>
+                      <Unpressed>skin:/btn/btn_play_sampler_preview.png</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                  <!-- Play -->
                   <PushButton>
                     <TooltipId>cue_gotoandplay_cue_default</TooltipId>
+                    <Pos>3,7</Pos>
                     <NumberStates>2</NumberStates>
                     <RightClickIsPushButton>true</RightClickIsPushButton>
                     <State>
                       <Number>0</Number>
                       <Pressed>skin:/btn/btn_play_sampler_down.png</Pressed>
-                      <Unpressed>skin:/btn/btn_play_sampler.png</Unpressed>
                     </State>
                     <State>
                       <Number>1</Number>
                       <Pressed>skin:/btn/btn_pause_sampler_overdown.png</Pressed>
                       <Unpressed>skin:/btn/btn_pause_sampler_over.png</Unpressed>
                     </State>
-                    <Pos>3,7</Pos>
                     <Connection>
                       <ConfigKey><Variable name="group"/>,cue_gotoandplay</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
@@ -136,7 +156,7 @@
                       <ButtonState>RightButton</ButtonState>
                     </Connection>
                     <Connection>
-                      <ConfigKey><Variable name="group"/>,play</ConfigKey>
+                      <ConfigKey><Variable name="group"/>,play_latched</ConfigKey>
                     </Connection>
                   </PushButton>
                 </Children>

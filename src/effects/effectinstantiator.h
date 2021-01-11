@@ -1,5 +1,4 @@
-#ifndef EFFECTINSTANTIATOR_H
-#define EFFECTINSTANTIATOR_H
+#pragma once
 
 #include <QSharedPointer>
 #include "effects/effectmanifest.h"
@@ -50,5 +49,3 @@ class LV2EffectProcessorInstantiator : public EffectInstantiator {
 
 };
 #endif /* __LILV__ */
-
-#endif /* EFFECTINSTANTIATOR_H */

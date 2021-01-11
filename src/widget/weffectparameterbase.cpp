@@ -1,7 +1,9 @@
+#include "widget/weffectparameterbase.h"
+
 #include <QtDebug>
 
-#include "widget/weffectparameterbase.h"
 #include "effects/effectsmanager.h"
+#include "moc_weffectparameterbase.cpp"
 
 WEffectParameterBase::WEffectParameterBase(QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),
@@ -32,7 +34,7 @@ void WEffectParameterBase::parameterUpdated() {
                        m_pEffectParameterSlot->name(),
                        m_pEffectParameterSlot->description()));
     } else {
-        setText(tr("None"));
+        setText(EffectsManager::kNoEffectString);
         setBaseTooltip(tr("No effect loaded."));
     }
 }

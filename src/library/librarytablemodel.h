@@ -1,5 +1,4 @@
-#ifndef LIBRARYTABLEMODEL_H
-#define LIBRARYTABLEMODEL_H
+#pragma once
 
 #include "library/basesqltablemodel.h"
 
@@ -18,5 +17,3 @@ class LibraryTableModel : public BaseSqlTableModel {
     int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
     TrackModel::CapabilitiesFlags getCapabilities() const final;
 };
-
-#endif

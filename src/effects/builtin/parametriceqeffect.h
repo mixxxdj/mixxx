@@ -1,5 +1,4 @@
-#ifndef PARAMERICEQEFFECT_H
-#define PARAMERICEQEFFECT_H
+#pragma once
 
 #include <vector>
 #include <QMap>
@@ -65,5 +64,3 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
 
     DISALLOW_COPY_AND_ASSIGN(ParametricEQEffect);
 };
-
-#endif // PARAMERICEQEFFECT_H

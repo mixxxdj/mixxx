@@ -131,7 +131,7 @@ QImage importCoverImageFromPictureList(
     }
 
     for (const auto coverArtType : kPreferredPictureTypes) {
-        for (const auto pPicture : pictures) {
+        for (auto* const pPicture : pictures) {
             DEBUG_ASSERT(pPicture); // trust TagLib
             if (pPicture->type() == coverArtType) {
                 const QImage image(loadImageFromPicture(*pPicture));
@@ -148,7 +148,7 @@ QImage importCoverImageFromPictureList(
     }
 
     // Fallback: No best match -> Create image from first loadable picture of any type
-    for (const auto pPicture : pictures) {
+    for (auto* const pPicture : pictures) {
         DEBUG_ASSERT(pPicture); // trust TagLib
         const QImage image(loadImageFromPicture(*pPicture));
         if (image.isNull()) {

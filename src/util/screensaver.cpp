@@ -170,8 +170,9 @@ void ScreenSaverHelper::triggerUserActivity()
 {
     const char* name = ":0.0";
     Display *display;
-    if (getenv("DISPLAY"))
+    if (getenv("DISPLAY")) {
         name=getenv("DISPLAY");
+    }
     display=XOpenDisplay(name);
     XResetScreenSaver(display);
     XCloseDisplay(display);
@@ -336,4 +337,3 @@ void ScreenSaverHelper::uninhibitInternal()
 
 
 } // namespace mixxx
-

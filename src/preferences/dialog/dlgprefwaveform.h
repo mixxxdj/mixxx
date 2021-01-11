@@ -1,11 +1,10 @@
-#ifndef DLGPREFWAVEFORM_H
-#define DLGPREFWAVEFORM_H
+#pragma once
 
 #include <QWidget>
 
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 
 class MixxxMainWindow;
 class Library;
@@ -48,6 +47,3 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     Library* m_pLibrary;
     MixxxMainWindow* m_pMixxx;
 };
-
-
-#endif /* DLGPREFWAVEFORM_H */
