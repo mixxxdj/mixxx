@@ -1,6 +1,6 @@
 { nixroot ? (import <nixpkgs> { }), defaultLv2Plugins ? false, lv2Plugins ? [ ]
 , releaseMode ? false, enableKeyfinder ? true, buildType ? "auto", cFlags ? [ ]
-, useClang ? true, useClazy ? false }:
+, useClang ? true, useClazy ? false, buildFolder ? "cbuild", qtDebug ? false }:
 let
   inherit (nixroot)
     pkgs lib makeWrapper clang-tools cmake fetchurl fetchgit glibcLocales
@@ -16,6 +16,8 @@ let
   glibcVersion = builtins.map builtins.fromJSON
     (lib.versions.splitVersion pkgs.glibc.version);
 
+  qtBaseWithDebug = pkgs.qt5.qtbase.override { developerBuild = true; };
+
   # llvm < 10.0.2 and glibc >= 2.31 do not work with -fast-math
   fastMathBug = (builtins.elemAt clangVersion 0) <= 10
     && (builtins.elemAt clangVersion 1) <= 0 && (builtins.elemAt clangVersion 2)
@@ -28,6 +30,8 @@ let
     (if releaseMode then "RelWithDebInfo" else "Debug")
   else
     buildType;
+
+  myQt5Base = if qtDebug then qtBaseWithDebug else pkgs.qt5.qtbase;
 
   allCFlags = cFlags ++ [
     ("-DKEYFINDER=" + (if enableKeyfinder then "ON" else "OFF"))
@@ -106,21 +110,12 @@ let
       fi
     '' else
       "") + ''
-        mkdir -p cbuild
-        cd cbuild
-        cmake .. ${
+        mkdir -p ${buildFolder}
+        cd ${buildFolder}
+        cmake $MIXXX_SRC ${
           lib.escapeShellArgs allCFlags
         } -DCMAKE_EXPORT_COMPILE_COMMANDS=ON "$@"
-        cd ..
-        V=$(pre-commit --version | sed s/"pre-commit /1.99.99\\n/" | sort -Vr | head -n1 | tr -d "\n")
-        # install pre-commit from python for older systems
-        if [ $V == "1.99.99" -a ! -e venv/bin/pre-commit ]; then
-          virtualenv -p python3 venv
-          ./venv/bin/pip install pre-commit
-          ./venv/bin/pre-commit install
-        else
-          pre-commit install
-        fi
+        cd -
         link-environment
       '');
 
@@ -138,7 +133,7 @@ let
   # we therefore need to call the wrapper script through a minimal nix-shell
   shell-build = nixroot.writeShellScriptBin "build" ''
     set -e
-    if [ ! -d "cbuild" ]; then
+    if [ ! -d "${buildFolder}" ]; then
       >&2 echo "First you have to run configure."
       exit 1
     fi
@@ -146,7 +141,7 @@ let
       export CLAZY_CHECKS=$(grep CLAZY_CHECKS ./.github/workflows/clazy.yml | sed "s/\s*CLAZY_CHECKS:\s*//")
       echo "Using clazy checks: $CLAZY_CHECKS"
     fi
-    cd cbuild
+    cd ${buildFolder}
     rm -f .mixxx-wrapped mixxx mixxx-test .mixxx-test-wrapped
     cmake --build . --parallel $NIX_BUILD_CORES "$@"
     if [ -f ./mixxx ]; then
@@ -162,31 +157,31 @@ let
   '';
 
   shell-run = nixroot.writeShellScriptBin "run" ''
-    if [ ! -f "cbuild/mixxx" ]; then
+    if [ ! -f "${buildFolder}/mixxx" ]; then
       >&2 echo "First you have to run build."
       exit 1
     fi
-    cd cbuild
+    cd ${buildFolder}
     exec ./mixxx --resourcePath res/ "$@"
   '';
 
   shell-debug = nixroot.writeShellScriptBin "debug" ''
-    if [ ! -f "cbuild/mixxx" ]; then
+    if [ ! -f "${buildFolder}/mixxx" ]; then
       >&2 echo "First you have to run build."
       exit 1
     fi
-    cd cbuild
+    cd ${buildFolder}
     head -n1 mixxx | grep bash >/dev/null || (echo "mixxx is not wrapped" && exit 1)
     eval "$(head -n -1 mixxx)"
     exec gdb --args ./.mixxx-wrapped --resourcePath res/ "$@"
   '';
 
   shell-run-tests = nixroot.writeShellScriptBin "run-tests" ''
-    if [ ! -f "cbuild/mixxx-test" ]; then
+    if [ ! -f "${buildFolder}/mixxx-test" ]; then
       >&2 echo "First you have to run build."
       exit 1
     fi
-    cd cbuild
+    cd ${buildFolder}
     # in case we run in a ci environment nix is < 20.09 QT_PLUGIN_PATH may not be set
     if [ -z "$QT_PLUGIN_PATH" ]; then
       export QT_PLUGIN_PATH=${pkgs.qt5.qtbase}/${pkgs.qt5.qtbase.qtPluginPrefix}
@@ -207,9 +202,9 @@ let
       set -f # Disable glob expansion
       includes=( $@ ) # Deliberately unquoted
       set +f
-      mkdir -p cbuild/includes
-      rm -f cbuild/includes/* >/dev/null
-      cd cbuild/includes
+      mkdir -p ${buildFolder}/includes
+      rm -f ${buildFolder}/includes/* >/dev/null
+      cd ${buildFolder}/includes
       for i in "''${includes[@]}"
         do
             t=$(basename $(dirname $i))
@@ -220,8 +215,8 @@ let
       cd ../..
     }
     create_includes $CMAKE_INCLUDE_PATH
-    rm -f cbuild/compiler 2>/dev/null
-    ln -s ${stdenv.cc} cbuild/compiler
+    rm -f ${buildFolder}/compiler 2>/dev/null
+    ln -s ${stdenv.cc} ${buildFolder}/compiler
   '';
 
   allLv2Plugins = lv2Plugins ++ (if defaultLv2Plugins then
@@ -256,6 +251,7 @@ in stdenv.mkDerivation rec {
       export LOCALE_ARCHIVE="${glibcLocales}/lib/locale/locale-archive";
     fi
     export PYTHONPATH=venv/lib/python3.7/site-packages/:$PYTHONPATH
+    export MIXXX_SRC=`pwd`
     export SOURCE_DATE_EPOCH=315532800
     if [ -z $QT_MESSAGE_PATTERN ]; then
       QT_MESSAGE_PATTERN="`echo -e \"\033[32m%{time h:mm:ss.zzz}\033[0m \"`"
@@ -280,6 +276,7 @@ in stdenv.mkDerivation rec {
   src = if releaseMode then
     (nix-gitignore.gitignoreSource ''
       /cbuild
+      /${buildFolder}
       /.envrc
       /result*
       /shell.nix
@@ -299,9 +296,6 @@ in stdenv.mkDerivation rec {
         include-what-you-use
         # for pre-commit installation since nixpkg.pre-commit may be to old
         python3
-        python37Packages.pip
-        python37Packages.setuptools
-        python37Packages.virtualenv
         nodejs
         shell-build
         shell-configure
@@ -352,11 +346,11 @@ in stdenv.mkDerivation rec {
     portaudio
     portmidi
     protobuf
-    qt5.qtbase
-    qt5.qtdoc
-    qt5.qtscript
-    qt5.qtsvg
-    qt5.qtx11extras
+    myQt5Base
+    pkgs.qt5.qtdoc
+    pkgs.qt5.qtscript
+    pkgs.qt5.qtsvg
+    pkgs.qt5.qtx11extras
     rubberband
     serd
     sord
