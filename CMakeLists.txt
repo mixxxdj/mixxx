@@ -655,7 +655,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixxx.cpp
   src/mixxxapplication.cpp
   src/musicbrainz/chromaprinter.cpp
-  src/musicbrainz/crc.c
+  src/musicbrainz/crc.cpp
   src/musicbrainz/gzip.cpp
   src/musicbrainz/musicbrainz.cpp
   src/musicbrainz/musicbrainzxml.cpp
