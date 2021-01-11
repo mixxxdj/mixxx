@@ -5,8 +5,8 @@
 #include "control/controlproxy.h"
 #include "preferences/colorpaletteeditor.h"
 #include "preferences/colorpalettesettings.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefcolorsdlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 

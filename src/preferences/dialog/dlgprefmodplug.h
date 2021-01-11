@@ -3,8 +3,9 @@
 #pragma once
 
 #include <QDialog>
+
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 
 namespace Ui {
 class DlgPrefModplug;
