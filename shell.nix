@@ -1,6 +1,6 @@
 { nixroot ? (import <nixpkgs> { }), defaultLv2Plugins ? false, lv2Plugins ? [ ]
 , releaseMode ? false, enableKeyfinder ? true, buildType ? "auto", cFlags ? [ ]
-, useClang ? true, useClazy ? false, buildFolder ? "cbuild", qtDebug ? false }:
+, useClang ? true, useClazy ? false, buildFolder ? "build", qtDebug ? false }:
 let
   inherit (nixroot)
     pkgs lib makeWrapper clang-tools cmake fetchurl fetchgit glibcLocales
