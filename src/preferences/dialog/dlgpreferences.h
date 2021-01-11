@@ -29,14 +29,16 @@ class DlgPrefEQ;
 class DlgPrefEffects;
 class DlgPrefCrossfader;
 class DlgPrefAutoDJ;
+#ifdef __BROADCAST__
 class DlgPrefBroadcast;
+#endif // __BROADCAST__
 class DlgPrefRecord;
 class DlgPrefBeats;
 class DlgPrefKey;
 class DlgPrefReplayGain;
 #ifdef __LILV__
 class DlgPrefLV2;
-#endif /* __LILV__ */
+#endif // __LILV__
 class LV2Backend;
 class ControllerManager;
 class EffectsManager;
@@ -46,7 +48,7 @@ class Library;
 class VinylControlManager;
 #ifdef __MODPLUG__
 class DlgPrefModplug;
-#endif
+#endif // __MODPLUG__
 
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
@@ -113,17 +115,19 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefCrossfader* m_crossfaderPage;
     DlgPrefEffects* m_effectsPage;
     DlgPrefAutoDJ* m_autoDjPage;
+#ifdef __BROADCAST__
     DlgPrefBroadcast* m_broadcastingPage;
+#endif // __BROADCAST__
     DlgPrefRecord* m_recordingPage;
     DlgPrefBeats* m_beatgridPage;
     DlgPrefKey* m_musicalKeyPage;
     DlgPrefReplayGain* m_replayGainPage;
 #ifdef __LILV__
     DlgPrefLV2* m_lv2Page;
-#endif /* __LILV__ */
+#endif // __LILV__
 #ifdef __MODPLUG__
     DlgPrefModplug* m_modplugPage;
-#endif /* __MODPLUG__ */
+#endif // __MODPLUG__
 
     QTreeWidgetItem* m_pSoundButton;
     QTreeWidgetItem* m_pLibraryButton;
@@ -138,18 +142,20 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pEqButton;
 #ifdef __LILV__
     QTreeWidgetItem* m_pLV2Button;
-#endif /* __LILV__ */
+#endif // __LILV__
     QTreeWidgetItem* m_pEffectsButton;
     QTreeWidgetItem* m_pCrossfaderButton;
     QTreeWidgetItem* m_pAutoDJButton;
+#ifdef __BROADCAST__
     QTreeWidgetItem* m_pBroadcastButton;
+#endif // __BROADCAST__
     QTreeWidgetItem* m_pRecordingButton;
     QTreeWidgetItem* m_pBeatDetectionButton;
     QTreeWidgetItem* m_pKeyDetectionButton;
     QTreeWidgetItem* m_pReplayGainButton;
 #ifdef __MODPLUG__
     QTreeWidgetItem* m_pModplugButton;
-#endif /* __MODPLUG__ */
+#endif // __MODPLUG__
 
     QSize m_pageSizeHint;
 
