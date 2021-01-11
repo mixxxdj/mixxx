@@ -23,6 +23,8 @@ const QString kSingleEq = "SingleEQEffect";
 const QString kDefaultEqId = BiquadFullKillEQEffect::getId();
 const QString kDefaultMasterEqId = QString();
 const QString kDefaultQuickEffectId = FilterEffect::getId();
+//: Shown when no EQ is loaded
+const QString kNoEffectLoadedLabel = QObject::tr("None");
 
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
@@ -226,7 +228,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
             }
         }
         // Add empty item, no effect
-        box->addItem(EffectsManager::kNoEffectString);
+        box->addItem(kNoEffectLoadedLabel);
 
         if (selectedEffectId.isEmpty()) {
             // Configured effect has no id, clear selection
@@ -257,7 +259,7 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
             }
         }
         // Add empty item, no effect
-        box->addItem(EffectsManager::kNoEffectString);
+        box->addItem(kNoEffectLoadedLabel);
 
         if (selectedEffectId.isEmpty()) {
             // Configured effect has no id, clear selection
@@ -676,7 +678,7 @@ void DlgPrefEQ::setUpMasterEQ() {
         comboBoxMasterEq->addItem(pManifest->name(), QVariant(pManifest->id()));
     }
     // Add empty item, no effect
-    comboBoxMasterEq->addItem(EffectsManager::kNoEffectString);
+    comboBoxMasterEq->addItem(kNoEffectLoadedLabel);
 
     int masterEqIndex = comboBoxMasterEq->findData(configuredEffect);
     if (masterEqIndex < 0) {
