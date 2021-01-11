@@ -256,26 +256,30 @@ if(WIN32)
 endif()
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
-execute_process(
-  COMMAND git describe --tags --always --dirty=-modified
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_DESCRIPTION
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
+if(NOT GIT_COMMIT_DESCRIPTION)
+  execute_process(
+    COMMAND git describe --tags --always --dirty=-modified
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_COMMIT_DESCRIPTION
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+endif()
 if(NOT GIT_COMMIT_DESCRIPTION)
     set(GIT_COMMIT_DESCRIPTION "unknown-commit")
 endif()
 message(STATUS "Git commit: ${GIT_COMMIT_DESCRIPTION}")
 
-set(ENV{TZ} UTC)
-execute_process(
-  COMMAND git show --quiet --format=%cd --date=short
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_DATE
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
+if(NOT GIT_COMMIT_DATE)
+  set(ENV{TZ} UTC)
+  execute_process(
+    COMMAND git show --quiet --format=%cd --date=short
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_COMMIT_DATE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+endif()
 if(NOT GIT_COMMIT_DATE)
     set(GIT_COMMIT_DATE "unknown-date")
 endif()
