@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13.0)
-project(mixxx VERSION 2.3.0)
+project(mixxx)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
 
@@ -256,6 +256,17 @@ if(WIN32)
 endif()
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
+if(NOT GIT_TAG)
+  execute_process(
+    COMMAND git describe --tags --abbrev=0
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_TAG
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+endif()
+message(STATUS "Git tag: ${GIT_TAG}")
+
 if(NOT GIT_COMMIT_DESCRIPTION)
   execute_process(
     COMMAND git describe --tags --always --dirty=-modified
@@ -264,9 +275,6 @@ if(NOT GIT_COMMIT_DESCRIPTION)
     OUTPUT_STRIP_TRAILING_WHITESPACE
     ERROR_QUIET
   )
-endif()
-if(NOT GIT_COMMIT_DESCRIPTION)
-    set(GIT_COMMIT_DESCRIPTION "unknown-commit")
 endif()
 message(STATUS "Git commit: ${GIT_COMMIT_DESCRIPTION}")
 
@@ -280,20 +288,21 @@ if(NOT GIT_COMMIT_DATE)
     ERROR_QUIET
   )
 endif()
-if(NOT GIT_COMMIT_DATE)
-    set(GIT_COMMIT_DATE "unknown-date")
-endif()
 message(STATUS "Git commit date: ${GIT_COMMIT_DATE}")
 
-execute_process(
-  COMMAND git show --quiet --date=format-local:%Y --format=%cd
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE MIXXX_YEAR
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
-if(NOT MIXXX_YEAR)
-  string(TIMESTAMP MIXXX_YEAR "%Y")
+string(REGEX MATCH "([0-9]*)-" GIT_YEAR "${GIT_COMMIT_DATE}")
+
+if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/git_info.h")
+  if(NOT GIT_TAG OR NOT GIT_COMMIT_DESCRIPTION OR NOT GIT_COMMIT_DATE)
+    message(FATAL_ERROR "Version information not found. "
+    "Either clone the Git repository from https://github.com/mixxxdj/mixxx.git ; "
+    "download an official release tarball from https://downloads.mixxx.org ; "
+    "or manually specify GIT_TAG, GIT_COMMIT_DESCRIPTION, and GIT_COMMIT_DATE variables to CMake.")
+  endif()
+  configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/src/git_info.h.template"
+    "${CMAKE_CURRENT_BINARY_DIR}/src/git_info.h"
+  )
 endif()
 
 if(MSVC)
@@ -333,14 +342,6 @@ endif()
 set_property(DIRECTORY APPEND
     PROPERTY CMAKE_CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/.git/index")
-
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/git_info.h")
-  # uses GIT_COMMIT_DESCRIPTION and GIT_COMMIT_DATE
-  configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/git_info.h.template"
-    "${CMAKE_CURRENT_BINARY_DIR}/src/git_info.h"
-  )
-endif()
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -1566,28 +1567,18 @@ else()
 endif()
 add_dependencies(mixxx-lib mixxx-res mixxx-script)
 
-file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
-string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
-# a dummy configure to force a reconfigure when the version changes
-configure_file(src/_version.h src/_version.h)
-
 # Windows-only resource file
 # refer to https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource for documentation
 if(WIN32)
-  if(GIT_COMMIT_DESCRIPTION STREQUAL "unknown-commit")
-    set(WINDOWS_RC_VERSION "${MIXXX_VERSION}")
-  else()
-    set(WINDOWS_RC_VERSION "${GIT_COMMIT_DESCRIPTION}")
-  endif()
-
-  string(FIND "${WINDOWS_RC_VERSION}" "alpha" MIXXX_ALPHA_POSITION)
-  string(FIND "${WINDOWS_RC_VERSION}" "beta" MIXXX_BETA_POSITION)
+  string(FIND "${GIT_TAG}" "alpha" MIXXX_ALPHA_POSITION)
+  string(FIND "${GIT_TAG}" "beta" MIXXX_BETA_POSITION)
   if(MIXXX_ALPHA_POSITION GREATER_EQUAL 0 OR MIXXX_BETA_POSITION GREATER_EQUAL 0)
     set(MIXXX_PRERELEASE 1)
   else()
     set(MIXXX_PRERELEASE 0)
   endif()
 
+  set(WINDOWS_RC_VERSION "${GIT_TAG}")
   # Remove anything after - to get just the version number
   string(REGEX REPLACE "^([^-]+).*$" "\\1" WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION}")
   string(REPLACE "." "," WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION}")
@@ -1598,22 +1589,18 @@ if(WIN32)
     set(WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION},0")
   endif()
 
-  if(NOT GIT_COMMIT_DESCRIPTION STREQUAL "unknown-commit")
-    string(REGEX MATCH "-([0-9]*)-" GIT_COMMITS_SINCE_LAST_TAG "${GIT_COMMIT_DESCRIPTION}")
-    # When the current commit is tagged, `git describe` outputs only the tag name
-    if(CMAKE_MATCH_1)
-      set(WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION},${CMAKE_MATCH_1}")
-    else()
-      set(WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION},0")
-    endif()
-    string(FIND "${GIT_COMMIT_DESCRIPTION}" "-modified" MODIFIED_POSITION)
-    if(MODIFIED_POSITION GREATER_EQUAL 0)
-      set(MIXXX_PATCHED 1)
-    else()
-      set(MIXXX_PATCHED 0)
-    endif()
+  string(REGEX MATCH "-([0-9]*)-" GIT_COMMITS_SINCE_LAST_TAG "${GIT_COMMIT_DESCRIPTION}")
+  # When the current commit is tagged, `git describe` outputs only the tag name
+  if(CMAKE_MATCH_1)
+    set(WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION},${CMAKE_MATCH_1}")
   else()
-      set(MIXXX_PATCHED 0)
+    set(WINDOWS_RC_VERSION "${WINDOWS_RC_VERSION},0")
+  endif()
+  string(FIND "${GIT_COMMIT_DESCRIPTION}" "-modified" MODIFIED_POSITION)
+  if(MODIFIED_POSITION GREATER_EQUAL 0)
+    set(MIXXX_PATCHED 1)
+  else()
+    set(MIXXX_PATCHED 0)
   endif()
 
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -1622,7 +1609,7 @@ if(WIN32)
     set(MIXXX_DEBUG 0)
   endif()
 
-  # uses MIXXX_YEAR WINDOWS_RC_VERSION MIXXX_DEBUG MIXXX_PRERELEASE MIXXX_PATCHED
+  # uses GIT_YEAR WINDOWS_RC_VERSION MIXXX_DEBUG MIXXX_PRERELEASE MIXXX_PATCHED
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/mixxx.rc.include.template"
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
@@ -2608,11 +2595,7 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
 set(CPACK_PACKAGE_EXECUTABLES "mixxx;Mixxx")
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
-if(GIT_COMMIT_DESCRIPTION STREQUAL "unknown-commit")
-  set(CPACK_PACKAGE_FILE_NAME "mixxx-${MIXXX_VERSION}")
-else()
-  set(CPACK_PACKAGE_FILE_NAME "mixxx-${GIT_COMMIT_DESCRIPTION}")
-endif()
+set(CPACK_PACKAGE_FILE_NAME "mixxx-${GIT_COMMIT_DESCRIPTION}")
 
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")

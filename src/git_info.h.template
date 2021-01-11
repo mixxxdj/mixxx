@@ -1,4 +1,5 @@
 #pragma once
 
+#define GIT_TAG "@GIT_TAG@"
 #define GIT_COMMIT_DESCRIPTION "@GIT_COMMIT_DESCRIPTION@"
 #define GIT_COMMIT_DATE "@GIT_COMMIT_DATE@"

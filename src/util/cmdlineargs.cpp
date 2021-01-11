@@ -120,7 +120,7 @@ when a critical error occurs unless this is set properly.\n", stdout);
 void CmdlineArgs::printUsage() {
     fputs(Version::applicationName().toLocal8Bit().constData(), stdout);
     fputs(" v", stdout);
-    fputs(Version::version().toLocal8Bit().constData(), stdout);
+    fputs(Version::gitTag().toLocal8Bit().constData(), stdout);
     fputs(" - Command line options", stdout);
     fputs("\n(These are case-sensitive.)\n\n\
 [FILE]                  Load the specified music file(s) at start-up.\n\

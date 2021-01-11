@@ -29,7 +29,7 @@ const QByteArray kUserAgentRawHeaderKey = "User-Agent";
 QString userAgentRawHeaderValue() {
     return Version::applicationName() +
             QStringLiteral("/") +
-            Version::version() +
+            Version::gitTag() +
             QStringLiteral(" ( ") +
             QStringLiteral(MIXXX_WEBSITE_URL) +
             QStringLiteral(" )");

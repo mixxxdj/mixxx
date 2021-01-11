@@ -10,7 +10,7 @@
 DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);
 
-    QString mixxxVersion = Version::version();
+    QString mixxxVersion = Version::gitTag();
     QString buildCommitDescription = Version::gitCommitDescription();
     QString buildCommitDate = Version::gitCommitDate();
 

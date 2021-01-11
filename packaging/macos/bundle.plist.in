@@ -24,7 +24,7 @@
     <string>@MACOS_BUNDLE_SHORTVERSION@</string>
 
     <key>NSHumanReadableCopyright</key>
-    <string>Copyright © 2001-@MIXXX_YEAR@ Mixxx Development Team</string>
+    <string>Copyright © 2001-@GIT_YEAR@ Mixxx Development Team</string>
 
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>

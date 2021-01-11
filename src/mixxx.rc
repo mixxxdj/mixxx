@@ -1,7 +1,6 @@
 IDI_ICON1               ICON    DISCARDABLE     "res/images/ic_mixxx.ico"
 
 #include <windows.h>
-#include <defs_version.h>
 
 #include "mixxx.rc.include"
 
@@ -9,7 +8,7 @@ IDI_ICON1               ICON    DISCARDABLE     "res/images/ic_mixxx.ico"
 #define VER_FILEDESCRIPTION_STR     "Mixxx digital DJ software"
 #define VER_COMPANYNAME_STR         "The Mixxx Development Team"
 // \xA9 for (c) symbol. The Microsoft Resource Compiler compiler asumes Latin-1 strings
-#define VER_LEGALCOPYRIGHT_STR      "\xA9 2001-" MIXXX_YEAR " Mixxx Development Team\0"
+#define VER_LEGALCOPYRIGHT_STR      "\xA9 2001-" GIT_YEAR " Mixxx Development Team\0"
 #define VER_ORIGINALFILENAME_STR    "Mixxx.exe"
 
 #if defined(AMD64) || defined(INTEL64) || defined(EM64T) || defined(x86_64)

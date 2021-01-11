@@ -10,13 +10,13 @@
 #include "preferences/beatdetectionsettings.h"
 #include "database/mixxxdb.h"
 #include "controllers/defs_controllers.h"
-#include "defs_version.h"
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
+#include "util/version.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
@@ -216,8 +216,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         else {
 #endif
             // This must have been the first run... right? :)
-            qDebug() << "No version number in configuration file. Setting to" << MIXXX_VERSION;
-            config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
+            qDebug() << "No version number in configuration file. Setting to" << Version::gitTag();
+            config->set(ConfigKey("[Config]", "Version"), ConfigValue(Version::gitTag()));
             m_bFirstRun = true;
             return config;
 #ifdef __APPLE__
@@ -228,8 +228,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     }
 
     // If it's already current, stop here
-    if (configVersion == MIXXX_VERSION) {
-        qDebug() << "Configuration file is at the current version" << MIXXX_VERSION;
+    if (configVersion == Version::gitTag()) {
+        qDebug() << "Configuration file is at the current version" << Version::gitTag();
         return config;
     }
 
@@ -417,8 +417,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // if everything until here worked fine we can mark the configuration as
         // updated
         if (successful) {
-            configVersion = MIXXX_VERSION;
-            config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
+            configVersion = Version::gitTag();
+            config->set(ConfigKey("[Config]", "Version"), ConfigValue(Version::gitTag()));
         }
         else {
             qDebug() << "Upgrade failed!\n";
@@ -429,15 +429,15 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         configVersion.startsWith("2.0") ||
         configVersion.startsWith("2.1.0")) {
         // No special upgrade required, just update the value.
-        configVersion = MIXXX_VERSION;
-        config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
+        configVersion = Version::gitTag();
+        config->set(ConfigKey("[Config]", "Version"), ConfigValue(Version::gitTag()));
     }
 
-    if (configVersion == MIXXX_VERSION) {
-        qDebug() << "Configuration file is now at the current version" << MIXXX_VERSION;
+    if (configVersion == Version::gitTag()) {
+        qDebug() << "Configuration file is now at the current version" << Version::gitTag();
     } else {
         qWarning() << "Configuration file is at version" << configVersion
-                   << "instead of the current" << MIXXX_VERSION;
+                   << "instead of the current" << Version::gitTag();
     }
 
     return config;

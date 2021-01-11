@@ -1,4 +1,4 @@
-#define MIXXX_YEAR                  "@MIXXX_YEAR@"
+#define GIT_YEAR                    "@GIT_YEAR@"
 #define WINDOWS_RC_VERSION          @WINDOWS_RC_VERSION@
 
 #if @MIXXX_DEBUG@
