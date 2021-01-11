@@ -28,8 +28,6 @@
 #include "engine/sync/synccontrol.h"
 #include "moc_enginebuffer.cpp"
 #include "preferences/usersettings.h"
-#include "track/beatfactory.h"
-#include "track/keyutils.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
@@ -232,6 +230,18 @@ EngineBuffer::EngineBuffer(const QString& group,
     // Create the cue controller
     m_pCueControl = new CueControl(group, pConfig);
     addControl(m_pCueControl);
+
+    for (int i = 1; i <= kMacrosPerChannel; ++i) {
+        auto* pMacroControl = new MacroControl(group, pConfig, i);
+        connect(this,
+                &EngineBuffer::cueJumpQueued,
+                pMacroControl,
+                &MacroControl::slotJumpQueued,
+                Qt::DirectConnection);
+        m_macroControls.append(pMacroControl);
+        addControl(pMacroControl);
+    }
+    DEBUG_ASSERT(m_macroControls.size() == kMacrosPerChannel);
 
     connect(m_pLoopingControl,
             &LoopingControl::loopReset,
@@ -461,7 +471,7 @@ void EngineBuffer::seekCloneBuffer(EngineBuffer* pOtherBuffer) {
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << m_group << "EngineBuffer::setNewPlaypos" << newpos;
+        kLogger.trace() << getGroup() << "EngineBuffer::setNewPlaypos" << newpos;
     }
 
     m_filepos_play = newpos;
@@ -644,13 +654,14 @@ void EngineBuffer::slotControlSeek(double fractionalPos) {
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
-void EngineBuffer::slotControlSeekAbs(double playPosition) {
-    doSeekPlayPos(playPosition, SEEK_STANDARD);
+void EngineBuffer::slotControlSeekAbs(double samplePos) {
+    emit cueJumpQueued(samplePos);
+    doSeekPlayPos(samplePos, SEEK_STANDARD);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
-void EngineBuffer::slotControlSeekExact(double playPosition) {
-    doSeekPlayPos(playPosition, SEEK_EXACT);
+void EngineBuffer::slotControlSeekExact(double samplePos) {
+    doSeekPlayPos(samplePos, SEEK_EXACT);
 }
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
@@ -726,38 +737,33 @@ void EngineBuffer::slotControlPlayRequest(double v) {
     m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
 }
 
-void EngineBuffer::slotControlStart(double v)
-{
+void EngineBuffer::slotControlStart(double v) {
     if (v > 0.0) {
         doSeekFractional(0., SEEK_EXACT);
     }
 }
 
-void EngineBuffer::slotControlEnd(double v)
-{
+void EngineBuffer::slotControlEnd(double v) {
     if (v > 0.0) {
         doSeekFractional(1., SEEK_EXACT);
     }
 }
 
-void EngineBuffer::slotControlPlayFromStart(double v)
-{
+void EngineBuffer::slotControlPlayFromStart(double v) {
     if (v > 0.0) {
         doSeekFractional(0., SEEK_EXACT);
         m_playButton->set(1);
     }
 }
 
-void EngineBuffer::slotControlJumpToStartAndStop(double v)
-{
+void EngineBuffer::slotControlJumpToStartAndStop(double v) {
     if (v > 0.0) {
         doSeekFractional(0., SEEK_EXACT);
         m_playButton->set(0);
     }
 }
 
-void EngineBuffer::slotControlStop(double v)
-{
+void EngineBuffer::slotControlStop(double v) {
     if (v > 0.0) {
         m_playButton->set(0);
     }

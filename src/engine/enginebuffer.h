@@ -7,6 +7,7 @@
 
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
+#include "engine/controls/macrocontrol.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
@@ -20,41 +21,40 @@
 #include <QTextStream>
 #endif
 
-class EngineChannel;
-class EngineControl;
 class BpmControl;
-class KeyControl;
-class RateControl;
-class SyncControl;
-class VinylControlControl;
-class LoopingControl;
 class ClockControl;
 class CueControl;
-class ReadAheadManager;
 class ControlObject;
 class ControlProxy;
 class ControlPushButton;
 class ControlIndicator;
-class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
 class EngineBufferScale;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineBufferScaleRubberBand;
+class EngineChannel;
+class EngineControl;
+class EngineMaster;
 class EngineSync;
 class EngineWorkerScheduler;
+class KeyControl;
+class LoopingControl;
+class RateControl;
+class ReadAheadManager;
+class SyncControl;
+class VinylControlControl;
 class VisualPlayPosition;
-class EngineMaster;
 
-// Length of audio beat marks in samples
+/// Length of audio beat marks in samples
 const int audioBeatMarkLen = 40;
 
-// Temporary buffer length
+/// Temporary buffer length
 const int kiTempLength = 200000;
 
-// Rate at which the playpos slider is updated
-const int kiPlaypositionUpdateRate = 15; // updates per second
+/// Updates per second of the playpos slider
+const int kiPlaypositionUpdateRate = 15;
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
@@ -89,8 +89,10 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(const QString& group, UserSettingsPointer pConfig,
-                 EngineChannel* pChannel, EngineMaster* pMixingEngine);
+    EngineBuffer(const QString& group,
+            UserSettingsPointer pConfig,
+            EngineChannel* pChannel,
+            EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
@@ -169,16 +171,20 @@ class EngineBuffer : public EngineObject {
     void slotControlStop(double);
     void slotControlStart(double);
     void slotControlEnd(double);
-    void slotControlSeek(double);
-    void slotControlSeekAbs(double);
-    void slotControlSeekExact(double);
+    /// Seek to a relative position (0-1) in the track
+    void slotControlSeek(double fractionalPos);
+    /// Seek to the given sample Position in phase
+    void slotControlSeekAbs(double samplePos);
+    void slotControlSeekExact(double samplePos);
     void slotKeylockEngineChanged(double);
 
-    void slotEjectTrack(double);
+    /// Eject current track if the supplied value is greater than 0
+    void slotEjectTrack(double value);
 
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
     void trackLoadFailed(TrackPointer pTrack, const QString& reason);
+    void cueJumpQueued(double samplePos);
 
   private slots:
     void slotTrackLoading();
@@ -236,6 +242,12 @@ class EngineBuffer : public EngineObject {
     friend class HotcueControlTest;
 
     LoopingControl* m_pLoopingControl; // used for testes
+    FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
+    FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
+    FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
+    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
+    FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
+    FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
     FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
@@ -243,12 +255,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);
     FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
-    FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
-    FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
-    FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
-    FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
-    FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
-    FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
+
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
     VinylControlControl* m_pVinylControlControl;
@@ -257,6 +264,7 @@ class EngineBuffer : public EngineObject {
     KeyControl* m_pKeyControl;
     ClockControl* m_pClockControl;
     CueControl* m_pCueControl;
+    QList<MacroControl*> m_macroControls;
 
     QList<EngineControl*> m_engineControls;
 

@@ -8,7 +8,6 @@
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
 #include "engine/effects/groupfeaturestate.h"
-#include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 #include "track/beats.h"
 #include "track/track_decl.h"
@@ -82,8 +81,9 @@ class EngineControl : public QObject {
     }
     void seek(double fractionalPosition);
     void seekAbs(double sample);
-    // Seek to an exact sample and don't allow quantizing adjustment.
-    void seekExact(double sample);
+    /// Seek to an exact sample, no quantizing
+    /// virtual only for testing!
+    virtual void seekExact(double sample);
     // Returns an EngineBuffer to target for syncing. Returns nullptr if none found
     EngineBuffer* pickSyncTarget();
 

@@ -54,7 +54,7 @@ WOverview #PassthroughLabel,
 #SamplerTitleMini,
 /* ToolBar */
 #GuiToggleButton,
-#RecFeedback, #RecDuration,
+#RecFeedback, #RecDuration, #RecName,
 #BroadcastButton,
 /* SKin settings & Library */
 #SkinSettingsToggle,
@@ -79,7 +79,7 @@ WOverview #PassthroughLabel {
 #FxAssignButtons WPushButton,
 /* ToolBar */
 #GuiToggleButton,
-#RecFeedback, #RecDuration,
+#RecFeedback, #RecDuration, #RecName,
 #BroadcastButton,
 #SkinSettingsToggle,
 WLibrary QPushButton {
@@ -116,6 +116,7 @@ WBeatSpinBox QMenu,
 }
 
 WPushButton, WLibrary QPushButton,
+#RecName,
 #RecDuration[highlight="0"],
 #RecDuration[highlight="1"] {
   font-size: 11px;

@@ -505,6 +505,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/controls/enginecontrol.cpp
   src/engine/controls/keycontrol.cpp
   src/engine/controls/loopingcontrol.cpp
+  src/engine/controls/macrocontrol.cpp
   src/engine/controls/quantizecontrol.cpp
   src/engine/controls/ratecontrol.cpp
   src/engine/effects/engineeffect.cpp
@@ -575,6 +576,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dao/cuedao.cpp
   src/library/dao/directorydao.cpp
   src/library/dao/libraryhashdao.cpp
+  src/library/dao/macrodao.cpp
   src/library/dao/playlistdao.cpp
   src/library/dao/settingsdao.cpp
   src/library/dao/trackdao.cpp
@@ -722,6 +724,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
   src/recording/recordingmanager.cpp
+  src/recording/recordingmanagerbase.cpp
   src/skin/colorschemeparser.cpp
   src/skin/imgcolor.cpp
   src/skin/imginvert.cpp
@@ -763,6 +766,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/keyfactory.cpp
   src/track/keys.cpp
   src/track/keyutils.cpp
+  src/track/macro.cpp
+  src/track/macroaction.cpp
   src/track/playcounter.cpp
   src/track/replaygain.cpp
   src/track/serato/beatgrid.cpp
@@ -1415,6 +1420,11 @@ add_executable(mixxx-test
   src/test/libraryscannertest.cpp
   src/test/librarytest.cpp
   src/test/looping_control_test.cpp
+  src/test/macros/macrocontrol_test.cpp
+  src/test/macros/macrodao_test.cpp
+  src/test/macros/macrorecording_test.cpp
+  src/test/macros/macroplayback_test.cpp
+  src/test/macros/macro_test.cpp
   src/test/main.cpp
   src/test/mathutiltest.cpp
   src/test/metadatatest.cpp

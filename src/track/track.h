@@ -11,6 +11,7 @@
 #include "track/beats.h"
 #include "track/cue.h"
 #include "track/cueinfoimporter.h"
+#include "track/macro.h"
 #include "track/track_decl.h"
 #include "track/trackfile.h"
 #include "track/trackrecord.h"
@@ -92,14 +93,10 @@ class Track : public QObject {
     // Get number of channels
     int getChannels() const;
 
-    // Get sample rate
     int getSampleRate() const;
 
-    // Sets the bitrate
     void setBitrate(int);
-    // Returns the bitrate
     int getBitrate() const;
-    // Returns the bitrate as a string
     QString getBitrateText() const;
 
     void setDuration(mixxx::Duration duration);
@@ -125,21 +122,19 @@ class Track : public QObject {
         return getDurationText(mixxx::Duration::Precision::MILLISECONDS);
     }
 
-    // Set BPM
-    double setBpm(double);
-    // Returns BPM
+    /// Call when analysis is done.
+    void analysisFinished();
+
     double getBpm() const;
-    // Returns BPM as a string
     QString getBpmText() const;
+    double setBpm(double);
 
     // A track with a locked BPM will not be re-analyzed by the beats or bpm
     // analyzer.
     void setBpmLocked(bool bpmLocked = true);
     bool isBpmLocked() const;
 
-    // Set ReplayGain
     void setReplayGain(const mixxx::ReplayGain&);
-    // Returns ReplayGain
     mixxx::ReplayGain getReplayGain() const;
 
     // Indicates if the metadata has been parsed from file tags.
@@ -253,8 +248,6 @@ class Track : public QObject {
     void setCuePoint(CuePosition cue);
     /// Shift all cues by a constant offset
     void shiftCuePositionsMillis(double milliseconds);
-    // Call when analysis is done.
-    void analysisFinished();
 
     // Calls for managing the track's cue points
     CuePointer createAndAddCue(
@@ -286,7 +279,10 @@ class Track : public QObject {
             mixxx::CueInfoImporterPointer pCueInfoImporter);
     ImportStatus getCueImportStatus() const;
 
-    bool isDirty();
+    QMap<int, MacroPointer> getMacros() const;
+
+    void setMacros(const QMap<int, MacroPointer>& macros);
+    void addMacro(int slot, const MacroPointer&);
 
     // Get the track's Beats list
     mixxx::BeatsPointer getBeats() const;
@@ -339,6 +335,7 @@ class Track : public QObject {
             mixxx::TrackRecord* pTrackRecord,
             bool* pDirty = nullptr) const;
 
+    bool isDirty();
     // Mark the track dirty if it isn't already.
     void markDirty();
     // Mark the track clean if it isn't already.
@@ -474,6 +471,8 @@ class Track : public QObject {
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;
+
+    QMap<int, MacroPointer> m_macros;
 
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;

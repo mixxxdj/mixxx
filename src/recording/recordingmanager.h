@@ -9,20 +9,21 @@
 #include "encoder/encoder.h"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
+#include "recording/recordingmanagerbase.h"
 
 class EngineMaster;
 class ControlPushButton;
 class ControlProxy;
 
-/// The RecordingManager is a central class and manages
-/// the recording feature of Mixxx.
+/// The RecordingManager is a central class that manages
+/// the audio recording feature of Mixxx.
 ///
-/// There is exactly one instance of this class
+/// There is exactly one instance of this class.
 ///
-/// All methods in this class are thread-safe
+/// All methods in this class are thread-safe.
 ///
 /// Note: The RecordingManager lives in the GUI thread
-class RecordingManager : public QObject {
+class RecordingManager : public RecordingManagerBase {
     Q_OBJECT
   public:
     RecordingManager(UserSettingsPointer pConfig, EngineMaster* pEngine);
@@ -31,9 +32,10 @@ class RecordingManager : public QObject {
     // This will try to start recording. If successful, slotIsRecording will be
     // called and a signal isRecording will be emitted.
     // The method computes the filename based on date/time information.
-    void startRecording();
-    void stopRecording();
-    bool isRecordingActive() const;
+    void startRecording() override;
+    void stopRecording() override;
+    bool isRecordingActive() const override;
+
     void setRecordingDir();
     QString& getRecordingDir();
     // Returns the currently recording file
@@ -50,8 +52,6 @@ class RecordingManager : public QObject {
     void slotIsRecording(bool recording, bool error);
     void slotBytesRecorded(int);
     void slotDurationRecorded(quint64);
-    void slotSetRecording(bool recording);
-    void slotToggleRecording(double value);
 
   private:
     QString formatDateTimeForFilename(const QDateTime& dateTime) const;

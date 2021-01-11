@@ -4,7 +4,6 @@
 
 #include "util/db/dbconnectionpool.h"
 
-
 namespace mixxx {
 
 // Dynamically provides thread-local database connections from
@@ -13,7 +12,7 @@ class DbConnectionPooled final {
   public:
     explicit DbConnectionPooled(
             DbConnectionPoolPtr pDbConnectionPool = DbConnectionPoolPtr())
-        : m_pDbConnectionPool(std::move(pDbConnectionPool)) {
+            : m_pDbConnectionPool(std::move(pDbConnectionPool)) {
     }
 
     // Checks if this instance actually references a connection pool

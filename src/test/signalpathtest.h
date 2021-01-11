@@ -28,8 +28,10 @@
 #include "util/types.h"
 #include "waveform/guitick.h"
 
-using ::testing::Return;
+class EngineSync;
+
 using ::testing::_;
+using ::testing::Return;
 
 // Subclass of EngineMaster that provides access to the master buffer object
 // for comparison.
@@ -57,17 +59,19 @@ class TestEngineMaster : public EngineMaster {
 
 class BaseSignalPathTest : public MixxxTest {
   protected:
-    BaseSignalPathTest() {
-        m_pGuiTick = std::make_unique<GuiTick>();
-        m_pChannelHandleFactory = std::make_shared<ChannelHandleFactory>();
-        m_pNumDecks = new ControlObject(ConfigKey(m_sMasterGroup, "num_decks"));
-        m_pEffectsManager = new EffectsManager(NULL, config(), m_pChannelHandleFactory);
-        m_pEngineMaster = new TestEngineMaster(m_pConfig,
-                m_sMasterGroup,
-                m_pEffectsManager,
-                m_pChannelHandleFactory,
-                false);
-
+    explicit BaseSignalPathTest()
+            : m_pChannelHandleFactory(std::make_shared<ChannelHandleFactory>()),
+              m_pNumDecks(new ControlObject(
+                      ConfigKey(m_sMasterGroup, "num_decks"))),
+              m_pGuiTick(std::make_unique<GuiTick>()),
+              m_pEffectsManager(new EffectsManager(
+                      nullptr, config(), m_pChannelHandleFactory)),
+              m_pEngineMaster(new TestEngineMaster(
+                      m_pConfig,
+                      m_sMasterGroup,
+                      m_pEffectsManager,
+                      m_pChannelHandleFactory,
+                      false)) {
         m_pMixerDeck1 = new Deck(nullptr,
                 m_pConfig,
                 m_pEngineMaster,
@@ -139,13 +143,18 @@ class BaseSignalPathTest : public MixxxTest {
         m_pNumDecks->set(m_pNumDecks->get() + 1);
     }
 
+    const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
+    TrackPointer getTestTrack() const {
+        return Track::newTemporary(kTrackLocationTest);
+    }
+
     void loadTrack(Deck* pDeck, TrackPointer pTrack) {
         pDeck->slotLoadTrack(pTrack, false);
 
         // Wait for the track to load.
         ProcessBuffer();
         EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-        while (!pEngineDeck->getEngineBuffer()->isTrackLoaded()) {
+        while (pEngineDeck->getEngineBuffer()->getLoadedTrack() != pTrack) {
             QTest::qSleep(1); // millis
         }
     }
@@ -159,7 +168,8 @@ class BaseSignalPathTest : public MixxxTest {
     // Use tools/AudioPlot.py to look at the reference file and make sure it
     // looks correct.  Each line of the generated file contains the left sample
     // followed by the right sample.
-    void assertBufferMatchesReference(const CSAMPLE* pBuffer,
+    void assertBufferMatchesReference(
+            const CSAMPLE* pBuffer,
             const int iBufferSize,
             const QString& reference_title,
             const double delta = .0001) {
@@ -223,7 +233,10 @@ class BaseSignalPathTest : public MixxxTest {
     ChannelHandleFactoryPointer m_pChannelHandleFactory;
     ControlObject* m_pNumDecks;
     std::unique_ptr<GuiTick> m_pGuiTick;
+
+    VisualsManager* m_pVisualsManager;
     EffectsManager* m_pEffectsManager;
+
     EngineSync* m_pEngineSync;
     TestEngineMaster* m_pEngineMaster;
     Deck *m_pMixerDeck1, *m_pMixerDeck2, *m_pMixerDeck3;
@@ -245,10 +258,9 @@ class BaseSignalPathTest : public MixxxTest {
 
 class SignalPathTest : public BaseSignalPathTest {
   protected:
-    SignalPathTest() {
-        const QString kTrackLocationTest = QDir::currentPath() + "/src/test/sine-30.wav";
-        TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-
+    SignalPathTest()
+            : BaseSignalPathTest() {
+        TrackPointer pTrack = getTestTrack();
         loadTrack(m_pMixerDeck1, pTrack);
         loadTrack(m_pMixerDeck2, pTrack);
         loadTrack(m_pMixerDeck3, pTrack);

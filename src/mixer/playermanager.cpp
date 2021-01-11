@@ -41,8 +41,8 @@ QAtomicPointer<ControlProxy> PlayerManager::m_pCOPNumPreviewDecks;
 
 PlayerManager::PlayerManager(UserSettingsPointer pConfig,
         SoundManager* pSoundManager,
-        EffectsManager* pEffectsManager,
-        EngineMaster* pEngine)
+        EngineMaster* pEngine,
+        EffectsManager* pEffectsManager)
         : m_mutex(QMutex::Recursive),
           m_pConfig(pConfig),
           m_pSoundManager(pSoundManager),
@@ -60,6 +60,7 @@ PlayerManager::PlayerManager(UserSettingsPointer pConfig,
                   ConfigKey("[Master]", "num_microphones"), true, true)),
           m_pCONumAuxiliaries(new ControlObject(
                   ConfigKey("[Master]", "num_auxiliaries"), true, true)),
+
           m_pTrackAnalysisScheduler(TrackAnalysisScheduler::NullPointer()) {
     m_pCONumDecks->connectValueChangeRequest(this,
             &PlayerManager::slotChangeNumDecks, Qt::DirectConnection);

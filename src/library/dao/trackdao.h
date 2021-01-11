@@ -1,25 +1,26 @@
 #pragma once
 
 #include <QFileInfo>
+#include <QList>
 #include <QObject>
 #include <QSet>
-#include <QList>
 #include <QSqlDatabase>
 #include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
+#include "library/dao/macrodao.h"
 #include "library/relocatedtrack.h"
+#include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/class.h"
 #include "util/memory.h"
 
-class FwdSqlQuery;
-class SqlTransaction;
-class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
+class FwdSqlQuery;
 class LibraryHashDAO;
+class PlaylistDAO;
+class SqlTransaction;
 
 class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT
@@ -42,6 +43,8 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             UserSettingsPointer pConfig);
     ~TrackDAO() override;
 
+    void initialize(
+            const QSqlDatabase& database) override;
     void finish();
 
     QList<TrackId> resolveTrackIds(
@@ -161,6 +164,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             TrackFile fileInfo) override;
 
     CueDAO& m_cueDao;
+    MacroDAO m_macroDao;
     PlaylistDAO& m_playlistDao;
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;

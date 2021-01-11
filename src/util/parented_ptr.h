@@ -5,13 +5,13 @@
 
 #include "util/assert.h"
 
-// Use this wrapper class to clearly represent a raw pointer that is owned by the QT object tree.
-// Objects which both derive from QObject AND have a parent object, have their lifetime governed by
-// the QT object tree, and thus such pointers do not require a manual delete to free the heap memory
-// when they go out of scope.
-//
-// NOTE: A parented_ptr must not dangle! Therefore, the lifetime of the parent must exceed the
-// lifetime of the parented_ptr.
+/// Use this wrapper class to clearly represent a raw pointer that is owned by the QT object tree.
+/// Objects which both derive from QObject AND have a parent object, have their lifetime governed by
+/// the QT object tree, and thus such pointers do not require a manual delete to free the heap memory
+/// when they go out of scope.
+///
+/// NOTE: A parented_ptr must not dangle! Therefore, the lifetime of the parent must exceed the
+/// lifetime of the parented_ptr.
 template<typename T>
 class parented_ptr final {
   public:

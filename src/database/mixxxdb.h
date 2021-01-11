@@ -3,9 +3,7 @@
 #include <QSqlDatabase>
 
 #include "preferences/usersettings.h"
-
 #include "util/db/dbconnectionpool.h"
-
 
 class MixxxDb : public QObject {
     Q_OBJECT

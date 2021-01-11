@@ -4,7 +4,7 @@
 #include "engine/sync/syncable.h"
 #include "engine/sync/basesyncablelistener.h"
 
-/// EngineSync is the heart of the Mixxx Master Sync engine.  It knows which objects
+/// EngineSync is the heart of the Mixxx Master Sync engine. It knows which objects
 /// (Decks, Internal Clock, etc) are participating in Sync and what their statuses
 /// are. It also orchestrates sync handoffs between different decks as they play,
 /// stop, or request their status to change.
