@@ -693,8 +693,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgpreflibrary.cpp
   src/preferences/dialog/dlgpreflibrarydlg.ui
   src/preferences/dialog/dlgpreflv2dlg.ui
-  src/preferences/dialog/dlgprefnovinyl.cpp
-  src/preferences/dialog/dlgprefnovinyldlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
   src/preferences/dialog/dlgprefreplaygain.cpp

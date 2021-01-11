@@ -16,9 +16,7 @@
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
-#else /* __VINYLCONTROL__ */
-#include "preferences/dialog/dlgprefnovinyl.h"
-#endif
+#endif // __VINYLCONTROL__
 
 #include "preferences/dialog/dlgprefcolors.h"
 #include "preferences/dialog/dlgprefcrossfader.h"
@@ -65,6 +63,9 @@ DlgPreferences::DlgPreferences(
         SettingsManager* pSettingsManager,
         Library* pLibrary)
         : m_pConfig(pSettingsManager->settings()), m_pageSizeHint(QSize(0, 0)) {
+#ifndef __VINYLCONTROL__
+    Q_UNUSED(pVCManager);
+#endif // __VINYLCONTROL__
 #ifndef __LILV__
     Q_UNUSED(pLV2Backend);
 #endif /* __LILV__ */
@@ -126,15 +127,7 @@ DlgPreferences::DlgPreferences(
             m_pVinylControlButton,
             tr("Vinyl Control"),
             "ic_preferences_vinyl.svg");
-#else /* __VINYLCONTROL__ */
-
-    m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_noVinylControlPage = new DlgPrefNoVinyl(this, pSoundManager, m_pConfig);
-    addPageWidget(m_noVinylControlPage,
-            m_pVinylControlButton,
-            tr("Vinyl Control"),
-            "ic_preferences_vinyl.svg");
-#endif
+#endif // __VINYLCONTROL__
 
     m_pInterfaceButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_interfacePage = new DlgPrefInterface(this, pMixxx, pSkinLoader, m_pConfig);
@@ -288,10 +281,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
 #ifdef __VINYLCONTROL__
     } else if (pCurrent == m_pVinylControlButton) {
         switchToPage(m_vinylControlPage);
-#else /* __VINYLCONTROL__ */
-    } else if (pCurrent == m_pVinylControlButton) {
-        switchToPage(m_noVinylControlPage);
-#endif
+#endif // __VINYLCONTROL__
     } else if (pCurrent == m_pInterfaceButton) {
         switchToPage(m_interfacePage);
     } else if (pCurrent == m_pWaveformButton) {

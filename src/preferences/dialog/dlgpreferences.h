@@ -18,8 +18,9 @@ class DlgPrefSound;
 class DlgPrefLibrary;
 class DlgPrefController;
 class DlgPrefControllers;
+#ifdef __VINYLCONTROL__
 class DlgPrefVinyl;
-class DlgPrefNoVinyl;
+#endif // __VINYLCONTROL__
 class DlgPrefInterface;
 class DlgPrefWaveform;
 class DlgPrefDeck;
@@ -103,9 +104,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefControllers *m_controllersPage;
 #ifdef __VINYLCONTROL__
     DlgPrefVinyl* m_vinylControlPage;
-#else /* __VINYLCONTROL__ */
-    DlgPrefNoVinyl* m_noVinylControlPage;
-#endif
+#endif // __VINYLCONTROL__
     DlgPrefInterface* m_interfacePage;
     DlgPrefWaveform* m_waveformPage;
     DlgPrefDeck* m_deckPage;
@@ -129,7 +128,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pSoundButton;
     QTreeWidgetItem* m_pLibraryButton;
     QTreeWidgetItem* m_pControllersRootButton;
+#ifdef __VINYLCONTROL__
     QTreeWidgetItem* m_pVinylControlButton;
+#endif // __VINYLCONTROL__
     QTreeWidgetItem* m_pInterfaceButton;
     QTreeWidgetItem* m_pWaveformButton;
     QTreeWidgetItem* m_pDecksButton;
