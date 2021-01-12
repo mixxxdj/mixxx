@@ -55,7 +55,7 @@ find_path(Rubberband_INCLUDE_DIR
 mark_as_advanced(Rubberband_INCLUDE_DIR)
 
 find_library(Rubberband_LIBRARY
-  NAMES rubberband
+  NAMES rubberband rubberband-library rubberband-dll
   PATHS ${PC_Rubberband_LIBRARY_DIRS}
   DOC "Rubberband library"
 )
