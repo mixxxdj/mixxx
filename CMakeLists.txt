@@ -2664,7 +2664,7 @@ if(APPLE AND MACOS_BUNDLE)
             get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
             get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
             get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
-            set(_qt_plugin_dest "${_prefix}/Contents/plugins/${_qt_plugin_type}")
+            set(_qt_plugin_dest "${_prefix}/Contents/PlugIns/${_qt_plugin_type}")
             install(FILES "${_qt_plugin_path}"
                 DESTINATION "${_qt_plugin_dest}")
             set(${_qt_plugins_var}
