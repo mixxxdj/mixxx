@@ -224,7 +224,7 @@ PioneerXDJRX.select_turn = function(channel, control, value, status, group) {
 
     if (PioneerXDJRX.playlistMode) // playlist
     {
-        engine.setValue("[Playlist]", "SelectTrackKnob", value);
+        engine.setValue("[Playlist]", "ScrollVertical", value);
     } else // tree
     {
         if (value > 0) {
