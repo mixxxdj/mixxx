@@ -1618,7 +1618,7 @@ if(WIN32)
 endif()
 
 # Denon Engine Prime library export support (using libdjinterop)
-option(ENGINEPRIME "Support for library export to Denon Engine Prime" OFF)
+option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
   # Look for an existing installation of libdjinterop and use that if available.
   # Otherwise, download and build from GitHub.
@@ -1645,7 +1645,7 @@ if(ENGINEPRIME)
     set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
     ExternalProject_Add(libdjinterop
       GIT_REPOSITORY https://github.com/xsco/libdjinterop.git
-      GIT_TAG tags/0.14.5
+      GIT_TAG tags/0.14.6
       GIT_SHALLOW TRUE
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       CMAKE_ARGS
