@@ -1,4 +1,8 @@
 cmake_minimum_required(VERSION 3.1)
+include(CMakePushCheckState)
+include(CheckStructHasMember)
+include(CheckSymbolExists)
+
 project(shout_mixxx LANGUAGES C VERSION 2.4.1)
 
 add_library(${PROJECT_NAME} STATIC
@@ -33,8 +37,38 @@ target_compile_definitions(${PROJECT_NAME}
         LIBSHOUT_MICRO=${PROJECT_VERSION_PATCH}
 )
 
-target_compile_options(${PROJECT_NAME} PRIVATE -pthread -Wall)
-target_link_libraries(${PROJECT_NAME} PRIVATE pthread)
+target_compile_options(${PROJECT_NAME} PRIVATE -Wall)
+
+cmake_push_check_state()
+
+# Ensure we have pthreads
+if(WIN32)
+    if (CMAKE_PREFIX_PATH)        
+        list(GET CMAKE_PREFIX_PATH 0 PREFIX_PATH_INCLUDE)
+        file(TO_CMAKE_PATH ${PREFIX_PATH_INCLUDE} PREFIX_PATH_INCLUDE)
+        set(PREFIX_PATH_INCLUDE "${PREFIX_PATH_INCLUDE}/include")      
+        list(APPEND CMAKE_REQUIRED_INCLUDES ${PREFIX_PATH_INCLUDE})
+    endif()   
+    set(PTW32_COMPILE_DEFINITIONS "-D__CLEANUP_C -D_TIMESPEC_DEFINED -D_USRDLL -D_MBCS -D_LIB -D_WIN32")  
+    check_include_file(pthread.h HAVE_PTW32_H ${PTW32_COMPILE_DEFINITIONS})
+    if (NOT HAVE_PTW32_H)
+        message (FATAL_ERROR "Building ${PROJECT_NAME} requires the pthread library and its development heraders")
+    endif ()
+    find_library(PTHREAD_LIBRARY NAMES pthread)
+    message("PTHREAD_LIBRARY ${PTHREAD_LIBRARY}")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE PTW32_STATIC_LIB __CLEANUP_C _TIMESPEC_DEFINED _USRDLL _MBCS _LIB _WIN32)
+    if(STATIC_DEPS)
+        target_compile_definitions(${PROJECT_NAME} PRIVATE PTW32_STATIC_LIB)
+    endif()
+    target_link_libraries(${PROJECT_NAME} PRIVATE ${PTHREAD_LIBRARY})
+else()
+    set(THREADS_PREFER_PTHREAD_FLAG ON)
+    find_package(Threads REQUIRED)
+    if (NOT CMAKE_USE_PTHREADS_INIT)
+        message (FATAL_ERROR "Building ${PROJECT_NAME} requires the pthread library and its development heraders")
+    endif ()
+    target_link_libraries(${PROJECT_NAME} PUBLIC Threads::Threads)
+endif()
 
 # Configure shout.h
 set(SHOUT_THREADSAFE 1)
@@ -49,7 +83,7 @@ target_link_libraries(${PROJECT_NAME} PUBLIC ${OggVorbis_LIBRARIES})
 # Optional system dependencies
 find_package(OpenSSL)
 if(TARGET OpenSSL::SSL)
-    target_compile_definitions(shout_mixxx PRIVATE HAVE_OPENSSL)
+    target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_OPENSSL)
     target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 endif()
 
@@ -70,8 +104,6 @@ if(THEORA)
     #endif()
 endif()
 
-set(STORED_REQUIRED_DEFINITIONS "${CMAKE_REQUIRED_DEFINITIONS}")
-
 check_symbol_exists(__GNU_LIBRARY__ "features.h" _GNU_SOURCE)
 if (NOT _GNU_SOURCE)
     unset(_GNU_SOURCE CACHE)
@@ -79,12 +111,12 @@ if (NOT _GNU_SOURCE)
 endif ()
 if (_GNU_SOURCE)
     list(APPEND CMAKE_REQUIRED_DEFINITIONS -D_GNU_SOURCE)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE "_GNU_SOURCE")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _GNU_SOURCE)
 endif ()
 
 if(UNIX AND NOT APPLE)
     list(APPEND CMAKE_REQUIRED_DEFINITIONS -D_XOPEN_SOURCE=600)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE "_XOPEN_SOURCE=600")
+    target_compile_definitions(${PROJECT_NAME} PRIVATE _XOPEN_SOURCE=600)
 endif()
 
 check_include_file(arpa/inet.h HAVE_ARPA_INET_H)
@@ -150,8 +182,6 @@ endif()
 check_include_file(time.h HAVE_TIME_H)
 if(HAVE_TIME_H)
     target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_TIME_H)
-
-    include(CheckStructHasMember)
     check_struct_has_member( "struct timespec" "tv_sec" "time.h" HAVE_STRUCT_TIMESPEC )
     # HAVE_STRUCT_TIMESPEC must be defined for windows pthreads on newer MSVC
     if(HAVE_STRUCT_TIMESPEC)
@@ -227,4 +257,4 @@ if(HAVE_X509_CHECK_HOST)
     target_compile_definitions(${PROJECT_NAME} PRIVATE XXX_HAVE_X509_check_host)
 endif()
 
-set(CMAKE_REQUIRED_DEFINITIONS "${STORED_REQUIRED_DEFINITIONS}")
+cmake_pop_check_state()
