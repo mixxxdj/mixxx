@@ -58,8 +58,8 @@ namespace taglib {
 
 TagLib::String toTString(
         const QString& str) {
-    if (str.isNull()) {
-        return TagLib::String::null;
+    if (str.isEmpty()) {
+        return TagLib::String();
     } else {
         const QByteArray qba(str.toUtf8());
         return TagLib::String(qba.constData(), TagLib::String::UTF8);
