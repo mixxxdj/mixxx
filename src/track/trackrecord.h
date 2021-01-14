@@ -114,8 +114,33 @@ class TrackRecord final {
     bool mergeImportedMetadata(
             const TrackMetadata& importedMetadata);
 
+    /// Update the stream info after opening the audio stream during
+    /// a session.
+    /// Returns true if the corresponding metadata properties have been
+    /// updated and false otherwise.
+    bool updateStreamInfoFromSource(
+            const mixxx::audio::StreamInfo& streamInfoFromSource);
+    /// Check if the stream info is supposed to be reliable and accurate.
+    /// TODO: Also flag the stream info as "accurate" in the database and
+    /// invoke updateStreamInfoFromSource() accordingly when loading tracks
+    /// from the database.
+    bool hasStreamInfoFromSource() const {
+        return static_cast<bool>(m_streamInfoFromSource);
+    }
+    const std::optional<audio::StreamInfo>& getStreamInfoFromSource() const {
+        return m_streamInfoFromSource;
+    }
+
 private:
     Keys m_keys;
+
+    std::optional<audio::StreamInfo> m_streamInfoFromSource;
+
+    friend bool operator==(const TrackRecord& lhs, const TrackRecord& rhs);
 };
+
+inline bool operator!=(const TrackRecord& lhs, const TrackRecord& rhs) {
+    return !(lhs == rhs);
+}
 
 } // namespace mixxx
