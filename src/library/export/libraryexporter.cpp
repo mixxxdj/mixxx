@@ -45,6 +45,10 @@ void LibraryExporter::beginEnginePrimeExport(
             m_pTrackCollectionManager,
             std::move(request));
     connect(pJobThread, &EnginePrimeExportJob::finished, pJobThread, &QObject::deleteLater);
+
+    // TODO(XXX) The conclusion of the export (succeeded/failed) could be better
+    //  presented as a user notification, rather than using a message box, if
+    //  such functionality is added to Mixxx.
     connect(pJobThread,
             &EnginePrimeExportJob::completed,
             this,

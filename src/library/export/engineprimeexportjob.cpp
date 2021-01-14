@@ -453,7 +453,7 @@ void EnginePrimeExportJob::run() {
                 m_request.exportVersion,
                 created));
     } catch (std::exception& e) {
-        qCritical() << "Failed to create/load database:" << e.what();
+        qWarning() << "Failed to create/load database:" << e.what();
         emit failed(e.what());
         return;
     }
@@ -490,9 +490,9 @@ void EnginePrimeExportJob::run() {
                     m_pLastLoadedTrack,
                     std::move(m_pLastLoadedWaveform));
         } catch (std::exception& e) {
-            qCritical() << "Failed to export track"
-                        << m_pLastLoadedTrack->getId().value() << ":"
-                        << e.what();
+            qWarning() << "Failed to export track"
+                       << m_pLastLoadedTrack->getId().value() << ":"
+                       << e.what();
             emit failed(e.what());
             return;
         }
@@ -513,7 +513,7 @@ void EnginePrimeExportJob::run() {
                         ? *optionalExtRootCrate
                         : pDb->create_root_crate(kMixxxRootCrateName));
     } catch (std::exception& e) {
-        qCritical() << "Failed to create/identify root crate:" << e.what();
+        qWarning() << "Failed to create/identify root crate:" << e.what();
         emit failed(e.what());
         return;
     }
@@ -531,8 +531,8 @@ void EnginePrimeExportJob::run() {
         try {
             pExtRootCrate->add_track(extTrackId);
         } catch (std::exception& e) {
-            qCritical() << "Failed to add track" << trackRef.getId()
-                        << "to root crate:" << e.what();
+            qWarning() << "Failed to add track" << trackRef.getId()
+                       << "to root crate:" << e.what();
             emit failed(e.what());
             return;
         }
@@ -565,8 +565,8 @@ void EnginePrimeExportJob::run() {
                     m_lastLoadedCrate,
                     m_lastLoadedCrateTrackIds);
         } catch (std::exception& e) {
-            qCritical() << "Failed to add crate" << m_lastLoadedCrate.getId().value()
-                        << ":" << e.what();
+            qWarning() << "Failed to add crate" << m_lastLoadedCrate.getId().value()
+                       << ":" << e.what();
             emit failed(e.what());
             return;
         }
