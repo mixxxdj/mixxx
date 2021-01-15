@@ -7,9 +7,6 @@
 #include "track/keyutils.h"
 #include "util/math.h"
 
-#define MUSIC_FLAT_UTF8  "\xe299ad"
-#define MUSIC_SHARP_UTF8 "\xe299af"
-
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
@@ -24,39 +21,39 @@ static const QString s_lancelotKeyPattern("^\\s*(1[0-2]|[1-9])([ab])\\s*$");
 // anchor the pattern so we don't get accidental sub-string matches
 // (?:or)? allows unabbreviated major|minor without capturing
 static const QString s_keyPattern = QString::fromUtf8(
-        "^\\s*([a-g])([#♯b♭]*)"
+        "^\\s*([a-g])([#" MUSIC_SHARP_SIGN_UTF8 "b" MUSIC_FLAT_SIGN_UTF8
+        "]*)"
         "(min(?:or)?|maj(?:or)?|m)?\\s*$");
 
-static const QString s_sharpSymbol = QString::fromUtf8("♯");
-//static const QString s_flatSymbol = QString::fromUtf8("♭");
+static const QString s_sharpSymbol = QString::fromUtf8(MUSIC_SHARP_SIGN_UTF8);
+//static const QString s_flatSymbol = QString::fromUtf8(MUSIC_FLAT_SIGN_UTF8);
 
 static const QString s_traditionalKeyNames[] = {
-    QString::fromUtf8("INVALID"),
-    QString::fromUtf8("C"),
-    QString::fromUtf8("D♭"),
-    QString::fromUtf8("D"),
-    QString::fromUtf8("E♭"),
-    QString::fromUtf8("E"),
-    QString::fromUtf8("F"),
-    QString::fromUtf8("F♯/G♭"),
-    QString::fromUtf8("G"),
-    QString::fromUtf8("A♭"),
-    QString::fromUtf8("A"),
-    QString::fromUtf8("B♭"),
-    QString::fromUtf8("B"),
-    QString::fromUtf8("Cm"),
-    QString::fromUtf8("C♯m"),
-    QString::fromUtf8("Dm"),
-    QString::fromUtf8("D♯m/E♭m"),
-    QString::fromUtf8("Em"),
-    QString::fromUtf8("Fm"),
-    QString::fromUtf8("F♯m"),
-    QString::fromUtf8("Gm"),
-    QString::fromUtf8("G♯m"),
-    QString::fromUtf8("Am"),
-    QString::fromUtf8("B♭m"),
-    QString::fromUtf8("Bm")
-};
+        QString::fromUtf8("INVALID"),
+        QString::fromUtf8("C"),
+        QString::fromUtf8("D" MUSIC_FLAT_SIGN_UTF8),
+        QString::fromUtf8("D"),
+        QString::fromUtf8("E" MUSIC_FLAT_SIGN_UTF8),
+        QString::fromUtf8("E"),
+        QString::fromUtf8("F"),
+        QString::fromUtf8("F" MUSIC_SHARP_SIGN_UTF8 "/G" MUSIC_FLAT_SIGN_UTF8),
+        QString::fromUtf8("G"),
+        QString::fromUtf8("A" MUSIC_FLAT_SIGN_UTF8),
+        QString::fromUtf8("A"),
+        QString::fromUtf8("B" MUSIC_FLAT_SIGN_UTF8),
+        QString::fromUtf8("B"),
+        QString::fromUtf8("Cm"),
+        QString::fromUtf8("C" MUSIC_SHARP_SIGN_UTF8 "m"),
+        QString::fromUtf8("Dm"),
+        QString::fromUtf8("D" MUSIC_SHARP_SIGN_UTF8 "m/E" MUSIC_FLAT_SIGN_UTF8 "m"),
+        QString::fromUtf8("Em"),
+        QString::fromUtf8("Fm"),
+        QString::fromUtf8("F" MUSIC_SHARP_SIGN_UTF8 "m"),
+        QString::fromUtf8("Gm"),
+        QString::fromUtf8("G" MUSIC_SHARP_SIGN_UTF8 "m"),
+        QString::fromUtf8("Am"),
+        QString::fromUtf8("B" MUSIC_FLAT_SIGN_UTF8 "m"),
+        QString::fromUtf8("Bm")};
 
 // Maps an OpenKey number to its major and minor key.
 const ChromaticKey s_openKeyToKeys[][2] = {

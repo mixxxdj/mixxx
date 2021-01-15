@@ -9,6 +9,9 @@
 #include "track/keys.h"
 #include "util/math.h"
 
+#define MUSIC_FLAT_SIGN_UTF8 u8"\xe2\x99\xad"
+#define MUSIC_SHARP_SIGN_UTF8 u8"\xe2\x99\xaf"
+
 class KeyUtils {
   public:
     enum class KeyNotation {
