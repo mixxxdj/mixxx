@@ -25,9 +25,14 @@ if(NOT CPACK_DEBIAN_MARKDOWN)
 endif()
 
 # hack from sconscript
-if(DEB_UPLOAD_PPA MATCHES "mixxxbetas" OR DEB_UPLOAD_PPA MATCHES "nightlies")
+if(DEB_UPLOAD_PPA MATCHES "mixxxbetas")
   string(REGEX MATCH "^.*(~git[0-9]*).*$" GITVERSION "${CPACK_DEBIAN_DEBIAN_VERSION_EXTRA}")
   set(CPACK_DEBIAN_UPSTREAM_VERSION "${CPACK_DEBIAN_UPSTREAM_VERSION}${CMAKE_MATCH_1}")
+endif()
+
+if(DEB_UPLOAD_PPA MATCHES "nightlies")
+  string(REGEX MATCH "^.*(~git[0-9]*).*$" GITVERSION "${CPACK_DEBIAN_DEBIAN_VERSION_EXTRA}")
+  set(CPACK_DEBIAN_UPSTREAM_VERSION "${CPACK_DEBIAN_UPSTREAM_VERSION}1${CMAKE_MATCH_1}")
 endif()
 
 # PR branches hav no access to the pgp key. Don't sign.
