@@ -75,7 +75,8 @@ jobs:
               -DSTATIC_DEPS=ON
             cc: cl
             cxx: cl
-            cmake_generator: Ninja
+            # cmake_generator: Ninja
+            cmake_generator: Visual Studio 16 2019
             # TODO: Fix these broken tests on Windows
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
@@ -207,6 +208,7 @@ jobs:
         -DOPUS=ON
         -DQTKEYCHAIN=ON
         -DVINYLCONTROL=ON
+        -DCMAKE_VERBOSE_MAKEFILE=ON
         ..
       working-directory: build
       env:
