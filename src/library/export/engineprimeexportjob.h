@@ -5,6 +5,7 @@
 #include <QMutex>
 #include <QQueue>
 #include <QSet>
+#include <QSharedPointer>
 #include <QThread>
 #include <QWaitCondition>
 #include <memory>
@@ -29,7 +30,7 @@ class EnginePrimeExportJob : public QThread {
     EnginePrimeExportJob(
             QObject* parent,
             TrackCollectionManager* pTrackCollectionManager,
-            EnginePrimeExportRequest request);
+            QSharedPointer<EnginePrimeExportRequest> pRequest);
 
     /// Run the export job.
     void run() override;
@@ -45,7 +46,7 @@ class EnginePrimeExportJob : public QThread {
     void completed(int numTracksExported, int numCratesExported);
 
     /// Inform of a failed export job.
-    void failed(QString message);
+    void failed(const QString& message);
 
   public slots:
     /// Request cancellation of any running export job.
@@ -55,9 +56,9 @@ class EnginePrimeExportJob : public QThread {
     // These slots are used to load data from the Mixxx database on the main
     // thread of the application, which will be different to the worker thread
     // used by an instance of this class.
-    void loadIds(QSet<CrateId> crateIdsToExport);
-    void loadTrack(TrackRef trackRef);
-    void loadCrate(CrateId crateId);
+    void loadIds(const QSet<CrateId>& crateIdsToExport);
+    void loadTrack(const TrackRef& trackRef);
+    void loadCrate(const CrateId& crateId);
 
   private:
     QList<TrackRef> m_trackRefs;
@@ -70,7 +71,9 @@ class EnginePrimeExportJob : public QThread {
     QAtomicInteger<int> m_cancellationRequested;
 
     TrackCollectionManager* m_pTrackCollectionManager;
-    EnginePrimeExportRequest m_request;
+    QSharedPointer<EnginePrimeExportRequest> m_pRequest;
+
+    QString m_lastErrorMessage;
 };
 
 } // namespace mixxx

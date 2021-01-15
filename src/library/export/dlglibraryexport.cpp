@@ -202,18 +202,19 @@ void DlgLibraryExport::exportRequested() {
             versionIndex == -1 ? el::version_latest_firmware : el::all_versions[versionIndex];
 
     // Construct a request to export the library/crates.
-    EnginePrimeExportRequest request;
-    request.engineLibraryDbDir = QDir{databaseDirectory};
-    request.musicFilesDir = QDir{musicDirectory};
-    request.exportVersion = exportVersion;
+    auto pRequest = QSharedPointer<EnginePrimeExportRequest>::create();
+    pRequest->engineLibraryDbDir = QDir{databaseDirectory};
+    pRequest->musicFilesDir = QDir{musicDirectory};
+    pRequest->exportVersion = exportVersion;
     if (m_pCratesList->isEnabled()) {
-        for (auto* pItem : m_pCratesList->selectedItems()) {
+        const auto selectedItems = m_pCratesList->selectedItems();
+        for (auto* pItem : selectedItems) {
             CrateId id{pItem->data(Qt::UserRole).value<int>()};
-            request.crateIdsToExport.insert(id);
+            pRequest->crateIdsToExport.insert(id);
         }
     }
 
-    emit startEnginePrimeExport(std::move(request));
+    emit startEnginePrimeExport(pRequest);
     accept();
 }
 
@@ -251,7 +252,7 @@ void DlgLibraryExport::checkExistingDatabase() {
         djinterop::database db = el::load_database(databaseDirectory.toStdString());
         const auto version = db.version();
 
-        const auto* result = std::find(el::all_versions.begin(), el::all_versions.end(), version);
+        const auto result = std::find(el::all_versions.begin(), el::all_versions.end(), version);
         if (result == el::all_versions.end()) {
             // Unknown database version.
             m_pExistingDatabaseLabel->setText(

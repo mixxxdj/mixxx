@@ -131,7 +131,7 @@ void WMainMenuBar::initialize() {
     pLibraryExport->setStatusTip(exportText);
     pLibraryExport->setWhatsThis(buildWhatsThis(exportTitle, exportText));
     pLibraryExport->setCheckable(false);
-    connect(pLibraryExport, SIGNAL(triggered()), this, SIGNAL(exportLibrary()));
+    connect(pLibraryExport, &QAction::triggered, this, &WMainMenuBar::exportLibrary);
     pLibraryMenu->addAction(pLibraryExport);
 #endif
 

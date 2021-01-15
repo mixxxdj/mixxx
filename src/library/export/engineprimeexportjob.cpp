@@ -74,17 +74,17 @@ inline double sampleOffsetToPlayPos(double sampleOffset) {
     return sampleOffset * 2;
 }
 
-QString exportFile(const EnginePrimeExportRequest& request,
+QString exportFile(const QSharedPointer<EnginePrimeExportRequest> pRequest,
         TrackPointer pTrack) {
-    if (!request.engineLibraryDbDir.exists()) {
+    if (!pRequest->engineLibraryDbDir.exists()) {
         const auto msg = QStringLiteral(
                 "Engine Library DB directory %1 has been removed from disk!")
-                                 .arg(request.engineLibraryDbDir.absolutePath());
+                                 .arg(pRequest->engineLibraryDbDir.absolutePath());
         throw std::runtime_error{msg.toStdString()};
-    } else if (!request.musicFilesDir.exists()) {
+    } else if (!pRequest->musicFilesDir.exists()) {
         const auto msg = QStringLiteral(
                 "Music file export directory %1 has been removed from disk!")
-                                 .arg(request.musicFilesDir.absolutePath());
+                                 .arg(pRequest->musicFilesDir.absolutePath());
         throw std::runtime_error{msg.toStdString()};
     }
 
@@ -95,14 +95,14 @@ QString exportFile(const EnginePrimeExportRequest& request,
     TrackFile srcFileInfo = pTrack->getFileInfo();
     const auto trackId = pTrack->getId().value();
     QString dstFilename = QString::number(trackId) + " - " + srcFileInfo.fileName();
-    QString dstPath = request.musicFilesDir.filePath(dstFilename);
+    QString dstPath = pRequest->musicFilesDir.filePath(dstFilename);
     if (!QFile::exists(dstPath) ||
             srcFileInfo.fileLastModified() > QFileInfo{dstPath}.lastModified()) {
         const auto srcPath = srcFileInfo.location();
         QFile::copy(srcPath, dstPath);
     }
 
-    return request.engineLibraryDbDir.relativeFilePath(dstPath);
+    return pRequest->engineLibraryDbDir.relativeFilePath(dstPath);
 }
 
 djinterop::track getTrackByRelativePath(
@@ -122,7 +122,7 @@ djinterop::track getTrackByRelativePath(
 void exportMetadata(djinterop::database* pDatabase,
         QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
         TrackPointer pTrack,
-        std::unique_ptr<Waveform> pWaveform,
+        const Waveform* pWaveform,
         const QString& relativePath) {
     // Create or load the track in the database, using the relative path to
     // the music file.  We will record the mapping from Mixxx track id to
@@ -264,11 +264,11 @@ void exportMetadata(djinterop::database* pDatabase,
 }
 
 void exportTrack(
-        const EnginePrimeExportRequest& request,
+        const QSharedPointer<EnginePrimeExportRequest> pRequest,
         djinterop::database* pDatabase,
         QHash<TrackId, int64_t>* pMixxxToEnginePrimeTrackIdMap,
         const TrackPointer pTrack,
-        std::unique_ptr<Waveform> pWaveform) {
+        const Waveform* pWaveform) {
     // Only export supported file types.
     if (!kSupportedFileTypes.contains(pTrack->getType())) {
         qInfo() << "Skipping file" << pTrack->getFileInfo().fileName()
@@ -278,13 +278,13 @@ void exportTrack(
     }
 
     // Copy the file, if required.
-    const auto musicFileRelativePath = exportFile(request, pTrack);
+    const auto musicFileRelativePath = exportFile(pRequest, pTrack);
 
     // Export meta-data.
     exportMetadata(pDatabase,
             pMixxxToEnginePrimeTrackIdMap,
             pTrack,
-            std::move(pWaveform),
+            pWaveform,
             musicFileRelativePath);
 }
 
@@ -308,10 +308,10 @@ void exportCrate(
 EnginePrimeExportJob::EnginePrimeExportJob(
         QObject* parent,
         TrackCollectionManager* pTrackCollectionManager,
-        EnginePrimeExportRequest request)
+        QSharedPointer<EnginePrimeExportRequest> pRequest)
         : QThread{parent},
           m_pTrackCollectionManager(pTrackCollectionManager),
-          m_request{std::move(request)} {
+          m_pRequest{pRequest} {
     // Must be collocated with the TrackCollectionManager.
     if (parent != nullptr) {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
@@ -321,7 +321,7 @@ EnginePrimeExportJob::EnginePrimeExportJob(
     }
 }
 
-void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
+void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
 
     if (crateIds.isEmpty()) {
@@ -355,13 +355,13 @@ void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
         for (const auto& trackRef : trackRefs) {
             trackIds.append(trackRef.getId());
         }
-        crateIds = m_pTrackCollectionManager->internalCollection()
-                           ->crates()
-                           .collectCrateIdsOfTracks(trackIds);
+        auto crateIdsOfTracks = m_pTrackCollectionManager->internalCollection()
+                                        ->crates()
+                                        .collectCrateIdsOfTracks(trackIds);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-        m_crateIds = QList<CrateId>{crateIds.begin(), crateIds.end()};
+        m_crateIds = QList<CrateId>{crateIdsOfTracks.begin(), crateIdsOfTracks.end()};
 #else
-        m_crateIds = crateIds.toList();
+        m_crateIds = crateIdsOfTracks.toList();
 #endif
     } else {
         // Explicit crates have been specified to export.
@@ -390,7 +390,7 @@ void EnginePrimeExportJob::loadIds(QSet<CrateId> crateIds) {
     }
 }
 
-void EnginePrimeExportJob::loadTrack(TrackRef trackRef) {
+void EnginePrimeExportJob::loadTrack(const TrackRef& trackRef) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
 
     // Load the track.
@@ -404,10 +404,12 @@ void EnginePrimeExportJob::loadTrack(TrackRef trackRef) {
         const auto& waveformAnalysis = waveformAnalyses.first();
         m_pLastLoadedWaveform.reset(
                 WaveformFactory::loadWaveformFromAnalysis(waveformAnalysis));
+    } else {
+        m_pLastLoadedWaveform.reset();
     }
 }
 
-void EnginePrimeExportJob::loadCrate(CrateId crateId) {
+void EnginePrimeExportJob::loadCrate(const CrateId& crateId) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(m_pTrackCollectionManager);
 
     // Load crate details.
@@ -426,7 +428,7 @@ void EnginePrimeExportJob::loadCrate(CrateId crateId) {
 
 void EnginePrimeExportJob::run() {
     // Crate music directory if it doesn't already exist.
-    QDir().mkpath(m_request.musicFilesDir.path());
+    QDir().mkpath(m_pRequest->musicFilesDir.path());
 
     // Load ids of tracks and crates to export.
     // Note that loading must happen on the same thread as the track collection
@@ -435,7 +437,7 @@ void EnginePrimeExportJob::run() {
             this,
             "loadIds",
             Qt::BlockingQueuedConnection,
-            Q_ARG(QSet<CrateId>, m_request.crateIdsToExport));
+            Q_ARG(QSet<CrateId>, m_pRequest->crateIdsToExport));
 
     // Measure progress as one 'count' for each track, each crate, plus some
     // additional counts for various other operations.
@@ -449,12 +451,13 @@ void EnginePrimeExportJob::run() {
     try {
         bool created;
         pDb = std::make_unique<djinterop::database>(el::create_or_load_database(
-                m_request.engineLibraryDbDir.path().toStdString(),
-                m_request.exportVersion,
+                m_pRequest->engineLibraryDbDir.path().toStdString(),
+                m_pRequest->exportVersion,
                 created));
     } catch (std::exception& e) {
         qWarning() << "Failed to create/load database:" << e.what();
-        emit failed(e.what());
+        m_lastErrorMessage = e.what();
+        emit failed(m_lastErrorMessage);
         return;
     }
 
@@ -464,7 +467,7 @@ void EnginePrimeExportJob::run() {
     // We will build up a map from Mixxx track id to EL track id during export.
     QHash<TrackId, int64_t> mixxxToEnginePrimeTrackIdMap;
 
-    for (const auto& trackRef : m_trackRefs) {
+    for (const auto& trackRef : qAsConst(m_trackRefs)) {
         // Load each track.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
@@ -484,16 +487,17 @@ void EnginePrimeExportJob::run() {
         qInfo() << "Exporting track" << m_pLastLoadedTrack->getId().value()
                 << "at" << m_pLastLoadedTrack->getFileInfo().location() << "...";
         try {
-            exportTrack(m_request,
+            exportTrack(m_pRequest,
                     pDb.get(),
                     &mixxxToEnginePrimeTrackIdMap,
                     m_pLastLoadedTrack,
-                    std::move(m_pLastLoadedWaveform));
+                    m_pLastLoadedWaveform.get());
         } catch (std::exception& e) {
             qWarning() << "Failed to export track"
                        << m_pLastLoadedTrack->getId().value() << ":"
                        << e.what();
-            emit failed(e.what());
+            m_lastErrorMessage = e.what();
+            emit failed(m_lastErrorMessage);
             return;
         }
 
@@ -514,12 +518,13 @@ void EnginePrimeExportJob::run() {
                         : pDb->create_root_crate(kMixxxRootCrateName));
     } catch (std::exception& e) {
         qWarning() << "Failed to create/identify root crate:" << e.what();
-        emit failed(e.what());
+        m_lastErrorMessage = e.what();
+        emit failed(m_lastErrorMessage);
         return;
     }
 
     // Add each track to the root crate, even if it also belongs to others.
-    for (const TrackRef& trackRef : m_trackRefs) {
+    for (const TrackRef& trackRef : qAsConst(m_trackRefs)) {
         if (!mixxxToEnginePrimeTrackIdMap.contains(trackRef.getId())) {
             qInfo() << "Not adding track" << trackRef.getId()
                     << "to any crates, as it was not exported";
@@ -533,7 +538,8 @@ void EnginePrimeExportJob::run() {
         } catch (std::exception& e) {
             qWarning() << "Failed to add track" << trackRef.getId()
                        << "to root crate:" << e.what();
-            emit failed(e.what());
+            m_lastErrorMessage = e.what();
+            emit failed(m_lastErrorMessage);
             return;
         }
     }
@@ -542,7 +548,7 @@ void EnginePrimeExportJob::run() {
     emit jobProgress(currProgress);
 
     // Export all Mixxx crates
-    for (const CrateId& crateId : m_crateIds) {
+    for (const CrateId& crateId : qAsConst(m_crateIds)) {
         // Load the current crate.
         // Note that loading must happen on the same thread as the track collection
         // manager, which is not the same as this method's worker thread.
@@ -567,7 +573,8 @@ void EnginePrimeExportJob::run() {
         } catch (std::exception& e) {
             qWarning() << "Failed to add crate" << m_lastLoadedCrate.getId().value()
                        << ":" << e.what();
-            emit failed(e.what());
+            m_lastErrorMessage = e.what();
+            emit failed(m_lastErrorMessage);
             return;
         }
 

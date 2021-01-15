@@ -48,7 +48,7 @@ class DlgLibraryExport : public QDialog {
     /// The startEnginePrimeExport signal is emitted when sufficient information
     /// has been gathered from the user to kick off an Engine Prime export, and
     /// details of the request are provided as part of the signal.
-    void startEnginePrimeExport(EnginePrimeExportRequest) const;
+    void startEnginePrimeExport(QSharedPointer<mixxx::EnginePrimeExportRequest>);
 
   private slots:
     void browseExportDirectory();

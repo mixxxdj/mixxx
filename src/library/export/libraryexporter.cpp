@@ -38,12 +38,12 @@ void LibraryExporter::requestExportWithOptionalInitialCrate(
 }
 
 void LibraryExporter::beginEnginePrimeExport(
-        EnginePrimeExportRequest request) {
+        QSharedPointer<EnginePrimeExportRequest> pRequest) {
     // Note that the job will run in a background thread.
     auto pJobThread = make_parented<EnginePrimeExportJob>(
             this,
             m_pTrackCollectionManager,
-            std::move(request));
+            pRequest);
     connect(pJobThread, &EnginePrimeExportJob::finished, pJobThread, &QObject::deleteLater);
 
     // TODO(XXX) The conclusion of the export (succeeded/failed) could be better
@@ -62,7 +62,7 @@ void LibraryExporter::beginEnginePrimeExport(
     connect(pJobThread,
             &EnginePrimeExportJob::failed,
             this,
-            [](QString message) {
+            [](const QString& message) {
                 QMessageBox::critical(nullptr,
                         tr("Export Failed"),
                         QString{tr("Export failed: %1")}.arg(message));

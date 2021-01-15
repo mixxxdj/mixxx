@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QSharedPointer>
 #include <QWidget>
 #include <memory>
 
@@ -37,7 +38,7 @@ class LibraryExporter : public QWidget {
     }
 
   private slots:
-    void beginEnginePrimeExport(EnginePrimeExportRequest request);
+    void beginEnginePrimeExport(QSharedPointer<mixxx::EnginePrimeExportRequest> pRequest);
 
   private:
     void requestExportWithOptionalInitialCrate(
