@@ -48,6 +48,7 @@ class HidController final : public Controller {
 
   private:
     bool isPolling() const override;
+    void processInputReport(int& bytesRead, const int& currentBufferIndex);
 
     // For devices which only support a single report, reportID must be set to
     // 0x0.
@@ -58,7 +59,7 @@ class HidController final : public Controller {
     QList<int> getInputReport(unsigned int reportID);
     QList<int> getFeatureReport(unsigned int reportID);
 
-    // Returns a pointer to the currently loaded controller mapping. For internal    // use only.
+    // Returns a pointer to the currently loaded controller mapping. For internal use only.
     LegacyControllerMapping* mapping() override {
         return &m_mapping;
     }

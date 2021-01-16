@@ -108,7 +108,7 @@ if(MSVC)
 
     # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
     # In general, you should pick /O2 over /Ox
-    add_compile_options($<$<NOT:$<CONFIG:Debug>>:/Od>)
+    add_compile_options($<$<NOT:$<CONFIG:Debug>>:/O2>)
 
     # Remove /RTC1 flag (conflicts with /O2)
     string(REGEX REPLACE "/RTC[^ ]*" "" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
@@ -1135,11 +1135,6 @@ endif()
 add_executable(mixxx WIN32 src/main.cpp)
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_link_libraries(mixxx PUBLIC mixxx-lib)
-
-# Visual Studio Debugger startup options
-   set_target_properties(mixxx PROPERTIES LINK_FLAGS_RELWITHDEBINFO "/SUBSYSTEM:CONSOLE")
-   set_target_properties(mixxx PROPERTIES COMPILE_DEFINITIONS_RELWITHDEBINFO "_CONSOLE")
-   #set_target_properties(mixxx PROPERTIES VS_DEBUGGER_COMMAND_ARGUMENTS "--developer")
 
 #
 # Installation and Packaging

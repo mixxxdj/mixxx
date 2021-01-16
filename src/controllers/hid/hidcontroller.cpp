@@ -137,12 +137,38 @@ int HidController::close() {
     return 0;
 }
 
+void HidController::processInputReport(int& bytesRead, const int& currentBufferIndex) {
+    Trace process("HidController processInputReport");
+    unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
+    unsigned char* pCurrentBuffer = m_pPollData[currentBufferIndex];
+    // Some controllers such as the Gemini GMX continuously send input reports even if it
+    // is identical to the previous send input report. If this loop processed all those redundant
+    // input report, it would be a big performance problem to run JS code for every  input report and
+    // would be unnecessary.
+    // This assumes that the redundant input report all use the same report ID. In practice we
+    // have not encountered any controllers that send redundant input report with different report
+    // IDs. If any such devices exist, this may be changed to use a separate buffer to store
+    // the last input report for each report ID.
+    if (bytesRead == m_iLastPollSize &&
+            memcmp(pCurrentBuffer, pPreviousBuffer, bytesRead) == 0) {
+        return;
+    }
+    m_iLastPollSize = bytesRead;
+    m_iPollingBufferIndex = currentBufferIndex;
+    auto incomingData = QByteArray::fromRawData(
+            reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
+    receive(incomingData, mixxx::Time::elapsed());
+}
+
 QList<int> HidController::getInputReport(unsigned int reportID) {
     Trace hidRead("HidController getInputReport");
-    unsigned char CurrentBuffer[kBufferSize];
     int bytesRead;
-    CurrentBuffer[0] = reportID;
-    bytesRead = hid_get_input_report(m_pHidDevice, CurrentBuffer, kBufferSize);
+
+    // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
+    const int currentBufferIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
+
+    m_pPollData[currentBufferIndex][0] = reportID;
+    bytesRead = hid_get_input_report(m_pHidDevice, m_pPollData[currentBufferIndex], kBufferSize);
 
     controllerDebug(bytesRead
             << "bytes received by hid_get_input_report" << getName()
@@ -163,16 +189,14 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
 
     // Execute callback function in JavaScript mapping
     // and print to stdout in case of --controllerDebug
-    auto incomingData = QByteArray::fromRawData(
-            reinterpret_cast<char*>(CurrentBuffer), bytesRead);
-    receive(incomingData, mixxx::Time::elapsed());
+    HidController::processInputReport(bytesRead, currentBufferIndex);
 
     // Convert array of bytes read in a JavaScript compatible return type
     // For compatibilty with the array provided by HidController::poll the reportID is contained as prefix
     QList<int> dataList;
     dataList.reserve(bytesRead);
     for (int i = 0; i < bytesRead; i++) {
-        dataList.append(CurrentBuffer[i]);
+        dataList.append(m_pPollData[currentBufferIndex][i]);
     }
     return dataList;
 }
@@ -187,11 +211,9 @@ bool HidController::poll() {
     // a problem in practice.
     while (true) {
         // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
-        unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
         const int currentBufferIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
-        unsigned char* pCurrentBuffer = m_pPollData[currentBufferIndex];
 
-        int bytesRead = hid_read(m_pHidDevice, pCurrentBuffer, kBufferSize);
+        int bytesRead = hid_read(m_pHidDevice, m_pPollData[currentBufferIndex], kBufferSize);
         if (bytesRead < 0) {
             // -1 is the only error value according to hidapi documentation.
             DEBUG_ASSERT(bytesRead == -1);
@@ -200,25 +222,7 @@ bool HidController::poll() {
             // No packet was available to be read
             return true;
         }
-
-        Trace process("HidController process packet");
-        // Some controllers such as the Gemini GMX continuously send input packets even if it
-        // is identical to the previous packet. If this loop processed all those redundant
-        // packets, it would be a big performance problem to run JS code for every packet and
-        // would be unnecessary.
-        // This assumes that the redundant packets all use the same report ID. In practice we
-        // have not encountered any controllers that send redundant packets with different report
-        // IDs. If any such devices exist, this may be changed to use a separate buffer to store
-        // the last packet for each report ID.
-        if (bytesRead == m_iLastPollSize &&
-                memcmp(pCurrentBuffer, pPreviousBuffer, bytesRead) == 0) {
-            continue;
-        }
-        m_iLastPollSize = bytesRead;
-        m_iPollingBufferIndex = currentBufferIndex;
-        auto incomingData = QByteArray::fromRawData(
-                reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
-        receive(incomingData, mixxx::Time::elapsed());
+        processInputReport(bytesRead, currentBufferIndex);
     }
 }
 
