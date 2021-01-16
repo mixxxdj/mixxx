@@ -2063,7 +2063,7 @@ target_link_libraries(mixxx-lib PUBLIC Rubberband::Rubberband)
 
 # SndFile
 find_package(SndFile REQUIRED)
-target_link_libraries(mixxx-lib PUBLIC SndFile::SndFile)
+target_link_libraries(mixxx-lib PUBLIC SndFile::sndfile)
 target_compile_definitions(mixxx-lib PUBLIC __SNDFILE__)
 if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
   target_compile_definitions(mixxx-lib PUBLIC SFC_SUPPORTS_SET_COMPRESSION_LEVEL)
