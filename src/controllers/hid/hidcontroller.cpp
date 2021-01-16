@@ -153,9 +153,11 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
                        .rightJustified(2, QChar('0'))
             << ")")
 
-            if (bytesRead < 0) {
-        // -1 is the only error value according to hidapi documentation. Otherwise minimum possible value is 1, because 1 byte is for the reportID.
-        DEBUG_ASSERT(bytesRead < 0);
+            if (bytesRead <= kReportIdSize) {
+        // -1 is the only error value according to hidapi documentation.
+        // Otherwise minimum possible value is 1, because 1 byte is for the reportID,
+        // the smallest report with data is therefore 2 bytes.
+        DEBUG_ASSERT(bytesRead <= kReportIdSize);
         return QList<int>();
     }
 
@@ -304,7 +306,10 @@ QList<int> HidController::getFeatureReport(
     bytesRead = hid_get_feature_report(m_pHidDevice,
             dataRead,
             kReportIdSize + kBufferSize);
-    if (bytesRead == -1) {
+    if (bytesRead <= kReportIdSize) {
+        // -1 is the only error value according to hidapi documentation.
+        // Otherwise minimum possible value is 1, because 1 byte is for the reportID,
+        // the smallest report with data is therefore 2 bytes.
         qWarning() << "getFeatureReport is unable to get data from" << getName()
                    << "serial #" << m_deviceInfo.serialNumber() << ":"
                    << mixxx::convertWCStringToQString(
