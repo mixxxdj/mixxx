@@ -2249,27 +2249,27 @@ endif()
 
 # FFmpeg 4.x support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
-find_package(FFmpeg COMPONENTS AVCODEC AVFORMAT AVUTIL SWRESAMPLE)
+find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
 option(FFMPEG "FFmpeg 4.x support" OFF)
 if(FFMPEG)
-  if(NOT AVCODEC_FOUND)
+  if(NOT FFMPEG_libavcodec_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libavcodec and its development headers.")
-  elseif(AVCODEC_VERSION VERSION_LESS 58)
+  elseif(FFMPEG_libavcodec_VERSION VERSION_LESS 58)
     message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavcodec (found: ${AVCODEC_VERSION}).")
   endif()
-  if(NOT AVFORMAT_FOUND)
+  if(NOT FFMPEG_libavformat_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libavformat and its development headers.")
-  elseif(AVFORMAT_VERSION VERSION_LESS 58)
+  elseif(FFMPEG_libavformat_VERSION VERSION_LESS 58)
     message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavformat (found: ${AVFORMAT_VERSION}).")
   endif()
-  if(NOT AVUTIL_FOUND)
+  if(NOT FFMPEG_libavutil_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libavutil and its development headers.")
-  elseif(AVUTIL_VERSION VERSION_LESS 56)
+  elseif(FFMPEG_libavutil_VERSION VERSION_LESS 56)
     message(FATAL_ERROR "FFmpeg support requires at least version 56 of libavutil (found: ${AVUTIL_VERSION}).")
   endif()
-  if(NOT SWRESAMPLE_FOUND)
+  if(NOT FFMPEG_libswresample_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libswresample and its development headers.")
-  elseif(SWRESAMPLE_VERSION VERSION_LESS 3.1)
+  elseif(FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
     message(FATAL_ERROR "FFmpeg support requires at least version 3.1 of libswresample (found: ${SWRESAMPLE_VERSION}).")
   endif()
 
@@ -2281,12 +2281,9 @@ if(FFMPEG)
     __STDC_LIMIT_MACROS
     __STDC_FORMAT_MACROS
   )
-  target_link_libraries(mixxx-lib PUBLIC
-    FFmpeg::avcodec
-    FFmpeg::avformat
-    FFmpeg::avutil
-    FFmpeg::swresample
-  )
+
+  target_link_libraries(mixxx-lib PUBLIC "${FFMPEG_LIBRARIES}")
+  target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
 
 # Google PerfTools
