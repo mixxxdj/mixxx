@@ -77,8 +77,11 @@ configure_file(include/shoutidjc/shout.h.in "${CMAKE_CURRENT_BINARY_DIR}/include
 
 # Required system dependencies
 # Ogg Vorbis
-find_package(OggVorbis REQUIRED)
-target_link_libraries(${PROJECT_NAME} PUBLIC ${OggVorbis_LIBRARIES})
+find_package(Ogg REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC Ogg::ogg)
+
+find_package(Vorbis REQUIRED)
+target_link_libraries(${PROJECT_NAME} PUBLIC Vorbis::vorbis Vorbis::vorbisenc)
 
 # Optional system dependencies
 find_package(OpenSSL)
