@@ -1,6 +1,3 @@
-// cuecontrol.cpp
-// Created 11/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/controls/cuecontrol.h"
 
 #include <QMutexLocker>
@@ -9,6 +6,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/enginebuffer.h"
+#include "moc_cuecontrol.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "track/track.h"
 #include "util/color/color.h"
@@ -50,9 +48,9 @@ inline mixxx::RgbColor::optional_t doubleToRgbColor(double value) {
 /// Works independent of if the hot cue index is either 0-based
 /// or 1..n-based.
 inline int hotcueIndexToHotcueNumber(int hotcueIndex) {
-    if (hotcueIndex >= Cue::kFirstHotCue) {
+    if (hotcueIndex >= mixxx::kFirstHotCueIndex) {
         DEBUG_ASSERT(hotcueIndex != Cue::kNoHotCue);
-        return (hotcueIndex - Cue::kFirstHotCue) + 1; // to 1-based numbering
+        return (hotcueIndex - mixxx::kFirstHotCueIndex) + 1; // to 1-based numbering
     } else {
         DEBUG_ASSERT(hotcueIndex == Cue::kNoHotCue);
         return kNoHotCueNumber;
@@ -66,7 +64,7 @@ inline int hotcueIndexToHotcueNumber(int hotcueIndex) {
 inline int hotcueNumberToHotcueIndex(int hotcueNumber) {
     if (hotcueNumber >= 1) {
         DEBUG_ASSERT(hotcueNumber != kNoHotCueNumber);
-        return Cue::kFirstHotCue + (hotcueNumber - 1); // from 1-based numbering
+        return mixxx::kFirstHotCueIndex + (hotcueNumber - 1); // from 1-based numbering
     } else {
         DEBUG_ASSERT(hotcueNumber == kNoHotCueNumber);
         return Cue::kNoHotCue;
@@ -369,14 +367,14 @@ void CueControl::detachCue(HotcueControl* pControl) {
     if (!pCue) {
         return;
     }
-    disconnect(pCue.get(), 0, this, 0);
+    disconnect(pCue.get(), nullptr, this, nullptr);
     pControl->resetCue();
 }
 
 void CueControl::trackLoaded(TrackPointer pNewTrack) {
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack) {
-        disconnect(m_pLoadedTrack.get(), 0, this, 0);
+        disconnect(m_pLoadedTrack.get(), nullptr, this, nullptr);
         for (const auto& pControl : qAsConst(m_hotcueControls)) {
             detachCue(pControl);
         }
@@ -758,8 +756,9 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double value) {
     }
 
     QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     CuePointer pCue(pControl->getCue());
 
@@ -920,8 +919,9 @@ void CueControl::hotcueClear(HotcueControl* pControl, double value) {
 
 void CueControl::hotcuePositionChanged(HotcueControl* pControl, double newPosition) {
     QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     CuePointer pCue(pControl->getCue());
     if (pCue) {
@@ -1090,21 +1090,16 @@ void CueControl::cueCDJ(double value) {
             seekAbs(m_pCuePoint->get());
         } else if (freely_playing || trackAt == TrackAt::End) {
             // Jump to cue when playing or when at end position
-
-            // Just in case.
-            m_bPreviewing = false;
             m_pPlay->set(0.0);
-
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
-
             seekAbs(m_pCuePoint->get());
         } else if (trackAt == TrackAt::Cue) {
-            // pause at cue point
+            // paused at cue point
             m_bPreviewing = true;
             m_pPlay->set(1.0);
         } else {
-            // Pause not at cue point and not at end position
+            // Paused not at cue point and not at end position
             cueSet(value);
 
             // If quantize is enabled, jump to the cue point since it's not
@@ -1156,10 +1151,11 @@ void CueControl::cueDenon(double value) {
             lock.unlock();
             seekAbs(m_pCuePoint->get());
         } else if (!playing && trackAt == TrackAt::Cue) {
-            // pause at cue point
+            // paused at cue point
             m_bPreviewing = true;
             m_pPlay->set(1.0);
         } else {
+            m_pPlay->set(0.0);
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
             seekAbs(m_pCuePoint->get());

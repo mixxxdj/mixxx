@@ -1,5 +1,4 @@
-#ifndef BEATGRID_H
-#define BEATGRID_H
+#pragma once
 
 #include <QMutex>
 
@@ -98,5 +97,3 @@ class BeatGrid final : public Beats {
 };
 
 } // namespace mixxx
-
-#endif /* BEATGRID_H */

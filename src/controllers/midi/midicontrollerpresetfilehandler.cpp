@@ -1,11 +1,3 @@
-/**
-* @file midicontrollerpresetfilehandler.cpp
-* @author Sean Pappalardo spappalardo@mixxx.org
-* @date Mon 9 Apr 2012
-* @brief Handles loading and saving of MIDI controller presets.
-*
-*/
-
 #include "controllers/midi/midicontrollerpresetfilehandler.h"
 #include "controllers/midi/midiutils.h"
 
@@ -46,11 +38,15 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement&
 
         // Allow specifying hex, octal, or decimal.
         unsigned char midiStatusByte = strMidiStatus.toInt(&ok, 0);
-        if (!ok) midiStatusByte = 0x00;
+        if (!ok) {
+            midiStatusByte = 0x00;
+        }
 
         // Allow specifying hex, octal, or decimal.
         unsigned char midiControl = midiNo.toInt(&ok, 0);
-        if (!ok) midiControl = 0x00;
+        if (!ok) {
+            midiControl = 0x00;
+        }
 
         QDomElement groupNode = control.firstChildElement("group");
         QDomElement keyNode = control.firstChildElement("key");
@@ -70,21 +66,37 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement&
             strMidiOption = optionsNode.nodeName().toLower();
 
             // "normal" is no options
-            if (strMidiOption == "invert")   options.invert = true;
-            if (strMidiOption == "rot64")    options.rot64 = true;
-            if (strMidiOption == "rot64inv") options.rot64_inv = true;
-            if (strMidiOption == "rot64fast")options.rot64_fast = true;
-            if (strMidiOption == "diff")     options.diff = true;
-            if (strMidiOption == "button")   options.button = true;
-            if (strMidiOption == "switch")   options.sw = true;
-            if (strMidiOption == "hercjog")  options.herc_jog = true;
-            if (strMidiOption == "hercjogfast")  options.herc_jog_fast = true;
-            if (strMidiOption == "spread64") options.spread64 = true;
-            if (strMidiOption == "selectknob")options.selectknob = true;
-            if (strMidiOption == "soft-takeover") options.soft_takeover = true;
-            if (strMidiOption == "script-binding") options.script = true;
-            if (strMidiOption == "fourteen-bit-msb") options.fourteen_bit_msb = true;
-            if (strMidiOption == "fourteen-bit-lsb") options.fourteen_bit_lsb = true;
+            if (strMidiOption == QLatin1String("invert")) {
+                options.invert = true;
+            } else if (strMidiOption == QLatin1String("rot64")) {
+                options.rot64 = true;
+            } else if (strMidiOption == QLatin1String("rot64inv")) {
+                options.rot64_inv = true;
+            } else if (strMidiOption == QLatin1String("rot64fast")) {
+                options.rot64_fast = true;
+            } else if (strMidiOption == QLatin1String("diff")) {
+                options.diff = true;
+            } else if (strMidiOption == QLatin1String("button")) {
+                options.button = true;
+            } else if (strMidiOption == QLatin1String("switch")) {
+                options.sw = true;
+            } else if (strMidiOption == QLatin1String("hercjog")) {
+                options.herc_jog = true;
+            } else if (strMidiOption == QLatin1String("hercjogfast")) {
+                options.herc_jog_fast = true;
+            } else if (strMidiOption == QLatin1String("spread64")) {
+                options.spread64 = true;
+            } else if (strMidiOption == QLatin1String("selectknob")) {
+                options.selectknob = true;
+            } else if (strMidiOption == QLatin1String("soft-takeover")) {
+                options.soft_takeover = true;
+            } else if (strMidiOption == QLatin1String("script-binding")) {
+                options.script = true;
+            } else if (strMidiOption == QLatin1String("fourteen-bit-msb")) {
+                options.fourteen_bit_msb = true;
+            } else if (strMidiOption == QLatin1String("fourteen-bit-lsb")) {
+                options.fourteen_bit_lsb = true;
+            }
 
             optionsNode = optionsNode.nextSiblingElement();
         }
@@ -138,16 +150,24 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement&
 
         //Use QString with toInt base of 0 to auto convert hex values
         mapping.output.status = midiStatus.toInt(&ok, 0);
-        if (!ok) mapping.output.status = 0x00;
+        if (!ok) {
+            mapping.output.status = 0x00;
+        }
 
         mapping.output.control = midiNo.toInt(&ok, 0);
-        if (!ok) mapping.output.control = 0x00;
+        if (!ok) {
+            mapping.output.control = 0x00;
+        }
 
         mapping.output.on = midiOn.toInt(&ok, 0);
-        if (!ok) mapping.output.on = DEFAULT_OUTPUT_ON;
+        if (!ok) {
+            mapping.output.on = DEFAULT_OUTPUT_ON;
+        }
 
         mapping.output.off = midiOff.toInt(&ok, 0);
-        if (!ok) mapping.output.off = DEFAULT_OUTPUT_OFF;
+        if (!ok) {
+            mapping.output.off = DEFAULT_OUTPUT_OFF;
+        }
 
         QDomElement minNode = output.firstChildElement("minimum");
         QDomElement maxNode = output.firstChildElement("maximum");
@@ -159,8 +179,10 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement&
             ok = false;
         }
 
-        if (!ok) //If not a double, or node wasn't defined
+        if (!ok) {
+            // If not a double, or node wasn't defined
             mapping.output.min = DEFAULT_OUTPUT_MIN;
+        }
 
         if (!maxNode.isNull()) {
             mapping.output.max = maxNode.text().toDouble(&ok);
@@ -168,8 +190,9 @@ ControllerPresetPointer MidiControllerPresetFileHandler::load(const QDomElement&
             ok = false;
         }
 
-        if (!ok) //If not a double, or node wasn't defined
+        if (!ok) { //If not a double, or node wasn't defined
             mapping.output.max = DEFAULT_OUTPUT_MAX;
+        }
 
         // END unserialize output
 

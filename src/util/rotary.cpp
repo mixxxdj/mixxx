@@ -11,8 +11,9 @@ Rotary::Rotary()
       m_iCalibrationCount(0) {
     m_iFilterLength = kiRotaryFilterMaxLen;
     m_pFilter = new double[m_iFilterLength];
-    for (int i=0; i<m_iFilterLength; ++i)
+    for (int i = 0; i < m_iFilterLength; ++i) {
         m_pFilter[i] = 0.;
+    }
 }
 
 Rotary::~Rotary() {
@@ -82,12 +83,13 @@ double Rotary::getCalibration() {
 }
 
 void Rotary::setFilterLength(int i) {
-    if (i>kiRotaryFilterMaxLen)
+    if (i > kiRotaryFilterMaxLen) {
         m_iFilterLength = kiRotaryFilterMaxLen;
-    else if (i<1)
+    } else if (i < 1) {
         m_iFilterLength = 1;
-    else
+    } else {
         m_iFilterLength = i;
+    }
 }
 
 int Rotary::getFilterLength() {

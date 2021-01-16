@@ -1,6 +1,3 @@
-// seratofeature.cpp
-// Created 2020-01-31 by Jan Holthuis
-
 #include "library/serato/seratofeature.h"
 
 #include <QMap>
@@ -15,6 +12,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_seratofeature.cpp"
 #include "track/beatfactory.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
@@ -509,7 +507,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             LIBRARYTABLE_SAMPLERATE + ", " +
             LIBRARYTABLE_BPM + ", " +
             LIBRARYTABLE_KEY + ", " +
-            LIBRARYTABLE_LOCATION + ", " +
+            TRACKLOCATIONSTABLE_LOCATION + ", " +
             LIBRARYTABLE_BPM_LOCK + ", " +
             LIBRARYTABLE_DATETIMEADDED +
             ", "
@@ -868,7 +866,7 @@ SeratoFeature::SeratoFeature(
             << LIBRARYTABLE_BPM
             << LIBRARYTABLE_KEY
             << LIBRARYTABLE_TRACKNUMBER
-            << LIBRARYTABLE_LOCATION
+            << TRACKLOCATIONSTABLE_LOCATION
             << LIBRARYTABLE_BPM_LOCK;
 
     QStringList searchColumns;
@@ -879,7 +877,7 @@ SeratoFeature::SeratoFeature(
             << LIBRARYTABLE_YEAR
             << LIBRARYTABLE_GENRE
             << LIBRARYTABLE_TRACKNUMBER
-            << LIBRARYTABLE_LOCATION
+            << TRACKLOCATIONSTABLE_LOCATION
             << LIBRARYTABLE_COMMENT
             << LIBRARYTABLE_DURATION
             << LIBRARYTABLE_BITRATE
@@ -1018,8 +1016,9 @@ void SeratoFeature::activate() {
 }
 
 void SeratoFeature::activateChild(const QModelIndex& index) {
-    if (!index.isValid())
+    if (!index.isValid()) {
         return;
+    }
 
     //access underlying TreeItem object
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());

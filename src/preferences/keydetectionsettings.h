@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_KEYDETECTIONSETTINGS_H
-#define PREFERENCES_KEYDETECTIONSETTINGS_H
+#pragma once
 
 #include "preferences/usersettings.h"
 
@@ -68,5 +67,3 @@ class KeyDetectionSettings {
   private:
     UserSettingsPointer m_pConfig;
 };
-
-#endif /* PREFERENCES_KEYDETECTIONSETTINGS_H */

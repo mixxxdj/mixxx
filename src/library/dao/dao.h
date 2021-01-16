@@ -13,6 +13,10 @@ class DAO {
         m_database = database;
     }
 
+    const QSqlDatabase& database() const {
+        return m_database;
+    }
+
   protected:
     QSqlDatabase m_database;
 };

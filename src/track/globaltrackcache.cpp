@@ -2,6 +2,7 @@
 
 #include <QCoreApplication>
 
+#include "moc_globaltrackcache.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/logger.h"

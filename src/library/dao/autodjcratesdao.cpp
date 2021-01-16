@@ -1,5 +1,7 @@
 #include "library/dao/autodjcratesdao.h"
 
+#include "moc_autodjcratesdao.cpp"
+
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
 #endif
@@ -197,8 +199,9 @@ void AutoDJCratesDAO::createAndConnectAutoDjCratesDatabase() {
                  PLAYLISTTABLE_HIDDEN, // %2
                  QString::number(PlaylistDAO::PLHT_SET_LOG))); // %3
     if (oQuery.exec()) {
-        while (oQuery.next())
+        while (oQuery.next()) {
             m_lstSetLogPlaylistIds.append(oQuery.value(0).toInt());
+        }
     } else {
         LOG_FAILED_QUERY(oQuery);
         return;
@@ -1075,7 +1078,7 @@ void AutoDJCratesDAO::slotPlaylistTrackRemoved(int playlistId,
 void AutoDJCratesDAO::slotPlayerInfoTrackLoaded(const QString& a_strGroup,
         TrackPointer a_pTrack) {
     // This gets called with a null track during an unload.  Filter that out.
-    if (a_pTrack == NULL) {
+    if (a_pTrack == nullptr) {
         return;
     }
 

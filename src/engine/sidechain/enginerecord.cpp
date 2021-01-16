@@ -1,17 +1,10 @@
-/***************************************************************************
-                          enginerecord.cpp  -  class to record the mix
-                             -------------------
-    copyright            : (C) 2007 by John Sully
-    copyright            : (C) 2010 by Tobias Rafreider
-    email                :
-***************************************************************************/
-
 #include "engine/sidechain/enginerecord.h"
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "encoder/encoder.h"
 #include "mixer/playerinfo.h"
+#include "moc_enginerecord.cpp"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
@@ -231,20 +224,23 @@ void EngineRecord::writeCueLine() {
                                     % 75);
 
     m_cueFile.write(QString("  TRACK %1 AUDIO\n")
-                    .arg((double)m_cueTrack, 2, 'f', 0, '0')
-                    .toLatin1());
+                            .arg((double)m_cueTrack, 2, 'f', 0, '0')
+                            .toUtf8());
 
     m_cueFile.write(QString("    TITLE \"%1\"\n")
-        .arg(m_pCurrentTrack->getTitle()).toLatin1());
+                            .arg(m_pCurrentTrack->getTitle())
+                            .toUtf8());
     m_cueFile.write(QString("    PERFORMER \"%1\"\n")
-        .arg(m_pCurrentTrack->getArtist()).toLatin1());
+                            .arg(m_pCurrentTrack->getArtist())
+                            .toUtf8());
 
     // Woefully inaccurate (at the seconds level anyways).
     // We'd need a signal fired state tracker
     // for the track detection code.
     m_cueFile.write(QString("    INDEX 01 %1:%2\n")
-                    .arg(getRecordedDurationStr())
-                    .arg((double)cueFrame, 2, 'f', 0, '0').toLatin1());
+                            .arg(getRecordedDurationStr())
+                            .arg(static_cast<double>(cueFrame), 2, 'f', 0, '0')
+                            .toUtf8());
 }
 
 // Encoder calls this method to write compressed audio
@@ -322,23 +318,29 @@ bool EngineRecord::openCueFile() {
 
     if (m_baAuthor.length() > 0) {
         m_cueFile.write(QString("PERFORMER \"%1\"\n")
-                        .arg(QString(m_baAuthor).replace(QString("\""), QString("\\\"")))
-                        .toLatin1());
+                                .arg(QString(m_baAuthor).replace(QString("\""), QString("\\\"")))
+                                .toUtf8());
     }
 
     if (m_baTitle.length() > 0) {
         m_cueFile.write(QString("TITLE \"%1\"\n")
-                        .arg(QString(m_baTitle).replace(QString("\""), QString("\\\"")))
-                        .toLatin1());
+                                .arg(QString(m_baTitle).replace(QString("\""), QString("\\\"")))
+                                .toUtf8());
     }
 
-    m_cueFile.write(QString("FILE \"%1\" %2\n").arg(
-            QFileInfo(m_fileName).fileName() //strip path
-                .replace(QString("\""), QString("\\\"")), // escape doublequote
-            (m_encoding == ENCODING_MP3) ? ENCODING_MP3  :
-            (m_encoding == ENCODING_AIFF) ? ENCODING_AIFF :
-            "WAVE" // MP3 and AIFF are recognized but other formats just use WAVE.
-        ).toLatin1());
+    m_cueFile.write(
+            QString("FILE \"%1\" %2\n")
+                    .arg(QFileInfo(m_fileName)
+                                    .fileName() //strip path
+                                    .replace(QString("\""),
+                                            QString("\\\"")), // escape doublequote
+                            (m_encoding == ENCODING_MP3)
+                                    ? ENCODING_MP3
+                                    : (m_encoding == ENCODING_AIFF)
+                                            ? ENCODING_AIFF
+                                            : "WAVE" // MP3 and AIFF are recognized but other formats just use WAVE.
+                            )
+                    .toUtf8());
     return true;
 }
 

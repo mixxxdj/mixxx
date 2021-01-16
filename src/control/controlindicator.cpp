@@ -1,5 +1,7 @@
 #include "control/controlindicator.h"
+
 #include "control/controlproxy.h"
+#include "moc_controlindicator.cpp"
 #include "util/math.h"
 
 ControlIndicator::ControlIndicator(const ConfigKey& key)

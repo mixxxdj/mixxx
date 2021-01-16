@@ -1,39 +1,27 @@
-/**
- * @file dlgprefsound.cpp
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100625
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#include <QtDebug>
-#include <QMessageBox>
 #include "preferences/dialog/dlgprefsound.h"
-#include "preferences/dialog/dlgprefsounditem.h"
+
+#include <QMessageBox>
+#include <QtDebug>
+
+#include "control/controlproxy.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "mixer/playermanager.h"
+#include "moc_dlgprefsound.cpp"
+#include "preferences/dialog/dlgprefsounditem.h"
 #include "soundio/soundmanager.h"
 #include "util/rlimit.h"
 #include "util/scopedoverridecursor.h"
-#include "control/controlproxy.h"
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the
  * all the controls to the values obtained from SoundManager.
  */
-DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
-                           PlayerManager* pPlayerManager, UserSettingsPointer pSettings)
+DlgPrefSound::DlgPrefSound(QWidget* pParent,
+        SoundManager* pSoundManager,
+        UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
           m_pSoundManager(pSoundManager),
-          m_pPlayerManager(pPlayerManager),
           m_pSettings(pSettings),
           m_config(pSoundManager),
           m_settingsModified(false),
@@ -41,11 +29,17 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
           m_bSkipConfigClear(true),
           m_loading(false) {
     setupUi(this);
+    // Create text color for the wiki links
+    createLinkColor();
 
-    connect(m_pSoundManager, &SoundManager::devicesUpdated, this, &DlgPrefSound::refreshDevices);
+    connect(m_pSoundManager,
+            &SoundManager::devicesUpdated,
+            this,
+            &DlgPrefSound::refreshDevices);
 
     apiComboBox->clear();
-    apiComboBox->addItem(tr("None"), "None");
+    apiComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
+            SoundManagerConfig::kDefaultAPI);
     updateAPIs();
     connect(apiComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -228,11 +222,11 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
     qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
 
     if (RLimit::isRtPrioAllowed()) {
-        limitsHint->setText(tr("Realtime scheduling is enabled."));
+        realtimeHint->setText(tr("Realtime scheduling is enabled."));
     }
 #else
     // the limits warning is a Linux only thing
-    limitsHint->hide();
+    realtimeHint->hide();
 #endif // __LINUX__
 
     // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
@@ -250,6 +244,21 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
             spin->installEventFilter(this);
         }
     }
+
+    realtimeHint->setText(
+            tr("To enable Realtime scheduling (currently disabled), see the %1.")
+                    .arg(coloredLinkString(
+                            m_pLinkColor,
+                            QStringLiteral("Mixxx Wiki"),
+                            MIXXX_WIKI_AUDIO_LATENCY_URL)));
+
+    hardwareGuide->setText(
+            tr("The %1 lists sound cards and controllers you may want to "
+               "consider for using Mixxx.")
+                    .arg(coloredLinkString(
+                            m_pLinkColor,
+                            tr("Mixxx DJ Hardware Guide"),
+                            MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));
 }
 
 DlgPrefSound::~DlgPrefSound() {
@@ -310,7 +319,7 @@ void DlgPrefSound::slotApply() {
     }
     if (err != SOUNDDEVICE_ERROR_OK) {
         QString error = m_pSoundManager->getLastErrorMessage(err);
-        QMessageBox::warning(NULL, tr("Configuration error"), error);
+        QMessageBox::warning(nullptr, tr("Configuration error"), error);
     } else {
         m_settingsModified = false;
         m_bLatencyChanged = false;
@@ -417,7 +426,9 @@ void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
     for (pos = 0; pos < pLayout->count() - 1; ++pos) {
         DlgPrefSoundItem *pOther(qobject_cast<DlgPrefSoundItem*>(
             pLayout->itemAt(pos)->widget()));
-        if (!pOther) continue;
+        if (!pOther) {
+            continue;
+        }
         if (pItem->type() < pOther->type()) {
             break;
         } else if (pItem->type() == pOther->type()
@@ -621,7 +632,7 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
  * just changes and we need to display new devices.
  */
 void DlgPrefSound::refreshDevices() {
-    if (m_config.getAPI() == "None") {
+    if (m_config.getAPI() == SoundManagerConfig::kDefaultAPI) {
         m_outputDevices.clear();
         m_inputDevices.clear();
     } else {
@@ -640,12 +651,16 @@ void DlgPrefSound::refreshDevices() {
  * DlgPrefSound::slotApply knows to apply them.
  */
 void DlgPrefSound::settingChanged() {
-    if (m_loading) return; // doesn't count if we're just loading prefs
+    if (m_loading) {
+        return; // doesn't count if we're just loading prefs
+    }
     m_settingsModified = true;
 }
 
 void DlgPrefSound::deviceSettingChanged() {
-    if (m_loading) return;
+    if (m_loading) {
+        return;
+    }
     checkLatencyCompensation();
     m_settingsModified = true;
 }

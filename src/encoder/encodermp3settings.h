@@ -1,17 +1,10 @@
-/**
-* @file encodermp3settings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for mp3 encoder
-*/
-
-#ifndef ENCODERMP3SETTINGS_H
-#define ENCODERMP3SETTINGS_H
+#pragma once
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 #include "recording/defs_recording.h"
 
+// Storage of settings for MP3 encoder
 class EncoderMp3Settings : public EncoderRecordingSettings {
   public:
     EncoderMp3Settings(UserSettingsPointer m_pConfig);
@@ -51,5 +44,3 @@ class EncoderMp3Settings : public EncoderRecordingSettings {
     QList<int> m_qualVBRList;
     UserSettingsPointer m_pConfig;
 };
-
-#endif // ENCODERMP3SETTINGS_H

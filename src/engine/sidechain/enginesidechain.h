@@ -1,21 +1,4 @@
-/***************************************************************************
-                          enginesidechain.h
-                             -------------------
-    copyright            : (C) 2008 Albert Santoni
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#ifndef ENGINESIDECHAIN_H
-#define ENGINESIDECHAIN_H
+#pragma once
 
 #include <QThread>
 #include <QMutex>
@@ -71,5 +54,3 @@ class EngineSideChain : public QThread, public AudioDestination {
     MMutex m_workerLock;
     QList<SideChainWorker*> m_workers GUARDED_BY(m_workerLock);
 };
-
-#endif

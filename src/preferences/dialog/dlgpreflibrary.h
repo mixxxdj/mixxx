@@ -1,5 +1,4 @@
-#ifndef DLGPREFLIBRARY_H
-#define DLGPREFLIBRARY_H
+#pragma once
 
 #include <QFont>
 #include <QStandardItemModel>
@@ -8,13 +7,9 @@
 #include "defs_urls.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
-
-/**
-  *@author Tue & Ken Haste Andersen
-  */
 
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
@@ -72,5 +67,3 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
 };
-
-#endif

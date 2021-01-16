@@ -1,5 +1,4 @@
-#ifndef CHROMAPRINTER_H
-#define CHROMAPRINTER_H
+#pragma once
 
 #include <QObject>
 
@@ -12,5 +11,3 @@ public:
       explicit ChromaPrinter(QObject* parent = NULL);
       QString getFingerprint(TrackPointer pTrack);
 };
-
-#endif //CHROMAPRINTER_H

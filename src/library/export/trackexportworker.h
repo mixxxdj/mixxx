@@ -1,5 +1,4 @@
-#ifndef TRACKEXPORTWORKER_H
-#define TRACKEXPORTWORKER_H
+#pragma once
 
 #include <QObject>
 #include <QScopedPointer>
@@ -86,5 +85,3 @@ class TrackExportWorker : public QThread {
     const QString m_destDir;
     const TrackPointerList m_tracks;
 };
-
-#endif  // TRACKEXPORTWORKER_H

@@ -1,8 +1,4 @@
-// rhythmboxfeature.h
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef RHYTHMBOXFEATURE_H
-#define RHYTHMBOXFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QtSql>
@@ -64,5 +60,3 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     QSharedPointer<BaseTrackCache>  m_trackSource;
     QIcon m_icon;
 };
-
-#endif // RHYTHMBOXFEATURE_H

@@ -1,14 +1,3 @@
-/**
-* @file controllerpresetinfo.cpp
-* @author Ilkka Tuohela hile@iki.fi
-* @date Wed May 15 2012
-* @brief Implement handling enumeration and parsing of preset info headers
-*
-* This class handles parsing of controller XML description file
-* <info> header tags. It can be used to match controllers automatically or to
-* show details for a mapping.
-*/
-
 #include "controllers/controllerpresetinfo.h"
 
 #include "controllers/defs_controllers.h"
@@ -58,16 +47,24 @@ PresetInfo::PresetInfo(const QString& preset_path)
     }
 
     QDomElement dom_author = info.firstChildElement("author");
-    if (!dom_author.isNull()) m_author = dom_author.text();
+    if (!dom_author.isNull()) {
+        m_author = dom_author.text();
+    }
 
     QDomElement dom_description = info.firstChildElement("description");
-    if (!dom_description.isNull()) m_description = dom_description.text();
+    if (!dom_description.isNull()) {
+        m_description = dom_description.text();
+    }
 
     QDomElement dom_forums = info.firstChildElement("forums");
-    if (!dom_forums.isNull()) m_forumlink = dom_forums.text();
+    if (!dom_forums.isNull()) {
+        m_forumlink = dom_forums.text();
+    }
 
     QDomElement dom_wiki = info.firstChildElement("wiki");
-    if (!dom_wiki.isNull()) m_wikilink = dom_wiki.text();
+    if (!dom_wiki.isNull()) {
+        m_wikilink = dom_wiki.text();
+    }
 
     QDomElement devices = info.firstChildElement("devices");
     if (!devices.isNull()) {

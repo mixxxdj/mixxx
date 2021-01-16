@@ -1,5 +1,4 @@
-#ifndef __RECORDING_DEFS_H__
-#define __RECORDING_DEFS_H__
+#pragma once
 
 #define RECORDING_PREF_KEY "[Recording]"
 #define ENCODING_WAVE "WAV"
@@ -32,5 +31,3 @@
 #define SIZE_1GB    Q_UINT64_C(1070000000)
 #define SIZE_2GB    Q_UINT64_C(2140000000)
 #define SIZE_4GB    Q_UINT64_C(4280000000)
-
-#endif

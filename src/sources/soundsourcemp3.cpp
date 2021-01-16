@@ -398,7 +398,7 @@ SoundSource::OpenResult SoundSourceMp3::tryOpen(
     }
 
     // Terminate m_seekFrameList
-    addSeekFrame(m_curFrameIndex, 0);
+    addSeekFrame(m_curFrameIndex, nullptr);
     DEBUG_ASSERT(m_seekFrameList.back().frameIndex == frameIndexMax());
 
     // Restart decoding at the beginning of the audio stream

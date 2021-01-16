@@ -1,5 +1,4 @@
-#ifndef ANALYZER_PLUGINS_ANALYZERSOUNDTOUCHBEATS
-#define ANALYZER_PLUGINS_ANALYZERSOUNDTOUCHBEATS
+#pragma once
 
 #include <QObject>
 
@@ -49,5 +48,3 @@ class AnalyzerSoundTouchBeats : public AnalyzerBeatsPlugin {
 };
 
 } // namespace mixxx
-
-#endif /* ANALYZER_PLUGINS_ANALYZERSOUNDTOUCHBEATS */

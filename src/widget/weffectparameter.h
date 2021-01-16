@@ -1,5 +1,4 @@
-#ifndef WEFFECTPARAMETER_H
-#define WEFFECTPARAMETER_H
+#pragma once
 
 #include <QDomNode>
 
@@ -16,6 +15,3 @@ class WEffectParameter : public WEffectParameterBase {
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 };
-
-
-#endif /* WEFFECTPARAMETER_H */

@@ -1,6 +1,3 @@
-// legacyskinparser.cpp
-// Created 9/19/2010 by RJ Ryan (rryan@mit.edu)
-
 #include "skin/legacyskinparser.h"
 
 #include <QDir>
@@ -22,6 +19,7 @@
 #include "library/library.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
+#include "moc_legacyskinparser.cpp"
 #include "recording/recordingmanager.h"
 #include "skin/colorschemeparser.h"
 #include "skin/launchimage.h"
@@ -184,7 +182,7 @@ LegacySkinParser::LegacySkinParser(UserSettingsPointer pConfig,
           m_pVCManager(pVCMan),
           m_pEffectsManager(pEffectsManager),
           m_pRecordingManager(pRecordingManager),
-          m_pParent(NULL) {
+          m_pParent(nullptr) {
     DEBUG_ASSERT(m_pSkinCreatedControls);
 }
 
@@ -198,8 +196,9 @@ bool LegacySkinParser::canParse(const QString& skinPath) {
         return false;
     }
 
-    if (!skinDir.exists("skin.xml"))
+    if (!skinDir.exists("skin.xml")) {
         return false;
+    }
 
     // TODO check skin.xml for compliance
 
@@ -329,7 +328,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 
     if (skinDocument.isNull()) {
         qDebug() << "LegacySkinParser::parseSkin - failed for skin:" << skinPath;
-        return NULL;
+        return nullptr;
     }
 
     SkinManifest manifest = getSkinManifest(skinDocument);
@@ -400,7 +399,7 @@ QWidget* LegacySkinParser::parseSkin(const QString& skinPath, QWidget* pParent) 
 
     if (widgets.empty()) {
         SKIN_WARNING(skinDocument, *m_pContext) << "Skin produced no widgets!";
-        return NULL;
+        return nullptr;
     } else if (widgets.size() > 1) {
         SKIN_WARNING(skinDocument, *m_pContext) << "Skin produced more than 1 widget!";
     }
@@ -413,12 +412,12 @@ LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget
 
     QDomElement skinDocument = openSkin(skinPath);
     if (skinDocument.isNull()) {
-        return NULL;
+        return nullptr;
     }
 
     QString nodeName = skinDocument.nodeName();
     if (nodeName != "skin") {
-        return NULL;
+        return nullptr;
     }
 
     // This allows image urls like
@@ -436,7 +435,7 @@ LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget
 
 QList<QWidget*> wrapWidget(QWidget* pWidget) {
     QList<QWidget*> result;
-    if (pWidget != NULL) {
+    if (pWidget != nullptr) {
         result.append(pWidget);
     }
     return result;
@@ -629,8 +628,9 @@ QWidget* LegacySkinParser::parseSplitter(const QDomElement& node) {
             if (node.isElement()) {
                 QList<QWidget*> children = parseNode(node.toElement());
                 foreach (QWidget* pChild, children) {
-                    if (pChild == NULL)
+                    if (pChild == nullptr) {
                         continue;
+                    }
                     pSplitter->addWidget(pChild);
                 }
             }
@@ -657,7 +657,7 @@ void LegacySkinParser::parseChildren(
             if (node.isElement()) {
                 QList<QWidget*> children = parseNode(node.toElement());
                 foreach (QWidget* pChild, children) {
-                    if (pChild == NULL) {
+                    if (pChild == nullptr) {
                         continue;
                     }
                     pGroup->addWidget(pChild);
@@ -691,7 +691,7 @@ QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
         prevConfigKey = pPrevControl->getKey();
     }
 
-    ControlObject* pCurrentPageControl = NULL;
+    ControlObject* pCurrentPageControl = nullptr;
     ConfigKey currentPageConfigKey;
     QString currentpage_co = node.attribute("currentpage");
     if (currentpage_co.length() > 0) {
@@ -740,11 +740,11 @@ QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
             }
             QWidget* pChild = child_widgets[0];
 
-            if (pChild == NULL) {
+            if (pChild == nullptr) {
                 continue;
             }
 
-            ControlObject* pControl = NULL;
+            ControlObject* pControl = nullptr;
             QString trigger_configkey = element.attribute("trigger");
             if (trigger_configkey.length() > 0) {
                 ConfigKey configKey = ConfigKey::parseCommaSeparated(trigger_configkey);
@@ -808,7 +808,7 @@ QWidget* LegacySkinParser::parseSizeAwareStack(const QDomElement& node) {
             }
             QWidget* pChild = children[0];
 
-            if (pChild == NULL) {
+            if (pChild == nullptr) {
                 continue;
             }
 
@@ -830,14 +830,14 @@ QWidget* LegacySkinParser::parseBackground(const QDomElement& node,
         m_pContext->makeSkinPath(filename), m_pContext->getScaleFactor());
 
     bg->move(0, 0);
-    if (background != NULL && !background->isNull()) {
+    if (background != nullptr && !background->isNull()) {
         bg->setPixmap(*background);
     }
 
     bg->lower();
 
     pInnerWidget->move(0,0);
-    if (background != NULL && !background->isNull()) {
+    if (background != nullptr && !background->isNull()) {
         pInnerWidget->setFixedSize(background->width(), background->height());
         pOuterWidget->setMinimumSize(background->width(), background->height());
     }
@@ -1202,7 +1202,7 @@ QWidget* LegacySkinParser::parseSpinny(const QDomElement& node) {
         return dummy;
     }
 
-    auto waveformWidgetFactory = WaveformWidgetFactory::instance();
+    auto* waveformWidgetFactory = WaveformWidgetFactory::instance();
 
     if (!waveformWidgetFactory->isOpenGlAvailable() &&
             !waveformWidgetFactory->isOpenGlesAvailable()) {
@@ -1330,7 +1330,7 @@ void LegacySkinParser::parseSingletonDefinition(const QDomElement& node) {
     }
 
     QWidget* pChild = child_widgets[0];
-    if (pChild == NULL) {
+    if (pChild == nullptr) {
         SKIN_WARNING(node, *m_pContext)
                 << "SingletonDefinition child widget is NULL";
         return;
@@ -2019,7 +2019,7 @@ void LegacySkinParser::setupWidget(const QDomNode& node,
 }
 
 void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidget) {
-    ControlParameterWidgetConnection* pLastLeftOrNoButtonConnection = NULL;
+    ControlParameterWidgetConnection* pLastLeftOrNoButtonConnection = nullptr;
 
     for (QDomNode con = m_pContext->selectNode(node, "Connection");
             !con.isNull();
@@ -2031,7 +2031,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
             continue;
         }
 
-        ValueTransformer* pTransformer = NULL;
+        ValueTransformer* pTransformer = nullptr;
         QDomElement transform = m_pContext->selectElement(con, "Transform");
         if (!transform.isNull()) {
             pTransformer = ValueTransformer::parseFromXml(transform, *m_pContext);
@@ -2216,7 +2216,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
     // connectValueToWidget is the display connection. If no left-button or
     // no-button connection exists, use the last right-button connection as the
     // display connection.
-    if (pLastLeftOrNoButtonConnection != NULL) {
+    if (pLastLeftOrNoButtonConnection != nullptr) {
         pWidget->setDisplayConnection(pLastLeftOrNoButtonConnection);
     }
 }

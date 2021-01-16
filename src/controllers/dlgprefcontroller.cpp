@@ -1,13 +1,7 @@
-/**
-* @file dlgprefcontroller.cpp
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Mon May 2 2011
-* @brief Configuration dialog for a DJ controller
-*/
-
 #include "controllers/dlgprefcontroller.h"
 
 #include <QDesktopServices>
+#include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QInputDialog>
@@ -21,12 +15,13 @@
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
 #include "defs_urls.h"
+#include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
 #include "util/version.h"
 
 namespace {
 const QString kPresetExt(".midi.xml");
-}
+} // namespace
 
 DlgPrefController::DlgPrefController(QWidget* parent,
         Controller* controller,
@@ -37,13 +32,15 @@ DlgPrefController::DlgPrefController(QWidget* parent,
           m_pUserDir(userPresetsPath(pConfig)),
           m_pControllerManager(controllerManager),
           m_pController(controller),
-          m_pDlgControllerLearning(NULL),
-          m_pInputTableModel(NULL),
-          m_pInputProxyModel(NULL),
-          m_pOutputTableModel(NULL),
-          m_pOutputProxyModel(NULL),
+          m_pDlgControllerLearning(nullptr),
+          m_pInputTableModel(nullptr),
+          m_pInputProxyModel(nullptr),
+          m_pOutputTableModel(nullptr),
+          m_pOutputProxyModel(nullptr),
           m_bDirty(false) {
     m_ui.setupUi(this);
+    // Create text color for the file and wiki links
+    createLinkColor();
 
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
@@ -67,7 +64,7 @@ DlgPrefController::DlgPrefController(QWidget* parent,
 
     // When the user picks a preset, load it.
     connect(m_ui.comboBoxPreset,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefController::slotPresetSelected);
 
@@ -184,7 +181,7 @@ void DlgPrefController::midiInputMappingsLearned(
         const MidiInputMappings& mappings) {
     // This is just a shortcut since doing a round-trip from Learning ->
     // Controller -> slotPresetLoaded -> setPreset is too heavyweight.
-    if (m_pInputTableModel != NULL) {
+    if (m_pInputTableModel != nullptr) {
         m_pInputTableModel->addMappings(mappings);
     }
 }
@@ -211,8 +208,9 @@ QString DlgPrefController::presetName(
         const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString name = pPreset->name();
-        if (name.length() > 0)
+        if (name.length() > 0) {
             return name;
+        }
     }
     return tr("No Name");
 }
@@ -221,8 +219,9 @@ QString DlgPrefController::presetDescription(
         const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString description = pPreset->description();
-        if (description.length() > 0)
+        if (description.length() > 0) {
             return description;
+        }
     }
     return tr("No Description");
 }
@@ -231,44 +230,53 @@ QString DlgPrefController::presetAuthor(
         const ControllerPresetPointer pPreset) const {
     if (pPreset) {
         QString author = pPreset->author();
-        if (author.length() > 0)
+        if (author.length() > 0) {
             return author;
+        }
     }
     return tr("No Author");
 }
 
-QString DlgPrefController::presetForumLink(
+QString DlgPrefController::presetSupportLinks(
         const ControllerPresetPointer pPreset) const {
-    QString url;
-    if (pPreset) {
-        QString link = pPreset->forumlink();
-        if (link.length() > 0)
-            url = "<a href=\"" + link + "\">Mixxx Forums</a>";
+    if (!pPreset) {
+        return QString();
     }
-    return url;
-}
 
-QString DlgPrefController::presetWikiLink(
-        const ControllerPresetPointer pPreset) const {
-    QString url;
-    if (pPreset) {
-        QString link = pPreset->wikilink();
-        if (link.length() > 0)
-            url = "<a href=\"" + link + "\">Mixxx Wiki</a>";
-    }
-    return url;
-}
+    QStringList linkList;
 
-QString DlgPrefController::presetManualLink(
-        const ControllerPresetPointer pPreset) const {
-    QString url;
-    if (pPreset) {
-        QString link = pPreset->manualLink();
-        if (!link.isEmpty()) {
-            url = "<a href=\"" + link + "\">Manual</a>";
-        }
+    QString forumLink = pPreset->forumlink();
+    if (!forumLink.isEmpty()) {
+        linkList << coloredLinkString(
+                m_pLinkColor,
+                "Mixxx Forums",
+                forumLink);
     }
-    return url;
+
+    QString wikiLink = pPreset->wikilink();
+    if (!wikiLink.isEmpty()) {
+        linkList << coloredLinkString(
+                m_pLinkColor,
+                "Mixxx Wiki",
+                wikiLink);
+    }
+
+    QString manualLink = pPreset->manualLink();
+    if (!manualLink.isEmpty()) {
+        linkList << coloredLinkString(
+                m_pLinkColor,
+                "Mixxx Manual",
+                manualLink);
+    }
+
+    // There is always at least one support link.
+    // TODO(rryan): This is a horrible general support link for MIDI!
+    linkList << coloredLinkString(
+            m_pLinkColor,
+            tr("Troubleshooting"),
+            MIXXX_WIKI_MIDI_SCRIPTING_URL);
+
+    return QString(linkList.join("&nbsp;&nbsp;"));
 }
 
 QString DlgPrefController::presetFileLinks(
@@ -280,20 +288,20 @@ QString DlgPrefController::presetFileLinks(
     const QString builtinFileSuffix = QStringLiteral(" (") + tr("built-in") + QStringLiteral(")");
     QString systemPresetPath = resourcePresetsPath(m_pConfig);
     QStringList linkList;
-    QString xmlFileName = QFileInfo(pPreset->filePath()).fileName();
-    QString xmlFileLink = QStringLiteral("<a href=\"") +
-            pPreset->filePath() + QStringLiteral("\">") +
-            xmlFileName + QStringLiteral("</a>");
+    QString xmlFileLink = coloredLinkString(
+            m_pLinkColor,
+            QFileInfo(pPreset->filePath()).fileName(),
+            pPreset->filePath());
     if (pPreset->filePath().startsWith(systemPresetPath)) {
         xmlFileLink += builtinFileSuffix;
     }
     linkList << xmlFileLink;
 
     for (const auto& script : pPreset->getScriptFiles()) {
-        QString scriptFileLink = QStringLiteral("<a href=\"") +
-                script.file.absoluteFilePath() + QStringLiteral("\">") +
-                script.name + QStringLiteral("</a>");
-
+        QString scriptFileLink = coloredLinkString(
+                m_pLinkColor,
+                script.name,
+                script.file.absoluteFilePath());
         if (!script.file.exists()) {
             scriptFileLink +=
                     QStringLiteral(" (") + tr("missing") + QStringLiteral(")");
@@ -312,15 +320,23 @@ void DlgPrefController::enumeratePresets(const QString& selectedPresetPath) {
 
     // qDebug() << "Enumerating presets for controller" << m_pController->getName();
 
+    // Check the text color of the palette for whether to use dark or light icons
+    QDir iconsPath;
+    if (!Color::isDimColor(palette().text().color())) {
+        iconsPath.setPath(":/images/preferences/light/");
+    } else {
+        iconsPath.setPath(":/images/preferences/dark/");
+    }
+
     // Insert a dummy item at the top to try to make it less confusing.
     // (We don't want the first found file showing up as the default item when a
     // user has their controller plugged in)
-    QIcon noPresetIcon(":/images/ic_none.svg");
-    m_ui.comboBoxPreset->addItem(noPresetIcon, "No Preset");
+    QIcon noPresetIcon(iconsPath.filePath("ic_none.svg"));
+    m_ui.comboBoxPreset->addItem(noPresetIcon, tr("No Preset"));
 
     PresetInfo match;
     // Enumerate user presets
-    QIcon userPresetIcon(":/images/ic_custom.svg");
+    QIcon userPresetIcon(iconsPath.filePath("ic_custom.svg"));
 
     // Reload user presets to detect added, changed or removed mappings
     m_pControllerManager->getMainThreadUserPresetEnumerator()->loadSupportedPresets();
@@ -336,7 +352,7 @@ void DlgPrefController::enumeratePresets(const QString& selectedPresetPath) {
     m_ui.comboBoxPreset->insertSeparator(m_ui.comboBoxPreset->count());
 
     // Enumerate system presets
-    QIcon systemPresetIcon(":/images/ic_mixxx_symbolic.svg");
+    QIcon systemPresetIcon(iconsPath.filePath("ic_mixxx_symbolic.svg"));
     PresetInfo systemPresetsMatch = enumeratePresetsFromEnumerator(
             m_pControllerManager->getMainThreadSystemPresetEnumerator(),
             systemPresetIcon);
@@ -434,7 +450,7 @@ void DlgPrefController::slotApply() {
     }
     m_ui.chkEnabledDevice->setChecked(bEnabled);
 
-    // The shouldn't be dirty at this pint because we already tried to save
+    // The shouldn't be dirty at this point because we already tried to save
     // it. If that failed, don't apply the preset.
     if (m_pPreset && m_pPreset->isDirty()) {
         return;
@@ -526,9 +542,9 @@ void DlgPrefController::savePreset() {
     // If this is a user preset, ask whether to overwrite or save with new name.
     // Optionally, tick checkbox to always overwrite this preset in the current session.
     if (isUserPreset && saveAsNew) {
-        QString overwriteTitle = tr("Preset already exists.");
+        QString overwriteTitle = tr("Mapping already exists.");
         QString overwriteLabel = tr(
-                "<b>%1</b> already exists in user preset folder.<br>"
+                "<b>%1</b> already exists in user mapping folder.<br>"
                 "Overwrite or save with a new name?");
         QString overwriteCheckLabel = tr("Always overwrite during this session");
 
@@ -648,35 +664,8 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     m_ui.labelLoadedPreset->setText(presetName(preset));
     m_ui.labelLoadedPresetDescription->setText(presetDescription(preset));
     m_ui.labelLoadedPresetAuthor->setText(presetAuthor(preset));
-    QStringList supportLinks;
-
-    QString forumLink = presetForumLink(preset);
-    if (forumLink.length() > 0) {
-        supportLinks << forumLink;
-    }
-
-    QString manualLink = presetManualLink(preset);
-    if (manualLink.length() > 0) {
-        supportLinks << manualLink;
-    }
-
-    QString wikiLink = presetWikiLink(preset);
-    if (wikiLink.length() > 0) {
-        supportLinks << wikiLink;
-    }
-
-    // There is always at least one support link.
-    // TODO(rryan): This is a horrible general support link for MIDI!
-    QString troubleShooting = QString(
-        "<a href=\"http://mixxx.org/wiki/doku.php/midi_scripting\">%1</a>")
-            .arg(tr("Troubleshooting"));
-    supportLinks << troubleShooting;
-
-    QString support = supportLinks.join("&nbsp;&nbsp;");
-    m_ui.labelLoadedPresetSupportLinks->setText(support);
-
-    QString mappingFileLinks = presetFileLinks(preset);
-    m_ui.labelLoadedPresetScriptFileLinks->setText(mappingFileLinks);
+    m_ui.labelLoadedPresetSupportLinks->setText(presetSupportLinks(preset));
+    m_ui.labelLoadedPresetScriptFileLinks->setText(presetFileLinks(preset));
 
     // We mutate this preset so keep a reference to it while we are using it.
     // TODO(rryan): Clone it? Technically a waste since nothing else uses this
@@ -695,7 +684,7 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     for (int i = 0; i < pInputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pInputModel->delegateForColumn(
             i, m_ui.m_pInputMappingTableView);
-        if (pDelegate != NULL) {
+        if (pDelegate != nullptr) {
             qDebug() << "Setting input delegate for column" << i << pDelegate;
             m_ui.m_pInputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }
@@ -719,7 +708,7 @@ void DlgPrefController::slotShowPreset(ControllerPresetPointer preset) {
     for (int i = 0; i < pOutputModel->columnCount(); ++i) {
         QAbstractItemDelegate* pDelegate = pOutputModel->delegateForColumn(
             i, m_ui.m_pOutputMappingTableView);
-        if (pDelegate != NULL) {
+        if (pDelegate != nullptr) {
             qDebug() << "Setting output delegate for column" << i << pDelegate;
             m_ui.m_pOutputMappingTableView->setItemDelegateForColumn(i, pDelegate);
         }

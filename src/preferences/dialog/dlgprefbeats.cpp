@@ -3,6 +3,7 @@
 #include "analyzer/analyzerbeats.h"
 #include "control/controlobject.h"
 #include "defs_urls.h"
+#include "moc_dlgprefbeats.cpp"
 
 DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
@@ -26,7 +27,7 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
 
     // Connections
     connect(comboBoxBeatPlugin,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefBeats::pluginSelected);
     connect(checkBoxAnalyzerEnabled,

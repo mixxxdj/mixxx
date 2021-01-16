@@ -1,5 +1,7 @@
 #include "engine/filters/enginefilterlinkwitzriley8.h"
 
+#include "moc_enginefilterlinkwitzriley8.cpp"
+
 namespace {
 constexpr char kFidSpecLowPassButterworth4[] = "LpBu4";
 constexpr char kFidSpecHighPassButterworth4[] = "HpBu4";

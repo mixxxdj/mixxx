@@ -1,10 +1,9 @@
-// wtracktableviewheader.cpp
-// Created 1/2/2010 by RJ Ryan (rryan@mit.edu)
+#include "widget/wtracktableviewheader.h"
 
 #include <QtDebug>
 
-#include "widget/wtracktableviewheader.h"
 #include "library/trackmodel.h"
+#include "moc_wtracktableviewheader.cpp"
 #include "util/math.h"
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
@@ -74,7 +73,8 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
     for (int li = 0; li < headers->count(); ++li) {
         headers->setSectionHidden(li, true);
         auto it = map.find(headers->model()->headerData(
-            li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString());
+                                                   li, Qt::Horizontal, TrackModel::kHeaderNameRole)
+                                   .toString());
         if (it != map.end()) {
             it.value()->set_logical_index(li);
         }
@@ -152,7 +152,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         }
 
         QString title = model->headerData(i, orientation()).toString();
-        auto action = new QAction(title, &m_menu);
+        auto* action = new QAction(title, &m_menu);
         action->setCheckable(true);
 
         /* If Mixxx starts the first time or the header states have been cleared
