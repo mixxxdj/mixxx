@@ -1783,10 +1783,13 @@ set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC OpenGL::GL)
 
-# Ogg Vorbis
-find_package(OggVorbis REQUIRED)
-target_include_directories(mixxx-lib SYSTEM PUBLIC ${OggVorbis_INCLUDE_DIRS})
-target_link_libraries(mixxx-lib PUBLIC ${OggVorbis_LIBRARIES})
+# Ogg
+find_package(Ogg REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC Ogg::ogg)
+
+# Vorbis
+find_package(Vorbis REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC Vorbis::vorbis Vorbis::vorbisenc Vorbis::vorbisfile)
 
 # PortAudio
 find_package(PortAudio REQUIRED)
