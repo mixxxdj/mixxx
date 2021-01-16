@@ -1755,8 +1755,8 @@ target_link_libraries(mixxx-lib PUBLIC FpClassify)
 target_include_directories(mixxx-lib SYSTEM PUBLIC "${gtest_SOURCE_DIR}/include")
 
 # LAME
-find_package(LAME REQUIRED)
-target_link_libraries(mixxx-lib PUBLIC LAME::LAME)
+find_package(mp3lame REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC mp3lame::mp3lame)
 
 # Kaitai for reading Rekordbox libraries
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL
