@@ -144,9 +144,6 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
     CurrentBuffer[0] = reportID;
     bytesRead = hid_get_input_report(m_pHidDevice, CurrentBuffer, kBufferSize);
 
-    // This does not match to the HIDAPI documentation, but without the decrement, I get no data consistent with HidController::poll() (tested only on Windows7)
-    bytesRead -= 1;
-
     controllerDebug(bytesRead << "bytes received by hid_get_input_report" << getName()
                               << "serial #" << m_deviceInfo.serialNumber() 
                               << "(including one byte for the report ID:" << QString::number(static_cast<quint8>(reportID), 16).toUpper().rightJustified(2, QChar('0')) << ")"
