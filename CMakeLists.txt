@@ -254,7 +254,6 @@ if(WIN32)
   # Add support for lib prefix on Windows
   set(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
 endif()
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
 # Get the current working branch
 execute_process(
