@@ -196,7 +196,7 @@ jobs:
       run: >-
         cmake
         -G "${{ matrix.cmake_generator }}"
-        -DCMAKE_BUILD_TYPE=Debug
+        -DCMAKE_BUILD_TYPE=Release
         "-DCMAKE_PREFIX_PATH=${{ env.CMAKE_PREFIX_PATH }}"
         -DDEBUG_ASSERTIONS_FATAL=ON
         -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
