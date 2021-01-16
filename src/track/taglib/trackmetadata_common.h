@@ -66,7 +66,7 @@ inline QByteArray toQByteArrayRaw(
 inline TagLib::ByteVector toTByteVector(
         const QByteArray& byteArray) {
     if (byteArray.isNull()) {
-        return TagLib::ByteVector::null;
+        return TagLib::ByteVector();
     } else {
         return TagLib::ByteVector(byteArray.constData(), byteArray.size());
     }
