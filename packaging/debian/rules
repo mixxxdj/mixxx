@@ -6,8 +6,7 @@
 override_dh_auto_configure:
 	dh_auto_configure -- -DCMAKE_BUILD_TYPE=RelWithDebInfo -DINSTALL_USER_UDEV_RULES=OFF
 
-override_dh_install:
-	dh_install
+override_dh_installudev:
 	dh_installudev --name=mixxx-usb-uaccess --priority 69
 
 %:
