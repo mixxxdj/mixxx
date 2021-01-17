@@ -37,7 +37,7 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
             QDir(), // No log file should be written during tests, only output to stderr
             logLevel,
             logLevel,
-            true);
+            mixxx::LogFlag::DebugAssertBreak);
 
     // All guessing of cover art should be done synchronously
     // in the same thread during tests to prevent test failures
