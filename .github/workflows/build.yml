@@ -18,6 +18,7 @@ jobs:
               -DMAD=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
+              -INSTALL_USER_UDEV_RULES=OFF
             cmake_generator: Unix Makefiles
             ctest_args:
             compiler_cache: ccache
@@ -37,6 +38,7 @@ jobs:
               -DMAD=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
+              -INSTALL_USER_UDEV_RULES=OFF
             cmake_generator: Unix Makefiles
             ctest_args:
             compiler_cache: ccache

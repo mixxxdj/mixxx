@@ -76,3 +76,4 @@ run_dh(dh_installman)
 run_dh(dh_installudev --name=mixxx-usb-uaccess --priority=69)
 
 file (REMOVE_RECURSE ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian)
+file (REMOVE ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/mixxx.1)
