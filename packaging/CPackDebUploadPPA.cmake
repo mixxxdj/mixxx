@@ -24,6 +24,11 @@ if(NOT CPACK_DEBIAN_MARKDOWN)
   message(FATAL_ERROR "markdown not found, required for cpack -G External -D DEB_UPLOAD_PPA=true")
 endif()
 
+find_program(CPACK_DEBIAN_DOCBOOK_TO_MAN docbook-to-man)
+if(NOT CPACK_DEBIAN_DOCBOOK_TO_MAN)
+  message(FATAL_ERROR "docbook-to-man not found, required for cpack -G External -D DEB_UPLOAD_PPA=true")
+endif()
+
 # hack from sconscript
 if(DEB_UPLOAD_PPA MATCHES "mixxxbetas")
   string(REGEX MATCH "^.*(~git[0-9]*).*$" GITVERSION "${CPACK_DEBIAN_DEBIAN_VERSION_EXTRA}")
@@ -55,6 +60,12 @@ execute_process(
   COMMAND ${CPACK_DEBIAN_MARKDOWN} ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/CHANGELOG.md
   OUTPUT_FILE NEWS.html
   WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian
+)
+
+execute_process(
+  COMMAND ${CPACK_DEBIAN_DOCBOOK_TO_MAN} debian/mixxx.sgml
+  OUTPUT_FILE mixxx.1
+  WORKING_DIRECTORY ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}
 )
 
 configure_file(${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control.in
