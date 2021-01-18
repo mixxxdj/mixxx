@@ -48,7 +48,7 @@ class FakeOverwriteAnswerer : public QObject {
     }
 
   public slots:
-    void slotProgress(const QString& filename, int progress, int count);
+    void slotProgress(const QString status, const QString to, int progress, int count);
     void slotAskOverwriteMode(
             const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
@@ -58,6 +58,7 @@ class FakeOverwriteAnswerer : public QObject {
     TrackExportWorker* m_worker;
     QMap<QString, TrackExportWorker::OverwriteAnswer> m_answers;
     QString m_progress_filename;
+    QString m_progress_to;
     int m_progress = 0;
     int m_progress_count = 0;
 };

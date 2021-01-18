@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "library/export/trackexportwizard.h"
+#include "library/export/trackexportdlg.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/parsercsv.h"
@@ -730,9 +730,10 @@ void CrateFeature::slotExportPlaylist() {
 
 void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
+    CrateId id = crateIdFromIndex(m_lastRightClickedIndex);
     QScopedPointer<CrateTableModel> pCrateTableModel(
             new CrateTableModel(this, m_pLibrary->trackCollections()));
-    pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
+    pCrateTableModel->selectCrate(id);
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();
@@ -742,8 +743,14 @@ void CrateFeature::slotExportTrackFiles() {
         trackpointers.push_back(m_crateTableModel.getTrack(index));
     }
 
-    TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
-    track_export.exportTracks();
+    Grantlee::Context* context = new Grantlee::Context();
+
+    // auto summary = new CrateSummary();
+    // m_pTrackCollection->crates().readCrateSummaryById(id, summary);
+    // context->insert(QStringLiteral("crate"), summary);
+
+    auto exportDialog = new TrackExportDlg(nullptr, m_pConfig, trackpointers, context);
+    exportDialog->open();
 }
 
 void CrateFeature::slotCrateTableChanged(CrateId crateId) {

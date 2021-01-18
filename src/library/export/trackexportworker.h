@@ -1,15 +1,21 @@
 #pragma once
 
+#include <grantlee/template.h>
+
 #include <QObject>
 #include <QScopedPointer>
 #include <QString>
 #include <QThread>
 #include <future>
 
-#include "track/track_decl.h"
+#include "track/track.h"
 
 class QFileInfo;
 
+namespace Grantlee {
+class Context;
+class Engine;
+} // namespace Grantlee
 // A QThread class for copying a list of files to a single destination directory.
 // Currently does not preserve subdirectory relationships.  This class performs
 // all copies in a blocking style within its own thread.  May be canceled from
@@ -17,6 +23,14 @@ class QFileInfo;
 class TrackExportWorker : public QThread {
     Q_OBJECT
   public:
+    enum ExportResult {
+        OK,
+        SKIPPED,
+        FAILED,
+        EXPORT_COMPLETE
+    };
+    Q_ENUM(ExportResult)
+
     enum class OverwriteMode {
         ASK,
         OVERWRITE_ALL,
@@ -35,19 +49,43 @@ class TrackExportWorker : public QThread {
 
     // Constructor does not validate the destination directory.  Calling classes
     // should do that.
-    TrackExportWorker(const QString& destDir, const TrackPointerList& tracks)
-            : m_destDir(destDir), m_tracks(tracks) {
-    }
+    // pattern will
+    TrackExportWorker(const QString& destDir,
+            TrackPointerList& tracks,
+            QString* pattern = nullptr,
+            Grantlee::Context* context = nullptr);
+
     virtual ~TrackExportWorker() { };
 
     // exports ALL the tracks.  Thread joins on success or failure.
     void run() override;
 
+    bool isRunning() {
+        return m_running;
+    };
     // Calling classes can call errorMessage after a failure for a user-friendly
     // message about what happened.
     QString errorMessage() const {
         return m_errorMessage;
     }
+
+    void setDestDir(const QString& destDir) {
+        m_destDir = destDir;
+    }
+
+    /// Sets the filename pattern
+    void setPattern(QString* pattern);
+
+    /// returns the current filename pattern
+    QString* getPattern() {
+        return m_pattern;
+    }
+
+    // Returns the new filename for the track. Applies the pattern if set.
+    QString generateFilename(TrackPointer track, int index = 0);
+
+    /// Applies the filename pattern on track
+    QString applyPattern(TrackPointer track, int index);
 
     // Cancels the export after the current copy operation.
     // May be called from another thread.
@@ -62,7 +100,8 @@ class TrackExportWorker : public QThread {
     void askOverwriteMode(
             const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
-    void progress(const QString& filename, int progress, int count);
+    void progress(const QString from, const QString to, int progress, int count);
+    void result(TrackExportWorker::ExportResult result, const QString msg);
     void canceled();
 
   private:
@@ -73,15 +112,23 @@ class TrackExportWorker : public QThread {
     // process entirely.
     void copyFile(const QFileInfo& source_fileinfo,
                   const QString& dest_filename);
+    QMap<QString, TrackFile> createCopylist(
+            const TrackPointerList& tracks,
+            TrackPointerList* skippedTracks);
 
     // Emit a signal requesting overwrite mode, and block until we get an
     // answer.  Updates m_overwriteMode appropriately.
     OverwriteAnswer makeOverwriteRequest(const QString& filename);
 
     QAtomicInt m_bStop = false;
+    bool m_running = false;
     QString m_errorMessage;
 
     OverwriteMode m_overwriteMode = OverwriteMode::ASK;
-    const QString m_destDir;
-    const TrackPointerList m_tracks;
+    QString m_destDir;
+    TrackPointerList m_tracks;
+    QString* m_pattern;
+    Grantlee::Context* m_context;
+    Grantlee::Template m_template;
+    Grantlee::Engine* m_engine{nullptr};
 };

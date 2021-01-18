@@ -52,7 +52,9 @@ class Track : public QObject {
     Q_PROPERTY(QString track_number READ getTrackNumber WRITE setTrackNumber)
     Q_PROPERTY(QString track_total READ getTrackTotal WRITE setTrackTotal)
     Q_PROPERTY(int times_played READ getTimesPlayed)
+    Q_PROPERTY(QDateTime lastPlayed READ getLastPlayedAt)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
+    Q_PROPERTY(int bitrate READ getBitrate WRITE setBitrate)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
     Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
@@ -62,6 +64,14 @@ class Track : public QObject {
     Q_PROPERTY(QString durationFormattedMilliseconds READ getDurationTextMilliseconds STORED false)
     Q_PROPERTY(QString info READ getInfo STORED false)
     Q_PROPERTY(QString titleInfo READ getTitleInfo STORED false)
+    Q_PROPERTY(int rating READ getRating WRITE setRating)
+
+    Q_PROPERTY(QString location READ getLocation STORED false)
+    Q_PROPERTY(QString directory READ directory STORED false)
+    Q_PROPERTY(QString baseName READ baseName STORED false)
+    Q_PROPERTY(QString fileName READ fileName STORED false)
+    Q_PROPERTY(QString extension READ extension STORED false)
+    Q_PROPERTY(QString url READ getURL WRITE setURL)
 
     TrackFile getFileInfo() const {
         // Copying TrackFile/QFileInfo is thread-safe (implicit sharing), no locking needed.
@@ -78,6 +88,20 @@ class Track : public QObject {
     QString getLocation() const {
         return m_fileInfo.location();
     }
+
+    QString directory() const {
+        return m_fileInfo.directory();
+    }
+    QString baseName() const {
+        return m_fileInfo.baseName();
+    }
+    QString fileName() const {
+        return m_fileInfo.fileName();
+    }
+    QString extension() const {
+        return m_fileInfo.extension();
+    }
+
     // The (refreshed) canonical location
     QString getCanonicalLocation() const;
     // Checks if the file exists

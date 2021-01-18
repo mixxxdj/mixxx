@@ -3,6 +3,8 @@
 
 #include "test/trackexport_test.h"
 
+#include <grantlee/context.h>
+
 #include <QDebug>
 #include <QScopedPointer>
 
@@ -11,8 +13,12 @@
 
 FakeOverwriteAnswerer::~FakeOverwriteAnswerer() { }
 
-void FakeOverwriteAnswerer::slotProgress(const QString& filename, int progress, int count) {
+void FakeOverwriteAnswerer::slotProgress(
+        const QString filename, const QString to, int progress, int count) {
     m_progress_filename = filename;
+    if (!to.isEmpty()) {
+        m_progress_to = to;
+    }
     m_progress = progress;
     m_progress_count = count;
 }
@@ -299,4 +305,39 @@ TEST_F(TrackExporterTest, MungeFilename) {
 
     // Remove the track we created.
     tempPath.remove("cover-test.ogg");
+}
+
+TEST_F(TrackExporterTest, PatternExport) {
+    // Create a simple list of trackpointers and export them.
+    TrackFile fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    TrackPointer track1(Track::newTemporary(fileinfo1));
+    TrackFile fileinfo2(m_testDataDir.filePath("cover-test.flac"));
+    TrackPointer track2(Track::newTemporary(fileinfo2));
+    TrackFile fileinfo3(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
+    TrackPointer track3(Track::newTemporary(fileinfo3));
+
+    // An initializer list would be prettier here, but it doesn't compile
+    // on MSVC or OSX.
+    TrackPointerList tracks;
+    tracks.append(track1);
+    tracks.append(track2);
+    tracks.append(track3);
+    auto context = new Grantlee::Context();
+    context->insert("t", "t42/");
+    auto pattern = QStringLiteral(
+            "{{t}}{{track.baseName}}-{{track.extension}}-"
+            "{{track.bpm}}{% if index %}-{{index}}{%endif%}");
+    TrackExportWorker worker(m_exportDir.canonicalPath(), tracks, &pattern, context);
+
+    EXPECT_EQ(worker.generateFilename(track1, 0),
+            QStringLiteral("t42/cover-test-ogg-0"));
+    EXPECT_EQ(worker.generateFilename(track2, 1),
+            QStringLiteral("t42/cover-test-flac-0-1"));
+    EXPECT_EQ(worker.generateFilename(track3, 0),
+            QStringLiteral("t42/cover-test-itunes-12-m4a-0"));
+
+    auto pattern2 = QStringLiteral("{{track.fileName}}");
+    worker.setPattern(&pattern2);
+    EXPECT_EQ(worker.generateFilename(track1, 0),
+            QStringLiteral("cover-test.ogg"));
 }

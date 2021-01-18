@@ -1,5 +1,8 @@
 #pragma once
 
+#include <grantlee/context.h>
+
+#include <QCloseEvent>
 #include <QDialog>
 #include <QScopedPointer>
 #include <QString>
@@ -23,29 +26,42 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
 
     // The dialog is prepared, but not shown on construction.  Does not
     // take ownership of the export worker.
-    TrackExportDlg(QWidget *parent, UserSettingsPointer pConfig,
-                   TrackExportWorker* worker);
-    virtual ~TrackExportDlg() { }
+    TrackExportDlg(QWidget* parent,
+            UserSettingsPointer pConfig,
+            TrackPointerList& tracks,
+            Grantlee::Context* context = nullptr);
+    virtual ~TrackExportDlg();
 
   public slots:
-    void slotProgress(const QString& filename, int progress, int count);
+    void slotProgress(const QString from, const QString to, int progress, int count);
+    void slotResult(TrackExportWorker::ExportResult result, const QString msg);
     void slotAskOverwriteMode(
             const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
     void cancelButtonClicked();
+    void slotBrowseFolder() {
+        browseFolder();
+    };
+    void slotStartExport();
 
   protected:
-    // First pops up a directory selector on show(), then does the actual
-    // copying.
-    void showEvent(QShowEvent* event) override;
+    bool browseFolder();
 
   private:
     // Called when progress is complete or the procedure has been canceled.
-    // Displays a final message box indicating success or failure.
     // Makes sure the exporter thread has exited.
     void finish();
+    void stopWorker();
+    int addStatus(const QString status, const QString to);
+    void updatePreview();
+    void setEnableControls(bool enabled);
+    void closeEvent(QCloseEvent* event) override;
 
     UserSettingsPointer m_pConfig;
     TrackPointerList m_tracks;
     TrackExportWorker* m_worker;
+    Grantlee::Context* m_context;
+    int m_errorCount = 0;
+    int m_skippedCount = 0;
+    int m_okCount = 0;
 };

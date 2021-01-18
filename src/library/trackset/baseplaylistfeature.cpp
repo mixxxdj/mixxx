@@ -6,7 +6,7 @@
 #include <QStandardPaths>
 
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "library/export/trackexportwizard.h"
+#include "library/export/trackexportdlg.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/parsercsv.h"
@@ -615,8 +615,16 @@ void BasePlaylistFeature::slotExportTrackFiles() {
         tracks.push_back(pPlaylistTableModel->getTrack(index));
     }
 
-    TrackExportWizard track_export(nullptr, m_pConfig, tracks);
-    track_export.exportTracks();
+    Grantlee::Context* context = new Grantlee::Context();
+
+    // FIXME(poelzi): make CrateSummary a QObject so it can be inserted into the
+    // context. Why the linker errors when QObject ?
+    // auto summary = new CrateSummary();
+    // m_pTrackCollection->crates().readCrateSummaryById(id, summary);
+    // context->insert(QStringLiteral("crate"), summary);
+
+    auto exportDialog = new TrackExportDlg(nullptr, m_pConfig, tracks, context);
+    exportDialog->open();
 }
 
 void BasePlaylistFeature::slotAddToAutoDJ() {
