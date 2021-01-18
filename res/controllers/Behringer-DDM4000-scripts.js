@@ -165,7 +165,7 @@ var DDM4000 = new behringer.extension.GenericMidiController({
                 },
             });
             this.playIndicator = new PlayIndicatorLED({
-                midi: bankOptions.play,
+                midi: [cc, bankOptions.play[1]],
                 group: bankOptions.group,
                 blinkDuration: DEFAULT_BLINK_DURATION,
             });
