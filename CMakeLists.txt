@@ -1802,9 +1802,9 @@ target_link_libraries(mixxx-lib PUBLIC FpClassify)
 # in production code
 target_include_directories(mixxx-lib SYSTEM PUBLIC "${gtest_SOURCE_DIR}/include")
 
-# FLAC
+# Grantlee5
 find_package(Grantlee5 REQUIRED)
-#target_link_libraries(mixxx-lib PUBLIC Grantlee5::GRANTLEE)
+
 target_link_libraries(mixxx-lib PUBLIC
   Grantlee5::Templates
   Grantlee5::TextDocument
