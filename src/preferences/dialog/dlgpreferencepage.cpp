@@ -1,4 +1,4 @@
-#include "preferences/dlgpreferencepage.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 
 #include "defs_urls.h"
 #include "moc_dlgpreferencepage.cpp"

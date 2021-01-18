@@ -9,8 +9,8 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 
 // Forward declarations
 class Controller;
