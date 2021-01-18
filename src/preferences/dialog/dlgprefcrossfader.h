@@ -2,11 +2,10 @@
 
 #include <QWidget>
 
+#include "control/controlproxy.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefcrossfaderdlg.h"
 #include "preferences/usersettings.h"
-#include "control/controlproxy.h"
-#include "preferences/dlgpreferencepage.h"
-
 
 class DlgPrefCrossfader : public DlgPreferencePage, public Ui::DlgPrefCrossfaderDlg  {
     Q_OBJECT

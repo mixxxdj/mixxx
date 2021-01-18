@@ -527,6 +527,15 @@ METADATA
     <sql>
       -- Add new column
       ALTER TABLE library ADD COLUMN last_played_at DATETIME DEFAULT NULL;
+    </sql>
+  </revision>
+  <revision version="36" min_compatible="3">
+    <description>
+      Populate last_played_at column in library table from play history
+    </description>
+    <sql>
+      -- Add new column
+      ALTER TABLE library ADD COLUMN last_played_at DATETIME DEFAULT NULL;
       -- Populate new column from history playlists
       UPDATE library SET last_played_at=(
         SELECT MAX(PlaylistTracks.pl_datetime_added)

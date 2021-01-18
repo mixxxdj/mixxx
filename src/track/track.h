@@ -211,6 +211,10 @@ class Track : public QObject {
         return getPlayCounter().getTimesPlayed();
     }
 
+    QDateTime getLastPlayedAt() const {
+        return getPlayCounter().getLastPlayedAt();
+    }
+
     // Returns rating
     int getRating() const;
     // Sets rating
@@ -253,7 +257,11 @@ class Track : public QObject {
     void analysisFinished();
 
     // Calls for managing the track's cue points
-    CuePointer createAndAddCue();
+    CuePointer createAndAddCue(
+            mixxx::CueType type,
+            int hotCueIndex,
+            double sampleStartPosition,
+            double sampleEndPosition);
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;
     void removeCue(const CuePointer& pCue);

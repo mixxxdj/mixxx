@@ -4,8 +4,8 @@
 #include <memory>
 
 #include "preferences/constants.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefinterfacedlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 
 class ControlProxy;

@@ -11,6 +11,7 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "effects/builtin/builtinbackend.h"
@@ -23,7 +24,9 @@
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
 #endif
+#ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
+#endif
 #include "control/controlpushbutton.h"
 #include "control/threadlocalquickaction.h"
 #include "controllers/controllermanager.h"
@@ -313,6 +316,28 @@ MixxxMainWindow::~MixxxMainWindow() {
         mixxx::ScreenSaverHelper::uninhibit();
     }
 
+    // Save the current window state (position, maximized, etc)
+    // Note(ronso0): Unfortunately saveGeometry() also stores the fullscreen state.
+    // On next start restoreGeometry would enable fullscreen mode even though that
+    // might not be requested (no '--fullscreen' command line arg and
+    // [Config],StartInFullscreen is '0'.
+    // https://bugs.launchpad.net/mixxx/+bug/1882474
+    // https://bugs.launchpad.net/mixxx/+bug/1909485
+    // So let's quit fullscreen if StartInFullscreen is not checked in Preferences.
+    bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
+            ConfigKey("[Config]", "StartInFullscreen"));
+    if (isFullScreen() && !fullscreenPref) {
+        slotViewFullScreen(false);
+        // After returning from fullscreen the main window incl. window decoration
+        // may be too large for the screen.
+        // Maximize the window so we can store a geometry that fits the screen.
+        showMaximized();
+    }
+    m_pCoreServices->getSettings()->set(ConfigKey("[MainWindow]", "geometry"),
+            QString(saveGeometry().toBase64()));
+    m_pCoreServices->getSettings()->set(ConfigKey("[MainWindow]", "state"),
+            QString(saveState().toBase64()));
+
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
     m_pCentralWidget = nullptr;
@@ -420,9 +445,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
             *retryClicked = true;
             return QDialog::Accepted;
         } else if (msgBox.clickedButton() == wikiButton) {
-            QDesktopServices::openUrl(QUrl(
-                "http://mixxx.org/wiki/doku.php/troubleshooting"
-                "#i_can_t_select_my_sound_card_in_the_sound_hardware_preferences"));
+            QDesktopServices::openUrl(QUrl(MIXXX_WIKI_TROUBLESHOOTING_SOUND_URL));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();

@@ -3,8 +3,8 @@
 #include <memory>
 
 #include "defs_urls.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefsounddlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 #include "soundio/sounddevice.h"
 #include "soundio/sounddeviceerror.h"

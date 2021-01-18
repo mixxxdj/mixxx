@@ -555,6 +555,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_dSlipPosition = 0.;
     m_dSlipRate = 0;
 
+    m_iSeekQueued.storeRelease(SEEK_NONE);
+
     // Reset the pitch value for the new track.
     m_pause.unlock();
 
@@ -593,6 +595,8 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_playposSlider->set(0);
     m_pCueControl->resetIndicators();
+
+    m_iSeekQueued.storeRelease(SEEK_NONE);
 
     m_pause.unlock();
 

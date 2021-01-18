@@ -10,7 +10,7 @@
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
-#include "preferences/dlgpreferencepage.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 
 // Forward declarations
@@ -70,9 +70,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString mappingName(const LegacyControllerMappingPointer pMapping) const;
     QString mappingAuthor(const LegacyControllerMappingPointer pMapping) const;
     QString mappingDescription(const LegacyControllerMappingPointer pMapping) const;
-    QString mappingForumLink(const LegacyControllerMappingPointer pMapping) const;
-    QString mappingManualLink(const LegacyControllerMappingPointer pMapping) const;
-    QString mappingWikiLink(const LegacyControllerMappingPointer pMapping) const;
+    QString mappingSupportLinks(const LegacyControllerMappingPointer pMapping) const;
     QString mappingFileLinks(const LegacyControllerMappingPointer pMapping) const;
     void applyMappingChanges();
     void saveMapping();
