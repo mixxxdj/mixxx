@@ -1,6 +1,7 @@
 #include "controllers/dlgprefcontroller.h"
 
 #include <QDesktopServices>
+#include <QDir>
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QInputDialog>
@@ -338,15 +339,23 @@ void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
 
     // qDebug() << "Enumerating mappings for controller" << m_pController->getName();
 
+    // Check the text color of the palette for whether to use dark or light icons
+    QDir iconsPath;
+    if (!Color::isDimColor(palette().text().color())) {
+        iconsPath.setPath(":/images/preferences/light/");
+    } else {
+        iconsPath.setPath(":/images/preferences/dark/");
+    }
+
     // Insert a dummy item at the top to try to make it less confusing.
     // (We don't want the first found file showing up as the default item when a
     // user has their controller plugged in)
-    QIcon noMappingIcon(":/images/ic_none.svg");
+    QIcon noMappingIcon(iconsPath.filePath("ic_none.svg"));
     m_ui.comboBoxMapping->addItem(noMappingIcon, "No Mapping");
 
     MappingInfo match;
     // Enumerate user mappings
-    QIcon userMappingIcon(":/images/ic_custom.svg");
+    QIcon userMappingIcon(iconsPath.filePath("ic_custom.svg"));
 
     // Reload user mappings to detect added, changed or removed mappings
     m_pControllerManager->getMainThreadUserMappingEnumerator()->loadSupportedMappings();
@@ -362,7 +371,7 @@ void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
     m_ui.comboBoxMapping->insertSeparator(m_ui.comboBoxMapping->count());
 
     // Enumerate system mappings
-    QIcon systemMappingIcon(":/images/ic_mixxx_symbolic.svg");
+    QIcon systemMappingIcon(iconsPath.filePath("ic_mixxx_symbolic.svg"));
     MappingInfo systemMappingsMatch = enumerateMappingsFromEnumerator(
             m_pControllerManager->getMainThreadSystemMappingEnumerator(),
             systemMappingIcon);

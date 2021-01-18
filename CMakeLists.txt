@@ -674,6 +674,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/musicbrainz/web/acoustidlookuptask.cpp
   src/musicbrainz/web/musicbrainzrecordingstask.cpp
   src/network/jsonwebtask.cpp
+  src/network/networktask.cpp
   src/network/webtask.cpp
   src/preferences/configobject.cpp
   src/preferences/dialog/dlgprefautodj.cpp
@@ -690,6 +691,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefeffectsdlg.ui
   src/preferences/dialog/dlgprefeq.cpp
   src/preferences/dialog/dlgprefeqdlg.ui
+  src/preferences/dialog/dlgpreferencepage.cpp
   src/preferences/dialog/dlgpreferences.cpp
   src/preferences/dialog/dlgpreferencesdlg.ui
   src/preferences/dialog/dlgprefinterface.cpp
@@ -712,7 +714,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefvinyldlg.ui
   src/preferences/dialog/dlgprefwaveform.cpp
   src/preferences/dialog/dlgprefwaveformdlg.ui
-  src/preferences/dlgpreferencepage.cpp
   src/preferences/effectsettingsmodel.cpp
   src/preferences/colorpaletteeditor.cpp
   src/preferences/colorpaletteeditormodel.cpp
@@ -1070,7 +1071,7 @@ set(MIXXX_INSTALL_DOCDIR "./doc")
 set(MIXXX_INSTALL_LICENSEDIR "./doc")
 if (APPLE AND MACOS_BUNDLE)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
-  set(MACOS_BUNDLE_NAME Mixxx)
+  set(MACOS_BUNDLE_NAME mixxx)
   set(MIXXX_INSTALL_PREFIX "${MACOS_BUNDLE_NAME}.app")
   set(MIXXX_INSTALL_DATADIR "${MIXXX_INSTALL_PREFIX}/Contents/Resources")
   set(MIXXX_INSTALL_DOCDIR "${MIXXX_INSTALL_DATADIR}")
@@ -2146,6 +2147,7 @@ if(WIN32 AND STATIC_DEPS)
 endif()
 
 # Threads
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC Threads::Threads)
 
@@ -2681,7 +2683,7 @@ set(CPACK_DEBIAN_DEBIAN_VERSION 0ubuntu1)
 set(CPACK_DEBIAN_DEBIAN_VERSION_EXTRA "${GIT_BRANCH}~git${GIT_COMMIT_COUNT}")
 string(REPLACE "_" "" CPACK_DEBIAN_DEBIAN_VERSION_EXTRA "${CPACK_DEBIAN_DEBIAN_VERSION_EXTRA}")
 set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_DEBIAN_UPSTREAM_VERSION}-ppa1~${GIT_BRANCH}~git${GIT_COMMIT_COUNT}~bionic")
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES bionic focal groovy)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES bionic focal groovy hirsute)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 
@@ -2704,7 +2706,7 @@ if(APPLE AND MACOS_BUNDLE)
             get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
             get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
             get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
-            set(_qt_plugin_dest "${_prefix}/Contents/plugins/${_qt_plugin_type}")
+            set(_qt_plugin_dest "${_prefix}/Contents/PlugIns/${_qt_plugin_type}")
             install(FILES "${_qt_plugin_path}"
                 DESTINATION "${_qt_plugin_dest}")
             set(${_qt_plugins_var}
