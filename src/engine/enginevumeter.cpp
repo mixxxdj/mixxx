@@ -1,7 +1,8 @@
 #include "engine/enginevumeter.h"
 
-#include "control/controlproxy.h"
 #include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
+#include "moc_enginevumeter.cpp"
 #include "util/math.h"
 #include "util/sample.h"
 
@@ -18,7 +19,7 @@ constexpr CSAMPLE kDecaySmoothing = 0.1f;  //.16//.4
 
 } // namespace
 
-EngineVuMeter::EngineVuMeter(QString group) {
+EngineVuMeter::EngineVuMeter(const QString& group) {
     // The VUmeter widget is controlled via a controlpotmeter, which means
     // that it should react on the setValue(int) signal.
     m_ctrlVuMeter = new ControlPotmeter(ConfigKey(group, "VuMeter"), 0., 1.);
@@ -79,14 +80,17 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
         // ControlObject will not prevent us from causing tons of extra
         // work. Because of this, we use an epsilon here to be gentle on the GUI
         // and MIDI controllers.
-        if (fabs(m_fRMSvolumeL - m_ctrlVuMeterL->get()) > epsilon)
+        if (fabs(m_fRMSvolumeL - m_ctrlVuMeterL->get()) > epsilon) {
             m_ctrlVuMeterL->set(m_fRMSvolumeL);
-        if (fabs(m_fRMSvolumeR - m_ctrlVuMeterR->get()) > epsilon)
+        }
+        if (fabs(m_fRMSvolumeR - m_ctrlVuMeterR->get()) > epsilon) {
             m_ctrlVuMeterR->set(m_fRMSvolumeR);
+        }
 
         double fRMSvolume = (m_fRMSvolumeL + m_fRMSvolumeR) / 2.0;
-        if (fabs(fRMSvolume - m_ctrlVuMeter->get()) > epsilon)
+        if (fabs(fRMSvolume - m_ctrlVuMeter->get()) > epsilon) {
             m_ctrlVuMeter->set(fRMSvolume);
+        }
 
         // Reset calculation:
         m_iSamplesCalculated = 0;
@@ -120,14 +124,17 @@ void EngineVuMeter::process(CSAMPLE* pIn, const int iBufferSize) {
 
 void EngineVuMeter::doSmooth(CSAMPLE &currentVolume, CSAMPLE newVolume)
 {
-    if (currentVolume > newVolume)
+    if (currentVolume > newVolume) {
         currentVolume -= kDecaySmoothing * (currentVolume - newVolume);
-    else
+    } else {
         currentVolume += kAttackSmoothing * (newVolume - currentVolume);
-    if (currentVolume < 0)
+    }
+    if (currentVolume < 0) {
         currentVolume=0;
-    if (currentVolume > 1.0)
+    }
+    if (currentVolume > 1.0) {
         currentVolume=1.0;
+    }
 }
 
 void EngineVuMeter::reset() {

@@ -1,5 +1,4 @@
-#ifndef QTVSYNCTESTWIDGET_H
-#define QTVSYNCTESTWIDGET_H
+#pragma once
 
 #include <QGLWidget>
 
@@ -27,5 +26,3 @@ class QtVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
   private:
     friend class WaveformWidgetFactory;
 };
-
-#endif // QTVSYNCTESTWIDGET_H

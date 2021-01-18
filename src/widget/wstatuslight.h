@@ -1,24 +1,4 @@
-/***************************************************************************
-                          wstatuslight.h  -  A general purpose status light
-                                        for indicating boolean events
-                             -------------------
-    begin                : Fri Jul 22 2007
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-                           (C) 2007 by John Sully (derived from WVumeter)
-    email                : jsully@scs.ryerson.ca
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef WSTATUSLIGHT_H
-#define WSTATUSLIGHT_H
+#pragma once
 
 #include <QPaintEvent>
 #include <QWidget>
@@ -31,6 +11,7 @@
 #include "widget/wpixmapstore.h"
 #include "skin/skincontext.h"
 
+/// A general purpose status light for indicating boolean events.
 class WStatusLight : public WWidget  {
    Q_OBJECT
   public:
@@ -45,8 +26,10 @@ class WStatusLight : public WWidget  {
     void paintEvent(QPaintEvent * /*unused*/) override;
 
   private:
-    void setPixmap(int iState, PixmapSource source,
-                   Paintable::DrawMode mode, double scaleFactor);
+    void setPixmap(int iState,
+            const PixmapSource& source,
+            Paintable::DrawMode mode,
+            double scaleFactor);
     void setNoPos(int iNoPos);
 
     // Current position
@@ -57,5 +40,3 @@ class WStatusLight : public WWidget  {
     // Associated pixmaps
     QVector<PaintablePointer> m_pixmaps;
 };
-
-#endif

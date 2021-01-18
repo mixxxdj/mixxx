@@ -1,5 +1,4 @@
-#ifndef CONTROLPICKERMENU_H
-#define CONTROLPICKERMENU_H
+#pragma once
 
 #include <QMenu>
 #include <QObject>
@@ -16,13 +15,13 @@ class ControlPickerMenu : public QMenu {
         return m_controlsAvailable;
     }
 
-    bool controlExists(ConfigKey key) const;
-    QString descriptionForConfigKey(ConfigKey key) const;
-    QString controlTitleForConfigKey(ConfigKey key) const;
+    bool controlExists(const ConfigKey& key) const;
+    QString descriptionForConfigKey(const ConfigKey& key) const;
+    QString controlTitleForConfigKey(const ConfigKey& key) const;
 
   signals:
     // Emitted when the user selects a control from the menu.
-    void controlPicked(ConfigKey control);
+    void controlPicked(const ConfigKey& control);
 
   private slots:
     // Triggered when user selects a control from the menu.
@@ -30,36 +29,67 @@ class ControlPickerMenu : public QMenu {
 
   private:
     QMenu* addSubmenu(QString title, QMenu* pParent=NULL);
-    void addSingleControl(QString group, QString control,
-                          QString title, QString description,
-                          QMenu* pMenu,
-                          QString prefix=QString(), QString actionTitle=QString());
-    void addControl(QString group, QString control, QString title,
-                    QString helpText, QMenu* pMenu, bool addReset=false, QString prefix=QString());
-    void addPlayerControl(QString control, QString title, QString helpText,
-                          QMenu* pMenu, bool deckControls, bool samplerControls,
-                          bool previewdeckControls, bool addReset=false);
-    void addDeckAndSamplerControl(QString control, QString title,
-                                  QString helpText, QMenu* pMenu,
-                                  bool addReset=false);
-    void addDeckAndPreviewDeckControl(QString control, QString title,
-                                      QString helpText, QMenu* pMenu,
-                                      bool addReset=false);
-    void addDeckAndSamplerAndPreviewDeckControl(QString control, QString title,
-                                                QString helpText, QMenu* pMenu,
-                                                bool addReset=false);
-    void addDeckControl(QString control, QString title, QString helpText,
-                        QMenu* pMenu, bool addReset=false);
-    void addSamplerControl(QString control, QString title, QString helpText,
-                           QMenu* pMenu, bool addReset=false);
-    void addPreviewDeckControl(QString control, QString title, QString helpText,
-                               QMenu* pMenu, bool addReset=false);
-    void addMicrophoneAndAuxControl(QString control, QString title,
-                                    QString helpText, QMenu* pMenu,
-                                    bool microphoneControls, bool auxControls,
-                                    bool addReset=false);
+    void addSingleControl(const QString& group,
+            const QString& control,
+            const QString& title,
+            const QString& description,
+            QMenu* pMenu,
+            const QString& prefix = QString(),
+            const QString& actionTitle = QString());
+    void addControl(const QString& group,
+            const QString& control,
+            const QString& title,
+            const QString& helpText,
+            QMenu* pMenu,
+            bool addReset = false,
+            const QString& prefix = QString());
+    void addPlayerControl(const QString& control,
+            const QString& title,
+            const QString& helpText,
+            QMenu* pMenu,
+            bool deckControls,
+            bool samplerControls,
+            bool previewdeckControls,
+            bool addReset = false);
+    void addDeckAndSamplerControl(const QString& control,
+            const QString& title,
+            const QString& helpText,
+            QMenu* pMenu,
+            bool addReset = false);
+    void addDeckAndPreviewDeckControl(const QString& control,
+            const QString& title,
+            const QString& helpText,
+            QMenu* pMenu,
+            bool addReset = false);
+    void addDeckAndSamplerAndPreviewDeckControl(const QString& control,
+            const QString& title,
+            const QString& helpText,
+            QMenu* pMenu,
+            bool addReset = false);
+    void addDeckControl(const QString& control,
+            const QString& title,
+            const QString& helpText,
+            QMenu* pMenu,
+            bool addReset = false);
+    void addSamplerControl(const QString& control,
+            const QString& title,
+            const QString& helpText,
+            QMenu* pMenu,
+            bool addReset = false);
+    void addPreviewDeckControl(const QString& control,
+            const QString& title,
+            const QString& helpText,
+            QMenu* pMenu,
+            bool addReset = false);
+    void addMicrophoneAndAuxControl(const QString& control,
+            const QString& title,
+            const QString& helpText,
+            QMenu* pMenu,
+            bool microphoneControls,
+            bool auxControls,
+            bool addReset = false);
 
-    int addAvailableControl(ConfigKey key, QString title, QString description);
+    int addAvailableControl(const ConfigKey& key, const QString& title, const QString& description);
 
     QString m_effectMasterOutputStr;
     QString m_effectHeadphoneOutputStr;
@@ -79,5 +109,3 @@ class ControlPickerMenu : public QMenu {
     QHash<ConfigKey, QString> m_descriptionsByKey;
     QHash<ConfigKey, QString> m_titlesByKey;
 };
-
-#endif /* CONTROLPICKERMENU_H */

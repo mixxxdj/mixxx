@@ -40,23 +40,23 @@ var toggleEffectUnitsWithDecks = false;
 **/
 var P32 = {};
 
-P32.init = function () {
+P32.init = function() {
     components.Component.prototype.shiftOffset = 3;
     components.Component.prototype.shiftChannel = true;
     components.Button.prototype.sendShifted = true;
 
-    if (engine.getValue('[Master]', 'num_samplers') < 32) {
-        engine.setValue('[Master]', 'num_samplers', 32);
+    if (engine.getValue("[Master]", "num_samplers") < 32) {
+        engine.setValue("[Master]", "num_samplers", 32);
     }
 
-    P32.leftDeck = new P32.Deck([1,3], 1);
-    P32.rightDeck = new P32.Deck([2,4], 2);
+    P32.leftDeck = new P32.Deck([1, 3], 1);
+    P32.rightDeck = new P32.Deck([2, 4], 2);
 
     // tell controller to send MIDI messages with positions of faders and knobs
     midi.sendShortMsg(0xB0, 0x7F, 0x7F);
 };
 
-P32.shutdown = function () {
+P32.shutdown = function() {
     for (var channel = 0; channel <= 5; channel++) {
         for (var button = 1; button <= 0x63; button++) {
             midi.sendShortMsg(0x90 + channel, button, 0);
@@ -74,7 +74,7 @@ P32.padColors = {
     off: 0
 };
 
-P32.PadNumToMIDIControl = function (PadNum, layer) {
+P32.PadNumToMIDIControl = function(PadNum, layer) {
     // The MIDI control numbers for the pad grid are numbered bottom to top, so
     // this returns the MIDI control numbers for the pads numbered top to bottom
     // layer argument is the 0-indexed pad mode, from bottom (sampler) to top (hotcue)
@@ -83,31 +83,31 @@ P32.PadNumToMIDIControl = function (PadNum, layer) {
     return 0x24 + 16 * layer + midiRow*4 + PadNum%4;
 };
 
-P32.browseEncoder = function (channel, control, value, status, group) {
+P32.browseEncoder = function(_channel, _control, value, _status, _group) {
     if (value > 64) {
-        engine.setValue('[Playlist]', 'SelectPrevTrack', 1);
+        engine.setValue("[Playlist]", "SelectPrevTrack", 1);
     } else {
-        engine.setValue('[Playlist]', 'SelectNextTrack', 1);
+        engine.setValue("[Playlist]", "SelectNextTrack", 1);
     }
 };
 
-P32.headMixEncoder = function (channel, control, value, status, group) {
+P32.headMixEncoder = function(_channel, _control, value, _status, _group) {
     var direction = (value > 64) ? -1 : 1;
-    engine.setValue('[Master]', 'headMix', engine.getValue('[Master]', 'headMix') + (0.25 * direction));
+    engine.setValue("[Master]", "headMix", engine.getValue("[Master]", "headMix") + (0.25 * direction));
 };
 
 P32.recordButton = new components.Button({
     midi: [0x90, 0x02],
-    group: '[Recording]',
-    inKey: 'toggle_recording',
-    outKey: 'status',
+    group: "[Recording]",
+    inKey: "toggle_recording",
+    outKey: "status",
     sendShifted: false,
 });
 
 P32.slipButton = new components.Button({
     midi: [0x90, 0x03],
     pressedToToggleDeck: false,
-    input: function (channel, control, value, status, group) {
+    input: function(_channel, _control, value, _status, _group) {
         if (P32.leftDeck.isShifted && value === 127) {
             // PFL button is controlling effect unit assignment to headphones while
             // shift is pressed, so switch it back to controlling PFL so
@@ -133,39 +133,39 @@ P32.slipButton = new components.Button({
                 this.pressedToToggleDeck = false;
             } else {
                 for (var i = 1; i <= 4; i++) {
-                    script.toggleControl('[Channel' + i + ']', 'slip_enabled');
+                    script.toggleControl("[Channel" + i + "]", "slip_enabled");
                 }
             }
         }
     },
-    connect: function () {
+    connect: function() {
         for (var d = 1; d <= 4; d++) {
             this.connections.push(
-                engine.connectControl('[Channel' + d + ']', 'slip_enabled', this.output.bind(this))
+                engine.connectControl("[Channel" + d + "]", "slip_enabled", this.output.bind(this))
             );
         }
     },
-    output: function (value, group, control) {
+    output: function(_value, _group, _control) {
         var slipEnabledOnAnyDeck = false;
         for (var d = 1; d <= 4; d++) {
-            if (engine.getValue('[Channel' + d + ']', 'slip_enabled')) {
+            if (engine.getValue("[Channel" + d + "]", "slip_enabled")) {
                 slipEnabledOnAnyDeck = true;
                 break;
             }
         }
         this.send(slipEnabledOnAnyDeck ? this.on : this.off);
     },
-    key: 'slip_enabled',
+    key: "slip_enabled",
     sendShifted: false,
     group: null // hack to get Component constructor to call this.connect()
 });
 
-P32.Deck = function (deckNumbers, channel) {
+P32.Deck = function(deckNumbers, channel) {
     components.Deck.call(this, deckNumbers);
 
     var theDeck = this;
 
-    this.shiftButton = function (channel, control, value, status, group) {
+    this.shiftButton = function(_channel, _control, value, _status, _group) {
         if (value === 127) {
             this.shift();
         } else {
@@ -175,11 +175,11 @@ P32.Deck = function (deckNumbers, channel) {
 
     this.loadTrack = new components.Button({
         midi: [0x90 + channel, 0x0F],
-        unshift: function () {
-            this.inKey = 'LoadSelectedTrack';
+        unshift: function() {
+            this.inKey = "LoadSelectedTrack";
         },
-        shift: function () {
-            this.inKey = 'eject';
+        shift: function() {
+            this.inKey = "eject";
         },
     });
 
@@ -187,52 +187,52 @@ P32.Deck = function (deckNumbers, channel) {
     this.loopEncoder = new components.Encoder({
         // NOTE: these are the MIDI bytes for the digit LEDs, not input from the encoder.
         midi: [0xB0 + channel, 0x1B],
-        unshift: function () {
-            this.input = function (channel, control, value, status, group) {
-                var loopSize = engine.getValue(this.group, 'beatloop_size');
+        unshift: function() {
+            this.input = function(_channel, _control, value, _status, _group) {
+                var loopSize = engine.getValue(this.group, "beatloop_size");
                 if (loopEnabledDot) {
                     if (value > 64 && loopSize > 2) { // turn left
                         // Unfortunately, there is no way to show 1 with a dot on the
                         // loop size LED.
-                        engine.setValue(this.group, 'beatloop_size', loopSize / 2);
+                        engine.setValue(this.group, "beatloop_size", loopSize / 2);
                     } else if (value < 64 && loopSize < 32) { // turn right
                         // Mixxx supports loops longer than 32 beats, but there is no way
                         // to show 64 with a dot on the loop size LED.
-                        engine.setValue(this.group, 'beatloop_size', loopSize * 2);
+                        engine.setValue(this.group, "beatloop_size", loopSize * 2);
                     }
                 } else {
                     if (value > 64 && loopSize > 1/32) { // turn left
-                        engine.setValue(this.group, 'beatloop_size', loopSize / 2);
+                        engine.setValue(this.group, "beatloop_size", loopSize / 2);
                     } else if (value < 64) { // turn right
                         if (clampLoopAndBeatJumpSize) {
                             if (loopSize * 2 <= 64) {
-                                engine.setValue(this.group, 'beatloop_size', loopSize * 2);
+                                engine.setValue(this.group, "beatloop_size", loopSize * 2);
                             }
                         } else {
-                            engine.setValue(this.group, 'beatloop_size', loopSize * 2);
+                            engine.setValue(this.group, "beatloop_size", loopSize * 2);
                         }
                     }
                 }
             };
         },
-        shift: function () {
-            this.input = function (channel, control, value, status, group) {
-                var direction = (value > 64) ? 'backward' : 'forward';
-                script.triggerControl(this.group, 'beatjump_1_' + direction);
+        shift: function() {
+            this.input = function(_channel, _control, value, _status, _group) {
+                var direction = (value > 64) ? "backward" : "forward";
+                script.triggerControl(this.group, "beatjump_1_" + direction);
             };
         },
-        connect: function () {
-            this.connections[0] = engine.connectControl(this.group, 'beatloop_size', this.output.bind(this));
+        connect: function() {
+            this.connections[0] = engine.connectControl(this.group, "beatloop_size", this.output.bind(this));
             if (loopEnabledDot) {
-                this.connections[1] = engine.connectControl(this.group, 'loop_enabled', this.output.bind(this));
+                this.connections[1] = engine.connectControl(this.group, "loop_enabled", this.output.bind(this));
             }
         },
-        output: function (value, group, control) {
-            var loopSize = engine.getValue(this.group, 'beatloop_size');
+        output: function(_value, _group, _control) {
+            var loopSize = engine.getValue(this.group, "beatloop_size");
             var loopSizeLogBase2 = Math.log(loopSize) / Math.log(2);
             // test if loopSizeLogBase2 is an integer
             if (Math.floor(loopSizeLogBase2) === loopSizeLogBase2) {
-                if (loopEnabledDot && engine.getValue(this.group, 'loop_enabled') === 1) {
+                if (loopEnabledDot && engine.getValue(this.group, "loop_enabled") === 1) {
                     this.send(5 - loopSizeLogBase2);
                 } else {
                     this.send(5 + loopSizeLogBase2);
@@ -244,54 +244,54 @@ P32.Deck = function (deckNumbers, channel) {
     });
 
     this.loopEncoderPress = new components.Button({
-        unshift: function () {
+        unshift: function() {
             // Make sure the shifted Controls don't get stuck with a value of 1
             // if the shift button is released before the encoder button.
-            if (engine.getValue(this.group, 'reloop_andstop') !== 0) {
-                engine.setValue(this.group, 'reloop_andstop', 0);
+            if (engine.getValue(this.group, "reloop_andstop") !== 0) {
+                engine.setValue(this.group, "reloop_andstop", 0);
             }
-            if (engine.getValue(this.group, 'reloop_toggle') !== 0) {
-                engine.setValue(this.group, 'reloop_toggle', 0);
+            if (engine.getValue(this.group, "reloop_toggle") !== 0) {
+                engine.setValue(this.group, "reloop_toggle", 0);
             }
 
-            this.input = function (channel, control, value, status, group) {
+            this.input = function(_channel, _control, value, _status, _group) {
                 if (value) {
-                    if (engine.getValue(this.group, 'loop_enabled') === 1) {
-                        engine.setValue(this.group, 'reloop_toggle', 1);
+                    if (engine.getValue(this.group, "loop_enabled") === 1) {
+                        engine.setValue(this.group, "reloop_toggle", 1);
                     } else {
-                        engine.setValue(this.group, 'beatloop_activate', 1);
+                        engine.setValue(this.group, "beatloop_activate", 1);
                     }
                 } else {
-                    if (engine.getValue(this.group, 'reloop_toggle') !== 1) {
-                        engine.setValue(this.group, 'reloop_toggle', 0);
-                    } else if (engine.getValue(this.group, 'beatloop_activate') !== 0) {
-                        engine.setValue(this.group, 'beatloop_activate', 0);
+                    if (engine.getValue(this.group, "reloop_toggle") !== 1) {
+                        engine.setValue(this.group, "reloop_toggle", 0);
+                    } else if (engine.getValue(this.group, "beatloop_activate") !== 0) {
+                        engine.setValue(this.group, "beatloop_activate", 0);
                     }
                 }
             };
         },
-        shift: function () {
+        shift: function() {
             // Make sure the unshifted Controls don't get stuck with a value of 1
             // if the shift button is pressed before releasing the encoder button.
-            if (engine.getValue(this.group, 'reloop_toggle') !== 0) {
-                engine.setValue(this.group, 'reloop_toggle', 0);
+            if (engine.getValue(this.group, "reloop_toggle") !== 0) {
+                engine.setValue(this.group, "reloop_toggle", 0);
             }
-            if (engine.getValue(this.group, 'beatloop_activate') !== 0) {
-                engine.setValue(this.group, 'beatloop_activate', 0);
+            if (engine.getValue(this.group, "beatloop_activate") !== 0) {
+                engine.setValue(this.group, "beatloop_activate", 0);
             }
 
-            this.input = function (channel, control, value, status, group) {
-                if (engine.getValue(this.group, 'loop_enabled') === 1) {
-                    engine.setValue(this.group, 'reloop_andstop', value / 127);
+            this.input = function(_channel, _control, value, _status, _group) {
+                if (engine.getValue(this.group, "loop_enabled") === 1) {
+                    engine.setValue(this.group, "reloop_andstop", value / 127);
                 } else {
-                    engine.setValue(this.group, 'reloop_toggle', value / 127);
+                    engine.setValue(this.group, "reloop_toggle", value / 127);
                 }
             };
         },
     });
 
-    this.showBeatjumpSize = function () {
-        var beatjumpSize = engine.getValue(this.currentDeck, 'beatjump_size');
+    this.showBeatjumpSize = function() {
+        var beatjumpSize = engine.getValue(this.currentDeck, "beatjump_size");
         var beatjumpSizeLogBase2 = Math.log(beatjumpSize) / Math.log(2);
         // test if beatjumpSizeLogBase2 is an integer
         if (Math.floor(beatjumpSizeLogBase2) === beatjumpSizeLogBase2) {
@@ -303,16 +303,16 @@ P32.Deck = function (deckNumbers, channel) {
     };
 
     this.tempoAndBeatjumpEncoder = new components.Encoder({
-        unshift: function () {
-            this.input = function (channel, control, value, status, group) {
+        unshift: function() {
+            this.input = function(_channel, _control, value, _status, _group) {
                 var direction = (value > 64) ? -1 : 1;
-                engine.setValue(this.group, 'rate',
-                    engine.getValue(this.group, 'rate') + (0.01 * direction));
+                engine.setValue(this.group, "rate",
+                    engine.getValue(this.group, "rate") + (0.01 * direction));
             };
         },
-        shift: function () {
-            this.input = function (channel, control, value, status, group) {
-                var beatJumpSize = engine.getValue(this.group, 'beatjump_size');
+        shift: function() {
+            this.input = function(_channel, _control, value, _status, _group) {
+                var beatJumpSize = engine.getValue(this.group, "beatjump_size");
                 if (theDeck.beatJumpEncoderPressed) {
                     if (value > 64 && beatJumpSize > 1/32) { // turn left
                         beatJumpSize /= 2;
@@ -322,27 +322,27 @@ P32.Deck = function (deckNumbers, channel) {
                         }
                         beatJumpSize *= 2;
                     }
-                    engine.setValue(this.group, 'beatjump_size', beatJumpSize);
+                    engine.setValue(this.group, "beatjump_size", beatJumpSize);
                     theDeck.showBeatjumpSize();
                 } else {
-                    var direction = (value > 64) ? 'backward' : 'forward';
-                    script.triggerControl(this.group, 'beatjump_' + direction);
+                    var direction = (value > 64) ? "backward" : "forward";
+                    script.triggerControl(this.group, "beatjump_" + direction);
                 }
             };
         },
     });
 
     this.tempoAndBeatjumpEncoderPress = new components.Button({
-        unshift: function () {
+        unshift: function() {
             theDeck.loopEncoder.trigger();
-            this.input = function (channel, control, value, status, group) {
+            this.input = function(_channel, _control, value, _status, _group) {
                 if (value === 127) {
-                    engine.setValue(this.group, 'rate', 0);
+                    engine.setValue(this.group, "rate", 0);
                 }
             };
         },
-        shift: function () {
-            this.input = function (channel, control, value, status, group) {
+        shift: function() {
+            this.input = function(_channel, _control, value, _status, _group) {
                 if (value === 127) {
                     theDeck.beatJumpEncoderPressed = true;
                     theDeck.showBeatjumpSize();
@@ -355,12 +355,12 @@ P32.Deck = function (deckNumbers, channel) {
     });
 
     if (mirroredEncoders) {
-        if (channel == 1) { // left deck
+        if (channel === 1) { // left deck
             this.leftEncoder = this.loopEncoder;
             this.leftEncoderPress = this.loopEncoderPress;
             this.rightEncoder = this.tempoAndBeatjumpEncoder;
             this.rightEncoderPress = this.tempoAndBeatjumpEncoderPress;
-        } else if (channel == 2) { // right deck
+        } else if (channel === 2) { // right deck
             this.leftEncoder = this.tempoAndBeatjumpEncoder;
             this.leftEncoderPress = this.tempoAndBeatjumpEncoderPress;
             this.rightEncoder = this.loopEncoder;
@@ -390,8 +390,10 @@ P32.Deck = function (deckNumbers, channel) {
     this.samplerButton = [];
     for (var i = 1; i <= 16; i++) {
         this.hotcueButton[i] = new components.HotcueButton({
-            midi: [0x90 + channel,
-                   P32.PadNumToMIDIControl(i, 3)],
+            midi: [
+                0x90 + channel,
+                P32.PadNumToMIDIControl(i, 3)
+            ],
             number: i,
             on: P32.padColors.red
         });
@@ -409,9 +411,10 @@ P32.Deck = function (deckNumbers, channel) {
             looping: P32.padColors.purple,
         });
         if (samplerCrossfaderAssign) {
-            engine.setValue('[Sampler' + samplerNumber + ']',
-                            'orientation',
-                            (channel === 1) ? 0 : 2
+            engine.setValue(
+                "[Sampler" + samplerNumber + "]",
+                "orientation",
+                (channel === 1) ? 0 : 2
             );
         }
     }
@@ -419,51 +422,76 @@ P32.Deck = function (deckNumbers, channel) {
     // LOOP layer
     this.loopIn = new components.Button({
         midi: [0x90 + channel, 0x50],
-        key: 'loop_in',
+        key: "loop_in",
         on: P32.padColors.red,
         off: P32.padColors.purple,
     });
     this.loopOut = new components.Button({
         midi: [0x90 + channel, 0x51],
-        key: 'loop_out',
+        key: "loop_out",
         on: P32.padColors.red,
         off: P32.padColors.purple,
     });
     this.reloop = new components.Button({
         midi: [0x90 + channel, 0x52],
-        unshift: function () {
-            this.inKey = 'reloop_toggle';
+        unshift: function() {
+            this.inKey = "reloop_toggle";
         },
-        shift: function () {
-            this.inKey = 'reloop_andstop';
+        shift: function() {
+            this.inKey = "reloop_andstop";
         },
         on: P32.padColors.red,
         off: P32.padColors.blue,
-        outKey: 'loop_enabled',
+        outKey: "loop_enabled",
     });
 
     this.tempSlow = new components.Button({
         midi: [0x90 + channel, 0x44],
-        key: 'rate_temp_down',
+        key: "rate_temp_down",
         on: P32.padColors.red,
         off: P32.padColors.purple,
     });
     this.tempFast = new components.Button({
         midi: [0x90 + channel, 0x45],
-        key: 'rate_temp_up',
+        key: "rate_temp_up",
         on: P32.padColors.red,
         off: P32.padColors.purple,
     });
     this.alignBeats = new components.Button({
         midi: [0x90 + channel, 0x46],
-        key: 'beats_translate_curpos',
+        key: "beats_translate_curpos",
         on: P32.padColors.red,
         off: P32.padColors.blue,
     });
 
+    this.syncKey = new components.Button({
+        midi: [0x90 + channel, 0x53],
+        key: "sync_key",
+        on: P32.padColors.blue,
+        off: P32.padColors.red,
+    });
+    this.pitchUp = new components.Button({
+        midi: [0x90 + channel, 0x4F],
+        key: "pitch_up",
+        on: P32.padColors.purple,
+        off: P32.padColors.red,
+    });
+    this.pitchDown = new components.Button({
+        midi: [0x90 + channel, 0x4B],
+        key: "pitch_down",
+        on: P32.padColors.purple,
+        off: P32.padColors.red,
+    });
+    this.resetKey = new components.Button({
+        midi: [0x90 + channel, 0x47],
+        key: "reset_key",
+        on: P32.padColors.blue,
+        off: P32.padColors.red,
+    });
+
     // SLICER layer
     this.enableEffectUnitButtons = [0x40, 0x41, 0x3C, 0x3D].map(
-        function (midiByte, index) {
+        function(midiByte, index) {
             return new components.EffectAssignmentButton({
                 midi: [0x90 + channel, midiByte],
                 effectUnit: index + 1,
@@ -471,8 +499,9 @@ P32.Deck = function (deckNumbers, channel) {
                 on: P32.padColors.blue,
                 off: P32.padColors.red,
             });
-        }
-    , this);
+        },
+        this
+    );
 
     // ============================= TRANSPORT ==================================
     this.sync = new components.SyncButton([0x90 + channel, 0x08]);
@@ -484,8 +513,8 @@ P32.Deck = function (deckNumbers, channel) {
     for (var k = 1; k <= 3; k++) {
         this.eqKnob[k] = new components.Pot({
             midi: [0xB0 + channel, 0x02 + k],
-            group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
-            inKey: 'parameter' + k,
+            group: "[EqualizerRack1_" + this.currentDeck + "_Effect1]",
+            inKey: "parameter" + k,
         });
     }
 
@@ -493,23 +522,23 @@ P32.Deck = function (deckNumbers, channel) {
         midi: [0x90 + channel, 0x10],
         sendShifted: false,
         type: components.Button.prototype.types.toggle,
-        unshift: function () {
+        unshift: function() {
             this.group = theDeck.currentDeck;
-            this.inKey = 'pfl';
+            this.inKey = "pfl";
         },
-        outKey: 'pfl',
-        shift: function () {
-            this.group = '[EffectRack1_EffectUnit' + theDeck.effectUnit.currentUnitNumber + ']';
-            this.inKey = 'group_[Headphone]_enable';
+        outKey: "pfl",
+        shift: function() {
+            this.group = "[EffectRack1_EffectUnit" + theDeck.effectUnit.currentUnitNumber + "]";
+            this.inKey = "group_[Headphone]_enable";
         },
     });
 
     this.volume = new components.Pot({
         midi: [0xB0 + channel, 0x01],
-        inKey: 'volume',
+        inKey: "volume",
     });
 
-    this.reconnectComponents(function (component) {
+    this.reconnectComponents(function(component) {
         if (component.group === undefined) {
             component.group = this.currentDeck;
         }

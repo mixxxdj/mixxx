@@ -19,7 +19,7 @@ class SeratoMarkersEntry {
   public:
     /// We didn't encounter other type IDs as those listed here (e.g. "2") yet.
     /// Apparently these are not used.
-    enum class TypeId : int {
+    enum class TypeId : quint8 {
         /// Used for unset cue points
         Unknown = 0,
         /// Used for set cue points
@@ -34,7 +34,7 @@ class SeratoMarkersEntry {
             bool hasEndPosition,
             int endPosition,
             RgbColor color,
-            int type,
+            quint8 type,
             bool isLocked)
             : m_color(color),
               m_hasStartPosition(hasStartPosition),
@@ -52,7 +52,7 @@ class SeratoMarkersEntry {
     static SeratoMarkersEntryPointer parseID3(const QByteArray& data);
     static SeratoMarkersEntryPointer parseMP4(const QByteArray& data);
 
-    int type() const {
+    quint8 type() const {
         return m_type;
     }
 
@@ -103,7 +103,7 @@ class SeratoMarkersEntry {
     bool m_isLocked;
     quint32 m_startPosition;
     quint32 m_endPosition;
-    int m_type;
+    quint8 m_type;
 };
 
 inline bool operator==(const SeratoMarkersEntry& lhs, const SeratoMarkersEntry& rhs) {
@@ -158,14 +158,14 @@ class SeratoMarkers final {
     const QList<SeratoMarkersEntryPointer>& getEntries() const {
         return m_entries;
     }
-    void setEntries(QList<SeratoMarkersEntryPointer> entries) {
+    void setEntries(const QList<SeratoMarkersEntryPointer>& entries) {
         m_entries = entries;
     }
 
-    RgbColor::optional_t getTrackColor() const {
+    const RgbColor::optional_t& getTrackColor() const {
         return m_trackColor;
     }
-    void setTrackColor(RgbColor::optional_t color) {
+    void setTrackColor(const RgbColor::optional_t& color) {
         m_trackColor = color;
     }
 

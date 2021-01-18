@@ -1,17 +1,18 @@
-#include <QMessageBox>
-#include <QtDebug>
-#include <QStringList>
-#include <QUrl>
-
 #include "library/rhythmbox/rhythmboxfeature.h"
 
-#include "library/baseexternaltrackmodel.h"
+#include <QMessageBox>
+#include <QStringList>
+#include <QUrl>
+#include <QtDebug>
+
 #include "library/baseexternalplaylistmodel.h"
+#include "library/baseexternaltrackmodel.h"
 #include "library/library.h"
+#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
-#include "library/queryutil.h"
+#include "moc_rhythmboxfeature.cpp"
 
 RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
@@ -84,7 +85,7 @@ RhythmboxFeature::~RhythmboxFeature() {
     delete m_pRhythmboxPlaylistModel;
 }
 
-BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
                                             this, m_pLibrary->trackCollections(),
                                             "mixxx.db.model.rhythmbox_playlist",
@@ -145,12 +146,13 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
     if (!db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/rhythmdb.xml");
         if (!db.exists()) {
-            return NULL;
+            return nullptr;
         }
     }
 
-    if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
-        return NULL;
+    if (!db.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return nullptr;
+    }
 
     //Delete all table entries of Traktor feature
     ScopedTransaction transaction(m_database);
@@ -185,12 +187,12 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
         // do error handling
         qDebug() << "Cannot process Rhythmbox music collection";
         qDebug() << "XML ERROR: " << xml.errorString();
-        return NULL;
+        return nullptr;
     }
 
     db.close();
     if (m_cancelImport) {
-        return NULL;
+        return nullptr;
     }
     return importPlaylists();
 }
@@ -200,12 +202,13 @@ TreeItem* RhythmboxFeature::importPlaylists() {
     if (!db.exists()) {
         db.setFileName(QDir::homePath() + "/.local/share/rhythmbox/playlists.xml");
         if (!db.exists()) {
-            return NULL;
+            return nullptr;
         }
     }
     //Open file
-     if (!db.open(QIODevice::ReadOnly | QIODevice::Text))
-        return NULL;
+    if (!db.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return nullptr;
+    }
 
     QSqlQuery query_insert_to_playlists(m_database);
     query_insert_to_playlists.prepare("INSERT INTO rhythmbox_playlists (id, name) "
@@ -406,7 +409,7 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
     }
 }
 
-void RhythmboxFeature::clearTable(QString table_name) {
+void RhythmboxFeature::clearTable(const QString& table_name) {
     qDebug() << "clearTable Thread Id: " << QThread::currentThread();
     QSqlQuery query(m_database);
     query.prepare("delete from "+table_name);

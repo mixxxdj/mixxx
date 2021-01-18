@@ -12,6 +12,7 @@
 #include "library/library.h"
 #include "library/libraryview.h"
 #include "mixer/playermanager.h"
+#include "moc_librarycontrol.cpp"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "widget/wsearchlineedit.h"
@@ -355,7 +356,7 @@ void LibraryControl::slotNumPreviewDecksChanged(double v) {
 
 void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
     if (m_pSidebarWidget) {
-        disconnect(m_pSidebarWidget, 0, this, 0);
+        disconnect(m_pSidebarWidget, nullptr, this, nullptr);
     }
     m_pSidebarWidget = pSidebarWidget;
     connect(m_pSidebarWidget,
@@ -367,7 +368,7 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFilter* pKeyboard) {
     Q_UNUSED(pKeyboard);
     if (m_pLibraryWidget) {
-        disconnect(m_pLibraryWidget, 0, this, 0);
+        disconnect(m_pLibraryWidget, nullptr, this, nullptr);
     }
     m_pLibraryWidget = pLibraryWidget;
     connect(m_pLibraryWidget,
@@ -378,7 +379,7 @@ void LibraryControl::bindLibraryWidget(WLibrary* pLibraryWidget, KeyboardEventFi
 
 void LibraryControl::bindSearchboxWidget(WSearchLineEdit* pSearchbox) {
     if (m_pSearchbox) {
-        disconnect(m_pSearchbox, 0, this, 0);
+        disconnect(m_pSearchbox, nullptr, this, nullptr);
     }
     m_pSearchbox = pSearchbox;
     connect(this,
@@ -405,16 +406,16 @@ void LibraryControl::searchboxWidgetDeleted() {
     m_pSearchbox = nullptr;
 }
 
-void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
+void LibraryControl::slotLoadSelectedTrackToGroup(const QString& group, bool play) {
     if (!m_pLibraryWidget) {
         return;
     }
 
-    LibraryView* activeView = m_pLibraryWidget->getActiveView();
-    if (!activeView) {
+    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+    if (!pActiveView) {
         return;
     }
-    activeView->loadSelectedTrackToGroup(group, play);
+    pActiveView->loadSelectedTrackToGroup(group, play);
 }
 
 void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
@@ -423,11 +424,11 @@ void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
     }
 
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->loadSelectedTrack();
+        pActiveView->loadSelectedTrack();
     }
 }
 
@@ -437,11 +438,11 @@ void LibraryControl::slotAutoDjAddTop(double v) {
     }
 
     if (v > 0) {
-        auto activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->slotAddToAutoDJTop();
+        pActiveView->slotAddToAutoDJTop();
     }
 }
 
@@ -450,11 +451,11 @@ void LibraryControl::slotAutoDjAddBottom(double v) {
         return;
     }
     if (v > 0) {
-        auto activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->slotAddToAutoDJBottom();
+        pActiveView->slotAddToAutoDJBottom();
     }
 }
 
@@ -463,11 +464,11 @@ void LibraryControl::slotAutoDjAddReplace(double v) {
         return;
     }
     if (v > 0) {
-        auto activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->slotAddToAutoDJReplace();
+        pActiveView->slotAddToAutoDJReplace();
     }
 }
 
@@ -490,11 +491,11 @@ void LibraryControl::slotSelectTrack(double v) {
 
     int i = (int)v;
 
-    auto activeView = m_pLibraryWidget->getActiveView();
-    if (!activeView) {
+    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+    if (!pActiveView) {
         return;
     }
-    activeView->moveSelection(i);
+    pActiveView->moveSelection(i);
 }
 
 void LibraryControl::slotMoveUp(double v) {
@@ -605,7 +606,7 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     }
 
     // Send the event pointer to the currently focused widget
-    auto focusWidget = QApplication::focusWidget();
+    auto* focusWidget = QApplication::focusWidget();
     if (focusWidget) {
         for (auto i = 0; i < event.count(); ++i) {
             QApplication::sendEvent(focusWidget, &event);
@@ -692,7 +693,8 @@ void LibraryControl::slotGoToItem(double v) {
         // expanding those root items via controllers is considered dispensable
         // because the subfeatures' actions can't be accessed by controllers anyway.
         if (m_pSidebarWidget->isLeafNodeSelected()) {
-            return setLibraryFocus();
+            setLibraryFocus();
+            return;
         } else {
             // Otherwise toggle the sidebar item expanded state
             slotToggleSelectedSidebarItem(v);
@@ -700,9 +702,10 @@ void LibraryControl::slotGoToItem(double v) {
     }
 
     // Load current track if a LibraryView object has focus
-    LibraryView* activeView = m_pLibraryWidget->getActiveView();
-    if (activeView && activeView->hasFocus()) {
-        return activeView->loadSelectedTrack();
+    LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+    if (pActiveView && pActiveView->hasFocus()) {
+        pActiveView->loadSelectedTrack();
+        return;
     }
 
     // If searchbox has focus jump to the tracks table
@@ -714,7 +717,7 @@ void LibraryControl::slotGoToItem(double v) {
     emit clearSearchIfClearButtonHasFocus();
 
     // If the focused window is a dialog, press Enter
-    auto focusWindow = QApplication::focusWindow();
+    auto* focusWindow = QApplication::focusWindow();
     if (focusWindow && (focusWindow->type() & (Qt::Dialog | Qt::Popup))) {
         QKeyEvent event(QEvent::KeyPress, Qt::Key_Enter, Qt::NoModifier);
         QApplication::sendEvent(focusWindow, &event);
@@ -777,11 +780,11 @@ void LibraryControl::slotTrackColorPrev(double v) {
     }
 
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->assignPreviousTrackColor();
+        pActiveView->assignPreviousTrackColor();
     }
 }
 
@@ -791,10 +794,10 @@ void LibraryControl::slotTrackColorNext(double v) {
     }
 
     if (v > 0) {
-        LibraryView* activeView = m_pLibraryWidget->getActiveView();
-        if (!activeView) {
+        LibraryView* pActiveView = m_pLibraryWidget->getActiveView();
+        if (!pActiveView) {
             return;
         }
-        activeView->assignNextTrackColor();
+        pActiveView->assignNextTrackColor();
     }
 }

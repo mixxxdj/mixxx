@@ -13,6 +13,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "moc_wtracktableview.cpp"
 #include "preferences/colorpalettesettings.h"
 #include "preferences/dialog/dlgpreflibrary.h"
 #include "sources/soundsourceproxy.h"
@@ -27,8 +28,9 @@
 namespace {
 
 const ConfigKey kConfigKeyAllowTrackLoadToPlayingDeck("[Controls]", "AllowTrackLoadToPlayingDeck");
-
-}
+// Default color for the focus border of TableItemDelegates
+const QColor kDefaultFocusBorderColor = Qt::white;
+} // namespace
 
 WTrackTableView::WTrackTableView(QWidget* parent,
         UserSettingsPointer pConfig,
@@ -42,6 +44,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
           m_backgroundColorOpacity(backgroundColorOpacity),
+          m_pFocusBorderColor(kDefaultFocusBorderColor),
           m_sorting(sorting),
           m_selectionChangedSinceLastGuiTick(true),
           m_loadCachedOnly(false) {
@@ -74,7 +77,7 @@ WTrackTableView::WTrackTableView(QWidget* parent,
 
 WTrackTableView::~WTrackTableView() {
     WTrackTableViewHeader* pHeader =
-            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
+            qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (pHeader) {
         pHeader->saveHeaderState();
     }
@@ -148,7 +151,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
         return;
     }
 
-    TrackModel* newModel = 0;
+    TrackModel* newModel = nullptr;
 
     /* If the model has not changed
      * there's no need to exchange the headers
@@ -171,7 +174,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
 
     // Save the previous track model's header state
     WTrackTableViewHeader* oldHeader =
-            dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
+            qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (oldHeader) {
         oldHeader->saveHeaderState();
     }
@@ -181,7 +184,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
     // header. Also, for some reason the WTrackTableView has to be hidden or
     // else problems occur. Since we parent the WtrackTableViewHeader's to the
     // WTrackTableView, they are automatically deleted.
-    auto header = new WTrackTableViewHeader(Qt::Horizontal, this);
+    auto* header = new WTrackTableViewHeader(Qt::Horizontal, this);
 
     // WTF(rryan) The following saves on unnecessary work on the part of
     // WTrackTableHeaderView. setHorizontalHeader() calls setModel() on the
@@ -191,7 +194,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
     // WTrackTableViewHeader, so this is wasteful. Setting a temporary
     // QHeaderView here saves on setModel() calls. Since we parent the
     // QHeaderView to the WTrackTableView, it is automatically deleted.
-    auto tempHeader = new QHeaderView(Qt::Horizontal, this);
+    auto* tempHeader = new QHeaderView(Qt::Horizontal, this);
     /* Tobias Rafreider: DO NOT SET SORTING TO TRUE during header replacement
      * Otherwise, setSortingEnabled(1) will immediately trigger sortByColumn()
      * For some reason this will cause 4 select statements in series
@@ -313,7 +316,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
 }
 
 void WTrackTableView::initTrackMenu() {
-    auto trackModel = getTrackModel();
+    auto* trackModel = getTrackModel();
     DEBUG_ASSERT(trackModel);
 
     if (m_pTrackMenu) {
@@ -345,7 +348,7 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex& index) {
         return;
     }
 
-    auto trackModel = getTrackModel();
+    auto* trackModel = getTrackModel();
     VERIFY_OR_DEBUG_ASSERT(trackModel) {
         return;
     }
@@ -502,7 +505,7 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
 
 // Drag enter event, happens when a dragged item hovers over the track table view
 void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
-    auto trackModel = getTrackModel();
+    auto* trackModel = getTrackModel();
     //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls()) {
         if (event->source() == this) {
@@ -523,7 +526,7 @@ void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
 // It changes the drop handle to a "+" when the drag content is acceptable.
 // Without it, the following drop is ignored.
 void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
-    auto trackModel = getTrackModel();
+    auto* trackModel = getTrackModel();
     // Needed to allow auto-scrolling
     WLibraryTableView::dragMoveEvent(event);
 
@@ -756,7 +759,7 @@ void WTrackTableView::loadSelectedTrack() {
     }
 }
 
-void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
+void WTrackTableView::loadSelectedTrackToGroup(const QString& group, bool play) {
     auto indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         // If the track load override is disabled, check to see if a track is
@@ -771,7 +774,7 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
             }
         }
         auto index = indices.at(0);
-        auto trackModel = getTrackModel();
+        auto* trackModel = getTrackModel();
         TrackPointer pTrack;
         if (trackModel &&
                 (pTrack = trackModel->getTrack(index))) {
@@ -835,7 +838,7 @@ void WTrackTableView::setSelectedTracks(const QList<TrackId>& trackIds) {
 }
 
 void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
-    auto trackModel = getTrackModel();
+    auto* trackModel = getTrackModel();
     if (!trackModel->hasCapabilities(TrackModel::Capability::AddToAutoDJ)) {
         return;
     }

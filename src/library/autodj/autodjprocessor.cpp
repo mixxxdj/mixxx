@@ -6,6 +6,7 @@
 #include "library/trackcollection.h"
 #include "mixer/basetrackplayer.h"
 #include "mixer/playermanager.h"
+#include "moc_autodjprocessor.cpp"
 #include "track/track.h"
 #include "util/math.h"
 
@@ -104,7 +105,7 @@ void DeckAttributes::slotRateChanged(double v) {
 }
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
-    return m_pPlayer != NULL ? m_pPlayer->getLoadedTrack() : TrackPointer();
+    return m_pPlayer != nullptr ? m_pPlayer->getLoadedTrack() : TrackPointer();
 }
 
 AutoDJProcessor::AutoDJProcessor(
@@ -116,13 +117,14 @@ AutoDJProcessor::AutoDJProcessor(
         : QObject(pParent),
           m_pConfig(pConfig),
           m_pPlayerManager(pPlayerManager),
-          m_pAutoDJTableModel(NULL),
+          m_pAutoDJTableModel(nullptr),
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),
           m_transitionTime(kTransitionPreferenceDefault) {
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollectionManager,
                                                  "mixxx.db.model.autodj");
     m_pAutoDJTableModel->setTableModel(iAutoDJPlaylistId);
+    m_pAutoDJTableModel->select();
 
     m_pShufflePlaylist = new ControlPushButton(
             ConfigKey("[AutoDJ]", "shuffle_playlist"));
@@ -133,6 +135,13 @@ AutoDJProcessor::AutoDJProcessor(
             ConfigKey("[AutoDJ]", "skip_next"));
     connect(m_pSkipNext, &ControlObject::valueChanged,
             this, &AutoDJProcessor::controlSkipNext);
+
+    m_pAddRandomTrack = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "add_random_track"));
+    connect(m_pAddRandomTrack,
+            &ControlObject::valueChanged,
+            this,
+            &AutoDJProcessor::controlAddRandomTrack);
 
     m_pFadeNow = new ControlPushButton(
             ConfigKey("[AutoDJ]", "fade_now"));
@@ -151,7 +160,7 @@ AutoDJProcessor::AutoDJProcessor(
         QString group = PlayerManager::groupForDeck(i);
         BaseTrackPlayer* pPlayer = pPlayerManager->getPlayer(group);
         // Shouldn't be possible.
-        if (pPlayer == NULL) {
+        if (pPlayer == nullptr) {
             qWarning() << "PROGRAMMING ERROR deck does not exist" << i;
             continue;
         }
@@ -184,6 +193,7 @@ AutoDJProcessor::~AutoDJProcessor() {
     delete m_pCOCrossfaderReverse;
 
     delete m_pSkipNext;
+    delete m_pAddRandomTrack;
     delete m_pShufflePlaylist;
     delete m_pEnabledAutoDJ;
     delete m_pFadeNow;
@@ -576,6 +586,12 @@ void AutoDJProcessor::controlShuffle(double value) {
 void AutoDJProcessor::controlSkipNext(double value) {
     if (value > 0.0) {
         skipNext();
+    }
+}
+
+void AutoDJProcessor::controlAddRandomTrack(double value) {
+    if (value > 0.0) {
+        emit randomTrackRequested(1);
     }
 }
 
@@ -1103,10 +1119,10 @@ double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
     }
 
     CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
-    if (pFromTrackAudibleSound && pFromTrackAudibleSound->getLength() > 0) {
-        double lastSound = pFromTrackAudibleSound->getEndPosition();
-        if (lastSound > 0) {
-            return samplePositionToSeconds(lastSound, pDeck);
+    if (pFromTrackAudibleSound) {
+        Cue::StartAndEndPositions pos = pFromTrackAudibleSound->getStartAndEndPosition();
+        if (pos.endPosition > 0 && (pos.endPosition - pos.startPosition) > 0) {
+            return samplePositionToSeconds(pos.endPosition, pDeck);
         }
     }
     return getEndSecond(pDeck);
@@ -1612,7 +1628,7 @@ DeckAttributes* AutoDJProcessor::getOtherDeck(
 }
 
 DeckAttributes* AutoDJProcessor::getFromDeck() {
-    for (const auto& pDeck : m_decks) {
+    for (const auto& pDeck : qAsConst(m_decks)) {
         if (pDeck->isFromDeck) {
             return pDeck;
         }

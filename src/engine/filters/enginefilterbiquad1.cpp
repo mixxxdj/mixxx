@@ -1,5 +1,8 @@
-#include <stdio.h>
 #include "engine/filters/enginefilterbiquad1.h"
+
+#include <stdio.h>
+
+#include "moc_enginefilterbiquad1.cpp"
 
 EngineFilterBiquad1LowShelving::EngineFilterBiquad1LowShelving(int sampleRate,
                                                                double centerFreq,
@@ -13,7 +16,7 @@ void EngineFilterBiquad1LowShelving::setFrequencyCorners(int sampleRate,
                                                          double Q,
                                                          double dBgain) {
     format_fidspec(m_spec, sizeof(m_spec), "LsBq/%.10f/%.10f", Q, dBgain);
-    setCoefs(m_spec, sampleRate, centerFreq);
+    setCoefs(m_spec, sizeof(m_spec), sampleRate, centerFreq);
 }
 
 EngineFilterBiquad1Peaking::EngineFilterBiquad1Peaking(int sampleRate,
@@ -27,7 +30,7 @@ void EngineFilterBiquad1Peaking::setFrequencyCorners(int sampleRate,
                                                      double Q,
                                                      double dBgain) {
     format_fidspec(m_spec, sizeof(m_spec), "PkBq/%.10f/%.10f", Q, dBgain);
-    setCoefs(m_spec, sampleRate, centerFreq);
+    setCoefs(m_spec, sizeof(m_spec), sampleRate, centerFreq);
 }
 
 EngineFilterBiquad1HighShelving::EngineFilterBiquad1HighShelving(int sampleRate,
@@ -42,7 +45,7 @@ void EngineFilterBiquad1HighShelving::setFrequencyCorners(int sampleRate,
                                                           double Q,
                                                           double dBgain) {
     format_fidspec(m_spec, sizeof(m_spec), "HsBq/%.10f/%.10f", Q, dBgain);
-    setCoefs(m_spec, sampleRate, centerFreq);
+    setCoefs(m_spec, sizeof(m_spec), sampleRate, centerFreq);
 }
 
 EngineFilterBiquad1Low::EngineFilterBiquad1Low(int sampleRate,
@@ -57,7 +60,7 @@ void EngineFilterBiquad1Low::setFrequencyCorners(int sampleRate,
                                                  double centerFreq,
                                                  double Q) {
     format_fidspec(m_spec, sizeof(m_spec), "LpBq/%.10f", Q);
-    setCoefs(m_spec, sampleRate, centerFreq);
+    setCoefs(m_spec, sizeof(m_spec), sampleRate, centerFreq);
 }
 
 EngineFilterBiquad1Band::EngineFilterBiquad1Band(int sampleRate,
@@ -70,7 +73,7 @@ void EngineFilterBiquad1Band::setFrequencyCorners(int sampleRate,
                                                   double centerFreq,
                                                   double Q) {
     format_fidspec(m_spec, sizeof(m_spec), "BpBq/%.10f", Q);
-    setCoefs(m_spec, sampleRate, centerFreq);
+    setCoefs(m_spec, sizeof(m_spec), sampleRate, centerFreq);
 }
 
 EngineFilterBiquad1High::EngineFilterBiquad1High(int sampleRate,
@@ -85,5 +88,5 @@ void EngineFilterBiquad1High::setFrequencyCorners(int sampleRate,
                                                   double centerFreq,
                                                   double Q) {
     format_fidspec(m_spec, sizeof(m_spec), "HpBq/%.10f", Q);
-    setCoefs(m_spec, sampleRate, centerFreq);
+    setCoefs(m_spec, sizeof(m_spec), sampleRate, centerFreq);
 }

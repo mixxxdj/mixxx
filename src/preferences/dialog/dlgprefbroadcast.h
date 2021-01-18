@@ -1,16 +1,15 @@
-#ifndef DLGPREFBROADCAST_H
-#define DLGPREFBROADCAST_H
+#pragma once
 
 #include <QModelIndex>
 #include <QWidget>
 
-#include "preferences/dialog/ui_dlgprefbroadcastdlg.h"
-#include "control/controlobject.h"
-#include "preferences/usersettings.h"
 #include "broadcast/defs_broadcast.h"
-#include "preferences/dlgpreferencepage.h"
+#include "control/controlobject.h"
 #include "preferences/broadcastsettings.h"
 #include "preferences/broadcastsettingsmodel.h"
+#include "preferences/dialog/dlgpreferencepage.h"
+#include "preferences/dialog/ui_dlgprefbroadcastdlg.h"
+#include "preferences/usersettings.h"
 
 class ControlProxy;
 
@@ -48,7 +47,7 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     void applyModel();
     void updateModel();
     void selectConnectionRow(int row);
-    void selectConnectionRowByName(QString rowName);
+    void selectConnectionRowByName(const QString& rowName);
     void getValuesFromProfile(BroadcastProfilePtr profile);
     void setValuesToProfile(BroadcastProfilePtr profile);
 
@@ -57,5 +56,3 @@ class DlgPrefBroadcast : public DlgPreferencePage, public Ui::DlgPrefBroadcastDl
     ControlProxy* m_pBroadcastEnabled;
     BroadcastProfilePtr m_pProfileListSelection;
 };
-
-#endif

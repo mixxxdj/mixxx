@@ -7,8 +7,8 @@
 #include "track/beatutils.h"
 
 mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const Track& track,
-        QString beatsVersion,
-        QString beatsSubVersion,
+        const QString& beatsVersion,
+        const QString& beatsSubVersion,
         const QByteArray& beatsSerialized) {
     if (beatsVersion == BEAT_GRID_1_VERSION ||
         beatsVersion == BEAT_GRID_2_VERSION) {
@@ -47,7 +47,7 @@ QString BeatFactory::getPreferredSubVersion(
         const bool bEnableOffsetCorrection,
         const int iMinBpm,
         const int iMaxBpm,
-        const QHash<QString, QString> extraVersionInfo) {
+        const QHash<QString, QString>& extraVersionInfo) {
     const char* kSubVersionKeyValueSeparator = "=";
     const char* kSubVersionFragmentSeparator = "|";
     QStringList fragments;
@@ -93,8 +93,8 @@ QString BeatFactory::getPreferredSubVersion(
 }
 
 mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
-        QVector<double> beats,
-        const QHash<QString, QString> extraVersionInfo,
+        const QVector<double>& beats,
+        const QHash<QString, QString>& extraVersionInfo,
         const bool bEnableFixedTempoCorrection,
         const bool bEnableOffsetCorrection,
         const int iSampleRate,

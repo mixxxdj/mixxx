@@ -6,8 +6,7 @@
 //     FLAC -> AIFF for CDJ
 //   * Export sidecar metadata files for import into Mixxx
 
-#ifndef TRACKEXPORT_H
-#define TRACKEXPORT_H
+#pragma once
 
 #include <QScopedPointer>
 #include <QString>
@@ -21,7 +20,7 @@
 class TrackExportWizard : public QObject {
   Q_OBJECT
   public:
-    TrackExportWizard(QWidget* parent, UserSettingsPointer pConfig, TrackPointerList tracks)
+    TrackExportWizard(QWidget* parent, UserSettingsPointer pConfig, const TrackPointerList& tracks)
             : m_parent(parent), m_pConfig(pConfig), m_tracks(tracks) {
     }
     virtual ~TrackExportWizard() { }
@@ -39,5 +38,3 @@ class TrackExportWizard : public QObject {
     QScopedPointer<TrackExportDlg> m_dialog;
     QScopedPointer<TrackExportWorker> m_worker;
 };
-
-#endif  // TRACKEXPORT_H

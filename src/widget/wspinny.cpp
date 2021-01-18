@@ -11,6 +11,7 @@
 #include "control/controlproxy.h"
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "moc_wspinny.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
@@ -59,7 +60,6 @@ WSpinny::WSpinny(
           m_iStartMouseY(-1),
           m_iFullRotations(0),
           m_dPrevTheta(0.),
-          m_dTheta(0.),
           m_dRotationsPerSecond(MIXXX_VINYL_SPEED_33_NUM / 60),
           m_bClampFailedWarning(false),
           m_bGhostPlayback(false),
@@ -87,18 +87,14 @@ WSpinny::WSpinny(
     }
 
     if (m_pPlayer != nullptr) {
-        connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-                this, SLOT(slotLoadTrack(TrackPointer)));
-        connect(m_pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-                this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+        connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WSpinny::slotLoadTrack);
+        connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WSpinny::slotLoadingTrack);
         // just in case a track is already loaded
         slotLoadTrack(m_pPlayer->getLoadedTrack());
     }
 
-    connect(m_pCoverMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-        this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
-    connect(m_pCoverMenu, SIGNAL(reloadCoverArt()),
-        this, SLOT(slotReloadCoverArt()));
+    connect(m_pCoverMenu, &WCoverArtMenu::coverInfoSelected, this, &WSpinny::slotCoverInfoSelected);
+    connect(m_pCoverMenu, &WCoverArtMenu::reloadCoverArt, this, &WSpinny::slotReloadCoverArt);
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -237,16 +233,20 @@ void WSpinny::setup(const QDomNode& node, const SkinContext& context) {
 
 void WSpinny::slotLoadTrack(TrackPointer pTrack) {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                   this, SLOT(slotTrackCoverArtUpdated()));
+        disconnect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WSpinny::slotTrackCoverArtUpdated);
     }
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();
     m_loadedCoverScaled = QPixmap();
     m_loadedTrack = pTrack;
     if (m_loadedTrack) {
-        connect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                this, SLOT(slotTrackCoverArtUpdated()));
+        connect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WSpinny::slotTrackCoverArtUpdated);
     }
 
     slotTrackCoverArtUpdated();
@@ -255,8 +255,10 @@ void WSpinny::slotLoadTrack(TrackPointer pTrack) {
 void WSpinny::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
     Q_UNUSED(pNewTrack);
     if (m_loadedTrack && pOldTrack == m_loadedTrack) {
-        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                   this, SLOT(slotTrackCoverArtUpdated()));
+        disconnect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WSpinny::slotTrackCoverArtUpdated);
     }
     m_loadedTrack.reset();
     m_lastRequestedCover = CoverInfo();
@@ -311,7 +313,7 @@ void WSpinny::render(VSyncThread* vSyncThread) {
         return;
     }
 
-    auto window = windowHandle();
+    auto* window = windowHandle();
     if (window == nullptr || !window->isExposed()) {
         return;
     }
@@ -397,9 +399,12 @@ void WSpinny::swap() {
     if (!isValid() || !isVisible()) {
         return;
     }
-    auto window = windowHandle();
+    auto* window = windowHandle();
     if (window == nullptr || !window->isExposed()) {
         return;
+    }
+    if (context() != QGLContext::currentContext()) {
+        makeCurrent();
     }
     swapBuffers();
 }
@@ -585,7 +590,7 @@ void WSpinny::mouseMoveEvent(QMouseEvent * e) {
         double absPos = calculatePositionFromAngle(theta);
         double absPosInSamples = absPos * m_pTrackSamples->get();
         m_pScratchPos->set(absPosInSamples - m_dInitialPos);
-    } else if (e->buttons() & Qt::MidButton) {
+    } else if (e->buttons() & Qt::MiddleButton) {
     } else if (e->buttons() & Qt::NoButton) {
         setCursor(QCursor(Qt::OpenHandCursor));
     }

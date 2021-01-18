@@ -58,8 +58,8 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     void search(const QString& searchText, const QString& extraFilter = QString()) override;
     const QString currentSearch() const override;
 
-    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int column) override;
-    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
+    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int column) const override;
+    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
 
     void hideTracks(const QModelIndexList& indices) override;
 
@@ -102,7 +102,7 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
 
   private slots:
-    void tracksChanged(QSet<TrackId> trackIds);
+    void tracksChanged(const QSet<TrackId>& trackIds);
 
   private:
     void setTrackValueForColumn(

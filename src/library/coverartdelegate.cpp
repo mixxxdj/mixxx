@@ -6,6 +6,7 @@
 #include "library/coverartcache.h"
 #include "library/dao/trackschema.h"
 #include "library/trackmodel.h"
+#include "moc_coverartdelegate.cpp"
 #include "track/track.h"
 #include "util/logger.h"
 
@@ -113,12 +114,13 @@ void CoverArtDelegate::paintItem(
     VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }
+    bool drewPixmap = false;
     if (coverInfo.hasImage()) {
         VERIFY_OR_DEBUG_ASSERT(m_pCache) {
             return;
         }
         const double scaleFactor =
-                getDevicePixelRatioF(static_cast<QWidget*>(parent()));
+                getDevicePixelRatioF(qobject_cast<QWidget*>(parent()));
         QPixmap pixmap = m_pCache->tryLoadCover(this,
                 coverInfo,
                 static_cast<int>(option.rect.width() * scaleFactor),
@@ -140,7 +142,7 @@ void CoverArtDelegate::paintItem(
             // Cache hit
             pixmap.setDevicePixelRatio(scaleFactor);
             painter->drawPixmap(option.rect.topLeft(), pixmap);
-            return;
+            drewPixmap = true;
         }
     }
     // Fallback: Use the (background) color as a placeholder:
@@ -148,8 +150,29 @@ void CoverArtDelegate::paintItem(
     //  - if the audio file with embedded cover art is missing
     //  - if the external image file with custom cover art is missing
     // Since the background color is calculated from the cover art image
-    // it is optional and may not always be available
-    if (coverInfo.color) {
+    // it is optional and may not always be available. The background
+    // color may even be set manually without having a cover image.
+    if (!drewPixmap && coverInfo.color) {
         painter->fillRect(option.rect, mixxx::RgbColor::toQColor(coverInfo.color));
+    }
+
+    // Draw a border if the cover art cell has focus
+    if (option.state & QStyle::State_HasFocus) {
+        // This uses a color from the stylesheet:
+        // WTrackTableView {
+        //   qproperty-focusBorderColor: red;
+        // }
+        QPen borderPen(
+                m_pFocusBorderColor,
+                1,
+                Qt::SolidLine,
+                Qt::SquareCap);
+        painter->setPen(borderPen);
+        painter->setBrush(QBrush(Qt::transparent));
+        painter->drawRect(
+                option.rect.left(),
+                option.rect.top(),
+                option.rect.width() - 1,
+                option.rect.height() - 1);
     }
 }

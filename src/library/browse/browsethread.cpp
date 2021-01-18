@@ -2,12 +2,15 @@
  * browsethread.cpp         (C) 2011 Tobias Rafreider
  */
 
+#include "library/browse/browsethread.h"
+
 #include <QDateTime>
 #include <QDirIterator>
 #include <QStringList>
 #include <QtDebug>
 
 #include "library/browse/browsetablemodel.h"
+#include "moc_browsethread.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/datetime.h"
@@ -30,7 +33,7 @@ static QMutex s_Mutex;
 BrowseThread::BrowseThread(QObject *parent)
         : QThread(parent) {
     m_bStopThread = false;
-    m_model_observer = NULL;
+    m_model_observer = nullptr;
     //start Thread
     start(QThread::LowPriority);
 
@@ -93,24 +96,23 @@ namespace {
 
 class YearItem: public QStandardItem {
 public:
-    explicit YearItem(QString year):
-        QStandardItem(year) {
-    }
+  explicit YearItem(const QString& year)
+          : QStandardItem(year) {
+  }
 
-    QVariant data(int role) const {
-        switch (role) {
-        case Qt::DisplayRole:
-        {
-            const QString year(QStandardItem::data(role).toString());
-            return mixxx::TrackMetadata::formatCalendarYear(year);
-        }
-        default:
-            return QStandardItem::data(role);
-        }
-    }
+  QVariant data(int role) const override {
+      switch (role) {
+      case Qt::DisplayRole: {
+          const QString year(QStandardItem::data(role).toString());
+          return mixxx::TrackMetadata::formatCalendarYear(year);
+      }
+      default:
+          return QStandardItem::data(role);
+      }
+  }
 };
 
-}
+} // namespace
 
 void BrowseThread::populateModel() {
     m_path_mutex.lock();
@@ -142,7 +144,8 @@ void BrowseThread::populateModel() {
 
         if (thisPath.dir() != newPath.dir()) {
             qDebug() << "Abort populateModel()";
-            return populateModel();
+            populateModel();
+            return;
         }
 
         QList<QStandardItem*> row_data;

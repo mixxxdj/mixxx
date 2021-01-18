@@ -5,8 +5,7 @@
  *      Author: Vittorio Colao
  *       */
 
-#ifndef ANALYZER_ANALYZERGAIN_H
-#define ANALYZER_ANALYZERGAIN_H
+#pragma once
 
 #include "analyzer/analyzer.h"
 #include "preferences/replaygainsettings.h"
@@ -34,5 +33,3 @@ class AnalyzerGain : public Analyzer {
     ReplayGain* m_pReplayGain;
     int m_iBufferSize;
 };
-
-#endif /* ANALYZER_ANALYZERGAIN_H */

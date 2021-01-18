@@ -107,7 +107,7 @@ bool parseDuration(
 }
 
 void readElementArtistCredit(QXmlStreamReader& reader, QString& artistName, QUuid& artistId) {
-    DEBUG_ASSERT(reader.name() == QStringLiteral("artist-credit"));
+    DEBUG_ASSERT(reader.name() == QLatin1String("artist-credit"));
     DEBUG_ASSERT(artistName.isEmpty());
     DEBUG_ASSERT(artistId.isNull());
 
@@ -115,7 +115,7 @@ void readElementArtistCredit(QXmlStreamReader& reader, QString& artistName, QUui
     while (continueReading(reader)) {
         const QXmlStreamReader::TokenType type = reader.readNext();
         if (type == QXmlStreamReader::StartElement) {
-            if (reader.name() == QStringLiteral("name-credit")) {
+            if (reader.name() == QLatin1String("name-credit")) {
                 QString thisJoinPhrase = nextJoinPhrase;
                 nextJoinPhrase = reader.attributes().value(QStringLiteral("joinphrase")).toString();
                 QString creditedName;
@@ -123,9 +123,9 @@ void readElementArtistCredit(QXmlStreamReader& reader, QString& artistName, QUui
                 while (continueReading(reader)) {
                     const QXmlStreamReader::TokenType type = reader.readNext();
                     if (type == QXmlStreamReader::StartElement) {
-                        if (reader.name() == QStringLiteral("name")) {
+                        if (reader.name() == QLatin1String("name")) {
                             creditedName = reader.readElementText();
-                        } else if (reader.name() == QStringLiteral("artist")) {
+                        } else if (reader.name() == QLatin1String("artist")) {
                             // Consume artist
                             if (artistId.isNull()) {
                                 artistId = QUuid(reader.attributes().value(QStringLiteral("id")).toString());
@@ -139,7 +139,7 @@ void readElementArtistCredit(QXmlStreamReader& reader, QString& artistName, QUui
                                 while (continueReading(reader)) {
                                     const QXmlStreamReader::TokenType type = reader.readNext();
                                     if (type == QXmlStreamReader::StartElement) {
-                                        if (reader.name() == QStringLiteral("name")) {
+                                        if (reader.name() == QLatin1String("name")) {
                                             creditedName = reader.readElementText();
                                         } else {
                                             skipCurrentElement(reader);
@@ -178,7 +178,7 @@ void readElementArtistCredit(QXmlStreamReader& reader, QString& artistName, QUui
 
 TrackRelease readElementRelease(
         QXmlStreamReader& reader) {
-    DEBUG_ASSERT(reader.name() == QStringLiteral("release"));
+    DEBUG_ASSERT(reader.name() == QLatin1String("release"));
 
     QString firstReleaseDate;
     QString releaseGroupTitle;
@@ -193,18 +193,18 @@ TrackRelease readElementRelease(
     while (continueReading(reader)) {
         const QXmlStreamReader::TokenType type = reader.readNext();
         if (type == QXmlStreamReader::StartElement) {
-            if (reader.name() == QStringLiteral("title")) {
+            if (reader.name() == QLatin1String("title")) {
                 DEBUG_ASSERT(trackRelease.albumTitle.isNull());
                 trackRelease.albumTitle = reader.readElementText();
-            } else if (reader.name() == QStringLiteral("disambiguation")) {
+            } else if (reader.name() == QLatin1String("disambiguation")) {
                 DEBUG_ASSERT(releaseTitleDisambiguation.isNull());
                 releaseTitleDisambiguation = reader.readElementText();
-            } else if (reader.name() == QStringLiteral("artist-credit")) {
+            } else if (reader.name() == QLatin1String("artist-credit")) {
                 readElementArtistCredit(reader, trackRelease.albumArtist, trackRelease.albumArtistId);
-            } else if (reader.name() == QStringLiteral("date")) {
+            } else if (reader.name() == QLatin1String("date")) {
                 DEBUG_ASSERT(trackRelease.date.isNull());
                 trackRelease.date = reader.readElementText();
-            } else if (reader.name() == QStringLiteral("release-group")) {
+            } else if (reader.name() == QLatin1String("release-group")) {
                 DEBUG_ASSERT(trackRelease.releaseGroupId.isNull());
                 trackRelease.releaseGroupId = QUuid(reader.attributes().value(QStringLiteral("id")).toString());
                 DEBUG_ASSERT(!trackRelease.releaseGroupId.isNull());
@@ -214,11 +214,11 @@ TrackRelease readElementRelease(
                 while (continueReading(reader)) {
                     const QXmlStreamReader::TokenType type = reader.readNext();
                     if (type == QXmlStreamReader::StartElement) {
-                        if (reader.name() == QStringLiteral("first-release-date")) {
+                        if (reader.name() == QLatin1String("first-release-date")) {
                             firstReleaseDate = reader.readElementText();
-                        } else if (reader.name() == QStringLiteral("title")) {
+                        } else if (reader.name() == QLatin1String("title")) {
                             releaseGroupTitle = reader.readElementText();
-                        } else if (reader.name() == QStringLiteral("artist-credit")) {
+                        } else if (reader.name() == QLatin1String("artist-credit")) {
                             readElementArtistCredit(reader, releaseGroupArtist, releaseGroupArtistId);
                         } else {
                             skipCurrentElement(reader);
@@ -227,7 +227,7 @@ TrackRelease readElementRelease(
                         break;
                     }
                 }
-            } else if (reader.name() == QStringLiteral("medium-list")) {
+            } else if (reader.name() == QLatin1String("medium-list")) {
                 DEBUG_ASSERT(trackRelease.discTotal.isNull());
                 trackRelease.discTotal = reader.attributes().value(QStringLiteral("count")).toString();
                 // Consume medium-list (with a single medium element)
@@ -235,7 +235,7 @@ TrackRelease readElementRelease(
                 while (continueReading(reader)) {
                     const QXmlStreamReader::TokenType type = reader.readNext();
                     if (type == QXmlStreamReader::StartElement) {
-                        if (reader.name() == QStringLiteral("medium")) {
+                        if (reader.name() == QLatin1String("medium")) {
                             // Consume medium
                             VERIFY_OR_DEBUG_ASSERT(++mediumCount == 1) {
                                 kLogger.warning()
@@ -248,17 +248,17 @@ TrackRelease readElementRelease(
                             while (continueReading(reader)) {
                                 const QXmlStreamReader::TokenType type = reader.readNext();
                                 if (type == QXmlStreamReader::StartElement) {
-                                    if (reader.name() == QStringLiteral("position")) {
+                                    if (reader.name() == QLatin1String("position")) {
                                         DEBUG_ASSERT(trackRelease.discNumber.isNull());
                                         trackRelease.discNumber = reader.readElementText();
-                                    } else if (reader.name() == QStringLiteral("number")) {
+                                    } else if (reader.name() == QLatin1String("number")) {
                                         // Literal, non-numeric disc number
                                         DEBUG_ASSERT(discNumber.isNull());
                                         discNumber = reader.readElementText();
-                                    } else if (reader.name() == QStringLiteral("format")) {
+                                    } else if (reader.name() == QLatin1String("format")) {
                                         DEBUG_ASSERT(trackRelease.mediumFormat.isNull());
                                         trackRelease.mediumFormat = reader.readElementText();
-                                    } else if (reader.name() == QStringLiteral("track-list")) {
+                                    } else if (reader.name() == QLatin1String("track-list")) {
                                         DEBUG_ASSERT(trackRelease.trackTotal.isNull());
                                         trackRelease.trackTotal = reader.attributes().value(QStringLiteral("count")).toString();
                                         // Consume track-list (with a single track element)
@@ -266,7 +266,7 @@ TrackRelease readElementRelease(
                                         while (continueReading(reader)) {
                                             const QXmlStreamReader::TokenType type = reader.readNext();
                                             if (type == QXmlStreamReader::StartElement) {
-                                                if (reader.name() == QStringLiteral("track")) {
+                                                if (reader.name() == QLatin1String("track")) {
                                                     // Consume track
                                                     VERIFY_OR_DEBUG_ASSERT(++trackCount == 1) {
                                                         kLogger.warning()
@@ -282,17 +282,21 @@ TrackRelease readElementRelease(
                                                     while (continueReading(reader)) {
                                                         const QXmlStreamReader::TokenType type = reader.readNext();
                                                         if (type == QXmlStreamReader::StartElement) {
-                                                            if (reader.name() == QStringLiteral("position")) {
+                                                            if (reader.name() ==
+                                                                    QLatin1String("position")) {
                                                                 DEBUG_ASSERT(trackRelease.trackNumber.isNull());
                                                                 trackRelease.trackNumber = reader.readElementText();
-                                                            } else if (reader.name() == QStringLiteral("number")) {
+                                                            } else if (reader.name() ==
+                                                                    QLatin1String("number")) {
                                                                 // Literal, non-numeric track number
                                                                 DEBUG_ASSERT(trackNumber.isNull());
                                                                 trackNumber = reader.readElementText();
-                                                            } else if (reader.name() == QStringLiteral("title")) {
+                                                            } else if (reader.name() ==
+                                                                    QLatin1String("title")) {
                                                                 DEBUG_ASSERT(trackRelease.title.isNull());
                                                                 trackRelease.title = reader.readElementText();
-                                                            } else if (reader.name() == QStringLiteral("length")) {
+                                                            } else if (reader.name() ==
+                                                                    QLatin1String("length")) {
                                                                 DEBUG_ASSERT(trackRelease.duration == Duration::empty());
                                                                 parseDuration(reader.readElementText(), &trackRelease.duration);
                                                             } else {
@@ -359,7 +363,7 @@ TrackRelease readElementRelease(
 }
 
 QPair<QList<TrackRelease>, bool> readElementRecording(QXmlStreamReader& reader) {
-    DEBUG_ASSERT(reader.name() == QStringLiteral("recording"));
+    DEBUG_ASSERT(reader.name() == QLatin1String("recording"));
 
     QList<TrackRelease> trackReleases;
     const auto recordingId =
@@ -375,23 +379,22 @@ QPair<QList<TrackRelease>, bool> readElementRecording(QXmlStreamReader& reader) 
     while (continueReading(reader)) {
         const QXmlStreamReader::TokenType type = reader.readNext();
         if (type == QXmlStreamReader::StartElement) {
-            const QStringRef name = reader.name();
-            if (reader.name() == QStringLiteral("title")) {
+            if (reader.name() == QLatin1String("title")) {
                 DEBUG_ASSERT(recordingTitle.isNull());
                 recordingTitle = reader.readElementText();
-            } else if (reader.name() == QStringLiteral("length")) {
+            } else if (reader.name() == QLatin1String("length")) {
                 DEBUG_ASSERT(recordingDuration == Duration::empty());
                 parseDuration(reader.readElementText(), &recordingDuration);
-            } else if (reader.name() == QStringLiteral("artist-credit")) {
+            } else if (reader.name() == QLatin1String("artist-credit")) {
                 readElementArtistCredit(reader, recordingArtist, recordingArtistId);
-            } else if (reader.name() == QStringLiteral("release-list")) {
+            } else if (reader.name() == QLatin1String("release-list")) {
                 // Consume release-list
                 while (continueReading(reader)) {
                     const QXmlStreamReader::TokenType type = reader.readNext();
                     if (type == QXmlStreamReader::StartElement) {
-                        if (reader.name() == QStringLiteral("release")) {
+                        if (reader.name() == QLatin1String("release")) {
                             trackReleases.append(readElementRelease(reader));
-                        } else if (reader.name() == QStringLiteral("release-group")) {
+                        } else if (reader.name() == QLatin1String("release-group")) {
                             DEBUG_ASSERT(releaseGroupId.isNull());
                             releaseGroupId = QUuid(reader.attributes().value(QStringLiteral("id")).toString());
                             DEBUG_ASSERT(!releaseGroupId.isNull());
@@ -451,11 +454,10 @@ Error::Error(
         : Error() {
     while (continueReading(reader)) {
         if (reader.readNext() == QXmlStreamReader::StartElement) {
-            const QStringRef name = reader.name();
-            if (name == QStringLiteral("message")) {
+            if (reader.name() == QLatin1String("message")) {
                 DEBUG_ASSERT(message == Error().message);
                 message = reader.readElementText();
-            } else if (name == QStringLiteral("code")) {
+            } else if (reader.name() == QLatin1String("code")) {
                 DEBUG_ASSERT(code == Error().code);
                 bool ok;
                 int val = reader.readElementText().toInt(&ok);
@@ -468,7 +470,6 @@ Error::Error(
 }
 
 QPair<QList<TrackRelease>, bool> parseRecordings(QXmlStreamReader& reader) {
-    QStringRef codecName;
     QList<TrackRelease> trackReleases;
     while (continueReading(reader)) {
         switch (reader.readNext()) {
@@ -476,15 +477,9 @@ QPair<QList<TrackRelease>, bool> parseRecordings(QXmlStreamReader& reader) {
         {
             return qMakePair(trackReleases, false);
         }
-        case QXmlStreamReader::StartDocument:
-        {
-            // The character encoding is always an ASCII string
-            codecName = reader.documentEncoding();
-            break;
-        }
         case QXmlStreamReader::StartElement:
         {
-            if (reader.name() == QStringLiteral("recording")) {
+            if (reader.name() == QLatin1String("recording")) {
                 auto recordingResult = readElementRecording(reader);
                 trackReleases += recordingResult.first;
                 if (!recordingResult.second) {

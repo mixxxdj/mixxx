@@ -30,7 +30,7 @@ DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     config.stepSize = stepSize;
     config.frameLength = windowSize;
     config.dbRise = 3;
-    config.adaptiveWhitening = 0;
+    config.adaptiveWhitening = false;
     config.whiteningRelaxCoeff = -1;
     config.whiteningFloor = -1;
     return config;
@@ -78,7 +78,7 @@ bool AnalyzerQueenMaryBeats::processSamples(const CSAMPLE* pIn, const int iLen) 
 bool AnalyzerQueenMaryBeats::finalize() {
     m_helper.finalize();
 
-    int nonZeroCount = m_detectionResults.size();
+    int nonZeroCount = static_cast<int>(m_detectionResults.size());
     while (nonZeroCount > 0 && m_detectionResults.at(nonZeroCount - 1) <= 0.0) {
         --nonZeroCount;
     }
@@ -103,7 +103,7 @@ bool AnalyzerQueenMaryBeats::finalize() {
     std::vector<double> beats;
     tt.calculateBeats(df, beatPeriod, beats);
 
-    m_resultBeats.reserve(beats.size());
+    m_resultBeats.reserve(static_cast<int>(beats.size()));
     for (size_t i = 0; i < beats.size(); ++i) {
         double result = (beats.at(i) * m_stepSize) - m_stepSize / 2;
         m_resultBeats.push_back(result);

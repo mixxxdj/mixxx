@@ -16,6 +16,7 @@
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
+#include "util/cmdlineargs.h"
 
 namespace {
 
@@ -32,9 +33,34 @@ QFile s_logfile;
 // Whether to break on debug assertions.
 bool s_debugAssertBreak = false;
 
+// Note:
+// you can customize this pattern by starting Mixxx with
+// QT_MESSAGE_PATTERN="%{message}" mixxx
+// For debugging timing related issues
+// QT_MESSAGE_PATTERN="%{time yyyyMMdd h:mm:ss.zzz} %{type} [{{threadname}}] %{message}"
+// Or for for finding the origin (in Debug builds)
+// QT_MESSAGE_PATTERN="%{type} [{{threadname}}] %{file}:%{line} %{message}"
+// QT_MESSAGE_PATTERN="%{type} [{{threadname}}] %{function} %{message}"
+// TODO: Adjust the default format and messages and collect file and function info in release builds as well.
+
 const QString kThreadNamePattern = QStringLiteral("{{threadname}}");
 const QString kDefaultMessagePattern = QStringLiteral("%{type} [") +
         kThreadNamePattern + QStringLiteral("] %{message}");
+
+const QString kDefaultMessagePatternColor =
+        QStringLiteral(
+                "%{if-category}\033[35m %{category}:\033[35m%{endif}"
+                "%{if-debug}\033[34m%{type}%{endif}"
+                "%{if-info}\033[32m%{type}%{endif}"
+                "%{if-warning}\033[93m%{type}%{endif}"
+                "%{if-critical}\033[91m%{type}%{endif}"
+                "\033[0m [\033[97m") +
+        kThreadNamePattern +
+        QStringLiteral(
+                "\033[0m] "
+                "%{if-fatal}\033[97m\033[41m%{type} "
+                "\033[30m%{file}:%{line}\033[0m %{endif}"
+                "%{message}");
 
 const QLoggingCategory kDefaultLoggingCategory = QLoggingCategory(nullptr);
 
@@ -126,7 +152,7 @@ inline void writeToStdErr(
                     .toLocal8Bit();
 
     QMutexLocker locked(&s_mutexStdErr);
-    const size_t written = fwrite(
+    const std::size_t written = fwrite(
             formattedMessage.constData(), sizeof(char), formattedMessage.size(), stderr);
     Q_UNUSED(written);
     DEBUG_ASSERT(written == static_cast<size_t>(formattedMessage.size()));
@@ -318,7 +344,9 @@ void Logging::initialize(
 
     s_debugAssertBreak = debugAssertBreak;
 
-    if (qgetenv("QT_MESSAGE_PATTERN").isEmpty()) {
+    if (CmdlineArgs::Instance().useColors()) {
+        qSetMessagePattern(kDefaultMessagePatternColor);
+    } else {
         qSetMessagePattern(kDefaultMessagePattern);
     }
 

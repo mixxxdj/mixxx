@@ -1,6 +1,3 @@
-// broadcastprofile.cpp
-// Created June 2nd 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
 #include <QEventLoop>
 #include <QFile>
 #include <QFileInfo>
@@ -15,14 +12,14 @@ using namespace QKeychain;
 #endif // __QTKEYCHAIN__
 
 #include "broadcast/defs_broadcast.h"
-#include "recording/defs_recording.h"
-#include "defs_urls.h"
-#include "util/compatibility.h"
-#include "util/xml.h"
-#include "util/memory.h"
-#include "util/logger.h"
-
 #include "broadcastprofile.h"
+#include "defs_urls.h"
+#include "moc_broadcastprofile.cpp"
+#include "recording/defs_recording.h"
+#include "util/compatibility.h"
+#include "util/logger.h"
+#include "util/memory.h"
+#include "util/xml.h"
 
 namespace {
 constexpr const char* kDoctype = "broadcastprofile";
@@ -111,8 +108,9 @@ QString BroadcastProfile::stripForbiddenChars(const QString& str) {
 BroadcastProfilePtr BroadcastProfile::loadFromFile(
         const QString& filename) {
     QFileInfo xmlFile(filename);
-    if (!xmlFile.exists())
+    if (!xmlFile.exists()) {
         return BroadcastProfilePtr(nullptr);
+    }
 
     QString profileFilename = xmlFile.baseName();
     // The profile filename (without extension) is used to create the instance
@@ -263,8 +261,9 @@ void BroadcastProfile::adoptDefaultValues() {
 
 bool BroadcastProfile::loadValues(const QString& filename) {
     QDomElement doc = XmlParse::openXMLFile(filename, kDoctype);
-    if (doc.childNodes().size() < 1)
+    if (doc.childNodes().size() < 1) {
         return false;
+    }
 
     m_filename = filename;
 
@@ -457,8 +456,7 @@ bool BroadcastProfile::setSecurePassword(const QString& login, const QString& pa
     writeJob.setTextData(password);
 
     QEventLoop loop;
-    writeJob.connect(&writeJob, SIGNAL(finished(QKeychain::Job*)),
-                     &loop, SLOT(quit()));
+    writeJob.connect(&writeJob, &WritePasswordJob::finished, &loop, &QEventLoop::quit);
     writeJob.start();
     loop.exec();
 
@@ -488,8 +486,7 @@ QString BroadcastProfile::getSecurePassword(const QString& login) {
     readJob.setKey(login);
 
     QEventLoop loop;
-    readJob.connect(&readJob, SIGNAL(finished(QKeychain::Job*)),
-                    &loop, SLOT(quit()));
+    readJob.connect(&readJob, &ReadPasswordJob::finished, &loop, &QEventLoop::quit);
     readJob.start();
     loop.exec();
 

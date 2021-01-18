@@ -1,4 +1,6 @@
 #include "widget/wkey.h"
+
+#include "moc_wkey.cpp"
 #include "track/keys.h"
 #include "track/keyutils.h"
 

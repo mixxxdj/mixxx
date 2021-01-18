@@ -1,6 +1,7 @@
 #include "library/treeitemmodel.h"
 
 #include "library/treeitem.h"
+#include "moc_treeitemmodel.cpp"
 
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:
@@ -129,8 +130,10 @@ QModelIndex TreeItemModel::parent(const QModelIndex& index) const {
 
     TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
     TreeItem *parentItem = childItem->parent();
-    if (parentItem == getRootItem()) {
+    if (!parentItem) {
         return QModelIndex();
+    } else if (parentItem == getRootItem()) {
+        return createIndex(0, 0, getRootItem());
     } else {
         return createIndex(parentItem->parentRow(), 0, parentItem);
     }
@@ -159,6 +162,10 @@ TreeItem* TreeItemModel::setRootItem(std::unique_ptr<TreeItem> pRootItem) {
     m_pRootItem = std::move(pRootItem);
     endResetModel();
     return getRootItem();
+}
+
+const QModelIndex TreeItemModel::getRootIndex() {
+    return createIndex(0, 0, getRootItem());
 }
 
 /**

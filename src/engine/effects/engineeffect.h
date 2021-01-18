@@ -1,5 +1,4 @@
-#ifndef ENGINEEFFECT_H
-#define ENGINEEFFECT_H
+#pragma once
 
 #include <QMap>
 #include <QString>
@@ -71,5 +70,3 @@ class EngineEffect : public EffectsRequestHandler {
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffect);
 };
-
-#endif /* ENGINEEFFECT_H */

@@ -1,10 +1,12 @@
 Debug
 Release
+.vs/
 *.exp
 *.ilk
 *.lib
 *.suo
 *.vcproj.*
+*.vcxproj.*
 *.ncb
 *.suo
 *.dll

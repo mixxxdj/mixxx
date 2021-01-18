@@ -115,7 +115,7 @@ class ReadAheadFrameBuffer final {
     /// Returns the remaining portion that could not be filled from
     /// the buffer.
     WritableSampleFrames drainBuffer(
-            WritableSampleFrames outputBuffer);
+            const WritableSampleFrames& outputBuffer);
 
     /// Fills first the output buffer and then the internal buffer with
     /// the data from the input buffer. The whole input buffer is consumed.
@@ -136,7 +136,7 @@ class ReadAheadFrameBuffer final {
     /// Returns the remaining portion that could not be filled from
     /// the buffer.
     WritableSampleFrames consumeAndFillBuffer(ReadableSampleFrames inputBuffer,
-            WritableSampleFrames outputBuffer,
+            const WritableSampleFrames& outputBuffer,
             FrameIndex minOutputIndex,
             std::pair<DiscontinuityOverlapMode, DiscontinuityGapMode>
                     discontinuityModes = std::make_pair(
@@ -156,7 +156,7 @@ class ReadAheadFrameBuffer final {
     /// Returns the unread portion of the readable sample frames,
     /// which should typically be empty.
     ReadableSampleFrames fillBuffer(
-            ReadableSampleFrames inputBuffer,
+            const ReadableSampleFrames& inputBuffer,
             DiscontinuityGapMode discontinuityGapMode);
 
     /// Advance the read position thereby discarding samples

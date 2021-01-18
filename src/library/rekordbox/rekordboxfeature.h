@@ -1,6 +1,3 @@
-// rekordboxfeature.h
-// Created 05/24/2019 by Evan Dekker
-
 // This feature reads tracks, playlists and folders from removable Recordbox
 // prepared devices (USB drives, etc), by parsing the binary *.PDB files
 // stored on each removable device. It does not read the locally stored
@@ -25,8 +22,7 @@
 
 //      https://github.com/Deep-Symmetry/crate-digger/blob/master/src/main/kaitai/rekordbox_pdb.ksy
 
-#ifndef REKORDBOX_FEATURE_H
-#define REKORDBOX_FEATURE_H
+#pragma once
 
 #include <QFuture>
 #include <QFutureWatcher>
@@ -82,7 +78,7 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
 
   private:
     QString formatRootViewHtml() const;
-    BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) override;
+    BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
 
     TreeItemModel m_childModel;
     RekordboxPlaylistModel* m_pRekordboxPlaylistModel;
@@ -96,5 +92,3 @@ class RekordboxFeature : public BaseExternalLibraryFeature {
     QSharedPointer<BaseTrackCache> m_trackSource;
     QIcon m_icon;
 };
-
-#endif // REKORDBOX_FEATURE_H

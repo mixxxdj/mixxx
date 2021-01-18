@@ -1,5 +1,4 @@
-#ifndef LV2EFFECTPROCESSOR_H
-#define LV2EFFECTPROCESSOR_H
+#pragma once
 
 #include "effects/effectprocessor.h"
 #include "effects/effectmanifest.h"
@@ -29,10 +28,10 @@ class LV2EffectGroupState : public EffectState {
 class LV2EffectProcessor : public EffectProcessor {
   public:
     LV2EffectProcessor(EngineEffect* pEngineEffect,
-                       EffectManifestPointer pManifest,
-                       const LilvPlugin* plugin,
-                       QList<int> audioPortIndices,
-                       QList<int> controlPortIndices);
+            EffectManifestPointer pManifest,
+            const LilvPlugin* plugin,
+            const QList<int>& audioPortIndices,
+            const QList<int>& controlPortIndices);
     ~LV2EffectProcessor();
 
     void initialize(
@@ -68,6 +67,3 @@ class LV2EffectProcessor : public EffectProcessor {
     EffectsManager* m_pEffectsManager;
     ChannelHandleMap<ChannelHandleMap<LV2EffectGroupState*>> m_channelStateMatrix;
 };
-
-
-#endif // LV2EFFECTPROCESSOR_H

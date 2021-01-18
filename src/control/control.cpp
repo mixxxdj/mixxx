@@ -1,6 +1,7 @@
 #include "control/control.h"
 
 #include "control/controlobject.h"
+#include "moc_control.cpp"
 #include "util/stat.h"
 
 //static
@@ -18,7 +19,7 @@ QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash
 MMutex ControlDoublePrivate::s_qCOHashMutex;
 
 ControlDoublePrivate::ControlDoublePrivate(
-        ConfigKey key,
+        const ConfigKey& key,
         ControlObject* pCreatorCO,
         bool bIgnoreNops,
         bool bTrack,
@@ -66,7 +67,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 
     if (m_bPersistInConfiguration) {
         UserSettingsPointer pConfig = ControlDoublePrivate::s_pUserConfig;
-        if (pConfig != NULL) {
+        if (pConfig != nullptr) {
             pConfig->set(m_key, QString::number(get()));
         }
     }
@@ -193,7 +194,7 @@ void ControlDoublePrivate::reset() {
     // NOTE: pSender = NULL is important. The originator of this action does
     // not know the resulting value so it makes sense that we should emit a
     // general valueChanged() signal even though we know the originator.
-    set(defaultValue, NULL);
+    set(defaultValue, nullptr);
 }
 
 void ControlDoublePrivate::set(double value, QObject* pSender) {

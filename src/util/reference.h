@@ -1,5 +1,4 @@
-#ifndef REFERENCE_H
-#define REFERENCE_H
+#pragma once
 
 // General tool for removing concrete dependencies while still incrementing a
 // reference count.
@@ -20,6 +19,3 @@ class ReferenceHolder : public BaseReferenceHolder {
   private:
     QSharedPointer<T> m_reference;
 };
-
-
-#endif /* REFERENCE_H */

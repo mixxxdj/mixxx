@@ -1,5 +1,4 @@
-#ifndef LV2BACKEND_H
-#define LV2BACKEND_H
+#pragma once
 
 #include "effects/defs.h"
 #include "effects/effectsbackend.h"
@@ -32,5 +31,3 @@ class LV2Backend : public EffectsBackend {
         return "LV2Backend";
     }
 };
-
-#endif // LV2BACKEND_H
