@@ -1,12 +1,3 @@
-<<<<<<< HEAD
-////////////////////////////////////////////////////////////////////////
-// JSHint configuration                                               //
-////////////////////////////////////////////////////////////////////////
-/* global engine                                                      */
-/* global script                                                      */
-/* global print                                                       */
-/* global midi                                                        */
-////////////////////////////////////////////////////////////////////////
 /**
  * Gemini G4V controller script
  *
@@ -3662,6 +3653,3 @@ try {
 } catch (e) {
     print("Exception creating G4V object: "+e);
 }
-
->>>>>>> a34c8ab3a6e5580bbe8b910b1311236410b078fb
-print("G4V Load finished");
