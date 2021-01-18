@@ -44,6 +44,7 @@ case "$COMMAND" in
             libfaad-dev \
             libfftw3-dev \
             libflac-dev \
+            libgrantlee5-dev \
             libhidapi-dev \
             libid3tag0-dev \
             liblilv-dev \
