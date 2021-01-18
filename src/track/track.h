@@ -57,7 +57,7 @@ class Track : public QObject {
     Q_PROPERTY(int bitrate READ getBitrate WRITE setBitrate)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
     Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
-    Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
+    Q_PROPERTY(Keys key READ getKeys WRITE setKeys)
     Q_PROPERTY(double duration READ getDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationTextSeconds STORED false)
     Q_PROPERTY(QString durationFormattedCentiseconds READ getDurationTextCentiseconds STORED false)

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QByteArray>
+#include <QObject>
 #include <QPair>
 #include <QVector>
 
@@ -13,8 +14,18 @@ typedef QVector<QPair<mixxx::track::io::key::ChromaticKey, double> > KeyChangeLi
 class KeyFactory;
 
 class Keys final {
+    Q_GADGET
   public:
+    Q_PROPERTY(QString traditional READ getTraditional)
+    Q_PROPERTY(QString openkey READ getOpenkey)
+    Q_PROPERTY(QString lancelot READ getLancelot)
+    Q_PROPERTY(bool isValid READ isValid)
+
     explicit Keys(const QByteArray* pByteArray = nullptr);
+
+    QString getTraditional() const;
+    QString getOpenkey() const;
+    QString getLancelot() const;
 
     // Serialization
     QByteArray toByteArray() const;
@@ -52,3 +63,5 @@ class Keys final {
     // For private constructor access.
     friend class KeyFactory;
 };
+
+Q_DECLARE_METATYPE(Keys)

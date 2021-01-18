@@ -1,7 +1,9 @@
+#include "track/keys.h"
+
 #include <QMutexLocker>
 #include <QtDebug>
 
-#include "track/keys.h"
+#include "track/keyutils.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::KeyMap;
@@ -14,6 +16,16 @@ Keys::Keys(const QByteArray* pByteArray) {
 
 Keys::Keys(const KeyMap& keyMap)
         : m_keyMap(keyMap) {
+}
+
+QString Keys::getTraditional() const {
+    return KeyUtils::getGlobalKeyText(*this, KeyUtils::KeyNotation::Traditional);
+}
+QString Keys::getOpenkey() const {
+    return KeyUtils::getGlobalKeyText(*this, KeyUtils::KeyNotation::OpenKey);
+}
+QString Keys::getLancelot() const {
+    return KeyUtils::getGlobalKeyText(*this, KeyUtils::KeyNotation::Lancelot);
 }
 
 QByteArray Keys::toByteArray() const {
