@@ -655,7 +655,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixxx.cpp
   src/mixxxapplication.cpp
   src/musicbrainz/chromaprinter.cpp
-  src/musicbrainz/crc.c
+  src/musicbrainz/crc.cpp
   src/musicbrainz/gzip.cpp
   src/musicbrainz/musicbrainz.cpp
   src/musicbrainz/musicbrainzxml.cpp
@@ -663,6 +663,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/musicbrainz/web/acoustidlookuptask.cpp
   src/musicbrainz/web/musicbrainzrecordingstask.cpp
   src/network/jsonwebtask.cpp
+  src/network/networktask.cpp
   src/network/webtask.cpp
   src/preferences/broadcastprofile.cpp
   src/preferences/broadcastsettings.cpp
@@ -683,6 +684,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefeffectsdlg.ui
   src/preferences/dialog/dlgprefeq.cpp
   src/preferences/dialog/dlgprefeqdlg.ui
+  src/preferences/dialog/dlgpreferencepage.cpp
   src/preferences/dialog/dlgpreferences.cpp
   src/preferences/dialog/dlgpreferencesdlg.ui
   src/preferences/dialog/dlgprefinterface.cpp
@@ -705,7 +707,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefvinyldlg.ui
   src/preferences/dialog/dlgprefwaveform.cpp
   src/preferences/dialog/dlgprefwaveformdlg.ui
-  src/preferences/dlgpreferencepage.cpp
   src/preferences/effectsettingsmodel.cpp
   src/preferences/colorpaletteeditor.cpp
   src/preferences/colorpaletteeditormodel.cpp
@@ -1061,7 +1062,7 @@ set(MIXXX_INSTALL_DOCDIR "./doc")
 set(MIXXX_INSTALL_LICENSEDIR "./doc")
 if (APPLE AND MACOS_BUNDLE)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
-  set(MACOS_BUNDLE_NAME Mixxx)
+  set(MACOS_BUNDLE_NAME mixxx)
   set(MIXXX_INSTALL_PREFIX "${MACOS_BUNDLE_NAME}.app")
   set(MIXXX_INSTALL_DATADIR "${MIXXX_INSTALL_PREFIX}/Contents/Resources")
   set(MIXXX_INSTALL_DOCDIR "${MIXXX_INSTALL_DATADIR}")
@@ -2111,6 +2112,7 @@ if(WIN32 AND STATIC_DEPS)
 endif()
 
 # Threads
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC Threads::Threads)
 
@@ -2663,7 +2665,7 @@ if(APPLE AND MACOS_BUNDLE)
             get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
             get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
             get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
-            set(_qt_plugin_dest "${_prefix}/Contents/plugins/${_qt_plugin_type}")
+            set(_qt_plugin_dest "${_prefix}/Contents/PlugIns/${_qt_plugin_type}")
             install(FILES "${_qt_plugin_path}"
                 DESTINATION "${_qt_plugin_dest}")
             set(${_qt_plugins_var}

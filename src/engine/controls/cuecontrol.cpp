@@ -1090,21 +1090,16 @@ void CueControl::cueCDJ(double value) {
             seekAbs(m_pCuePoint->get());
         } else if (freely_playing || trackAt == TrackAt::End) {
             // Jump to cue when playing or when at end position
-
-            // Just in case.
-            m_bPreviewing = false;
             m_pPlay->set(0.0);
-
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
-
             seekAbs(m_pCuePoint->get());
         } else if (trackAt == TrackAt::Cue) {
-            // pause at cue point
+            // paused at cue point
             m_bPreviewing = true;
             m_pPlay->set(1.0);
         } else {
-            // Pause not at cue point and not at end position
+            // Paused not at cue point and not at end position
             cueSet(value);
 
             // If quantize is enabled, jump to the cue point since it's not
@@ -1156,10 +1151,11 @@ void CueControl::cueDenon(double value) {
             lock.unlock();
             seekAbs(m_pCuePoint->get());
         } else if (!playing && trackAt == TrackAt::Cue) {
-            // pause at cue point
+            // paused at cue point
             m_bPreviewing = true;
             m_pPlay->set(1.0);
         } else {
+            m_pPlay->set(0.0);
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
             seekAbs(m_pCuePoint->get());
