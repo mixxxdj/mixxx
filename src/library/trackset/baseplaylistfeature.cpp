@@ -602,7 +602,7 @@ void BasePlaylistFeature::slotExportTrackFiles() {
                     m_pLibrary->trackCollections(),
                     "mixxx.db.model.playlist_export"));
 
-    pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setTableModel(playlistIdFromIndex(m_lastRightClickedIndex));
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
                                          ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);
