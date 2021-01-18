@@ -594,7 +594,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dlgtrackmetadataexport.cpp
   src/library/export/dlgtrackexport.ui
   src/library/export/trackexportdlg.cpp
-  src/library/export/trackexportwizard.cpp
   src/library/export/trackexportworker.cpp
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
@@ -809,6 +808,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/duration.cpp
   src/util/experiment.cpp
   src/util/file.cpp
+  src/util/formatter.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp
   src/util/logger.cpp
@@ -1801,6 +1801,14 @@ target_link_libraries(mixxx-lib PUBLIC FpClassify)
 # Required to use the macro FRIEND_TEST from <gtest/gtest_prod.h>
 # in production code
 target_include_directories(mixxx-lib SYSTEM PUBLIC "${gtest_SOURCE_DIR}/include")
+
+# FLAC
+find_package(Grantlee5 REQUIRED)
+#target_link_libraries(mixxx-lib PUBLIC Grantlee5::GRANTLEE)
+target_link_libraries(mixxx-lib PUBLIC
+  Grantlee5::Templates
+  Grantlee5::TextDocument
+)
 
 # LAME
 find_package(LAME REQUIRED)
