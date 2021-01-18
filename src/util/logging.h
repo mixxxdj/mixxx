@@ -1,7 +1,6 @@
 #ifndef MIXXX_UTIL_LOGGING_H
 #define MIXXX_UTIL_LOGGING_H
 
-#include <QDir>
 #include <QFlags>
 
 namespace mixxx {
@@ -36,7 +35,7 @@ class Logging {
   public:
     // These are not thread safe. Only call them on Mixxx startup and shutdown.
     static void initialize(
-            const QDir& logDir,
+            const QString& logDirPath,
             LogLevel logLevel,
             LogLevel logFlushLevel,
             LogFlags flags);

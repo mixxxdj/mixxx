@@ -56,7 +56,13 @@ inline void writeToLog(const QByteArray& message, bool shouldPrint,
 
 /// Rotate existing logfiles and get the file path of the log file to write to.
 /// May return an invalid/empty QString if the log directory does not exist.
-inline QString rotateLogFilesAndGetFilePath(const QDir& logDir) {
+inline QString rotateLogFilesAndGetFilePath(const QString& logDirPath) {
+    if (logDirPath.isEmpty()) {
+        fprintf(stderr, "No log directory specified!\n");
+        return QString();
+    }
+
+    QDir logDir(logDirPath);
     if (!logDir.exists()) {
         fprintf(stderr,
                 "Log directory %s does not exist!\n",
@@ -183,7 +189,7 @@ void MessageHandler(QtMsgType type,
 
 // static
 void Logging::initialize(
-        const QDir& logDir,
+        const QString& logDirPath,
         LogLevel logLevel,
         LogLevel logFlushLevel,
         LogFlags flags) {
@@ -196,7 +202,7 @@ void Logging::initialize(
 
     QString logFilePath;
     if (flags.testFlag(LogFlag::LogToFile)) {
-        logFilePath = rotateLogFilesAndGetFilePath(logDir);
+        logFilePath = rotateLogFilesAndGetFilePath(logDirPath);
     }
 
     if (logFilePath.isEmpty()) {
