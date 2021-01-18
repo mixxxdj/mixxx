@@ -93,7 +93,6 @@ WSearchLineEdit::WSearchLineEdit(QWidget* pParent)
 
     m_clearButton->setCursor(Qt::ArrowCursor);
     m_clearButton->setObjectName(QStringLiteral("SearchClearButton"));
-    m_clearButton->setFocusPolicy(Qt::ClickFocus);
     // Query style for arrow width and frame border
     updateStyleMetrics();
 
