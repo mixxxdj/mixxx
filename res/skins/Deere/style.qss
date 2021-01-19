@@ -528,6 +528,7 @@ WLibrary QRadioButton::indicator:unchecked {
 }
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
+#BeatgridLockButton,
 #DlgMissing > QPushButton,
 #DlgHidden > QPushButton,
 #DlgAutoDJ > QPushButton,
@@ -1118,19 +1119,6 @@ WBeatSpinBox,
 
 #BpmKeyEditTriggerLabel {
   padding-right: 1px;
-}
-
-/* BPM lock next to BPM label */
-#BeatgridLock[highlight="1"] {
-  padding-left: 1px;
-  padding-right: 5px;
-  image: url(skin:/icon/ic_library_bpm_locked.svg);
-}
-
-#BeatgridLock[highlight="0"] {
-  padding-left: 1px;
-  padding-right: 5px;
-  image: url(skin:/icon/ic_library_bpm_unlocked.svg);
 }
 
 #BpmKeyInfoShow {

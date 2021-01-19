@@ -420,6 +420,10 @@ void Tooltips::addStandardTooltips() {
             << tempoDisplay
             << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
 
+    add("beatgrid_lock")
+            << tr("Toggle Beatgrid Lock")
+            << tr("Protects the Beatgrid from changes");
+
     add("shift_cues_earlier")
             << tr("Shift cues earlier")
             << tr("Shift cues imported from Serato or Rekordbox if they are slightly off time.")

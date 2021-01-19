@@ -88,76 +88,99 @@
                     <Children>
                       <WidgetGroup><!-- BpmEditRowCollapsed -->
                         <ObjectName>BpmKeyEditRowCollapsed</ObjectName>
-                        <Layout>stacked</Layout>
+                        <Layout>horizontal</Layout>
                         <Children>
+                          <WidgetGroup>
+                            <ObjectName>BpmKeyEditRowCollapsedContent</ObjectName>
+                            <Layout>stacked</Layout>
+                            <Children>
+
+
+                              <PushButton>
+                                <ObjectName>BpmKeyEditTrigger</ObjectName>
+                                <TooltipId>visual_bpm</TooltipId>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Pressed scalemode="STRETCH"></Pressed>
+                                  <Unpressed scalemode="STRETCH"></Unpressed>
+                                </State>
+                                <Connection>
+                                  <ConfigKey>[Deere],bpm_layout_next</ConfigKey>
+                                </Connection>
+                              </PushButton>
+
+                              <!-- We allow to hide the current BPM info in the skin settings,
+                                    display just a label with asterixes instead.
+                                    See https://bugs.launchpad.net/mixxx/+bug/722889 -->
+                              <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <Children>
+                                  <Label>
+                                    <Size>10f,20f</Size>
+                                    <ObjectName>BpmKeyInfoShow</ObjectName>
+                                  </Label>
+
+                                  <NumberBpm>
+                                    <ObjectName>BpmKeyEditTriggerLabel</ObjectName>
+                                    <MinimumSize>60,20</MinimumSize>
+                                    <Group><Variable name="group"/></Group>
+                                    <Alignment>right</Alignment>
+                                    <Connection>
+                                      <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                                    </Connection>
+                                    <Connection>
+                                      <ConfigKey>[Deere],show_bpm_info</ConfigKey>
+                                      <BindProperty>visible</BindProperty>
+                                    </Connection>
+                                  </NumberBpm>
+
+                                  <Label>
+                                    <TooltipId>visual_bpm</TooltipId>
+                                    <Size>me,min</Size>
+                                    <ObjectName>HiddenBpmInfo</ObjectName>
+                                    <Text>***.**</Text>
+                                    <Connection>
+                                      <ConfigKey>[Deere],show_bpm_info</ConfigKey>
+                                      <BindProperty>visible</BindProperty>
+                                      <Transform>
+                                        <Not/>
+                                      </Transform>
+                                    </Connection>
+                                  </Label>
+                                </Children>
+                              </WidgetGroup>
+                            </Children>
+                          </WidgetGroup> <!-- BpmKeyEditRowCollapsedContent -->
                           <PushButton>
-                            <ObjectName>BpmKeyEditTrigger</ObjectName>
-                            <TooltipId>visual_bpm</TooltipId>
-                            <NumberStates>1</NumberStates>
+                            <TooltipId>beatgrid_lock</TooltipId>
+                            <ObjectName>BeatgridLockButton</ObjectName>
+                            <MinimumSize><Variable name="SmallSquareButtonMinimumSize"/></MinimumSize>
+                            <MaximumSize><Variable name="SmallSquareButtonMaximumSize"/></MaximumSize>
+                            <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
+                            <NumberStates>2</NumberStates>
                             <State>
                               <Number>0</Number>
-                              <Pressed scalemode="STRETCH"></Pressed>
-                              <Unpressed scalemode="STRETCH"></Unpressed>
+                              <Pressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_unlocked.svg</Pressed>
+                              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_unlocked.svg</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_locked.svg</Pressed>
+                              <Unpressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_locked.svg</Unpressed>
                             </State>
                             <Connection>
-                              <ConfigKey>[Deere],bpm_layout_next</ConfigKey>
+                              <ConfigKey><Variable name="group"/>,beatgrid_lock</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey>[Deere],show_beatgrid_lock</ConfigKey>
+                              <BindProperty>visible</BindProperty>
                             </Connection>
                           </PushButton>
-
-                          <!-- We allow to hide the current BPM info in the skin settings,
-                                display just a label with asterixes instead.
-                                See https://bugs.launchpad.net/mixxx/+bug/722889 -->
-                          <WidgetGroup>
-                            <Layout>horizontal</Layout>
-                            <Children>
-                              <Label>
-                                <Size>10f,20f</Size>
-                                <ObjectName>BpmKeyInfoShow</ObjectName>
-                              </Label>
-
-                              <NumberBpm>
-                                <ObjectName>BpmKeyEditTriggerLabel</ObjectName>
-                                <MinimumSize>60,20</MinimumSize>
-                                <Group><Variable name="group"/></Group>
-                                <Alignment>right</Alignment>
-                                <Connection>
-                                  <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
-                                </Connection>
-                                <Connection>
-                                  <ConfigKey>[Deere],show_bpm_info</ConfigKey>
-                                  <BindProperty>visible</BindProperty>
-                                </Connection>
-                              </NumberBpm>
-                              <Label>
-                                <TooltipId>beatgrid_lock</TooltipId>
-                                <Size>me,min</Size>
-                                <ObjectName>BeatgridLock</ObjectName>
-                                <Connection>
-                                  <ConfigKey>[Deere],show_beatgrid_lock</ConfigKey>
-                                  <BindProperty>visible</BindProperty>
-                                </Connection>
-                                <Connection>
-                                  <ConfigKey><Variable name="group"/>,beatgrid_lock</ConfigKey>
-                                  <BindProperty>highlight</BindProperty>
-                                </Connection>
-                              </Label>
-                              <Label>
-                                <TooltipId>visual_bpm</TooltipId>
-                                <Size>me,min</Size>
-                                <ObjectName>HiddenBpmInfo</ObjectName>
-                                <Text>***.**</Text>
-                                <Connection>
-                                  <ConfigKey>[Deere],show_bpm_info</ConfigKey>
-                                  <BindProperty>visible</BindProperty>
-                                  <Transform>
-                                    <Not/>
-                                  </Transform>
-                                </Connection>
-                              </Label>
-                            </Children>
-                          </WidgetGroup>
                         </Children>
-                      </WidgetGroup><!-- BpmEditTrigger -->
+                      </WidgetGroup> <!-- /BpmEditRowCollapsed -->
 
                       <WidgetGroup><!-- BpmEditRowExpanded -->
                         <ObjectName>BpmKeyEditRowExpanded</ObjectName>
@@ -318,28 +341,70 @@
                                     </Connection>
                                   </NumberBpm>
 
-                                  <Label>
-                                    <TooltipId>beatgrid_lock</TooltipId>
-                                    <Size>me,min</Size>
-                                    <ObjectName>BeatgridLock</ObjectName>
-                                    <Connection>
-                                      <ConfigKey>[Deere],show_beatgrid_lock</ConfigKey>
-                                      <BindProperty>visible</BindProperty>
-                                    </Connection>
-                                    <Connection>
-                                      <ConfigKey><Variable name="group"/>,beatgrid_lock</ConfigKey>
-                                      <BindProperty>highlight</BindProperty>
-                                    </Connection>
-                                  </Label>
                                 </Children>
                               </WidgetGroup>
 
                             </Children>
                           </WidgetGroup><!-- BpmEditTrigger -->
+                                            <PushButton>
+                    <TooltipId>beatgrid_lock</TooltipId>
+                    <ObjectName>BeatgridLockButton</ObjectName>
+                    <MinimumSize><Variable name="SmallSquareButtonMinimumSize"/></MinimumSize>
+                    <MaximumSize><Variable name="SmallSquareButtonMaximumSize"/></MaximumSize>
+                    <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_unlocked.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_unlocked.svg</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_locked.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_locked.svg</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,beatgrid_lock</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey>[Deere],show_beatgrid_lock</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </PushButton>
+
                         </Children>
                       </WidgetGroup><!-- BpmEditRowExpanded -->
                     </Children>
                   </WidgetStack><!-- BpmEditRow -->
+                  <!-- <PushButton>
+                    <TooltipId>beatgrid_lock</TooltipId>
+                    <ObjectName>BeatgridLockButton</ObjectName>
+                    <MinimumSize><Variable name="SmallSquareButtonMinimumSize"/></MinimumSize>
+                    <MaximumSize><Variable name="SmallSquareButtonMaximumSize"/></MaximumSize>
+                    <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_unlocked.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_unlocked.svg</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_locked.svg</Pressed>
+                      <Unpressed scalemode="STRETCH_ASPECT">icon/ic_library_bpm_locked.svg</Unpressed>
+                    </State>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,beatgrid_lock</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey>[Deere],show_beatgrid_lock</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </PushButton> -->
                 </Children>
               </WidgetGroup><!-- TitleGutter -->
             </Children>

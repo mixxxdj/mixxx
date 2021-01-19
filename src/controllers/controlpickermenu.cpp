@@ -205,7 +205,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     bpmMenu->addSeparator();
     addDeckAndSamplerControl("beatgrid_lock",
             tr("Lock Beatgrid"),
-            tr("Toggle beatgrid lock"),
+            tr("Protects the Beatgrid from changes."),
             bpmMenu);
     addDeckAndSamplerControl("quantize", tr("Quantize Mode"), tr("Toggle quantize mode"), bpmMenu);
 
