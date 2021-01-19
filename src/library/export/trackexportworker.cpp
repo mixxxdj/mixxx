@@ -59,7 +59,9 @@ QMap<QString, TrackFile> TrackExportWorker::createCopylist(const TrackPointerLis
     // in practice and is the best object for producing the final list
     // efficiently.
     QMap<QString, TrackFile> copylist;
+    int index = 0;
     for (auto& it : tracks) {
+        index++;
         if (!it.get()) {
             qWarning() << "nullptr in tracklist";
             continue;
@@ -77,7 +79,7 @@ QMap<QString, TrackFile> TrackExportWorker::createCopylist(const TrackPointerLis
         const auto trackFile = it->getFileInfo();
 
         const auto fileName = trackFile.fileName();
-        QString destFileName = generateFilename(it, 0);
+        QString destFileName = generateFilename(it, index, 0);
         if (destFileName.isEmpty()) {
             //qWarning() << "pattern generated empty filename for:" << it;
             skippedTracks->append(it);
@@ -105,7 +107,7 @@ QMap<QString, TrackFile> TrackExportWorker::createCopylist(const TrackPointerLis
                 break;
             }
             // Next round
-            destFileName = generateFilename(it, duplicateCounter);
+            destFileName = generateFilename(it, index, duplicateCounter);
         } while (!destFileName.isEmpty());
     }
     return copylist;
@@ -160,27 +162,29 @@ void TrackExportWorker::run() {
         }
         ++i;
     }
+    emit progress(QStringLiteral(""), QStringLiteral(""), copy_list.size(), copy_list.size());
     emit result(TrackExportWorker::ExportResult::EXPORT_COMPLETE, kResultOk);
     m_running = false;
 }
 
 // Returns the new filename for the track. Applies the pattern if set.
-QString TrackExportWorker::generateFilename(TrackPointer track, int index) {
+QString TrackExportWorker::generateFilename(TrackPointer track, int index, int dupCounter) {
     if (m_pattern) {
-        return applyPattern(track, index);
+        return applyPattern(track, index, dupCounter);
     }
 
     const auto trackFile = track->getFileInfo();
-    if (index == 0) {
+    if (dupCounter == 0) {
         return trackFile.fileName();
     }
-    return rewriteFilename(trackFile.asFileInfo(), index);
+    return rewriteFilename(trackFile.asFileInfo(), dupCounter);
 }
 
 // Applies the pattern on track
 QString TrackExportWorker::applyPattern(
         TrackPointer track,
-        int index) {
+        int index,
+        int duplicateCounter) {
     VERIFY_OR_DEBUG_ASSERT(!m_destDir.isEmpty()) {
         qWarning() << "empty target directory";
         return QString();
@@ -204,6 +208,7 @@ QString TrackExportWorker::applyPattern(
     // this is safe since the context stack is popped after rendering
     context->insert(QStringLiteral("track"), track.get());
     context->insert(QStringLiteral("index"), QVariant(index));
+    context->insert(QStringLiteral("dup"), QVariant(duplicateCounter));
 
     QString newName = m_template->render(context);
 

@@ -82,10 +82,10 @@ class TrackExportWorker : public QThread {
     }
 
     // Returns the new filename for the track. Applies the pattern if set.
-    QString generateFilename(TrackPointer track, int index = 0);
+    QString generateFilename(TrackPointer track, int index = 0, int dupCounter = 0);
 
     /// Applies the filename pattern on track
-    QString applyPattern(TrackPointer track, int index);
+    QString applyPattern(TrackPointer track, int index, int duplicateCounter = 0);
 
     // Cancels the export after the current copy operation.
     // May be called from another thread.

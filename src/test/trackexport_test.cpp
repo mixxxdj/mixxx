@@ -326,15 +326,15 @@ TEST_F(TrackExporterTest, PatternExport) {
     context->insert("t", "t42/");
     auto pattern = QStringLiteral(
             "{{t}}{{track.baseName}}-{{track.extension}}-"
-            "{{track.bpm}}{% if index %}-{{index}}{%endif%}");
+            "{{track.bpm}}{% if index %}-{{index}}{%endif%}#{{ dup }}");
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks, &pattern, context);
 
     EXPECT_EQ(worker.generateFilename(track1, 0),
-            QStringLiteral("t42/cover-test-ogg-0"));
+            QStringLiteral("t42/cover-test-ogg-0#0"));
     EXPECT_EQ(worker.generateFilename(track2, 1),
-            QStringLiteral("t42/cover-test-flac-0-1"));
-    EXPECT_EQ(worker.generateFilename(track3, 0),
-            QStringLiteral("t42/cover-test-itunes-12-m4a-0"));
+            QStringLiteral("t42/cover-test-flac-0-1#0"));
+    EXPECT_EQ(worker.generateFilename(track3, 0, 23),
+            QStringLiteral("t42/cover-test-itunes-12-m4a-0#23"));
 
     auto pattern2 = QStringLiteral("{{track.fileName}}");
     worker.setPattern(&pattern2);
