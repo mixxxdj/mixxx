@@ -209,7 +209,9 @@ void TrackExportDlg::slotResult(TrackExportWorker::ExportResult result, const QS
 }
 
 void TrackExportDlg::slotProgress(const QString from, const QString to, int progress, int count) {
-    addStatus(from, to);
+    if (!from.isEmpty() || !to.isEmpty()) {
+        addStatus(from, to);
+    }
     exportProgress->setMinimum(0);
     exportProgress->setMaximum(count);
     exportProgress->setValue(progress);

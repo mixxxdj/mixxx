@@ -12,6 +12,7 @@
 #include "library/dlgtagfetcher.h"
 #include "library/dlgtrackinfo.h"
 #include "library/dlgtrackmetadataexport.h"
+#include "library/export/trackexportdlg.h"
 #include "library/externaltrackcollection.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
@@ -165,6 +166,9 @@ void WTrackMenu::createMenus() {
                     m_pLibrary->searchTracksInCollection(searchQuery);
                 });
     }
+    // file menu used for browse/export and other features
+    m_pFileMenu = new QMenu(this);
+    m_pFileMenu->setTitle(tr("File"));
 }
 
 void WTrackMenu::createActions() {
@@ -214,8 +218,13 @@ void WTrackMenu::createActions() {
     }
 
     if (featureIsEnabled(Feature::FileBrowser)) {
-        m_pFileBrowserAct = new QAction(tr("Open in File Browser"), this);
+        m_pFileBrowserAct = new QAction(tr("Open in File Browser"), m_pFileMenu);
         connect(m_pFileBrowserAct, &QAction::triggered, this, &WTrackMenu::slotOpenInFileBrowser);
+    }
+
+    if (featureIsEnabled(Feature::Export)) {
+        m_pFileExportAct = new QAction(tr("Export Files"), m_pFileMenu);
+        connect(m_pFileExportAct, &QAction::triggered, this, &WTrackMenu::slotExportFiles);
     }
 
     if (featureIsEnabled(Feature::Metadata)) {
@@ -485,8 +494,17 @@ void WTrackMenu::setupActions() {
         }
     }
 
-    if (featureIsEnabled(Feature::FileBrowser)) {
-        addAction(m_pFileBrowserAct);
+    if (featureIsEnabled(Feature::FileBrowser) ||
+            featureIsEnabled(Feature::Export)) {
+        addMenu(m_pFileMenu);
+
+        if (featureIsEnabled(Feature::FileBrowser)) {
+            m_pFileMenu->addAction(m_pFileBrowserAct);
+        }
+
+        if (featureIsEnabled(Feature::Export)) {
+            m_pFileMenu->addAction(m_pFileExportAct);
+        }
     }
 
     if (featureIsEnabled(Feature::Properties)) {
@@ -895,6 +913,21 @@ void WTrackMenu::slotOpenInFileBrowser() {
         locations << trackRef.getLocation();
     }
     mixxx::DesktopHelper::openInFileBrowser(locations);
+}
+
+void WTrackMenu::slotExportFiles() {
+    const auto pTrackPointerIter = newTrackPointerIterator();
+    if (!pTrackPointerIter) {
+        // Empty, i.e. nothing to do
+        return;
+    }
+    auto trackList = TrackPointerList();
+    while (auto nextTrackPointer = pTrackPointerIter->nextItem()) {
+        const auto pTrack = *nextTrackPointer;
+        trackList.append(pTrack);
+    }
+    TrackExportDlg* exporter = new TrackExportDlg(nullptr, m_pConfig, trackList);
+    exporter->open();
 }
 
 namespace {
@@ -1784,6 +1817,8 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
                 m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide) ||
                 m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge);
     case Feature::FileBrowser:
+        return true;
+    case Feature::Export:
         return true;
     case Feature::Properties:
         return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
