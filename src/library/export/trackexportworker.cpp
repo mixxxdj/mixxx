@@ -36,14 +36,19 @@ QString rewriteFilename(const QFileInfo& fileinfo, int index) {
 
 TrackExportWorker::TrackExportWorker(const QString& destDir,
         TrackPointerList& tracks,
-        QString* pattern,
         Grantlee::Context* context)
         : m_running(false),
           m_destDir(destDir),
           m_tracks(tracks),
           m_context(context) {
     qRegisterMetaType<TrackExportWorker::ExportResult>("TrackExportWorker::ExportResult");
-    setPattern(pattern);
+    if (!m_context) {
+        m_context = new Grantlee::Context();
+    }
+}
+
+TrackExportWorker::~TrackExportWorker() {
+    delete m_context;
 }
 
 // Iterate over a list of tracks and generate a minimal set of files to copy.
@@ -197,23 +202,18 @@ QString TrackExportWorker::applyPattern(
         qWarning() << "engine missing";
         return QString();
     }
-
-    Grantlee::Context* context = m_context;
-    if (context == nullptr) {
-        context = new Grantlee::Context();
-    }
     // fill the context with the proper variables
-    context->push();
-    context->insert(QStringLiteral("directory"), m_destDir);
+    m_context->push();
+    m_context->insert(QStringLiteral("directory"), m_destDir);
     // this is safe since the context stack is popped after rendering
-    context->insert(QStringLiteral("track"), track.get());
-    context->insert(QStringLiteral("index"), QVariant(index));
-    context->insert(QStringLiteral("dup"), QVariant(duplicateCounter));
+    m_context->insert(QStringLiteral("track"), track.get());
+    m_context->insert(QStringLiteral("index"), QVariant(index));
+    m_context->insert(QStringLiteral("dup"), QVariant(duplicateCounter));
 
-    QString newName = m_template->render(context);
+    QString newName = m_template->render(m_context);
 
     // remove the context stack so it is clean again
-    context->pop();
+    m_context->pop();
 
     // replace bad filename characters with spaces
     return newName.replace(kBadFileCharacters, QStringLiteral(" "));

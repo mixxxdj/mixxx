@@ -17,8 +17,7 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
           Ui::DlgTrackExport(),
           m_pConfig(pConfig),
           m_tracks(tracks),
-          m_worker(nullptr),
-          m_context(context) {
+          m_worker(nullptr) {
     setupUi(this);
 
     QString lastExportDirectory = m_pConfig->getValue(
@@ -26,7 +25,7 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
     folderEdit->setText(lastExportDirectory);
 
-    m_worker = new TrackExportWorker(folderEdit->text(), m_tracks);
+    m_worker = new TrackExportWorker(folderEdit->text(), m_tracks, context);
 
     connect(cancelButton,
             &QPushButton::clicked,
@@ -96,9 +95,6 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
 }
 
 TrackExportDlg::~TrackExportDlg() {
-    if (m_context) {
-        delete m_context;
-    }
 }
 
 bool TrackExportDlg::browseFolder() {
@@ -162,7 +158,7 @@ void TrackExportDlg::updatePreview() {
     QString pattern = comboPattern->currentText();
     m_worker->setPattern(&pattern);
     m_worker->setDestDir(folderEdit->text());
-    previewLabel->setText(m_worker->applyPattern(m_tracks[0], 0));
+    previewLabel->setText(m_worker->applyPattern(m_tracks[0], 1));
     errorLabel->setText(m_worker->errorMessage());
 }
 

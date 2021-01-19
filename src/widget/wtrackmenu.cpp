@@ -64,7 +64,6 @@ WTrackMenu::WTrackMenu(
         // Remove unsupported features
         m_eActiveFeatures &= !m_eTrackModelFeatures;
     }
-
     createMenus();
     createActions();
     setupActions();

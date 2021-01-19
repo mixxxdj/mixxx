@@ -743,11 +743,12 @@ void CrateFeature::slotExportTrackFiles() {
         trackpointers.push_back(m_crateTableModel.getTrack(index));
     }
 
+    // ownership is transferred to TrackExportDlg
     Grantlee::Context* context = new Grantlee::Context();
 
-    // auto summary = new CrateSummary();
-    // m_pTrackCollection->crates().readCrateSummaryById(id, summary);
-    // context->insert(QStringLiteral("crate"), summary);
+    auto summary = new CrateSummary();
+    m_pTrackCollection->crates().readCrateSummaryById(id, summary);
+    context->insert(QStringLiteral("crate"), summary);
 
     auto exportDialog = new TrackExportDlg(nullptr, m_pConfig, trackpointers, context);
     exportDialog->open();

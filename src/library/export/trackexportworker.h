@@ -52,10 +52,9 @@ class TrackExportWorker : public QThread {
     // pattern will
     TrackExportWorker(const QString& destDir,
             TrackPointerList& tracks,
-            QString* pattern = nullptr,
             Grantlee::Context* context = nullptr);
 
-    virtual ~TrackExportWorker() { };
+    virtual ~TrackExportWorker();
 
     // exports ALL the tracks.  Thread joins on success or failure.
     void run() override;

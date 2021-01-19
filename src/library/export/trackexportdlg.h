@@ -24,8 +24,9 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
         SKIP_ALL,
     };
 
-    // The dialog is prepared, but not shown on construction.  Does not
-    // take ownership of the export worker.
+    /// The dialog is prepared, but not shown on construction.
+    /// You can pass additional information through a Context.
+    /// The dialog will take ownership of the Context.
     TrackExportDlg(QWidget* parent,
             UserSettingsPointer pConfig,
             TrackPointerList& tracks,
@@ -60,7 +61,6 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     UserSettingsPointer m_pConfig;
     TrackPointerList m_tracks;
     TrackExportWorker* m_worker;
-    Grantlee::Context* m_context;
     int m_errorCount = 0;
     int m_skippedCount = 0;
     int m_okCount = 0;

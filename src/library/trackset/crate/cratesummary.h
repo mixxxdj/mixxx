@@ -6,19 +6,15 @@
 #include "util/duration.h"
 
 // A crate with aggregated track properties (total count + duration)
-class CrateSummary : public Crate {
-    //    Q_OBJECT
+class CrateSummary : public QObject, public Crate {
+    Q_OBJECT
   public:
-    // Q_PROPERTY(uint trackCount READ getTrackCount WRITE setTrackCount)
-    // Q_PROPERTY(double trackDuration READ getTrackDuration WRITE setTrackDuration)
-    // Q_PROPERTY(QString name READ getName WRITE setName)
+    Q_PROPERTY(uint trackCount READ getTrackCount WRITE setTrackCount)
+    Q_PROPERTY(double trackDuration READ getTrackDuration WRITE setTrackDuration)
+    Q_PROPERTY(QString name READ getName WRITE setName)
 
-    CrateSummary(CrateId id = CrateId())
-            : Crate(id),
-              m_trackCount(0),
-              m_trackDuration(0.0) {
-    }
-    ~CrateSummary() override{};
+    CrateSummary(CrateId id = CrateId());
+    ~CrateSummary() override;
 
     // The number of all tracks in this crate
     uint getTrackCount() const {
