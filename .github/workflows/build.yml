@@ -101,13 +101,6 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: "Set up cmake"
-      uses: jwlawson/actions-setup-cmake@v1.4
-      with:
-        # This should always match the mininum required version in
-        # our CMakeLists.txt
-        cmake-version: '3.13.x'
-
     - name: "[Windows] Install additional build tools"
       if: runner.os == 'Windows'
       # TODO: Add ninja, clcache and rsync to the windows buildenv
