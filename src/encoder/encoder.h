@@ -14,14 +14,11 @@ class Encoder {
               Format(const QString& labelIn,
                       const QString& nameIn,
                       bool losslessIn,
-                      const QString& fileExtIn = QString::null)
+                      const QString& fileExtIn)
                       : label(labelIn),
                         internalName(nameIn),
                         lossless(losslessIn),
                         fileExtension(fileExtIn) {
-                  if (fileExtension.isEmpty()) {
-                      fileExtension = label;
-                  }
               }
             QString label;
             QString internalName;

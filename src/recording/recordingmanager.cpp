@@ -117,7 +117,7 @@ void RecordingManager::startRecording() {
             ConfigKey(RECORDING_PREF_KEY, "Encoding"));
     QString fileExtension = EncoderFactory::getFactory()
                                     .getFormatFor(encodingType)
-                                    .fileExtension.toLower();
+                                    .fileExtension;
 
     m_iNumberOfBytesRecordedSplit = 0;
     m_secondsRecordedSplit=0;
@@ -162,7 +162,7 @@ void RecordingManager::splitContinueRecording()
     QString encodingType = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
     QString fileExtension = EncoderFactory::getFactory()
                                     .getFormatFor(encodingType)
-                                    .fileExtension.toLower();
+                                    .fileExtension;
 
     QString new_base_filename = m_recording_base_file + QStringLiteral("part") + QString::number(m_iNumberSplits);
     m_recordingLocation = new_base_filename + QChar('.') + fileExtension;
