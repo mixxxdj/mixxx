@@ -134,6 +134,26 @@ class TrackRecord final {
 private:
     Keys m_keys;
 
+    // TODO: Use TrackMetadata as single source of truth and do not
+    // store this information redundantly.
+    //
+    // PROPOSAL (as implememted by https://gitlab.com/uklotzde/aoide-rs):
+    // This redesign requires to track the status of some or all track
+    // metadata (which includes the stream info properties) by a set of
+    // bitflags:
+    //  - UNRELIABLE = 0 (default)
+    //    Parsed from file tags which are considered inaccurate and
+    //    are often imprecise
+    //  - RELIABLE =   1 << 0
+    //    Reported by a decoder when opening an audio/video stream for
+    //    reading. Nevertheless different decoders may report slightly
+    //    differing values.
+    //  - LOCKED =     1 << 1
+    //    Locked metadata will not be updated automatically, neither when
+    //    parsing file tags nor when decoding an audio/video stream.
+    //    While locked the stale flag is never set.
+    //  - STALE =      1 << 2
+    //    Stale metadata should be re-imported depending on the other flags.
     std::optional<audio::StreamInfo> m_streamInfoFromSource;
 
     /// Equality comparison
