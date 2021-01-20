@@ -210,7 +210,7 @@ QString TrackExportWorker::applyPattern(
     m_context->insert(QStringLiteral("index"), QVariant(index));
     m_context->insert(QStringLiteral("dup"), QVariant(duplicateCounter));
 
-    QString newName = m_template->render(m_context);
+    QString newName = Formatter::renderNoEscape(m_template, *m_context);
 
     // remove the context stack so it is clean again
     m_context->pop();
