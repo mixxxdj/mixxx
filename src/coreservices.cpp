@@ -121,11 +121,15 @@ void CoreServices::initialize(QApplication* pApp) {
     mixxx::Time::start();
     ScopedTimer t("CoreServices::initialize");
 
+    mixxx::LogFlags logFlags = mixxx::LogFlag::LogToFile;
+    if (m_cmdlineArgs.getDebugAssertBreak()) {
+        logFlags.setFlag(mixxx::LogFlag::DebugAssertBreak);
+    }
     mixxx::Logging::initialize(
             m_pSettingsManager->settings()->getSettingsPath(),
             m_cmdlineArgs.getLogLevel(),
             m_cmdlineArgs.getLogFlushLevel(),
-            m_cmdlineArgs.getDebugAssertBreak());
+            logFlags);
 
     VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
         qCritical() << "Failed to register any SoundSource providers";
