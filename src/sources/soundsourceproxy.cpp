@@ -537,7 +537,7 @@ void SoundSourceProxy::updateTrackFromSource(
         mergeImportedMetadata = true;
     }
 
-    // Safe for later to replace the unreliable and imprecise audio
+    // Save for later to replace the unreliable and imprecise audio
     // properties imported from file tags (see below).
     const auto preciseStreamInfo = trackMetadata.getStreamInfo();
 

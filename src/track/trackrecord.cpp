@@ -228,9 +228,6 @@ bool TrackRecord::updateStreamInfoFromSource(
 }
 
 bool operator==(const TrackRecord& lhs, const TrackRecord& rhs) {
-    // m_streamInfoFromSource must not be considered for equality
-    // comparisons! It is only needed for verifying consistency
-    // during updates and as a flags when a track is loaded.
     return lhs.getMetadata() == rhs.getMetadata() &&
             lhs.getCoverInfo() == rhs.getCoverInfo() &&
             lhs.getId() == rhs.getId() &&

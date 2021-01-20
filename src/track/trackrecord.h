@@ -136,6 +136,11 @@ private:
 
     std::optional<audio::StreamInfo> m_streamInfoFromSource;
 
+    /// Equality comparison
+    ///
+    /// Exception: The member m_streamInfoFromSource must not be considered
+    /// for equality comparisons! It is only needed for verifying consistency
+    /// during updates and as a flags when a track is loaded.
     friend bool operator==(const TrackRecord& lhs, const TrackRecord& rhs);
 };
 
