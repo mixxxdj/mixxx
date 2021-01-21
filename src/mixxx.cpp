@@ -178,11 +178,15 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
     }
 #endif
 
+    mixxx::LogFlags logFlags = mixxx::LogFlag::LogToFile;
+    if (args.getDebugAssertBreak()) {
+        logFlags.setFlag(mixxx::LogFlag::DebugAssertBreak);
+    }
     mixxx::Logging::initialize(
             settingsPath,
             args.getLogLevel(),
             args.getLogFlushLevel(),
-            args.getDebugAssertBreak());
+            logFlags);
 
     VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
         qCritical() << "Failed to register any SoundSource providers";

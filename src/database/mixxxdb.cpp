@@ -1,5 +1,7 @@
 #include "database/mixxxdb.h"
 
+#include <QDir>
+
 #include "database/schemamanager.h"
 #include "moc_mixxxdb.cpp"
 #include "util/assert.h"
