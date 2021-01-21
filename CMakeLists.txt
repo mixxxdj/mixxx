@@ -1075,12 +1075,6 @@ elseif (UNIX)
   set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DOCDIR}")
 endif()
 
-# Required to find the resource files when running from the build dir
-target_compile_definitions(
-      mixxx-lib PUBLIC CMAKE_CURRENT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
-target_compile_definitions(
-      mixxx-lib PUBLIC CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
-
 if(WIN32)
   target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
 
