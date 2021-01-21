@@ -883,7 +883,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
         double position = pControl->getPreviewingPosition();
         pControl->setPreviewing(false);
         pControl->setPreviewingPosition(Cue::kNoPosition);
-        if (m_iCurrentlyPreviewingHotcues) {
+        if (m_iCurrentlyPreviewingHotcues > 0) {
             // This is a release of an active previewing hotcue.
             // If this is the last hotcue, leave preview.
             if (--m_iCurrentlyPreviewingHotcues == 0 && !m_bPreviewing) {
