@@ -70,7 +70,6 @@ case "$COMMAND" in
             markdown \
             portaudio19-dev \
             protobuf-compiler \
-            qt5-default \
             qt5keychain-dev \
             qtdeclarative5-dev \
             "${PACKAGES_EXTRA[@]}"
