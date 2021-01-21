@@ -31,17 +31,17 @@ QString computeResourcePath() {
             // We are running form a build dir, use resources from the source path
             qResourcePath = QStringLiteral(CMAKE_CURRENT_SOURCE_DIR) + QStringLiteral("/res");
         }
-#ifdef __UNIX__
+#if defined(__UNIX__)
         else if (mixxxDir.cdUp() && mixxxDir.cd(QStringLiteral("/share/mixxx"))) {
             qResourcePath = mixxxDir.absolutePath();
         }
-#elif __WINDOWS__
+#elif defined(__WINDOWS__)
         // On Windows, set the config dir relative to the application dir if all
         // of the above fail.
         else {
             qResourcePath = QCoreApplication::applicationDirPath();
         }
-#elif __APPLE__
+#elif defined(__APPLE__)
         else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
             // Release configuration
             qResourcePath = mixxxDir.absolutePath();
