@@ -2579,15 +2579,15 @@ if(VINYLCONTROL)
 endif()
 
 # WavPack audio file support
-find_package(WavPack)
+find_package(wavpack)
 option(WAVPACK "WavPack audio file support" OFF)
 if(WAVPACK)
-  if(NOT WavPack_FOUND)
+  if(NOT TARGET WavPack::wavpack)
     message(FATAL_ERROR "WavPack audio file support requires libwv and its development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcewv.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
-  target_link_libraries(mixxx-lib PUBLIC WavPack::WavPack)
+  target_link_libraries(mixxx-lib PUBLIC WavPack::wavpack)
 endif()
 
 # Packaging
