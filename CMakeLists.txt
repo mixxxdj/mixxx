@@ -1406,6 +1406,7 @@ add_executable(mixxx-test
   src/test/enginemastertest.cpp
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
+  src/test/formatter_test.cpp
   src/test/globaltrackcache_test.cpp
   src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
@@ -1809,6 +1810,19 @@ find_package(Grantlee5 REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC
   Grantlee5::Templates
   Grantlee5::TextDocument
+)
+
+# grantlee plugin
+add_library(mixxxformatter MODULE
+  src/util/formatterplugin/mixxxformatter.cpp
+)
+
+set_target_properties(mixxxformatter PROPERTIES AUTOMOC ON)
+
+grantlee_adjust_plugin_name(mixxxformatter)
+
+target_link_libraries(mixxxformatter
+  Grantlee5::Templates
 )
 
 # LAME

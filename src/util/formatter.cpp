@@ -28,6 +28,7 @@ class NoEscapeStream : public Grantlee::OutputStream {
 
 Grantlee::Engine* Formatter::getEngine(QObject* parent) {
     auto engine = new Grantlee::Engine(parent);
+    engine->addDefaultLibrary(QStringLiteral("mixxxformatter"));
     // register custom
     return engine;
 }
