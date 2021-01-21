@@ -20,36 +20,28 @@ QString computeResourcePath() {
     QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
 
     if (qResourcePath.isEmpty()) {
-        QDir mixxxDir(QCoreApplication::applicationDirPath());
+        QDir mixxxDir = QCoreApplication::applicationDirPath();
         // We used to support using the mixxx.cfg's [Config],Path setting but
         // this causes issues if you try and use two different versions of Mixxx
         // on the same computer. See Bug #1392854. We start by checking if we're
         // running out of a build root ('res' dir exists or our path ends with
         // '_build') and if not then we fall back on a platform-specific method
         // of determining the resource path (see comments below).
-        if (mixxxDir.cd("res")) {
-            // We are running out of the repository root.
-            qResourcePath = mixxxDir.absolutePath();
-        } else if (mixxxDir.absolutePath().endsWith("_build") &&
-                   mixxxDir.cdUp() && mixxxDir.cd("res")) {
-            // We are running out of the (lin|win|osx)XX_build folder.
-            qResourcePath = mixxxDir.absolutePath();
+        if (mixxxDir == QStringLiteral(CMAKE_CURRENT_BINARY_DIR)) {
+            // We are running form a build dir, use resources from the source path
+            qResourcePath = QStringLiteral(CMAKE_CURRENT_SOURCE_DIR) + QStringLiteral("/res");
         }
 #ifdef __UNIX__
-        // On Linux if all of the above fail the /usr/share path is the logical
-        // place to look.
-        else {
-            qResourcePath = UNIX_SHARE_PATH;
+        else if (mixxxDir.cdUp() && mixxxDir.cd(QStringLiteral("/share/mixxx"))) {
+            qResourcePath = mixxxDir.absolutePath();
         }
-#endif
-#ifdef __WINDOWS__
+#elif __WINDOWS__
         // On Windows, set the config dir relative to the application dir if all
         // of the above fail.
         else {
             qResourcePath = QCoreApplication::applicationDirPath();
         }
-#endif
-#ifdef __APPLE__
+#elif __APPLE__
         else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
             // Release configuration
             qResourcePath = mixxxDir.absolutePath();

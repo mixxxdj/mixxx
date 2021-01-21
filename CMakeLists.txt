@@ -1075,6 +1075,12 @@ elseif (UNIX)
   set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DOCDIR}")
 endif()
 
+# Required to find the resource files when running from the build dir
+target_compile_definitions(
+      mixxx-lib PUBLIC CMAKE_CURRENT_BINARY_DIR="${CMAKE_CURRENT_BINARY_DIR}")
+target_compile_definitions(
+      mixxx-lib PUBLIC CMAKE_CURRENT_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+
 if(WIN32)
   target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
 
@@ -1110,10 +1116,6 @@ elseif(UNIX)
     target_compile_definitions(mixxx-lib PUBLIC __APPLE__)
   else()
     target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
-    # UNIX_SHARE_PATH must be set to the absolute path
-    # including the install prefix!
-    target_compile_definitions(
-      mixxx-lib PUBLIC UNIX_SHARE_PATH="${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}")
     if(CMAKE_SYSTEM_NAME STREQUAL Linux)
       target_compile_definitions(mixxx-lib PUBLIC __LINUX__)
     elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")
@@ -1538,40 +1540,6 @@ set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 # at: https://doc.qt.io/qt5/resources.html#using-resources-in-a-library
 target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
-
-if(UNIX AND USE_SYMLINKS)
-  add_custom_target(mixxx-res
-    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
-    COMMENT "Symlinking resources to build directory..."
-  )
-  add_custom_target(mixxx-script
-    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
-    COMMENT "Symlinking to build directory..."
-  )
-elseif(WIN32)
-  file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/res" CMAKE_CURRENT_SOURCE_RES_DIR_NATIVE)
-  file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/res/" CMAKE_CURRENT_BINARY_RES_DIR_NATIVE)
-  add_custom_target(mixxx-res
-    COMMAND xcopy ${CMAKE_CURRENT_SOURCE_RES_DIR_NATIVE} ${CMAKE_CURRENT_BINARY_RES_DIR_NATIVE} /s /d /q /y
-    COMMENT "Copying missing or modified resources files to build directory..."
-  )
-  file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/script" CMAKE_CURRENT_SOURCE_SCRIPT_DIR_NATIVE)
-  file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/script/" CMAKE_CURRENT_BINARY_SCRIPT_DIR_NATIVE)
-  add_custom_target(mixxx-script
-    COMMAND xcopy ${CMAKE_CURRENT_SOURCE_SCRIPT_DIR_NATIVE} ${CMAKE_CURRENT_BINARY_SCRIPT_DIR_NATIVE} /s /d /q /y
-    COMMENT "Copying missing or modified QScriptEngine extension files to build directory..."
-  )
-else()
-  add_custom_target(mixxx-res
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
-    COMMENT "Copying all resources files to build directory..."
-  )
-  add_custom_target(mixxx-script
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
-    COMMENT "Copying all QScriptEngine extension files to build directory..."
-  )
-endif()
-add_dependencies(mixxx-lib mixxx-res mixxx-script)
 
 file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
 string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
