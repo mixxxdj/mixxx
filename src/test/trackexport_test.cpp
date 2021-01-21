@@ -327,7 +327,8 @@ TEST_F(TrackExporterTest, PatternExport) {
     auto pattern = QStringLiteral(
             "{{t}}{{track.baseName}}-{{track.extension}}-"
             "{{track.bpm}}{% if index %}-{{index}}{%endif%}#{{ dup }}");
-    TrackExportWorker worker(m_exportDir.canonicalPath(), tracks, &pattern, context);
+    TrackExportWorker worker(m_exportDir.canonicalPath(), tracks, context);
+    worker.setPattern(&pattern);
 
     EXPECT_EQ(worker.generateFilename(track1, 0),
             QStringLiteral("t42/cover-test-ogg-0#0"));
