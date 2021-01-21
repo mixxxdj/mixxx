@@ -2058,8 +2058,8 @@ target_include_directories(mixxx-lib SYSTEM PRIVATE lib/reverb)
 target_link_libraries(mixxx-lib PUBLIC Reverb)
 
 # Rubberband
-find_package(Rubberband REQUIRED)
-target_link_libraries(mixxx-lib PUBLIC Rubberband::Rubberband)
+find_package(rubberband REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC rubberband::rubberband)
 
 # SndFile
 find_package(SndFile REQUIRED)
