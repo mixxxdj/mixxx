@@ -1,9 +1,8 @@
 #include "library/trackset/crate/cratesummary.h"
 
-CrateSummary::CrateSummary(CrateId id)
-        : Crate(id),
-          m_trackCount(0),
-          m_trackDuration(0.0) {
+CrateSummaryWrapper::CrateSummaryWrapper(CrateSummary& summary)
+        : QObject(nullptr),
+          m_summary(summary) {
 }
 
-CrateSummary::~CrateSummary(){};
+CrateSummaryWrapper::~CrateSummaryWrapper(){};

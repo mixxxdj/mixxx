@@ -6,16 +6,15 @@
 #include "util/duration.h"
 
 // A crate with aggregated track properties (total count + duration)
-class CrateSummary : public QObject, public Crate {
-    Q_OBJECT
+class CrateSummary : public Crate {
   public:
-    Q_PROPERTY(uint trackCount READ getTrackCount WRITE setTrackCount)
-    Q_PROPERTY(double trackDuration READ getTrackDuration WRITE setTrackDuration)
-    Q_PROPERTY(QString name READ getName WRITE setName)
+    CrateSummary(CrateId id = CrateId())
+            : Crate(id),
+              m_trackCount(0),
+              m_trackDuration(0.0) {
+    }
 
-    CrateSummary(CrateId id = CrateId());
-    ~CrateSummary() override;
-
+    ~CrateSummary(){};
     // The number of all tracks in this crate
     uint getTrackCount() const {
         return m_trackCount;
@@ -39,4 +38,41 @@ class CrateSummary : public QObject, public Crate {
   private:
     uint m_trackCount;
     double m_trackDuration;
+};
+
+class CrateSummaryWrapper : public QObject {
+    Q_OBJECT
+  public:
+    Q_PROPERTY(uint trackCount READ getTrackCount WRITE setTrackCount)
+    Q_PROPERTY(double trackDuration READ getTrackDuration WRITE setTrackDuration)
+    Q_PROPERTY(QString name READ getName WRITE setName)
+
+    CrateSummaryWrapper(CrateSummary& summary);
+    ~CrateSummaryWrapper();
+
+    QString getName() const {
+        return m_summary.getName();
+    };
+    void setName(QString name) {
+        m_summary.setName(name);
+    };
+
+    // The number of all tracks in this crate
+    uint getTrackCount() const {
+        return m_summary.getTrackCount();
+    }
+    void setTrackCount(uint trackCount) {
+        m_summary.setTrackCount(trackCount);
+    }
+
+    // The total duration (in seconds) of all tracks in this crate
+    double getTrackDuration() const {
+        return m_summary.getTrackDuration();
+    }
+    void setTrackDuration(double trackDuration) {
+        m_summary.setTrackDuration(trackDuration);
+    }
+
+  private:
+    CrateSummary m_summary;
 };
