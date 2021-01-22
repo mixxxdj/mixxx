@@ -124,14 +124,6 @@ class LibraryFeature : public QObject {
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
 
-  protected:
-    // TODO: Move common crate/playlist functions into
-    // a separate base class
-    static bool exportPlaylistItemsIntoFile(
-            QString playlistFilePath,
-            const QList<QString>& playlistItemLocations,
-            bool useRelativePath);
-
   private:
     QStringList getPlaylistFiles(QFileDialog::FileMode mode) const;
 };

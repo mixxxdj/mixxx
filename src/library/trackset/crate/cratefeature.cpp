@@ -721,7 +721,7 @@ void CrateFeature::slotExportPlaylist() {
             QModelIndex index = m_crateTableModel.index(i, 0);
             playlist_items << m_crateTableModel.getTrackLocation(index);
         }
-        exportPlaylistItemsIntoFile(
+        Parser::exportPlaylistItemsIntoFile(
                 file_location,
                 playlist_items,
                 useRelativePath);

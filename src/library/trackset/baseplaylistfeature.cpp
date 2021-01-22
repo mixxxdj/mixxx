@@ -591,7 +591,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
             QModelIndex index = pPlaylistTableModel->index(i, 0);
             playlist_items << pPlaylistTableModel->getTrackLocation(index);
         }
-        exportPlaylistItemsIntoFile(
+        Parser::exportPlaylistItemsIntoFile(
                 file_location, playlist_items, useRelativePath);
     }
 }
