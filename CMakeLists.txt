@@ -1684,13 +1684,12 @@ target_link_libraries(mixxx-lib PUBLIC fidlib)
 
 # KeyFinder
 find_package(KeyFinder)
-# If KeyFinder is built statically, we need FFTW
-find_package(FFTW)
-cmake_dependent_option(KEYFINDER "KeyFinder support" ON "KeyFinder_FOUND OR FFTW_FOUND" OFF)
+option(KEYFINDER "KeyFinder support" ON)
 if(KEYFINDER)
   if (KeyFinder_FOUND)
     target_link_libraries(mixxx-lib PUBLIC KeyFinder::KeyFinder)
   else()
+    # If KeyFinder is built statically, we need FFTW
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
