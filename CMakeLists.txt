@@ -256,55 +256,6 @@ if(WIN32)
 endif()
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
-if(NOT GIT_TAG)
-  execute_process(
-    COMMAND git describe --tags --abbrev=0
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE GIT_TAG
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET
-  )
-endif()
-message(STATUS "Git tag: ${GIT_TAG}")
-
-if(NOT GIT_COMMIT_DESCRIPTION)
-  execute_process(
-    COMMAND git describe --tags --always --dirty=-modified
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE GIT_COMMIT_DESCRIPTION
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET
-  )
-endif()
-message(STATUS "Git commit: ${GIT_COMMIT_DESCRIPTION}")
-
-if(NOT GIT_COMMIT_DATE)
-  set(ENV{TZ} UTC)
-  execute_process(
-    COMMAND git show --quiet --format=%cd --date=short
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    OUTPUT_VARIABLE GIT_COMMIT_DATE
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    ERROR_QUIET
-  )
-endif()
-message(STATUS "Git commit date: ${GIT_COMMIT_DATE}")
-
-string(REGEX MATCH "([0-9]*)-" GIT_YEAR "${GIT_COMMIT_DATE}")
-
-if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/src/git_info.h")
-  if(NOT GIT_TAG OR NOT GIT_COMMIT_DESCRIPTION OR NOT GIT_COMMIT_DATE)
-    message(FATAL_ERROR "Version information not found. "
-    "Either clone the Git repository from https://github.com/mixxxdj/mixxx.git ; "
-    "download an official release tarball from https://downloads.mixxx.org ; "
-    "or manually specify GIT_TAG, GIT_COMMIT_DESCRIPTION, and GIT_COMMIT_DATE variables to CMake.")
-  endif()
-  configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/git_info.h.template"
-    "${CMAKE_CURRENT_BINARY_DIR}/src/git_info.h"
-  )
-endif()
-
 if(MSVC)
   # clcache support
   find_program(CLCACHE_EXECUTABLE "clcache")
@@ -348,6 +299,35 @@ if(CMAKE_VERSION VERSION_LESS "3.7.0")
 endif()
 
 set(CLANG_TIDY "" CACHE STRING "CMAKE_CXX_CLANG_TIDY equivalent that only applies to mixxx sources, not bundled dependencies")
+
+if(GIT_TAG AND GIT_COMMIT_DESCRIPTION AND GIT_COMMIT_DATE)
+  message(STATUS "Using manually specified version information")
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/.git")
+  message(STATUS "Using version information from Git")
+  set(GIT_REPO_ROOT "${CMAKE_CURRENT_SOURCE_DIR}")
+  include("${CMAKE_CURRENT_SOURCE_DIR}/cmake/GitVersionInfo.cmake")
+elseif(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/packaging/VersionInfo.cmake")
+  message(STATUS "Using version information from release source archive")
+  include("${CMAKE_CURRENT_SOURCE_DIR}/packaging/VersionInfo.cmake")
+else()
+  message(FATAL_ERROR "Version information not found. Mixxx must be built from a Git repository or a release source code archive. Alternatively, manually specify the GIT_TAG, GIT_COMMIT_DESCRIPTION, and GIT_COMMIT_DATE variables to CMake.")
+endif()
+
+message(STATUS "Git tag: ${GIT_TAG}")
+message(STATUS "Git commit: ${GIT_COMMIT_DESCRIPTION}")
+message(STATUS "Git commit date: ${GIT_COMMIT_DATE}")
+
+string(REGEX MATCH "([0-9]*)-" GIT_YEAR "${GIT_COMMIT_DATE}")
+
+# Separate this from the rest of Mixxx so ccache & clcache don't recompile everything
+# for each commit.
+add_library(mixxx-version STATIC EXCLUDE_FROM_ALL src/util/version.cpp)
+target_include_directories(mixxx-version PRIVATE src)
+target_compile_definitions(mixxx-version PRIVATE
+  GIT_TAG="${GIT_TAG}"
+  GIT_COMMIT_DESCRIPTION="${GIT_COMMIT_DESCRIPTION}"
+  GIT_COMMIT_DATE="${GIT_COMMIT_DATE}"
+)
 
 # Mixxx itself
 add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
@@ -820,7 +800,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/time.cpp
   src/util/timer.cpp
   src/util/valuetransformer.cpp
-  src/util/version.cpp
   src/util/widgethelper.cpp
   src/util/widgetrendertimer.cpp
   src/util/workerthread.cpp
@@ -948,6 +927,7 @@ target_compile_definitions(mixxx-lib PRIVATE SETTINGS_FILE="mixxx.cfg")
 if(UNIX AND NOT APPLE)
   target_compile_definitions(mixxx-lib PRIVATE SETTINGS_PATH=".mixxx/")
 endif()
+target_link_libraries(mixxx-lib PRIVATE mixxx-version)
 
 # Disable warnings in generated source files
 set_property(
@@ -1629,6 +1609,7 @@ option(STATIC_DEPS "Link dependencies statically" OFF)
 # Chromaprint
 find_package(Chromaprint REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC Chromaprint::Chromaprint)
+target_include_directories(mixxx-version PRIVATE ${Chromaprint_INCLUDE_DIRS})
 if(WIN32)
   if(STATIC_DEPS)
     target_compile_definitions(mixxx-lib PUBLIC CHROMAPRINT_NODLL)
@@ -1743,6 +1724,7 @@ endif()
 # FLAC
 find_package(FLAC REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC FLAC::FLAC)
+target_include_directories(mixxx-version PRIVATE ${FLAC_INCLUDE_DIRS})
 if(WIN32 AND STATIC_DEPS)
   target_compile_definitions(mixxx-lib PUBLIC FLAC__NO_DLL)
 endif()
@@ -1764,6 +1746,7 @@ target_include_directories(mixxx-lib SYSTEM PUBLIC "${gtest_SOURCE_DIR}/include"
 # LAME
 find_package(LAME REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC LAME::LAME)
+target_include_directories(mixxx-version PRIVATE ${LAME_INCLUDE_DIRS})
 
 # Kaitai for reading Rekordbox libraries
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL
@@ -1794,11 +1777,13 @@ target_link_libraries(mixxx-lib PUBLIC OpenGL::GL)
 # Ogg Vorbis
 find_package(OggVorbis REQUIRED)
 target_include_directories(mixxx-lib SYSTEM PUBLIC ${OggVorbis_INCLUDE_DIRS})
+target_include_directories(mixxx-version SYSTEM PRIVATE ${OggVorbis_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${OggVorbis_LIBRARIES})
 
 # PortAudio
 find_package(PortAudio REQUIRED)
 target_include_directories(mixxx-lib SYSTEM PUBLIC ${PortAudio_INCLUDE_DIRS})
+target_include_directories(mixxx-version SYSTEM PRIVATE ${PortAudio_INCLUDE_DIRS})
 target_link_libraries(mixxx-lib PUBLIC ${PortAudio_LIBRARIES})
 
 # PortAudio Ring Buffer
@@ -1855,6 +1840,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Test
   Qt5::Widgets
   Qt5::Xml)
+target_link_libraries(mixxx-version PUBLIC Qt5::Core)
 target_compile_definitions(mixxx-lib PUBLIC QT_TABLET_SUPPORT QT_USE_QSTRINGBUILDER)
 if(UNIX AND NOT APPLE)
   find_package(X11 REQUIRED)
@@ -2067,10 +2053,12 @@ target_link_libraries(mixxx-lib PUBLIC Reverb)
 # Rubberband
 find_package(Rubberband REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC Rubberband::Rubberband)
+target_include_directories(mixxx-version PRIVATE ${Rubberband_INCLUDE_DIRS})
 
 # SndFile
 find_package(SndFile REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC SndFile::SndFile)
+target_include_directories(mixxx-version PRIVATE ${SndFile_INCLUDE_DIRS})
 target_compile_definitions(mixxx-lib PUBLIC __SNDFILE__)
 if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
   target_compile_definitions(mixxx-lib PUBLIC SFC_SUPPORTS_SET_COMPRESSION_LEVEL)
@@ -2104,6 +2092,7 @@ if(SoundTouch_STATIC)
     lib/soundtouch/sse_optimized.cpp
   )
   target_include_directories(SoundTouch SYSTEM PUBLIC lib)
+  target_include_directories(mixxx-version SYSTEM PUBLIC lib)
   target_link_libraries(mixxx-lib PUBLIC SoundTouch)
 else()
   message(STATUS "Linking libSoundTouch dynamically")
@@ -2113,6 +2102,7 @@ endif()
 # TagLib
 find_package(TagLib REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC TagLib::TagLib)
+target_include_directories(mixxx-version PRIVATE ${TagLib_INCLUDE_DIRS})
 if(WIN32 AND STATIC_DEPS)
   target_compile_definitions(mixxx-lib PUBLIC TAGLIB_STATIC)
 endif()
@@ -2347,9 +2337,11 @@ if(BROADCAST)
       message(STATUS "Using internal libshout")
       add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout")
       target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout/include)
+      target_include_directories(mixxx-version SYSTEM PRIVATE lib/libshout/include)
       target_link_libraries(mixxx-lib PUBLIC shout_mixxx)
     else()
       target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
+      target_include_directories(mixxx-version PRIVATE ${Shout_INCLUDE_DIRS})
     endif()
   else()
     if(NOT Shout_FOUND)
@@ -2609,7 +2601,15 @@ list(APPEND CPACK_SOURCE_IGNORE_FILES "/cache/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/.*_build/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.sconf_temp/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "${CMAKE_CURRENT_BINARY_DIR}/")
-set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-Source")
+list(APPEND CPACK_SOURCE_IGNORE_FILES "CMakeFiles")
+list(APPEND CPACK_SOURCE_IGNORE_FILES "compile_commands.json")
+list(APPEND CPACK_SOURCE_IGNORE_FILES "config.log")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}")
+# When CPack runs the CPACK_INSTALL_SCRIPT, CMAKE_CURRENT_SOURCE_DIR is set to the directory that
+# CPack will install the source to, but it has not yet copied the source. To hack around that,
+# set a variable here to the current value of CMAKE_CURRENT_SOURCE_DIR.
+set(CPACK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
+set(CPACK_SOURCE_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackSourceInstall.cmake")
 
 set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
