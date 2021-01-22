@@ -17,12 +17,13 @@ double kDefaultGroupSize = 10.0;
 }
 
 /// Groups numeric values into ranges of values (parameter is group size, default 10)
-
 QVariant RangeGroup::doFilter(const QVariant& input,
         const QVariant& argument,
         bool autoescape) const {
+    Q_UNUSED(autoescape);
+    auto safeInput = getSafeString(input);
+
     bool ok = false;
-    SafeString safeInput = qvariant_cast<SafeString>(input);
     double finput = 0.0;
     if (!safeInput.get().isNull()) {
         finput = safeInput.get().toDouble(&ok);
@@ -37,10 +38,11 @@ QVariant RangeGroup::doFilter(const QVariant& input,
             return input;
         }
     }
-    double modulus = kDefaultGroupSize;
+    //double modulus = kDefaultGroupSize;
     // FIXME(XXX) why is the argument always a QVariant(Invalid) ?
-    //qDebug() << "arg" << argument << getSafeString(argument).get();
-    if (!argument.isNull()) {
+    double modulus = getSafeString(argument).get().toDouble(&ok);
+    //qDebug() << "modulus" << modulus << ok;
+    if (ok) {
         SafeString safeModulus = qvariant_cast<SafeString>(argument);
         double modulusInput = kDefaultGroupSize;
         if (!safeModulus.get().isNull()) {
@@ -58,6 +60,8 @@ QVariant RangeGroup::doFilter(const QVariant& input,
             qWarning() << argument << "rangegroup filter group size is not a positive number";
             modulus = kDefaultGroupSize;
         }
+    } else {
+        modulus = kDefaultGroupSize;
     }
 
     double rest = std::fmod(finput, modulus);
@@ -79,6 +83,26 @@ QVariant RangeGroup::doFilter(const QVariant& input,
     return QVariant(startString + QStringLiteral("-") + endString);
 }
 
+QVariant ZeroPad::doFilter(const QVariant& input,
+        const QVariant& argument,
+        bool autoescape) const {
+    Q_UNUSED(autoescape)
+    auto value = getSafeString(input);
+
+    bool ok;
+    int iValue = value.get().toInt(&ok);
+    if (!ok)
+        return QString();
+
+    int arg = getSafeString(argument).get().toInt(&ok);
+    qDebug() << "zeroarg" << arg << ok;
+    if (!ok) {
+        arg = 2;
+    }
+
+    return SafeString(QString("%1").arg(iValue, arg, 10, QChar('0')));
+}
+
 QHash<QString, AbstractNodeFactory*> FormatterPlugin::nodeFactories(const QString& name) {
     Q_UNUSED(name);
     QHash<QString, AbstractNodeFactory*> nodes;
@@ -90,6 +114,7 @@ QHash<QString, Filter*> FormatterPlugin::filters(const QString& name) {
     QHash<QString, Filter*> filters;
 
     filters.insert("rangegroup", new RangeGroup());
+    filters.insert("zeropad", new ZeroPad());
 
     return filters;
 }

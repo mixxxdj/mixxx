@@ -152,12 +152,27 @@
           </item>
           <item>
            <property name="text">
+            <string>{{ index|zeropad:&quot;3&quot;}} - {{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>{{ track.bpm}} - {{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
            </property>
           </item>
           <item>
            <property name="text">
             <string>{{ track.bpm}}/{{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>{{ track.bpm|rangegroup }}/{{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>{{ crate.name}}/{{ index }} - {{ track.artist }} - {{ track.title }}.{{ track.extension }}</string>
            </property>
           </item>
          </widget>

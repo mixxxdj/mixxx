@@ -21,7 +21,21 @@ class RangeGroup : public Filter {
             bool autoescape = false) const override;
     bool isSafe() const override {
         return true;
-    }; // see the Autoescaping section
+    };
+};
+
+/// Pads a integer with 0
+class ZeroPad : public Filter {
+  public:
+    ZeroPad(){};
+    ~ZeroPad(){};
+
+    QVariant doFilter(const QVariant& input,
+            const QVariant& arg = {},
+            bool autoescape = false) const override;
+    bool isSafe() const override {
+        return true;
+    };
 };
 
 class FormatterPlugin : public QObject, public TagLibraryInterface {

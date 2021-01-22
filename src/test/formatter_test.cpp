@@ -31,11 +31,10 @@ TEST_F(FormatterTest, TestRangeGroupFilter) {
     EXPECT_EQ(t2->render(context), QString("130-140"));
     context->insert(QStringLiteral("x1"), QVariant(QString("131")));
     EXPECT_EQ(t2->render(context), QString("130-140"));
-
-    // FIXME(XXX) why is filter argument QVariant(Invalid) ???
 #if 0
+    // FIXME(XXX) why is filter argument always QVariant(Invalid) ???
     // use different grouping size
-    Template t3 = engine->newTemplate(QStringLiteral("{{ x1|rangegroup:\"5\" }}"), QStringLiteral("t3"));
+    Template t3 = engine->newTemplate(QStringLiteral("{{x1|rangegroup:\"5\"}}"), QStringLiteral("t3"));
     context->insert("x1", "122");
     qDebug() << t2->render(context);
     EXPECT_EQ(t2->render(context), QString("120-125"));
@@ -54,4 +53,26 @@ TEST_F(FormatterTest, TestRangeGroupFilter) {
     context->insert("x1", QVariant(120.0));
     EXPECT_EQ(t2->render(context), QString("120-122.5"));
 #endif
+}
+
+TEST_F(FormatterTest, TestZeropadFilter) {
+    // Generate a file name for the temporary file
+    auto engine = Formatter::getEngine(nullptr);
+    auto context = new Context();
+    //context->insert("x1", "122");
+    Template t1 = engine->newTemplate(QStringLiteral("{{1|zeropad}}"), QStringLiteral("t1"));
+
+    EXPECT_EQ(t1->render(context),
+            QString("01"));
+
+    Template t2 = engine->newTemplate(QStringLiteral("{{1|zeropad:\"3\"}}"), QStringLiteral("t2"));
+
+    EXPECT_EQ(t2->render(context),
+            QString("001"));
+
+    Template t3 = engine->newTemplate(QStringLiteral("{{x1|zeropad:\"4\"}}"), QStringLiteral("t2"));
+    context->insert("x1", QVariant(23));
+
+    EXPECT_EQ(t3->render(context),
+            QString("0023"));
 }
