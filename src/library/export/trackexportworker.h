@@ -80,6 +80,15 @@ class TrackExportWorker : public QThread {
         return m_pattern;
     }
 
+    /// Sets the filename for the playlist to generate
+    void setPlaylist(QString playlist) {
+        m_playlist = playlist;
+    }
+    /// returns the playlist filename
+    QString getPlaylist() {
+        return m_playlist;
+    }
+
     // Returns the new filename for the track. Applies the pattern if set.
     QString generateFilename(TrackPointer track, int index = 0, int dupCounter = 0);
 
@@ -114,6 +123,7 @@ class TrackExportWorker : public QThread {
     QMap<QString, TrackFile> createCopylist(
             const TrackPointerList& tracks,
             TrackPointerList* skippedTracks);
+    void exportPlaylist();
 
     // Emit a signal requesting overwrite mode, and block until we get an
     // answer.  Updates m_overwriteMode appropriately.
@@ -130,4 +140,5 @@ class TrackExportWorker : public QThread {
     Grantlee::Context* m_context;
     Grantlee::Template m_template;
     Grantlee::Engine* m_engine{nullptr};
+    QString m_playlist;
 };

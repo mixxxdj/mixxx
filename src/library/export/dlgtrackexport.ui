@@ -135,6 +135,34 @@
           </item>
          </layout>
         </item>
+        <item row="0" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <item>
+           <widget class="QLineEdit" name="folderEdit"/>
+          </item>
+          <item>
+           <widget class="QPushButton" name="browseButton">
+            <property name="text">
+             <string>Browse</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="0" column="0">
+         <widget class="QLabel" name="labelFolder">
+          <property name="text">
+           <string>Folder</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="0">
+         <widget class="QLabel" name="labelPreview">
+          <property name="text">
+           <string>Preview</string>
+          </property>
+         </widget>
+        </item>
         <item row="1" column="1">
          <widget class="QComboBox" name="comboPattern">
           <property name="editable">
@@ -167,6 +195,16 @@
           </item>
           <item>
            <property name="text">
+            <string>{{ track.bpm }}/{{track.key.openkey}} - {{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>{{ track.bpm }}/{{track.key.lancelot}} - {{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
             <string>{{ track.bpm|rangegroup }}/{{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
            </property>
           </item>
@@ -184,33 +222,38 @@
           </property>
          </widget>
         </item>
-        <item row="0" column="0">
-         <widget class="QLabel" name="labelFolder">
+        <item row="3" column="0">
+         <widget class="QCheckBox" name="playlistExport">
           <property name="text">
-           <string>Folder</string>
+           <string>Create Playlist</string>
           </property>
          </widget>
         </item>
-        <item row="0" column="1">
-         <layout class="QHBoxLayout" name="horizontalLayout">
+        <item row="3" column="1">
+         <layout class="QHBoxLayout" name="horizontalLayout_4">
           <item>
-           <widget class="QLineEdit" name="folderEdit"/>
+           <widget class="QLineEdit" name="playlistName"/>
           </item>
           <item>
-           <widget class="QPushButton" name="browseButton">
-            <property name="text">
-             <string>Browse</string>
-            </property>
+           <widget class="QComboBox" name="playlistSuffix">
+            <item>
+             <property name="text">
+              <string>.m3u8</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>.m3u</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>.pls</string>
+             </property>
+            </item>
            </widget>
           </item>
          </layout>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="labelPreview">
-          <property name="text">
-           <string>Preview</string>
-          </property>
-         </widget>
         </item>
        </layout>
       </item>

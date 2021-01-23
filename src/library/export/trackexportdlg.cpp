@@ -12,7 +12,8 @@
 TrackExportDlg::TrackExportDlg(QWidget* parent,
         UserSettingsPointer pConfig,
         TrackPointerList& tracks,
-        Grantlee::Context* context)
+        Grantlee::Context* context,
+        const QString* playlist)
         : QDialog(parent),
           Ui::DlgTrackExport(),
           m_pConfig(pConfig),
@@ -26,6 +27,10 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
     folderEdit->setText(lastExportDirectory);
 
     m_worker = new TrackExportWorker(folderEdit->text(), m_tracks, context);
+
+    if (playlist) {
+        playlistName->setText(*playlist);
+    }
 
     connect(cancelButton,
             &QPushButton::clicked,
@@ -118,6 +123,9 @@ void TrackExportDlg::setEnableControls(bool enabled) {
     comboPattern->setEnabled(enabled);
     folderEdit->setEnabled(enabled);
     browseButton->setEnabled(enabled);
+    playlistName->setEnabled(enabled);
+    playlistExport->setEnabled(enabled);
+    playlistSuffix->setEnabled(enabled);
 }
 
 void TrackExportDlg::slotStartExport() {
@@ -147,6 +155,13 @@ void TrackExportDlg::slotStartExport() {
     updatePreview();
     setEnableControls(false);
     cancelButton->setText(tr("&Cancel"));
+
+    // enable playlist export
+    if (playlistExport->isChecked()) {
+        m_worker->setPlaylist(playlistName->text() + playlistSuffix->currentText());
+    } else {
+        m_worker->setPlaylist(QString());
+    }
 
     m_worker->start();
 }

@@ -30,7 +30,8 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     TrackExportDlg(QWidget* parent,
             UserSettingsPointer pConfig,
             TrackPointerList& tracks,
-            Grantlee::Context* context = nullptr);
+            Grantlee::Context* context = nullptr,
+            const QString* playlistName = nullptr);
     virtual ~TrackExportDlg();
 
   public slots:

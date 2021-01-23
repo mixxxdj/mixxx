@@ -11,6 +11,7 @@
 #include <QString>
 #include <QVariant>
 
+#include "library/parser.h"
 #include "moc_trackexportworker.cpp"
 #include "track/track.h"
 #include "util/formatter.h"
@@ -24,6 +25,7 @@ const auto kResultCanceled = QStringLiteral("Export canceled");
 const auto kResultEmptyPattern = QStringLiteral("empty pattern result, skipped");
 const auto kResultOk = QStringLiteral("ok");
 const auto kResultCantCreateDirectory = QStringLiteral("Could not create folder");
+const auto kResultCantCreateFile = QStringLiteral("Could not create file");
 
 QString rewriteFilename(const QFileInfo& fileinfo, int index) {
     // We don't have total control over the inputs, so definitely
@@ -145,9 +147,15 @@ void TrackExportWorker::run() {
     int i = 0;
     auto skippedTracks = TrackPointerList();
     QMap<QString, TrackFile> copy_list = createCopylist(m_tracks, &skippedTracks);
+    int jobsTotal = copy_list.size();
+
+    if (!m_playlist.isEmpty()) {
+        jobsTotal++;
+    }
+
     for (TrackPointer track : qAsConst(skippedTracks)) {
         QString fileName = track->fileName();
-        emit progress(fileName, nullptr, 0, copy_list.size());
+        emit progress(fileName, nullptr, 0, jobsTotal);
         emit result(TrackExportWorker::ExportResult::SKIPPED, kResultEmptyPattern);
     }
 
@@ -158,7 +166,7 @@ void TrackExportWorker::run() {
         // on the bar, which looks really nice.
         QString fileName = it->fileName();
         QString target = it.key();
-        emit progress(fileName, target, i, copy_list.size());
+        emit progress(fileName, target, i, jobsTotal);
         copyFile((*it).asFileInfo(), target);
         if (atomicLoadAcquire(m_bStop)) {
             emit canceled();
@@ -167,7 +175,39 @@ void TrackExportWorker::run() {
         }
         ++i;
     }
-    emit progress(QStringLiteral(""), QStringLiteral(""), copy_list.size(), copy_list.size());
+    if (!m_playlist.isEmpty()) {
+        const auto targetDir = QDir(m_destDir);
+        const QString plsPath = targetDir.filePath(m_playlist);
+        QFileInfo plsPathFileinfo(plsPath);
+
+        emit progress(QStringLiteral("export playlist"), m_playlist, i, jobsTotal);
+
+        QDir plsDir = plsPathFileinfo.absoluteDir();
+        if (!plsDir.mkpath(plsDir.absolutePath())) {
+            emit result(TrackExportWorker::ExportResult::FAILED, kResultCantCreateDirectory);
+        } else {
+            QStringList playlistItemLocations = QStringList();
+            for (auto it = copy_list.constBegin(); it != copy_list.constEnd(); ++it) {
+                // calculate the relative path between the exported file and the playlist
+                QString relpath = plsPathFileinfo.dir().relativeFilePath(
+                        targetDir.filePath(it.key()));
+                playlistItemLocations.append(relpath);
+            }
+            bool playlistOk = Parser::exportPlaylistItemsIntoFile(
+                    plsPath,
+                    playlistItemLocations,
+                    true);
+            if (playlistOk) {
+                emit result(TrackExportWorker::ExportResult::OK, kResultOk);
+            } else {
+                emit result(TrackExportWorker::ExportResult::FAILED,
+                        kResultCantCreateDirectory);
+            }
+        }
+        i++;
+    }
+
+    emit progress(QStringLiteral(""), QStringLiteral(""), i, jobsTotal);
     emit result(TrackExportWorker::ExportResult::EXPORT_COMPLETE, kResultOk);
     m_running = false;
 }

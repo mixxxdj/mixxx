@@ -751,7 +751,8 @@ void CrateFeature::slotExportTrackFiles() {
     auto summaryWrapper = new CrateSummaryWrapper(*summary);
     context->insert(QStringLiteral("crate"), summaryWrapper);
 
-    auto exportDialog = new TrackExportDlg(nullptr, m_pConfig, trackpointers, context);
+    auto exportDialog = new TrackExportDlg(
+            nullptr, m_pConfig, trackpointers, context, &summary->getName());
     exportDialog->open();
 }
 
