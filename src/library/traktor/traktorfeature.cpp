@@ -27,13 +27,13 @@ QString fromTraktorSeparators(QString path) {
     return path.replace("/:", "/");
 }
 
-struct TraktorVersion {
+struct SemanticVersion {
     uint major{0},
             minor{0},
             patch{0};
 };
 
-bool operator<(const TraktorVersion& a, const TraktorVersion& b) {
+bool operator<(const SemanticVersion& a, const SemanticVersion& b) {
     return std::tie(a.major, a.minor, a.patch) < std::tie(b.major, b.minor, b.patch);
 }
 
@@ -584,7 +584,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 
     //Iterate over the subfolders
     QFileInfoList list = ni_directory.entryInfoList();
-    QMap<TraktorVersion, QString> installed_ts_map;
+    QMap<SemanticVersion, QString> installed_ts_map;
 
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
@@ -600,7 +600,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
             QRegularExpression re("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)");
             QRegularExpressionMatch match = re.match(folder_name);
             if (match.hasMatch()) {
-                const auto version = TraktorVersion{
+                const auto version = SemanticVersion{
                         match.captured("major").toUInt(),
                         match.captured("minor").toUInt(),
                         match.captured("patch").toUInt()};
@@ -612,7 +612,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
     if (installed_ts_map.isEmpty()) {
         musicFolder = QDir::homePath() + "/collection.nml";
     } else { //Select the folder with the highest version as default Traktor folder
-        QList<TraktorVersion> versions = installed_ts_map.keys();
+        QList<SemanticVersion> versions = installed_ts_map.keys();
         std::sort(versions.begin(), versions.end());
         musicFolder = installed_ts_map.value(versions.last()) + "/collection.nml";
     }
