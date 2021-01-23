@@ -2,9 +2,9 @@
 
 #include <QWidget>
 
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 
 class MixxxMainWindow;
 class Library;

@@ -3,8 +3,8 @@
 #include <QSpinBox>
 #include <QWidget>
 
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefvinyldlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 

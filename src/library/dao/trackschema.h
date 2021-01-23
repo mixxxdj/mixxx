@@ -1,94 +1,58 @@
-#ifndef MIXXX_TRACKSCHEMA_H
-#define MIXXX_TRACKSCHEMA_H
+#pragma once
 
 #include <QString>
-#include <QStringList>
 
 #define LIBRARY_TABLE "library"
 #define TRACKLOCATIONS_TABLE "track_locations"
 
-const QString LIBRARYTABLE_ID = "id";
-const QString LIBRARYTABLE_ARTIST = "artist";
-const QString LIBRARYTABLE_TITLE = "title";
-const QString LIBRARYTABLE_ALBUM = "album";
-const QString LIBRARYTABLE_ALBUMARTIST = "album_artist";
-const QString LIBRARYTABLE_YEAR = "year";
-const QString LIBRARYTABLE_GENRE = "genre";
-const QString LIBRARYTABLE_COMPOSER = "composer";
-const QString LIBRARYTABLE_GROUPING = "grouping";
-const QString LIBRARYTABLE_TRACKNUMBER = "tracknumber";
-const QString LIBRARYTABLE_FILETYPE = "filetype";
-const QString LIBRARYTABLE_LOCATION = "location";
-const QString LIBRARYTABLE_COMMENT = "comment";
-const QString LIBRARYTABLE_DURATION = "duration";
-const QString LIBRARYTABLE_BITRATE = "bitrate";
-const QString LIBRARYTABLE_BPM = "bpm";
-const QString LIBRARYTABLE_REPLAYGAIN = "replaygain";
-const QString LIBRARYTABLE_CUEPOINT = "cuepoint";
-const QString LIBRARYTABLE_URL = "url";
-const QString LIBRARYTABLE_SAMPLERATE = "samplerate";
-const QString LIBRARYTABLE_WAVESUMMARYHEX = "wavesummaryhex";
-const QString LIBRARYTABLE_CHANNELS = "channels";
-const QString LIBRARYTABLE_MIXXXDELETED = "mixxx_deleted";
-const QString LIBRARYTABLE_DATETIMEADDED = "datetime_added";
-const QString LIBRARYTABLE_HEADERPARSED = "header_parsed";
-const QString LIBRARYTABLE_TIMESPLAYED = "timesplayed";
-const QString LIBRARYTABLE_PLAYED = "played";
-const QString LIBRARYTABLE_RATING = "rating";
-const QString LIBRARYTABLE_KEY = "key";
-const QString LIBRARYTABLE_KEY_ID = "key_id";
-const QString LIBRARYTABLE_BPM_LOCK = "bpm_lock";
-const QString LIBRARYTABLE_PREVIEW = "preview";
-const QString LIBRARYTABLE_COLOR = "color";
-const QString LIBRARYTABLE_COVERART = "coverart";
-const QString LIBRARYTABLE_COVERART_SOURCE = "coverart_source";
-const QString LIBRARYTABLE_COVERART_TYPE = "coverart_type";
-const QString LIBRARYTABLE_COVERART_LOCATION = "coverart_location";
-const QString LIBRARYTABLE_COVERART_HASH = "coverart_hash";
+const QString LIBRARYTABLE_ID = QStringLiteral("id");
+const QString LIBRARYTABLE_ARTIST = QStringLiteral("artist");
+const QString LIBRARYTABLE_TITLE = QStringLiteral("title");
+const QString LIBRARYTABLE_ALBUM = QStringLiteral("album");
+const QString LIBRARYTABLE_ALBUMARTIST = QStringLiteral("album_artist");
+const QString LIBRARYTABLE_YEAR = QStringLiteral("year");
+const QString LIBRARYTABLE_GENRE = QStringLiteral("genre");
+const QString LIBRARYTABLE_COMPOSER = QStringLiteral("composer");
+const QString LIBRARYTABLE_GROUPING = QStringLiteral("grouping");
+const QString LIBRARYTABLE_TRACKNUMBER = QStringLiteral("tracknumber");
+const QString LIBRARYTABLE_FILETYPE = QStringLiteral("filetype");
+const QString LIBRARYTABLE_LOCATION_ID = QStringLiteral("location");
+const QString LIBRARYTABLE_COMMENT = QStringLiteral("comment");
+const QString LIBRARYTABLE_DURATION = QStringLiteral("duration");
+const QString LIBRARYTABLE_BITRATE = QStringLiteral("bitrate");
+const QString LIBRARYTABLE_BPM = QStringLiteral("bpm");
+const QString LIBRARYTABLE_REPLAYGAIN = QStringLiteral("replaygain");
+const QString LIBRARYTABLE_CUEPOINT = QStringLiteral("cuepoint");
+const QString LIBRARYTABLE_URL = QStringLiteral("url");
+const QString LIBRARYTABLE_SAMPLERATE = QStringLiteral("samplerate");
+const QString LIBRARYTABLE_WAVESUMMARYHEX = QStringLiteral("wavesummaryhex");
+const QString LIBRARYTABLE_CHANNELS = QStringLiteral("channels");
+const QString LIBRARYTABLE_MIXXXDELETED = QStringLiteral("mixxx_deleted");
+const QString LIBRARYTABLE_DATETIMEADDED = QStringLiteral("datetime_added");
+const QString LIBRARYTABLE_HEADERPARSED = QStringLiteral("header_parsed");
+const QString LIBRARYTABLE_TIMESPLAYED = QStringLiteral("timesplayed");
+const QString LIBRARYTABLE_PLAYED = QStringLiteral("played");
+const QString LIBRARYTABLE_RATING = QStringLiteral("rating");
+const QString LIBRARYTABLE_KEY = QStringLiteral("key");
+const QString LIBRARYTABLE_KEY_ID = QStringLiteral("key_id");
+const QString LIBRARYTABLE_BPM_LOCK = QStringLiteral("bpm_lock");
+const QString LIBRARYTABLE_PREVIEW = QStringLiteral("preview");
+const QString LIBRARYTABLE_COLOR = QStringLiteral("color");
+const QString LIBRARYTABLE_COVERART = QStringLiteral("coverart");
+const QString LIBRARYTABLE_COVERART_SOURCE = QStringLiteral("coverart_source");
+const QString LIBRARYTABLE_COVERART_TYPE = QStringLiteral("coverart_type");
+const QString LIBRARYTABLE_COVERART_LOCATION = QStringLiteral("coverart_location");
+const QString LIBRARYTABLE_COVERART_HASH = QStringLiteral("coverart_hash");
 
-const QString TRACKLOCATIONSTABLE_ID = "id";
-const QString TRACKLOCATIONSTABLE_LOCATION = "location";
-const QString TRACKLOCATIONSTABLE_FILENAME = "filename";
-const QString TRACKLOCATIONSTABLE_DIRECTORY = "directory";
-const QString TRACKLOCATIONSTABLE_FILESIZE = "filesize";
-const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
-const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
+const QString TRACKLOCATIONSTABLE_ID = QStringLiteral("id");
+const QString TRACKLOCATIONSTABLE_LOCATION = QStringLiteral("location");
+const QString TRACKLOCATIONSTABLE_FILENAME = QStringLiteral("filename");
+const QString TRACKLOCATIONSTABLE_DIRECTORY = QStringLiteral("directory");
+const QString TRACKLOCATIONSTABLE_FILESIZE = QStringLiteral("filesize");
+const QString TRACKLOCATIONSTABLE_FSDELETED = QStringLiteral("fs_deleted");
+const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = QStringLiteral("needs_verification");
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
-
-const QStringList DEFAULT_COLUMNS = {
-        LIBRARYTABLE_ID,
-        LIBRARYTABLE_PLAYED,
-        LIBRARYTABLE_TIMESPLAYED,
-        //has to be up here otherwise Played and TimesPlayed are not shown
-        LIBRARYTABLE_ALBUMARTIST,
-        LIBRARYTABLE_ALBUM,
-        LIBRARYTABLE_ARTIST,
-        LIBRARYTABLE_TITLE,
-        LIBRARYTABLE_YEAR,
-        LIBRARYTABLE_RATING,
-        LIBRARYTABLE_GENRE,
-        LIBRARYTABLE_COMPOSER,
-        LIBRARYTABLE_GROUPING,
-        LIBRARYTABLE_TRACKNUMBER,
-        LIBRARYTABLE_KEY,
-        LIBRARYTABLE_KEY_ID,
-        LIBRARYTABLE_BPM,
-        LIBRARYTABLE_BPM_LOCK,
-        LIBRARYTABLE_DURATION,
-        LIBRARYTABLE_BITRATE,
-        LIBRARYTABLE_REPLAYGAIN,
-        LIBRARYTABLE_FILETYPE,
-        LIBRARYTABLE_DATETIMEADDED,
-        TRACKLOCATIONSTABLE_LOCATION,
-        TRACKLOCATIONSTABLE_FSDELETED,
-        LIBRARYTABLE_COMMENT,
-        LIBRARYTABLE_MIXXXDELETED,
-        LIBRARYTABLE_COLOR,
-        LIBRARYTABLE_COVERART_SOURCE,
-        LIBRARYTABLE_COVERART_TYPE,
-        LIBRARYTABLE_COVERART_LOCATION,
-        LIBRARYTABLE_COVERART_HASH};
 
 namespace mixxx {
 namespace trackschema {
@@ -96,5 +60,3 @@ namespace trackschema {
 QString tableForColumn(const QString& columnName);
 } // namespace trackschema
 } // namespace mixxx
-
-#endif //MIXXX_TRACKSCHEMA_H

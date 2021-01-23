@@ -167,7 +167,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// COLUMN_LIBRARYTABLE_GROUPING: QString (pass-through)
     /// COLUMN_LIBRARYTABLE_TRACKNUMBER: QString (pass-through)
     /// COLUMN_LIBRARYTABLE_FILETYPE: QString (pass-through)
-    /// COLUMN_LIBRARYTABLE_NATIVELOCATION: QString (pass-through)
+    /// COLUMN_TRACKLOCATIONSTABLE_LOCATION: QString (pass-through)
     /// COLUMN_LIBRARYTABLE_COMMENT: QString (pass-through)
     /// COLUMN_LIBRARYTABLE_DURATION: double (seconds)/mixxx::Duration
     /// COLUMN_LIBRARYTABLE_BITRATE: int (kbps)/mixxx::audio::Bitrate

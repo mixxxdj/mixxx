@@ -4,6 +4,7 @@
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/midiutils.h"
+#include "defs_urls.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
 #include "moc_midicontroller.cpp"
@@ -124,15 +125,17 @@ void MidiController::createOutputHandlers() {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(tr("MixxxControl(s) not found"));
-        props->setText(tr("One or more MixxxControls specified in the "
-                          "outputs section of the loaded preset were invalid."));
+        props->setText(tr(
+                "One or more MixxxControls specified in the "
+                "outputs section of the loaded mapping were invalid."));
         props->setInfoText(tr("Some LEDs or other feedback may not work correctly."));
         QString detailsText = tr("* Check to see that the MixxxControl "
                                  "names are spelled correctly in the mapping "
                                  "file (.xml)\n");
-        detailsText += tr("* Make sure the MixxxControls in question actually exist."
-                          " Visit this wiki page for a complete list: ");
-        detailsText += "http://mixxx.org/wiki/doku.php/mixxxcontrols\n\n";
+        detailsText += tr(
+                "* Make sure the MixxxControls in question actually exist."
+                " Visit the manual for a complete list: ");
+        detailsText += MIXXX_MANUAL_CONTROLS_URL + QStringLiteral("\n\n");
         detailsText += failures.join("\n");
         props->setDetails(detailsText);
         ErrorDialogHandler::instance()->requestErrorDialog(props);

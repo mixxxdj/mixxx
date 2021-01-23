@@ -79,7 +79,7 @@ void writeCommentField(
         const TagLib::String& value) {
     if (value.isEmpty()) {
         // Purge empty fields
-        pTag->removeField(key);
+        pTag->removeFields(key);
     } else {
         const bool replace = true;
         pTag->addField(key, value, replace);

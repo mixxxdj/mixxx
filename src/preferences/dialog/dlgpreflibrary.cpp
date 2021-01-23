@@ -383,13 +383,13 @@ void DlgPrefLibrary::setLibraryFont(const QFont& font) {
         font.family(), font.styleName(), QString::number(font.pointSizeF())));
     m_pLibrary->setFont(font);
 
-    // Don't let the row height exceed the library height.
+    // Don't let the font height exceed the row height.
     QFontMetrics metrics(font);
     int fontHeight = metrics.height();
-    if (fontHeight > spinBoxRowHeight->value()) {
-        spinBoxRowHeight->setValue(fontHeight);
-    }
     spinBoxRowHeight->setMinimum(fontHeight);
+    // library.cpp takes care of setting the new row height according to the
+    // previous font height/ row height ratio
+    spinBoxRowHeight->setValue(m_pLibrary->getTrackTableRowHeight());
 }
 
 void DlgPrefLibrary::slotSelectFont() {

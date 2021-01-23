@@ -56,7 +56,7 @@ find_path(HIDAPI_INCLUDE_DIR
 mark_as_advanced(HIDAPI_INCLUDE_DIR)
 
 find_library(HIDAPI_LIBRARY
-  NAMES hidapi-libusb
+  NAMES hidapi-libusb hidapi
   PATHS ${PC_HIDAPI_LIBRARY_DIRS}
   DOC "HIDAPI library"
 )

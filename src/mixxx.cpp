@@ -29,6 +29,7 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "effects/builtin/builtinbackend.h"
@@ -171,16 +172,21 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     QString settingsPath = args.getSettingsPath();
 #ifdef __APPLE__
+    Sandbox::checkSandboxed();
     if (!args.getSettingsPathSet()) {
         settingsPath = Sandbox::migrateOldSettings();
     }
 #endif
 
+    mixxx::LogFlags logFlags = mixxx::LogFlag::LogToFile;
+    if (args.getDebugAssertBreak()) {
+        logFlags.setFlag(mixxx::LogFlag::DebugAssertBreak);
+    }
     mixxx::Logging::initialize(
             settingsPath,
             args.getLogLevel(),
             args.getLogFlushLevel(),
-            args.getDebugAssertBreak());
+            logFlags);
 
     VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
         qCritical() << "Failed to register any SoundSource providers";
@@ -194,7 +200,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         StatsManager::createInstance();
     }
 
-    m_pSettingsManager = std::make_unique<SettingsManager>(args.getSettingsPath());
+    m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 
     initializeKeyboard();
     installEventFilter(m_pKeyboard);
@@ -239,7 +245,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
-    Sandbox::initialize(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
+    Sandbox::setPermissionsFilePath(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
 
     QString resourcePath = pConfig->getResourcePath();
 
@@ -699,7 +705,23 @@ void MixxxMainWindow::finalize() {
     m_pTrackCollectionManager->stopLibraryScan();
     m_pLibrary->stopPendingTasks();
 
-   // Save the current window state (position, maximized, etc)
+    // Save the current window state (position, maximized, etc)
+    // Note(ronso0): Unfortunately saveGeometry() also stores the fullscreen state.
+    // On next start restoreGeometry would enable fullscreen mode even though that
+    // might not be requested (no '--fullscreen' command line arg and
+    // [Config],StartInFullscreen is '0'.
+    // https://bugs.launchpad.net/mixxx/+bug/1882474
+    // https://bugs.launchpad.net/mixxx/+bug/1909485
+    // So let's quit fullscreen if StartInFullscreen is not checked in Preferences.
+    bool fullscreenPref = m_pSettingsManager->settings()->getValue<bool>(
+            ConfigKey("[Config]", "StartInFullscreen"));
+    if (isFullScreen() && !fullscreenPref) {
+        slotViewFullScreen(false);
+        // After returning from fullscreen the main window incl. window decoration
+        // may be too large for the screen.
+        // Maximize the window so we can store a geometry that fits the screen.
+        showMaximized();
+    }
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),
         QString(saveGeometry().toBase64()));
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "state"),
@@ -988,9 +1010,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
             *retryClicked = true;
             return QDialog::Accepted;
         } else if (msgBox.clickedButton() == wikiButton) {
-            QDesktopServices::openUrl(QUrl(
-                "http://mixxx.org/wiki/doku.php/troubleshooting"
-                "#i_can_t_select_my_sound_card_in_the_sound_hardware_preferences"));
+            QDesktopServices::openUrl(QUrl(MIXXX_WIKI_TROUBLESHOOTING_SOUND_URL));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
