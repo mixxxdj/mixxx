@@ -1,14 +1,15 @@
 #pragma once
 
 #include <QDialog>
+#include <QDir>
 #include <QEvent>
 #include <QRect>
 #include <QStringList>
 #include <memory>
 
 #include "control/controlpushbutton.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreferencesdlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
 
@@ -68,13 +69,15 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
             std::shared_ptr<Library> pLibrary);
     virtual ~DlgPreferences();
 
-    void addPageWidget(PreferencesPage page);
+    void addPageWidget(PreferencesPage page,
+            const QString& pageTitle,
+            const QString& iconFile);
     void removePageWidget(DlgPreferencePage* pWidget);
     void expandTreeItem(QTreeWidgetItem* pItem);
     void switchToPage(DlgPreferencePage* pPage);
 
   public slots:
-    void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious);
     void showSoundHardwarePage();
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
@@ -96,7 +99,6 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
   private:
     DlgPreferencePage* currentPage();
     QList<PreferencesPage> m_allPages;
-    QTreeWidgetItem* createTreeItem(const QString& text, const QIcon& icon);
     void onShow();
     void onHide();
     QRect getDefaultGeometry();
@@ -110,4 +112,6 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     DlgPrefControllers* m_pControllersDlg;
 
     QSize m_pageSizeHint;
+
+    QDir m_iconsPath;
 };

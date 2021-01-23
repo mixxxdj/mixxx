@@ -32,6 +32,8 @@ class Cue : public QObject {
         double endPosition;
     };
 
+    Cue() = delete;
+
     /// For roundtrips during tests
     Cue(
             const mixxx::CueInfo& cueInfo,

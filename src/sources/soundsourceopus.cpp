@@ -1,5 +1,7 @@
 #include "sources/soundsourceopus.h"
 
+#include <QFileInfo>
+
 #include "audio/streaminfo.h"
 #include "util/logger.h"
 
