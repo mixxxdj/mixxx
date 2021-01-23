@@ -58,6 +58,7 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     void updatePreview();
     void setEnableControls(bool enabled);
     void closeEvent(QCloseEvent* event) override;
+    void populateDefaultPatterns();
 
     UserSettingsPointer m_pConfig;
     TrackPointerList m_tracks;

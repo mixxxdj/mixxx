@@ -38,6 +38,20 @@ class ZeroPad : public Filter {
     };
 };
 
+/// Rounds a double to n precission (default = 0)
+class Rounder : public Filter {
+  public:
+    Rounder(){};
+    ~Rounder(){};
+
+    QVariant doFilter(const QVariant& input,
+            const QVariant& arg = {},
+            bool autoescape = false) const override;
+    bool isSafe() const override {
+        return true;
+    };
+};
+
 class FormatterPlugin : public QObject, public TagLibraryInterface {
     Q_OBJECT
     Q_INTERFACES(Grantlee::TagLibraryInterface)

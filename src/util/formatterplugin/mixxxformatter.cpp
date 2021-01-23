@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariant>
+#include <QtMath>
 #include <QtPlugin>
 #include <cmath>
 
@@ -91,16 +92,36 @@ QVariant ZeroPad::doFilter(const QVariant& input,
 
     bool ok;
     int iValue = value.get().toInt(&ok);
-    if (!ok)
+    if (!ok) {
         return QString();
-
+    }
     int arg = getSafeString(argument).get().toInt(&ok);
-    qDebug() << "zeroarg" << arg << ok;
     if (!ok) {
         arg = 2;
     }
 
     return SafeString(QString("%1").arg(iValue, arg, 10, QChar('0')));
+}
+
+QVariant Rounder::doFilter(const QVariant& input,
+        const QVariant& argument,
+        bool autoescape) const {
+    Q_UNUSED(autoescape)
+    auto value = getSafeString(input);
+
+    bool ok;
+    double dValue = value.get().toDouble(&ok);
+    if (!ok) {
+        return QString();
+    }
+    int arg = getSafeString(argument).get().toInt(&ok);
+    if (!ok) {
+        arg = 0;
+    }
+
+    double rValue = qRound(dValue * qPow(10, arg)) / qPow(10, arg);
+
+    return SafeString(QString("%1").arg(rValue, 0, 'f', arg));
 }
 
 QHash<QString, AbstractNodeFactory*> FormatterPlugin::nodeFactories(const QString& name) {
@@ -115,6 +136,7 @@ QHash<QString, Filter*> FormatterPlugin::filters(const QString& name) {
 
     filters.insert("rangegroup", new RangeGroup());
     filters.insert("zeropad", new ZeroPad());
+    filters.insert("round", new Rounder());
 
     return filters;
 }

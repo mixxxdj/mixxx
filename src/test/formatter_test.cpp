@@ -70,9 +70,37 @@ TEST_F(FormatterTest, TestZeropadFilter) {
     EXPECT_EQ(t2->render(context),
             QString("001"));
 
-    Template t3 = engine->newTemplate(QStringLiteral("{{x1|zeropad:\"4\"}}"), QStringLiteral("t2"));
+    Template t3 = engine->newTemplate(QStringLiteral("{{x1|zeropad:\"4\"}}"), QStringLiteral("t3"));
     context->insert("x1", QVariant(23));
 
     EXPECT_EQ(t3->render(context),
             QString("0023"));
+}
+
+TEST_F(FormatterTest, TestRoundFilter) {
+    // Generate a file name for the temporary file
+    auto engine = Formatter::getEngine(nullptr);
+    auto context = new Context();
+    //context->insert("x1", "122");
+    Template t1 = engine->newTemplate(QStringLiteral("{{x1|round}}"), QStringLiteral("t1"));
+    context->insert("x1", QVariant(1.49));
+    EXPECT_EQ(t1->render(context),
+            QString("1"));
+    context->insert("x1", QVariant(1.51));
+    EXPECT_EQ(t1->render(context),
+            QString("2"));
+
+    context->insert("x1", QVariant(156.49567));
+    EXPECT_EQ(t1->render(context),
+            QString("156"));
+
+    Template t2 = engine->newTemplate(QStringLiteral("{{x1|round:\"2\"}}"), QStringLiteral("t3"));
+
+    context->insert("x1", QVariant(1.234567));
+    EXPECT_EQ(t2->render(context),
+            QString("1.23"));
+
+    context->insert("x1", QVariant(1.23567));
+    EXPECT_EQ(t2->render(context),
+            QString("1.24"));
 }

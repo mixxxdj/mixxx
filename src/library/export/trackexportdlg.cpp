@@ -9,6 +9,30 @@
 #include "moc_trackexportdlg.cpp"
 #include "util/assert.h"
 
+namespace {
+
+const QStringList kDefaultPatterns = QStringList()
+        << "{{ track.fileName }}"
+        << "{{ track.artist }} - {{track.title }}.{{ track.extension }}"
+        << "{{ index|zeropad:\"3\"}} - {{ track.artist }} - {{track.title "
+           "}}.{{ track.extension }}"
+        << "{{ track.bpm|round }} - {{ track.artist }} - {{track.title }}.{{ "
+           "track.extension }}"
+        << "{{ track.bpm|round }}/{{ track.artist }} - {{track.title }}.{{ "
+           "track.extension }}"
+        << "{{ track.bpm|round }}/{{ track.key.openkey }} - {{ track.artist }} "
+           "- {{track.title }}.{{ track.extension }}"
+        << "{{ track.bpm|round }}/{{ track.key.lancelot }} - {{ track.artist "
+           "}} - {{track.title }}.{{ track.extension }}"
+        << "{{ track.bpm|rangegroup }}/{{ track.artist }} - {{track.title "
+           "}}.{{ track.extension }}"
+        << "{{ crate.name }}/{{ index }} - {{ track.artist }} - {{ track.title "
+           "}}.{{ track.extension }}"
+        << "{{ playlist.name }}/{{ index }} - {{ track.artist }} - {{ "
+           "track.title }}.{{ track.extension }}";
+
+} // anonymous namespace
+
 TrackExportDlg::TrackExportDlg(QWidget* parent,
         UserSettingsPointer pConfig,
         TrackPointerList& tracks,
@@ -31,6 +55,8 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
     if (playlist) {
         playlistName->setText(*playlist);
     }
+
+    populateDefaultPatterns();
 
     connect(cancelButton,
             &QPushButton::clicked,
@@ -102,6 +128,12 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
 TrackExportDlg::~TrackExportDlg() {
 }
 
+void TrackExportDlg::populateDefaultPatterns() {
+    for (auto pattern : kDefaultPatterns) {
+        comboPattern->addItem(pattern, QVariant(true));
+    }
+}
+
 bool TrackExportDlg::browseFolder() {
     QString destDir = QFileDialog::getExistingDirectory(
             nullptr, tr("Export Track Files To"), folderEdit->text());
@@ -134,7 +166,7 @@ void TrackExportDlg::slotStartExport() {
         return;
     }
     // Do we want to check for target folder to exist ?
-    // When I file is exported, all parent folders are created automatically.
+    // When a file is exported, all parent folders are created automatically.
 
     // QString destDir = folderEdit->text();
     // if (!QFile::exists(destDir)) {

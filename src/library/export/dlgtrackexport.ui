@@ -168,51 +168,6 @@
           <property name="editable">
            <bool>true</bool>
           </property>
-          <item>
-           <property name="text">
-            <string>{{ track.fileName }}</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>{{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>{{ index|zeropad:&quot;3&quot;}} - {{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>{{ track.bpm}} - {{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>{{ track.bpm}}/{{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>{{ track.bpm }}/{{track.key.openkey}} - {{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>{{ track.bpm }}/{{track.key.lancelot}} - {{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>{{ track.bpm|rangegroup }}/{{ track.artist }} - {{track.title }}.{{ track.extension }}</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>{{ crate.name}}/{{ index }} - {{ track.artist }} - {{ track.title }}.{{ track.extension }}</string>
-           </property>
-          </item>
          </widget>
         </item>
         <item row="1" column="0">
