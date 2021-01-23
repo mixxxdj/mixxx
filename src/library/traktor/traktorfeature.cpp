@@ -1,7 +1,5 @@
 #include "library/traktor/traktorfeature.h"
 
-#include <tuple>
-
 #include <QMap>
 #include <QMessageBox>
 #include <QRegularExpression>
@@ -10,6 +8,7 @@
 #include <QStandardPaths>
 #include <QXmlStreamReader>
 #include <QtDebug>
+#include <tuple>
 
 #include "library/library.h"
 #include "library/librarytablemodel.h"
@@ -28,15 +27,13 @@ QString fromTraktorSeparators(QString path) {
     return path.replace("/:", "/");
 }
 
-struct TraktorVersion
-{
+struct TraktorVersion {
     uint major{0},
-         minor{0},
-         patch{0};
+            minor{0},
+            patch{0};
 };
 
-bool operator<(const TraktorVersion& a, const TraktorVersion& b)
-{
+bool operator<(const TraktorVersion& a, const TraktorVersion& b) {
     return std::tie(a.major, a.minor, a.patch) < std::tie(b.major, b.minor, b.patch);
 }
 
@@ -604,10 +601,9 @@ QString TraktorFeature::getTraktorMusicDatabase() {
             QRegularExpressionMatch match = re.match(folder_name);
             if (match.hasMatch()) {
                 const auto version = TraktorVersion{
-                    match.captured("major").toUInt(),
-                    match.captured("minor").toUInt(),
-                    match.captured("patch").toUInt()
-                };
+                        match.captured("major").toUInt(),
+                        match.captured("minor").toUInt(),
+                        match.captured("patch").toUInt()};
                 installed_ts_map.insert(version, fileInfo.absoluteFilePath());
             }
         }
