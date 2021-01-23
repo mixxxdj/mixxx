@@ -339,6 +339,29 @@
                 </State>
                 <Pos>11,84</Pos>
                 <Connection>
+                  <ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter4</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter4_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </EffectPushButton>
+              <EffectPushButton>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>skin:/btn/btn_kill_down.png</Pressed>
+                  <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+                  <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
+                </State>
+                <Pos>11,84</Pos>
+                <Connection>
                   <ConfigKey>[EqualizerRack1_[Channel1]_Effect1],button_parameter3</ConfigKey>
                   <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
                   <ButtonState>LeftButton</ButtonState>
@@ -405,6 +428,29 @@
                 <EffectUnitGroup>[EqualizerRack1_[Channel1]]</EffectUnitGroup>
                 <Effect>1</Effect>
                 <EffectButtonParameter>3</EffectButtonParameter>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Pressed>skin:/btn/btn_kill_down.png</Pressed>
+                  <Unpressed>skin:/btn/btn_kill.png</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Pressed>skin:/btn/btn_kill_overdown.png</Pressed>
+                  <Unpressed>skin:/btn/btn_kill_over.png</Unpressed>
+                </State>
+                <Pos>229,84</Pos>
+                <Connection>
+                  <ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter4</ConfigKey>
+                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[EqualizerRack1_[Channel2]_Effect1],button_parameter4_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </EffectPushButton>
+              <EffectPushButton>
                 <NumberStates>2</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -728,6 +774,18 @@
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>32,76</Pos>
                 <Connection>
+                  <ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter4</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter4_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </EffectParameterKnob>
+              <EffectParameterKnob>
+                <NumberStates>64</NumberStates>
+                <Path>knobs/knob_rotary_s%1.png</Path>
+                <Pos>32,76</Pos>
+                <Connection>
                   <ConfigKey>[EqualizerRack1_[Channel1]_Effect1],parameter3</ConfigKey>
                 </Connection>
                 <Connection>
@@ -782,6 +840,18 @@
                 <NumberStates>64</NumberStates>
                 <Path>knobs/knob_rotary_s%1.png</Path>
                 <Pos>197,76</Pos>
+                <Connection>
+                  <ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter4</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter4_loaded</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </EffectParameterKnob>
+              <EffectParameterKnob>
+                <NumberStates>64</NumberStates>
+                <Path>knobs/knob_rotary_s%1.png</Path>
+                <Pos>196,76</Pos>
                 <Connection>
                   <ConfigKey>[EqualizerRack1_[Channel2]_Effect1],parameter3</ConfigKey>
                 </Connection>

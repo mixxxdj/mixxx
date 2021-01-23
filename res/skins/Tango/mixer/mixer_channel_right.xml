@@ -99,6 +99,9 @@ Variables:
         <SizePolicy>max,min</SizePolicy>
         <Children>
           <WidgetGroup><Size>1min,4f</Size></WidgetGroup>
+          <Template src="skin:../Tango/mixer/eq_knob_right.xml"><!-- 4th EQ knob -->
+            <SetVariable name="FxParameter">4</SetVariable>
+          </Template>
           <Template src="skin:../Tango/mixer/eq_knob_right.xml"><!-- High EQ -->
             <SetVariable name="FxParameter">3</SetVariable>
           </Template>

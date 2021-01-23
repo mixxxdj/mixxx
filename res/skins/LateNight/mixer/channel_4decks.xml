@@ -37,6 +37,13 @@
       <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
 
       <Template src="skin:/mixer/eq_knob_4decks.xml">
+        <SetVariable name="EqParameter">4</SetVariable>
+        <SetVariable name="EqRange"></SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
+
+      <Template src="skin:/mixer/eq_knob_4decks.xml">
         <SetVariable name="EqParameter">3</SetVariable>
         <SetVariable name="EqRange">High</SetVariable>
       </Template>
