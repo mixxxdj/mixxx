@@ -15,6 +15,7 @@
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/playlistsummary.h"
 #include "library/treeitem.h"
 #include "library/treeitemmodel.h"
 #include "moc_baseplaylistfeature.cpp"
@@ -601,8 +602,12 @@ void BasePlaylistFeature::slotExportTrackFiles() {
             new PlaylistTableModel(this,
                     m_pLibrary->trackCollections(),
                     "mixxx.db.model.playlist_export"));
-
-    pPlaylistTableModel->setTableModel(playlistIdFromIndex(m_lastRightClickedIndex));
+    int id = playlistIdFromIndex(m_lastRightClickedIndex);
+    VERIFY_OR_DEBUG_ASSERT(id != -1) {
+        qWarning() << "try to export invalid playlist id";
+        return;
+    }
+    pPlaylistTableModel->setTableModel(id);
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(
                                          ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION),
             Qt::AscendingOrder);
@@ -617,13 +622,20 @@ void BasePlaylistFeature::slotExportTrackFiles() {
 
     Grantlee::Context* context = new Grantlee::Context();
 
-    // FIXME(poelzi): make CrateSummary a QObject so it can be inserted into the
-    // context. Why the linker errors when QObject ?
-    // auto summary = new CrateSummary();
-    // m_pTrackCollection->crates().readCrateSummaryById(id, summary);
-    // context->insert(QStringLiteral("crate"), summary);
+    PlaylistSummary summary = m_playlistDao.getPlaylistSummary(id);
+    PlaylistSummaryWrapper* wrapper = nullptr;
+    if (summary.isValid()) {
+        wrapper = new PlaylistSummaryWrapper(summary);
+        context->insert(QStringLiteral("playlist"), wrapper);
+    }
+    QString playlistName = summary.name();
 
-    auto exportDialog = new TrackExportDlg(nullptr, m_pConfig, tracks, context);
+    auto exportDialog = new TrackExportDlg(nullptr, m_pConfig, tracks, context, &playlistName);
+
+    if (wrapper) {
+        wrapper->setParent(exportDialog);
+    }
+
     exportDialog->open();
 }
 

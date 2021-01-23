@@ -748,11 +748,17 @@ void CrateFeature::slotExportTrackFiles() {
 
     auto summary = new CrateSummary();
     m_pTrackCollection->crates().readCrateSummaryById(id, summary);
-    auto summaryWrapper = new CrateSummaryWrapper(*summary);
-    context->insert(QStringLiteral("crate"), summaryWrapper);
+    CrateSummaryWrapper* summaryWrapper = nullptr;
+    if (summary->isValid()) {
+        new CrateSummaryWrapper(*summary);
+        context->insert(QStringLiteral("crate"), summaryWrapper);
+    }
 
     auto exportDialog = new TrackExportDlg(
             nullptr, m_pConfig, trackpointers, context, &summary->getName());
+    if (summaryWrapper) {
+        summaryWrapper->setParent(exportDialog);
+    }
     exportDialog->open();
 }
 

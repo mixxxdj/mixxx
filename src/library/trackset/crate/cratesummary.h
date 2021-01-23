@@ -15,6 +15,11 @@ class CrateSummary : public Crate {
     }
 
     ~CrateSummary(){};
+
+    bool isValid() {
+        return getId().isValid();
+    }
+
     // The number of all tracks in this crate
     uint getTrackCount() const {
         return m_trackCount;

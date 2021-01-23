@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QObject>
+
 #include "util/duration.h"
 
 class PlaylistSummary {
@@ -15,6 +17,9 @@ class PlaylistSummary {
 
     int id() const {
         return m_id;
+    }
+    bool isValid() const {
+        return m_id != -1;
     }
 
     void setCount(int count) {
@@ -77,3 +82,55 @@ class PlaylistSummary {
 };
 
 Q_DECLARE_METATYPE(PlaylistSummary);
+
+class PlaylistSummaryWrapper : public QObject {
+    Q_OBJECT
+  public:
+    Q_PROPERTY(QString name READ getName WRITE setName)
+    Q_PROPERTY(int id READ getId)
+
+    Q_PROPERTY(uint trackCount READ getTrackCount WRITE setTrackCount)
+    Q_PROPERTY(int trackDuration READ getTrackDuration WRITE setTrackDuration)
+    Q_PROPERTY(int matches READ getMatches WRITE setMatches)
+
+    PlaylistSummaryWrapper(PlaylistSummary& summary);
+    ~PlaylistSummaryWrapper();
+
+    int getId() const {
+        return m_summary.id();
+    }
+
+    QString getName() const {
+        return m_summary.name();
+    };
+    void setName(QString name) {
+        m_summary.setName(name);
+    };
+
+    // The number of all tracks in this crate
+    uint getTrackCount() const {
+        return m_summary.count();
+    }
+    void setTrackCount(uint trackCount) {
+        m_summary.setCount(trackCount);
+    }
+
+    // The total duration (in seconds) of all tracks in this crate
+    int getTrackDuration() const {
+        return m_summary.duration();
+    }
+    void setTrackDuration(int trackDuration) {
+        m_summary.setDuration(trackDuration);
+    }
+
+    // The total duration (in seconds) of all tracks in this crate
+    int16_t getMatches() const {
+        return m_summary.matches();
+    }
+    void setMatches(int matches) {
+        m_summary.setMatches(matches);
+    }
+
+  private:
+    PlaylistSummary m_summary;
+};
