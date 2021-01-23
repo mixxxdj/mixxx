@@ -6,8 +6,8 @@
 
 #include "control/controlproxy.h"
 #include "effects/effectsmanager.h"
-#include "preferences/dialog/ui_dlgprefeqdlg.h"
 #include "preferences/dialog/dlgpreferencepage.h"
+#include "preferences/dialog/ui_dlgprefeqdlg.h"
 #include "preferences/usersettings.h"
 
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {

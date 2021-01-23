@@ -125,7 +125,8 @@ DlgPreferences::DlgPreferences(
     addPageWidget(PreferencesPage(
 <<<<<<< HEAD
             new DlgPrefNoVinyl(this, pSoundManager, m_pConfig),
-            createTreeItem(tr("Vinyl Control"), QIcon(":/images/preferences/ic_preferences_vinyl.svg"))));
+            createTreeItem(tr("Vinyl Control"),
+                    QIcon(":/images/preferences/ic_preferences_vinyl.svg"))));
 =======
                           new DlgPrefNoVinyl(this, soundman, m_pConfig),
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
@@ -134,11 +135,13 @@ DlgPreferences::DlgPreferences(
 >>>>>>> upstream/main
 #endif
 
-    addPageWidget(PreferencesPage(
-                          new DlgPrefInterface(this, mixxx, pSkinLoader, m_pConfig),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Interface"),
-            "ic_preferences_interface.svg");
+            addPageWidget(PreferencesPage(
+                                  new DlgPrefInterface(
+                                          this, mixxx, pSkinLoader, m_pConfig),
+                                  new QTreeWidgetItem(contentsTreeWidget,
+                                          QTreeWidgetItem::Type)),
+                    tr("Interface"),
+                    "ic_preferences_interface.svg");
 
     addPageWidget(PreferencesPage(
                           new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary),
