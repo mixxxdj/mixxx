@@ -49,6 +49,9 @@ class TrackExportWorker : public QThread {
         return m_errorMessage;
     }
 
+    //Get the list
+    QList<QString> getMissingTracks();
+
     // Cancels the export after the current copy operation.
     // May be called from another thread.
     void stop();
@@ -63,6 +66,7 @@ class TrackExportWorker : public QThread {
             const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
     void progress(const QString& filename, int progress, int count);
+    void missing();
     void canceled();
 
   private:

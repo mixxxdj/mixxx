@@ -1,8 +1,12 @@
 #include "library/export/trackexportdlg.h"
 
 #include <QDesktopServices>
+#include <QDialogButtonBox>
 #include <QFileInfo>
+#include <QListView>
+#include <QListWidget>
 #include <QMessageBox>
+#include <QVBoxLayout>
 
 #include "moc_trackexportdlg.cpp"
 #include "util/assert.h"
@@ -48,6 +52,36 @@ void TrackExportDlg::showEvent(QShowEvent* event) {
         qDebug() << "Programming error: did not initialize m_exporter, about to crash";
         return;
     }
+
+    //Checks if there are any files that are missing. If so, it will throw dialog informing the user
+    QList<QString> files = m_worker->getMissingTracks();
+    if (files.length() > 0) {
+        QDialog* notExportedDlg = new QDialog(nullptr);
+        notExportedDlg->setWindowTitle(tr("Export Track Files"));
+        QVBoxLayout* notExportedLayout = new QVBoxLayout;
+        QLabel* notExportedLabel = new QLabel;
+        notExportedLabel->setText(
+                tr("The following %1 files were not found at the specified "
+                   "file location and as a result were not exported")
+                        .arg(QString::number(files.length())));
+        notExportedLabel->setTextFormat(Qt::RichText);
+
+        QListWidget* notExportedList = new QListWidget;
+        notExportedList->addItems(files);
+
+        QDialogButtonBox* exportedDlgButtons = new QDialogButtonBox();
+        QPushButton* okBtn = exportedDlgButtons->addButton(
+                tr("OK"),
+                QDialogButtonBox::AcceptRole);
+        connect(okBtn, &QPushButton::clicked, notExportedDlg, &QDialog::accept);
+
+        notExportedLayout->addWidget(notExportedLabel);
+        notExportedLayout->addWidget(notExportedList);
+        notExportedLayout->addWidget(exportedDlgButtons);
+        notExportedDlg->setLayout(notExportedLayout);
+        notExportedDlg->exec();
+    }
+
     m_worker->start();
 }
 
@@ -63,6 +97,7 @@ void TrackExportDlg::slotProgress(const QString& filename, int progress, int cou
     exportProgress->setValue(progress);
 }
 
+//TODO review this code to see how I can make a dialog box ask the user whether they want to skip importing the file or not
 void TrackExportDlg::slotAskOverwriteMode(
         const QString& filename,
         std::promise<TrackExportWorker::OverwriteAnswer>* promise) {

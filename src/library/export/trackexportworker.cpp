@@ -31,7 +31,6 @@ QMap<QString, TrackFile> createCopylist(const TrackPointerList& tracks) {
             qWarning()
                     << "File not found or inaccessible while exporting"
                     << it->getFileInfo();
-            // Skip file
             continue;
         }
 
@@ -71,9 +70,31 @@ QMap<QString, TrackFile> createCopylist(const TrackPointerList& tracks) {
 
 }  // namespace
 
+QList<QString> TrackExportWorker::getMissingTracks() {
+    QList<QString> missingFiles;
+    for (const auto& it : m_tracks) {
+        if (it->getCanonicalLocation().isEmpty()) {
+            missingFiles << it->getFileInfo().fileName();
+        }
+    }
+    missingFiles.removeDuplicates();
+    return missingFiles;
+}
+
 void TrackExportWorker::run() {
     int i = 0;
     QMap<QString, TrackFile> copy_list = createCopylist(m_tracks);
+
+    /**
+     * TODO: if the copylist is empty, then end the process
+     */
+
+    if (copy_list.empty()) {
+        emit canceled();
+        m_errorMessage = tr("There were no files in the specified file locations to export!");
+        return;
+    }
+
     for (auto it = copy_list.constBegin(); it != copy_list.constEnd(); ++it) {
         // We emit progress twice per loop, which may seem excessive, but it
         // guarantees that we emit a sane progress before we start and after
