@@ -1,6 +1,6 @@
 #pragma once
 
-#include <lilv-0/lilv/lilv.h>
+#include <lilv/lilv.h>
 
 #include <QSharedPointer>
 

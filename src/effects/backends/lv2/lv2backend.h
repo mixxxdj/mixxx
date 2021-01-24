@@ -1,9 +1,10 @@
 #pragma once
 
-#include <lilv-0/lilv/lilv.h>
+#include <lilv/lilv.h>
 
 #include "effects/backends/effectsbackend.h"
 #include "effects/backends/lv2/lv2manifest.h"
+
 #include "effects/defs.h"
 #include "preferences/usersettings.h"
 
