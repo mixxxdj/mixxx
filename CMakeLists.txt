@@ -254,7 +254,6 @@ if(WIN32)
   # Add support for lib prefix on Windows
   set(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
 endif()
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
 
 if(MSVC)
   # clcache support
@@ -629,7 +628,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/mixxx.cpp
   src/mixxxapplication.cpp
   src/musicbrainz/chromaprinter.cpp
-  src/musicbrainz/crc.c
+  src/musicbrainz/crc.cpp
   src/musicbrainz/gzip.cpp
   src/musicbrainz/musicbrainz.cpp
   src/musicbrainz/musicbrainzxml.cpp
@@ -658,6 +657,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefeffectsdlg.ui
   src/preferences/dialog/dlgprefeq.cpp
   src/preferences/dialog/dlgprefeqdlg.ui
+  src/preferences/dialog/dlgpreferencepage.cpp
   src/preferences/dialog/dlgpreferences.cpp
   src/preferences/dialog/dlgpreferencesdlg.ui
   src/preferences/dialog/dlgprefinterface.cpp
@@ -680,7 +680,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefvinyldlg.ui
   src/preferences/dialog/dlgprefwaveform.cpp
   src/preferences/dialog/dlgprefwaveformdlg.ui
-  src/preferences/dlgpreferencepage.cpp
   src/preferences/effectsettingsmodel.cpp
   src/preferences/colorpaletteeditor.cpp
   src/preferences/colorpaletteeditormodel.cpp
@@ -1036,7 +1035,7 @@ set(MIXXX_INSTALL_DOCDIR "./doc")
 set(MIXXX_INSTALL_LICENSEDIR "./doc")
 if (APPLE AND MACOS_BUNDLE)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
-  set(MACOS_BUNDLE_NAME Mixxx)
+  set(MACOS_BUNDLE_NAME mixxx)
   set(MIXXX_INSTALL_PREFIX "${MACOS_BUNDLE_NAME}.app")
   set(MIXXX_INSTALL_DATADIR "${MIXXX_INSTALL_PREFIX}/Contents/Resources")
   set(MIXXX_INSTALL_DOCDIR "${MIXXX_INSTALL_DATADIR}")
@@ -1084,10 +1083,6 @@ elseif(UNIX)
     target_compile_definitions(mixxx-lib PUBLIC __APPLE__)
   else()
     target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
-    # UNIX_SHARE_PATH must be set to the absolute path
-    # including the install prefix!
-    target_compile_definitions(
-      mixxx-lib PUBLIC UNIX_SHARE_PATH="${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}")
     if(CMAKE_SYSTEM_NAME STREQUAL Linux)
       target_compile_definitions(mixxx-lib PUBLIC __LINUX__)
     elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")
@@ -1117,15 +1112,11 @@ if (APPLE)
     )
   endif()
 else()
+  set(CMAKE_INSTALL_SYSTEM_RUNTIME_DESTINATION "${MIXXX_INSTALL_BINDIR}")
+  if(MSVC AND CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(CMAKE_INSTALL_DEBUG_LIBRARIES true)
+  endif()
   include(InstallRequiredSystemLibraries)
-  install(
-    FILES
-        ${CMAKE_INSTALL_SYSTEM_RUNTIME_LIBS}
-    DESTINATION
-        "${MIXXX_INSTALL_BINDIR}"
-    COMPONENT
-        Libraries
-  )
 endif()
 
 if(WIN32)
@@ -1513,40 +1504,6 @@ set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
 target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
 
-if(UNIX AND USE_SYMLINKS)
-  add_custom_target(mixxx-res
-    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
-    COMMENT "Symlinking resources to build directory..."
-  )
-  add_custom_target(mixxx-script
-    COMMAND ${CMAKE_COMMAND} -E create_symlink "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
-    COMMENT "Symlinking to build directory..."
-  )
-elseif(WIN32)
-  file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/res" CMAKE_CURRENT_SOURCE_RES_DIR_NATIVE)
-  file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/res/" CMAKE_CURRENT_BINARY_RES_DIR_NATIVE)
-  add_custom_target(mixxx-res
-    COMMAND xcopy ${CMAKE_CURRENT_SOURCE_RES_DIR_NATIVE} ${CMAKE_CURRENT_BINARY_RES_DIR_NATIVE} /s /d /q /y
-    COMMENT "Copying missing or modified resources files to build directory..."
-  )
-  file(TO_NATIVE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/script" CMAKE_CURRENT_SOURCE_SCRIPT_DIR_NATIVE)
-  file(TO_NATIVE_PATH "${CMAKE_CURRENT_BINARY_DIR}/script/" CMAKE_CURRENT_BINARY_SCRIPT_DIR_NATIVE)
-  add_custom_target(mixxx-script
-    COMMAND xcopy ${CMAKE_CURRENT_SOURCE_SCRIPT_DIR_NATIVE} ${CMAKE_CURRENT_BINARY_SCRIPT_DIR_NATIVE} /s /d /q /y
-    COMMENT "Copying missing or modified QScriptEngine extension files to build directory..."
-  )
-else()
-  add_custom_target(mixxx-res
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/res" "${CMAKE_CURRENT_BINARY_DIR}/res"
-    COMMENT "Copying all resources files to build directory..."
-  )
-  add_custom_target(mixxx-script
-    COMMAND ${CMAKE_COMMAND} -E copy_directory "${CMAKE_CURRENT_SOURCE_DIR}/script" "${CMAKE_CURRENT_BINARY_DIR}/script"
-    COMMENT "Copying all QScriptEngine extension files to build directory..."
-  )
-endif()
-add_dependencies(mixxx-lib mixxx-res mixxx-script)
-
 # Windows-only resource file
 # refer to https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource for documentation
 if(WIN32)
@@ -1672,13 +1629,12 @@ target_link_libraries(mixxx-lib PUBLIC fidlib)
 
 # KeyFinder
 find_package(KeyFinder)
-# If KeyFinder is built statically, we need FFTW
-find_package(FFTW)
-cmake_dependent_option(KEYFINDER "KeyFinder support" ON "KeyFinder_FOUND OR FFTW_FOUND" OFF)
+option(KEYFINDER "KeyFinder support" ON)
 if(KEYFINDER)
   if (KeyFinder_FOUND)
     target_link_libraries(mixxx-lib PUBLIC KeyFinder::KeyFinder)
   else()
+    # If KeyFinder is built statically, we need FFTW
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
@@ -1744,9 +1700,8 @@ target_link_libraries(mixxx-lib PUBLIC FpClassify)
 target_include_directories(mixxx-lib SYSTEM PUBLIC "${gtest_SOURCE_DIR}/include")
 
 # LAME
-find_package(LAME REQUIRED)
-target_link_libraries(mixxx-lib PUBLIC LAME::LAME)
-target_include_directories(mixxx-version PRIVATE ${LAME_INCLUDE_DIRS})
+find_package(mp3lame REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC mp3lame::mp3lame)
 
 # Kaitai for reading Rekordbox libraries
 add_library(Kaitai STATIC EXCLUDE_FROM_ALL
@@ -2051,21 +2006,17 @@ target_include_directories(mixxx-lib SYSTEM PRIVATE lib/reverb)
 target_link_libraries(mixxx-lib PUBLIC Reverb)
 
 # Rubberband
-find_package(Rubberband REQUIRED)
-target_link_libraries(mixxx-lib PUBLIC Rubberband::Rubberband)
-target_include_directories(mixxx-version PRIVATE ${Rubberband_INCLUDE_DIRS})
+find_package(rubberband REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC rubberband::rubberband)
 
 # SndFile
 find_package(SndFile REQUIRED)
-target_link_libraries(mixxx-lib PUBLIC SndFile::SndFile)
-target_include_directories(mixxx-version PRIVATE ${SndFile_INCLUDE_DIRS})
+target_link_libraries(mixxx-lib PUBLIC SndFile::sndfile)
 target_compile_definitions(mixxx-lib PUBLIC __SNDFILE__)
 if(SndFile_SUPPORTS_SET_COMPRESSION_LEVEL)
   target_compile_definitions(mixxx-lib PUBLIC SFC_SUPPORTS_SET_COMPRESSION_LEVEL)
 endif()
-
-#libsndfile is always build statically, so we don't check for STATIC_DEPS
-if(WIN32)
+if(WIN32 AND STATIC_DEPS)
   find_package(G72X REQUIRED)
   target_link_libraries(mixxx-lib PUBLIC G72X::G72X)
 endif()
@@ -2108,6 +2059,7 @@ if(WIN32 AND STATIC_DEPS)
 endif()
 
 # Threads
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC Threads::Threads)
 
@@ -2235,27 +2187,27 @@ endif()
 
 # FFmpeg 4.x support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
-find_package(FFmpeg COMPONENTS AVCODEC AVFORMAT AVUTIL SWRESAMPLE)
+find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
 option(FFMPEG "FFmpeg 4.x support" OFF)
 if(FFMPEG)
-  if(NOT AVCODEC_FOUND)
+  if(NOT FFMPEG_libavcodec_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libavcodec and its development headers.")
-  elseif(AVCODEC_VERSION VERSION_LESS 58)
+  elseif(FFMPEG_libavcodec_VERSION VERSION_LESS 58)
     message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavcodec (found: ${AVCODEC_VERSION}).")
   endif()
-  if(NOT AVFORMAT_FOUND)
+  if(NOT FFMPEG_libavformat_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libavformat and its development headers.")
-  elseif(AVFORMAT_VERSION VERSION_LESS 58)
+  elseif(FFMPEG_libavformat_VERSION VERSION_LESS 58)
     message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavformat (found: ${AVFORMAT_VERSION}).")
   endif()
-  if(NOT AVUTIL_FOUND)
+  if(NOT FFMPEG_libavutil_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libavutil and its development headers.")
-  elseif(AVUTIL_VERSION VERSION_LESS 56)
+  elseif(FFMPEG_libavutil_VERSION VERSION_LESS 56)
     message(FATAL_ERROR "FFmpeg support requires at least version 56 of libavutil (found: ${AVUTIL_VERSION}).")
   endif()
-  if(NOT SWRESAMPLE_FOUND)
+  if(NOT FFMPEG_libswresample_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libswresample and its development headers.")
-  elseif(SWRESAMPLE_VERSION VERSION_LESS 3.1)
+  elseif(FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
     message(FATAL_ERROR "FFmpeg support requires at least version 3.1 of libswresample (found: ${SWRESAMPLE_VERSION}).")
   endif()
 
@@ -2267,12 +2219,9 @@ if(FFMPEG)
     __STDC_LIMIT_MACROS
     __STDC_FORMAT_MACROS
   )
-  target_link_libraries(mixxx-lib PUBLIC
-    FFmpeg::avcodec
-    FFmpeg::avformat
-    FFmpeg::avutil
-    FFmpeg::swresample
-  )
+
+  target_link_libraries(mixxx-lib PUBLIC "${FFMPEG_LIBRARIES}")
+  target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
 
 # Google PerfTools
@@ -2306,10 +2255,10 @@ if(HSS1394)
 endif()
 
 # Lilv (LV2)
-find_package(Lilv)
-cmake_dependent_option(LILV "Lilv (LV2) support" ON "Lilv_FOUND" OFF)
+find_package(lilv)
+cmake_dependent_option(LILV "Lilv (LV2) support" ON "lilv_FOUND" OFF)
 if(LILV)
-  if(NOT Lilv_FOUND)
+  if(NOT TARGET lilv::lilv)
     message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and its development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE
@@ -2319,7 +2268,7 @@ if(LILV)
     src/preferences/dialog/dlgpreflv2.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __LILV__)
-  target_link_libraries(mixxx-lib PUBLIC Lilv::Lilv)
+  target_link_libraries(mixxx-lib PUBLIC lilv::lilv)
 endif()
 
 # Live Broadcasting (Shoutcast)
@@ -2391,8 +2340,7 @@ if(OPUS)
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC ${Opus_INCLUDE_DIRS})
   target_link_libraries(mixxx-lib PUBLIC ${Opus_LIBRARIES})
-  # Opus is always built statically so we don't check STATIC_DEPS
-  if(WIN32)
+  if(WIN32 AND STATIC_DEPS)
     find_package(Celt)
     if(NOT Celt_FOUND)
       message(FATAL_ERROR "Opus support with static dependencies requires the celt library.")
@@ -2491,12 +2439,12 @@ if(HID)
     target_include_directories(mixxx-hidapi SYSTEM PUBLIC lib/hidapi/hidapi)
     if(WIN32)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi/windows/hid.c)
+        find_library(Setupapi_LIBRARY Setupapi REQUIRED)
+        target_link_libraries(mixxx-hidapi PUBLIC ${Setupapi_LIBRARY})
     elseif(APPLE)
         target_sources(mixxx-hidapi PRIVATE lib/hidapi/mac/hid.c)
-        find_library(APPKIT_LIBRARY AppKit REQUIRED)
-        target_link_libraries(mixxx-lib PUBLIC
-          ${APPKIT_LIBRARY}
-        )
+        find_library(AppKit_LIBRARY AppKit REQUIRED)
+        target_link_libraries(mixxx-hidapi PUBLIC ${AppKit_LIBRARY})
     elseif(UNIX)
       if(NOT LibUSB_FOUND)
         message(FATAL_ERROR "USB HID controller support on Unix with statically linked libhidapi-libusb requires libusb 1.0 and its development headers.")
@@ -2567,15 +2515,15 @@ if(VINYLCONTROL)
 endif()
 
 # WavPack audio file support
-find_package(WavPack)
+find_package(wavpack)
 option(WAVPACK "WavPack audio file support" OFF)
 if(WAVPACK)
-  if(NOT WavPack_FOUND)
+  if(NOT TARGET WavPack::wavpack)
     message(FATAL_ERROR "WavPack audio file support requires libwv and its development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcewv.cpp)
   target_compile_definitions(mixxx-lib PUBLIC __WV__)
-  target_link_libraries(mixxx-lib PUBLIC WavPack::WavPack)
+  target_link_libraries(mixxx-lib PUBLIC WavPack::wavpack)
 endif()
 
 # Packaging
@@ -2657,7 +2605,7 @@ if(APPLE AND MACOS_BUNDLE)
             get_filename_component(_qt_plugin_file "${_qt_plugin_path}" NAME)
             get_filename_component(_qt_plugin_type "${_qt_plugin_path}" PATH)
             get_filename_component(_qt_plugin_type "${_qt_plugin_type}" NAME)
-            set(_qt_plugin_dest "${_prefix}/Contents/plugins/${_qt_plugin_type}")
+            set(_qt_plugin_dest "${_prefix}/Contents/PlugIns/${_qt_plugin_type}")
             install(FILES "${_qt_plugin_path}"
                 DESTINATION "${_qt_plugin_dest}")
             set(${_qt_plugins_var}
