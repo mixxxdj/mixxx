@@ -1348,7 +1348,7 @@ if(UNIX AND NOT APPLE)
 endif()
 
 if(MSVC)
-  # install debug symbols if any where generated
+  # install debug symbols if any were generated
   install(
     FILES $<TARGET_PDB_FILE:mixxx>
     CONFIGURATIONS Debug RelWithDebInfo
