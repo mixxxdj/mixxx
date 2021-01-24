@@ -83,14 +83,16 @@ endif()
 #
 
 # CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
-if(NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+# We keep DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION unset = FALSE for Debug builds to save
+# build time during development at the cost of a bigger memory foodprint.
+# Note: This is has caused issues on Fedoa https://bugzilla.rpmfusion.org/show_bug.cgi?id=5829
+if(NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT OPTIMIZE STREQUAL "off")
   include(CheckIPOSupported)
   check_ipo_supported(RESULT HAVE_IPO)
   if(HAVE_IPO)
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
   endif()
 endif()
-
 
 set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy, fastbuild)")
 message(STATUS "Optimization level: ${OPTIMIZE}")
@@ -115,37 +117,19 @@ if(MSVC)
     # http://msdn.microsoft.com/en-us/library/xsa71f43.aspx
     # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
     add_compile_options(/Gy)
-    add_link_options(/OPT:REF /OPT:ICF)
 
-    # http://msdn.microsoft.com/en-us/library/59a3b321.aspx
-    # In general, you should pick /O2 over /Ox
-    add_compile_options($<$<NOT:$<CONFIG:Debug>>:/O2>)
-
-    # Remove /RTC1 flag (conflicts with /O2)
-    string(REGEX REPLACE "/RTC[^ ]*" "" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
-
-    # Re-add /RTC1 for Debug builds
-    add_compile_options($<$<CONFIG:Debug>:/RTC1>)
-
-
-    if(OPTIMIZE STREQUAL "fastbuild")
-      # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
-      # !!! /GL is incompatible with /ZI, which is set by mscvdebug
-
-      # Do link-time code generation (and don't show a progress indicator
-      # -- this relies on ANSI control characters and tends to overwhelm
-      # Jenkins logs) Should we turn on PGO ?
-      # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
-
-      # CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the /GL and /LTCG flags for us
-      set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
-    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
-      # We need to set it here to false as well to avoid:
-      # LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
-      set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+      #optimize Debug Builds as well, to have "normal" behaviour of mixxx during development
+      add_compile_options(/O2)
+      # Remove /RTC1 flag set by CMAKE by default (conflicts with /O2)
+      string(REGEX REPLACE "/RTC[^ ]*" "" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
+    else()
+      # Squeez binary in Release builds
+      add_link_options(/OPT:REF /OPT:ICF)
+      # Note: CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the /GL and /LTCG flags for us
     endif()
 
-    if(OPTIMIZE STREQUAL "portable" OR OPTIMIZE STREQUAL "fastbuild")
+    if(OPTIMIZE STREQUAL "portable")
       if(NOT CMAKE_SIZEOF_VOID_P EQUAL 8)
         # Target architecture is x86 with SSE and SSE2
         message(STATUS "x86 Enabling SS2 CPU optimizations (>= Pentium 4)")
@@ -162,25 +146,31 @@ if(MSVC)
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
       endif()
-        # Define the target processor instruction and other compiler optimization flags here:
-        # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
-        # add_compile_options(/arch:AVX512)
-        message(FATAL_ERROR "User need to set the MSVC compiler flags for the native processor here!")
+      # Define the target processor instruction and other compiler optimization flags here:
+      # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
+      # add_compile_options(/arch:AVX512)
+      message(FATAL_ERROR "User need to set the MSVC compiler flags for the native processor here!")
       add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
     elseif(OPTIMIZE STREQUAL "legacy")
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      message("Enabling pure x64 instruction set (without AVX etc.)")
-    else()
-      message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
-    endif()
+      if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        message("Enabling pure x64 instruction set (without AVX etc.)")
+      else()
+        message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
+      endif()
     else()
       message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
     endif()
+  else()
+    # OPTIMIZE=off
+    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+      #Remove optimize flags set by cmake defaults
+      string(REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
+      string(REPLACE "/Od2" "/Od0" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
+      add_compile_options(/RTC1)
+    endif()
   endif()
 elseif(GNU_GCC OR LLVM_CLANG)
-  if(OPTIMIZE STREQUAL "off")
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
-  else()
+  if(NOT OPTIMIZE STREQUAL "off")
     # Common flags to all optimizations.
     # -ffast-math will prevent a performance penalty by denormals
     # (floating point values almost Zero are treated as Zero)
@@ -200,7 +190,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
       add_compile_options(-fomit-frame-pointer)
     endif()
 
-    if(OPTIMIZE STREQUAL "portable" OR OPTIMIZE STREQUAL "fastbuild")
+    if(OPTIMIZE STREQUAL "portable")
       # portable: sse2 CPU (>= Pentium 4)
       if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(i[3456]86|x86|x64|x86_64|AMD64)$")
         message(STATUS "Enabling SS2 CPU optimizations (>= Pentium 4)")
