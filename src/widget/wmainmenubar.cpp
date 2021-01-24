@@ -519,7 +519,9 @@ void WMainMenuBar::initialize() {
 
     QString externalLinkSuffix = " =>";
 
+    //: menu title
     QString keywheelTitle = tr("Show Keywheel");
+    //: tooltip text
     QString keywheelText = tr("Show keywheel");
     m_pViewKeywheel = new QAction(keywheelTitle, this);
     m_pViewKeywheel->setCheckable(true);
@@ -530,7 +532,7 @@ void WMainMenuBar::initialize() {
     m_pViewKeywheel->setShortcutContext(Qt::ApplicationShortcut);
     m_pViewKeywheel->setStatusTip(keywheelText);
     m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
-    connect(m_pViewKeywheel, SIGNAL(triggered(bool)), this, SIGNAL(showKeywheel(bool)));
+    connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
     pHelpMenu->addAction(m_pViewKeywheel);
 
     QString supportTitle = tr("&Community Support") + externalLinkSuffix;

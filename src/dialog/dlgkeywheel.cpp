@@ -9,20 +9,20 @@
 using namespace mixxx::track::io::key;
 
 namespace {
-auto kKeywheelSVG = QStringLiteral("images/keywheel/keywheel.svg");
+const auto kKeywheelSVG = QStringLiteral("images/keywheel/keywheel.svg");
 const KeyUtils::KeyNotation kNotationHidden[]{
         KeyUtils::KeyNotation::OpenKeyAndTraditional,
         KeyUtils::KeyNotation::LancelotAndTraditional};
 } // namespace
 
-DlgKeywheel::DlgKeywheel(QWidget* parent, UserSettingsPointer pConfig)
+DlgKeywheel::DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig)
         : QDialog(parent),
           ui(new Ui::DlgKeywheel),
           m_pConfig(pConfig) {
     ui->setupUi(this);
     QDir resourceDir(m_pConfig->getResourcePath());
     auto svgPath = resourceDir.filePath(kKeywheelSVG);
-    qDebug() << svgPath;
+
     QFile xmlFile(svgPath);
     if (!xmlFile.exists() || !xmlFile.open(QFile::ReadOnly | QFile::Text)) {
         qDebug() << "Could not load template: " << svgPath;
@@ -63,7 +63,7 @@ bool DlgKeywheel::eventFilter(QObject* obj, QEvent* event) {
         return true;
     }
     // standard event processing
-    return QObject::eventFilter(obj, event);
+    return QDialog::eventFilter(obj, event);
 }
 
 void DlgKeywheel::resizeEvent(QResizeEvent* ev) {

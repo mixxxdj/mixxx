@@ -17,7 +17,7 @@ class DlgKeywheel : public QDialog {
     Q_OBJECT
 
   public:
-    explicit DlgKeywheel(QWidget* parent, UserSettingsPointer pConfig);
+    explicit DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig);
     void switchDisplay(int dir = 1);
     void updateSvg();
     ~DlgKeywheel();
@@ -32,7 +32,7 @@ class DlgKeywheel : public QDialog {
     QDomDocument m_domDocument;
     Ui::DlgKeywheel* ui;
     QSvgWidget* m_wheel;
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
 };
 
 #endif // DLGKEYWHEEL_H
