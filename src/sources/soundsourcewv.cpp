@@ -1,6 +1,6 @@
 #include "sources/soundsourcewv.h"
 
-#include <wavpack/wavpack.h>
+#include <wavpack.h>
 
 #include "util/logger.h"
 
