@@ -53,35 +53,46 @@ void TrackExportDlg::showEvent(QShowEvent* event) {
         return;
     }
 
-    //Checks if there are any files that are missing. If so, it will throw dialog informing the user
+    //Checks if there are any files that are missing. If so, it will throw dialog informing the user.
+    //User can then decide to either cancel the export or skip those files
     QList<QString> files = m_worker->getMissingTracks();
-    if (files.length() > 0) {
-        QDialog* notExportedDlg = new QDialog(nullptr);
-        notExportedDlg->setWindowTitle(tr("Export Track Files"));
-        QVBoxLayout* notExportedLayout = new QVBoxLayout;
-        QLabel* notExportedLabel = new QLabel;
-        notExportedLabel->setText(
-                tr("The following %1 files were not found at the specified "
-                   "file location and as a result were not exported")
-                        .arg(QString::number(files.length())));
-        notExportedLabel->setTextFormat(Qt::RichText);
+    {
+        if (!files.isEmpty()) {
+            QDialog notExportedDlg = QDialog();
+            notExportedDlg.setWindowTitle(tr("Export Track Files"));
+            QVBoxLayout notExportedLayout;
+            QLabel notExportedLabel;
+            notExportedLabel.setText(
+                    tr("The following %1 files were not found at the specified "
+                       "file location and as a result were not exported."
+                       "Click \"OK\" to skip these files. Click \"Cancel\" to cancel the export.")
+                            .arg(QString::number(files.length())));
+            notExportedLabel.setTextFormat(Qt::RichText);
 
-        QListWidget* notExportedList = new QListWidget;
-        notExportedList->addItems(files);
+            QListWidget notExportedList;
+            notExportedList.addItems(files);
 
-        QDialogButtonBox* exportedDlgButtons = new QDialogButtonBox();
-        QPushButton* okBtn = exportedDlgButtons->addButton(
-                tr("OK"),
-                QDialogButtonBox::AcceptRole);
-        connect(okBtn, &QPushButton::clicked, notExportedDlg, &QDialog::accept);
+            QDialogButtonBox exportedDlgButtons = QDialogButtonBox();
+            exportedDlgButtons.addButton(QDialogButtonBox::Ok);
+            exportedDlgButtons.addButton(QDialogButtonBox::Cancel);
+            connect(&exportedDlgButtons,
+                    &QDialogButtonBox::accepted,
+                    &notExportedDlg,
+                    &QDialog::accept);
+            connect(&exportedDlgButtons,
+                    &QDialogButtonBox::rejected,
+                    &notExportedDlg,
+                    &QDialog::reject);
 
-        notExportedLayout->addWidget(notExportedLabel);
-        notExportedLayout->addWidget(notExportedList);
-        notExportedLayout->addWidget(exportedDlgButtons);
-        notExportedDlg->setLayout(notExportedLayout);
-        notExportedDlg->exec();
+            notExportedLayout.addWidget(&notExportedLabel);
+            notExportedLayout.addWidget(&notExportedList);
+            notExportedLayout.addWidget(&exportedDlgButtons);
+            notExportedDlg.setLayout(&notExportedLayout);
+            if (notExportedDlg.exec() == 0) {
+                m_worker->m_skip = true;
+            }
+        }
     }
-
     m_worker->start();
 }
 
@@ -97,7 +108,6 @@ void TrackExportDlg::slotProgress(const QString& filename, int progress, int cou
     exportProgress->setValue(progress);
 }
 
-//TODO review this code to see how I can make a dialog box ask the user whether they want to skip importing the file or not
 void TrackExportDlg::slotAskOverwriteMode(
         const QString& filename,
         std::promise<TrackExportWorker::OverwriteAnswer>* promise) {

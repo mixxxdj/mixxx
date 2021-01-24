@@ -82,16 +82,18 @@ QList<QString> TrackExportWorker::getMissingTracks() {
 }
 
 void TrackExportWorker::run() {
+    //if user doesn't want to initiate export, immediately cancels the job
+    if (m_skip) {
+        emit canceled();
+        return;
+    }
+
     int i = 0;
     QMap<QString, TrackFile> copy_list = createCopylist(m_tracks);
 
-    /**
-     * TODO: if the copylist is empty, then end the process
-     */
-
     if (copy_list.empty()) {
-        emit canceled();
         m_errorMessage = tr("There were no files in the specified file locations to export!");
+        emit canceled();
         return;
     }
 
