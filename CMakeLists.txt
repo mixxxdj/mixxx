@@ -1595,16 +1595,14 @@ if(WIN32)
 endif()
 
 # Denon Engine Prime library export support (using libdjinterop)
-option(ENGINEPRIME "Support for library export to Denon Engine Prime" OFF)
+option(ENGINEPRIME "Support for library export to Denon Engine Prime" ON)
 if(ENGINEPRIME)
-  target_compile_definitions(mixxx-lib PUBLIC __ENGINEPRIME__)
-
   # Look for an existing installation of libdjinterop and use that if available.
   # Otherwise, download and build from GitHub.
   find_package(DjInterop)
   if(DjInterop_FOUND)
     # An existing installation of djinterop is available.
-    message(STATUS "Linking dynamically to existing installation of libdjinterop")
+    message(STATUS "Using existing system installation of libdjinterop")
     target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
     target_link_libraries(mixxx-lib PUBLIC DjInterop::DjInterop)
   else()
@@ -1624,7 +1622,7 @@ if(ENGINEPRIME)
     set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
     ExternalProject_Add(libdjinterop
       GIT_REPOSITORY https://github.com/xsco/libdjinterop.git
-      GIT_TAG tags/0.14.3
+      GIT_TAG tags/0.14.6
       GIT_SHALLOW TRUE
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       CMAKE_ARGS
@@ -1633,6 +1631,8 @@ if(ENGINEPRIME)
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
         -DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH}
+        -DCMAKE_INSTALL_LIBDIR:PATH=lib
+        -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
         -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE}
       BUILD_BYPRODUCTS <INSTALL_DIR>/${DJINTEROP_LIBRARY}
       EXCLUDE_FROM_ALL TRUE
@@ -1649,11 +1649,19 @@ if(ENGINEPRIME)
 
     # Since we have built libdjinterop from sources as a static library, its
     # transitive dependencies are not automatically recognised.  libdjinterop
-    # depends on zlib and sqlite3.  Mixxx already has a dependency on sqlite3,
-    # but not zlib, so we explicitly add that here.
+    # depends on zlib and optionally sqlite3.  If libdjinterop was configured
+    # to depend on system SQLite, Mixxx will already have the dependency.
+    # But it does not have zlib, so we explicitly add that here.
     find_package(ZLIB 1.2.8 REQUIRED)
     target_link_libraries(mixxx-lib PUBLIC ${ZLIB_LIBRARIES})
   endif()
+
+  # Include conditional sources only required with Engine Prime export support.
+  target_sources(mixxx-lib PRIVATE
+    src/library/export/dlglibraryexport.cpp
+    src/library/export/engineprimeexportjob.cpp
+    src/library/export/libraryexporter.cpp)
+  target_compile_definitions(mixxx-lib PUBLIC __ENGINEPRIME__)
 endif()
 
 # Ebur128
