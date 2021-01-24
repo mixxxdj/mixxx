@@ -2440,7 +2440,7 @@ endif()
 find_package(LibUSB)
 
 # USB HID controller support
-find_package(HIDAPI)
+find_package(hidapi)
 option(HID "USB HID controller support" ON)
 cmake_dependent_option(HIDAPI_STATIC "Link HIDAPI library statically" OFF "HIDAPI_FOUND" ON)
 if(HID)
@@ -2478,7 +2478,7 @@ if(HID)
     if(NOT HIDAPI_FOUND)
       message(FATAL_ERROR "USB HID controller support requires libhidapi-libusb and its development headers.")
     endif()
-    target_link_libraries(mixxx-lib PUBLIC HIDAPI::LibUSB)
+    target_link_libraries(mixxx-lib PUBLIC hidapi::hidapi)
   endif()
 endif()
 
