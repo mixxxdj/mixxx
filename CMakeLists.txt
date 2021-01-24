@@ -8,6 +8,12 @@ set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
 # Option to disable symlinks
 set(USE_SYMLINKS ON CACHE BOOL "Use symlinks in build directory when possible")
 
+# Install CODE|SCRIPT allow the use of generator expressions
+# Needed for X_VCPKG_APPLOCAL_DEPS_INSTALL
+if(POLICY CMP0087)
+    cmake_policy(SET CMP0087 NEW)
+endif()
+
 # Support new IN_LIST if() operator
 if(POLICY CMP0057)
   cmake_policy(SET CMP0057 NEW)
