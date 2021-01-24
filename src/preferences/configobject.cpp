@@ -42,7 +42,7 @@ QString computeResourcePath() {
             DEBUG_ASSERT(QDir(qResourcePath).exists());
         }
 #if defined(__UNIX__)
-        else if (mixxxDir.cdUp() && mixxxDir.cd(QStringLiteral("/share/mixxx"))) {
+        else if (mixxxDir.cdUp() && mixxxDir.cd(QStringLiteral("share/mixxx"))) {
             qResourcePath = mixxxDir.absolutePath();
         }
 #elif defined(__WINDOWS__)
