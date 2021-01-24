@@ -24,6 +24,7 @@ jobs:
           libebur128-dev \
           libfftw3-dev \
           libflac-dev \
+          libgrantlee5-dev \
           libid3tag0-dev \
           liblilv-dev \
           libmad0-dev \

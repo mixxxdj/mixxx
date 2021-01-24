@@ -5,6 +5,7 @@
 #include <QObject>
 #include <QString>
 #include <QVariant>
+#include <QtDebug>
 #include <QtMath>
 #include <QtPlugin>
 #include <cmath>

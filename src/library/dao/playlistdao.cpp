@@ -13,8 +13,8 @@
 #include "library/trackcollection.h"
 #include "track/track.h"
 #include "util/compatibility.h"
-#include "util/db/fwdsqlquery.h"
 #include "util/db/dbconnection.h"
+#include "util/db/fwdsqlquery.h"
 #include "util/math.h"
 
 PlaylistDAO::PlaylistDAO()
