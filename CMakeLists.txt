@@ -1340,6 +1340,17 @@ if(UNIX AND NOT APPLE)
   endif()
 endif()
 
+if(MSVC)
+  # install debug symbols if any were generated
+  install(
+    FILES $<TARGET_PDB_FILE:mixxx>
+    CONFIGURATIONS Debug RelWithDebInfo
+    DESTINATION "${MIXXX_INSTALL_BINDIR}"
+    COMPONENT "Debug Information (PDB)"
+  )
+endif()
+
+
 #
 # Tests
 #
