@@ -75,7 +75,6 @@ jobs:
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
-              -DSTATIC_DEPS=ON
             cc: cl
             cxx: cl
             cmake_generator: Ninja
