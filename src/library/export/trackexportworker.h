@@ -50,10 +50,9 @@ class TrackExportWorker : public QThread {
     }
 
     //Get the list
-    QList<QString> getMissingTracks();
+    QList<QString> getMissingTracks() const;
 
-    //Boolean that lets the worker know if the job will be skipped due to missing files
-    bool m_skip = false;
+    bool m_canceledByUser = false;
 
     // Cancels the export after the current copy operation.
     // May be called from another thread.

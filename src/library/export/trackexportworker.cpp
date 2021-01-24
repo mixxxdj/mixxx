@@ -70,7 +70,7 @@ QMap<QString, TrackFile> createCopylist(const TrackPointerList& tracks) {
 
 }  // namespace
 
-QList<QString> TrackExportWorker::getMissingTracks() {
+QList<QString> TrackExportWorker::getMissingTracks() const {
     QList<QString> missingFiles;
     for (const auto& it : m_tracks) {
         if (it->getCanonicalLocation().isEmpty()) {
@@ -83,7 +83,7 @@ QList<QString> TrackExportWorker::getMissingTracks() {
 
 void TrackExportWorker::run() {
     //if user doesn't want to initiate export, immediately cancels the job
-    if (m_skip) {
+    if (m_canceledByUser) {
         emit canceled();
         return;
     }

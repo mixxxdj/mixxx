@@ -55,42 +55,40 @@ void TrackExportDlg::showEvent(QShowEvent* event) {
 
     //Checks if there are any files that are missing. If so, it will throw dialog informing the user.
     //User can then decide to either cancel the export or skip those files
-    QList<QString> files = m_worker->getMissingTracks();
-    {
-        if (!files.isEmpty()) {
-            QDialog notExportedDlg = QDialog();
-            notExportedDlg.setWindowTitle(tr("Export Track Files"));
-            QVBoxLayout notExportedLayout;
-            QLabel notExportedLabel;
-            notExportedLabel.setText(
-                    tr("The following %1 files were not found at the specified "
-                       "file location and as a result were not exported."
-                       "Click \"OK\" to skip these files. Click \"Cancel\" to cancel the export.")
-                            .arg(QString::number(files.length())));
-            notExportedLabel.setTextFormat(Qt::RichText);
+    const QList<QString> files = m_worker->getMissingTracks();
+    if (!files.isEmpty()) {
+        QDialog notExportedDlg;
+        notExportedDlg.setWindowTitle(tr("Export Track Files"));
+        QVBoxLayout* notExportedLayout = new QVBoxLayout;
+        QLabel* notExportedLabel = new QLabel;
+        notExportedLabel->setText(
+                tr("The following %1 files were not found at the specified "
+                   "file location and as a result were not exported."
+                   "Click \"OK\" to skip these files. Click \"Cancel\" to cancel the export.")
+                        .arg(QString::number(files.length())));
+        notExportedLabel->setTextFormat(Qt::RichText);
 
-            QListWidget notExportedList;
-            notExportedList.addItems(files);
+        QListWidget* notExportedList = new QListWidget;
+        notExportedList->addItems(files);
 
-            QDialogButtonBox exportedDlgButtons = QDialogButtonBox();
-            exportedDlgButtons.addButton(QDialogButtonBox::Ok);
-            exportedDlgButtons.addButton(QDialogButtonBox::Cancel);
-            connect(&exportedDlgButtons,
-                    &QDialogButtonBox::accepted,
-                    &notExportedDlg,
-                    &QDialog::accept);
-            connect(&exportedDlgButtons,
-                    &QDialogButtonBox::rejected,
-                    &notExportedDlg,
-                    &QDialog::reject);
+        QDialogButtonBox* exportedDlgButtons = new QDialogButtonBox();
+        exportedDlgButtons->addButton(QDialogButtonBox::Ok);
+        exportedDlgButtons->addButton(QDialogButtonBox::Cancel);
+        connect(exportedDlgButtons,
+                &QDialogButtonBox::accepted,
+                &notExportedDlg,
+                &QDialog::accept);
+        connect(exportedDlgButtons,
+                &QDialogButtonBox::rejected,
+                &notExportedDlg,
+                &QDialog::reject);
 
-            notExportedLayout.addWidget(&notExportedLabel);
-            notExportedLayout.addWidget(&notExportedList);
-            notExportedLayout.addWidget(&exportedDlgButtons);
-            notExportedDlg.setLayout(&notExportedLayout);
-            if (notExportedDlg.exec() == 0) {
-                m_worker->m_skip = true;
-            }
+        notExportedLayout->addWidget(notExportedLabel);
+        notExportedLayout->addWidget(notExportedList);
+        notExportedLayout->addWidget(exportedDlgButtons);
+        notExportedDlg.setLayout(notExportedLayout);
+        if (notExportedDlg.exec() == QDialog::Rejected) {
+            m_worker->m_canceledByUser = true;
         }
     }
     m_worker->start();
