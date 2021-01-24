@@ -82,10 +82,13 @@ endif()
 # Optimizations
 #
 
-include(CheckIPOSupported)
-check_ipo_supported(RESULT HAVE_IPO)
-if(HAVE_IPO)
-  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+# CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
+if(NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION)
+  include(CheckIPOSupported)
+  check_ipo_supported(RESULT HAVE_IPO)
+  if(HAVE_IPO)
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+  endif()
 endif()
 
 
