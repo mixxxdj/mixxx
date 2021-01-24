@@ -118,7 +118,7 @@ if(MSVC)
     # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
     add_compile_options(/Gy)
 
-    if(CMAKE_BUILD_TYPE STREQUAL "Debug)
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
       #optimize Debug Builds as well, to have "normal" behaviour of mixxx during development
       add_compile_options(/O2)
       # Remove /RTC1 flag set by CMAKE by default (conflicts with /O2)
@@ -146,28 +146,28 @@ if(MSVC)
         # Define gcc/clang style defines for SSE and SSE2 for compatibility
         add_compile_definitions("__SSE__" "__SSE2__")
       endif()
-        # Define the target processor instruction and other compiler optimization flags here:
-        # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
-        # add_compile_options(/arch:AVX512)
-        message(FATAL_ERROR "User need to set the MSVC compiler flags for the native processor here!")
+      # Define the target processor instruction and other compiler optimization flags here:
+      # https://docs.microsoft.com/en-us/cpp/build/reference/arch-x64?view=msvc-160
+      # add_compile_options(/arch:AVX512)
+      message(FATAL_ERROR "User need to set the MSVC compiler flags for the native processor here!")
       add_compile_options("/favor:${CMAKE_SYSTEM_PROCESSOR}")
     elseif(OPTIMIZE STREQUAL "legacy")
-    if(CMAKE_SIZEOF_VOID_P EQUAL 8)
-      message("Enabling pure x64 instruction set (without AVX etc.)")
-    else()
-      message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
-    endif()
+      if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+        message("Enabling pure x64 instruction set (without AVX etc.)")
+      else()
+        message("Enabling pure i386 instruction set (without SSE/SSE2 etc.)")
+      endif()
     else()
       message(FATAL_ERROR "Invalid value passed to OPTIMIZE option: ${OPTIMIZE}")
-     endif()
+    endif()
   else()
     # OPTIMIZE=off
-    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug)
+    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
       #Remove optimize flags set by cmake defaults
       string(REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
       string(REPLACE "/Od2" "/Od0" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
       add_compile_options(/RTC1)
-    else()
+    endif()
   endif()
 elseif(GNU_GCC OR LLVM_CLANG)
   if(NOT OPTIMIZE STREQUAL "off")

@@ -211,7 +211,7 @@ jobs:
         -DOPUS=ON
         -DQTKEYCHAIN=ON
         -DVINYLCONTROL=ON
-        -DCMAKE_VERBOSE_MAKEFILE=OFF
+        -DCMAKE_VERBOSE_MAKEFILE=ON
         ..
       working-directory: build
       env:
@@ -252,7 +252,7 @@ jobs:
         CTEST_OUTPUT_ON_FAILURE: 1
 
     - name: Benchmark
-      run: cmake --build . --target mixxx-benchmark --config Release
+      run: cmake --build . --target mixxx-benchmark --config ${{ matrix.cmake_build_type }}
       working-directory: build
       env:
         # Render analyzer waveform tests to an offscreen buffer
