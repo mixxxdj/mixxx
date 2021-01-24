@@ -94,7 +94,7 @@ if(NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT CMAKE_BUILD_TYPE STREQ
   endif()
 endif()
 
-set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy, fastbuild)")
+set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy)")
 message(STATUS "Optimization level: ${OPTIMIZE}")
 
 if(MSVC)
@@ -120,9 +120,15 @@ if(MSVC)
 
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
       #optimize Debug Builds as well, to have "normal" behaviour of mixxx during development
-      add_compile_options(/O2)
+      string(REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
+      string(REPLACE "/Od" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS}")
+      string(REPLACE "/Ob0" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
+      string(REPLACE "/Ob0" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS}")
+
+      add_compile_options(/O2) # this implies /Od2
       # Remove /RTC1 flag set by CMAKE by default (conflicts with /O2)
-      string(REGEX REPLACE "/RTC[^ ]*" "" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
+      string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
+      string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG}")
     else()
       # Squeez binary in Release builds
       add_link_options(/OPT:REF /OPT:ICF)
@@ -162,10 +168,21 @@ if(MSVC)
     endif()
   else()
     # OPTIMIZE=off
-    if(NOT CMAKE_BUILD_TYPE STREQUAL "Debug")
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
       #Remove optimize flags set by cmake defaults
-      string(REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
-      string(REPLACE "/Od2" "/Od0" CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS}")
+      string(REPLACE "/O2" "" CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}")
+      string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELEASE  "${CMAKE_C_FLAGS_RELEASE}")
+      string(REPLACE "/Ob2" "" CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_RELEASE}")
+      string(REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELEASE  "${CMAKE_C_FLAGS_RELEASE}")
+      add_compile_options(/Od) # this implies /Ob0
+      add_compile_options(/RTC1)
+    elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+      #Remove optimize flags set by cmake defaults
+      string(REPLACE "/O2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/O2" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/Ob2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+      string(REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+      add_compile_options(/Od) # this implies /Ob0
       add_compile_options(/RTC1)
     endif()
   endif()
