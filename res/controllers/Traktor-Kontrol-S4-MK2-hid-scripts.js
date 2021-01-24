@@ -20,7 +20,7 @@
 //    released playback will resume where the track would have been without the loop.
 // To choose sample launching, set the word in quotes below to SAMPLES, all caps.  For
 // rolls, change the word to LOOPROLLS (no space).
-RemixSlotButtonAction = "SAMPLES";
+RemixSlotButtonAction = "LOOPROLLS";
 // The Cue button, when Shift is also held, can have two possible functions:
 // 1. "REWIND": seeks to the very start of the track.
 // 2. "REVERSEROLL": performs a temporary reverse or "censor" effect, where the track
@@ -173,22 +173,22 @@ TraktorS4MK2.registerInputPackets = function() {
     MessageShort.addControl("[Channel1]", "pfl", 0x0F, "B", 0x40);
     MessageShort.addControl("[EffectRack1_EffectUnit1]", "group_[Channel1]_enable", 0x12, "B", 0x02);
     MessageShort.addControl("[EffectRack1_EffectUnit2]", "group_[Channel1]_enable", 0x12, "B", 0x01);
-    MessageShort.addControl("[Channel1]", "pregain_set_default", 0x11, "B", 0x20);
+    MessageShort.addControl("[Channel1]", "!pregain_reset", 0x11, "B", 0x20);
 
     MessageShort.addControl("[Channel2]", "pfl", 0x0A, "B", 0x40);
     MessageShort.addControl("[EffectRack1_EffectUnit1]", "group_[Channel2]_enable", 0x10, "B", 0x80);
     MessageShort.addControl("[EffectRack1_EffectUnit2]", "group_[Channel2]_enable", 0x10, "B", 0x40);
-    MessageShort.addControl("[Channel2]", "pregain_set_default", 0x11, "B", 0x40);
+    MessageShort.addControl("[Channel2]", "!pregain_reset", 0x11, "B", 0x40);
 
     MessageShort.addControl("[Channel3]", "pfl", 0x0F, "B", 0x80);
     MessageShort.addControl("[EffectRack1_EffectUnit1]", "group_[Channel3]_enable", 0x12, "B", 0x08);
     MessageShort.addControl("[EffectRack1_EffectUnit2]", "group_[Channel3]_enable", 0x12, "B", 0x04);
-    MessageShort.addControl("[Channel3]", "pregain_set_default", 0x11, "B", 0x10);
+    MessageShort.addControl("[Channel3]", "!pregain_reset", 0x11, "B", 0x10);
 
     MessageShort.addControl("[Channel4]", "pfl", 0x0A, "B", 0x80);
     MessageShort.addControl("[EffectRack1_EffectUnit1]", "group_[Channel4]_enable", 0x10, "B", 0x20);
     MessageShort.addControl("[EffectRack1_EffectUnit2]", "group_[Channel4]_enable", 0x10, "B", 0x10);
-    MessageShort.addControl("[Channel4]", "pregain_set_default", 0x11, "B", 0x80);
+    MessageShort.addControl("[Channel4]", "!pregain_reset", 0x11, "B", 0x80);
 
     MessageShort.addControl("[Library]", "GoToItem",  0x13, "B", 0x04);
     MessageShort.addControl("[PreviewDeck1]", "!previewdeck", 0x0F, "B", 0x01);
@@ -239,6 +239,10 @@ TraktorS4MK2.registerInputPackets = function() {
     MessageShort.setCallback("deck2", "!slip_mode", this.slipHandler);
     MessageShort.setCallback("deck1", "!reset_key", this.resetHandler);
     MessageShort.setCallback("deck2", "!reset_key", this.resetHandler);
+    MessageShort.setCallback("[Channel1]", "!pregain_reset", this.pregainResetHandler);
+    MessageShort.setCallback("[Channel2]", "!pregain_reset", this.pregainResetHandler);
+    MessageShort.setCallback("[Channel3]", "!pregain_reset", this.pregainResetHandler);
+    MessageShort.setCallback("[Channel4]", "!pregain_reset", this.pregainResetHandler);
 
     MessageShort.setCallback("[PreviewDeck1]", "!previewdeck", this.previewDeckHandler);
     MessageShort.setCallback("[Master]", "!quantize", this.quantizeHandler);
@@ -1069,7 +1073,7 @@ TraktorS4MK2.finishJogTouch = function(group) {
     if (play != 0) {
         // If we are playing, just hand off to the engine.
         engine.scratchDisable(deckNumber, true);
-        TraktorS4MK2.slipAutoHandler(field.group, 0);
+
     } else {
         // If things are paused, there will be a non-smooth handoff between scratching and jogging.
         // Instead, keep scratch on until the platter is not moving.
@@ -1279,7 +1283,21 @@ TraktorS4MK2.callbackPregain = function(field) {
         } else if (delta < 0) {
             engine.setValue(group, "beats_translate_earlier", true);
         }
-    } else {
+    }
+    else if (TraktorS4MK2.controller.play_shift_pressed === 1) {
+        var bpm_sensitivity_multipler = 50;
+        if (delta > 0) {
+            for (var i = 0; i < bpm_sensitivity_multipler; i++){
+                engine.setValue(group, "beats_adjust_faster", true);
+            }
+
+        } else if (delta < 0) {
+            for (var i = 0; i < bpm_sensitivity_multipler; i++){
+                engine.setValue(group, "beats_adjust_slower", true);
+            }
+        }
+    }
+    else {
         var cur_pregain = engine.getValue(group, "pregain");
         engine.setValue(group, "pregain", cur_pregain + delta);
     }
@@ -1706,6 +1724,38 @@ TraktorS4MK2.resetHandler = function(field) {
         } else {
             engine.setValue(field.group, "reset_key", field.value);
         }
+    }
+};
+
+TraktorS4MK2.pregainResetHandler = function(field) {
+
+
+    // Don't do something on push up
+    if (field.value === 0) {
+        return;
+    }
+    if (TraktorS4MK2.controller.play_shift_pressed) {
+        // If the 'play modifier' button is held down round the BPM   
+        var bpm = engine.getValue(group, 'bpm');
+        var rounded_value = Math.round(bpm);
+        var delta = (bpm - rounded_value)*100;
+        print(delta);
+        if (delta > 0){
+            for (var i = 0; i < delta; i++){
+                engine.setValue(group, 'beats_adjust_slower', true)
+            }
+        }
+        else if (delta < 0){
+            for (var i = 0; i < delta; i++){
+                engine.setValue(group, 'beats_adjust_faster', true)
+            }
+        } 
+
+
+    } else {
+        // Otherwise reset the gain on the channel
+        print(group)
+        engine.setValue(group, 'pregain', '1.0');
     }
 };
 
