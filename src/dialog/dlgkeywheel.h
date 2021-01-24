@@ -9,11 +9,7 @@
 #include "dialog/ui_dlgkeywheel.h"
 #include "track/keyutils.h"
 
-namespace Ui {
-class DlgKeywheel;
-}
-
-class DlgKeywheel : public QDialog {
+class DlgKeywheel : public QDialog, public Ui::DlgKeywheel {
     Q_OBJECT
 
   public:

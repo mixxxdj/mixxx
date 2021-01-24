@@ -37,6 +37,11 @@ DlgKeywheel::DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig)
     installEventFilter(this);
     ui->graphic->installEventFilter(this);
 
+    connect(ui->closeButton,
+            &QAbstractButton::clicked,
+            this,
+            &QDialog::accept);
+
     // load the user configured setting as default
     const int notation = static_cast<int>(ControlObject::get(
             ConfigKey("[Library]", "key_notation")));
