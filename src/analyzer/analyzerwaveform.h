@@ -1,5 +1,4 @@
-#ifndef ANALYZER_ANALYZERWAVEFORM_H
-#define ANALYZER_ANALYZERWAVEFORM_H
+#pragma once
 
 #include <QImage>
 #include <QSqlDatabase>
@@ -139,7 +138,7 @@ class AnalyzerWaveform : public Analyzer {
   public:
     AnalyzerWaveform(
             UserSettingsPointer pConfig,
-            QSqlDatabase dbConnection);
+            const QSqlDatabase& dbConnection);
     ~AnalyzerWaveform() override;
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
@@ -178,5 +177,3 @@ class AnalyzerWaveform : public Analyzer {
     QImage* test_heatMap;
 #endif
 };
-
-#endif /* ANALYZER_ANALYZERWAVEFORM_H */

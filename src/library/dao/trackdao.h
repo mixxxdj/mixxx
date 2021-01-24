@@ -1,5 +1,4 @@
-#ifndef TRACKDAO_H
-#define TRACKDAO_H
+#pragma once
 
 #include <QFileInfo>
 #include <QObject>
@@ -73,7 +72,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     /// Update the play counter properties according to the corresponding
     /// aggregated properties obtained from the played history.
     bool updatePlayCounterFromPlayedHistory(
-            const QSet<TrackId> trackIds) const;
+            const QSet<TrackId>& trackIds) const;
 
   signals:
     // Forwarded from Track object
@@ -81,21 +80,21 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void trackClean(TrackId trackId);
 
     // Multiple tracks
-    void tracksAdded(QSet<TrackId> trackIds);
-    void tracksChanged(QSet<TrackId> trackIds);
-    void tracksRemoved(QSet<TrackId> trackIds);
+    void tracksAdded(const QSet<TrackId>& trackIds);
+    void tracksChanged(const QSet<TrackId>& trackIds);
+    void tracksRemoved(const QSet<TrackId>& trackIds);
 
-    void progressVerifyTracksOutside(QString path);
-    void progressCoverArt(QString file);
+    void progressVerifyTracksOutside(const QString& path);
+    void progressCoverArt(const QString& file);
     void forceModelUpdate();
 
   public slots:
     // Slots to inform the TrackDAO about changes that
     // have been applied directly to the database.
     void slotDatabaseTracksChanged(
-            QSet<TrackId> changedTrackIds);
+            const QSet<TrackId>& changedTrackIds);
     void slotDatabaseTracksRelocated(
-            QList<RelocatedTrack> relocatedTracks);
+            const QList<RelocatedTrack>& relocatedTracks);
 
   private:
     friend class LibraryScanner;
@@ -184,5 +183,3 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(TrackDAO::ResolveTrackIdFlags)
-
-#endif //TRACKDAO_H

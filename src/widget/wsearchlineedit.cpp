@@ -7,6 +7,7 @@
 #include <QSizePolicy>
 #include <QStyle>
 
+#include "moc_wsearchlineedit.cpp"
 #include "skin/skincontext.h"
 #include "util/assert.h"
 #include "util/logger.h"

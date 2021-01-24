@@ -4,6 +4,7 @@
 #include <QMutex>
 #include <QObject>
 #include <memory>
+#include <type_traits> // static_assert
 
 #include "audio/types.h"
 #include "track/cueinfo.h"
@@ -19,14 +20,26 @@ class Cue : public QObject {
   public:
     /// A position value for the cue that signals its position is not set
     static constexpr double kNoPosition = -1.0;
-    /// A value for #m_iHotCue signaling it is not a hotcue
+
+    /// Invalid hot cue index
     static constexpr int kNoHotCue = -1;
 
-    Cue();
+    static_assert(kNoHotCue != mixxx::kFirstHotCueIndex,
+            "Conflicting definitions of invalid and first hot cue index");
+
+    struct StartAndEndPositions {
+        double startPosition;
+        double endPosition;
+    };
+
+    Cue() = delete;
+
+    /// For roundtrips during tests
     Cue(
             const mixxx::CueInfo& cueInfo,
             mixxx::audio::SampleRate sampleRate,
             bool setDirty);
+
     /// Load entity from database.
     Cue(
             DbId id,
@@ -34,8 +47,16 @@ class Cue : public QObject {
             double position,
             double length,
             int hotCue,
-            QString label,
+            const QString& label,
             mixxx::RgbColor color);
+
+    /// Initialize new cue points
+    Cue(
+            mixxx::CueType type,
+            int hotCueIndex,
+            double sampleStartPosition,
+            double sampleEndPosition);
+
     ~Cue() override = default;
 
     bool isDirty() const;
@@ -46,24 +67,27 @@ class Cue : public QObject {
 
     double getPosition() const;
     void setStartPosition(
-            double samplePosition = kNoPosition);
+            double samplePosition);
     void setEndPosition(
-            double samplePosition = kNoPosition);
+            double samplePosition);
+    void setStartAndEndPosition(
+            double sampleStartPosition,
+            double sampleEndPosition);
     void shiftPositionFrames(double frameOffset);
 
     double getLength() const;
 
     int getHotCue() const;
-    void setHotCue(
-            int hotCue = kNoHotCue);
 
     QString getLabel() const;
-    void setLabel(QString label);
+    void setLabel(const QString& label);
 
     mixxx::RgbColor getColor() const;
     void setColor(mixxx::RgbColor color);
 
     double getEndPosition() const;
+
+    StartAndEndPositions getStartAndEndPosition() const;
 
     mixxx::CueInfo getCueInfo(
             mixxx::audio::SampleRate sampleRate) const;
@@ -83,7 +107,7 @@ class Cue : public QObject {
     mixxx::CueType m_type;
     double m_sampleStartPosition;
     double m_sampleEndPosition;
-    int m_iHotCue;
+    const int m_iHotCue;
     QString m_label;
     mixxx::RgbColor m_color;
 

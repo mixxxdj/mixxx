@@ -24,7 +24,7 @@ const mixxx::Logger kLogger("DbConnection");
 
 QSqlDatabase createDatabase(
         const DbConnection::Params& params,
-        const QString connectionName) {
+        const QString& connectionName) {
     kLogger.info()
         << "Available drivers for database connections:"
         << QSqlDatabase::drivers();
@@ -41,7 +41,7 @@ QSqlDatabase createDatabase(
 
 QSqlDatabase cloneDatabase(
         const QSqlDatabase& database,
-        const QString connectionName) {
+        const QString& connectionName) {
     DEBUG_ASSERT(!database.isOpen());
     return QSqlDatabase::cloneDatabase(database, connectionName);
 }
@@ -147,7 +147,7 @@ int likeCompareInner(
             }
         } else if (!prevEscape && uPattern == esc) {
             // Case 3.
-            prevEscape = 1;
+            prevEscape = true;
         } else {
             // Case 4.
             if (iString == stringSize) {
@@ -189,7 +189,7 @@ int sqliteStringCompareUTF16(void* pArg,
     return pCollator->compare(string1, string2);
 }
 
-const char* const kLexicographicalCollationFunc = "mixxxLexicographicalCollationFunc";
+const char kLexicographicalCollationFunc[] = "mixxxLexicographicalCollationFunc";
 
 // This implements the like() SQL function. This is used by the LIKE operator.
 // The SQL statement 'A LIKE B' is implemented as 'like(B, A)', and if there is
@@ -233,7 +233,7 @@ void sqliteLike(sqlite3_context *context,
 
 #endif // __SQLITE3__
 
-bool initDatabase(QSqlDatabase database, mixxx::StringCollator* pCollator) {
+bool initDatabase(const QSqlDatabase& database, mixxx::StringCollator* pCollator) {
     DEBUG_ASSERT(database.isOpen());
 #ifdef __SQLITE3__
     QVariant v = database.driver()->handle();
@@ -374,7 +374,7 @@ void DbConnection::close() {
 //static
 QString DbConnection::collateLexicographically(const QString& orderByQuery) {
 #ifdef __SQLITE3__
-        return orderByQuery + QString(" COLLATE %1").arg(kLexicographicalCollationFunc);
+    return orderByQuery + QStringLiteral(" COLLATE ") + kLexicographicalCollationFunc;
 #else
         return orderByQuery;
 #endif //  __SQLITE3__

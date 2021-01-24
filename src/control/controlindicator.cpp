@@ -1,8 +1,10 @@
 #include "control/controlindicator.h"
+
 #include "control/controlproxy.h"
+#include "moc_controlindicator.cpp"
 #include "util/math.h"
 
-ControlIndicator::ControlIndicator(ConfigKey key)
+ControlIndicator::ControlIndicator(const ConfigKey& key)
         : ControlObject(key, false),
           m_blinkValue(OFF),
           m_nextSwitchTime(0.0) {

@@ -1,5 +1,4 @@
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
 
 #include <cstddef>
 #include <climits>
@@ -62,5 +61,3 @@ inline
 CSAMPLE_GAIN CSAMPLE_GAIN_clamp(CSAMPLE_GAIN in) {
     return math_clamp(in, CSAMPLE_GAIN_MIN, CSAMPLE_GAIN_MAX);
 }
-
-#endif /* TYPES_H */

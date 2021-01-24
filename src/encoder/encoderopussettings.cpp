@@ -1,6 +1,3 @@
-// encoderopussettings.cpp
-// Create on August 15th 2017 by Palakis
-
 #include <QMap>
 
 #include "encoder/encoderopussettings.h"
@@ -12,7 +9,7 @@ namespace {
 const int kDefaultQualityIndex = 6;
 const char* kQualityKey = "Opus_Quality";
 const mixxx::Logger kLogger("EncoderOpusSettings");
-}
+} // namespace
 
 const QString EncoderOpusSettings::BITRATE_MODE_GROUP = "Opus_BitrateMode";
 
@@ -90,7 +87,7 @@ QList<EncoderSettings::OptionsGroup> EncoderOpusSettings::getOptionGroups() cons
     return m_radioList;
 }
 
-void EncoderOpusSettings::setGroupOption(QString groupCode, int optionIndex) {
+void EncoderOpusSettings::setGroupOption(const QString& groupCode, int optionIndex) {
     bool found = false;
     for (const OptionsGroup& group : qAsConst(m_radioList)) {
         if (groupCode == group.groupCode) {
@@ -113,7 +110,7 @@ void EncoderOpusSettings::setGroupOption(QString groupCode, int optionIndex) {
     }
 }
 
-int EncoderOpusSettings::getSelectedOption(QString groupCode) const {
+int EncoderOpusSettings::getSelectedOption(const QString& groupCode) const {
     int value = m_pConfig->getValue(
             ConfigKey(RECORDING_PREF_KEY, BITRATE_MODE_GROUP), 0);
 

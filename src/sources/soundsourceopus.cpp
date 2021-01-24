@@ -1,5 +1,7 @@
 #include "sources/soundsourceopus.h"
 
+#include <QFileInfo>
+
 #include "audio/streaminfo.h"
 #include "util/logger.h"
 
@@ -138,17 +140,18 @@ SoundSourceOpus::importTrackMetadataAndCoverImage(
         return imported;
     }
 
-    pTrackMetadata->setChannelCount(
-            audio::ChannelCount(op_channel_count(pOggOpusFile, -1)));
-    pTrackMetadata->setSampleRate(
-            kSampleRate);
-    pTrackMetadata->setBitrate(
-            audio::Bitrate(op_bitrate(pOggOpusFile, -1) / 1000));
     // Cast to double is required for duration with sub-second precision
     const double dTotalFrames = op_pcm_total(pOggOpusFile, -1);
     const auto duration = Duration::fromMicros(
-            static_cast<qint64>(1000000 * dTotalFrames / pTrackMetadata->getSampleRate()));
-    pTrackMetadata->setDuration(duration);
+            static_cast<qint64>(1000000 * dTotalFrames / kSampleRate));
+    pTrackMetadata->setStreamInfo(audio::StreamInfo{
+            audio::SignalInfo{
+                    audio::ChannelCount(op_channel_count(pOggOpusFile, -1)),
+                    kSampleRate,
+            },
+            audio::Bitrate(op_bitrate(pOggOpusFile, -1) / 1000),
+            duration,
+    });
 
 #ifndef TAGLIB_HAS_OPUSFILE
     const OpusTags* l_ptrOpusTags = op_tags(pOggOpusFile, -1);
@@ -300,7 +303,7 @@ void SoundSourceOpus::close() {
 }
 
 ReadableSampleFrames SoundSourceOpus::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {

@@ -1,5 +1,4 @@
-#ifndef DLGPREFLIBRARY_H
-#define DLGPREFLIBRARY_H
+#pragma once
 
 #include <QFont>
 #include <QStandardItemModel>
@@ -8,13 +7,9 @@
 #include "defs_urls.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
-
-/**
-  *@author Tue & Ken Haste Andersen
-  */
 
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
@@ -29,7 +24,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     DlgPrefLibrary(
             QWidget* pParent,
             UserSettingsPointer pConfig,
-            Library* pLibrary);
+            std::shared_ptr<Library> pLibrary);
     ~DlgPrefLibrary() override {}
 
     QUrl helpUrl() const override;
@@ -51,9 +46,9 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
   signals:
     void apply();
     void scanLibrary();
-    void requestAddDir(QString dir);
-    void requestRemoveDir(QString dir, Library::RemovalType removalType);
-    void requestRelocateDir(QString currentDir, QString newDir);
+    void requestAddDir(const QString& dir);
+    void requestRemoveDir(const QString& dir, Library::RemovalType removalType);
+    void requestRelocateDir(const QString& currentDir, const QString& newDir);
 
   private slots:
     void slotRowHeightValueChanged(int);
@@ -67,10 +62,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
 
     QStandardItemModel m_dirListModel;
     UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
+    std::shared_ptr<Library> m_pLibrary;
     bool m_bAddedDirectory;
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
 };
-
-#endif

@@ -2,6 +2,7 @@
 
 #include <QScreen>
 
+#include "moc_wsearchrelatedtracksmenu.cpp"
 #include "track/track.h"
 #include "util/math.h"
 #include "util/qt.h"
@@ -63,7 +64,8 @@ WSearchRelatedTracksMenu::WSearchRelatedTracksMenu(
 
 void WSearchRelatedTracksMenu::addTriggerSearchAction(
         bool* /*in/out*/ pAddSeparatorBeforeNextAction,
-        QString /*!by-value-because-captured-by-lambda!*/ searchQuery,
+        /*!by-value-because-captured-by-lambda!*/
+        QString searchQuery, // clazy:exclude=function-args-by-ref
         const QString& actionTextPrefix,
         const QString& elidableTextSuffix) {
     DEBUG_ASSERT(pAddSeparatorBeforeNextAction);

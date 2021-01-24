@@ -1,16 +1,17 @@
-#include <QtDebug>
-#include <QFileInfo>
-
 #include "engine/cachingreader/cachingreader.h"
+
+#include <QFileInfo>
+#include <QtDebug>
+
 #include "control/controlobject.h"
+#include "moc_cachingreader.cpp"
 #include "track/track.h"
 #include "util/assert.h"
+#include "util/compatibility.h"
 #include "util/counter.h"
+#include "util/logger.h"
 #include "util/math.h"
 #include "util/sample.h"
-#include "util/logger.h"
-#include "util/compatibility.h"
-
 
 namespace {
 
@@ -40,7 +41,7 @@ const SINT kNumberOfCachedChunksInMemory = 80;
 
 } // anonymous namespace
 
-CachingReader::CachingReader(QString group,
+CachingReader::CachingReader(const QString& group,
         UserSettingsPointer config)
         : m_pConfig(config),
           // Limit the number of in-flight requests to the worker. This should
@@ -150,7 +151,7 @@ CachingReaderChunkForOwner* CachingReader::allocateChunk(SINT chunkIndex) {
 }
 
 CachingReaderChunkForOwner* CachingReader::allocateChunkExpireLRU(SINT chunkIndex) {
-    auto pChunk = allocateChunk(chunkIndex);
+    auto* pChunk = allocateChunk(chunkIndex);
     if (!pChunk) {
         if (m_lruCachingReaderChunk) {
             freeChunk(m_lruCachingReaderChunk);
@@ -167,7 +168,7 @@ CachingReaderChunkForOwner* CachingReader::allocateChunkExpireLRU(SINT chunkInde
 
 CachingReaderChunkForOwner* CachingReader::lookupChunk(SINT chunkIndex) {
     // Defaults to nullptr if it's not in the hash.
-    auto pChunk = m_allocatedCachingReaderChunks.value(chunkIndex, nullptr);
+    auto* pChunk = m_allocatedCachingReaderChunks.value(chunkIndex, nullptr);
     DEBUG_ASSERT(!pChunk || pChunk->getIndex() == chunkIndex);
     return pChunk;
 }
@@ -195,7 +196,7 @@ void CachingReader::freshenChunk(CachingReaderChunkForOwner* pChunk) {
 }
 
 CachingReaderChunkForOwner* CachingReader::lookupChunkAndFreshen(SINT chunkIndex) {
-    auto pChunk = lookupChunk(chunkIndex);
+    auto* pChunk = lookupChunk(chunkIndex);
     if (pChunk && (pChunk->getState() == CachingReaderChunkForOwner::READY)) {
         freshenChunk(pChunk);
     }
@@ -224,7 +225,7 @@ void CachingReader::newTrack(TrackPointer pTrack) {
 void CachingReader::process() {
     ReaderStatusUpdate update;
     while (m_readerStatusUpdateFIFO.read(&update, 1) == 1) {
-        auto pChunk = update.takeFromWorker();
+        auto* pChunk = update.takeFromWorker();
         if (pChunk) {
             // Result of a read request (with a chunk)
             DEBUG_ASSERT(atomicLoadRelaxed(m_state) != STATE_IDLE);

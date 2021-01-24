@@ -1,5 +1,4 @@
-#ifndef MIXXX_LEGACYAUDIOSOURCEADAPTER_H
-#define MIXXX_LEGACYAUDIOSOURCEADAPTER_H
+#pragma once
 
 #include "sources/v1/legacyaudiosource.h"
 
@@ -16,7 +15,7 @@ class LegacyAudioSourceAdapter : public virtual /*implements*/ IAudioSourceReade
 
   protected:
     ReadableSampleFrames readSampleFramesClamped(
-            WritableSampleFrames sampleFrames) override;
+            const WritableSampleFrames& sampleFrames) override;
 
   private:
     AudioSource* m_pOwner;
@@ -24,5 +23,3 @@ class LegacyAudioSourceAdapter : public virtual /*implements*/ IAudioSourceReade
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_LEGACYAUDIOSOURCEADAPTER_H

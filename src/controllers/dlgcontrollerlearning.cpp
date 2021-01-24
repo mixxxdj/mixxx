@@ -1,17 +1,11 @@
-/**
-* @file dlgcontrollerlearning.cpp
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Thu 12 Apr 2012
-* @brief The controller mapping learning wizard
-*
-*/
+#include "controllers/dlgcontrollerlearning.h"
 
 #include <QCompleter>
 
 #include "control/controlobject.h"
-#include "controllers/dlgcontrollerlearning.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
+#include "moc_dlgcontrollerlearning.cpp"
 #include "util/version.h"
 
 namespace {
@@ -19,13 +13,13 @@ typedef QPair<QString, ConfigKey> NamedControl;
 bool namedControlComparator(const NamedControl& l1, const NamedControl& l2) {
     return l1.first < l2.first;
 }
-}
+} // namespace
 
-DlgControllerLearning::DlgControllerLearning(QWidget * parent,
-                                             Controller* controller)
+DlgControllerLearning::DlgControllerLearning(QWidget* parent,
+        Controller* controller)
         : QDialog(parent),
           m_pController(controller),
-          m_pMidiController(NULL),
+          m_pMidiController(nullptr),
           m_controlPickerMenu(this),
           m_messagesLearned(false) {
     qRegisterMetaType<MidiInputMappings>("MidiInputMappings");
@@ -467,8 +461,8 @@ void DlgControllerLearning::showControlMenu() {
 }
 
 void DlgControllerLearning::loadControl(const ConfigKey& key,
-                                        QString title,
-                                        QString description) {
+        const QString& title,
+        QString description) {
     // If we have learned a mapping and the user picked a new control then we
     // should tell the controller to commit the existing ones.
     if (m_messagesLearned) {
@@ -493,7 +487,7 @@ void DlgControllerLearning::loadControl(const ConfigKey& key,
     pushButtonStartLearn->setFocus();
 }
 
-void DlgControllerLearning::controlPicked(ConfigKey control) {
+void DlgControllerLearning::controlPicked(const ConfigKey& control) {
     QString title = m_controlPickerMenu.controlTitleForConfigKey(control);
     QString description = m_controlPickerMenu.descriptionForConfigKey(control);
     loadControl(control, title, description);

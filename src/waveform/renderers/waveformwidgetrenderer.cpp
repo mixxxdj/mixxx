@@ -19,7 +19,7 @@ const double WaveformWidgetRenderer::s_defaultPlayMarkerPosition = 0.5;
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
-}
+} // namespace
 
 WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
         : m_group(group),
@@ -38,15 +38,15 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
           m_audioSamplePerPixel(1.0),
           m_alphaBeatGrid(90),
           // Really create some to manage those;
-          m_visualPlayPosition(NULL),
+          m_visualPlayPosition(nullptr),
           m_playPos(-1),
           m_playPosVSample(0),
           m_totalVSamples(0),
-          m_pRateRatioCO(NULL),
+          m_pRateRatioCO(nullptr),
           m_rateRatio(1.0),
-          m_pGainControlObject(NULL),
+          m_pGainControlObject(nullptr),
           m_gain(1.0),
-          m_pTrackSamplesControlObject(NULL),
+          m_pTrackSamplesControlObject(nullptr),
           m_trackSamples(0.0),
           m_scaleFactor(1.0),
           m_playMarkerPosition(s_defaultPlayMarkerPosition) {
@@ -69,8 +69,9 @@ WaveformWidgetRenderer::WaveformWidgetRenderer(const QString& group)
 WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     //qDebug() << "~WaveformWidgetRenderer";
 
-    for (int i = 0; i < m_rendererStack.size(); ++i)
+    for (int i = 0; i < m_rendererStack.size(); ++i) {
         delete m_rendererStack[i];
+    }
 
     delete m_pRateRatioCO;
     delete m_pGainControlObject;
@@ -290,7 +291,7 @@ void WaveformWidgetRenderer::drawPlayPosmarker(QPainter* painter) {
 }
 
 void WaveformWidgetRenderer::drawTriangle(QPainter* painter,
-        QBrush fillColor,
+        const QBrush& fillColor,
         QPointF p0,
         QPointF p1,
         QPointF p2) {

@@ -1,5 +1,4 @@
-#ifndef SYNCABLE_H
-#define SYNCABLE_H
+#pragma once
 
 #include <QString>
 
@@ -132,5 +131,3 @@ class SyncableListener {
 
     virtual Syncable* getMasterSyncable() = 0;
 };
-
-#endif /* SYNCABLE_H */

@@ -1,5 +1,4 @@
-#ifndef FIFO_H
-#define FIFO_H
+#pragma once
 
 #include "pa_ringbuffer.h"
 
@@ -69,5 +68,3 @@ class FIFO {
     PaUtilRingBuffer m_ringBuffer;
     DISALLOW_COPY_AND_ASSIGN(FIFO<DataType>);
 };
-
-#endif /* FIFO_H */

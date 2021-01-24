@@ -140,7 +140,7 @@ inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts)
             av_rescale_q(
                     pts - getStreamStartTime(avStream),
                     avStream.time_base,
-                    (AVRational){1, avStream.codecpar->sample_rate});
+                    av_make_q(1, avStream.codecpar->sample_rate));
 }
 
 inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
@@ -148,7 +148,7 @@ inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT fram
     return getStreamStartTime(avStream) +
             av_rescale_q(
                     frameIndex - kMinFrameIndex,
-                    (AVRational){1, avStream.codecpar->sample_rate},
+                    av_make_q(1, avStream.codecpar->sample_rate),
                     avStream.time_base);
 }
 
@@ -973,17 +973,18 @@ const CSAMPLE* SoundSourceFFmpeg::resampleDecodedAVFrame() {
 }
 
 ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& originalWritableSampleFrames) {
     DEBUG_ASSERT(m_frameBuffer.signalInfo() == getSignalInfo());
     const SINT readableStartIndex =
-            writableSampleFrames.frameIndexRange().start();
-    const CSAMPLE* readableData = writableSampleFrames.writableData();
+            originalWritableSampleFrames.frameIndexRange().start();
+    const CSAMPLE* readableData = originalWritableSampleFrames.writableData();
 
 #if VERBOSE_DEBUG_LOG
-    kLogger.debug()
-            << "readSampleFramesClamped:"
-            << "writableSampleFrames.frameIndexRange()" << writableSampleFrames.frameIndexRange();
+    kLogger.debug() << "readSampleFramesClamped:"
+                    << "originalWritableSampleFrames.frameIndexRange()"
+                    << originalWritableSampleFrames.frameIndexRange();
 #endif
+    WritableSampleFrames writableSampleFrames = originalWritableSampleFrames;
 
     // Consume all buffered sample data before decoding any new data
     if (m_frameBuffer.isReady()) {

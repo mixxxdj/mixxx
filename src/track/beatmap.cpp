@@ -36,7 +36,7 @@ namespace mixxx {
 
 class BeatMapIterator : public BeatIterator {
   public:
-    BeatMapIterator(BeatList::const_iterator start, BeatList::const_iterator end)
+    BeatMapIterator(const BeatList::const_iterator& start, const BeatList::const_iterator& end)
             : m_currentBeat(start),
               m_endBeat(end) {
         // Advance to the first enabled beat.
@@ -45,11 +45,11 @@ class BeatMapIterator : public BeatIterator {
         }
     }
 
-    virtual bool hasNext() const {
+    bool hasNext() const override {
         return m_currentBeat != m_endBeat;
     }
 
-    virtual double next() {
+    double next() override {
         double beat = framesToSamples(m_currentBeat->frame_position());
         ++m_currentBeat;
         while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
@@ -109,7 +109,7 @@ QByteArray BeatMap::toByteArray() const {
 
     std::string output;
     map.SerializeToString(&output);
-    return QByteArray(output.data(), output.length());
+    return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
 BeatsPointer BeatMap::clone() const {
@@ -165,7 +165,7 @@ QString BeatMap::getSubVersion() const {
     return m_subVersion;
 }
 
-void BeatMap::setSubVersion(QString subVersion) {
+void BeatMap::setSubVersion(const QString& subVersion) {
     m_subVersion = subVersion;
 }
 
@@ -413,15 +413,17 @@ bool BeatMap::hasBeatInRange(double startSample, double stopSample) const {
 
 double BeatMap::getBpm() const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return -1;
+    }
     return m_dCachedBpm;
 }
 
 double BeatMap::getBpmRange(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return -1;
+    }
     Beat startBeat, stopBeat;
     startBeat.set_frame_position(
             static_cast<google::protobuf::int32>(samplesToFrames(startSample)));
@@ -431,8 +433,9 @@ double BeatMap::getBpmRange(double startSample, double stopSample) const {
 
 double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     QMutexLocker locker(&m_mutex);
-    if (!isValid())
+    if (!isValid()) {
         return -1;
+    }
 
     // To make sure we are always counting n beats, iterate backward to the
     // lower bound, then iterate forward from there to the upper bound.

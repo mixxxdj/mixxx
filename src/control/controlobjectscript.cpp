@@ -1,9 +1,12 @@
-#include <QtDebug>
-
 #include "control/controlobjectscript.h"
 
+#include <QtDebug>
+
+#include "controllers/controllerdebug.h"
+#include "moc_controlobjectscript.cpp"
+
 ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
-        : ControlProxy(key, pParent, ControlFlag::NoAssertIfMissing) {
+        : ControlProxy(key, pParent, ControllerDebug::controlFlags()) {
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {

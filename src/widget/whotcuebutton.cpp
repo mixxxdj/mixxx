@@ -5,11 +5,12 @@
 #include <QtDebug>
 
 #include "mixer/playerinfo.h"
+#include "moc_whotcuebutton.cpp"
 #include "track/track.h"
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
-}
+} // namespace
 
 WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
         : WPushButton(pParent),
@@ -64,7 +65,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     m_pCoType->connectValueChanged(this, &WHotcueButton::slotTypeChanged);
     slotTypeChanged(m_pCoType->get());
 
-    auto pLeftConnection = new ControlParameterWidgetConnection(
+    auto* pLeftConnection = new ControlParameterWidgetConnection(
             this,
             createConfigKey(QStringLiteral("activate")),
             nullptr,
@@ -72,7 +73,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
     addLeftConnection(pLeftConnection);
 
-    auto pDisplayConnection = new ControlParameterWidgetConnection(
+    auto* pDisplayConnection = new ControlParameterWidgetConnection(
             this,
             createConfigKey(QStringLiteral("enabled")),
             nullptr,
@@ -90,6 +91,12 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
 void WHotcueButton::mousePressEvent(QMouseEvent* e) {
     const bool rightClick = e->button() == Qt::RightButton;
     if (rightClick) {
+        if (isPressed()) {
+            // Discard right clicks when already left clicked.
+            // Otherwise the pop up menu receives the release event and the
+            // button stucks in the pressed stage.
+            return;
+        }
         if (readDisplayValue()) {
             // hot cue is set
             TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(m_group);
@@ -121,6 +128,15 @@ void WHotcueButton::mousePressEvent(QMouseEvent* e) {
 
     // Pass all other press events to the base class.
     WPushButton::mousePressEvent(e);
+}
+
+void WHotcueButton::mouseReleaseEvent(QMouseEvent* e) {
+    const bool rightClick = e->button() == Qt::RightButton;
+    if (rightClick) {
+        // Don't handle stray release events
+        return;
+    }
+    WPushButton::mouseReleaseEvent(e);
 }
 
 ConfigKey WHotcueButton::createConfigKey(const QString& name) {

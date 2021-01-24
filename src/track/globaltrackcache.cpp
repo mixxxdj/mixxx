@@ -2,6 +2,7 @@
 
 #include <QCoreApplication>
 
+#include "moc_globaltrackcache.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/logger.h"
@@ -35,7 +36,7 @@ TrackRef createTrackRef(const Track& track) {
 }
 
 TrackRef validateAndCanonicalizeRequestedTrackRef(
-        const TrackRef requestedTrackRef,
+        const TrackRef& requestedTrackRef,
         const Track& cachedTrack) {
     const auto cachedTrackRef = createTrackRef(cachedTrack);
     // If an id has been provided the caller expects that if a track
@@ -147,7 +148,7 @@ void GlobalTrackCacheLocker::relocateCachedTracks(
 
 void GlobalTrackCacheLocker::purgeTrackId(const TrackId& trackId) {
     DEBUG_ASSERT(m_pInstance);
-    return m_pInstance->purgeTrackId(trackId);
+    m_pInstance->purgeTrackId(trackId);
 }
 
 void GlobalTrackCacheLocker::deactivateCache() const {
@@ -697,7 +698,7 @@ void GlobalTrackCache::resolve(
 
 TrackRef GlobalTrackCache::initTrackId(
         const TrackPointer& strongPtr,
-        TrackRef trackRef,
+        const TrackRef& trackRef,
         TrackId trackId) {
     DEBUG_ASSERT(strongPtr);
     DEBUG_ASSERT(!trackRef.getId().isValid());

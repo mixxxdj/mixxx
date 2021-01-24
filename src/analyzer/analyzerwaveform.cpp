@@ -16,16 +16,16 @@ mixxx::Logger kLogger("AnalyzerWaveform");
 
 AnalyzerWaveform::AnalyzerWaveform(
         UserSettingsPointer pConfig,
-        QSqlDatabase dbConnection)
+        const QSqlDatabase& dbConnection)
         : m_analysisDao(pConfig),
           m_waveformData(nullptr),
           m_waveformSummaryData(nullptr),
           m_stride(0, 0),
           m_currentStride(0),
           m_currentSummaryStride(0) {
-    m_filter[0] = 0;
-    m_filter[1] = 0;
-    m_filter[2] = 0;
+    m_filter[0] = nullptr;
+    m_filter[1] = nullptr;
+    m_filter[2] = nullptr;
     m_analysisDao.initialize(dbConnection);
 }
 
@@ -162,7 +162,7 @@ void AnalyzerWaveform::destroyFilters() {
     for (int i = 0; i < FilterCount; ++i) {
         if (m_filter[i]) {
             delete m_filter[i];
-            m_filter[i] = 0;
+            m_filter[i] = nullptr;
         }
     }
 }

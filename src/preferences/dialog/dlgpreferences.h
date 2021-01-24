@@ -1,33 +1,17 @@
-/***************************************************************************
-                          dlgpreferences.h  -  description
-                             -------------------
-    begin                : Sun Jun 30 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFERENCES_H
-#define DLGPREFERENCES_H
+#pragma once
 
 #include <QDialog>
+#include <QDir>
 #include <QEvent>
 #include <QRect>
 #include <QStringList>
+#include <memory>
 
-#include "preferences/dialog/ui_dlgpreferencesdlg.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
-#include "preferences/dlgpreferencepage.h"
+#include "preferences/dialog/dlgpreferencepage.h"
+#include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/settingsmanager.h"
+#include "preferences/usersettings.h"
 
 class MixxxMainWindow;
 class SoundManager;
@@ -78,25 +62,27 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
         QTreeWidgetItem* pTreeItem;
     };
 
-DlgPreferences(MixxxMainWindow* mixxx,
-            SkinLoader* pSkinLoader,
-            SoundManager* soundman,
-            PlayerManager* pPlayerManager,
-            ControllerManager* controllers,
-            VinylControlManager* pVCManager,
+    DlgPreferences(MixxxMainWindow* mixxx,
+            std::shared_ptr<SkinLoader> pSkinLoader,
+            std::shared_ptr<SoundManager> pSoundManager,
+            std::shared_ptr<PlayerManager> pPlayerManager,
+            std::shared_ptr<ControllerManager> pControllerManager,
+            std::shared_ptr<VinylControlManager> pVCManager,
             LV2Backend* pLV2Backend,
-            EffectsManager* pEffectsManager,
-            SettingsManager* pSettingsManager,
-            Library* pLibrary);
+            std::shared_ptr<EffectsManager> pEffectsManager,
+            std::shared_ptr<SettingsManager> pSettingsManager,
+            std::shared_ptr<Library> pLibrary);
     virtual ~DlgPreferences();
 
-    void addPageWidget(PreferencesPage page);
+    void addPageWidget(PreferencesPage page,
+            const QString& pageTitle,
+            const QString& iconFile);
     void removePageWidget(DlgPreferencePage* pWidget);
     void expandTreeItem(QTreeWidgetItem* pItem);
     void switchToPage(DlgPreferencePage* pPage);
 
   public slots:
-    void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious);
     void showSoundHardwarePage();
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
@@ -118,7 +104,6 @@ DlgPreferences(MixxxMainWindow* mixxx,
   private:
     DlgPreferencePage* currentPage();
     QList<PreferencesPage> m_allPages;
-    QTreeWidgetItem* createTreeItem(QString text, QIcon icon);
     void onShow();
     void onHide();
     QRect getDefaultGeometry();
@@ -130,10 +115,8 @@ DlgPreferences(MixxxMainWindow* mixxx,
     UserSettingsPointer m_pConfig;
     PreferencesPage m_soundPage;
     DlgPrefControllers* m_pControllersDlg;
-    DlgPrefColors* m_colorsPage;
-    QTreeWidgetItem* m_pColorsButton;
 
     QSize m_pageSizeHint;
-};
 
-#endif
+    QDir m_iconsPath;
+};

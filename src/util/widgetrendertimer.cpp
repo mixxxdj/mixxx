@@ -1,5 +1,6 @@
 #include "util/widgetrendertimer.h"
 
+#include "moc_widgetrendertimer.cpp"
 #include "util/time.h"
 
 WidgetRenderTimer::WidgetRenderTimer(mixxx::Duration renderFrequency,

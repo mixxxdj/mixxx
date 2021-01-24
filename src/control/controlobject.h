@@ -1,20 +1,3 @@
-/***************************************************************************
-                          controlobject.h  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #pragma once
 
 #include <QObject>
@@ -35,9 +18,11 @@ class ControlObject : public QObject {
     // bPersist: Store value on exit, load on startup.
     // defaultValue: default value of CO. If CO is persistent and there is no valid
     //               value found in the config, this is also the initial value.
-    ControlObject(ConfigKey key,
-                  bool bIgnoreNops = true, bool bTrack = false,
-                  bool bPersist = false, double defaultValue = 0.0);
+    ControlObject(const ConfigKey& key,
+            bool bIgnoreNops = true,
+            bool bTrack = false,
+            bool bPersist = false,
+            double defaultValue = 0.0);
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey

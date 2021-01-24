@@ -9,7 +9,6 @@
 #include <QFile>
 
 #include <stdlib.h>
-#include <unistd.h>
 
 namespace mixxx {
 
@@ -32,7 +31,7 @@ const QStringList kSupportedFileExtensions = {
 /* read files in 512k chunks */
 constexpr SINT kChunkSizeInBytes = SINT(1) << 19;
 
-QString getModPlugTypeFromUrl(QUrl url) {
+QString getModPlugTypeFromUrl(const QUrl& url) {
     const QString fileExtension(SoundSource::getFileExtensionFromUrl(url));
     if (fileExtension == "mod") {
         return "Protracker";
@@ -108,11 +107,14 @@ SoundSourceModPlug::importTrackMetadataAndCoverImage(
 
         pTrackMetadata->refTrackInfo().setComment(QString(ModPlug::ModPlug_GetMessage(pModFile)));
         pTrackMetadata->refTrackInfo().setTitle(QString(ModPlug::ModPlug_GetName(pModFile)));
-        pTrackMetadata->setChannelCount(audio::ChannelCount(kChannelCount));
-        pTrackMetadata->setSampleRate(audio::SampleRate(kSampleRate));
-        pTrackMetadata->setBitrate(audio::Bitrate(8));
-        pTrackMetadata->setDuration(Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)));
-        ModPlug::ModPlug_Unload(pModFile);
+        pTrackMetadata->setStreamInfo(audio::StreamInfo{
+                audio::SignalInfo{
+                        audio::ChannelCount(kChannelCount),
+                        audio::SampleRate(kSampleRate),
+                },
+                audio::Bitrate(8),
+                Duration::fromMillis(ModPlug::ModPlug_GetLength(pModFile)),
+        });
 
         return std::make_pair(ImportResult::Succeeded, QFileInfo(modFile).lastModified());
     }
@@ -207,7 +209,7 @@ void SoundSourceModPlug::close() {
 }
 
 ReadableSampleFrames SoundSourceModPlug::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT readOffset = getSignalInfo().frames2samples(writableSampleFrames.frameIndexRange().start());
     const SINT readSamples = getSignalInfo().frames2samples(writableSampleFrames.frameLength());
     SampleUtil::convertS16ToFloat32(

@@ -148,6 +148,17 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     stream >> colorSerato32 >> type >> isLocked;
 
+    if (isLocked && type != static_cast<quint8>(TypeId::Loop)) {
+        // This should never happen with Metadata exported from Serato. We fail
+        // here because this case is unexpected and should not be corrected
+        // silently without knowing what we do. Write a bug if this assumption
+        // is wrong.
+        kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
+                          << "isLocked field is not false for non-loop type"
+                          << static_cast<quint8>(TypeId::Loop);
+        return nullptr;
+    }
+
     const RgbColor color = RgbColor(serato32toUint24(colorSerato32));
 
     // Parse Start Position
@@ -156,6 +167,10 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
     if (!hasStartPosition) {
         // Start position not set
         if (startPositionSerato32 != kNoPosition) {
+            // This should never happen with Metadata exported from Serato. We fail
+            // here because this case is unexpected and should not be corrected
+            // silently without knowing what we do. Write a bug if this assumption
+            // is wrong.
             kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
                               << "startPosition"
                               << startPosition
@@ -174,6 +189,10 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
     if (!hasEndPosition) {
         // End position not set
         if (endPositionSerato32 != kNoPosition) {
+            // This should never happen with Metadata exported from Serato. We fail
+            // here because this case is unexpected and should not be corrected
+            // silently without knowing what we do. Write a bug if this assumption
+            // is wrong.
             kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
                               << "endPosition"
                               << endPositionSerato32
@@ -188,6 +207,10 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseID3(const QByteArray& data) {
 
     // Make sure that the unknown (and probably unused) bytes have the expected value
     if (strncmp(buffer, "\x00\x7F\x7F\x7F\x7F\x7F", sizeof(buffer)) != 0) {
+        // This should never happen with Metadata exported from Serato. We fail
+        // here because this case is unexpected and should not be corrected
+        // silently without knowing what we do. Write a bug if this assumption
+        // is wrong.
         kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
                           << "Unexpected value at offset 10"
                           << QByteArray::fromRawData(buffer, sizeof(buffer));
@@ -246,10 +269,26 @@ SeratoMarkersEntryPointer SeratoMarkersEntry::parseMP4(const QByteArray& data) {
     }
 
     stream >> colorRed >> colorGreen >> colorBlue >> type >> isLocked;
+
+    if (isLocked && type != static_cast<quint8>(TypeId::Loop)) {
+        // This should never happen with Metadata exported from Serato. We fail
+        // here because this case is unexpected and should not be corrected
+        // silently without knowing what we do. Write a bug if this assumption
+        // is wrong.
+        kLogger.warning() << "Parsing SeratoMarkersEntry failed:"
+                          << "isLocked field is not false for non-loop type"
+                          << static_cast<quint8>(TypeId::Loop);
+        return nullptr;
+    }
+
     const RgbColor color = RgbColor(qRgb(colorRed, colorGreen, colorBlue));
 
     // Make sure that the unknown (and probably unused) bytes have the expected value
     if (strncmp(buffer, "\x00\xFF\xFF\xFF\xFF\x00", sizeof(buffer)) != 0) {
+        // This should never happen with Metadata exported from Serato. We fail
+        // here because this case is unexpected and should not be corrected
+        // silently without knowing what we do. Write a bug if this assumption
+        // is wrong.
         kLogger.warning() << "Parsing SeratoMarkersEntry (MP4) failed:"
                           << "Unexpected value at offset 8"
                           << QByteArray::fromRawData(buffer, sizeof(buffer));
@@ -344,6 +383,10 @@ bool SeratoMarkers::parseID3(
 
         if (i < kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Cue) {
+            // This should never happen with Metadata exported from Serato. We fail
+            // here because this case is unexpected and should not be corrected
+            // silently without knowing what we do. Write a bug if this assumption
+            // is wrong.
             kLogger.warning() << "Parsing SeratoMarkers_ failed:"
                               << "Expected cue entry but found type" << pEntry->type();
             return false;
@@ -351,6 +394,10 @@ bool SeratoMarkers::parseID3(
 
         if (i >= kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Loop) {
+            // This should never happen with Metadata exported from Serato. We fail
+            // here because this case is unexpected and should not be corrected
+            // silently without knowing what we do. Write a bug if this assumption
+            // is wrong.
             kLogger.warning() << "Parsing SeratoMarkers_ failed:"
                               << "Expected loop entry but found type"
                               << pEntry->type();
@@ -437,6 +484,10 @@ bool SeratoMarkers::parseMP4(
 
         if (i < kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Cue) {
+            // This should never happen with Metadata exported from Serato. We fail
+            // here because this case is unexpected and should not be corrected
+            // silently without knowing what we do. Write a bug if this assumption
+            // is wrong.
             kLogger.warning() << "Parsing SeratoMarkers_ (MP4) failed:"
                               << "Expected cue entry but found type" << pEntry->type();
             return false;
@@ -444,6 +495,10 @@ bool SeratoMarkers::parseMP4(
 
         if (i >= kNumCueEntries &&
                 pEntry->typeId() != SeratoMarkersEntry::TypeId::Loop) {
+            // This should never happen with Metadata exported from Serato. We fail
+            // here because this case is unexpected and should not be corrected
+            // silently without knowing what we do. Write a bug if this assumption
+            // is wrong.
             kLogger.warning() << "Parsing SeratoMarkers_ (MP4) failed:"
                               << "Expected loop entry but found type"
                               << pEntry->type();
@@ -461,6 +516,10 @@ bool SeratoMarkers::parseMP4(
     RgbColor trackColor = RgbColor(qRgb(colorRed, colorGreen, colorBlue));
 
     if (field1 != 0x00) {
+        // This should never happen with Metadata exported from Serato. We fail
+        // here because this case is unexpected and should not be corrected
+        // silently without knowing what we do. Write a bug if this assumption
+        // is wrong.
         kLogger.warning() << "Parsing SeratoMarkers_ (MP4) failed:"
                           << "Unexpected value before track color"
                           << field1;
@@ -588,7 +647,8 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         std::nullopt,
                         cueIndex,
                         QString(),
-                        pEntry->getColor());
+                        pEntry->getColor(),
+                        CueFlag::None);
                 cueInfos.append(cueInfo);
             }
             cueIndex++;
@@ -609,7 +669,8 @@ QList<CueInfo> SeratoMarkers::getCues() const {
                         pEntry->getEndPosition(),
                         loopIndex,
                         QString(),
-                        std::nullopt);
+                        std::nullopt,
+                        pEntry->isLocked() ? CueFlag::Locked : CueFlag::None);
                 cueInfos.append(loopInfo);
                 // TODO: Add support for the "locked" attribute
             }
@@ -631,15 +692,12 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
     for (const CueInfo& cueInfo : cueInfos) {
         // All of these check can be debug assertions, as the list should be
         // pre-filtered by the seratoTags class.
-        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueIndex()) {
             continue;
         }
-        int hotcueNumber = *cueInfo.getHotCueNumber();
+        int hotcueIndex = *cueInfo.getHotCueIndex();
 
-        VERIFY_OR_DEBUG_ASSERT(hotcueNumber >= 0) {
-            continue;
-        }
-        VERIFY_OR_DEBUG_ASSERT(cueInfo.getColor()) {
+        VERIFY_OR_DEBUG_ASSERT(hotcueIndex >= kFirstHotCueIndex) {
             continue;
         }
         VERIFY_OR_DEBUG_ASSERT(cueInfo.getStartPositionMillis()) {
@@ -648,13 +706,13 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
 
         switch (cueInfo.getType()) {
         case CueType::HotCue:
-            cueMap.insert(hotcueNumber, cueInfo);
+            cueMap.insert(hotcueIndex, cueInfo);
             break;
         case CueType::Loop:
             VERIFY_OR_DEBUG_ASSERT(cueInfo.getEndPositionMillis()) {
                 continue;
             }
-            loopMap.insert(hotcueNumber, cueInfo);
+            loopMap.insert(hotcueIndex, cueInfo);
             break;
         default:
             DEBUG_ASSERT(!"Invalid cue type");
@@ -667,7 +725,7 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
         const CueInfo cueInfo = cueMap.value(i);
 
         SeratoMarkersEntryPointer pEntry;
-        if (cueInfo.getStartPositionMillis()) {
+        if (cueInfo.getStartPositionMillis() && cueInfo.getColor()) {
             pEntry = std::make_shared<SeratoMarkersEntry>(
                     true,
                     static_cast<int>(*cueInfo.getStartPositionMillis()),
@@ -699,9 +757,13 @@ void SeratoMarkers::setCues(const QList<CueInfo>& cueInfos) {
                     static_cast<int>(*cueInfo.getStartPositionMillis()),
                     true,
                     static_cast<int>(*cueInfo.getEndPositionMillis()),
-                    *cueInfo.getColor(),
+                    // TODO: In Serato, saved loops always have a fixed color.
+                    // We *could* export the actual color here if we also
+                    // import the blue-ish default color in the code above, but
+                    // it will not be used by Serato.
+                    SeratoTags::kFixedLoopColor,
                     static_cast<int>(SeratoMarkersEntry::TypeId::Loop),
-                    false);
+                    cueInfo.isLocked());
         } else {
             pEntry = std::make_shared<SeratoMarkersEntry>(
                     false,

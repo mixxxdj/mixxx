@@ -66,8 +66,15 @@ class TrackRecord final {
     TrackRecord& operator=(TrackRecord&&) = default;
     TrackRecord& operator=(const TrackRecord&) = default;
 
+    static constexpr int kMinRating = 0;
+    static constexpr int kMaxRating = 5;
+    static constexpr int kNoRating = kMinRating;
+
+    static bool isValidRating(int rating) {
+        return rating >= kMinRating && rating <= kMaxRating;
+    }
     bool hasRating() const {
-        return getRating() > 0;
+        return getRating() != kNoRating;
     }
 
     void setKeys(const Keys& keys);

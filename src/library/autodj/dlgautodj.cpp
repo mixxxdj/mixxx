@@ -4,6 +4,7 @@
 
 #include "library/playlisttablemodel.h"
 #include "library/trackcollectionmanager.h"
+#include "moc_dlgautodj.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/compatibility.h"
@@ -66,7 +67,7 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             m_pTrackTableView,
             &WTrackTableView::setSelectedClick);
 
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
@@ -222,7 +223,7 @@ DlgAutoDJ::~DlgAutoDJ() {
 
 void DlgAutoDJ::setupActionButton(QPushButton* pButton,
         void (DlgAutoDJ::*pSlot)(bool),
-        QString fallbackText) {
+        const QString& fallbackText) {
     connect(pButton, &QPushButton::clicked, this, pSlot);
     if (m_bShowButtonText) {
         pButton->setText(fallbackText);
@@ -243,7 +244,7 @@ void DlgAutoDJ::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
 
-void DlgAutoDJ::loadSelectedTrackToGroup(QString group, bool play) {
+void DlgAutoDJ::loadSelectedTrackToGroup(const QString& group, bool play) {
     m_pTrackTableView->loadSelectedTrackToGroup(group, play);
 }
 
@@ -272,16 +273,16 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
     AutoDJProcessor::AutoDJError error = m_pAutoDJProcessor->toggleAutoDJ(enable);
     switch (error) {
         case AutoDJProcessor::ADJ_BOTH_DECKS_PLAYING:
-            QMessageBox::warning(
-                    NULL, tr("Auto DJ"),
+            QMessageBox::warning(nullptr,
+                    tr("Auto DJ"),
                     tr("One deck must be stopped to enable Auto DJ mode."),
                     QMessageBox::Ok);
             // Make sure the button becomes unpushed.
             pushButtonAutoDJ->setChecked(false);
             break;
         case AutoDJProcessor::ADJ_DECKS_3_4_PLAYING:
-            QMessageBox::warning(
-                    NULL, tr("Auto DJ"),
+            QMessageBox::warning(nullptr,
+                    tr("Auto DJ"),
                     tr("Decks 3 and 4 must be stopped to enable Auto DJ mode."),
                     QMessageBox::Ok);
             pushButtonAutoDJ->setChecked(false);

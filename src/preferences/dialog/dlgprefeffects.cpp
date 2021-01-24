@@ -1,20 +1,21 @@
 #include "preferences/dialog/dlgprefeffects.h"
 
-#include "effects/effectsmanager.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectsbackend.h"
+#include "effects/effectsmanager.h"
+#include "moc_dlgprefeffects.cpp"
 
 DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
-                               UserSettingsPointer pConfig,
-                               EffectsManager* pEffectsManager)
+        UserSettingsPointer pConfig,
+        std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_pEffectsManager(pEffectsManager) {
     setupUi(this);
 
-    m_availableEffectsModel.resetFromEffectManager(pEffectsManager);
+    m_availableEffectsModel.resetFromEffectManager(pEffectsManager.get());
     const QList<EffectProfilePtr> effectProfiles = m_availableEffectsModel.profiles();
-    for (auto& profile : effectProfiles) {
+    for (const auto& profile : effectProfiles) {
         EffectManifestPointer pManifest = profile->pManifest;
 
         // Users are likely to have lots of external plugins installed and
@@ -48,7 +49,7 @@ DlgPrefEffects::~DlgPrefEffects() {
 
 void DlgPrefEffects::slotUpdate() {
     clear();
-    m_availableEffectsModel.resetFromEffectManager(m_pEffectsManager);
+    m_availableEffectsModel.resetFromEffectManager(m_pEffectsManager.get());
 
     if (!m_availableEffectsModel.isEmpty()) {
         availableEffectsList->selectRow(0);

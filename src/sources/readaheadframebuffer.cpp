@@ -104,7 +104,7 @@ FrameCount ReadAheadFrameBuffer::discardLastBufferedFrames(
 }
 
 ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
-        ReadableSampleFrames inputBuffer,
+        const ReadableSampleFrames& inputBuffer,
         DiscontinuityGapMode discontinuityGapMode) {
     DEBUG_ASSERT(isValid());
     auto inputRange = inputBuffer.frameIndexRange();
@@ -187,7 +187,7 @@ ReadableSampleFrames ReadAheadFrameBuffer::fillBuffer(
 }
 
 WritableSampleFrames ReadAheadFrameBuffer::drainBuffer(
-        WritableSampleFrames outputBuffer) {
+        const WritableSampleFrames& outputBuffer) {
     DEBUG_ASSERT(isValid());
     auto outputRange = outputBuffer.frameIndexRange();
 #if VERBOSE_DEBUG_LOG
@@ -263,7 +263,7 @@ WritableSampleFrames ReadAheadFrameBuffer::drainBuffer(
 
 WritableSampleFrames ReadAheadFrameBuffer::consumeAndFillBuffer(
         ReadableSampleFrames inputBuffer,
-        WritableSampleFrames outputBuffer,
+        const WritableSampleFrames& outputBuffer,
         FrameCount minOutputIndex,
         std::pair<DiscontinuityOverlapMode, DiscontinuityGapMode> discontinuityModes) {
     auto inputRange = inputBuffer.frameIndexRange();

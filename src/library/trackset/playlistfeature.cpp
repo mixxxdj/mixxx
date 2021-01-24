@@ -12,6 +12,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_playlistfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/db/dbconnection.h"
 #include "util/dnd.h"
@@ -23,7 +24,7 @@
 namespace {
 
 QString createPlaylistLabel(
-        QString name,
+        const QString& name,
         int count,
         int duration) {
     return QStringLiteral("%1 (%2) %3")
@@ -46,7 +47,7 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
     // construct child model
     std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
     m_childModel.setRootItem(std::move(pRootItem));
-    constructChildModel(-1);
+    constructChildModel(kInvalidPlaylistId);
 }
 
 QVariant PlaylistFeature::title() {
@@ -55,11 +56,6 @@ QVariant PlaylistFeature::title() {
 
 QIcon PlaylistFeature::getIcon() {
     return m_icon;
-}
-
-void PlaylistFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    // store the sidebar widget pointer for later use in onRightClickChild
-    m_pSidebarWidget = pSidebarWidget;
 }
 
 void PlaylistFeature::onRightClick(const QPoint& globalPos) {
@@ -72,7 +68,7 @@ void PlaylistFeature::onRightClick(const QPoint& globalPos) {
 }
 
 void PlaylistFeature::onRightClickChild(
-        const QPoint& globalPos, QModelIndex index) {
+        const QPoint& globalPos, const QModelIndex& index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     int playlistId = playlistIdFromIndex(index);
@@ -104,7 +100,7 @@ void PlaylistFeature::onRightClickChild(
 }
 
 bool PlaylistFeature::dropAcceptChild(
-        const QModelIndex& index, QList<QUrl> urls, QObject* pSource) {
+        const QModelIndex& index, const QList<QUrl>& urls, QObject* pSource) {
     int playlistId = playlistIdFromIndex(index);
     VERIFY_OR_DEBUG_ASSERT(playlistId >= 0) {
         return false;
@@ -125,7 +121,7 @@ bool PlaylistFeature::dropAcceptChild(
     return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
-bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
+bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) {
     int playlistId = playlistIdFromIndex(index);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
@@ -236,6 +232,43 @@ QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
     return QString();
 }
 
+/// Purpose: When inserting or removing playlists,
+/// we require the sidebar model not to reset.
+/// This method queries the database and does dynamic insertion
+/// @param selectedId entry which should be selected
+QModelIndex PlaylistFeature::constructChildModel(int selectedId) {
+    QList<TreeItem*> data_list;
+    int selectedRow = -1;
+
+    int row = 0;
+    const QList<IdAndLabel> playlistLabels = createPlaylistLabels();
+    for (const auto& idAndLabel : playlistLabels) {
+        int playlistId = idAndLabel.id;
+        QString playlistLabel = idAndLabel.label;
+
+        if (selectedId == playlistId) {
+            // save index for selection
+            selectedRow = row;
+        }
+
+        // Create the TreeItem whose parent is the invisible root item
+        TreeItem* item = new TreeItem(playlistLabel, playlistId);
+        item->setBold(m_playlistIdsOfSelectedTrack.contains(playlistId));
+
+        decorateChild(item, playlistId);
+        data_list.append(item);
+
+        ++row;
+    }
+
+    // Append all the newly created TreeItems in a dynamic way to the childmodel
+    m_childModel.insertTreeItemRows(data_list, 0);
+    if (selectedRow == -1) {
+        return QModelIndex();
+    }
+    return m_childModel.index(selectedRow, 0);
+}
+
 void PlaylistFeature::decorateChild(TreeItem* item, int playlistId) {
     if (m_playlistDao.isPlaylistLocked(playlistId)) {
         item->setIcon(
@@ -267,7 +300,7 @@ void PlaylistFeature::slotPlaylistContentChanged(QSet<int> playlistIds) {
 }
 
 void PlaylistFeature::slotPlaylistTableRenamed(
-        int playlistId, QString newName) {
+        int playlistId, const QString& newName) {
     Q_UNUSED(newName);
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);

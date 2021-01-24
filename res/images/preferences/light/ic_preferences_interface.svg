@@ -1,0 +1,13 @@
+<svg width="32" height="32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Mixxx 1.12+ iconset</title>
+  <defs>
+    <linearGradient id="a" x1="18.5" x2="18.5" y2="32" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3c3c3c" offset="0"/>
+      <stop offset="1"/>
+    </linearGradient>
+  </defs>
+  <g fill="#fff">
+    <path d="m8 0c-1.6447 0-3 1.3553-3 3v18.553c0.084578 0.039295 0.16954 0.06549 0.25391 0.11133l1.7461-3.6777v-7.9863h23v19c0 0.5713-0.4287 1-1 1h-18.848l-0.59961 1.2617c-0.12972 0.27288-0.28985 0.51379-0.46289 0.73828h19.91c1.6447 0 3-1.3553 3-3v-26c0-1.6447-1.3553-3-3-3h-21zm0 2h21c0.5713 0 1 0.4287 1 1v5h-23v-5c0-0.5713 0.4287-1 1-1zm1 2v2h8v-2h-8zm18 0c-0.554 0-1 0.446-1 1s0.446 1 1 1 1-0.446 1-1-0.446-1-1-1zm-14.316 10c1.0597 0.32261 1.8947 1.0672 2.375 2h8.9414v2h-8.5c-0.023483 0.53047-0.14948 1.0702-0.40625 1.5918l-0.19336 0.4082h11.1v-6h-13.316zm0.31641 10-0.94922 2h13.949v-2h-13z" color="#000000"/>
+    <path d="m11.385 16.891a1.2501 1.2501 0 0 0-1.1738 0.73047l-4.5352 9.5508-1.375-2.3105a1.2501 1.2501 0 1 0-2.1484 1.2773l2.5723 4.3262a1.2501 1.2501 0 0 0 2.2031-0.10352l5.543-11.668a1.2501 1.2501 0 0 0-1.0859-1.8027z" color="#000000" color-rendering="auto" dominant-baseline="auto" fill-rule="evenodd" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+  </g>
+</svg>

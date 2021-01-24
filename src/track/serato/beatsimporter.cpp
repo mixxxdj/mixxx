@@ -10,7 +10,7 @@ SeratoBeatsImporter::SeratoBeatsImporter()
 }
 
 SeratoBeatsImporter::SeratoBeatsImporter(
-        QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers,
+        const QList<SeratoBeatGridNonTerminalMarkerPointer>& nonTerminalMarkers,
         SeratoBeatGridTerminalMarkerPointer pTerminalMarker)
         : BeatsImporter(),
           m_nonTerminalMarkers(nonTerminalMarkers),
@@ -57,7 +57,7 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
         beatLengthMillis = (nextBeatPositionMillis - beatPositionMillis) /
                 pMarker->beatsTillNextMarker();
 
-        beats.resize(beats.size() + pMarker->beatsTillNextMarker());
+        beats.reserve(beats.size() + pMarker->beatsTillNextMarker());
         for (quint32 j = 0; j < pMarker->beatsTillNextMarker(); ++j) {
             beats.append(streamInfo.getSignalInfo().millis2frames(
                     beatPositionMillis + (j * beatLengthMillis)));

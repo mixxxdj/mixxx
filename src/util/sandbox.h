@@ -1,5 +1,4 @@
-#ifndef SANDBOX_H
-#define SANDBOX_H
+#pragma once
 
 #include <QFile>
 #include <QDir>
@@ -29,8 +28,11 @@ typedef QWeakPointer<SandboxSecurityToken> SecurityTokenWeakPointer;
 
 class Sandbox {
   public:
-    static void initialize(const QString& permissionsFile);
+    static void checkSandboxed();
+    static void setPermissionsFilePath(const QString& permissionsFile);
     static void shutdown();
+
+    static QString migrateOldSettings();
 
     // Returns true if we are in a sandbox.
     static bool enabled() {
@@ -79,6 +81,3 @@ class Sandbox {
     static QSharedPointer<ConfigObject<ConfigValue>> s_pSandboxPermissions;
     static QHash<QString, SecurityTokenWeakPointer> s_activeTokens;
 };
-
-
-#endif /* SANDBOX_H */

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QCollator>
+#include <QColor>
 #include <QLocale>
 #include <QString>
 #include <QStringRef>
@@ -86,3 +87,15 @@ inline QString convertWCStringToQString(
 }
 
 } // namespace mixxx
+
+// Helper to create html link strings to be used for ui files, mostly in
+// Preferences dialogs.
+inline QString coloredLinkString(
+        const QColor& color,
+        const QString& text,
+        const QString& baseUrl,
+        const QString& extUrl = nullptr) {
+    return QStringLiteral("<a style=\"color:") + color.name() +
+            QStringLiteral(";\" href=\"") + baseUrl + extUrl +
+            QStringLiteral("\">") + text + QStringLiteral("</a>");
+}

@@ -1,20 +1,12 @@
 #pragma once
 
-// Causes MSVC to define M_PI and friends.
-// http://msdn.microsoft.com/en-us/library/4hwaceh6.aspx
-// Our SConscript defines this but check anyway.
-#ifdef __WINDOWS__
-#ifndef _USE_MATH_DEFINES
-#define _USE_MATH_DEFINES
-#endif
-#endif
-
 #include <math.h>
-#include <cmath> 
-// Note: Because of our fpclassify hack, we actually need to include both, 
-// the c and the c++ version of the math header.  
-// From GCC 6.1.1 math.h depends on cmath, which fails to compile if included 
-// after our fpclassify hack 
+
+#include <cmath>
+// Note: Because of our fpclassify hack, we actually need to include both,
+// the c and the c++ version of the math header.
+// From GCC 6.1.1 math.h depends on cmath, which fails to compile if included
+// after our fpclassify hack
 
 #include <algorithm>
 #include <type_traits>

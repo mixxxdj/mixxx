@@ -1,11 +1,8 @@
-#ifndef GLVSYNCTESTWIDGET_H
-#define GLVSYNCTESTWIDGET_H
+#pragma once
 
-#include <QGLWidget>
+#include "waveform/widgets/glwaveformwidgetabstract.h"
 
-#include "waveformwidgetabstract.h"
-
-class GLVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
+class GLVSyncTestWidget : public GLWaveformWidgetAbstract {
     Q_OBJECT
   public:
     GLVSyncTestWidget(const QString& group, QWidget* parent);
@@ -27,4 +24,3 @@ class GLVSyncTestWidget : public QGLWidget, public WaveformWidgetAbstract {
   private:
     friend class WaveformWidgetFactory;
 };
-#endif // GLVSYNCTESTWIDGET_H

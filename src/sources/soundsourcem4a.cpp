@@ -359,7 +359,7 @@ bool SoundSourceM4A::openDecoder() {
 }
 
 bool SoundSourceM4A::reopenDecoder() {
-    auto hNewDecoder = m_pFaad->Open();
+    faad2::DecoderHandle hNewDecoder = m_pFaad->Open();
     if (!hNewDecoder) {
         kLogger.warning() << "Failed to open the AAC decoder";
         return false;
@@ -528,7 +528,7 @@ void SoundSourceM4A::restartDecoding(MP4SampleId sampleBlockId) {
 }
 
 ReadableSampleFrames SoundSourceM4A::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     bool retryAfterReopeningDecoder = false;

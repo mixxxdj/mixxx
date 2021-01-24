@@ -1,5 +1,7 @@
 #include "widget/wrecordingduration.h"
 
+#include "moc_wrecordingduration.cpp"
+
 WRecordingDuration::WRecordingDuration(QWidget *parent,
                                     RecordingManager* pRecordingManager)
         : WLabel(parent),
@@ -39,6 +41,6 @@ void WRecordingDuration::slotRecordingInactive(bool isRecording) {
     }
 }
 
-void WRecordingDuration::refreshLabel(QString durationRecorded) {
+void WRecordingDuration::refreshLabel(const QString& durationRecorded) {
     setText(durationRecorded);
 }

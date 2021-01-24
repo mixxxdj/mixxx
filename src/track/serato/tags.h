@@ -15,6 +15,7 @@ class SeratoTags final {
   public:
     static constexpr RgbColor kDefaultTrackColor = RgbColor(0xFF9999);
     static constexpr RgbColor kDefaultCueColor = RgbColor(0xCC0000);
+    static constexpr RgbColor kFixedLoopColor = RgbColor(0x27AAE1);
 
     SeratoTags() = default;
 
@@ -60,8 +61,14 @@ class SeratoTags final {
     QList<CueInfo> getCueInfos() const;
     void setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset = 0);
 
+    void setBeats(BeatsPointer pBeats,
+            const audio::StreamInfo& streamInfo,
+            double timingOffset) {
+        m_seratoBeatGrid.setBeats(pBeats, streamInfo, timingOffset);
+    }
+
     RgbColor::optional_t getTrackColor() const;
-    void setTrackColor(RgbColor::optional_t color);
+    void setTrackColor(const RgbColor::optional_t& color);
 
     bool isBpmLocked() const;
     void setBpmLocked(bool bpmLocked);

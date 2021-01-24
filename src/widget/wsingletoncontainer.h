@@ -44,8 +44,7 @@
 // in the skin.  Note that if a Singleton is visible twice at the same time,
 // behavior is undefined and could be crashy.
 
-#ifndef WSINGLETONCONTAINER_H
-#define WSINGLETONCONTAINER_H
+#pragma once
 
 #include <QPointer>
 
@@ -73,16 +72,13 @@ class SingletonMap {
     // Takes a constructed QWidget and inserts it in the map of available
     // singletons.  Checks that an object of that name hasn't already been
     // defined.
-    void insertSingleton(QString objectName, QWidget* widget);
+    void insertSingleton(const QString& objectName, QWidget* widget);
 
     // We don't want to end up with badly-constructed containers, so only
     // provide a factory function.  Returns NULL if the objectName is not in
     // the map.
-    QWidget* getSingletonWidget(QString objectName) const;
+    QWidget* getSingletonWidget(const QString& objectName) const;
 
   private:
     QMap<QString, QWidget*> m_singletons;
 };
-
-
-#endif  // WSINGLETONCONTAINER_H

@@ -1,32 +1,16 @@
-/***************************************************************************
-                          main.cpp  -  description
-                             -------------------
-    begin                : Mon Feb 18 09:48:17 CET 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include <QThread>
-#include <QDir>
-#include <QtDebug>
 #include <QApplication>
-#include <QStringList>
+#include <QDir>
 #include <QString>
+#include <QStringList>
 #include <QTextCodec>
+#include <QThread>
+#include <QtDebug>
 
+#include "coreservices.h"
+#include "errordialoghandler.h"
 #include "mixxx.h"
 #include "mixxxapplication.h"
 #include "sources/soundsourceproxy.h"
-#include "errordialoghandler.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
 #include "util/logging.h"
@@ -43,11 +27,11 @@ constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
-    MixxxMainWindow mainWindow(app, args);
+    auto coreServices = std::make_shared<mixxx::CoreServices>(args);
+    MixxxMainWindow mainWindow(app, coreServices);
     // If startup produced a fatal error, then don't even start the
     // Qt event loop.
     if (ErrorDialogHandler::instance()->checkError()) {
-        mainWindow.finalize();
         return kFatalErrorOnStartupExitCode;
     } else {
         qDebug() << "Displaying main window";
@@ -104,17 +88,8 @@ int main(int argc, char * argv[]) {
     // the main thread. Bug #1748636.
     ErrorDialogHandler::instance();
 
-    mixxx::Logging::initialize(args.getSettingsPath(),
-                               args.getLogLevel(),
-                               args.getLogFlushLevel(),
-                               args.getDebugAssertBreak());
-
     MixxxApplication app(argc, argv);
 
-    VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
-        qCritical() << "Failed to register any SoundSource providers";
-        return kFatalErrorOnStartupExitCode;
-    }
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());

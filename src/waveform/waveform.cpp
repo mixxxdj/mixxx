@@ -17,7 +17,7 @@ int computeTextureStride(int size) {
     return stride;
 }
 
-Waveform::Waveform(const QByteArray data)
+Waveform::Waveform(const QByteArray& data)
         : m_id(-1),
           m_saveState(SaveState::NotSaved),
           m_dataSize(0),
@@ -123,7 +123,7 @@ QByteArray Waveform::toByteArray() const {
 
     std::string output;
     waveform.SerializeToString(&output);
-    return QByteArray(output.data(), output.length());
+    return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
 void Waveform::readByteArray(const QByteArray& data) {

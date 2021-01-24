@@ -12,15 +12,13 @@
 //
 #include "library/parserpls.h"
 
-#include <QtDebug>
-#include <QMessageBox>
 #include <QDir>
 #include <QFile>
+#include <QMessageBox>
 #include <QUrl>
+#include <QtDebug>
 
-/**
-   @author Ingo Kossyk (kossyki@cs.tu-berlin.de)
- **/
+#include "moc_parserpls.cpp"
 
 /**
    ToDo:
@@ -34,7 +32,7 @@ ParserPls::ParserPls() : Parser() {
 ParserPls::~ParserPls() {
 }
 
-QList<QString> ParserPls::parse(QString sFilename) {
+QList<QString> ParserPls::parse(const QString& sFilename) {
     //long numEntries =0;
     QFile file(sFilename);
     const auto basePath = sFilename.section('/', 0, -2);
@@ -55,8 +53,9 @@ QList<QString> ParserPls::parse(QString sFilename) {
         //detect encoding
         bool isCRLF_encoded = ba.contains("\r\n");
         bool isCR_encoded = ba.contains("\r");
-        if(isCR_encoded && !isCRLF_encoded)
+        if (isCR_encoded && !isCRLF_encoded) {
             ba.replace('\r','\n');
+        }
         QTextStream textstream(ba.constData());
 
         while(!textstream.atEnd()) {
@@ -71,10 +70,11 @@ QList<QString> ParserPls::parse(QString sFilename) {
 
         file.close();
 
-        if(m_sLocations.count() != 0)
+        if (m_sLocations.count() != 0) {
             return m_sLocations;
-        else
+        } else {
             return QList<QString>(); // NULL pointer returned when no locations were found
+        }
     }
 
     file.close();
@@ -132,8 +132,9 @@ bool ParserPls::writePLSFile(const QString &file_str, const QList<QString> &item
 {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        QMessageBox::warning(NULL,tr("Playlist Export Failed"),
-                             tr("Could not create file")+" "+file_str);
+        QMessageBox::warning(nullptr,
+                tr("Playlist Export Failed"),
+                tr("Could not create file") + " " + file_str);
         return false;
     }
     //Base folder of file

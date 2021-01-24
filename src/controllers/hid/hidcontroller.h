@@ -1,10 +1,11 @@
 #pragma once
 
 #include "controllers/controller.h"
-#include "controllers/hid/hidcontrollerpreset.h"
 #include "controllers/hid/hiddevice.h"
+#include "controllers/hid/legacyhidcontrollermapping.h"
 #include "util/duration.h"
 
+/// HID controller backend
 class HidController final : public Controller {
     Q_OBJECT
   public:
@@ -14,15 +15,15 @@ class HidController final : public Controller {
 
     ControllerJSProxy* jsProxy() override;
 
-    QString presetExtension() override;
+    QString mappingExtension() override;
 
-    ControllerPresetPointer getPreset() const override {
-        return ControllerPresetPointer(
-                new HidControllerPreset(m_preset));
+    LegacyControllerMappingPointer getMapping() const override {
+        return LegacyControllerMappingPointer(
+                new LegacyHidControllerMapping(m_mapping));
     }
 
-    void visit(const MidiControllerPreset* preset) override;
-    void visit(const HidControllerPreset* preset) override;
+    void visit(const LegacyMidiControllerMapping* mapping) override;
+    void visit(const LegacyHidControllerMapping* mapping) override;
 
     void accept(ControllerVisitor* visitor) override {
         if (visitor) {
@@ -31,10 +32,10 @@ class HidController final : public Controller {
     }
 
     bool isMappable() const override {
-        return m_preset.isMappable();
+        return m_mapping.isMappable();
     }
 
-    bool matchPreset(const PresetInfo& preset) override;
+    bool matchMapping(const MappingInfo& mapping) override;
 
   protected:
     void sendReport(QList<int> data, unsigned int length, unsigned int reportID);
@@ -54,16 +55,16 @@ class HidController final : public Controller {
     void sendBytesReport(QByteArray data, unsigned int reportID);
     void sendFeatureReport(const QList<int>& dataList, unsigned int reportID);
 
-    // Returns a pointer to the currently loaded controller preset. For internal
+    // Returns a pointer to the currently loaded controller mapping. For internal
     // use only.
-    ControllerPreset* preset() override {
-        return &m_preset;
+    LegacyControllerMapping* mapping() override {
+        return &m_mapping;
     }
 
     const mixxx::hid::DeviceInfo m_deviceInfo;
 
     hid_device* m_pHidDevice;
-    HidControllerPreset m_preset;
+    LegacyHidControllerMapping m_mapping;
 
     static constexpr int kNumBuffers = 2;
     static constexpr int kBufferSize = 255;
@@ -82,11 +83,11 @@ class HidControllerJSProxy : public ControllerJSProxy {
               m_pHidController(m_pController) {
     }
 
-    Q_INVOKABLE void send(QList<int> data, unsigned int length = 0) override {
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length = 0) override {
         m_pHidController->send(data, length);
     }
 
-    Q_INVOKABLE void send(QList<int> data, unsigned int length, unsigned int reportID) {
+    Q_INVOKABLE void send(const QList<int>& data, unsigned int length, unsigned int reportID) {
         m_pHidController->sendReport(data, length, reportID);
     }
 

@@ -18,6 +18,7 @@
 #include "library/dao/trackschema.h"
 #include "library/queryutil.h"
 #include "library/trackset/crate/cratestorage.h"
+#include "moc_trackdao.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
@@ -30,6 +31,7 @@
 #include "util/compatibility.h"
 #include "util/datetime.h"
 #include "util/db/fwdsqlquery.h"
+#include "util/db/sqlite.h"
 #include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqllikewildcards.h"
 #include "util/db/sqlstringformatter.h"
@@ -46,7 +48,7 @@ mixxx::Logger kLogger("TrackDAO");
 
 enum { UndefinedRecordIndex = -2 };
 
-void markTrackLocationsAsDeleted(QSqlDatabase database, const QString& directory) {
+void markTrackLocationsAsDeleted(const QSqlDatabase& database, const QString& directory) {
     //qDebug() << "TrackDAO::markTrackLocationsAsDeleted" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(database);
     query.prepare("UPDATE track_locations "
@@ -308,13 +310,13 @@ void TrackDAO::saveTrack(Track* pTrack) const {
     }
 }
 
-void TrackDAO::slotDatabaseTracksChanged(QSet<TrackId> changedTrackIds) {
+void TrackDAO::slotDatabaseTracksChanged(const QSet<TrackId>& changedTrackIds) {
     if (!changedTrackIds.isEmpty()) {
         emit tracksChanged(changedTrackIds);
     }
 }
 
-void TrackDAO::slotDatabaseTracksRelocated(QList<RelocatedTrack> relocatedTracks) {
+void TrackDAO::slotDatabaseTracksRelocated(const QList<RelocatedTrack>& relocatedTracks) {
     QSet<TrackId> removedTrackIds;
     QSet<TrackId> changedTrackIds;
     for (const auto& relocatedTrack : qAsConst(relocatedTracks)) {
@@ -540,20 +542,21 @@ void bindTrackLibraryValues(
     pTrackLibraryQuery->bindValue(":replaygain_peak", trackInfo.getReplayGain().getPeak());
 
     pTrackLibraryQuery->bindValue(":channels",
-            static_cast<uint>(trackMetadata.getChannelCount()));
+            static_cast<uint>(trackMetadata.getStreamInfo().getSignalInfo().getChannelCount()));
     pTrackLibraryQuery->bindValue(":samplerate",
-            static_cast<uint>(trackMetadata.getSampleRate()));
+            static_cast<uint>(trackMetadata.getStreamInfo().getSignalInfo().getSampleRate()));
     pTrackLibraryQuery->bindValue(":bitrate",
-            static_cast<uint>(trackMetadata.getBitrate()));
+            static_cast<uint>(trackMetadata.getStreamInfo().getBitrate()));
     pTrackLibraryQuery->bindValue(":duration",
-            trackMetadata.getDuration().toDoubleSeconds());
+            trackMetadata.getStreamInfo().getDuration().toDoubleSeconds());
 
     pTrackLibraryQuery->bindValue(":header_parsed",
             track.getMetadataSynchronized() ? 1 : 0);
 
     const PlayCounter& playCounter = track.getPlayCounter();
     pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
-    pTrackLibraryQuery->bindValue(":last_played_at", playCounter.getLastPlayedAt());
+    pTrackLibraryQuery->bindValue(":last_played_at",
+            mixxx::sqlite::writeGeneratedTimestamp(playCounter.getLastPlayedAt()));
     pTrackLibraryQuery->bindValue(":played", playCounter.isPlayed() ? 1 : 0);
 
     const CoverInfoRelative& coverInfo = track.getCoverInfo();
@@ -606,7 +609,7 @@ bool insertTrackLibrary(
         const mixxx::BeatsPointer& pBeats,
         DbId trackLocationId,
         const TrackFile& trackFile,
-        QDateTime trackDateAdded) {
+        const QDateTime& trackDateAdded) {
     bindTrackLibraryValues(pTrackLibraryInsert, trackRecord, pBeats);
 
     if (!trackRecord.getDateAdded().isNull()) {
@@ -1169,8 +1172,9 @@ bool setTrackPlayed(const QSqlRecord& record, const int column,
 }
 
 bool setTrackLastPlayedAt(const QSqlRecord& record, const int column, TrackPointer pTrack) {
-    PlayCounter playCounter(pTrack->getPlayCounter());
-    playCounter.setLastPlayedAt(record.value(column).toDateTime());
+    auto playCounter = pTrack->getPlayCounter();
+    playCounter.setLastPlayedAt(
+            mixxx::sqlite::readGeneratedTimestamp(record.value(column)));
     pTrack->setPlayCounter(playCounter);
     return false;
 }
@@ -1257,10 +1261,14 @@ bool setTrackCoverInfo(const QSqlRecord& record, const int column,
     bool ok = false;
     coverInfo.source = static_cast<CoverInfo::Source>(
             record.value(column).toInt(&ok));
-    if (!ok) coverInfo.source = CoverInfo::UNKNOWN;
+    if (!ok) {
+        coverInfo.source = CoverInfo::UNKNOWN;
+    }
     coverInfo.type = static_cast<CoverInfo::Type>(
             record.value(column + 1).toInt(&ok));
-    if (!ok) coverInfo.type = CoverInfo::NONE;
+    if (!ok) {
+        coverInfo.type = CoverInfo::NONE;
+    }
     coverInfo.coverLocation = record.value(column + 2).toString();
     coverInfo.color = mixxx::RgbColor::fromQVariant(record.value(column + 3));
     coverInfo.setImageDigest(
@@ -1718,7 +1726,7 @@ namespace {
         }
         return matchLength;
     }
-}
+    } // namespace
 
 // Look for moved files. Look for files that have been marked as
 // "deleted on disk" and see if another "file" with the same name and
@@ -2169,7 +2177,7 @@ TrackFile TrackDAO::relocateCachedTrack(
 }
 
 bool TrackDAO::updatePlayCounterFromPlayedHistory(
-        const QSet<TrackId> trackIds) const {
+        const QSet<TrackId>& trackIds) const {
     // Update both timesplay and last_played_at according to the
     // corresponding aggregated properties from the played history,
     // i.e. COUNT for the number of times a track has been played

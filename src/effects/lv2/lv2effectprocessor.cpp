@@ -5,14 +5,14 @@
 #include "util/defs.h"
 
 LV2EffectProcessor::LV2EffectProcessor(EngineEffect* pEngineEffect,
-                                       EffectManifestPointer pManifest,
-                                       const LilvPlugin* plugin,
-                                       QList<int> audioPortIndices,
-                                       QList<int> controlPortIndices)
-            : m_pPlugin(plugin),
-              m_audioPortIndices(audioPortIndices),
-              m_controlPortIndices(controlPortIndices),
-              m_pEffectsManager(nullptr) {
+        EffectManifestPointer pManifest,
+        const LilvPlugin* plugin,
+        const QList<int>& audioPortIndices,
+        const QList<int>& controlPortIndices)
+        : m_pPlugin(plugin),
+          m_audioPortIndices(audioPortIndices),
+          m_controlPortIndices(controlPortIndices),
+          m_pEffectsManager(nullptr) {
     m_inputL = new float[MAX_BUFFER_LEN];
     m_inputR = new float[MAX_BUFFER_LEN];
     m_outputL = new float[MAX_BUFFER_LEN];
@@ -204,8 +204,8 @@ bool LV2EffectProcessor::loadStatesForInputChannel(const ChannelHandle* inputCha
                      << this << "output" << outputChannel;
         }
 
-        auto pState = dynamic_cast<LV2EffectGroupState*>(
-                  pStatesMap->at(outputChannel.handle()));
+        auto* pState = dynamic_cast<LV2EffectGroupState*>(
+                pStatesMap->at(outputChannel.handle()));
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
               return false;
         }
