@@ -19,7 +19,7 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
             cmake_generator: Unix Makefiles
-            cmake_build_type: Release
+            cmake_build_type: Debug
             ctest_args:
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
@@ -39,7 +39,7 @@ jobs:
               -DMODPLUG=ON
               -DWAVPACK=ON
             cmake_generator: Unix Makefiles
-            cmake_build_type: Release
+            cmake_build_type: Debug
             ctest_args:
             compiler_cache: ccache
             compiler_cache_path: ~/.ccache
@@ -56,7 +56,7 @@ jobs:
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
             cmake_generator: Unix Makefiles
-            cmake_build_type: Release
+            cmake_build_type: Debug
             # TODO: Fix this broken test on macOS
             ctest_args: --exclude-regex DirectoryDAOTest.relocateDirectory
             cpack_generator: DragNDrop
@@ -79,7 +79,7 @@ jobs:
             cc: cl
             cxx: cl
             cmake_generator: Ninja
-            cmake_build_type: Release
+            cmake_build_type: Debug
             # TODO: Fix these broken tests on Windows
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
