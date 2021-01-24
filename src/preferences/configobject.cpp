@@ -14,42 +14,44 @@
 // TODO(rryan): Move to a utility file.
 namespace {
 const QString kTempFilenameExtension = QStringLiteral(".tmp");
+const QString kCMakeCacheFile = QStringLiteral("CMakeCache.txt");
+const QLatin1String kSourceDirLine = QLatin1String("mixxx_SOURCE_DIR:STATIC=");
 
 QString computeResourcePath() {
     // Try to read in the resource directory from the command line
     QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
 
     if (qResourcePath.isEmpty()) {
-        QDir mixxxDir(QCoreApplication::applicationDirPath());
+        QDir mixxxDir = QCoreApplication::applicationDirPath();
         // We used to support using the mixxx.cfg's [Config],Path setting but
         // this causes issues if you try and use two different versions of Mixxx
-        // on the same computer. See Bug #1392854. We start by checking if we're
-        // running out of a build root ('res' dir exists or our path ends with
-        // '_build') and if not then we fall back on a platform-specific method
-        // of determining the resource path (see comments below).
-        if (mixxxDir.cd("res")) {
-            // We are running out of the repository root.
-            qResourcePath = mixxxDir.absolutePath();
-        } else if (mixxxDir.absolutePath().endsWith("_build") &&
-                   mixxxDir.cdUp() && mixxxDir.cd("res")) {
-            // We are running out of the (lin|win|osx)XX_build folder.
+        // on the same computer.
+        auto cmakecache = QFile(mixxxDir.filePath(kCMakeCacheFile));
+        if (cmakecache.open(QFile::ReadOnly | QFile::Text)) {
+            // We are running form a build dir (CMAKE_CURRENT_BINARY_DIR),
+            // Look up the source path from CMakeCache.txt (mixxx_SOURCE_DIR)
+            QTextStream in(&cmakecache);
+            QString line = in.readLine();
+            while (!line.isNull()) {
+                if (line.startsWith(kSourceDirLine)) {
+                    qResourcePath = line.mid(kSourceDirLine.size()) + QStringLiteral("/res");
+                    break;
+                }
+                line = in.readLine();
+            }
+            DEBUG_ASSERT(QDir(qResourcePath).exists());
+        }
+#if defined(__UNIX__)
+        else if (mixxxDir.cdUp() && mixxxDir.cd(QStringLiteral("share/mixxx"))) {
             qResourcePath = mixxxDir.absolutePath();
         }
-#ifdef __UNIX__
-        // On Linux if all of the above fail the /usr/share path is the logical
-        // place to look.
-        else {
-            qResourcePath = UNIX_SHARE_PATH;
-        }
-#endif
-#ifdef __WINDOWS__
+#elif defined(__WINDOWS__)
         // On Windows, set the config dir relative to the application dir if all
         // of the above fail.
         else {
             qResourcePath = QCoreApplication::applicationDirPath();
         }
-#endif
-#ifdef __APPLE__
+#elif defined(__APPLE__)
         else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
             // Release configuration
             qResourcePath = mixxxDir.absolutePath();
