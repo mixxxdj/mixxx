@@ -2260,19 +2260,21 @@ if(GPERFTOOLS OR GPERFTOOLSPROFILER)
 endif()
 
 # HSS1394 MIDI device
-find_package(HSS1394)
-cmake_dependent_option(HSS1394 "HSS1394 MIDI device support" ON "HSS1394_FOUND;WIN32 OR APPLE" OFF)
-if(HSS1394)
-  target_sources(mixxx-lib PRIVATE
-    src/controllers/midi/hss1394controller.cpp
-    src/controllers/midi/hss1394enumerator.cpp
-  )
-  target_compile_definitions(mixxx-lib PUBLIC __HSS1394__)
-  if(WIN32 OR APPLE)
-    if(NOT HSS1394_FOUND)
-      message(FATAL_ERROR "HSS1394 MIDI device support requires the libhss1394 and its development headers.")
+if(WIN32 OR APPLE)
+  find_package(HSS1394)
+  cmake_dependent_option(HSS1394 "HSS1394 MIDI device support" ON "HSS1394_FOUND;WIN32 OR APPLE" OFF)
+  if(HSS1394)
+    target_sources(mixxx-lib PRIVATE
+      src/controllers/midi/hss1394controller.cpp
+      src/controllers/midi/hss1394enumerator.cpp
+    )
+    target_compile_definitions(mixxx-lib PUBLIC __HSS1394__)
+    if(WIN32 OR APPLE)
+      if(NOT HSS1394_FOUND)
+        message(FATAL_ERROR "HSS1394 MIDI device support requires the libhss1394 and its development headers.")
+      endif()
+      target_link_libraries(mixxx-lib PUBLIC HSS1394::HSS1394)
     endif()
-    target_link_libraries(mixxx-lib PUBLIC HSS1394::HSS1394)
   endif()
 endif()
 
