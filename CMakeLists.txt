@@ -28,6 +28,10 @@ if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
+if(POLICY CMP0069)
+  cmake_policy(SET CMP0069 NEW)
+endif()
+
 #######################################################################
 # Compilers and toolchains
 
@@ -77,6 +81,14 @@ endif()
 #
 # Optimizations
 #
+
+include(CheckIPOSupported)
+check_ipo_supported(RESULT HAVE_IPO)
+if(HAVE_IPO)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+endif()
+
+
 set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy, fastbuild)")
 message(STATUS "Optimization level: ${OPTIMIZE}")
 
@@ -116,18 +128,18 @@ if(MSVC)
     if(OPTIMIZE STREQUAL "fastbuild")
       # /GL : http://msdn.microsoft.com/en-us/library/0zza0de8.aspx
       # !!! /GL is incompatible with /ZI, which is set by mscvdebug
-      add_compile_options(/GL-)
 
       # Do link-time code generation (and don't show a progress indicator
       # -- this relies on ANSI control characters and tends to overwhelm
       # Jenkins logs) Should we turn on PGO ?
       # http://msdn.microsoft.com/en-us/library/xbf3tbeh.aspx
-      add_link_options(/LTCG:OFF)
-    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
-      add_compile_options(/GL-)
-    else()
-      add_compile_options(/GL)
-      add_link_options(/LTCG:NOSTATUS)
+
+      # CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the /GL and /LTCG flags for us
+      set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+      # We need to set it here to false as well to avoid:
+      # LINK : warning LNK4075: ignoring '/INCREMENTAL' due to '/LTCG' specification
+      set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
     endif()
 
     if(OPTIMIZE STREQUAL "portable" OR OPTIMIZE STREQUAL "fastbuild")
@@ -163,7 +175,9 @@ if(MSVC)
     endif()
   endif()
 elseif(GNU_GCC OR LLVM_CLANG)
-  if(NOT OPTIMIZE STREQUAL "off")
+  if(OPTIMIZE STREQUAL "off")
+    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION FALSE)
+  else()
     # Common flags to all optimizations.
     # -ffast-math will prevent a performance penalty by denormals
     # (floating point values almost Zero are treated as Zero)
@@ -175,7 +189,6 @@ elseif(GNU_GCC OR LLVM_CLANG)
       -ffast-math
       -funroll-loops
     )
-
     # set -fomit-frame-pointer when we don't profile and are not using
     # Clang sanitizers.
     # Note: It is only included in -O on machines where it does not
