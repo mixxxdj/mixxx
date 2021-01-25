@@ -211,6 +211,7 @@ jobs:
         -DOPUS=ON
         -DQTKEYCHAIN=ON
         -DVINYLCONTROL=ON
+        -DOPTIMIZE="Off"
         -DCMAKE_VERBOSE_MAKEFILE=ON
         ..
       working-directory: build
