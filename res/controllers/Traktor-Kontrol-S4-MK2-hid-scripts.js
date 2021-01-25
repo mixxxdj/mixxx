@@ -568,7 +568,7 @@ TraktorS4MK2.registerOutputPackets = function() {
         TraktorS4MK2.linkDeckOutputs("beatlooproll_1_activate", TraktorS4MK2.outputCallback);
     }
 
-    engine.connectControl("[Recording]", "status", "TraktorS4MK2.onRecordingChanged");
+    engine.makeConnection("[Recording]", "status", TraktorS4MK2.onRecordingChanged);
 
     // VU meters get special attention
     engine.connectControl("[Channel1]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
