@@ -249,21 +249,21 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 
     QString path = item->getData().toString();
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
-        m_browseModel.setPath(MDir());
+        m_browseModel.setPath({});
     } else {
         // Open a security token for this path and if we do not have access, ask
         // for it.
-        MDir dir(path);
-        if (!dir.canAccess()) {
+        auto dir = mixxx::FileAccess(mixxx::FileInfo(path));
+        if (!dir.isReadable()) {
             if (Sandbox::askForAccess(path)) {
                 // Re-create to get a new token.
-                dir = MDir(path);
+                dir = mixxx::FileAccess(mixxx::FileInfo(path));
             } else {
                 // TODO(rryan): Activate an info page about sandboxing?
                 return;
             }
         }
-        m_browseModel.setPath(dir);
+        m_browseModel.setPath(std::move(dir));
     }
     emit showTrackModel(&m_proxyModel);
     emit enableCoverArtDisplay(false);
@@ -402,10 +402,10 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     } else {
         // we assume that the path refers to a folder in the file system
         // populate childs
-        MDir dir(path);
+        const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
 
-        QFileInfoList all = dir.dir().entryInfoList(
-            QDir::Dirs | QDir::NoDotAndDotDot);
+        QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
+                QDir::Dirs | QDir::NoDotAndDotDot);
 
         // loop through all the item and construct the childs
         foreach (QFileInfo one, all) {
@@ -465,7 +465,6 @@ QString BrowseFeature::extractNameFromPath(const QString& spath) {
 
 QStringList BrowseFeature::getDefaultQuickLinks() const {
     // Default configuration
-    QStringList mixxxMusicDirs = m_pTrackCollection->getDirectoryDAO().getDirs();
     QDir osMusicDir(QStandardPaths::writableLocation(
             QStandardPaths::MusicLocation));
     QDir osDocumentsDir(QStandardPaths::writableLocation(
@@ -485,8 +484,9 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     bool osDownloadsDirIncluded = false;
     bool osDesktopDirIncluded = false;
     bool osDocumentsDirIncluded = false;
-    foreach (QString dirPath, mixxxMusicDirs) {
-        QDir dir(dirPath);
+    const auto rootDirs = m_pLibrary->trackCollections()->internalCollection()->loadRootDirs();
+    for (const mixxx::FileInfo& fileInfo : rootDirs) {
+        const auto dir = fileInfo.toQDir();
         // Skip directories we don't have permission to.
         if (!Sandbox::canAccessFile(dir)) {
             continue;

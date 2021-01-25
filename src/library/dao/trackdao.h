@@ -1,15 +1,15 @@
 #pragma once
 
 #include <QFileInfo>
+#include <QList>
 #include <QObject>
 #include <QSet>
-#include <QList>
 #include <QSqlDatabase>
 #include <QString>
 
-#include "preferences/usersettings.h"
 #include "library/dao/dao.h"
 #include "library/relocatedtrack.h"
+#include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/class.h"
 #include "util/memory.h"
@@ -20,6 +20,12 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class LibraryHashDAO;
+
+namespace mixxx {
+
+class FileInfo;
+
+} // namespace mixxx
 
 class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackCacheRelocator {
     Q_OBJECT
@@ -149,7 +155,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void markUnverifiedTracksAsDeleted();
 
     bool verifyRemainingTracks(
-            const QStringList& libraryRootDirs,
+            const QList<mixxx::FileInfo>& libraryRootDirs,
             volatile const bool* pCancel);
 
     void detectCoverArtForTracksWithoutCover(volatile const bool* pCancel,

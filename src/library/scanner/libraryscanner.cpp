@@ -12,7 +12,7 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/db/fwdsqlquery.h"
-#include "util/file.h"
+#include "util/fileaccess.h"
 #include "util/logger.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
@@ -163,7 +163,7 @@ void LibraryScanner::slotStartScan() {
     cleanUpDatabase(m_libraryHashDao.database());
 
     // Recursively scan each directory in the directories table.
-    m_libraryRootDirs = m_directoryDao.getDirs();
+    m_libraryRootDirs = m_directoryDao.loadAllDirectories();
     // If there are no directories then we have nothing to do. Cleanup and
     // finish the scan immediately.
     if (m_libraryRootDirs.isEmpty()) {
@@ -219,17 +219,19 @@ void LibraryScanner::slotStartScan() {
             this,
             &LibraryScanner::slotFinishHashedScan);
 
-    foreach (const QString& dirPath, m_libraryRootDirs) {
+    for (const mixxx::FileInfo& rootDir : qAsConst(m_libraryRootDirs)) {
         // Acquire a security bookmark for this directory if we are in a
         // sandbox. For speed we avoid opening security bookmarks when recursive
         // scanning so that relies on having an open bookmark for the containing
         // directory.
-        MDir dir(dirPath);
-        if (!m_scannerGlobal->testAndMarkDirectoryScanned(dir.dir())) {
-            queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal,
-                                                     dir.dir(),
-                                                     dir.token(),
-                                                     false));
+        if (!rootDir.exists() || !rootDir.isDir()) {
+            qWarning() << "Skipping to scan" << rootDir;
+            continue;
+        }
+        auto dirAccess = mixxx::FileAccess(rootDir);
+        if (!m_scannerGlobal->testAndMarkDirectoryScanned(rootDir.toQDir())) {
+            queueTask(new RecursiveScanDirectoryTask(
+                    this, m_scannerGlobal, std::move(dirAccess), false));
         }
     }
     pWatcher->taskDone();
@@ -264,13 +266,11 @@ void LibraryScanner::slotFinishHashedScan() {
             this,
             &LibraryScanner::slotFinishUnhashedScan);
 
-    foreach (const DirInfo& dirInfo, m_scannerGlobal->unhashedDirs()) {
+    for (mixxx::FileAccess dirAccess : m_scannerGlobal->unhashedDirs()) {
         // no testAndMarkDirectoryScanned() here, because all unhashedDirs()
         // are already tracked
-        queueTask(new RecursiveScanDirectoryTask(this, m_scannerGlobal,
-                                                 dirInfo.dir(),
-                                                 dirInfo.token(),
-                                                 true));
+        queueTask(new RecursiveScanDirectoryTask(
+                this, m_scannerGlobal, std::move(dirAccess), true));
     }
     pWatcher->taskDone();
 }
