@@ -82,6 +82,10 @@ endif()
 # Optimizations
 #
 
+set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy)")
+string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
+message(STATUS "Optimization level: ${OPTIMIZE}")
+
 # CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
 # We keep DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION unset = FALSE for Debug builds to save
 # build time during development at the cost of a bigger memory foodprint.
@@ -93,9 +97,6 @@ if(NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT CMAKE_BUILD_TYPE STREQ
     set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
   endif()
 endif()
-
-set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy)")
-message(STATUS "Optimization level: ${OPTIMIZE}")
 
 if(MSVC)
   # Microsoft Visual Studio Compiler
