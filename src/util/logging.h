@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QDir>
+#include <QFlags>
 
 namespace mixxx {
 
@@ -11,6 +11,14 @@ enum class LogLevel {
     Debug = 3,
     Trace = 4, // DEPRECATED (not available in Qt, used for profiling etc.)
 };
+
+enum class LogFlag {
+    None = 0,
+    LogToFile = 1,
+    DebugAssertBreak = 1 << 1,
+};
+Q_DECLARE_FLAGS(LogFlags, LogFlag);
+Q_DECLARE_OPERATORS_FOR_FLAGS(LogFlags);
 
 /// Default log level for (console) logs.
 constexpr LogLevel kLogLevelDefault = LogLevel::Warning;
@@ -26,10 +34,10 @@ class Logging {
   public:
     // These are not thread safe. Only call them on Mixxx startup and shutdown.
     static void initialize(
-            const QDir& logDir,
+            const QString& logDirPath,
             LogLevel logLevel,
             LogLevel logFlushLevel,
-            bool debugAssertBreak);
+            LogFlags flags);
 
     // Sets only the loglevel without the on-disk settings. Used by mixxx-test.
     static void setLogLevel(

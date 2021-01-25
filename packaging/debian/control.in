@@ -17,7 +17,6 @@ Build-Depends: debhelper (>= 11),
 # QtSql
 # QtWidgets
 # QtXml
-               qt5-default,
                qt5keychain-dev,
 # We additionally need headers for QtOpenGL, QtScript, and QtSvg.
                qtdeclarative5-dev,

@@ -223,6 +223,13 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     if (RLimit::isRtPrioAllowed()) {
         realtimeHint->setText(tr("Realtime scheduling is enabled."));
+    } else {
+        realtimeHint->setText(
+                tr("To enable Realtime scheduling (currently disabled), see the %1.")
+                        .arg(coloredLinkString(
+                                m_pLinkColor,
+                                QStringLiteral("Mixxx Wiki"),
+                                MIXXX_WIKI_AUDIO_LATENCY_URL)));
     }
 #else
     // the limits warning is a Linux only thing
@@ -232,7 +239,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
     // connect them to the custom event filter below so they don't accept focus
     // when we scroll the preferences page.
-    QObjectList objList = this->children();
+    QObjectList objList = children();
     for (int i = 0; i < objList.length(); ++i) {
         QComboBox* combo = qobject_cast<QComboBox*>(objList[i]);
         QDoubleSpinBox* spin = qobject_cast<QDoubleSpinBox*>(objList[i]);
@@ -244,13 +251,6 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             spin->installEventFilter(this);
         }
     }
-
-    realtimeHint->setText(
-            tr("To enable Realtime scheduling (currently disabled), see the %1.")
-                    .arg(coloredLinkString(
-                            m_pLinkColor,
-                            QStringLiteral("Mixxx Wiki"),
-                            MIXXX_WIKI_AUDIO_LATENCY_URL)));
 
     hardwareGuide->setText(
             tr("The %1 lists sound cards and controllers you may want to "
