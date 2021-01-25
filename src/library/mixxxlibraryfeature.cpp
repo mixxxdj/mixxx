@@ -1,6 +1,9 @@
 #include "library/mixxxlibraryfeature.h"
 
 #include <QtDebug>
+#ifdef __ENGINEPRIME__
+#include <QMenu>
+#endif
 
 #include "library/basetrackcache.h"
 #include "library/dao/trackschema.h"
@@ -19,6 +22,9 @@
 #include "sources/soundsourceproxy.h"
 #include "util/dnd.h"
 #include "widget/wlibrary.h"
+#ifdef __ENGINEPRIME__
+#include "widget/wlibrarysidebar.h"
+#endif
 
 namespace {
 
@@ -102,6 +108,14 @@ MixxxLibraryFeature::MixxxLibraryFeature(Library* pLibrary,
     pRootItem->appendChild(kHiddenTitle);
 
     m_childModel.setRootItem(std::move(pRootItem));
+
+#ifdef __ENGINEPRIME__
+    m_pExportLibraryAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
+    connect(m_pExportLibraryAction.get(),
+            &QAction::triggered,
+            this,
+            &MixxxLibraryFeature::exportLibrary);
+#endif
 }
 
 void MixxxLibraryFeature::bindLibraryWidget(WLibrary* pLibraryWidget,
@@ -155,6 +169,13 @@ void MixxxLibraryFeature::searchAndActivate(const QString& query) {
     activate();
 }
 
+#ifdef __ENGINEPRIME__
+void MixxxLibraryFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClick
+    m_pSidebarWidget = pSidebarWidget;
+}
+#endif
+
 void MixxxLibraryFeature::activate() {
     emit showTrackModel(m_pLibraryTableModel);
     emit enableCoverArtDisplay(true);
@@ -185,3 +206,11 @@ bool MixxxLibraryFeature::dragMoveAccept(const QUrl& url) {
     return SoundSourceProxy::isUrlSupported(url) ||
             Parser::isPlaylistFilenameSupported(url.toLocalFile());
 }
+
+#ifdef __ENGINEPRIME__
+void MixxxLibraryFeature::onRightClick(const QPoint& globalPos) {
+    QMenu menu(m_pSidebarWidget);
+    menu.addAction(m_pExportLibraryAction.get());
+    menu.exec(globalPos);
+}
+#endif

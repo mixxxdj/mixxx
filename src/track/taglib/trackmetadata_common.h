@@ -27,18 +27,11 @@ namespace mixxx {
 
 namespace taglib {
 
-inline QString toQString(
-        const TagLib::String& tString) {
-    if (tString.isNull()) {
-        // null -> null
-        return QString();
-    } else {
-        return TStringToQString(tString);
-    }
-}
+QString toQString(
+        const TagLib::String& tString);
 
 TagLib::String toTString(
-        const QString& str);
+        const QString& qString);
 
 /// Returns the first element of TagLib string list that is not empty.
 TagLib::String firstNonEmptyStringListItem(
@@ -73,7 +66,7 @@ inline QByteArray toQByteArrayRaw(
 inline TagLib::ByteVector toTByteVector(
         const QByteArray& byteArray) {
     if (byteArray.isNull()) {
-        return TagLib::ByteVector::null;
+        return TagLib::ByteVector();
     } else {
         return TagLib::ByteVector(byteArray.constData(), byteArray.size());
     }

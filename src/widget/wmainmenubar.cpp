@@ -124,6 +124,17 @@ void WMainMenuBar::initialize() {
     connect(this, &WMainMenuBar::internalLibraryScanActive, pLibraryRescan, &QAction::setDisabled);
     pLibraryMenu->addAction(pLibraryRescan);
 
+#ifdef __ENGINEPRIME__
+    QString exportTitle = tr("E&xport Library to Engine Prime");
+    QString exportText = tr("Export the library to the Engine Prime format");
+    auto pLibraryExport = new QAction(exportTitle, this);
+    pLibraryExport->setStatusTip(exportText);
+    pLibraryExport->setWhatsThis(buildWhatsThis(exportTitle, exportText));
+    pLibraryExport->setCheckable(false);
+    connect(pLibraryExport, &QAction::triggered, this, &WMainMenuBar::exportLibrary);
+    pLibraryMenu->addAction(pLibraryExport);
+#endif
+
     pLibraryMenu->addSeparator();
 
     QString createPlaylistTitle = tr("Create &New Playlist");
