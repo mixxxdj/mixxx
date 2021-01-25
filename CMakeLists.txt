@@ -1346,7 +1346,7 @@ if(MSVC)
     FILES $<TARGET_PDB_FILE:mixxx>
     CONFIGURATIONS Debug RelWithDebInfo
     DESTINATION "${MIXXX_INSTALL_BINDIR}"
-    COMPONENT "Debug Information (PDB)"
+    COMPONENT PBD_Debug_Information
   )
 endif()
 
