@@ -933,10 +933,10 @@ void MixxxMainWindow::slotHelpAbout() {
 }
 
 void MixxxMainWindow::slotShowKeywheel(bool toggle) {
-    if (m_pKeywheel == nullptr) {
-        m_pKeywheel = new DlgKeywheel(this, m_pCoreServices->getSettings());
+    if (!m_pKeywheel) {
+        m_pKeywheel = make_parented<DlgKeywheel>(this, m_pCoreServices->getSettings());
         // uncheck the menu item on window close
-        connect(m_pKeywheel,
+        connect(m_pKeywheel.get(),
                 &DlgKeywheel::finished,
                 m_pMenuBar,
                 &WMainMenuBar::onKeywheelChange);

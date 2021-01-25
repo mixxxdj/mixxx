@@ -14,9 +14,9 @@ class DlgKeywheel : public QDialog, public Ui::DlgKeywheel {
 
   public:
     explicit DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig);
-    void switchDisplay(int dir = 1);
+    void switchNotation(int dir = 1);
     void updateSvg();
-    ~DlgKeywheel();
+    ~DlgKeywheel() = default;
 
   protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
@@ -26,7 +26,6 @@ class DlgKeywheel : public QDialog, public Ui::DlgKeywheel {
     bool isHiddenNotation(KeyUtils::KeyNotation notation);
     KeyUtils::KeyNotation m_notation;
     QDomDocument m_domDocument;
-    Ui::DlgKeywheel* ui;
     QSvgWidget* m_wheel;
     const UserSettingsPointer m_pConfig;
 };

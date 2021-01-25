@@ -17,9 +17,8 @@ const KeyUtils::KeyNotation kNotationHidden[]{
 
 DlgKeywheel::DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig)
         : QDialog(parent),
-          ui(new Ui::DlgKeywheel),
           m_pConfig(pConfig) {
-    ui->setupUi(this);
+    setupUi(this);
     QDir resourceDir(m_pConfig->getResourcePath());
     auto svgPath = resourceDir.filePath(kKeywheelSVG);
 
@@ -30,14 +29,12 @@ DlgKeywheel::DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig)
     }
     m_domDocument.setContent(&xmlFile);
 
-    // FIXME(poelzi): try to prevent aspect ratio. This fails unfortunatelly
-    QSizePolicy qsp = ui->graphic->sizePolicy(); //.setHeightForWidth(true);
-    qsp.setHeightForWidth(true);
-    ui->graphic->setSizePolicy(qsp);
     installEventFilter(this);
-    ui->graphic->installEventFilter(this);
+    graphic->installEventFilter(this);
+    graphic->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+    graphic->setMinimumSize(200, 200);
 
-    connect(ui->closeButton,
+    connect(closeButton,
             &QAbstractButton::clicked,
             this,
             &QDialog::accept);
@@ -46,25 +43,25 @@ DlgKeywheel::DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig)
     const int notation = static_cast<int>(ControlObject::get(
             ConfigKey("[Library]", "key_notation")));
     m_notation = static_cast<KeyUtils::KeyNotation>(notation);
-    // Select a valid display and update
-    switchDisplay(0);
+    // Display the current or next valid notation
+    switchNotation(0);
 }
 
 bool DlgKeywheel::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
-        // we handle TAB + Shift TAB to cycle through the display types
+        // we handle TAB + Shift TAB to cycle through the notations
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
         if (keyEvent->key() == Qt::Key_Tab) {
-            switchDisplay(+1);
+            switchNotation(+1);
             return true;
         } else if (keyEvent->key() == Qt::Key_Backtab) {
-            switchDisplay(-1);
+            switchNotation(-1);
             return true;
         }
     } else if (event->type() == QEvent::MouseButtonPress) {
         QMouseEvent* mouseEvent = static_cast<QMouseEvent*>(event);
         // first button forward, other buttons backward cycle
-        switchDisplay(mouseEvent->button() == Qt::LeftButton ? +1 : -1);
+        switchNotation(mouseEvent->button() == Qt::LeftButton ? +1 : -1);
         return true;
     }
     // standard event processing
@@ -73,39 +70,43 @@ bool DlgKeywheel::eventFilter(QObject* obj, QEvent* event) {
 
 void DlgKeywheel::resizeEvent(QResizeEvent* ev) {
     QSize newSize = ev->size();
-    int size = qMin(ui->graphic->size().height(), ui->graphic->size().width());
+    int size = qMin(graphic->size().height(), graphic->size().width());
     newSize = QSize(size, size);
 
-    ui->graphic->resize(newSize);
+    graphic->resize(newSize);
+    updateGeometry();
+    QDialog::resizeEvent(ev);
 }
 
 bool DlgKeywheel::isHiddenNotation(KeyUtils::KeyNotation notation) {
-    for (size_t i = 0; i < sizeof(kNotationHidden) / sizeof(kNotationHidden[0]); i++) {
-        if (kNotationHidden[i] == notation) {
+    for (KeyUtils::KeyNotation hidden : kNotationHidden) {
+        if (hidden == notation) {
             return true;
         }
     }
     return false;
 }
 
-void DlgKeywheel::switchDisplay(int step) {
-    const int invalidNotations = static_cast<int>(KeyUtils::KeyNotation::Invalid);
-    const int numNotations = static_cast<int>(KeyUtils::KeyNotation::NumKeyNotations);
+void DlgKeywheel::switchNotation(int step) {
+    const int invalidNotation = static_cast<int>(KeyUtils::KeyNotation::Invalid);
+    const int numNotation = static_cast<int>(KeyUtils::KeyNotation::NumKeyNotations);
 
     int newNotation = static_cast<int>(m_notation) + step;
 
+    // use default step forward in case of invalid direction.
+    // This only takes affects if the already selected new notation is invalid.
     if (step == 0) {
         step = 1;
     }
     // we skip variants with redundant information
-    while (newNotation <= invalidNotations ||
-            newNotation >= numNotations ||
+    while (newNotation <= invalidNotation ||
+            newNotation >= numNotation ||
             isHiddenNotation(static_cast<KeyUtils::KeyNotation>(newNotation))) {
         newNotation = newNotation + step;
-        if (newNotation >= numNotations) {
-            newNotation = invalidNotations + 1;
-        } else if (newNotation <= invalidNotations) {
-            newNotation = numNotations - 1;
+        if (newNotation >= numNotation) {
+            newNotation = invalidNotation + 1;
+        } else if (newNotation <= invalidNotation) {
+            newNotation = numNotation - 1;
         }
     }
     m_notation = static_cast<KeyUtils::KeyNotation>(newNotation);
@@ -114,15 +115,15 @@ void DlgKeywheel::switchDisplay(int step) {
 }
 
 void DlgKeywheel::updateSvg() {
-    /* update the svg with new values to display, then cause a an update on the widget */
+    // update the svg with new values to display, then issue a an update on the widget
     QDomElement topElement = m_domDocument.documentElement();
 
     bool hideTraditional = m_notation == KeyUtils::KeyNotation::Traditional;
     QDomElement domElement;
 
-    QDomNodeList node_list = m_domDocument.elementsByTagName(QStringLiteral("text"));
-    for (int i = 0; i < node_list.count(); i++) {
-        QDomNode node = node_list.at(i);
+    QDomNodeList nodeList = m_domDocument.elementsByTagName(QStringLiteral("text"));
+    for (int i = 0; i < nodeList.count(); i++) {
+        QDomNode node = nodeList.at(i);
         domElement = node.toElement();
         QString id = domElement.attribute("id", "UNKNOWN");
 
@@ -150,9 +151,6 @@ void DlgKeywheel::updateSvg() {
 
     m_domDocument.save(stream, QDomNode::EncodingFromDocument);
 
-    ui->graphic->load(str.toUtf8());
-}
-
-DlgKeywheel::~DlgKeywheel() {
-    delete ui;
+    // toUtf8 creates a ByteArray which is loaded as content. QString would be a filename
+    graphic->load(str.toUtf8());
 }

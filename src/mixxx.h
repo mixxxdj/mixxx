@@ -135,7 +135,7 @@ class MixxxMainWindow : public QMainWindow {
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 
     DlgPreferences* m_pPrefDlg;
-    DlgKeywheel* m_pKeywheel;
+    parented_ptr<DlgKeywheel> m_pKeywheel;
 
 #ifdef __ENGINEPRIME__
     // Library exporter
