@@ -98,7 +98,7 @@ Cue::Cue(
         int hotCueIndex,
         double sampleStartPosition,
         double sampleEndPosition)
-        : m_bDirty(false), // not yet in database
+        : m_bDirty(true), // not yet in database, needs to be saved
           m_type(type),
           m_sampleStartPosition(sampleStartPosition),
           m_sampleEndPosition(sampleEndPosition),
