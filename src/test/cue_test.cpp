@@ -8,6 +8,15 @@
 
 namespace mixxx {
 
+TEST(CueTest, NewCueIsDirty) {
+    const auto cue = Cue(
+            mixxx::CueType::HotCue,
+            1,
+            0.0,
+            Cue::kNoPosition);
+    EXPECT_TRUE(cue.isDirty());
+}
+
 TEST(CueTest, DefaultCueInfoToCueRoundtrip) {
     const CueInfo cueInfo1;
     const Cue cueObject(
@@ -35,6 +44,7 @@ TEST(CueTest, ConvertCueInfoToCueRoundtrip) {
             cueInfo1,
             audio::SampleRate(44100),
             true);
+    EXPECT_TRUE(cueObject.isDirty());
     const auto cueInfo2 = cueObject.getCueInfo(
             audio::SampleRate(44100));
     EXPECT_EQ(cueInfo1, cueInfo2);

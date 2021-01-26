@@ -64,4 +64,10 @@ class Keys final {
     friend class KeyFactory;
 };
 
+bool operator==(const Keys& lhs, const Keys& rhs);
+
+inline bool operator!=(const Keys& lhs, const Keys& rhs) {
+    return !(lhs == rhs);
+}
+
 Q_DECLARE_METATYPE(Keys)
