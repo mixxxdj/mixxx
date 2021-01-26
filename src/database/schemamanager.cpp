@@ -24,8 +24,7 @@ std::optional<int> readSchemaVersion(
         const SettingsDAO& settings,
         const QString& key) {
     QString settingsValue = settings.getValue(key);
-    // May be a null string if the schema has not been created. We default the
-    // startVersion to 0 so that we automatically try to upgrade to revision 1.
+    // May be a null string if the schema has not been created yet.
     if (settingsValue.isNull()) {
         return std::nullopt;
     }
