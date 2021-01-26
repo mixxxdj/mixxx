@@ -1307,10 +1307,10 @@ if(UNIX AND NOT APPLE)
       "${CMAKE_INSTALL_DATADIR}/pixmaps"
   )
 
-  # .appdata.xml file for KDE/GNOME AppStream initiative
+  # .metainfo.xml file for KDE/GNOME AppStream initiative
   install(
     FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml"
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.metainfo.xml"
     DESTINATION
       "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
   )
