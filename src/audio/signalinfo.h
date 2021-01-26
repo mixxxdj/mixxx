@@ -36,7 +36,6 @@ class SignalInfo final {
 
     constexpr bool isValid() const {
         return getChannelCount().isValid() &&
-                getSampleLayout() &&
                 getSampleRate().isValid();
     }
 

@@ -539,7 +539,7 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
                 lastIndex
                         .sibling(
                                 lastIndex.row(),
-                                m_pTrackModel->fieldIndex(LIBRARYTABLE_LOCATION))
+                                m_pTrackModel->fieldIndex(TRACKLOCATIONSTABLE_LOCATION))
                         .data()
                         .toString();
         return coverInfo;

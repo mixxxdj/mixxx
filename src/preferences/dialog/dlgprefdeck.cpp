@@ -50,6 +50,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
           m_iNumConfiguredDecks(0),
           m_iNumConfiguredSamplers(0) {
     setupUi(this);
+    // Create text color for the cue mode link "?" to the manual
+    createLinkColor();
 
     m_pNumDecks->connectValueChanged(this, [=](double value){slotNumDecksChanged(value);});
     slotNumDecksChanged(m_pNumDecks->get(), true);
@@ -333,11 +335,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     //
 
     // Add "(?)" with a manual link to the label
-    labelCueMode->setText(
-            labelCueMode->text() +
-            " <a href=\"" +
-            MIXXX_MANUAL_URL +
-            "/chapters/user_interface.html#using-cue-modes\">(?)</a>");
+    labelCueMode->setText(labelCueMode->text() + QStringLiteral(" ") +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_CUE_MODES_URL));
 
     //
     // Ramping Temporary Rate Change configuration
