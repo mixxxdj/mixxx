@@ -186,7 +186,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "DEBUG_ASSERTIONS_FATAL"             "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "HID"                                "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "HSS1394"                            "BOOL"   "True"
-    CALL :AddCMakeVar2CMakeSettings_JSON "KEYFINDER"                          "BOOL"   "False"
+    CALL :AddCMakeVar2CMakeSettings_JSON "KEYFINDER"                          "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "LOCALECOMPARE"                      "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "LILV"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "MAD"                                "BOOL"   "True"

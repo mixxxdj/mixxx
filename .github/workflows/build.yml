@@ -13,7 +13,6 @@ jobs:
             os: ubuntu-18.04
             cmake_args: >-
               -DFAAD=ON
-              -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
@@ -33,7 +32,6 @@ jobs:
             os: ubuntu-20.04
             cmake_args: >-
               -DFFMPEG=ON
-              -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
@@ -71,7 +69,6 @@ jobs:
             os: windows-2019
             cmake_args: >-
               -DHSS1394=ON
-              -DKEYFINDER=OFF
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
