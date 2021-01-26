@@ -4,7 +4,7 @@
 #include <optional>
 
 template<typename T>
-QDebug operator<<(QDebug dbg, std::optional<T> arg) {
+inline QDebug operator<<(QDebug dbg, std::optional<T> arg) {
     if (arg) {
         return dbg << *arg;
     } else {
