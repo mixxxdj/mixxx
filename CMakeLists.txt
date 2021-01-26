@@ -87,8 +87,8 @@ string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 message(STATUS "Optimization level: ${OPTIMIZE}")
 
 # CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
-# We keep DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION unset = FALSE for Debug builds to save
-# build time during development at the cost of a bigger memory foodprint at run-time.
+# We keep CMAKE_INTERPROCEDURAL_OPTIMIZATION unset (IPO disabled) for Debug builds to save
+# build time during development at the cost of a bigger memory footprint at run-time.
 # Note: This is has caused issues on Fedora https://bugzilla.rpmfusion.org/show_bug.cgi?id=5829
 if(NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT OPTIMIZE STREQUAL "off")
   include(CheckIPOSupported)
