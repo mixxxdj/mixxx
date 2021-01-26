@@ -1356,6 +1356,17 @@ if(UNIX AND NOT APPLE)
   endif()
 endif()
 
+if(MSVC)
+  # install debug symbols if any were generated
+  install(
+    FILES $<TARGET_PDB_FILE:mixxx>
+    CONFIGURATIONS Debug RelWithDebInfo
+    DESTINATION "${MIXXX_INSTALL_BINDIR}"
+    COMPONENT PDB # No spaces allowed
+  )
+endif()
+
+
 #
 # Tests
 #
@@ -1739,20 +1750,21 @@ if(KEYFINDER)
     # If KeyFinder is built statically, we need FFTW
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
-    set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(KeyFinder_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
     ExternalProject_Add(libkeyfinder
-      URL "https://github.com/mixxxdj/libkeyfinder/archive/v2.2.3.zip"
-      URL_HASH SHA256=ad43ca006e3bbed0810ff62e170d04522a64f8606c2166bfa5a9b9158b7ebc11
+      URL "https://github.com/mixxxdj/libkeyfinder/archive/v2.2.4.zip"
+      URL_HASH SHA256=cb3fea8c7213257281b6c7006b2430809f466ad8a1d485663324378d6fc0782c
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libkeyfinder"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
-        -DBUILD_STATIC_LIBS=ON
+        -DBUILD_SHARED_LIBS=OFF
         -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
         -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
-      BUILD_COMMAND ${CMAKE_COMMAND} --build . --target keyfinder
+        -DBUILD_TESTING=OFF
+      BUILD_COMMAND ${CMAKE_COMMAND} --build .
       BUILD_BYPRODUCTS <INSTALL_DIR>/${KeyFinder_LIBRARY}
       EXCLUDE_FROM_ALL TRUE
     )
@@ -2335,19 +2347,21 @@ if(GPERFTOOLS OR GPERFTOOLSPROFILER)
 endif()
 
 # HSS1394 MIDI device
-find_package(HSS1394)
-cmake_dependent_option(HSS1394 "HSS1394 MIDI device support" ON "HSS1394_FOUND;WIN32 OR APPLE" OFF)
-if(HSS1394)
-  target_sources(mixxx-lib PRIVATE
-    src/controllers/midi/hss1394controller.cpp
-    src/controllers/midi/hss1394enumerator.cpp
-  )
-  target_compile_definitions(mixxx-lib PUBLIC __HSS1394__)
-  if(WIN32 OR APPLE)
-    if(NOT HSS1394_FOUND)
-      message(FATAL_ERROR "HSS1394 MIDI device support requires the libhss1394 and its development headers.")
+if(WIN32 OR APPLE)
+  find_package(HSS1394)
+  cmake_dependent_option(HSS1394 "HSS1394 MIDI device support" ON "HSS1394_FOUND;WIN32 OR APPLE" OFF)
+  if(HSS1394)
+    target_sources(mixxx-lib PRIVATE
+      src/controllers/midi/hss1394controller.cpp
+      src/controllers/midi/hss1394enumerator.cpp
+    )
+    target_compile_definitions(mixxx-lib PUBLIC __HSS1394__)
+    if(WIN32 OR APPLE)
+      if(NOT HSS1394_FOUND)
+        message(FATAL_ERROR "HSS1394 MIDI device support requires the libhss1394 and its development headers.")
+      endif()
+      target_link_libraries(mixxx-lib PUBLIC HSS1394::HSS1394)
     endif()
-    target_link_libraries(mixxx-lib PUBLIC HSS1394::HSS1394)
   endif()
 endif()
 
@@ -2521,7 +2535,7 @@ endif()
 find_package(LibUSB)
 
 # USB HID controller support
-find_package(HIDAPI)
+find_package(hidapi)
 option(HID "USB HID controller support" ON)
 cmake_dependent_option(HIDAPI_STATIC "Link HIDAPI library statically" OFF "HIDAPI_FOUND" ON)
 if(HID)
@@ -2560,7 +2574,7 @@ if(HID)
     if(NOT HIDAPI_FOUND)
       message(FATAL_ERROR "USB HID controller support requires libhidapi-libusb and its development headers.")
     endif()
-    target_link_libraries(mixxx-lib PUBLIC HIDAPI::LibUSB)
+    target_link_libraries(mixxx-lib PUBLIC hidapi::hidapi)
   endif()
 endif()
 
@@ -2646,6 +2660,7 @@ set(CPACK_SOURCE_IGNORE_FILES  "\\\\.#;/#;.*~;\\\\.o$")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.git/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.github/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/cache/")
+list(APPEND CPACK_SOURCE_IGNORE_FILES "/build/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/.*_build/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.sconf_temp/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "${CMAKE_CURRENT_BINARY_DIR}/")
