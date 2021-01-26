@@ -203,7 +203,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
         # https://stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
       elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
         add_compile_options(
-          -mflat-abi=hard
+          -mfloat-abi=hard
           -mfpu=neon
         )
       endif()
