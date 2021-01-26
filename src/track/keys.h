@@ -52,3 +52,9 @@ class Keys final {
     // For private constructor access.
     friend class KeyFactory;
 };
+
+bool operator==(const Keys& lhs, const Keys& rhs);
+
+inline bool operator!=(const Keys& lhs, const Keys& rhs) {
+    return !(lhs == rhs);
+}
