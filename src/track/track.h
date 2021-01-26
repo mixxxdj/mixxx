@@ -444,7 +444,7 @@ class Track : public QObject {
     // these values.
     bool hasStreamInfoFromSource() const {
         QMutexLocker lock(&m_qMutex);
-        return static_cast<bool>(m_streamInfoFromSource);
+        return m_record.hasStreamInfoFromSource();
     }
     void updateStreamInfoFromSource(
             mixxx::audio::StreamInfo&& streamInfo);
@@ -466,11 +466,6 @@ class Track : public QObject {
     // Flag indicating that the user has explicitly requested to save
     // the metadata.
     bool m_bMarkedForMetadataExport;
-
-    // Reliable information about the PCM audio stream
-    // that only becomes available when opening the
-    // corresponding file.
-    std::optional<mixxx::audio::StreamInfo> m_streamInfoFromSource;
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;

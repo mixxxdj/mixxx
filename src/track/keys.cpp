@@ -51,3 +51,9 @@ bool Keys::readByteArray(const QByteArray& byteArray) {
     }
     return true;
 }
+
+bool operator==(const Keys& lhs, const Keys& rhs) {
+    return lhs.getSubVersion() == rhs.getSubVersion() &&
+            // TODO: Is there a more efficient way to compare protobuf types?
+            lhs.toByteArray() == rhs.toByteArray();
+}
