@@ -131,7 +131,7 @@ if(MSVC)
       string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG}")
     else()
-      # Squeez binary in Release builds
+      # Squeeze binary in Release builds
       add_link_options(/OPT:REF /OPT:ICF)
       # Note: CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the /GL and /LTCG flags for us
     endif()
