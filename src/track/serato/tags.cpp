@@ -330,6 +330,7 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
         newCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
         newCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
         newCueInfo.setHotCueIndex(index);
+        newCueInfo.setFlags(cueInfo.flags());
 
         RgbColor::optional_t color = cueInfo.getColor();
         if (color) {
@@ -385,6 +386,7 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
         if (cueInfo.getEndPositionMillis()) {
             newCueInfo.setEndPositionMillis(*cueInfo.getEndPositionMillis() - timingOffsetMillis);
         }
+        newCueInfo.setFlags(cueInfo.flags());
 
         switch (cueInfo.getType()) {
         case CueType::HotCue:
