@@ -13,7 +13,9 @@ mixxx::Logger kLogger("SchemaManager");
 
 constexpr int INITIAL_VERSION = 0;
 
-// Reapplying past schema migrations is only supported starting with version 35
+// Reapplying previous schema migrations is only supported starting
+// with version 35. All following schema migrations must support to
+// be reapplied without any data loss.
 constexpr int MIN_REAPPLY_VERSION = 35;
 
 const QString SETTINGS_VERSION_KEY = QStringLiteral("mixxx.schema.version");
