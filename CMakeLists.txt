@@ -2325,7 +2325,7 @@ if(BROADCAST)
     target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout-idjc/include)
     target_link_libraries(mixxx-lib PUBLIC shout_mixxx)
   else()
-    target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
+    target_link_libraries(mixxx-lib PUBLIC Shoutidjc::Shoutidjc)
   endif()
   target_sources(mixxx-lib PRIVATE
     src/preferences/dialog/dlgprefbroadcastdlg.ui
