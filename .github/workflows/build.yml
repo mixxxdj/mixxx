@@ -248,7 +248,8 @@ jobs:
         # Render analyzer waveform tests to an offscreen buffer
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
         GTEST_COLOR: 1
-        CTEST_PARALLEL_LEVEL: 2
+        # Windows tests fail randomly if run in parallel
+        CTEST_PARALLEL_LEVEL: 1
         CTEST_OUTPUT_ON_FAILURE: 1
 
     - name: Benchmark
