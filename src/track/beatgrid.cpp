@@ -233,9 +233,10 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
     double prevBeat = floor(beatFraction);
     double nextBeat = ceil(beatFraction);
 
-    // If the position is within 1/100th of the next or previous beat, treat it
-    // as if it is that beat.
-    const double kEpsilon = .01;
+    // If the position is within 1/1000,000,000th of the next or previous beat, treat it
+    // as if it is that beat. This value ensures safe float comparisation and that the
+    // accuracy is always better one sample.
+    const double kEpsilon = 1e-09;
 
     if (fabs(nextBeat - beatFraction) < kEpsilon) {
         beatFraction = nextBeat;

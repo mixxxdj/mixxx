@@ -1350,6 +1350,8 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
             (double)iBufferSize / m_trackSamplesOld,
             fractionalPlayposFromAbsolute(m_dSlipPosition),
             tempoTrackSeconds);
+
+    m_pClockControl->updateIndicators(speed * m_baserate_old, m_filepos_play);
 }
 
 void EngineBuffer::hintReader(const double dRate) {

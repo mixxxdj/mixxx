@@ -10,13 +10,16 @@
 ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     m_pCOBeatActive = new ControlObject(ConfigKey(group, "beat_active"));
-    m_pCOBeatActive->set(0.0);
-    m_pCOSampleRate = new ControlProxy("[Master]","samplerate");
+    m_pCOBeatActive->setReadOnly();
+    m_pCOBeatActive->forceSet(0.0);
+    m_lastEvaluatedSample = 0;
+    m_PrevBeatSamples = 0;
+    m_PrevBeatSamples = 0;
+    m_blinkIntervalSamples = 0;
 }
 
 ClockControl::~ClockControl() {
     delete m_pCOBeatActive;
-    delete m_pCOSampleRate;
 }
 
 // called from an engine worker thread
@@ -30,27 +33,92 @@ void ClockControl::trackLoaded(TrackPointer pNewTrack) {
 
 void ClockControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     // Clear on-beat control
-    m_pCOBeatActive->set(0.0);
+    m_pCOBeatActive->forceSet(0.0);
     m_pBeats = pBeats;
 }
 
 void ClockControl::process(const double dRate,
-                           const double currentSample,
-                           const int iBuffersize) {
+        const double currentSample,
+        const int iBuffersize) {
+    Q_UNUSED(dRate);
+    Q_UNUSED(currentSample);
     Q_UNUSED(iBuffersize);
-    double samplerate = m_pCOSampleRate->get();
+}
+
+void ClockControl::updateIndicators(const double dRate,
+        const double currentSample) {
+    /* This method sets the control beat_active is set to the following values:
+    * +1.0 --> Forward playing, set at the beat and set back to 0.0 at 20% of beat distance
+    * +0.5 --> Direction changed to reverse playing while forward playing indication was on
+    *  0.0 --> No beat indication
+    * -0.5 --> Direction changed to forward playing while reverse playing indication was on
+    * -1.0 --> Reverse playing, set at the beat and set back to 0.0 at -20% of beat distance
+    */
 
     // TODO(XXX) should this be customizable, or latency dependent?
-    const double blinkSeconds = 0.100;
+    const double kBlinkInterval = 0.20; // LED is on 20% of the beat period
 
-    // Multiply by two to get samples from frames. Interval is scaled linearly
-    // by the rate.
-    const double blinkIntervalSamples = 2.0 * samplerate * (1.0 * dRate) * blinkSeconds;
+    if ((currentSample == m_lastEvaluatedSample) ||
+            (dRate == 0.0)) {
+        return; // No position change (e.g. deck stopped) -> No indicator update needed
+    }
 
     mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
-        double closestBeat = pBeats->findClosestBeat(currentSample);
-        double distanceToClosestBeat = fabs(currentSample - closestBeat);
-        m_pCOBeatActive->set(distanceToClosestBeat < blinkIntervalSamples / 2.0);
+        if ((currentSample >= m_NextBeatSamples) ||
+                (currentSample <= m_PrevBeatSamples)) {
+            //qDebug() << "### findPrevNextBeats ### " << " currentSample: " << currentSample << " m_lastEvaluatedSample: " << m_lastEvaluatedSample << " m_PrevBeatSamples: " << m_PrevBeatSamples << " m_NextBeatSamples: " << m_NextBeatSamples;
+
+            pBeats->findPrevNextBeats(
+                    currentSample, &m_PrevBeatSamples, &m_NextBeatSamples);
+
+            m_blinkIntervalSamples = (m_NextBeatSamples - m_PrevBeatSamples) * kBlinkInterval;
+        }
+        //qDebug() << "dRate:" << dRate << " m_lastPlayDirection:" << m_lastPlayDirection << " m_pCOBeatActive->get(): " << m_pCOBeatActive->get() << " currentSample: " << currentSample << " m_lastEvaluatedSample: " << m_lastEvaluatedSample << " m_PrevBeatSamples: " << m_PrevBeatSamples << " m_NextBeatSamples: " << m_NextBeatSamples << " m_blinkIntervalSamples: " << m_blinkIntervalSamples;
+
+        if (dRate >= 0.0) {
+            if (m_lastPlayDirection == true) {
+                if ((currentSample > m_PrevBeatSamples) &&
+                        (currentSample <
+                                m_PrevBeatSamples + m_blinkIntervalSamples) &&
+                        (m_pCOBeatActive->get() < 0.5)) {
+                    m_pCOBeatActive->forceSet(1.0);
+                } else if ((currentSample > m_PrevBeatSamples +
+                                           m_blinkIntervalSamples) &&
+                        (m_pCOBeatActive->get() > 0.0)) {
+                    m_pCOBeatActive->forceSet(0.0);
+                }
+            } else {
+                // Play direction changed while beat indicator was on and forward playing
+                if ((currentSample < m_NextBeatSamples) &&
+                        (currentSample >=
+                                m_NextBeatSamples - m_blinkIntervalSamples)) {
+                    m_pCOBeatActive->forceSet(-0.5);
+                }
+            }
+            m_lastPlayDirection = true; // Forward
+        } else {
+            if (m_lastPlayDirection == false) {
+                if ((currentSample < m_NextBeatSamples) &&
+                        (currentSample >
+                                m_NextBeatSamples - m_blinkIntervalSamples) &&
+                        (m_pCOBeatActive->get() > -0.5)) {
+                    m_pCOBeatActive->forceSet(-1.0);
+                } else if ((currentSample < m_NextBeatSamples -
+                                           m_blinkIntervalSamples) &&
+                        (m_pCOBeatActive->get() < 0.0)) {
+                    m_pCOBeatActive->forceSet(0.0);
+                }
+            } else {
+                // Play direction changed while beat indicator was on and reverse playing
+                if ((currentSample > m_PrevBeatSamples) &&
+                        (currentSample <=
+                                m_PrevBeatSamples + m_blinkIntervalSamples)) {
+                    m_pCOBeatActive->forceSet(0.5);
+                }
+            }
+            m_lastPlayDirection = false; // Reverse
+        }
+        m_lastEvaluatedSample = currentSample;
     }
 }
