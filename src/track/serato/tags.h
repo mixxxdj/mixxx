@@ -15,6 +15,7 @@ class SeratoTags final {
   public:
     static constexpr RgbColor kDefaultTrackColor = RgbColor(0xFF9999);
     static constexpr RgbColor kDefaultCueColor = RgbColor(0xCC0000);
+    static constexpr RgbColor kFixedLoopColor = RgbColor(0x27AAE1);
 
     SeratoTags() = default;
 

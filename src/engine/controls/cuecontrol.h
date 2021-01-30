@@ -1,5 +1,7 @@
 #pragma once
 
+#include <QAtomicInt>
+#include <QAtomicPointer>
 #include <QList>
 #include <QMutex>
 
@@ -94,18 +96,27 @@ class HotcueControl : public QObject {
     void setColor(mixxx::RgbColor::optional_t newColor);
     mixxx::RgbColor::optional_t getColor() const;
 
-    // Used for caching the preview state of this hotcue control.
+    /// Used for caching the preview state of this hotcue control
+    /// for the case the cue is deleted during preview.
     mixxx::CueType getPreviewingType() const {
-        return m_previewingType;
+        return m_previewingType.getValue();
     }
-    void setPreviewingType(mixxx::CueType type) {
-        m_previewingType = type;
-    }
+
+    /// Used for caching the preview state of this hotcue control
+    /// for the case the cue is deleted during preview.
     double getPreviewingPosition() const {
-        return m_previewingPosition;
+        return m_previewingPosition.getValue();
     }
-    void setPreviewingPosition(double position) {
-        m_previewingPosition = position;
+
+    /// Used for caching the preview state of this hotcue control
+    /// for the case the cue is deleted during preview.
+    void cachePreviewingStartState() {
+        if (m_pCue) {
+            m_previewingPosition.setValue(m_pCue->getPosition());
+            m_previewingType.setValue(m_pCue->getType());
+        } else {
+            m_previewingType.setValue(mixxx::CueType::Invalid);
+        }
     }
 
   private slots:
@@ -170,8 +181,8 @@ class HotcueControl : public QObject {
     std::unique_ptr<ControlPushButton> m_hotcueActivatePreview;
     std::unique_ptr<ControlPushButton> m_hotcueClear;
 
-    mixxx::CueType m_previewingType;
-    double m_previewingPosition;
+    ControlValueAtomic<mixxx::CueType> m_previewingType;
+    ControlValueAtomic<double> m_previewingPosition;
 };
 
 class CueControl : public EngineControl {
@@ -211,6 +222,7 @@ class CueControl : public EngineControl {
     void hotcueCueLoop(HotcueControl* pControl, double v);
     void hotcueActivate(HotcueControl* pControl, double v, HotcueSetMode mode);
     void hotcueActivatePreview(HotcueControl* pControl, double v);
+    void updateCurrentlyPreviewingIndex(int hotcueIndex);
     void hotcueClear(HotcueControl* pControl, double v);
     void hotcuePositionChanged(HotcueControl* pControl, double newPosition);
     void hotcueEndPositionChanged(HotcueControl* pControl, double newEndPosition);
@@ -266,10 +278,9 @@ class CueControl : public EngineControl {
 
     UserSettingsPointer m_pConfig;
     ColorPaletteSettings m_colorPaletteSettings;
-    bool m_bPreviewing;
+    QAtomicInt m_currentlyPreviewingIndex;
     ControlObject* m_pPlay;
     ControlObject* m_pStopButton;
-    int m_iCurrentlyPreviewingHotcues;
     ControlObject* m_pQuantizeEnabled;
     ControlObject* m_pClosestBeat;
     parented_ptr<ControlProxy> m_pLoopStartPosition;
@@ -331,24 +342,14 @@ class CueControl : public EngineControl {
     ControlObject* m_pHotcueFocusColorNext;
     ControlObject* m_pHotcueFocusColorPrev;
 
-    TrackPointer m_pLoadedTrack; // is written from an engine worker thread
-    HotcueControl* m_pCurrentSavedLoopControl;
+    QAtomicPointer<HotcueControl> m_pCurrentSavedLoopControl;
 
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
 
-    // TODO(daschuer): It looks like the whole m_mutex is broken. Originally it
-    // ensured that the main cue really belongs to the loaded track. Now that
-    // we have hot cues that are altered outsite this guard this guarantee has
-    // become void.
-    //
-    // We have multiple cases where it locks m_pLoadedTrack and
-    // pControl->getCue(). This guards the hotcueClear() that could detach the
-    // cue call, but doesn't protect from cue changes via loadCuesFromTrack()
-    // which is called outside the mutex lock.
-    //
-    // We need to repair this.
-    QMutex m_mutex;
+    // Must be locked when using the m_pLoadedTrack and it's properties
+    QMutex m_trackMutex;
+    TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 
     friend class HotcueControlTest;
 };

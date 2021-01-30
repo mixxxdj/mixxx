@@ -37,7 +37,7 @@ QString typeToString(CoverInfo::Type type) {
 
 quint16 calculateLegacyHash(
         const QImage& image) {
-    const auto legacyHash = qChecksum(
+    auto legacyHash = qChecksum(
             reinterpret_cast<const char*>(image.constBits()),
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
             image.sizeInBytes()
@@ -45,6 +45,15 @@ quint16 calculateLegacyHash(
             image.byteCount()
 #endif
     );
+    // In rare cases the calculated checksum could be equal to the
+    // reserved value CoverInfo::defaultLegacyHash() which might cause
+    // unexpected behavior. In this case we simply invert all bits to
+    // get a hash value that is considered valid.
+    // See also (same special case handling): mixxx::cacheKeyFromMessageDigest()
+    // https://mixxx.discourse.group/t/mixxx-2-2-4-reads-id3v1-tags-mixxx-2-3-or-2-4-does-not/21041/11
+    if (legacyHash == CoverInfo::defaultLegacyHash() && !image.isNull()) {
+        legacyHash = ~legacyHash;
+    }
     DEBUG_ASSERT(image.isNull() || legacyHash != CoverInfo::defaultLegacyHash());
     DEBUG_ASSERT(!image.isNull() || legacyHash == CoverInfo::defaultLegacyHash());
     return legacyHash;

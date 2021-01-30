@@ -4,7 +4,7 @@
 #include <memory>
 
 #include "controllers/ui_dlgprefcontrollersdlg.h"
-#include "preferences/dlgpreferencepage.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 
 class DlgPreferences;
@@ -21,7 +21,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     DlgPrefControllers(DlgPreferences* pDlgPreferences,
             UserSettingsPointer pConfig,
             std::shared_ptr<ControllerManager> pControllerManager,
-            QTreeWidgetItem* pControllerTreeItem);
+            QTreeWidgetItem* pControllersRootItem);
     virtual ~DlgPrefControllers();
 
     bool handleTreeItemClick(QTreeWidgetItem* clickedItem);
@@ -49,7 +49,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     DlgPreferences* m_pDlgPreferences;
     UserSettingsPointer m_pConfig;
     std::shared_ptr<ControllerManager> m_pControllerManager;
-    QTreeWidgetItem* m_pControllerTreeItem;
-    QList<DlgPrefController*> m_controllerWindows;
+    QTreeWidgetItem* m_pControllersRootItem;
+    QList<DlgPrefController*> m_controllerPages;
     QList<QTreeWidgetItem*> m_controllerTreeItems;
 };

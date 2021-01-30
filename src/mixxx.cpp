@@ -11,6 +11,7 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "effects/builtin/builtinbackend.h"
@@ -23,7 +24,9 @@
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
 #endif
+#ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
+#endif
 #include "control/controlpushbutton.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
@@ -31,6 +34,9 @@
 #include "library/coverartcache.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#ifdef __ENGINEPRIME__
+#include "library/export/libraryexporter.h"
+#endif
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
@@ -89,6 +95,9 @@ MixxxMainWindow::MixxxMainWindow(
           m_pLaunchImage(nullptr),
           m_pGuiTick(nullptr),
           m_pDeveloperToolsDlg(nullptr),
+#ifdef __ENGINEPRIME__
+          m_pLibraryExporter(nullptr),
+#endif
           m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON),
           m_pTouchShift(nullptr) {
     DEBUG_ASSERT(pApp);
@@ -187,6 +196,19 @@ MixxxMainWindow::MixxxMainWindow(
             m_pCoreServices->getLibrary());
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
+
+#ifdef __ENGINEPRIME__
+    // Initialise library exporter
+    m_pLibraryExporter = m_pCoreServices->getLibrary()->makeLibraryExporter(this);
+    connect(m_pCoreServices->getLibrary().get(),
+            &Library::exportLibrary,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExport);
+    connect(m_pCoreServices->getLibrary().get(),
+            &Library::exportCrate,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExportWithInitialCrate);
+#endif
 
     connectMenuBar();
 
@@ -309,6 +331,28 @@ MixxxMainWindow::~MixxxMainWindow() {
         mixxx::ScreenSaverHelper::uninhibit();
     }
 
+    // Save the current window state (position, maximized, etc)
+    // Note(ronso0): Unfortunately saveGeometry() also stores the fullscreen state.
+    // On next start restoreGeometry would enable fullscreen mode even though that
+    // might not be requested (no '--fullscreen' command line arg and
+    // [Config],StartInFullscreen is '0'.
+    // https://bugs.launchpad.net/mixxx/+bug/1882474
+    // https://bugs.launchpad.net/mixxx/+bug/1909485
+    // So let's quit fullscreen if StartInFullscreen is not checked in Preferences.
+    bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
+            ConfigKey("[Config]", "StartInFullscreen"));
+    if (isFullScreen() && !fullscreenPref) {
+        slotViewFullScreen(false);
+        // After returning from fullscreen the main window incl. window decoration
+        // may be too large for the screen.
+        // Maximize the window so we can store a geometry that fits the screen.
+        showMaximized();
+    }
+    m_pCoreServices->getSettings()->set(ConfigKey("[MainWindow]", "geometry"),
+            QString(saveGeometry().toBase64()));
+    m_pCoreServices->getSettings()->set(ConfigKey("[MainWindow]", "state"),
+            QString(saveState().toBase64()));
+
     // GUI depends on KeyboardEventFilter, PlayerManager, Library
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting skin";
     m_pCentralWidget = nullptr;
@@ -348,6 +392,11 @@ MixxxMainWindow::~MixxxMainWindow() {
     VERIFY_OR_DEBUG_ASSERT(pMenuBar.isNull()) {
         qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
+
+#ifdef __ENGINEPRIME__
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting LibraryExporter";
+    m_pLibraryExporter.reset();
+#endif
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DlgPreferences";
     delete m_pPrefDlg;
@@ -415,9 +464,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
             *retryClicked = true;
             return QDialog::Accepted;
         } else if (msgBox.clickedButton() == wikiButton) {
-            QDesktopServices::openUrl(QUrl(
-                "http://mixxx.org/wiki/doku.php/troubleshooting"
-                "#i_can_t_select_my_sound_card_in_the_sound_hardware_preferences"));
+            QDesktopServices::openUrl(QUrl(MIXXX_WIKI_TROUBLESHOOTING_SOUND_URL));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
@@ -694,6 +741,14 @@ void MixxxMainWindow::connectMenuBar() {
                 m_pCoreServices->getLibrary().get(),
                 &Library::slotCreatePlaylist);
     }
+
+#ifdef __ENGINEPRIME__
+    DEBUG_ASSERT(m_pLibraryExporter);
+    connect(m_pMenuBar,
+            &WMainMenuBar::exportLibrary,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExport);
+#endif
 }
 
 void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
