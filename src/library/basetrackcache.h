@@ -149,7 +149,6 @@ class BaseTrackCache : public QObject {
     bool m_bIsCaching;
     QHash<TrackId, QVector<QVariant> > m_trackInfo;
     QSqlDatabase m_database;
-    ControlProxy* m_pKeyNotationCP;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };

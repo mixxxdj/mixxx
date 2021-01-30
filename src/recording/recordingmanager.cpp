@@ -120,7 +120,7 @@ void RecordingManager::startRecording() {
     m_secondsRecordedSplit=0;
     m_iNumberOfBytesRecorded = 0;
     m_secondsRecorded=0;
-    m_dfSilence=0;
+    m_dfSilence = false;
     m_dfCounter=0;
     m_split_size = getFileSplitSize();
     m_split_time = getFileSplitSeconds();
@@ -318,38 +318,40 @@ const QString& RecordingManager::getRecordingLocation() const {
 quint64 RecordingManager::getFileSplitSize()
 {
      QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
-     if(fileSizeStr == SPLIT_650MB)
+     if (fileSizeStr == SPLIT_650MB) {
          return SIZE_650MB;
-     else if(fileSizeStr == SPLIT_700MB)
+     } else if (fileSizeStr == SPLIT_700MB) {
          return SIZE_700MB;
-     else if(fileSizeStr == SPLIT_1024MB)
+     } else if (fileSizeStr == SPLIT_1024MB) {
          return SIZE_1GB;
-     else if(fileSizeStr == SPLIT_2048MB)
+     } else if (fileSizeStr == SPLIT_2048MB) {
          return SIZE_2GB;
-     else if(fileSizeStr == SPLIT_4096MB)
+     } else if (fileSizeStr == SPLIT_4096MB) {
          return SIZE_4GB;
-     else if(fileSizeStr == SPLIT_60MIN)
+     } else if (fileSizeStr == SPLIT_60MIN) {
          return SIZE_4GB; //Ignore size limit. use time limit
-     else if(fileSizeStr == SPLIT_74MIN)
+     } else if (fileSizeStr == SPLIT_74MIN) {
          return SIZE_4GB; //Ignore size limit. use time limit
-     else if(fileSizeStr == SPLIT_80MIN)
+     } else if (fileSizeStr == SPLIT_80MIN) {
          return SIZE_4GB; //Ignore size limit. use time limit
-     else if(fileSizeStr == SPLIT_120MIN)
+     } else if (fileSizeStr == SPLIT_120MIN) {
          return SIZE_4GB; //Ignore size limit. use time limit
-     else
+     } else {
          return SIZE_650MB;
+     }
 }
 unsigned int RecordingManager::getFileSplitSeconds()
 {
     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
-    if(fileSizeStr == SPLIT_60MIN)
+    if (fileSizeStr == SPLIT_60MIN) {
         return 60*60;
-    else if(fileSizeStr == SPLIT_74MIN)
+    } else if (fileSizeStr == SPLIT_74MIN) {
         return 74*60;
-    else if(fileSizeStr == SPLIT_80MIN)
+    } else if (fileSizeStr == SPLIT_80MIN) {
         return 80*60;
-    else if(fileSizeStr == SPLIT_120MIN)
+    } else if (fileSizeStr == SPLIT_120MIN) {
         return 120*60;
-    else // Do not limit by time for the rest.
+    } else { // Do not limit by time for the rest.
         return INT_MAX;
+    }
 }

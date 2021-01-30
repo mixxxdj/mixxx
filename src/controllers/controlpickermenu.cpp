@@ -415,6 +415,43 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         hotcueMainMenu->addMenu(hotcueMoreMenu);
     }
 
+    // Intro/outro range markers
+    QMenu* introOutroMenu = addSubmenu(tr("Intro / Outro Markers"));
+    const QStringList markerTitles = {
+            tr("Intro Start Marker"),
+            tr("Intro End Marker"),
+            tr("Outro Start Marker"),
+            tr("Outro End Marker")};
+    const QStringList markerNames = {
+            tr("intro start marker"),
+            tr("intro end marker"),
+            tr("outro start marker"),
+            tr("outro end marker")};
+    const QStringList markerCOs = {
+            "intro_start",
+            "intro_end",
+            "outro_start",
+            "outro_end"};
+
+    for (int i = 0; i < markerTitles.size(); ++i) {
+        QMenu* tempMenu = addSubmenu(markerTitles[i], introOutroMenu);
+        addDeckAndSamplerAndPreviewDeckControl(
+                QString("%1_activate").arg(markerCOs[i]),
+                tr("Activate %1", "[intro/outro marker").arg(markerTitles[i]),
+                tr("Jump to or set the %1", "[intro/outro marker").arg(markerNames[i]),
+                tempMenu);
+        addDeckAndSamplerAndPreviewDeckControl(
+                QString("%1_set").arg(markerCOs[i]),
+                tr("Set %1", "[intro/outro marker").arg(markerTitles[i]),
+                tr("Set or jump to the %1", "[intro/outro marker").arg(markerNames[i]),
+                tempMenu);
+        addDeckAndSamplerAndPreviewDeckControl(
+                QString("%1_clear").arg(markerCOs[i]),
+                tr("Clear %1", "[intro/outro marker").arg(markerTitles[i]),
+                tr("Clear the %1", "[intro/outro marker").arg(markerNames[i]),
+                tempMenu);
+    }
+
     // Loops
     QMenu* loopMenu = addSubmenu(tr("Looping"));
     // add beatloop_activate and beatlooproll_activate to both the
@@ -1380,7 +1417,7 @@ void ControlPickerMenu::addPreviewDeckControl(const QString& control,
 }
 
 QMenu* ControlPickerMenu::addSubmenu(QString title, QMenu* pParent) {
-    if (pParent == NULL) {
+    if (pParent == nullptr) {
         pParent = this;
     }
     auto subMenu = make_parented<QMenu>(title, pParent);

@@ -537,6 +537,10 @@ void SoundSourceProxy::updateTrackFromSource(
         mergeImportedMetadata = true;
     }
 
+    // Save for later to replace the unreliable and imprecise audio
+    // properties imported from file tags (see below).
+    const auto preciseStreamInfo = trackMetadata.getStreamInfo();
+
     // Embedded cover art is imported together with the track's metadata.
     // But only if the user has not selected external cover art for this
     // track!
@@ -635,7 +639,24 @@ void SoundSourceProxy::updateTrackFromSource(
                         << getUrl().toString();
             }
         }
+
+        // Preserve the precise stream info data (if available) that has been
+        // obtained from the actual audio stream. If the file content itself
+        // has been modified the stream info data will be updated next time
+        // when opening and decoding the audio stream.
+        if (preciseStreamInfo.isValid()) {
+            trackMetadata.setStreamInfo(preciseStreamInfo);
+        } else if (preciseStreamInfo.getSignalInfo().isValid()) {
+            // Special case: Only the bitrate might be invalid or unknown
+            trackMetadata.refStreamInfo().setSignalInfo(
+                    preciseStreamInfo.getSignalInfo());
+            if (preciseStreamInfo.getDuration() > mixxx::Duration::empty()) {
+                trackMetadata.refStreamInfo().setDuration(preciseStreamInfo.getDuration());
+            }
+        }
+
         m_pTrack->importMetadata(trackMetadata, metadataImported.second);
+
         bool pendingBeatsImport = m_pTrack->getBeatsImportStatus() == Track::ImportStatus::Pending;
         bool pendingCueImport = m_pTrack->getCueImportStatus() == Track::ImportStatus::Pending;
         if (pendingBeatsImport || pendingCueImport) {

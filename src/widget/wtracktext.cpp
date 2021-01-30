@@ -19,7 +19,7 @@ const WTrackMenu::Features trackMenuFeatures =
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Properties;
-}
+} // namespace
 
 WTrackText::WTrackText(QWidget* pParent,
         UserSettingsPointer pConfig,

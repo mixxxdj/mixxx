@@ -51,4 +51,15 @@ QColor chooseContrastColor(QColor baseColor, int dimBrightThreshold) {
     return contrastColor;
 }
 
+QColor blendColors(QColor color1, QColor color2) {
+    if (!color1.isValid() || !color2.isValid()) {
+        return QColor();
+    }
+    int r = (color1.red() + color2.red()) / 2;
+    int g = (color1.green() + color2.green()) / 2;
+    int b = (color1.blue() + color2.blue()) / 2;
+    // TODO also blend alpha?
+    return QColor(r, g, b, 255);
+}
+
 } // namespace Color

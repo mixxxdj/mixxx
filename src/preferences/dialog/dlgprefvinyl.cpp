@@ -20,6 +20,8 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     m_pNumDecks->connectValueChanged(this, &DlgPrefVinyl::slotNumDecksChanged);
 
     setupUi(this);
+    // Create text color for the Troubleshooting link
+    createLinkColor();
 
     delete groupBoxSignalQuality->layout();
     QHBoxLayout *layout = new QHBoxLayout;
@@ -77,10 +79,10 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     LeadinTime3->setSuffix(" s");
     LeadinTime4->setSuffix(" s");
 
-    TroubleshootingLink->setText(
-            QString("<a href='%1%2'>Troubleshooting</a>")
-                    .arg(MIXXX_MANUAL_URL,
-                            "/chapters/vinyl_control.html#troubleshooting"));
+    TroubleshootingLink->setText(coloredLinkString(
+            m_pLinkColor,
+            QStringLiteral("Troubleshooting"),
+            MIXXX_MANUAL_VINYL_TROUBLESHOOTING_URL));
 
     connect(VinylGain, &QSlider::sliderReleased, this, &DlgPrefVinyl::slotVinylGainApply);
     connect(VinylGain,
@@ -197,51 +199,58 @@ void DlgPrefVinyl::slotUpdate() {
     int combo_index =
             ComboBoxVinylType1->findText(config->getValueString(
                     ConfigKey("[Channel1]", "vinylcontrol_vinyl_type")));
-    if (combo_index != -1)
+    if (combo_index != -1) {
         ComboBoxVinylType1->setCurrentIndex(combo_index);
+    }
 
     combo_index =
             ComboBoxVinylType2->findText(config->getValueString(
                     ConfigKey("[Channel2]", "vinylcontrol_vinyl_type")));
-    if (combo_index != -1)
+    if (combo_index != -1) {
         ComboBoxVinylType2->setCurrentIndex(combo_index);
+    }
 
     combo_index =
             ComboBoxVinylType3->findText(config->getValueString(
                     ConfigKey("[Channel3]", "vinylcontrol_vinyl_type")));
-    if (combo_index != -1)
+    if (combo_index != -1) {
         ComboBoxVinylType3->setCurrentIndex(combo_index);
+    }
 
     combo_index =
             ComboBoxVinylType4->findText(config->getValueString(
                     ConfigKey("[Channel4]", "vinylcontrol_vinyl_type")));
-    if (combo_index != -1)
+    if (combo_index != -1) {
         ComboBoxVinylType4->setCurrentIndex(combo_index);
-
+    }
 
     combo_index =
             ComboBoxVinylSpeed1->findText(config->getValueString(
                     ConfigKey("[Channel1]", "vinylcontrol_speed_type")));
-    if (combo_index != -1)
+    if (combo_index != -1) {
         ComboBoxVinylSpeed1->setCurrentIndex(combo_index);
+    }
 
     combo_index =
             ComboBoxVinylSpeed2->findText(config->getValueString(
                     ConfigKey("[Channel2]", "vinylcontrol_speed_type")));
-    if (combo_index != -1)
+    if (combo_index != -1) {
         ComboBoxVinylSpeed2->setCurrentIndex(combo_index);
+    }
 
     combo_index =
             ComboBoxVinylSpeed3->findText(config->getValueString(
                     ConfigKey("[Channel3]", "vinylcontrol_speed_type")));
-    if (combo_index != -1)
+    if (combo_index != -1) {
         ComboBoxVinylSpeed3->setCurrentIndex(combo_index);
+    }
 
     combo_index =
             ComboBoxVinylSpeed4->findText(config->getValueString(
                     ConfigKey("[Channel4]", "vinylcontrol_speed_type")));
-    if (combo_index != -1)
+    if (combo_index != -1) {
         ComboBoxVinylSpeed4->setCurrentIndex(combo_index);
+    }
 
     // set lead-in time
     LeadinTime1->setValue((config->getValue(ConfigKey("[Channel1]", "vinylcontrol_lead_in_time"), "0")).toInt());

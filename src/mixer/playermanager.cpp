@@ -171,7 +171,7 @@ bool PlayerManager::isDeckGroup(const QString& group, int* number) {
     if (!ok || deckNum <= 0) {
         return false;
     }
-    if (number != NULL) {
+    if (number != nullptr) {
         *number = deckNum;
     }
     return true;
@@ -205,7 +205,7 @@ bool PlayerManager::isPreviewDeckGroup(const QString& group, int* number) {
     if (!ok || deckNum <= 0) {
         return false;
     }
-    if (number != NULL) {
+    if (number != nullptr) {
         *number = deckNum;
     }
     return true;
@@ -526,7 +526,7 @@ BaseTrackPlayer* PlayerManager::getPlayer(const QString& group) const {
     if (m_players.contains(group)) {
         return m_players[group];
     }
-    return NULL;
+    return nullptr;
 }
 
 Deck* PlayerManager::getDeck(unsigned int deck) const {
@@ -534,7 +534,7 @@ Deck* PlayerManager::getDeck(unsigned int deck) const {
     if (deck < 1 || deck > numDecks()) {
         kLogger.warning() << "Warning getDeck() called with invalid index: "
                    << deck;
-        return NULL;
+        return nullptr;
     }
     return m_decks[deck - 1];
 }
@@ -544,7 +544,7 @@ PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const 
     if (libPreviewPlayer < 1 || libPreviewPlayer > numPreviewDecks()) {
         kLogger.warning() << "Warning getPreviewDeck() called with invalid index: "
                    << libPreviewPlayer;
-        return NULL;
+        return nullptr;
     }
     return m_preview_decks[libPreviewPlayer - 1];
 }
@@ -554,7 +554,7 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
     if (sampler < 1 || sampler > numSamplers()) {
         kLogger.warning() << "Warning getSampler() called with invalid index: "
                    << sampler;
-        return NULL;
+        return nullptr;
     }
     return m_samplers[sampler - 1];
 }
@@ -564,7 +564,7 @@ Microphone* PlayerManager::getMicrophone(unsigned int microphone) const {
     if (microphone < 1 || microphone >= static_cast<unsigned int>(m_microphones.size())) {
         kLogger.warning() << "Warning getMicrophone() called with invalid index: "
                    << microphone;
-        return NULL;
+        return nullptr;
     }
     return m_microphones[microphone - 1];
 }
@@ -574,7 +574,7 @@ Auxiliary* PlayerManager::getAuxiliary(unsigned int auxiliary) const {
     if (auxiliary < 1 || auxiliary > static_cast<unsigned int>(m_auxiliaries.size())) {
         kLogger.warning() << "Warning getAuxiliary() called with invalid index: "
                    << auxiliary;
-        return NULL;
+        return nullptr;
     }
     return m_auxiliaries[auxiliary - 1];
 }
@@ -595,7 +595,7 @@ void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, const QString& gr
     // PlayerManager state.
     BaseTrackPlayer* pPlayer = getPlayer(group);
 
-    if (pPlayer == NULL) {
+    if (pPlayer == nullptr) {
         kLogger.warning() << "Invalid group argument " << group << " to slotLoadTrackToPlayer.";
         return;
     }

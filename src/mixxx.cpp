@@ -29,6 +29,7 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
 #include "effects/builtin/builtinbackend.h"
@@ -109,12 +110,12 @@ const mixxx::Logger kLogger("MixxxMainWindow");
 typedef Bool (*WireToErrorType)(Display*, XErrorEvent*, xError*);
 
 const int NUM_HANDLERS = 256;
-WireToErrorType __oldHandlers[NUM_HANDLERS] = {0};
+WireToErrorType __oldHandlers[NUM_HANDLERS] = {nullptr};
 
 Bool __xErrorHandler(Display* display, XErrorEvent* event, xError* error) {
     // Call any previous handler first in case it needs to do real work.
     auto code = static_cast<int>(event->error_code);
-    if (__oldHandlers[code] != NULL) {
+    if (__oldHandlers[code] != nullptr) {
         __oldHandlers[code](display, event, error);
     }
 
@@ -171,16 +172,21 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 
     QString settingsPath = args.getSettingsPath();
 #ifdef __APPLE__
+    Sandbox::checkSandboxed();
     if (!args.getSettingsPathSet()) {
         settingsPath = Sandbox::migrateOldSettings();
     }
 #endif
 
+    mixxx::LogFlags logFlags = mixxx::LogFlag::LogToFile;
+    if (args.getDebugAssertBreak()) {
+        logFlags.setFlag(mixxx::LogFlag::DebugAssertBreak);
+    }
     mixxx::Logging::initialize(
             settingsPath,
             args.getLogLevel(),
             args.getLogFlushLevel(),
-            args.getDebugAssertBreak());
+            logFlags);
 
     VERIFY_OR_DEBUG_ASSERT(SoundSourceProxy::registerProviders()) {
         qCritical() << "Failed to register any SoundSource providers";
@@ -194,7 +200,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         StatsManager::createInstance();
     }
 
-    m_pSettingsManager = std::make_unique<SettingsManager>(args.getSettingsPath());
+    m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 
     initializeKeyboard();
     installEventFilter(m_pKeyboard);
@@ -239,7 +245,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
-    Sandbox::initialize(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
+    Sandbox::setPermissionsFilePath(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
 
     QString resourcePath = pConfig->getResourcePath();
 
@@ -366,7 +372,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
 #ifdef __MODPLUG__
     // restore the configuration for the modplug library before trying to load a module
-    DlgPrefModplug* pModplugPrefs = new DlgPrefModplug(0, pConfig);
+    DlgPrefModplug* pModplugPrefs = new DlgPrefModplug(nullptr, pConfig);
     pModplugPrefs->loadSettings();
     pModplugPrefs->applySettings();
     delete pModplugPrefs; // not needed anymore
@@ -652,7 +658,9 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
         if (noOutputDlg(&continueClicked) != QDialog::Accepted) {
             exit(0);
         }
-        if (continueClicked) break;
+        if (continueClicked) {
+            break;
+        }
    }
 
     // Load tracks in args.qlMusicFiles (command line arguments) into player
@@ -697,7 +705,23 @@ void MixxxMainWindow::finalize() {
     m_pTrackCollectionManager->stopLibraryScan();
     m_pLibrary->stopPendingTasks();
 
-   // Save the current window state (position, maximized, etc)
+    // Save the current window state (position, maximized, etc)
+    // Note(ronso0): Unfortunately saveGeometry() also stores the fullscreen state.
+    // On next start restoreGeometry would enable fullscreen mode even though that
+    // might not be requested (no '--fullscreen' command line arg and
+    // [Config],StartInFullscreen is '0'.
+    // https://bugs.launchpad.net/mixxx/+bug/1882474
+    // https://bugs.launchpad.net/mixxx/+bug/1909485
+    // So let's quit fullscreen if StartInFullscreen is not checked in Preferences.
+    bool fullscreenPref = m_pSettingsManager->settings()->getValue<bool>(
+            ConfigKey("[Config]", "StartInFullscreen"));
+    if (isFullScreen() && !fullscreenPref) {
+        slotViewFullScreen(false);
+        // After returning from fullscreen the main window incl. window decoration
+        // may be too large for the screen.
+        // Maximize the window so we can store a geometry that fits the screen.
+        showMaximized();
+    }
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "geometry"),
         QString(saveGeometry().toBase64()));
     m_pSettingsManager->settings()->set(ConfigKey("[MainWindow]", "state"),
@@ -874,12 +898,14 @@ bool MixxxMainWindow::initializeDatabase() {
     kLogger.info() << "Connecting to database";
     QSqlDatabase dbConnection = mixxx::DbConnectionPooled(m_pDbConnectionPool);
     if (!dbConnection.isOpen()) {
-        QMessageBox::critical(0, tr("Cannot open database"),
-                            tr("Unable to establish a database connection.\n"
-                                "Mixxx requires QT with SQLite support. Please read "
-                                "the Qt SQL driver documentation for information on how "
-                                "to build it.\n\n"
-                                "Click OK to exit."), QMessageBox::Ok);
+        QMessageBox::critical(nullptr,
+                tr("Cannot open database"),
+                tr("Unable to establish a database connection.\n"
+                   "Mixxx requires QT with SQLite support. Please read "
+                   "the Qt SQL driver documentation for information on how "
+                   "to build it.\n\n"
+                   "Click OK to exit."),
+                QMessageBox::Ok);
         return false;
     }
 
@@ -916,8 +942,9 @@ void MixxxMainWindow::initializeKeyboard() {
     QString resourcePath = pConfig->getResourcePath();
 
     // Set the default value in settings file
-    if (pConfig->getValueString(ConfigKey("[Keyboard]","Enabled")).length() == 0)
+    if (pConfig->getValueString(ConfigKey("[Keyboard]", "Enabled")).length() == 0) {
         pConfig->set(ConfigKey("[Keyboard]","Enabled"), ConfigValue(1));
+    }
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
@@ -983,9 +1010,7 @@ QDialog::DialogCode MixxxMainWindow::soundDeviceErrorDlg(
             *retryClicked = true;
             return QDialog::Accepted;
         } else if (msgBox.clickedButton() == wikiButton) {
-            QDesktopServices::openUrl(QUrl(
-                "http://mixxx.org/wiki/doku.php/troubleshooting"
-                "#i_can_t_select_my_sound_card_in_the_sound_hardware_preferences"));
+            QDesktopServices::openUrl(QUrl(MIXXX_WIKI_TROUBLESHOOTING_SOUND_URL));
             wikiButton->setEnabled(false);
         } else if (msgBox.clickedButton() == reconfigureButton) {
             msgBox.hide();
@@ -1276,8 +1301,9 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
             QMessageBox::Yes | QMessageBox::No,
             QMessageBox::No);
 
-        if (ret != QMessageBox::Yes)
+        if (ret != QMessageBox::Yes) {
             return;
+        }
     }
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
@@ -1344,7 +1370,7 @@ void MixxxMainWindow::slotDeveloperTools(bool visible) {
 }
 
 void MixxxMainWindow::slotDeveloperToolsClosed() {
-    m_pDeveloperToolsDlg = NULL;
+    m_pDeveloperToolsDlg = nullptr;
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle) {
@@ -1471,7 +1497,7 @@ void MixxxMainWindow::rebootMixxxView() {
         m_pWidgetParent->hide();
         WaveformWidgetFactory::instance()->destroyWidgets();
         delete m_pWidgetParent;
-        m_pWidgetParent = NULL;
+        m_pWidgetParent = nullptr;
     }
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1573,21 +1599,25 @@ void MixxxMainWindow::checkDirectRendering() {
     //  * Warn user
 
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    if (!factory)
+    if (!factory) {
         return;
+    }
 
     UserSettingsPointer pConfig = m_pSettingsManager->settings();
 
     if (!factory->isOpenGlAvailable() && !factory->isOpenGlesAvailable() &&
         pConfig->getValueString(ConfigKey("[Direct Rendering]", "Warned")) != QString("yes")) {
-        QMessageBox::warning(
-            0, tr("OpenGL Direct Rendering"),
-            tr("Direct rendering is not enabled on your machine.<br><br>"
-               "This means that the waveform displays will be very<br>"
-               "<b>slow and may tax your CPU heavily</b>. Either update your<br>"
-               "configuration to enable direct rendering, or disable<br>"
-               "the waveform displays in the Mixxx preferences by selecting<br>"
-               "\"Empty\" as the waveform display in the 'Interface' section."));
+        QMessageBox::warning(nullptr,
+                tr("OpenGL Direct Rendering"),
+                tr("Direct rendering is not enabled on your machine.<br><br>"
+                   "This means that the waveform displays will be very<br>"
+                   "<b>slow and may tax your CPU heavily</b>. Either update "
+                   "your<br>"
+                   "configuration to enable direct rendering, or disable<br>"
+                   "the waveform displays in the Mixxx preferences by "
+                   "selecting<br>"
+                   "\"Empty\" as the waveform display in the 'Interface' "
+                   "section."));
         pConfig->set(ConfigKey("[Direct Rendering]", "Warned"), QString("yes"));
     }
 }

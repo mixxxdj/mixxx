@@ -69,8 +69,9 @@ int EncoderVorbis::getSerial()
 {
     static int prevSerial = 0;
     int serial = rand();
-    while (prevSerial == serial)
+    while (prevSerial == serial) {
         serial = rand();
+    }
     prevSerial = serial;
     qDebug() << "RETURNING SERIAL " << serial;
     return serial;
@@ -93,8 +94,9 @@ void EncoderVorbis::writePage() {
     if (m_header_write) {
         while (true) {
             result = ogg_stream_flush(&m_oggs, &m_oggpage);
-            if (result == 0)
+            if (result == 0) {
                 break;
+            }
             m_pCallback->write(
                     m_oggpage.header,
                     m_oggpage.body,
@@ -105,7 +107,7 @@ void EncoderVorbis::writePage() {
     }
 
     while (vorbis_analysis_blockout(&m_vdsp, &m_vblock) == 1) {
-        vorbis_analysis(&m_vblock, 0);
+        vorbis_analysis(&m_vblock, nullptr);
         vorbis_bitrate_addblock(&m_vblock);
         while (vorbis_bitrate_flushpacket(&m_vdsp, &m_oggpacket)) {
             // weld packet into bitstream
@@ -114,12 +116,14 @@ void EncoderVorbis::writePage() {
             bool eos = false;
             while (!eos) {
                 int result = ogg_stream_pageout(&m_oggs, &m_oggpage);
-                if (result == 0)
+                if (result == 0) {
                     break;
+                }
                 m_pCallback->write(m_oggpage.header, m_oggpage.body,
                                    m_oggpage.header_len, m_oggpage.body_len);
-                if (ogg_page_eos(&m_oggpage))
+                if (ogg_page_eos(&m_oggpage)) {
                     eos = true;
+                }
             }
         }
     }
@@ -165,7 +169,7 @@ void EncoderVorbis::initStream() {
     vorbis_block_init(&m_vdsp, &m_vblock);
 
     // set up packet-to-stream encoder; attach a random serial number
-    srand(time(0));
+    srand(time(nullptr));
     ogg_stream_init(&m_oggs, getSerial());
 
     // add comment

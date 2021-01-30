@@ -1,6 +1,7 @@
 // Helper class to have easy access
 #pragma once
 
+#include <QAtomicInt>
 #include <QMap>
 #include <QMutex>
 #include <QObject>
@@ -57,7 +58,7 @@ class PlayerInfo : public QObject {
     ControlProxy* m_pCOxfader;
     // QMap is faster than QHash for small count of elements < 50
     QMap<QString, TrackPointer> m_loadedTrackMap;
-    int m_currentlyPlayingDeck;
+    QAtomicInt m_currentlyPlayingDeck;
     QList<DeckControls*> m_deckControlList;
 
     static PlayerInfo* m_pPlayerinfo;

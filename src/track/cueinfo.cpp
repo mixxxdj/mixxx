@@ -8,23 +8,26 @@ CueInfo::CueInfo()
         : m_type(CueType::Invalid),
           m_startPositionMillis(std::nullopt),
           m_endPositionMillis(std::nullopt),
-          m_hotCueNumber(std::nullopt),
-          m_color(std::nullopt) {
+          m_hotCueIndex(std::nullopt),
+          m_color(std::nullopt),
+          m_flags(CueFlag::None) {
 }
 
 CueInfo::CueInfo(
         CueType type,
         std::optional<double> startPositionMillis,
         std::optional<double> endPositionMillis,
-        std::optional<int> hotCueNumber,
+        std::optional<int> hotCueIndex,
         const QString& label,
-        mixxx::RgbColor::optional_t color)
+        mixxx::RgbColor::optional_t color,
+        CueFlags flags)
         : m_type(type),
           m_startPositionMillis(startPositionMillis),
           m_endPositionMillis(endPositionMillis),
-          m_hotCueNumber(hotCueNumber),
+          m_hotCueIndex(hotCueIndex),
           m_label(label),
-          m_color(color) {
+          m_color(color),
+          m_flags(flags) {
 }
 
 CueType CueInfo::getType() const {
@@ -51,12 +54,13 @@ std::optional<double> CueInfo::getEndPositionMillis() const {
     return m_endPositionMillis;
 }
 
-std::optional<int> CueInfo::getHotCueNumber() const {
-    return m_hotCueNumber;
+std::optional<int> CueInfo::getHotCueIndex() const {
+    return m_hotCueIndex;
 }
 
-void CueInfo::setHotCueNumber(std::optional<int> hotCueNumber) {
-    m_hotCueNumber = hotCueNumber;
+void CueInfo::setHotCueIndex(const std::optional<int> hotCueIndex) {
+    DEBUG_ASSERT(!hotCueIndex || *hotCueIndex >= kFirstHotCueIndex);
+    m_hotCueIndex = hotCueIndex;
 }
 
 QString CueInfo::getLabel() const {
@@ -81,7 +85,7 @@ bool operator==(
     return lhs.getType() == rhs.getType() &&
             lhs.getStartPositionMillis() == rhs.getStartPositionMillis() &&
             lhs.getEndPositionMillis() == rhs.getEndPositionMillis() &&
-            lhs.getHotCueNumber() == rhs.getHotCueNumber() &&
+            lhs.getHotCueIndex() == rhs.getHotCueIndex() &&
             lhs.getLabel() == rhs.getLabel() &&
             lhs.getColor() == rhs.getColor();
 }
@@ -125,9 +129,10 @@ QDebug operator<<(QDebug debug, const CueInfo& cueInfo) {
             << "type=" << cueInfo.getType()
             << ", startPos=" << cueInfo.getStartPositionMillis()
             << ", endPos=" << cueInfo.getEndPositionMillis()
-            << ", number=" << cueInfo.getHotCueNumber()
+            << ", index=" << cueInfo.getHotCueIndex()
             << ", label=" << cueInfo.getLabel()
             << ", color=" << cueInfo.getColor()
+            << ", flags=" << cueInfo.flags()
             << "]";
     return debug;
 }
