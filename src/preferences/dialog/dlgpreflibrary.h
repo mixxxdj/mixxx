@@ -7,8 +7,8 @@
 #include "defs_urls.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {

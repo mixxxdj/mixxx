@@ -34,10 +34,10 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     // Log level Debug would produce too many log messages that
     // might abort and fail the CI builds.
     mixxx::Logging::initialize(
-            QDir(), // No log file should be written during tests, only output to stderr
+            QString(), // No log file should be written during tests, only output to stderr
             logLevel,
             logLevel,
-            true);
+            mixxx::LogFlag::DebugAssertBreak);
 
     // All guessing of cover art should be done synchronously
     // in the same thread during tests to prevent test failures
