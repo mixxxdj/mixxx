@@ -110,7 +110,7 @@ PioneerDDJ400.beta = PioneerDDJ400.alpha/32;
 
 // Multiplier for fast seek through track using SHIFT+JOGWHEEL
 PioneerDDJ400.fastSeekScale = 150;
-PioneerDDJ400.bendScale = 0.9;
+PioneerDDJ400.bendScale = 0.8;
 
 PioneerDDJ400.tempoRanges = [0.06, 0.10, 0.16, 0.25];
 
