@@ -202,8 +202,14 @@ QDebug operator<<(QDebug dbg, Bitrate arg);
 Q_DECLARE_TYPEINFO(mixxx::audio::ChannelCount, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(mixxx::audio::ChannelCount)
 
+Q_DECLARE_TYPEINFO(mixxx::audio::ChannelLayout, Q_PRIMITIVE_TYPE);
+Q_DECLARE_METATYPE(mixxx::audio::ChannelLayout)
+
 Q_DECLARE_TYPEINFO(mixxx::audio::OptionalChannelLayout, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::audio::OptionalChannelLayout)
+
+Q_DECLARE_TYPEINFO(mixxx::audio::SampleLayout, Q_PRIMITIVE_TYPE);
+Q_DECLARE_METATYPE(mixxx::audio::SampleLayout)
 
 Q_DECLARE_TYPEINFO(mixxx::audio::OptionalSampleLayout, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::audio::OptionalSampleLayout)
