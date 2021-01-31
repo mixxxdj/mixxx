@@ -30,6 +30,13 @@ var TraktorS3 = {};
 // * keylock will still toggle on, but on release, not press.
 TraktorS3.PitchSliderRelativeMode = true;
 
+// The Samplers can operate two ways.
+// With SamplerModePressAndHold = false, tapping a Sampler button will start the
+// sample playing.  Pressing the button again will stop playback.
+// With SamplerModePressAndHold = true, a Sample will play while you hold the
+// button down.  Letting go will stop playback.
+TraktorS3.SamplerModePressAndHold = false;
+
 // You can choose the colors you want for each channel. The list of colors is:
 // RED, CARROT, ORANGE, HONEY, YELLOW, LIME, GREEN, AQUA, CELESTE, SKY, BLUE,
 // PURPLE, FUCHSIA, MAGENTA, AZALEA, SALMON, WHITE
@@ -402,8 +409,8 @@ TraktorS3.Deck.prototype.numberButtonHandler = function(field) {
         sampler += 8;
     }
 
+    var playing = engine.getValue("[Sampler" + sampler + "]", "play");
     if (this.shiftPressed) {
-        var playing = engine.getValue("[Sampler" + sampler + "]", "play");
         if (playing) {
             action = "cue_default";
         } else {
@@ -414,12 +421,23 @@ TraktorS3.Deck.prototype.numberButtonHandler = function(field) {
     }
     var loaded = engine.getValue("[Sampler" + sampler + "]", "track_loaded");
     if (loaded) {
-        if (field.value) {
-            action = "cue_gotoandplay";
+        if (TraktorS3.SamplerModePressAndHold) {
+            if (field.value) {
+                action = "cue_gotoandplay";
+            } else {
+                action = "stop";
+            }
+            engine.setValue("[Sampler" + sampler + "]", action, 1);
         } else {
-            action = "stop";
+            if (field.value) {
+                if (playing) {
+                    action = "stop";
+                } else {
+                    action = "cue_gotoandplay";
+                }
+                engine.setValue("[Sampler" + sampler + "]", action, 1);
+            }
         }
-        engine.setValue("[Sampler" + sampler + "]", action, 1);
         return;
     }
     engine.setValue("[Sampler" + sampler + "]", "LoadSelectedTrack", field.value);
