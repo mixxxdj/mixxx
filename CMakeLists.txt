@@ -2313,12 +2313,15 @@ endif()
 option(BROADCAST "Live Broadcasting (Shoutcast) support" ON)
 if(BROADCAST)
   find_package(Shoutidjc)
-  # Check if system lib is at least 2.4.4 and not suffering bug
+  # Check if system lib is at least 2.4.6 and not suffering bugs
   # https://bugs.launchpad.net/mixxx/+bug/1833225
+  # https://bugs.launchpad.net/mixxx/+bug/1913579
   if(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.4)
       message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from bug lp1833225")
+  elseif(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.6)
+      message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1913579")
   endif()
-  if(NOT Shoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.4)
+  if(NOT Shsoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.6)
     # Fall back to internal libraray in the lib tree
     message(STATUS "Using internal libshout-idjc")
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout-idjc")
