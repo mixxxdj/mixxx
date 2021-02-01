@@ -142,15 +142,6 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
   public:
     ~AudioSource() override = default;
 
-    // All sources are required to produce a signal of frames
-    // where each frame contains samples from all channels that are
-    // coincident in time.
-    //
-    // A frame for a mono signal contains a single sample. A frame
-    // for a stereo signal contains a pair of samples, one for the
-    // left and right channel respectively.
-    static constexpr audio::SampleLayout kSampleLayout = mixxx::kEngineSampleLayout;
-
     /// Defines how thoroughly the stream properties should be verified
     /// when opening an audio stream.
     enum class OpenMode {
@@ -201,16 +192,13 @@ class AudioSource : public UrlResource, public virtual /*implements*/ IAudioSour
     // Parameters for opening audio sources
     class OpenParams {
       public:
-        OpenParams()
-                : m_signalInfo(kSampleLayout) {
-        }
+        OpenParams() = default;
         OpenParams(
                 audio::ChannelCount channelCount,
                 audio::SampleRate sampleRate)
                 : m_signalInfo(
                           channelCount,
-                          sampleRate,
-                          kSampleLayout) {
+                          sampleRate) {
         }
 
         const audio::SignalInfo& getSignalInfo() const {
