@@ -35,6 +35,15 @@ QList<int> EncoderFdkAacSettings::getQualityValues() const {
     return m_qualList;
 }
 
+void EncoderFdkAacSettings::setQualityByIndex(int qualityIndex) {
+    if (qualityIndex >= 0 && qualityIndex < m_qualList.size()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, kQualityKey), ConfigValue(qualityIndex));
+    } else {
+        qWarning() << "Invalid qualityIndex given to EncoderMp3Settings: "
+                   << qualityIndex << ". Ignoring it";
+    }
+}
+
 int EncoderFdkAacSettings::getQuality() const {
     return m_qualList.at(getQualityIndex());
 }
