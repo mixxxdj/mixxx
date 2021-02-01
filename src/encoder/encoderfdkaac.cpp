@@ -70,19 +70,23 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     libnames << "/opt/local/lib/libfdk-aac.1.dylib";
 #endif
 
+    QString failedMsg = "Failed to load AAC encoder library";
     for (const auto& libname : qAsConst(libnames)) {
         m_library = new QLibrary(libname);
         if (m_library->load()) {
             kLogger.debug() << "Successfully loaded encoder library " << m_library->fileName();
             break;
         } else {
-            kLogger.warning() << "Failed to load " << libname << ", " << m_library->errorString();
+            // collect error messages for the case we have no success
+            failedMsg.append("\n" + m_library->errorString());
         }
         delete m_library;
         m_library = nullptr;
     }
 
     if (!m_library || !m_library->isLoaded()) {
+        kLogger.warning() << failedMsg;
+
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(QObject::tr("Encoder"));
@@ -149,8 +153,6 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return;
     }
-
-    kLogger.debug() << "Loaded libfdk-aac";
 }
 
 EncoderFdkAac::~EncoderFdkAac() {
