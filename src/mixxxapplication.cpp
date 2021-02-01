@@ -69,8 +69,6 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::audio::ChannelCount>("mixxx::audio::ChannelCount");
     qRegisterMetaType<mixxx::audio::ChannelLayout>("mixxx::audio::ChannelLayout");
     qRegisterMetaType<mixxx::audio::OptionalChannelLayout>("mixxx::audio::OptionalChannelLayout");
-    qRegisterMetaType<mixxx::audio::SampleLayout>("mixxx::audio::SampleLayout");
-    qRegisterMetaType<mixxx::audio::OptionalSampleLayout>("mixxx::audio::OptionalSampleLayout");
     qRegisterMetaType<mixxx::audio::SampleRate>("mixxx::audio::SampleRate");
     qRegisterMetaType<mixxx::audio::Bitrate>("mixxx::audio::Bitrate");
 
