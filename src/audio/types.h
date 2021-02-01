@@ -100,8 +100,6 @@ enum class SampleLayout {
     Interleaved
 };
 
-typedef std::optional<SampleLayout> OptionalSampleLayout;
-
 QDebug operator<<(QDebug dbg, SampleLayout arg);
 
 class SampleRate {
@@ -210,9 +208,6 @@ Q_DECLARE_METATYPE(mixxx::audio::OptionalChannelLayout)
 
 Q_DECLARE_TYPEINFO(mixxx::audio::SampleLayout, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(mixxx::audio::SampleLayout)
-
-Q_DECLARE_TYPEINFO(mixxx::audio::OptionalSampleLayout, Q_MOVABLE_TYPE);
-Q_DECLARE_METATYPE(mixxx::audio::OptionalSampleLayout)
 
 Q_DECLARE_TYPEINFO(mixxx::audio::SampleRate, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(mixxx::audio::SampleRate)
