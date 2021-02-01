@@ -1,5 +1,13 @@
 #include "util/file.h"
 
+#include <QRegExp>
+
+namespace {
+//const auto kIllegalCharacters = QRegExp("[\0/<>:\"\\|\\?\\*]");
+// see https://stackoverflow.com/questions/1976007/what-characters-are-forbidden-in-windows-and-linux-directory-names
+const auto kIllegalCharacters = QRegExp("([/<>:\"\\\\\\|\\?\\*]|[\x01-\x1F])");
+} // namespace
+
 MDir::MDir() {
 }
 
@@ -27,4 +35,10 @@ MDir& MDir::operator=(const MDir& other) {
 
 bool MDir::canAccess() {
     return Sandbox::canAccessFile(m_dir);
+}
+
+QString FileUtils::safeFilename(const QString& input, const QString& replacement) {
+    auto output = QString(input);
+    output.replace(kIllegalCharacters, replacement);
+    return output.replace(QChar::Null, replacement);
 }
