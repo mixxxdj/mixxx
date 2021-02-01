@@ -579,34 +579,37 @@ void SoundSourceProxy::updateTrackFromSource(
         if (mergeImportedMetadata) {
             // Nothing to do if no metadata imported
             return;
-        } else if (trackMetadata.getTrackInfo().getTitle().trimmed().isEmpty()) {
-            // Only parse artist and title if both fields are empty to avoid
-            // inconsistencies. Otherwise the file name (without extension)
-            // is used as the title and the artist is unmodified.
-            //
-            // TODO(XXX): Disable splitting of artist/title in settings, i.e.
-            // optionally don't split even if both title and artist are empty?
-            // Some users might want to import the whole file name of untagged
-            // files as the title without splitting the artist:
-            //     https://www.mixxx.org/forums/viewtopic.php?f=3&t=12838
-            // NOTE(uklotzde, 2019-09-26): Whoever needs this should simply set
-            // splitArtistTitle = false here and compile their custom version!
-            // It is not worth extending the settings and injecting them into
-            // SoundSourceProxy for just a few people.
-            const bool splitArtistTitle =
-                    trackMetadata.getTrackInfo().getArtist().trimmed().isEmpty();
-            const auto trackFile = m_pTrack->getFileInfo();
-            kLogger.info()
-                    << "Parsing missing"
-                    << (splitArtistTitle ? "artist/title" : "title")
-                    << "from file name:"
-                    << trackFile;
-            if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(trackFile.fileName(), splitArtistTitle) &&
-                    metadataImported.second.isNull()) {
-                // Since this is also some kind of metadata import, we mark the
-                // track's metadata as synchronized with the time stamp of the file.
-                metadataImported.second = trackFile.fileLastModified();
-            }
+        }
+    }
+
+    if (trackMetadata.getTrackInfo().getTitle().trimmed().isEmpty()) {
+        // Only parse artist and title if both fields are empty to avoid
+        // inconsistencies. Otherwise the file name (without extension)
+        // is used as the title and the artist is unmodified.
+        //
+        // TODO(XXX): Disable splitting of artist/title in settings, i.e.
+        // optionally don't split even if both title and artist are empty?
+        // Some users might want to import the whole file name of untagged
+        // files as the title without splitting the artist:
+        //     https://www.mixxx.org/forums/viewtopic.php?f=3&t=12838
+        // NOTE(uklotzde, 2019-09-26): Whoever needs this should simply set
+        // splitArtistTitle = false here and compile their custom version!
+        // It is not worth extending the settings and injecting them into
+        // SoundSourceProxy for just a few people.
+        const bool splitArtistTitle =
+                trackMetadata.getTrackInfo().getArtist().trimmed().isEmpty();
+        const auto trackFile = m_pTrack->getFileInfo();
+        kLogger.info()
+                << "Parsing missing"
+                << (splitArtistTitle ? "artist/title" : "title")
+                << "from file name:"
+                << trackFile;
+        if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(
+                    trackFile.fileName(), splitArtistTitle) &&
+                metadataImported.second.isNull()) {
+            // Since this is also some kind of metadata import, we mark the
+            // track's metadata as synchronized with the time stamp of the file.
+            metadataImported.second = trackFile.fileLastModified();
         }
     }
 
