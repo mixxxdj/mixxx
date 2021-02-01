@@ -40,24 +40,10 @@ QVariant RangeGroup::doFilter(const QVariant& input,
             return input;
         }
     }
-    //double modulus = kDefaultGroupSize;
-    // FIXME(XXX) why is the argument always a QVariant(Invalid) ?
+
     double modulus = getSafeString(argument).get().toDouble(&ok);
-    //qDebug() << "modulus" << modulus << ok;
+
     if (ok) {
-        SafeString safeModulus = qvariant_cast<SafeString>(argument);
-        double modulusInput = kDefaultGroupSize;
-        if (!safeModulus.get().isNull()) {
-            modulusInput = safeModulus.get().toDouble(&ok);
-            if (!ok) {
-                qWarning() << argument << "rangegroup filter group size is not a number";
-            }
-        } else {
-            modulusInput = argument.toDouble(&ok);
-            if (!ok) {
-                qWarning() << argument << "rangegroup filter group size is not a number";
-            }
-        }
         if (modulus <= 0.0) {
             qWarning() << argument << "rangegroup filter group size is not a positive number";
             modulus = kDefaultGroupSize;
