@@ -70,6 +70,7 @@ class TrackExportWorker : public QThread {
 
     void setDestDir(const QString& destDir) {
         m_destDir = destDir;
+        updateTemplate();
     }
 
     /// Sets the filename pattern
@@ -124,6 +125,7 @@ class TrackExportWorker : public QThread {
             const TrackPointerList& tracks,
             TrackPointerList* skippedTracks);
     void exportPlaylist();
+    void updateTemplate();
 
     // Emit a signal requesting overwrite mode, and block until we get an
     // answer.  Updates m_overwriteMode appropriately.

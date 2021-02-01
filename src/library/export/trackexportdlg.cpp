@@ -62,6 +62,10 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
             &QPushButton::clicked,
             this,
             &TrackExportDlg::cancelButtonClicked);
+    connect(progressCancelButton,
+            &QPushButton::clicked,
+            this,
+            &TrackExportDlg::cancelButtonClicked);
     connect(startButton,
             &QPushButton::clicked,
             this,
@@ -112,17 +116,9 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
             this,
             &TrackExportDlg::stopWorker);
 
-    if (m_tracks.isEmpty()) {
-        QMessageBox::warning(
-                nullptr,
-                tr("Export Error"),
-                tr("No files selected"),
-                QMessageBox::Ok,
-                QMessageBox::Ok);
-        hide();
-        accept();
-    }
     updatePreview();
+    setEnableControls(true);
+    tabWidget->setCurrentIndex(0);
 }
 
 TrackExportDlg::~TrackExportDlg() {
@@ -165,16 +161,7 @@ void TrackExportDlg::slotStartExport() {
         qWarning() << "Export already running";
         return;
     }
-    // Do we want to check for target folder to exist ?
-    // When a file is exported, all parent folders are created automatically.
 
-    // QString destDir = folderEdit->text();
-    // if (!QFile::exists(destDir)) {
-    //     if (!browseFolder()) {
-    //         return;
-    //     }
-    //     destDir = folderEdit->text();
-    // }
     m_errorCount = 0;
     m_okCount = 0;
     m_skippedCount = 0;
@@ -186,7 +173,10 @@ void TrackExportDlg::slotStartExport() {
     // sets destDirectory and Pattern
     updatePreview();
     setEnableControls(false);
+    tabWidget->setCurrentIndex(1);
+
     cancelButton->setText(tr("&Cancel"));
+    progressCancelButton->setText(tr("&Cancel"));
 
     // enable playlist export
     if (playlistExport->isChecked()) {
@@ -309,6 +299,31 @@ void TrackExportDlg::stopWorker() {
     m_worker->wait();
     setEnableControls(true);
     cancelButton->setText(tr("&Close"));
+    progressCancelButton->setText(tr("&Close"));
+}
+
+void TrackExportDlg::open() {
+    bool empty = true;
+    // check if at least one trackpointer is valid
+    for (TrackPointer track : qAsConst(m_tracks)) {
+        if (track) {
+            empty = false;
+            break;
+        }
+    }
+
+    if (empty) {
+        QMessageBox::warning(
+                nullptr,
+                tr("Export Error"),
+                tr("No files selected"),
+                QMessageBox::Ok,
+                QMessageBox::Ok);
+        hide();
+        accept();
+        return;
+    }
+    QDialog::open();
 }
 
 void TrackExportDlg::finish() {

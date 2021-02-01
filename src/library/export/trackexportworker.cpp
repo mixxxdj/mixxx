@@ -14,6 +14,7 @@
 #include "library/parser.h"
 #include "moc_trackexportworker.cpp"
 #include "track/track.h"
+#include "util/file.h"
 #include "util/formatter.h"
 
 namespace {
@@ -26,6 +27,9 @@ const auto kResultEmptyPattern = QStringLiteral("empty pattern result, skipped")
 const auto kResultOk = QStringLiteral("ok");
 const auto kResultCantCreateDirectory = QStringLiteral("Could not create folder");
 const auto kResultCantCreateFile = QStringLiteral("Could not create file");
+const auto kDefaultPattern = QStringLiteral(
+        "{{ track.basename }}{% if dup %}-{{dup}}{% endif %}"
+        ".{{track.extension}}");
 
 QString rewriteFilename(const QFileInfo& fileinfo, int index) {
     // We don't have total control over the inputs, so definitely
@@ -133,7 +137,12 @@ void TrackExportWorker::setPattern(QString* pattern) {
         m_engine->setSmartTrimEnabled(true);
     }
     m_pattern = pattern;
-    m_template = m_engine->newTemplate(*m_pattern, QStringLiteral("export"));
+    updateTemplate();
+}
+void TrackExportWorker::updateTemplate() {
+    QString tmpl = m_destDir + QDir::separator().toLatin1() +
+            (m_pattern ? *m_pattern : kDefaultPattern);
+    m_template = m_engine->newTemplate(tmpl, QStringLiteral("export"));
     if (m_template->error()) {
         m_errorMessage = m_template->errorString();
     } else {
@@ -214,15 +223,13 @@ void TrackExportWorker::run() {
 
 // Returns the new filename for the track. Applies the pattern if set.
 QString TrackExportWorker::generateFilename(TrackPointer track, int index, int dupCounter) {
-    if (m_pattern) {
-        return applyPattern(track, index, dupCounter);
-    }
+    return FileUtils::safeFilename(applyPattern(track, index, dupCounter).trimmed());
 
-    const auto trackFile = track->getFileInfo();
-    if (dupCounter == 0) {
-        return trackFile.fileName();
-    }
-    return rewriteFilename(trackFile.asFileInfo(), dupCounter);
+    // const auto trackFile = track->getFileInfo();
+    // if (dupCounter == 0) {
+    //     return QDir(m_destDir).filePath(trackFile.fileName());
+    // }
+    // return rewriteFilename(trackFile.asFileInfo(), dupCounter);
 }
 
 // Applies the pattern on track

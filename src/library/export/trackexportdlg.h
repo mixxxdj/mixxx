@@ -33,6 +33,7 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
             Grantlee::Context* context = nullptr,
             const QString* playlistName = nullptr);
     virtual ~TrackExportDlg();
+    void open() override;
 
   public slots:
     void slotProgress(const QString from, const QString to, int progress, int count);
