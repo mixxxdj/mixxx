@@ -33,7 +33,8 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
           m_readRequired(0),
           m_aacEnc(),
           m_pAacDataBuffer(nullptr),
-          m_aacInfo() {
+          m_aacInfo(),
+          m_hasSbr(false) {
     // Load shared library
     // Code import from encodermp3.cpp
     QStringList libnames;
@@ -153,6 +154,18 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return;
     }
+
+    LIB_INFO libinfo[FDK_MODULE_LAST] = {};
+    aacEncGetLibInfo(libinfo);
+    for (const auto& li : libinfo) {
+        if (li.module_id == FDK_NONE) {
+            break;
+        }
+        qDebug() << li.title << li.versionStr;
+        if (li.module_id == FDK_SBRENC) {
+            m_hasSbr = true;
+        }
+    }
 }
 
 EncoderFdkAac::~EncoderFdkAac() {
@@ -258,6 +271,11 @@ int EncoderFdkAac::initEncoder(int samplerate, QString& errorMessage) {
 
     if (!m_library) {
         kLogger.warning() << "initEncoder failed: fdk-aac library not loaded";
+        return -1;
+    }
+
+    if ((m_aacAot & AOT_SBR) == AOT_SBR && !m_hasSbr) {
+        kLogger.warning() << "initEncoder failed: fdk-aac library has no HE-AAC support";
         return -1;
     }
 

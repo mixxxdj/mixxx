@@ -213,6 +213,7 @@ class EncoderFdkAac : public Encoder {
     HANDLE_AACENCODER m_aacEnc;
     unsigned char* m_pAacDataBuffer;
     AACENC_InfoStruct m_aacInfo;
+    bool m_hasSbr;
 };
 
 #endif // ENCODER_ENCODERFDKAAC_H
