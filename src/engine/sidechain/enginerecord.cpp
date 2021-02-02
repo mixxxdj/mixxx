@@ -130,7 +130,6 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
         // Update file location from preferences.
         if (updateFromPreferences() < 0) {
-            ;
             // Maybe the encoder could not be initialized
             qDebug() << "Setting record flag to: OFF";
             m_pRecReady->slotSet(RECORD_OFF);
