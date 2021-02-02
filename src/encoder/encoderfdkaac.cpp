@@ -135,23 +135,15 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
         delete m_library;
         m_library = nullptr;
 
+        failedMsg.append(", the interface is not as expected");
+        kLogger.warning() << failedMsg;
+
         kLogger.debug() << "aacEncGetLibInfo:" << aacEncGetLibInfo;
         kLogger.debug() << "aacEncOpen:" << aacEncOpen;
         kLogger.debug() << "aacEncClose:" << aacEncClose;
         kLogger.debug() << "aacEncEncode:" << aacEncEncode;
         kLogger.debug() << "aacEncInfo:" << aacEncInfo;
         kLogger.debug() << "aacEncoder_SetParam:" << aacEncoder_SetParam;
-
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-        props->setType(DLG_WARNING);
-        props->setTitle(QObject::tr("Encoder"));
-        QString key = QObject::tr(
-                "<html>Mixxx has detected that you use a modified version of libfdk-aac. "
-                "See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> "
-                "for more information.</html>");
-        props->setText(key);
-        props->setKey(key);
-        ErrorDialogHandler::instance()->requestErrorDialog(props);
         return;
     }
 
@@ -265,17 +257,26 @@ void EncoderFdkAac::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderFdkAac::initEncoder(int samplerate, QString& errorMessage) {
-    (void)errorMessage;
+int EncoderFdkAac::initEncoder(int samplerate, QString* pUserErrorMessage) {
     m_samplerate = samplerate;
 
     if (!m_library) {
         kLogger.warning() << "initEncoder failed: fdk-aac library not loaded";
+        if (pUserErrorMessage) {
+            *pUserErrorMessage = QObject::tr(
+                    "The required AAC encoding library is missing. Please "
+                    "consult the manual for more information");
+        }
         return -1;
     }
 
     if ((m_aacAot & AOT_SBR) == AOT_SBR && !m_hasSbr) {
         kLogger.warning() << "initEncoder failed: fdk-aac library has no HE-AAC support";
+        if (pUserErrorMessage) {
+            *pUserErrorMessage = QObject::tr(
+                    "The installed AAC encoding library does not support "
+                    "HE-AAC. Please consult the manual for more information");
+        }
         return -1;
     }
 

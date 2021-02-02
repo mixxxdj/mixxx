@@ -29,7 +29,7 @@ class Encoder {
     Encoder() {}
     virtual ~Encoder() = default;
 
-    virtual int initEncoder(int samplerate, QString& errorMessage) = 0;
+    virtual int initEncoder(int samplerate, QString* pUserErrorMessage) = 0;
     // encodes the provided buffer of audio.
     virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
     // Adds metadata to the encoded audio, i.e., the ID3 tag. Currently only used

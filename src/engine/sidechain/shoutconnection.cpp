@@ -458,13 +458,24 @@ void ShoutConnection::updateFromPreferences() {
     m_encoder = EncoderFactory::getFactory().createEncoder(
                     pBroadcastSettings, this);
 
-    QString errorMsg;
+    QString userErrorMsg;
+    int ret = -1;
+    if (m_encoder) {
+        ret = m_encoder->initEncoder(static_cast<int>(masterSamplerate), &userErrorMsg);
+    }
+
     // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
-    if (m_encoder->initEncoder(static_cast<int>(masterSamplerate), errorMsg) < 0) {
-        // e.g., if lame is not found
-        // init m_encoder itself will display a message box
-        kLogger.warning() << "**** Encoder init failed";
-        kLogger.warning() << errorMsg;
+    if (ret < 0) {
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(pBroadcastSettings->getFormat() + QChar(' ') +
+                QObject::tr(" encoder failure"));
+        if (userErrorMsg.isEmpty()) {
+            QString userErrorMsg = QObject::tr(
+                    "Failed to apply the selected settings.");
+        }
+        props->setText(userErrorMsg);
+        ErrorDialogHandler::instance()->requestErrorDialog(props);
 
         // delete m_encoder calls write() make sure it will be exit early
         DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);

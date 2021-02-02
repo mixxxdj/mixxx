@@ -32,10 +32,6 @@ EngineRecord::~EngineRecord() {
     delete m_pSamplerate;
 }
 
-
-
-
-
 void EngineRecord::updateFromPreferences() {
     m_fileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Path"));
     m_baTitle = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title"));
@@ -53,11 +49,24 @@ void EngineRecord::updateFromPreferences() {
     m_encoding = format.internalName;
     m_pEncoder = EncoderFactory::getFactory().createRecordingEncoder(
             format, m_pConfig, this);
-    m_pEncoder->updateMetaData(m_baAuthor, m_baTitle, m_baAlbum);
 
-    QString errorMsg;
-    if(m_pEncoder->initEncoder(m_sampleRate, errorMsg) < 0) {
-        qWarning() << errorMsg;
+    QString userErrorMsg;
+    int ret = -1;
+    if (m_pEncoder) {
+        m_pEncoder->updateMetaData(m_baAuthor, m_baTitle, m_baAlbum);
+        ret = m_pEncoder->initEncoder(m_sampleRate, &userErrorMsg);
+    }
+
+    if (ret < 0) {
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(format.label + QChar(' ') + QObject::tr(" encoder failure"));
+        if (userErrorMsg.isEmpty()) {
+            QString userErrorMsg = QObject::tr(
+                    "Failed to apply the selected settings.");
+        }
+        props->setText(userErrorMsg);
+        ErrorDialogHandler::instance()->requestErrorDialog(props);
         m_pEncoder.reset();
     }
 }
