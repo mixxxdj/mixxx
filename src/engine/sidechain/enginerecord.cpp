@@ -62,7 +62,7 @@ int EngineRecord::updateFromPreferences() {
         props->setType(DLG_WARNING);
         props->setTitle(format.label + QChar(' ') + QObject::tr(" encoder failure"));
         if (userErrorMsg.isEmpty()) {
-            QString userErrorMsg = QObject::tr(
+            userErrorMsg = QObject::tr(
                     "Failed to apply the selected settings.");
         }
         props->setText(userErrorMsg);
