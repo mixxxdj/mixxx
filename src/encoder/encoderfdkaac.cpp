@@ -87,31 +87,6 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
 
     if (!m_library || !m_library->isLoaded()) {
         kLogger.warning() << failedMsg;
-
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-        props->setType(DLG_WARNING);
-        props->setTitle(QObject::tr("Encoder"));
-
-        // TODO(Palakis): write installation guide on Mixxx's wiki
-        // and include link in message below
-        QString missingCodec = QObject::tr(
-                "<html>Mixxx cannot record or stream in AAC "
-                "or AAC+ without the FDK-AAC encoder. Due to licensing issues, "
-                "we cannot distribute this with Mixxx. "
-                "In order to record or stream in AAC or AAC+, you need to "
-                "download <b>libfdk-aac</b> "
-                "and install it on your system.");
-
-#ifdef __LINUX__
-        missingCodec = missingCodec.arg("linux");
-#elif __WINDOWS__
-        missingCodec = missingCodec.arg("windows");
-#elif __APPLE__
-        missingCodec = missingCodec.arg("mac_osx");
-#endif
-        props->setText(missingCodec);
-        props->setKey(missingCodec);
-        ErrorDialogHandler::instance()->requestErrorDialog(props);
         return;
     }
 
@@ -263,9 +238,15 @@ int EncoderFdkAac::initEncoder(int samplerate, QString* pUserErrorMessage) {
     if (!m_library) {
         kLogger.warning() << "initEncoder failed: fdk-aac library not loaded";
         if (pUserErrorMessage) {
+            // TODO(Palakis): write installation guide on Mixxx's wiki
+            // and include link in message below
             *pUserErrorMessage = QObject::tr(
-                    "The required AAC encoding library is missing. Please "
-                    "consult the manual for more information");
+                    "<html>Mixxx cannot record or stream in AAC "
+                    "or HE-AAC without the FDK-AAC encoder. Due to licensing issues, "
+                    "we cannot distribute this with Mixxx. "
+                    "In order to record or stream in AAC or AAC+, you need to "
+                    "download <b>libfdk-aac</b> "
+                    "and install it on your system.");
         }
         return -1;
     }
@@ -275,7 +256,7 @@ int EncoderFdkAac::initEncoder(int samplerate, QString* pUserErrorMessage) {
         if (pUserErrorMessage) {
             *pUserErrorMessage = QObject::tr(
                     "The installed AAC encoding library does not support "
-                    "HE-AAC. Please consult the manual for more information");
+                    "HE-AAC. Please consult the manual for more information.");
         }
         return -1;
     }
