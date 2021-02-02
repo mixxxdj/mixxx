@@ -48,7 +48,7 @@ class HidController final : public Controller {
 
   private:
     bool isPolling() const override;
-    void processInputReport(int& bytesRead, const int& currentBufferIndex);
+    void processInputReport(int bytesRead, const int currentBufferIndex);
 
     // For devices which only support a single report, reportID must be set to
     // 0x0.

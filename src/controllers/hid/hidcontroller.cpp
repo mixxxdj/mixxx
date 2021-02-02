@@ -137,7 +137,7 @@ int HidController::close() {
     return 0;
 }
 
-void HidController::processInputReport(int& bytesRead, const int& currentBufferIndex) {
+void HidController::processInputReport(int bytesRead, const int currentBufferIndex) {
     Trace process("HidController processInputReport");
     unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
     unsigned char* pCurrentBuffer = m_pPollData[currentBufferIndex];
