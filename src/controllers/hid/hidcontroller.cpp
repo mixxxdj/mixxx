@@ -19,7 +19,7 @@ HidController::HidController(
         mixxx::hid::DeviceInfo&& deviceInfo)
         : m_deviceInfo(std::move(deviceInfo)),
           m_pHidDevice(nullptr),
-          m_iPollingBufferIndex(0) {
+          m_PollingBufferIndex(0) {
     setDeviceCategory(mixxx::hid::DeviceCategory::guessFromDeviceInfo(m_deviceInfo));
     setDeviceName(m_deviceInfo.formatName());
 
@@ -110,7 +110,7 @@ int HidController::open() {
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
     }
-    m_iLastPollSize = 0;
+    m_LastPollSize = 0;
 
     setOpen(true);
     startEngine();
@@ -139,7 +139,7 @@ int HidController::close() {
 
 void HidController::processInputReport(int bytesRead, const int currentBufferIndex) {
     Trace process("HidController processInputReport");
-    unsigned char* pPreviousBuffer = m_pPollData[m_iPollingBufferIndex];
+    unsigned char* pPreviousBuffer = m_pPollData[m_PollingBufferIndex];
     unsigned char* pCurrentBuffer = m_pPollData[currentBufferIndex];
     // Some controllers such as the Gemini GMX continuously send input reports even if it
     // is identical to the previous send input report. If this loop processed all those redundant
@@ -149,12 +149,12 @@ void HidController::processInputReport(int bytesRead, const int currentBufferInd
     // have not encountered any controllers that send redundant input report with different report
     // IDs. If any such devices exist, this may be changed to use a separate buffer to store
     // the last input report for each report ID.
-    if (bytesRead == m_iLastPollSize &&
+    if (bytesRead == m_LastPollSize &&
             memcmp(pCurrentBuffer, pPreviousBuffer, bytesRead) == 0) {
         return;
     }
-    m_iLastPollSize = bytesRead;
-    m_iPollingBufferIndex = currentBufferIndex;
+    m_LastPollSize = bytesRead;
+    m_PollingBufferIndex = currentBufferIndex;
     auto incomingData = QByteArray::fromRawData(
             reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
     receive(incomingData, mixxx::Time::elapsed());
@@ -165,7 +165,7 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
     int bytesRead;
 
     // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
-    const int currentBufferIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
+    const int currentBufferIndex = (m_PollingBufferIndex + 1) % kNumBuffers;
 
     m_pPollData[currentBufferIndex][0] = reportID;
     bytesRead = hid_get_input_report(m_pHidDevice, m_pPollData[currentBufferIndex], kBufferSize);
@@ -211,7 +211,7 @@ bool HidController::poll() {
     // a problem in practice.
     while (true) {
         // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
-        const int currentBufferIndex = (m_iPollingBufferIndex + 1) % kNumBuffers;
+        const int currentBufferIndex = (m_PollingBufferIndex + 1) % kNumBuffers;
 
         int bytesRead = hid_read(m_pHidDevice, m_pPollData[currentBufferIndex], kBufferSize);
         if (bytesRead < 0) {
