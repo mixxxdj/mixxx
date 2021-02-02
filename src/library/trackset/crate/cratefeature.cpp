@@ -774,8 +774,10 @@ void CrateFeature::slotExportTrackFiles() {
     m_pTrackCollection->crates().readCrateSummaryById(id, summary);
     CrateSummaryWrapper* summaryWrapper = nullptr;
     if (summary->isValid()) {
-        new CrateSummaryWrapper(*summary);
+        summaryWrapper = new CrateSummaryWrapper(*summary);
         context->insert(QStringLiteral("crate"), summaryWrapper);
+    } else {
+        qWarning() << "CrateSummary is empty";
     }
 
     auto exportDialog = new TrackExportDlg(

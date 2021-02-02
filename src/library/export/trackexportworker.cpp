@@ -30,14 +30,6 @@ const auto kResultCantCreateFile = QStringLiteral("Could not create file");
 const auto kDefaultPattern = QStringLiteral(
         "{{ track.basename }}{% if dup %}-{{dup}}{% endif %}"
         ".{{track.extension}}");
-
-QString rewriteFilename(const QFileInfo& fileinfo, int index) {
-    // We don't have total control over the inputs, so definitely
-    // don't use .arg().arg().arg().
-    const QString index_str = QString("%1").arg(index, 4, 10, QChar('0'));
-    return QString("%1-%2.%3").arg(fileinfo.baseName(), index_str, fileinfo.completeSuffix());
-}
-
 } // namespace
 
 TrackExportWorker::TrackExportWorker(const QString& destDir,
@@ -224,12 +216,6 @@ void TrackExportWorker::run() {
 // Returns the new filename for the track. Applies the pattern if set.
 QString TrackExportWorker::generateFilename(TrackPointer track, int index, int dupCounter) {
     return FileUtils::safeFilename(applyPattern(track, index, dupCounter).trimmed());
-
-    // const auto trackFile = track->getFileInfo();
-    // if (dupCounter == 0) {
-    //     return QDir(m_destDir).filePath(trackFile.fileName());
-    // }
-    // return rewriteFilename(trackFile.asFileInfo(), dupCounter);
 }
 
 // Applies the pattern on track

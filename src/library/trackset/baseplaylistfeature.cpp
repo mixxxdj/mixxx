@@ -624,11 +624,12 @@ void BasePlaylistFeature::slotExportTrackFiles() {
 
     PlaylistSummary summary = m_playlistDao.getPlaylistSummary(id);
     PlaylistSummaryWrapper* wrapper = nullptr;
+    QString playlistName = QString();
     if (summary.isValid()) {
         wrapper = new PlaylistSummaryWrapper(summary);
         context->insert(QStringLiteral("playlist"), wrapper);
+        playlistName = summary.name();
     }
-    QString playlistName = summary.name();
 
     auto exportDialog = new TrackExportDlg(nullptr, m_pConfig, tracks, context, &playlistName);
 
