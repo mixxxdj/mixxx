@@ -231,7 +231,7 @@ QString EncoderFdkAac::buttWindowsFdkAac() {
         }
     }
 
-    return QString::null;
+    return QString();
 }
 
 void EncoderFdkAac::setEncoderSettings(const EncoderSettings& settings) {
