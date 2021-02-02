@@ -11,6 +11,7 @@
 #include <cmath>
 
 #include "moc_mixxxformatter.cpp"
+#include "util/fileutils.h"
 
 using namespace Grantlee;
 
@@ -111,6 +112,15 @@ QVariant Rounder::doFilter(const QVariant& input,
     return SafeString(QString("%1").arg(rValue, 0, 'f', arg));
 }
 
+QVariant NoDir::doFilter(const QVariant& input,
+        const QVariant& argument,
+        bool autoescape) const {
+    Q_UNUSED(autoescape)
+    auto value = getSafeString(input);
+
+    return SafeString(FileUtils::replaceDirChars(value.get()));
+}
+
 QHash<QString, AbstractNodeFactory*> FormatterPlugin::nodeFactories(const QString& name) {
     Q_UNUSED(name);
     QHash<QString, AbstractNodeFactory*> nodes;
@@ -124,6 +134,7 @@ QHash<QString, Filter*> FormatterPlugin::filters(const QString& name) {
     filters.insert("rangegroup", new RangeGroup());
     filters.insert("zeropad", new ZeroPad());
     filters.insert("round", new Rounder());
+    filters.insert("nodir", new NoDir());
 
     return filters;
 }

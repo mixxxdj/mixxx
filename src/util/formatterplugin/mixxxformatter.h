@@ -52,6 +52,20 @@ class Rounder : public Filter {
     };
 };
 
+/// SafeFileName
+class NoDir : public Filter {
+  public:
+    NoDir(){};
+    ~NoDir(){};
+
+    QVariant doFilter(const QVariant& input,
+            const QVariant& arg = {},
+            bool autoescape = false) const override;
+    bool isSafe() const override {
+        return true;
+    };
+};
+
 class FormatterPlugin : public QObject, public TagLibraryInterface {
     Q_OBJECT
     Q_INTERFACES(Grantlee::TagLibraryInterface)

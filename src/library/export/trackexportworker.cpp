@@ -14,7 +14,7 @@
 #include "library/parser.h"
 #include "moc_trackexportworker.cpp"
 #include "track/track.h"
-#include "util/file.h"
+#include "util/fileutils.h"
 #include "util/formatter.h"
 
 namespace {
@@ -243,13 +243,13 @@ QString TrackExportWorker::applyPattern(
     m_context->insert(QStringLiteral("index"), QVariant(index));
     m_context->insert(QStringLiteral("dup"), QVariant(duplicateCounter));
 
-    QString newName = Formatter::renderNoEscape(m_template, *m_context);
+    QString newName = Formatter::renderFilenameEscape(m_template, *m_context);
 
     // remove the context stack so it is clean again
     m_context->pop();
 
     // replace bad filename characters with spaces
-    return newName.replace(kBadFileCharacters, QStringLiteral(" "));
+    return newName;
 }
 
 void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,

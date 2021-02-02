@@ -14,22 +14,22 @@ namespace {
 const QStringList kDefaultPatterns = QStringList()
         << "{{ track.fileName }}"
         << "{{ track.artist }} - {{track.title }}.{{ track.extension }}"
-        << "{{ index|zeropad:\"3\"}} - {{ track.artist }} - {{track.title "
-           "}}.{{ track.extension }}"
-        << "{{ track.bpm|round }} - {{ track.artist }} - {{track.title }}.{{ "
-           "track.extension }}"
-        << "{{ track.bpm|round }}/{{ track.artist }} - {{track.title }}.{{ "
-           "track.extension }}"
+        << "{{ index|zeropad:\"3\"}} - {{ track.artist }} - "
+           "{{ track.title }}.{{ track.extension }}"
+        << "{{ track.bpm|round }} - {{ track.artist }} - {{track.title }}"
+           ".{{ track.extension }}"
+        << "{{ track.bpm|round }}/{{ track.artist }} - {{track.title }}"
+           ".{{ track.extension }}"
         << "{{ track.bpm|round }}/{{ track.key.openkey }} - {{ track.artist }} "
            "- {{track.title }}.{{ track.extension }}"
         << "{{ track.bpm|round }}/{{ track.key.lancelot }} - {{ track.artist "
            "}} - {{track.title }}.{{ track.extension }}"
         << "{{ track.bpm|rangegroup }}/{{ track.artist }} - {{track.title "
            "}}.{{ track.extension }}"
-        << "{{ crate.name }}/{{ index }} - {{ track.artist }} - {{ track.title "
-           "}}.{{ track.extension }}"
-        << "{{ playlist.name }}/{{ index }} - {{ track.artist }} - {{ "
-           "track.title }}.{{ track.extension }}";
+        << "{{ crate.name }}/{{ index|zeropad:\"3\" }} - {{ track.artist }}"
+           " - {{ track.title }}.{{ track.extension }}"
+        << "{{ playlist.name }}/{{ index }} - {{ track.artist }} - "
+           "{{ track.title }}.{{ track.extension }}";
 
 } // anonymous namespace
 

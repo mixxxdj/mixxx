@@ -809,6 +809,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/duration.cpp
   src/util/experiment.cpp
   src/util/file.cpp
+  src/util/fileutils.cpp
   src/util/formatter.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp
@@ -1416,7 +1417,7 @@ add_executable(mixxx-test
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
   src/test/formatter_test.cpp
-  src/test/file_test.cpp
+  src/test/fileutils_test.cpp
   src/test/globaltrackcache_test.cpp
   src/test/hotcuecontrol_test.cpp
   src/test/imageutils_test.cpp
@@ -1813,9 +1814,11 @@ target_link_libraries(mixxx-lib PUBLIC
 # grantlee plugin
 add_library(mixxxformatter MODULE
   src/util/formatterplugin/mixxxformatter.cpp
+  src/util/fileutils.cpp
 )
 
 set_target_properties(mixxxformatter PROPERTIES AUTOMOC ON)
+target_include_directories(mixxxformatter PRIVATE src)
 
 grantlee_adjust_plugin_name(mixxxformatter)
 

@@ -33,14 +33,3 @@ class MDir {
     QDir m_dir;
     SecurityTokenPointer m_pSecurityToken;
 };
-
-namespace {
-const QString kDefaultReplacementCharacter = QString("#");
-}
-
-class FileUtils {
-  public:
-    // returns a filename that is safe on all platforms and does not contain unwanted characters like newline
-    static QString safeFilename(const QString& input,
-            const QString& replacement = kDefaultReplacementCharacter);
-};

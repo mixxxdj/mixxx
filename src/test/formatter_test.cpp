@@ -104,3 +104,15 @@ TEST_F(FormatterTest, TestRoundFilter) {
     EXPECT_EQ(t2->render(context),
             QString("1.24"));
 }
+
+TEST_F(FormatterTest, TestEscape) {
+    // Generate a file name for the temporary file
+    auto engine = Formatter::getEngine(nullptr);
+    auto context = new Context();
+    context->insert(QStringLiteral("file"), QStringLiteral("file<>|with_/&terrible.name"));
+    context->insert(QStringLiteral("dir"), QStringLiteral("extra/bad\\directory"));
+    Template t1 = engine->newTemplate(QStringLiteral("{{dir}}/{{file}}"), QStringLiteral("t1"));
+
+    EXPECT_EQ(Formatter::renderFilenameEscape(t1, *context),
+            QString("extra-bad-directory/file###with_-&terrible.name"));
+}
