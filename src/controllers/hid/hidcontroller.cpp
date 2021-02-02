@@ -137,10 +137,10 @@ int HidController::close() {
     return 0;
 }
 
-void HidController::processInputReport(int bytesRead, const int currentBufferIndex) {
+void HidController::processInputReport(int bytesRead) {
     Trace process("HidController processInputReport");
-    unsigned char* pPreviousBuffer = m_pPollData[m_PollingBufferIndex];
-    unsigned char* pCurrentBuffer = m_pPollData[currentBufferIndex];
+    unsigned char* pPreviousBuffer = m_pPollData[(m_PollingBufferIndex + 1) % kNumBuffers];
+    unsigned char* pCurrentBuffer = m_pPollData[m_PollingBufferIndex];
     // Some controllers such as the Gemini GMX continuously send input reports even if it
     // is identical to the previous send input report. If this loop processed all those redundant
     // input report, it would be a big performance problem to run JS code for every  input report and
@@ -153,8 +153,9 @@ void HidController::processInputReport(int bytesRead, const int currentBufferInd
             memcmp(pCurrentBuffer, pPreviousBuffer, bytesRead) == 0) {
         return;
     }
+    // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
+    m_PollingBufferIndex = (m_PollingBufferIndex + 1) % kNumBuffers;
     m_LastPollSize = bytesRead;
-    m_PollingBufferIndex = currentBufferIndex;
     auto incomingData = QByteArray::fromRawData(
             reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
     receive(incomingData, mixxx::Time::elapsed());
@@ -164,11 +165,8 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
     Trace hidRead("HidController getInputReport");
     int bytesRead;
 
-    // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
-    const int currentBufferIndex = (m_PollingBufferIndex + 1) % kNumBuffers;
-
-    m_pPollData[currentBufferIndex][0] = reportID;
-    bytesRead = hid_get_input_report(m_pHidDevice, m_pPollData[currentBufferIndex], kBufferSize);
+    m_pPollData[m_PollingBufferIndex][0] = reportID;
+    bytesRead = hid_get_input_report(m_pHidDevice, m_pPollData[m_PollingBufferIndex], kBufferSize);
 
     controllerDebug(bytesRead
             << "bytes received by hid_get_input_report" << getName()
@@ -187,17 +185,18 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
         return QList<int>();
     }
 
-    // Execute callback function in JavaScript mapping
-    // and print to stdout in case of --controllerDebug
-    HidController::processInputReport(bytesRead, currentBufferIndex);
-
     // Convert array of bytes read in a JavaScript compatible return type
     // For compatibilty with the array provided by HidController::poll the reportID is contained as prefix
     QList<int> dataList;
     dataList.reserve(bytesRead);
     for (int i = 0; i < bytesRead; i++) {
-        dataList.append(m_pPollData[currentBufferIndex][i]);
+        dataList.append(m_pPollData[m_PollingBufferIndex][i]);
     }
+
+    // Execute callback function in JavaScript mapping
+    // and print to stdout in case of --controllerDebug
+    HidController::processInputReport(bytesRead);
+
     return dataList;
 }
 
@@ -210,10 +209,7 @@ bool HidController::poll() {
     // There is no safety net for this because it has not been demonstrated to be
     // a problem in practice.
     while (true) {
-        // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
-        const int currentBufferIndex = (m_PollingBufferIndex + 1) % kNumBuffers;
-
-        int bytesRead = hid_read(m_pHidDevice, m_pPollData[currentBufferIndex], kBufferSize);
+        int bytesRead = hid_read(m_pHidDevice, m_pPollData[m_PollingBufferIndex], kBufferSize);
         if (bytesRead < 0) {
             // -1 is the only error value according to hidapi documentation.
             DEBUG_ASSERT(bytesRead == -1);
@@ -222,7 +218,7 @@ bool HidController::poll() {
             // No packet was available to be read
             return true;
         }
-        processInputReport(bytesRead, currentBufferIndex);
+        processInputReport(bytesRead);
     }
 }
 
