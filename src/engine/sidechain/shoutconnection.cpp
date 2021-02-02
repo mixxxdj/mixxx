@@ -466,24 +466,20 @@ void ShoutConnection::updateFromPreferences() {
 
     // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
     if (ret < 0) {
-        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-        props->setType(DLG_WARNING);
-        props->setTitle(pBroadcastSettings->getFormat() + QChar(' ') +
-                QObject::tr(" encoder failure"));
-        if (userErrorMsg.isEmpty()) {
-            QString userErrorMsg = QObject::tr(
-                    "Failed to apply the selected settings.");
-        }
-        props->setText(userErrorMsg);
-        ErrorDialogHandler::instance()->requestErrorDialog(props);
-
         // delete m_encoder calls write() make sure it will be exit early
         DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
         m_encoder.reset();
 
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
-        m_lastErrorStr = "Encoder error";
 
+        m_lastErrorStr = pBroadcastSettings->getFormat() + QChar(' ') +
+                QObject::tr(" encoder failure") + QChar('\n');
+        if (userErrorMsg.isEmpty()) {
+            m_lastErrorStr.append(QObject::tr(
+                    "Failed to apply the selected settings."));
+        } else {
+            m_lastErrorStr.append(userErrorMsg);
+        }
         return;
     }
     setState(NETWORKSTREAMWORKER_STATE_READY);
@@ -1010,8 +1006,10 @@ void ShoutConnection::run() {
 
     if (!processConnect()) {
         errorDialog(tr("Can't connect to streaming server"),
-                m_lastErrorStr + "\n" +
-                tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                m_lastErrorStr + "\n\n" +
+                        tr("Please check your connection to the Internet and "
+                           "verify that your username and password are "
+                           "correct."));
         return;
     }
 
