@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13.0)
+cmake_minimum_required(VERSION 3.15.0)
 project(mixxx VERSION 2.3.0)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
@@ -2224,15 +2224,19 @@ endif()
 # FDK-AAC is loaded dynamically at runtime by EncoderFdkAac using QLibrary,
 # so copy it into the Windows and macOS packages, but do not link to it.
 find_library(FDK_AAC_LIBRARY fdk-aac)
-if(FDK_AAC_LIBRARY)
-  message(STATUS "Found FDK-AAC: ${FDK_AAC_LIBRARY}")
-  if(WIN32)
-    install(FILES ${FDK_AAC_LIBRARY} DESTINATION ${CMAKE_INSTALL_BINDIR})
-  elseif(APPLE AND MACOS_BUNDLE)
-    install(FILES ${FDK_AAC_LIBRARY} DESTINATION ${CMAKE_INSTALL_LIBDIR})
-  endif()
-else()
-  message(STATUS "FDK-AAC library NOT found")
+# On Windows find_library finds the .lib file, but the installer needs the .dll file.
+find_file(FDK_AAC_DLL fdk-aac.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
+if(APPLE AND MACOS_BUNDLE AND FDK_AAC_LIBRARY)
+  message(STATUS "Found fdk-aac: ${FDK_AAC_LIBRARY}")
+  file(COPY ${FDK_AAC_LIBRARY}
+    DESTINATION ${MIXXX_INSTALL_PREFIX}/Contents/Frameworks
+    FOLLOW_SYMLINK_CHAIN
+  )
+elseif(WIN32 AND FDK_AAC_DLL)
+  message(STATUS "Found fdk-aac DLL: ${FDK_AAC_DLL}")
+  install(FILES ${FDK_AAC_DLL} DESTINATION ${MIXXX_INSTALL_BINDIR})
+elseif(NOT FDK_AAC_LIBRARY)
+  message(STATUS "Could NOT find fdk-aac")
 endif()
 
 # FFmpeg 4.x support
