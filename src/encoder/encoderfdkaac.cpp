@@ -69,6 +69,11 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     libnames << QStringLiteral("/opt/local/lib/libfdk-aac.dylib");
     libnames << QStringLiteral("/opt/local/lib/libfdk-aac.2.dylib");
     libnames << QStringLiteral("/opt/local/lib/libfdk-aac.1.dylib");
+    // Finally check at the default lookup path which should reveal the
+    // shipped fdk-aac-free
+    libnames << QStringLiteral("libfdk-aac");
+    libnames << QStringLiteral("libfdk-aac.2.dylib");
+    libnames << QStringLiteral("libfdk-aac.1.dylib");
 #endif
 
     QString failedMsg = QStringLiteral("Failed to load AAC encoder library");
