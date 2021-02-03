@@ -39,14 +39,14 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     // Code import from encodermp3.cpp
     QStringList libnames;
 #ifdef __LINUX__
-    libnames << "fdk-aac";
-    libnames << "libfdk-aac.so.2";
-    libnames << "libfdk-aac.so.1";
+    libnames << QStringLiteral("fdk-aac");
+    libnames << QStringLiteral("libfdk-aac.so.2");
+    libnames << QStringLiteral("libfdk-aac.so.1");
 #elif __WINDOWS__
     // Give top priority to libfdk-aac copied
     // into Mixxx's installation folder
-    libnames << "libfdk-aac-2.dll";
-    libnames << "libfdk-aac-1.dll";
+    libnames << QStringLiteral("libfdk-aac-2.dll");
+    libnames << QStringLiteral("libfdk-aac-1.dll");
 
     // Fallback and user-friendly method: use libfdk-aac
     // provided with B.U.T.T installed in
@@ -58,20 +58,20 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     }
 
     // Last resort choices: try versions with unusual names
-    libnames << "libfdk-aac.dll";
-    libnames << "libfdkaac.dll";
+    libnames << QStringLiteral("libfdk-aac.dll");
+    libnames << QStringLiteral("libfdkaac.dll");
 #elif __APPLE__
     // Using Homebrew ('brew install fdk-aac' command):
-    libnames << "/usr/local/lib/libfdk-aac.dylib";
-    libnames << "/usr/local/lib/libfdk-aac.2.dylib";
-    libnames << "/usr/local/lib/libfdk-aac.1.dylib";
+    libnames << QStringLiteral("/usr/local/lib/libfdk-aac.dylib");
+    libnames << QStringLiteral("/usr/local/lib/libfdk-aac.2.dylib");
+    libnames << QStringLiteral("/usr/local/lib/libfdk-aac.1.dylib");
     // Using MacPorts ('sudo port install libfdk-aac' command):
-    libnames << "/opt/local/lib/libfdk-aac.dylib";
-    libnames << "/opt/local/lib/libfdk-aac.2.dylib";
-    libnames << "/opt/local/lib/libfdk-aac.1.dylib";
+    libnames << QStringLiteral("/opt/local/lib/libfdk-aac.dylib");
+    libnames << QStringLiteral("/opt/local/lib/libfdk-aac.2.dylib");
+    libnames << QStringLiteral("/opt/local/lib/libfdk-aac.1.dylib");
 #endif
 
-    QString failedMsg = "Failed to load AAC encoder library";
+    QString failedMsg = QStringLiteral("Failed to load AAC encoder library");
     for (const auto& libname : qAsConst(libnames)) {
         m_library = new QLibrary(libname);
         if (m_library->load()) {
