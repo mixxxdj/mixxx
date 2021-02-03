@@ -2221,6 +2221,20 @@ if(FAAD)
   endif()
 endif()
 
+# FDK-AAC is loaded dynamically at runtime by EncoderFdkAac using QLibrary,
+# so copy it into the Windows and macOS packages, but do not link to it.
+find_library(FDK_AAC_LIBRARY fdk-aac)
+if(FDK_AAC_LIBRARY)
+  message(STATUS "Found FDK-AAC: ${FDK_AAC_LIBRARY}")
+  if(WIN32)
+    install(FILES ${FDK_AAC_LIBRARY} DESTINATION ${CMAKE_INSTALL_BINDIR})
+  elseif(APPLE AND MACOS_BUNDLE)
+    install(FILES ${FDK_AAC_LIBRARY} DESTINATION ${CMAKE_INSTALL_LIBDIR})
+  endif()
+else()
+  message(STATUS "FDK-AAC library NOT found")
+endif()
+
 # FFmpeg 4.x support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
 find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
