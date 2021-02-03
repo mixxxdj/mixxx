@@ -593,9 +593,6 @@ void SoundSourceProxy::updateTrackFromSource(
         // once in the past. Only overwrite this information if
         // new data has actually been imported, otherwise abort
         // and preserve the existing data!
-        if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
-            return; // abort
-        }
         if (kLogger.debugEnabled()) {
             kLogger.debug()
                     << "Updating track metadata"
