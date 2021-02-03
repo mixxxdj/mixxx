@@ -99,7 +99,6 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
 
     // Check if all function pointers aren't null.
     // Otherwise, the version of libfdk-aac loaded doesn't comply with the official distribution
-    // Shouldn't happen on Linux, mainly on Windows.
     if (!aacEncGetLibInfo ||
             !aacEncOpen ||
             !aacEncClose ||
