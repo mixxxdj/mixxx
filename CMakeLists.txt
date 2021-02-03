@@ -1631,10 +1631,11 @@ if(ENGINEPRIME)
 
     set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
     set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
     ExternalProject_Add(libdjinterop
-      GIT_REPOSITORY https://github.com/xsco/libdjinterop.git
-      GIT_TAG tags/0.14.6
-      GIT_SHALLOW TRUE
+      URL "https://github.com/xsco/libdjinterop/archive/0.14.6.tar.gz"
+      URL_HASH SHA256=db2f57f6c06c801d1785280ede0f032d7280bedd72f2a30bc263a272e3269587
+      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libdjinterop"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       CMAKE_ARGS
         -DBUILD_SHARED_LIBS=OFF
