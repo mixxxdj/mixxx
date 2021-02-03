@@ -52,7 +52,7 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     // provided with B.U.T.T installed in
     // a standard location
     QString buttFdkAacPath = buttWindowsFdkAac();
-    if (!buttFdkAacPath.isNull()) {
+    if (!buttFdkAacPath.isEmpty()) {
         kLogger.debug() << "Found libfdk-aac at" << buttFdkAacPath;
         libnames << buttFdkAacPath;
     }
