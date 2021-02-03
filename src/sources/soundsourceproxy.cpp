@@ -575,13 +575,59 @@ void SoundSourceProxy::updateTrackFromSource(
                 << getUrl().toString();
     }
 
-    if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
-        if (mergeImportedMetadata) {
-            // Nothing to do if no metadata imported
-            return;
+    // Partial import
+    if (mergeImportedMetadata) {
+        // No reimport of embedded cover image desired in this case
+        DEBUG_ASSERT(!pCoverImg);
+        if (metadataImported.first == mixxx::MetadataSource::ImportResult::Succeeded) {
+            // Partial import of properties that are not (yet) stored
+            // in the database
+            m_pTrack->mergeImportedMetadata(trackMetadata);
+        } // else: Nothing to do if no metadata has been imported
+        return;
+    }
+
+    // Full import
+    if (metadataSynchronized) {
+        // Metadata has been synchronized successfully at least
+        // once in the past. Only overwrite this information if
+        // new data has actually been imported, otherwise abort
+        // and preserve the existing data!
+        if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
+            return; // abort
+        }
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Updating track metadata"
+                    << (pCoverImg ? "and embedded cover art" : "")
+                    << "from file"
+                    << getUrl().toString();
+        }
+    } else {
+        DEBUG_ASSERT(pCoverImg);
+        if (kLogger.debugEnabled()) {
+            kLogger.debug()
+                    << "Initializing track metadata and embedded cover art from file"
+                    << getUrl().toString();
         }
     }
 
+    // Preserve the precise stream info data (if available) that has been
+    // obtained from the actual audio stream. If the file content itself
+    // has been modified the stream info data will be updated next time
+    // when opening and decoding the audio stream.
+    if (preciseStreamInfo.isValid()) {
+        trackMetadata.setStreamInfo(preciseStreamInfo);
+    } else if (preciseStreamInfo.getSignalInfo().isValid()) {
+        // Special case: Only the bitrate might be invalid or unknown
+        trackMetadata.refStreamInfo().setSignalInfo(
+                preciseStreamInfo.getSignalInfo());
+        if (preciseStreamInfo.getDuration() > mixxx::Duration::empty()) {
+            trackMetadata.refStreamInfo().setDuration(preciseStreamInfo.getDuration());
+        }
+    }
+
+    // Ensure that all tracks have a title
     if (trackMetadata.getTrackInfo().getTitle().trimmed().isEmpty()) {
         // Only parse artist and title if both fields are empty to avoid
         // inconsistencies. Otherwise the file name (without extension)
@@ -613,69 +659,23 @@ void SoundSourceProxy::updateTrackFromSource(
         }
     }
 
-    if (mergeImportedMetadata) {
-        // Partial import of properties that are not (yet) stored
-        // in the database
-        m_pTrack->mergeImportedMetadata(trackMetadata);
-    } else {
-        // Full import
-        if (metadataSynchronized) {
-            // Metadata has been synchronized successfully at least
-            // once in the past. Only overwrite this information if
-            // new data has actually been imported, otherwise abort
-            // and preserve the existing data!
-            if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
-                return; // abort
-            }
-            if (kLogger.debugEnabled()) {
-                kLogger.debug()
-                        << "Updating track metadata"
-                        << (pCoverImg ? "and embedded cover art" : "")
-                        << "from file"
-                        << getUrl().toString();
-            }
-        } else {
-            DEBUG_ASSERT(pCoverImg);
-            if (kLogger.debugEnabled()) {
-                kLogger.debug()
-                        << "Initializing track metadata and embedded cover art from file"
-                        << getUrl().toString();
-            }
-        }
+    m_pTrack->importMetadata(trackMetadata, metadataImported.second);
 
-        // Preserve the precise stream info data (if available) that has been
-        // obtained from the actual audio stream. If the file content itself
-        // has been modified the stream info data will be updated next time
-        // when opening and decoding the audio stream.
-        if (preciseStreamInfo.isValid()) {
-            trackMetadata.setStreamInfo(preciseStreamInfo);
-        } else if (preciseStreamInfo.getSignalInfo().isValid()) {
-            // Special case: Only the bitrate might be invalid or unknown
-            trackMetadata.refStreamInfo().setSignalInfo(
-                    preciseStreamInfo.getSignalInfo());
-            if (preciseStreamInfo.getDuration() > mixxx::Duration::empty()) {
-                trackMetadata.refStreamInfo().setDuration(preciseStreamInfo.getDuration());
-            }
-        }
-
-        m_pTrack->importMetadata(trackMetadata, metadataImported.second);
-
-        bool pendingBeatsImport = m_pTrack->getBeatsImportStatus() == Track::ImportStatus::Pending;
-        bool pendingCueImport = m_pTrack->getCueImportStatus() == Track::ImportStatus::Pending;
-        if (pendingBeatsImport || pendingCueImport) {
-            // Try to open the audio source once to determine the actual
-            // stream properties for finishing the pending import.
-            kLogger.debug()
-                    << "Opening audio source to finish import of beats/cues";
-            const auto pAudioSource = openAudioSource();
-            Q_UNUSED(pAudioSource); // only used in debug assertion
-            DEBUG_ASSERT(!pAudioSource ||
-                    m_pTrack->getBeatsImportStatus() ==
-                            Track::ImportStatus::Complete);
-            DEBUG_ASSERT(!pAudioSource ||
-                    m_pTrack->getCueImportStatus() ==
-                            Track::ImportStatus::Complete);
-        }
+    bool pendingBeatsImport = m_pTrack->getBeatsImportStatus() == Track::ImportStatus::Pending;
+    bool pendingCueImport = m_pTrack->getCueImportStatus() == Track::ImportStatus::Pending;
+    if (pendingBeatsImport || pendingCueImport) {
+        // Try to open the audio source once to determine the actual
+        // stream properties for finishing the pending import.
+        kLogger.debug()
+                << "Opening audio source to finish import of beats/cues";
+        const auto pAudioSource = openAudioSource();
+        Q_UNUSED(pAudioSource); // only used in debug assertion
+        DEBUG_ASSERT(!pAudioSource ||
+                m_pTrack->getBeatsImportStatus() ==
+                        Track::ImportStatus::Complete);
+        DEBUG_ASSERT(!pAudioSource ||
+                m_pTrack->getCueImportStatus() ==
+                        Track::ImportStatus::Complete);
     }
 
     if (pCoverImg) {
