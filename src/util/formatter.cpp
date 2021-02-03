@@ -8,6 +8,7 @@
 #include <QSharedPointer>
 #include <QTextStream>
 
+#include "track/keys.h"
 #include "util/fileutils.h"
 
 NoEscapeStream::NoEscapeStream()
@@ -40,6 +41,8 @@ QSharedPointer<Grantlee::OutputStream> FileEscapeStream::clone(QTextStream* stre
 }
 
 Grantlee::Engine* Formatter::getEngine(QObject* parent) {
+    Grantlee::registerMetaType<Keys>();
+
     auto engine = new Grantlee::Engine(parent);
     engine->addDefaultLibrary(QStringLiteral("mixxxformatter"));
     // register custom

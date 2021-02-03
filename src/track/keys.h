@@ -1,5 +1,7 @@
 #pragma once
 
+#include <grantlee/metatype.h>
+
 #include <QByteArray>
 #include <QObject>
 #include <QPair>
@@ -71,3 +73,16 @@ inline bool operator!=(const Keys& lhs, const Keys& rhs) {
 }
 
 Q_DECLARE_METATYPE(Keys)
+
+// FIXME(XXX) This should work according to grentlee docs, but it does not
+GRANTLEE_BEGIN_LOOKUP(Keys)
+if (property.isEmpty()) {
+    return object.getOpenkey();
+}
+GRANTLEE_END_LOOKUP
+
+GRANTLEE_BEGIN_LOOKUP_PTR(Keys)
+if (property.isEmpty()) {
+    return object->getOpenkey();
+}
+GRANTLEE_END_LOOKUP
