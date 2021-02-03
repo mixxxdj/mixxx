@@ -13,6 +13,7 @@
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 
+class QMenu;
 // A dialog for interacting with the track exporter in an interactive manner.
 // Handles errors and user interactions.
 class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
@@ -34,6 +35,7 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
             const QString* playlistName = nullptr);
     virtual ~TrackExportDlg();
     void open() override;
+    bool eventFilter(QObject* obj, QEvent* event) override;
 
   public slots:
     void slotProgress(const QString from, const QString to, int progress, int count);
@@ -50,6 +52,9 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
   protected:
     bool browseFolder();
 
+  private slots:
+    void slotPatternSelected(QAction* action);
+
   private:
     // Called when progress is complete or the procedure has been canceled.
     // Makes sure the exporter thread has exited.
@@ -64,6 +69,7 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     UserSettingsPointer m_pConfig;
     TrackPointerList m_tracks;
     TrackExportWorker* m_worker;
+    QMenu* m_patternMenu;
     int m_errorCount = 0;
     int m_skippedCount = 0;
     int m_okCount = 0;

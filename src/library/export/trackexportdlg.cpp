@@ -3,6 +3,7 @@
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QFileInfo>
+#include <QMenu>
 #include <QMessageBox>
 #include <QScrollBar>
 
@@ -28,7 +29,7 @@ const QStringList kDefaultPatterns = QStringList()
            "}}.{{ track.extension }}"
         << "{{ crate.name }}/{{ index|zeropad:\"3\" }} - {{ track.artist }}"
            " - {{ track.title }}.{{ track.extension }}"
-        << "{{ playlist.name }}/{{ index }} - {{ track.artist }} - "
+        << "{{ playlist.name }}/{{ index|zeropad:\"3\" }} - {{ track.artist }} - "
            "{{ track.title }}.{{ track.extension }}";
 
 } // anonymous namespace
@@ -45,12 +46,17 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
           m_worker(nullptr) {
     setupUi(this);
 
+    QString musicDir = QStandardPaths::writableLocation(QStandardPaths::MusicLocation);
+    auto exportDir = QDir(musicDir + "/Mixxx/Export");
     QString lastExportDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastTrackCopyDirectory"),
-            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
+            exportDir.absolutePath());
     folderEdit->setText(lastExportDirectory);
 
     m_worker = new TrackExportWorker(folderEdit->text(), m_tracks, context);
+
+    m_patternMenu = new QMenu(patternButton);
+    m_patternMenu->installEventFilter(this);
 
     if (playlist) {
         playlistName->setText(*playlist);
@@ -92,12 +98,20 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
                 Q_UNUSED(x);
                 updatePreview();
             });
-    connect(comboPattern,
-            &QComboBox::currentTextChanged,
+
+    patternEdit->setText(kDefaultPatterns[0]);
+    connect(patternEdit,
+            &QLineEdit::textChanged,
             [this](const QString& x) {
                 Q_UNUSED(x);
                 updatePreview();
             });
+    patternButton->setMenu(m_patternMenu);
+
+    connect(m_patternMenu,
+            &QMenu::triggered,
+            this,
+            &TrackExportDlg::slotPatternSelected);
 
     connect(m_worker,
             &TrackExportWorker::progress,
@@ -126,8 +140,22 @@ TrackExportDlg::~TrackExportDlg() {
 
 void TrackExportDlg::populateDefaultPatterns() {
     for (auto pattern : kDefaultPatterns) {
-        comboPattern->addItem(pattern, QVariant(true));
+        m_patternMenu->addAction(pattern);
     }
+}
+
+void TrackExportDlg::slotPatternSelected(QAction* action) {
+    patternEdit->setText(action->text());
+}
+
+bool TrackExportDlg::eventFilter(QObject* obj, QEvent* event) {
+    if (event->type() == QEvent::Show && obj == m_patternMenu) {
+        QPoint pos = m_patternMenu->pos();
+        pos.rx() -= m_patternMenu->width() - patternButton->width();
+        m_patternMenu->move(pos);
+        return true;
+    }
+    return false;
 }
 
 bool TrackExportDlg::browseFolder() {
@@ -148,7 +176,7 @@ void TrackExportDlg::closeEvent(QCloseEvent* event) {
 
 void TrackExportDlg::setEnableControls(bool enabled) {
     startButton->setEnabled(enabled);
-    comboPattern->setEnabled(enabled);
+    patternEdit->setEnabled(enabled);
     folderEdit->setEnabled(enabled);
     browseButton->setEnabled(enabled);
     playlistName->setEnabled(enabled);
@@ -192,7 +220,7 @@ void TrackExportDlg::updatePreview() {
     VERIFY_OR_DEBUG_ASSERT(!m_tracks.isEmpty()) {
         return;
     }
-    QString pattern = comboPattern->currentText();
+    QString pattern = patternEdit->text();
     m_worker->setPattern(&pattern);
     m_worker->setDestDir(folderEdit->text());
     previewLabel->setText(m_worker->applyPattern(m_tracks[0], 1));
