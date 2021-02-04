@@ -43,24 +43,16 @@ cmake_push_check_state()
 
 # Ensure we have pthreads
 if(WIN32)
-    if (CMAKE_PREFIX_PATH)        
-        list(GET CMAKE_PREFIX_PATH 0 PREFIX_PATH_INCLUDE)
-        file(TO_CMAKE_PATH ${PREFIX_PATH_INCLUDE} PREFIX_PATH_INCLUDE)
-        set(PREFIX_PATH_INCLUDE "${PREFIX_PATH_INCLUDE}/include")      
-        list(APPEND CMAKE_REQUIRED_INCLUDES ${PREFIX_PATH_INCLUDE})
-    endif()   
-    set(PTW32_COMPILE_DEFINITIONS "-D__CLEANUP_C -D_TIMESPEC_DEFINED -D_USRDLL -D_MBCS -D_LIB -D_WIN32")  
-    check_include_file(pthread.h HAVE_PTW32_H ${PTW32_COMPILE_DEFINITIONS})
-    if (NOT HAVE_PTW32_H)
-        message (FATAL_ERROR "Building ${PROJECT_NAME} requires the pthread library and its development heraders")
-    endif ()
-    find_library(PTHREAD_LIBRARY NAMES pthread)
-    message("PTHREAD_LIBRARY ${PTHREAD_LIBRARY}")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE PTW32_STATIC_LIB __CLEANUP_C _TIMESPEC_DEFINED _USRDLL _MBCS _LIB _WIN32)
+    # vcpkg provides CMake targets for pthreads4w
+    # This won't work if pthreads4w was built without vcpkg.
+    find_package(pthreads REQUIRED)
+    target_link_libraries(${PROJECT_NAME} PRIVATE PThreads4W::PThreads4W)
+
+    target_compile_definitions(${PROJECT_NAME} PRIVATE
+        __CLEANUP_C _TIMESPEC_DEFINED _USRDLL _MBCS _LIB _WIN32)
     if(STATIC_DEPS)
         target_compile_definitions(${PROJECT_NAME} PRIVATE PTW32_STATIC_LIB)
     endif()
-    target_link_libraries(${PROJECT_NAME} PRIVATE ${PTHREAD_LIBRARY})
 else()
     set(THREADS_PREFER_PTHREAD_FLAG ON)
     find_package(Threads REQUIRED)
