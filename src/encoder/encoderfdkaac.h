@@ -6,6 +6,7 @@
 
 #include <QLibrary>
 #include <QString>
+#include <memory>
 
 #include "encoder/encoder.h"
 #include "util/fifo.h"
@@ -206,7 +207,7 @@ class EncoderFdkAac : public Encoder {
     int m_channels;
     int m_samplerate;
     EncoderCallback* m_pCallback;
-    QLibrary* m_library;
+    std::unique_ptr<QLibrary> m_pLibrary;
     FIFO<SAMPLE>* m_pInputFifo;
     SAMPLE* m_pFifoChunkBuffer;
     int m_readRequired;
