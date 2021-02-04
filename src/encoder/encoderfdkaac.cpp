@@ -79,9 +79,8 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
         libnames << buttFdkAacPath;
     }
 
-    // Last resort choices: try versions with unusual names
-    libnames << QStringLiteral("libfdk-aac.dll");
-    libnames << QStringLiteral("libfdkaac.dll");
+    // We install the dfk-aac-free version without version suffix and lib prefix
+    libnames << QStringLiteral("fdk-aac.dll");
 #elif __APPLE__
     // Using Homebrew ('brew install fdk-aac' command):
     libnames << QStringLiteral("/usr/local/lib/libfdk-aac.dylib");
