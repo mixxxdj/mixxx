@@ -14,6 +14,8 @@
 #include "track/beatutils.h"
 #include "util/math.h"
 
+namespace {
+
 // we are generous and assume the global_BPM to be at most 0.05 BPM far away
 // from the correct one
 #define BPM_ERROR 0.05
@@ -28,6 +30,14 @@ const double kCorrectBeatLocalBpmEpsilon = 0.05; //0.2;
 const int kHistogramDecimalPlaces = 2;
 const double kHistogramDecimalScale = pow(10.0, kHistogramDecimalPlaces);
 const double kBpmFilterTolerance = 1.0;
+
+// When ironing the grid for long sequences of const tempo we use
+// a 25 ms tolerance because this small of a difference is inaudible
+// This is > 2 * 12 ms, the step width of the QM beat detector
+constexpr double kMaxSecsPhaseError = 0.025;
+constexpr int kMaxOutlierCount = 1;
+
+} // namespace
 
 void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate) {
     if (!sDebug) {
@@ -455,4 +465,65 @@ double BeatUtils::calculateFixedTempoFirstBeat(
                  << "while the first raw beat was at" << rawbeats.at(0);
     }
     return firstBeat;
+}
+
+QVector<double> BeatUtils::calculateIronedGrid(
+        const QVector<double>& coarseBeats,
+        const mixxx::audio::SampleRate& sampleRate) {
+    // The QM Beat detector has a step size of 512 frames @ 44100 Hz. This means that
+    // Single beats have has a jitter of +- 12 ms around the actual position.
+    // Expressed in BPM it means we have for instance only these BPM value around 120 BPM
+    // 117.454 120.185 123.046 126.048
+    // A pure electronic 120.000 BPM track will have many 120,185 BPM beats and a few
+    // 117,454 BPM beats to adjust the collected offset.
+    // This function irons these adjustment beats by adjusting every beat to the average of
+    // a likely constant region.
+
+    // There for we loop through the coarse beats and calculate the average beat
+    // length from the first beat.
+    // A inner loop check for outliers using the momentary average as beat length.
+    // once we have found an average with only single outliers, we store the beats using the
+    // current average to adjust them by up to +-12 ms.
+    // Than we start with the region from the found beat to the end.
+
+    double maxPhaseError = kMaxSecsPhaseError * sampleRate;
+    int leftIndex = 0;
+    int rightIndex = coarseBeats.size() - 1;
+    QVector<double> ironedBeats;
+    ironedBeats.reserve(coarseBeats.size());
+
+    while (leftIndex < coarseBeats.size() - 1) {
+        double meanBeatLength =
+                (coarseBeats[rightIndex] - coarseBeats[leftIndex]) /
+                (rightIndex - leftIndex);
+        int outliersCount = 0;
+        double ironedBeat = coarseBeats[leftIndex];
+        for (int i = leftIndex + 1; i < rightIndex; ++i) {
+            ironedBeat += meanBeatLength;
+            double phaseError = ironedBeat - coarseBeats[i];
+            if (fabs(phaseError) > maxPhaseError) {
+                outliersCount++;
+                if (outliersCount > kMaxOutlierCount) {
+                    // region is not const
+                    break;
+                }
+            }
+        }
+        if (outliersCount <= kMaxOutlierCount) {
+            // We have found a constant enough region.
+            ironedBeat = coarseBeats[leftIndex];
+            for (int i = leftIndex; i < rightIndex; ++i) {
+                ironedBeats << ironedBeat;
+                ironedBeat += meanBeatLength;
+            }
+            // continue with the next region.
+            leftIndex = rightIndex;
+            rightIndex = coarseBeats.size() - 1;
+            continue;
+        }
+        // Try a by one beat smaller region
+        rightIndex--;
+    }
+    ironedBeats << coarseBeats[coarseBeats.size() - 1];
+    return ironedBeats;
 }

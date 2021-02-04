@@ -1,9 +1,10 @@
 #pragma once
 
-// to tell the msvs compiler about `isnan`
+#include <QVector>
+
+#include "audio/types.h"
 #include "util/math.h"
 
-#include <QVector>
 
 class BeatUtils {
   public:
@@ -67,6 +68,10 @@ class BeatUtils {
             const int sampleRate,
             const int totalSamples,
             const double globalBpm);
+
+    static QVector<double> calculateIronedGrid(
+            const QVector<double>& coarseBeats,
+            const mixxx::audio::SampleRate& sampleRate);
 
   private:
     static double computeSampleMedian(const QList<double>& sortedItems);
