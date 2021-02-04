@@ -35,8 +35,24 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
           m_pAacDataBuffer(nullptr),
           m_aacInfo(),
           m_hasSbr(false) {
-    // Load shared library
-    // Code import from encodermp3.cpp
+    // Load the shared library
+    //
+    // Libraries from external sources take priority because they may include HE-AAC support,
+    // but we do not risk shipping that with Mixxx because of patents and GPL compatibility.
+    //
+    // From https://bugzilla.redhat.com/show_bug.cgi?id=1501522#c112 :
+    // The Fedora Project is aware that the Free Software Foundation
+    // has stated that the Fraunhofer FDK AAC license is GPL
+    // incompatible, specifically, because of Clause 3.
+    //
+    // We believe that the fdk-aac software codec implementation that we
+    // wish to include in Fedora [which is shipped with Mixxx on Windows and macOS]
+    // is no longer encumbered by AAC patents.
+    // This fact means that Clause 3 in the FDK AAC license is a "no op",
+    // or to put it plainly, if no patents are in play, there are no
+    // patent licenses to disclaim. For this (and only this) specific
+    // implementation of fdk-aac, we believe that the FDK AAC license is
+    // GPL compatible.
     QStringList libnames;
 #ifdef __LINUX__
     libnames << QStringLiteral("fdk-aac");
