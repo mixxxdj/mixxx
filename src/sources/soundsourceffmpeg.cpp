@@ -454,11 +454,7 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
 SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
         const QString& supportedFileExtension) const {
     Q_UNUSED(supportedFileExtension)
-    // TODO: Increase priority to Default or even Higher for all
-    // supported and tested file extension?
-    // Currently it is only used as a fallback after all other
-    // SoundSources failed to open a file or are otherwise unavailable.
-    return SoundSourceProviderPriority::Lowest;
+    return SoundSourceProviderPriority::Higher;
 }
 
 SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)

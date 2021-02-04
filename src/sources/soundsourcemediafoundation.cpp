@@ -57,9 +57,9 @@ const QStringList SoundSourceProviderMediaFoundation::kSupportedFileExtensions =
 SoundSourceProviderPriority SoundSourceProviderMediaFoundation::getPriorityHint(
         const QString& supportedFileExtension) const {
     Q_UNUSED(supportedFileExtension)
-    // On Windows SoundSourceMediaFoundation is the preferred decoder for all
-    // supported audio formats.
-    return SoundSourceProviderPriority::Higher;
+    // Prefer FFMPEG because of known issues with this SoundSource and lack of maintenance
+    // https://bugs.launchpad.net/mixxx/+bug/1899242
+    return SoundSourceProviderPriority::Lower;
 }
 
 SoundSourcePointer SoundSourceProviderMediaFoundation::newSoundSource(const QUrl& url) {
