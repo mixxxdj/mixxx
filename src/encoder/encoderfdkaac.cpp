@@ -1,5 +1,8 @@
 #include "encoder/encoderfdkaac.h"
 
+#ifdef __APPLE__
+#include <QCoreApplication>
+#endif
 #include <QDir>
 #include <QStandardPaths>
 #include <QString>
@@ -35,52 +38,61 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
           m_pAacDataBuffer(nullptr),
           m_aacInfo(),
           m_hasSbr(false) {
-    // Load shared library
-    // Code import from encodermp3.cpp
+    // Load the shared library
+    //
+    // Libraries from external sources take priority because they may include HE-AAC support,
+    // but we do not risk shipping that with Mixxx because of patents and GPL compatibility.
+    //
+    // From https://bugzilla.redhat.com/show_bug.cgi?id=1501522#c112 :
+    // The Fedora Project is aware that the Free Software Foundation
+    // has stated that the Fraunhofer FDK AAC license is GPL
+    // incompatible, specifically, because of Clause 3.
+    //
+    // We believe that the fdk-aac software codec implementation that we
+    // wish to include in Fedora [which is shipped with Mixxx on Windows and macOS]
+    // is no longer encumbered by AAC patents.
+    // This fact means that Clause 3 in the FDK AAC license is a "no op",
+    // or to put it plainly, if no patents are in play, there are no
+    // patent licenses to disclaim. For this (and only this) specific
+    // implementation of fdk-aac, we believe that the FDK AAC license is
+    // GPL compatible.
     QStringList libnames;
-#ifdef __LINUX__
-    libnames << QStringLiteral("fdk-aac");
-    libnames << QStringLiteral("libfdk-aac.so.2");
-    libnames << QStringLiteral("libfdk-aac.so.1");
-#elif __WINDOWS__
-    // Give top priority to libfdk-aac copied
-    // into Mixxx's installation folder
-    libnames << QStringLiteral("libfdk-aac-2.dll");
-    libnames << QStringLiteral("libfdk-aac-1.dll");
-
-    // Fallback and user-friendly method: use libfdk-aac
-    // provided with B.U.T.T installed in
-    // a standard location
+#if __WINDOWS__
+    // Search for library from B.U.T.T.
     QString buttFdkAacPath = buttWindowsFdkAac();
     if (!buttFdkAacPath.isEmpty()) {
         kLogger.debug() << "Found libfdk-aac at" << buttFdkAacPath;
         libnames << buttFdkAacPath;
     }
-
-    // Last resort choices: try versions with unusual names
-    libnames << QStringLiteral("libfdk-aac.dll");
-    libnames << QStringLiteral("libfdkaac.dll");
 #elif __APPLE__
-    // Using Homebrew ('brew install fdk-aac' command):
-    libnames << QStringLiteral("/usr/local/lib/libfdk-aac.dylib");
-    libnames << QStringLiteral("/usr/local/lib/libfdk-aac.2.dylib");
-    libnames << QStringLiteral("/usr/local/lib/libfdk-aac.1.dylib");
-    // Using MacPorts ('sudo port install libfdk-aac' command):
-    libnames << QStringLiteral("/opt/local/lib/libfdk-aac.dylib");
-    libnames << QStringLiteral("/opt/local/lib/libfdk-aac.2.dylib");
-    libnames << QStringLiteral("/opt/local/lib/libfdk-aac.1.dylib");
+    // Homebrew
+    libnames << QStringLiteral("/usr/local/lib/libfdk-aac");
+    // MacPorts
+    libnames << QStringLiteral("/opt/local/lib/libfdk-aac");
+
+    // Mixxx application bundle
+    QFileInfo bundlePath(QCoreApplication::applicationDirPath() +
+            QStringLiteral("/../Frameworks/libfdk-aac"));
+    libnames << bundlePath.absoluteFilePath();
 #endif
+    libnames << QStringLiteral("fdk-aac");
 
     QString failedMsg = QStringLiteral("Failed to load AAC encoder library");
     for (const auto& libname : qAsConst(libnames)) {
-        m_pLibrary = std::make_unique<QLibrary>(libname);
+        m_pLibrary = std::make_unique<QLibrary>(libname, 2);
         if (m_pLibrary->load()) {
-            kLogger.debug() << "Successfully loaded encoder library " << m_pLibrary->fileName();
+            kLogger.debug() << "Successfully loaded encoder library" << m_pLibrary->fileName();
             break;
-        } else {
-            // collect error messages for the case we have no success
-            failedMsg.append("\n" + m_pLibrary->errorString());
         }
+        // The APIs this class uses did not change between library versions 1 and 2.
+        // Ubuntu 20.04 LTS has version 1.
+        m_pLibrary = std::make_unique<QLibrary>(libname, 1);
+        if (m_pLibrary->load()) {
+            kLogger.debug() << "Successfully loaded encoder library" << m_pLibrary->fileName();
+            break;
+        }
+        // collect error messages for the case we have no success
+        failedMsg.append("\n" + m_pLibrary->errorString());
         m_pLibrary = nullptr;
     }
 
