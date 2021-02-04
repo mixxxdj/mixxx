@@ -17,6 +17,7 @@ class DlgKeywheel : public QDialog, public Ui::DlgKeywheel {
     void switchNotation(int dir = 1);
     void updateSvg();
     ~DlgKeywheel() = default;
+    void show();
 
   protected:
     bool eventFilter(QObject* obj, QEvent* event) override;
@@ -28,6 +29,7 @@ class DlgKeywheel : public QDialog, public Ui::DlgKeywheel {
     QDomDocument m_domDocument;
     QSvgWidget* m_wheel;
     const UserSettingsPointer m_pConfig;
+    bool m_resized{false};
 };
 
 #endif // DLGKEYWHEEL_H

@@ -3,6 +3,7 @@
 #include <QDir>
 #include <QKeyEvent>
 #include <QMouseEvent>
+#include <QSvgRenderer>
 
 #include "control/controlobject.h"
 
@@ -24,7 +25,7 @@ DlgKeywheel::DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig)
 
     QFile xmlFile(svgPath);
     if (!xmlFile.exists() || !xmlFile.open(QFile::ReadOnly | QFile::Text)) {
-        qDebug() << "Could not load template: " << svgPath;
+        qWarning() << "Could not load svg template: " << svgPath;
         return;
     }
     m_domDocument.setContent(&xmlFile);
@@ -33,6 +34,10 @@ DlgKeywheel::DlgKeywheel(QWidget* parent, const UserSettingsPointer& pConfig)
     graphic->installEventFilter(this);
     graphic->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
     graphic->setMinimumSize(200, 200);
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
+    graphic->renderer()->setAspectRatioMode(Qt::KeepAspectRatio);
+#endif
 
     connect(closeButton,
             &QAbstractButton::clicked,
@@ -66,6 +71,16 @@ bool DlgKeywheel::eventFilter(QObject* obj, QEvent* event) {
     }
     // standard event processing
     return QDialog::eventFilter(obj, event);
+}
+
+void DlgKeywheel::show() {
+    QDialog::show();
+    // FIXME(XXX) this is a very ugly workaround that the svg graphics gets its
+    // correct form. The SVG seems only to be scaled correctly after it has been shown
+    if (!m_resized) {
+        resize(height() - 1, width() - 1);
+        m_resized = true;
+    }
 }
 
 void DlgKeywheel::resizeEvent(QResizeEvent* ev) {
