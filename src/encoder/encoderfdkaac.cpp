@@ -27,7 +27,7 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
           m_channels(0),
           m_samplerate(0),
           m_pCallback(pCallback),
-          m_library(nullptr),
+          m_pLibrary(nullptr),
           m_pInputFifo(nullptr),
           m_pFifoChunkBuffer(nullptr),
           m_readRequired(0),
@@ -78,29 +78,28 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
 
     QString failedMsg = QStringLiteral("Failed to load AAC encoder library");
     for (const auto& libname : qAsConst(libnames)) {
-        m_library = new QLibrary(libname);
-        if (m_library->load()) {
-            kLogger.debug() << "Successfully loaded encoder library " << m_library->fileName();
+        m_pLibrary = std::make_unique<QLibrary>(libname);
+        if (m_pLibrary->load()) {
+            kLogger.debug() << "Successfully loaded encoder library " << m_pLibrary->fileName();
             break;
         } else {
             // collect error messages for the case we have no success
-            failedMsg.append("\n" + m_library->errorString());
+            failedMsg.append("\n" + m_pLibrary->errorString());
         }
-        delete m_library;
-        m_library = nullptr;
+        m_pLibrary = nullptr;
     }
 
-    if (!m_library || !m_library->isLoaded()) {
+    if (!m_pLibrary || !m_pLibrary->isLoaded()) {
         kLogger.warning() << failedMsg;
         return;
     }
 
-    aacEncGetLibInfo = (aacEncGetLibInfo_)m_library->resolve("aacEncGetLibInfo");
-    aacEncOpen = (aacEncOpen_)m_library->resolve("aacEncOpen");
-    aacEncClose = (aacEncClose_)m_library->resolve("aacEncClose");
-    aacEncEncode = (aacEncEncode_)m_library->resolve("aacEncEncode");
-    aacEncInfo = (aacEncInfo_)m_library->resolve("aacEncInfo");
-    aacEncoder_SetParam = (aacEncoder_SetParam_)m_library->resolve("aacEncoder_SetParam");
+    aacEncGetLibInfo = (aacEncGetLibInfo_)m_pLibrary->resolve("aacEncGetLibInfo");
+    aacEncOpen = (aacEncOpen_)m_pLibrary->resolve("aacEncOpen");
+    aacEncClose = (aacEncClose_)m_pLibrary->resolve("aacEncClose");
+    aacEncEncode = (aacEncEncode_)m_pLibrary->resolve("aacEncEncode");
+    aacEncInfo = (aacEncInfo_)m_pLibrary->resolve("aacEncInfo");
+    aacEncoder_SetParam = (aacEncoder_SetParam_)m_pLibrary->resolve("aacEncoder_SetParam");
 
     // Check if all function pointers aren't null.
     // Otherwise, the version of libfdk-aac loaded doesn't comply with the official distribution
@@ -110,9 +109,8 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
             !aacEncEncode ||
             !aacEncInfo ||
             !aacEncoder_SetParam) {
-        m_library->unload();
-        delete m_library;
-        m_library = nullptr;
+        m_pLibrary->unload();
+        m_pLibrary = nullptr;
 
         failedMsg.append(", the interface is not as expected");
         kLogger.warning() << failedMsg;
@@ -140,12 +138,11 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
 }
 
 EncoderFdkAac::~EncoderFdkAac() {
-    if (m_library && m_library->isLoaded()) {
+    if (m_pLibrary && m_pLibrary->isLoaded()) {
         aacEncClose(&m_aacEnc);
 
         flush();
-        m_library->unload();
-        delete m_library;
+        m_pLibrary->unload();
         kLogger.debug() << "Unloaded libfdk-aac";
     }
 
@@ -239,7 +236,7 @@ void EncoderFdkAac::setEncoderSettings(const EncoderSettings& settings) {
 int EncoderFdkAac::initEncoder(int samplerate, QString* pUserErrorMessage) {
     m_samplerate = samplerate;
 
-    if (!m_library) {
+    if (!m_pLibrary) {
         kLogger.warning() << "initEncoder failed: fdk-aac library not loaded";
         if (pUserErrorMessage) {
             // TODO(Palakis): write installation guide on Mixxx's wiki
