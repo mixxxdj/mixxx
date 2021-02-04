@@ -186,7 +186,7 @@ QString EncoderFdkAac::buttWindowsFdkAac() {
                     << "Found potential B.U.T.T installation at"
                     << (topPath + "/" + subName);
 
-            QString libFile = "libfdk-aac-1.dll";
+            QString libFile = "libfdk-aac-2.dll";
             if (folder.exists(libFile)) {
                 // Found a libfdk-aac here.
                 // Return the full path of the .dll file.
