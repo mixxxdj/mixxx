@@ -1,5 +1,8 @@
 #include "encoder/encoderfdkaac.h"
 
+#ifdef __APPLE__
+#include <QCoreApplication>
+#endif
 #include <QDir>
 #include <QStandardPaths>
 #include <QString>
@@ -55,8 +58,11 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     // GPL compatible.
     QStringList libnames;
 #ifdef __LINUX__
+    // Prefere the version less symlink, if exist
     libnames << QStringLiteral("fdk-aac");
     libnames << QStringLiteral("libfdk-aac.so.2");
+    // The APIs this class uses did not change between library versions 1 and 2.
+    // Ubuntu 20.04 LTS has version 1.
     libnames << QStringLiteral("libfdk-aac.so.1");
 #elif __WINDOWS__
     // Give top priority to libfdk-aac copied
@@ -85,11 +91,10 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     libnames << QStringLiteral("/opt/local/lib/libfdk-aac.dylib");
     libnames << QStringLiteral("/opt/local/lib/libfdk-aac.2.dylib");
     libnames << QStringLiteral("/opt/local/lib/libfdk-aac.1.dylib");
-    // Finally check at the default lookup path which should reveal the
-    // shipped fdk-aac-free
-    libnames << QStringLiteral("libfdk-aac");
-    libnames << QStringLiteral("libfdk-aac.2.dylib");
-    libnames << QStringLiteral("libfdk-aac.1.dylib");
+    // Mixxx application bundle
+    QFileInfo bundlePath(QCoreApplication::applicationDirPath() +
+            QStringLiteral("/../Frameworks/libfdk-aac.2.dylib"));
+    libnames << bundlePath.absoluteFilePath();
 #endif
 
     QString failedMsg = QStringLiteral("Failed to load AAC encoder library");
