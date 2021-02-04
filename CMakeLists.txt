@@ -1352,6 +1352,25 @@ if(MSVC)
   )
 endif()
 
+if(WIN32)
+  find_file(QT_TRANSLATION_FILE qt_de.qm PATH_SUFFIXES share/qt5/translations)
+  get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
+  install(
+    DIRECTORY "${QT_TRANSLATIONS}"
+    DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+    FILES_MATCHING REGEX
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+  )
+
+  # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is blocklisted.
+  # Qt does not link these and vcpkg does not build them as a dependency of Qt,
+  # so copy them manually.
+  find_file(EGL_DLL libEGL.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
+  find_file(GLESv2_DLL libGLESv2.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
+  install(FILES ${EGL_DLL} ${GLESv2_DLL} DESTINATION "${MIXXX_INSTALL_BINDIR}")
+endif()
 
 #
 # Tests
@@ -1923,32 +1942,6 @@ elseif(WIN32)
       gdi32       # libshout
     )
   endif()
-endif()
-
-# Qt5_DIR is not set until now, so this cannot be moved above with the rest of the install commands
-if(WIN32)
-  install(
-    # I haven't seen a way to determine where the translations dir is, so I am making
-    # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
-    # which is what my configuration tells me.
-    DIRECTORY
-      "${Qt5_DIR}/../../../translations"
-    DESTINATION
-      "${MIXXX_INSTALL_DATADIR}"
-    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
-    FILES_MATCHING REGEX
-      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
-  )
-
-  # ANGLE DLLs are dynamically linked even when the rest of Qt is built statically
-  install(
-    FILES
-        "${Qt5_DIR}/../../../bin/libEGL.dll"
-        "${Qt5_DIR}/../../../bin/libGLESv2.dll"
-    DESTINATION
-        "${MIXXX_INSTALL_DATADIR}"
-  )
 endif()
 
 # QtScriptByteArray
