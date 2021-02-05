@@ -86,8 +86,8 @@ jobs:
             # TODO: Fix these broken tests on Windows
             ctest_args: --exclude-regex '^AutoDJProcessorTest.*$'
             cpack_generator: WIX
-            compiler_cache: clcache
-            compiler_cache_path: ${{ github.workspace }}\clcache
+            compiler_cache: sccache
+            compiler_cache_path: C:\Users\runneradmin\AppData\Local\Mozilla\sccache\cache
             buildenv_basepath: C:\buildenv
             buildenv_script: tools/windows_buildenv.bat
             artifacts_name: Windows Installer
@@ -117,9 +117,8 @@ jobs:
 
     - name: "[Windows] Install additional build tools"
       if: runner.os == 'Windows'
-      # TODO: Add ninja, clcache and rsync to the windows buildenv
       run: |
-        python -m pip install ninja git+https://github.com/frerich/clcache.git
+        choco install sccache ninja
         $Env:PATH="C:\msys64\usr\bin;$Env:PATH"
         pacman -S --noconfirm coreutils bash rsync openssh
         Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
@@ -182,9 +181,10 @@ jobs:
       env:
         BUILDENV_BASEPATH: ${{ matrix.buildenv_basepath }}
 
-    - name: "Set compiler cache size limit"
+    - name: "[Ubuntu/macOS] Set compiler cache size limit"
       # Set size to 2 GiB
       run: ${{ matrix.compiler_cache }}  -M 2097152
+      if: runner.os != 'windows'
 
     - name: "Set up compiler cache"
       uses: actions/cache@v2
@@ -238,8 +238,7 @@ jobs:
         CMAKE_BUILD_PARALLEL_LEVEL: 2
         # GitHub Actions automatically zstd compresses caches
         CCACHE_NOCOMPRESS: true
-        CLCACHE_COMPRESS: false
-        CLCACHE_HARDLINK: true
+        SCCACHE_CACHE_SIZE: 2G
 
     - name: "Print compiler cache stats"
       run: ${{ matrix.compiler_cache }} -s
