@@ -4,7 +4,6 @@
 
 #include "effects/backends/effectsbackend.h"
 #include "effects/backends/lv2/lv2manifest.h"
-
 #include "effects/defs.h"
 #include "preferences/usersettings.h"
 
