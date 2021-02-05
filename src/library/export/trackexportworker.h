@@ -82,7 +82,7 @@ class TrackExportWorker : public QThread {
     }
 
     /// Sets the filename for the playlist to generate
-    void setPlaylist(QString playlist) {
+    void setPlaylist(const QString& playlist) {
         m_playlist = playlist;
     }
     /// returns the playlist filename

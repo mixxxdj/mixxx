@@ -1,6 +1,5 @@
 #include "util/file.h"
 
-
 MDir::MDir() {
 }
 

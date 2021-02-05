@@ -58,7 +58,7 @@ class CrateSummaryWrapper : public QObject {
     QString getName() const {
         return m_summary.getName();
     };
-    void setName(QString name) {
+    void setName(const QString& name) {
         m_summary.setName(name);
     };
 

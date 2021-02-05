@@ -6,7 +6,7 @@
 
 class PlaylistSummary {
   public:
-    explicit PlaylistSummary(int id = -1, QString label = nullptr)
+    explicit PlaylistSummary(int id = -1, const QString& label = nullptr)
             : m_id(id),
               m_name(label),
               m_count(0),
@@ -39,7 +39,7 @@ class PlaylistSummary {
     QString name() const {
         return m_name;
     }
-    void setName(QString name) {
+    void setName(const QString& name) {
         m_name = name;
     }
 
@@ -103,7 +103,7 @@ class PlaylistSummaryWrapper : public QObject {
     QString getName() const {
         return m_summary.name();
     };
-    void setName(QString name) {
+    void setName(const QString& name) {
         m_summary.setName(name);
     };
 
