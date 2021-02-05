@@ -439,6 +439,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/dialog/dlgaboutdlg.ui
   src/dialog/dlgdevelopertools.cpp
   src/dialog/dlgdevelopertoolsdlg.ui
+  src/dialog/dlgkeywheel.cpp
+  src/dialog/dlgkeywheel.ui
   src/dialog/dlgreplacecuecolor.cpp
   src/dialog/dlgreplacecuecolordlg.ui
   src/effects/builtin/autopaneffect.cpp

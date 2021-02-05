@@ -267,9 +267,7 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
-
     pViewMenu->addSeparator();
-
 
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
@@ -532,6 +530,22 @@ void WMainMenuBar::initialize() {
 
     QString externalLinkSuffix = " =>";
 
+    //: menu title
+    QString keywheelTitle = tr("Show Keywheel");
+    //: tooltip text
+    QString keywheelText = tr("Show keywheel");
+    m_pViewKeywheel = new QAction(keywheelTitle, this);
+    m_pViewKeywheel->setCheckable(true);
+    m_pViewKeywheel->setShortcut(
+            QKeySequence(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowKeywheel"),
+                    tr("F2", "Menubar|View|Show Keywheel"))));
+    m_pViewKeywheel->setShortcutContext(Qt::ApplicationShortcut);
+    m_pViewKeywheel->setStatusTip(keywheelText);
+    m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
+    connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
+    pHelpMenu->addAction(m_pViewKeywheel);
+
     QString supportTitle = tr("&Community Support") + externalLinkSuffix;
     QString supportText = tr("Get help with Mixxx");
     auto* pHelpSupport = new QAction(supportTitle, this);
@@ -612,6 +626,11 @@ void WMainMenuBar::initialize() {
 
     pHelpMenu->addAction(pHelpAboutApp);
     addMenu(pHelpMenu);
+}
+
+void WMainMenuBar::onKeywheelChange(int state) {
+    Q_UNUSED(state);
+    m_pViewKeywheel->setChecked(false);
 }
 
 void WMainMenuBar::onLibraryScanStarted() {
