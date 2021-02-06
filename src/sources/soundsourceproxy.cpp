@@ -573,6 +573,8 @@ void SoundSourceProxy::updateTrackFromSource(
                 << (pCoverImg ? "and embedded cover art" : "")
                 << "from file"
                 << getUrl().toString();
+        // make sure that the trackMetadata was not messed up due to the failure
+        m_pTrack->readTrackMetadata(&trackMetadata, &metadataSynchronized);
     }
 
     // Partial import
@@ -593,9 +595,6 @@ void SoundSourceProxy::updateTrackFromSource(
         // once in the past. Only overwrite this information if
         // new data has actually been imported, otherwise abort
         // and preserve the existing data!
-        if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
-            return; // abort
-        }
         if (kLogger.debugEnabled()) {
             kLogger.debug()
                     << "Updating track metadata"

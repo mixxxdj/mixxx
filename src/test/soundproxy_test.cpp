@@ -227,11 +227,21 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
     proxy1.updateTrackFromSource();
     EXPECT_EQ("empty", pTrack1->getTitle());
 
+    // Test a reload also works
+    pTrack1->setTitle("");
+    proxy1.updateTrackFromSource(SoundSourceProxy::ImportTrackMetadataMode::Again);
+    EXPECT_EQ("empty", pTrack1->getTitle());
+
     // Test a file with other metadata but no title
     auto pTrack2 = Track::newTemporary(TrackFile(
             kTestDir, "cover-test-png.mp3"));
     SoundSourceProxy proxy2(pTrack2);
     proxy2.updateTrackFromSource();
+    EXPECT_EQ("cover-test-png", pTrack2->getTitle());
+
+    // Test a reload also works
+    pTrack2->setTitle("");
+    proxy2.updateTrackFromSource(SoundSourceProxy::ImportTrackMetadataMode::Again);
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a file with a title
