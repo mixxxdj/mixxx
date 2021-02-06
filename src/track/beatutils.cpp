@@ -35,6 +35,9 @@ const double kBpmFilterTolerance = 1.0;
 // a 25 ms tolerance because this small of a difference is inaudible
 // This is > 2 * 12 ms, the step width of the QM beat detector
 constexpr double kMaxSecsPhaseError = 0.025;
+// This is set to avoid to use a constant region during an offset shift.
+// That happens for instance when the beat instrument changes.
+constexpr double kMaxSecsPhaseErrorSum = 0.1;
 constexpr int kMaxOutlierCount = 1;
 
 } // namespace
@@ -487,6 +490,7 @@ QVector<double> BeatUtils::calculateIronedGrid(
     // Than we start with the region from the found beat to the end.
 
     double maxPhaseError = kMaxSecsPhaseError * sampleRate;
+    double maxPhaseErrorSum = kMaxSecsPhaseErrorSum * sampleRate;
     int leftIndex = 0;
     int rightIndex = coarseBeats.size() - 1;
     QVector<double> ironedBeats;
@@ -498,21 +502,29 @@ QVector<double> BeatUtils::calculateIronedGrid(
                 (rightIndex - leftIndex);
         int outliersCount = 0;
         double ironedBeat = coarseBeats[leftIndex];
-        for (int i = leftIndex + 1; i < rightIndex; ++i) {
+        double phaseErrorSum = 0;
+        int i;
+        for (i = leftIndex + 1; i < rightIndex; ++i) {
             ironedBeat += meanBeatLength;
             double phaseError = ironedBeat - coarseBeats[i];
+            phaseErrorSum += phaseError;
             if (fabs(phaseError) > maxPhaseError) {
                 outliersCount++;
-                if (outliersCount > kMaxOutlierCount) {
-                    // region is not const
+                if (outliersCount > kMaxOutlierCount ||
+                        i == leftIndex + 1) { // the first beat must not be an outlier.
+                    // region is not const.
                     break;
                 }
             }
+            if (fabs(phaseErrorSum) > maxPhaseErrorSum) {
+                // we drift away in one direction, the meanBeatLength is not optimal.
+                break;
+            }
         }
-        if (outliersCount <= kMaxOutlierCount) {
+        if (i == rightIndex) {
             // We have found a constant enough region.
             ironedBeat = coarseBeats[leftIndex];
-            for (int i = leftIndex; i < rightIndex; ++i) {
+            for (int j = leftIndex; j < rightIndex; ++j) {
                 ironedBeats << ironedBeat;
                 ironedBeat += meanBeatLength;
             }
