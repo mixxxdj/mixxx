@@ -2185,35 +2185,16 @@ TraktorS3.debugLights = function() {
 
 TraktorS3.shutdown = function() {
     // Deactivate all LEDs
-    var dataStrings = [
-        "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00 ",
-        "      00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00 " +
-        "00 00 00 00  00 00 00 00  00 00 00 00  00 00 00",
-    ];
-
-    var data = [Array(), Array()];
-
-
-    for (var i = 0; i < data.length; i++) {
-        var tokens = dataStrings[i].split(/\s+/);
-        data[i].length = tokens.length;
-        for (var j = 0; j < tokens.length; j++) {
-            var byteStr = tokens[j];
-            if (byteStr.length === 0) {
-                continue;
-            }
-            data[i][j] = parseInt(byteStr, 16);
-        }
-        controller.send(data[i], data[i].length, 0x80 + i);
+    var packet = Array(267);
+    for (var i = 0; i < packet.length; i++) {
+        packet[i] = 0;
     }
+    controller.send(packet, packet.length, 0x80);
+    packet = Array(251);
+    for (i = 0; i < packet.length; i++) {
+        packet[i] = 0;
+    }
+    controller.send(packet, packet.length, 0x81);
 
     HIDDebug("TraktorS3: Shutdown done!");
 };
