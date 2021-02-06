@@ -1663,7 +1663,7 @@ if(KEYFINDER)
     # If KeyFinder is built statically, we need FFTW
     find_package(FFTW REQUIRED)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
-    set(KeyFinder_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    set(KeyFinder_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
     ExternalProject_Add(libkeyfinder
       URL "https://github.com/mixxxdj/libkeyfinder/archive/v2.2.4.zip"
@@ -1675,6 +1675,7 @@ if(KEYFINDER)
         -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
+        -DCMAKE_INSTALL_LIBDIR:PATH=lib
         -DCMAKE_PREFIX_PATH:PATH="${CMAKE_PREFIX_PATH}"
         -DBUILD_TESTING=OFF
       BUILD_COMMAND ${CMAKE_COMMAND} --build .
