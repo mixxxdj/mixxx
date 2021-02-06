@@ -238,7 +238,8 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
                     oldName + QStringLiteral("\""),
             QLineEdit::Normal,
             oldName,
-            &okay);
+            &okay)
+                              .trimmed();
     if (!okay) {
         return;
     }
@@ -344,7 +345,8 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
                 errorText + tr("Name for new effect chain preset:"),
                 QLineEdit::Normal,
                 pPreset->name(),
-                &okay);
+                &okay)
+                       .trimmed();
         if (!okay) {
             return;
         }
