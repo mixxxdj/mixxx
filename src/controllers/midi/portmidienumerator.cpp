@@ -26,7 +26,8 @@ bool recognizeDevice(const PmDeviceInfo& deviceInfo) {
 
 } // namespace
 
-PortMidiEnumerator::PortMidiEnumerator() {
+PortMidiEnumerator::PortMidiEnumerator(UserSettingsPointer config)
+        : m_pConfig(config) {
     PmError err = Pm_Initialize();
     // Based on reading the source, it's not possible for this to fail.
     if (err != pmNoError) {
@@ -270,7 +271,8 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
 
         //.... so create our (aggregate) MIDI device!
         PortMidiController* currentDevice =
-                new PortMidiController(inputDeviceInfo,
+                new PortMidiController(m_pConfig,
+                        inputDeviceInfo,
                         outputDeviceInfo,
                         inputDevIndex,
                         outputDevIndex);

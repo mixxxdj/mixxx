@@ -2,6 +2,7 @@
 
 const QString BaseSignalPathTest::m_sMasterGroup = QStringLiteral("[Master]");
 const QString BaseSignalPathTest::m_sInternalClockGroup = QStringLiteral("[InternalClock]");
+const QString BaseSignalPathTest::m_sMidiSourceClockGroup = QStringLiteral("[MidiSourceClock]");
 // these names need to match PlayerManager::groupForDeck and friends
 const QString BaseSignalPathTest::m_sGroup1 = QStringLiteral("[Channel1]");
 const QString BaseSignalPathTest::m_sGroup2 = QStringLiteral("[Channel2]");

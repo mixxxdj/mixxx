@@ -3,8 +3,9 @@
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 
-class InternalClock;
 class EngineChannel;
+class InternalClock;
+class MidiMasterClock;
 
 /// BaseSyncableListener is a SyncableListener used by EngineSync.
 /// It provides some foundational functionality for distributing
@@ -64,6 +65,8 @@ class BaseSyncableListener : public SyncableListener {
     UserSettingsPointer m_pConfig;
     // The InternalClock syncable.
     InternalClock* m_pInternalClock;
+    // Midi master clock.
+    MidiMasterClock* m_pMidiSourceClock;
     // The current Syncable that is the master.
     Syncable* m_pMasterSyncable;
     // The list of all Syncables registered with BaseSyncableListener via

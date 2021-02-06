@@ -113,6 +113,15 @@ QString MidiUtils::formatMidiMessage(const QString& controllerName,
                          QString::number((status & 255)>>4, 16).toUpper(),
                          QString::number(control, 16).toUpper().rightJustified(2,'0'),
                          QString::number(value, 16).toUpper().rightJustified(2,'0'));
+        case MIDI_START:
+            return QString("MIDI status 0x%1: Start Sequence")
+                    .arg(QString::number(status, 16).toUpper());
+        case MIDI_TIMING_CLK:
+            return QString("MIDI status 0x%1: Timing Clock")
+                    .arg(QString::number(status, 16).toUpper());
+        case MIDI_STOP:
+            return QString("MIDI status 0x%1: Stop Sequence")
+                    .arg(QString::number(status, 16).toUpper());
         default:
             return QString("%1: %2 status 0x%3")
                     .arg(controllerName, msg2,

@@ -264,6 +264,9 @@ class Duration : public DurationBase {
     }
 
   private:
+    /// If your code is trying to access this constructor, your code was probably
+    /// written for the old API.  Most likely you want to use
+    /// Duration::fromNanos(val) instead.
     explicit constexpr Duration(qint64 durationNanos)
             : DurationBase(durationNanos) {
     }

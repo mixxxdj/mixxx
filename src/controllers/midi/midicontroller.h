@@ -5,8 +5,10 @@
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midioutputhandler.h"
+#include "controllers/midi/midisourceclock.h"
 #include "controllers/softtakeover.h"
 
+class ControlProxy;
 class DlgControllerLearning;
 
 /// MIDI Controller base class
@@ -15,10 +17,11 @@ class DlgControllerLearning;
 /// It must be inherited by a class that implements it on some API.
 ///
 /// Note that the subclass' destructor should call close() at a minimum.
+
 class MidiController : public Controller {
     Q_OBJECT
   public:
-    explicit MidiController();
+    explicit MidiController(UserSettingsPointer config);
     ~MidiController() override;
 
     ControllerJSProxy* jsProxy() override;
@@ -107,6 +110,13 @@ class MidiController : public Controller {
     LegacyMidiControllerMapping m_mapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
+    UserSettingsPointer m_pConfig;
+    MidiSourceClock m_midiSourceClock;
+
+    // Slaves are cleaned up by QT.
+    ControlProxy* m_pClockBpm;
+    ControlProxy* m_pClockLastBeat;
+    ControlProxy* m_pClockRunning;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;

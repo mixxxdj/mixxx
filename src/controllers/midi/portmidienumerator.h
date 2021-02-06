@@ -6,13 +6,14 @@
 class PortMidiEnumerator : public MidiEnumerator {
     Q_OBJECT
   public:
-    PortMidiEnumerator();
+    explicit PortMidiEnumerator(UserSettingsPointer config);
     ~PortMidiEnumerator() override;
 
     QList<Controller*> queryDevices() override;
 
   private:
     QList<Controller*> m_devices;
+    UserSettingsPointer m_pConfig;
 };
 
 // For testing.
