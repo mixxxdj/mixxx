@@ -498,7 +498,7 @@ TraktorS3.Deck.prototype.LibraryFocusHandler = function(field) {
         return;
     }
 
-    script.toggleControl("[Library]", "MoveFocus");
+    engine.setValue("[Library]", "MoveFocus", field.value);
 };
 
 TraktorS3.Deck.prototype.cueAutoDJHandler = function(field) {
@@ -512,10 +512,24 @@ TraktorS3.Deck.prototype.cueAutoDJHandler = function(field) {
 
 
 TraktorS3.Deck.prototype.selectLoopHandler = function(field) {
+    var delta = 1;
     if ((field.value + 1) % 16 === this.loopKnobEncoderState) {
-        script.triggerControl(this.activeChannel, "loop_halve");
+        delta = -1;
+    }
+
+    if (this.shiftPressed) {
+        var beatjumpSize = engine.getValue(this.activeChannel, "beatjump_size");
+        if (delta > 0) {
+            script.triggerControl(this.activeChannel, "loop_move_" + beatjumpSize + "_forward");
+        } else {
+            script.triggerControl(this.activeChannel, "loop_move_" + beatjumpSize + "_backward");
+        }
     } else {
-        script.triggerControl(this.activeChannel, "loop_double");
+        if (delta > 0) {
+            script.triggerControl(this.activeChannel, "loop_double");
+        } else {
+            script.triggerControl(this.activeChannel, "loop_halve");
+        }
     }
 
     this.loopKnobEncoderState = field.value;
@@ -552,10 +566,10 @@ TraktorS3.Deck.prototype.selectBeatjumpHandler = function(field) {
             engine.setValue(this.activeChannel, "beatjump_size", beatjumpSize / 2);
         }
     } else {
-        if (delta < 0) {
-            script.triggerControl(this.activeChannel, "beatjump_backward");
-        } else {
+        if (delta > 0) {
             script.triggerControl(this.activeChannel, "beatjump_forward");
+        } else {
+            script.triggerControl(this.activeChannel, "beatjump_backward");
         }
     }
 
@@ -615,6 +629,13 @@ TraktorS3.Deck.prototype.jogTouchHandler = function(field) {
     }
     if (field.value !== 0) {
         engine.setValue(this.activeChannel, "scratch2_enable", true);
+        return;
+    }
+    // If shift is pressed, reset right away.
+    if (this.shiftPressed) {
+        engine.setValue(this.activeChannel, "scratch2", 0.0);
+        engine.setValue(this.activeChannel, "scratch2_enable", false);
+        this.playIndicatorHandler(0, this.activeChannel);
         return;
     }
     // The wheel keeps moving after the user lifts their finger, so don't release scratch mode
