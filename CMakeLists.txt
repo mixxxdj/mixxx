@@ -205,9 +205,9 @@ elseif(GNU_GCC OR LLVM_CLANG)
         # TODO(rryan): macOS can use SSE3, and possibly SSE 4.1 once
         # we require macOS 10.12.
         # https://stackoverflow.com/questions/45917280/mac-osx-minumum-support-sse-version
-      elseif(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+      elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm|armv7.*)$") # but not armv8
         add_compile_options(
-          -mflat-abi=hard
+          -mfloat-abi=hard
           -mfpu=neon
         )
       endif()
@@ -228,7 +228,7 @@ elseif(GNU_GCC OR LLVM_CLANG)
       # Note: requires gcc >= 4.2.0
       # macros like __SSE2_MATH__ __SSE_MATH__ __SSE2__ __SSE__
       # are set automatically
-      if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm")
+      if(CMAKE_SYSTEM_PROCESSOR MATCHES "^(arm|armv7.*)$") # but not armv8
         add_compile_options(
           -mfloat-abi=hard
           -mfpu=neon
@@ -439,6 +439,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/dialog/dlgaboutdlg.ui
   src/dialog/dlgdevelopertools.cpp
   src/dialog/dlgdevelopertoolsdlg.ui
+  src/dialog/dlgkeywheel.cpp
+  src/dialog/dlgkeywheel.ui
   src/dialog/dlgreplacecuecolor.cpp
   src/dialog/dlgreplacecuecolordlg.ui
   src/effects/effectbuttonparameterslot.cpp
@@ -1323,10 +1325,10 @@ if(UNIX AND NOT APPLE)
       "${CMAKE_INSTALL_DATADIR}/pixmaps"
   )
 
-  # .appdata.xml file for KDE/GNOME AppStream initiative
+  # .metainfo.xml file for KDE/GNOME AppStream initiative
   install(
     FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.appdata.xml"
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/linux/mixxx.metainfo.xml"
     DESTINATION
       "${CMAKE_INSTALL_DATAROOTDIR}/metainfo"
   )
@@ -2386,12 +2388,15 @@ option(BROADCAST "Live Broadcasting (Shoutcast) support" ON)
 if(BROADCAST)
   find_package(Shout)
   if(UNIX AND NOT APPLE)
-    # Check if system lib is at least 2.4.4 and not suffering bug
+    # Check if system lib is at least 2.4.6 and not suffering bugs
     # https://bugs.launchpad.net/mixxx/+bug/1833225
+    # https://bugs.launchpad.net/mixxx/+bug/1913579
     if(Shout_FOUND AND Shout_VERSION VERSION_LESS 2.4.4)
-        message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1833225")
+        message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bugs lp1833225 and lp1913579")
+    elseif(Shout_FOUND AND Shout_VERSION VERSION_LESS 2.4.6)
+        message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1913579")
     endif()
-    if(NOT Shout_FOUND OR Shout_VERSION VERSION_LESS 2.4.4)
+    if(NOT Shout_FOUND OR Shout_VERSION VERSION_LESS 2.4.6)
       # Fall back to internal libraray in the lib tree
       message(STATUS "Using internal libshout")
       add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout")
