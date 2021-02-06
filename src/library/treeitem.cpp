@@ -106,9 +106,8 @@ void TreeItem::insertChildren(int row, QList<TreeItem*>& children) {
     DEBUG_ASSERT(row >= 0);
     DEBUG_ASSERT(row <= m_children.size());
     while (!children.isEmpty()) {
-        TreeItem* pChild = children.front();
+        TreeItem* pChild = children.takeFirst();
         insertChild(row++, pChild);
-        children.pop_front();
     }
 }
 

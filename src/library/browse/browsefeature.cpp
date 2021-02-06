@@ -1,6 +1,7 @@
 #include "library/browse/browsefeature.h"
 
 #include <QAction>
+#include <QtConcurrent>
 #include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
@@ -402,28 +403,47 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     if (path == DEVICE_NODE) {
         folders += getRemovableDevices();
     } else {
-        // we assume that the path refers to a folder in the file system
-        // populate childs
-        const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
+        auto listWorker = [=]() mutable -> void {
+            // we assume that the path refers to a folder in the file system
+            // populate childs
+            const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
+            QList<TreeItem*> children;
+            QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
+                    QDir::Dirs | QDir::NoDotAndDotDot);
 
-        QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
-                QDir::Dirs | QDir::NoDotAndDotDot);
-
-        // loop through all the item and construct the childs
-        foreach (QFileInfo one, all) {
-            // Skip folders that end with .app on OS X
+            // loop through all the item and construct the childs
+            foreach (QFileInfo one, all) {
 #if defined(__APPLE__)
-            if (one.isDir() && one.fileName().endsWith(".app"))
-                continue;
+                if (one.isDir() && one.fileName().endsWith(".app"))
+                    continue;
 #endif
-            // We here create new items for the sidebar models
-            // Once the items are added to the TreeItemModel,
-            // the models takes ownership of them and ensures their deletion
-            TreeItem* folder = new TreeItem(
-                one.fileName(),
-                QVariant(one.absoluteFilePath() + QStringLiteral("/")));
-            folders << folder;
-        }
+                // We here create new items for the sidebar models
+                // Once the items are added to the TreeItemModel,
+                // the models takes ownership of them and ensures their deletion
+                auto* folder = new TreeItem(
+                        one.fileName(),
+                        QVariant(one.absoluteFilePath() + QStringLiteral("/")));
+                children << folder;
+            }
+            if (!children.isEmpty()) {
+                m_childModel.insertTreeItemRows(children, 0, index);
+            }
+        };
+        /*
+        auto title = m_childModel.data(index, Qt::DisplayRole);
+        m_childModel.setData(index, QString("loading"));
+        m_childModel.triggerRepaint(index);
+        */
+        auto result = QtConcurrent::run(listWorker);
+        // FIXME: create QTimer to update label
+        /*
+        auto title = m_childModel.data(index, Qt::DisplayRole);
+        m_childModel.setData(index, QString("loading"));
+        m_childModel.triggerRepaint(index);
+        */
+        
+        //auto foundFolders = result.result();
+        //folders += foundFolders;
     }
     // we need to check here if subfolders are found
     // On Ubuntu 10.04, otherwise, this will draw an icon although the folder
