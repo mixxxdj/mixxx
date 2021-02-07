@@ -139,7 +139,7 @@ TrackExportDlg::~TrackExportDlg() {
 }
 
 void TrackExportDlg::populateDefaultPatterns() {
-    for (auto pattern : kDefaultPatterns) {
+    for (const auto& pattern : kDefaultPatterns) {
         m_patternMenu->addAction(pattern);
     }
 }
@@ -227,7 +227,7 @@ void TrackExportDlg::updatePreview() {
     errorLabel->setText(m_worker->errorMessage());
 }
 
-int TrackExportDlg::addStatus(const QString status, const QString to) {
+int TrackExportDlg::addStatus(const QString& status, const QString& to) {
     auto scrollbar = statusTable->verticalScrollBar();
     bool atEnd = scrollbar->value() == scrollbar->maximum();
     int row = statusTable->rowCount();
@@ -244,7 +244,7 @@ int TrackExportDlg::addStatus(const QString status, const QString to) {
     return row;
 }
 
-void TrackExportDlg::slotResult(TrackExportWorker::ExportResult result, const QString msg) {
+void TrackExportDlg::slotResult(TrackExportWorker::ExportResult result, const QString& msg) {
     int type = QTableWidgetItem::UserType;
     if (result == TrackExportWorker::ExportResult::EXPORT_COMPLETE) {
         exportProgress->setValue(exportProgress->maximum());
@@ -269,7 +269,7 @@ void TrackExportDlg::slotResult(TrackExportWorker::ExportResult result, const QS
     statusTable->setItem(row, 2, item);
 }
 
-void TrackExportDlg::slotProgress(const QString from, const QString to, int progress, int count) {
+void TrackExportDlg::slotProgress(const QString& from, const QString& to, int progress, int count) {
     if (!from.isEmpty() || !to.isEmpty()) {
         addStatus(from, to);
     }
@@ -333,7 +333,7 @@ void TrackExportDlg::stopWorker() {
 void TrackExportDlg::open() {
     bool empty = true;
     // check if at least one trackpointer is valid
-    for (TrackPointer track : qAsConst(m_tracks)) {
+    for (const TrackPointer& track : qAsConst(m_tracks)) {
         if (track) {
             empty = false;
             break;

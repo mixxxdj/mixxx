@@ -109,8 +109,8 @@ class TrackExportWorker : public QThread {
     void askOverwriteMode(
             const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
-    void progress(const QString from, const QString to, int progress, int count);
-    void result(TrackExportWorker::ExportResult result, const QString msg);
+    void progress(const QString& from, const QString& to, int progress, int count);
+    void result(TrackExportWorker::ExportResult result, const QString& msg);
     void canceled();
 
   private:

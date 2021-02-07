@@ -118,8 +118,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool isTrackInPlaylist(TrackId trackId, const int playlistId) const;
 
     void getPlaylistsTrackIsIn(TrackId trackId, QSet<int>* playlistSet) const;
-    QList<PlaylistSummary> createPlaylistSummary(QSet<int>* playlistIds = nullptr);
-    QList<PlaylistSummary> createPlaylistSummaryForTracks(QList<TrackId> tracks);
+    QList<PlaylistSummary> createPlaylistSummary(const QSet<int>* playlistIds = nullptr);
+    QList<PlaylistSummary> createPlaylistSummaryForTracks(const QList<TrackId>& tracks);
     PlaylistSummary getPlaylistSummary(int playlistId);
 
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);

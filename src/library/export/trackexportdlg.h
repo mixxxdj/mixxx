@@ -38,8 +38,8 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     bool eventFilter(QObject* obj, QEvent* event) override;
 
   public slots:
-    void slotProgress(const QString from, const QString to, int progress, int count);
-    void slotResult(TrackExportWorker::ExportResult result, const QString msg);
+    void slotProgress(const QString& from, const QString& to, int progress, int count);
+    void slotResult(TrackExportWorker::ExportResult result, const QString& msg);
     void slotAskOverwriteMode(
             const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
@@ -60,7 +60,7 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     // Makes sure the exporter thread has exited.
     void finish();
     void stopWorker();
-    int addStatus(const QString status, const QString to);
+    int addStatus(const QString& status, const QString& to);
     void updatePreview();
     void setEnableControls(bool enabled);
     void closeEvent(QCloseEvent* event) override;

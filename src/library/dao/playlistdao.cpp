@@ -1197,26 +1197,26 @@ void PlaylistDAO::getPlaylistsTrackIsIn(TrackId trackId,
     }
 }
 
-QList<PlaylistSummary> PlaylistDAO::createPlaylistSummaryForTracks(QList<TrackId> tracks) {
+QList<PlaylistSummary> PlaylistDAO::createPlaylistSummaryForTracks(const QList<TrackId>& tracks) {
     QSet<int> allPlaylistIds;
     QSet<int> playlistIds;
     QMap<int, int> trackCount;
-    for (TrackId trackId : qAsConst(tracks)) {
+    for (TrackId trackId : tracks) {
         PlaylistDAO::getPlaylistsTrackIsIn(trackId, &playlistIds);
         allPlaylistIds += playlistIds;
-        for (int playlistId : playlistIds) {
+        for (int playlistId : qAsConst(playlistIds)) {
             trackCount[playlistId] = trackCount.value(playlistId, 0) + 1;
         }
     }
     QList<PlaylistSummary> summaries = PlaylistDAO::createPlaylistSummary(&allPlaylistIds);
-    for (PlaylistSummary summary : qAsConst(summaries)) {
+    for (PlaylistSummary summary : summaries) {
         DEBUG_ASSERT(trackCount.contains(summary.id()));
         summary.setMatches(trackCount.value(summary.id()));
     }
     return summaries;
 }
 
-QList<PlaylistSummary> PlaylistDAO::createPlaylistSummary(QSet<int>* playlistIds) {
+QList<PlaylistSummary> PlaylistDAO::createPlaylistSummary(const QSet<int>* playlistIds) {
     QList<PlaylistSummary> playlistLabels;
 
     // Setup the sidebar playlist model
