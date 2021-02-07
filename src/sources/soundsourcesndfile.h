@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCESNDFILE_H
-#define MIXXX_SOUNDSOURCESNDFILE_H
+#pragma once
 
 #include "sources/soundsourceprovider.h"
 
@@ -13,42 +12,48 @@
 
 namespace mixxx {
 
-class SoundSourceSndFile: public mixxx::SoundSource {
-public:
+class SoundSourceSndFile final : public SoundSource {
+  public:
     explicit SoundSourceSndFile(const QUrl& url);
     ~SoundSourceSndFile() override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            const WritableSampleFrames& sampleFrames) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
-
-private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+  private:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override;
 
     SNDFILE* m_pSndFile;
+
+    SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderSndFile: public SoundSourceProvider {
-public:
-    QString getName() const override;
+class SoundSourceProviderSndFile : public SoundSourceProvider {
+  public:
+    static const QString kDisplayName;
 
-    SoundSourceProviderPriority getPriorityHint(
-            const QString& supportedFileExtension) const override {
-        Q_UNUSED(supportedFileExtension);
-        // libsnd will be used as a fallback
-        return SoundSourceProviderPriority::LOWER;
+    SoundSourceProviderSndFile();
+
+    QString getDisplayName() const override {
+        return kDisplayName;
     }
 
     QStringList getSupportedFileExtensions() const override;
 
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override;
+
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceSndFile>(url);
     }
+
+  private:
+    const QStringList m_supportedFileExtensions;
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCESNDFILE_H

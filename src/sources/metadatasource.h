@@ -1,32 +1,57 @@
-#ifndef MIXXX_METADATASOURCE_H
-#define MIXXX_METADATASOURCE_H
+#pragma once
 
+#include <QDateTime>
 #include <QImage>
 
+#include <utility>
+
 #include "track/trackmetadata.h"
-#include "util/result.h"
+#include "util/memory.h"
 
 namespace mixxx {
 
-// Interface for parsing track metadata and cover art.
+// API and abstract base class for parsing track metadata and
+// cover art.
+//
+// The time stamp returned from the source when importing/exporting
+// metadata reflects the current version of the metadata at the source
+// and can be used for synchronization purposes.
 class MetadataSource {
-public:
+  public:
+    virtual ~MetadataSource() = default;
+
+    enum class ImportResult {
+        Succeeded,
+        Failed,
+        Unavailable,
+    };
+
     // Read both track metadata and cover art at once, because this
-    // is should be the most common use case. Both parameters are
-    // output parameters and might be nullptr if their result is not
-    // needed.
-    virtual Result parseTrackMetadataAndCoverArt(
-            TrackMetadata* pTrackMetadata,
-            QImage* pCoverArt) const = 0;
+    // is the most common use case. Both pointers are output parameters
+    // and might be passed a nullptr if their result is not needed.
+    // If no metadata is available for a track then the source should
+    // return Unavailable as this default implementation does.
+    virtual std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
+            TrackMetadata* /*pTrackMetadata*/,
+            QImage* /*pCoverImage*/) const {
+        return std::make_pair(ImportResult::Unavailable, QDateTime());
+    }
+
+    enum class ExportResult {
+        Succeeded,
+        Failed,
+        Unsupported,
+    };
 
     // Update track metadata of the source.
-    virtual Result writeTrackMetadata(
-            const TrackMetadata& trackMetadata) const = 0;
-
-protected:
-    virtual ~MetadataSource() {}
+    // Sources that are read-only and don't support updating of metadata
+    // should return Unsupported as this default implementation does.
+    virtual std::pair<ExportResult, QDateTime> exportTrackMetadata(
+            const TrackMetadata& /*trackMetadata*/) const {
+        return std::make_pair(ExportResult::Unsupported, QDateTime());
+    }
 };
 
-} //namespace mixxx
+typedef std::shared_ptr<MetadataSource> MetadataSourcePointer;
 
-#endif // MIXXX_METADATASOURCE_H
+} // namespace mixxx

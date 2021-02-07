@@ -1,13 +1,17 @@
-#ifndef MIXXX_UTIL_SAMPLEBUFFER_H
-#define MIXXX_UTIL_SAMPLEBUFFER_H
+#pragma once
+
 
 #include <algorithm> // std::swap
 
 #include "util/types.h"
 
+
+namespace mixxx {
+
 // A sample buffer with properly aligned memory to enable SSE optimizations.
 // After construction the content of the buffer is uninitialized. No resize
-// operation is provided intentionally because malloc might block!
+// operation is provided intentionally because malloc might block! Copying
+// has intentionally been disabled, because it should not be needed.
 //
 // Hint: If the size of an existing sample buffer ever needs to be altered
 // after construction this can simply be achieved by swapping the contents
@@ -27,24 +31,25 @@
 //     ...
 //     SampleBuffer(newSize).swap(sampleBuffer);
 //
-class SampleBuffer {
+class SampleBuffer final {
   public:
     SampleBuffer()
-            : m_data(nullptr),
-              m_size(0) {
+        : m_data(nullptr),
+          m_size(0) {
     }
     explicit SampleBuffer(SINT size);
-    SampleBuffer(SampleBuffer& other) = delete;
-    SampleBuffer(SampleBuffer&& other)
-        : m_data(other.m_data),
-          m_size(other.m_size) {
-        other.m_data = nullptr;
-        other.m_size = 0;
+    SampleBuffer(SampleBuffer&) = delete;
+    SampleBuffer(SampleBuffer&& that)
+        : m_data(that.m_data),
+          m_size(that.m_size) {
+        that.m_data = nullptr;
+        that.m_size = 0;
     }
-    virtual ~SampleBuffer();
+    virtual ~SampleBuffer() final;
 
-    SampleBuffer& operator=(SampleBuffer&& other) {
-        swap(other);
+    SampleBuffer& operator=(SampleBuffer& that) = delete;
+    SampleBuffer& operator=(SampleBuffer&& that) {
+        swap(that);
         return *this;
     }
 
@@ -53,12 +58,14 @@ class SampleBuffer {
     }
 
     CSAMPLE* data(SINT offset = 0) {
+        DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
         DEBUG_ASSERT(0 <= offset);
         // >=: allow access to one element behind allocated memory
         DEBUG_ASSERT(m_size >= offset);
         return m_data + offset;
     }
     const CSAMPLE* data(SINT offset = 0) const {
+        DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
         DEBUG_ASSERT(0 <= offset);
         // >=: allow access to one element behind allocated memory
         DEBUG_ASSERT(m_size >= offset);
@@ -76,9 +83,9 @@ class SampleBuffer {
     // implementation of all STL containers. Required for exception
     // safe programming and as a workaround for the missing resize
     // operation.
-    void swap(SampleBuffer& other) {
-        std::swap(m_data, other.m_data);
-        std::swap(m_size, other.m_size);
+    void swap(SampleBuffer& that) {
+        std::swap(m_data, that.m_data);
+        std::swap(m_size, that.m_size);
     }
 
     // Fills the whole buffer with zeroes
@@ -87,52 +94,90 @@ class SampleBuffer {
     // Fills the whole buffer with the same value
     void fill(CSAMPLE value);
 
-    class ReadableChunk {
+    class ReadableSlice {
       public:
-        ReadableChunk(const SampleBuffer& buffer, SINT offset, SINT length)
+        ReadableSlice()
+            : m_data(nullptr),
+              m_length(0) {
+        }
+        ReadableSlice(const CSAMPLE* data, SINT length)
+            : m_data(data),
+              m_length(length) {
+            DEBUG_ASSERT(m_length >= 0);
+            DEBUG_ASSERT((m_length == 0) || (m_data != nullptr));
+        }
+        ReadableSlice(const SampleBuffer& buffer, SINT offset, SINT length)
             : m_data(buffer.data(offset)),
-              m_size(length) {
+              m_length(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);
         }
         const CSAMPLE* data(SINT offset = 0) const {
+            DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
             DEBUG_ASSERT(0 <= offset);
             // >=: allow access to one element behind allocated memory
-            DEBUG_ASSERT(m_size >= offset);
+            DEBUG_ASSERT(m_length >= offset);
             return m_data + offset;
         }
-        SINT size() const {
-            return m_size;
+        SINT length(SINT offset = 0) const {
+            DEBUG_ASSERT(0 <= offset);
+            // >=: allow access to one element behind allocated memory
+            DEBUG_ASSERT(m_length >= offset);
+            return m_length - offset;
+        }
+        bool empty() const {
+            return (m_data == nullptr) || (m_length <= 0);
         }
         const CSAMPLE& operator[](SINT index) const {
             return *data(index);
         }
       private:
         const CSAMPLE* m_data;
-        SINT m_size;
+        SINT m_length;
     };
 
-    class WritableChunk {
+    class WritableSlice {
       public:
-        WritableChunk(SampleBuffer& buffer, SINT offset, SINT length)
+        WritableSlice()
+            : m_data(nullptr),
+              m_length(0) {
+        }
+        WritableSlice(CSAMPLE* data, SINT length)
+            : m_data(data),
+              m_length(length) {
+            DEBUG_ASSERT(m_length >= 0);
+            DEBUG_ASSERT((m_length == 0) || (m_data != nullptr));
+        }
+        explicit WritableSlice(SampleBuffer& buffer)
+            : m_data(buffer.data()),
+              m_length(buffer.size()) {
+        }
+        WritableSlice(SampleBuffer& buffer, SINT offset, SINT length)
             : m_data(buffer.data(offset)),
-              m_size(length) {
+              m_length(length) {
             DEBUG_ASSERT((buffer.size() - offset) >= length);
         }
         CSAMPLE* data(SINT offset = 0) const {
+            DEBUG_ASSERT((m_data != nullptr) || (offset == 0));
             DEBUG_ASSERT(0 <= offset);
             // >=: allow access to one element behind allocated memory
-            DEBUG_ASSERT(m_size >= offset);
+            DEBUG_ASSERT(m_length >= offset);
             return m_data + offset;
         }
-        SINT size() const {
-            return m_size;
+        SINT length(SINT offset = 0) const {
+            DEBUG_ASSERT(0 <= offset);
+            // >=: allow access to one element behind allocated memory
+            DEBUG_ASSERT(m_length >= offset);
+            return m_length - offset;
+        }
+        bool empty() const {
+            return (m_data == nullptr) || (m_length <= 0);
         }
         CSAMPLE& operator[](SINT index) const {
             return *data(index);
         }
       private:
         CSAMPLE* m_data;
-        SINT m_size;
+        SINT m_length;
     };
 
   private:
@@ -140,14 +185,14 @@ class SampleBuffer {
     SINT m_size;
 };
 
+} // namespace mixxx
+
 namespace std {
 
-// Template specialization of std::swap for SampleBuffer.
+// Template specialization of std::swap() for SampleBuffer
 template<>
-inline void swap(SampleBuffer& lhs, SampleBuffer& rhs) {
+inline void swap(::mixxx::SampleBuffer& lhs, ::mixxx::SampleBuffer& rhs) {
     lhs.swap(rhs);
 }
 
 }  // namespace std
-
-#endif // MIXXX_UTIL_SAMPLEBUFFER_H

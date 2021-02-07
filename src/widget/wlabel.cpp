@@ -1,24 +1,8 @@
-/***************************************************************************
-                          wlabel.cpp  -  description
-                             -------------------
-    begin                : Wed Jan 5 2005
-    copyright            : (C) 2003 by Tue Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "widget/wlabel.h"
 
 #include <QFont>
 
+#include "moc_wlabel.cpp"
 #include "widget/wskincolor.h"
 
 WLabel::WLabel(QWidget* pParent)
@@ -26,13 +10,16 @@ WLabel::WLabel(QWidget* pParent)
           WBaseWidget(this),
           m_skinText(),
           m_longText(),
-          m_elideMode(Qt::ElideNone) {
+          m_elideMode(Qt::ElideNone),
+          m_scaleFactor(1.0),
+          m_highlight(0) {
 }
 
 void WLabel::setup(const QDomNode& node, const SkinContext& context) {
-    // Colors
-    QPalette pal = palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
+    m_scaleFactor = context.getScaleFactor();
 
+    // Colors
+    QPalette pal = palette(); // we have to copy out the palette to edit it since it's const (probably for threadsafety)
 
     QDomElement bgColor = context.selectElement(node, "BgColor");
     if (!bgColor.isNull()) {
@@ -45,17 +32,23 @@ void WLabel::setup(const QDomNode& node, const SkinContext& context) {
     pal.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
     setPalette(pal);
 
-    // Text
-    if (context.hasNodeSelectString(node, "Text", &m_skinText)) {
-        setText(m_skinText);
-    }
-
     // Font size
     QString strFontSize;
     if (context.hasNodeSelectString(node, "FontSize", &strFontSize)) {
-        int fontsize = strFontSize.toInt();
-        // TODO(XXX) "Helvetica" should retrain the Qt default font matching, verify that.
-        setFont(QFont("Helvetica", fontsize, QFont::Normal));
+        bool widthOk = false;
+        double dFontSize = strFontSize.toDouble(&widthOk);
+        if (widthOk && dFontSize >= 0) {
+            QFont fonti = font();
+            // We do not scale the font here, because in most cases
+            // this is overridden by the style sheet font size
+            fonti.setPointSizeF(dFontSize);
+            setFont(fonti);
+        }
+    }
+
+    // Text
+    if (context.hasNodeSelectString(node, "Text", &m_skinText)) {
+        setText(m_skinText);
     }
 
     // Alignment
@@ -74,7 +67,7 @@ void WLabel::setup(const QDomNode& node, const SkinContext& context) {
         }
     }
 
-    // Adds an ellipsis to turncated text
+    // Adds an ellipsis to truncated text
     QString elide;
     if (context.hasNodeSelectString(node, "Elide", &elide)) {
         elide = elide.toLower();
@@ -87,7 +80,7 @@ void WLabel::setup(const QDomNode& node, const SkinContext& context) {
         } else if (elide == "none") {
             m_elideMode = Qt::ElideNone;
         } else {
-            qDebug() << "WLabel::setup(): Alide =" << elide <<
+            qDebug() << "WLabel::setup(): Elide =" << elide <<
                     "unknown, use right, middle, left or none.";
         }
     }
@@ -116,6 +109,18 @@ void WLabel::setText(const QString& text) {
 bool WLabel::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
+    } else if (pEvent->type() == QEvent::FontChange) {
+        const QFont& fonti = font();
+        // Change the new font on the fly by casting away its constancy
+        // using setFont() here, would results into a recursive loop
+        // resetting the font to the original css values.
+        // Only scale pixel size fonts, point size fonts are scaled by the OS
+        if (fonti.pixelSize() > 0) {
+            const_cast<QFont&>(fonti).setPixelSize(
+                    static_cast<int>(fonti.pixelSize() * m_scaleFactor));
+        }
+        // measure text with the new font
+        setText(m_longText);
     }
     return QLabel::event(pEvent);
 }
@@ -128,4 +133,16 @@ void WLabel::resizeEvent(QResizeEvent* event) {
 void WLabel::fillDebugTooltip(QStringList* debug) {
     WBaseWidget::fillDebugTooltip(debug);
     *debug << QString("Text: \"%1\"").arg(text());
+}
+
+int WLabel::getHighlight() const {
+    return m_highlight;
+}
+
+void WLabel::setHighlight(int highlight) {
+    if (m_highlight == highlight) {
+        return;
+    }
+    m_highlight = highlight;
+    emit highlightChanged(m_highlight);
 }

@@ -1,14 +1,16 @@
 #include "test/signalpathtest.h"
 
-const char* SignalPathTest::m_sMasterGroup = "[Master]";
-const char* SignalPathTest::m_sInternalClockGroup = "[InternalClock]";
+const QString BaseSignalPathTest::m_sMasterGroup = QStringLiteral("[Master]");
+const QString BaseSignalPathTest::m_sInternalClockGroup = QStringLiteral("[InternalClock]");
+const QString BaseSignalPathTest::m_sMidiSourceClockGroup = QStringLiteral("[MidiSourceClock]");
 // these names need to match PlayerManager::groupForDeck and friends
-const char* SignalPathTest::m_sGroup1 = "[Channel1]";
-const char* SignalPathTest::m_sGroup2 = "[Channel2]";
-const char* SignalPathTest::m_sGroup3 = "[Channel3]";
-const char* SignalPathTest::m_sPreviewGroup = "[PreviewDeck1]";
-const char* SignalPathTest::m_sSamplerGroup = "[Sampler1]";
-const double SignalPathTest::kDefaultRateRange = 4.0;
-const double SignalPathTest::kDefaultRateDir = 1.0;
-const double SignalPathTest::kRateRangeDivisor = kDefaultRateDir * kDefaultRateRange;
-const int SignalPathTest::kProcessBufferSize = 1024;
+const QString BaseSignalPathTest::m_sGroup1 = QStringLiteral("[Channel1]");
+const QString BaseSignalPathTest::m_sGroup2 = QStringLiteral("[Channel2]");
+const QString BaseSignalPathTest::m_sGroup3 = QStringLiteral("[Channel3]");
+const QString BaseSignalPathTest::m_sPreviewGroup = QStringLiteral("[PreviewDeck1]");
+const QString BaseSignalPathTest::m_sSamplerGroup = QStringLiteral("[Sampler1]");
+
+const double BaseSignalPathTest::kDefaultRateRange = 0.08;
+const double BaseSignalPathTest::kDefaultRateDir = 1.0;
+const double BaseSignalPathTest::kRateRangeDivisor = kDefaultRateDir * kDefaultRateRange;
+const int BaseSignalPathTest::kProcessBufferSize = 1024;

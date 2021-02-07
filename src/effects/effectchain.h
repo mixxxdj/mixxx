@@ -1,13 +1,13 @@
-#ifndef EFFECTCHAIN_H
-#define EFFECTCHAIN_H
+#pragma once
 
 #include <QObject>
 #include <QMap>
 #include <QList>
 #include <QDomDocument>
 
-#include "effects/effect.h"
+#include "effects/defs.h"
 #include "engine/channelhandle.h"
+#include "effects/effect.h"
 #include "util/class.h"
 
 class EffectsManager;
@@ -38,10 +38,10 @@ class EffectChain : public QObject {
     void setEnabled(bool enabled);
 
     // Activates EffectChain processing for the provided channel.
-    void enableForChannel(const ChannelHandleAndGroup& handle_group);
-    bool enabledForChannel(const ChannelHandleAndGroup& handle_group) const;
+    void enableForInputChannel(const ChannelHandleAndGroup& handleGroup);
+    bool enabledForChannel(const ChannelHandleAndGroup& handleGroup) const;
     const QSet<ChannelHandleAndGroup>& enabledChannels() const;
-    void disableForChannel(const ChannelHandleAndGroup& handle_group);
+    void disableForInputChannel(const ChannelHandleAndGroup& handleGroup);
 
     EffectChainPointer prototype() const;
 
@@ -56,56 +56,51 @@ class EffectChain : public QObject {
     double mix() const;
     void setMix(const double& dMix);
 
-    enum InsertionType {
-        INSERT = 0,
-        SEND,
-        // The number of insertion types. Also used to represent "unknown".
-        NUM_INSERTION_TYPES
-    };
-    static QString insertionTypeToString(InsertionType type) {
+    static QString mixModeToString(EffectChainMixMode type) {
         switch (type) {
-            case INSERT:
-                return "INSERT";
-            case SEND:
-                return "SEND";
+            case EffectChainMixMode::DrySlashWet:
+                return "DRY/WET";
+            case EffectChainMixMode::DryPlusWet:
+                return "DRY+WET";
             default:
                 return "UNKNOWN";
         }
     }
-    static InsertionType insertionTypeFromString(const QString& typeStr) {
-        if (typeStr == "INSERT") {
-            return INSERT;
-        } else if (typeStr == "SEND") {
-            return SEND;
+    static EffectChainMixMode mixModeFromString(const QString& typeStr) {
+        if (typeStr == "DRY/WET") {
+            return EffectChainMixMode::DrySlashWet;
+        } else if (typeStr == "DRY+WET") {
+            return EffectChainMixMode::DryPlusWet;
         } else {
-            return NUM_INSERTION_TYPES;
+            return EffectChainMixMode::NumMixModes;
         }
     }
 
-    InsertionType insertionType() const;
-    void setInsertionType(InsertionType type);
+    EffectChainMixMode mixMode() const;
+    void setMixMode(EffectChainMixMode type);
 
     void addEffect(EffectPointer pEffect);
     void replaceEffect(unsigned int effectSlotNumber, EffectPointer pEffect);
     void removeEffect(unsigned int effectSlotNumber);
+    void refreshAllEffects();
+
     const QList<EffectPointer>& effects() const;
     unsigned int numEffects() const;
 
     EngineEffectChain* getEngineEffectChain();
 
-    QDomElement toXML(QDomDocument* doc) const;
-    static EffectChainPointer fromXML(EffectsManager* pEffectsManager,
+    static EffectChainPointer createFromXml(EffectsManager* pEffectsManager,
                                       const QDomElement& element);
     static EffectChainPointer clone(EffectChainPointer pChain);
 
   signals:
     // Signal that indicates that an effect has been added or removed.
-    void effectsChanged();
+    void effectChanged(unsigned int effectSlotNumber);
     void nameChanged(const QString& name);
     void descriptionChanged(const QString& name);
     void enabledChanged(bool enabled);
     void mixChanged(double v);
-    void insertionTypeChanged(EffectChain::InsertionType type);
+    void mixModeChanged(EffectChainMixMode type);
     void channelStatusChanged(const QString& group, bool enabled);
 
   private:
@@ -122,15 +117,13 @@ class EffectChain : public QObject {
     QString m_id;
     QString m_name;
     QString m_description;
-    InsertionType m_insertionType;
+    EffectChainMixMode m_mixMode;
     double m_dMix;
 
-    QSet<ChannelHandleAndGroup> m_enabledChannels;
+    QSet<ChannelHandleAndGroup> m_enabledInputChannels;
     QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;
     bool m_bAddedToEngine;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChain);
 };
-
-#endif /* EFFECTCHAIN_H */

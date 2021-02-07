@@ -6,139 +6,157 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <!-- I don't now why this works but a WidgetGroup wrapper around a
-         WidgetStack with a 'fixed' size policy makes the group track the
-         minimum size of the current stack widget. -->
     <SizePolicy>me,f</SizePolicy>
-
     <Children>
-      <WidgetStack>
-        <ObjectName>MicrophonesContainer</ObjectName>
+      <WidgetGroup>
+        <ObjectName>MicAuxRack</ObjectName>
         <SizePolicy>me,min</SizePolicy>
+        <Layout>horizontal</Layout>
         <Children>
 
+          <!-- Microphone input controls -->
+          <!-- Hide all mic controls but for Mic 1, if not enabled in
+            the sound hardware preferences. Clicking the Mic 1 TALK
+            button opens a modal window which allows to go straight
+            to the preferences pane for easy set up. Once Mic 1 is
+            set up, this widget hides itself. -->
+
+          <Template src="skin:microphone.xml"/>
+          <Template src="skin:microphone_unconfigured.xml"/>
+
+          <Template src="skin:microphone.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+          <Template src="skin:microphone_unconfigured.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+
+          <Template src="skin:microphone.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+          <Template src="skin:microphone_unconfigured.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+
+          <Template src="skin:microphone.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+          <Template src="skin:microphone_unconfigured.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+
           <WidgetGroup>
-            <ObjectName>MicrophoneRackExpanded</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Layout>horizontal</Layout>
+            <ObjectName>MicDuckingContainer</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>max,me</SizePolicy>
             <Children>
 
-              <!-- Microphone input controls -->
               <WidgetGroup>
                 <Layout>horizontal</Layout>
+                <SizePolicy>min,min</SizePolicy>
                 <Children>
-                  <!-- Hide all mic controls but for Mic 1, if not enabled in
-                       the sound hardware preferences. Clicking the Mic 1 TALK
-                       button opens a modal window which allows to go straight
-                       to the preferences pane for easy set up. Once Mic 1 is
-                       set up, this widget hides itself. -->
-                  <Template src="skin:microphone_talkover_button.xml">
-                    <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
-                    <SetVariable name="TooltipId">microphone_talkover</SetVariable>
-                    <SetVariable name="talk_text">Talk</SetVariable>
-                  </Template>
-
-                  <Template src="skin:vumeter.xml">
-                    <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
-                    <SetVariable name="TooltipId">microphone_VuMeter</SetVariable>
-                    <SetVariable name="control">VuMeter</SetVariable>
-                  </Template>
-
-                  <Template src="skin:knob_with_button.xml">
-                    <SetVariable name="TooltipId">microphone_pregain</SetVariable>
-                    <SetVariable name="group">[Microphone<Variable name="i"/>]</SetVariable>
-                    <SetVariable name="control">pregain</SetVariable>
-                    <SetVariable name="color">red</SetVariable>
-                    <SetVariable name="button_TooltipId">mute</SetVariable>
-                    <SetVariable name="button_control">mute</SetVariable>
-                    <SetVariable name="label">Gain</SetVariable>
-                  </Template>
+                  <Label>
+                    <ObjectName>DuckingLabel</ObjectName>
+                    <Text>DUCKING</Text>
+                  </Label>
                 </Children>
-                <Connection>
-                  <ConfigKey>[Microphone],enabled</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                  <Transform>
-                    <Not/>
-                  </Transform>
-                </Connection>
               </WidgetGroup>
 
-              <Template src="skin:microphone.xml">
-                <SetVariable name="i"></SetVariable>
-              </Template>
-              <Template src="skin:microphone.xml">
-                <SetVariable name="i">2</SetVariable>
-              </Template>
-              <Template src="skin:microphone.xml">
-                <SetVariable name="i">3</SetVariable>
-              </Template>
-              <Template src="skin:microphone.xml">
-                <SetVariable name="i">4</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <ObjectName>MicDuckingControls</ObjectName>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <PushButton>
+                    <TooltipId>talkover_duck_mode</TooltipId>
+                    <Size>46f,20f</Size>
+                    <NumberStates>3</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text>OFF</Text>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Text>AUTO</Text>
+                    </State>
+                    <State>
+                      <Number>2</Number>
+                      <Text>MAN</Text>
+                    </State>
+                    <Connection>
+                      <ConfigKey>[Master],talkoverDucking</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                    </Connection>
+                  </PushButton>
 
-              <PushButton>
-                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-                <TooltipId></TooltipId>
-                <Size>70f,20f</Size>
-                <NumberStates>3</NumberStates>
-                <State>
-                  <Number>0</Number>
-                  <Text>Ducking</Text>
-                </State>
-                <State>
-                  <Number>1</Number>
-                  <Text>Ducking</Text>
-                </State>
-                <State>
-                  <Number>2</Number>
-                  <Text>Manual</Text>
-                </State>
-                <Connection>
-                  <ConfigKey>[Master],talkoverDucking</ConfigKey>
-                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-                </Connection>
-              </PushButton>
+                  <!-- knob_with_label.xml template will not work here because
+                  "Strength" label exceeds width of knob. -->
+                  <Template src="skin:knob.xml">
+                    <SetVariable name="group">[Master]</SetVariable>
+                    <SetVariable name="control">duckStrength</SetVariable>
+                    <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
+                    <SetVariable name="color">blue</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
 
-              <Template src="skin:knob_with_label.xml">
-                <SetVariable name="group">[Master]</SetVariable>
-                <SetVariable name="control">duckStrength</SetVariable>
-                <!-- TODO(jus): Add missing string to src/skin/tooltips.cpp -->
-                <SetVariable name="TooltipId"></SetVariable>
-                <SetVariable name="color">blue</SetVariable>
-                <SetVariable name="label">Strength</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,min</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>0me,0min</Size></WidgetGroup>
+                  <Label>
+                    <Size>52f,12f</Size>
+                    <ObjectName>KnobLabel</ObjectName>
+                    <Text>Strength</Text>
+                  </Label>
+                </Children>
+              </WidgetGroup>
 
-              <!-- Auxiliary input controls -->
-              <Template src="skin:spacer_h.xml"></Template>
-
-              <Template src="skin:auxiliary.xml">
-                <SetVariable name="i">1</SetVariable>
-              </Template>
-              <Template src="skin:auxiliary.xml">
-                <SetVariable name="i">2</SetVariable>
-              </Template>
-              <Template src="skin:auxiliary.xml">
-                <SetVariable name="i">3</SetVariable>
-              </Template>
-              <Template src="skin:auxiliary.xml">
-                <SetVariable name="i">4</SetVariable>
-              </Template>
             </Children>
           </WidgetGroup>
 
+          <WidgetGroup>
+            <ObjectName>Spacer33</ObjectName>
+            <SizePolicy>min,me</SizePolicy>
+          </WidgetGroup>
+
+          <!-- Auxiliary input controls -->
+
+          <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">1</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">1</SetVariable>
+          </Template>
+
+          <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">2</SetVariable>
+          </Template>
+
+          <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">3</SetVariable>
+          </Template>
+
+          <Template src="skin:auxiliary.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+          <Template src="skin:auxiliary_unconfigured.xml">
+            <SetVariable name="i">4</SetVariable>
+          </Template>
+
         </Children>
-        <Connection>
-          <ConfigKey persist="true">[Microphone],show_microphone</ConfigKey>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetStack>
+      </WidgetGroup>
+
     </Children>
     <Connection>
-      <ConfigKey>[Master],maximize_library</ConfigKey>
+      <ConfigKey>[Microphone],show_microphone</ConfigKey>
       <BindProperty>visible</BindProperty>
-      <Transform>
-        <Not/>
-      </Transform>
     </Connection>
   </WidgetGroup>
 </Template>

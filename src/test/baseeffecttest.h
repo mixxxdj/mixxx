@@ -1,5 +1,4 @@
-#ifndef BASEEFFECTTEST_H
-#define BASEEFFECTTEST_H
+#pragma once
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -19,14 +18,14 @@
 
 class TestEffectBackend : public EffectsBackend {
   public:
-    TestEffectBackend() : EffectsBackend(NULL, "TestBackend") {
+    TestEffectBackend() : EffectsBackend(NULL, EffectBackendType::Unknown) {
     }
 
     // Expose as public
     void registerEffect(const QString& id,
-                        const EffectManifest& manifest,
+                        EffectManifestPointer pManifest,
                         EffectInstantiatorPointer pInstantiator) {
-        EffectsBackend::registerEffect(id, manifest, pInstantiator);
+        EffectsBackend::registerEffect(id, pManifest, pInstantiator);
     }
 };
 
@@ -34,28 +33,37 @@ class MockEffectProcessor : public EffectProcessor {
   public:
     MockEffectProcessor() {}
 
-    MOCK_METHOD7(process, void(const ChannelHandle& group, const CSAMPLE* pInput,
+    MOCK_METHOD3(initialize, void(const QSet<ChannelHandleAndGroup>& activeInputChannels,
+                                  EffectsManager* pEffectsManager,
+                                  const mixxx::EngineParameters& bufferParameters));
+    MOCK_METHOD1(createState, EffectState*(const mixxx::EngineParameters& bufferParameters));
+    MOCK_METHOD2(loadStatesForInputChannel, bool(const ChannelHandle* inputChannel,
+          const EffectStatesMap* pStatesMap));
+    MOCK_METHOD1(deleteStatesForInputChannel, void(const ChannelHandle* inputChannel));
+    MOCK_METHOD7(process, void(const ChannelHandle& inputHandle,
+                               const ChannelHandle& outputHandle,
+                               const CSAMPLE* pInput,
                                CSAMPLE* pOutput,
-                               const unsigned int numSamples,
-                               const unsigned int sampleRate,
-                               const EffectProcessor::EnableState enableState,
+                               const mixxx::EngineParameters& bufferParameters,
+                               const EffectEnableState enableState,
                                const GroupFeatureState& groupFeatures));
 
-    MOCK_METHOD1(initialize, void(const QSet<ChannelHandleAndGroup>& registeredChannels));
 };
 
 class MockEffectInstantiator : public EffectInstantiator {
   public:
     MockEffectInstantiator() {}
     MOCK_METHOD2(instantiate, EffectProcessor*(EngineEffect* pEngineEffect,
-                                               const EffectManifest& manifest));
+                                               EffectManifestPointer pManifest));
 };
 
 
 class BaseEffectTest : public MixxxTest {
   protected:
-    BaseEffectTest() : m_pTestBackend(NULL),
-                       m_pEffectsManager(new EffectsManager(NULL, config())) {
+    BaseEffectTest()
+            : m_pChannelHandleFactory(std::make_shared<ChannelHandleFactory>()),
+              m_pTestBackend(nullptr),
+              m_pEffectsManager(new EffectsManager(nullptr, config(), m_pChannelHandleFactory)) {
     }
 
     void registerTestBackend() {
@@ -63,12 +71,11 @@ class BaseEffectTest : public MixxxTest {
         m_pEffectsManager->addEffectsBackend(m_pTestBackend);
     }
 
-    void registerTestEffect(const EffectManifest& manifest, bool willAddToEngine);
+    void registerTestEffect(EffectManifestPointer pManifest, bool willAddToEngine);
+
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
 
     // Deleted by EffectsManager. Do not delete.
     TestEffectBackend* m_pTestBackend;
     QScopedPointer<EffectsManager> m_pEffectsManager;
 };
-
-
-#endif /* BASEEFFECTTEST_H */

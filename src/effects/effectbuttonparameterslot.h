@@ -1,5 +1,4 @@
-#ifndef EFFECTBUTTONPARAMETERSLOT_H
-#define EFFECTBUTTONPARAMETERSLOT_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -12,9 +11,6 @@
 
 class ControlObject;
 class ControlPushButton;
-
-class EffectButtonParameterSlot;
-typedef QSharedPointer<EffectButtonParameterSlot> EffectButtonParameterSlotPointer;
 
 class EffectButtonParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
@@ -32,6 +28,9 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
     // Clear the currently loaded effect
     void clear();
 
+    QDomElement toXml(QDomDocument* doc) const override;
+    void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
+
   private slots:
     // Solely for handling control changes
     void slotParameterValueChanged(double value);
@@ -47,5 +46,3 @@ class EffectButtonParameterSlot : public EffectParameterSlotBase {
 
     DISALLOW_COPY_AND_ASSIGN(EffectButtonParameterSlot);
 };
-
-#endif // EFFECTBUTTONPARAMETERSLOT_H

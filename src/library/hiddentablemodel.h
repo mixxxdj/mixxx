@@ -1,20 +1,18 @@
-#ifndef HIDDENTABLEMODEL_H
-#define HIDDENTABLEMODEL_H
+#pragma once
 
 #include "library/basesqltablemodel.h"
 
-class HiddenTableModel : public BaseSqlTableModel {
+class HiddenTableModel final : public BaseSqlTableModel {
     Q_OBJECT
   public:
-    HiddenTableModel(QObject* parent, TrackCollection* pTrackCollection);
-    virtual ~HiddenTableModel();
+    HiddenTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager);
+    ~HiddenTableModel() final;
 
-    void setTableModel(int id = -1);
-    bool isColumnInternal(int column);
-    void purgeTracks(const QModelIndexList& indices);
-    void unhideTracks(const QModelIndexList& indices);
-    Qt::ItemFlags flags(const QModelIndex &index) const;
-    TrackModel::CapabilitiesFlags getCapabilities() const;
+    void setTableModel();
+
+    bool isColumnInternal(int column) final;
+    void purgeTracks(const QModelIndexList& indices) final;
+    void unhideTracks(const QModelIndexList& indices) final;
+    Qt::ItemFlags flags(const QModelIndex &index) const final;
+    Capabilities getCapabilities() const final;
 };
-
-#endif

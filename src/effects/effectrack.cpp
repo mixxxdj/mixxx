@@ -1,24 +1,26 @@
 #include "effects/effectrack.h"
 
-#include "effects/effectsmanager.h"
 #include "effects/effectchainmanager.h"
+#include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
 #include "engine/effects/engineeffectrack.h"
+#include "moc_effectrack.cpp"
+#include "util/assert.h"
 
 EffectRack::EffectRack(EffectsManager* pEffectsManager,
                        EffectChainManager* pEffectChainManager,
                        const unsigned int iRackNumber,
-                       const QString& group)
-        : m_pEffectsManager(pEffectsManager),
+                       const QString& group, SignalProcessingStage stage)
+        : m_pEngineEffectRack(nullptr),
+          m_pEffectsManager(pEffectsManager),
           m_pEffectChainManager(pEffectChainManager),
+          m_signalProcessingStage(stage),
           m_iRackNumber(iRackNumber),
           m_group(group),
           m_controlNumEffectChainSlots(ConfigKey(m_group, "num_effectunits")),
-          m_controlClearRack(ConfigKey(m_group, "clear")),
-          m_pEngineEffectRack(NULL) {
-    connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
-            this, SLOT(slotClearRack(double)));
-    m_controlNumEffectChainSlots.connectValueChangeRequest(
-            this, SLOT(slotNumEffectChainSlots(double)));
+          m_controlClearRack(ConfigKey(m_group, "clear")) {
+    connect(&m_controlClearRack, &ControlObject::valueChanged, this, &EffectRack::slotClearRack);
+    m_controlNumEffectChainSlots.setReadOnly();
     addToEngine();
 }
 
@@ -36,6 +38,7 @@ void EffectRack::addToEngine() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::ADD_EFFECT_RACK;
     pRequest->AddEffectRack.pRack = m_pEngineEffectRack;
+    pRequest->AddEffectRack.signalProcessingStage = m_signalProcessingStage;
     m_pEffectsManager->writeRequest(pRequest);
 
     // Add all effect chains.
@@ -63,22 +66,16 @@ void EffectRack::removeFromEngine() {
 
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::REMOVE_EFFECT_RACK;
+    pRequest->RemoveEffectRack.signalProcessingStage = m_signalProcessingStage;
     pRequest->RemoveEffectRack.pRack = m_pEngineEffectRack;
     m_pEffectsManager->writeRequest(pRequest);
-    m_pEngineEffectRack = NULL;
+    m_pEngineEffectRack = nullptr;
 }
 
-void EffectRack::registerChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectRack::registerInputChannel(const ChannelHandleAndGroup& handleGroup) {
     foreach (EffectChainSlotPointer pChainSlot, m_effectChainSlots) {
-        pChainSlot->registerChannel(handle_group);
+        pChainSlot->registerInputChannel(handleGroup);
     }
-}
-
-void EffectRack::slotNumEffectChainSlots(double v) {
-    // Ignore sets to num_effectchain_slots
-    Q_UNUSED(v);
-    //qDebug() << debugString() << "slotNumEffectChainSlots" << v;
-    qWarning() << "WARNING: num_effectchain_slots is a read-only control.";
 }
 
 void EffectRack::slotClearRack(double v) {
@@ -89,20 +86,13 @@ void EffectRack::slotClearRack(double v) {
     }
 }
 
-EffectChainPointer EffectRack::makeEmptyChain() {
-    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, QString(),
-                                              EffectChainPointer()));
-    pChain->setName(tr("Empty Chain"));
-    return pChain;
-}
-
 int EffectRack::numEffectChainSlots() const {
     return m_effectChainSlots.size();
 }
 
 void EffectRack::addEffectChainSlotInternal(EffectChainSlotPointer pChainSlot) {
     m_effectChainSlots.append(pChainSlot);
-    m_controlNumEffectChainSlots.setAndConfirm(
+    m_controlNumEffectChainSlots.forceSet(
         m_controlNumEffectChainSlots.get() + 1);
 }
 
@@ -124,7 +114,9 @@ void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
             pLoadedChain);
 
     pNextChain = EffectChain::clone(pNextChain);
-    m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pNextChain);
+    pNextChain->addToEngine(m_pEngineEffectRack, iChainSlotNumber);
+    m_effectChainSlots[iChainSlotNumber]->loadEffectChainToSlot(pNextChain);
+    m_effectChainSlots[iChainSlotNumber]->updateRoutingSwitches();
 }
 
 
@@ -138,7 +130,36 @@ void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
         pLoadedChain);
 
     pPrevChain = EffectChain::clone(pPrevChain);
-    m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
+    pPrevChain->addToEngine(m_pEngineEffectRack, iChainSlotNumber);
+    m_effectChainSlots[iChainSlotNumber]->loadEffectChainToSlot(pPrevChain);
+    m_effectChainSlots[iChainSlotNumber]->updateRoutingSwitches();
+}
+
+void EffectRack::maybeLoadEffect(const unsigned int iChainSlotNumber,
+                                 const unsigned int iEffectSlotNumber,
+                                 const QString& id) {
+    if (iChainSlotNumber >= static_cast<unsigned int>(m_effectChainSlots.size())) {
+        return;
+    }
+
+    EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
+    if (pChainSlot == nullptr) {
+        return;
+    }
+    EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(iEffectSlotNumber);
+
+    bool loadNew = false;
+    if (pEffectSlot == nullptr || pEffectSlot->getEffect() == nullptr) {
+        loadNew = true;
+    } else if (id != pEffectSlot->getEffect()->getManifest()->id()) {
+        loadNew = true;
+    }
+
+    if (loadNew) {
+        EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        EffectPointer pEffect = m_pEffectsManager->instantiateEffect(id);
+        pChain->replaceEffect(iEffectSlotNumber, pEffect);
+    }
 }
 
 void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
@@ -148,16 +169,12 @@ void EffectRack::loadNextEffect(const unsigned int iChainSlotNumber,
         return;
     }
 
-    QString effectId = pEffect ? pEffect->getManifest().id() : QString();
+    QString effectId = pEffect ? pEffect->getManifest()->id() : QString();
     QString nextEffectId = m_pEffectsManager->getNextEffectId(effectId);
     EffectPointer pNextEffect = m_pEffectsManager->instantiateEffect(nextEffectId);
 
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
-    EffectChainPointer pChain = pChainSlot->getEffectChain();
-    if (!pChain) {
-        pChain = makeEmptyChain();
-        pChainSlot->loadEffectChain(pChain);
-    }
+    EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
     pChain->replaceEffect(iEffectSlotNumber, pNextEffect);
 }
 
@@ -169,25 +186,50 @@ void EffectRack::loadPrevEffect(const unsigned int iChainSlotNumber,
         return;
     }
 
-    QString effectId = pEffect ? pEffect->getManifest().id() : QString();
+    QString effectId = pEffect ? pEffect->getManifest()->id() : QString();
     QString prevEffectId = m_pEffectsManager->getPrevEffectId(effectId);
     EffectPointer pPrevEffect = m_pEffectsManager->instantiateEffect(prevEffectId);
 
     EffectChainSlotPointer pChainSlot = m_effectChainSlots[iChainSlotNumber];
-    EffectChainPointer pChain = pChainSlot->getEffectChain();
-    if (!pChain) {
-        pChain = makeEmptyChain();
-        pChainSlot->loadEffectChain(pChain);
-    }
-
+    EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
     pChain->replaceEffect(iEffectSlotNumber, pPrevEffect);
+}
+
+QDomElement EffectRack::toXml(QDomDocument* doc) const {
+    QDomElement rackElement = doc->createElement("Rack");
+    QDomElement groupElement = doc->createElement("Group");
+    QDomText groupText = doc->createTextNode(m_group);
+    groupElement.appendChild(groupText);
+    rackElement.appendChild(groupElement);
+
+    QDomElement chainsElement = doc->createElement("Chains");
+    for (const EffectChainSlotPointer& pChainSlot : m_effectChainSlots) {
+        QDomElement chain = pChainSlot->toXml(doc);
+        chainsElement.appendChild(chain);
+    }
+    rackElement.appendChild(chainsElement);
+    return rackElement;
+}
+
+void EffectRack::refresh() {
+    for (const auto& pChainSlot : qAsConst(m_effectChainSlots)) {
+        EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+        pChain->refreshAllEffects();
+    }
+}
+
+bool EffectRack::isAdoptMetaknobValueEnabled() const {
+    return m_pEffectChainManager->isAdoptMetaknobValueEnabled();
 }
 
 StandardEffectRack::StandardEffectRack(EffectsManager* pEffectsManager,
                                        EffectChainManager* pChainManager,
                                        const unsigned int iRackNumber)
         : EffectRack(pEffectsManager, pChainManager, iRackNumber,
-                     formatGroupString(iRackNumber)) {
+                     formatGroupString(iRackNumber), SignalProcessingStage::Postfader) {
+    for (int i = 0; i < EffectChainManager::kNumStandardEffectChains; ++i) {
+        addEffectChainSlot();
+    }
 }
 
 EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
@@ -198,55 +240,84 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     EffectChainSlot* pChainSlot =
             new EffectChainSlot(this, group, iChainSlotNumber);
 
-    // TODO(rryan) How many should we make default? They create controls that
-    // the GUI may rely on, so the choice is important to communicate to skin
-    // designers.
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < kNumEffectsPerUnit; ++i) {
         pChainSlot->addEffectSlot(
-            StandardEffectRack::formatEffectSlotGroupString(
-                getRackNumber(), iChainSlotNumber, i));
+                StandardEffectRack::formatEffectSlotGroupString(
+                        getRackNumber(), iChainSlotNumber, i));
     }
 
-    connect(pChainSlot, SIGNAL(nextChain(unsigned int, EffectChainPointer)),
-            this, SLOT(loadNextChain(unsigned int, EffectChainPointer)));
-    connect(pChainSlot, SIGNAL(prevChain(unsigned int, EffectChainPointer)),
-            this, SLOT(loadPrevChain(unsigned int, EffectChainPointer)));
+    connect(pChainSlot, &EffectChainSlot::nextChain, this, &StandardEffectRack::loadNextChain);
+    connect(pChainSlot, &EffectChainSlot::prevChain, this, &StandardEffectRack::loadPrevChain);
 
-    connect(pChainSlot, SIGNAL(nextEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(loadNextEffect(unsigned int, unsigned int, EffectPointer)));
-    connect(pChainSlot, SIGNAL(prevEffect(unsigned int, unsigned int, EffectPointer)),
-            this, SLOT(loadPrevEffect(unsigned int, unsigned int, EffectPointer)));
+    connect(pChainSlot, &EffectChainSlot::nextEffect, this, &StandardEffectRack::loadNextEffect);
+    connect(pChainSlot, &EffectChainSlot::prevEffect, this, &StandardEffectRack::loadPrevEffect);
 
     // Register all the existing channels with the new EffectChain.
     const QSet<ChannelHandleAndGroup>& registeredChannels =
-            m_pEffectChainManager->registeredChannels();
-    foreach (const ChannelHandleAndGroup& handle_group, registeredChannels) {
-        pChainSlot->registerChannel(handle_group);
+            m_pEffectChainManager->registeredInputChannels();
+    for (const ChannelHandleAndGroup& handleGroup : registeredChannels) {
+        pChainSlot->registerInputChannel(handleGroup);
     }
 
     EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
     addEffectChainSlotInternal(pChainSlotPointer);
 
-    // Now load an empty effect chain into the slot so that users can edit
-    // effect slots on the fly without having to load a chain.
-    EffectChainPointer pChain = makeEmptyChain();
-    pChainSlotPointer->loadEffectChain(pChain);
-
     return pChainSlotPointer;
+}
+
+OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
+                                   EffectChainManager* pChainManager)
+        : EffectRack(pEffectsManager, pChainManager, 0,
+                     "[OutputEffectRack]", SignalProcessingStage::Postfader) {
+
+    const QString unitGroup = "[OutputEffectRack_[Master]]";
+    // Hard code only one EffectChainSlot
+    EffectChainSlot* pChainSlot = new EffectChainSlot(this, unitGroup, 0);
+    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, unitGroup));
+    pChainSlot->loadEffectChainToSlot(pChain);
+    pChain->addToEngine(getEngineEffectRack(), 0);
+    // Add a single EffectSlot for the master EQ effect
+    pChainSlot->addEffectSlot("[OutputEffectRack_[Master]_Effect1]");
+
+    connect(pChainSlot, &EffectChainSlot::nextChain, this, &OutputEffectRack::loadNextChain);
+    connect(pChainSlot, &EffectChainSlot::prevChain, this, &OutputEffectRack::loadPrevChain);
+
+    connect(pChainSlot, &EffectChainSlot::nextEffect, this, &OutputEffectRack::loadNextEffect);
+    connect(pChainSlot, &EffectChainSlot::prevEffect, this, &OutputEffectRack::loadPrevEffect);
+
+    // Register the master channel.
+    const ChannelHandleAndGroup* masterHandleAndGroup = nullptr;
+
+    // TODO(Be): Remove this hideous hack to get the ChannelHandleAndGroup
+    const QSet<ChannelHandleAndGroup>& registeredChannels =
+            m_pEffectChainManager->registeredInputChannels();
+    for (const ChannelHandleAndGroup& handleGroup : registeredChannels) {
+        if (handleGroup.name() == "[MasterOutput]") {
+            masterHandleAndGroup = &handleGroup;
+            break;
+        }
+    }
+    DEBUG_ASSERT(masterHandleAndGroup != nullptr);
+
+    pChainSlot->registerInputChannel(*masterHandleAndGroup);
+    pChain->enableForInputChannel(*masterHandleAndGroup);
+    pChain->setMix(1.0);
+
+    EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
+    addEffectChainSlotInternal(pChainSlotPointer);
 }
 
 PerGroupRack::PerGroupRack(EffectsManager* pEffectsManager,
                            EffectChainManager* pChainManager,
                            const unsigned int iRackNumber,
                            const QString& group)
-        : EffectRack(pEffectsManager, pChainManager, iRackNumber, group) {
+        : EffectRack(pEffectsManager, pChainManager, iRackNumber, group,
+                     SignalProcessingStage::Prefader) {
 }
 
-EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& groupName) {
-    if (m_groupToChainSlot.contains(groupName)) {
-        qWarning() << "PerGroupRack" << getGroup()
-                   << "group is already registered" << groupName;
-        return getGroupEffectChainSlot(groupName);
+void PerGroupRack::setupForGroup(const QString& groupName) {
+    VERIFY_OR_DEBUG_ASSERT(!m_groupToChainSlot.contains(groupName)) {
+        return;
     }
 
     int iChainSlotNumber = m_groupToChainSlot.size();
@@ -258,19 +329,51 @@ EffectChainSlotPointer PerGroupRack::addEffectChainSlotForGroup(const QString& g
     addEffectChainSlotInternal(pChainSlotPointer);
     m_groupToChainSlot[groupName] = pChainSlotPointer;
 
+    // TODO(rryan): Set up next/prev signals.
+
+    EffectChainPointer pChain(new EffectChain(m_pEffectsManager, chainSlotGroup));
+    pChainSlot->loadEffectChainToSlot(pChain);
+    pChain->addToEngine(getEngineEffectRack(), iChainSlotNumber);
+    // Set the chain to be fully wet.
+    pChain->setMix(1.0);
+    pChain->updateEngineState();
+
     // TODO(rryan): remove.
-    foreach (const ChannelHandleAndGroup& handle_group,
-             m_pEffectChainManager->registeredChannels()) {
-        if (handle_group.name() == groupName) {
-            configureEffectChainSlotForGroup(pChainSlotPointer, handle_group);
-            return pChainSlotPointer;
+    const ChannelHandleAndGroup* handleAndGroup = nullptr;
+    for (const ChannelHandleAndGroup& handleGroup :
+            m_pEffectChainManager->registeredInputChannels()) {
+        if (handleGroup.name() == groupName) {
+            handleAndGroup = &handleGroup;
+            break;
         }
     }
+    DEBUG_ASSERT(handleAndGroup != nullptr);
 
-    qWarning() << "PerGroupRack::addEffectChainSlotForGroup" << groupName
-               << "was not registered before calling."
-               << "Can't configure the effect chain slot.";
-    return pChainSlotPointer;
+    // Register this channel alone with the chain slot.
+    pChainSlot->registerInputChannel(*handleAndGroup);
+    pChainSlot->updateRoutingSwitches();
+
+    // Add a single effect slot
+    pChainSlot->addEffectSlot(formatEffectSlotGroupString(0, groupName));
+    // DlgPrefEq loads the Effect with loadEffectToGroup
+
+    configureEffectChainSlotForGroup(pChainSlotPointer, groupName);
+}
+
+bool PerGroupRack::loadEffectToGroup(const QString& groupName, EffectPointer pEffect) {
+    EffectChainSlotPointer pChainSlot = getGroupEffectChainSlot(groupName);
+    VERIFY_OR_DEBUG_ASSERT(pChainSlot) {
+        return false;
+    }
+
+    EffectChainPointer pChain = pChainSlot->getOrCreateEffectChain(m_pEffectsManager);
+    pChain->replaceEffect(0, pEffect);
+    pChainSlot->updateRoutingSwitches();
+
+    if (pEffect != nullptr) {
+        pEffect->setEnabled(true);
+    }
+    return true;
 }
 
 EffectChainSlotPointer PerGroupRack::getGroupEffectChainSlot(const QString& group) {
@@ -285,27 +388,8 @@ QuickEffectRack::QuickEffectRack(EffectsManager* pEffectsManager,
 }
 
 void QuickEffectRack::configureEffectChainSlotForGroup(
-        EffectChainSlotPointer pSlot, const ChannelHandleAndGroup& handle_group) {
-    // Register this channel alone with the chain slot.
-    pSlot->registerChannel(handle_group);
-
-    // Add a single EffectSlot for the quick effect.
-    pSlot->addEffectSlot(QuickEffectRack::formatEffectSlotGroupString(
-            getRackNumber(), handle_group.name()));
-
-    // TODO(rryan): Set up next/prev signals.
-
-    // Now load an empty effect chain into the slot so that users can edit
-    // effect slots on the fly without having to load a chain.
-    EffectChainPointer pChain = makeEmptyChain();
-    pSlot->loadEffectChain(pChain);
-
-    // Enable the chain for the channel by default.
-    pChain->enableForChannel(handle_group);
-
-    // Set the chain to be fully wet.
-    pChain->setMix(1.0);
-
+        EffectChainSlotPointer pSlot, const QString& groupName) {
+    Q_UNUSED(groupName);
     // Set the parameter default value to 0.5 (neutral).
     pSlot->setSuperParameter(0.5);
     pSlot->setSuperParameterDefaultValue(0.5);
@@ -313,34 +397,10 @@ void QuickEffectRack::configureEffectChainSlotForGroup(
 
 bool QuickEffectRack::loadEffectToGroup(const QString& groupName,
                                         EffectPointer pEffect) {
+    PerGroupRack::loadEffectToGroup(groupName, pEffect);
     EffectChainSlotPointer pChainSlot = getGroupEffectChainSlot(groupName);
-    if (pChainSlot.isNull()) {
-        qWarning() << "No chain for group" << groupName;
-        return false;
-    }
-
-    EffectChainPointer pChain = pChainSlot->getEffectChain();
-    if (pChain.isNull()) {
-        pChain = makeEmptyChain();
-        pChainSlot->loadEffectChain(pChain);
-        // TODO(rryan): remove.
-        foreach (const ChannelHandleAndGroup& handle_group,
-                 m_pEffectChainManager->registeredChannels()) {
-            if (handle_group.name() == groupName) {
-                pChain->enableForChannel(handle_group);
-            }
-        }
-        pChain->setMix(1.0);
-    }
-
-    pChain->replaceEffect(0, pEffect);
-
-    // Force update the new effect to match the current superknob position.
-    EffectSlotPointer pEffectSlot = pChainSlot->getEffectSlot(0);
-    if (pEffectSlot) {
-        pEffectSlot->onChainSuperParameterChanged(
-                pChainSlot->getSuperParameter(), true);
-    }
+    // Force update metaknobs and parameters to match state of superknob
+    pChainSlot->setSuperParameter(pChainSlot->getSuperParameter(), true);
     return true;
 }
 
@@ -351,57 +411,8 @@ EqualizerRack::EqualizerRack(EffectsManager* pEffectsManager,
                        EqualizerRack::formatGroupString(iRackNumber)) {
 }
 
-bool EqualizerRack::loadEffectToGroup(const QString& groupName,
-                                      EffectPointer pEffect) {
-    EffectChainSlotPointer pChainSlot = getGroupEffectChainSlot(groupName);
-    if (pChainSlot.isNull()) {
-        qWarning() << "No chain for group" << groupName;
-        return false;
-    }
-
-    EffectChainPointer pChain = pChainSlot->getEffectChain();
-    if (pChain.isNull()) {
-        pChain = makeEmptyChain();
-        pChainSlot->loadEffectChain(pChain);
-        // TODO(rryan): remove.
-        foreach (const ChannelHandleAndGroup& handle_group,
-                 m_pEffectChainManager->registeredChannels()) {
-            if (handle_group.name() == groupName) {
-                pChain->enableForChannel(handle_group);
-            }
-        }
-        pChain->setMix(1.0);
-    }
-
-    pChain->replaceEffect(0, pEffect);
-    return true;
-}
-
-
 void EqualizerRack::configureEffectChainSlotForGroup(EffectChainSlotPointer pSlot,
-                                                     const ChannelHandleAndGroup& handle_group) {
-    const QString& groupName = handle_group.name();
-
-    // Register this channel alone with the chain slot.
-    pSlot->registerChannel(handle_group);
-
-    // Add a single EffectSlot for the equalizer effect.
-    pSlot->addEffectSlot(EqualizerRack::formatEffectSlotGroupString(
-            getRackNumber(), groupName));
-
-    // TODO(rryan): Set up next/prev signals.
-
-    // Now load an empty effect chain into the slot so that users can edit
-    // effect slots on the fly without having to load a chain.
-    EffectChainPointer pChain = makeEmptyChain();
-    pSlot->loadEffectChain(pChain);
-
-    // Enable the chain for the channel by default.
-    pChain->enableForChannel(handle_group);
-
-    // Set the chain to be fully wet.
-    pChain->setMix(1.0);
-
+                                                     const QString& groupName) {
     // Create aliases for legacy EQ controls.
     // NOTE(rryan): If we ever add a second EqualizerRack then we need to make
     // these only apply to the first.

@@ -1,5 +1,4 @@
-#ifndef MIXXX_URLRESOURCE_H
-#define MIXXX_URLRESOURCE_H
+#pragma once
 
 #include "util/assert.h"
 
@@ -8,19 +7,19 @@
 namespace mixxx {
 
 class UrlResource {
-public:
-    virtual ~UrlResource() {}
+  public:
+    virtual ~UrlResource() = default;
 
-    const QUrl& getUrl() const {
+    QUrl getUrl() const {
         return m_url;
     }
     QString getUrlString() const {
         return m_url.toString();
     }
 
-protected:
+  protected:
     explicit UrlResource(const QUrl& url)
-        : m_url(url) {
+            : m_url(url) {
     }
 
     inline bool isLocalFile() const {
@@ -28,18 +27,16 @@ protected:
         // handled! From the documentation of QUrl::isLocalFile():
         // "Note that this function considers URLs with hostnames
         // to be local file paths, ..."
-        return getUrl().isLocalFile();
+        return m_url.isLocalFile();
     }
 
     inline QString getLocalFileName() const {
         DEBUG_ASSERT(isLocalFile());
-        return getUrl().toLocalFile();
+        return m_url.toLocalFile();
     }
 
-private:
-    const QUrl m_url;
+  private:
+    QUrl m_url;
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_URLRESOURCE_H

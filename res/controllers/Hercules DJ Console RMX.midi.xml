@@ -4,6 +4,7 @@
         <name>Hercules DJ Console RMX</name>
         <author>Anders Gunnarsson</author>
         <description>Hercules DJ Console RMX controller mapping, v1.9.0. Requires script v1.9.0</description>
+        <manual>hercules_dj_console_rmx</manual>
     </info>
     <controller id="Hercules DJ Console RMX MIDI">
         <scriptfiles>
@@ -530,21 +531,21 @@
             </control>
     </controls>
     <outputs>
-		<output>
-		    <group>[Channel1]</group>
-		    <key>play</key>
-		    <status>0xB0</status>
-		    <midino>0x0B</midino>
-		    <minimum>0.5</minimum>
-		</output>
-		<output>
-		    <group>[Channel2]</group>
-		    <key>play</key>
-		    <status>0xB0</status>
-		    <midino>0x23</midino>
-		    <minimum>0.5</minimum>
-		</output>
-		    <output>
+        <output>
+            <group>[Channel1]</group>
+            <key>play</key>
+            <status>0xB0</status>
+            <midino>0x0B</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel2]</group>
+            <key>play</key>
+            <status>0xB0</status>
+            <midino>0x23</midino>
+            <minimum>0.5</minimum>
+        </output>
+            <output>
           <group>[Channel1]</group>
           <key>cue_default</key>
           <status>0xB0</status>
@@ -576,20 +577,20 @@
       </output>
 
 <!-- Headphone Cue -->
-		<output>
-		    <group>[Channel1]</group>
-		    <key>pfl</key>
-		    <status>0xB0</status>
-		    <midino>0x14</midino>
-		    <minimum>0.5</minimum>
-		</output>
-		<output>
-		    <group>[Channel2]</group>
-		    <key>pfl</key>
-		    <status>0xB0</status>
-		    <midino>0x18</midino>
-		    <minimum>0.5</minimum>
-		</output>
+        <output>
+            <group>[Channel1]</group>
+            <key>pfl</key>
+            <status>0xB0</status>
+            <midino>0x14</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel2]</group>
+            <key>pfl</key>
+            <status>0xB0</status>
+            <midino>0x18</midino>
+            <minimum>0.5</minimum>
+        </output>
     </outputs>
   </controller>
 </MixxxMIDIPreset>

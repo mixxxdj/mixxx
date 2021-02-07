@@ -1,0 +1,99 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>p,min</SizePolicy>
+    <MaximumSize>111,</MaximumSize>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>KeyControls</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <MaximumSize>111,</MaximumSize>
+        <Children>
+          <Template src="skin:/controls/button_2state_right.xml">
+            <SetVariable name="TooltipId">sync_reset_key</SetVariable>
+            <SetVariable name="ObjectName">KeyMatchReset</SetVariable>
+            <SetVariable name="Size">26f,20f</SetVariable>
+            <!--Musical note 1/8th icon: &#9834; -->
+            <!--SetVariable name="state_0_text">&#8202;&#9834;&#8202;</SetVariable>
+            <SetVariable name="state_1_text">&#8202;&#9834;&#8202;</SetVariable-->
+            <SetVariable name="ConfigKey"><Variable name="Group"/>,sync_key</SetVariable>
+            <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,reset_key</SetVariable>
+          </Template>
+
+          <Key>
+            <ObjectName>KeyText</ObjectName>
+            <TooltipId>track_key</TooltipId>
+            <Group><Variable name="Group"/></Group>
+            <MinimumSize>30,20</MinimumSize>
+            <MaximumSize>65,20</MaximumSize>
+            <SizePolicy>me,f</SizePolicy>
+            <Elide>right</Elide>
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
+            </Connection>
+            <!-- unfortunately this can't be used to highlight if the key is
+                offset from original file key
+            <Connection>
+              <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
+              <Transform><Not><Variable name="Group"/>,file_key</Not></Transform>
+              <BindProperty>highlight</BindProperty>
+            </Connection> -->
+          </Key>
+
+          <!-- Another idea to group all keycontrols
+          <WidgetGroup>
+            <ObjectName>KeyTextBox</ObjectName>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,f</SizePolicy>
+            <MinimumSize>30,20</MinimumSize>
+            <MaximumSize>65,20</MaximumSize>
+            <Children>
+              <Key>
+                <ObjectName>KeyText</ObjectName>
+                <TooltipId>track_key</TooltipId>
+                <Group><Variable name="Group"/></Group>
+                <MinimumSize>30,18</MinimumSize>
+                <MaximumSize>65,18</MaximumSize>
+                <SizePolicy>me,f</SizePolicy>
+                <Elide>right</Elide>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
+                </Connection>
+                <Connection>
+                  <ConfigKey><Variable name="Group"/>,visual_key</ConfigKey>
+                  <Transform><Not><Variable name="Group"/>,file_key</Not></Transform>
+                  <BindProperty>highlight</BindProperty>
+                </Connection>
+              </Key>
+            </Children>
+          </WidgetGroup>KeyTextBox -->
+
+          <WidgetGroup>
+            <ObjectName>KeyUpDown</ObjectName>
+            <Layout>vertical</Layout>
+            <Size>20f,20f</Size>
+            <Children>
+              <Template src="skin:/controls/button_2state_right.xml">
+                <SetVariable name="TooltipId">pitch_up</SetVariable>
+                <SetVariable name="ObjectName">KeyUp</SetVariable>
+                <SetVariable name="Size">20f,10f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,pitch_up</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,pitch_up_small</SetVariable>
+              </Template>
+
+              <Template src="skin:/controls/button_2state_right.xml">
+                <SetVariable name="TooltipId">pitch_down</SetVariable>
+                <SetVariable name="ObjectName">KeyDown</SetVariable>
+                <SetVariable name="Size">20f,10f</SetVariable>
+                <SetVariable name="ConfigKey"><Variable name="Group"/>,pitch_down</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,pitch_down_small</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup><!-- KeyUpDown -->
+
+        </Children>
+      </WidgetGroup><!-- KeyControls -->
+    </Children>
+  </WidgetGroup>
+</Template>

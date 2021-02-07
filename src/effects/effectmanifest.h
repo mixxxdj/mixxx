@@ -1,11 +1,12 @@
-#ifndef EFFECTMANIFEST_H
-#define EFFECTMANIFEST_H
+#pragma once
 
 #include <QList>
 #include <QString>
 #include <QtDebug>
+#include <QSharedPointer>
 
 #include "effects/effectmanifestparameter.h"
+#include "effects/defs.h"
 
 // An EffectManifest is a full description of the metadata associated with an
 // effect (e.g. name, author, version, description, etc.) and the parameters of
@@ -19,92 +20,158 @@
 // the no-argument constructor be non-explicit. All methods are left virtual to
 // allow a backend to replace the entire functionality with its own (for
 // example, a database-backed manifest)
-class EffectManifest {
+class EffectManifest final {
   public:
     EffectManifest()
-        : m_isMixingEQ(false),
+        : m_backendType(EffectBackendType::Unknown),
+          m_isMixingEQ(false),
           m_isMasterEQ(false),
-          m_isForFilterKnob(false),
-          m_effectRampsFromDry(false) {
-    }
-    virtual ~EffectManifest() {
-        //qDebug() << debugString() << "deleted";
+          m_effectRampsFromDry(false),
+          m_bAddDryToWet(false),
+          m_metaknobDefault(0.5) {
     }
 
-    virtual const QString& id() const {
+    const QString& id() const {
         return m_id;
     }
-    virtual void setId(const QString& id) {
+    void setId(const QString& id) {
         m_id = id;
     }
 
-    virtual const QString& name() const {
+    const QString& name() const {
         return m_name;
     }
-    virtual void setName(const QString& name) {
+    void setName(const QString& name) {
         m_name = name;
     }
 
-    virtual const QString& author() const {
+    const QString& shortName() const {
+        return m_shortName;
+    }
+    void setShortName(const QString& shortName) {
+        m_shortName = shortName;
+    }
+
+    const QString& displayName() const {
+        if (!m_shortName.isEmpty()) {
+            return m_shortName;
+        } else {
+            return m_name;
+        }
+    }
+
+    const EffectBackendType& backendType() const {
+        return m_backendType;
+    }
+    void setBackendType(const EffectBackendType& type) {
+        m_backendType = type;
+    }
+
+    const QString& author() const {
         return m_author;
     }
-    virtual void setAuthor(const QString& author) {
+    void setAuthor(const QString& author) {
         m_author = author;
     }
 
-    virtual const QString& version() const {
+    const QString& version() const {
         return m_version;
     }
-    virtual void setVersion(const QString& version) {
+    void setVersion(const QString& version) {
         m_version = version;
     }
 
-    virtual const QString& description() const {
+    const QString& description() const {
         return m_description;
     }
 
-    virtual const bool& isMixingEQ() const {
+    const bool& isMixingEQ() const {
         return m_isMixingEQ;
     }
 
-    virtual void setIsMixingEQ(const bool value) {
+    void setIsMixingEQ(const bool value) {
         m_isMixingEQ = value;
     }
 
-    virtual const bool& isMasterEQ() const {
+    const bool& isMasterEQ() const {
         return m_isMasterEQ;
     }
 
-    virtual void setIsMasterEQ(const bool value) {
+    void setIsMasterEQ(const bool value) {
         m_isMasterEQ = value;
     }
 
-    virtual const bool& isForFilterKnob() const {
-        return m_isForFilterKnob;
-    }
-
-    virtual void setIsForFilterKnob(const bool value) {
-        m_isForFilterKnob = value;
-    }
-
-    virtual void setDescription(const QString& description) {
+    void setDescription(const QString& description) {
         m_description = description;
     }
 
-    virtual const QList<EffectManifestParameter>& parameters() const {
+    const QList<EffectManifestParameterPointer>& parameters() const {
         return m_parameters;
     }
 
-    virtual EffectManifestParameter* addParameter() {
-        m_parameters.append(EffectManifestParameter());
-        return &m_parameters.last();
+    EffectManifestParameterPointer addParameter() {
+        EffectManifestParameterPointer effectManifestParameterPointer(
+                new EffectManifestParameter());
+        m_parameters.append(effectManifestParameterPointer);
+        return effectManifestParameterPointer;
     }
 
-    virtual bool effectRampsFromDry() const {
+    EffectManifestParameterPointer parameter(int i) {
+        return m_parameters[i];
+    }
+
+    bool effectRampsFromDry() const {
         return m_effectRampsFromDry;
     }
-    virtual void setEffectRampsFromDry(bool effectFadesFromDry) {
+    void setEffectRampsFromDry(bool effectFadesFromDry) {
         m_effectRampsFromDry = effectFadesFromDry;
+    }
+
+    bool addDryToWet() const {
+        return m_bAddDryToWet;
+    }
+    void setAddDryToWet(bool addDryToWet) {
+        m_bAddDryToWet = addDryToWet;
+    }
+
+    double metaknobDefault() const {
+        return m_metaknobDefault;
+    }
+    void setMetaknobDefault(double metaknobDefault) {
+        m_metaknobDefault = metaknobDefault;
+    }
+
+    QString backendName() {
+        switch (m_backendType) {
+            case EffectBackendType::BuiltIn:
+                return QString("Built-in");
+            case EffectBackendType::LV2:
+                return QString("LV2");
+            default:
+                return QString("Unknown");
+        }
+    }
+
+    // Use this when showing the string in the GUI
+    QString translatedBackendName() {
+        switch (m_backendType) {
+            case EffectBackendType::BuiltIn:
+                //: Used for effects that are built into Mixxx
+                return QObject::tr("Built-in");
+            case EffectBackendType::LV2:
+                return QString("LV2");
+            default:
+                return QString();
+        }
+    }
+    static EffectBackendType backendTypeFromString(const QString& name) {
+        if (name == "Built-in") {
+            return EffectBackendType::BuiltIn;
+        } else if (name == "LV2") {
+            return EffectBackendType::LV2;
+        } else {
+            return EffectBackendType::Unknown;
+        }
     }
 
   private:
@@ -114,16 +181,16 @@ class EffectManifest {
 
     QString m_id;
     QString m_name;
+    QString m_shortName;
+    EffectBackendType m_backendType;
     QString m_author;
     QString m_version;
     QString m_description;
     // This helps us at DlgPrefEQ's basic selection of Equalizers
     bool m_isMixingEQ;
     bool m_isMasterEQ;
-    // This helps us at DlgPrefEQ's basic selection of Filter knob effects
-    bool m_isForFilterKnob;
-    QList<EffectManifestParameter> m_parameters;
+    QList<EffectManifestParameterPointer> m_parameters;
     bool m_effectRampsFromDry;
+    bool m_bAddDryToWet;
+    double m_metaknobDefault;
 };
-
-#endif /* EFFECTMANIFEST_H */

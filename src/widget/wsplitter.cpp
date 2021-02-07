@@ -1,13 +1,14 @@
+#include "widget/wsplitter.h"
+
 #include <QList>
 
-#include "widget/wsplitter.h"
+#include "moc_wsplitter.cpp"
 
 WSplitter::WSplitter(QWidget* pParent, UserSettingsPointer pConfig)
         : QSplitter(pParent),
           WBaseWidget(this),
           m_pConfig(pConfig) {
-    connect(this, SIGNAL(splitterMoved(int,int)),
-            this, SLOT(slotSplitterMoved()));
+    connect(this, &WSplitter::splitterMoved, this, &WSplitter::slotSplitterMoved);
 }
 
 void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
@@ -15,6 +16,17 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
     QString sizesJoined;
     QString msg;
     bool ok = false;
+
+    // Default orientation is horizontal. For vertical splitters, the orientation must be set
+    // before calling setSizes() for reloading the saved state to work.
+    QString layout;
+    if (context.hasNodeSelectString(node, "Orientation", &layout)) {
+        if (layout == "vertical") {
+            setOrientation(Qt::Vertical);
+        } else if (layout == "horizontal") {
+            setOrientation(Qt::Horizontal);
+        }
+    }
 
     // Try to load last values stored in mixxx.cfg
     QString splitSizesConfigKey;
@@ -61,16 +73,6 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
         }
     }
 
-    // Default orientation is horizontal.
-    QString layout;
-    if (context.hasNodeSelectString(node, "Orientation", &layout)) {
-        if (layout == "vertical") {
-            setOrientation(Qt::Vertical);
-        } else if (layout == "horizontal") {
-            setOrientation(Qt::Horizontal);
-        }
-    }
-
     // Which children can be collapsed?
     QString collapsibleJoined;
     if (context.hasNodeSelectString(node, "Collapsible", &collapsibleJoined)) {
@@ -103,7 +105,8 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
 void WSplitter::slotSplitterMoved() {
     if (!m_configKey.group.isEmpty() && !m_configKey.item.isEmpty()) {
         QStringList sizeStrList;
-        for (const int& sizeInt : sizes()) {
+        const auto sizesIntList = sizes();
+        for (const int& sizeInt : sizesIntList) {
             sizeStrList.push_back(QString::number(sizeInt));
         }
         QString sizesStr = sizeStrList.join(",");

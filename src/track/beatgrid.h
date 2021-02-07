@@ -1,21 +1,21 @@
-#ifndef BEATGRID_H
-#define BEATGRID_H
+#pragma once
 
 #include <QMutex>
-#include <QObject>
 
-#include "track/track.h"
-#include "track/beats.h"
 #include "proto/beats.pb.h"
+#include "track/beats.h"
 
 #define BEAT_GRID_1_VERSION "BeatGrid-1.0"
 #define BEAT_GRID_2_VERSION "BeatGrid-2.0"
 
+class Track;
+
+namespace mixxx {
+
 // BeatGrid is an implementation of the Beats interface that implements an
 // infinite grid of beats, aligned to a song simply by a starting offset of the
 // first beat and the song's average beats-per-minute.
-class BeatGrid : public QObject, public virtual Beats {
-    Q_OBJECT
+class BeatGrid final : public Beats {
   public:
     // Construct a BeatGrid. If a more accurate sample rate is known, provide it
     // in the iSampleRate parameter -- otherwise pass 0.
@@ -35,46 +35,46 @@ class BeatGrid : public QObject, public virtual Beats {
     // The following are all methods from the Beats interface, see method
     // comments in beats.h
 
-    virtual Beats::CapabilitiesFlags getCapabilities() const {
+    Beats::CapabilitiesFlags getCapabilities() const override {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_SETBPM;
     }
 
-    virtual QByteArray toByteArray() const;
-    virtual BeatsPointer clone() const;
-    virtual QString getVersion() const;
-    virtual QString getSubVersion() const;
-    virtual void setSubVersion(QString subVersion);
+    QByteArray toByteArray() const override;
+    BeatsPointer clone() const override;
+    QString getVersion() const override;
+    QString getSubVersion() const override;
+    virtual void setSubVersion(const QString& subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
     ////////////////////////////////////////////////////////////////////////////
 
-    virtual double findNextBeat(double dSamples) const;
-    virtual double findPrevBeat(double dSamples) const;
-    virtual bool findPrevNextBeats(double dSamples,
-                                   double* dpPrevBeatSamples,
-                                   double* dpNextBeatSamples) const;
-    virtual double findClosestBeat(double dSamples) const;
-    virtual double findNthBeat(double dSamples, int n) const;
-    virtual std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const;
-    virtual bool hasBeatInRange(double startSample, double stopSample) const;
-    virtual double getBpm() const;
-    virtual double getBpmRange(double startSample, double stopSample) const;
-    virtual double getBpmAroundPosition(double curSample, int n) const;
+    double findNextBeat(double dSamples) const override;
+    double findPrevBeat(double dSamples) const override;
+    bool findPrevNextBeats(double dSamples,
+                           double* dpPrevBeatSamples,
+                           double* dpNextBeatSamples) const override;
+    double findClosestBeat(double dSamples) const override;
+    double findNthBeat(double dSamples, int n) const override;
+    std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
+    bool hasBeatInRange(double startSample, double stopSample) const override;
+    double getBpm() const override;
+    double getBpmRange(double startSample, double stopSample) const override;
+    double getBpmAroundPosition(double curSample, int n) const override;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    virtual void addBeat(double dBeatSample);
-    virtual void removeBeat(double dBeatSample);
-    virtual void moveBeat(double dBeatSample, double dNewBeatSample);
-    virtual void translate(double dNumSamples);
-    virtual void scale(enum BPMScale scale);
-    virtual void setBpm(double dBpm);
+    void addBeat(double dBeatSample) override;
+    void removeBeat(double dBeatSample) override;
+    void translate(double dNumSamples) override;
+    void scale(enum BPMScale scale) override;
+    void setBpm(double dBpm) override;
 
-  signals:
-    void updated();
+    SINT getSampleRate() const override {
+        return m_iSampleRate;
+    }
 
   private:
     BeatGrid(const BeatGrid& other);
@@ -96,5 +96,4 @@ class BeatGrid : public QObject, public virtual Beats {
     double m_dBeatLength;
 };
 
-
-#endif /* BEATGRID_H */
+} // namespace mixxx

@@ -1,5 +1,4 @@
-#ifndef TOOLTIPS_H
-#define TOOLTIPS_H
+#pragma once
 
 #include <QHash>
 #include <QStringList>
@@ -10,15 +9,12 @@ class Tooltips : public QObject {
   public:
     Tooltips();
     virtual ~Tooltips();
-    QString tooltipForId(QString id) const;
+    QString tooltipForId(const QString& id) const;
 
   private:
     void addStandardTooltips();
     QString tooltipSeparator() const;
-    QList<QString>& add(QString id);
+    QList<QString>& add(const QString& id);
 
     QHash<QString, QStringList> m_tooltips;
 };
-
-
-#endif /* TOOLTIPS_H */

@@ -3,77 +3,58 @@
 #include <QtDebug>
 #include <QScopedPointer>
 
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "control/controlobject.h"
-#include "engine/loopingcontrol.h"
+#include "engine/controls/loopingcontrol.h"
 #include "engine/readaheadmanager.h"
 #include "test/mixxxtest.h"
 #include "util/assert.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
+namespace {
+const QString kGroup = "[test]";
+} // namespace
+
 class StubReader : public CachingReader {
   public:
     StubReader()
-            : CachingReader("[test]", UserSettingsPointer()) { }
+            : CachingReader(kGroup, UserSettingsPointer()) {
+    }
 
-    SINT read(SINT startSample, SINT numSamples, bool reverse,
+    CachingReader::ReadResult read(SINT startSample, SINT numSamples, bool reverse,
              CSAMPLE* buffer) override {
         Q_UNUSED(startSample);
         Q_UNUSED(reverse);
         SampleUtil::clear(buffer, numSamples);
-        return numSamples;
+        return CachingReader::ReadResult::AVAILABLE;
     }
 };
 
 class StubLoopControl : public LoopingControl {
   public:
     StubLoopControl()
-            : LoopingControl("[test]", UserSettingsPointer()) { }
+            : LoopingControl(kGroup, UserSettingsPointer()) {
+    }
 
     void pushTriggerReturnValue(double value) {
         m_triggerReturnValues.push_back(value);
     }
 
-    void pushProcessReturnValue(double value) {
-        m_processReturnValues.push_back(value);
+    void pushTargetReturnValue(double value) {
+        m_targetReturnValues.push_back(value);
     }
 
-    double nextTrigger(const double dRate,
+    double nextTrigger(bool reverse,
                        const double currentSample,
-                       const double totalSamples,
-                       const int iBufferSize) override {
-        Q_UNUSED(dRate);
+                       double* pTarget) override {
+        Q_UNUSED(reverse);
         Q_UNUSED(currentSample);
-        Q_UNUSED(totalSamples);
-        Q_UNUSED(iBufferSize);
+        Q_UNUSED(pTarget);
+        RELEASE_ASSERT(!m_targetReturnValues.isEmpty());
+        *pTarget = m_targetReturnValues.takeFirst();
         RELEASE_ASSERT(!m_triggerReturnValues.isEmpty());
         return m_triggerReturnValues.takeFirst();
-    }
-
-    double process(const double dRate,
-                   const double dCurrentSample,
-                   const double dTotalSamples,
-                   const int iBufferSize) override {
-        Q_UNUSED(dRate);
-        Q_UNUSED(dCurrentSample);
-        Q_UNUSED(dTotalSamples);
-        Q_UNUSED(iBufferSize);
-        RELEASE_ASSERT(!m_processReturnValues.isEmpty());
-        return m_processReturnValues.takeFirst();
-    }
-
-    // getTrigger returns the sample that the engine will next be triggered to
-    // loop to, given the value of currentSample and dRate.
-    double getTrigger(const double dRate,
-                      const double currentSample,
-                      const double totalSamples,
-                      const int iBufferSize) override {
-        Q_UNUSED(dRate);
-        Q_UNUSED(currentSample);
-        Q_UNUSED(totalSamples);
-        Q_UNUSED(iBufferSize);
-        return kNoTrigger;
     }
 
     // hintReader has no effect in this stubbed class
@@ -81,26 +62,34 @@ class StubLoopControl : public LoopingControl {
         Q_UNUSED(pHintList);
     }
 
-    void notifySeek(double dNewPlaypos) {
+    void notifySeek(double dNewPlaypos) override {
         Q_UNUSED(dNewPlaypos);
     }
 
-  public slots:
-    void trackLoaded(TrackPointer pTrack, TrackPointer pOldTrack) override {
+    void trackLoaded(TrackPointer pTrack) override {
         Q_UNUSED(pTrack);
-        Q_UNUSED(pOldTrack);
     }
 
   protected:
     QList<double> m_triggerReturnValues;
-    QList<double> m_processReturnValues;
+    QList<double> m_targetReturnValues;
 };
 
 class ReadAheadManagerTest : public MixxxTest {
   public:
-    ReadAheadManagerTest() : m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) { }
+    ReadAheadManagerTest()
+            : m_beatClosestCO(ConfigKey(kGroup, "beat_closest")),
+              m_beatNextCO(ConfigKey(kGroup, "beat_next")),
+              m_beatPrevCO(ConfigKey(kGroup, "beat_prev")),
+              m_playCO(ConfigKey(kGroup, "play")),
+              m_quantizeCO(ConfigKey(kGroup, "quantize")),
+              m_slipEnabledCO(ConfigKey(kGroup, "slip_enabled")),
+              m_trackSamplesCO(ConfigKey(kGroup, "track_samples")),
+              m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+    }
+
   protected:
-    virtual void SetUp() {
+    void SetUp() override {
         SampleUtil::clear(m_pBuffer, MAX_BUFFER_LEN);
         m_pReader.reset(new StubReader());
         m_pLoopControl.reset(new StubLoopControl());
@@ -111,32 +100,15 @@ class ReadAheadManagerTest : public MixxxTest {
     QScopedPointer<StubReader> m_pReader;
     QScopedPointer<StubLoopControl> m_pLoopControl;
     QScopedPointer<ReadAheadManager> m_pReadAheadManager;
+    ControlObject m_beatClosestCO;
+    ControlObject m_beatNextCO;
+    ControlObject m_beatPrevCO;
+    ControlObject m_playCO;
+    ControlObject m_quantizeCO;
+    ControlObject m_slipEnabledCO;
+    ControlObject m_trackSamplesCO;
     CSAMPLE* m_pBuffer;
 };
-
-TEST_F(ReadAheadManagerTest, LoopEnableSeekBackward) {
-    // If a loop is enabled and the current playposition is ahead of the loop,
-    // we should seek to the beginning of the loop.
-    m_pReadAheadManager->notifySeek(110);
-    // Trigger value means, the sample that triggers the loop (loop out)
-    m_pLoopControl->pushTriggerReturnValue(100);
-    // Process value is the sample we should seek to
-    m_pLoopControl->pushProcessReturnValue(10);
-    EXPECT_EQ(0, m_pReadAheadManager->getNextSamples(1.0, m_pBuffer, 100));
-    EXPECT_EQ(10, m_pReadAheadManager->getPlaypos());
-}
-
-TEST_F(ReadAheadManagerTest, InReverseLoopEnableSeekForward) {
-    // If we are in reverse, a loop is enabled, and the current playposition
-    // is before of the loop, we should seek to the out point of the loop.
-    m_pReadAheadManager->notifySeek(1);
-    // Trigger value means, the sample that triggers the loop (loop in)
-    m_pLoopControl->pushTriggerReturnValue(10);
-    // Process value is the sample we should seek to.
-    m_pLoopControl->pushProcessReturnValue(100);
-    EXPECT_EQ(0, m_pReadAheadManager->getNextSamples(-1.0, m_pBuffer, 100));
-    EXPECT_EQ(100, m_pReadAheadManager->getPlaypos());
-}
 
 TEST_F(ReadAheadManagerTest, FractionalFrameLoop) {
     // If we are in reverse, a loop is enabled, and the current playposition
@@ -150,12 +122,12 @@ TEST_F(ReadAheadManagerTest, FractionalFrameLoop) {
     m_pLoopControl->pushTriggerReturnValue(20.2);
     m_pLoopControl->pushTriggerReturnValue(20.2);
     // Process value is the sample we should seek to.
-    m_pLoopControl->pushProcessReturnValue(3.3);
-    m_pLoopControl->pushProcessReturnValue(3.3);
-    m_pLoopControl->pushProcessReturnValue(3.3);
-    m_pLoopControl->pushProcessReturnValue(3.3);
-    m_pLoopControl->pushProcessReturnValue(3.3);
-    m_pLoopControl->pushProcessReturnValue(kNoTrigger);
+    m_pLoopControl->pushTargetReturnValue(3.3);
+    m_pLoopControl->pushTargetReturnValue(3.3);
+    m_pLoopControl->pushTargetReturnValue(3.3);
+    m_pLoopControl->pushTargetReturnValue(3.3);
+    m_pLoopControl->pushTargetReturnValue(3.3);
+    m_pLoopControl->pushTargetReturnValue(kNoTrigger);
     // read from start to loop trigger, overshoot 0.3
     EXPECT_EQ(20, m_pReadAheadManager->getNextSamples(1.0, m_pBuffer, 100));
     // read loop

@@ -1,38 +1,44 @@
-#ifndef ANALYZER_ANALYZERKEY_H
-#define ANALYZER_ANALYZERKEY_H
+#pragma once
 
 #include <QHash>
+#include <QList>
 #include <QString>
 
 #include "analyzer/analyzer.h"
-#include "analyzer/vamp/vampanalyzer.h"
+#include "analyzer/plugins/analyzerplugin.h"
+#include "preferences/keydetectionsettings.h"
 #include "preferences/usersettings.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "util/memory.h"
 
 class AnalyzerKey : public Analyzer {
   public:
-    AnalyzerKey(UserSettingsPointer pConfig);
-    virtual ~AnalyzerKey();
+    explicit AnalyzerKey(const KeyDetectionSettings& keySettings);
+    ~AnalyzerKey() override = default;
+
+    static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
+    static mixxx::AnalyzerPluginInfo defaultPlugin();
 
     bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
-    bool isDisabledOrLoadStoredSuccess(TrackPointer tio) const override;
-    void process(const CSAMPLE *pIn, const int iLen) override;
-    void finalize(TrackPointer tio) override;
-    void cleanup(TrackPointer tio) override;
+    bool processSamples(const CSAMPLE *pIn, const int iLen) override;
+    void storeResults(TrackPointer tio) override;
+    void cleanup() override;
 
   private:
     static QHash<QString, QString> getExtraVersionInfo(
-        QString pluginId, bool bPreferencesFastAnalysis);
+            const QString& pluginId, bool bPreferencesFastAnalysis);
 
-    UserSettingsPointer m_pConfig;
-    VampAnalyzer* m_pVamp;
+    bool shouldAnalyze(TrackPointer tio) const;
+
+    KeyDetectionSettings m_keySettings;
+    std::unique_ptr<mixxx::AnalyzerKeyPlugin> m_pPlugin;
     QString m_pluginId;
     int m_iSampleRate;
     int m_iTotalSamples;
+    int m_iMaxSamplesToProcess;
+    int m_iCurrentSample;
 
     bool m_bPreferencesKeyDetectionEnabled;
     bool m_bPreferencesFastAnalysisEnabled;
     bool m_bPreferencesReanalyzeEnabled;
 };
-
-#endif /* ANALYZER_ANALYZERKEY_H */

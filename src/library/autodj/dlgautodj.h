@@ -1,35 +1,38 @@
-#ifndef DLGAUTODJ_H
-#define DLGAUTODJ_H
+#pragma once
 
-#include <QWidget>
+#include <QLineEdit>
 #include <QString>
+#include <QWidget>
 
-#include "library/autodj/ui_dlgautodj.h"
-#include "preferences/usersettings.h"
-#include "track/track.h"
-#include "library/libraryview.h"
-#include "library/library.h"
-#include "library/trackcollection.h"
-#include "library/autodj/autodjprocessor.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/autodj/autodjprocessor.h"
+#include "library/autodj/ui_dlgautodj.h"
+#include "library/library.h"
+#include "library/libraryview.h"
+#include "library/trackcollection.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 
 class PlaylistTableModel;
+class WLibrary;
 class WTrackTableView;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
-    DlgAutoDJ(QWidget* parent, UserSettingsPointer pConfig,
-              Library* pLibrary,
-              AutoDJProcessor* pProcessor, TrackCollection* pTrackCollection,
-              KeyboardEventFilter* pKeyboard);
-    virtual ~DlgAutoDJ();
+    DlgAutoDJ(WLibrary* parent,
+            UserSettingsPointer pConfig,
+            Library* pLibrary,
+            AutoDJProcessor* pProcessor,
+            KeyboardEventFilter* pKeyboard);
+    ~DlgAutoDJ() override;
 
-    void onShow();
-    void onSearch(const QString& text);
-    void loadSelectedTrack();
-    void loadSelectedTrackToGroup(QString group, bool play);
-    void moveSelection(int delta);
+    void onShow() override;
+    bool hasFocus() const override;
+    void onSearch(const QString& text) override;
+    void loadSelectedTrack() override;
+    void loadSelectedTrackToGroup(const QString& group, bool play) override;
+    void moveSelection(int delta) override;
 
   public slots:
     void shufflePlaylistButton(bool buttonChecked);
@@ -39,20 +42,29 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void transitionTimeChanged(int time);
     void transitionSliderChanged(int value);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
-    void setTrackTableFont(const QFont& font);
-    void setTrackTableRowHeight(int rowHeight);
     void updateSelectionInfo();
+    void slotTransitionModeChanged(int comboboxIndex);
+    void slotRepeatPlaylistChanged(int checkedState);
 
   signals:
-    void addRandomButton(bool buttonChecked);
+    void addRandomTrackButton(bool buttonChecked);
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group, bool);
+    void loadTrackToPlayer(TrackPointer tio, const QString& group, bool);
     void trackSelected(TrackPointer pTrack);
 
   private:
-    AutoDJProcessor* m_pAutoDJProcessor;
-    WTrackTableView* m_pTrackTableView;
-    PlaylistTableModel* m_pAutoDJTableModel;
-};
+    void setupActionButton(QPushButton* pButton,
+            void (DlgAutoDJ::*pSlot)(bool),
+            const QString& fallbackText);
 
-#endif //DLGAUTODJ_H
+    const UserSettingsPointer m_pConfig;
+
+    AutoDJProcessor* const m_pAutoDJProcessor;
+    WTrackTableView* const m_pTrackTableView;
+    const bool m_bShowButtonText;
+
+    PlaylistTableModel* m_pAutoDJTableModel;
+
+    QString m_enableBtnTooltip;
+    QString m_disableBtnTooltip;
+};

@@ -1,8 +1,9 @@
-#ifndef DIRECTORYDAO_H
-#define DIRECTORYDAO_H
+#pragma once
 
-#include <QSqlDatabase>
-#include "library/dao/trackdao.h"
+#include <QList>
+
+#include "library/dao/dao.h"
+#include "library/relocatedtrack.h"
 
 const QString DIRECTORYDAO_DIR = "directory";
 const QString DIRECTORYDAO_TABLE = "directories";
@@ -15,20 +16,14 @@ enum ReturnCodes {
 
 class DirectoryDAO : public DAO {
   public:
+    ~DirectoryDAO() override = default;
 
-    DirectoryDAO(QSqlDatabase& database);
-    virtual ~DirectoryDAO();
+    QStringList getDirs() const;
 
-    void initialize();
-    void setDatabase(QSqlDatabase& database) { m_database = database; }
-    int addDirectory(const QString& dir);
-    int removeDirectory(const QString& dir);
-    QSet<TrackId> relocateDirectory(const QString& oldFolder, const QString& newFolder);
-    QStringList getDirs();
+    int addDirectory(const QString& dir) const;
+    int removeDirectory(const QString& dir) const;
 
-  private:
-    bool isChildDir(QString testDir, QString dirStr);
-    QSqlDatabase& m_database;
+    QList<RelocatedTrack> relocateDirectory(
+            const QString& oldFolder,
+            const QString& newFolder) const;
 };
-
-#endif //DIRECTORYDAO_H

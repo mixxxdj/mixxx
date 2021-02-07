@@ -1,0 +1,64 @@
+<Template>
+  <WidgetGroup>
+    <Size>0e,50f</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>EffectLeftBorder</ObjectName>
+        <Size>5f,50f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <Size>0e,50f</Size>
+        <BackPath>style/style_bg_deck_pane.png</BackPath>
+        <Layout>horizontal</Layout>
+        <Children>
+          <!-- Spacer to position parameters more below the focused effect -->
+          <WidgetGroup>
+            <Size>0me,0min</Size>
+            <Connection>
+              <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+              <Transform><IsEqual>1</IsEqual><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+          <Template src="skin:effect_parameters.xml">
+            <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
+            <SetVariable name="effectnum">1</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameters.xml">
+            <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
+            <SetVariable name="effectnum">2</SetVariable>
+          </Template>
+          <Template src="skin:effect_parameters.xml">
+            <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
+            <SetVariable name="effectnum">3</SetVariable>
+          </Template>
+          <!-- Spacer to position parameters more below the focused effect -->
+          <WidgetGroup>
+            <Size>0me,0min</Size>
+            <Connection>
+              <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+              <Transform><IsEqual>3</IsEqual><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>5f,50f</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>EffectRightBorder</ObjectName>
+        <Size>3f,50f</Size>
+      </WidgetGroup>
+    </Children>
+      <Connection>
+        <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+        <Transform><IsEqual>0</IsEqual><Not/></Transform>
+        <BindProperty>visible</BindProperty>
+      </Connection>
+  </WidgetGroup>
+</Template>

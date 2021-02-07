@@ -1,52 +1,57 @@
-#include <QtDebug>
-
 #include "engine/sync/midimaster.h"
 
-#include "engine/sync/enginesync.h"
-#include "controllers/midi/midisourceclock.h"
-#include "control/controllinpotmeter.h"
+#include <QtDebug>
+
 #include "control/control.h"
+#include "control/controllinpotmeter.h"
 #include "control/controlpushbutton.h"
+#include "controllers/midi/midisourceclock.h"
+#include "engine/sync/enginesync.h"
 #include "preferences/configobject.h"
 #include "util/time.h"
 
-MidiMasterClock::MidiMasterClock(const char* pGroup, SyncableListener* pEngineSync)
-        : m_group(pGroup),
+MidiMasterClock::MidiMasterClock(
+        const QString& group, SyncableListener* pEngineSync)
+        : m_group(group),
           m_pEngineSync(pEngineSync),
+          m_pSyncMasterEnabled(std::make_unique<ControlPushButton>(
+                  ConfigKey(group, "sync_master"))),
+          m_pMidiSourceClockBpm(
+                  std::make_unique<ControlObject>(ConfigKey(group, "bpm"))),
+          m_pMidiSourceClockLastBeatTime(std::make_unique<ControlObject>(
+                  ConfigKey(group, "last_beat_time"))),
+          m_pMidiSourceClockBeatDistance(std::make_unique<ControlObject>(
+                  ConfigKey(group, "beat_distance"))),
+          m_pMidiSourceClockRunning(
+                  std::make_unique<ControlPushButton>(ConfigKey(group, "run"))),
+          m_pMidiSourceClockSyncAdjust(std::make_unique<ControlLinPotmeter>(
+                  ConfigKey(group, "sync_adjust"),
+                  -.5,
+                  .5,
+                  0.1,
+                  0.01,
+                  /*allow oob*/ true)),
           m_mode(SYNC_NONE) {
-    m_pMidiSourceClockBpm.reset(new ControlObject(ConfigKey(pGroup, "bpm")));
-    m_pMidiSourceClockLastBeatTime.reset(
-            new ControlObject(ConfigKey(pGroup, "last_beat_time")));
-    m_pMidiSourceClockBeatDistance.reset(
-            new ControlObject(ConfigKey(pGroup, "beat_distance")));
-
-    m_pMidiSourceClockRunning.reset(
-            new ControlPushButton(ConfigKey(pGroup, "run")));
-
-    m_pSyncMasterEnabled.reset(
-            new ControlPushButton(ConfigKey(pGroup, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMasterEnabled->connectValueChangeRequest(
-            this, SLOT(slotSyncMasterEnabledChangeRequest(double)),
-            Qt::DirectConnection);
-
-    m_pMidiSourceClockSyncAdjust.reset(
-            new ControlLinPotmeter(ConfigKey(pGroup, "sync_adjust"), -.5, .5,
-                                   0.1, 0.01, /*allow oob*/ true));
+            this, &MidiMasterClock::slotSyncMasterEnabledChangeRequest, Qt::DirectConnection);
 }
 
-MidiMasterClock::~MidiMasterClock() {
-};
+MidiMasterClock::~MidiMasterClock(){};
 
 void MidiMasterClock::notifySyncModeChanged(SyncMode mode) {
     // Syncable has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_mode = mode;
-    m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
+    m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER_SOFT);
 }
 
 void MidiMasterClock::notifyOnlyPlayingSyncable() {
     // No action necessary.
+}
+
+void MidiMasterClock::requestSync() {
+    // TODO: Implement this?
 }
 
 void MidiMasterClock::requestSyncPhase() {
@@ -60,14 +65,14 @@ bool MidiMasterClock::isPlaying() const {
 }
 
 void MidiMasterClock::slotSyncMasterEnabledChangeRequest(double state) {
-    bool currentlyMaster = getSyncMode() == SYNC_MASTER;
+    bool currentlyMaster = getSyncMode() == SYNC_MASTER_SOFT;
 
     if (state > 0.0) {
         if (currentlyMaster) {
             // Already master.
             return;
         }
-        m_pEngineSync->requestSyncMode(this, SYNC_MASTER);
+        m_pEngineSync->requestSyncMode(this, SYNC_MASTER_SOFT);
     } else {
         // TODO: midi follower (clock out?)
         m_pEngineSync->requestSyncMode(this, SYNC_NONE);

@@ -1,7 +1,7 @@
-#ifndef MIDIUTILS_H
-#define MIDIUTILS_H
+#pragma once
 
 #include "controllers/midi/midimessage.h"
+#include "util/duration.h"
 
 class MidiUtils {
   public:
@@ -38,7 +38,12 @@ class MidiUtils {
     static QString opCodeToTranslatedString(MidiOpCode code);
     static QString formatByteAsHex(unsigned char value);
     static QString midiOptionToTranslatedString(MidiOption option);
+    static QString formatMidiMessage(const QString& controllerName,
+                              unsigned char status, unsigned char control,
+                              unsigned char value, unsigned char channel,
+                              unsigned char opCode,
+                              mixxx::Duration timestamp = mixxx::Duration::fromMillis(0));
+    static QString formatSysexMessage(const QString& controllerName,
+                              const QByteArray& data,
+                              mixxx::Duration timestamp = mixxx::Duration::fromMillis(0));
 };
-
-
-#endif /* MIDIUTILS_H */

@@ -20,8 +20,6 @@ class EffectChainSlotTest : public BaseEffectTest {
     EffectChainSlotTest()
             : m_master(m_factory.getOrCreateHandle("[Master]"), "[Master]"),
               m_headphone(m_factory.getOrCreateHandle("[Headphone]"), "[Headphone]") {
-        m_pEffectsManager->registerChannel(m_master);
-        m_pEffectsManager->registerChannel(m_headphone);
     }
 
     ChannelHandleFactory m_factory;
@@ -36,12 +34,12 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
-    pSlot->clear();
+    EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
+    pChainSlot->registerInputChannel(m_master);
 
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
-    pSlot->loadEffectChain(pChain);
+    pChainSlot->loadEffectChainToSlot(pChain);
 
     pChain->setEnabled(true);
     EXPECT_LT(0.0, ControlObject::get(ConfigKey(group, "enabled")));
@@ -67,16 +65,16 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain) {
     ControlObject::set(ConfigKey(group, "mix"), 0.5);
     EXPECT_DOUBLE_EQ(0.5, pChain->mix());
 
-    pChain->setInsertionType(EffectChain::SEND);
-    EXPECT_DOUBLE_EQ(pChain->insertionType(),
-                     ControlObject::get(ConfigKey(group, "insertion_type")));
+    pChain->setMixMode(EffectChainMixMode::DryPlusWet);
+    EXPECT_DOUBLE_EQ(static_cast<double>(pChain->mixMode()),
+                     ControlObject::get(ConfigKey(group, "mix_mode")));
 
-    ControlObject::set(ConfigKey(group, "insertion_type"), EffectChain::INSERT);
-    EXPECT_DOUBLE_EQ(EffectChain::INSERT, pChain->insertionType());
+    ControlObject::set(ConfigKey(group, "mix_mode"),
+                       static_cast<double>(EffectChainMixMode::DrySlashWet));
+    EXPECT_EQ(EffectChainMixMode::DrySlashWet, pChain->mixMode());
 
     EXPECT_FALSE(pChain->enabledForChannel(m_master));
-    pChain->enableForChannel(m_master);
-    EXPECT_LT(0.0, ControlObject::get(ConfigKey(group, "group_[Master]_enable")));
+    EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(group, "group_[Master]_enable")));
 
     ControlObject::set(ConfigKey(group, "group_[Master]_enable"), 0);
     EXPECT_FALSE(pChain->enabledForChannel(m_master));
@@ -89,7 +87,8 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_StartsWithChainLoaded) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
+    EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
+    pChainSlot->loadEffectChainToSlot(pChain);
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
     EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(group, "loaded")));
@@ -103,15 +102,12 @@ TEST_F(EffectChainSlotTest, ChainSlotMirrorsLoadedChain_Clear) {
     int iChainNumber = 0;
 
     StandardEffectRackPointer pRack = m_pEffectsManager->addStandardEffectRack();
-    EffectChainSlotPointer pSlot = pRack->addEffectChainSlot();
-
-    // Clear the default chain.
-    pSlot->clear();
+    EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(iChainNumber);
 
     QString group = StandardEffectRack::formatEffectChainSlotGroupString(
         iRackNumber, iChainNumber);
     EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(group, "loaded")));
-    pSlot->loadEffectChain(pChain);
+    pChainSlot->loadEffectChainToSlot(pChain);
     EXPECT_DOUBLE_EQ(1.0, ControlObject::get(ConfigKey(group, "loaded")));
     ControlObject::set(ConfigKey(group, "clear"), 1.0);
     EXPECT_DOUBLE_EQ(0.0, ControlObject::get(ConfigKey(group, "loaded")));

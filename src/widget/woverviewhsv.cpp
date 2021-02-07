@@ -7,15 +7,18 @@
 #include "util/math.h"
 #include "waveform/waveform.h"
 
-WOverviewHSV::WOverviewHSV(const char* pGroup,
-                           UserSettingsPointer pConfig, QWidget* parent)
-        : WOverview(pGroup, pConfig, parent)  {
+WOverviewHSV::WOverviewHSV(
+        const QString& group,
+        PlayerManager* pPlayerManager,
+        UserSettingsPointer pConfig,
+        QWidget* parent)
+        : WOverview(group, pPlayerManager, pConfig, parent) {
 }
 
 bool WOverviewHSV::drawNextPixmapPart() {
     ScopedTimer t("WOverviewHSV::drawNextPixmapPart");
 
-    //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
+    //qDebug() << "WOverview::drawNextPixmapPart()";
 
     int currentCompletion;
 
@@ -29,13 +32,13 @@ bool WOverviewHSV::drawNextPixmapPart() {
         return false;
     }
 
-    if (!m_pWaveformSourceImage) {
+    if (m_waveformSourceImage.isNull()) {
         // Waveform pixmap twice the height of the viewport to be scalable
         // by total_gain
         // We keep full range waveform data to scale it on paint
-        m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255,
+        m_waveformSourceImage = QImage(dataSize / 2, 2 * 255,
                 QImage::Format_ARGB32_Premultiplied);
-        m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
+        m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
     }
 
     // Always multiple of 2
@@ -44,7 +47,8 @@ bool WOverviewHSV::drawNextPixmapPart() {
     const int completionIncrement = waveformCompletion - m_actualCompletion;
 
     int visiblePixelIncrement = completionIncrement * length() / dataSize;
-    if (completionIncrement < 2 || visiblePixelIncrement == 0) {
+    if (waveformCompletion < (dataSize - 2) &&
+            (completionIncrement < 2 || visiblePixelIncrement == 0)) {
         return false;
     }
 
@@ -57,8 +61,8 @@ bool WOverviewHSV::drawNextPixmapPart() {
     // << "completionIncrement:" << completionIncrement;
 
 
-    QPainter painter(m_pWaveformSourceImage);
-    painter.translate(0.0,static_cast<double>(m_pWaveformSourceImage->height())/2.0);
+    QPainter painter(&m_waveformSourceImage);
+    painter.translate(0.0, static_cast<double>(m_waveformSourceImage.height()) / 2.0);
 
     // Get HSV of low color. NOTE(rryan): On ARM, qreal is float so it's
     // important we use qreal here and not double or float or else we will get
@@ -87,7 +91,8 @@ bool WOverviewHSV::drawNextPixmapPart() {
             maxHigh[1] = pWaveform->getHigh(currentCompletion+1);
 
             total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] +
-                     maxHigh[0] + maxHigh[1]) * 1.2;
+                            maxHigh[0] + maxHigh[1]) *
+                    1.2f;
 
             // Prevent division by zero
             if (total > 0) {

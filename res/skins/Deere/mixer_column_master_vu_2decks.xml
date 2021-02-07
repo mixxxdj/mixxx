@@ -1,0 +1,22 @@
+<!DOCTYPE template>
+<!-- Master level meter -->
+<Template>
+  <WidgetGroup>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+
+      <!-- 2 Decks: Spacer sized like channel Gain knob -->
+      <WidgetGroup><Size>0min,28f</Size></WidgetGroup>
+
+      <WidgetGroup>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,me</SizePolicy>
+        <Children>
+          <Template src="skin:vumeter_master.xml"/>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

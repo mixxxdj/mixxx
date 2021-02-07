@@ -1,51 +1,44 @@
-#ifndef MIXXX_SOUNDSOURCEFLAC_H
-#define MIXXX_SOUNDSOURCEFLAC_H
-
-#include "sources/soundsourceprovider.h"
-
-#include "util/circularsamplebuffer.h"
+#pragma once
 
 #include <FLAC/stream_decoder.h>
 
 #include <QFile>
 
+#include "sources/soundsourceprovider.h"
+#include "util/readaheadsamplebuffer.h"
+
 namespace mixxx {
 
-class SoundSourceFLAC: public SoundSource {
-public:
+class SoundSourceFLAC final : public SoundSource {
+  public:
     explicit SoundSourceFLAC(const QUrl& url);
     ~SoundSourceFLAC() override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
-
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
-    SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
-
-    // callback methods
+    // Internal callbacks
     FLAC__StreamDecoderReadStatus flacRead(FLAC__byte buffer[], size_t* bytes);
     FLAC__StreamDecoderSeekStatus flacSeek(FLAC__uint64 offset);
     FLAC__StreamDecoderTellStatus flacTell(FLAC__uint64* offset);
     FLAC__StreamDecoderLengthStatus flacLength(FLAC__uint64* length);
     FLAC__bool flacEOF();
-    FLAC__StreamDecoderWriteStatus flacWrite(const FLAC__Frame *frame,
+    FLAC__StreamDecoderWriteStatus flacWrite(const FLAC__Frame* frame,
             const FLAC__int32* const buffer[]);
     void flacMetadata(const FLAC__StreamMetadata* metadata);
     void flacError(FLAC__StreamDecoderErrorStatus status);
 
-private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            const WritableSampleFrames& sampleFrames) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize,
-            bool readStereoSamples);
+  private:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override;
 
     QFile m_file;
 
-    FLAC__StreamDecoder *m_decoder;
+    FLAC__StreamDecoder* m_decoder;
     // misc bits about the flac format:
     // flac encodes from and decodes to LPCM in blocks, each block is made up of
     // subblocks (one for each chan)
@@ -54,18 +47,30 @@ private:
     SINT m_maxBlocksize; // in time samples (audio samples = time samples * chanCount)
     SINT m_bitsPerSample;
 
-    CSAMPLE m_sampleScaleFactor;
+    ReadAheadSampleBuffer m_sampleBuffer;
 
-    SingularSampleBuffer m_sampleBuffer;
+    void invalidateCurFrameIndex() {
+        m_curFrameIndex = frameIndexMax();
+    }
 
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderFLAC: public SoundSourceProvider {
-public:
-    QString getName() const override;
+class SoundSourceProviderFLAC : public SoundSourceProvider {
+  public:
+    static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
-    QStringList getSupportedFileExtensions() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
+
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceFLAC>(url);
@@ -73,5 +78,3 @@ public:
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEFLAC_H

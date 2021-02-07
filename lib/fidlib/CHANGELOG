@@ -1,0 +1,7 @@
+*************************************************************
+*** This is a forked and patched version of Fidlib 0.9.10 ***
+*************************************************************
+
+* Thu Apr 19 2018 Uwe Klotz <uklotz@mixxx.org>
+- Thread-safe invocation of code for generating filters
+- Fix compiler warnings

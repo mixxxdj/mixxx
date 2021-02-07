@@ -1,5 +1,4 @@
-#ifndef EFFECTPARAMETERSLOT_H
-#define EFFECTPARAMETERSLOT_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -14,9 +13,6 @@ class ControlObject;
 class ControlPushButton;
 class ControlEffectKnob;
 class SoftTakeover;
-
-class EffectParameterSlot;
-typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
 
 class EffectParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
@@ -33,7 +29,7 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
     double getValueParameter() const;
 
-    void onChainSuperParameterChanged(double parameter, bool force=false);
+    void onEffectMetaParameterChanged(double parameter, bool force=false);
 
     // Syncs the Super button with the parameter, that the following
     // super button change will be passed to the effect parameter
@@ -42,6 +38,9 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
     // Clear the currently loaded effect
     void clear();
+
+    QDomElement toXml(QDomDocument* doc) const override;
+    void loadParameterSlotFromXml(const QDomElement& parameterElement) override;
 
   private slots:
     // Solely for handling control changes
@@ -64,5 +63,3 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
 };
-
-#endif // EFFECTPARAMETERSLOT_H

@@ -1,12 +1,10 @@
-#ifndef WCOVERARTMENU_H
-#define WCOVERARTMENU_H
+#pragma once
 
 #include <QAction>
 #include <QMenu>
 #include <QWidget>
 #include <QPixmap>
 
-#include "track/track.h"
 #include "library/coverart.h"
 
 // This class implements a context-menu with all CoverArt user actions. Callers
@@ -23,7 +21,7 @@ class WCoverArtMenu : public QMenu {
     void setCoverArt(const CoverInfo& coverInfo);
 
   signals:
-    void coverInfoSelected(const CoverInfo& coverInfo);
+    void coverInfoSelected(const CoverInfoRelative& coverInfo);
     void reloadCoverArt();
 
   private slots:
@@ -39,5 +37,3 @@ class WCoverArtMenu : public QMenu {
 
     CoverInfo m_coverInfo;
 };
-
-#endif // WCOVERARTMENU_H

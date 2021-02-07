@@ -1,15 +1,15 @@
-#ifndef QUERYUTIL_H
-#define QUERYUTIL_H
+#pragma once
 
 #include <QtDebug>
 #include <QtSql>
 
-#define LOG_FAILED_QUERY(query) qDebug() << __FILE__ << __LINE__ << "FAILED QUERY [" \
+
+#define LOG_FAILED_QUERY(query) qWarning() << __FILE__ << __LINE__ << "FAILED QUERY [" \
     << (query).executedQuery() << "]" << (query).lastError()
 
 class ScopedTransaction {
   public:
-    explicit ScopedTransaction(QSqlDatabase& database) :
+    explicit ScopedTransaction(const QSqlDatabase& database) :
             m_database(database),
             m_active(false) {
         if (!transaction()) {
@@ -41,9 +41,14 @@ class ScopedTransaction {
             return false;
         }
         bool result = m_database.commit();
-        qDebug() << "Committing transaction on"
-                 << m_database.connectionName()
-                 << "result:" << result;
+        if (result) {
+            qDebug() << "Committing transaction successfully on"
+                     << m_database.connectionName();
+        } else {
+            qInfo() << "Committing transaction failed on"
+                    << m_database.connectionName()
+                    << ":" << m_database.lastError();
+        }
         m_active = false;
         return result;
     }
@@ -61,17 +66,15 @@ class ScopedTransaction {
         return result;
     }
   private:
-    QSqlDatabase& m_database;
+    QSqlDatabase m_database;
     bool m_active;
 };
 
-class FieldEscaper {
+class FieldEscaper final {
   public:
     FieldEscaper(const QSqlDatabase& database)
             : m_database(database),
               m_stringField("string", QVariant::String) {
-    }
-    virtual ~FieldEscaper() {
     }
 
     // Escapes a string for use in a SQL query by wrapping with quotes and
@@ -87,6 +90,7 @@ class FieldEscaper {
         return result;
     }
 
+  private:
     void escapeStringsInPlace(QStringList* pEscapeStrings) const {
         QMutableStringListIterator it(*pEscapeStrings);
         while (it.hasNext()) {
@@ -94,28 +98,6 @@ class FieldEscaper {
         }
     }
 
-    // Escapes a string for use in a LIKE operation by prefixing instances of
-    // LIKE wildcard characters (% and _) with escapeCharacter. This allows the
-    // caller to then attach wildcard characters to the string. This does NOT
-    // escape the string in the same way that escapeString() does.
-    QString escapeStringForLike(const QString& escapeString, const QChar escapeCharacter) const {
-        QString escapeCharacterStr(escapeCharacter);
-        QString result = escapeString;
-        // Replace instances of escapeCharacter with two escapeCharacters.
-        result = result.replace(
-            escapeCharacter, escapeCharacterStr + escapeCharacterStr);
-        // Replace instances of % or _ with $escapeCharacter%.
-        if (escapeCharacter != '%') {
-            result = result.replace("%", escapeCharacterStr + "%");
-        }
-        if (escapeCharacter != '_') {
-            result = result.replace("_", escapeCharacterStr + "_");
-        }
-        return result;
-    }
-
-  private:
-    const QSqlDatabase& m_database;
+    QSqlDatabase m_database;
     mutable QSqlField m_stringField;
 };
-#endif /* QUERYUTIL_H */

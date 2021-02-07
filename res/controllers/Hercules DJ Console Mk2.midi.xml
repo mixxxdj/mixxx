@@ -4,6 +4,7 @@
     <name>Hercules DJ Console Mk2</name>
     <author>Garth Dahlstrom</author>
     <description>This is a complete mapping for a Hercules DJ Console Mk2.</description>
+    <manual>hercules_dj_console_mk2</manual>
   </info>
   <controller id="Hercules DJ Console Mk2 MIDI">
     <scriptfiles>
@@ -29,7 +30,7 @@
       <control>
         <group>[Channel1]</group>
         <key>HerculesMk2.cue</key>
-	<status>0xB0</status>
+    <status>0xB0</status>
         <midino>0x09</midino>
         <options>
           <Script-Binding/>
@@ -352,7 +353,7 @@
         <status>0xB0</status>
         <midino>0x1B</midino>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -361,7 +362,7 @@
         <status>0xB0</status>
         <midino>0x1C</midino>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control> <!-- Headphones Mix -->

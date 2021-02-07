@@ -163,12 +163,25 @@ RMX.init = function() {
 
   var print_unhandled_button = function(g,e,v) { print("Unhandled button");};
 
-  c.capture("keypad1","all", print_unhandled_button );
-  c.capture("keypad2","all", print_unhandled_button );
-  c.capture("keypad3","all", print_unhandled_button );
-  c.capture("keypad4","all", print_unhandled_button );
-  c.capture("keypad5","all", print_unhandled_button );
-  c.capture("keypad6","all", print_unhandled_button );
+  c.capture("keypad1","all", function(g, e, v) {
+    engine.setValue(g,"hotcue_1_activate",v)
+  } );
+  c.capture("keypad2","all", function(g, e, v) {
+    engine.setValue(g,"hotcue_2_activate",v)
+  } );
+  c.capture("keypad3","all", function(g, e, v) {
+    engine.setValue(g,"hotcue_3_activate",v)
+  } );
+  c.capture("keypad4","all", function(g, e, v) {
+    engine.setValue(g,"hotcue_4_activate",v)
+  } );
+
+  c.capture("keypad5","all", function(g, e, v) {
+    engine.setValue(g,"loop_in",v)
+  } );
+  c.capture("keypad6","all", function(g, e, v) {
+    engine.setValue(g,"loop_out",v)
+  } );
 
   var filterKill = function(g, e, v) {
     engine.setValue(g, e, !engine.getValue(g, e));

@@ -1,48 +1,53 @@
 #include "library/dlgmissing.h"
 
 #include "library/missingtablemodel.h"
-#include "widget/wtracktableview.h"
+#include "library/trackcollectionmanager.h"
+#include "moc_dlgmissing.cpp"
 #include "util/assert.h"
+#include "widget/wlibrary.h"
+#include "widget/wtracktableview.h"
 
-DlgMissing::DlgMissing(QWidget* parent, UserSettingsPointer pConfig,
-                       Library* pLibrary,
-                       TrackCollection* pTrackCollection, KeyboardEventFilter* pKeyboard)
-         : QWidget(parent),
-           Ui::DlgMissing(),
-           m_pTrackTableView(
-               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
+DlgMissing::DlgMissing(
+        WLibrary* parent,
+        UserSettingsPointer pConfig,
+        Library* pLibrary,
+        KeyboardEventFilter* pKeyboard)
+        : QWidget(parent),
+          Ui::DlgMissing(),
+          m_pTrackTableView(
+                  new WTrackTableView(
+                          this,
+                          pConfig,
+                          pLibrary,
+                          parent->getTrackTableBackgroundColorOpacity(),
+                          false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
     // Install our own trackTable
-    QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
-    DEBUG_ASSERT_AND_HANDLE(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
+    QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
+    VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
     } else {
         box->removeWidget(m_pTrackTablePlaceholder);
         m_pTrackTablePlaceholder->hide();
         box->insertWidget(1, m_pTrackTableView);
     }
 
-    m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
+    m_pMissingTableModel = new MissingTableModel(this, pLibrary->trackCollections());
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
-    connect(btnPurge, SIGNAL(clicked()),
-            m_pTrackTableView, SLOT(slotPurge()));
-    connect(btnPurge, SIGNAL(clicked()),
-            this, SLOT(clicked()));
-    connect(btnSelect, SIGNAL(clicked()),
-            this, SLOT(selectAll()));
+    connect(btnPurge, &QPushButton::clicked, m_pTrackTableView, &WTrackTableView::slotPurge);
+    connect(btnPurge, &QPushButton::clicked, this, &DlgMissing::clicked);
+    connect(btnSelect, &QPushButton::clicked, this, &DlgMissing::selectAll);
     connect(m_pTrackTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
+            &QItemSelectionModel::selectionChanged,
             this,
-            SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
-    connect(pLibrary, SIGNAL(setTrackTableFont(QFont)),
-            m_pTrackTableView, SLOT(setTrackTableFont(QFont)));
-    connect(pLibrary, SIGNAL(setTrackTableRowHeight(int)),
-            m_pTrackTableView, SLOT(setTrackTableRowHeight(int)));
+            &DlgMissing::selectionChanged);
+    connect(m_pTrackTableView, &WTrackTableView::trackSelected, this, &DlgMissing::trackSelected);
 
-    connect(m_pTrackTableView, SIGNAL(trackSelected(TrackPointer)),
-            this, SIGNAL(trackSelected(TrackPointer)));
+    connect(pLibrary, &Library::setTrackTableFont, m_pTrackTableView, &WTrackTableView::setTrackTableFont);
+    connect(pLibrary, &Library::setTrackTableRowHeight, m_pTrackTableView, &WTrackTableView::setTrackTableRowHeight);
+    connect(pLibrary, &Library::setSelectedClick, m_pTrackTableView, &WTrackTableView::setSelectedClick);
 }
 
 DlgMissing::~DlgMissing() {
@@ -66,6 +71,10 @@ void DlgMissing::onSearch(const QString& text) {
     m_pMissingTableModel->search(text);
 }
 
+QString DlgMissing::currentSearch() {
+    return m_pMissingTableModel->currentSearch();
+}
+
 void DlgMissing::selectAll() {
     m_pTrackTableView->selectAll();
 }
@@ -80,10 +89,6 @@ void DlgMissing::selectionChanged(const QItemSelection &selected,
     activateButtons(!selected.indexes().isEmpty());
 }
 
-void DlgMissing::setTrackTableFont(const QFont& font) {
-    m_pTrackTableView->setTrackTableFont(font);
-}
-
-void DlgMissing::setTrackTableRowHeight(int rowHeight) {
-    m_pTrackTableView->setTrackTableRowHeight(rowHeight);
+bool DlgMissing::hasFocus() const {
+    return m_pTrackTableView->hasFocus();
 }

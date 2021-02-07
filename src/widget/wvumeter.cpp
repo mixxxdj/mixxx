@@ -1,31 +1,15 @@
-/***************************************************************************
-                          wvumeter.cpp  -  description
-                             -------------------
-    begin                : Fri Jul 22 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "widget/wvumeter.h"
 
-#include <QStylePainter>
-#include <QStyleOption>
 #include <QPaintEvent>
-#include <QtDebug>
 #include <QPixmap>
+#include <QStyleOption>
+#include <QStylePainter>
+#include <QtDebug>
 
+#include "moc_wvumeter.cpp"
+#include "util/math.h"
 #include "util/timer.h"
 #include "widget/wpixmapstore.h"
-#include "util/math.h"
 
 #define DEFAULT_FALLTIME 20
 #define DEFAULT_FALLSTEP 1
@@ -58,15 +42,18 @@ void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
     if (!backPathNode.isNull()) {
         // The implicit default in <1.12.0 was FIXED so we keep it for backwards
         // compatibility.
-        setPixmapBackground(context.getPixmapSource(backPathNode),
-                            context.selectScaleMode(backPathNode, Paintable::FIXED));
+        setPixmapBackground(
+                context.getPixmapSource(backPathNode),
+                context.selectScaleMode(backPathNode, Paintable::FIXED),
+                context.getScaleFactor());
     }
 
     QDomElement vuNode = context.selectElement(node, "PathVu");
     // The implicit default in <1.12.0 was FIXED so we keep it for backwards
     // compatibility.
     setPixmaps(context.getPixmapSource(vuNode), bHorizontal,
-               context.selectScaleMode(vuNode, Paintable::FIXED));
+               context.selectScaleMode(vuNode, Paintable::FIXED),
+               context.getScaleFactor());
 
     m_iPeakHoldSize = context.selectInt(node, "PeakHoldSize");
     if (m_iPeakHoldSize < 0 || m_iPeakHoldSize > 100) {
@@ -87,10 +74,15 @@ void WVuMeter::setup(const QDomNode& node, const SkinContext& context) {
     if (m_iPeakFallTime < 1 || m_iPeakFallTime > 1000) {
         m_iPeakFallTime = DEFAULT_FALLTIME;
     }
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
-void WVuMeter::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode) {
-    m_pPixmapBack = WPixmapStore::getPaintable(source, mode);
+void WVuMeter::setPixmapBackground(
+        const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
+    m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pPixmapBack.isNull() || m_pPixmapBack->isNull()) {
         qDebug() << metaObject()->className()
                  << "Error loading background pixmap:" << source.getPath();
@@ -99,9 +91,11 @@ void WVuMeter::setPixmapBackground(PixmapSource source, Paintable::DrawMode mode
     }
 }
 
-void WVuMeter::setPixmaps(PixmapSource source,
-                          bool bHorizontal, Paintable::DrawMode mode) {
-    m_pPixmapVu = WPixmapStore::getPaintable(source, mode);
+void WVuMeter::setPixmaps(const PixmapSource& source,
+        bool bHorizontal,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
+    m_pPixmapVu = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (m_pPixmapVu.isNull() || m_pPixmapVu->isNull()) {
         qDebug() << "WVuMeter: Error loading vu pixmap" << source.getPath();
     } else {

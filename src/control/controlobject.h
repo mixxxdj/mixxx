@@ -1,22 +1,4 @@
-/***************************************************************************
-                          controlobject.h  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef CONTROLOBJECT_H
-#define CONTROLOBJECT_H
+#pragma once
 
 #include <QObject>
 #include <QEvent>
@@ -34,20 +16,22 @@ class ControlObject : public QObject {
     // bIgnoreNops: Don't emit a signal if the CO is set to its current value.
     // bTrack: Record statistics about this control.
     // bPersist: Store value on exit, load on startup.
-    ControlObject(ConfigKey key,
-                  bool bIgnoreNops=true, bool bTrack=false,
-                  bool bPersist=false);
+    // defaultValue: default value of CO. If CO is persistent and there is no valid
+    //               value found in the config, this is also the initial value.
+    ControlObject(const ConfigKey& key,
+            bool bIgnoreNops = true,
+            bool bTrack = false,
+            bool bPersist = false,
+            double defaultValue = 0.0);
     virtual ~ControlObject();
 
     // Returns a pointer to the ControlObject matching the given ConfigKey
-    static ControlObject* getControl(const ConfigKey& key, bool warn = true);
-    static inline ControlObject* getControl(const QString& group, const QString& item, bool warn = true) {
+    static ControlObject* getControl(const ConfigKey& key, ControlFlags flags = ControlFlag::None);
+    static ControlObject* getControl(const QString& group,
+            const QString& item,
+            ControlFlags flags = ControlFlag::None) {
         ConfigKey key(group, item);
-        return getControl(key, warn);
-    }
-    static inline ControlObject* getControl(const char* group, const char* item, bool warn = true) {
-        ConfigKey key(group, item);
-        return getControl(key, warn);
+        return getControl(key, flags);
     }
 
     QString name() const {
@@ -88,18 +72,31 @@ class ControlObject : public QObject {
     // Instantly returns the value of the ControlObject
     static double get(const ConfigKey& key);
 
+    /// Returns the boolean interpretation of the ControlObject's value.
+    static bool toBool(const ConfigKey& key) {
+        return ControlObject::get(key) > 0;
+    }
+
     // Sets the ControlObject value. May require confirmation by owner.
     inline void set(double value) {
         if (m_pControl) {
             m_pControl->set(value, this);
         }
     }
+
     // Sets the ControlObject value and confirms it.
     inline void setAndConfirm(double value) {
         if (m_pControl) {
             m_pControl->setAndConfirm(value, this);
         }
     }
+
+    // Forces the control to 'value', regardless of whether it has a change
+    // request handler attached (identical to setAndConfirm).
+    inline void forceSet(double value) {
+        setAndConfirm(value);
+    }
+
     // Instantly sets the value of the ControlObject
     static void set(const ConfigKey& key, const double& value);
 
@@ -126,7 +123,7 @@ class ControlObject : public QObject {
     virtual double getParameterForValue(double value) const;
 
     // Returns the parameterized value of the object. Thread safe, non-blocking.
-    virtual double getParameterForMidiValue(double midiValue) const;
+    virtual double getParameterForMidi(double midiValue) const;
 
     // Sets the control parameterized value to v. Thread safe, non-blocking.
     virtual void setParameter(double v);
@@ -141,12 +138,21 @@ class ControlObject : public QObject {
     // You need to use Qt::DirectConnection for the engine objects, since the
     // audio thread has no Qt event queue. But be a ware of race conditions in this case.
     // ref: http://qt-project.org/doc/qt-4.8/qt.html#ConnectionType-enum
-    bool connectValueChangeRequest(const QObject* receiver,
-                                   const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    template <typename Receiver, typename Slot>
+    bool connectValueChangeRequest(Receiver receiver, Slot func,
+                                   Qt::ConnectionType type = Qt::AutoConnection) {
+        bool ret = false;
+        if (m_pControl) {
+          ret = m_pControl->connectValueChangeRequest(receiver, func, type);
+        }
+        return ret;
+    }
+
+    // Installs a value-change request handler that ignores all sets.
+    void setReadOnly();
 
   signals:
     void valueChanged(double);
-    void valueChangedFromEngine(double);
 
   public:
     // DEPRECATED: Called to set the control value from the controller
@@ -161,13 +167,15 @@ class ControlObject : public QObject {
 
   private slots:
     void privateValueChanged(double value, QObject* pSetter);
+    void readOnlyHandler(double v);
 
   private:
-    void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                    bool bPersist);
+    ControlObject(ControlObject&&) = delete;
+    ControlObject(const ControlObject&) = delete;
+    ControlObject& operator=(ControlObject&&) = delete;
+    ControlObject& operator=(const ControlObject&) = delete;
+
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }
 };
-
-#endif

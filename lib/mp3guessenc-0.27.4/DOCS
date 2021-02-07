@@ -1,0 +1,63 @@
+
+ * Sample MPEG-1 Audio Layer I, II, and III files for testing implementations
+http://standards.iso.org/ittf/PubliclyAvailableStandards/s022691_ISO_IEC_11172-4_1995(E)_Compliance_Testing.zip
+
+ * MPEG Audio Frame Header by Konrad Windszus
+http://www.codeproject.com/KB/audio-video/mpegaudioinfo.asp
+
+ * Mp3 Info Tag rev 1 specifications
+http://gabriel.mp3-tech.org/mp3infotag.html
+
+ * Mpeg Audio Frame Header
+http://www.mpgedit.org/mpgedit/mpeg_format/mpeghdr.htm
+
+ * ID3 tag version 2.3.0
+http://www.id3.org/d3v2.3.0
+
+ * Maaate! The Australian audio analysis tools
+http://maaate.sourceforge.net/
+
+ * Implementation details about an mp3 decoder
+http://www.mp3-tech.org/programmer/docs/bitstream.zip
+
+ * MPEG 1 layer 1/2/3 MPEG 2 2/3 Test Data
+http://mpgedit.org/mpgedit/mpgedit/testdata/mpegdata.html
+
+ * Lame Y switch
+http://wiki.hydrogenaudio.org/index.php?title=LAME_Y_SWITCH
+
+ * MP3 format at Hydrogenaudio Knowledgebase
+http://wiki.hydrogenaudio.org/index.php?title=MP3
+
+ * APEv2 specification at Hydrogenaudio Knowledgebase
+http://wiki.hydrogenaudio.org/index.php?title=APEv2_specification
+
+ * Home site of mp3PRO technology
+http://www.mp3prozone.com
+
+ * Introducing mp3Surround - also many samples
+http://www.all4mp3.com/learn/mp3-surround.php
+
+ * Wave File Specifications
+http://www-mmsp.ece.mcgill.ca/Documents/AudioFormats/WAVE/WAVE.html
+
+ * RIFF file format
+https://www.daubnet.com/en/file-format-riff
+
+ * Wav (RIFF) File Format Tutorial
+http://www.topherlee.com/software/pcm-tut-wavformat.html
+
+ * Definition of Lyrics3 tag
+http://id3.org/Lyrics3
+
+ * Specification for the (new) Lyrics3 v2.00 tag
+http://id3.org/Lyrics3v2
+
+ * Description of MusicMatch tag
+https://github.com/dreamindustries/id3lib/blob/master/doc/musicmatch.txt
+
+ * Old home page of the BladeEnc developer
+http://home8.swipnet.se/~w-82625/default.htm
+
+ * BladeEnc binaries for several OSs
+http://www2.arnes.si/~mmilut/BladeEnc.html

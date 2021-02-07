@@ -6,16 +6,10 @@
 
 class PlayCounterTest : public testing::Test {
   protected:
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
     void updatePlayedAndVerify(PlayCounter* pPlayCounter, bool bPlayed) {
         bool isPlayedBefore = pPlayCounter->isPlayed();
         int timesPlayedBefore = pPlayCounter->getTimesPlayed();
-        pPlayCounter->setPlayedAndUpdateTimesPlayed(bPlayed);
+        pPlayCounter->updateLastPlayedNowAndTimesPlayed(bPlayed);
         bool isPlayedAfter = pPlayCounter->isPlayed();
         int timesPlayedAfter = pPlayCounter->getTimesPlayed();
         if (bPlayed) {
@@ -52,9 +46,10 @@ class PlayCounterTest : public testing::Test {
         updatePlayedAndVerify(pPlayCounter, true);
         updatePlayedAndVerify(pPlayCounter, true);
         updatePlayedAndVerify(pPlayCounter, false);
-        EXPECT_EQ(PlayCounter(1), *pPlayCounter);
+        EXPECT_EQ(1, pPlayCounter->getTimesPlayed());
+        EXPECT_FALSE(pPlayCounter->isPlayed());
         resetAndVerify(pPlayCounter);
-        EXPECT_EQ(PlayCounter(), *pPlayCounter);
+        ASSERT_EQ(PlayCounter(), *pPlayCounter);
     }
 };
 

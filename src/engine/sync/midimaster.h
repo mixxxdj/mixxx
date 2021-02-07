@@ -7,11 +7,11 @@
 
 #include <QObject>
 #include <QString>
-#include <QScopedPointer>
+#include <memory>
 
+#include "engine/channels/enginechannel.h"
 #include "engine/sync/clock.h"
 #include "engine/sync/syncable.h"
-#include "engine/enginechannel.h"
 
 class ControlLinPotmeter;
 class ControlObject;
@@ -21,19 +21,24 @@ class EngineSync;
 class MidiMasterClock : public QObject, public Clock, public Syncable {
     Q_OBJECT
   public:
-    MidiMasterClock(const char* pGroup, SyncableListener* pEngineSync);
+    MidiMasterClock(const QString& group, SyncableListener* pEngineSync);
     virtual ~MidiMasterClock();
 
     const QString& getGroup() const {
         return m_group;
     }
     EngineChannel* getChannel() const {
-        return NULL;
+        return nullptr;
     }
 
     void notifySyncModeChanged(SyncMode mode);
     void notifyOnlyPlayingSyncable();
+    void requestSync();
     void requestSyncPhase();
+    void setSyncMode(SyncMode mode) {
+        // TODO: Does this implementation suffice?
+        m_mode = mode;
+    }
     SyncMode getSyncMode() const {
         return m_mode;
     }
@@ -59,19 +64,19 @@ class MidiMasterClock : public QObject, public Clock, public Syncable {
   private:
     QString m_group;
     SyncableListener* m_pEngineSync;
-    QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
+    std::unique_ptr<ControlPushButton> m_pSyncMasterEnabled;
 
-    QScopedPointer<ControlObject> m_pMidiSourceClockBpm;
-    QScopedPointer<ControlObject> m_pMidiSourceClockLastBeatTime;
-    QScopedPointer<ControlObject> m_pMidiSourceClockBeatDistance;
+    std::unique_ptr<ControlObject> m_pMidiSourceClockBpm;
+    std::unique_ptr<ControlObject> m_pMidiSourceClockLastBeatTime;
+    std::unique_ptr<ControlObject> m_pMidiSourceClockBeatDistance;
     // Indicates if the midi clock is active or stopped.
-    QScopedPointer<ControlPushButton> m_pMidiSourceClockRunning;
+    std::unique_ptr<ControlPushButton> m_pMidiSourceClockRunning;
     // Since there may be differences in latency between other midi devices and
     // Mixxx, allow for manual adjustment of the beat percentage value.
-    QScopedPointer<ControlLinPotmeter> m_pMidiSourceClockSyncAdjust;
+    std::unique_ptr<ControlLinPotmeter> m_pMidiSourceClockSyncAdjust;
 
     SyncMode m_mode;
     double m_dOldBpm;
 };
 
-#endif   // MIDIMASTER_H
+#endif // MIDIMASTER_H

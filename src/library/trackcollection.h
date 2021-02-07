@@ -1,114 +1,165 @@
-/***************************************************************************
-                           trackcollection.h
-                              -------------------
-     begin                : 10/27/2008
-     copyright            : (C) 2008 Albert Santoni
-     email                : gamegod \a\t users.sf.net
-***************************************************************************/
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef TRACKCOLLECTION_H
-#define TRACKCOLLECTION_H
-
-#include <QtSql>
+#include <QDir>
 #include <QList>
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
-#include "preferences/usersettings.h"
-#include "library/basetrackcache.h"
-#include "library/dao/trackdao.h"
-#include "library/dao/cratedao.h"
-#include "library/dao/cuedao.h"
-#include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
+#include "library/dao/cuedao.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/libraryhashdao.h"
+#include "library/dao/playlistdao.h"
+#include "library/dao/trackdao.h"
+#include "library/trackset/crate/cratestorage.h"
+#include "preferences/usersettings.h"
+#include "util/thread_affinity.h"
 
-#ifdef __SQLITE3__
-typedef struct sqlite3_context sqlite3_context;
-typedef struct Mem sqlite3_value;
-#endif
+// forward declaration(s)
+class BaseTrackCache;
 
-class Track;
-
-#define AUTODJ_TABLE "Auto DJ"
-
-class BpmDetector;
-
-/**
-   @author Albert Santoni
-*/
-class TrackCollection : public QObject {
+// Manages the internal database.
+class TrackCollection : public QObject,
+    public virtual /*implements*/ SqlStorage {
     Q_OBJECT
+
   public:
-    static const int kRequiredSchemaVersion;
+    TrackCollection(
+            QObject* parent,
+            const UserSettingsPointer& pConfig);
+    ~TrackCollection() override;
 
-    TrackCollection(UserSettingsPointer pConfig);
-    virtual ~TrackCollection();
-    bool checkForTables();
+    void repairDatabase(
+            const QSqlDatabase& database) override;
 
-    void resetLibaryCancellation();
-    QSqlDatabase& getDatabase();
+    void connectDatabase(
+            const QSqlDatabase& database) override;
+    void disconnectDatabase() override;
 
-    CrateDAO& getCrateDAO();
-    TrackDAO& getTrackDAO();
-    PlaylistDAO& getPlaylistDAO();
-    DirectoryDAO& getDirectoryDAO();
+    QSqlDatabase database() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_database;
+    }
+
+    const CrateStorage& crates() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_crates;
+    }
+
+    TrackDAO& getTrackDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_trackDao;
+    }
+    PlaylistDAO& getPlaylistDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_playlistDao;
+    }
+    DirectoryDAO& getDirectoryDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_directoryDao;
+    }
     AnalysisDao& getAnalysisDAO() {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_analysisDao;
     }
-    QSharedPointer<BaseTrackCache> getTrackSource();
-    void setTrackSource(QSharedPointer<BaseTrackCache> trackSource);
-    void cancelLibraryScan();
 
-    UserSettingsPointer getConfig() {
-        return m_pConfig;
+    void connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource);
+    QWeakPointer<BaseTrackCache> disconnectTrackSource();
+
+    QSharedPointer<BaseTrackCache> getTrackSource() const {
+        DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+        return m_pTrackSource;
     }
 
-    void relocateDirectory(QString oldDir, QString newDir);
+    // This function returns a track ID of all file in the list not already visible,
+    // it adds and unhides the tracks as well.
+    QList<TrackId> resolveTrackIds(
+            const QList<TrackFile> &trackFiles,
+            TrackDAO::ResolveTrackIdFlags flags);
+    QList<TrackId> resolveTrackIdsFromUrls(
+            const QList<QUrl>& urls,
+            bool addMissing);
+    QList<TrackId> resolveTrackIdsFromLocations(
+            const QList<QString>& locations);
 
-  protected:
-#ifdef __SQLITE3__
-    void installSorting(QSqlDatabase &db);
-    static int sqliteLocaleAwareCompare(void* pArg,
-                                        int len1, const void* data1,
-                                        int len2, const void* data2);
-    static void sqliteLike(sqlite3_context *p,
-                          int aArgc,
-                          sqlite3_value **aArgv);
-    static void makeLatinLow(QChar* c, int count);
-    static int likeCompareLatinLow(
-            QString* pattern,
-            QString* string,
-            const QChar esc);
-    static int likeCompareInner(
-            const QChar* pattern,
-            int patterenSize,
-            const QChar* string,
-            int stringSize,
-            const QChar esc);
-#endif // __SQLITE3__
+    bool insertCrate(const Crate& crate, CrateId* pCrateId = nullptr);
+    bool updateCrate(const Crate& crate);
+    bool deleteCrate(CrateId crateId);
+    bool addCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
+    bool removeCrateTracks(CrateId crateId, const QList<TrackId>& trackIds);
+
+    bool updateAutoDjCrate(CrateId crateId, bool isAutoDjSource);
+
+    TrackPointer getTrackById(
+            TrackId trackId) const;
+
+    TrackPointer getTrackByRef(
+            const TrackRef& trackRef) const;
+    TrackId getTrackIdByRef(
+            const TrackRef& trackRef) const;
+
+    // Only public for tests
+    TrackPointer getOrAddTrack(
+            const TrackRef& trackRef,
+            bool* pAlreadyInLibrary = nullptr);
+    TrackId addTrack(
+            const TrackPointer& pTrack,
+            bool unremove);
+
+  signals:
+    // Forwarded signals from LibraryScanner
+    void scanTrackAdded(TrackPointer pTrack);
+
+    // Forwarded signals from TrackDAO
+    void trackClean(TrackId trackId);
+    void trackDirty(TrackId trackId);
+    void tracksAdded(const QSet<TrackId>& trackIds);
+    void tracksChanged(const QSet<TrackId>& trackIds);
+    void tracksRemoved(const QSet<TrackId>& trackIds);
+    void multipleTracksChanged();
+
+    void crateInserted(CrateId id);
+    void crateUpdated(CrateId id);
+    void crateDeleted(CrateId id);
+
+    void crateTracksChanged(
+            CrateId crate,
+            const QList<TrackId>& tracksAdded,
+            const QList<TrackId>& tracksRemoved);
+    void crateSummaryChanged(
+            const QSet<CrateId>& crates);
 
   private:
-    UserSettingsPointer m_pConfig;
-    QSqlDatabase m_db;
-    QSharedPointer<BaseTrackCache> m_defaultTrackSource;
+    friend class TrackCollectionManager;
+    friend class Upgrade;
+
+    // No parent during database schema upgrade
+    TrackCollection(const UserSettingsPointer& pConfig)
+            : TrackCollection(nullptr, pConfig) {
+    }
+
+    bool hideTracks(const QList<TrackId>& trackIds);
+    bool unhideTracks(const QList<TrackId>& trackIds);
+    void hideAllTracks(const QDir& rootDir);
+
+    bool purgeTracks(const QList<TrackId>& trackIds);
+    bool purgeAllTracks(const QDir& rootDir);
+
+    bool addDirectory(const QString& dir);
+    bool removeDirectory(const QString& dir);
+    void relocateDirectory(const QString& oldDir, const QString& newDir);
+
+    void saveTrack(Track* pTrack);
+
+    QSqlDatabase m_database;
+
     PlaylistDAO m_playlistDao;
-    CrateDAO m_crateDao;
+    CrateStorage m_crates;
     CueDAO m_cueDao;
     DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
     LibraryHashDAO m_libraryHashDao;
     TrackDAO m_trackDao;
-};
 
-#endif // TRACKCOLLECTION_H
+    QSharedPointer<BaseTrackCache> m_pTrackSource;
+};

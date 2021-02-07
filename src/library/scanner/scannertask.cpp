@@ -1,5 +1,7 @@
 #include "library/scanner/scannertask.h"
+
 #include "library/scanner/libraryscanner.h"
+#include "moc_scannertask.cpp"
 
 ScannerTask::ScannerTask(LibraryScanner* pScanner,
                          const ScannerGlobalPointer scannerGlobal)
@@ -11,7 +13,7 @@ ScannerTask::ScannerTask(LibraryScanner* pScanner,
 
 ScannerTask::~ScannerTask() {
     if (!m_success) {
-    	m_scannerGlobal->clearScanFinishedCleanly();
+        m_scannerGlobal->clearScanFinishedCleanly();
     }
     m_scannerGlobal->getTaskWatcher().taskDone();
 }

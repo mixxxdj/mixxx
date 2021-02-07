@@ -1,7 +1,9 @@
+#include "widget/weffectbuttonparameter.h"
+
 #include <QtDebug>
 
-#include "widget/weffectbuttonparameter.h"
 #include "effects/effectsmanager.h"
+#include "moc_weffectbuttonparameter.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffectButtonParameter::WEffectButtonParameter(QWidget* pParent, EffectsManager* pEffectsManager)
@@ -9,6 +11,7 @@ WEffectButtonParameter::WEffectButtonParameter(QWidget* pParent, EffectsManager*
 }
 
 void WEffectButtonParameter::setup(const QDomNode& node, const SkinContext& context) {
+    WLabel::setup(node, context);
     // EffectWidgetUtils propagates NULLs so this is all safe.
     EffectRackPointer pRack = EffectWidgetUtils::getEffectRackFromNode(
             node, context, m_pEffectsManager);

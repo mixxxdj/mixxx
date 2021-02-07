@@ -1,10 +1,6 @@
-// engineworker.h
-// Created 6/2/2010 by RJ Ryan (rryan@mit.edu)
+#pragma once
 
-#ifndef ENGINEWORKER_H
-#define ENGINEWORKER_H
-
-#include <QAtomicInt>
+#include <atomic>
 #include <QObject>
 #include <QSemaphore>
 #include <QThread>
@@ -25,16 +21,13 @@ class EngineWorker : public QThread {
     virtual void run();
 
     void setScheduler(EngineWorkerScheduler* pScheduler);
-    bool workReady();
-    void wake() {
-        m_semaRun.release();
-    }
+    void workReady();
+    void wakeIfReady();
 
   protected:
     QSemaphore m_semaRun;
 
   private:
     EngineWorkerScheduler* m_pScheduler;
+    std::atomic_flag m_notReady;
 };
-
-#endif /* ENGINEWORKER_H */

@@ -3,8 +3,10 @@
 #include "track/tracknumbers.h"
 #include "util/assert.h"
 
-// static
-const QString TrackNumbers::kSeparator("/");
+/*static*/ constexpr int TrackNumbers::kValueUndefined;
+/*static*/ constexpr int TrackNumbers::kValueMin;
+
+/*static*/ const QString TrackNumbers::kSeparator("/");
 
 //static
 bool TrackNumbers::parseValueFromString(
@@ -64,7 +66,7 @@ TrackNumbers::ParseResult TrackNumbers::parseFromString(
 
 //static
 void TrackNumbers::splitString(
-        QString str,
+        const QString& str,
         QString* pActualText,
         QString* pTotalText) {
     // NOTE(uklotzde): The input string must be passed by value and
@@ -96,7 +98,7 @@ void TrackNumbers::splitString(
 }
 
 //static
-QString TrackNumbers::joinStrings(
+QString TrackNumbers::joinAsString(
         const QString& actualText,
         const QString& totalText) {
     if (totalText.isEmpty()) {
@@ -139,5 +141,5 @@ QString TrackNumbers::toString() const {
     QString actualText;
     QString totalText;
     toStrings(&actualText, &totalText);
-    return joinStrings(actualText, totalText);
+    return joinAsString(actualText, totalText);
 }

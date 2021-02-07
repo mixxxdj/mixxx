@@ -1,0 +1,52 @@
+{
+  "extends": "eslint:recommended",
+  "parserOptions": {
+    "ecmaVersion": 5,
+    "sourceType": "script"
+  },
+  "rules": {
+    "array-bracket-spacing" : "warn",
+    "block-spacing": "warn",
+    "brace-style": ["warn", "1tbs", {
+        "allowSingleLine": true
+    }],
+    "camelcase": "warn",
+    "comma-spacing": "warn",
+    "computed-property-spacing" : ["warn", "never", {
+        "enforceForClassMembers": true
+    }],
+    "dot-location": "warn",
+    "eqeqeq": ["error", "always"],
+    "func-style": ["error", "expression", {
+        "allowArrowFunctions": true
+    }],
+    "indent": ["warn", 4],
+    "key-spacing": "warn",
+    "keyword-spacing": "warn",
+    "linebreak-style": ["warn", "unix"],
+    "no-trailing-spaces": "warn",
+    "no-unneeded-ternary": ["warn", {
+        "defaultAssignment": false
+    }],
+    "no-unused-vars": ["error", {
+        "argsIgnorePattern": "^_"
+    }],
+    "object-curly-newline" : ["warn", {
+        "consistent": true,
+        "multiline": true
+    }],
+    "object-curly-spacing" : "warn",
+    "quotes": ["warn", "double"],
+    "require-atomic-updates": "error",
+    "semi": "warn",
+    "semi-spacing": "warn",
+    "space-before-blocks": ["warn", "always"],
+    "space-before-function-paren": ["warn", "never"],
+    "space-in-parens": "warn"
+  },
+  "globals": {
+    "console": "writable",
+    "svg": "writable",
+    "print": "readonly"
+  }
+}

@@ -5,6 +5,7 @@
         <author>Rick Prokup</author>
         <description>This preset provides functionality for the Ion Discover DJ controller for Mixxx</description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=939</forums>
+        <manual>ion_discover_dj</manual>
     </info>
     <controller id="Ion">
         <scriptfiles>
@@ -32,7 +33,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>IonDiscoverDJ.toggle_scratch_mode_off</key>
+                <key>IonDiscoverDJ.toggle_scratch_mode_on</key>
                 <status>0x80</status>
                 <midino>0x48</midino>
                 <options>

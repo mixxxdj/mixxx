@@ -1,361 +1,72 @@
 <Template>
-    <WidgetGroup>
-        <ObjectName>Mixer</ObjectName>
-        <SizePolicy>e,me</SizePolicy>
-        <MinimumSize>450,</MinimumSize>
-        <MaximumSize>1000,</MaximumSize>
+  <SetVariable name="BtnType"><Variable name="TopRegion_BtnType"/></SetVariable>
+
+  <WidgetGroup>
+    <SizePolicy>max,me</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>MixerContainer</ObjectName>
+        <SizePolicy>min,me</SizePolicy>
         <Layout>horizontal</Layout>
         <Children>
-            <WidgetGroup>
-                <ObjectName>PrimaryMixer</ObjectName>
-                <Layout>vertical</Layout>
-                <SizePolicy>me,me</SizePolicy>
-                <Children>
-                   <WidgetGroup>
-                     <ObjectName>MixerChannelControls</ObjectName>
-                     <Layout>horizontal</Layout>
-                     <SizePolicy>me,max</SizePolicy>
-                     <Children>
-                           <!-- <WidgetGroup>
-                              <ObjectName>MasterSync</ObjectName>
-                              <SizePolicy>f,me</SizePolicy>
-                              <Size>50,</Size>
-                              <Layout>vertical</Layout>
-                              <Children>
-                                  <PushButton>
-                                      <TooltipId>sync_master</TooltipId>
-                                      <Style></Style>
-                                      <NumberStates>2</NumberStates>
-                                      <State>
-                                          <Number>0</Number>
-                                          <Pressed>btn_mastersync_master_on.png</Pressed>
-                                          <Unpressed>btn_mastersync_master_off.png</Unpressed>
-                                      </State>
-                                      <State>
-                                          <Number>1</Number>
-                                          <Pressed>btn_mastersync_master_on.png</Pressed>
-                                          <Unpressed>btn_mastersync_master_on.png</Unpressed>
-                                      </State>
-                                      <Pos>4,4</Pos>
-                                      <Connection>
-                                          <ConfigKey>[MidiSourceClock],sync_master</ConfigKey>
-                                          <ButtonState>LeftButton</ButtonState>
-                                      </Connection>
-                                  </PushButton>
-                                  <NumberBpm>
-                                      <TooltipId>visual_bpm</TooltipId>
-                                      <Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans
-                                          Unicode, Arial, Verdana, sans-serif;
-                                          background-color:
-                                          transparent; color: #EECE33; text-align: left;padding-left:
-                                          1px;
-                                          }
-                                      </Style>
-                                      <Channel>1</Channel>
-                                      <NumberOfDigits>2</NumberOfDigits>
-                                      <Connection>
-                                          <ConfigKey>[MidiSourceClock],bpm</ConfigKey>
-                                      </Connection>
-                                  </NumberBpm>
-                              </Children>
-                          </WidgetGroup> -->
-        		          <WidgetGroup>
-        	                <ObjectName>MixerLeftMargin</ObjectName>
-        	                <Layout>horizontal</Layout>
-        	                <SizePolicy>me,min</SizePolicy>
-        	                <MinimumSize>1,</MinimumSize>
-        	                <Children>
-        	                </Children>
-        	              </WidgetGroup>
-        				  <WidgetGroup>
-        					<ObjectName>MixerContainer</ObjectName>
-        					<Layout>vertical</Layout>
-        					<SizePolicy>e,max</SizePolicy>
-        					<Children>
-        						<WidgetGroup>
-        						    <SizePolicy>max,min</SizePolicy>
-        							<Layout>horizontal</Layout>
-									<MaximumSize>400,400</MaximumSize>
-        							<Children>
-        							   <WidgetGroup>
-        							        <SizePolicy>max,min</SizePolicy>
-        						            <Layout>horizontal</Layout>
-        						            <Children>
-        										<Template src="skin:mixer_channel_vertical.xml">
-        											<SetVariable name="channum">3</SetVariable>
-              									</Template>
-        						            </Children>
-        						            <Connection>
-        						                <ConfigKey>[Master],show_4decks</ConfigKey>
-        						                <BindProperty>visible</BindProperty>
-        						            </Connection>
-        						       </WidgetGroup>
-        							   <Template src="skin:mixer_channel.xml">
-        									<SetVariable name="channum">1</SetVariable>
-        							   </Template>
-									   <WidgetGroup>
-											<ObjectName>MasterVuMeter2ch</ObjectName>
-											<Layout>horizontal</Layout>
-											<SizePolicy>max,me</SizePolicy>
-											<Children>
-												<WidgetGroup>
-													<Layout>vertical</Layout>
-													<Children>
-														<StatusLight>
-															<TooltipId>master_PeakIndicator</TooltipId>
-															<Style></Style>
-															<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-															<PathBack>btn_clipping1.png</PathBack>
-															<Connection>
-																<ConfigKey>[Master],PeakIndicatorL</ConfigKey>
-															</Connection>
-														</StatusLight>
-														<VuMeter>
-															<TooltipId>master_VuMeterL</TooltipId>
-															<Style></Style>
-															<PathVu>btn_volume_display1_over.png</PathVu>
-															<PathBack>btn_volume_display1.png</PathBack>
-															<Horizontal>false</Horizontal>
-															<PeakHoldSize>5</PeakHoldSize>
-															<PeakHoldTime>500</PeakHoldTime>
-															<PeakFallTime>50</PeakFallTime>
-															<PeakFallStep>2</PeakFallStep>
-															<Connection>
-																<ConfigKey>[Master],VuMeterL</ConfigKey>
-															</Connection>
-														</VuMeter>
-													</Children>
-												</WidgetGroup>
-												<WidgetGroup>
-													<Layout>vertical</Layout>
-													<Children>
-														<StatusLight>
-															<TooltipId>master_PeakIndicator</TooltipId>
-															<Style></Style>
-															<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-															<PathBack>btn_clipping1.png</PathBack>
-															<Connection>
-																<ConfigKey>[Master],PeakIndicatorR</ConfigKey>
-															</Connection>
-														</StatusLight>
-														<VuMeter>
-															<TooltipId>master_VuMeterR</TooltipId>
-															<Style></Style>
-															<PathVu>btn_volume_display1_over.png</PathVu>
-															<PathBack>btn_volume_display1.png</PathBack>
-															<Horizontal>false</Horizontal>
-															<PeakHoldSize>5</PeakHoldSize>
-															<PeakHoldTime>500</PeakHoldTime>
-															<PeakFallTime>50</PeakFallTime>
-															<PeakFallStep>2</PeakFallStep>
-															<Connection>
-																<ConfigKey>[Master],VuMeterR</ConfigKey>
-															</Connection>
-														</VuMeter>
-													</Children>
-												</WidgetGroup>
-											</Children>
-											<Connection>
-												<ConfigKey>[Master],show_4decks</ConfigKey>
-												<BindProperty>visible</BindProperty>
-												<Transform>
-													<Invert/>
-													<Not/>
-												</Transform>
-											</Connection>
-										</WidgetGroup>
-        							   <Template src="skin:mixer_channel_reversed.xml">
-        									<SetVariable name="channum">2</SetVariable>
-        							   </Template>
-        	                           <WidgetGroup>
-      	                                  <SizePolicy>max,min</SizePolicy>
-                                          <Layout>horizontal</Layout>
-                                          <Children>
-                                              <Template src="skin:mixer_channel_vertical.xml">
-                                              <SetVariable name="channum">4</SetVariable>
-                                              </Template>
-                                          </Children>
-                                          <Connection>
-                                              <ConfigKey>[Master],show_4decks</ConfigKey>
-                                              <BindProperty>visible</BindProperty>
-                                          </Connection>
-                                       </WidgetGroup>
-        							</Children>
-        						</WidgetGroup>
-								<WidgetGroup>
-									<ObjectName>Crossfader</ObjectName>
-									<Layout>horizontal</Layout>
-									<SizePolicy>me,min</SizePolicy>
-									<Children>
-										<SliderComposed>
-											<TooltipId>crossfader</TooltipId>
-											<Handle>knob_crossfader.png</Handle>
-											<Slider>slider_crossfader.png</Slider>
-											<Horizontal>true</Horizontal>
-											<Connection>
-												<ConfigKey>[Master],crossfader</ConfigKey>
-											</Connection>
-										</SliderComposed>
-									</Children>
-								</WidgetGroup>
-        					</Children>
-        				  </WidgetGroup>
-        				  <WidgetGroup>
-                            <ObjectName>MixerRightMargin</ObjectName>
-                            <Layout>horizontal</Layout>
-                            <SizePolicy>me,min</SizePolicy>
-                            <MinimumSize>1,</MinimumSize>
-                            <Children>
-                            </Children>
-                          </WidgetGroup>
-                      </Children>
-                    </WidgetGroup>
-				</Children>
-			</WidgetGroup>
-            <WidgetGroup>
-              <Layout>vertical</Layout>
-              <SizePolicy>min,me</SizePolicy>
-              <Children>
-                <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>min,me</SizePolicy>
-                    <Children>
-            			<WidgetGroup>
-            			    <ObjectName>MasterControls</ObjectName>
-            			    <SizePolicy>min,me</SizePolicy>
-                            <Layout>vertical</Layout>
-                            <Children>
-                                <WidgetGroup>
-                                  <ObjectName>MasterKnobs</ObjectName>
-                                  <Layout>horizontal</Layout>
-                                  <SizePolicy>min,me</SizePolicy>
-                                  <Children>
-                                    <WidgetGroup>
-                                      <Layout>vertical</Layout>
-                                      <SizePolicy>min,max</SizePolicy>
-                                      <ObjectName>MasterKnobCol</ObjectName>
-                                      <Children>
-                                        <Template src="skin:knob.xml">
-                                            <SetVariable name="tooltip">master_gain</SetVariable>
-                                            <SetVariable name="group">[Master]</SetVariable>
-                                            <SetVariable name="control">gain</SetVariable>
-                                            <SetVariable name="label">Master</SetVariable>
-                                        </Template>
-                                        <Template src="skin:knob.xml">
-                                            <SetVariable name="tooltip">balance</SetVariable>
-                                            <SetVariable name="group">[Master]</SetVariable>
-                                            <SetVariable name="control">balance</SetVariable>
-                                            <SetVariable name="label">Balance</SetVariable>
-                                        </Template>
-                                      </Children>
-                                    </WidgetGroup>
-                                    <WidgetGroup>
-                                      <Layout>vertical</Layout>
-                                      <SizePolicy>min,max</SizePolicy>
-                                      <ObjectName>MasterKnobCol</ObjectName>
-                                      <Children>
-                                          <Template src="skin:knob.xml">
-                                            <SetVariable name="tooltip">headphone_gain</SetVariable>
-                                            <SetVariable name="group">[Master]</SetVariable>
-                                            <SetVariable name="control">headGain</SetVariable>
-                                            <SetVariable name="label">Head Gain</SetVariable>
-                                          </Template>
-                                          <Template src="skin:knob.xml">
-                                            <SetVariable name="tooltip">headMix</SetVariable>
-                                            <SetVariable name="group">[Master]</SetVariable>
-                                            <SetVariable name="control">headMix</SetVariable>
-                                            <SetVariable name="label">Pre/Main</SetVariable>
-                                          </Template>
-                                      </Children>
-                                    </WidgetGroup>
-                                  </Children>
-                                </WidgetGroup>
-                            </Children>
-                        </WidgetGroup>
-                      </Children>
-                    </WidgetGroup>
-					<WidgetGroup>
-						<ObjectName>MasterVuMeter4ch</ObjectName>
-						<Layout>horizontal</Layout>
-						<SizePolicy>min,me</SizePolicy>
-						<Children>
-							<WidgetGroup>
-								<Layout>vertical</Layout>
-								<Children>
-									<StatusLight>
-										<TooltipId>master_PeakIndicator</TooltipId>
-										<Style></Style>
-										<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-										<PathBack>btn_clipping1.png</PathBack>
-										<Connection>
-											<ConfigKey>[Master],PeakIndicatorL</ConfigKey>
-										</Connection>
-									</StatusLight>
-									<VuMeter>
-										<TooltipId>master_VuMeterL</TooltipId>
-										<Style></Style>
-										<PathVu>btn_volume_display1_over.png</PathVu>
-										<PathBack>btn_volume_display1.png</PathBack>
-										<Horizontal>false</Horizontal>
-										<PeakHoldSize>5</PeakHoldSize>
-										<PeakHoldTime>500</PeakHoldTime>
-										<PeakFallTime>50</PeakFallTime>
-										<PeakFallStep>2</PeakFallStep>
-										<Connection>
-											<ConfigKey>[Master],VuMeterL</ConfigKey>
-										</Connection>
-									</VuMeter>
-								</Children>
-							</WidgetGroup>
-							<WidgetGroup>
-								<Layout>vertical</Layout>
-								<Children>
-									<StatusLight>
-										<TooltipId>master_PeakIndicator</TooltipId>
-										<Style></Style>
-										<PathStatusLight>btn_clipping1_over.png</PathStatusLight>
-										<PathBack>btn_clipping1.png</PathBack>
-										<Connection>
-											<ConfigKey>[Master],PeakIndicatorR</ConfigKey>
-										</Connection>
-									</StatusLight>
-									<VuMeter>
-										<TooltipId>master_VuMeterR</TooltipId>
-										<Style></Style>
-										<PathVu>btn_volume_display1_over.png</PathVu>
-										<PathBack>btn_volume_display1.png</PathBack>
-										<Horizontal>false</Horizontal>
-										<PeakHoldSize>5</PeakHoldSize>
-										<PeakHoldTime>500</PeakHoldTime>
-										<PeakFallTime>50</PeakFallTime>
-										<PeakFallStep>2</PeakFallStep>
-										<Connection>
-											<ConfigKey>[Master],VuMeterR</ConfigKey>
-										</Connection>
-									</VuMeter>
-								</Children>
-							</WidgetGroup>
-						</Children>
-						<Connection>
-							<ConfigKey>[Master],show_4decks</ConfigKey>
-							<BindProperty>visible</BindProperty>
-						</Connection>
-					</WidgetGroup>
-                    <WidgetGroup>
-                        <ObjectName>AlignRightBottom</ObjectName>
-                        <Layout>horizontal</Layout>
-                        <SizePolicy>min,f</SizePolicy>
-                        <Children>
-                            <WidgetGroup>
-                                <Layout>horizontal</Layout>
-                                <SizePolicy>f,f</SizePolicy>
-                                <Size>103,40</Size>
-                                <BackPath>style/mixxx_logo.png</BackPath>
-                            </WidgetGroup>
-                        </Children>
-                    </WidgetGroup>
-                </Children>
-            </WidgetGroup>
-		</Children>
-	</WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>MixerDecks</ObjectName>
+            <SizePolicy>max,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <Template src="skin:/mixer/mixer_2decks.xml"/>
+              <Template src="skin:/mixer/mixer_4decks.xml"/>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_main_head_mixer</ConfigKey>
+              <BindProperty>highlight</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <Template src="skin:/mixer/mixer_main_headphone.xml"/>
+
+        </Children>
+      </WidgetGroup><!-- MixerContainer -->
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <SizePolicy>max,me</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName></ObjectName>
+        <SizePolicy>min,me</SizePolicy>
+        <Layout>vertical</Layout>
+        <Children>
+
+          <WidgetGroup><!--  width set in qss  -->
+            <ObjectName>CompactDecksCenterSpacer</ObjectName>
+          </WidgetGroup>
+
+          <Template src="skin:/mixer/vumeters_compact.xml"/>
+
+        </Children>
+        <Connection>
+          <ConfigKey>[LateNight],show_compact_deck</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
+      <Transform><Not/></Transform>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
 </Template>

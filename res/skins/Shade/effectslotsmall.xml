@@ -1,0 +1,87 @@
+<Template>
+  <WidgetGroup>
+    <Size>163f,26f</Size>
+    <Children>
+      <PushButton>
+        <Pos>4,10</Pos>
+        <TooltipId>EffectSlot_focus</TooltipId>
+        <NumberStates>2</NumberStates>
+        <State>
+          <Number>0</Number>
+          <Pressed>skin:/btn/btn_plus.png</Pressed>
+          <Unpressed>skin:/btn/btn_plus.png</Unpressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Pressed>skin:/btn/btn_minus.png</Pressed>
+          <Unpressed>skin:/btn/btn_minus.png</Unpressed>
+        </State>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+          <Transform><IsEqual><Variable name="effectnum"/></IsEqual></Transform>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup>
+        <ObjectName>EffectSelectorGroup</ObjectName>
+        <Pos>15,3</Pos>
+        <Size>22f,22f</Size>
+        <Children>
+          <PushButton>
+            <Pos>1,1</Pos>
+            <TooltipId>EffectSlot_enabled</TooltipId>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Pressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>_down.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>.png</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Pressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>_overdown.png</Pressed>
+              <Unpressed>skin:/btn/btn_beatloop_<Variable name="effectnum"/>_over.png</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],enabled</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
+        </Children>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+          <Transform><IsEqual><Variable name="effectnum"/></IsEqual></Transform>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <Knob>
+        <Pos>38,3</Pos>
+        <TooltipId>EffectSlot_metaknob</TooltipId>
+        <NumberStates>64</NumberStates>
+        <Path>knobs_no_center/knob_rotary_s%1.png</Path>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],meta</ConfigKey>
+        </Connection>
+      </Knob>
+
+      <WidgetGroup>
+        <ObjectName>EffectSelectorGroup</ObjectName>
+        <Pos>65,3</Pos>
+        <Size>94f,22f</Size>
+        <Children>
+          <Template src="skin:effect_selector_button.xml">
+            <SetVariable name="effectunitnum"><Variable name="effectunitnum"/></SetVariable>
+            <SetVariable name="effectnum"><Variable name="effectnum"/></SetVariable>
+          </Template>
+        </Children>
+        <Connection>
+          <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>],focused_effect</ConfigKey>
+          <Transform><IsEqual><Variable name="effectnum"/></IsEqual></Transform>
+          <BindProperty>highlight</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

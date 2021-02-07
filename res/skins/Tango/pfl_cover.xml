@@ -1,0 +1,27 @@
+<!--
+Description:
+  Covers Pfl buttons in decks, samplers, FX, Mic & Aux units
+  when no headphone device is configured.
+  Intention is to indicate the headphone device is lacking BEFORE
+  starting a live session instead of having to re-configure sound
+  devices DURING a session and producing a playback gap.
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>GuiCover</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+      <Label>
+        <ObjectName>UnconfiguredHeadphoneHint</ObjectName>
+        <SizePolicy>min,min</SizePolicy>
+        <Text>!</Text>
+      </Label>
+    </Children>
+    <Connection>
+      <ConfigKey>[Master],headEnabled</ConfigKey>
+      <BindProperty>visible</BindProperty>
+      <Transform><Not/></Transform>
+    </Connection>
+  </WidgetGroup>
+</Template>

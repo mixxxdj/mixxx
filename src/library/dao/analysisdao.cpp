@@ -17,31 +17,20 @@ const QString AnalysisDao::s_analysisTableName = "track_analysis";
 // CPU time so I think we should stick with the default. rryan 4/3/2012
 const int kCompressionLevel = -1;
 
-AnalysisDao::AnalysisDao(QSqlDatabase& database, UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
-          m_db(database) {
+AnalysisDao::AnalysisDao(UserSettingsPointer pConfig)
+        : m_pConfig(pConfig) {
     QDir storagePath = getAnalysisStoragePath();
     if (!QDir().mkpath(storagePath.absolutePath())) {
         qDebug() << "WARNING: Could not create analysis storage path. Mixxx will be unable to store analyses.";
     }
 }
 
-AnalysisDao::~AnalysisDao() {
-}
-
-void AnalysisDao::initialize() {
-}
-
-void AnalysisDao::setDatabase(QSqlDatabase& database) {
-    m_db = database;
-}
-
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(TrackId trackId) {
-    if (!m_db.isOpen() || !trackId.isValid()) {
+    if (!m_database.isOpen() || !trackId.isValid()) {
         return QList<AnalysisInfo>();
     }
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     query.prepare(QString(
         "SELECT id, type, description, version, data_checksum FROM %1 "
         "WHERE track_id=:trackId").arg(s_analysisTableName));
@@ -52,11 +41,11 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(TrackId trackI
 
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
     TrackId trackId, AnalysisType type) {
-    if (!m_db.isOpen() || !trackId.isValid()) {
+    if (!m_database.isOpen() || !trackId.isValid()) {
         return QList<AnalysisInfo>();
     }
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     query.prepare(QString(
         "SELECT id, type, description, version, data_checksum FROM %1 "
         "WHERE track_id=:trackId AND type=:type").arg(s_analysisTableName));
@@ -114,7 +103,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(TrackId trac
 }
 
 bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
-    if (!m_db.isOpen() || info == NULL) {
+    if (!m_database.isOpen() || info == nullptr) {
         return false;
     }
 
@@ -129,14 +118,13 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
     int checksum = qChecksum(compressedData.constData(),
                              compressedData.length());
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     if (info->analysisId == -1) {
         query.prepare(QString(
             "INSERT INTO %1 (track_id, type, description, version, data_checksum) "
             "VALUES (:trackId,:type,:description,:version,:data_checksum)")
                       .arg(s_analysisTableName));
 
-        QByteArray waveformBytes;
         query.bindValue(":trackId", info->trackId.toVariant());
         query.bindValue(":type", info->type);
         query.bindValue(":description", info->description);
@@ -190,7 +178,7 @@ bool AnalysisDao::deleteAnalysis(const int analysisId) {
     if (analysisId == -1) {
         return false;
     }
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     query.prepare(QString(
         "DELETE FROM %1 WHERE id = :id").arg(s_analysisTableName));
     query.bindValue(":id", analysisId);
@@ -211,7 +199,7 @@ void AnalysisDao::deleteAnalyses(const QList<TrackId>& trackIds) {
     for (const auto& trackId: trackIds) {
         idList << trackId.toString();
     }
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     query.prepare(QString("SELECT track_analysis.id FROM track_analysis WHERE "
                           "track_id in (%1)").arg(idList.join(",")));
     if (!query.exec()) {
@@ -235,7 +223,7 @@ bool AnalysisDao::deleteAnalysesForTrack(TrackId trackId) {
     if (!trackId.isValid()) {
         return false;
     }
-    QSqlQuery query(m_db);
+    QSqlQuery query(m_database);
     query.prepare(QString(
         "SELECT id FROM %1 where track_id = :track_id").arg(s_analysisTableName));
     query.bindValue(":track_id", trackId.toVariant());
@@ -316,7 +304,10 @@ bool AnalysisDao::saveDataToFile(const QString& fileName, const QByteArray& data
     return true;
 }
 
-void AnalysisDao::saveTrackAnalyses(const Track& track) {
+void AnalysisDao::saveTrackAnalyses(
+        TrackId trackId,
+        ConstWaveformPointer pWaveform,
+        ConstWaveformPointer pWaveSummary) {
     // The only analyses we have at the moment are waveform analyses so we have
     // nothing to do if it is disabled.
     WaveformSettings waveformSettings(m_pConfig);
@@ -324,16 +315,11 @@ void AnalysisDao::saveTrackAnalyses(const Track& track) {
         return;
     }
 
-    ConstWaveformPointer pWaveform = track.getWaveform();
-    ConstWaveformPointer pWaveSummary = track.getWaveformSummary();
-
     // Don't try to save invalid or non-dirty waveforms.
-    if (!pWaveform || pWaveform->getDataSize() == 0 || !pWaveform->isDirty() ||
-        !pWaveSummary || pWaveSummary->getDataSize() == 0 || !pWaveSummary->isDirty()) {
+    if (!pWaveform || pWaveform->saveState() != Waveform::SaveState::SavePending ||
+        !pWaveSummary || pWaveSummary->saveState() != Waveform::SaveState::SavePending) {
         return;
     }
-
-    TrackId trackId(track.getId());
 
     AnalysisDao::AnalysisInfo analysis;
     analysis.trackId = trackId;
@@ -346,7 +332,7 @@ void AnalysisDao::saveTrackAnalyses(const Track& track) {
     analysis.data = pWaveform->toByteArray();
     bool success = saveAnalysis(&analysis);
     if (success) {
-        pWaveform->setDirty(false);
+        pWaveform->setSaveState(Waveform::SaveState::Saved);
     }
 
     qDebug() << (success ? "Saved" : "Failed to save")
@@ -362,17 +348,19 @@ void AnalysisDao::saveTrackAnalyses(const Track& track) {
 
     success = saveAnalysis(&analysis);
     if (success) {
-        pWaveSummary->setDirty(false);
+        pWaveSummary->setSaveState(Waveform::SaveState::Saved);
     }
     qDebug() << (success ? "Saved" : "Failed to save")
              << "waveform summary analysis for trackId" << trackId
              << "analysisId" << analysis.analysisId;
 }
 
-size_t AnalysisDao::getDiskUsageInBytes(AnalysisType type) {
+size_t AnalysisDao::getDiskUsageInBytes(
+        const QSqlDatabase& database,
+        AnalysisType type) const {
     QDir analysisPath(getAnalysisStoragePath());
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(database);
     query.prepare(QString("SELECT id FROM %1 WHERE type=:type").arg(s_analysisTableName));
     query.bindValue(":type", type);
 
@@ -390,10 +378,12 @@ size_t AnalysisDao::getDiskUsageInBytes(AnalysisType type) {
     return total;
 }
 
-bool AnalysisDao::deleteAnalysesByType(AnalysisType type) {
+bool AnalysisDao::deleteAnalysesByType(
+        const QSqlDatabase& database,
+        AnalysisType type) const {
     QDir analysisPath(getAnalysisStoragePath());
 
-    QSqlQuery query(m_db);
+    QSqlQuery query(database);
     query.prepare(QString("SELECT id FROM %1 WHERE type=:type").arg(s_analysisTableName));
     query.bindValue(":type", type);
 
@@ -407,5 +397,11 @@ bool AnalysisDao::deleteAnalysesByType(AnalysisType type) {
         QString dataPath = analysisPath.absoluteFilePath(query.value(idColumn).toString());
         deleteFile(dataPath);
     }
+    query.prepare(QString("DELETE FROM %1 WHERE type=:type").arg(s_analysisTableName));
+    query.bindValue(":type", type);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't delete analysis";
+    }
+
     return true;
 }

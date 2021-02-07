@@ -1,737 +1,658 @@
 <?xml version='1.0' encoding='utf-8'?>
-<MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.11+">
+<MixxxControllerPreset mixxxVersion="1.11+" schemaVersion="1">
     <info>
         <name>Novation Launchpad</name>
-        <author>zestoi</author>
-        <description>Multi page mapping for the Novation Launchpad</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=3739</forums>
+        <author>Midiparse</author>
+        <description>Novation Launchpad mapping for Mixxx</description>
+        <forums>https://github.com/dszakallas/mixxx-launchpad</forums>
     </info>
     <controller id="Novation Launchpad">
         <scriptfiles>
-            <file filename="Novation-Launchpad-scripts.js" functionprefix="NovationLaunchpad"/>
+            <file functionprefix="NovationLaunchpad" filename="Novation-Launchpad-scripts.js"/>
         </scriptfiles>
         <controls>
             <control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
-                <status>0xb0</status>
+                <key>NovationLaunchpad.__midi_0xB0_0x68</key>
+                <status>0xB0</status>
                 <midino>0x68</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
-                <status>0xb0</status>
+                <key>NovationLaunchpad.__midi_0xB0_0x69</key>
+                <status>0xB0</status>
                 <midino>0x69</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
-                <status>0xb0</status>
+                <key>NovationLaunchpad.__midi_0xB0_0x6A</key>
+                <status>0xB0</status>
                 <midino>0x6A</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
-                <status>0xb0</status>
+                <key>NovationLaunchpad.__midi_0xB0_0x6B</key>
+                <status>0xB0</status>
                 <midino>0x6B</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
-                <status>0xb0</status>
+                <key>NovationLaunchpad.__midi_0xB0_0x6C</key>
+                <status>0xB0</status>
                 <midino>0x6C</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
-                <status>0xb0</status>
+                <key>NovationLaunchpad.__midi_0xB0_0x6D</key>
+                <status>0xB0</status>
                 <midino>0x6D</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
-                <status>0xb0</status>
+                <key>NovationLaunchpad.__midi_0xB0_0x6E</key>
+                <status>0xB0</status>
                 <midino>0x6E</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
-                <status>0xb0</status>
+                <key>NovationLaunchpad.__midi_0xB0_0x6F</key>
+                <status>0xB0</status>
                 <midino>0x6F</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x08</key>
                 <status>0x90</status>
-                <midino>0x8</midino>
+                <midino>0x08</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x18</key>
                 <status>0x90</status>
                 <midino>0x18</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x28</key>
                 <status>0x90</status>
                 <midino>0x28</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x38</key>
                 <status>0x90</status>
                 <midino>0x38</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x48</key>
                 <status>0x90</status>
                 <midino>0x48</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x58</key>
                 <status>0x90</status>
                 <midino>0x58</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x68</key>
                 <status>0x90</status>
                 <midino>0x68</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x78</key>
                 <status>0x90</status>
                 <midino>0x78</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x00</key>
                 <status>0x90</status>
-                <midino>0x0</midino>
+                <midino>0x00</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x01</key>
                 <status>0x90</status>
-                <midino>0x1</midino>
+                <midino>0x01</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x02</key>
                 <status>0x90</status>
-                <midino>0x2</midino>
+                <midino>0x02</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x03</key>
                 <status>0x90</status>
-                <midino>0x3</midino>
+                <midino>0x03</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x04</key>
                 <status>0x90</status>
-                <midino>0x4</midino>
+                <midino>0x04</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x05</key>
                 <status>0x90</status>
-                <midino>0x5</midino>
+                <midino>0x05</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x06</key>
                 <status>0x90</status>
-                <midino>0x6</midino>
+                <midino>0x06</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x07</key>
                 <status>0x90</status>
-                <midino>0x7</midino>
+                <midino>0x07</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x10</key>
                 <status>0x90</status>
                 <midino>0x10</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x11</key>
                 <status>0x90</status>
                 <midino>0x11</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x12</key>
                 <status>0x90</status>
                 <midino>0x12</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x13</key>
                 <status>0x90</status>
                 <midino>0x13</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x14</key>
                 <status>0x90</status>
                 <midino>0x14</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x15</key>
                 <status>0x90</status>
                 <midino>0x15</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x16</key>
                 <status>0x90</status>
                 <midino>0x16</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x17</key>
                 <status>0x90</status>
                 <midino>0x17</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x20</key>
                 <status>0x90</status>
                 <midino>0x20</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x21</key>
                 <status>0x90</status>
                 <midino>0x21</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x22</key>
                 <status>0x90</status>
                 <midino>0x22</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x23</key>
                 <status>0x90</status>
                 <midino>0x23</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x24</key>
                 <status>0x90</status>
                 <midino>0x24</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x25</key>
                 <status>0x90</status>
                 <midino>0x25</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x26</key>
                 <status>0x90</status>
                 <midino>0x26</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x27</key>
                 <status>0x90</status>
                 <midino>0x27</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x30</key>
                 <status>0x90</status>
                 <midino>0x30</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x31</key>
                 <status>0x90</status>
                 <midino>0x31</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x32</key>
                 <status>0x90</status>
                 <midino>0x32</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x33</key>
                 <status>0x90</status>
                 <midino>0x33</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x34</key>
                 <status>0x90</status>
                 <midino>0x34</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x35</key>
                 <status>0x90</status>
                 <midino>0x35</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x36</key>
                 <status>0x90</status>
                 <midino>0x36</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x37</key>
                 <status>0x90</status>
                 <midino>0x37</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x40</key>
                 <status>0x90</status>
                 <midino>0x40</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x41</key>
                 <status>0x90</status>
                 <midino>0x41</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x42</key>
                 <status>0x90</status>
                 <midino>0x42</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x43</key>
                 <status>0x90</status>
                 <midino>0x43</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x44</key>
                 <status>0x90</status>
                 <midino>0x44</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x45</key>
                 <status>0x90</status>
                 <midino>0x45</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x46</key>
                 <status>0x90</status>
                 <midino>0x46</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x47</key>
                 <status>0x90</status>
                 <midino>0x47</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x50</key>
                 <status>0x90</status>
                 <midino>0x50</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x51</key>
                 <status>0x90</status>
                 <midino>0x51</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x52</key>
                 <status>0x90</status>
                 <midino>0x52</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x53</key>
                 <status>0x90</status>
                 <midino>0x53</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x54</key>
                 <status>0x90</status>
                 <midino>0x54</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x55</key>
                 <status>0x90</status>
                 <midino>0x55</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x56</key>
                 <status>0x90</status>
                 <midino>0x56</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x57</key>
                 <status>0x90</status>
                 <midino>0x57</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x60</key>
                 <status>0x90</status>
                 <midino>0x60</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x61</key>
                 <status>0x90</status>
                 <midino>0x61</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x62</key>
                 <status>0x90</status>
                 <midino>0x62</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x63</key>
                 <status>0x90</status>
                 <midino>0x63</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x64</key>
                 <status>0x90</status>
                 <midino>0x64</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x65</key>
                 <status>0x90</status>
                 <midino>0x65</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x66</key>
                 <status>0x90</status>
                 <midino>0x66</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x67</key>
                 <status>0x90</status>
                 <midino>0x67</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x70</key>
                 <status>0x90</status>
                 <midino>0x70</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x71</key>
                 <status>0x90</status>
                 <midino>0x71</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x72</key>
                 <status>0x90</status>
                 <midino>0x72</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x73</key>
                 <status>0x90</status>
                 <midino>0x73</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x74</key>
                 <status>0x90</status>
                 <midino>0x74</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x75</key>
                 <status>0x90</status>
                 <midino>0x75</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x76</key>
                 <status>0x90</status>
                 <midino>0x76</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
-            </control>
-            <control>
+            </control><control>
                 <group>[Master]</group>
-                <key>NovationLaunchpad.incomingData</key>
+                <key>NovationLaunchpad.__midi_0x90_0x77</key>
                 <status>0x90</status>
                 <midino>0x77</midino>
                 <options>
-                    <Script-Binding/>
+                    <script-binding/>
                 </options>
             </control>
         </controls>
         <outputs/>
     </controller>
-</MixxxMIDIPreset>
+</MixxxControllerPreset>

@@ -1,37 +1,40 @@
-#ifndef BEATFACTORY_H
-#define BEATFACTORY_H
+#pragma once
 
 #include <QHash>
 
 #include "track/beats.h"
 
+class Track;
+
 class BeatFactory {
   public:
-    static BeatsPointer loadBeatsFromByteArray(const Track& track,
-                                               QString beatsVersion,
-                                               QString beatsSubVersion,
-                                               const QByteArray& beatsSerialized);
-    static BeatsPointer makeBeatGrid(const Track& track,
-                                     double dBpm, double dFirstBeatSample);
+    static mixxx::BeatsPointer loadBeatsFromByteArray(const Track& track,
+            const QString& beatsVersion,
+            const QString& beatsSubVersion,
+            const QByteArray& beatsSerialized);
+    static mixxx::BeatsPointer makeBeatGrid(const Track& track,
+            double dBpm,
+            double dFirstBeatSample);
 
     static QString getPreferredVersion(const bool bEnableFixedTempoCorrection);
 
     static QString getPreferredSubVersion(
-        const bool bEnableFixedTempoCorrection,
-        const bool bEnableOffsetCorrection,
-        const int iMinBpm, const int iMaxBpm,
-        const QHash<QString, QString> extraVersionInfo);
+            const bool bEnableFixedTempoCorrection,
+            const bool bEnableOffsetCorrection,
+            const int iMinBpm,
+            const int iMaxBpm,
+            const QHash<QString, QString>& extraVersionInfo);
 
-    static BeatsPointer makePreferredBeats(
-        const Track& track, QVector<double> beats,
-        const QHash<QString, QString> extraVersionInfo,
-        const bool bEnableFixedTempoCorrection,
-        const bool bEnableOffsetCorrection,
-        const int iSampleRate, const int iTotalSamples,
-        const int iMinBpm, const int iMaxBpm);
+    static mixxx::BeatsPointer makePreferredBeats(const Track& track,
+            const QVector<double>& beats,
+            const QHash<QString, QString>& extraVersionInfo,
+            const bool bEnableFixedTempoCorrection,
+            const bool bEnableOffsetCorrection,
+            const int iSampleRate,
+            const int iTotalSamples,
+            const int iMinBpm,
+            const int iMaxBpm);
 
   private:
-    static void deleteBeats(Beats* pBeats);
+    static void deleteBeats(mixxx::Beats* pBeats);
 };
-
-#endif /* BEATFACTORY_H */

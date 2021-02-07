@@ -1,513 +1,566 @@
-#include <QtSql>
-#include <QtDebug>
-
 #include "library/trackcollection.h"
 
-#ifdef __SQLITE3__
-#include <sqlite3.h>
-#endif
+#include <QApplication>
 
-#include "library/librarytablemodel.h"
-#include "library/schemamanager.h"
-#include "track/track.h"
-#include "util/xml.h"
+#include "library/basetrackcache.h"
+#include "moc_trackcollection.cpp"
+#include "track/globaltrackcache.h"
 #include "util/assert.h"
+#include "util/db/sqltransaction.h"
+#include "util/dnd.h"
+#include "util/logger.h"
 
-// static
-const int TrackCollection::kRequiredSchemaVersion = 27;
+namespace {
 
-TrackCollection::TrackCollection(UserSettingsPointer pConfig)
-        : m_pConfig(pConfig),
-          m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
-          m_playlistDao(m_db),
-          m_crateDao(m_db),
-          m_cueDao(m_db),
-          m_directoryDao(m_db),
-          m_analysisDao(m_db, pConfig),
-          m_libraryHashDao(m_db),
-          m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao,
+mixxx::Logger kLogger("TrackCollection");
+
+} // anonymous namespace
+
+TrackCollection::TrackCollection(
+        QObject* parent,
+        const UserSettingsPointer& pConfig)
+        : QObject(parent),
+          m_analysisDao(pConfig),
+          m_trackDao(m_cueDao, m_playlistDao,
                      m_analysisDao, m_libraryHashDao, pConfig) {
-    qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
-
-    m_db.setHostName("localhost");
-    m_db.setDatabaseName(QDir(pConfig->getSettingsPath()).filePath("mixxxdb.sqlite"));
-    m_db.setUserName("mixxx");
-    m_db.setPassword("mixxx");
-    bool ok = m_db.open();
-    qDebug() << "DB status:" << m_db.databaseName() << "=" << ok;
-    if (m_db.lastError().isValid()) {
-        qDebug() << "Error loading database:" << m_db.lastError();
-    }
-    // Check for tables and create them if missing
-    if (!checkForTables()) {
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
+    // Forward signals from TrackDAO
+    connect(&m_trackDao,
+            &TrackDAO::trackClean,
+            this,
+            &TrackCollection::trackClean,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::trackDirty,
+            this,
+            &TrackCollection::trackDirty,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksAdded,
+            this,
+            &TrackCollection::tracksAdded,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksChanged,
+            this,
+            &TrackCollection::tracksChanged,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::tracksRemoved,
+            this,
+            &TrackCollection::tracksRemoved,
+            /*signal-to-signal*/ Qt::DirectConnection);
+    connect(&m_trackDao,
+            &TrackDAO::forceModelUpdate,
+            this,
+            &TrackCollection::multipleTracksChanged,
+            /*signal-to-signal*/ Qt::DirectConnection);
 }
 
 TrackCollection::~TrackCollection() {
-    qDebug() << "~TrackCollection()";
+    if (kLogger.debugEnabled()) {
+        kLogger.debug() << "~TrackCollection()";
+    }
+    // The database should have been detached earlier
+    DEBUG_ASSERT(!m_database.isOpen());
+}
+
+void TrackCollection::repairDatabase(const QSqlDatabase& database) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    kLogger.info() << "Repairing database";
+    m_crates.repairDatabase(database);
+}
+
+void TrackCollection::connectDatabase(const QSqlDatabase& database) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    kLogger.info() << "Connecting database";
+    m_database = database;
+    m_trackDao.initialize(database);
+    m_playlistDao.initialize(database);
+    m_cueDao.initialize(database);
+    m_directoryDao.initialize(database);
+    m_analysisDao.initialize(database);
+    m_libraryHashDao.initialize(database);
+    m_crates.connectDatabase(database);
+}
+
+void TrackCollection::disconnectDatabase() {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    kLogger.info() << "Disconnecting database";
+    m_database = QSqlDatabase();
     m_trackDao.finish();
-
-    if (m_db.isOpen()) {
-        // There should never be an outstanding transaction when this code is
-        // called. If there is, it means we probably aren't committing a
-        // transaction somewhere that should be.
-        if (m_db.rollback()) {
-            qDebug() << "ERROR: There was a transaction in progress on the main database connection while shutting down."
-                    << "There is a logic error somewhere.";
-        }
-        m_db.close();
-    } else {
-        qDebug() << "ERROR: The main database connection was closed before TrackCollection closed it."
-                << "There is a logic error somewhere.";
-    }
+    m_crates.disconnectDatabase();
 }
 
-bool TrackCollection::checkForTables() {
-    if (!m_db.open()) {
-        QMessageBox::critical(0, tr("Cannot open database"),
-                            tr("Unable to establish a database connection.\n"
-                                "Mixxx requires QT with SQLite support. Please read "
-                                "the Qt SQL driver documentation for information on how "
-                                "to build it.\n\n"
-                                "Click OK to exit."), QMessageBox::Ok);
-        return false;
-    }
+void TrackCollection::connectTrackSource(QSharedPointer<BaseTrackCache> pTrackSource) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-#ifdef __SQLITE3__
-    installSorting(m_db);
-#endif
-
-    // The schema XML is baked into the binary via Qt resources.
-    QString schemaFilename(":/schema.xml");
-    QString okToExit = tr("Click OK to exit.");
-    QString upgradeFailed = tr("Cannot upgrade database schema");
-    QString upgradeToVersionFailed =
-            tr("Unable to upgrade your database schema to version %1")
-            .arg(QString::number(kRequiredSchemaVersion));
-    QString helpEmail = tr("For help with database issues contact:") + "\n" +
-                           "mixxx-devel@lists.sourceforge.net";
-
-    SchemaManager::Result result = SchemaManager::upgradeToSchemaVersion(
-            schemaFilename, m_db, kRequiredSchemaVersion);
-    switch (result) {
-        case SchemaManager::RESULT_BACKWARDS_INCOMPATIBLE:
-            QMessageBox::warning(
-                    0, upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                    tr("Your mixxxdb.sqlite file was created by a newer "
-                       "version of Mixxx and is incompatible.") +
-                    "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false;
-        case SchemaManager::RESULT_UPGRADE_FAILED:
-            QMessageBox::warning(
-                    0, upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                    tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
-                    tr("Try renaming it and restarting Mixxx.") + "\n" +
-                    helpEmail + "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false;
-        case SchemaManager::RESULT_SCHEMA_ERROR:
-            QMessageBox::warning(
-                    0, upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                    tr("The database schema file is invalid.") + "\n" +
-                    helpEmail + "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false;
-        case SchemaManager::RESULT_OK:
-        default:
-            break;
-    }
-
-    m_trackDao.initialize();
-    m_playlistDao.initialize();
-    m_crateDao.initialize();
-    m_cueDao.initialize();
-    m_directoryDao.initialize();
-    m_libraryHashDao.initialize();
-    return true;
-}
-
-QSqlDatabase& TrackCollection::getDatabase() {
-    return m_db;
-}
-
-CrateDAO& TrackCollection::getCrateDAO() {
-    return m_crateDao;
-}
-
-TrackDAO& TrackCollection::getTrackDAO() {
-    return m_trackDao;
-}
-
-PlaylistDAO& TrackCollection::getPlaylistDAO() {
-    return m_playlistDao;
-}
-
-DirectoryDAO& TrackCollection::getDirectoryDAO() {
-    return m_directoryDao;
-}
-
-QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource() {
-    return m_defaultTrackSource;
-}
-
-void TrackCollection::setTrackSource(QSharedPointer<BaseTrackCache> trackSource) {
-    DEBUG_ASSERT_AND_HANDLE(m_defaultTrackSource.isNull()) {
+    VERIFY_OR_DEBUG_ASSERT(m_pTrackSource.isNull()) {
+        kLogger.warning() << "Track source has already been connected";
         return;
     }
-    m_defaultTrackSource = trackSource;
+    kLogger.info() << "Connecting track source";
+    m_pTrackSource = pTrackSource;
+    connect(this,
+            &TrackCollection::scanTrackAdded,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotScanTrackAdded);
+    connect(&m_trackDao,
+            &TrackDAO::trackDirty,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTrackDirty);
+    connect(&m_trackDao,
+            &TrackDAO::trackClean,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTrackClean);
+    connect(&m_trackDao,
+            &TrackDAO::tracksAdded,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTracksAddedOrChanged);
+    connect(&m_trackDao,
+            &TrackDAO::tracksChanged,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTracksAddedOrChanged);
+    connect(&m_trackDao,
+            &TrackDAO::tracksRemoved,
+            m_pTrackSource.data(),
+            &BaseTrackCache::slotTracksRemoved);
 }
 
-void TrackCollection::relocateDirectory(QString oldDir, QString newDir) {
+QWeakPointer<BaseTrackCache> TrackCollection::disconnectTrackSource() {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    auto pWeakPtr = m_pTrackSource.toWeakRef();
+    if (m_pTrackSource) {
+        kLogger.info() << "Disconnecting track source";
+        m_trackDao.disconnect(m_pTrackSource.data());
+        m_pTrackSource.reset();
+    }
+    return pWeakPtr;
+}
+
+bool TrackCollection::addDirectory(const QString& dir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    SqlTransaction transaction(m_database);
+    switch (m_directoryDao.addDirectory(dir)) {
+    case SQL_ERROR:
+        return false;
+    case ALREADY_WATCHING:
+        return true;
+    case ALL_FINE:
+        transaction.commit();
+        return true;
+    default:
+        DEBUG_ASSERT("unreachable");
+    }
+    return false;
+}
+
+bool TrackCollection::removeDirectory(const QString& dir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    SqlTransaction transaction(m_database);
+    switch (m_directoryDao.removeDirectory(dir)) {
+    case SQL_ERROR:
+        return false;
+    case ALL_FINE:
+        transaction.commit();
+        return true;
+    default:
+        DEBUG_ASSERT("unreachable");
+    }
+    return false;
+}
+
+void TrackCollection::relocateDirectory(const QString& oldDir, const QString& newDir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
     // We only call this method if the user has picked a relocated directory via
     // a file dialog. This means the system sandboxer (if we are sandboxed) has
     // granted us permission to this folder. Create a security bookmark while we
     // have permission so that we can access the folder on future runs. We need
     // to canonicalize the path so we first wrap the directory string with a
     // QDir.
-    QDir directory(newDir);
-    Sandbox::createSecurityToken(directory);
+    Sandbox::createSecurityToken(QDir(newDir));
 
-    QSet<TrackId> movedIds(
-            m_directoryDao.relocateDirectory(oldDir, newDir));
+    SqlTransaction transaction(m_database);
+    QList<RelocatedTrack> relocatedTracks =
+            m_directoryDao.relocateDirectory(oldDir, newDir);
+    transaction.commit();
 
-    // Clear cache to that all TIO with the old dir information get updated
-    m_trackDao.clearCache();
-    m_trackDao.databaseTracksMoved(std::move(movedIds), QSet<TrackId>());
-}
-
-#ifdef __SQLITE3__
-// from public domain code
-// http://www.archivum.info/qt-interest@trolltech.com/2008-12/00584/Re-%28Qt-interest%29-Qt-Sqlite-UserDefinedFunction.html
-void TrackCollection::installSorting(QSqlDatabase &db) {
-    QVariant v = db.driver()->handle();
-    if (v.isValid() && strcmp(v.typeName(), "sqlite3*") == 0) {
-        // v.data() returns a pointer to the handle
-        sqlite3* handle = *static_cast<sqlite3**>(v.data());
-        if (handle != 0) { // check that it is not NULL
-            int result = sqlite3_create_collation(
-                    handle,
-                    "localeAwareCompare",
-                    SQLITE_UTF16,
-                    NULL,
-                    sqliteLocaleAwareCompare);
-            if (result != SQLITE_OK)
-            qWarning() << "Could not add string collation function: " << result;
-
-            result = sqlite3_create_function(
-                    handle,
-                    "like",
-                    2,
-                    SQLITE_ANY,
-                    NULL,
-                    sqliteLike,
-                    NULL, NULL);
-            if (result != SQLITE_OK)
-            qWarning() << "Could not add like 2 function: " << result;
-
-            result = sqlite3_create_function(
-                    handle,
-                    "like",
-                    3,
-                    SQLITE_UTF8, // No conversion, Data is stored as UTF8
-                    NULL,
-                    sqliteLike,
-                    NULL, NULL);
-            if (result != SQLITE_OK)
-            qWarning() << "Could not add like 3 function: " << result;
-        } else {
-            qWarning() << "Could not get sqlite handle";
-        }
-    } else {
-        qWarning() << "handle variant returned typename " << v.typeName();
-    }
-}
-
-// The collating function callback is invoked with a copy of the pArg
-// application data pointer and with two strings in the encoding specified
-// by the eTextRep argument.
-// The collating function must return an integer that is negative, zero,
-// or positive if the first string is less than, equal to, or greater
-// than the second, respectively.
-//static
-int TrackCollection::sqliteLocaleAwareCompare(void* pArg,
-                                              int len1, const void* data1,
-                                              int len2, const void* data2) {
-    Q_UNUSED(pArg);
-    // Construct a QString without copy
-    QString string1 = QString::fromRawData(reinterpret_cast<const QChar*>(data1),
-                                           len1 / sizeof(QChar));
-    QString string2 = QString::fromRawData(reinterpret_cast<const QChar*>(data2),
-                                           len2 / sizeof(QChar));
-    return QString::localeAwareCompare(string1, string2);
-}
-
-// This implements the like() SQL function. This is used by the LIKE operator.
-// The SQL statement 'A LIKE B' is implemented as 'like(B, A)', and if there is
-// an escape character, say E, it is implemented as 'like(B, A, E)'
-//static
-void TrackCollection::sqliteLike(sqlite3_context *context,
-                                int aArgc,
-                                sqlite3_value **aArgv) {
-    DEBUG_ASSERT_AND_HANDLE(aArgc == 2 || aArgc == 3) {
+    if (relocatedTracks.isEmpty()) {
+        // No tracks moved
         return;
     }
 
-    const char* b = reinterpret_cast<const char*>(
-            sqlite3_value_text(aArgv[0]));
-    const char* a = reinterpret_cast<const char*>(
-            sqlite3_value_text(aArgv[1]));
+    // Inform the TrackDAO about the changes
+    m_trackDao.slotDatabaseTracksRelocated(std::move(relocatedTracks));
 
-    if (!a || !b) {
-        return;
+    GlobalTrackCacheLocker().relocateCachedTracks(&m_trackDao);
+}
+
+QList<TrackId> TrackCollection::resolveTrackIds(
+        const QList<TrackFile>& trackFiles,
+        TrackDAO::ResolveTrackIdFlags flags) {
+    QList<TrackId> trackIds = m_trackDao.resolveTrackIds(trackFiles, flags);
+    if (flags & TrackDAO::ResolveTrackIdFlag::UnhideHidden) {
+        unhideTracks(trackIds);
+    }
+    return trackIds;
+}
+
+QList<TrackId> TrackCollection::resolveTrackIdsFromUrls(
+        const QList<QUrl>& urls, bool addMissing) {
+    QList<TrackFile> files = DragAndDropHelper::supportedTracksFromUrls(urls, false, true);
+    if (files.isEmpty()) {
+        return QList<TrackId>();
     }
 
-    QString stringB = QString::fromUtf8(b); // Like String
-    QString stringA = QString::fromUtf8(a);
+    TrackDAO::ResolveTrackIdFlags flags =
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden;
+    if (addMissing) {
+        flags |= TrackDAO::ResolveTrackIdFlag::AddMissing;
+    }
+    return resolveTrackIds(files, flags);
+}
 
-    QChar esc = '\0'; // Escape
-    if (aArgc == 3) {
-        const char* e = reinterpret_cast<const char*>(
-                sqlite3_value_text(aArgv[2]));
-        if(e) {
-            QString stringE = QString::fromUtf8(e);
-            if (!stringE.isEmpty()) {
-                esc = stringE.data()[0];
+QList<TrackId> TrackCollection::resolveTrackIdsFromLocations(
+        const QList<QString>& locations) {
+    QList<TrackFile> trackFiles;
+    trackFiles.reserve(locations.size());
+    for (const QString& location : locations) {
+        trackFiles.append(TrackFile(location));
+    }
+    return resolveTrackIds(trackFiles,
+            TrackDAO::ResolveTrackIdFlag::UnhideHidden
+                    | TrackDAO::ResolveTrackIdFlag::AddMissing);
+}
+
+bool TrackCollection::hideTracks(const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Warn if tracks have a playlist membership
+    QSet<int> allPlaylistIds;
+    for (const auto& trackId: trackIds) {
+        QSet<int> playlistIds;
+        m_playlistDao.getPlaylistsTrackIsIn(trackId, &playlistIds);
+        for (const auto& playlistId : qAsConst(playlistIds)) {
+            if (m_playlistDao.getHiddenType(playlistId) != PlaylistDAO::PLHT_SET_LOG) {
+                allPlaylistIds.insert(playlistId);
             }
         }
     }
 
-    int ret = likeCompareLatinLow(&stringB, &stringA, esc);
-    sqlite3_result_int64(context, ret);
-    return;
-}
+    if (!allPlaylistIds.isEmpty()) {
+         QStringList playlistNames;
+         playlistNames.reserve(allPlaylistIds.count());
+         for (const auto& playlistId: allPlaylistIds) {
+             playlistNames.append(m_playlistDao.getPlaylistName(playlistId));
+         }
 
-//static
-void TrackCollection::makeLatinLow(QChar* c, int count) {
-    for (int i = 0; i < count; ++i) {
-        if (c[i].decompositionTag() != QChar::NoDecomposition) {
-            c[i] = c[i].decomposition()[0];
-        }
-        if (c[i].isUpper()) {
-            c[i] = c[i].toLower();
-        }
+         QString playlistNamesSection =
+                 "\n\n\"" %
+                 playlistNames.join("\"\n\"") %
+                 "\"\n\n";
+
+         if (QMessageBox::question(
+                 nullptr,
+                 tr("Hiding tracks"),
+                 tr("The selected tracks are in the following playlists:"
+                     "%1"
+                     "Hiding them will remove them from these playlists. Continue?")
+                         .arg(playlistNamesSection),
+                 QMessageBox::Ok | QMessageBox::Cancel) != QMessageBox::Ok) {
+             return false;
+         }
+     }
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
     }
-}
-
-//static
-int TrackCollection::likeCompareLatinLow(
-        QString* pattern,
-        QString* string,
-        const QChar esc) {
-    makeLatinLow(pattern->data(), pattern->length());
-    makeLatinLow(string->data(), string->length());
-    //qDebug() << *pattern << *string;
-    return likeCompareInner(pattern->data(), pattern->length(), string->data(), string->length(), esc);
-}
-
-// Compare two strings for equality where the first string is
-// a "LIKE" expression. Return true (1) if they are the same and
-// false (0) if they are different.
-// This is the original sqlite3 icuLikeCompare rewritten for QChar
-//static
-int TrackCollection::likeCompareInner(
-  const QChar* pattern, // LIKE pattern
-  int patternSize,
-  const QChar* string, // The string to compare against
-  int stringSize,
-  const QChar esc // The escape character
-) {
-    static const QChar MATCH_ONE = QChar('_');
-    static const QChar MATCH_ALL = QChar('%');
-
-    int iPattern = 0; // Current index in pattern
-    int iString = 0; // Current index in string
-
-    bool prevEscape = false; // True if the previous character was uEsc
-
-    while (iPattern < patternSize) {
-        // Read (and consume) the next character from the input pattern.
-        QChar uPattern = pattern[iPattern++];
-        // There are now 4 possibilities:
-        // 1. uPattern is an unescaped match-all character "%",
-        // 2. uPattern is an unescaped match-one character "_",
-        // 3. uPattern is an unescaped escape character, or
-        // 4. uPattern is to be handled as an ordinary character
-
-        if (!prevEscape && uPattern == MATCH_ALL) {
-            // Case 1.
-            QChar c;
-
-            // Skip any MATCH_ALL or MATCH_ONE characters that follow a
-            // MATCH_ALL. For each MATCH_ONE, skip one character in the
-            // test string.
-
-            if (iPattern >= patternSize) {
-                // Tailing %
-                return 1;
-            }
-
-            while ((c = pattern[iPattern]) == MATCH_ALL || c == MATCH_ONE) {
-                if (c == MATCH_ONE) {
-                    if (++iString == stringSize) {
-                        return 0;
-                    }
-                }
-                if (++iPattern == patternSize) {
-                    // Two or more tailing %
-                    return 1;
-                }
-            }
-
-            while (iString < stringSize) {
-                if (likeCompareInner(&pattern[iPattern], patternSize - iPattern,
-                                &string[iString], stringSize - iString, esc)) {
-                    return 1;
-                }
-                iString++;
-            }
-            return 0;
-        } else if (!prevEscape && uPattern == MATCH_ONE) {
-            // Case 2.
-            if (++iString == stringSize) {
-                return 0;
-            }
-        } else if (!prevEscape && uPattern == esc) {
-            // Case 3.
-            prevEscape = 1;
-        } else {
-            // Case 4.
-            if (iString == stringSize) {
-                return 0;
-            }
-            QChar uString = string[iString++];
-            if (uString != uPattern) {
-                return 0;
-            }
-            prevEscape = false;
-        }
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.hideTracks(trackIds)) {
+        return false;
     }
-    return iString == stringSize;
-}
-
-
-/*
-static int
-likeCompare(nsAString::const_iterator aPatternItr,
-            nsAString::const_iterator aPatternEnd,
-            nsAString::const_iterator aStringItr,
-            nsAString::const_iterator aStringEnd,
-            PRUnichar aEscape)
-{
-  const PRUnichar MATCH_ALL('%');
-  const PRUnichar MATCH_ONE('_');
-
-  PRBool lastWasEscape = PR_FALSE;
-  while (aPatternItr != aPatternEnd) {
-
-* What we do in here is take a look at each character from the input
-* pattern, and do something with it. There are 4 possibilities:
-* 1) character is an un-escaped match-all character
-* 2) character is an un-escaped match-one character
-* 3) character is an un-escaped escape character
-* 4) character is not any of the above
-
-    if (!lastWasEscape && *aPatternItr == MATCH_ALL) {
-      // CASE 1
-
-* Now we need to skip any MATCH_ALL or MATCH_ONE characters that follow a
-* MATCH_ALL character. For each MATCH_ONE character, skip one character
-* in the pattern string.
-
-      while (*aPatternItr == MATCH_ALL || *aPatternItr == MATCH_ONE) {
-        if (*aPatternItr == MATCH_ONE) {
-          // If we've hit the end of the string we are testing, no match
-          if (aStringItr == aStringEnd)
-            return 0;
-          aStringItr++;
-        }
-        aPatternItr++;
-      }
-
-      // If we've hit the end of the pattern string, match
-      if (aPatternItr == aPatternEnd)
-        return 1;
-
-      while (aStringItr != aStringEnd) {
-        if (likeCompare(aPatternItr, aPatternEnd, aStringItr, aStringEnd, aEscape)) {
-          // we've hit a match, so indicate this
-          return 1;
-        }
-        aStringItr++;
-      }
-
-      // No match
-      return 0;
-    } else if (!lastWasEscape && *aPatternItr == MATCH_ONE) {
-      // CASE 2
-      if (aStringItr == aStringEnd) {
-        // If we've hit the end of the string we are testing, no match
-        return 0;
-      }
-      aStringItr++;
-      lastWasEscape = PR_FALSE;
-    } else if (!lastWasEscape && *aPatternItr == aEscape) {
-      // CASE 3
-      lastWasEscape = PR_TRUE;
-    } else {
-      // CASE 4
-      if (ToUpperCase(*aStringItr) != ToUpperCase(*aPatternItr)) {
-        // If we've hit a point where the strings don't match, there is no match
-        return 0;
-      }
-      aStringItr++;
-      lastWasEscape = PR_FALSE;
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
     }
 
-    aPatternItr++;
-  }
+    m_playlistDao.removeTracksFromPlaylists(trackIds);
 
-  return aStringItr == aStringEnd;
+    // Post-processing
+    // TODO(XXX): Move signals from TrackDAO to TrackCollection
+    m_trackDao.afterHidingTracks(trackIds);
+    QSet<CrateId> modifiedCrateSummaries(
+            m_crates.collectCrateIdsOfTracks(trackIds));
+
+    // Emit signal(s)
+    // TODO(XXX): Emit signals here instead of from DAOs
+    emit crateSummaryChanged(modifiedCrateSummaries);
+
+    return true;
 }
 
+void TrackCollection::hideAllTracks(const QDir& rootDir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-.
-void
-StorageUnicodeFunctions::likeFunction(sqlite3_context *p,
-                                      int aArgc,
-                                      sqlite3_value **aArgv)
-{
-  NS_ASSERTION(2 == aArgc || 3 == aArgc, "Invalid number of arguments!");
-
-  if (sqlite3_value_bytes(aArgv[0]) > SQLITE_MAX_LIKE_PATTERN_LENGTH) {
-    sqlite3_result_error(p, "LIKE or GLOB pattern too complex", SQLITE_TOOBIG);
-    return;
-  }
-
-  if (!sqlite3_value_text16(aArgv[0]) || !sqlite3_value_text16(aArgv[1]))
-    return;
-
-  nsDependentString A(static_cast<const PRUnichar *>(sqlite3_value_text16(aArgv[1])));
-  nsDependentString B(static_cast<const PRUnichar *>(sqlite3_value_text16(aArgv[0])));
-  NS_ASSERTION(!B.IsEmpty(), "LIKE string must not be null!");
-
-  PRUnichar E = 0;
-  if (3 == aArgc)
-    E = static_cast<const PRUnichar *>(sqlite3_value_text16(aArgv[2]))[0];
-
-  nsAString::const_iterator itrString, endString;
-  A.BeginReading(itrString);
-  A.EndReading(endString);
-  nsAString::const_iterator itrPattern, endPattern;
-  B.BeginReading(itrPattern);
-  B.EndReading(endPattern);
-  sqlite3_result_int(p, likeCompare(itrPattern, endPattern,
-                                    itrString, endString, E));
+    m_trackDao.hideAllTracks(rootDir);
 }
-*/
-#endif
+
+bool TrackCollection::unhideTracks(const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.unhideTracks(trackIds)) {
+        return false;
+    }
+
+    // Post-processing
+    // TODO(XXX): Move signals from TrackDAO to TrackCollection
+    // to update BaseTrackCache
+    m_trackDao.afterUnhidingTracks(trackIds);
+
+    // Emit signal(s)
+    // TODO(XXX): Emit signals here instead of from DAOs
+    // To update labels of CrateFeature, because unhiding might make a
+    // crate track visible again.
+    QSet<CrateId> modifiedCrateSummaries =
+            m_crates.collectCrateIdsOfTracks(trackIds);
+    emit crateSummaryChanged(modifiedCrateSummaries);
+
+    return true;
+}
+
+bool TrackCollection::purgeTracks(
+        const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_trackDao.onPurgingTracks(trackIds)) {
+        return false;
+    }
+    // Collect crates of tracks that will be purged before actually purging
+    // them within the same transactions. Those tracks will be removed from
+    // all crates on purging.
+    QSet<CrateId> modifiedCrateSummaries(
+            m_crates.collectCrateIdsOfTracks(trackIds));
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onPurgingTracks(trackIds)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+    // TODO(XXX): Move reversible actions inside transaction
+    m_cueDao.deleteCuesForTracks(trackIds);
+    m_playlistDao.removeTracksFromPlaylists(trackIds);
+    m_analysisDao.deleteAnalyses(trackIds);
+
+    // Post-processing
+    // TODO(XXX): Move signals from TrackDAO to TrackCollection
+    m_trackDao.afterPurgingTracks(trackIds);
+
+    // Emit signal(s)
+    // TODO(XXX): Emit signals here instead of from DAOs
+    emit crateSummaryChanged(modifiedCrateSummaries);
+
+    return true;
+}
+
+bool TrackCollection::purgeAllTracks(
+        const QDir& rootDir) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    QList<TrackRef> trackRefs = m_trackDao.getAllTrackRefs(rootDir);
+    QList<TrackId> trackIds;
+    trackIds.reserve(trackRefs.size());
+    for (const auto& trackRef : trackRefs) {
+        DEBUG_ASSERT(trackRef.hasId());
+        trackIds.append(trackRef.getId());
+    }
+    return purgeTracks(trackIds);
+}
+
+bool TrackCollection::insertCrate(
+        const Crate& crate,
+        CrateId* pCrateId) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    CrateId crateId;
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onInsertingCrate(crate, &crateId)) {
+        return false;
+    }
+    DEBUG_ASSERT(crateId.isValid());
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit crateInserted(crateId);
+
+    if (pCrateId != nullptr) {
+        *pCrateId = crateId;
+    }
+    return true;
+}
+
+bool TrackCollection::updateCrate(
+        const Crate& crate) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onUpdatingCrate(crate)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit crateUpdated(crate.getId());
+
+    return true;
+}
+
+bool TrackCollection::deleteCrate(
+        CrateId crateId) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onDeletingCrate(crateId)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit crateDeleted(crateId);
+
+    return true;
+}
+
+bool TrackCollection::addCrateTracks(
+        CrateId crateId,
+        const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onAddingCrateTracks(crateId, trackIds)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit crateTracksChanged(crateId, trackIds, QList<TrackId>());
+
+    return true;
+}
+
+bool TrackCollection::removeCrateTracks(
+        CrateId crateId,
+        const QList<TrackId>& trackIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    // Transactional
+    SqlTransaction transaction(m_database);
+    VERIFY_OR_DEBUG_ASSERT(transaction) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_crates.onRemovingCrateTracks(crateId, trackIds)) {
+        return false;
+    }
+    VERIFY_OR_DEBUG_ASSERT(transaction.commit()) {
+        return false;
+    }
+
+    // Emit signals
+    emit crateTracksChanged(crateId, QList<TrackId>(), trackIds);
+
+    return true;
+}
+
+bool TrackCollection::updateAutoDjCrate(
+        CrateId crateId,
+        bool isAutoDjSource) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    Crate crate;
+    VERIFY_OR_DEBUG_ASSERT(crates().readCrateById(crateId, &crate)) {
+        return false; // inexistent or failure
+    }
+    if (crate.isAutoDjSource() == isAutoDjSource) {
+        return false; // nothing to do
+    }
+    crate.setAutoDjSource(isAutoDjSource);
+    return updateCrate(crate);
+}
+
+void TrackCollection::saveTrack(Track* pTrack) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    m_trackDao.saveTrack(pTrack);
+}
+
+TrackPointer TrackCollection::getTrackById(
+        TrackId trackId) const {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    return m_trackDao.getTrackById(trackId);
+}
+
+TrackPointer TrackCollection::getTrackByRef(
+        const TrackRef& trackRef) const {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    return m_trackDao.getTrackByRef(trackRef);
+}
+
+TrackId TrackCollection::getTrackIdByRef(
+        const TrackRef& trackRef) const {
+    return m_trackDao.getTrackIdByRef(trackRef);
+}
+
+TrackPointer TrackCollection::getOrAddTrack(
+        const TrackRef& trackRef,
+        bool* pAlreadyInLibrary) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    return m_trackDao.getOrAddTrack(trackRef, pAlreadyInLibrary);
+}
+
+TrackId TrackCollection::addTrack(
+        const TrackPointer& pTrack,
+        bool unremove) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+
+    m_trackDao.addTracksPrepare();
+    const auto trackId = m_trackDao.addTracksAddTrack(pTrack, unremove);
+    m_trackDao.addTracksFinish(!trackId.isValid());
+    return trackId;
+}

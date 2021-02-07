@@ -1,29 +1,15 @@
 #include <QtDebug>
+#include <QCryptographicHash>
 
 #include "skin/pixmapsource.h"
+#include "util/assert.h"
 
-PixmapSource::PixmapSource():
-    m_eType(SVG) {
+PixmapSource::PixmapSource()
+     : m_eType(SVG) {
 }
 
-PixmapSource::PixmapSource(const QString& filepath) {
-    setPath(filepath);
-}
-
-PixmapSource::~PixmapSource() {
-}
-
-QByteArray PixmapSource::getData() const {
-    return m_baData;
-}
-
-QString PixmapSource::getPath() const {
-    return m_path;
-}
-
-void PixmapSource::setPath(const QString& newPath) {
-    m_baData.truncate(0);
-    m_path = newPath;
+PixmapSource::PixmapSource(const QString& filepath)
+    : m_path(filepath) {
     if (m_path.endsWith(".svg", Qt::CaseInsensitive)) {
         m_eType = SVG;
     } else {
@@ -31,8 +17,16 @@ void PixmapSource::setPath(const QString& newPath) {
     }
 }
 
+const QByteArray& PixmapSource::getSvgSourceData() const {
+    return m_svgSourceData;
+}
+
+const QString& PixmapSource::getPath() const {
+    return m_path;
+}
+
 bool PixmapSource::isEmpty() const {
-    return m_path.isEmpty() && m_baData.isEmpty() ;
+    return m_path.isEmpty() && m_svgSourceData.isEmpty() ;
 }
 
 bool PixmapSource::isSVG() const {
@@ -44,16 +38,14 @@ bool PixmapSource::isBitmap() const {
 }
 
 void PixmapSource::setSVG(const QByteArray& content) {
-    m_baData = content;
+    m_svgSourceData = content;
     m_eType = SVG;
 }
 
 QString PixmapSource::getId() const {
-    quint16 checksum;
-    if (m_baData.isEmpty()) {
-        checksum = qChecksum(m_path.toAscii().constData(), m_path.length());
-    } else {
-        checksum = qChecksum(m_baData.constData(), m_baData.length());
+    if (m_svgSourceData.isEmpty()) {
+        DEBUG_ASSERT(!m_path.isEmpty());
+        return m_path;
     }
-    return m_path + QString::number(checksum);
+    return QCryptographicHash::hash(m_svgSourceData, QCryptographicHash::Sha1).toHex();
 }

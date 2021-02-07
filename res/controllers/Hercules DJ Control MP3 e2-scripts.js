@@ -10,7 +10,7 @@ function HerculesMP3e2() {}
 
 // Control schema: http://blog.ebruni.it/blog/wp-content/uploads/2010/01/Hercules-mp3e2-schema-comandi.jpg
 // Image: http://www.hablarcom.com.br/Imagens/arquivos/jptech/DJ_control_MP3_2_frente.jpg
-// Explaination: http://www.mixxx.org/wiki/doku.php/hercules_dj_control_mp3_e2
+// Explanation: http://www.mixxx.org/wiki/doku.php/hercules_dj_control_mp3_e2
 
 // Number of the standard RPM value. Lower values increase de sensitivity as the really records.
 var standardRpm = 33.33;
@@ -53,42 +53,42 @@ var wheelMove = [0, 0, 0, 0];
 // to be used as a reference of MP3e2 MIDI controls
 /*HerculesMP3e2.controls = {
     "inputs": {
-	0x11: { "channel": 1, "name": "loadA", 		"type": "button" },
-	0x25: { "channel": 2, "name": "loadB", 		"type": "button" },
-	0x0B: { "channel": 1, "name": "pitchbend+", 	"type": "button" },
-	0x0A: { "channel": 1, "name": "pitchbend-", 	"type": "button" },
-	0x1F: { "channel": 2, "name": "pitchbend+", 	"type": "button" },
-	0x1E: { "channel": 2, "name": "pitchbend-", 	"type": "button" },
-	0x12: { "channel": 1, "name": "sync", 			"type": "button" },
-	0x26: { "channel": 2, "name": "sync", 			"type": "button" },
-	0x13: { "channel": 1, "name": "mastertempo", "type": "button" },
-	0x27: { "channel": 2, "name": "mastertempo", "type": "button" },
-	0x0F: { "channel": 1, "name": "play", 			"type": "button" },
-	0x23: { "channel": 2, "name": "play", 			"type": "button" },
-	0x0E: { "channel": 1, "name": "cue", 			"type": "button" },
-	0x22: { "channel": 2, "name": "cue", 			"type": "button" },
-	0x2D: { "channel": 1, "name": "scratch", 		"type": "button" },
-	0x2E: { "channel": 1, "name": "automix", 		"type": "button" },
-	0x01: { "channel": 1, "name": "K1", 			"type": "button" },
-	0x02: { "channel": 1, "name": "K2", 			"type": "button" },
-	0x03: { "channel": 1, "name": "K3", 			"type": "button" },
-	0x04: { "channel": 1, "name": "K4", 			"type": "button" },
-	0x05: { "channel": 1, "name": "K5", 			"type": "button" },
-	0x06: { "channel": 1, "name": "K6", 			"type": "button" },
-	0x07: { "channel": 1, "name": "K7", 			"type": "button" },
-	0x08: { "channel": 1, "name": "K8", 			"type": "button" },
-	0x15: { "channel": 2, "name": "K1", 			"type": "button" },
-	0x16: { "channel": 2, "name": "K2", 			"type": "button" },
-	0x17: { "channel": 2, "name": "K3", 			"type": "button" },
-	0x18: { "channel": 2, "name": "K4", 			"type": "button" },
-	0x19: { "channel": 2, "name": "K5", 			"type": "button" },
-	0x1A: { "channel": 2, "name": "K6", 			"type": "button" },
-	0x1B: { "channel": 2, "name": "K7", 			"type": "button" },
-	0x1C: { "channel": 2, "name": "K8", 			"type": "button" },
-	0x30: { "channel": 1, "name": "wheel", 		"type": "pot" },
-	0x31: { "channel": 2, "name": "wheel", 		"type": "pot" },
-	0x2C: { "channel": 1, "name": "folder", 		"type": "button" },
-	0x2B: { "channel": 1, "name": "files", 		"type": "button" },
+    0x11: { "channel": 1, "name": "loadA",         "type": "button" },
+    0x25: { "channel": 2, "name": "loadB",         "type": "button" },
+    0x0B: { "channel": 1, "name": "pitchbend+",     "type": "button" },
+    0x0A: { "channel": 1, "name": "pitchbend-",     "type": "button" },
+    0x1F: { "channel": 2, "name": "pitchbend+",     "type": "button" },
+    0x1E: { "channel": 2, "name": "pitchbend-",     "type": "button" },
+    0x12: { "channel": 1, "name": "sync",             "type": "button" },
+    0x26: { "channel": 2, "name": "sync",             "type": "button" },
+    0x13: { "channel": 1, "name": "mastertempo", "type": "button" },
+    0x27: { "channel": 2, "name": "mastertempo", "type": "button" },
+    0x0F: { "channel": 1, "name": "play",             "type": "button" },
+    0x23: { "channel": 2, "name": "play",             "type": "button" },
+    0x0E: { "channel": 1, "name": "cue",             "type": "button" },
+    0x22: { "channel": 2, "name": "cue",             "type": "button" },
+    0x2D: { "channel": 1, "name": "scratch",         "type": "button" },
+    0x2E: { "channel": 1, "name": "automix",         "type": "button" },
+    0x01: { "channel": 1, "name": "K1",             "type": "button" },
+    0x02: { "channel": 1, "name": "K2",             "type": "button" },
+    0x03: { "channel": 1, "name": "K3",             "type": "button" },
+    0x04: { "channel": 1, "name": "K4",             "type": "button" },
+    0x05: { "channel": 1, "name": "K5",             "type": "button" },
+    0x06: { "channel": 1, "name": "K6",             "type": "button" },
+    0x07: { "channel": 1, "name": "K7",             "type": "button" },
+    0x08: { "channel": 1, "name": "K8",             "type": "button" },
+    0x15: { "channel": 2, "name": "K1",             "type": "button" },
+    0x16: { "channel": 2, "name": "K2",             "type": "button" },
+    0x17: { "channel": 2, "name": "K3",             "type": "button" },
+    0x18: { "channel": 2, "name": "K4",             "type": "button" },
+    0x19: { "channel": 2, "name": "K5",             "type": "button" },
+    0x1A: { "channel": 2, "name": "K6",             "type": "button" },
+    0x1B: { "channel": 2, "name": "K7",             "type": "button" },
+    0x1C: { "channel": 2, "name": "K8",             "type": "button" },
+    0x30: { "channel": 1, "name": "wheel",         "type": "pot" },
+    0x31: { "channel": 2, "name": "wheel",         "type": "pot" },
+    0x2C: { "channel": 1, "name": "folder",         "type": "button" },
+    0x2B: { "channel": 1, "name": "files",         "type": "button" },
     },
 }; */
 
@@ -129,7 +129,7 @@ HerculesMP3e2.connectControl = function(deck, remove) {
 };
 
 // This function prints its argument values for debug purposes
-// Use it like this : 	engine.connectControl("[Channel1]", "volume", "HerculesMP3e2.debugControl");
+// Use it like this :     engine.connectControl("[Channel1]", "volume", "HerculesMP3e2.debugControl");
 HerculesMP3e2.debugControl = function(value, group, control) {
     print("*** Received control: value=" + value + ", group=" + group + ", control=" + control + ";");
 };
@@ -202,9 +202,9 @@ HerculesMP3e2.shutdown = function() {
 };
 
 HerculesMP3e2.automix = function(midino, control, value, status, group) {
-    // SHIFT BUTTON	
+    // SHIFT BUTTON
     // The "Automix" button is used like a shift button. When this is hold
-    //	down, many commands of the console has another functions
+    //    down, many commands of the console has another functions
 
     // Button pressed
     if (value) {
@@ -215,7 +215,7 @@ HerculesMP3e2.automix = function(midino, control, value, status, group) {
         midi.sendShortMsg(0x90, 31, 0x7F); // Pitchbend + DB
         midi.sendShortMsg(0x90, 10, 0x7F); // Pitchbend - DA
         midi.sendShortMsg(0x90, 11, 0x7F); // Pitchbend + DA
-        midi.sendShortMsg(0x90, 18, 0x7F); // Sync DA 
+        midi.sendShortMsg(0x90, 18, 0x7F); // Sync DA
         midi.sendShortMsg(0x90, 38, 0x7F); // Sync DB
     }
     // Button released
@@ -224,12 +224,12 @@ HerculesMP3e2.automix = function(midino, control, value, status, group) {
             superButtonHold = 0;
         }
         automixPressed = false;
-        // Switch-off some LEDs	
+        // Switch-off some LEDs
         midi.sendShortMsg(0x90, 30, 0x00); // Pitchbend - DB
         midi.sendShortMsg(0x90, 31, 0x00); // Pitchbend + DB
         midi.sendShortMsg(0x90, 10, 0x00); // Pitchbend - DA
         midi.sendShortMsg(0x90, 11, 0x00); // Pitchbend + DA
-        midi.sendShortMsg(0x90, 18, 0x00); // Sync DA 
+        midi.sendShortMsg(0x90, 18, 0x00); // Sync DA
         midi.sendShortMsg(0x90, 38, 0x00); // Sync DB
     }
 };
@@ -338,33 +338,33 @@ HerculesMP3e2.scroll = function(midino, control, value, status, group) {
 
 HerculesMP3e2.holdTimer = function (group, first, second) {
 
-	holdButtonFlag = 1;
-	engine.setValue(group, first, 0);	// Set "Off" the first function
-	engine.setValue(group, second, 1);	// Set "On" the second function
+    holdButtonFlag = 1;
+    engine.setValue(group, first, 0);    // Set "Off" the first function
+    engine.setValue(group, second, 1);    // Set "On" the second function
 };
 
 
 HerculesMP3e2.holdButton = function (group, value, first, second) {
-	// This feature allows you to perform a different function if a button is 
-	// pressed for 2 seconds. When the button is pressed, the first function is
-	// performed. If the button is hold down for 2 seconds, the second function
-	// is performed and the first function is disables.
-	
-	if (value) {
-		engine.setValue(group, first, 1);	// Set "On" the first function
-		holdTimerID = engine.beginTimer(2000, "HerculesMP3e2.holdTimer(\""+group+"\", \""+first+"\", \""+second+"\")", true);
-		}
-	else {
-		if (holdButtonFlag) {
-			engine.setValue(group, second, 0);	// Set "Off" the second function
-			holdButtonFlag = 0;
-		}
-		else {
-			engine.stopTimer(holdTimerID);
-			engine.setValue(group, first, 0);	// Set "Off" the first function
-		}
-	}
-}; 
+    // This feature allows you to perform a different function if a button is
+    // pressed for 2 seconds. When the button is pressed, the first function is
+    // performed. If the button is hold down for 2 seconds, the second function
+    // is performed and the first function is disables.
+
+    if (value) {
+        engine.setValue(group, first, 1);    // Set "On" the first function
+        holdTimerID = engine.beginTimer(2000, "HerculesMP3e2.holdTimer(\""+group+"\", \""+first+"\", \""+second+"\")", true);
+        }
+    else {
+        if (holdButtonFlag) {
+            engine.setValue(group, second, 0);    // Set "Off" the second function
+            holdButtonFlag = 0;
+        }
+        else {
+            engine.stopTimer(holdTimerID);
+            engine.setValue(group, first, 0);    // Set "Off" the first function
+        }
+    }
+};
 
 */
 
@@ -409,7 +409,7 @@ HerculesMP3e2.keyButton = function(midino, control, value, status, group) {
                 engine.setValue(deck, "beatloop_16_toggle", 1);
             } else if (superButtonHold == 1 && value) {
                 engine.setValue(deck, "beatloop_2_toggle", 1);
-            } else if (value) { 
+            } else if (value) {
                 engine.setValue(deck, "beatloop_4_toggle", 1);
             }
             break;
@@ -465,7 +465,7 @@ HerculesMP3e2.keyButton = function(midino, control, value, status, group) {
 
 HerculesMP3e2.pitch = function(midino, control, value, status, group) {
     // Simple: pitch slider
-    // Shifted: Headphone volume and pre/main (this are 4-deck independant)
+    // Shifted: Headphone volume and pre/main (these are 4-deck independent)
     // Supershifted: QuickEffect Filter knob
 
     var sign;
@@ -568,7 +568,7 @@ HerculesMP3e2.pitchbend = function(midino, control, value, status, group) {
 HerculesMP3e2.cue = function(channel, control, value, status, group) {
     var deck = HerculesMP3e2.switchDeck(group);
 
-    // Don't set Cue accidentaly at the end of the song
+    // Don't set Cue accidentally at the end of the song
     if (engine.getValue(deck, "playposition") <= 0.97) {
         engine.setValue(deck, "cue_default", value ? 1 : 0);
     } else {
@@ -585,14 +585,14 @@ HerculesMP3e2.scratch = function(midino, control, value, status, group) {
             midi.sendShortMsg(0x90, 79, 0x7F); // Blink Pitchbend + DB
             midi.sendShortMsg(0x90, 58, 0x7F); // Blink Pitchbend - DA
             midi.sendShortMsg(0x90, 59, 0x7F); // Blink Pitchbend + DA
-            midi.sendShortMsg(0x90, 66, 0x7F); // Blink Sync DA 
+            midi.sendShortMsg(0x90, 66, 0x7F); // Blink Sync DA
             midi.sendShortMsg(0x90, 86, 0x7F); // Blink Sync DB
         } else {
             midi.sendShortMsg(0x90, 78, 0x00); // Blink Pitchbend - DB
             midi.sendShortMsg(0x90, 79, 0x00); // Blink Pitchbend + DB
             midi.sendShortMsg(0x90, 58, 0x00); // Blink Pitchbend - DA
             midi.sendShortMsg(0x90, 59, 0x00); // Blink Pitchbend + DA
-            midi.sendShortMsg(0x90, 66, 0x00); // Blink Sync DA 
+            midi.sendShortMsg(0x90, 66, 0x00); // Blink Sync DA
             midi.sendShortMsg(0x90, 86, 0x00); // Blink Sync DB
             if (automixPressed) {
                 superButtonHold = 1;
@@ -604,7 +604,7 @@ HerculesMP3e2.scratch = function(midino, control, value, status, group) {
         // Normal scratch function
         if (value) {
             if (scratchMode === 0) {
-                // Enable the scratch mode on the corrisponding deck and start the timer
+                // Enable the scratch mode on the corresponding deck and start the timer
                 scratchMode = 1;
                 scratchTimer = engine.beginTimer(scratchResetTime, "HerculesMP3e2.wheelOnOff()");
                 midi.sendShortMsg(0x90, 45, 0x7F); // Switch-on the Scratch led
@@ -613,7 +613,7 @@ HerculesMP3e2.scratch = function(midino, control, value, status, group) {
                 engine.setValue("[Channel3]", "keylock", 0);
                 engine.setValue("[Channel4]", "keylock", 0);
             } else {
-                // Disable the scratch mode on the corrisponding deck and stop the timer
+                // Disable the scratch mode on the corresponding deck and stop the timer
                 scratchMode = 0;
                 engine.stopTimer(scratchTimer);
                 midi.sendShortMsg(0x90, 45, 0x00); // Switch-off the Scratch led
@@ -641,7 +641,7 @@ HerculesMP3e2.sync = function(midino, control, value, status, group) {
 };
 
 
-// This function is called every "scratchResetTime" seconds and checks if the wheel was moved in the previous interval 
+// This function is called every "scratchResetTime" seconds and checks if the wheel was moved in the previous interval
 // (every interval last "scratchResetTime" seconds). If the wheel was moved enables the scratch mode, else disables it.
 // In this way I have made a simple workaround to simulate the touch-sensitivity of the other controllers.
 
@@ -736,20 +736,20 @@ HerculesMP3e2.syncmode = function(value, group, control) {
     // currently (2015-05-20) explicit master mode is not supported.
     // Switched to sync_enabled (binary) control
 
-    /*	if (value == 2) //Master => Blink
-    	{
-    		if (((group == "[Channel1]") && (deckA == 1)) || ((group == "[Channel3]") && (deckA == 3)))
-    		{
-    			midi.sendShortMsg(0x90,19,0x00); //fixed off
-    			midi.sendShortMsg(0x90,67,0x7F); //blink on
-    		}
-    		else if (((group == "[Channel2]") && (deckB == 2)) || ((group == "[Channel4]") && (deckB == 4)))
-    		{
-    			midi.sendShortMsg(0x90,39,0x00); //fixed off
-    			midi.sendShortMsg(0x90,87,0x7F); //blink on
-    		}
-    	}
-    	else */
+    /*    if (value == 2) //Master => Blink
+        {
+            if (((group == "[Channel1]") && (deckA == 1)) || ((group == "[Channel3]") && (deckA == 3)))
+            {
+                midi.sendShortMsg(0x90,19,0x00); //fixed off
+                midi.sendShortMsg(0x90,67,0x7F); //blink on
+            }
+            else if (((group == "[Channel2]") && (deckB == 2)) || ((group == "[Channel4]") && (deckB == 4)))
+            {
+                midi.sendShortMsg(0x90,39,0x00); //fixed off
+                midi.sendShortMsg(0x90,87,0x7F); //blink on
+            }
+        }
+        else */
 
     if (value == 1) { // Sync_enabled => fixed
         if (((group == "[Channel1]") && (deckA == 1)) || ((group == "[Channel3]") && (deckA == 3))) {
@@ -968,7 +968,7 @@ HerculesMP3e2.loopEnabledLeds = function(value, group, control) {
 
 HerculesMP3e2.selectTrack = function(midino, control, value, status, group) {
     //normal: goes 1 track down
-    //shift: goes 1 track up 
+    //shift: goes 1 track up
     if (superButtonHold >= 1 && value) {
         engine.setValue("[Playlist]", "SelectPrevTrack", 1);
     } else if (value) {

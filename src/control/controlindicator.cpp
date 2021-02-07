@@ -1,17 +1,21 @@
 #include "control/controlindicator.h"
+
 #include "control/controlproxy.h"
+#include "moc_controlindicator.cpp"
 #include "util/math.h"
 
-ControlIndicator::ControlIndicator(ConfigKey key)
+ControlIndicator::ControlIndicator(const ConfigKey& key)
         : ControlObject(key, false),
           m_blinkValue(OFF),
           m_nextSwitchTime(0.0) {
     // Tick time in audio buffer resolution
     m_pCOTGuiTickTime = new ControlProxy("[Master]", "guiTickTime", this);
     m_pCOTGuiTick50ms = new ControlProxy("[Master]", "guiTick50ms", this);
-    m_pCOTGuiTick50ms->connectValueChanged(SLOT(slotGuiTick50ms(double)));
-    connect(this, SIGNAL(blinkValueChanged()),
-            this, SLOT(slotBlinkValueChanged()));
+    m_pCOTGuiTick50ms->connectValueChanged(this, &ControlIndicator::slotGuiTick50ms);
+    connect(this,
+            &ControlIndicator::blinkValueChanged,
+            this,
+            &ControlIndicator::slotBlinkValueChanged);
 }
 
 ControlIndicator::~ControlIndicator() {
@@ -20,7 +24,7 @@ ControlIndicator::~ControlIndicator() {
 void ControlIndicator::setBlinkValue(enum BlinkValue bv) {
     if (m_blinkValue != bv) {
         m_blinkValue = bv; // must be set at first, to avoid timer toggle
-        emit(blinkValueChanged());
+        emit blinkValueChanged();
     }
 }
 
@@ -69,15 +73,15 @@ void ControlIndicator::slotBlinkValueChanged() {
 }
 
 void ControlIndicator::toggle(double duration) {
-	double tickTime = m_pCOTGuiTickTime->get();
-	double toggles = floor(tickTime / duration);
-	bool phase = fmod(toggles, 2) >= 1;
-	bool val = toBool();
-	if(val != phase) {
-		// Out of phase, wait until we are in phase
-		m_nextSwitchTime = (toggles + 2) * duration;
-	} else {
-		m_nextSwitchTime = (toggles + 1) * duration;
-	}
-	set(val ? 0.0 : 1.0);
+    double tickTime = m_pCOTGuiTickTime->get();
+    double toggles = floor(tickTime / duration);
+    bool phase = fmod(toggles, 2) >= 1;
+    bool val = toBool();
+    if(val != phase) {
+        // Out of phase, wait until we are in phase
+        m_nextSwitchTime = (toggles + 2) * duration;
+    } else {
+        m_nextSwitchTime = (toggles + 1) * duration;
+    }
+    set(val ? 0.0 : 1.0);
 }

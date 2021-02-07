@@ -1,23 +1,4 @@
-/***************************************************************************
-                     encodervorbis.h  -  vorbis encoder for mixxx
-                             -------------------
-    copyright            : (C) 2012-2013 by Tuukka Pasanen
-                           (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (broadcast and recording fixes)
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENCODERFFMPEGCORE_H
-#define ENCODERFFMPEGCORE_H
+#pragma once
 
 #include <encoder/encoderffmpegresample.h>
 
@@ -33,22 +14,25 @@ extern "C" {
 #include <libavutil/avutil.h>
 #endif
 
-// Compability
+// Compatibility
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
 }
 
-#include <QByteArray>
 #include <QBuffer>
-
+#include <QByteArray>
 #include <QLibrary>
 
-#include "util/types.h"
 #include "encoder/encoder.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "util/types.h"
 
 class EncoderCallback;
 
+/// FFmpeg encoder class
+///
+/// Supports what FFmpeg is compiled to support and provides the same
+/// interface for all codecs.
 class EncoderFfmpegCore : public Encoder {
 public:
 #if LIBAVCODEC_VERSION_INT > 3544932
@@ -59,10 +43,11 @@ public:
                       CodecID codec = CODEC_ID_MP2);
 #endif
     ~EncoderFfmpegCore();
-    int initEncoder(int bitrate, int samplerate);
-    void encodeBuffer(const CSAMPLE *samples, const int size);
-    void updateMetaData(char* artist, char* title, char* album);
-    void flush();
+    int initEncoder(int samplerate, QString errorMessage) override;
+    void encodeBuffer(const CSAMPLE *samples, const int size) override;
+    void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
+    void flush() override;
+    void setEncoderSettings(const EncoderSettings& settings) override;
 protected:
     unsigned int reSample(AVFrame *inframe);
 
@@ -73,7 +58,7 @@ private:
     //Call this method in conjunction with broadcast streaming
     int writeAudioFrame(AVFormatContext *oc, AVStream *st);
     void closeAudio(AVStream *st);
-    void openAudio(AVCodec *codec, AVStream *st);
+    int openAudio(AVCodec *codec, AVStream *st);
 #if LIBAVCODEC_VERSION_INT > 3544932
     AVStream *addStream(AVFormatContext *oc, AVCodec **codec,
                         enum AVCodecID codec_id);
@@ -86,9 +71,9 @@ private:
     EncoderCallback* m_pCallback;
     TrackPointer m_pMetaData;
 
-    char *m_strMetaDataTitle;
-    char *m_strMetaDataArtist;
-    char *m_strMetaDataAlbum;
+    QString m_strMetaDataTitle;
+    QString m_strMetaDataArtist;
+    QString m_strMetaDataAlbum;
     QFile m_pFile;
 
     QByteArray m_strReadByteArray;
@@ -121,5 +106,3 @@ private:
     EncoderFfmpegResample *m_pResample;
     AVStream *m_pStream;
 };
-
-#endif

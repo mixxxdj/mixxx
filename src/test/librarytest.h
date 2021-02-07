@@ -1,25 +1,32 @@
-#ifndef LIBRARYTEST_H
-#define LIBRARYTEST_H
+#pragma once
 
-#include <QDir>
-#include <QScopedPointer>
+#include <memory>
 
-#include "test/mixxxtest.h"
+#include "control/controlobject.h"
+#include "database/mixxxdb.h"
 #include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "test/mixxxdbtest.h"
+#include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
 
-class LibraryTest : public MixxxTest {
+class LibraryTest : public MixxxDbTest {
   protected:
-    LibraryTest() {
-        m_pTrackCollection.reset(new TrackCollection(config()));
+    LibraryTest();
+    ~LibraryTest() override = default;
+
+    TrackCollectionManager* trackCollections() const {
+        return m_pTrackCollectionManager.get();
     }
 
-    TrackCollection* collection() {
-        return m_pTrackCollection.data();
+    TrackCollection* internalCollection() const {
+        return trackCollections()->internalCollection();
     }
+
+    TrackPointer getOrAddTrackByLocation(
+            const QString& trackLocation) const;
 
   private:
-    QScopedPointer<TrackCollection> m_pTrackCollection;
+    const std::unique_ptr<TrackCollectionManager> m_pTrackCollectionManager;
+    ControlObject m_keyNotationCO;
 };
-
-
-#endif /* LIBRARYTEST_H */

@@ -1,20 +1,14 @@
-/**
- * @file portmidicontroller.h
- * @author Albert Santoni alberts@mixxx.org
- * @author Sean M. Pappalardo  spappalardo@mixxx.org
- * @date Thu 15 Mar 2012
- * @brief PortMidi-based MIDI backend
- *
- */
-
 #include "controllers/midi/portmidicontroller.h"
+
 #include "controllers/controllerdebug.h"
+#include "controllers/midi/midiutils.h"
+#include "moc_portmidicontroller.cpp"
 
 PortMidiController::PortMidiController(UserSettingsPointer config,
-                                       const PmDeviceInfo* inputDeviceInfo,
-                                       const PmDeviceInfo* outputDeviceInfo,
-                                       int inputDeviceIndex,
-                                       int outputDeviceIndex)
+        const PmDeviceInfo* inputDeviceInfo,
+        const PmDeviceInfo* outputDeviceInfo,
+        int inputDeviceIndex,
+        int outputDeviceIndex)
         : MidiController(config),
           m_cReceiveMsg_index(0),
           m_bInSysex(false) {
@@ -34,7 +28,7 @@ PortMidiController::PortMidiController(UserSettingsPointer config,
             inputDeviceInfo, inputDeviceIndex));
     }
     if (outputDeviceInfo) {
-        if (inputDeviceInfo == NULL) {
+        if (inputDeviceInfo == nullptr) {
             setDeviceName(QString("%1").arg(outputDeviceInfo->name));
         }
         setOutputDevice(outputDeviceInfo->output);
@@ -55,8 +49,9 @@ int PortMidiController::open() {
         return -1;
     }
 
-    if (getName() == MIXXX_PORTMIDI_NO_DEVICE_STRING)
+    if (getName() == MIXXX_PORTMIDI_NO_DEVICE_STRING) {
         return -1;
+    }
 
     m_bInSysex = false;
     m_cReceiveMsg_index = 0;
@@ -151,7 +146,7 @@ bool PortMidiController::poll() {
 
         if ((status & 0xF8) == 0xF8) {
             // Handle real-time MIDI messages at any time
-            receive(status, 0, 0, timestamp);
+            receivedShortMessage(status, 0, 0, timestamp);
             continue;
         }
 
@@ -165,7 +160,7 @@ bool PortMidiController::poll() {
                 //unsigned char channel = status & 0x0F;
                 unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                 unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-                receive(status, note, velocity, timestamp);
+                receivedShortMessage(status, note, velocity, timestamp);
             }
         }
 
@@ -204,18 +199,33 @@ bool PortMidiController::poll() {
     return numEvents > 0;
 }
 
-void PortMidiController::sendWord(unsigned int word) {
+void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
+                                      unsigned char byte2) {
     if (m_pOutputDevice.isNull() || !m_pOutputDevice->isOpen()) {
         return;
     }
 
+    unsigned int word = (((unsigned int)byte2) << 16) |
+                         (((unsigned int)byte1) << 8) | status;
+
     PmError err = m_pOutputDevice->writeShort(word);
-    if (err != pmNoError) {
-        qWarning() << "PortMidi sendShortMsg error:" << Pm_GetErrorText(err);
+    if (err == pmNoError) {
+        controllerDebug(MidiUtils::formatMidiMessage(getName(),
+                                                     status, byte1, byte2,
+                                                     MidiUtils::channelFromStatus(status),
+                                                     MidiUtils::opCodeFromStatus(status)));
+    } else {
+        // Use two qWarnings() to ensure line break works on all operating systems
+        qWarning() << "Error sending short message"
+                      << MidiUtils::formatMidiMessage(getName(),
+                                                      status, byte1, byte2,
+                                                      MidiUtils::channelFromStatus(status),
+                                                      MidiUtils::opCodeFromStatus(status));
+        qWarning()    << "PortMidi error:" << Pm_GetErrorText(err);
     }
 }
 
-void PortMidiController::send(QByteArray data) {
+void PortMidiController::sendBytes(const QByteArray& data) {
     // PortMidi does not receive a length argument for the buffer we provide to
     // Pm_WriteSysEx. Instead, it scans for a MIDI_EOX byte to know when the
     // message is over. If one is not provided, it will overflow the buffer and
@@ -230,8 +240,12 @@ void PortMidiController::send(QByteArray data) {
     }
 
     PmError err = m_pOutputDevice->writeSysEx((unsigned char*)data.constData());
-    if (err != pmNoError) {
-        qWarning() << "PortMidi sendSysexMsg error:"
-                   << Pm_GetErrorText(err);
+    if (err == pmNoError) {
+        controllerDebug(MidiUtils::formatSysexMessage(getName(), data));
+    } else {
+        // Use two qWarnings() to ensure line break works on all operating systems
+        qWarning() << "Error sending SysEx message:"
+                   << MidiUtils::formatSysexMessage(getName(), data);
+        qWarning() << "PortMidi error:" << Pm_GetErrorText(err);
     }
 }

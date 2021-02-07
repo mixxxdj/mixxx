@@ -1,43 +1,41 @@
-#ifndef PLAYLISTTABLEMODEL_H
-#define PLAYLISTTABLEMODEL_H
+#pragma once
 
 #include "library/basesqltablemodel.h"
-#include "library/dao/playlistdao.h"
+#include "library/trackset/tracksettablemodel.h"
 
-class PlaylistTableModel : public BaseSqlTableModel {
+class PlaylistTableModel final : public TrackSetTableModel {
     Q_OBJECT
-  public:
-    PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection,
-                       const char* settingsNamespace, bool showAll = false);
-    virtual ~PlaylistTableModel();
-    void setTableModel(int playlistId = -1);
 
+  public:
+    PlaylistTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, const char* settingsNamespace, bool keepDeletedTracks = false);
+    ~PlaylistTableModel() final = default;
+
+    void setTableModel(int playlistId = -1);
     int getPlaylist() const {
         return m_iPlaylistId;
     }
 
-    bool isColumnInternal(int column);
-    bool isColumnHiddenByDefault(int column);
-    // This function should only be used by AUTODJ
-    void removeTrack(const QModelIndex& index);
-    void removeTracks(const QModelIndexList& indices);
-    // Adding multiple tracks at one to a playlist. Returns the number of
-    // successful additions.
-    int addTracks(const QModelIndex& index, const QList<QString>& locations);
     bool appendTrack(TrackId trackId);
-    void moveTrack(const QModelIndex& sourceIndex,
-                   const QModelIndex& destIndex);
-    bool isLocked();
+    void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) override;
+    void removeTrack(const QModelIndex& index);
     void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
-    TrackModel::CapabilitiesFlags getCapabilities() const;
+
+    bool isColumnInternal(int column) final;
+    bool isColumnHiddenByDefault(int column) final;
+    /// This function should only be used by AUTODJ
+    void removeTracks(const QModelIndexList& indices) final;
+    /// Returns the number of successful additions.
+    int addTracks(const QModelIndex& index, const QList<QString>& locations) final;
+    bool isLocked() final;
+
+    Capabilities getCapabilities() const final;
 
   private slots:
-    void playlistChanged(int playlistId);
+    void playlistsChanged(const QSet<int>& playlistIds);
 
   private:
-    PlaylistDAO& m_playlistDao;
-    int m_iPlaylistId;
-    bool m_showAll;
-};
+    void initSortColumnMapping() override;
 
-#endif
+    int m_iPlaylistId;
+    bool m_keepDeletedTracks;
+};

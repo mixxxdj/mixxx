@@ -1,17 +1,18 @@
-#ifndef WAVEFORMRENDERERABSTRACT_H
-#define WAVEFORMRENDERERABSTRACT_H
+#pragma once
 
-#include <QDomNode>
-#include <QPaintEvent>
-#include <QPainter>
+#include <qglobal.h>
 
-#include "skin/skincontext.h"
+QT_FORWARD_DECLARE_CLASS(QDomNode)
+QT_FORWARD_DECLARE_CLASS(QPaintEvent)
+QT_FORWARD_DECLARE_CLASS(QPainter)
 
+class SkinContext;
 class WaveformWidgetRenderer;
 
 class WaveformRendererAbstract {
   public:
-    explicit WaveformRendererAbstract(WaveformWidgetRenderer* waveformWidgetRenderer);
+    explicit WaveformRendererAbstract(
+            WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererAbstract();
 
     virtual bool init() {return true; }
@@ -28,10 +29,20 @@ class WaveformRendererAbstract {
     void setDirty(bool dirty = true) {
         m_dirty = dirty;
     }
+
+    double scaleFactor() const {
+        return m_scaleFactor;
+    }
+    void setScaleFactor(double scaleFactor) {
+        m_scaleFactor = scaleFactor;
+    }
+
     WaveformWidgetRenderer* m_waveformRenderer;
+
+  private:
+
     bool m_dirty;
+    double m_scaleFactor;
 
     friend class WaveformWidgetRenderer;
 };
-
-#endif // WAVEFORMRENDERERABSTRACT_H

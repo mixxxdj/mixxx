@@ -1,21 +1,6 @@
-/**
- * @file soundmanagerutil.cpp
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100611
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #include "soundio/soundmanagerutil.h"
 
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 
 /**
  * Constructs a ChannelGroup.
@@ -42,16 +27,6 @@ unsigned char ChannelGroup::getChannelCount() const {
 }
 
 /**
- * Defines equality between two ChannelGroups.
- * @return true if the two ChannelGroups share a common base channel
- *          and channel count, otherwise false.
- */
-bool ChannelGroup::operator==(const ChannelGroup &other) const {
-    return m_channelBase == other.m_channelBase
-        && m_channels == other.m_channels;
-}
-
-/**
  * Checks if another ChannelGroup shares channels with this one.
  * @param other the other ChannelGroup to check for a clash with.
  * @return true if the other and this ChannelGroup share any channels,
@@ -70,22 +45,14 @@ bool ChannelGroup::clashesWith(const ChannelGroup &other) const {
 }
 
 /**
- * Generates a hash of this ChannelGroup, so it can act as a key in a QHash.
- * @return a hash for this ChannelGroup
- */
-unsigned int ChannelGroup::getHash() const {
-    return 0 | (m_channels << 8) | m_channelBase;
-}
-
-/**
  * Constructs an AudioPath object (must be called by a child class's
  * constructor, AudioPath is abstract).
  * @param channelBase the first channel on a sound device used by this AudioPath.
  * @param channels the number of channels used.
  */
 AudioPath::AudioPath(unsigned char channelBase, unsigned char channels)
-    : m_type(INVALID),
-      m_channelGroup(channelBase, channels),
+    : m_channelGroup(channelBase, channels),
+      m_type(INVALID),
       m_index(0) {
 }
 
@@ -108,23 +75,6 @@ ChannelGroup AudioPath::getChannelGroup() const {
  */
 unsigned char AudioPath::getIndex() const {
     return m_index;
-}
-
-/**
- * Defines equality for AudioPath objects.
- * @return true of this and other share a common type and index.
- */
-bool AudioPath::operator==(const AudioPath &other) const {
-    return m_type == other.m_type
-        && m_index == other.m_index;
-}
-
-/**
- * Generates a hash of this AudioPath, so it can act as a key in a QHash.
- * @return a hash for this AudioPath
- */
-unsigned int AudioPath::getHash() const {
-    return 0 | (m_type << 8) | m_index;
 }
 
 /**
@@ -152,25 +102,30 @@ QString AudioPath::getStringFromType(AudioPathType type) {
     case INVALID:
         // this shouldn't happen but g++ complains if I don't
         // handle this -- bkgood
-        return QString::fromAscii("Invalid");
+        return QStringLiteral("Invalid");
     case MASTER:
-        return QString::fromAscii("Master");
+        // This was renamed to "Main" in the GUI, but keep "Master" here to avoid
+        // making users reconfigure the output when upgrading.
+        // https://mixxx.org/news/2020-06-29-black-lives-matter/
+        return QStringLiteral("Master");
+    case BOOTH:
+        return QStringLiteral("Booth");
     case HEADPHONES:
-        return QString::fromAscii("Headphones");
+        return QStringLiteral("Headphones");
     case BUS:
-        return QString::fromAscii("Bus");
+        return QStringLiteral("Bus");
     case DECK:
-        return QString::fromAscii("Deck");
+        return QStringLiteral("Deck");
+    case RECORD_BROADCAST:
+        return QStringLiteral("Record/Broadcast");
     case VINYLCONTROL:
-        return QString::fromAscii("Vinyl Control");
+        return QStringLiteral("Vinyl Control");
     case MICROPHONE:
-        return QString::fromAscii("Microphone");
+        return QStringLiteral("Microphone");
     case AUXILIARY:
-        return QString::fromAscii("Auxiliary");
-    case SIDECHAIN:
-        return QString::fromAscii("Sidechain");
+        return QStringLiteral("Auxiliary");
     }
-    return QString::fromAscii("Unknown path type %1").arg(type);
+    return QStringLiteral("Unknown path type %1").arg(type);
 }
 
 /**
@@ -184,7 +139,9 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         // handle this -- bkgood
         return QObject::tr("Invalid");
     case MASTER:
-        return QObject::tr("Master");
+        return QObject::tr("Main");
+    case BOOTH:
+        return QObject::tr("Booth");
     case HEADPHONES:
         return QObject::tr("Headphones");
     case BUS:
@@ -201,6 +158,8 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
     case DECK:
         return QString("%1 %2").arg(QObject::tr("Deck"),
                                     QString::number(index + 1));
+    case RECORD_BROADCAST:
+        return QObject::tr("Record/Broadcast");
     case VINYLCONTROL:
         return QString("%1 %2").arg(QObject::tr("Vinyl Control"),
                                     QString::number(index + 1));
@@ -210,8 +169,6 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
     case AUXILIARY:
         return QString("%1 %2").arg(QObject::tr("Auxiliary"),
                                     QString::number(index + 1));
-    case SIDECHAIN:
-        return QObject::tr("Sidechain");
     }
     return QObject::tr("Unknown path type %1").arg(type);
 }
@@ -224,6 +181,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
     string = string.toLower();
     if (string == AudioPath::getStringFromType(AudioPath::MASTER).toLower()) {
         return AudioPath::MASTER;
+    } else if (string == AudioPath::getStringFromType(AudioPath::BOOTH).toLower()) {
+        return AudioPath::BOOTH;
     } else if (string == AudioPath::getStringFromType(AudioPath::HEADPHONES).toLower()) {
         return AudioPath::HEADPHONES;
     } else if (string == AudioPath::getStringFromType(AudioPath::BUS).toLower()) {
@@ -236,8 +195,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
         return AudioPath::MICROPHONE;
     } else if (string == AudioPath::getStringFromType(AudioPath::AUXILIARY).toLower()) {
         return AudioPath::AUXILIARY;
-    } else if (string == AudioPath::getStringFromType(AudioPath::SIDECHAIN).toLower()) {
-        return AudioPath::SIDECHAIN;
+    } else if (string == AudioPath::getStringFromType(AudioPath::RECORD_BROADCAST).toLower()) {
+        return AudioPath::RECORD_BROADCAST;
     } else {
         return AudioPath::INVALID;
     }
@@ -284,10 +243,8 @@ unsigned char AudioPath::minChannelsForType(AudioPathType type) {
 
 // static
 unsigned char AudioPath::maxChannelsForType(AudioPathType type) {
-    switch (type) {
-    default:
-        return 2;
-    }
+    Q_UNUSED(type);
+    return 2;
 }
 
 /**
@@ -298,16 +255,13 @@ AudioOutput::AudioOutput(AudioPathType type,
                          unsigned char channels,
                          unsigned char index)
     : AudioPath(channelBase, channels) {
+    // TODO(rryan): This is a virtual function call from a constructor.
     setType(type);
     if (isIndexed(type)) {
         m_index = index;
     } else {
         m_index = 0;
     }
-}
-
-AudioOutput::~AudioOutput() {
-
 }
 
 /**
@@ -350,15 +304,16 @@ AudioOutput AudioOutput::fromXML(const QDomElement &xml) {
 QList<AudioPathType> AudioOutput::getSupportedTypes() {
     QList<AudioPathType> types;
     types.append(MASTER);
+    types.append(BOOTH);
     types.append(HEADPHONES);
     types.append(BUS);
     types.append(DECK);
-    types.append(SIDECHAIN);
+    types.append(RECORD_BROADCAST);
     return types;
 }
 
 bool AudioOutput::isHidden() {
-    return m_type == SIDECHAIN;
+    return m_type == RECORD_BROADCAST;
 }
 
 
@@ -382,6 +337,7 @@ AudioInput::AudioInput(AudioPathType type,
                        unsigned char channels,
                        unsigned char index)
         : AudioPath(channelBase, channels) {
+    // TODO(rryan): This is a virtual function call from a constructor.
     setType(type);
     if (isIndexed(type)) {
         m_index = index;
@@ -439,6 +395,7 @@ QList<AudioPathType> AudioInput::getSupportedTypes() {
 #endif
     types.append(AUXILIARY);
     types.append(MICROPHONE);
+    types.append(RECORD_BROADCAST);
     return types;
 }
 
@@ -454,23 +411,10 @@ void AudioInput::setType(AudioPathType type) {
     }
 }
 
-/**
- * Defined for QHash, so ChannelGroup can be used as a QHash key.
- */
-unsigned int qHash(const ChannelGroup &group) {
-    return group.getHash();
-}
-
-/**
- * Defined for QHash, so AudioOutput can be used as a QHash key.
- */
-unsigned int qHash(const AudioOutput &output) {
-    return output.getHash();
-}
-
-/**
- * Defined for QHash, so AudioInput can be used as a QHash key.
- */
-unsigned int qHash(const AudioInput &input) {
-    return input.getHash();
+QString SoundDeviceId::debugName() const {
+    if (alsaHwDevice.isEmpty()) {
+        return name + QStringLiteral(", ") + QString::number(portAudioIndex);
+    } else {
+        return name + QStringLiteral(", ") + alsaHwDevice + QStringLiteral(", ") + QString::number(portAudioIndex);
+    }
 }

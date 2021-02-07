@@ -1,44 +1,55 @@
-#ifndef MIXXX_SOUNDSOURCEOPUS_H
-#define MIXXX_SOUNDSOURCEOPUS_H
-
-#include "sources/soundsourceprovider.h"
+#pragma once
 
 #define OV_EXCLUDE_STATIC_CALLBACKS
 #include <opus/opusfile.h>
 
+#include "sources/soundsourceprovider.h"
+#include "util/samplebuffer.h"
+
 namespace mixxx {
 
-class SoundSourceOpus: public mixxx::SoundSource {
-public:
+class SoundSourceOpus final : public SoundSource {
+  public:
     explicit SoundSourceOpus(const QUrl& url);
     ~SoundSourceOpus() override;
 
-    Result parseTrackMetadataAndCoverArt(
+    std::pair<ImportResult, QDateTime> importTrackMetadataAndCoverImage(
             TrackMetadata* pTrackMetadata,
             QImage* pCoverArt) const override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            const WritableSampleFrames& sampleFrames) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
-    SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
+  private:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override;
 
-private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+    OggOpusFile* m_pOggOpusFile;
 
-    OggOpusFile *m_pOggOpusFile;
+    SampleBuffer m_prefetchSampleBuffer;
 
     SINT m_curFrameIndex;
 };
 
-class SoundSourceProviderOpus: public SoundSourceProvider {
-public:
-    QString getName() const override;
+class SoundSourceProviderOpus : public SoundSourceProvider {
+  public:
+    static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
-    QStringList getSupportedFileExtensions() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
+
+    SoundSourceProviderPriority getPriorityHint(
+            const QString& supportedFileExtension) const override;
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceOpus>(url);
@@ -46,5 +57,3 @@ public:
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEOPUS_H

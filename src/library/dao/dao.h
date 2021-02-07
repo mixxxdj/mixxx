@@ -1,11 +1,22 @@
-// dao.h
-// Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
+#pragma once
 
-#ifndef DAO_H
-#define DAO_H
+#include <QSqlDatabase>
+
+#include "util/assert.h"
 
 class DAO {
-    virtual void initialize() = 0;
-};
+  public:
+    virtual ~DAO() = default;
 
-#endif /* DAO_H */
+    virtual void initialize(const QSqlDatabase& database) {
+        DEBUG_ASSERT(!m_database.isOpen());
+        m_database = database;
+    }
+
+    const QSqlDatabase& database() const {
+        return m_database;
+    }
+
+  protected:
+    QSqlDatabase m_database;
+};

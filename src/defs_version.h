@@ -1,19 +1,3 @@
-/***************************************************************************
-                          defs_version.h  -  description
-                          --------------
-    copyright            : (C) 2010 by Sean Pappalardo
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 // Doing this in its own file avoids needlessly rebuilding everything when just
 // the version number changes
 //
@@ -49,10 +33,11 @@
 //
 // $ dpkg --compare-versions 2.0.0~rc1-0ubuntu1 lt 2.0.0-0ubuntu1 && echo true
 //
-#ifndef VERSION
+#ifndef MIXXX_VERSION
     // In that case, this value is used
-    
+
     // READ ABOVE CAREFULLY BEFORE CHANGING!
-    // USE 3 DIGITS VERSION ONLY /!\ _
-    #define VERSION "2.1.0-alpha-pre"
+    // USE 3 DIGITS VERSION ONLY !
+    // CHANGE IN ACTUAL VERSION FILE
+    #include "_version.h"
 #endif

@@ -10,13 +10,16 @@
 <Template>
   <VuMeter>
     <TooltipId><Variable name="TooltipId"/></TooltipId>
-    <MinimumSize>50,5</MinimumSize>
-    <MaximumSize>200,5</MaximumSize>
-    <PathVu>vumeter.svg</PathVu>
-    <Horizontal>true</Horizontal>
+    <MinimumSize>5,30</MinimumSize>
+    <MaximumSize>5,-1</MaximumSize>
+    <SizePolicy>f,me</SizePolicy>
+    <!-- overwrites above properties. just used in auxiliary.xml for now -->
+    <Size><Variable name="Size"/></Size>
+    <PathVu>vumeter_v.png</PathVu>
+    <Horizontal>false</Horizontal>
     <PeakHoldSize>5</PeakHoldSize>
-    <PeakHoldTime>600</PeakHoldTime>
-    <PeakFallTime>100</PeakFallTime>
+    <PeakHoldTime>300</PeakHoldTime>
+    <PeakFallTime>20</PeakFallTime>
     <PeakFallStep>1</PeakFallStep>
     <Connection>
       <ConfigKey><Variable name="group"/>,<Variable name="control"/></ConfigKey>

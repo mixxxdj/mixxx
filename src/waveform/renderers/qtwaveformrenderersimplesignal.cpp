@@ -7,6 +7,7 @@
 #include "widget/wwidget.h"
 #include "track/track.h"
 #include "util/math.h"
+#include "util/painterscope.h"
 
 #include <QLinearGradient>
 
@@ -54,11 +55,11 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     }
 
     const WaveformData* data = waveform->data();
-    if (data == NULL) {
+    if (data == nullptr) {
         return;
     }
 
-    painter->save();
+    PainterScope PainterScope(painter);
 
     painter->setRenderHint(QPainter::Antialiasing);
     painter->resetTransform();
@@ -69,7 +70,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     }
 
     float allGain(1.0);
-    getGains(&allGain, NULL, NULL, NULL);
+    getGains(&allGain, nullptr, nullptr, nullptr);
 
     double heightGain = allGain * (double)m_waveformRenderer->getBreadth()/255.0;
     if (m_alignment == Qt::AlignTop || m_alignment == Qt::AlignRight) {
@@ -104,8 +105,9 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     //NOTE(vrince) Please help me find a better name for "channelSeparation"
     //this variable stand for merged channel ... 1 = merged & 2 = separated
     int channelSeparation = 2;
-    if (m_alignment != Qt::AlignCenter)
+    if (m_alignment != Qt::AlignCenter) {
         channelSeparation = 1;
+    }
 
     for (int channel = 0; channel < channelSeparation; ++channel) {
         int startPixel = 0;
@@ -114,8 +116,9 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         double direction = 1.0;
 
         // Reverse display for merged bottom/left channel
-        if (m_alignment == Qt::AlignBottom || m_alignment == Qt::AlignLeft)
+        if (m_alignment == Qt::AlignBottom || m_alignment == Qt::AlignLeft) {
             direction = -1.0;
+        }
 
         if (channel == 1) {
             startPixel = m_waveformRenderer->getLength() - 1;
@@ -205,7 +208,7 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
         }
     }
 
-    //If channel are not displayed separatly we nne to close the loop properly
+    //If channel are not displayed separately we need to close the loop properly
     if (channelSeparation == 1) {
         m_polygon.append(QPointF(m_waveformRenderer->getLength(), 0.0));
     }
@@ -214,8 +217,6 @@ void QtWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     painter->setBrush(m_brush);
 
     painter->drawPolygon(&m_polygon[0], m_polygon.size());
-
-    painter->restore();
 }
 
 void QtWaveformRendererSimpleSignal::onResize() {

@@ -8,16 +8,6 @@ namespace {
 
 class TrackNumbersTest : public testing::Test {
   protected:
-
-    TrackNumbersTest() {
-    }
-
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
     void parseFromStringEmpty(const QString& inputValue) {
         TrackNumbers actualTrackNumbers;
         TrackNumbers::ParseResult actualParseResult = TrackNumbers::parseFromString(inputValue, &actualTrackNumbers);
@@ -79,7 +69,7 @@ class TrackNumbersTest : public testing::Test {
 
         EXPECT_EQ(expectedTrackNumber, actualTrackNumber);
         EXPECT_EQ(expectedTrackTotal, actualTrackTotal);
-        EXPECT_EQ(inputValue, TrackNumbers::joinStrings(actualTrackNumber, actualTrackTotal));
+        EXPECT_EQ(inputValue, TrackNumbers::joinAsString(actualTrackNumber, actualTrackTotal));
     }
 };
 

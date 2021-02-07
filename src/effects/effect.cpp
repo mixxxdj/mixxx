@@ -1,30 +1,33 @@
+#include "effects/effect.h"
+
 #include <QtDebug>
 
-#include "effects/effect.h"
 #include "effects/effectprocessor.h"
 #include "effects/effectsmanager.h"
-#include "engine/effects/engineeffectchain.h"
+#include "effects/effectxmlelements.h"
 #include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectchain.h"
+#include "moc_effect.cpp"
 #include "util/xml.h"
 
 Effect::Effect(EffectsManager* pEffectsManager,
-               const EffectManifest& manifest,
-               EffectInstantiatorPointer pInstantiator)
+        EffectManifestPointer pManifest,
+        EffectInstantiatorPointer pInstantiator)
         : QObject(), // no parent
           m_pEffectsManager(pEffectsManager),
-          m_manifest(manifest),
+          m_pManifest(pManifest),
           m_pInstantiator(pInstantiator),
-          m_pEngineEffect(NULL),
+          m_pEngineEffect(nullptr),
           m_bAddedToEngine(false),
-          m_bEnabled(true) {
-    foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
+          m_bEnabled(false) {
+    for (const auto& pManifestParameter: m_pManifest->parameters()) {
         EffectParameter* pParameter = new EffectParameter(
-            this, pEffectsManager, m_parameters.size(), parameter);
+                this, pEffectsManager, m_parameters.size(), pManifestParameter);
         m_parameters.append(pParameter);
-        if (m_parametersById.contains(parameter.id())) {
+        if (m_parametersById.contains(pParameter->id())) {
             qWarning() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
         }
-        m_parametersById[parameter.id()] = pParameter;
+        m_parametersById[pParameter->id()] = pParameter;
     }
     //qDebug() << debugString() << "created" << this;
 }
@@ -39,32 +42,57 @@ Effect::~Effect() {
     }
 }
 
-void Effect::addToEngine(EngineEffectChain* pChain, int iIndex) {
-    if (m_pEngineEffect) {
+EffectState* Effect::createState(const mixxx::EngineParameters& bufferParameters) {
+    return m_pEngineEffect->createState(bufferParameters);
+}
+
+void Effect::addToEngine(EngineEffectChain* pChain, int iIndex,
+                         const QSet<ChannelHandleAndGroup>& activeInputChannels) {
+    VERIFY_OR_DEBUG_ASSERT(pChain) {
         return;
     }
-    m_pEngineEffect = new EngineEffect(m_manifest,
-            m_pEffectsManager->registeredChannels(),
+    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect == nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(!m_bAddedToEngine) {
+        return;
+    }
+
+    m_pEngineEffect = new EngineEffect(m_pManifest,
+            activeInputChannels,
+            m_pEffectsManager,
             m_pInstantiator);
+
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
     request->pTargetChain = pChain;
     request->AddEffectToChain.pEffect = m_pEngineEffect;
     request->AddEffectToChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
+
+    m_bAddedToEngine = true;
 }
 
 void Effect::removeFromEngine(EngineEffectChain* pChain, int iIndex) {
-    if (!m_pEngineEffect) {
+    VERIFY_OR_DEBUG_ASSERT(pChain) {
         return;
     }
+    VERIFY_OR_DEBUG_ASSERT(m_pEngineEffect != nullptr) {
+        return;
+    }
+    VERIFY_OR_DEBUG_ASSERT(m_bAddedToEngine) {
+        return;
+    }
+
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::REMOVE_EFFECT_FROM_CHAIN;
     request->pTargetChain = pChain;
     request->RemoveEffectFromChain.pEffect = m_pEngineEffect;
     request->RemoveEffectFromChain.iIndex = iIndex;
     m_pEffectsManager->writeRequest(request);
-    m_pEngineEffect = NULL;
+    m_pEngineEffect = nullptr;
+
+    m_bAddedToEngine = false;
 }
 
 void Effect::updateEngineState() {
@@ -81,15 +109,15 @@ EngineEffect* Effect::getEngineEffect() {
     return m_pEngineEffect;
 }
 
-const EffectManifest& Effect::getManifest() const {
-    return m_manifest;
+EffectManifestPointer Effect::getManifest() const {
+    return m_pManifest;
 }
 
 void Effect::setEnabled(bool enabled) {
     if (enabled != m_bEnabled) {
         m_bEnabled = enabled;
         updateEngineState();
-        emit(enabledChanged(m_bEnabled));
+        emit enabledChanged(m_bEnabled);
     }
 }
 
@@ -111,7 +139,8 @@ void Effect::sendParameterUpdate() {
 unsigned int Effect::numKnobParameters() const {
     unsigned int num = 0;
     foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() != EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
+        if (parameter->manifest()->controlHint() !=
+                EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
             ++num;
         }
     }
@@ -121,7 +150,8 @@ unsigned int Effect::numKnobParameters() const {
 unsigned int Effect::numButtonParameters() const {
     unsigned int num = 0;
     foreach(const EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().controlHint() == EffectManifestParameter::CONTROL_TOGGLE_STEPPING) {
+        if (parameter->manifest()->controlHint() ==
+                EffectManifestParameter::ControlHint::TOGGLE_STEPPING) {
             ++num;
         }
     }
@@ -130,7 +160,7 @@ unsigned int Effect::numButtonParameters() const {
 
 EffectParameter* Effect::getParameterById(const QString& id) const {
     EffectParameter* pParameter = m_parametersById.value(id, NULL);
-    if (pParameter == NULL) {
+    if (pParameter == nullptr) {
         qWarning() << debugString() << "getParameterById"
                    << "WARNING: parameter for id does not exist:" << id;
     }
@@ -139,8 +169,8 @@ EffectParameter* Effect::getParameterById(const QString& id) const {
 
 // static
 bool Effect::isButtonParameter(EffectParameter* parameter) {
-    return  parameter->manifest().controlHint() ==
-            EffectManifestParameter::CONTROL_TOGGLE_STEPPING;
+    return  parameter->manifest()->controlHint() ==
+            EffectManifestParameter::ControlHint::TOGGLE_STEPPING;
 }
 
 // static
@@ -153,15 +183,15 @@ EffectParameter* Effect::getFilteredParameterForSlot(ParameterFilterFnc filterFn
     // It's normal to ask for a parameter that doesn't exist. Callers must check
     // for NULL.
     unsigned int num = 0;
-    foreach(EffectParameter* parameter, m_parameters) {
-        if (parameter->manifest().showInParameterSlot() && filterFnc(parameter)) {
+    for (const auto& parameter : qAsConst(m_parameters)) {
+        if (parameter->manifest()->showInParameterSlot() && filterFnc(parameter)) {
             if(num == slotNumber) {
                 return parameter;
             }
             ++num;
         }
     }
-    return NULL;
+    return nullptr;
 }
 
 EffectParameter* Effect::getKnobParameterForSlot(unsigned int slotNumber) {
@@ -172,32 +202,19 @@ EffectParameter* Effect::getButtonParameterForSlot(unsigned int slotNumber) {
     return getFilteredParameterForSlot(isButtonParameter, slotNumber);
 }
 
-QDomElement Effect::toXML(QDomDocument* doc) const {
-    QDomElement element = doc->createElement("Effect");
-    XmlParse::addElement(*doc, element, "Id", m_manifest.id());
-    XmlParse::addElement(*doc, element, "Version", m_manifest.version());
-
-    QDomElement parameters = doc->createElement("Parameters");
-    foreach (EffectParameter* pParameter, m_parameters) {
-        const EffectManifestParameter& parameterManifest =
-                pParameter->manifest();
-        QDomElement parameter = doc->createElement("Parameter");
-        XmlParse::addElement(*doc, parameter, "Id", parameterManifest.id());
-        // TODO(rryan): Do smarter QVariant formatting?
-        XmlParse::addElement(*doc, parameter, "Value", QString::number(pParameter->getValue()));
-        // TODO(rryan): Output link state, etc.
-        parameters.appendChild(parameter);
+// static
+EffectPointer Effect::createFromXml(EffectsManager* pEffectsManager,
+                              const QDomElement& element) {
+    // Empty <Effect/> elements are used to preserve chain order
+    // when there are empty slots at the beginning of the chain.
+    if (!element.hasChildNodes()) {
+        return EffectPointer();
     }
-    element.appendChild(parameters);
-
-    return element;
+    QString effectId = XmlParse::selectNodeQString(element, EffectXml::EffectId);
+    EffectPointer pEffect = pEffectsManager->instantiateEffect(effectId);
+    return pEffect;
 }
 
-// static
-EffectPointer Effect::fromXML(EffectsManager* pEffectsManager,
-                              const QDomElement& element) {
-    QString effectId = XmlParse::selectNodeQString(element, "Id");
-    EffectPointer pEffect = pEffectsManager->instantiateEffect(effectId);
-    // TODO(rryan): Load parameter values / etc. from element.
-    return pEffect;
+double Effect::getMetaknobDefault() {
+    return m_pManifest->metaknobDefault();
 }

@@ -8,6 +8,7 @@
 <Template>
   <PushButton>
     <ObjectName><Variable name="object_name"/></ObjectName>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
     <Size>20f,20f</Size>
     <NumberStates>2</NumberStates>
     <State>

@@ -1,6 +1,5 @@
-#ifndef LIBRARY_PREFERENCES_H
-#define LIBRARY_PREFERENCES_H
+#pragma once
 
 #define PREF_LEGACY_LIBRARY_DIR ConfigKey("[Playlist]","Directory")
 
-#endif /* LIBRARY_PREFERENCES_H */
+#define PREF_LIBRARY_EDIT_METADATA_DEFAULT false

@@ -1,29 +1,13 @@
-/***************************************************************************
-                           starrating.h
-                              -------------------
-     copyright            : (C) 2010 Tobias Rafreider
-     copyright            : (C) 2009 Nokia Corporation
-
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-
-#ifndef STARRATING_H
-#define STARRATING_H
+#pragma once
 
 #include <QMetaType>
-#include <QPointF>
-#include <QVector>
-#include <QPainter>
-#include <QStyledItemDelegate>
+#include <QPolygonF>
+#include <QSize>
+
+#include "track/trackrecord.h"
+
+QT_FORWARD_DECLARE_CLASS(QPainter);
+QT_FORWARD_DECLARE_CLASS(QRect);
 
 /*
  * The StarRating class represents a rating as a number of stars.
@@ -36,23 +20,32 @@ class StarRating {
   public:
     enum EditMode { Editable, ReadOnly };
 
-    StarRating(int starCount = 1, int maxStarCount = 5);
+    static constexpr int kMinStarCount = 0;
+
+    explicit StarRating(
+            int starCount = kMinStarCount,
+            int maxStarCount = mixxx::TrackRecord::kMaxRating - mixxx::TrackRecord::kMinRating);
 
     void paint(QPainter* painter, const QRect& rect) const;
     QSize sizeHint() const;
 
-    int starCount() const { return m_myStarCount; }
-    int maxStarCount() const { return m_myMaxStarCount; }
-    void setStarCount(int starCount) { m_myStarCount = starCount; }
-    void setMaxStarCount(int maxStarCount) { m_myMaxStarCount = maxStarCount; }
+    int starCount() const {
+        return m_starCount;
+    }
+    int maxStarCount() const {
+        return m_maxStarCount;
+    }
+    void setStarCount(int starCount) {
+        DEBUG_ASSERT(starCount >= kMinStarCount);
+        DEBUG_ASSERT(starCount <= m_maxStarCount);
+        m_starCount = starCount;
+    }
 
   private:
     QPolygonF m_starPolygon;
     QPolygonF m_diamondPolygon;
-    int m_myStarCount;
-    int m_myMaxStarCount;
+    int m_starCount;
+    int m_maxStarCount;
 };
 
 Q_DECLARE_METATYPE(StarRating)
-
-#endif

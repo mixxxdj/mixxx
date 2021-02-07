@@ -1,5 +1,4 @@
-#ifndef WAVEFORM_H
-#define WAVEFORM_H
+#pragma once
 
 #include <vector>
 
@@ -31,7 +30,13 @@ union WaveformData {
 
 class Waveform {
   public:
-    explicit Waveform(const QByteArray pData = QByteArray());
+    enum class SaveState {
+        NotSaved = 0,
+        SavePending, 
+        Saved
+    };
+
+    explicit Waveform(const QByteArray& pData = QByteArray());
     Waveform(int audioSampleRate, int audioSamples,
              int desiredVisualSampleRate, int maxVisualSamples);
 
@@ -52,7 +57,7 @@ class Waveform {
         return m_version;
     }
 
-    void setVersion(QString version) {
+    void setVersion(const QString& version) {
         QMutexLocker locker(&m_mutex);
         m_version = version;
     }
@@ -62,7 +67,7 @@ class Waveform {
         return m_description;
     }
 
-    void setDescription(QString description) {
+    void setDescription(const QString& description) {
         QMutexLocker locker(&m_mutex);
         m_description = description;
     }
@@ -75,14 +80,14 @@ class Waveform {
         return getDataSize() > 0 && getVisualSampleRate() > 0;
     }
 
-    bool isDirty() const {
-        return m_bDirty;
+    SaveState saveState() const {
+        return m_saveState;
     }
 
-    // AnalysisDAO needs to be able to set the waveform as clean so we mark this
-    // as const and m_bDirty mutable.
-    void setDirty(bool bDirty) const {
-        m_bDirty = bDirty;
+    // AnalysisDAO needs to be able to change the state to savePending when finished 
+    // so we mark this as const and m_saveState mutable.
+    void setSaveState(SaveState eState) const {
+        m_saveState = eState;
     }
 
     // We do not lock the mutex since m_audioVisualRatio is not changed after
@@ -94,7 +99,7 @@ class Waveform {
     // Atomically lookup the completion of the waveform. Represents the number
     // of data elements that have been processed out of dataSize.
     int getCompletion() const {
-        return load_atomic(m_completion);
+        return atomicLoadAcquire(m_completion);
     }
     void setCompletion(int completion) {
         m_completion = completion;
@@ -106,7 +111,7 @@ class Waveform {
 
     // We do not lock the mutex since m_data is not resized after the
     // constructor runs.
-    inline int getTextureSize() const { return m_data.size(); }
+    inline int getTextureSize() const { return static_cast<int>(m_data.size()); }
 
     // Atomically get the number of data elements in this Waveform. We do not
     // lock the mutex since m_dataSize is not changed after the constructor
@@ -143,8 +148,8 @@ class Waveform {
 
     // If stored in the database, the ID of the waveform.
     int m_id;
-    // AnalysisDAO needs to be able to set the waveform as clean.
-    mutable bool m_bDirty;
+    // mutable since AnalysisDAO needs to be able to set the waveform as saved.
+    mutable SaveState m_saveState;
     QString m_version;
     QString m_description;
 
@@ -179,5 +184,3 @@ class Waveform {
 
 typedef QSharedPointer<Waveform> WaveformPointer;
 typedef QSharedPointer<const Waveform> ConstWaveformPointer;
-
-#endif // WAVEFORM_H

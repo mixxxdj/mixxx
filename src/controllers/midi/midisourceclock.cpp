@@ -1,9 +1,10 @@
-#include "controllers/midi/midimessage.h"
 #include "controllers/midi/midisourceclock.h"
+
+#include "controllers/midi/midimessage.h"
 #include "util/math.h"
 
 bool MidiSourceClock::handleMessage(unsigned char status,
-                                    const mixxx::Duration& timestamp) {
+        const mixxx::Duration& timestamp) {
     // TODO(owen): We need to support MIDI_CONTINUE.
     switch (status) {
     case MIDI_START:
@@ -58,7 +59,7 @@ void MidiSourceClock::pulse(const mixxx::Duration& timestamp) {
             // and the actual last beat time.  By not using the last smoothed
             // time we prevent drift.
             const double beat_length = 60.0 * 1e9 / m_dBpm;
-            const auto beat_duration = mixxx::Duration::fromNanos(beat_length);
+            const auto beat_duration = mixxx::Duration::fromNanos(static_cast<qint64>(beat_length));
             m_smoothedBeatTime = m_lastBeatTime + beat_duration;
         } else {
             m_smoothedBeatTime = timestamp;
@@ -83,8 +84,8 @@ void MidiSourceClock::pulse(const mixxx::Duration& timestamp) {
 
 // static
 double MidiSourceClock::calcBpm(const mixxx::Duration& early_pulse,
-                                const mixxx::Duration& late_pulse,
-                                int pulse_count) {
+        const mixxx::Duration& late_pulse,
+        int pulse_count) {
     // Get the elapsed time between the latest pulse and the earliest pulse
     // and divide by the number of pulses in the buffer to get bpm.  Midi
     // clock information is by nature imprecise, and issues such as drift and
@@ -92,12 +93,12 @@ double MidiSourceClock::calcBpm(const mixxx::Duration& early_pulse,
     // expect to wring more precision out of an imprecise standard.
 
     // If we have too few samples, we can't calculate a bpm, so return 0.0.
-    DEBUG_ASSERT_AND_HANDLE(pulse_count >= 2) {
+    VERIFY_OR_DEBUG_ASSERT(pulse_count >= 2) {
         qWarning() << "MidiSourceClock::calcBpm called with too few pulses";
         return 0.0;
     }
 
-    DEBUG_ASSERT_AND_HANDLE(late_pulse >= early_pulse) {
+    VERIFY_OR_DEBUG_ASSERT(late_pulse >= early_pulse) {
         qWarning() << "MidiSourceClock asked to calculate beat fraction but "
                    << "late_pulse < early_pulse:" << late_pulse << early_pulse;
         return 0.0;
@@ -108,8 +109,7 @@ double MidiSourceClock::calcBpm(const mixxx::Duration& early_pulse,
 
     // We subtract one since two time values denote a single span of time --
     // so a filled value of 3 indicates 2 pulse periods, etc.
-    const double bpm = static_cast<double>(pulse_count - 1) / kPulsesPerQuarter
-                       / elapsed_mins;
+    const double bpm = static_cast<double>(pulse_count - 1) / kPulsesPerQuarter / elapsed_mins;
 
     if (bpm < kMinMidiBpm || bpm > kMaxMidiBpm) {
         qWarning() << "MidiSourceClock bpm out of range, returning 0:" << bpm;
@@ -120,9 +120,9 @@ double MidiSourceClock::calcBpm(const mixxx::Duration& early_pulse,
 
 // static
 double MidiSourceClock::beatFraction(const mixxx::Duration& last_beat,
-                                     const mixxx::Duration& now,
-                                     const double bpm) {
-    DEBUG_ASSERT_AND_HANDLE(now >= last_beat) {
+        const mixxx::Duration& now,
+        const double bpm) {
+    VERIFY_OR_DEBUG_ASSERT(now >= last_beat) {
         qWarning() << "MidiSourceClock asked to calculate beat fraction but "
                    << "now < last_beat:" << now << last_beat;
         return 0.0;

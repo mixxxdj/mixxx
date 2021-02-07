@@ -4,28 +4,28 @@
  * Written by Adam Marcus 2012
  *
  * Button mapping details:
- * 
- * Browse & A/B Load buttons: The browse button will scroll through the library. Pressing the Browse button will load the selected track to whatever deck is not currently playing. 
+ *
+ * Browse & A/B Load buttons: The browse button will scroll through the library. Pressing the Browse button will load the selected track to whatever deck is not currently playing.
  * The Load A and Load B buttons will load the selected track to that deck (but only if the deck isn't already playing something).
- * 
- * Preview button: This button will load the currently-selected track into sampler 4 and adjust the volume of sampler 4 so that it only plays through the headphones. 
+ *
+ * Preview button: This button will load the currently-selected track into sampler 4 and adjust the volume of sampler 4 so that it only plays through the headphones.
  * This works great except it marks the track as played. I don't see a Mixxx function to toggle the played state for tracks, so there's nothing I can do about that.
  * To see the sampler, click on the word "Sampler" above the main VU meters in the center of the Mixxx window.
- * 
- * EFX/fader knobs: Since the EFX function in Mixx is kinda useless (only a flanger effect that doesn't sound that different), the EFX knobs adjust the gain, 
+ *
+ * EFX/fader knobs: Since the EFX function in Mixxx is kinda useless (only a flanger effect that doesn't sound that different), the EFX knobs adjust the gain,
  * the gain knobs to adjust the high fader and the treble knobs to adjust the mid fader. This way, you get high/mid/low faders.
- * 
+ *
  * EFX buttons & Master volume: The EFX buttons are mapped to send that deck to the headphones (a.k.a PFL function). The buttons light up to indicate PFL state.
  * The master volume knob is mapped to headMix (the cue/main mix in the headphones). If you have two soundcards, this will allow you to cross-fade through the headphones before you do it live.
- * 
- * Play/Cue button blinking: The play button will blink on every beat when the track is playing. Starting at secondsBlink seconds (default is 30) before the end of the track, the CUE button 
+ *
+ * Play/Cue button blinking: The play button will blink on every beat when the track is playing. Starting at secondsBlink seconds (default is 30) before the end of the track, the CUE button
  * also blinks to warn you that the track is about to end.
- * 
+ *
  * Jogwheel: Normally (when the Scratch button for the deck is not lit), the jogwheels will "nudge" the playing track, speeding it up or slowing it down slightly.
  * Pressing the Scratch button will toggle the scratch mode. In scratch mode, the jogwheels will "scratch" the playing track but only while you are touching them (because the jogwheels are touch-sensitive).
- * 
+ *
  * Sel(ect) buttons: I didn't know what to do with these buttons so I left them undefined.
- * 
+ *
  **/
 
 // Seconds to the end of track after which cue button blink (default = 30)
@@ -38,10 +38,10 @@ alpha = .13;
 beta = alpha/32;
 
 // pitch shift mode
-gammaInputRange = 12;	// Max jog speed
-maxOutFraction = 0.5;	// Where on the curve it should peak; 0.5 is half-way
-sensitivity = 0.9;		// .5 Adjustment gamma
-gammaOutputRange = 3;	// Max rate change
+gammaInputRange = 12;    // Max jog speed
+maxOutFraction = 0.5;    // Where on the curve it should peak; 0.5 is half-way
+sensitivity = 0.9;        // .5 Adjustment gamma
+gammaOutputRange = 3;    // Max rate change
 
 
 
@@ -61,13 +61,13 @@ firstmix.init = function (channel, control, value, status, group) {
     engine.connectControl("[Channel2]","beat_active","firstmix.Stutter2Beat");
 
     firstmix.leds = [
-		// Common
-		{ "preview": 0x60 },
-		// Deck 1
-		{ "play": 0x4a, "cue": 0x3b, "efx": 0x43, "scratch": 0x48, "rev": 0x40, "sync": 0x33 },
-		// Deck 2
-		{ "play": 0x4c, "cue": 0x42, "efx": 0x45, "scratch": 0x35, "rev": 0x47, "sync": 0x3c },
-	];
+        // Common
+        { "preview": 0x60 },
+        // Deck 1
+        { "play": 0x4a, "cue": 0x3b, "efx": 0x43, "scratch": 0x48, "rev": 0x40, "sync": 0x33 },
+        // Deck 2
+        { "play": 0x4c, "cue": 0x42, "efx": 0x45, "scratch": 0x35, "rev": 0x47, "sync": 0x3c },
+    ];
 
     // Set controls in Mixxx to reflect settings on the device
     // I've tried both of the following commands but they don't work. Not sure if this is possible.
@@ -96,34 +96,34 @@ firstmix.shutdown = function () {
 // ----------------
 
 firstmix.setLED = function(value, status) {
-	status = status ? 0x64 : 0x00;
-	midi.sendShortMsg(0x90, value, status);
+    status = status ? 0x64 : 0x00;
+    midi.sendShortMsg(0x90, value, status);
 }
 
 firstmix.currentDeck = function (group) {
-	if (group == "[Channel1]")
-		return 1;
-	else if (group == "[Channel2]")
-		return 2;
-	print("Invalid group : " + group);
+    if (group == "[Channel1]")
+        return 1;
+    else if (group == "[Channel2]")
+        return 2;
+    print("Invalid group : " + group);
         midi.sendShortMsg(0x90,0x45,0x7F);    // Turn on right EFX LED
-	return -1; // error
+    return -1; // error
 }
 
 firstmix.Stutter1Beat = function (value) {
-    	var secondsToEnd = engine.getValue("[Channel1]", "duration") * (1-engine.getValue("[Channel1]", "playposition"));
-	if (secondsToEnd < secondsBlink && secondsToEnd > 1 && engine.getValue("[Channel1]", "play")) { // The song is going to end
-		firstmix.setLED(firstmix.leds[1]["cue"], value);
-	}
-	firstmix.setLED(firstmix.leds[1]["play"], value);
+        var secondsToEnd = engine.getValue("[Channel1]", "duration") * (1-engine.getValue("[Channel1]", "playposition"));
+    if (secondsToEnd < secondsBlink && secondsToEnd > 1 && engine.getValue("[Channel1]", "play")) { // The song is going to end
+        firstmix.setLED(firstmix.leds[1]["cue"], value);
+    }
+    firstmix.setLED(firstmix.leds[1]["play"], value);
 }
 
 firstmix.Stutter2Beat = function (value) {
-    	var secondsToEnd = engine.getValue("[Channel2]", "duration") * (1-engine.getValue("[Channel2]", "playposition"));
-	if (secondsToEnd < secondsBlink && secondsToEnd > 1 && engine.getValue("[Channel2]", "play")) { // If song is about to end, blink cue button
-		firstmix.setLED(firstmix.leds[2]["cue"], value);
-	}
-	firstmix.setLED(firstmix.leds[2]["play"], value); // Blink play button on beat
+        var secondsToEnd = engine.getValue("[Channel2]", "duration") * (1-engine.getValue("[Channel2]", "playposition"));
+    if (secondsToEnd < secondsBlink && secondsToEnd > 1 && engine.getValue("[Channel2]", "play")) { // If song is about to end, blink cue button
+        firstmix.setLED(firstmix.leds[2]["cue"], value);
+    }
+    firstmix.setLED(firstmix.leds[2]["play"], value); // Blink play button on beat
 }
 
 // ----------------------
@@ -142,7 +142,7 @@ firstmix.pfl = function (channel, control, value, status, group) {
             engine.setValue(group, "pfl", 0);
             firstmix.setLED(firstmix.leds[firstmix.currentDeck(group)]["efx"], 0x00);
             firstmix.efxButton[firstmix.currentDeck(group)-1] = false;
-        }  
+        }
     }
 }
 
@@ -188,39 +188,39 @@ firstmix.preview = function (channel, control, value, status, group) {
 firstmix.wheelTouch = function (channel, control, value, status, group) {
     if ((value == 0x7F) && (firstmix.scratchButton[firstmix.currentDeck(group)-1] == true)) {
         engine.scratchEnable(firstmix.currentDeck(group), 180, 33+1/3, alpha, beta);
-	firstmix.touchingWheel[firstmix.currentDeck(group)-1] = true;
+    firstmix.touchingWheel[firstmix.currentDeck(group)-1] = true;
     }
-    else if ((value == 0x7F) && (firstmix.scratchButton[firstmix.currentDeck(group)-1] == false)) 
-	firstmix.touchingWheel[firstmix.currentDeck(group)-1] = true;
+    else if ((value == 0x7F) && (firstmix.scratchButton[firstmix.currentDeck(group)-1] == false))
+    firstmix.touchingWheel[firstmix.currentDeck(group)-1] = true;
 
     else if (value == 0x00) {    // If button up
         engine.scratchDisable(firstmix.currentDeck(group));
-	firstmix.touchingWheel[firstmix.currentDeck(group)-1] = false;
+    firstmix.touchingWheel[firstmix.currentDeck(group)-1] = false;
     }
 }
 
 firstmix.jogWheel = function(channel, control, value, status, group) {
-	var deck = firstmix.currentDeck(group);
-	var adjustedJog = parseFloat(value);
-	var posNeg = 1;
-	if (adjustedJog > 63) {	// Counter-clockwise
-		posNeg = -1;
-		adjustedJog = value - 128;
-	}
-	
+    var deck = firstmix.currentDeck(group);
+    var adjustedJog = parseFloat(value);
+    var posNeg = 1;
+    if (adjustedJog > 63) {    // Counter-clockwise
+        posNeg = -1;
+        adjustedJog = value - 128;
+    }
+
         if ((firstmix.scratchButton[deck-1]) && (firstmix.touchingWheel[deck-1])) { // scratch mode
             var newValue;
             if (value-64 > 0) newValue = value-128;
             else newValue = value;
             engine.scratchTick(firstmix.currentDeck(group),newValue);
-	} else if (firstmix.touchingWheel[deck-1] == true) { // pitch shift mode
-		if (engine.getValue(group,"play")) {
-			adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(adjustedJog) / (gammaInputRange * maxOutFraction), sensitivity);
-		} else {
-			adjustedJog = gammaOutputRange * adjustedJog / (gammaInputRange * maxOutFraction);
-		}
-		engine.setValue(group, "jog", adjustedJog);
-	}
+    } else if (firstmix.touchingWheel[deck-1] == true) { // pitch shift mode
+        if (engine.getValue(group,"play")) {
+            adjustedJog = posNeg * gammaOutputRange * Math.pow(Math.abs(adjustedJog) / (gammaInputRange * maxOutFraction), sensitivity);
+        } else {
+            adjustedJog = gammaOutputRange * adjustedJog / (gammaInputRange * maxOutFraction);
+        }
+        engine.setValue(group, "jog", adjustedJog);
+    }
 }
 
 
@@ -232,7 +232,7 @@ firstmix.jogWheel = function(channel, control, value, status, group) {
 firstmix.wheelTurn = function (channel, control, value, status, group) {
     // Only continue if scratch button was pressed and jogwheel is being touched. If not, skip this.
     if (!(firstmix.scratchButton[firstmix.currentDeck(group)-1] && firstmix.touchingWheel[firstmix.currentDeck(group)-1])) return;
- 
+
     var newValue;
     if (value-64 > 0) newValue = value-128;
     else newValue = value;

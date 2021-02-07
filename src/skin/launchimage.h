@@ -1,16 +1,16 @@
-#ifndef LAUNCHIMAGE_H_
-#define LAUNCHIMAGE_H_
+#pragma once
 
 #include <QWidget>
 
-class QProgressBar;
+QT_FORWARD_DECLARE_CLASS(QProgressBar);
+QT_FORWARD_DECLARE_CLASS(QLabel);
 
 // This is a widget that is shown in the Mixxx main window
 // until the skin is ready to use.
 // It shows a centered Image and a progress bar below.
 // By default a symbolic Mixxx icon and logo is shown.
-// It can be modified in the skin.xml file at <skin> sction,
-// to match the  skin like that:
+// It can be modified in the skin.xml file at <skin> section,
+// to match the skin like that:
 //    <LaunchImageStyle>
 //        LaunchImage { background-color: #202020; }
 //        QLabel {
@@ -39,7 +39,7 @@ class LaunchImage: public QWidget {
   public:
     LaunchImage(QWidget* pParent, const QString& styleSheet);
     virtual ~LaunchImage();
-    void progress(int value);
+    void progress(int value, const QString& serviceName);
 
   protected:
     virtual void paintEvent(QPaintEvent *);
@@ -47,5 +47,3 @@ class LaunchImage: public QWidget {
   private:
     QProgressBar* m_pProgressBar;
 };
-
-#endif // LAUNCHIMAGE_H_

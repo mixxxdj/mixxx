@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="32"
+   height="32"
+   id="svg2"
+   inkscape:version="0.92.3 (unknown)"
+   sodipodi:docname="ic_library_history.svg"
+   style="display:inline"
+   inkscape:export-filename=""
+   inkscape:export-xdpi="135"
+   inkscape:export-ydpi="135">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview26"
+     showgrid="true"
+     inkscape:zoom="11.313708"
+     inkscape:cx="18.878377"
+     inkscape:cy="18.688638"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="ic_library_crates"
+     inkscape:object-paths="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-midpoints="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3788"
+       empspacing="4"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       originx="4"
+       spacingx="1"
+       spacingy="1"
+       color="#00ffe0"
+       opacity="0.1254902"
+       empcolor="#0072ff"
+       empopacity="0.25098039"
+       originy="4"
+       dotted="false" />
+  </sodipodi:namedview>
+  <title
+     id="title5647">Mixxx 1.12+ iconset</title>
+  <defs
+     id="defs28">
+    <linearGradient
+       id="linearGradient5515"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5517" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5695-6">
+      <stop
+         style="stop-color:#3c3c3c;stop-opacity:1;"
+         offset="0"
+         id="stop5697-6" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop5699-7" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5695-4">
+      <stop
+         style="stop-color:#646464;stop-opacity:1;"
+         offset="0"
+         id="stop5697-7" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop5699-6" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942-73">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944-6" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946-6" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942-5">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944-9" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946-5" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient4219"
+       gradientUnits="userSpaceOnUse"
+       x1="-34.862213"
+       y1="8.090909"
+       x2="-34.862213"
+       y2="25.09091" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient4215"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.24166667,0,0,0.91334616,-4.866666,-8.1135391)"
+       x1="24.275867"
+       y1="17.642313"
+       x2="24.27586"
+       y2="41.729565" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient4212"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0,0.24166667,-0.91334616,0,26.113539,5.133334)"
+       x1="11.862065"
+       y1="27.496187"
+       x2="102.89655"
+       y2="27.496189" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient4209"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.12083333,0,0,0.45667308,-0.933333,4.4432303)"
+       x1="16.000013"
+       y1="7.7884369"
+       x2="15.999998"
+       y2="55.962944" />
+  </defs>
+  <metadata
+     id="metadata4">
+    <rdf:RDF>
+      <rdf:Description
+         rdf:about="">
+        <dc:title />
+        <dc:creator />
+        <dc:rights />
+        <dc:description />
+        <dc:format>image/svg+xml</dc:format>
+        <dc:language>en</dc:language>
+      </rdf:Description>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Mixxx 1.12+ iconset</dc:title>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>Mixxx</rdf:li>
+            <rdf:li>GUI</rdf:li>
+            <rdf:li>Interface</rdf:li>
+            <rdf:li>Icons</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>s.brandt@mixxx.org</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
+        <dc:date>2014-04-18</dc:date>
+        <dc:source>www.mixxx.org</dc:source>
+        <dc:description>Iconset for use in Mixxx 1.12s+. Optimized for 48px (16px) icon size. Contains icons for preference menu and library widget
+
+Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc:description>
+        <dc:coverage />
+        <dc:language>en</dc:language>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     style="display:inline"
+     id="ic_library_crates"
+     inkscape:label="#g6169">
+    <g
+       style="display:inline"
+       id="ic_library_history"
+       inkscape:label="#g4221">
+      <rect
+         transform="matrix(0,-1,-1,0,0,0)"
+         style="color:#bebebe;display:inline;overflow:visible;visibility:visible;fill:none;stroke:none;stroke-width:1;marker:none;enable-background:new"
+         id="rect10837-5-8-4-4-2"
+         y="-26"
+         x="-28"
+         height="16"
+         width="16" />
+      <path
+         sodipodi:open="true"
+         sodipodi:end="2.443461"
+         sodipodi:start="3.3161256"
+         transform="matrix(1.2941177,0,0,1.2941176,46.115809,-2.470588)"
+         d="m -30.870866,12.02399 a 8.5,8.5 0 0 1 8.000101,-7.0158999 8.5,8.5 0 0 1 8.581135,6.2919479 8.5,8.5 0 0 1 -4.285507,9.739554 8.5,8.5 0 0 1 -10.436241,-2.075898"
+         sodipodi:ry="8.5"
+         sodipodi:rx="8.5"
+         sodipodi:cy="13.5"
+         sodipodi:cx="-22.5"
+         id="path7817"
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:none;stroke:url(#linearGradient4219);stroke-width:3.090909;stroke-linecap:round;stroke-miterlimit:4;stroke-dasharray:none;marker:none;enable-background:accumulate"
+         sodipodi:type="arc" />
+      <path
+         inkscape:connector-curvature="0"
+         id="path9802"
+         d="M 4,14 C 4,4 4,4 4,4"
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:none;stroke:url(#linearGradient4215);stroke-width:4;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
+      <path
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:none;stroke:url(#linearGradient4212);stroke-width:3.99999976;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate"
+         d="m 4,14 c 10,0 10,0 10,0"
+         id="path9821"
+         inkscape:connector-curvature="0" />
+      <rect
+         y="14.5"
+         x="2.5"
+         height="1"
+         width="1"
+         id="rect9825"
+         style="color:#000000;display:inline;overflow:visible;visibility:visible;fill:none;stroke:url(#linearGradient4209);stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;marker:none;enable-background:accumulate" />
+    </g>
+  </g>
+</svg>

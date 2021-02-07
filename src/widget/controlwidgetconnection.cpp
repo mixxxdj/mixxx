@@ -1,10 +1,13 @@
 #include "widget/controlwidgetconnection.h"
 
-#include "widget/wbasewidget.h"
+#include <QStyle>
+
 #include "control/controlproxy.h"
+#include "moc_controlwidgetconnection.cpp"
+#include "util/assert.h"
 #include "util/debug.h"
 #include "util/valuetransformer.h"
-#include "util/assert.h"
+#include "widget/wbasewidget.h"
 
 ControlWidgetConnection::ControlWidgetConnection(
         WBaseWidget* pBaseWidget,
@@ -12,8 +15,8 @@ ControlWidgetConnection::ControlWidgetConnection(
         ValueTransformer* pTransformer)
         : m_pWidget(pBaseWidget),
           m_pValueTransformer(pTransformer) {
-    m_pControl = new ControlProxy(key, this);
-    m_pControl->connectValueChanged(SLOT(slotControlValueChanged(double)));
+    m_pControl = new ControlProxy(key, this, ControlFlag::NoAssertIfMissing);
+    m_pControl->connectValueChanged(this, &ControlWidgetConnection::slotControlValueChanged);
 }
 
 void ControlWidgetConnection::setControlParameter(double parameter) {
@@ -54,9 +57,10 @@ void ControlParameterWidgetConnection::Init() {
 
 QString ControlParameterWidgetConnection::toDebugString() const {
     const ConfigKey& key = getKey();
-    return QString("%1,%2 Parameter: %3 Direction: %4 Emit: %5")
+    return QString("%1,%2 Parameter: %3 Value: %4 Direction: %5 Emit: %6")
             .arg(key.group, key.item,
                  QString::number(m_pControl->getParameter()),
+                 QString::number(m_pControl->get()),
                  directionOptionToString(m_directionOption),
                  emitOptionToString(m_emitOption));
 }
@@ -96,7 +100,7 @@ ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(
         WBaseWidget* pBaseWidget, const ConfigKey& key,
         ValueTransformer* pTransformer, const QString& propertyName)
         : ControlWidgetConnection(pBaseWidget, key, pTransformer),
-          m_propertyName(propertyName.toAscii()) {
+          m_propertyName(propertyName.toLatin1()) {
     slotControlValueChanged(m_pControl->get());
 }
 
@@ -121,7 +125,17 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
     }
 
     if (!pWidget->setProperty(m_propertyName.constData(),parameter)) {
-        qDebug() << "Setting property" << m_propertyName
-                << "to widget failed. Value:" << parameter;
+        qWarning() << "Property" << m_propertyName
+                   << "was not defined for widget" << pWidget->objectName()
+                   << "of type" << pWidget->metaObject()->className()
+                   << "(parameter:" << parameter << ")";
     }
+
+    // According to http://stackoverflow.com/a/3822243 this is the least
+    // expensive way to restyle just this widget.
+    pWidget->style()->unpolish(pWidget);
+    pWidget->style()->polish(pWidget);
+
+    // These calls don't always trigger the repaint, so call it explicitly.
+    pWidget->repaint();
 }

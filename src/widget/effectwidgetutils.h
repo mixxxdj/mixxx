@@ -1,9 +1,11 @@
-#ifndef EFFECTWIDGETUTILS_H
-#define EFFECTWIDGETUTILS_H
+#pragma once
 
 #include <QDomNode>
 
 #include "effects/effectsmanager.h"
+#include "effects/defs.h"
+#include "effects/effectrack.h"
+#include "effects/effectslot.h"
 #include "skin/skincontext.h"
 
 class EffectWidgetUtils {
@@ -118,5 +120,3 @@ class EffectWidgetUtils {
   private:
     EffectWidgetUtils() = default;
 };
-
-#endif /* EFFECTWIDGETUTILS_H */

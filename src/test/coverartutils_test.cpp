@@ -1,12 +1,12 @@
-#include <gtest/gtest.h>
-#include <QStringBuilder>
-#include <QFileInfo>
-
-#include "sources/soundsourceproxy.h"
-#include "library/coverartcache.h"
 #include "library/coverartutils.h"
-#include "library/trackcollection.h"
-#include "test/mixxxtest.h"
+
+#include <QFileInfo>
+#include <QTemporaryDir>
+
+#include "library/coverartcache.h"
+#include "sources/soundsourceproxy.h"
+#include "test/librarytest.h"
+#include "track/track.h"
 
 namespace {
 
@@ -30,32 +30,13 @@ void extractEmbeddedCover(
 
 } // anonymous namespace
 
-// first inherit from MixxxTest to construct a QApplication to be able to
-// construct the default QPixmap in CoverArtCache
-class CoverArtUtilTest : public MixxxTest, public CoverArtCache {
-  protected:
-    virtual void SetUp() {
-        m_pTrackCollection = new TrackCollection(config());
-    }
-
-    virtual void TearDown() {
-        // make sure we clean up the db
-        QSqlQuery query(m_pTrackCollection->getDatabase());
-        query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
-        ASSERT_TRUE(query.exec());
-        query.prepare("DELETE FROM library");
-        ASSERT_TRUE(query.exec());
-        query.prepare("DELETE FROM track_locations");
-        ASSERT_TRUE(query.exec());
-
-        delete m_pTrackCollection;
-    }
-
-    TrackCollection* m_pTrackCollection;
+// First inherit from LibraryTest to construct an QApplication instance
+// needed by CoverArtCache for the default QPixmapCache.
+// LibraryTest is required to instantiate the GlobalTrackCache singleton.
+class CoverArtUtilTest : public LibraryTest, CoverArtCache {
 };
 
 TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
-    QImage cover;
     QImage referencePNGImage = QImage(kReferencePNGLocationTest);
     QImage referenceJPGImage = QImage(kReferenceJPGLocationTest);
 
@@ -76,7 +57,11 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
 
     if (isSupportedFileExtension("m4a")) {
         extractEmbeddedCover(
-                kTestDir.absoluteFilePath("cover-test.m4a"), pToken, referencePNGImage);
+                kTestDir.absoluteFilePath("cover-test-itunes-12.3.0-aac.m4a"), pToken, referencePNGImage);
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test-itunes-12.7.0-aac.m4a"), pToken, referencePNGImage);
+        extractEmbeddedCover(
+                kTestDir.absoluteFilePath("cover-test-itunes-12.7.0-alac.m4a"), pToken, referencePNGImage);
     }
 
     if (isSupportedFileExtension("mp3")) {
@@ -112,31 +97,29 @@ TEST_F(CoverArtUtilTest, extractEmbeddedCover) {
 
 TEST_F(CoverArtUtilTest, searchImage) {
     // creating a temp track directory
-    QString trackdir(QDir::tempPath() % "/TrackDir");
-    ASSERT_FALSE(QDir().exists(trackdir)); // it must start empty
-    ASSERT_TRUE(QDir().mkpath(trackdir));
+    QTemporaryDir tempTrackDir;
+    ASSERT_TRUE(tempTrackDir.isValid());
+    QString trackdir = QString(tempTrackDir.path());
 
     const QString kTrackLocationTest(kTestDir.absoluteFilePath("cover-test-png.mp3"));
 
     TrackPointer pTrack(Track::newTemporary(kTrackLocationTest));
-    SoundSourceProxy(pTrack).loadTrackMetadata();
-    QLinkedList<QFileInfo> covers;
-    CoverInfo res;
+    QList<QFileInfo> covers;
+    CoverInfoRelative res;
     // looking for cover in an empty directory
     res = CoverArtUtils::selectCoverArtForTrack(*pTrack, covers);
-    CoverInfo expected1;
+    CoverInfoRelative expected1;
     expected1.source = CoverInfo::GUESSED;
-    expected1.trackLocation = pTrack->getLocation();
     EXPECT_EQ(expected1, res);
 
     // Looking for a track with embedded cover.
-    pTrack = TrackPointer(Track::newTemporary(kTrackLocationTest));
-    SoundSourceProxy(pTrack).loadTrackMetadataAndCoverArt();
-    CoverInfo result = pTrack->getCoverInfo();
+    pTrack = Track::newTemporary(kTrackLocationTest);
+    SoundSourceProxy(pTrack).updateTrackFromSource();
+    CoverInfo result = pTrack->getCoverInfoWithLocation();
     EXPECT_EQ(result.type, CoverInfo::METADATA);
     EXPECT_EQ(result.source, CoverInfo::GUESSED);
     EXPECT_EQ(result.coverLocation, QString());
-    EXPECT_NE(result.hash, CoverInfoRelative().hash);
+    EXPECT_NE(result.cacheKey(), CoverInfoRelative().cacheKey());
 
     const char* format("jpg");
     const QString qFormat(format);
@@ -146,7 +129,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     // stuff below.
 
     result.trackLocation = kTrackLocationTest;
-    const QImage img = CoverArtUtils::loadCover(result);
+    const QImage img = result.loadImage().image;
     EXPECT_EQ(img.isNull(), false);
 
     QString trackBaseName = "cover-test";
@@ -164,7 +147,6 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     // All the following expect the same image/hash to be selected.
     CoverInfoRelative expected2;
-    expected2.hash = CoverInfoRelative().hash;
 
     // All the following expect FILE and GUESSED.
     expected2.type = CoverInfo::FILE;
@@ -176,7 +158,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     // looking for cover in an directory with one image will select that one.
     expected2.coverLocation = "foo.jpg";
-    expected2.hash = CoverArtUtils::calculateHash(QImage(cLoc_foo));
+    expected2.setImage(QImage(cLoc_foo));
     covers << QFileInfo(cLoc_foo);
     CoverInfoRelative res2 = CoverArtUtils::selectCoverArtForTrack(
             trackBaseName, trackAlbum, covers);
@@ -196,7 +178,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     extraCovers << cLoc_big3;
 
     // saving more covers using the preferred names in the right order
-    QLinkedList<QFileInfo> prefCovers;
+    QList<QFileInfo> prefCovers;
     // 1. track_filename.jpg
     QString cLoc_filename = QString(trackdir % "/cover-test." % qFormat);
     EXPECT_TRUE(img.scaled(500,500).save(cLoc_filename, format));
@@ -244,16 +226,16 @@ TEST_F(CoverArtUtilTest, searchImage) {
         if (cover.baseName() == "other1") {
             expected2.type = CoverInfo::NONE;
             expected2.coverLocation = QString();
-            expected2.hash = CoverInfoRelative().hash;
+            expected2.setImage();
         } else {
             expected2.type = CoverInfo::FILE;
             expected2.coverLocation = cover.fileName();
-            expected2.hash = CoverArtUtils::calculateHash(QImage(cover.filePath()));
+            expected2.setImage(QImage(cover.filePath()));
         }
         res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                     prefCovers);
         EXPECT_QSTRING_EQ(expected2.coverLocation, res2.coverLocation);
-        EXPECT_EQ(expected2.hash, res2.hash);
+        EXPECT_EQ(expected2.cacheKey(), res2.cacheKey());
         EXPECT_EQ(expected2, res2);
 
         QFile::remove(cover.filePath());
@@ -276,7 +258,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
 
     res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                 prefCovers);
-    expected2.hash = CoverArtUtils::calculateHash(QImage(cLoc_coverJPG));
+    expected2.setImage(QImage(cLoc_coverJPG));
     expected2.coverLocation = "cover.JPG";
     EXPECT_EQ(expected2, res2);
 
@@ -293,7 +275,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     prefCovers.append(QFileInfo(cLoc_albumName));
     res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                 prefCovers);
-    expected2.hash = CoverArtUtils::calculateHash(QImage(cLoc_albumName));
+    expected2.setImage(QImage(cLoc_albumName));
     expected2.coverLocation = trackAlbum % ".jpg";
     EXPECT_EQ(expected2, res2);
 
@@ -304,7 +286,7 @@ TEST_F(CoverArtUtilTest, searchImage) {
     res2 = CoverArtUtils::selectCoverArtForTrack(trackBaseName, trackAlbum,
                                                 prefCovers);
 
-    expected2.hash = CoverArtUtils::calculateHash(QImage(cLoc_filename));
+    expected2.setImage(QImage(cLoc_filename));
     expected2.coverLocation = trackBaseName % ".jpg";
     EXPECT_EQ(expected2, res2);
 
@@ -315,5 +297,4 @@ TEST_F(CoverArtUtilTest, searchImage) {
     foreach (QString loc, extraCovers) {
         QFile::remove(loc);
     }
-    EXPECT_TRUE(QDir(trackdir).rmdir(trackdir));
 }

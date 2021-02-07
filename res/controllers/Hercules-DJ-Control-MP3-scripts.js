@@ -5,7 +5,7 @@ function HerculesMp3 () {}
 
 jog_sens = 1;
 
-//Warning! setting enable_beats to true, will enable Autobeat lights to flash near a beat. 
+//Warning! setting enable_beats to true, will enable Autobeat lights to flash near a beat.
 //Unfortunately I had to use a buffer to avoid sending signal to the controller too close each other.
 //If you enable this feature, leds could not properly work.
 //In the future, a function midi.sendShortMsgBuffered() will be implemented in Mixxx code and I will try to fix this.
@@ -100,7 +100,7 @@ HerculesMp3.init = function (id) { // called when the device is opened & set up
     bshot = [];
 
     VLset = [];
-    
+
     for(decks=1;  decks<=2; decks++){
         Deck[decks] = "[Channel"+decks+"]";
         loopc[decks] = 0;
@@ -288,7 +288,7 @@ HerculesMp3.loop = function (deck, control, value) {
     if(value) {
         is_hold_loop[deck] = false;
         timerloopID[deck] = engine.beginTimer(700,"HerculesMp3.loophold("+deck+")",true);
-    } 
+    }
     else {
         engine.stopTimer(timerloopID[deck]);
         if(!is_hold_loop[deck]) {
@@ -320,7 +320,7 @@ HerculesMp3.fxbutton = function (fxnumber) {
 
         case "fx 3" :
             return "hotcue_3_";
-            break;	
+            break;
     }
 
 };
@@ -365,12 +365,12 @@ HerculesMp3.mode = function (group, control, value, status) {
         sNextMode = HerculesMp3.buttons123Modes[nextMode];
         sCurrentMode = HerculesMp3.buttons123Modes[currentMode];
         for ( fxcontrol in HerculesMp3.controls.outputs){
-            if(HerculesMp3.controls.outputs[fxcontrol].channel == n && 
+            if(HerculesMp3.controls.outputs[fxcontrol].channel == n &&
                     HerculesMp3.controls.outputs[fxcontrol].name == sCurrentMode+" mode")
             {
                 currentLed = fxcontrol;
             }
-            if(HerculesMp3.controls.outputs[fxcontrol].channel == n && 
+            if(HerculesMp3.controls.outputs[fxcontrol].channel == n &&
                     HerculesMp3.controls.outputs[fxcontrol].name == sNextMode+" mode")
             {
                 nextLed = fxcontrol;
@@ -386,20 +386,20 @@ HerculesMp3.mode = function (group, control, value, status) {
                     HerculesMp3.ledblink(nextLed, false);
                     returnblink[n] = true;
                 }
-                HerculesMp3.led(nextLed, true); 
+                HerculesMp3.led(nextLed, true);
                 //print("HerculesMp3.buttons123mode: Switching to " + sNextMode + " mode");
                 break;
             case "cue":
                 if(returnblink[n]){
                     HerculesMp3.ledblink(currentLed, true);
                 }
-                HerculesMp3.led(currentLed, false); 
-                HerculesMp3.led(nextLed, true); 
+                HerculesMp3.led(currentLed, false);
+                HerculesMp3.led(nextLed, true);
                 //print("HerculesMp3.buttons123mode: Switching to " + sNextMode + " mode");
-                break; 
+                break;
             case "loop":
-                HerculesMp3.led(currentLed, false); 
-                HerculesMp3.led(nextLed, true); 
+                HerculesMp3.led(currentLed, false);
+                HerculesMp3.led(nextLed, true);
                 //print("HerculesMp3.buttons123mode: " + sNextMode + " mode");
                 break;
         }
@@ -424,7 +424,7 @@ HerculesMp3.fx = function (group, control, value, status) {
             if (value){
                 HerculesMp3.controls.inputs[control].used = true;
             }
-            else { HerculesMp3.controls.inputs[control].used = false; 
+            else { HerculesMp3.controls.inputs[control].used = false;
             }
             break;
 
@@ -449,7 +449,7 @@ HerculesMp3.fx = function (group, control, value, status) {
                     HerculesMp3.controls.outputs[nextLed].isblinking = scratch[n];
                     returnblink[n] = scratch[n];
                     }
-                
+
             }
             if (HerculesMp3.controls.inputs[control].name == "fx 2"){
                 if(value){bpm.tapButton(n);}
@@ -499,7 +499,7 @@ HerculesMp3.pitchpot = function (group, control, value, status) {
         }
     }
 
-    if (name == "fx 1"){ 
+    if (name == "fx 1"){
         chan = Deck[n];
         action = "pregain";
         min = -4;
@@ -566,7 +566,7 @@ HerculesMp3.jog_wheel = function (group, control, value, status) {
                 var jogValue = value >=0x40 ? value - 0x80 : value;
                 jogValue = jogValue*jog_sens;
                 engine.setValue(Deck[n],"jog", jogValue);
-                
+
             }
         }
     }
@@ -579,9 +579,9 @@ HerculesMp3.jog_wheelhelper = function(n) {
 }
 
 HerculesMp3.joystick = function (group, control, value, status) {
-    if(!value) 
+    if(!value)
         engine.setValue("[Playlist]","SelectPrevTrack", 1);
-    if(value == 0x7F) 
+    if(value == 0x7F)
         engine.setValue("[Playlist]","SelectNextTrack",1);
 };
 
@@ -602,7 +602,7 @@ HerculesMp3.bpconnectA = function (valueA) {
        if(valueA){
         HerculesMp3.controls.outputs[0x0A].beatlen = 6000/valueA;
     }
-    else	{
+    else    {
         HerculesMp3.controls.outputs[0x0A].beatlen=0;
     }
 };
@@ -611,7 +611,7 @@ HerculesMp3.bpconnectB = function (valueB) {
     if(valueB){
         HerculesMp3.controls.outputs[0x04].beatlen = 6000/valueB;
     }
-    else	{
+    else    {
         HerculesMp3.controls.outputs[0x04].beatlen=0;
     }
 };
@@ -627,7 +627,7 @@ HerculesMp3.bblinkA = function (csecA) {
                 if(!HerculesMp3.controls.outputs[0x0A].status)
                     {HerculesMp3.led(0x0A, true);
                     }
-            } 
+            }
             if((actposA+csecA/3)>(bshot[1]-1)*csecA && (actposA+csecA/6)<bshot[1]*csecA) {
                 if(HerculesMp3.controls.outputs[0x0A].status) HerculesMp3.led(0x0A, false);
             }

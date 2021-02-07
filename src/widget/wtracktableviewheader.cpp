@@ -1,10 +1,9 @@
-// wtracktableviewheader.cpp
-// Created 1/2/2010 by RJ Ryan (rryan@mit.edu)
+#include "widget/wtracktableviewheader.h"
 
 #include <QtDebug>
 
-#include "widget/wtracktableviewheader.h"
 #include "library/trackmodel.h"
+#include "moc_wtracktableviewheader.cpp"
 #include "util/math.h"
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
@@ -38,20 +37,22 @@ HeaderViewState::HeaderViewState(const QHeaderView& headers)
 }
 
 HeaderViewState::HeaderViewState(const QString& base64serialized) {
-    QByteArray array;
-    array.append(base64serialized);
     // First decode the array from Base64, then initialize the protobuf from it.
-    array = QByteArray::fromBase64(array);
+    QByteArray array = QByteArray::fromBase64(base64serialized.toLatin1());
     if (!m_view_state.ParseFromArray(array.constData(), array.size())) {
-        qDebug() << "ERROR: Could not parse m_view_state from QByteArray of size "
-                 << array.size();
+        qWarning() << "Could not parse m_view_state from QByteArray of size "
+                   << array.size();
         return;
     }
 }
 
 QString HeaderViewState::saveState() const {
     // Serialize the proto to a byte array, then encode the array as Base64.
+#if GOOGLE_PROTOBUF_VERSION >= 3001000
+    size_t size = m_view_state.ByteSizeLong();
+#else
     int size = m_view_state.ByteSize();
+#endif
     QByteArray array(size, '\0');
     m_view_state.SerializeToArray(array.data(), size);
     return QString(array.toBase64());
@@ -72,7 +73,8 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
     for (int li = 0; li < headers->count(); ++li) {
         headers->setSectionHidden(li, true);
         auto it = map.find(headers->model()->headerData(
-            li, Qt::Horizontal, TrackModel::kHeaderNameRole).toString());
+                                                   li, Qt::Horizontal, TrackModel::kHeaderNameRole)
+                                   .toString());
         if (it != map.end()) {
             it.value()->set_logical_index(li);
         }
@@ -97,10 +99,7 @@ void HeaderViewState::restoreState(QHeaderView* headers) {
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
                                              QWidget* parent)
         : QHeaderView(orientation, parent),
-          m_menu(tr("Show or hide columns."), this),
-          m_signalMapper(this) {
-    connect(&m_signalMapper, SIGNAL(mapped(int)),
-            this, SLOT(showOrHideColumn(int)));
+          m_menu(tr("Show or hide columns."), this) {
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
@@ -139,7 +138,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     restoreHeaderState();
 
     // Here we can override values to prevent restoring corrupt values from database
-    setMovable(true);
+    setSectionsMovable(true);
 
     // Setting true in the next line causes Bug #925619 at least with Qt 4.6.1
     setCascadingSectionResizes(false);
@@ -153,13 +152,13 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         }
 
         QString title = model->headerData(i, orientation()).toString();
-        auto action = new QAction(title, &m_menu);
+        auto* action = new QAction(title, &m_menu);
         action->setCheckable(true);
 
         /* If Mixxx starts the first time or the header states have been cleared
          * due to database schema evolution we gonna hide all columns that may
          * contain a potential large number of NULL values.  Here we uncheck
-         * item in the context menu that are hidden by defualt (e.g., key
+         * item in the context menu that are hidden by default (e.g., key
          * column)
          */
         if (!hasPersistedHeaderState() &&
@@ -169,11 +168,10 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
             action->setChecked(!isSectionHidden(i));
         }
 
-        // Map this action's signals via our QSignalMapper
-        m_signalMapper.setMapping(action, i);
+        // Map this action's signals
         m_columnActions.insert(i, action);
-        connect(action, SIGNAL(triggered()),
-                &m_signalMapper, SLOT(map()));
+        connect(action, &QAction::triggered,
+                this, [this, i] { showOrHideColumn(i); });
         m_menu.addAction(action);
 
         // force the section size to be a least WTTVH_MINIMUM_SECTION_SIZE
@@ -281,7 +279,7 @@ void WTrackTableViewHeader::showOrHideColumn(int column) {
 
 int WTrackTableViewHeader::hiddenCount() {
     int count = 0;
-    for (const auto& pAction : m_columnActions) {
+    for (const auto& pAction : qAsConst(m_columnActions)) {
         if (!pAction->isChecked()) {
             count += 1;
         }

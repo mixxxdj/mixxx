@@ -1,5 +1,4 @@
-#ifndef MIXXX_UTIL_SAMPLE_H
-#define MIXXX_UTIL_SAMPLE_H
+#pragma once
 
 #include <algorithm>
 #include <cstring> // memset
@@ -20,6 +19,11 @@ class SampleUtil {
         CLIPPING_RIGHT = 2,
     };
     Q_DECLARE_FLAGS(CLIP_STATUS, CLIP_FLAG);
+
+    // The PlayPosition, Loops and Cue Points used in the Database and
+    // Mixxx CO interface are expressed as a floating point number of stereo samples.
+    // This is some legacy, we cannot easily revert.
+    static constexpr double kPlayPositionChannels = 2.0;
 
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
     // is 16-byte aligned for SSE enhancement.
@@ -108,6 +112,23 @@ class SampleUtil {
         return playPosFrames * numChannels;
     }
 
+    inline static SINT roundPlayPosToFrame(double playPos) {
+        return static_cast<SINT>(round(playPos / kPlayPositionChannels));
+    }
+
+    inline static SINT truncPlayPosToFrame(double playPos) {
+        return static_cast<SINT>(playPos / kPlayPositionChannels);
+    }
+
+    inline static SINT floorPlayPosToFrame(double playPos) {
+        return static_cast<SINT>(floor(playPos / kPlayPositionChannels));
+
+    }
+
+    inline static SINT ceilPlayPosToFrame(double playPos) {
+        return static_cast<SINT>(ceil(playPos / kPlayPositionChannels));
+    }
+
     // Multiply every sample in pBuffer by gain
     static void applyGain(CSAMPLE* pBuffer, CSAMPLE gain,
             SINT numSamples);
@@ -122,6 +143,10 @@ class SampleUtil {
     static void applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain1,
             CSAMPLE_GAIN gain2, SINT numSamples);
 
+    static void applyRampingAlternatingGain(CSAMPLE* pBuffer,
+            CSAMPLE gain1, CSAMPLE gain2,
+            CSAMPLE gain1Old, CSAMPLE gain2Old, SINT numSamples);
+
     // Multiply every sample in pBuffer ramping from gain1 to gain2.
     // We use ramping as often as possible to prevent soundwave discontinuities
     // which can cause audible clicks and pops.
@@ -134,6 +159,9 @@ class SampleUtil {
     static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
             CSAMPLE_GAIN old_gain, CSAMPLE_GAIN new_gain,
             SINT numSamples);
+
+    // Add pSrc to pDest
+    static void add(CSAMPLE* pDest, const CSAMPLE* pSrc, SINT numSamples);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
@@ -194,13 +222,12 @@ class SampleUtil {
     static void deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
             const CSAMPLE* pSrc, SINT numSamples);
 
-    // Crossfade two buffers together and put the result in pDest.  All the
-    // buffers must be the same length.  pDest may be an alias of the source
-    // buffers.  It is preferable to use the copyWithRamping functions, but
-    // sometimes this function is necessary.
-    static void linearCrossfadeBuffers(CSAMPLE* pDest,
-            const CSAMPLE* pSrcFadeOut, const CSAMPLE* pSrcFadeIn,
-            SINT numSamples);
+    /// Crossfade two buffers together. All the buffers must be the same length.
+    /// pDest is in one version the Out and in the other version the In buffer.
+    static void linearCrossfadeBuffersOut(
+            CSAMPLE* pDestSrcFadeOut, const CSAMPLE* pSrcFadeIn, SINT numSamples);
+    static void linearCrossfadeBuffersIn(
+            CSAMPLE* pDestSrcFadeIn, const CSAMPLE* pSrcFadeOut, SINT numSamples);
 
     // Mix a buffer down to mono, putting the result in both of the channels.
     // This uses a simple (L+R)/2 method, which assumes that the audio is
@@ -218,6 +245,13 @@ class SampleUtil {
     // (numFrames) samples will be read from pSrc
     // (numFrames * 2) samples will be written into pDest
     static void copyMonoToDualMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
+            SINT numFrames);
+
+    // Adds and doubles the mono samples in pSrc to dual mono samples
+    // to pDest.
+    // (numFrames) samples will be read from pSrc
+    // (numFrames * 2) samples will be added to pDest
+    static void addMonoToStereo(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numFrames);
 
     // In-place strips interleaved multi-channel samples in pBuffer with
@@ -252,5 +286,3 @@ class SampleUtil {
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(SampleUtil::CLIP_STATUS);
-
-#endif /* MIXXX_UTIL_SAMPLE_H */

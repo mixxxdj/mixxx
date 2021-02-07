@@ -1,0 +1,24 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An effect meta knob.
+  Variables:
+    EffectRack: the rack
+    EffectUnit: the chain
+    Effect: the effect
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>EffectMetaKnob</ObjectName>
+    <Layout>vertical</Layout>
+    <Size>40f,34f</Size>
+    <Children>
+      <Template src="skin:knob.xml">
+        <SetVariable name="TooltipId">EffectSlot_metaknob</SetVariable>
+        <SetVariable name="group">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>]</SetVariable>
+        <SetVariable name="control">meta</SetVariable>
+        <SetVariable name="color">blue_gapless</SetVariable>
+      </Template>
+    </Children>
+  </WidgetGroup>
+</Template>

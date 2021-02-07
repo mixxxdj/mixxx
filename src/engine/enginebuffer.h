@@ -1,33 +1,16 @@
-/***************************************************************************
-                          enginebuffer.h  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
- ***************************************************************************/
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEBUFFER_H
-#define ENGINEBUFFER_H
-
-#include <QMutex>
-#include <QAtomicInt>
 #include <gtest/gtest_prod.h>
 
-#include "engine/cachingreader.h"
-#include "preferences/usersettings.h"
+#include <QAtomicInt>
+#include <QMutex>
+
 #include "control/controlvalue.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "engine/engineobject.h"
 #include "engine/sync/syncable.h"
-#include "track/track.h"
+#include "preferences/usersettings.h"
+#include "track/track_decl.h"
 #include "util/rotary.h"
 #include "util/types.h"
 
@@ -64,10 +47,6 @@ class EngineWorkerScheduler;
 class VisualPlayPosition;
 class EngineMaster;
 
-/**
-  *@author Tue and Ken Haste Andersen
-*/
-
 // Length of audio beat marks in samples
 const int audioBeatMarkLen = 40;
 
@@ -75,9 +54,7 @@ const int audioBeatMarkLen = 40;
 const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated
-const int kiPlaypositionUpdateRate = 10; // updates per second
-// Number of kiUpdateRates that go by before we update BPM.
-const int kiBpmUpdateCnt = 4; // about 2.5 updates per sec
+const int kiPlaypositionUpdateRate = 15; // updates per second
 
 class EngineBuffer : public EngineObject {
      Q_OBJECT
@@ -90,10 +67,19 @@ class EngineBuffer : public EngineObject {
     };
   public:
     enum SeekRequest {
-        SEEK_NONE = 0x00,
-        SEEK_PHASE = 0x01,
-        SEEK_EXACT = 0x02,
-        SEEK_STANDARD = 0x03, // = (SEEK_EXACT | SEEK_PHASE)
+        SEEK_NONE = 0u,
+        /// Force an in-phase seek
+        SEEK_PHASE = 1u,
+        /// Bypass Quantization
+        SEEK_EXACT = 2u,
+        /// This is an artificial state that happens if an exact seek and a
+        /// phase seek are scheduled at the same time.
+        SEEK_EXACT_PHASE = SEEK_PHASE | SEEK_EXACT,
+        /// #SEEK_PHASE if Quantize enables, otherwise SEEK_EXACT
+        SEEK_STANDARD = 4u,
+        /// This is an artificial state that happens if a standard seek and a
+        /// phase seek are scheduled at the same time.
+        SEEK_STANDARD_PHASE = SEEK_STANDARD | SEEK_PHASE,
     };
     Q_DECLARE_FLAGS(SeekRequests, SeekRequest);
 
@@ -103,19 +89,25 @@ class EngineBuffer : public EngineObject {
         KEYLOCK_ENGINE_COUNT,
     };
 
-    EngineBuffer(QString _group, UserSettingsPointer pConfig,
+    EngineBuffer(const QString& group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
     virtual ~EngineBuffer();
 
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
+    QString getGroup() const;
     // Return the current rate (not thread-safe)
-    double getSpeed();
-    bool getScratching();
+    double getSpeed() const;
+    bool getScratching() const;
+    bool isReverse() const;
     // Returns current bpm value (not thread-safe)
-    double getBpm();
+    double getBpm() const;
     // Returns the BPM of the loaded track around the current position (not thread-safe)
-    double getLocalBpm();
+    double getLocalBpm() const;
+    /// Sets a beatloop for the loaded track (not thread safe)
+    void setBeatLoop(double startPosition, bool enabled);
+    /// Sets a loop for the loaded track (not thread safe)
+    void setLoop(double startPosition, double endPositon, bool enabled);
     // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
@@ -124,30 +116,35 @@ class EngineBuffer : public EngineObject {
     void requestSyncPhase();
     void requestEnableSync(bool enabled);
     void requestSyncMode(SyncMode mode);
+    void requestClonePosition(EngineChannel* pChannel);
 
     // The process methods all run in the audio callback.
     void process(CSAMPLE* pOut, const int iBufferSize);
     void processSlip(int iBufferSize);
     void postProcess(const int iBufferSize);
 
-    QString getGroup();
-    bool isTrackLoaded();
+    /// Return true iff a seek is currently queued but not yet processed
+    /// If no seek was queued, the seek position is set to -1
+    bool getQueuedSeekPosition(double* pSeekPosition) const;
+
+    bool isTrackLoaded() const;
     TrackPointer getLoadedTrack() const;
 
-    double getVisualPlayPos();
-    double getTrackSamples();
+    double getExactPlayPos() const;
+    double getVisualPlayPos() const;
+    double getTrackSamples() const;
+
+    double getRateRatio() const;
 
     void collectFeatures(GroupFeatureState* pGroupFeatures) const;
 
-    // For dependency injection of readers.
-    //void setReader(CachingReader* pReader);
-
     // For dependency injection of scalers.
-    void setScalerForTest(EngineBufferScale* pScaleVinyl,
-                          EngineBufferScale* pScaleKeylock);
+    void setScalerForTest(
+            EngineBufferScale* pScaleVinyl,
+            EngineBufferScale* pScaleKeylock);
 
-    // For dependency injection of fake tracks, with an optional filebpm value.
-    TrackPointer loadFakeTrack(double filebpm = 0);
+    // For injection of fake tracks.
+    void loadFakeTrack(TrackPointer pTrack, bool bPlay);
 
     static QString getKeylockEngineName(KeylockEngine engine) {
         switch (engine) {
@@ -175,23 +172,23 @@ class EngineBuffer : public EngineObject {
     void slotControlSeek(double);
     void slotControlSeekAbs(double);
     void slotControlSeekExact(double);
-    void slotControlSlip(double);
     void slotKeylockEngineChanged(double);
 
     void slotEjectTrack(double);
 
   signals:
     void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
-    void trackLoadFailed(TrackPointer pTrack, QString reason);
+    void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private slots:
     void slotTrackLoading();
     void slotTrackLoaded(TrackPointer pTrack,
                          int iSampleRate, int iNumSamples);
     void slotTrackLoadFailed(TrackPointer pTrack,
-                             QString reason);
+            const QString& reason);
     // Fired when passthrough mode is enabled or disabled.
     void slotPassthroughChanged(double v);
+    void slotUpdatedTrackBeats();
 
   private:
     // Add an engine control to the EngineBuffer
@@ -217,27 +214,40 @@ class EngineBuffer : public EngineObject {
     // to prevent pops.
     void readToCrossfadeBuffer(const int iBufferSize);
 
+    // Copy the play position from the given buffer
+    void seekCloneBuffer(EngineBuffer* pOtherBuffer);
+
     // Reset buffer playpos and set file playpos.
     void setNewPlaypos(double playpos);
 
     void processSyncRequests();
     void processSeek(bool paused);
 
-    bool updateIndicatorsAndModifyPlay(bool newPlay);
+    bool updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay);
     void verifyPlay();
+    void notifyTrackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack);
+    void processTrackLocked(CSAMPLE* pOutput, const int iBufferSize, int sample_rate);
 
     // Holds the name of the control group
-    QString m_group;
+    const QString m_group;
     UserSettingsPointer m_pConfig;
 
-    LoopingControl* m_pLoopingControl;
-    FRIEND_TEST(LoopingControlTest, LoopHalveButton_HalvesLoop);
+    friend class CueControlTest;
+    friend class HotcueControlTest;
+
+    LoopingControl* m_pLoopingControl; // used for testes
+    FRIEND_TEST(LoopingControlTest, LoopScale_HalvesLoop);
     FRIEND_TEST(LoopingControlTest, LoopMoveTest);
     FRIEND_TEST(LoopingControlTest, LoopResizeSeek);
+    FRIEND_TEST(LoopingControlTest, ReloopToggleButton_DoesNotJumpAhead);
+    FRIEND_TEST(LoopingControlTest, ReloopAndStopButton);
+    FRIEND_TEST(LoopingControlTest, Beatjump_JumpsByBeats);
     FRIEND_TEST(SyncControlTest, TestDetermineBpmMultiplier);
     FRIEND_TEST(EngineSyncTest, HalfDoubleBpmTest);
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
+    FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
+    FRIEND_TEST(EngineSyncTest, BeatMapQantizePlay);
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
     EngineSync* m_pEngineSync;
     SyncControl* m_pSyncControl;
@@ -266,6 +276,9 @@ class EngineBuffer : public EngineObject {
     // need updating.
     double m_speed_old;
 
+    // The previous callback's tempo ratio.
+    double m_tempo_ratio_old;
+
     // True if the previous callback was scratching.
     bool m_scratching_old;
 
@@ -284,24 +297,21 @@ class EngineBuffer : public EngineObject {
     double m_rate_old;
 
     // Copy of length of file
-    int m_trackSamplesOld;
+    double m_trackSamplesOld;
 
     // Copy of file sample rate
-    int m_trackSampleRateOld;
+    double m_trackSampleRateOld;
 
-    // Mutex controlling weather the process function is in pause mode. This happens
+    // Mutex controlling whether the process function is in pause mode. This happens
     // during seek and loading of a new track
     QMutex m_pause;
     // Used in update of playpos slider
-    int m_iSamplesCalculated;
-    int m_iUiSlowTick;
+    int m_iSamplesSinceLastIndicatorUpdate;
 
     // The location where the track would have been had slip not been engaged
     double m_dSlipPosition;
     // Saved value of rate for slip mode
     double m_dSlipRate;
-    // m_slipEnabled is a boolean accessed from multiple threads, so we use an atomic int.
-    QAtomicInt m_slipEnabled;
     // m_bSlipEnabledProcessing is only used by the engine processing thread.
     bool m_bSlipEnabledProcessing;
 
@@ -317,8 +327,6 @@ class EngineBuffer : public EngineObject {
     ControlObject* m_backButton;
     ControlPushButton* m_pSlipButton;
 
-    ControlObject* m_visualBpm;
-    ControlObject* m_visualKey;
     ControlObject* m_pQuantize;
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
@@ -332,6 +340,7 @@ class EngineBuffer : public EngineObject {
     ControlProxy* m_pPassthroughEnabled;
 
     ControlPushButton* m_pEject;
+    ControlObject* m_pTrackLoaded;
 
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;
@@ -347,6 +356,8 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineBufferTest, ResetPitchAdjustUsesLinear);
     FRIEND_TEST(EngineBufferTest, VinylScalerRampZero);
     FRIEND_TEST(EngineBufferTest, ReadFadeOut);
+    FRIEND_TEST(EngineBufferTest, RateTempTest);
+    FRIEND_TEST(EngineBufferTest, RatePermTest);
     EngineBufferScale* m_pScaleVinyl;
     // The keylock engine is configurable, so it could flip flop between
     // ScaleST and ScaleRB during a single callback.
@@ -368,6 +379,7 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<double> m_queuedSeekPosition;
+    QAtomicPointer<EngineChannel> m_pChannelToCloneFrom;
 
     // Is true if the previous buffer was silent due to pausing
     QAtomicInt m_iTrackLoading;
@@ -392,5 +404,3 @@ class EngineBuffer : public EngineObject {
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(EngineBuffer::SeekRequests)
-
-#endif

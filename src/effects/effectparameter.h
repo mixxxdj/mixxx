@@ -1,5 +1,4 @@
-#ifndef EFFECTPARAMETER_H
-#define EFFECTPARAMETER_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -19,7 +18,7 @@ class EffectParameter : public QObject {
     Q_OBJECT
   public:
     EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
-                    int iParameterNumber, const EffectManifestParameter& parameter);
+                    int iParameterNumber, EffectManifestParameterPointer pParameter);
     virtual ~EffectParameter();
 
     void addToEngine();
@@ -29,16 +28,18 @@ class EffectParameter : public QObject {
     // Parameter Information
     ///////////////////////////////////////////////////////////////////////////
 
-    const EffectManifestParameter& manifest() const;
-    const QString id() const;
-    const QString name() const;
-    const QString description() const;
+    EffectManifestParameterPointer manifest() const;
+    const QString& id() const;
+    const QString& name() const;
+    const QString& shortName() const;
+    const QString& description() const;
 
     ///////////////////////////////////////////////////////////////////////////
     // Value Settings
     ///////////////////////////////////////////////////////////////////////////
 
     EffectManifestParameter::LinkType getDefaultLinkType() const;
+    EffectManifestParameter::LinkInversion getDefaultLinkInversion() const;
     double getNeutralPointOnScale() const;
 
     double getValue() const;
@@ -63,7 +64,7 @@ class EffectParameter : public QObject {
 
   private:
     QString debugString() const {
-        return QString("EffectParameter(%1)").arg(m_parameter.name());
+        return QString("EffectParameter(%1)").arg(m_pParameter->name());
     }
 
     static bool clampValue(double* pValue,
@@ -75,7 +76,7 @@ class EffectParameter : public QObject {
     Effect* m_pEffect;
     EffectsManager* m_pEffectsManager;
     int m_iParameterNumber;
-    EffectManifestParameter m_parameter;
+    EffectManifestParameterPointer m_pParameter;
     double m_minimum;
     double m_maximum;
     double m_default;
@@ -84,6 +85,3 @@ class EffectParameter : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameter);
 };
-
-
-#endif /* EFFECTPARAMETER_H */

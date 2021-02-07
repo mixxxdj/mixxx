@@ -1,31 +1,4 @@
-/***************************************************************************
-                           stareditor.h
-                              -------------------
-     copyright            : (C) 2010 Tobias Rafreider
-     copyright            : (C) 2009 Nokia Corporation
-
-***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- * StarEditor inherits QWidget and is used by StarDelegate to let the user *
- * edit a star rating in the library using the mouse.                      *
- *                                                                         *
- * The class has been adapted from the official "Star Delegate Example",   *
- * see http://doc.trolltech.com/4.5/itemviews-stardelegate.html            *
- ***************************************************************************/
-
-#ifndef STAREDITOR_H
-#define STAREDITOR_H
+#pragma once
 
 #include <QWidget>
 #include <QMouseEvent>
@@ -33,7 +6,7 @@
 #include <QStyle>
 #include <QSize>
 #include <QPaintEvent>
-#include <QStyleOptionViewItemV4>
+#include <QStyleOptionViewItem>
 #include <QTableView>
 #include <QModelIndex>
 
@@ -44,7 +17,7 @@ class StarEditor : public QWidget {
   public:
     StarEditor(QWidget* parent, QTableView* pTableView,
                const QModelIndex& index,
-               const QStyleOptionViewItemV4& option);
+               const QStyleOptionViewItem& option);
 
     QSize sizeHint() const;
     void setStarRating(const StarRating& starRating) {
@@ -53,7 +26,7 @@ class StarEditor : public QWidget {
     StarRating starRating() { return m_starRating; }
 
     static void renderHelper(QPainter* painter, QTableView* pTableView,
-                             const QStyleOptionViewItemV4& option,
+                             const QStyleOptionViewItem& option,
                              StarRating* pStarRating);
 
   signals:
@@ -71,8 +44,6 @@ class StarEditor : public QWidget {
 
     QTableView* m_pTableView;
     QModelIndex m_index;
-    QStyleOptionViewItemV4 m_styleOption;
+    QStyleOptionViewItem m_styleOption;
     StarRating m_starRating;
 };
-
-#endif

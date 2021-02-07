@@ -1,0 +1,38 @@
+<!--
+Description:
+  2-state button for skin settings menu.
+  Its <IsEqual> CO transformation allows to toggle i.e. amount of HotCue
+  buttons in a comfortable way ( [ 4 ] or [ 8 ] ) while keeping qss simple.
+  Can be squeezed so that all skin settings categories fit on small screens.
+Variables:
+  width         :
+  state_x_text  : label text for state X
+  Setting       : persistent left-click control
+-->
+<Template>
+  <PushButton>
+    <ObjectName>SkinSettingsButtonMulti</ObjectName>
+    <MinimumSize><Variable name="width"/>,13</MinimumSize>
+    <MaximumSize><Variable name="width"/>,15</MaximumSize>
+    <SizePolicy>me,me</SizePolicy>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text><Variable name="state_x_text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text><Variable name="state_x_text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey persist="true"><Variable name="Setting"/></ConfigKey>
+      <Transform>
+        <Add>-<Variable name="stateX"/></Add>
+        <IsEqual>0</IsEqual>
+      </Transform>
+      <EmitOnDownPress>true</EmitOnDownPress>
+    </Connection>
+  </PushButton>
+</Template>

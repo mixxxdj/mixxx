@@ -1,22 +1,4 @@
-/***************************************************************************
-                          wvumeter.h  -  description
-                             -------------------
-    begin                : Fri Jul 22 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef WVUMETER_H
-#define WVUMETER_H
+#pragma once
 
 #include <QPixmap>
 #include <QString>
@@ -35,15 +17,22 @@ class WVuMeter : public WWidget  {
     explicit WVuMeter(QWidget *parent=nullptr);
 
     void setup(const QDomNode& node, const SkinContext& context);
-    void setPixmapBackground(PixmapSource source, Paintable::DrawMode mode);
-    void setPixmaps(PixmapSource source,
-                    bool bHorizontal,
-                    Paintable::DrawMode mode);
+    void setPixmapBackground(
+            const PixmapSource& source,
+            Paintable::DrawMode mode,
+            double scaleFactor);
+    void setPixmaps(
+            const PixmapSource& source,
+            bool bHorizontal,
+            Paintable::DrawMode mode,
+            double scaleFactor);
     void onConnectedControlChanged(double dParameter, double dValue) override;
+
+  public slots:
+    void maybeUpdate();
 
   protected slots:
     void updateState(mixxx::Duration elapsed);
-    void maybeUpdate();
 
   private:
     void paintEvent(QPaintEvent * /*unused*/) override;
@@ -79,5 +68,3 @@ class WVuMeter : public WWidget  {
 
     PerformanceTimer m_timer;
 };
-
-#endif

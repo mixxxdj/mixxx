@@ -1,27 +1,23 @@
-#ifndef BPMDELEGATE_H
-#define BPMDELEGATE_H
+#pragma once
 
 #include <QCheckBox>
 #include <QModelIndex>
-#include <QObject>
-#include <QPainter>
 #include <QStyleOptionViewItem>
-#include <QStyledItemDelegate>
-#include <QTableView>
 
-class BPMDelegate : public QStyledItemDelegate {
+#include "library/tableitemdelegate.h"
+
+
+class BPMDelegate : public TableItemDelegate {
     Q_OBJECT
   public:
-    explicit BPMDelegate(QObject* parent);
+    explicit BPMDelegate(QTableView* pTableView);
     virtual ~BPMDelegate();
 
-    void paint(QPainter *painter, const QStyleOptionViewItem &option,
-               const QModelIndex &index) const;
+    void paintItem(QPainter* painter, const QStyleOptionViewItem& option,
+               const QModelIndex& index) const;
 
   private:
     QTableView* m_pTableView;
     QCheckBox* m_pCheckBox;
     QItemEditorFactory* m_pFactory;
 };
-
-#endif // BUTTONCOLUMNDELEGATE_H

@@ -1,22 +1,4 @@
-/***************************************************************************
-                          imgsource.h  -  description
-                             -------------------
-    begin                : 14 April 2007
-    copyright            : (C) 2007 by Adam Davison
-    email                : adamdavison@gmail.com
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef IMGSOURCE_H
-#define IMGSOURCE_H
+#pragma once
 
 #include <QImage>
 #include <QColor>
@@ -27,21 +9,23 @@
 class ImgSource {
   public:
     virtual ~ImgSource() {};
-    virtual QImage* getImage(QString img) = 0;
-    virtual inline QColor getCorrectColor(QColor c) { return c; }
-    virtual void correctImageColors(QImage* p) { (void)p; };
+    virtual QImage* getImage(const QString& fileName, double scaleFactor) const = 0;
+    virtual QColor getCorrectColor(const QColor& c) const { return c; }
+    virtual void correctImageColors(QImage* p) const { (void)p; };
+    virtual bool willCorrectColors() const { return false; };
 };
 
 class ImgProcessor : public ImgSource {
 
   public:
-    virtual ~ImgProcessor() {};
+    ~ImgProcessor() override {};
     inline ImgProcessor(ImgSource* parent) : m_parent(parent) {}
-    virtual QColor doColorCorrection(QColor c) = 0;
-    inline QColor getCorrectColor(QColor c) {
+    virtual QColor doColorCorrection(const QColor& c) const = 0;
+    QColor getCorrectColor(const QColor& c) const override {
         return doColorCorrection(m_parent->getCorrectColor(c));
     }
-    virtual void correctImageColors(QImage* p) { (void)p; };
+    void correctImageColors(QImage* p) const override { (void)p; }
+    bool willCorrectColors() const override { return false; }
 
   protected:
     ImgSource* m_parent;
@@ -54,13 +38,13 @@ public:
 
     inline ImgColorProcessor(ImgSource* parent) : ImgProcessor(parent) {}
 
-    inline virtual QImage* getImage(QString img) {
-        QImage* i = m_parent->getImage(img);
+    QImage* getImage(const QString& fileName, double scaleFactor) const override {
+        QImage* i = m_parent->getImage(fileName, scaleFactor);
         correctImageColors(i);
         return i;
     }
 
-    virtual void correctImageColors(QImage* i) {
+    void correctImageColors(QImage* i) const override {
         if (i == NULL || i->isNull()) {
             return;
         }
@@ -131,6 +115,6 @@ public:
             }
         }
     }
-};
 
-#endif
+    bool willCorrectColors() const override { return true; }
+};

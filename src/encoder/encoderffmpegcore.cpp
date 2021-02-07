@@ -1,9 +1,3 @@
-//
-//   FFMPEG encoder class..
-//     - Supports what FFMPEG is compiled to supported
-//     - Same interface for all codecs
-//
-
 #include "encoder/encoderffmpegcore.h"
 
 #include <stdlib.h>
@@ -31,10 +25,6 @@ EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, CodecID codec)
 {
     m_bStreamInitialized = false;
     m_pCallback = pCallback;
-    m_strMetaDataTitle = NULL;
-    m_strMetaDataArtist = NULL;
-    m_strMetaDataAlbum = NULL;
-    m_pMetaData = TrackPointer(NULL);
 
     m_pEncodeFormatCtx = NULL;
     m_pEncoderAudioStream = NULL;
@@ -89,6 +79,11 @@ EncoderFfmpegCore::~EncoderFfmpegCore() {
 
     // Close buffer
     delete m_pResample;
+}
+
+void EncoderFfmpegCore::setEncoderSettings(const EncoderSettings& settings)
+{
+    m_lBitrate = settings.getQuality() * 1000;
 }
 
 //call sendPackages() or write() after 'flush()' as outlined in enginebroadcast.cpp
@@ -194,7 +189,7 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
 //
 // Currently this method is used before init() once to save artist, title and album
 //
-void EncoderFfmpegCore::updateMetaData(char* artist, char* title, char* album) {
+void EncoderFfmpegCore::updateMetaData(const QString& artist, const QString& title, const QString& album) {
     qDebug() << "ffmpegencodercore: UpdateMetadata: !" << artist << " - " << title <<
              " - " << album;
     m_strMetaDataTitle = title;
@@ -202,15 +197,15 @@ void EncoderFfmpegCore::updateMetaData(char* artist, char* title, char* album) {
     m_strMetaDataAlbum = album;
 }
 
-int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
+int EncoderFfmpegCore::initEncoder(int samplerate, QString errorMessage) {
 
 #ifndef avformat_alloc_output_context2
     qDebug() << "EncoderFfmpegCore::initEncoder: Old Style initialization";
     m_pEncodeFormatCtx = avformat_alloc_context();
 #endif
 
-    m_lBitrate = bitrate * 1000;
     m_lSampleRate = samplerate;
+    QString codecString;
 
 #if LIBAVCODEC_VERSION_INT > 3544932
     if (m_SCcodecId == AV_CODEC_ID_MP3) {
@@ -218,6 +213,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
     if (m_SCcodecId == CODEC_ID_MP3) {
 #endif // LIBAVCODEC_VERSION_INT > 3544932
         qDebug() << "EncoderFfmpegCore::initEncoder: Codec MP3";
+        codecString = "Codec MP3";
 #ifdef avformat_alloc_output_context2
         avformat_alloc_output_context2(&m_pEncodeFormatCtx, NULL, NULL, "output.mp3");
 #else
@@ -230,6 +226,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
     } else if (m_SCcodecId == CODEC_ID_AAC) {
 #endif // LIBAVCODEC_VERSION_INT > 3544932
         qDebug() << "EncoderFfmpegCore::initEncoder: Codec M4A";
+        codecString = "Codec M4A";
 #ifdef avformat_alloc_output_context2
         avformat_alloc_output_context2(&m_pEncodeFormatCtx, NULL, NULL, "output.m4a");
 #else
@@ -238,6 +235,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
 
     } else {
         qDebug() << "EncoderFfmpegCore::initEncoder: Codec OGG/Vorbis";
+        codecString = "Codec OGG/Vorbis";
 #ifdef avformat_alloc_output_context2
         avformat_alloc_output_context2(&m_pEncodeFormatCtx, NULL, NULL, "output.ogg");
         m_pEncodeFormatCtx->oformat->audio_codec=AV_CODEC_ID_VORBIS;
@@ -260,11 +258,15 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
     m_pEncoderAudioStream = addStream(m_pEncodeFormatCtx, &m_pEncoderAudioCodec,
                                       m_pEncoderFormat->audio_codec);
 
-    openAudio(m_pEncoderAudioCodec, m_pEncoderAudioStream);
+    int ret = openAudio(m_pEncoderAudioCodec, m_pEncoderAudioStream);
 
-    // qDebug() << "jepusti";
+    if (ret != 0) {
+        errorMessage  = codecString + "recording is not supported. FFMPEG " 
+                        + codecString + " could not be initialized";
+        ret = -1;
+    };
 
-    return 0;
+    return ret;
 }
 
 // Private methods
@@ -434,7 +436,7 @@ void EncoderFfmpegCore::closeAudio(AVStream *stream) {
     av_free(m_pSamples);
 }
 
-void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
+int EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
     AVCodecContext *l_SCodecCtx;
     int l_iRet;
 
@@ -446,10 +448,14 @@ void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
     l_iRet = avcodec_open2(l_SCodecCtx, codec, NULL);
     if (l_iRet < 0) {
         qDebug() << "Could not open audio codec!";
-        return;
+        return -1;
     }
 
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57, 89, 100)
+    if (l_SCodecCtx->codec->capabilities & AV_CODEC_CAP_VARIABLE_FRAME_SIZE) {
+#else
     if (l_SCodecCtx->codec->capabilities & CODEC_CAP_VARIABLE_FRAME_SIZE) {
+#endif
         m_iAudioInputFrameSize = 10000;
     } else {
         m_iAudioInputFrameSize = l_SCodecCtx->frame_size;
@@ -470,11 +476,10 @@ void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
 
     if (!m_pSamples) {
         qDebug() << "Could not allocate audio samples buffer";
-        return;
+        return -2;
     }
 
-
-
+    return 0;
 }
 
 // Add an output stream.
@@ -526,8 +531,13 @@ AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx,
 
 
     // Some formats want stream headers to be separate.
-    if (formatctx->oformat->flags & AVFMT_GLOBALHEADER)
+    if (formatctx->oformat->flags & AVFMT_GLOBALHEADER) {
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(57, 89, 100)
+        l_SCodecCtx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+#else
         l_SCodecCtx->flags |= CODEC_FLAG_GLOBAL_HEADER;
+#endif
+    }
 
     return l_SStream;
 }

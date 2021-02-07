@@ -1,22 +1,4 @@
-/***************************************************************************
-                          imgcolor.h  -  description
-                             -------------------
-    begin                : 14 April 2007
-    copyright            : (C) 2007 by Adam Davison
-    email                : adamdavison@gmail.com
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef IMGCOLOR_H
-#define IMGCOLOR_H
+#pragma once
 
 #include "imgsource.h"
 
@@ -24,7 +6,7 @@ class ImgAdd : public ImgColorProcessor {
 
 public:
     ImgAdd(ImgSource* parent, int amt);
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 
 private:
     int m_amt;
@@ -34,7 +16,7 @@ class ImgMax : public ImgColorProcessor {
 
 public:
     ImgMax(ImgSource* parent, int amt);
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 
 private:
     int m_amt;
@@ -45,7 +27,7 @@ class ImgScaleWhite : public ImgColorProcessor {
 public:
     inline ImgScaleWhite(ImgSource* parent, float amt)
         : ImgColorProcessor(parent), m_amt(amt) {}
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 private:
     float m_amt;
 };
@@ -55,7 +37,7 @@ class ImgHueRot : public ImgColorProcessor {
 public:
     inline ImgHueRot(ImgSource* parent, int amt)
         : ImgColorProcessor(parent), m_amt(amt) {}
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 
 private:
     int m_amt;
@@ -65,7 +47,7 @@ class ImgHueInv : public ImgColorProcessor {
 
 public:
     inline ImgHueInv(ImgSource* parent) : ImgColorProcessor(parent) {}
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 };
 
 class ImgHSVTweak : public ImgColorProcessor {
@@ -79,7 +61,7 @@ class ImgHSVTweak : public ImgColorProcessor {
               m_vmin(vmin), m_vmax(vmax),
               m_hconst(hconst), m_sconst(sconst), m_vconst(vconst),
               m_hfact(hfact), m_sfact(sfact), m_vfact(vfact) {}
-    virtual QColor doColorCorrection(QColor c);
+    QColor doColorCorrection(const QColor& c) const override;
 
   private:
     int m_hmin, m_hmax,
@@ -88,5 +70,3 @@ class ImgHSVTweak : public ImgColorProcessor {
         m_hconst, m_sconst, m_vconst;
     float m_hfact, m_sfact, m_vfact;
 };
-#endif
-

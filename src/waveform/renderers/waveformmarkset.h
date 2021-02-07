@@ -1,5 +1,4 @@
-#ifndef WAVEFORMMARKSET_H
-#define WAVEFORMMARKSET_H
+#pragma once
 
 #include <QList>
 
@@ -9,6 +8,8 @@
 
 class WaveformWidgetRenderer;
 
+// This class helps share code between the WaveformRenderMark and WOverview
+// constructors.
 class WaveformMarkSet {
   public:
     WaveformMarkSet();
@@ -17,20 +18,19 @@ class WaveformMarkSet {
     void setup(const QString& group, const QDomNode& node,
                const SkinContext& context,
                const WaveformSignalColors& signalColors);
-    void clear();
 
-    int size() const { return m_marks.size();}
-    WaveformMarkPointer operator[] (int i) const { return m_marks[i]; };
+    inline QList<WaveformMarkPointer>::const_iterator begin() const { return m_marks.begin(); }
+    inline QList<WaveformMarkPointer>::const_iterator end() const { return m_marks.end(); }
 
     // hotCue must be valid (>= 0 and < NUM_HOT_CUES)
     WaveformMarkPointer getHotCueMark(int hotCue) const;
-    void setHotCueMark(int hotCue, WaveformMarkPointer pMark);
+    WaveformMarkPointer getDefaultMark() const;
 
   private:
-    WaveformMark m_defaultMark;
+    void clear() { m_marks.clear(); }
+    WaveformMarkPointer m_pDefaultMark;
     QList<WaveformMarkPointer> m_marks;
-    int m_iFirstHotCue;
+    QMap<int, WaveformMarkPointer> m_hotCueMarks;
+
     DISALLOW_COPY_AND_ASSIGN(WaveformMarkSet);
 };
-
-#endif // WAVEFORMMARKSET_H

@@ -1,0 +1,130 @@
+<Template>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerMini1_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/samplers/sampler_mini.xml">
+            <SetVariable name="SamplerNum">1</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerMini2_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/samplers/sampler_mini.xml">
+            <SetVariable name="SamplerNum">2</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerMini3_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/samplers/sampler_mini.xml">
+            <SetVariable name="SamplerNum">3</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>SamplerMini4_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/samplers/sampler_mini.xml">
+            <SetVariable name="SamplerNum">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler1_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/samplers/sampler.xml">
+            <SetVariable name="SamplerNum">1</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler2_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/samplers/sampler.xml">
+            <SetVariable name="SamplerNum">2</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler3_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/samplers/sampler.xml">
+            <SetVariable name="SamplerNum">3</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>Sampler4_Singleton</ObjectName>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>AlignCenterTop</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:/samplers/sampler.xml">
+            <SetVariable name="SamplerNum">4</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </SingletonDefinition>
+</Template>

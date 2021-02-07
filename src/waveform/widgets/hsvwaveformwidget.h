@@ -1,5 +1,4 @@
-#ifndef HSVWAVEFORMWIDGET_H
-#define HSVWAVEFORMWIDGET_H
+#pragma once
 
 #include <QWidget>
 
@@ -14,6 +13,7 @@ class HSVWaveformWidget : public QWidget, public WaveformWidgetAbstract {
 
     static inline QString getWaveformWidgetName() { return tr("HSV"); }
     static inline bool useOpenGl() { return false; }
+    static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
     static inline bool developerOnly() { return false; }
 
@@ -22,8 +22,6 @@ class HSVWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     virtual void paintEvent(QPaintEvent* event);
 
   private:
-    HSVWaveformWidget(const char* group, QWidget* parent);
+    HSVWaveformWidget(const QString& group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
-
-#endif // HSVWAVEFORMWIDGET_H

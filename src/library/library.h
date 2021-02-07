@@ -1,127 +1,161 @@
-// library.h
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+#pragma once
 
-// A Library class is a container for all the model-side aspects of the library.
-// A library widget can be attached to the Library object by calling bindWidget.
-
-#ifndef LIBRARY_H
-#define LIBRARY_H
-
-#include <QList>
-#include <QObject>
 #include <QAbstractItemModel>
 #include <QFont>
+#include <QList>
+#include <QObject>
+#include <QPointer>
 
+#include "analyzer/analyzerprogress.h"
+#ifdef __ENGINEPRIME__
+#include "library/trackset/crate/crateid.h"
+#endif
 #include "preferences/usersettings.h"
-#include "track/track.h"
-#include "recording/recordingmanager.h"
-#include "analysisfeature.h"
-#include "library/coverartcache.h"
-#include "library/setlogfeature.h"
-#include "library/scanner/libraryscanner.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+#include "util/db/dbconnectionpool.h"
+#include "util/parented_ptr.h"
 
-class TrackModel;
-class TrackCollection;
-class SidebarModel;
+class AnalysisFeature;
+class ControlObject;
+class CrateFeature;
+class ExternalTrackCollection;
+class LibraryControl;
 class LibraryFeature;
 class LibraryTableModel;
+class KeyboardEventFilter;
+class MixxxLibraryFeature;
+class PlayerManager;
+class PlaylistFeature;
+class RecordingManager;
+class SidebarModel;
+class TrackCollection;
+class TrackCollectionManager;
+class TrackModel;
+class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
-class WSearchLineEdit;
-class MixxxLibraryFeature;
-class PlaylistFeature;
-class CrateFeature;
-class LibraryControl;
-class KeyboardEventFilter;
-class PlayerManagerInterface;
 
-class Library : public QObject {
+#ifdef __ENGINEPRIME__
+namespace mixxx {
+class LibraryExporter;
+} // namespace mixxx
+#endif
+
+// A Library class is a container for all the model-side aspects of the library.
+// A library widget can be attached to the Library object by calling bindLibraryWidget.
+class Library: public QObject {
     Q_OBJECT
-public:
+
+  public:
+    static const QString kConfigGroup;
+
     Library(QObject* parent,
             UserSettingsPointer pConfig,
-            PlayerManagerInterface* pPlayerManager,
+            mixxx::DbConnectionPoolPtr pDbConnectionPool,
+            TrackCollectionManager* pTrackCollectionManager,
+            PlayerManager* pPlayerManager,
             RecordingManager* pRecordingManager);
-    virtual ~Library();
+    ~Library() override;
 
-    void bindWidget(WLibrary* libraryWidget,
-                    KeyboardEventFilter* pKeyboard);
+    void stopPendingTasks();
+
+    const mixxx::DbConnectionPoolPtr& dbConnectionPool() const {
+        return m_pDbConnectionPool;
+    }
+
+    TrackCollectionManager* trackCollections() const;
+
+    // Deprecated: Obtain directly from TrackCollectionManager
+    TrackCollection& trackCollection();
+
+    void bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
+    void bindLibraryWidget(WLibrary* libraryWidget,
+                    KeyboardEventFilter* pKeyboard);
 
     void addFeature(LibraryFeature* feature);
     QStringList getDirs();
 
-    // TODO(rryan) Transitionary only -- the only reason this is here is so the
-    // waveform widgets can signal to a player to load a track. This can be
-    // fixed by moving the waveform renderers inside player and connecting the
-    // signals directly.
-    TrackCollection* getTrackCollection() {
-        return m_pTrackCollection;
-    }
-
-    inline int getTrackTableRowHeight() const {
+    int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
     }
 
-    inline const QFont& getTrackTableFont() const {
+    const QFont& getTrackTableFont() const {
         return m_trackTableFont;
     }
 
     //static Library* buildDefaultLibrary();
 
-    enum RemovalType {
-        LeaveTracksUnchanged = 0,
+    enum class RemovalType {
+        KeepTracks,
         HideTracks,
         PurgeTracks
     };
 
     static const int kDefaultRowHeightPx;
 
+    void setFont(const QFont& font);
+    void setRowHeight(int rowHeight);
+    void setEditMedatataSelectedClick(bool enable);
+
+    /// Triggers a new search in the internal track collection
+    /// and shows the results by switching the view.
+    void searchTracksInCollection(const QString& query);
+
+#ifdef __ENGINEPRIME__
+    std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);
+#endif
+
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
-    void slotLoadLocationToPlayer(QString location, QString group);
-    void slotRestoreSearch(const QString& text);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+    void slotLoadLocationToPlayer(const QString& location, const QString& group);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
-    void slotRequestAddDir(QString directory);
-    void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
-    void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
+    void slotRequestAddDir(const QString& directory);
+    void slotRequestRemoveDir(const QString& directory, Library::RemovalType removalType);
+    void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
     void onSkinLoadFinished();
-    void slotSetTrackTableFont(const QFont& font);
-    void slotSetTrackTableRowHeight(int rowHeight);
-
-    void scan() {
-        m_scanner.scan();
-    }
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
     void restoreSearch(const QString&);
     void search(const QString& text);
-    void searchCleared();
-    void searchStarting();
+    void disableSearch();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
+#ifdef __ENGINEPRIME__
+    void exportLibrary();
+    void exportCrate(CrateId crateId);
+#endif
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);
+    void setSelectedClick(bool enable);
 
-    // Emitted when a library scan starts and finishes.
-    void scanStarted();
-    void scanFinished();
+  private slots:
+      void onPlayerManagerTrackAnalyzerProgress(TrackId trackId, AnalyzerProgress analyzerProgress);
+      void onPlayerManagerTrackAnalyzerIdle();
 
   private:
-    UserSettingsPointer m_pConfig;
-    SidebarModel* m_pSidebarModel;
-    TrackCollection* m_pTrackCollection;
+    const UserSettingsPointer m_pConfig;
+
+    // The Mixxx database connection pool
+    const mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
+
+    const QPointer<TrackCollectionManager> m_pTrackCollectionManager;
+
+    parented_ptr<SidebarModel> m_pSidebarModel;
+    parented_ptr<LibraryControl> m_pLibraryControl;
+
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;
@@ -129,12 +163,8 @@ public:
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
     AnalysisFeature* m_pAnalysisFeature;
-    LibraryControl* m_pLibraryControl;
-    RecordingManager* m_pRecordingManager;
-    LibraryScanner m_scanner;
     QFont m_trackTableFont;
     int m_iTrackTableRowHeight;
+    bool m_editMetadataSelectedClick;
     QScopedPointer<ControlObject> m_pKeyNotation;
 };
-
-#endif /* LIBRARY_H */

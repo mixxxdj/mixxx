@@ -1,52 +1,43 @@
-/***************************************************************************
-                          dlgpreferences.h  -  description
-                             -------------------
-    begin                : Sun Jun 30 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFERENCES_H
-#define DLGPREFERENCES_H
+#pragma once
 
 #include <QDialog>
+#include <QDir>
 #include <QEvent>
 #include <QRect>
 #include <QStringList>
+#include <memory>
 
-#include "preferences/dialog/ui_dlgpreferencesdlg.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
-#include "preferences/dlgpreferencepage.h"
+#include "preferences/dialog/dlgpreferencepage.h"
+#include "preferences/dialog/ui_dlgpreferencesdlg.h"
+#include "preferences/settingsmanager.h"
+#include "preferences/usersettings.h"
 
 class MixxxMainWindow;
 class SoundManager;
 class DlgPrefSound;
+class DlgPrefLibrary;
 class DlgPrefController;
 class DlgPrefControllers;
-class DlgPrefLibrary;
-class DlgPrefControls;
+class DlgPrefVinyl;
+class DlgPrefNoVinyl;
+class DlgPrefInterface;
 class DlgPrefWaveform;
-class DlgPrefAutoDJ;
+class DlgPrefDeck;
+class DlgPrefColors;
 class DlgPrefEQ;
 class DlgPrefEffects;
 class DlgPrefCrossfader;
-class DlgPrefRecord;
-class DlgPrefKey;
-class DlgPrefBeats;
-class DlgPrefVinyl;
-class DlgPrefNoVinyl;
+class DlgPrefAutoDJ;
 class DlgPrefBroadcast;
+class DlgPrefRecord;
+class DlgPrefBeats;
+class DlgPrefKey;
 class DlgPrefReplayGain;
+#ifdef __LILV__
+class DlgPrefLV2;
+#endif /* __LILV__ */
+class LV2Backend;
 class ControllerManager;
 class EffectsManager;
 class SkinLoader;
@@ -60,19 +51,38 @@ class DlgPrefModplug;
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
-    DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
-                   PlayerManager* pPlayerManager, ControllerManager* controllers,
-                   VinylControlManager* pVCManager, EffectsManager* pEffectsManager,
-                   UserSettingsPointer pConfig, Library *pLibrary);
+    struct PreferencesPage {
+        PreferencesPage() {
+        }
+        PreferencesPage(DlgPreferencePage* pDlg, QTreeWidgetItem* pTreeItem)
+                : pDlg(pDlg), pTreeItem(pTreeItem) {
+        }
+
+        DlgPreferencePage* pDlg;
+        QTreeWidgetItem* pTreeItem;
+    };
+
+    DlgPreferences(MixxxMainWindow* mixxx,
+            std::shared_ptr<SkinLoader> pSkinLoader,
+            std::shared_ptr<SoundManager> pSoundManager,
+            std::shared_ptr<PlayerManager> pPlayerManager,
+            std::shared_ptr<ControllerManager> pControllerManager,
+            std::shared_ptr<VinylControlManager> pVCManager,
+            LV2Backend* pLV2Backend,
+            std::shared_ptr<EffectsManager> pEffectsManager,
+            std::shared_ptr<SettingsManager> pSettingsManager,
+            std::shared_ptr<Library> pLibrary);
     virtual ~DlgPreferences();
 
-    void addPageWidget(DlgPreferencePage* pWidget);
+    void addPageWidget(PreferencesPage page,
+            const QString& pageTitle,
+            const QString& iconFile);
     void removePageWidget(DlgPreferencePage* pWidget);
     void expandTreeItem(QTreeWidgetItem* pItem);
-    void switchToPage(DlgPreferencePage* pWidget);
+    void switchToPage(DlgPreferencePage* pPage);
 
   public slots:
-    void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious);
     void showSoundHardwarePage();
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
@@ -93,55 +103,20 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 
   private:
     DlgPreferencePage* currentPage();
-    void createIcons();
+    QList<PreferencesPage> m_allPages;
     void onShow();
     void onHide();
     QRect getDefaultGeometry();
 
+    QAbstractButton* m_pApplyButton;
+    QAbstractButton* m_pAcceptButton;
+
     QStringList m_geometry;
     UserSettingsPointer m_pConfig;
-    DlgPrefSound* m_wsound;
-    DlgPrefLibrary* m_wlibrary;
-    DlgPrefControllers *m_wcontrollers;
-    DlgPrefControls* m_wcontrols;
-    DlgPrefWaveform* m_wwaveform;
-    DlgPrefAutoDJ* m_wautodj;
-    DlgPrefEQ* m_weq;
-    DlgPrefEffects* m_weffects;
-    DlgPrefCrossfader* m_wcrossfader;
-    DlgPrefRecord* m_wrecord;
-    DlgPrefKey* m_wkey;
-    DlgPrefBeats* m_wbeats;
-    DlgPrefVinyl* m_wvinylcontrol;
-    DlgPrefNoVinyl* m_wnovinylcontrol;
-    DlgPrefBroadcast* m_wbroadcast;
-    DlgPrefReplayGain* m_wreplaygain;
-#ifdef __MODPLUG__
-    DlgPrefModplug* m_wmodplug;
-#endif
-
-    QTreeWidgetItem* m_pSoundButton;
-    QTreeWidgetItem* m_pLibraryButton;
-    QTreeWidgetItem* m_pControlsButton;
-    QTreeWidgetItem* m_pWaveformButton;
-    QTreeWidgetItem* m_pAutoDJButton;
-    QTreeWidgetItem* m_pEqButton;
-    QTreeWidgetItem* m_pEffectsButton;
-    QTreeWidgetItem* m_pCrossfaderButton;
-    QTreeWidgetItem* m_pRecordingButton;
-    QTreeWidgetItem* m_pBeatDetectionButton;
-    QTreeWidgetItem* m_pKeyDetectionButton;
-    QTreeWidgetItem* m_pVinylControlButton;
-    QTreeWidgetItem* m_pBroadcastButton;
-    QTreeWidgetItem* m_pReplayGainButton;
-#ifdef __MODPLUG__
-    QTreeWidgetItem* m_pModplugButton;
-#endif
-    QTreeWidgetItem* m_pControllerTreeItem;
+    PreferencesPage m_soundPage;
+    DlgPrefControllers* m_pControllersDlg;
 
     QSize m_pageSizeHint;
 
-    ControlPushButton m_preferencesUpdated;
+    QDir m_iconsPath;
 };
-
-#endif

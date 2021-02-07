@@ -1,14 +1,19 @@
-#include <QtSql>
-
-#include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
-#include "library/librarytablemodel.h"
 
-const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
+#include "library/dao/trackschema.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "moc_missingtablemodel.cpp"
+
+namespace {
+
+const QString kMissingFilter = "mixxx_deleted=0 AND fs_deleted=1";
+
+} // anonymous namespace
 
 MissingTableModel::MissingTableModel(QObject* parent,
-                                     TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(parent, pTrackCollection,
+                                     TrackCollectionManager* pTrackCollectionManager)
+        : BaseSqlTableModel(parent, pTrackCollectionManager,
                             "mixxx.db.model.missing") {
     setTableModel();
 }
@@ -29,7 +34,7 @@ void MissingTableModel::setTableModel(int id) {
                   " FROM library "
                   "INNER JOIN track_locations "
                   "ON library.location=track_locations.id "
-                  "WHERE " + MissingTableModel::MISSINGFILTER);
+                  "WHERE " + kMissingFilter);
     if (!query.exec()) {
         qDebug() << query.executedQuery() << query.lastError();
     }
@@ -42,7 +47,7 @@ void MissingTableModel::setTableModel(int id) {
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
     setTable(tableName, LIBRARYTABLE_ID, tableColumns,
-             m_pTrackCollection->getTrackSource());
+             m_pTrackCollectionManager->internalCollection()->getTrackSource());
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
 
@@ -53,13 +58,7 @@ MissingTableModel::~MissingTableModel() {
 
 
 void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
-    QList<TrackId> trackIds;
-
-    foreach (QModelIndex index, indices) {
-        trackIds.append(getTrackId(index));
-    }
-
-    m_trackDAO.purgeTracks(trackIds);
+    m_pTrackCollectionManager->purgeTracks(getTrackRefs(indices));
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
@@ -68,19 +67,18 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
 
 
 bool MissingTableModel::isColumnInternal(int column) {
-    if (column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
+    return column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM_LOCK) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID)||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY_ID) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_MIXXXDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_FSDELETED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_SOURCE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_TYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH)) {
-        return true;
-    }
-    return false;
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_COLOR) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_DIGEST) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH);
 }
 
 // Override flags from BaseSqlModel since we don't want edit this model
@@ -88,6 +86,6 @@ Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 
-TrackModel::CapabilitiesFlags MissingTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_NONE | TRACKMODELCAPS_PURGE;
+TrackModel::Capabilities MissingTableModel::getCapabilities() const {
+    return Capability::Purge;
 }

@@ -4,7 +4,7 @@
     <name>M-Audio X-Session Pro</name>
     <author>Karli</author>
     <description>MIDI Mapping for M-Audio X-Session Pro</description>
-    <wiki>http://mixxx.org/wiki/doku.php/m-audio_x-session_pro</wiki>
+    <manual>m_audio_x_session_pro</manual>
   </info>
   <controller id="M-Audio Xsession pro" port="Port">
     <controls>

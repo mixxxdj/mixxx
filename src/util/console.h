@@ -1,6 +1,9 @@
+#pragma once
 
-#ifndef CONSOLE_H_
-#define CONSOLE_H_
+#ifdef __WINDOWS__
+#include <windows.h>
+#include <tchar.h>
+#endif
 
 class Console {
   public:
@@ -11,7 +14,8 @@ class Console {
 #ifdef __WINDOWS__
     unsigned int m_oldCodePage;
     bool m_shouldResetCodePage;
+    bool m_shouldResetConsoleTitle;
+    bool m_shouldFreeConsole;
+    TCHAR m_oldTitle[MAX_PATH];
 #endif
 };
-
-#endif /* CONSOLE_H_ */

@@ -1,7 +1,7 @@
 #include <QtDebug>
 
 #include "engine/positionscratchcontroller.h"
-#include "engine/enginebufferscale.h" // for MIN_SEEK_SPEED
+#include "engine/bufferscalers/enginebufferscale.h" // for MIN_SEEK_SPEED
 #include "util/math.h"
 
 class VelocityController {
@@ -62,17 +62,17 @@ class RateIIFilter {
     double m_last_rate;
 };
 
-PositionScratchController::PositionScratchController(QString group)
-    : m_group(group),
-      m_bScratching(false),
-      m_bEnableInertia(false),
-      m_dLastPlaypos(0),
-      m_dPositionDeltaSum(0),
-      m_dTargetDelta(0),
-      m_dStartScratchPosition(0),
-      m_dRate(0),
-      m_dMoveDelay(0),
-      m_dMouseSampeTime(0) {
+PositionScratchController::PositionScratchController(const QString& group)
+        : m_group(group),
+          m_bScratching(false),
+          m_bEnableInertia(false),
+          m_dLastPlaypos(0),
+          m_dPositionDeltaSum(0),
+          m_dTargetDelta(0),
+          m_dStartScratchPosition(0),
+          m_dRate(0),
+          m_dMoveDelay(0),
+          m_dMouseSampeTime(0) {
     m_pScratchEnable = new ControlObject(ConfigKey(group, "scratch_position_enable"));
     m_pScratchPosition = new ControlObject(ConfigKey(group, "scratch_position"));
     m_pMasterSampleRate = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
@@ -107,11 +107,11 @@ void PositionScratchController::process(double currentSample, double releaseRate
 
     // Sample Mouse with fixed timing intervals to iron out significant jitters
     // that are added on the way from mouse to engine thread
-    // Normaly the Mouse is sampled every 8 ms so with this 16 ms window we
+    // Normally the Mouse is sampled every 8 ms so with this 16 ms window we
     // have 0 ... 3 samples. The remaining jitter is ironed by the following IIR
     // lowpass filter
     const double m_dMouseSampeIntervall = 0.016;
-    const int callsPerDt = ceil(m_dMouseSampeIntervall/dt);
+    const auto callsPerDt = static_cast<int>(ceil(m_dMouseSampeIntervall / dt));
     double scratchPosition = 0;
     m_dMouseSampeTime += dt;
     if (m_dMouseSampeTime >= m_dMouseSampeIntervall || !m_bScratching) {

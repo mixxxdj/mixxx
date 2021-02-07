@@ -14,8 +14,11 @@ typedef VOID (WINAPI *PgGetSystemTimeFn)(LPFILETIME);
 static PgGetSystemTimeFn s_pfpgGetSystemTimeFn = NULL;
 #endif
 
+#include "broadcast/defs_broadcast.h"
+#include "util/logger.h"
 #include "util/sample.h"
 
+namespace {
 const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Related chunk sizes:
 // Mp3 frames = 1152 samples
@@ -29,20 +32,19 @@ const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
 // We allow to buffer two extra chunks for a CPU overload case, when
 // the broadcast thread is not scheduled in time.
 
+const mixxx::Logger kLogger("EngineNetworkStream");
+} // namespace
+
 EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
                                          int numInputChannels)
-    : m_pOutputFifo(NULL),
-      m_pInputFifo(NULL),
+    : m_pInputFifo(nullptr),
       m_numOutputChannels(numOutputChannels),
       m_numInputChannels(numInputChannels),
       m_sampleRate(0),
-      m_streamStartTimeUs(-1),
-      m_streamFramesWritten(0),
-      m_streamFramesRead(0),
-      m_writeOverflowCount(0) {
-    if (numOutputChannels) {
-        m_pOutputFifo = new FIFO<CSAMPLE>(numOutputChannels * kBufferFrames);
-    }
+      m_inputStreamStartTimeUs(-1),
+      m_inputStreamFramesWritten(0),
+      m_inputStreamFramesRead(0),
+      m_outputWorkers(BROADCAST_MAX_CONNECTIONS) {
     if (numInputChannels) {
         m_pInputFifo = new FIFO<CSAMPLE>(numInputChannels * kBufferFrames);
     }
@@ -64,132 +66,67 @@ EngineNetworkStream::EngineNetworkStream(int numOutputChannels,
 }
 
 EngineNetworkStream::~EngineNetworkStream() {
-    if (m_streamStartTimeUs >= 0) {
+    if (m_inputStreamStartTimeUs >= 0) {
         stopStream();
     }
-    delete m_pOutputFifo;
+
     delete m_pInputFifo;
 }
 
 void EngineNetworkStream::startStream(double sampleRate) {
     m_sampleRate = sampleRate;
-    m_streamStartTimeUs = getNetworkTimeUs();
-    m_streamFramesWritten = 0;
+    m_inputStreamStartTimeUs = getNetworkTimeUs();
+    m_inputStreamFramesWritten = 0;
+
+    for (NetworkOutputStreamWorkerPtr worker : qAsConst(m_outputWorkers)) {
+        if (worker.isNull()) {
+            continue;
+        }
+
+        worker->startStream(m_sampleRate, m_numOutputChannels);
+    }
 }
 
 void EngineNetworkStream::stopStream() {
-    m_streamStartTimeUs = -1;
-}
+    m_inputStreamStartTimeUs = -1;
 
-int EngineNetworkStream::getWriteExpected() {
-    return static_cast<int>(getStreamTimeFrames() - m_streamFramesWritten);
+    for (NetworkOutputStreamWorkerPtr worker : qAsConst(m_outputWorkers)) {
+        if (worker.isNull()) {
+            continue;
+        }
+
+        worker->stopStream();
+    }
 }
 
 int EngineNetworkStream::getReadExpected() {
-    return static_cast<int>(getStreamTimeFrames() - m_streamFramesRead);
-}
-
-void EngineNetworkStream::write(const CSAMPLE* buffer, int frames) {
-    if (m_pWorker.isNull()) {
-        return;
-    }
-
-    //qDebug() << "EngineNetworkStream::write()" << frames;
-    if (!m_pWorker->threadWaiting()) {
-        // no thread waiting, so we can advance the stream without
-        // buffering
-        m_streamFramesWritten += frames;
-        return;
-    }
-    int writeAvailable = m_pOutputFifo->writeAvailable();
-    int writeRequired = frames * m_numOutputChannels;
-    if (writeAvailable < writeRequired) {
-        qDebug() << "EngineNetworkStream::write() buffer full, loosing samples";
-        NetworkStreamWorker::debugState();
-        m_writeOverflowCount++;
-    }
-    int copyCount = math_min(writeAvailable, writeRequired);
-    if (copyCount > 0) {
-        (void)m_pOutputFifo->write(buffer, copyCount);
-        // we advance the frame only by the samples we have actually copied
-        // This means in case of buffer full (where we loose some frames)
-        // we do not get out of sync, and the syncing code tries to catch up the
-        // stream by writing silence, once the buffer is free.
-        m_streamFramesWritten += copyCount / m_numOutputChannels;
-    }
-    scheduleWorker();
-}
-
-void EngineNetworkStream::writeSilence(int frames) {
-    if (m_pWorker.isNull()) {
-        return;
-    }
-    //qDebug() << "EngineNetworkStream::writeSilence()" << frames;
-    if (!m_pWorker->threadWaiting()) {
-        // no thread waiting, so we can advance the stream without
-        // buffering
-        m_streamFramesWritten += frames;
-        return;
-    }
-    int writeAvailable = m_pOutputFifo->writeAvailable();
-    int writeRequired = frames * m_numOutputChannels;
-    if (writeAvailable < writeRequired) {
-        qDebug() << "EngineNetworkStream::writeSilence() buffer full";
-        NetworkStreamWorker::debugState();
-    }
-    int clearCount = math_min(writeAvailable, writeRequired);
-    if (clearCount > 0) {
-        CSAMPLE* dataPtr1;
-        ring_buffer_size_t size1;
-        CSAMPLE* dataPtr2;
-        ring_buffer_size_t size2;
-        (void)m_pOutputFifo->aquireWriteRegions(clearCount,
-                &dataPtr1, &size1, &dataPtr2, &size2);
-        SampleUtil::clear(dataPtr1,size1);
-        if (size2 > 0) {
-            SampleUtil::clear(dataPtr2,size2);
-        }
-        m_pOutputFifo->releaseWriteRegions(clearCount);
-
-        // we advance the frame only by the samples we have actually cleared
-        m_streamFramesWritten += clearCount / m_numOutputChannels;
-    }
-    scheduleWorker();
-}
-
-void EngineNetworkStream::scheduleWorker() {
-    if (m_pWorker.isNull()) {
-        return;
-    }
-    if (m_pOutputFifo->readAvailable()
-            >= m_numOutputChannels * kNetworkLatencyFrames) {
-        m_pWorker->outputAvailable();
-    }
+    return static_cast<int>(getInputStreamTimeFrames() - m_inputStreamFramesRead);
 }
 
 void EngineNetworkStream::read(CSAMPLE* buffer, int frames) {
-    int readAvailable = m_pOutputFifo->readAvailable();
+    int readAvailable = m_pInputFifo->readAvailable();
     int readRequired = frames * m_numInputChannels;
     int copyCount = math_min(readAvailable, readRequired);
     if (copyCount > 0) {
-        (void)m_pOutputFifo->read(buffer, copyCount);
+        (void)m_pInputFifo->read(buffer, copyCount);
         buffer += copyCount;
     }
     if (readAvailable < readRequired) {
         // Fill missing Samples with silence
         int silenceCount = readRequired - readAvailable;
-        qDebug() << "EngineNetworkStream::write flushed" << readRequired
-                 << "samples";
+        kLogger.debug() << "write: flushed"
+                        << readRequired << "samples";
         SampleUtil::clear(buffer, silenceCount);
     }
 }
 
-qint64 EngineNetworkStream::getStreamTimeFrames() {
-    return static_cast<double>(getStreamTimeUs()) * m_sampleRate / 1000000.0;
+qint64 EngineNetworkStream::getInputStreamTimeFrames() {
+    return static_cast<qint64>(static_cast<double>(getInputStreamTimeUs()) *
+            m_sampleRate / 1000000.0);
 }
 
-qint64 EngineNetworkStream::getStreamTimeUs() {
-    return getNetworkTimeUs() - m_streamStartTimeUs;
+qint64 EngineNetworkStream::getInputStreamTimeUs() {
+    return getNetworkTimeUs() - m_inputStreamStartTimeUs;
 }
 
 // static
@@ -200,7 +137,6 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
     // will overflow > 200,000 years
 #ifdef __WINDOWS__
     FILETIME ft;
-    qint64 t;
     // no GetSystemTimePreciseAsFileTime available, fall
     // back to GetSystemTimeAsFileTime. This happens before
     // Windows 8 and Windows Server 2012
@@ -219,11 +155,9 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
             // timer was not incremented since last call (< 15 ms)
             // Add time since last function call after last increment
             // This reduces the jitter < one call cycle which is sufficient
-            LARGE_INTEGER li;
             now += timerSinceInc.elapsed().toIntegerMicros();
         } else {
             // timer was incremented
-            LARGE_INTEGER li;
             timerSinceInc.start();
             oldNow = now;
         }
@@ -244,9 +178,52 @@ qint64 EngineNetworkStream::getNetworkTimeUs() {
 #endif
 }
 
-void EngineNetworkStream::addWorker(QSharedPointer<NetworkStreamWorker> pWorker) {
-    m_pWorker = pWorker;
-    if (m_pWorker) {
-        m_pWorker->setOutputFifo(m_pOutputFifo);
+void EngineNetworkStream::addOutputWorker(NetworkOutputStreamWorkerPtr pWorker) {
+    if (nextOutputSlotAvailable() < 0) {
+        kLogger.warning() << "addWorker: can't add worker:"
+                          << "no free slot left in internal list";
+        return;
     }
+
+    if (pWorker && m_numOutputChannels) {
+        int nextNullItem = nextOutputSlotAvailable();
+        if(nextNullItem > -1) {
+            QSharedPointer<FIFO<CSAMPLE>> workerFifo(
+                    new FIFO<CSAMPLE>(m_numOutputChannels * kBufferFrames));
+            pWorker->setOutputFifo(workerFifo);
+            pWorker->startStream(m_sampleRate, m_numOutputChannels);
+            m_outputWorkers[nextNullItem] = pWorker;
+
+            kLogger.debug() << "addWorker: worker added";
+            debugOutputSlots();
+        }
+    }
+}
+
+void EngineNetworkStream::removeOutputWorker(NetworkOutputStreamWorkerPtr pWorker) {
+    int index = m_outputWorkers.indexOf(pWorker);
+    if(index > -1) {
+        m_outputWorkers[index].clear();
+        kLogger.debug() << "removeWorker: worker removed";
+    } else {
+        kLogger.warning() << "removeWorker: ERROR: worker not found";
+    }
+    debugOutputSlots();
+}
+
+void EngineNetworkStream::setInputWorker(NetworkInputStreamWorker* pInputWorker) {
+    if (pInputWorker) {
+        pInputWorker->setSourceFifo(m_pInputFifo);
+    }
+}
+
+int EngineNetworkStream::nextOutputSlotAvailable() {
+    return m_outputWorkers.indexOf(NetworkOutputStreamWorkerPtr(nullptr));
+}
+
+void EngineNetworkStream::debugOutputSlots() {
+    int available = m_outputWorkers.count(NetworkOutputStreamWorkerPtr(nullptr));
+    int total = m_outputWorkers.size();
+    kLogger.debug() << "worker slots used:"
+                    << QString("%1 out of %2").arg(total - available).arg(total);
 }

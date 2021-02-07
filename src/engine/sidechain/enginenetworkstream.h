@@ -1,9 +1,11 @@
-#ifndef ENGINENETWORKSTREAM_H_
-#define ENGINENETWORKSTREAM_H_
+#pragma once
+
+#include <engine/sidechain/networkoutputstreamworker.h>
+#include <engine/sidechain/networkinputstreamworker.h>
+#include <QVector>
 
 #include "util/types.h"
 #include "util/fifo.h"
-#include "engine/sidechain/networkstreamworker.h"
 
 class EngineNetworkStream {
   public:
@@ -14,15 +16,11 @@ class EngineNetworkStream {
     void startStream(double sampleRate);
     void stopStream();
 
-    int getWriteExpected();
     int getReadExpected();
-
-    void write(const CSAMPLE* buffer, int frames);
     void read(CSAMPLE* buffer, int frames);
-    void writeSilence(int frames);
 
-    qint64 getStreamTimeUs();
-    qint64 getStreamTimeFrames();
+    qint64 getInputStreamTimeUs();
+    qint64 getInputStreamTimeFrames();
 
     int getNumOutputChannels() {
         return m_numOutputChannels;
@@ -34,21 +32,32 @@ class EngineNetworkStream {
 
     static qint64 getNetworkTimeUs();
 
-    void addWorker(QSharedPointer<NetworkStreamWorker> pWorker);
+    void addOutputWorker(NetworkOutputStreamWorkerPtr pWorker);
+    void removeOutputWorker(NetworkOutputStreamWorkerPtr pWorker);
+    void setInputWorker(NetworkInputStreamWorker* pInputWorker);
+
+    QVector<NetworkOutputStreamWorkerPtr> outputWorkers() {
+        return m_outputWorkers;
+    }
 
   private:
-    void scheduleWorker();
+    int nextOutputSlotAvailable();
+    void debugOutputSlots();
 
-    FIFO<CSAMPLE>* m_pOutputFifo;
     FIFO<CSAMPLE>* m_pInputFifo;
     int m_numOutputChannels;
     int m_numInputChannels;
     double m_sampleRate;
-    qint64 m_streamStartTimeUs;
-    qint64 m_streamFramesWritten;
-    qint64 m_streamFramesRead;
-    QSharedPointer<NetworkStreamWorker> m_pWorker;
-    int m_writeOverflowCount;
-};
+    qint64 m_inputStreamStartTimeUs;
+    qint64 m_inputStreamFramesWritten;
+    qint64 m_inputStreamFramesRead;
 
-#endif /* ENGINENETWORKSTREAM_H_ */
+    // EngineNetworkStream can't use locking mechanisms to protect its
+    // internal worker list against concurrency issues, as it is used by
+    // methods called from the audio engine thread.
+    // Instead, the internal list has a fixed number of QSharedPointers
+    // (which are thread-safe) initialized with null pointers. R/W operations to
+    // the workers are then performed on thread-safe QSharedPointers and not
+    // onto the thread-unsafe QVector
+    QVector<NetworkOutputStreamWorkerPtr> m_outputWorkers;
+};

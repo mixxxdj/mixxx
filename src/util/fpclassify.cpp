@@ -1,7 +1,11 @@
-// this is a wapper around the fpclassify functions which prevents inlining 
-// It is compiled without optization 
-// The rest of the source of Mixxx is compiled with -ffast-math, which breaks 
+// this is a wrapper around the fpclassify functions which prevents inlining
+// It is compiled without optimization
+// The rest of the source of Mixxx is compiled with -ffast-math, which breaks
 // the fpclassify functions
+
+#ifdef __FAST_MATH__
+#error This file must be compiled without a -ffast-math flag set
+#endif
 
 #include <cmath>
 
@@ -22,7 +26,7 @@ int util_isnan(float x) {
 }
 
 int util_isinf(float x) {
-    return std::isinf(x); 
+    return std::isinf(x);
 }
 
 int util_fpclassify(double x) {
@@ -42,5 +46,5 @@ int util_isnan(double x) {
 }
 
 int util_isinf(double x) {
-    return std::isinf(x); 
+    return std::isinf(x);
 }

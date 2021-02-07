@@ -1,9 +1,10 @@
+#include "preferences/dialog/dlgprefmodplug.h"
 
 #include <QtDebug>
 
-#include "preferences/dialog/dlgprefmodplug.h"
+#include "defs_urls.h"
+#include "moc_dlgprefmodplug.cpp"
 #include "preferences/dialog/ui_dlgprefmodplugdlg.h"
-
 #include "preferences/usersettings.h"
 #include "sources/soundsourcemodplug.h"
 
@@ -15,7 +16,30 @@ DlgPrefModplug::DlgPrefModplug(QWidget *parent,
           m_pUi(new Ui::DlgPrefModplug),
           m_pConfig(_config) {
     m_pUi->setupUi(this);
+    // Create text color for the OpenMTP manual link
+    createLinkColor();
     m_pUi->advancedSettings->setVisible(m_pUi->showAdvanced->isChecked());
+
+    connect(m_pUi->memoryLimit,
+            &QAbstractSlider::valueChanged,
+            m_pUi->memoryLimitSpin,
+            &QSpinBox::setValue);
+    connect(m_pUi->memoryLimitSpin,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            m_pUi->memoryLimit,
+            &QAbstractSlider::setValue);
+    connect(m_pUi->showAdvanced,
+            &QAbstractButton::toggled,
+            m_pUi->advancedSettings,
+            &QWidget::setVisible);
+
+    m_pUi->modplugSettingsHint->setText(
+            tr("All settings take effect on next track load. Currently loaded tracks "
+               "are not affected. For an explanation of these settings, see the %1")
+                    .arg(coloredLinkString(
+                            m_pLinkColor,
+                            "OpenMPT manual",
+                            "http://wiki.openmpt.org/Manual:_Setup/Player")));
 }
 
 DlgPrefModplug::~DlgPrefModplug() {
@@ -50,36 +74,36 @@ void DlgPrefModplug::slotResetToDefaults() {
 }
 
 void DlgPrefModplug::loadSettings() {
-    m_pUi->memoryLimit->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"PerTrackMemoryLimitMB"),"256").toInt());
-    m_pUi->oversampling->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"OversamplingEnabled"),"1") == QString("1"));
-    m_pUi->noiseReduction->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"NoiseReductionEnabled"),"0") == QString("1"));
-    m_pUi->stereoSeparation->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"StereoSeparation"),"1").toInt());
-    m_pUi->maxMixChannels->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MaxMixChannels"),"128").toInt());
-    m_pUi->resampleMode->setCurrentIndex(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ResamplingMode"),"1").toInt());
-    m_pUi->reverb->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ReverbEnabled"),"0") == QString("1"));
-    m_pUi->reverbDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ReverbLevel"),"50").toInt());
-    m_pUi->reverbDelay->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"ReverbDelay"),"50").toInt());
-    m_pUi->megabass->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MegabassEnabled"),"0") == QString("1"));
-    m_pUi->bassDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MegabassLevel"),"50").toInt());
-    m_pUi->bassCutoff->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"MegabassCutoff"),"50").toInt());
-    m_pUi->surround->setChecked(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"SurroundEnabled"),"0") == QString("1"));
-    m_pUi->surroundDepth->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"SurroundLevel"),"50").toInt());
-    m_pUi->surroundDelay->setValue(m_pConfig->getValueString(
-        ConfigKey(kConfigKey,"SurroundDelay"),"50").toInt());
+    m_pUi->memoryLimit->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"PerTrackMemoryLimitMB"), 256));
+    m_pUi->oversampling->setChecked(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"OversamplingEnabled"), true));
+    m_pUi->noiseReduction->setChecked(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"NoiseReductionEnabled"), false));
+    m_pUi->stereoSeparation->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"StereoSeparation"), 1));
+    m_pUi->maxMixChannels->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"MaxMixChannels"), 128));
+    m_pUi->resampleMode->setCurrentIndex(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"ResamplingMode"), 1));
+    m_pUi->reverb->setChecked(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"ReverbEnabled"), false));
+    m_pUi->reverbDepth->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"ReverbLevel"), 50));
+    m_pUi->reverbDelay->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"ReverbDelay"), 50));
+    m_pUi->megabass->setChecked(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"MegabassEnabled"), false));
+    m_pUi->bassDepth->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"MegabassLevel"), 50));
+    m_pUi->bassCutoff->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"MegabassCutoff"), 50));
+    m_pUi->surround->setChecked(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"SurroundEnabled"), false));
+    m_pUi->surroundDepth->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"SurroundLevel"), 50));
+    m_pUi->surroundDelay->setValue(m_pConfig->getValue(
+        ConfigKey(kConfigKey,"SurroundDelay"), 50));
 }
 
 void DlgPrefModplug::saveSettings() {
@@ -128,21 +152,26 @@ void DlgPrefModplug::applySettings() {
     settings.mChannels = mixxx::SoundSourceModPlug::kChannelCount;
     // Bits per sample - 8, 16, or 32
     settings.mBits = mixxx::SoundSourceModPlug::kBitsPerSample;
-    // Sampling rate - 11025, 22050, or 44100
-    settings.mFrequency = mixxx::SoundSourceModPlug::kSamplingRate;
+    // Sample rate - 11025, 22050, or 44100
+    settings.mFrequency = mixxx::SoundSourceModPlug::kSampleRate;
 
     // enabled features flags
     settings.mFlags = 0;
-    if (m_pUi->oversampling->isChecked())
+    if (m_pUi->oversampling->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_OVERSAMPLING;
-    if (m_pUi->noiseReduction->isChecked())
+    }
+    if (m_pUi->noiseReduction->isChecked()) {
         settings.mFlags |=  ModPlug::MODPLUG_ENABLE_NOISE_REDUCTION;
-    if (m_pUi->reverb->isChecked())
+    }
+    if (m_pUi->reverb->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_REVERB;
-    if (m_pUi->megabass->isChecked())
+    }
+    if (m_pUi->megabass->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_MEGABASS;
-    if (m_pUi->surround->isChecked())
+    }
+    if (m_pUi->surround->isChecked()) {
         settings.mFlags |= ModPlug::MODPLUG_ENABLE_SURROUND;
+    }
 
     switch (m_pUi->resampleMode->currentIndex()) {
     case 0: // nearest neighbor

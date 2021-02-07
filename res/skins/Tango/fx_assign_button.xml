@@ -1,0 +1,30 @@
+<!--
+Description:
+  A button to assign an effect unit to parent deck,
+  used in decks' artist/duration row.
+Variables:
+  FxUnit_FxNum: [EffectRack1_EffectUnitN]
+  group:  [ChannelN]
+-->
+<Template>
+  <PushButton>
+    <TooltipId>EffectUnit_<Variable name="sourceType"/>_enabled</TooltipId>
+    <ObjectName>FxAssignButton</ObjectName>
+    <Size><Variable name="Size"/></Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text>FX&#8202;<Variable name="FxUnit"/></Text>
+      <Alignment>center</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey>[EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/>],group_<Variable name="group"/>_enable</ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

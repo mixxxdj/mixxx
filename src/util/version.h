@@ -1,5 +1,4 @@
-#ifndef VERSION_H
-#define VERSION_H
+#pragma once
 
 #include <QString>
 
@@ -26,11 +25,9 @@ class Version {
     // the null string if the flags are unknown.
     static QString buildFlags();
 
-    // Returns a list of the version of each depenency:
+    // Returns a list of the version of each dependency:
     static QStringList dependencyVersions();
 
     // Prints out diagnostic information about this build.
     static void logBuildDetails();
 };
-
-#endif /* VERSION_H */

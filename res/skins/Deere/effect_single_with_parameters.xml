@@ -1,0 +1,54 @@
+<!--
+A single effect with all parameters showing, highlightable and not highlightable versions
+
+Variables:
+  EffectRack: the rack
+  EffectUnit: the chain
+  Effect: the effect
+-->
+<!DOCTYPE template>
+<Template>
+  <WidgetGroup>
+    <ObjectName>EffectHighlightableContainer</ObjectName>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>EffectHighlightable</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+          <Template src="skin:effect_single_with_parameters_row.xml" />
+        </Children>
+        <Connection>
+          <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],focused_effect</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+          <Transform>
+            <IsEqual><Variable name="Effect"/></IsEqual>
+          </Transform>
+        </Connection>
+      </WidgetGroup>
+
+    </Children>
+    <Connection>
+      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+
+  <WidgetGroup>
+    <ObjectName>EffectNotHighlightable</ObjectName>
+    <Layout>horizontal</Layout>
+    <Children>
+      <Template src="skin:effect_single_with_parameters_row.xml" />
+    </Children>
+    <Connection>
+      <ConfigKey>[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>],show_focus</ConfigKey>
+      <BindProperty>visible</BindProperty>
+      <Transform>
+        <Not/>
+      </Transform>
+    </Connection>
+  </WidgetGroup>
+
+</Template>

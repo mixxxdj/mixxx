@@ -1,7 +1,7 @@
-#ifndef TAPFILTER_H
-#define TAPFILTER_H
+#pragma once
 
 #include <QObject>
+#include <QMutex>
 
 #include "util/duration.h"
 #include "util/movinginterquartilemean.h"
@@ -24,6 +24,5 @@ class TapFilter : public QObject {
     PerformanceTimer m_timer;
     MovingInterquartileMean m_mean;
     mixxx::Duration m_maxInterval;
+    QMutex m_mutex;
 };
-
-#endif /* TAPFILTER_H */

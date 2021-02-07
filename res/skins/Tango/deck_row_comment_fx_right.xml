@@ -1,0 +1,89 @@
+<!--
+Description:
+  An extra line below/above waveform overview that contains FX asssign buttons and
+  track comment (optional)
+Variables:
+  chanNum : the channel number
+-->
+<Template>
+  <SetVariable name="sourceType">deck</SetVariable>
+  <SetVariable name="FxRack">1</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>DeckRowCommentFx</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <Size>1me,1f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
+          <Transform><Not/></Transform>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+
+      <WidgetGroup><!-- Track comment + FX indicators -->
+        <Layout>horizontal</Layout>
+        <SizePolicy>i,min</SizePolicy>
+        <Children>
+
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="Size">32f,16f</SetVariable>
+            <SetVariable name="FxUnit">1</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="Size">32f,16f</SetVariable>
+            <SetVariable name="FxUnit">2</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="Size">32f,16f</SetVariable>
+            <SetVariable name="FxUnit">3</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+          <Template src="skin:fx_assign_button.xml">
+            <SetVariable name="Size">32f,16f</SetVariable>
+            <SetVariable name="FxUnit">4</SetVariable>
+          </Template>
+            <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
+
+          <!--	Additional line to display comments from file tag.
+          Useful to explain hotcues, loop, Ins & Outs for live sets etc.
+          Deprecated as soon as HotCue labels are easily editable -->
+          <TrackProperty>
+            <ObjectName>TrackComment</ObjectName>
+            <Size>1me,16f</Size>
+            <Property>comment</Property>
+            <Elide>right</Elide>
+            <Channel><Variable name="chanNum"/></Channel>
+            <Connection>
+              <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </TrackProperty>
+
+          <WidgetGroup>
+            <ObjectName>Spacer33</ObjectName>
+            <Size>1me,16f</Size>
+            <Connection>
+              <ConfigKey persist="true">[Tango],trackComment</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup><!-- /Track comment + FX indicators -->
+
+      <WidgetGroup>
+        <Size>1me,1f</Size>
+        <Connection>
+          <ConfigKey persist="true">[Tango],symmetric_overviews</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,7 +1,9 @@
+#include "widget/weffectparameterbase.h"
+
 #include <QtDebug>
 
-#include "widget/weffectparameterbase.h"
 #include "effects/effectsmanager.h"
+#include "moc_weffectparameterbase.cpp"
 
 WEffectParameterBase::WEffectParameterBase(QWidget* pParent, EffectsManager* pEffectsManager)
         : WLabel(pParent),
@@ -13,18 +15,26 @@ void WEffectParameterBase::setEffectParameterSlot(
         EffectParameterSlotBasePointer pEffectParameterSlot) {
     m_pEffectParameterSlot = pEffectParameterSlot;
     if (m_pEffectParameterSlot) {
-        connect(m_pEffectParameterSlot.data(), SIGNAL(updated()),
-                this, SLOT(parameterUpdated()));
+        connect(m_pEffectParameterSlot.data(),
+                &EffectParameterSlotBase::updated,
+                this,
+                &WEffectParameterBase::parameterUpdated);
     }
     parameterUpdated();
 }
 
 void WEffectParameterBase::parameterUpdated() {
     if (m_pEffectParameterSlot) {
-        setText(m_pEffectParameterSlot->name());
-        setBaseTooltip(m_pEffectParameterSlot->description());
+        if (!m_pEffectParameterSlot->shortName().isEmpty()) {
+            setText(m_pEffectParameterSlot->shortName());
+        } else {
+            setText(m_pEffectParameterSlot->name());
+        }
+        setBaseTooltip(QString("%1\n%2").arg(
+                       m_pEffectParameterSlot->name(),
+                       m_pEffectParameterSlot->description()));
     } else {
-        setText(tr("None"));
+        setText(EffectsManager::kNoEffectString);
         setBaseTooltip(tr("No effect loaded."));
     }
 }

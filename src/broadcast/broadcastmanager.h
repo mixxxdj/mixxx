@@ -1,19 +1,29 @@
-#ifndef BROADCAST_BROADCASTMANAGER_H
-#define BROADCAST_BROADCASTMANAGER_H
+#pragma once
 
 #include <QObject>
 
-#include "engine/sidechain/enginebroadcast.h"
+#include "preferences/settingsmanager.h"
 #include "preferences/usersettings.h"
+#include "engine/sidechain/enginenetworkstream.h"
+#include "engine/sidechain/shoutconnection.h"
 
 class SoundManager;
+class ControlPushButton;
 
 class BroadcastManager : public QObject {
     Q_OBJECT
   public:
-    BroadcastManager(UserSettingsPointer pConfig,
+    enum StatusCOStates {
+        STATUSCO_UNCONNECTED = 0, // IDLE state, no error
+        STATUSCO_CONNECTING = 1, // 30 s max
+        STATUSCO_CONNECTED = 2, // On Air
+        STATUSCO_FAILURE = 3, // Happens when all connection fails
+        STATUSCO_WARNING = 4
+    };
+
+    BroadcastManager(SettingsManager* pSettingsManager,
                      SoundManager* pSoundManager);
-    virtual ~BroadcastManager();
+    ~BroadcastManager() override;
 
     // Returns true if the broadcast connection is enabled. Note this only
     // indicates whether the connection is enabled, not whether it is connected.
@@ -28,11 +38,20 @@ class BroadcastManager : public QObject {
 
   private slots:
     void slotControlEnabled(double v);
+    void slotProfileAdded(BroadcastProfilePtr profile);
+    void slotProfileRemoved(BroadcastProfilePtr profile);
+    void slotProfilesChanged();
+    void slotConnectionStatusChanged(int newState);
 
   private:
-    UserSettingsPointer m_pConfig;
-    QSharedPointer<EngineBroadcast> m_pBroadcast;
-    ControlProxy* m_pBroadcastEnabled;
-};
+    bool addConnection(BroadcastProfilePtr profile);
+    bool removeConnection(BroadcastProfilePtr profile);
+    ShoutConnectionPtr findConnectionForProfile(BroadcastProfilePtr profile);
 
-#endif /* BROADCAST_BROADCASTMANAGER_H */
+    UserSettingsPointer m_pConfig;
+    BroadcastSettingsPointer m_pBroadcastSettings;
+    QSharedPointer<EngineNetworkStream> m_pNetworkStream;
+
+    ControlPushButton* m_pBroadcastEnabled;
+    ControlObject* m_pStatusCO;
+};

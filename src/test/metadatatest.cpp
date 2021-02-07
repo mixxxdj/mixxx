@@ -1,26 +1,17 @@
 #include <gtest/gtest.h>
 
-#include "track/trackmetadatataglib.h"
+#include "track/taglib/trackmetadata.h"
+#include "util/memory.h"
 
+#include <taglib/tstring.h>
+#include <taglib/textidentificationframe.h>
 #include <QtDebug>
 
 namespace {
 
-const double kBpmValueMax = 300.0;
-
 class MetadataTest : public testing::Test {
   protected:
-
-    MetadataTest() {
-    }
-
-    virtual void SetUp() {
-    }
-
-    virtual void TearDown() {
-    }
-
-    double parseBpm(QString inputValue, bool expectedResult, double expectedValue) {
+    double parseBpm(const QString& inputValue, bool expectedResult, double expectedValue) {
         //qDebug() << "parseBpm" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;
@@ -37,20 +28,53 @@ class MetadataTest : public testing::Test {
     }
 
     void normalizeBpm(double normalizedValue) {
-        mixxx::Bpm normalizedBpm(normalizedValue);
-        normalizedBpm.normalizeValue(); // re-normalize
         // Expected: Re-normalization does not change the value
         // that should already be normalized.
-        EXPECT_EQ(normalizedBpm.getValue(), normalizedValue);
+        EXPECT_EQ(normalizedValue, mixxx::Bpm::normalizeValue(normalizedValue));
+    }
+
+    void readBPMFromId3(const char* inputValue, double expectedValue) {
+        TagLib::ID3v2::Tag tag;
+        tag.header()->setMajorVersion(3);
+        auto pFrame =
+            std::make_unique<TagLib::ID3v2::TextIdentificationFrame>("TBPM", TagLib::String::Latin1);
+
+        pFrame->setText(TagLib::String(inputValue, TagLib::String::UTF8));
+        tag.addFrame(pFrame.get());
+        // Now that the plain pointer in pFrame is owned and managed by
+        // pTag we need to release the ownership to avoid double deletion!
+        pFrame.release();
+
+        mixxx::TrackMetadata trackMetadata;
+        mixxx::taglib::id3v2::importTrackMetadataFromTag(&trackMetadata, tag);
+
+        EXPECT_DOUBLE_EQ(expectedValue, trackMetadata.getTrackInfo().getBpm().getValue());
     }
 };
 
 TEST_F(MetadataTest, ParseBpmPrecision) {
     parseBpm("128.1234", true, 128.1234); // 4 fractional digits
+
+    //Test special case where BPM value represents cents of a BPM (like 1240 instead of 124)
+    const char* bpmchar[] = {
+        "200",
+        "600",
+        "1256",
+        "14525"
+    };
+    double bpmdouble[] = {
+        200.0,
+        60.0,
+        125.6,
+        145.25
+    };
+    for (size_t i = 0; i < sizeof(bpmchar) / sizeof(bpmchar[0]); ++i) {
+        readBPMFromId3(bpmchar[i], bpmdouble[i]);
+    }
 }
 
 TEST_F(MetadataTest, ParseBpmValidRange) {
-    for (int bpm100 = int(mixxx::Bpm::kValueMin) * 100; kBpmValueMax * 100 >= bpm100; ++bpm100) {
+    for (int bpm100 = int(mixxx::Bpm::kValueMin) * 100; mixxx::Bpm::kValueMax * 100 >= bpm100; ++bpm100) {
         const double expectedValue = bpm100 / 100.0;
         const QString inputValues[] = {
                 QString("%1").arg(expectedValue),
@@ -74,10 +98,10 @@ TEST_F(MetadataTest, NormalizeBpm) {
     normalizeBpm(mixxx::Bpm::kValueMin - 1.0);
     normalizeBpm(mixxx::Bpm::kValueMin + 1.0);
     normalizeBpm(-mixxx::Bpm::kValueMin);
-    normalizeBpm(kBpmValueMax);
-    normalizeBpm(kBpmValueMax - 1.0);
-    normalizeBpm(kBpmValueMax + 1.0);
-    normalizeBpm(-kBpmValueMax);
+    normalizeBpm(mixxx::Bpm::kValueMax);
+    normalizeBpm(mixxx::Bpm::kValueMax - 1.0);
+    normalizeBpm(mixxx::Bpm::kValueMax + 1.0);
+    normalizeBpm(-mixxx::Bpm::kValueMax);
 }
 
 TEST_F(MetadataTest, ID3v2Year) {
@@ -100,14 +124,14 @@ TEST_F(MetadataTest, ID3v2Year) {
             tag.header()->setMajorVersion(majorVersion);
             {
                 mixxx::TrackMetadata trackMetadata;
-                trackMetadata.setYear(year);
-                mixxx::taglib::writeTrackMetadataIntoID3v2Tag(&tag, trackMetadata);
+                trackMetadata.refTrackInfo().setYear(year);
+                mixxx::taglib::id3v2::exportTrackMetadataIntoTag(&tag, trackMetadata);
             }
             mixxx::TrackMetadata trackMetadata;
-            mixxx::taglib::readTrackMetadataFromID3v2Tag(&trackMetadata, tag);
+            mixxx::taglib::id3v2::importTrackMetadataFromTag(&trackMetadata, tag);
             if (4 > majorVersion) {
                 // ID3v2.3.0: parsed + formatted
-                const QString actualYear(trackMetadata.getYear());
+                const QString actualYear(trackMetadata.getTrackInfo().getYear());
                 const QDate expectedDate(mixxx::TrackMetadata::parseDate(year));
                 if (expectedDate.isValid()) {
                     // Only the date part can be stored in an ID3v2.3.0 tag
@@ -118,7 +142,7 @@ TEST_F(MetadataTest, ID3v2Year) {
                 }
             } else {
                 // ID3v2.4.0: currently unverified/unmodified
-                EXPECT_EQ(year, trackMetadata.getYear());
+                EXPECT_EQ(year, trackMetadata.getTrackInfo().getYear());
             }
         }
     }

@@ -1,33 +1,31 @@
 #include "imgcolor.h"
 
-QColor ImgHueInv::doColorCorrection(QColor c) {
-    int h, s, v, a;
-    c.getHsv(&h, &s, &v, &a);
-    int r, g, b;
-    c.getRgb(&r, &g, &b);
-    c.setRgb(0xff - r, 0xff - g, 0xff - b);
-    int hi, si, vi;
-    c.getHsv(&hi, &si, &vi);
-    c.setHsv(hi, s, v, a);
-    return c;
+QColor ImgHueInv::doColorCorrection(const QColor& c) const {
+    int r, g, b, a;
+    c.getRgb(&r, &g, &b, &a);
+    return QColor(0xff - r, 0xff - g, 0xff - b, a);
 }
 
-QColor ImgHueRot::doColorCorrection(QColor c) {
+QColor ImgHueRot::doColorCorrection(const QColor& c) const {
     int h, s, v, a;
     c.getHsv(&h, &s, &v, &a);
     h = (h + m_amt) % 256;
     if (h < 0) { h += 256; }
-    c.setHsv(h, s, v, a);
-    return c;
+    QColor ret;
+    ret.setHsv(h, s, v, a);
+    return ret;
 }
 
-QColor ImgScaleWhite::doColorCorrection(QColor c) {
+QColor ImgScaleWhite::doColorCorrection(const QColor& c) const {
     int h, s, v, a;
     c.getHsv(&h, &s, &v, &a);
-    if (s < 50) { v *= m_amt; }
+    if (s < 50) {
+        v = static_cast<int>(v * m_amt);
+    }
     if (v > 255) { v = 255; }
-    c.setHsv(h, s, v, a);
-    return c;
+    QColor ret;
+    ret.setHsv(h, s, v, a);
+    return ret;
 }
 
 ImgAdd::ImgAdd(ImgSource * parent, int amt)
@@ -35,7 +33,7 @@ ImgAdd::ImgAdd(ImgSource * parent, int amt)
     // Nothing left to do
 }
 
-QColor ImgAdd::doColorCorrection(QColor c) {
+QColor ImgAdd::doColorCorrection(const QColor& c) const {
     int r = c.red() + m_amt;
     int g = c.green() + m_amt;
     int b = c.blue() + m_amt;
@@ -52,7 +50,7 @@ ImgMax::ImgMax(ImgSource * parent, int amt)
     : ImgColorProcessor(parent), m_amt(amt) {
 }
 
-QColor ImgMax::doColorCorrection(QColor c) {
+QColor ImgMax::doColorCorrection(const QColor& c) const {
     int r = c.red();
     int g = c.green();
     int b = c.blue();
@@ -63,15 +61,15 @@ QColor ImgMax::doColorCorrection(QColor c) {
 }
 
 
-QColor ImgHSVTweak::doColorCorrection(QColor c) {
+QColor ImgHSVTweak::doColorCorrection(const QColor& c) const {
     int h, s, v, a;
     c.getHsv(&h, &s, &v, &a);
 
     if (h >= m_hmin && h <= m_hmax && s >= m_smin && s <= m_smax &&
         v >= m_vmin && v <= m_vmax) {
-        h *= m_hfact;
-        s *= m_sfact;
-        v *= m_vfact;
+        h = static_cast<int>(h * m_hfact);
+        s = static_cast<int>(s * m_sfact);
+        v = static_cast<int>(v * m_vfact);
         h += m_hconst;
         s += m_sconst;
         v += m_vconst;
@@ -83,8 +81,9 @@ QColor ImgHSVTweak::doColorCorrection(QColor c) {
         if (v < 0) { v = 0; }
         if (v > 255) { v = 255; }
 
-        c.setHsv(h, s, v, a);
+        QColor ret;
+        ret.setHsv(h, s, v, a);
+        return ret;
     }
     return c;
 }
-

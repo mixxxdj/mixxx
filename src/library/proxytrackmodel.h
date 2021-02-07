@@ -1,8 +1,4 @@
-// proxytrackmodel.h
-// Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef PROXYTRACKMODEL_H
-#define PROXYTRACKMODEL_H
+#pragma once
 
 #include <QSortFilterProxyModel>
 #include <QAbstractItemModel>
@@ -22,35 +18,37 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     // composes. If bHandleSearches is true, then search signals will not be
     // delivered to pTrackModel -- instead the ProxyTrackModel will do its own
     // filtering.
-    ProxyTrackModel(QAbstractItemModel* pTrackModel, bool bHandleSearches=true);
-    virtual ~ProxyTrackModel();
+    explicit ProxyTrackModel(QAbstractItemModel* pTrackModel, bool bHandleSearches = true);
+    ~ProxyTrackModel() override;
 
-    virtual TrackPointer getTrack(const QModelIndex& index) const;
-    virtual QString getTrackLocation(const QModelIndex& index) const;
-    virtual TrackId getTrackId(const QModelIndex& index) const;
-    virtual const QLinkedList<int> getTrackRows(TrackId trackId) const;
-    virtual void search(const QString& searchText,const QString& extraFilter=QString());
-    virtual const QString currentSearch() const;
-    virtual bool isColumnInternal(int column);
-    virtual bool isColumnHiddenByDefault(int column);
-    virtual void removeTracks(const QModelIndexList& indices);
-    virtual void moveTrack(const QModelIndex& sourceIndex,
-                           const QModelIndex& destIndex);
-    void deleteTracks(const QModelIndexList& indices);
-    virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
-    virtual TrackModel::CapabilitiesFlags getCapabilities() const;
+    // Inherited from TrackModel
+    Capabilities getCapabilities() const final;
+    TrackPointer getTrack(const QModelIndex& index) const final;
+    TrackPointer getTrackByRef(const TrackRef& trackRef) const final;
+    QString getTrackLocation(const QModelIndex& index) const final;
+    TrackId getTrackId(const QModelIndex& index) const final;
+    CoverInfo getCoverInfo(const QModelIndex& index) const final;
+    const QVector<int> getTrackRows(TrackId trackId) const final;
+    void search(const QString& searchText,const QString& extraFilter = QString()) final;
+    const QString currentSearch() const final;
+    bool isColumnInternal(int column) final;
+    bool isColumnHiddenByDefault(int column) final;
+    void removeTracks(const QModelIndexList& indices) final;
+    void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) final;
+    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) final;
+    QString getModelSetting(const QString& name) final;
+    bool setModelSetting(const QString& name, const QVariant& value) final;
+    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) const override;
+    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
 
-    bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const;
+    // Inherited from QSortFilterProxyModel
+    bool filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const final;
 
-    virtual QString getModelSetting(QString name);
-    virtual bool setModelSetting(QString name, QVariant value);
-
-    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
+    // Inherited from QAbstractItemModel
+    void sort(int column, Qt::SortOrder order = Qt::AscendingOrder) final;
 
   private:
     TrackModel* m_pTrackModel;
     QString m_currentSearch;
     bool m_bHandleSearches;
 };
-
-#endif /* PROXYTRACKMODEL_H */

@@ -26,18 +26,18 @@ IonDiscoverDJ.init = function (id) {    // called when the MIDI device is opened
         IonDiscoverDJ.sendMidi(0x80, IonDiscoverDJ.leds[LED], IonDiscoverDJ.ledOff, timeToWait);
         timeToWait += 5;
     }
-    
+
     for (var LED in IonDiscoverDJ.leds ) {
         IonDiscoverDJ.sendMidi(0x90, IonDiscoverDJ.leds[LED], IonDiscoverDJ.ledOn, timeToWait);
         timeToWait += 5;
     }
-    
+
     timeToWait += 1000;
     for (var LED in IonDiscoverDJ.leds ) {
         IonDiscoverDJ.sendMidi(0x80, IonDiscoverDJ.leds[LED], IonDiscoverDJ.ledOff, timeToWait);
         timeToWait += 5;
     }
-    
+
     engine.connectControl("[Channel1]", "play_indicator", "IonDiscoverDJ.PlayLED");
     engine.connectControl("[Channel2]", "play_indicator", "IonDiscoverDJ.PlayLED");
     engine.connectControl("[Channel1]", "cue_indicator", "IonDiscoverDJ.CueLED");
@@ -89,14 +89,14 @@ IonDiscoverDJ.GetDeck = function(group) {
 };
 
 
-IonDiscoverDJ.getControl = function (io, channel, name) { 
+IonDiscoverDJ.getControl = function (io, channel, name) {
     // Accept channel in form 'N' or '[ChannelN]'
     channel = channel.replace(/\[Channel(\d)\]/, "$1");
 
     for (control in IonDiscoverDJ.controls.inputs) {
-	if (IonDiscoverDJ.controls.inputs[control].channel == channel && 
-	    IonDiscoverDJ.controls.inputs[control].name == name
-	    ) return IonDiscoverDJ.controls.inputs[control];
+    if (IonDiscoverDJ.controls.inputs[control].channel == channel &&
+        IonDiscoverDJ.controls.inputs[control].name == name
+        ) return IonDiscoverDJ.controls.inputs[control];
     }
 
     print ("IonDiscoverDJ.getControl: Control not found: io=" + io + ": channel=" + channel + ": name=" + name);
@@ -130,7 +130,7 @@ IonDiscoverDJ.jog_touch = function (channel, control, value, status, group) {
 };
 
 IonDiscoverDJ.jog_wheel = function (channel, control, value, status, group) {
-   // 7F > 40: CCW Slow > Fast - 127 > 64 
+   // 7F > 40: CCW Slow > Fast - 127 > 64
    // 01 > 3F: CW Slow > Fast - 0 > 63
    var jogValue = value >=0x40 ? value - 0x80 : value; // -64 to +63, - = CCW, + = CW
    IonDiscoverDJ.GetDeck(group).jogMove(jogValue);
@@ -138,7 +138,7 @@ IonDiscoverDJ.jog_wheel = function (channel, control, value, status, group) {
 
 IonDiscoverDJ.reversek = function (channel, control, value, status, group) {
    var deck = IonDiscoverDJ.GetDeck(group);
-   
+
    deck.shiftMode = (value == 0x7F); //If button down on, else off
 }
 
@@ -188,37 +188,37 @@ IonDiscoverDJ.LoadSelectedTrackCh2 = function (group, control, value, status) {
 }
 
 IonDiscoverDJ.PlayLED = function (value, group, control) {
-	var deck = IonDiscoverDJ.GetDeck(group);
-	if(value) {
-		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] play"], IonDiscoverDJ.ledOn);
-	} else {
-		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] play"], IonDiscoverDJ.ledOff);
-	}
+    var deck = IonDiscoverDJ.GetDeck(group);
+    if(value) {
+        midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] play"], IonDiscoverDJ.ledOn);
+    } else {
+        midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] play"], IonDiscoverDJ.ledOff);
+    }
 }
 
 IonDiscoverDJ.CueLED = function (value, group, control) {
-	var deck = IonDiscoverDJ.GetDeck(group);
-	if(value) {
-		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] cue"], IonDiscoverDJ.ledOn);
-	} else {
-		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] cue"], IonDiscoverDJ.ledOff);
-	}
+    var deck = IonDiscoverDJ.GetDeck(group);
+    if(value) {
+        midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] cue"], IonDiscoverDJ.ledOn);
+    } else {
+        midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] cue"], IonDiscoverDJ.ledOff);
+    }
 }
 
 IonDiscoverDJ.SyncLED = function (value, group, control) {
-	var deck = IonDiscoverDJ.GetDeck(group);
-	if(value) {
-		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] sync"], IonDiscoverDJ.ledOn);
-	} else {
-		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] sync"], IonDiscoverDJ.ledOff);
-	}
+    var deck = IonDiscoverDJ.GetDeck(group);
+    if(value) {
+        midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] sync"], IonDiscoverDJ.ledOn);
+    } else {
+        midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] sync"], IonDiscoverDJ.ledOff);
+    }
 }
 
 IonDiscoverDJ.RevLED = function (value, group, control) {
-	var deck = IonDiscoverDJ.GetDeck(group);
-	if(value) {
-		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] rev"], IonDiscoverDJ.ledOn);
-	} else {
-		midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] rev"], IonDiscoverDJ.ledOff);
-	}
+    var deck = IonDiscoverDJ.GetDeck(group);
+    if(value) {
+        midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] rev"], IonDiscoverDJ.ledOn);
+    } else {
+        midi.sendShortMsg(0x90, IonDiscoverDJ.leds["[Channel" + deck.deckNumber +"] rev"], IonDiscoverDJ.ledOff);
+    }
 }

@@ -1,5 +1,4 @@
-#ifndef MIXXX_SOUNDSOURCEMP3_H
-#define MIXXX_SOUNDSOURCEMP3_H
+#pragma once
 
 #include "sources/soundsourceprovider.h"
 
@@ -17,26 +16,21 @@
 
 namespace mixxx {
 
-class SoundSourceMp3: public SoundSource {
-public:
+class SoundSourceMp3 final : public SoundSource {
+  public:
     explicit SoundSourceMp3(const QUrl& url);
     ~SoundSourceMp3() override;
 
     void close() override;
 
-    SINT seekSampleFrame(SINT frameIndex) override;
+  protected:
+    ReadableSampleFrames readSampleFramesClamped(
+            const WritableSampleFrames& sampleFrames) override;
 
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer) override;
-    SINT readSampleFramesStereo(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize) override;
-
-    SINT readSampleFrames(SINT numberOfFrames,
-            CSAMPLE* sampleBuffer, SINT sampleBufferSize,
-            bool readStereoSamples);
-
-private:
-    OpenResult tryOpen(const AudioSourceConfig& audioSrcCfg) override;
+  private:
+    OpenResult tryOpen(
+            OpenMode mode,
+            const OpenParams& params) override;
 
     QFile m_file;
     quint64 m_fileSize;
@@ -51,11 +45,11 @@ private:
     /** It is not possible to make a precise seek in an mp3 file without decoding the whole stream.
      * To have precise seek within a limited range from the current decode position, we keep track
      * of past decoded frame, and their exact position. If a seek occurs and it is within the
-     * range of frames we keep track of a precise seek occurs, otherwise an unprecise seek is performed
+     * range of frames we keep track of a precise seek occurs, otherwise an imprecise seek is performed
      */
     typedef std::vector<SeekFrameType> SeekFrameList;
     SeekFrameList m_seekFrameList; // ordered-by frameIndex
-    SINT m_avgSeekFrameCount; // avg. sample frames per MP3 frame
+    SINT m_avgSeekFrameCount;      // avg. sample frames per MP3 frame
 
     void addSeekFrame(SINT frameIndex, const unsigned char* pInputData);
 
@@ -65,12 +59,9 @@ private:
     SINT m_curFrameIndex;
 
     // NOTE(uklotzde): Each invocation of initDecoding() must be
-    // followed by an invocation of finishDecoding(). In between
-    // 2 matching invocations restartDecoding() might invoked any
-    // number of times, but only if the files has been opened
-    // successfully.
+    // followed by an invocation of finishDecoding().
     void initDecoding();
-    SINT restartDecoding(const SeekFrameType& seekFrame);
+    void restartDecoding(const SeekFrameType& seekFrame);
     void finishDecoding();
 
     // MAD decoder
@@ -79,13 +70,22 @@ private:
     mad_synth m_madSynth;
 
     SINT m_madSynthCount; // left overs from the previous read
+
+    std::vector<unsigned char> m_leftoverBuffer;
 };
 
-class SoundSourceProviderMp3: public SoundSourceProvider {
-public:
-    QString getName() const override;
+class SoundSourceProviderMp3 : public SoundSourceProvider {
+  public:
+    static const QString kDisplayName;
+    static const QStringList kSupportedFileExtensions;
 
-    QStringList getSupportedFileExtensions() const override;
+    QString getDisplayName() const override {
+        return kDisplayName;
+    }
+
+    QStringList getSupportedFileExtensions() const override {
+        return kSupportedFileExtensions;
+    }
 
     SoundSourcePointer newSoundSource(const QUrl& url) override {
         return newSoundSourceFromUrl<SoundSourceMp3>(url);
@@ -93,5 +93,3 @@ public:
 };
 
 } // namespace mixxx
-
-#endif // MIXXX_SOUNDSOURCEMP3_H

@@ -1,35 +1,28 @@
-#ifndef MIXXXTEST_H
-#define MIXXXTEST_H
+#pragma once
 
 #include <gtest/gtest.h>
 
 #include <QDir>
-#include <QTemporaryFile>
 #include <QScopedPointer>
+#include <QTemporaryDir>
 
 #include "mixxxapplication.h"
-
 #include "preferences/usersettings.h"
-#include "control/controlobject.h"
-#include "control/controlproxy.h"
 
 #define EXPECT_QSTRING_EQ(expected, test) EXPECT_STREQ(qPrintable(expected), qPrintable(test))
 #define ASSERT_QSTRING_EQ(expected, test) ASSERT_STREQ(qPrintable(expected), qPrintable(test))
 
-typedef QScopedPointer<QTemporaryFile> ScopedTemporaryFile;
-typedef QScopedPointer<ControlObject> ScopedControl;
-
 class MixxxTest : public testing::Test {
   public:
     MixxxTest();
-    virtual ~MixxxTest();
+    ~MixxxTest() override;
 
     // ApplicationScope creates QApplication as a singleton and keeps
     // it alive during all tests. This prevents issues with creating
     // and destroying the QApplication multiple times in the same process.
     // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
-    class ApplicationScope {
-    public:
+    class ApplicationScope final {
+      public:
         ApplicationScope(int& argc, char** argv);
         ~ApplicationScope();
     };
@@ -40,32 +33,53 @@ class MixxxTest : public testing::Test {
         return s_pApplication.data();
     }
 
-    UserSettingsPointer config() {
+    UserSettingsPointer config() const {
         return m_pConfig;
     }
 
-    ControlProxy* getControlProxy(const ConfigKey& key) {
-        return new ControlProxy(key);
-    }
+    // Simulate restarting Mixxx by saving and reloading the UserSettings.
+    void saveAndReloadConfig();
 
-    QTemporaryFile* makeTemporaryFile(const QString contents) {
-        QByteArray contentsBa = contents.toLocal8Bit();
-        QTemporaryFile* file = new QTemporaryFile();
-        file->open();
-        file->write(contentsBa);
-        file->close();
-        return file;
+    QDir getTestDataDir() const {
+        return m_testDataDir.path();
     }
 
   private:
     static QScopedPointer<MixxxApplication> s_pApplication;
 
-    const QDir m_testDataDir;
-    const QString m_testDataCfg;
+    const QTemporaryDir m_testDataDir;
 
   protected:
-    const UserSettingsPointer m_pConfig;
+    UserSettingsPointer m_pConfig;
 };
 
+namespace mixxxtest {
 
-#endif /* MIXXXTEST_H */
+/// Returns the full, non-empty file path on success.
+///
+/// For the format of fileNameTemplate refer to QTemporaryFile.
+QString generateTemporaryFileName(const QString& fileNameTemplate);
+
+/// Returns the full, non-empty file path on success.
+///
+/// For the format of fileNameTemplate refer to QTemporaryFile.
+QString createEmptyTemporaryFile(const QString& fileNameTemplate);
+
+bool copyFile(const QString& srcFileName, const QString& dstFileName);
+
+class FileRemover final {
+  public:
+    explicit FileRemover(const QString& fileName)
+            : m_fileName(fileName) {
+    }
+    ~FileRemover();
+
+    void keepFile() {
+        m_fileName = QString();
+    }
+
+  private:
+    QString m_fileName;
+};
+
+} // namespace mixxxtest
