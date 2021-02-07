@@ -9,6 +9,7 @@
 
 #include "moc_trackexportdlg.cpp"
 #include "util/assert.h"
+#include "util/fileutils.h"
 
 namespace {
 
@@ -59,7 +60,8 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
     m_patternMenu->installEventFilter(this);
 
     if (playlist) {
-        playlistName->setText(*playlist);
+        // use the escaped version as suggestion for playlist name
+        playlistName->setText(FileUtils::escapeFileName(*playlist));
     }
 
     populateDefaultPatterns();
