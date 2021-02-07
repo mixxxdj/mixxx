@@ -37,10 +37,9 @@ TraktorS3.PitchSliderRelativeMode = true;
 // button down.  Letting go will stop playback.
 TraktorS3.SamplerModePressAndHold = false;
 
-// By default, touching the jog wheel does nothing special.  When this option is true,
-// touching the job wheel enables scratch mode. Pressing the jog button still also
-// enables scratching.
-TraktorS3.WheelTouchScratching = false;
+// When this option is true, touching the job wheel enables scratch mode. Pressing the jog button
+// still also enables scratching.
+TraktorS3.WheelTouchScratching = true;
 
 // You can choose the colors you want for each channel. The list of colors is:
 // RED, CARROT, ORANGE, HONEY, YELLOW, LIME, GREEN, AQUA, CELESTE, SKY, BLUE,
@@ -113,7 +112,7 @@ TraktorS3.Controller = function() {
         0: this.hid.LEDColors.PURPLE,
         1: this.hid.LEDColors.RED,
         2: this.hid.LEDColors.GREEN,
-        3: this.hid.LEDColors.BLUE,
+        3: this.hid.LEDColors.CELESTE,
         4: this.hid.LEDColors.YELLOW,
     };
 
@@ -255,8 +254,10 @@ TraktorS3.Deck.prototype.registerInputs = function(messageShort, messageLong) {
     this.defineButton(messageShort, "!SelectTrack", 0x0B, 0x0F, 0x0C, 0xF0, deckFn.selectTrackHandler);
     this.defineButton(messageShort, "!LoadSelectedTrack", 0x09, 0x01, 0x09, 0x08, deckFn.loadTrackHandler);
     this.defineButton(messageShort, "!PreviewTrack", 0x01, 0x08, 0x04, 0x10, deckFn.previewTrackHandler);
-    this.defineButton(messageShort, "!LibraryFocus", 0x01, 0x40, 0x04, 0x80, deckFn.LibraryFocusHandler);
-    this.defineButton(messageShort, "!QueueAutoDJ", 0x01, 0x20, 0x04, 0x40, deckFn.cueAutoDJHandler);
+    // There is no control object to mark / unmark a track as played.
+    // this.defineButton(messageShort, "!SetPlayed", 0x01, 0x10, 0x04, 0x20, deckFn.SetPlayedHandler);
+    this.defineButton(messageShort, "!LibraryFocus", 0x01, 0x20, 0x04, 0x40, deckFn.LibraryFocusHandler);
+    this.defineButton(messageShort, "!MaximizeLibrary", 0x01, 0x40, 0x04, 0x80, deckFn.MaximizeLibraryHandler);
 
     // Loop control
     // TODO: bind touch detections: 0x0A/0x01, 0x0A/0x08
@@ -501,15 +502,13 @@ TraktorS3.Deck.prototype.LibraryFocusHandler = function(field) {
     engine.setValue("[Library]", "MoveFocus", field.value);
 };
 
-TraktorS3.Deck.prototype.cueAutoDJHandler = function(field) {
-    this.colorOutput(field.value, "!QueueAutoDJ");
-    if (this.shiftPressed) {
-        engine.setValue("[Library]", "AutoDjAddTop", field.value);
-    } else {
-        engine.setValue("[Library]", "AutoDjAddBottom", field.value);
+TraktorS3.Deck.prototype.MaximizeLibraryHandler = function(field) {
+    if (field.value === 0) {
+        return;
     }
-};
 
+    script.toggleControl("[Master]", "maximize_library");
+};
 
 TraktorS3.Deck.prototype.selectLoopHandler = function(field) {
     var delta = 1;
@@ -806,8 +805,8 @@ TraktorS3.Deck.prototype.registerOutputs = function(outputA, _outputB) {
     this.defineOutput(outputA, "slip_enabled", 0x02, 0x1B);
     this.defineOutput(outputA, "reverse", 0x03, 0x1C);
     this.defineOutput(outputA, "!PreviewTrack", 0x04,  0x1D);
-    this.defineOutput(outputA, "!QueueAutoDJ", 0x06, 0x1F);
-    this.defineOutput(outputA, "!LibraryFocus", 0x07, 0x20);
+    this.defineOutput(outputA, "!LibraryFocus", 0x06, 0x1F);
+    this.defineOutput(outputA, "!MaximizeLibrary", 0x07, 0x20);
     this.defineOutput(outputA, "quantize", 0x08, 0x21);
     this.defineOutput(outputA, "scratch2_enable", 0x09, 0x22);
     this.defineOutput(outputA, "sync_enabled", 0x0C, 0x25);
@@ -1893,6 +1892,8 @@ TraktorS3.Controller.prototype.registerOutputPackets = function() {
 
     engine.connectControl("[Microphone]", "pfl", this.pflOutput);
 
+    engine.connectControl("[Master]", "maximize_library", TraktorS3.bind(TraktorS3.Controller.prototype.maximizeLibraryOutput, this));
+
     // Master VuMeters
     this.masterVuMeter["VuMeterL"].connection = engine.makeConnection("[Master]", "VuMeterL", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
     this.masterVuMeter["VuMeterR"].connection = engine.makeConnection("[Master]", "VuMeterR", TraktorS3.bind(TraktorS3.Controller.prototype.masterVuMeterHandler, this));
@@ -1924,6 +1925,11 @@ TraktorS3.Controller.prototype.pflOutput = function(value, group, key) {
         this.basicOutput(value, group, key);
     }
     // Unhandled case, ignore.
+};
+
+TraktorS3.Controller.prototype.maximizeLibraryOutput = function(value, _group, _key) {
+    this.Decks["deck1"].colorOutput(value, "!MaximizeLibrary");
+    this.Decks["deck2"].colorOutput(value, "!MaximizeLibrary");
 };
 
 // Output drives lights that only have one color.
@@ -2061,8 +2067,8 @@ TraktorS3.Controller.prototype.lightDeck = function(group, sendPackets) {
         // there are two buttons that point to the same CO.
         deck.basicOutput(0, "!shift");
         deck.colorOutput(0, "!PreviewTrack");
-        deck.colorOutput(0, "!QueueAutoDJ");
         deck.colorOutput(0, "!LibraryFocus");
+        deck.colorOutput(0, "!MaximizeLibrary");
         if (group === "[Channel4]") {
             this.basicOutput(0, "[Master]", "!extButton");
         }
