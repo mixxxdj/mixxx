@@ -59,6 +59,34 @@
          <layout class="QVBoxLayout" name="verticalLayout_2">
           <item>
            <layout class="QGridLayout" name="gridLayout_2">
+            <item row="3" column="0">
+             <widget class="QCheckBox" name="playlistExport">
+              <property name="text">
+               <string>Create Playlist</string>
+              </property>
+             </widget>
+            </item>
+            <item row="0" column="1">
+             <layout class="QHBoxLayout" name="horizontalLayout">
+              <item>
+               <widget class="QLineEdit" name="folderEdit"/>
+              </item>
+              <item>
+               <widget class="QPushButton" name="browseButton">
+                <property name="text">
+                 <string>Browse</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item row="2" column="0">
+             <widget class="QLabel" name="labelPreview">
+              <property name="text">
+               <string>Preview</string>
+              </property>
+             </widget>
+            </item>
             <item row="1" column="0">
              <widget class="QLabel" name="labelPattern">
               <property name="text">
@@ -66,10 +94,10 @@
               </property>
              </widget>
             </item>
-            <item row="2" column="0">
-             <widget class="QLabel" name="labelPreview">
+            <item row="0" column="0">
+             <widget class="QLabel" name="labelFolder">
               <property name="text">
-               <string>Preview</string>
+               <string>Folder</string>
               </property>
              </widget>
             </item>
@@ -99,27 +127,6 @@
               </item>
              </layout>
             </item>
-            <item row="0" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout">
-              <item>
-               <widget class="QLineEdit" name="folderEdit"/>
-              </item>
-              <item>
-               <widget class="QPushButton" name="browseButton">
-                <property name="text">
-                 <string>Browse</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
-            </item>
-            <item row="3" column="0">
-             <widget class="QCheckBox" name="playlistExport">
-              <property name="text">
-               <string>Create Playlist</string>
-              </property>
-             </widget>
-            </item>
             <item row="2" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <property name="spacing">
@@ -128,16 +135,19 @@
               <item>
                <widget class="QLabel" name="previewLabel">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
                 <property name="text">
-                 <string/>
+                 <string notr="true"/>
                 </property>
                 <property name="alignment">
                  <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                </property>
+                <property name="textInteractionFlags">
+                 <set>Qt::TextSelectableByMouse</set>
                 </property>
                </widget>
               </item>
@@ -158,13 +168,6 @@
                </widget>
               </item>
              </layout>
-            </item>
-            <item row="0" column="0">
-             <widget class="QLabel" name="labelFolder">
-              <property name="text">
-               <string>Folder</string>
-              </property>
-             </widget>
             </item>
             <item row="1" column="1">
              <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -189,83 +192,11 @@
                  <enum>Qt::ToolButtonIconOnly</enum>
                 </property>
                 <property name="arrowType">
-                 <enum>Qt::DownArrow</enum>
+                 <enum>Qt::NoArrow</enum>
                 </property>
                </widget>
               </item>
              </layout>
-            </item>
-           </layout>
-          </item>
-          <item>
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
-            </property>
-            <property name="sizeType">
-             <enum>QSizePolicy::Fixed</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
-          </item>
-          <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_2">
-            <item>
-             <widget class="QPushButton" name="pushButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>Help</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <spacer name="horizontalSpacer">
-              <property name="orientation">
-               <enum>Qt::Horizontal</enum>
-              </property>
-              <property name="sizeHint" stdset="0">
-               <size>
-                <width>40</width>
-                <height>20</height>
-               </size>
-              </property>
-             </spacer>
-            </item>
-            <item>
-             <widget class="QPushButton" name="cancelButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>&amp;Close</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QPushButton" name="startButton">
-              <property name="sizePolicy">
-               <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                <horstretch>0</horstretch>
-                <verstretch>0</verstretch>
-               </sizepolicy>
-              </property>
-              <property name="text">
-               <string>&amp;Start</string>
-              </property>
-             </widget>
             </item>
            </layout>
           </item>
@@ -298,13 +229,6 @@
           <widget class="QProgressBar" name="exportProgress">
            <property name="value">
             <number>24</number>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="progressCancelButton">
-           <property name="text">
-            <string>&amp;Cancel</string>
            </property>
           </widget>
          </item>
@@ -345,6 +269,62 @@
      </widget>
     </widget>
    </item>
+   <item row="2" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_7">
+     <item>
+      <widget class="QPushButton" name="pushButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>Help</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="cancelButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&amp;Close</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="startButton">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>&amp;Start</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
   </layout>
  </widget>
  <tabstops>
@@ -355,12 +335,11 @@
   <tabstop>patternButton</tabstop>
   <tabstop>playlistExport</tabstop>
   <tabstop>playlistName</tabstop>
-  <tabstop>startButton</tabstop>
-  <tabstop>cancelButton</tabstop>
   <tabstop>playlistSuffix</tabstop>
   <tabstop>pushButton</tabstop>
+  <tabstop>cancelButton</tabstop>
+  <tabstop>startButton</tabstop>
   <tabstop>statusTable</tabstop>
-  <tabstop>progressCancelButton</tabstop>
  </tabstops>
  <resources/>
  <connections/>

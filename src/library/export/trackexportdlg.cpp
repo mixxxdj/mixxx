@@ -68,10 +68,6 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
             &QPushButton::clicked,
             this,
             &TrackExportDlg::cancelButtonClicked);
-    connect(progressCancelButton,
-            &QPushButton::clicked,
-            this,
-            &TrackExportDlg::cancelButtonClicked);
     connect(startButton,
             &QPushButton::clicked,
             this,
@@ -182,6 +178,7 @@ void TrackExportDlg::setEnableControls(bool enabled) {
     playlistName->setEnabled(enabled);
     playlistExport->setEnabled(enabled);
     playlistSuffix->setEnabled(enabled);
+    patternButton->setEnabled(enabled);
 }
 
 void TrackExportDlg::slotStartExport() {
@@ -204,7 +201,6 @@ void TrackExportDlg::slotStartExport() {
     tabWidget->setCurrentIndex(1);
 
     cancelButton->setText(tr("&Cancel"));
-    progressCancelButton->setText(tr("&Cancel"));
 
     // enable playlist export
     if (playlistExport->isChecked()) {
@@ -327,7 +323,6 @@ void TrackExportDlg::stopWorker() {
     m_worker->wait();
     setEnableControls(true);
     cancelButton->setText(tr("&Close"));
-    progressCancelButton->setText(tr("&Close"));
 }
 
 void TrackExportDlg::open() {
