@@ -60,10 +60,10 @@ class EngineSyncTest : public MockedEngineBackendTest {
     }
 
     void assertSyncOff(const QString& group) {
-        if (group == m_sInternalClockGroup) {
+        if (group == m_sInternalClockGroup || group == m_sMidiSourceClockGroup) {
             ASSERT_EQ(0,
                     ControlObject::getControl(
-                            ConfigKey(m_sInternalClockGroup, "sync_master"))
+                            ConfigKey(group, "sync_master"))
                             ->get());
         } else {
             ASSERT_EQ(SYNC_NONE,
@@ -352,6 +352,29 @@ TEST_F(EngineSyncTest, InternalMasterSetFollowerSliderMoves) {
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
     EXPECT_DOUBLE_EQ(100.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+}
+
+TEST_F(EngineSyncTest, MidiSourceClockMasterSetSlaveSliderMoves) {
+    // TODO: refactor this with the test above -- but we have to be careful to
+    // reset state between passes.
+    // If midi clock is master, and we turn on a slave, the slider should move.
+    auto pButtonMasterSyncMidi = std::make_unique<ControlProxy>(
+            m_sMidiSourceClockGroup, "sync_master");
+    pButtonMasterSyncMidi->slotSet(1);
+    auto pMasterSyncSlider = std::make_unique<ControlProxy>(m_sMidiSourceClockGroup, "bpm");
+    pMasterSyncSlider->set(100.0);
+
+    // Set the file bpm of channel 1 to 160bpm.
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sGroup1, "file_bpm");
+    pFileBpm1->set(80.0);
+
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
+    pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.25),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    EXPECT_DOUBLE_EQ(100.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 }
 
 TEST_F(EngineSyncTest, AnySyncDeckSliderStays) {
@@ -1048,6 +1071,25 @@ TEST_F(EngineSyncTest, EnableOneDeckSliderUpdates) {
 
     // Internal clock rate should be set.
     EXPECT_DOUBLE_EQ(130.0,
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
+                    ->get());
+}
+
+TEST_F(EngineSyncTest, EnableMidiSliderUpdates) {
+    // If we enable midi to be master, the internal slider should immediately update.
+    auto pButtonMasterSyncMidi = std::make_unique<ControlProxy>(
+            m_sMidiSourceClockGroup, "sync_master");
+    ControlObject::getControl(ConfigKey(m_sMidiSourceClockGroup, "bpm"))->set(132.0);
+
+    // Set midi to sync master.
+    pButtonMasterSyncMidi->slotSet(1.0);
+    ProcessBuffer();
+
+    // Midi should still be master.
+    ASSERT_TRUE(isExplicitMaster(m_sMidiSourceClockGroup));
+
+    // Internal clock rate should be set.
+    EXPECT_DOUBLE_EQ(132.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
 }
@@ -2088,6 +2130,38 @@ TEST_F(EngineSyncTest, MasterBpmNeverZero) {
     m_pTrack1->setBeats(mixxx::BeatsPointer());
     EXPECT_EQ(128.0,
               ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+}
+
+TEST_F(EngineSyncTest, MidiRateChangeMovesSlider) {
+    // If the midi rate changes, the rate sliders should change on followers.
+    auto pButtonMasterSyncMidi = std::make_unique<ControlProxy>(
+            m_sMidiSourceClockGroup, "sync_master");
+    pButtonMasterSyncMidi->slotSet(1);
+    auto pMidiSlider = std::make_unique<ControlProxy>(m_sMidiSourceClockGroup, "bpm");
+    pMidiSlider->set(100.0);
+
+    auto pFileBpm1 = std::make_unique<ControlProxy>(m_sMidiSourceClockGroup, "file_bpm");
+    pFileBpm1->set(80.0);
+
+    auto pButtonMasterSync1 = std::make_unique<ControlProxy>(m_sMidiSourceClockGroup, "sync_mode");
+    pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.25),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    EXPECT_DOUBLE_EQ(100.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    pMidiSlider->set(120.0);
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.5),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    EXPECT_DOUBLE_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    // Setting the deck slider shouldn't work
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.5),
+            ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
 }
 
 TEST_F(EngineSyncTest, ZeroBpmNaturalRate) {

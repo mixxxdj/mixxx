@@ -1,6 +1,7 @@
 #include "controllers/midi/midicontroller.h"
 
 #include "control/controlobject.h"
+#include "control/controlproxy.h"
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "controllers/midi/midiutils.h"
@@ -11,8 +12,13 @@
 #include "util/math.h"
 #include "util/screensaver.h"
 
-MidiController::MidiController()
-        : Controller() {
+MidiController::MidiController(UserSettingsPointer config)
+        : Controller(), m_pConfig(config) {
+    m_pClockBpm = new ControlProxy("[MidiSourceClock]", "bpm", this);
+    m_pClockLastBeat = new ControlProxy("[MidiSourceClock]",
+            "last_beat_time",
+            this);
+    m_pClockRunning = new ControlProxy("[MidiSourceClock]", "run", this);
     setDeviceCategory(tr("MIDI Controller"));
 }
 
@@ -20,6 +26,9 @@ MidiController::~MidiController() {
     destroyOutputHandlers();
     // Don't close the device here. Sub-classes should close the device in their
     // destructors.
+    delete m_pClockRunning;
+    delete m_pClockLastBeat;
+    delete m_pClockBpm;
 }
 
 ControllerJSProxy* MidiController::jsProxy() {
@@ -206,18 +215,25 @@ void MidiController::receivedShortMessage(unsigned char status,
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
-    // Ignore MIDI beat clock messages (0xF8) until we have proper MIDI sync in
-    // Mixxx. These messages are not suitable to use in JS anyway, as they are
-    // sent at 24 ppqn (i.e. one message every 20.83 ms for a 120 BPM track)
-    // and require real-time code. Currently, they are only spam on the
-    // console, inhibit the screen saver unintentionally, could potentially
-    // slow down Mixxx or interfere with the learning wizard.
-    if (status == 0xF8) {
+    controllerDebug(MidiUtils::formatMidiMessage(
+            getName(), status, control, value, channel, opCode, timestamp));
+
+    // If MidiSourceClock handles the message, record the updated values and
+    // no further action is needed.  Note that the clock code is active even if
+    // this device is not master, so if the user changes masters all of the data
+    // is ready to be used instantly.
+    if (m_midiSourceClock.handleMessage(status, timestamp)) {
+        // TODO(owen): Use preferences to determine if we are clock master and only
+        // set values if so.
+        // TODO(owen): Enable midi clock handling when UI is finished.
+        if (false) {
+            m_pClockBpm->set(m_midiSourceClock.bpm());
+            m_pClockLastBeat->set(m_midiSourceClock.smoothedBeatTime().toDoubleNanos());
+            m_pClockRunning->set(static_cast<double>(m_midiSourceClock.running()));
+        }
         return;
     }
 
-    controllerDebug(MidiUtils::formatMidiMessage(getName(), status, control, value,
-                                                 channel, opCode, timestamp));
     MidiKey mappingKey(status, control);
 
     triggerActivity();
@@ -413,7 +429,7 @@ double MidiController::computeValue(
             newmidivalue = newmidivalue - 128.;
         }
         //Apply sensitivity to signed value. FIXME
-       // if(sensitivity > 0)
+        // if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
         //Apply new value to current value.
         newmidivalue = prevmidivalue + newmidivalue;

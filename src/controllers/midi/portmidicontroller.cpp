@@ -4,11 +4,14 @@
 #include "controllers/midi/midiutils.h"
 #include "moc_portmidicontroller.cpp"
 
-PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
+PortMidiController::PortMidiController(UserSettingsPointer config,
+        const PmDeviceInfo* inputDeviceInfo,
         const PmDeviceInfo* outputDeviceInfo,
         int inputDeviceIndex,
         int outputDeviceIndex)
-        : MidiController(), m_cReceiveMsg_index(0), m_bInSysex(false) {
+        : MidiController(config),
+          m_cReceiveMsg_index(0),
+          m_bInSysex(false) {
     for (unsigned int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
         // Can be shortened to `m_midiBuffer[k] = {}` with C++11.
         m_midiBuffer[k].message = 0;

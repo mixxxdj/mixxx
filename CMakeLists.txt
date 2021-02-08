@@ -429,6 +429,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/midi/midienumerator.cpp
   src/controllers/midi/midimessage.cpp
   src/controllers/midi/midioutputhandler.cpp
+  src/controllers/midi/midisourceclock.cpp
   src/controllers/midi/midiutils.cpp
   src/controllers/midi/portmidicontroller.cpp
   src/controllers/midi/portmidienumerator.cpp
@@ -544,6 +545,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/sync/enginesync.cpp
   src/engine/sync/internalclock.cpp
   src/engine/sync/synccontrol.cpp
+  src/engine/sync/midimaster.cpp
   src/errordialoghandler.cpp
   src/library/analysisfeature.cpp
   src/library/analysislibrarytablemodel.cpp

@@ -3,16 +3,19 @@
 #include <QMetaType>
 
 #include "engine/sync/internalclock.h"
+#include "engine/sync/midimaster.h"
 
 namespace {
 
 const QString kInternalClockGroup = QStringLiteral("[InternalClock]");
+const QString kMidiMasterClockGroup = QStringLiteral("[MidiSourceClock]");
 
 } // anonymous namespace
 
 BaseSyncableListener::BaseSyncableListener(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
+          m_pMidiSourceClock(new MidiMasterClock(kMidiMasterClockGroup, this)),
           m_pMasterSyncable(nullptr) {
     qRegisterMetaType<SyncMode>("SyncMode");
     m_pInternalClock->setMasterBpm(124.0);
@@ -22,6 +25,7 @@ BaseSyncableListener::~BaseSyncableListener() {
     // We use the slider value because that is never set to 0.0.
     m_pConfig->set(ConfigKey("[InternalClock]", "bpm"), ConfigValue(
         m_pInternalClock->getBpm()));
+    delete m_pMidiSourceClock;
     delete m_pInternalClock;
 }
 
@@ -35,9 +39,11 @@ void BaseSyncableListener::addSyncableDeck(Syncable* pSyncable) {
 
 void BaseSyncableListener::onCallbackStart(int sampleRate, int bufferSize) {
     m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
+    m_pMidiSourceClock->onCallbackStart(sampleRate, bufferSize);
 }
 
 void BaseSyncableListener::onCallbackEnd(int sampleRate, int bufferSize) {
+    m_pMidiSourceClock->onCallbackEnd(sampleRate, bufferSize);
     m_pInternalClock->onCallbackEnd(sampleRate, bufferSize);
 }
 

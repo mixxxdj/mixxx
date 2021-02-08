@@ -49,7 +49,8 @@
 class PortMidiController : public MidiController {
     Q_OBJECT
   public:
-    PortMidiController(const PmDeviceInfo* inputDeviceInfo,
+    PortMidiController(UserSettingsPointer config,
+            const PmDeviceInfo* inputDeviceInfo,
             const PmDeviceInfo* outputDeviceInfo,
             int inputDeviceIndex,
             int outputDeviceIndex);

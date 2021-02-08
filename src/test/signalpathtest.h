@@ -232,6 +232,7 @@ class BaseSignalPathTest : public MixxxTest {
 
     static const QString m_sMasterGroup;
     static const QString m_sInternalClockGroup;
+    static const QString m_sMidiSourceClockGroup;
     static const QString m_sGroup1;
     static const QString m_sGroup2;
     static const QString m_sGroup3;
