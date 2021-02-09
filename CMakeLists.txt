@@ -473,7 +473,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/encoder/encoderflacsettings.cpp
   src/encoder/encodermp3.cpp
   src/encoder/encodermp3settings.cpp
-  src/encoder/encoderopussettings.cpp
   src/encoder/encodersndfileflac.cpp
   src/encoder/encodervorbis.cpp
   src/encoder/encodervorbissettings.cpp
@@ -2385,6 +2384,7 @@ if(OPUS)
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourceopus.cpp
     src/encoder/encoderopus.cpp
+    src/encoder/encoderopussettings.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC ${Opus_INCLUDE_DIRS})

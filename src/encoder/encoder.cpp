@@ -141,8 +141,10 @@ EncoderRecordingSettingsPointer EncoderFactory::getEncoderRecordingSettings(Enco
         return std::make_shared<EncoderMp3Settings>(pConfig);
     } else if (format.internalName == ENCODING_OGG) {
         return std::make_shared<EncoderVorbisSettings>(pConfig);
+#ifdef __OPUS__
     } else if (format.internalName == ENCODING_OPUS) {
         return std::make_shared<EncoderOpusSettings>(pConfig);
+#endif
     } else if (format.internalName == ENCODING_AAC ||
             format.internalName == ENCODING_HEAAC ||
             format.internalName == ENCODING_HEAACV2) {
