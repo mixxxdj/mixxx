@@ -1,8 +1,4 @@
-// encoderfdkaac.h
-// Created on Aug 15 2017 by Palakis
-
-#ifndef ENCODER_ENCODERFDKAAC_H
-#define ENCODER_ENCODERFDKAAC_H
+#pragma once
 
 #include <QLibrary>
 #include <QString>
@@ -216,5 +212,3 @@ class EncoderFdkAac : public Encoder {
     AACENC_InfoStruct m_aacInfo;
     bool m_hasSbr;
 };
-
-#endif // ENCODER_ENCODERFDKAAC_H
