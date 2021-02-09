@@ -10,7 +10,7 @@
 using namespace mixxx::track::io::key;
 
 namespace {
-const auto kKeywheelSVG = QStringLiteral("images/keywheel/keywheel.svg");
+const auto kKeywheelSVG = QStringLiteral(":/images/keywheel/keywheel.svg");
 const KeyUtils::KeyNotation kNotationHidden[]{
         KeyUtils::KeyNotation::OpenKeyAndTraditional,
         KeyUtils::KeyNotation::LancelotAndTraditional};
