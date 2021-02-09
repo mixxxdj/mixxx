@@ -815,6 +815,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/sample.cpp
   src/util/samplebuffer.cpp
   src/util/sandbox.cpp
+  src/util/semanticversion.cpp
   src/util/screensaver.cpp
   src/util/sleepableqthread.cpp
   src/util/stat.cpp
