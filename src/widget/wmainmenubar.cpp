@@ -539,7 +539,7 @@ void WMainMenuBar::initialize() {
     m_pViewKeywheel->setShortcut(
             QKeySequence(m_pKbdConfig->getValue(
                     ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowKeywheel"),
-                    tr("F2", "Menubar|View|Show Keywheel"))));
+                    tr("F12", "Menubar|View|Show Keywheel"))));
     m_pViewKeywheel->setShortcutContext(Qt::ApplicationShortcut);
     m_pViewKeywheel->setStatusTip(keywheelText);
     m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
