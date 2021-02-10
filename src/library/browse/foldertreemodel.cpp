@@ -70,7 +70,7 @@ FolderTreeModel::FolderTreeModel(QObject *parent)
 }
 
 FolderTreeModel::~FolderTreeModel() {
-    m_isRunning.store(true, std::memory_order_release);
+    m_isRunning.store(false, std::memory_order_release);
 }
 
 /* A tree model of the filesystem should be initialized lazy.
@@ -183,6 +183,7 @@ void FolderTreeModel::processFolder(const QModelIndex& parent, const FileAccess&
 }
 
 void FolderTreeModel::addChildren(const QModelIndex& parent, TreeItemList children) {
+    kLogger.debug() << "adding " << children->size() << " to the list";
     TreeItemModel::insertTreeItemRows(*children, 0, parent);
     delete children;
 }
