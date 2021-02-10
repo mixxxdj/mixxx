@@ -182,20 +182,17 @@ WRecordingDuration {
 #MicAuxLabel,
 #MicAuxLabelUnconfigured,
 #PreviewTitle,
-#PreviewLabel,
-WBeatSpinBox,
-#spinBoxTransition {
+#PreviewLabel {
   text-align: left;
 }
 
 #RateText,
 #MicAuxLabel,
-#PreviewBPM,
-WBeatSpinBox,
-#spinBoxTransition {
+#PreviewBPM {
   text-align: center;
   }
-  WBeatSpinBox,#spinBoxTransition {
+  WBeatSpinBox,
+  #spinBoxTransition {
     qproperty-alignment: 'AlignHCenter';
   }
 
