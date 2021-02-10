@@ -403,38 +403,8 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     if (path == DEVICE_NODE) {
         folders += getRemovableDevices();
     } else {
-        auto listWorker = [=]() mutable -> void {
-            // we assume that the path refers to a folder in the file system
-            // populate childs
-            const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
-            QList<TreeItem*> children;
-            QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
-                    QDir::Dirs | QDir::NoDotAndDotDot);
-
-            // loop through all the item and construct the childs
-            foreach (QFileInfo one, all) {
-#if defined(__APPLE__)
-                if (one.isDir() && one.fileName().endsWith(".app"))
-                    continue;
-#endif
-                // We here create new items for the sidebar models
-                // Once the items are added to the TreeItemModel,
-                // the models takes ownership of them and ensures their deletion
-                auto* folder = new TreeItem(
-                        one.fileName(),
-                        QVariant(one.absoluteFilePath() + QStringLiteral("/")));
-                children << folder;
-            }
-            if (!children.isEmpty()) {
-                m_childModel.insertTreeItemRows(children, 0, index);
-            }
-        };
-        /*
-        auto title = m_childModel.data(index, Qt::DisplayRole);
-        m_childModel.setData(index, QString("loading"));
-        m_childModel.triggerRepaint(index);
-        */
-        auto result = QtConcurrent::run(listWorker);
+        const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
+        m_childModel.processFolder(index, dirAccess);
         // FIXME: create QTimer to update label
         /*
         auto title = m_childModel.data(index, Qt::DisplayRole);
