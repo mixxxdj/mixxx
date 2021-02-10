@@ -76,6 +76,7 @@
 #SidebarCoverSplitter,
 #SidebarCoverSplitter:handle,
 #LibrarySplitter::handle,
+#LibraryFeatureControls,
 QAbstractScrollArea::corner {
   border-top: 1px solid #212123;
   border-right: 1px solid #111;
@@ -134,8 +135,15 @@ QAbstractScrollArea::corner {
         min-height: 3px;
         max-height: 3px;
       }
-#LibraryContainer {
-}
+  /* Controls row in AutoDJ, Recording and other library features */
+  #LibraryFeatureControls {
+    border-width: 1px 0px 0px 0px;
+    border-radius: 0px;
+    margin-top: 1px;
+  }
+
+#LibraryContainer {}
+
   #LibraryContainer QScrollBar::handle:horizontal,
   #LibraryContainer QScrollBar::handle:vertical,
   WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
@@ -196,11 +204,10 @@ WSearchLineEdit {
   #DeckSettingsContainer,
   #DeckSettingsContainerCompact,
   #SamplerSettingsContainer,
-  #spinBoxTransition,
   /* Prevent cut-off or shifted stars on macOS */
   WStarRating {
     background-color: #19191a;
-  }
+    }
     #DeckSettingsContainer,
     #DeckSettingsContainerCompact,
     #SamplerSettingsContainer {
@@ -1188,15 +1195,12 @@ WSearchLineEdit, WTime,
 #LibraryBPMSpinBox,
 #LibraryBPMButton::item,
 #LibraryContainer QTableView,
+#LibraryContainer QTableView::indicator,
 #LibraryContainer QTextBrowser,
 #LibraryContainer QTreeView,
-WLibrary QLabel, WLibrary QRadioButton,
-WLibrary QTableView::indicator,
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton,
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QPushButton,
+#LibraryFeatureControls QRadioButton,
 /* Tooltip and menus */
 QToolTip,
 WBeatSpinBox QMenu,
@@ -1333,7 +1337,7 @@ WEffectSelector QAbstractScrollArea,
 #RecDuration[highlight="0"],
 #BroadcastButton[displayValue="0"],
 #SkinSettingsToggle[displayValue="0"],
-WLibrary QLabel {
+#LibraryFeatureControls QLabel {
   color: #777;
 }
 
@@ -1371,16 +1375,12 @@ WLibrary QLabel {
 #SkinSettingsToggle[displayValue="1"],
 QPushButton#pushButtonAutoDJ:checked,
 QPushButton#pushButtonRepeatPlaylist:checked,
-#DlgAnalysis > QPushButton:checked,
+QPushButton#pushButtonAnalyze:checked,
 QPushButton#pushButtonRecording:checked {
   color: #000;
 }
 
-#DlgMissing > QPushButton:!enabled,
-#DlgHidden > QPushButton:!enabled,
-#DlgAutoDJ > QPushButton:!enabled,
-#DlgRecording > QPushButton:!enabled,
-#DlgAnalysis > QPushButton:!enabled {
+#LibraryFeatureControls QPushButton:!enabled {
   color: #444443;
 }
 
@@ -1437,14 +1437,9 @@ WOverview #PassthroughLabel {
 WPushButton#VinylButton[displayValue="0"],
 WPushButton#FxAssignButton1[displayValue="0"],
 WEffectSelector,
-#DlgMissing > QPushButton:enabled,
-#DlgHidden > QPushButton:enabled,
-#DlgAutoDJ > QPushButton:enabled,
-#DlgRecording > QPushButton:enabled,
-#DlgAnalysis > QPushButton:enabled,
+#LibraryFeatureControls QPushButton:enabled,
 #fadeModeCombobox,
-#CueDeleteButton,
-#LibraryContainer WBeatSpinBox {
+#CueDeleteButton {
   outline: none;
   border-width: 2px;
   border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 2 2 2 2;
@@ -1462,14 +1457,10 @@ WEffectSelector,
   #BroadcastButton[displayValue="2"],
   #BroadcastButton[displayValue="3"],
   #SkinSettingsToggle[displayValue="1"],
-  #DlgMissing > QPushButton:pressed,
-  #DlgHidden > QPushButton:pressed,
-  #DlgAutoDJ > QPushButton:pressed,
-  #DlgRecording > QPushButton:pressed,
-  #DlgAnalysis > QPushButton:pressed
+  #LibraryFeatureControls QPushButton:pressed
   QPushButton#pushButtonAutoDJ:checked,
   QPushButton#pushButtonRepeatPlaylist:checked,
-  #DlgAnalysis > QPushButton:checked,
+  QPushButton#pushButtonAnalyze:checked,
   QPushButton#pushButtonRecording:checked,
   #fadeModeCombobox:on,
   WEffectSelector:on,
@@ -1495,11 +1486,7 @@ WEffectSelector,
     border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1; */
   }
 
-  #DlgMissing > QPushButton:!enabled,
-  #DlgHidden > QPushButton:!enabled,
-  #DlgAutoDJ > QPushButton:!enabled,
-  #DlgRecording > QPushButton:!enabled,
-  #DlgAnalysis > QPushButton:!enabled {
+  #LibraryFeatureControls QPushButton:!enabled {
     outline: none;
     border-width: 2px;
     border-image: url(skin:/palemoon/buttons/btn_embedded_library_disabled.svg) 2 2 2 2;
@@ -1629,11 +1616,7 @@ WBeatSpinBox::down-button {
   #spinBoxTransition::up-button,
   #spinBoxTransition::down-button,
   QPushButton#pushButtonAutoDJ:enabled:!checked,
-  #DlgMissing > QPushButton:enabled,
-  #DlgHidden > QPushButton:enabled,
-  #DlgAutoDJ > QPushButton:enabled,
-  #DlgRecording > QPushButton:enabled,
-  #DlgAnalysis > QPushButton:enabled {
+  #LibraryFeatureControls QPushButton:enabled {
     background-color: #222;
   }
   /* dark buttons in toolbar */
@@ -1660,7 +1643,7 @@ WPushButton#Reverse[pressed="true"],
 #VinylButton[displayValue="1"],
 #PassthroughButton[displayValue="1"],
 QPushButton#pushButtonAutoDJ:checked,
-#DlgAnalysis > QPushButton:checked {
+QPushButton#pushButtonAnalyze:checked {
   background-color: #b24c12;
   }
   /* Orange border for Play buttons when previewing from
@@ -2751,54 +2734,22 @@ WLibrary QRadioButton::indicator:unchecked {
   Don't use 'WLibrary QPushButton' here, as this would apply padding
   to the Preview & BPM lock buttons as well.
   Define the buttons fore every Library feature instead. */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
+#LibraryFeatureControls QPushButton {
   margin: 0px 6px 3px 0px;
-  padding: 0px;
-  height: 20px;
   }
 /* add margin to compensate for frameless library table */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton,
+#LibraryFeatureControls QPushButton,
 #fadeModeCombobox,
 #spinBoxTransition {
   margin-top: 4px;
   }
-  WLibrary QRadioButton {
+  #LibraryFeatureControls QRadioButton {
     /* bottom margin! */
     margin: 6px 3px 4px 3px;
   }
-  #DlgAnalysis QLabel,
-  #DlgAutoDJ QLabel {
-    margin: 6px 5px 5px 1px;
-  }
-
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
-  padding: 0px 5px;
-  }
-  QPushButton#pushButtonAutoDJ {
-    min-width: 40px;
-  }
-  /* Space in between 'Enable AutoDJ' and transition time spinbox */
-  #DlgAutoDJ > #horizontalSpacer {
-    width: 100px;
-  }
-  /* Push 'New' radio button away from corner */
-  #radioButtonRecentlyAdded {
-    margin-left: 10px;
-  }
-  /* Space in between 'All' radio button and 'Select All' button */
-  QPushButton#pushButtonSelectAll {
-    margin-left: 12px;
+  QLabel#labelProgress, /* Analysis progress */
+  QLabel#labelSelectionInfo /* AutoDJ track selection info */ {
+    margin: 4px 5px 5px 1px;
   }
 
 #LibraryContainer QTreeView {
@@ -2869,7 +2820,8 @@ WTrackMenu QMenu {
 #LibraryContainer QTextBrowser,
 #LibraryContainer QTreeView,
 #SkinSettings,
-WSearchLineEdit {
+WSearchLineEdit,
+#spinBoxTransition {
   background-color: #0f0f0f;
 }
 
