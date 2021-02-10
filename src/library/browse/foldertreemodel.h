@@ -9,12 +9,21 @@
 #include <QThreadPool>
 #include <QQueue>
 
+#include <functional>
 #include <unordered_map>
 
 #include "library/treeitemmodel.h"
 #include "library/treeitem.h"
 #include "util/fileaccess.h"
 #include "util/mutex.h"
+
+namespace std {
+  template<> struct hash<QString> {
+    std::size_t operator()(const QString& s) const noexcept {
+      return (size_t) qHash(s);
+    }
+  };
+}
 
 class TreeItem;
 // This class represents a folder item within the Browse Feature
