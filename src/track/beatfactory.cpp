@@ -102,24 +102,29 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         const int iMinBpm,
         const int iMaxBpm) {
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
-    const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
-                                                      bEnableOffsetCorrection,
-                                                      iMinBpm, iMaxBpm,
-                                                      extraVersionInfo);
-
-    BeatUtils::printBeatStatistics(beats, iSampleRate);
-    if (version == BEAT_GRID_2_VERSION) {
-        double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
-        double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
+    const QString subVersion = getPreferredSubVersion(
+            bEnableFixedTempoCorrection,
             bEnableOffsetCorrection,
-            beats, iSampleRate, iTotalSamples, globalBpm);
+            iMinBpm,
+            iMaxBpm,
+            extraVersionInfo);
+
+    QVector<BeatUtils::ConstRegion> constantRegions =
+            BeatUtils::retrieveConstRegions(beats, mixxx::audio::SampleRate(iSampleRate));
+
+    if (version == BEAT_GRID_2_VERSION) {
+        double firstBeat = 0;
+        double constBPM = BeatUtils::makeConstBpm(constantRegions, iSampleRate, &firstBeat);
+        qDebug() << ":-) " << constBPM << "(-:";
+        firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, iSampleRate, beats);
         mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, iSampleRate);
         // firstBeat is in frames here and setGrid() takes samples.
-        pGrid->setGrid(globalBpm, firstBeat * 2);
+        pGrid->setGrid(constBPM, firstBeat * 2);
         pGrid->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (version == BEAT_MAP_VERSION) {
-        mixxx::BeatMap* pBeatMap = new mixxx::BeatMap(track, iSampleRate, beats);
+        QVector<double> ironedBeats = BeatUtils::getBeats(constantRegions);
+        mixxx::BeatMap* pBeatMap = new mixxx::BeatMap(track, iSampleRate, ironedBeats);
         pBeatMap->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
     } else {
