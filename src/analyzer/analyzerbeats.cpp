@@ -243,7 +243,6 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
                 m_bPreferencesFixedTempo,
                 m_bPreferencesOffsetCorrection,
                 m_iSampleRate,
-                m_iTotalSamples,
                 m_iMinBpm,
                 m_iMaxBpm);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()

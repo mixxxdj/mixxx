@@ -31,7 +31,6 @@ class BeatFactory {
             const bool bEnableFixedTempoCorrection,
             const bool bEnableOffsetCorrection,
             const int iSampleRate,
-            const int iTotalSamples,
             const int iMinBpm,
             const int iMaxBpm);
 

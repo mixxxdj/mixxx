@@ -26,7 +26,6 @@ namespace {
 
 static bool sDebug = false;
 
-const double kCorrectBeatLocalBpmEpsilon = 0.05; //0.2;
 const int kHistogramDecimalPlaces = 2;
 const double kHistogramDecimalScale = pow(10.0, kHistogramDecimalPlaces);
 const double kBpmFilterTolerance = 1.0;
@@ -43,37 +42,6 @@ constexpr int kMinRegionBeatCount = 16;
 
 } // namespace
 
-void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate) {
-    if (!sDebug) {
-        return;
-    }
-    QMap<double, int> frequency;
-
-    for (int i = N; i < beats.size(); i += 1) {
-        double beat_start = beats.at(i - N);
-        double beat_end = beats.at(i);
-
-        // Time needed to count a bar (N beats)
-        const double time = (beat_end - beat_start) / SampleRate;
-        if (time == 0) {
-            continue;
-        }
-        double local_bpm = 60.0 * N / time;
-
-        qDebug() << "Beat" << i << "local BPM:" << local_bpm;
-
-        local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
-        frequency[local_bpm] += 1;
-    }
-
-    qDebug() << "Rounded local BPM histogram:";
-
-    QMapIterator<double, int> it(frequency);
-    while (it.hasNext()) {
-        it.next();
-        qDebug() << it.key() << ":" << it.value();
-    }
-}
 
 // Given a sorted set of numbers, find the sample median.
 // http://en.wikipedia.org/wiki/Median#The_sample_median
@@ -333,142 +301,6 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
          qDebug() << "Constrained to Range [" << min_bpm << "," << max_bpm << "]=" << constrainedBpm;
      }
      return constrainedBpm;
-}
-
-double BeatUtils::calculateOffset(const QVector<double>& beats1,
-        const double bpm1,
-        const QVector<double>& beats2,
-        const int SampleRate) {
-    /*
-     * Here we compare to beats vector and try to determine the best offset
-     * based on the occurrences, i.e. by assuming that the almost correct beats
-     * are more than the "false" ones.
-     */
-    const double beatlength1 = (60.0 * SampleRate / bpm1);
-    const double beatLength1Epsilon = beatlength1 * 0.02;
-
-    int bestFreq = 1;
-    double bestOffset = beats1.at(0) - beats2.at(0);
-
-    // Sweep offset from [-beatlength1/2, beatlength1/2]
-    double offset = floor(-beatlength1 / 2);
-    while (offset < (beatlength1 / 2)) {
-        int freq = 0;
-        for (int i = 0; i < beats2.size(); i += 4) {
-            double beats2_beat = beats2.at(i);
-            QVector<double>::const_iterator it = std::upper_bound(
-                beats1.constBegin(), beats1.constEnd(), beats2_beat);
-            if (fabs(*it - beats2_beat - offset) <= beatLength1Epsilon) {
-                freq++;
-            }
-        }
-        if (freq > bestFreq) {
-            bestFreq = freq;
-            bestOffset = offset;
-        }
-        offset++;
-    }
-
-    if (sDebug) {
-        qDebug() << "Best offset " << bestOffset << "guarantees that"
-                << bestFreq << "over" << beats1.size()/4
-                << "beats almost coincides.";
-    }
-
-    return floor(bestOffset + beatLength1Epsilon);
-}
-
-double BeatUtils::findFirstCorrectBeat(const QVector<double>& rawbeats,
-        const int SampleRate,
-        const double global_bpm) {
-    for (int i = N; i < rawbeats.size(); i++) {
-        // get start and end sample of the beats
-        double start_sample = rawbeats.at(i-N);
-        double end_sample = rawbeats.at(i);
-
-        // The time in seconds represented by this sample range.
-        double time = (end_sample - start_sample)/SampleRate;
-
-        // Average BPM within this sample range.
-        double avg_bpm = 60.0 * N / time;
-
-        //qDebug() << "Local BPM between beat " << (i-N) << " and " << i << " is " << avg_bpm;
-
-        // If the local BPM is within kCorrectBeatLocalBpmEpsilon of the global
-        // BPM then use this window as the first beat.
-        if (fabs(global_bpm - avg_bpm) <= kCorrectBeatLocalBpmEpsilon) {
-            //qDebug() << "Using beat " << (i-N) << " as first beat";
-            return start_sample;
-        }
-    }
-
-    // If we didn't find any beat that matched the window, return the first
-    // beat.
-    return !rawbeats.empty() ? rawbeats.first() : 0.0;
-}
-
-// static
-double BeatUtils::calculateFixedTempoFirstBeat(
-        bool enableOffsetCorrection,
-        const QVector<double>& rawbeats,
-        const int sampleRate,
-        const int totalSamples,
-        const double globalBpm) {
-    if (rawbeats.size() == 0) {
-        return 0;
-    }
-
-    if (!enableOffsetCorrection) {
-        return rawbeats.first();
-    }
-
-    QVector <double> corrbeats;
-    // Length of a beat at globalBpm in mono samples.
-    const double beat_length = 60.0 * sampleRate / globalBpm;
-
-
-    double firstCorrectBeat = findFirstCorrectBeat(
-        rawbeats, sampleRate, globalBpm);
-
-    // We start building a fixed beat grid at globalBpm and the first beat from
-    // rawbeats that matches globalBpm.
-    double i = firstCorrectBeat;
-    while (i <= totalSamples) {
-        corrbeats << i;
-        i += beat_length;
-    }
-
-    if (rawbeats.size() == 1 || corrbeats.size()==1) {
-        return firstCorrectBeat;
-    }
-
-    /*
-     * calculateOffset compares the beats from the analyzer and the
-     * beats from the beat grid constructed above in corrbeats.
-     */
-    // qDebug() << "Calculating best offset";
-    // double offset = calculateOffset(rawbeats, globalBpm, corrbeats, sampleRate);
-    // // Adjust firstCorrectBeat by offset
-    // firstCorrectBeat += offset;
-
-
-    // Find the smallest positive beat that is linked to firstCorrectBeat by
-    // beat_length steps.
-    double FirstFrame = firstCorrectBeat;
-    while (FirstFrame < 0) {
-        FirstFrame += beat_length;
-    }
-    while (FirstFrame > beat_length) {
-        FirstFrame -= beat_length;
-    }
-
-    // Round to nearest integer.
-    double firstBeat = floor(FirstFrame + 0.5);
-    if (sDebug) {
-        qDebug() << "calculateFixedTempoFirstBeat chose a first beat at frame" << firstBeat
-                 << "while the first raw beat was at" << rawbeats.at(0);
-    }
-    return firstBeat;
 }
 
 QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(

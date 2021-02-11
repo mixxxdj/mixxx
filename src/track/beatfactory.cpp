@@ -98,7 +98,6 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         const bool bEnableFixedTempoCorrection,
         const bool bEnableOffsetCorrection,
         const int iSampleRate,
-        const int iTotalSamples,
         const int iMinBpm,
         const int iMaxBpm) {
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);

@@ -13,8 +13,6 @@ class BeatUtils {
         double beatLength;
     };
 
-    static void printBeatStatistics(const QVector<double>& beats, int SampleRate);
-
     static double constrainBpm(double bpm, const int min_bpm,
                                const int max_bpm, bool aboveRange) {
         if (bpm <= 0.0 || min_bpm < 0 || max_bpm < 0 ||
@@ -49,30 +47,6 @@ class BeatUtils {
      */
     static double calculateBpm(const QVector<double>& beats, int SampleRate,
                                int min_bpm, int max_bpm);
-    static double findFirstCorrectBeat(const QVector<double>& rawBeats,
-            const int SampleRate,
-            const double global_bpm);
-
-    /* This implement a method to find the best offset so that
-     * the grid generated from bpm is close enough to the one we get from vamp.
-     */
-    static double calculateOffset(const QVector<double>& beats1,
-            const double bpm1,
-            const QVector<double>& beats2,
-            const int SampleRate);
-
-    // By default Vamp does not assume a 4/4 signature. This is basically a good
-    // property of Vamp, however, it leads to inaccurate beat grids if a 4/4
-    // signature is given.  What is the problem? Almost all modern dance music
-    // from the last decades refer to 4/4 signatures. Given a set of beat frame
-    // positions, this method calculates the position of the first beat assuming
-    // the beats have a fixed tempo given by globalBpm.
-    static double calculateFixedTempoFirstBeat(
-            bool enableOffsetCorrection,
-            const QVector<double>& rawbeats,
-            const int sampleRate,
-            const int totalSamples,
-            const double globalBpm);
 
     static QVector<ConstRegion> retrieveConstRegions(
             const QVector<double>& coarseBeats,
