@@ -19,20 +19,13 @@ class BeatFactory {
     static QString getPreferredVersion(const bool bEnableFixedTempoCorrection);
 
     static QString getPreferredSubVersion(
-            const bool bEnableFixedTempoCorrection,
-            const bool bEnableOffsetCorrection,
-            const int iMinBpm,
-            const int iMaxBpm,
             const QHash<QString, QString>& extraVersionInfo);
 
     static mixxx::BeatsPointer makePreferredBeats(const Track& track,
             const QVector<double>& beats,
             const QHash<QString, QString>& extraVersionInfo,
             const bool bEnableFixedTempoCorrection,
-            const bool bEnableOffsetCorrection,
-            const int iSampleRate,
-            const int iMinBpm,
-            const int iMaxBpm);
+            const int iSampleRate);
 
   private:
     static void deleteBeats(mixxx::Beats* pBeats);

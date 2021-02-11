@@ -43,24 +43,10 @@ QString BeatFactory::getPreferredVersion(
 }
 
 QString BeatFactory::getPreferredSubVersion(
-        const bool bEnableFixedTempoCorrection,
-        const bool bEnableOffsetCorrection,
-        const int iMinBpm,
-        const int iMaxBpm,
         const QHash<QString, QString>& extraVersionInfo) {
     const char* kSubVersionKeyValueSeparator = "=";
     const char* kSubVersionFragmentSeparator = "|";
     QStringList fragments;
-
-    // min/max BPM limits only apply to fixed-tempo assumption
-    if (bEnableFixedTempoCorrection) {
-        fragments << QString("min_bpm%1%2")
-                             .arg(kSubVersionKeyValueSeparator,
-                                     QString::number(iMinBpm));
-        fragments << QString("max_bpm%1%2")
-                             .arg(kSubVersionKeyValueSeparator,
-                                     QString::number(iMaxBpm));
-    }
 
     QHashIterator<QString, QString> it(extraVersionInfo);
     while (it.hasNext()) {
@@ -77,11 +63,6 @@ QString BeatFactory::getPreferredSubVersion(
         fragments << QString("%1%2%3").arg(
                 it.key(), kSubVersionKeyValueSeparator, it.value());
     }
-    if (bEnableFixedTempoCorrection && bEnableOffsetCorrection) {
-        fragments << QString("offset_correction%1%2")
-                             .arg(kSubVersionKeyValueSeparator,
-                                     QString::number(1));
-    }
 
     fragments << QString("rounding%1%2")
                          .arg(kSubVersionKeyValueSeparator,
@@ -96,17 +77,9 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         const QVector<double>& beats,
         const QHash<QString, QString>& extraVersionInfo,
         const bool bEnableFixedTempoCorrection,
-        const bool bEnableOffsetCorrection,
-        const int iSampleRate,
-        const int iMinBpm,
-        const int iMaxBpm) {
+        const int iSampleRate) {
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
-    const QString subVersion = getPreferredSubVersion(
-            bEnableFixedTempoCorrection,
-            bEnableOffsetCorrection,
-            iMinBpm,
-            iMaxBpm,
-            extraVersionInfo);
+    const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
     QVector<BeatUtils::ConstRegion> constantRegions =
             BeatUtils::retrieveConstRegions(beats, mixxx::audio::SampleRate(iSampleRate));

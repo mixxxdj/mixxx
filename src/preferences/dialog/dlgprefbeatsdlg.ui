@@ -38,65 +38,6 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
      </property>
     </spacer>
    </item>
-   <item row="4" column="0">
-    <widget class="QGroupBox" name="groupBox_3">
-     <property name="title">
-      <string>BPM Range</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Min:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="txtMinBpm">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="minimum">
-         <number>50</number>
-        </property>
-        <property name="maximum">
-         <number>200</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Max:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="txtMaxBpm">
-        <property name="minimum">
-         <number>50</number>
-        </property>
-        <property name="maximum">
-         <number>300</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item row="3" column="0">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
@@ -124,17 +65,6 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         </property>
         <property name="text">
          <string>Assume constant tempo (Recommended)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="checkBoxOffsetCorr">
-        <property name="toolTip">
-         <string>Attempts to correct the phase (first beat) of fixed-tempo beatgrids
-by analyzing the beats to discard outliers.</string>
-        </property>
-        <property name="text">
-         <string>Enable Offset Correction (Recommended)</string>
         </property>
        </widget>
       </item>
@@ -220,11 +150,8 @@ by analyzing the beats to discard outliers.</string>
   <tabstop>comboBoxBeatPlugin</tabstop>
   <tabstop>checkBoxFastAnalysis</tabstop>
   <tabstop>checkBoxFixedTempo</tabstop>
-  <tabstop>checkBoxOffsetCorr</tabstop>
   <tabstop>checkBoxReanalyse</tabstop>
   <tabstop>checkBoxReanalyseImported</tabstop>
-  <tabstop>txtMinBpm</tabstop>
-  <tabstop>txtMaxBpm</tabstop>
  </tabstops>
  <resources/>
  <connections/>

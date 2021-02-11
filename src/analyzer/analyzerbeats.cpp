@@ -36,14 +36,11 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
           m_bPreferencesReanalyzeOldBpm(false),
           m_bPreferencesReanalyzeImported(false),
           m_bPreferencesFixedTempo(true),
-          m_bPreferencesOffsetCorrection(false),
           m_bPreferencesFastAnalysis(false),
           m_iSampleRate(0),
           m_iTotalSamples(0),
           m_iMaxSamplesToProcess(0),
-          m_iCurrentSample(0),
-          m_iMinBpm(0),
-          m_iMaxBpm(9999) {
+          m_iCurrentSample(0) {
 }
 
 bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSamples) {
@@ -64,11 +61,7 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
         return false;
     }
 
-    m_iMinBpm = m_bpmSettings.getBpmRangeStart();
-    m_iMaxBpm = m_bpmSettings.getBpmRangeEnd();
-
     m_bPreferencesFixedTempo = m_bpmSettings.getFixedTempoAssumption();
-    m_bPreferencesOffsetCorrection = m_bpmSettings.getFixedTempoOffsetCorrection();
     m_bPreferencesReanalyzeOldBpm = m_bpmSettings.getReanalyzeWhenSettingsChange();
     m_bPreferencesReanalyzeImported = m_bpmSettings.getReanalyzeImported();
     m_bPreferencesFastAnalysis = m_bpmSettings.getFastAnalysis();
@@ -87,9 +80,7 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
 
     qDebug() << "AnalyzerBeats preference settings:"
              << "\nPlugin:" << m_pluginId
-             << "\nMin/Max BPM:" << m_iMinBpm << m_iMaxBpm
              << "\nFixed tempo assumption:" << m_bPreferencesFixedTempo
-             << "\nOffset correction:" << m_bPreferencesOffsetCorrection
              << "\nRe-analyze when settings change:" << m_bPreferencesReanalyzeOldBpm
              << "\nFast analysis:" << m_bPreferencesFastAnalysis;
 
@@ -137,9 +128,6 @@ bool AnalyzerBeats::initialize(TrackPointer tio, int sampleRate, int totalSample
 }
 
 bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
-    int iMinBpm = m_bpmSettings.getBpmRangeStart();
-    int iMaxBpm = m_bpmSettings.getBpmRangeEnd();
-
     bool bpmLock = tio->isBpmLocked();
     if (bpmLock) {
         qDebug() << "Track is BpmLocked: Beat calculation will not start";
@@ -178,12 +166,8 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer tio) const {
             pluginID,
             m_bPreferencesFastAnalysis);
     QString newVersion = BeatFactory::getPreferredVersion(
-            m_bPreferencesOffsetCorrection);
+            m_bPreferencesFixedTempo);
     QString newSubVersion = BeatFactory::getPreferredSubVersion(
-            m_bPreferencesFixedTempo,
-            m_bPreferencesOffsetCorrection,
-            iMinBpm,
-            iMaxBpm,
             extraVersionInfo);
     if (subVersion == mixxx::rekordboxconstants::beatsSubversion) {
         return m_bPreferencesReanalyzeImported;
@@ -241,10 +225,7 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
                 beats,
                 extraVersionInfo,
                 m_bPreferencesFixedTempo,
-                m_bPreferencesOffsetCorrection,
-                m_iSampleRate,
-                m_iMinBpm,
-                m_iMaxBpm);
+                m_iSampleRate);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
                  << "beats. Average BPM:" << (pBeats ? pBeats->getBpm() : 0.0);
     } else {
