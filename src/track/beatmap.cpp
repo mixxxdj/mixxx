@@ -719,7 +719,7 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
         return -1;
     }
 
-    return BeatUtils::calculateBpm(beatvect, mixxx::audio::SampleRate(m_iSampleRate), 0, 9999);
+    return BeatUtils::calculateBpm(beatvect, mixxx::audio::SampleRate(m_iSampleRate));
 }
 
 } // namespace mixxx
