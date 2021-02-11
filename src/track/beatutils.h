@@ -83,6 +83,14 @@ class BeatUtils {
             int SampleRate,
             double* pFirstBeat);
 
+    static double adjustPhase(
+            double firstBeat,
+            double bpm,
+            int sampleRate,
+            const QVector<double>& beats);
+
+    static QVector<double> getBeats(const QVector<ConstRegion>& constantRegions);
+
   private:
     static double computeSampleMedian(const QList<double>& sortedItems);
     static double computeFilteredWeightedAverage(

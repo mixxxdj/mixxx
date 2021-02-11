@@ -726,3 +726,41 @@ double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double ma
 
     return centerBpm;
 }
+
+// static
+QVector<double> BeatUtils::getBeats(const QVector<BeatUtils::ConstRegion>& constantRegions) {
+    QVector<double> beats;
+    for (int i = 0; i < constantRegions.size() - 1; ++i) {
+        double beat = constantRegions[i].firstBeat;
+        constexpr double epsilon = 100; // Protection against tiny beats due rounding
+        while (beat < constantRegions[i + 1].firstBeat - epsilon) {
+            beats.append(beat);
+            beat += constantRegions[i].beatLength;
+        }
+    }
+    return beats;
+}
+
+// static
+double BeatUtils::adjustPhase(
+        double firstBeat,
+        double bpm,
+        int sampleRate,
+        const QVector<double>& beats) {
+    double beatLength = 60 * sampleRate / bpm;
+    double startOffset = fmod(firstBeat, beatLength);
+    double offsetAdjust = 0;
+    double offsetAdjustCount = 0;
+    for (const auto& beat : beats) {
+        double offset = fmod(beat, beatLength) - startOffset;
+        if (abs(offset) < (kMaxSecsPhaseError * sampleRate)) {
+            offsetAdjust += offset;
+            offsetAdjustCount++;
+        }
+    }
+    offsetAdjust /= offsetAdjustCount;
+    qDebug() << "adjusting phase by" << offsetAdjust;
+    DEBUG_ASSERT(abs(offsetAdjust) < (kMaxSecsPhaseError * sampleRate));
+
+    return firstBeat - offsetAdjust;
+}
