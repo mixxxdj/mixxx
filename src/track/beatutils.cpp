@@ -131,8 +131,11 @@ double BeatUtils::computeFilteredWeightedAverage(
     return filterWeightedAverage / static_cast<double>(filterSum);
 }
 
-double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
-                               int min_bpm, int max_bpm) {
+double BeatUtils::calculateBpm(const QVector<double>& beats,
+        const mixxx::audio::SampleRate& sampleRate,
+        int min_bpm,
+        int max_bpm) {
+    int SampleRate = sampleRate;
     /*
      * Let's compute the average local
      * BPM for N subsequent beats.
@@ -381,7 +384,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
 // static
 double BeatUtils::makeConstBpm(
         const QVector<BeatUtils::ConstRegion>& constantRegions,
-        int sampleRate,
+        const mixxx::audio::SampleRate& sampleRate,
         double* pFirstBeat) {
     // We assume her the track was recorded with an unhear-able static metronome.
     // This metronome is likely at a full BPM.
@@ -577,7 +580,7 @@ QVector<double> BeatUtils::getBeats(const QVector<BeatUtils::ConstRegion>& const
 double BeatUtils::adjustPhase(
         double firstBeat,
         double bpm,
-        int sampleRate,
+        const mixxx::audio::SampleRate& sampleRate,
         const QVector<double>& beats) {
     double beatLength = 60 * sampleRate / bpm;
     double startOffset = fmod(firstBeat, beatLength);

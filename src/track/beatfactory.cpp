@@ -81,27 +81,27 @@ QString BeatFactory::getPreferredSubVersion(
 mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         const QVector<double>& beats,
         const QHash<QString, QString>& extraVersionInfo,
-        const bool bEnableFixedTempoCorrection,
-        const int iSampleRate) {
+        bool bEnableFixedTempoCorrection,
+        const mixxx::audio::SampleRate& sampleRate) {
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
     QVector<BeatUtils::ConstRegion> constantRegions =
-            BeatUtils::retrieveConstRegions(beats, mixxx::audio::SampleRate(iSampleRate));
+            BeatUtils::retrieveConstRegions(beats, sampleRate);
 
     if (version == BEAT_GRID_2_VERSION) {
         double firstBeat = 0;
-        double constBPM = BeatUtils::makeConstBpm(constantRegions, iSampleRate, &firstBeat);
+        double constBPM = BeatUtils::makeConstBpm(constantRegions, sampleRate, &firstBeat);
         qDebug() << ":-) " << constBPM << "(-:";
-        firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, iSampleRate, beats);
-        mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, iSampleRate);
+        firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
+        mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, sampleRate);
         // firstBeat is in frames here and setGrid() takes samples.
         pGrid->setGrid(constBPM, firstBeat * 2);
         pGrid->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
     } else if (version == BEAT_MAP_VERSION) {
         QVector<double> ironedBeats = BeatUtils::getBeats(constantRegions);
-        mixxx::BeatMap* pBeatMap = new mixxx::BeatMap(track, iSampleRate, ironedBeats);
+        mixxx::BeatMap* pBeatMap = new mixxx::BeatMap(track, sampleRate, ironedBeats);
         pBeatMap->setSubVersion(subVersion);
         return mixxx::BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
     } else {

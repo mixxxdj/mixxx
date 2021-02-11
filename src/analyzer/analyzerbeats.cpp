@@ -225,7 +225,7 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
                 beats,
                 extraVersionInfo,
                 m_bPreferencesFixedTempo,
-                m_iSampleRate);
+                mixxx::audio::SampleRate(m_iSampleRate));
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
                  << "beats. Average BPM:" << (pBeats ? pBeats->getBpm() : 0.0);
     } else {

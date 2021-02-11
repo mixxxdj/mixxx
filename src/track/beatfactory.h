@@ -2,6 +2,7 @@
 
 #include <QHash>
 
+#include "audio/types.h"
 #include "track/beats.h"
 
 class Track;
@@ -24,8 +25,8 @@ class BeatFactory {
     static mixxx::BeatsPointer makePreferredBeats(const Track& track,
             const QVector<double>& beats,
             const QHash<QString, QString>& extraVersionInfo,
-            const bool bEnableFixedTempoCorrection,
-            const int iSampleRate);
+            bool bEnableFixedTempoCorrection,
+            const mixxx::audio::SampleRate& sampleRate);
 
   private:
     static void deleteBeats(mixxx::Beats* pBeats);

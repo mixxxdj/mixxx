@@ -45,8 +45,10 @@ class BeatUtils {
      * from which the statistical median is computed. This value provides
      * a pretty good guess of the global BPM value.
      */
-    static double calculateBpm(const QVector<double>& beats, int SampleRate,
-                               int min_bpm, int max_bpm);
+    static double calculateBpm(const QVector<double>& beats,
+            const mixxx::audio::SampleRate& sampleRate,
+            int min_bpm,
+            int max_bpm);
 
     static QVector<ConstRegion> retrieveConstRegions(
             const QVector<double>& coarseBeats,
@@ -54,13 +56,13 @@ class BeatUtils {
 
     static double makeConstBpm(
             const QVector<ConstRegion>& constantRegions,
-            int SampleRate,
+            const mixxx::audio::SampleRate& sampleRate,
             double* pFirstBeat);
 
     static double adjustPhase(
             double firstBeat,
             double bpm,
-            int sampleRate,
+            const mixxx::audio::SampleRate& sampleRate,
             const QVector<double>& beats);
 
     static QVector<double> getBeats(const QVector<ConstRegion>& constantRegions);
