@@ -470,41 +470,46 @@ double BeatUtils::calculateFixedTempoFirstBeat(
     return firstBeat;
 }
 
-QVector<double> BeatUtils::calculateIronedGrid(
+QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
         const QVector<double>& coarseBeats,
         const mixxx::audio::SampleRate& sampleRate) {
     // The QM Beat detector has a step size of 512 frames @ 44100 Hz. This means that
     // Single beats have has a jitter of +- 12 ms around the actual position.
-    // Expressed in BPM it means we have for instance only these BPM value around 120 BPM
-    // 117.454 120.185 123.046 126.048
+    // Expressed in BPM it means we have for instance steps of these BPM value around 120 BPM
+    // 117.454 - 120.185 - 123.046 - 126.048
     // A pure electronic 120.000 BPM track will have many 120,185 BPM beats and a few
     // 117,454 BPM beats to adjust the collected offset.
     // This function irons these adjustment beats by adjusting every beat to the average of
     // a likely constant region.
 
-    // There for we loop through the coarse beats and calculate the average beat
+    // Therefore we loop through the coarse beats and calculate the average beat
     // length from the first beat.
-    // A inner loop check for outliers using the momentary average as beat length.
+    // A inner loop checks for outliers using the momentary average as beat length.
     // once we have found an average with only single outliers, we store the beats using the
     // current average to adjust them by up to +-12 ms.
     // Than we start with the region from the found beat to the end.
+
+    QVector<ConstRegion> constantRegions;
+    if (!coarseBeats.size()) {
+        // no beats
+        return constantRegions;
+    }
 
     double maxPhaseError = kMaxSecsPhaseError * sampleRate;
     double maxPhaseErrorSum = kMaxSecsPhaseErrorSum * sampleRate;
     int leftIndex = 0;
     int rightIndex = coarseBeats.size() - 1;
-    QVector<double> ironedBeats;
-    ironedBeats.reserve(coarseBeats.size());
 
     while (leftIndex < coarseBeats.size() - 1) {
+        DEBUG_ASSERT(rightIndex > leftIndex);
         double meanBeatLength =
                 (coarseBeats[rightIndex] - coarseBeats[leftIndex]) /
                 (rightIndex - leftIndex);
         int outliersCount = 0;
         double ironedBeat = coarseBeats[leftIndex];
         double phaseErrorSum = 0;
-        int i;
-        for (i = leftIndex + 1; i < rightIndex; ++i) {
+        int i = leftIndex + 1;
+        for (; i <= rightIndex; ++i) {
             ironedBeat += meanBeatLength;
             double phaseError = ironedBeat - coarseBeats[i];
             phaseErrorSum += phaseError;
@@ -521,13 +526,11 @@ QVector<double> BeatUtils::calculateIronedGrid(
                 break;
             }
         }
-        if (i == rightIndex) {
+        if (i > rightIndex) {
             // We have found a constant enough region.
-            ironedBeat = coarseBeats[leftIndex];
-            for (int j = leftIndex; j < rightIndex; ++j) {
-                ironedBeats << ironedBeat;
-                ironedBeat += meanBeatLength;
-            }
+            double firstBeat = coarseBeats[leftIndex];
+            // store the regions for the later stages
+            constantRegions.append({firstBeat, meanBeatLength});
             // continue with the next region.
             leftIndex = rightIndex;
             rightIndex = coarseBeats.size() - 1;
@@ -536,6 +539,8 @@ QVector<double> BeatUtils::calculateIronedGrid(
         // Try a by one beat smaller region
         rightIndex--;
     }
-    ironedBeats << coarseBeats[coarseBeats.size() - 1];
-    return ironedBeats;
+
+    // Add a final region with zero length to mark the end.
+    constantRegions.append({coarseBeats[coarseBeats.size() - 1], 0});
+    return constantRegions;
 }

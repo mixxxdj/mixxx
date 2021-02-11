@@ -8,6 +8,11 @@
 
 class BeatUtils {
   public:
+    struct ConstRegion {
+        double firstBeat;
+        double beatLength;
+    };
+
     static void printBeatStatistics(const QVector<double>& beats, int SampleRate);
 
     static double constrainBpm(double bpm, const int min_bpm,
@@ -69,7 +74,7 @@ class BeatUtils {
             const int totalSamples,
             const double globalBpm);
 
-    static QVector<double> calculateIronedGrid(
+    static QVector<ConstRegion> retrieveConstRegions(
             const QVector<double>& coarseBeats,
             const mixxx::audio::SampleRate& sampleRate);
 
