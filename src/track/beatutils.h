@@ -78,6 +78,11 @@ class BeatUtils {
             const QVector<double>& coarseBeats,
             const mixxx::audio::SampleRate& sampleRate);
 
+    static double makeConstBpm(
+            const QVector<ConstRegion>& constantRegions,
+            int SampleRate,
+            double* pFirstBeat);
+
   private:
     static double computeSampleMedian(const QList<double>& sortedItems);
     static double computeFilteredWeightedAverage(
@@ -91,4 +96,5 @@ class BeatUtils {
             const int windowStep,
             const int sampleRate,
             QMap<double, int>* frequencyHistogram);
+    static double roundBpmWithinRange(double minBpm, double centerBpm, double maxBpm);
 };
