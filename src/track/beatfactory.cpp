@@ -6,6 +6,12 @@
 #include "track/beatfactory.h"
 #include "track/beatutils.h"
 
+namespace {
+
+const QString kRoundingVersion = QStringLiteral("V2");
+
+} // namespace
+
 mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const Track& track,
         const QString& beatsVersion,
         const QString& beatsSubVersion,
@@ -65,8 +71,7 @@ QString BeatFactory::getPreferredSubVersion(
     }
 
     fragments << QString("rounding%1%2")
-                         .arg(kSubVersionKeyValueSeparator,
-                                 QString::number(0.05));
+                         .arg(kSubVersionKeyValueSeparator, kRoundingVersion);
 
     std::sort(fragments.begin(), fragments.end());
     return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator)
