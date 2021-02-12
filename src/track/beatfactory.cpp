@@ -92,7 +92,6 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
     if (version == BEAT_GRID_2_VERSION) {
         double firstBeat = 0;
         double constBPM = BeatUtils::makeConstBpm(constantRegions, sampleRate, &firstBeat);
-        qDebug() << ":-) " << constBPM << "(-:";
         firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
         mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, sampleRate);
         // firstBeat is in frames here and setGrid() takes samples.
