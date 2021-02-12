@@ -216,7 +216,7 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
 
     //Parse Trakor XML file using SAX (for performance)
     QFile traktor_file(file);
-    if (!traktor_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (!Sandbox::askForAccess(file) || !traktor_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Cannot open Traktor music collection";
         return nullptr;
     }
