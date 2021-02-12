@@ -39,11 +39,11 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
             &QCheckBox::stateChanged,
             this,
             &DlgPrefBeats::fastAnalysisEnabled);
-    connect(checkBoxReanalyse,
+    connect(checkBoxReanalyze,
             &QCheckBox::stateChanged,
             this,
             &DlgPrefBeats::slotReanalyzeChanged);
-    connect(checkBoxReanalyseImported,
+    connect(checkBoxReanalyzeImported,
             &QCheckBox::stateChanged,
             this,
             &DlgPrefBeats::slotReanalyzeImportedChanged);
@@ -102,8 +102,8 @@ void DlgPrefBeats::slotUpdate() {
     checkBoxAnalyzerEnabled->setChecked(m_bAnalyzerEnabled);
     // Fast analysis cannot be combined with non-constant tempo beatgrids.
     checkBoxFastAnalysis->setEnabled(m_bAnalyzerEnabled && m_bFixedTempoEnabled);
-    checkBoxReanalyse->setEnabled(m_bAnalyzerEnabled);
-    checkBoxReanalyseImported->setEnabled(m_bAnalyzerEnabled);
+    checkBoxReanalyze->setEnabled(m_bAnalyzerEnabled);
+    checkBoxReanalyzeImported->setEnabled(m_bAnalyzerEnabled);
 
     if (!m_bAnalyzerEnabled) {
         return;
@@ -132,8 +132,8 @@ void DlgPrefBeats::slotUpdate() {
     // Fast analysis cannot be combined with non-constant tempo beatgrids.
     checkBoxFastAnalysis->setChecked(m_bFastAnalysisEnabled && m_bFixedTempoEnabled);
 
-    checkBoxReanalyse->setChecked(m_bReanalyze);
-    checkBoxReanalyseImported->setChecked(m_bReanalyzeImported);
+    checkBoxReanalyze->setChecked(m_bReanalyze);
+    checkBoxReanalyzeImported->setChecked(m_bReanalyzeImported);
 }
 
 void DlgPrefBeats::slotReanalyzeChanged(int value) {

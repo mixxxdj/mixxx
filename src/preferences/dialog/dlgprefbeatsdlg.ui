@@ -69,7 +69,7 @@ This can speed up beat detection on slower computers but may result in lower qua
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBoxReanalyse">
+       <widget class="QCheckBox" name="checkBoxReanalyze">
         <property name="toolTip">
          <string>e.g. from 3rd-party programs or Mixxx versions before 1.11.
 (Not checked: Analyze only, if no beats exist.)</string>
@@ -80,7 +80,7 @@ This can speed up beat detection on slower computers but may result in lower qua
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBoxReanalyseImported">
+       <widget class="QCheckBox" name="checkBoxReanalyzeImported">
         <property name="text">
          <string>Re-analyze beatgrids imported from other DJ software</string>
         </property>
@@ -149,8 +149,8 @@ This can speed up beat detection on slower computers but may result in lower qua
   <tabstop>checkBoxAnalyzerEnabled</tabstop>
   <tabstop>comboBoxBeatPlugin</tabstop>
   <tabstop>checkBoxFixedTempo</tabstop>
-  <tabstop>checkBoxReanalyse</tabstop>
-  <tabstop>checkBoxReanalyseImported</tabstop>
+  <tabstop>checkBoxReanalyze</tabstop>
+  <tabstop>checkBoxReanalyzeImported</tabstop>
  </tabstops>
  <resources/>
  <connections/>
