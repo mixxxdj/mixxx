@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>564</width>
+    <width>576</width>
     <height>400</height>
    </rect>
   </property>
@@ -45,18 +45,6 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
-       <widget class="QCheckBox" name="checkBoxFastAnalysis">
-        <property name="toolTip">
-         <string>Enable fast beat detection.
-If activated Mixxx only analyzes the first minute of a track for beat information.
-This can speed up beat detection on slower computers but may result in lower quality beatgrids.</string>
-        </property>
-        <property name="text">
-         <string>Enable Fast Analysis (For slow computers, may be less accurate)</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <widget class="QCheckBox" name="checkBoxFixedTempo">
         <property name="toolTip">
          <string>Converts beats detected by the analyzer into a fixed-tempo beatgrid.
@@ -65,6 +53,18 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
         </property>
         <property name="text">
          <string>Assume constant tempo (Recommended)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxFastAnalysis">
+        <property name="toolTip">
+         <string>Enable fast beat detection.
+If activated Mixxx only analyzes the first minute of a track for beat information.
+This can speed up beat detection on slower computers but may result in lower quality beatgrids.</string>
+        </property>
+        <property name="text">
+         <string>Enable Fast Analysis (For slow computers, may be less accurate)</string>
         </property>
        </widget>
       </item>
@@ -148,7 +148,6 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
  <tabstops>
   <tabstop>checkBoxAnalyzerEnabled</tabstop>
   <tabstop>comboBoxBeatPlugin</tabstop>
-  <tabstop>checkBoxFastAnalysis</tabstop>
   <tabstop>checkBoxFixedTempo</tabstop>
   <tabstop>checkBoxReanalyse</tabstop>
   <tabstop>checkBoxReanalyseImported</tabstop>

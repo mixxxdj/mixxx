@@ -103,7 +103,7 @@ void DlgPrefBeats::slotUpdate() {
     // Fast analysis cannot be combined with non-constant tempo beatgrids.
     checkBoxFastAnalysis->setEnabled(m_bAnalyzerEnabled && m_bFixedTempoEnabled);
     checkBoxReanalyse->setEnabled(m_bAnalyzerEnabled);
-    checkBoxReanalyseImported->setEnabled(m_bReanalyzeImported);
+    checkBoxReanalyseImported->setEnabled(m_bAnalyzerEnabled);
 
     if (!m_bAnalyzerEnabled) {
         return;
@@ -133,6 +133,7 @@ void DlgPrefBeats::slotUpdate() {
     checkBoxFastAnalysis->setChecked(m_bFastAnalysisEnabled && m_bFixedTempoEnabled);
 
     checkBoxReanalyse->setChecked(m_bReanalyze);
+    checkBoxReanalyseImported->setChecked(m_bReanalyzeImported);
 }
 
 void DlgPrefBeats::slotReanalyzeChanged(int value) {
