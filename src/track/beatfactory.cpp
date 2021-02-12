@@ -40,9 +40,8 @@ mixxx::BeatsPointer BeatFactory::makeBeatGrid(
 }
 
 // static
-QString BeatFactory::getPreferredVersion(
-        const bool bEnableFixedTempoCorrection) {
-    if (bEnableFixedTempoCorrection) {
+QString BeatFactory::getPreferredVersion(bool fixedTempo) {
+    if (fixedTempo) {
         return BEAT_GRID_2_VERSION;
     }
     return BEAT_MAP_VERSION;
@@ -81,9 +80,9 @@ QString BeatFactory::getPreferredSubVersion(
 mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         const QVector<double>& beats,
         const QHash<QString, QString>& extraVersionInfo,
-        bool bEnableFixedTempoCorrection,
+        bool fixedTempo,
         const mixxx::audio::SampleRate& sampleRate) {
-    const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
+    const QString version = getPreferredVersion(fixedTempo);
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
     QVector<BeatUtils::ConstRegion> constantRegions =

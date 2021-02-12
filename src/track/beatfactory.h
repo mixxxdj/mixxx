@@ -17,7 +17,7 @@ class BeatFactory {
             double dBpm,
             double dFirstBeatSample);
 
-    static QString getPreferredVersion(const bool bEnableFixedTempoCorrection);
+    static QString getPreferredVersion(bool fixedTempo);
 
     static QString getPreferredSubVersion(
             const QHash<QString, QString>& extraVersionInfo);
@@ -25,7 +25,7 @@ class BeatFactory {
     static mixxx::BeatsPointer makePreferredBeats(const Track& track,
             const QVector<double>& beats,
             const QHash<QString, QString>& extraVersionInfo,
-            bool bEnableFixedTempoCorrection,
+            bool fixedTempo,
             const mixxx::audio::SampleRate& sampleRate);
 
   private:
