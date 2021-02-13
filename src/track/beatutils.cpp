@@ -312,6 +312,9 @@ QVector<double> BeatUtils::getBeats(const QVector<BeatUtils::ConstRegion>& const
             beat += constantRegions[i].beatLength;
         }
     }
+    if (constantRegions.size() > 0) {
+        beats.append(constantRegions.last().firstBeat);
+    }
     return beats;
 }
 
