@@ -1290,8 +1290,7 @@ TraktorS4MK2.callbackPregain = function(field) {
         } else if (delta < 0) {
             engine.setValue(group, "beats_translate_earlier", true);
         }
-    }
-    else if (TraktorS4MK2.controller.play_shift_pressed === 1) {
+    } else if (TraktorS4MK2.controller.play_shift_pressed === 1) {
         var bpm_sensitivity_multipler = 50;
         if (delta > 0) {
             for (var i = 0; i < bpm_sensitivity_multipler; i++) {
