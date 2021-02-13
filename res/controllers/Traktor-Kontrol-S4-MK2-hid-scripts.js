@@ -1741,26 +1741,23 @@ TraktorS4MK2.pregainResetHandler = function(field) {
         return;
     }
     if (TraktorS4MK2.controller.play_shift_pressed) {
-        // If the 'play modifier' button is held down round the BPM   
+        // If the 'play modifier' button is held down round the BPM
         var bpm = engine.getValue(group, "bpm");
         var rounded_value = Math.round(bpm);
         var delta = (bpm - rounded_value)*100;
-        print(delta);
         if (delta > 0) {
             for (var i = 0; i < delta; i++) {
-                engine.setValue(group, "beats_adjust_slower", true)
+                engine.setValue(group, "beats_adjust_slower", true);
+            }
+        } else if (delta < 0) {
+            for (var i = 0; i < delta; i++) {
+                engine.setValue(group, "beats_adjust_faster", true);
             }
         }
-        else if (delta < 0) {
-            for (var i = 0; i < delta; i++) {
-                engine.setValue(group, "beats_adjust_faster", true)
-            }
-        } 
 
 
     } else {
         // Otherwise reset the gain on the channel
-        print(group)
         engine.setValue(group, "pregain", "1.0");
     }
 };
