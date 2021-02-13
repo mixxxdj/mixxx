@@ -7,8 +7,8 @@
 #include "defs_urls.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflibrarydlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
@@ -24,7 +24,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     DlgPrefLibrary(
             QWidget* pParent,
             UserSettingsPointer pConfig,
-            Library* pLibrary);
+            std::shared_ptr<Library> pLibrary);
     ~DlgPrefLibrary() override {}
 
     QUrl helpUrl() const override;
@@ -62,7 +62,7 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
 
     QStandardItemModel m_dirListModel;
     UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
+    std::shared_ptr<Library> m_pLibrary;
     bool m_bAddedDirectory;
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;

@@ -313,7 +313,7 @@ void WSpinny::render(VSyncThread* vSyncThread) {
         return;
     }
 
-    auto window = windowHandle();
+    auto* window = windowHandle();
     if (window == nullptr || !window->isExposed()) {
         return;
     }
@@ -399,7 +399,7 @@ void WSpinny::swap() {
     if (!isValid() || !isVisible()) {
         return;
     }
-    auto window = windowHandle();
+    auto* window = windowHandle();
     if (window == nullptr || !window->isExposed()) {
         return;
     }

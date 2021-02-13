@@ -211,6 +211,10 @@ class Track : public QObject {
         return getPlayCounter().getTimesPlayed();
     }
 
+    QDateTime getLastPlayedAt() const {
+        return getPlayCounter().getLastPlayedAt();
+    }
+
     // Returns rating
     int getRating() const;
     // Sets rating
@@ -253,7 +257,11 @@ class Track : public QObject {
     void analysisFinished();
 
     // Calls for managing the track's cue points
-    CuePointer createAndAddCue();
+    CuePointer createAndAddCue(
+            mixxx::CueType type,
+            int hotCueIndex,
+            double sampleStartPosition,
+            double sampleEndPosition);
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;
     void removeCue(const CuePointer& pCue);
@@ -436,7 +444,7 @@ class Track : public QObject {
     // these values.
     bool hasStreamInfoFromSource() const {
         QMutexLocker lock(&m_qMutex);
-        return static_cast<bool>(m_streamInfoFromSource);
+        return m_record.hasStreamInfoFromSource();
     }
     void updateStreamInfoFromSource(
             mixxx::audio::StreamInfo&& streamInfo);
@@ -458,11 +466,6 @@ class Track : public QObject {
     // Flag indicating that the user has explicitly requested to save
     // the metadata.
     bool m_bMarkedForMetadataExport;
-
-    // Reliable information about the PCM audio stream
-    // that only becomes available when opening the
-    // corresponding file.
-    std::optional<mixxx::audio::StreamInfo> m_streamInfoFromSource;
 
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;

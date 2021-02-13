@@ -11,7 +11,7 @@
 
 namespace {
 constexpr int kNumColumnsCandidates[] = {5, 4, 3};
-}
+} // namespace
 
 // Determine the best number of columns for items in a QGridView.
 //

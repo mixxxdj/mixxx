@@ -3,8 +3,7 @@
 #include <QVector>
 
 #include "control/controlproxy.h"
-#include "controllers/controllerdebug.h"
-#include "controllers/engine/scriptconnection.h"
+#include "controllers/scripting/legacy/scriptconnection.h"
 
 // this is used for communicate with controller scripts
 class ControlObjectScript : public ControlProxy {

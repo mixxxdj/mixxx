@@ -9,8 +9,8 @@
 
 AnalyzerGain::AnalyzerGain(UserSettingsPointer pConfig)
         : m_rgSettings(pConfig),
-          m_pLeftTempBuffer(NULL),
-          m_pRightTempBuffer(NULL),
+          m_pLeftTempBuffer(nullptr),
+          m_pRightTempBuffer(nullptr),
           m_iBufferSize(0) {
     m_pReplayGain = new ReplayGain();
 }

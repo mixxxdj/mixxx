@@ -1876,10 +1876,12 @@ do not highlight either state. */
 
 #EffectSlotParameterLinkInversionButton[value="1"] {
     background-color: #b90505;
+    border: 1px solid #b90505;
 }
 
 #EffectSlotParameterLinkInversionButton[value="1"]:hover {
     background-color: #e80808;
+    border: 1px solid #FF0808;
 }
 
 /* Special case "hide/show" button

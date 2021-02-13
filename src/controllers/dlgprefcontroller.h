@@ -2,28 +2,30 @@
 
 #include <QHash>
 #include <QSortFilterProxyModel>
+#include <memory>
 
 #include "controllers/controllerinputmappingtablemodel.h"
+#include "controllers/controllermappinginfo.h"
 #include "controllers/controlleroutputmappingtablemodel.h"
-#include "controllers/controllerpreset.h"
-#include "controllers/controllerpresetinfo.h"
 #include "controllers/dlgcontrollerlearning.h"
+#include "controllers/legacycontrollermapping.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 
 // Forward declarations
 class Controller;
 class ControllerManager;
-class PresetInfoEnumerator;
+class MappingInfoEnumerator;
 
 /// Configuration dialog for a single DJ controller
 class DlgPrefController : public DlgPreferencePage {
     Q_OBJECT
   public:
-    DlgPrefController(QWidget *parent, Controller* controller,
-                      ControllerManager* controllerManager,
-                      UserSettingsPointer pConfig);
+    DlgPrefController(QWidget* parent,
+            Controller* controller,
+            std::shared_ptr<ControllerManager> controllerManager,
+            UserSettingsPointer pConfig);
     virtual ~DlgPrefController();
 
     QUrl helpUrl() const override;
@@ -37,16 +39,18 @@ class DlgPrefController : public DlgPreferencePage {
     void slotResetToDefaults() override;
 
   signals:
-    void applyPreset(Controller* pController, ControllerPresetPointer pPreset, bool bEnabled);
+    void applyMapping(Controller* pController,
+            LegacyControllerMappingPointer pMapping,
+            bool bEnabled);
     void mappingStarted();
     void mappingEnded();
 
   private slots:
-    /// Called when the user selects another preset in the combobox
-    void slotPresetSelected(int index);
-    /// Used to selected the current preset in the combobox and display the
-    /// preset information.
-    void slotShowPreset(ControllerPresetPointer preset);
+    /// Called when the user selects another mapping in the combobox
+    void slotMappingSelected(int index);
+    /// Used to selected the current mapping in the combobox and display the
+    /// mapping information.
+    void slotShowMapping(LegacyControllerMappingPointer mapping);
 
     // Input mappings
     void addInputMapping();
@@ -62,16 +66,14 @@ class DlgPrefController : public DlgPreferencePage {
     void midiInputMappingsLearned(const MidiInputMappings& mappings);
 
   private:
-    QString presetShortName(const ControllerPresetPointer pPreset) const;
-    QString presetName(const ControllerPresetPointer pPreset) const;
-    QString presetAuthor(const ControllerPresetPointer pPreset) const;
-    QString presetDescription(const ControllerPresetPointer pPreset) const;
-    QString presetForumLink(const ControllerPresetPointer pPreset) const;
-    QString presetManualLink(const ControllerPresetPointer pPreset) const;
-    QString presetWikiLink(const ControllerPresetPointer pPreset) const;
-    QString presetFileLinks(const ControllerPresetPointer pPreset) const;
-    void applyPresetChanges();
-    void savePreset();
+    QString mappingShortName(const LegacyControllerMappingPointer pMapping) const;
+    QString mappingName(const LegacyControllerMappingPointer pMapping) const;
+    QString mappingAuthor(const LegacyControllerMappingPointer pMapping) const;
+    QString mappingDescription(const LegacyControllerMappingPointer pMapping) const;
+    QString mappingSupportLinks(const LegacyControllerMappingPointer pMapping) const;
+    QString mappingFileLinks(const LegacyControllerMappingPointer pMapping) const;
+    void applyMappingChanges();
+    void saveMapping();
     void initTableView(QTableView* pTable);
 
     /// Set dirty state (i.e. changes have been made).
@@ -95,9 +97,9 @@ class DlgPrefController : public DlgPreferencePage {
     }
 
     /// Reload the mappings in the dropdown dialog
-    void enumeratePresets(const QString& selectedPresetPath);
-    PresetInfo enumeratePresetsFromEnumerator(
-            QSharedPointer<PresetInfoEnumerator> pPresetEnumerator,
+    void enumerateMappings(const QString& selectedMappingPath);
+    MappingInfo enumerateMappingsFromEnumerator(
+            QSharedPointer<MappingInfoEnumerator> pMappingEnumerator,
             const QIcon& icon = QIcon());
 
     void enableDevice();
@@ -106,11 +108,11 @@ class DlgPrefController : public DlgPreferencePage {
     Ui::DlgPrefControllerDlg m_ui;
     UserSettingsPointer m_pConfig;
     const QString m_pUserDir;
-    ControllerManager* m_pControllerManager;
+    std::shared_ptr<ControllerManager> m_pControllerManager;
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
-    ControllerPresetPointer m_pPreset;
-    QMap<QString, bool> m_pOverwritePresets;
+    LegacyControllerMappingPointer m_pMapping;
+    QMap<QString, bool> m_pOverwriteMappings;
     ControllerInputMappingTableModel* m_pInputTableModel;
     QSortFilterProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;

@@ -92,7 +92,7 @@ QString firstNonEmptyFrameToQString(
             if (!str.isEmpty()) {
                 return toQString(str);
             }
-            auto pUnknownFrame = dynamic_cast<const TagLib::ID3v2::UnknownFrame*>(pFrame);
+            const auto* pUnknownFrame = dynamic_cast<const TagLib::ID3v2::UnknownFrame*>(pFrame);
             if (pUnknownFrame) {
                 kLogger.warning()
                         << "Unsupported ID3v2 frame"
@@ -148,7 +148,7 @@ TagLib::ID3v2::CommentsFrame* findFirstCommentsFrame(
     for (TagLib::ID3v2::FrameList::ConstIterator it(commentsFrames.begin());
             it != commentsFrames.end();
             ++it) {
-        auto pFrame =
+        auto* pFrame =
                 dynamic_cast<TagLib::ID3v2::CommentsFrame*>(*it);
         if (pFrame) {
             const QString frameDescription(
@@ -191,7 +191,7 @@ TagLib::ID3v2::UserTextIdentificationFrame* findFirstUserTextIdentificationFrame
     for (TagLib::ID3v2::FrameList::ConstIterator it = textFrames.begin();
             it != textFrames.end();
             ++it) {
-        auto pFrame =
+        auto* pFrame =
                 dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
         if (pFrame) {
             const QString frameDescription = toQString(pFrame->description());
@@ -292,7 +292,7 @@ TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjec
     for (TagLib::ID3v2::FrameList::ConstIterator it(geobFrames.begin());
             it != geobFrames.end();
             ++it) {
-        auto pFrame =
+        auto* pFrame =
                 dynamic_cast<TagLib::ID3v2::GeneralEncapsulatedObjectFrame*>(*it);
         if (pFrame) {
             const QString frameDescription(
@@ -399,7 +399,7 @@ int removeUserTextIdentificationFrames(
         for (TagLib::ID3v2::FrameList::ConstIterator it(textFrames.begin());
                 it != textFrames.end();
                 ++it) {
-            auto pFrame =
+            auto* pFrame =
                     dynamic_cast<TagLib::ID3v2::UserTextIdentificationFrame*>(*it);
             if (pFrame) {
                 const QString frameDescription(
@@ -593,7 +593,7 @@ bool importCoverImageFromTag(
 
     const TagLib::ID3v2::FrameList pFrames = iterAPIC->second;
     for (const auto coverArtType : kPreferredPictureTypes) {
-        for (const auto pFrame : pFrames) {
+        for (auto* const pFrame : pFrames) {
             const auto* pApicFrame =
                     downcastFrame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
             if (pApicFrame && (pApicFrame->type() == coverArtType)) {
@@ -612,7 +612,7 @@ bool importCoverImageFromTag(
     }
 
     // Fallback: No best match -> Simply select the 1st loadable image
-    for (const auto pFrame : pFrames) {
+    for (auto* const pFrame : pFrames) {
         const auto* pApicFrame =
                 downcastFrame<TagLib::ID3v2::AttachedPictureFrame>(pFrame);
         if (pApicFrame) {

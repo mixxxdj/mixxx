@@ -1,15 +1,17 @@
 #pragma once
 
 #include <QDialog>
+#include <QDir>
 #include <QEvent>
 #include <QRect>
 #include <QStringList>
+#include <memory>
 
-#include "preferences/dialog/ui_dlgpreferencesdlg.h"
-#include "preferences/usersettings.h"
 #include "control/controlpushbutton.h"
-#include "preferences/dlgpreferencepage.h"
+#include "preferences/dialog/dlgpreferencepage.h"
+#include "preferences/dialog/ui_dlgpreferencesdlg.h"
 #include "preferences/settingsmanager.h"
+#include "preferences/usersettings.h"
 
 class MixxxMainWindow;
 class SoundManager;
@@ -60,25 +62,27 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
         QTreeWidgetItem* pTreeItem;
     };
 
-DlgPreferences(MixxxMainWindow* mixxx,
-            SkinLoader* pSkinLoader,
-            SoundManager* soundman,
-            PlayerManager* pPlayerManager,
-            ControllerManager* controllers,
-            VinylControlManager* pVCManager,
+    DlgPreferences(MixxxMainWindow* mixxx,
+            std::shared_ptr<SkinLoader> pSkinLoader,
+            std::shared_ptr<SoundManager> pSoundManager,
+            std::shared_ptr<PlayerManager> pPlayerManager,
+            std::shared_ptr<ControllerManager> pControllerManager,
+            std::shared_ptr<VinylControlManager> pVCManager,
             LV2Backend* pLV2Backend,
-            EffectsManager* pEffectsManager,
-            SettingsManager* pSettingsManager,
-            Library* pLibrary);
+            std::shared_ptr<EffectsManager> pEffectsManager,
+            std::shared_ptr<SettingsManager> pSettingsManager,
+            std::shared_ptr<Library> pLibrary);
     virtual ~DlgPreferences();
 
-    void addPageWidget(PreferencesPage page);
+    void addPageWidget(PreferencesPage page,
+            const QString& pageTitle,
+            const QString& iconFile);
     void removePageWidget(DlgPreferencePage* pWidget);
     void expandTreeItem(QTreeWidgetItem* pItem);
     void switchToPage(DlgPreferencePage* pPage);
 
   public slots:
-    void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
+    void changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious);
     void showSoundHardwarePage();
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
@@ -100,7 +104,6 @@ DlgPreferences(MixxxMainWindow* mixxx,
   private:
     DlgPreferencePage* currentPage();
     QList<PreferencesPage> m_allPages;
-    QTreeWidgetItem* createTreeItem(const QString& text, const QIcon& icon);
     void onShow();
     void onHide();
     QRect getDefaultGeometry();
@@ -114,4 +117,6 @@ DlgPreferences(MixxxMainWindow* mixxx,
     DlgPrefControllers* m_pControllersDlg;
 
     QSize m_pageSizeHint;
+
+    QDir m_iconsPath;
 };

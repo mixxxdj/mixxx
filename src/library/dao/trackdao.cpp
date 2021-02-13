@@ -31,6 +31,7 @@
 #include "util/compatibility.h"
 #include "util/datetime.h"
 #include "util/db/fwdsqlquery.h"
+#include "util/db/sqlite.h"
 #include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqllikewildcards.h"
 #include "util/db/sqlstringformatter.h"
@@ -554,7 +555,8 @@ void bindTrackLibraryValues(
 
     const PlayCounter& playCounter = track.getPlayCounter();
     pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
-    pTrackLibraryQuery->bindValue(":last_played_at", playCounter.getLastPlayedAt());
+    pTrackLibraryQuery->bindValue(":last_played_at",
+            mixxx::sqlite::writeGeneratedTimestamp(playCounter.getLastPlayedAt()));
     pTrackLibraryQuery->bindValue(":played", playCounter.isPlayed() ? 1 : 0);
 
     const CoverInfoRelative& coverInfo = track.getCoverInfo();
@@ -1170,8 +1172,9 @@ bool setTrackPlayed(const QSqlRecord& record, const int column,
 }
 
 bool setTrackLastPlayedAt(const QSqlRecord& record, const int column, TrackPointer pTrack) {
-    PlayCounter playCounter(pTrack->getPlayCounter());
-    playCounter.setLastPlayedAt(record.value(column).toDateTime());
+    auto playCounter = pTrack->getPlayCounter();
+    playCounter.setLastPlayedAt(
+            mixxx::sqlite::readGeneratedTimestamp(record.value(column)));
     pTrack->setPlayCounter(playCounter);
     return false;
 }
@@ -1258,10 +1261,14 @@ bool setTrackCoverInfo(const QSqlRecord& record, const int column,
     bool ok = false;
     coverInfo.source = static_cast<CoverInfo::Source>(
             record.value(column).toInt(&ok));
-    if (!ok) coverInfo.source = CoverInfo::UNKNOWN;
+    if (!ok) {
+        coverInfo.source = CoverInfo::UNKNOWN;
+    }
     coverInfo.type = static_cast<CoverInfo::Type>(
             record.value(column + 1).toInt(&ok));
-    if (!ok) coverInfo.type = CoverInfo::NONE;
+    if (!ok) {
+        coverInfo.type = CoverInfo::NONE;
+    }
     coverInfo.coverLocation = record.value(column + 2).toString();
     coverInfo.color = mixxx::RgbColor::fromQVariant(record.value(column + 3));
     coverInfo.setImageDigest(
@@ -1719,7 +1726,7 @@ namespace {
         }
         return matchLength;
     }
-}
+    } // namespace
 
 // Look for moved files. Look for files that have been marked as
 // "deleted on disk" and see if another "file" with the same name and

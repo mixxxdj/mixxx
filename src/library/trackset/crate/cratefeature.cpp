@@ -107,7 +107,7 @@ void CrateFeature::initActions() {
             &QAction::triggered,
             this,
             &CrateFeature::slotCreateImportCrate);
-    m_pExportPlaylistAction = make_parented<QAction>(tr("Export Crate"), this);
+    m_pExportPlaylistAction = make_parented<QAction>(tr("Export Crate as Playlist"), this);
     connect(m_pExportPlaylistAction.get(),
             &QAction::triggered,
             this,
@@ -117,6 +117,23 @@ void CrateFeature::initActions() {
             &QAction::triggered,
             this,
             &CrateFeature::slotExportTrackFiles);
+#ifdef __ENGINEPRIME__
+    m_pExportAllCratesAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
+    connect(m_pExportAllCratesAction.get(),
+            &QAction::triggered,
+            this,
+            &CrateFeature::exportAllCrates);
+    m_pExportCrateAction = make_parented<QAction>(tr("Export to Engine Prime"), this);
+    connect(m_pExportCrateAction.get(),
+            &QAction::triggered,
+            this,
+            [this]() {
+                CrateId crateId = crateIdFromIndex(m_lastRightClickedIndex);
+                if (crateId.isValid()) {
+                    emit exportCrate(crateId);
+                }
+            });
+#endif
 }
 
 void CrateFeature::connectLibrary(Library* pLibrary) {
@@ -315,6 +332,10 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
     menu.addAction(m_pCreateCrateAction.get());
     menu.addSeparator();
     menu.addAction(m_pCreateImportPlaylistAction.get());
+#ifdef __ENGINEPRIME__
+    menu.addSeparator();
+    menu.addAction(m_pExportAllCratesAction.get());
+#endif
     menu.exec(globalPos);
 }
 
@@ -356,6 +377,9 @@ void CrateFeature::onRightClickChild(
     }
     menu.addAction(m_pExportPlaylistAction.get());
     menu.addAction(m_pExportTrackFilesAction.get());
+#ifdef __ENGINEPRIME__
+    menu.addAction(m_pExportCrateAction.get());
+#endif
     menu.exec(globalPos);
 }
 
@@ -556,8 +580,9 @@ void CrateFeature::slotImportPlaylist() {
     //qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 
     QString playlist_file = getPlaylistFile();
-    if (playlist_file.isEmpty())
+    if (playlist_file.isEmpty()) {
         return;
+    }
 
     // Update the import/export crate directory
     QFileInfo fileName(playlist_file);
@@ -676,7 +701,7 @@ void CrateFeature::slotExportPlaylist() {
             ConfigKey("[Library]", "LastImportExportCrateDirectory"),
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
-    QString file_location = QFileDialog::getSaveFileName(NULL,
+    QString file_location = QFileDialog::getSaveFileName(nullptr,
             tr("Export Crate"),
             lastCrateDirectory.append("/").append(crate.getName()),
             tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist "

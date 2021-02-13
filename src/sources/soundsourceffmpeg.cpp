@@ -140,7 +140,7 @@ inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts)
             av_rescale_q(
                     pts - getStreamStartTime(avStream),
                     avStream.time_base,
-                    (AVRational){1, avStream.codecpar->sample_rate});
+                    av_make_q(1, avStream.codecpar->sample_rate));
 }
 
 inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
@@ -148,7 +148,7 @@ inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT fram
     return getStreamStartTime(avStream) +
             av_rescale_q(
                     frameIndex - kMinFrameIndex,
-                    (AVRational){1, avStream.codecpar->sample_rate},
+                    av_make_q(1, avStream.codecpar->sample_rate),
                     avStream.time_base);
 }
 

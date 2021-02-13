@@ -17,7 +17,7 @@
 #include "controllers/controllervisitor.h"
 #include "preferences/usersettings.h"
 
-class ControllerPreset;
+class LegacyControllerMapping;
 
 //#define CONTROLLERLESSTESTING
 

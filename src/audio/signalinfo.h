@@ -14,21 +14,14 @@ class SignalInfo final {
     // Properties
     MIXXX_DECL_PROPERTY(ChannelCount, channelCount, ChannelCount)
     MIXXX_DECL_PROPERTY(SampleRate, sampleRate, SampleRate)
-    MIXXX_DECL_PROPERTY(OptionalSampleLayout, sampleLayout, SampleLayout)
 
   public:
     constexpr SignalInfo() = default;
-    constexpr explicit SignalInfo(
-            const OptionalSampleLayout& sampleLayout)
-            : m_sampleLayout(sampleLayout) {
-    }
     SignalInfo(
             ChannelCount channelCount,
-            SampleRate sampleRate,
-            const OptionalSampleLayout& sampleLayout = std::nullopt)
+            SampleRate sampleRate)
             : m_channelCount(channelCount),
-              m_sampleRate(sampleRate),
-              m_sampleLayout(sampleLayout) {
+              m_sampleRate(sampleRate) {
     }
     SignalInfo(SignalInfo&&) = default;
     SignalInfo(const SignalInfo&) = default;
@@ -36,7 +29,6 @@ class SignalInfo final {
 
     constexpr bool isValid() const {
         return getChannelCount().isValid() &&
-                getSampleLayout() &&
                 getSampleRate().isValid();
     }
 

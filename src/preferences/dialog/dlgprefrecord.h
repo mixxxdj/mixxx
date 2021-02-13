@@ -4,10 +4,10 @@
 #include <QRadioButton>
 #include <QWidget>
 
+#include "encoder/encoder.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefrecorddlg.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
-#include "encoder/encoder.h"
 
 class ControlObject;
 class ControlProxy;

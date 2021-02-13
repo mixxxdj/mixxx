@@ -18,12 +18,12 @@
 
 namespace {
     const ConfigKey kSearchDebouncingTimeoutMillisKey = ConfigKey("[Library]","SearchDebouncingTimeoutMillis");
-}
+    } // namespace
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
         UserSettingsPointer pConfig,
-        Library* pLibrary)
+        std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_dirListModel(),
           m_pConfig(pConfig),
@@ -34,15 +34,15 @@ DlgPrefLibrary::DlgPrefLibrary(
 
     connect(this,
             &DlgPrefLibrary::requestAddDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestAddDir);
     connect(this,
             &DlgPrefLibrary::requestRemoveDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestRemoveDir);
     connect(this,
             &DlgPrefLibrary::requestRelocateDir,
-            m_pLibrary,
+            m_pLibrary.get(),
             &Library::slotRequestRelocateDir);
     connect(PushButtonAddDir,
             &QPushButton::clicked,
@@ -385,13 +385,13 @@ void DlgPrefLibrary::setLibraryFont(const QFont& font) {
         font.family(), font.styleName(), QString::number(font.pointSizeF())));
     m_pLibrary->setFont(font);
 
-    // Don't let the row height exceed the library height.
+    // Don't let the font height exceed the row height.
     QFontMetrics metrics(font);
     int fontHeight = metrics.height();
-    if (fontHeight > spinBoxRowHeight->value()) {
-        spinBoxRowHeight->setValue(fontHeight);
-    }
     spinBoxRowHeight->setMinimum(fontHeight);
+    // library.cpp takes care of setting the new row height according to the
+    // previous font height/ row height ratio
+    spinBoxRowHeight->setValue(m_pLibrary->getTrackTableRowHeight());
 }
 
 void DlgPrefLibrary::slotSelectFont() {

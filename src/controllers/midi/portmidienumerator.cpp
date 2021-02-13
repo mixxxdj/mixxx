@@ -202,8 +202,8 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
 
     m_devices.clear();
 
-    const PmDeviceInfo* inputDeviceInfo = NULL;
-    const PmDeviceInfo* outputDeviceInfo = NULL;
+    const PmDeviceInfo* inputDeviceInfo = nullptr;
+    const PmDeviceInfo* outputDeviceInfo = nullptr;
     int inputDevIndex = -1;
     int outputDevIndex = -1;
     QMap<int, QString> unassignedOutputDevices;

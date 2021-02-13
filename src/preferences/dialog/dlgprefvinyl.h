@@ -2,9 +2,10 @@
 
 #include <QSpinBox>
 #include <QWidget>
+#include <memory>
 
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefvinyldlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 
@@ -14,7 +15,10 @@ class VinylControlManager;
 class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     Q_OBJECT
   public:
-    DlgPrefVinyl(QWidget* pParent, VinylControlManager* m_pVCMan, UserSettingsPointer _config);
+    DlgPrefVinyl(
+            QWidget* pParent,
+            std::shared_ptr<VinylControlManager> m_pVCMan,
+            UserSettingsPointer _config);
     virtual ~DlgPrefVinyl();
 
     QUrl helpUrl() const override;
@@ -48,7 +52,7 @@ class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
 
     QList<VinylControlSignalWidget*> m_signalWidgets;
 
-    VinylControlManager* m_pVCManager;
+    std::shared_ptr<VinylControlManager> m_pVCManager;
     UserSettingsPointer config;
     QList<ControlProxy*> m_COSpeeds;
     ControlProxy* m_pNumDecks;
