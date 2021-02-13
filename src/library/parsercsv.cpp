@@ -180,12 +180,22 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
                 first = false;
             }
             out << "\"";
-            QString field = pPlaylistTableModel->data(pPlaylistTableModel->index(j,i)).toString();
-            if (useRelativePath &&
-                    i ==
-                            pPlaylistTableModel->fieldIndex(ColumnCache::
-                                            COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
-                field = base_dir.relativeFilePath(field);
+            QString field;
+            if (i == pPlaylistTableModel->fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM)) {
+                // Use ToolTip Role for full precision.
+                field = pPlaylistTableModel
+                                ->data(pPlaylistTableModel->index(j, i),
+                                        Qt::ToolTipRole)
+                                .toString();
+            } else if (i ==
+                    pPlaylistTableModel->fieldIndex(
+                            ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
+                field = pPlaylistTableModel->data(pPlaylistTableModel->index(j, i)).toString();
+                if (useRelativePath) {
+                    field = base_dir.relativeFilePath(field);
+                }
+            } else {
+                field = pPlaylistTableModel->data(pPlaylistTableModel->index(j, i)).toString();
             }
             out << field.replace('\"', "\"\"");  // escape "
             out << "\"";

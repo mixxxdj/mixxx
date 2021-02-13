@@ -638,7 +638,11 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             }
             if (bpm.hasValue()) {
-                return QString("%1").arg(bpm.getValue(), 0, 'f', 1);
+                if (role == Qt::ToolTipRole) {
+                    return QString::number(bpm.getValue(), 'f', 4);
+                } else {
+                    return QString::number(bpm.getValue(), 'f', 1);
+                }
             } else {
                 return QChar('-');
             }
