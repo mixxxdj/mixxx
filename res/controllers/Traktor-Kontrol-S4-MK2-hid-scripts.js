@@ -568,7 +568,7 @@ TraktorS4MK2.registerOutputPackets = function() {
         TraktorS4MK2.linkDeckOutputs("beatlooproll_1_activate", TraktorS4MK2.outputCallback);
     }
 
-    engine.makeConnection("[Recording]", "status", TraktorS4MK2.onRecordingChanged);
+    engine.connectControl("[Recording]", "status", "TraktorS4MK2.onRecordingChanged");
 
     // VU meters get special attention
     engine.connectControl("[Channel1]", "VuMeter", "TraktorS4MK2.onVuMeterChanged");
@@ -1009,6 +1009,12 @@ TraktorS4MK2.playHandler = function(field) {
         engine.setValue(field.group, "keylock", !locked);
     } else {
         var playing = engine.getValue(field.group, "play");
+        var deckNumber = TraktorS4MK2.controller.resolveDeck(group);
+        // Failsafe to disable scratching in case the finishJogTouch timer has not executed yet
+        // after a backspin.
+        if (engine.isScratching(deckNumber)) {
+            engine.scratchDisable(deckNumber, false);
+        }
         engine.setValue(field.group, "play", !playing);
     }
 };
@@ -1073,6 +1079,7 @@ TraktorS4MK2.finishJogTouch = function(group) {
     if (play != 0) {
         // If we are playing, just hand off to the engine.
         engine.scratchDisable(deckNumber, true);
+        TraktorS4MK2.slipAutoHandler(field.group, 0);
 
     } else {
         // If things are paused, there will be a non-smooth handoff between scratching and jogging.
@@ -1287,17 +1294,16 @@ TraktorS4MK2.callbackPregain = function(field) {
     else if (TraktorS4MK2.controller.play_shift_pressed === 1) {
         var bpm_sensitivity_multipler = 50;
         if (delta > 0) {
-            for (var i = 0; i < bpm_sensitivity_multipler; i++){
+            for (var i = 0; i < bpm_sensitivity_multipler; i++) {
                 engine.setValue(group, "beats_adjust_faster", true);
             }
 
         } else if (delta < 0) {
-            for (var i = 0; i < bpm_sensitivity_multipler; i++){
+            for (var i = 1; i < bpm_sensitivity_multipler; i++) {
                 engine.setValue(group, "beats_adjust_slower", true);
             }
         }
-    }
-    else {
+    } else {
         var cur_pregain = engine.getValue(group, "pregain");
         engine.setValue(group, "pregain", cur_pregain + delta);
     }
@@ -1736,18 +1742,18 @@ TraktorS4MK2.pregainResetHandler = function(field) {
     }
     if (TraktorS4MK2.controller.play_shift_pressed) {
         // If the 'play modifier' button is held down round the BPM   
-        var bpm = engine.getValue(group, 'bpm');
+        var bpm = engine.getValue(group, "bpm");
         var rounded_value = Math.round(bpm);
         var delta = (bpm - rounded_value)*100;
         print(delta);
-        if (delta > 0){
-            for (var i = 0; i < delta; i++){
-                engine.setValue(group, 'beats_adjust_slower', true)
+        if (delta > 0) {
+            for (var i = 0; i < delta; i++) {
+                engine.setValue(group, "beats_adjust_slower", true)
             }
         }
-        else if (delta < 0){
-            for (var i = 0; i < delta; i++){
-                engine.setValue(group, 'beats_adjust_faster', true)
+        else if (delta < 0) {
+            for (var i = 0; i < delta; i++) {
+                engine.setValue(group, "beats_adjust_faster", true)
             }
         } 
 
@@ -1755,7 +1761,7 @@ TraktorS4MK2.pregainResetHandler = function(field) {
     } else {
         // Otherwise reset the gain on the channel
         print(group)
-        engine.setValue(group, 'pregain', '1.0');
+        engine.setValue(group, "pregain", "1.0");
     }
 };
 
