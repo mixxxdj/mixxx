@@ -441,9 +441,9 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-    if (m_protocol_is_shoutcast && !m_format_is_mp3) {
-        errorDialog(tr("Error: libshout only supports Shoutcast with MP3 format!"),
-                    shout_get_error(m_pShout));
+    if (m_protocol_is_shoutcast && !(m_format_is_mp3 || m_format_is_aac)) {
+        errorDialog(tr("Error: Shoutcast only supports MP3 and AAC encoders"),
+                shout_get_error(m_pShout));
         return;
     }
 
