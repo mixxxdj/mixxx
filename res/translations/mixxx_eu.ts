@@ -26,7 +26,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="95"/>
         <source>Remove Crate as Track Source</source>
-        <translation type="unfinished"/>
+        <translation>Kendu kaxa pistaren iturri bezala</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="108"/>
@@ -36,7 +36,7 @@
     <message>
         <location filename="../../src/library/autodj/autodjfeature.cpp" line="296"/>
         <source>Add Crate as Track Source</source>
-        <translation type="unfinished"/>
+        <translation>Gehitu kaxa pistaren iturri bezala</translation>
     </message>
 </context>
 <context>
@@ -45,25 +45,25 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="26"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="110"/>
         <source>Banshee</source>
-        <translation type="unfinished"/>
+        <translation>Banshee</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
         <source>Error loading Banshee database</source>
-        <translation type="unfinished"/>
+        <translation>Errore bat gertatu da Banshee-ren data-basea kargatzerakoan</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="77"/>
         <source>Banshee database file not found at
 </source>
-        <translation type="unfinished"/>
+        <translation>Banshee-ren datu-basearen fitxategia ez da aurkitu leku honetan</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="86"/>
         <source>There was an error loading your Banshee database at
 </source>
-        <translation type="unfinished"/>
+        <translation>Errore bat gertatu da zure Banshee-ren datu-basea kargatzerakoan</translation>
     </message>
 </context>
 <context>
@@ -115,7 +115,7 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="45"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="329"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Erreprodukzio-zerrenda berria sortu</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="77"/>
@@ -140,7 +140,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="56"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>Bikoiztu</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="94"/>
@@ -151,17 +151,17 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="109"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>Pisten fitxategiak esportatu</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="88"/>
         <source>Analyze entire Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Erreprodukzio-zerrenda osoa aztertu</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="235"/>
         <source>Enter new name for playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Erreprodukzio-zerrendaren izen berria sartu:</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="276"/>
@@ -172,7 +172,7 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="277"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="330"/>
         <source>Enter name for new playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Idatzi erreprodukzio-zerrendaren izena</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="104"/>
@@ -236,7 +236,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="534"/>
         <source>M3U Playlist (*.m3u)</source>
-        <translation type="unfinished"/>
+        <translation>M3U erreproduzio-zerrenda (*.m3u)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="539"/>
@@ -275,7 +275,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="131"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Albumaren artista</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="135"/>
@@ -315,7 +315,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="163"/>
         <source>Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>Azalaren irudia</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="167"/>
@@ -340,7 +340,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="183"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Taldeka</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="187"/>
@@ -365,7 +365,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="203"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>ReplayGain</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="207"/>
@@ -398,12 +398,12 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="112"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Ekintzak huts egin du</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="113"/>
         <source>Please enable at least one connection to use Live Broadcasting.</source>
-        <translation type="unfinished"/>
+        <translation>Mesedez, gutxienez konexio bat erabil ezazu Zuzeneko Emanaldia erabiltzeko.</translation>
     </message>
 </context>
 <context>
@@ -439,32 +439,32 @@
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="145"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Izena</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="147"/>
         <source>Status</source>
-        <translation type="unfinished"/>
+        <translation>Egoera</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="197"/>
         <source>Disconnected</source>
-        <translation type="unfinished"/>
+        <translation>Deskonektatua</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="199"/>
         <source>Connecting...</source>
-        <translation type="unfinished"/>
+        <translation>Konektatzen</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="201"/>
         <source>Connected</source>
-        <translation type="unfinished"/>
+        <translation>Konektatuta</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="203"/>
         <source>Failed</source>
-        <translation type="unfinished"/>
+        <translation>Huts egin du</translation>
     </message>
     <message>
         <location filename="../../src/preferences/broadcastsettingsmodel.cpp" line="206"/>
@@ -487,7 +487,7 @@
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="57"/>
         <source>Add to Library</source>
-        <translation type="unfinished"/>
+        <translation>Liburutegira gehitu</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="74"/>
@@ -509,12 +509,12 @@
         <location filename="../../src/library/browse/browsefeature.cpp" line="141"/>
         <location filename="../../src/library/browse/browsefeature.cpp" line="435"/>
         <source>Computer</source>
-        <translation type="unfinished"/>
+        <translation>Ordenagailua</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="174"/>
         <source>Music Directory Added</source>
-        <translation type="unfinished"/>
+        <translation>Musika Direktorioa gehituta</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="175"/>
@@ -612,7 +612,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="56"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>ReplayGain</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="51"/>
@@ -622,12 +622,12 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="52"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Albumaren artista</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="53"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Taldeka</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="54"/>
@@ -691,7 +691,7 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="61"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Izena</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="67"/>
@@ -3155,12 +3155,12 @@
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="115"/>
         <source>Export Track Files</source>
-        <translation type="unfinished"/>
+        <translation>Pisten fitxategiak esportatu</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="71"/>
         <source>Duplicate</source>
-        <translation type="unfinished"/>
+        <translation>Bikoiztu</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/crate/cratefeature.cpp" line="94"/>
@@ -4099,7 +4099,7 @@ You tried to learn: %1,%2</source>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="566"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="601"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Ekintzak huts egin du</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="228"/>
@@ -5757,7 +5757,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="121"/>
         <source>Music Directory Added</source>
-        <translation type="unfinished"/>
+        <translation>Musika Direktorioa gehituta</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="122"/>
@@ -7284,7 +7284,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="60"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Albumaren artista</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.ui" line="115"/>
@@ -7467,7 +7467,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="193"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Albumaren artista</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="240"/>
@@ -7482,7 +7482,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="340"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Taldeka</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="315"/>
@@ -7704,7 +7704,7 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     <message>
         <location filename="../../src/preferences/effectsettingsmodel.cpp" line="107"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Izena</translation>
     </message>
     <message>
         <location filename="../../src/preferences/effectsettingsmodel.cpp" line="109"/>
@@ -8437,7 +8437,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/library/trackset/playlistfeature.cpp" line="333"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Erreprodukzio-zerrenda berria sortu</translation>
     </message>
 </context>
 <context>
@@ -10305,7 +10305,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="11"/>
         <source>Name</source>
-        <translation type="unfinished"/>
+        <translation>Izena</translation>
     </message>
     <message>
         <location filename="../../src/util/statmodel.cpp" line="12"/>
@@ -10649,7 +10649,7 @@ Fully right: end of the effect period</source>
         <location filename="../../src/skin/tooltips.cpp" line="254"/>
         <location filename="../../src/skin/tooltips.cpp" line="817"/>
         <source>Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>Azalaren irudia</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="251"/>
@@ -13567,7 +13567,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="207"/>
         <source>Album Artist</source>
-        <translation type="unfinished"/>
+        <translation>Albumaren artista</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="241"/>
@@ -13587,7 +13587,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="283"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Taldeka</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="300"/>
@@ -13645,7 +13645,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="124"/>
         <source>Cover Art</source>
-        <translation type="unfinished"/>
+        <translation>Azalaren irudia</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="131"/>
@@ -13786,7 +13786,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="286"/>
         <source>ReplayGain</source>
-        <translation type="unfinished"/>
+        <translation>ReplayGain</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="289"/>
@@ -13867,12 +13867,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/widget/wtrackmenu.cpp" line="989"/>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1013"/>
         <source>Create New Playlist</source>
-        <translation type="unfinished"/>
+        <translation>Erreprodukzio-zerrenda berria sortu</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1014"/>
         <source>Enter name for new playlist:</source>
-        <translation type="unfinished"/>
+        <translation>Idatzi erreprodukzio-zerrendaren izena</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="1016"/>
