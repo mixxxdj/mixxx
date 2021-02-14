@@ -51,6 +51,9 @@ QIcon ClementineFeature::getIcon() {
 void ClementineFeature::activate() {
     qDebug() << "ClementineFeature::activate()";
 
+    m_title = tr("(loading) Clementine");
+    //calls a slot in the sidebar model such that 'Clementine (isLoading)' is displayed.
+    emit featureIsLoading(this, true);
     QString databaseFile = ClementineDbConnection::getDatabaseFile();
 
     if (!m_isActivated) {
@@ -81,16 +84,18 @@ void ClementineFeature::activate() {
         // append the playlist to the child model
         pRootItem->appendChild(playlist.name, playlist.playlistId);
     }
-
     m_childModel.setRootItem(std::move(pRootItem));
-    qDebug() << "Clementine library loaded: success";
+
+    m_pClementinePlaylistModel->setTableModel(0); // Gets the master playlist
 
     //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("Clementine");
     emit featureLoadingFinished(this);
+    qDebug() << "Clementine library loaded: success";
 
-    m_pClementinePlaylistModel->setTableModel(0); // Gets the master playlist
     emit showTrackModel(m_pClementinePlaylistModel);
+    emit showTrackModel(
+            m_pClementinePlaylistModel); // TODO find bug which doesnt show master playlist on first emit showTrackModel()
     emit enableCoverArtDisplay(false);
 }
 
