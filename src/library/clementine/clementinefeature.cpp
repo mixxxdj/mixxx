@@ -23,7 +23,7 @@ ClementineFeature::ClementineFeature(
           m_playlists(),
           m_future(),
           m_title(tr("Clementine")),
-          m_icon(":/images/library/ic_library_clementine.png") {
+          m_icon(":/images/library/ic_library_clementine.svg") {
 }
 
 ClementineFeature::~ClementineFeature() {
