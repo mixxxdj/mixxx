@@ -1,6 +1,6 @@
 #pragma once
-// cueinfo.h
-// Created 2020-02-28 by Jan Holthuis
+
+#include <QFlags>
 
 #include "audio/signalinfo.h"
 #include "util/color/rgbcolor.h"
@@ -21,47 +21,77 @@ enum class CueType {
                       // sound; not shown to user
 };
 
+enum class CueFlag {
+    None = 0,
+    /// Currently only used when importing locked loops from Serato Metadata.
+    Locked = 1,
+};
+Q_DECLARE_FLAGS(CueFlags, CueFlag);
+Q_DECLARE_OPERATORS_FOR_FLAGS(CueFlags);
+
+/// Hot cues are sequentially indexed starting with kFirstHotCueIndex (inclusive)
+static constexpr int kFirstHotCueIndex = 0;
+
 // DTO for Cue information without dependencies on the actual Track object
 class CueInfo {
   public:
     CueInfo();
     CueInfo(CueType type,
-            std::optional<double> startPositionMillis,
-            std::optional<double> endPositionMillis,
-            std::optional<int> hotCueNumber,
+            const std::optional<double>& startPositionMillis,
+            const std::optional<double>& endPositionMillis,
+            const std::optional<int>& hotCueIndex,
             QString label,
-            RgbColor::optional_t color);
+            const RgbColor::optional_t& color,
+            CueFlags flags = CueFlag::None);
 
     CueType getType() const;
     void setType(CueType type);
 
     std::optional<double> getStartPositionMillis() const;
     void setStartPositionMillis(
-            std::optional<double> positionMillis = std::nullopt);
+            const std::optional<double>& positionMillis = std::nullopt);
 
     std::optional<double> getEndPositionMillis() const;
     void setEndPositionMillis(
-            std::optional<double> positionMillis = std::nullopt);
+            const std::optional<double>& positionMillis = std::nullopt);
 
-    std::optional<int> getHotCueNumber() const;
-    void setHotCueNumber(
-            std::optional<int> hotCueNumber = std::nullopt);
+    std::optional<int> getHotCueIndex() const;
+    void setHotCueIndex(
+            const std::optional<int>& hotCueIndex = std::nullopt);
 
     QString getLabel() const;
     void setLabel(
-            QString label = QString());
+            const QString& label = QString());
 
     mixxx::RgbColor::optional_t getColor() const;
     void setColor(
-            mixxx::RgbColor::optional_t color = std::nullopt);
+            const mixxx::RgbColor::optional_t& color = std::nullopt);
+
+    CueFlags flags() const {
+        return m_flags;
+    }
+
+    /// Set flags for the cue.
+    ///
+    /// These flags are currently only set during Serato cue import and *not*
+    /// saved in the Database (only used for roundtrip testing purposes).
+    void setFlags(CueFlags flags) {
+        m_flags = flags;
+    }
+
+    /// Checks if the `CueFlag::Locked` flag is set for this cue.
+    bool isLocked() const {
+        return m_flags.testFlag(CueFlag::Locked);
+    }
 
   private:
     CueType m_type;
     std::optional<double> m_startPositionMillis;
     std::optional<double> m_endPositionMillis;
-    std::optional<int> m_hotCueNumber;
+    std::optional<int> m_hotCueIndex;
     QString m_label;
     RgbColor::optional_t m_color;
+    CueFlags m_flags;
 };
 
 bool operator==(

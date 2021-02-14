@@ -1,12 +1,11 @@
-#ifndef WAVEFORMWIDGETABSTRACT_H
-#define WAVEFORMWIDGETABSTRACT_H
+#pragma once
 
-#include <QWidget>
 #include <QString>
+#include <QWidget>
 
+#include "util/duration.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveformwidgettype.h"
-#include "util/duration.h"
 
 class VSyncThread;
 
@@ -42,5 +41,3 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
 
     friend class WaveformWidgetFactory;
 };
-
-#endif // WAVEFORMWIDGETABSTRACT_H

@@ -59,7 +59,7 @@
 #define HAVE_SOCKLEN_T 1
 
 /* Define if you want speex streams supported */
-#define HAVE_SPEEX 1
+//define HAVE_SPEEX 1
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #define HAVE_STDINT_H 1
@@ -95,7 +95,7 @@
 #define HAVE_SYS_UIO_H 1
 
 /* Define if you want theora streams supported */
-#define HAVE_THEORA 1
+//define HAVE_THEORA 1
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1

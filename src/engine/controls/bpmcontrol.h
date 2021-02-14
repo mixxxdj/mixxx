@@ -1,5 +1,4 @@
-#ifndef BPMCONTROL_H
-#define BPMCONTROL_H
+#pragma once
 
 #include <gtest/gtest_prod.h>
 
@@ -23,7 +22,7 @@ class BpmControl : public EngineControl {
     Q_OBJECT
 
   public:
-    BpmControl(QString group, UserSettingsPointer pConfig);
+    BpmControl(const QString& group, UserSettingsPointer pConfig);
     ~BpmControl() override;
 
     double getBpm() const;
@@ -170,5 +169,3 @@ class BpmControl : public EngineControl {
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
 };
-
-#endif // BPMCONTROL_H

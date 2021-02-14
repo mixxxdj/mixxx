@@ -3,6 +3,7 @@
 #include <QCoreApplication>
 #include <QThread>
 
+#include "moc_taskmonitor.cpp"
 #include "util/assert.h"
 #include "util/math.h"
 #include "util/thread_affinity.h"
@@ -31,9 +32,8 @@ TaskMonitor::~TaskMonitor() {
 
 Task* TaskMonitor::senderTask() const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    auto* pTask = static_cast<Task*>(sender());
+    auto* pTask = qobject_cast<Task*>(sender());
     DEBUG_ASSERT(pTask);
-    DEBUG_ASSERT(dynamic_cast<Task*>(sender()));
     return pTask;
 }
 

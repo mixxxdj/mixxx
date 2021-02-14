@@ -1,5 +1,4 @@
-#ifndef MIXXXAPPLICATION_H
-#define MIXXXAPPLICATION_H
+#pragma once
 
 #include <QApplication>
 
@@ -21,5 +20,3 @@ class MixxxApplication : public QApplication {
     ControlProxy* m_pTouchShift;
 
 };
-
-#endif // MIXXXAPPLICATION_H

@@ -1,5 +1,4 @@
-#ifndef WAVEFORMRENDERERSIGNALBASE_H
-#define WAVEFORMRENDERERSIGNALBASE_H
+#pragma once
 
 #include "waveformrendererabstract.h"
 #include "waveformsignalcolors.h"
@@ -46,6 +45,7 @@ public:
     qreal m_rgbLowColor_r, m_rgbLowColor_g, m_rgbLowColor_b;
     qreal m_rgbMidColor_r, m_rgbMidColor_g, m_rgbMidColor_b;
     qreal m_rgbHighColor_r, m_rgbHighColor_g, m_rgbHighColor_b;
+    qreal m_rgbLowFilteredColor_r, m_rgbLowFilteredColor_g, m_rgbLowFilteredColor_b;
+    qreal m_rgbMidFilteredColor_r, m_rgbMidFilteredColor_g, m_rgbMidFilteredColor_b;
+    qreal m_rgbHighFilteredColor_r, m_rgbHighFilteredColor_g, m_rgbHighFilteredColor_b;
 };
-
-#endif // WAVEFORMRENDERERSIGNALBASE_H

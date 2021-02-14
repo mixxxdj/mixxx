@@ -48,7 +48,7 @@ class SeratoFeature : public BaseExternalLibraryFeature {
 
   private:
     QString formatRootViewHtml() const;
-    BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) override;
+    BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
 
     TreeItemModel m_childModel;
     SeratoPlaylistModel* m_pSeratoPlaylistModel;

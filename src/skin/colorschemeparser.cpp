@@ -1,4 +1,3 @@
-
 #include "skin/colorschemeparser.h"
 
 #include "widget/wpixmapstore.h"
@@ -13,10 +12,10 @@
 #include "skin/legacyskinparser.h"
 #include "skin/skincontext.h"
 
-void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
-                                                UserSettingsPointer pConfig,
-                                                QString* pStyle,
-                                                SkinContext* pContext) {
+void ColorSchemeParser::setupLegacyColorSchemes(const QDomElement& docElem,
+        UserSettingsPointer pConfig,
+        QString* pStyle,
+        SkinContext* pContext) {
     QDomNode schemesNode = docElem.namedItem("Schemes");
 
     bool bSelectedColorSchemeFound = false;
@@ -71,7 +70,7 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
     }
 }
 
-ImgSource* ColorSchemeParser::parseFilters(QDomNode filt) {
+ImgSource* ColorSchemeParser::parseFilters(const QDomNode& filt) {
     ImgSource* ret = new ImgLoader();
 
     if (!filt.hasChildNodes()) {

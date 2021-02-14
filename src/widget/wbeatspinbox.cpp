@@ -1,9 +1,10 @@
-#include <QLineEdit>
-
 #include "widget/wbeatspinbox.h"
+
+#include <QLineEdit>
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "moc_wbeatspinbox.cpp"
 #include "util/math.h"
 
 QRegExp WBeatSpinBox::s_regexpBlacklist("[^0-9.,/ ]");
@@ -30,15 +31,17 @@ WBeatSpinBox::WBeatSpinBox(QWidget* parent,
     lineEdit()->setFocusPolicy(Qt::ClickFocus);
 
     setValue(m_valueControl.get());
-    connect(this, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSpinboxValueChanged(double)));
+    connect(this,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &WBeatSpinBox::slotSpinboxValueChanged);
     m_valueControl.connectValueChanged(this, &WBeatSpinBox::slotControlValueChanged);
 }
 
 void WBeatSpinBox::setup(const QDomNode& node, const SkinContext& context) {
     Q_UNUSED(node);
     m_scaleFactor = context.getScaleFactor();
-    static_cast<WBeatLineEdit*>(lineEdit())->setScaleFactor(m_scaleFactor);
+    qobject_cast<WBeatLineEdit*>(lineEdit())->setScaleFactor(m_scaleFactor);
 }
 
 void WBeatSpinBox::stepBy(int steps) {

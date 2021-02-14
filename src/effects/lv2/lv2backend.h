@@ -1,11 +1,11 @@
-#ifndef LV2BACKEND_H
-#define LV2BACKEND_H
+#pragma once
+
+#include <lilv/lilv.h>
 
 #include "effects/defs.h"
 #include "effects/effectsbackend.h"
 #include "effects/lv2/lv2manifest.h"
 #include "preferences/usersettings.h"
-#include <lilv-0/lilv/lilv.h>
 
 class LV2Backend : public EffectsBackend {
     Q_OBJECT
@@ -32,5 +32,3 @@ class LV2Backend : public EffectsBackend {
         return "LV2Backend";
     }
 };
-
-#endif // LV2BACKEND_H

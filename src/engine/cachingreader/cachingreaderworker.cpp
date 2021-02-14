@@ -5,6 +5,7 @@
 #include <QtDebug>
 
 #include "control/controlobject.h"
+#include "moc_cachingreaderworker.cpp"
 #include "sources/soundsourceproxy.h"
 #include "track/track.h"
 #include "util/compatibility.h"
@@ -18,7 +19,7 @@ mixxx::Logger kLogger("CachingReaderWorker");
 } // anonymous namespace
 
 CachingReaderWorker::CachingReaderWorker(
-        QString group,
+        const QString& group,
         FIFO<CachingReaderChunkReadRequest>* pChunkReadRequestFIFO,
         FIFO<ReaderStatusUpdate>* pReaderStatusFIFO)
         : m_group(group),
@@ -39,7 +40,7 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
     // actually available.
     auto chunkFrameIndexRange = pChunk->frameIndexRange(m_pAudioSource);
     DEBUG_ASSERT(!m_pAudioSource ||
-            chunkFrameIndexRange <= m_pAudioSource->frameIndexRange());
+            chunkFrameIndexRange.isSubrangeOf(m_pAudioSource->frameIndexRange()));
     if (chunkFrameIndexRange.empty()) {
         ReaderStatusUpdate result;
         result.init(CHUNK_READ_INVALID, pChunk, m_pAudioSource ? m_pAudioSource->frameIndexRange() : mixxx::IndexRange());
@@ -51,11 +52,11 @@ ReaderStatusUpdate CachingReaderWorker::processReadRequest(
             m_pAudioSource,
             mixxx::SampleBuffer::WritableSlice(m_tempReadBuffer));
     DEBUG_ASSERT(!m_pAudioSource ||
-            bufferedFrameIndexRange <= m_pAudioSource->frameIndexRange());
+            bufferedFrameIndexRange.isSubrangeOf(m_pAudioSource->frameIndexRange()));
     // The readable frame range might have changed
     chunkFrameIndexRange = intersect(chunkFrameIndexRange, m_pAudioSource->frameIndexRange());
     DEBUG_ASSERT(bufferedFrameIndexRange.empty() ||
-            bufferedFrameIndexRange <= chunkFrameIndexRange);
+            bufferedFrameIndexRange.isSubrangeOf(chunkFrameIndexRange));
 
     ReaderStatus status = bufferedFrameIndexRange.empty() ? CHUNK_READ_EOF : CHUNK_READ_SUCCESS;
     if (bufferedFrameIndexRange != chunkFrameIndexRange) {

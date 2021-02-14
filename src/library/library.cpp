@@ -13,6 +13,9 @@
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
 #include "library/clementine/clementinefeature.h"
+#ifdef __ENGINEPRIME__
+#include "library/export/libraryexporter.h"
+#endif
 #include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/library_preferences.h"
@@ -33,6 +36,7 @@
 #include "library/trackset/setlogfeature.h"
 #include "library/traktor/traktorfeature.h"
 #include "mixer/playermanager.h"
+#include "moc_library.cpp"
 #include "recording/recordingmanager.h"
 #include "util/assert.h"
 #include "util/db/dbconnectionpooled.h"
@@ -91,12 +95,32 @@ Library::Library(
             this,
             m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
+#ifdef __ENGINEPRIME__
+    connect(m_pMixxxLibraryFeature,
+            &MixxxLibraryFeature::exportLibrary,
+            this,
+            &Library::exportLibrary,
+            Qt::DirectConnection /* signal-to-signal */);
+#endif
 
     addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
     m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
+
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
+#ifdef __ENGINEPRIME__
+    connect(m_pCrateFeature,
+            &CrateFeature::exportAllCrates,
+            this,
+            &Library::exportLibrary, // signal-to-signal
+            Qt::DirectConnection);
+    connect(m_pCrateFeature,
+            &CrateFeature::exportCrate,
+            this,
+            &Library::exportCrate, // signal-to-signal
+            Qt::DirectConnection);
+#endif
 
     BrowseFeature* browseFeature = new BrowseFeature(
             this, m_pConfig, pRecordingManager);
@@ -183,10 +207,8 @@ Library::Library(
         addFeature(new SeratoFeature(this, m_pConfig));
     }
 
-    for (const auto& externalTrackCollection :
-            m_pTrackCollectionManager->externalCollections()) {
-        auto feature =
-                externalTrackCollection->newLibraryFeature(this, m_pConfig);
+    for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
+        auto* feature = externalTrackCollection->newLibraryFeature(this, m_pConfig);
         if (feature) {
             kLogger.info() << "Adding library feature for"
                            << externalTrackCollection->name();
@@ -295,7 +317,7 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
             pSidebarWidget,
             &WLibrarySidebar::slotSetFont);
 
-    for (const auto& feature : m_features) {
+    for (const auto& feature : qAsConst(m_features)) {
         feature->bindSidebarWidget(pSidebarWidget);
     }
 }
@@ -347,7 +369,7 @@ void Library::bindLibraryWidget(
 
     m_pLibraryControl->bindLibraryWidget(pLibraryWidget, pKeyboard);
 
-    for (const auto& feature : m_features) {
+    for (const auto& feature : qAsConst(m_features)) {
         feature->bindLibraryWidget(pLibraryWidget, pKeyboard);
     }
 
@@ -431,7 +453,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit loadTrack(pTrack);
 }
 
-void Library::slotLoadLocationToPlayer(QString location, QString group) {
+void Library::slotLoadLocationToPlayer(const QString& location, const QString& group) {
     auto trackRef = TrackRef::fromFileInfo(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
@@ -440,7 +462,7 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
 }
 
 void Library::slotLoadTrackToPlayer(
-        TrackPointer pTrack, QString group, bool play) {
+        TrackPointer pTrack, const QString& group, bool play) {
     emit loadTrackToPlayer(pTrack, group, play);
 }
 
@@ -462,7 +484,7 @@ void Library::onSkinLoadFinished() {
     m_pSidebarModel->activateDefaultSelection();
 }
 
-void Library::slotRequestAddDir(QString dir) {
+void Library::slotRequestAddDir(const QString& dir) {
     // We only call this method if the user has picked a new directory via a
     // file dialog. This means the system sandboxer (if we are sandboxed) has
     // granted us permission to this folder. Create a security bookmark while we
@@ -473,7 +495,7 @@ void Library::slotRequestAddDir(QString dir) {
     Sandbox::createSecurityToken(directory);
 
     if (!m_pTrackCollectionManager->addDirectory(dir)) {
-        QMessageBox::information(0,
+        QMessageBox::information(nullptr,
                 tr("Add Directory to Library"),
                 tr("Could not add the directory to your library. Either this "
                    "directory is already in your library or you are currently "
@@ -486,7 +508,7 @@ void Library::slotRequestAddDir(QString dir) {
     }
 }
 
-void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
+void Library::slotRequestRemoveDir(const QString& dir, RemovalType removalType) {
     switch (removalType) {
     case RemovalType::KeepTracks:
         break;
@@ -522,7 +544,7 @@ void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
     }
 }
 
-void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
+void Library::slotRequestRelocateDir(const QString& oldDir, const QString& newDir) {
     m_pTrackCollectionManager->relocateDirectory(oldDir, newDir);
 
     // also update the config file if necessary so that downgrading is still
@@ -538,8 +560,18 @@ QStringList Library::getDirs() {
 }
 
 void Library::setFont(const QFont& font) {
+    QFontMetrics currMetrics(m_trackTableFont);
+    QFontMetrics newMetrics(font);
+    double currFontHeight = currMetrics.height();
+    double newFontHeight = newMetrics.height();
+
     m_trackTableFont = font;
     emit setTrackTableFont(font);
+
+    // adapt the previous font height/row height ratio
+    int scaledRowHeight = static_cast<int>(std::round(
+            (newFontHeight / currFontHeight) * m_iTrackTableRowHeight));
+    setRowHeight(scaledRowHeight);
 }
 
 void Library::setRowHeight(int rowHeight) {
@@ -566,3 +598,11 @@ void Library::searchTracksInCollection(const QString& query) {
     emit switchToView(m_sTrackViewName);
     m_pSidebarModel->activateDefaultSelection();
 }
+
+#ifdef __ENGINEPRIME__
+std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
+        QWidget* parent) {
+    return std::make_unique<mixxx::LibraryExporter>(
+            parent, m_pConfig, m_pTrackCollectionManager);
+}
+#endif

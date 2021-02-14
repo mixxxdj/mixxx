@@ -1,0 +1,13 @@
+#!/usr/bin/make -f
+
+# Documentation: https://www.debian.org/doc/debian-policy/ch-source.html#main-building-script-debian-rules
+
+
+override_dh_auto_configure:
+	dh_auto_configure -- -DCMAKE_BUILD_TYPE=RelWithDebInfo -DINSTALL_USER_UDEV_RULES=OFF -DKEYFINDER=OFF -DENGINEPRIME=OFF
+
+override_dh_installudev:
+	dh_installudev --name=mixxx-usb-uaccess --priority 69
+
+%:
+	dh $@ --buildsystem=cmake

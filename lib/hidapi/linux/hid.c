@@ -18,7 +18,7 @@
  files located at the root of the source distribution.
  These files may also be found in the public source
  code repository located at:
-        http://github.com/signal11/hidapi .
+        https://github.com/libusb/hidapi .
 ********************************************************/
 
 /* C */
@@ -45,15 +45,6 @@
 
 #include "hidapi.h"
 
-/* Definitions from linux/hidraw.h. Since these are new, some distros
-   may not have header files which contain them. */
-#ifndef HIDIOCSFEATURE
-#define HIDIOCSFEATURE(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x06, len)
-#endif
-#ifndef HIDIOCGFEATURE
-#define HIDIOCGFEATURE(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x07, len)
-#endif
-
 
 /* USB HID device property names */
 const char *device_string_names[] = {
@@ -75,38 +66,26 @@ struct hid_device_ {
 	int device_handle;
 	int blocking;
 	int uses_numbered_reports;
+	wchar_t *last_error_str;
 };
 
+static struct hid_api_version api_version = {
+	.major = HID_API_VERSION_MAJOR,
+	.minor = HID_API_VERSION_MINOR,
+	.patch = HID_API_VERSION_PATCH
+};
 
-static __u32 kernel_version = 0;
-
-static __u32 detect_kernel_version(void)
-{
-	struct utsname name;
-	int major, minor, release;
-	int ret;
-
-	uname(&name);
-	ret = sscanf(name.release, "%d.%d.%d", &major, &minor, &release);
-	if (ret == 3) {
-		return KERNEL_VERSION(major, minor, release);
-	}
-
-	ret = sscanf(name.release, "%d.%d", &major, &minor);
-	if (ret == 2) {
-		return KERNEL_VERSION(major, minor, 0);
-	}
-
-	printf("Couldn't determine kernel version from version string \"%s\"\n", name.release);
-	return 0;
-}
+/* Global error message that is not specific to a device, e.g. for
+   hid_open(). It is thread-local like errno. */
+__thread wchar_t *last_global_error_str = NULL;
 
 static hid_device *new_hid_device(void)
 {
-	hid_device *dev = calloc(1, sizeof(hid_device));
+	hid_device *dev = (hid_device*) calloc(1, sizeof(hid_device));
 	dev->device_handle = -1;
 	dev->blocking = 1;
 	dev->uses_numbered_reports = 0;
+	dev->last_error_str = NULL;
 
 	return dev;
 }
@@ -122,12 +101,54 @@ static wchar_t *utf8_to_wchar_t(const char *utf8)
 		if ((size_t) -1 == wlen) {
 			return wcsdup(L"");
 		}
-		ret = calloc(wlen+1, sizeof(wchar_t));
+		ret = (wchar_t*) calloc(wlen+1, sizeof(wchar_t));
 		mbstowcs(ret, utf8, wlen+1);
 		ret[wlen] = 0x0000;
 	}
 
 	return ret;
+}
+
+
+/* Set the last global error to be reported by hid_error(NULL).
+ * The given error message will be copied (and decoded according to the
+ * currently locale, so do not pass in string constants).
+ * The last stored global error message is freed.
+ * Use register_global_error(NULL) to indicate "no error". */
+static void register_global_error(const char *msg)
+{
+	if (last_global_error_str)
+		free(last_global_error_str);
+
+	last_global_error_str = utf8_to_wchar_t(msg);
+}
+
+
+/* Set the last error for a device to be reported by hid_error(device).
+ * The given error message will be copied (and decoded according to the
+ * currently locale, so do not pass in string constants).
+ * The last stored global error message is freed.
+ * Use register_device_error(device, NULL) to indicate "no error". */
+static void register_device_error(hid_device *dev, const char *msg)
+{
+	if (dev->last_error_str)
+		free(dev->last_error_str);
+
+	dev->last_error_str = utf8_to_wchar_t(msg);
+}
+
+/* See register_device_error, but you can pass a format string into this function. */
+static void register_device_error_format(hid_device *dev, const char *format, ...)
+{
+	va_list args;
+	va_start(args, format);
+
+	char msg[100];
+	vsnprintf(msg, sizeof(msg), format, args);
+
+	va_end(args);
+
+	register_device_error(dev, msg);
 }
 
 /* Get an attribute value from a udev_device and return it as a whar_t
@@ -269,7 +290,7 @@ static int get_device_string(hid_device *dev, enum device_string_id key, wchar_t
 	/* Create the udev object */
 	udev = udev_new();
 	if (!udev) {
-		printf("Can't create udev\n");
+		register_global_error("Couldn't create udev context");
 		return -1;
 	}
 
@@ -359,6 +380,16 @@ end:
 	return ret;
 }
 
+HID_API_EXPORT const struct hid_api_version* HID_API_CALL hid_version()
+{
+	return &api_version;
+}
+
+HID_API_EXPORT const char* HID_API_CALL hid_version_str()
+{
+	return HID_API_VERSION_STR;
+}
+
 int HID_API_EXPORT hid_init(void)
 {
 	const char *locale;
@@ -368,14 +399,14 @@ int HID_API_EXPORT hid_init(void)
 	if (!locale)
 		setlocale(LC_CTYPE, "");
 
-	kernel_version = detect_kernel_version();
-
 	return 0;
 }
 
 int HID_API_EXPORT hid_exit(void)
 {
-	/* Nothing to do for this in the Linux/hidraw implementation. */
+	/* Free global error message */
+	register_global_error(NULL);
+
 	return 0;
 }
 
@@ -395,7 +426,7 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
 	/* Create the udev object */
 	udev = udev_new();
 	if (!udev) {
-		printf("Can't create udev\n");
+		register_global_error("Couldn't create udev context");
 		return NULL;
 	}
 
@@ -461,7 +492,7 @@ struct hid_device_info  HID_API_EXPORT *hid_enumerate(unsigned short vendor_id, 
 			struct hid_device_info *tmp;
 
 			/* VID/PID match. Create the record. */
-			tmp = malloc(sizeof(struct hid_device_info));
+			tmp = (struct hid_device_info*) calloc(1, sizeof(struct hid_device_info));
 			if (cur_dev) {
 				cur_dev->next = tmp;
 			}
@@ -584,6 +615,9 @@ void  HID_API_EXPORT hid_free_enumeration(struct hid_device_info *devs)
 
 hid_device * hid_open(unsigned short vendor_id, unsigned short product_id, const wchar_t *serial_number)
 {
+	/* Set global error to none */
+	register_global_error(NULL);
+
 	struct hid_device_info *devs, *cur_dev;
 	const char *path_to_open = NULL;
 	hid_device *handle = NULL;
@@ -610,6 +644,8 @@ hid_device * hid_open(unsigned short vendor_id, unsigned short product_id, const
 	if (path_to_open) {
 		/* Open the device */
 		handle = hid_open_path(path_to_open);
+	} else {
+		register_global_error("No such device");
 	}
 
 	hid_free_enumeration(devs);
@@ -619,6 +655,9 @@ hid_device * hid_open(unsigned short vendor_id, unsigned short product_id, const
 
 hid_device * HID_API_EXPORT hid_open_path(const char *path)
 {
+	/* Set global error to none */
+	register_global_error(NULL);
+
 	hid_device *dev = NULL;
 
 	hid_init();
@@ -629,7 +668,9 @@ hid_device * HID_API_EXPORT hid_open_path(const char *path)
 	dev->device_handle = open(path, O_RDWR);
 
 	/* If we have a good handle, return it. */
-	if (dev->device_handle > 0) {
+	if (dev->device_handle >= 0) {
+		/* Set device error to none */
+		register_device_error(dev, NULL);
 
 		/* Get the report descriptor */
 		int res, desc_size = 0;
@@ -640,14 +681,13 @@ hid_device * HID_API_EXPORT hid_open_path(const char *path)
 		/* Get Report Descriptor Size */
 		res = ioctl(dev->device_handle, HIDIOCGRDESCSIZE, &desc_size);
 		if (res < 0)
-			perror("HIDIOCGRDESCSIZE");
-
+			register_device_error_format(dev, "ioctl (GRDESCSIZE): %s", strerror(errno));
 
 		/* Get Report Descriptor */
 		rpt_desc.size = desc_size;
 		res = ioctl(dev->device_handle, HIDIOCGRDESC, &rpt_desc);
 		if (res < 0) {
-			perror("HIDIOCGRDESC");
+			register_device_error_format(dev, "ioctl (GRDESC): %s", strerror(errno));
 		} else {
 			/* Determine if this device uses numbered reports. */
 			dev->uses_numbered_reports =
@@ -659,6 +699,7 @@ hid_device * HID_API_EXPORT hid_open_path(const char *path)
 	}
 	else {
 		/* Unable to open any devices. */
+		register_global_error(strerror(errno));
 		free(dev);
 		return NULL;
 	}
@@ -671,12 +712,17 @@ int HID_API_EXPORT hid_write(hid_device *dev, const unsigned char *data, size_t 
 
 	bytes_written = write(dev->device_handle, data, length);
 
+	register_device_error(dev, (bytes_written == -1)? strerror(errno): NULL);
+
 	return bytes_written;
 }
 
 
 int HID_API_EXPORT hid_read_timeout(hid_device *dev, unsigned char *data, size_t length, int milliseconds)
 {
+	/* Set device error to none */
+	register_device_error(dev, NULL);
+
 	int bytes_read;
 
 	if (milliseconds >= 0) {
@@ -693,29 +739,30 @@ int HID_API_EXPORT hid_read_timeout(hid_device *dev, unsigned char *data, size_t
 		fds.events = POLLIN;
 		fds.revents = 0;
 		ret = poll(&fds, 1, milliseconds);
-		if (ret == -1 || ret == 0) {
-			/* Error or timeout */
+		if (ret == 0) {
+			/* Timeout */
+			return ret;
+		}
+		if (ret == -1) {
+			/* Error */
+			register_device_error(dev, strerror(errno));
 			return ret;
 		}
 		else {
 			/* Check for errors on the file descriptor. This will
 			   indicate a device disconnection. */
 			if (fds.revents & (POLLERR | POLLHUP | POLLNVAL))
+				// We cannot use strerror() here as no -1 was returned from poll().
 				return -1;
 		}
 	}
 
 	bytes_read = read(dev->device_handle, data, length);
-	if (bytes_read < 0 && (errno == EAGAIN || errno == EINPROGRESS))
-		bytes_read = 0;
-
-	if (bytes_read >= 0 &&
-	    kernel_version != 0 &&
-	    kernel_version < KERNEL_VERSION(2,6,34) &&
-	    dev->uses_numbered_reports) {
-		/* Work around a kernel bug. Chop off the first byte. */
-		memmove(data, data+1, bytes_read);
-		bytes_read--;
+	if (bytes_read < 0) {
+		if (errno == EAGAIN || errno == EINPROGRESS)
+			bytes_read = 0;
+		else
+			register_device_error(dev, strerror(errno));
 	}
 
 	return bytes_read;
@@ -743,7 +790,7 @@ int HID_API_EXPORT hid_send_feature_report(hid_device *dev, const unsigned char 
 
 	res = ioctl(dev->device_handle, HIDIOCSFEATURE(length), data);
 	if (res < 0)
-		perror("ioctl (SFEATURE)");
+		register_device_error_format(dev, "ioctl (SFEATURE): %s", strerror(errno));
 
 	return res;
 }
@@ -754,18 +801,29 @@ int HID_API_EXPORT hid_get_feature_report(hid_device *dev, unsigned char *data, 
 
 	res = ioctl(dev->device_handle, HIDIOCGFEATURE(length), data);
 	if (res < 0)
-		perror("ioctl (GFEATURE)");
-
+		register_device_error_format(dev, "ioctl (GFEATURE): %s", strerror(errno));
 
 	return res;
 }
 
+// Not supported by Linux HidRaw yet
+int HID_API_EXPORT HID_API_CALL hid_get_input_report(hid_device *dev, unsigned char *data, size_t length)
+{
+	return -1;
+}
 
 void HID_API_EXPORT hid_close(hid_device *dev)
 {
 	if (!dev)
 		return;
-	close(dev->device_handle);
+
+	int ret = close(dev->device_handle);
+
+	register_global_error((ret == -1)? strerror(errno): NULL);
+
+	/* Free the device error message */
+	register_device_error(dev, NULL);
+
 	free(dev);
 }
 
@@ -791,7 +849,16 @@ int HID_API_EXPORT_CALL hid_get_indexed_string(hid_device *dev, int string_index
 }
 
 
+/* Passing in NULL means asking for the last global error message. */
 HID_API_EXPORT const wchar_t * HID_API_CALL  hid_error(hid_device *dev)
 {
-	return NULL;
+	if (dev) {
+		if (dev->last_error_str == NULL)
+			return L"Success";
+		return dev->last_error_str;
+	}
+
+	if (last_global_error_str == NULL)
+		return L"Success";
+	return last_global_error_str;
 }

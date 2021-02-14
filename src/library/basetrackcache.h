@@ -72,17 +72,17 @@ class BaseTrackCache : public QObject {
                                QHash<TrackId, int>* trackToIndex);
     virtual bool isCached(TrackId trackId) const;
     virtual void ensureCached(TrackId trackId);
-    virtual void ensureCached(QSet<TrackId> trackIds);
+    virtual void ensureCached(const QSet<TrackId>& trackIds);
     virtual void setSearchColumns(const QStringList& columns);
 
   signals:
-    void tracksChanged(QSet<TrackId> trackIds);
+    void tracksChanged(const QSet<TrackId>& trackIds);
 
   public slots:
     void slotScanTrackAdded(TrackPointer pTrack);
 
-    void slotTracksAddedOrChanged(QSet<TrackId> trackId);
-    void slotTracksRemoved(QSet<TrackId> trackId);
+    void slotTracksAddedOrChanged(const QSet<TrackId>& trackId);
+    void slotTracksRemoved(const QSet<TrackId>& trackId);
     void slotTrackDirty(TrackId trackId);
     void slotTrackClean(TrackId trackId);
 
@@ -103,8 +103,10 @@ class BaseTrackCache : public QObject {
                                const QList<SortColumn>& sortColumns,
                                const int columnOffset,
                                const QVector<TrackId>& trackIds) const;
-    int compareColumnValues(int sortColumn, Qt::SortOrder sortOrder,
-                            QVariant val1, QVariant val2) const;
+    int compareColumnValues(int sortColumn,
+            Qt::SortOrder sortOrder,
+            const QVariant& val1,
+            const QVariant& val2) const;
     bool trackMatches(const TrackPointer& pTrack,
                       const QRegExp& matcher) const;
     bool trackMatchesNumeric(const TrackPointer& pTrack,
@@ -122,7 +124,7 @@ class BaseTrackCache : public QObject {
 
     const std::unique_ptr<SearchQueryParser> m_pQueryParser;
 
-    const StringCollator m_collator;
+    const mixxx::StringCollator m_collator;
 
     QStringList m_searchColumns;
     QVector<int> m_searchColumnIndices;
@@ -147,7 +149,6 @@ class BaseTrackCache : public QObject {
     bool m_bIsCaching;
     QHash<TrackId, QVector<QVariant> > m_trackInfo;
     QSqlDatabase m_database;
-    ControlProxy* m_pKeyNotationCP;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };

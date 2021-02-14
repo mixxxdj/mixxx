@@ -1,5 +1,4 @@
-#ifndef WSTARRATING_H
-#define WSTARRATING_H
+#pragma once
 
 #include <QEvent>
 #include <QMouseEvent>
@@ -18,7 +17,7 @@ class ControlPushButton;
 class WStarRating : public WWidget {
     Q_OBJECT
   public:
-    WStarRating(QString group, QWidget* pParent);
+    WStarRating(const QString& group, QWidget* pParent);
 
     virtual void setup(const QDomNode& node, const SkinContext& context);
     QSize sizeHint() const override;
@@ -50,5 +49,3 @@ class WStarRating : public WWidget {
     std::unique_ptr<ControlPushButton> m_pStarsUp;
     std::unique_ptr<ControlPushButton> m_pStarsDown;
 };
-
-#endif /* WSTARRATING_H */

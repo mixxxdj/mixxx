@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>593</width>
-    <height>867</height>
+    <height>1049</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -131,7 +131,7 @@
       <item row="0" column="0" colspan="2">
        <widget class="QCheckBox" name="checkBox_SyncTrackMetadataExport">
         <property name="text">
-         <string>Export: Write modified track metadata from the library into file tags</string>
+         <string>Automatically write modified track metadata from the library into file tags</string>
         </property>
        </widget>
       </item>

@@ -1,17 +1,10 @@
-/**
-* @file encodermp3settings.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of setting for mp3 encoder
-*/
-
-#ifndef ENCODERMP3SETTINGS_H
-#define ENCODERMP3SETTINGS_H
+#pragma once
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
 #include "recording/defs_recording.h"
 
+// Storage of settings for MP3 encoder
 class EncoderMp3Settings : public EncoderRecordingSettings {
   public:
     EncoderMp3Settings(UserSettingsPointer m_pConfig);
@@ -33,10 +26,10 @@ class EncoderMp3Settings : public EncoderRecordingSettings {
     QList<OptionsGroup> getOptionGroups() const override;
     // Selects the option by its index. If it is a single-element option,
     // index 0 means disabled and 1 enabled.
-    void setGroupOption(QString groupCode, int optionIndex) override;
+    void setGroupOption(const QString& groupCode, int optionIndex) override;
     // Return the selected option of the group. If it is a single-element option,
     // 0 means disabled and 1 enabled.
-    int getSelectedOption(QString groupCode) const override;
+    int getSelectedOption(const QString& groupCode) const override;
 
     // Returns the format of this encoder settings.
     QString getFormat() const override {
@@ -51,5 +44,3 @@ class EncoderMp3Settings : public EncoderRecordingSettings {
     QList<int> m_qualVBRList;
     UserSettingsPointer m_pConfig;
 };
-
-#endif // ENCODERMP3SETTINGS_H

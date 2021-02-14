@@ -28,6 +28,8 @@
                 <MinimumSize>100,</MinimumSize>
                 <Children>
 
+                  <Template src="skin:/decks/preview_deck.xml"/>
+
                   <!--Search Input Field + Library Expand toggle -->
                   <WidgetGroup>
                     <ObjectName></ObjectName>
@@ -69,7 +71,11 @@
                     </Children>
                   </WidgetGroup><!-- SearchLineBox -->
 
-                  <Template src="skin:/decks/preview_deck.xml"/>
+                  <WidgetGroup>
+                    <ObjectName>SearchTreeSpacer</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <Children/>
+                  </WidgetGroup>
 
                   <Splitter>
                     <ObjectName>SidebarCoverSplitter</ObjectName>
@@ -110,8 +116,6 @@
 
               <!-- Library Table-->
               <Library>
-                <BgColor>#585858</BgColor>
-                <FgColor>#eece33</FgColor>
                 <ShowButtonText>false</ShowButtonText>
                 <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
               </Library>

@@ -11,7 +11,7 @@ class SeratoBeatsImporter : public BeatsImporter {
   public:
     SeratoBeatsImporter();
     SeratoBeatsImporter(
-            QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers,
+            const QList<SeratoBeatGridNonTerminalMarkerPointer>& nonTerminalMarkers,
             SeratoBeatGridTerminalMarkerPointer pTerminalMarker);
     ~SeratoBeatsImporter() override = default;
 

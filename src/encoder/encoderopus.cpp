@@ -1,6 +1,3 @@
-// encoderopus.cpp
-// Create on August 15th 2017 by Palakis
-
 #include "encoder/encoderopus.h"
 
 #include <stdlib.h>
@@ -79,7 +76,7 @@ int getSerial() {
     kLogger.debug() << "RETURNING SERIAL " << serial;
     return serial;
 }
-}
+} // namespace
 
 //static
 int EncoderOpus::getMasterSamplerate() {
@@ -151,7 +148,7 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderOpus::initEncoder(int samplerate, QString errorMessage) {
+int EncoderOpus::initEncoder(int samplerate, QString& errorMessage) {
     Q_UNUSED(errorMessage);
 
     if (samplerate != kMasterSamplerate) {
@@ -446,8 +443,9 @@ void EncoderOpus::writePage(ogg_packet* pPacket) {
     if (m_header_write) {
         while (true) {
             int result = ogg_stream_flush(&m_oggStream, &m_oggPage);
-            if (result == 0)
+            if (result == 0) {
                 break;
+            }
 
             kLogger.debug() << "pushing headers to output";
             m_pCallback->write(m_oggPage.header, m_oggPage.body,

@@ -16,6 +16,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "moc_browsetablemodel.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "widget/wlibrarytableview.h"
@@ -163,7 +164,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
 BrowseTableModel::~BrowseTableModel() {
 }
 
-int BrowseTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
+int BrowseTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) const {
     if (column < TrackModel::SortColumnId::IdMin ||
             column >= TrackModel::SortColumnId::IdMax) {
         return -1;
@@ -172,7 +173,7 @@ int BrowseTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId colum
     return m_columnIndexBySortColumnId[static_cast<int>(column)];
 }
 
-TrackModel::SortColumnId BrowseTableModel::sortColumnIdFromColumnIndex(int index) {
+TrackModel::SortColumnId BrowseTableModel::sortColumnIdFromColumnIndex(int index) const {
     return m_sortColumnIdByColumnIndex.value(index, TrackModel::SortColumnId::Invalid);
 }
 
@@ -195,7 +196,7 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
 
 TrackPointer BrowseTableModel::getTrackByRef(const TrackRef& trackRef) const {
     if (m_pRecordingManager->getRecordingLocation() == trackRef.getLocation()) {
-        QMessageBox::critical(0,
+        QMessageBox::critical(nullptr,
                 tr("Mixxx Library"),
                 tr("Could not load the following file because it is in use by "
                    "Mixxx or another application.") +
@@ -435,7 +436,7 @@ bool BrowseTableModel::setData(
     return true;
 }
 
-void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
+void BrowseTableModel::trackLoaded(const QString& group, TrackPointer pTrack) {
     if (group == m_previewDeckGroup) {
         for (int row = 0; row < rowCount(); ++row) {
             QModelIndex i = index(row, COLUMN_PREVIEW);
@@ -459,7 +460,7 @@ void BrowseTableModel::trackLoaded(QString group, TrackPointer pTrack) {
     }
 }
 
-bool BrowseTableModel::isColumnSortable(int column) {
+bool BrowseTableModel::isColumnSortable(int column) const {
     return COLUMN_PREVIEW != column;
 }
 

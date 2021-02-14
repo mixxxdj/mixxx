@@ -4,6 +4,7 @@
 #include <QJsonObject>
 #include <QMetaMethod>
 
+#include "moc_acoustidlookuptask.cpp"
 #include "musicbrainz/gzip.h"
 #include "util/assert.h"
 #include "util/logger.h"
@@ -112,37 +113,37 @@ QNetworkReply* AcoustIdLookupTask::sendNetworkRequest(
 }
 
 void AcoustIdLookupTask::onFinished(
-        network::JsonWebResponse&& response) {
+        const network::JsonWebResponse& response) {
     if (!response.isStatusCodeSuccess()) {
         kLogger.warning()
                 << "Request failed with HTTP status code"
-                << response.statusCode;
-        emitFailed(std::move(response));
+                << response.statusCode();
+        emitFailed(response);
         return;
     }
-    VERIFY_OR_DEBUG_ASSERT(response.statusCode == network::kHttpStatusCodeOk) {
+    VERIFY_OR_DEBUG_ASSERT(response.statusCode() == network::kHttpStatusCodeOk) {
         kLogger.warning()
                 << "Unexpected HTTP status code"
-                << response.statusCode;
-        emitFailed(std::move(response));
+                << response.statusCode();
+        emitFailed(response);
         return;
     }
 
-    VERIFY_OR_DEBUG_ASSERT(response.content.isObject()) {
+    VERIFY_OR_DEBUG_ASSERT(response.content().isObject()) {
         kLogger.warning()
                 << "Invalid JSON content"
-                << response.content;
-        emitFailed(std::move(response));
+                << response.content();
+        emitFailed(response);
         return;
     }
-    const auto jsonObject = response.content.object();
+    const auto jsonObject = response.content().object();
 
     const auto statusText = jsonObject.value(QStringLiteral("status")).toString();
     if (statusText != QStringLiteral("ok")) {
         kLogger.warning()
                 << "Unexpected response status"
                 << statusText;
-        emitFailed(std::move(response));
+        emitFailed(response);
         return;
     }
 
@@ -151,7 +152,7 @@ void AcoustIdLookupTask::onFinished(
     const QJsonArray results = jsonObject.value(QLatin1String("results")).toArray();
     double maxScore = -1.0; // uninitialized (< 0)
     // Results are expected to be ordered by score (descending)
-    for (const auto result : results) {
+    for (const auto& result : results) {
         DEBUG_ASSERT(result.isObject());
         const auto resultObject = result.toObject();
         const auto resultId =
@@ -194,7 +195,7 @@ void AcoustIdLookupTask::onFinished(
                         << "with score"
                         << score;
             }
-            for (const auto recording : recordingsArray) {
+            for (const auto& recording : recordingsArray) {
                 DEBUG_ASSERT(recording.isObject());
                 const auto recordingObject = recording.toObject();
                 const auto recordingId =
@@ -206,11 +207,11 @@ void AcoustIdLookupTask::onFinished(
             }
         }
     }
-    emitSucceeded(std::move(recordingIds));
+    emitSucceeded(recordingIds);
 }
 
 void AcoustIdLookupTask::emitSucceeded(
-        QList<QUuid>&& recordingIds) {
+        const QList<QUuid>& recordingIds) {
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&AcoustIdLookupTask::succeeded)) {
         kLogger.warning()
@@ -218,8 +219,7 @@ void AcoustIdLookupTask::emitSucceeded(
         deleteLater();
         return;
     }
-    emit succeeded(
-            std::move(recordingIds));
+    emit succeeded(recordingIds);
 }
 
 } // namespace mixxx

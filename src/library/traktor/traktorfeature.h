@@ -1,8 +1,4 @@
-// traktorfeature.h
-// Created 9/26/2010 by Tobias Rafreider
-
-#ifndef TRAKTOR_FEATURE_H
-#define TRAKTOR_FEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QtSql>
@@ -51,16 +47,18 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     void onTrackCollectionLoaded();
 
   private:
-    BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) override;
-    TreeItem* importLibrary(QString file);
+    BaseSqlTableModel* getPlaylistModelForPlaylist(const QString& playlist) override;
+    TreeItem* importLibrary(const QString& file);
     // parses a track in the music collection
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
     // Iterates over all playliost and folders and constructs the childmodel
     TreeItem* parsePlaylists(QXmlStreamReader &xml);
     // processes a particular playlist
-    void parsePlaylistEntries(QXmlStreamReader &xml, QString playlist_path,
-    QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks);
-    void clearTable(QString table_name);
+    void parsePlaylistEntries(QXmlStreamReader& xml,
+            const QString& playlist_path,
+            QSqlQuery query_insert_into_playlist,
+            QSqlQuery query_insert_into_playlisttracks);
+    void clearTable(const QString& table_name);
     static QString getTraktorMusicDatabase();
     // private fields
     TreeItemModel m_childModel;
@@ -78,5 +76,3 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     QSharedPointer<BaseTrackCache> m_trackSource;
     QIcon m_icon;
 };
-
-#endif // TRAKTOR_FEATURE_H

@@ -1,5 +1,4 @@
-#ifndef EFFECTRACK_H
-#define EFFECTRACK_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -55,7 +54,6 @@ class EffectRack : public QObject {
   public slots:
     void slotClearRack(double v);
 
-  private slots:
     void loadNextChain(const unsigned int iChainSlotNumber,
                        EffectChainPointer pLoadedChain);
     void loadPrevChain(const unsigned int iChainSlotNumber,
@@ -95,24 +93,23 @@ class StandardEffectRack : public EffectRack {
     virtual ~StandardEffectRack() {}
 
     static QString formatGroupString(const unsigned int iRackNumber) {
-        return QString("[EffectRack%1]")
-                .arg(QString::number(iRackNumber + 1));
+        return QString("[EffectRack%1]").arg(QString::number(iRackNumber + 1));
     }
 
     static QString formatEffectChainSlotGroupString(const unsigned int iRackNumber,
                                                     const unsigned int iChainSlotNumber) {
         return QString("[EffectRack%1_EffectUnit%2]")
-                .arg(QString::number(iRackNumber + 1))
-                .arg(QString::number(iChainSlotNumber + 1));
+                .arg(QString::number(iRackNumber + 1),
+                        QString::number(iChainSlotNumber + 1));
     }
 
     static QString formatEffectSlotGroupString(const unsigned int iRackNumber,
                                                const unsigned int iChainSlotNumber,
                                                const unsigned int iEffectSlotNumber) {
         return QString("[EffectRack%1_EffectUnit%2_Effect%3]")
-                .arg(QString::number(iRackNumber + 1))
-                .arg(QString::number(iChainSlotNumber + 1))
-                .arg(QString::number(iEffectSlotNumber + 1));
+                .arg(QString::number(iRackNumber + 1),
+                        QString::number(iChainSlotNumber + 1),
+                        QString::number(iEffectSlotNumber + 1));
     }
 
     EffectChainSlotPointer addEffectChainSlot();
@@ -166,24 +163,21 @@ class QuickEffectRack : public PerGroupRack {
     bool loadEffectToGroup(const QString& group, EffectPointer pEffect) override;
 
     static QString formatGroupString(const unsigned int iRackNumber) {
-        return QString("[QuickEffectRack%1]")
-                .arg(QString::number(iRackNumber + 1));
+        return QString("[QuickEffectRack%1]").arg(QString::number(iRackNumber + 1));
     }
 
     static QString formatEffectChainSlotGroupString(const unsigned int iRackNumber,
                                                     const QString& group) {
-        return QString("[QuickEffectRack%1_%2]")
-                .arg(QString::number(iRackNumber + 1))
-                .arg(group);
+        return QString("[QuickEffectRack%1_%2]").arg(QString::number(iRackNumber + 1), group);
     }
 
     static QString formatEffectSlotGroupString(const unsigned int iRackNumber,
                                                const unsigned int iEffectSlotNumber,
                                                const QString& group) {
         return QString("[QuickEffectRack%1_%2_Effect%3]")
-                .arg(QString::number(iRackNumber + 1))
-                .arg(group)
-                .arg(QString::number(iEffectSlotNumber + 1));
+                .arg(QString::number(iRackNumber + 1),
+                        group,
+                        QString::number(iEffectSlotNumber + 1));
     }
 
     QString formatEffectSlotGroupString(const unsigned int iEffectSlotNumber,
@@ -218,24 +212,21 @@ class EqualizerRack : public PerGroupRack {
     virtual ~EqualizerRack() {}
 
     static QString formatGroupString(const unsigned int iRackNumber) {
-        return QString("[EqualizerRack%1]")
-                .arg(QString::number(iRackNumber + 1));
+        return QString("[EqualizerRack%1]").arg(QString::number(iRackNumber + 1));
     }
 
     static QString formatEffectChainSlotGroupString(const unsigned int iRackNumber,
                                                     const QString& group) {
-        return QString("[EqualizerRack%1_%2]")
-                .arg(QString::number(iRackNumber + 1))
-                .arg(group);
+        return QString("[EqualizerRack%1_%2]").arg(QString::number(iRackNumber + 1), group);
     }
 
     static QString formatEffectSlotGroupString(const unsigned int iRackNumber,
                                                const unsigned int iEffectSlotNumber,
                                                const QString& group) {
         return QString("[EqualizerRack%1_%2_Effect%3]")
-                .arg(QString::number(iRackNumber + 1))
-                .arg(group)
-                .arg(QString::number(iEffectSlotNumber + 1));
+                .arg(QString::number(iRackNumber + 1),
+                        group,
+                        QString::number(iEffectSlotNumber + 1));
     }
 
     QString formatEffectSlotGroupString(const unsigned int iEffectSlotNumber,
@@ -259,5 +250,3 @@ class EqualizerRack : public PerGroupRack {
         return formatEffectChainSlotGroupString(iRackNumber, group);
     }
 };
-
-#endif /* EFFECTRACK_H */

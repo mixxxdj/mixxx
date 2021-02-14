@@ -49,7 +49,7 @@ class SeratoMarkers2Test : public testing::Test {
             quint8 index,
             quint32 position,
             mixxx::RgbColor color,
-            QString label) {
+            const QString& label) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2CueEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);
@@ -72,7 +72,7 @@ class SeratoMarkers2Test : public testing::Test {
             quint32 startposition,
             quint32 endposition,
             bool locked,
-            QString label) {
+            const QString& label) {
         const mixxx::SeratoMarkers2EntryPointer parsedEntry = mixxx::SeratoMarkers2LoopEntry::parse(inputValue);
         if (!parsedEntry) {
             EXPECT_FALSE(valid);

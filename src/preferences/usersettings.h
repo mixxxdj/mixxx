@@ -1,5 +1,4 @@
-#ifndef PREFERENCES_USERSETTINGS_H
-#define PREFERENCES_USERSETTINGS_H
+#pragma once
 
 #include <QSharedPointer>
 #include <QWeakPointer>
@@ -35,5 +34,3 @@ typedef QWeakPointer<UserSettings> UserSettingsWeakPointer;
         m_pConfig->setValue(ConfigKey(preference_group, preference_item),   \
                             value);                                         \
     }
-
-#endif /* PREFERENCES_USERSETTINGS_H */

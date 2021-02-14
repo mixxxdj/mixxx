@@ -1,5 +1,4 @@
-#ifndef WSIZEAWARESTACK_H
-#define WSIZEAWARESTACK_H
+#pragma once
 
 #include <QWidget>
 #include <QEvent>
@@ -22,5 +21,3 @@ class WSizeAwareStack : public QWidget, public WBaseWidget {
   private:
     SizeAwareLayout* m_layout;
 };
-
-#endif /* WSIZEAWARESTACK_H */

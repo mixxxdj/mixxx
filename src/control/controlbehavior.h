@@ -1,5 +1,4 @@
-#ifndef CONTROLBEHAVIOR_H
-#define CONTROLBEHAVIOR_H
+#pragma once
 
 #include <QTimer>
 #include <QScopedPointer>
@@ -159,5 +158,3 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     int m_iNumStates;
     QScopedPointer<QTimer> m_pushTimer;
 };
-
-#endif /* CONTROLBEHAVIOR_H */

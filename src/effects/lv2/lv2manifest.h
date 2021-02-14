@@ -1,9 +1,9 @@
-#ifndef LV2MANIFEST_H
-#define LV2MANIFEST_H
+#pragma once
 
-#include "effects/effectmanifest.h"
+#include <lilv/lilv.h>
+
 #include "effects/defs.h"
-#include <lilv-0/lilv/lilv.h>
+#include "effects/effectmanifest.h"
 
 class LV2Manifest {
   public:
@@ -43,5 +43,3 @@ class LV2Manifest {
     float* m_default;
     Status m_status;
 };
-
-#endif // LV2MANIFEST_H

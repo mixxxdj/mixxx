@@ -1,8 +1,4 @@
-// Created on: 30/nov/2011
-// Author: vittorio
-
-#ifndef BEATUTILS_H_
-#define BEATUTILS_H_
+#pragma once
 
 // to tell the msvs compiler about `isnan`
 #include "util/math.h"
@@ -47,15 +43,17 @@ class BeatUtils {
      */
     static double calculateBpm(const QVector<double>& beats, int SampleRate,
                                int min_bpm, int max_bpm);
-    static double findFirstCorrectBeat(const QVector<double> rawBeats,
-                                       const int SampleRate, const double global_bpm);
+    static double findFirstCorrectBeat(const QVector<double>& rawBeats,
+            const int SampleRate,
+            const double global_bpm);
 
     /* This implement a method to find the best offset so that
      * the grid generated from bpm is close enough to the one we get from vamp.
      */
-    static double calculateOffset(
-        const QVector<double> beats1, const double bpm1,
-        const QVector<double> beats2, const int SampleRate);
+    static double calculateOffset(const QVector<double>& beats1,
+            const double bpm1,
+            const QVector<double>& beats2,
+            const int SampleRate);
 
     // By default Vamp does not assume a 4/4 signature. This is basically a good
     // property of Vamp, however, it leads to inaccurate beat grids if a 4/4
@@ -64,21 +62,23 @@ class BeatUtils {
     // positions, this method calculates the position of the first beat assuming
     // the beats have a fixed tempo given by globalBpm.
     static double calculateFixedTempoFirstBeat(
-        bool enableOffsetCorrection,
-        const QVector<double> rawbeats, const int sampleRate,
-        const int totalSamples, const double globalBpm);
+            bool enableOffsetCorrection,
+            const QVector<double>& rawbeats,
+            const int sampleRate,
+            const int totalSamples,
+            const double globalBpm);
 
   private:
-    static double computeSampleMedian(QList<double> sortedItems);
+    static double computeSampleMedian(const QList<double>& sortedItems);
     static double computeFilteredWeightedAverage(
-        const QMap<double, int> frequencyTable,
-        const double filterCenter,
-        const double filterTolerance,
-        QMap<double, int>* filteredFrequencyTable);
+            const QMap<double, int>& frequencyTable,
+            const double filterCenter,
+            const double filterTolerance,
+            QMap<double, int>* filteredFrequencyTable);
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(
-        const QVector<double> beats, const int windowSize, const int windowStep,
-        const int sampleRate, QMap<double, int>* frequencyHistogram);
-
+            const QVector<double>& beats,
+            const int windowSize,
+            const int windowStep,
+            const int sampleRate,
+            QMap<double, int>* frequencyHistogram);
 };
-
-#endif /* BEATUTILS_H_ */

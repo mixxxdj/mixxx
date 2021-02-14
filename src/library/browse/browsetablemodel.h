@@ -1,5 +1,4 @@
-#ifndef BROWSETABLEMODEL_H
-#define BROWSETABLEMODEL_H
+#pragma once
 
 #include <QStandardItemModel>
 #include <QMimeData>
@@ -70,14 +69,14 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole) override;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
-    bool isColumnSortable(int column) override;
-    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) override;
-    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
+    bool isColumnSortable(int column) const override;
+    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) const override;
+    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
 
   public slots:
     void slotClear(BrowseTableModel*);
     void slotInsert(const QList< QList<QStandardItem*> >&, BrowseTableModel*);
-    void trackLoaded(QString group, TrackPointer pTrack);
+    void trackLoaded(const QString& group, TrackPointer pTrack);
 
   private:
     void addSearchColumn(int index);
@@ -93,5 +92,3 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     QMap<int, TrackModel::SortColumnId> m_sortColumnIdByColumnIndex;
 
 };
-
-#endif

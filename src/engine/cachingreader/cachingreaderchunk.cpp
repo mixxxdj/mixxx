@@ -75,7 +75,7 @@ mixxx::IndexRange CachingReaderChunk::bufferSampleFrames(
                             sourceFrameIndexRange,
                             mixxx::SampleBuffer::WritableSlice(m_sampleBuffer)));
     DEBUG_ASSERT(m_bufferedSampleFrames.frameIndexRange().empty() ||
-            m_bufferedSampleFrames.frameIndexRange() <= sourceFrameIndexRange);
+            m_bufferedSampleFrames.frameIndexRange().isSubrangeOf(sourceFrameIndexRange));
     return m_bufferedSampleFrames.frameIndexRange();
 }
 
@@ -215,8 +215,8 @@ void CachingReaderChunkForOwner::removeFromList(
     }
 
     // Disconnect this chunk from the double-linked list
-    const auto pPrev = m_pPrev;
-    const auto pNext = m_pNext;
+    auto* const pPrev = m_pPrev;
+    auto* const pNext = m_pNext;
     m_pPrev = nullptr;
     m_pNext = nullptr;
 

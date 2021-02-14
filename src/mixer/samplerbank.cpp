@@ -6,6 +6,7 @@
 #include "control/controlpushbutton.h"
 #include "mixer/playermanager.h"
 #include "mixer/sampler.h"
+#include "moc_samplerbank.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 

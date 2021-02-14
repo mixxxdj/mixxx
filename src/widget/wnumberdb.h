@@ -1,6 +1,4 @@
-
-#ifndef WNUMBERDB_H
-#define WNUMBERDB_H
+#pragma once
 
 #include <QLabel>
 
@@ -15,5 +13,3 @@ class WNumberDb : public WNumber {
   public slots:
     void setValue(double dValue) override;
 };
-
-#endif // WNUMBERDB_H

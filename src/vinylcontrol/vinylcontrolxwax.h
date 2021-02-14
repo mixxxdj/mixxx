@@ -1,5 +1,4 @@
-#ifndef __VINYLCONTROLXWAX_H__
-#define __VINYLCONTROLXWAX_H__
+#pragma once
 
 #include <QTime>
 
@@ -22,7 +21,7 @@ extern "C" {
 
 class VinylControlXwax : public VinylControl {
   public:
-    VinylControlXwax(UserSettingsPointer pConfig, QString group);
+    VinylControlXwax(UserSettingsPointer pConfig, const QString& group);
     virtual ~VinylControlXwax();
 
     static void freeLUTs();
@@ -139,5 +138,3 @@ class VinylControlXwax : public VinylControl {
     static QMutex s_xwaxLUTMutex;
     static bool s_bLUTInitialized;
 };
-
-#endif

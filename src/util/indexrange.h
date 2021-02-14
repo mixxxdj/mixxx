@@ -140,6 +140,8 @@ class IndexRange final: private std::pair<SINT, SINT> {
     // the length of this range.
     IndexRange splitAndShrinkBack(SINT backLength);
 
+    bool isSubrangeOf(IndexRange outerIndexRange) const;
+
     friend
     bool operator==(IndexRange lhs, IndexRange rhs) {
         return (lhs.first == rhs.first) && (lhs.second == rhs.second);
@@ -150,8 +152,6 @@ class IndexRange final: private std::pair<SINT, SINT> {
         : Super(start, end) {
     }
 };
-
-IndexRange reverse(IndexRange arg);
 
 /// Intersect two ranges with compatible orientations.
 ///
@@ -170,31 +170,9 @@ inline IndexRange intersect(IndexRange lhs, IndexRange rhs) {
     return res ? *res : IndexRange();
 }
 
-IndexRange span(IndexRange lhs, IndexRange rhs);
-
 inline
 bool operator!=(IndexRange lhs, IndexRange rhs) {
     return !(lhs == rhs);
-}
-
-inline
-bool operator<=(IndexRange lhs, IndexRange rhs) {
-    return intersect2(lhs, rhs) == std::make_optional(lhs);
-}
-
-inline
-bool operator>=(IndexRange lhs, IndexRange rhs) {
-    return rhs <= lhs;
-}
-
-inline
-bool operator<(IndexRange lhs, IndexRange rhs) {
-    return (lhs.length() < rhs.length()) && (lhs <= rhs);
-}
-
-inline
-bool operator>(IndexRange lhs, IndexRange rhs) {
-    return rhs < lhs;
 }
 
 std::ostream& operator<<(std::ostream& os, IndexRange arg);

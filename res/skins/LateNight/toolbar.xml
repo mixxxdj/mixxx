@@ -120,6 +120,25 @@
 
       <WidgetGroup><Size>me,min</Size></WidgetGroup>
 
+      <WidgetGroup><Size>7f,1min</Size></WidgetGroup>
+
+      <StatusLight>
+        <TooltipId>autodj_status</TooltipId>
+        <ObjectName>AutoDjStatus</ObjectName>
+        <Size>30f,22f</Size>
+        <NumberPos>3</NumberPos>
+        <PathStatusLight1>skin:<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight1>
+        <PathStatusLight2>skin:<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight2>
+        <PathStatusLight3>skin:<Variable name="StyleScheme"/>/style/autodj_status.svg</PathStatusLight3>
+        <Connection>
+          <ConfigKey>[AutoDJ],enabled</ConfigKey>
+        </Connection>
+        <Connection>
+          <ConfigKey>[AutoDJ],enabled</ConfigKey>
+          <BindProperty>visible</BindProperty>
+        </Connection>
+      </StatusLight>
+
       <WidgetGroup>
         <ObjectName>ClockWidget</ObjectName>
         <Layout>horizontal</Layout>
