@@ -277,7 +277,8 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
         if (keyEvent->key() == Qt::Key_Up) {
-            if (findCurrentTextIndex() == 0) {
+            if (findCurrentTextIndex() == 0 ||
+                    (findCurrentTextIndex() == -1 && !currentText().isEmpty())) {
                 setCurrentIndex(-1);
                 setCurrentText("");
                 return true;
