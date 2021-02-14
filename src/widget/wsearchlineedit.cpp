@@ -279,8 +279,7 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
         if (keyEvent->key() == Qt::Key_Up) {
             if (findCurrentTextIndex() == 0 ||
                     (findCurrentTextIndex() == -1 && !currentText().isEmpty())) {
-                setCurrentIndex(-1);
-                setCurrentText("");
+                slotClearSearch();
                 return true;
             }
         } else if (keyEvent->key() == Qt::Key_Down) {
