@@ -102,14 +102,24 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
             }
         }
         if (i > rightIndex) {
-            // We have found a constant enough region.
-            double firstBeat = coarseBeats[leftIndex];
-            // store the regions for the later stages
-            constantRegions.append({firstBeat, meanBeatLength});
-            // continue with the next region.
-            leftIndex = rightIndex;
-            rightIndex = coarseBeats.size() - 1;
-            continue;
+            // Verify that the first an the last beat are not correction beats in the same direction
+            // This would bend meanBeatLength unfavorably away from the optimum.
+            double regionBorderError = 0;
+            if (rightIndex > leftIndex + 2) {
+                double firstBeatLength = coarseBeats[leftIndex + 1] - coarseBeats[leftIndex];
+                double lastBeatLength = coarseBeats[rightIndex] - coarseBeats[rightIndex - 1];
+                regionBorderError = fabs(firstBeatLength + lastBeatLength - (2 * meanBeatLength));
+            }
+            if (regionBorderError < maxPhaseError / 2) {
+                // We have found a constant enough region.
+                double firstBeat = coarseBeats[leftIndex];
+                // store the regions for the later stages
+                constantRegions.append({firstBeat, meanBeatLength});
+                // continue with the next region.
+                leftIndex = rightIndex;
+                rightIndex = coarseBeats.size() - 1;
+                continue;
+            }
         }
         // Try a by one beat smaller region
         rightIndex--;
@@ -136,7 +146,7 @@ double BeatUtils::makeConstBpm(
 
     // This code aims to find the static metronome and a phase offset.
 
-    // Find the longest region somwher in the middle of the track to start with.
+    // Find the longest region somewhere in the middle of the track to start with.
     // At least this region will be have finally correct annotated beats.
     int midRegion = 0;
     double longesRegionLength = 0;
