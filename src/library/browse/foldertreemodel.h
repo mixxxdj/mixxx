@@ -9,6 +9,7 @@
 #include <QThreadPool>
 #include <QVariant>
 #include <functional>
+#include <mutex>
 #include <unordered_map>
 
 #include "library/treeitem.h"
@@ -16,12 +17,13 @@
 #include "util/mutex.h"
 
 namespace std {
-  template<> struct hash<QString> {
+template<>
+struct hash<QString> {
     std::size_t operator()(const QString& s) const noexcept {
-      return (size_t) qHash(s);
+        return (size_t)qHash(s);
     }
-  };
-}
+};
+} // namespace std
 
 class TreeItem;
 // This class represents a folder item within the Browse Feature

@@ -20,9 +20,20 @@
 
 FolderTreeModel::FolderTreeModel(QObject* parent)
         : TreeItemModel(parent), m_isRunning(true) {
-    QObject::connect(&m_fsWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(dirModified(QString)));
-    connect(this, &FolderTreeModel::newChildren, this, &FolderTreeModel::addChildren, Qt::QueuedConnection);
-    connect(this, &FolderTreeModel::hasSubDirectory, this, &FolderTreeModel::onHasSubDirectory, Qt::QueuedConnection);
+    QObject::connect(&m_fsWatcher,
+            SIGNAL(directoryChanged(QString)),
+            this,
+            SLOT(dirModified(QString)));
+    connect(this,
+            &FolderTreeModel::newChildren,
+            this,
+            &FolderTreeModel::addChildren,
+            Qt::QueuedConnection);
+    connect(this,
+            &FolderTreeModel::hasSubDirectory,
+            this,
+            &FolderTreeModel::onHasSubDirectory,
+            Qt::QueuedConnection);
 
     m_pool.setMaxThreadCount(4);
     QtConcurrent::run(&m_pool, [&]() {
@@ -42,21 +53,23 @@ FolderTreeModel::FolderTreeModel(QObject* parent)
                 // loop through all the item and construct the childs
                 foreach (QFileInfo one, all) {
 #if defined(__APPLE__)
-                    if (one.isDir() && one.fileName().endsWith(".app"))
+                    if (one.isDir() && one.fileName().endsWith(".app")) {
                         continue;
+                    }
 #endif
                     // We here create new items for the sidebar models
                     // Once the items are added to the TreeItemModel,
                     // the models takes ownership of them and ensures their deletion
                     const auto& absPath = one.absoluteFilePath();
-                    auto* folder = new TreeItem(
-                            one.fileName(),
-                            QVariant(absPath));
+                    auto* folder =
+                            new TreeItem(one.fileName(), QVariant(absPath));
                     // init cache
-                    if (m_directoryCache.find(absPath) == m_directoryCache.end()) {
-                        sync.addFuture(QtConcurrent::run(&m_pool, [this, absPath]() {
-                            this->directoryHasChildren(absPath);
-                        }));
+                    if (m_directoryCache.find(absPath) ==
+                            m_directoryCache.end()) {
+                        sync.addFuture(
+                                QtConcurrent::run(&m_pool, [this, absPath]() {
+                                    this->directoryHasChildren(absPath);
+                                }));
                     }
                     folders->push_back(folder);
                 }
@@ -68,7 +81,7 @@ FolderTreeModel::FolderTreeModel(QObject* parent)
                     m_cacheLock.unlock();
                 }
             }
-            QThread::sleep(1);
+            QThread::msleep(100);
         }
     });
 }
@@ -137,7 +150,11 @@ void FolderTreeModel::directoryHasChildren(const QString& path) {
 
     //quick subfolder test
     SHFILEINFOW sfi;
-    SHGetFileInfo((LPCWSTR)folder.constData(), NULL, &sfi, sizeof(sfi), SHGFI_ATTRIBUTES);
+    SHGetFileInfo((LPCWSTR)folder.constData(),
+            NULL,
+            &sfi,
+            sizeof(sfi),
+            SHGFI_ATTRIBUTES);
     has_children = (sfi.dwAttributes & SFGAO_HASSUBFOLDER);
 #else
     // For OS X and Linux
@@ -156,7 +173,8 @@ void FolderTreeModel::directoryHasChildren(const QString& path) {
                 if (entry->d_type == DT_UNKNOWN) {
                     unknown_count++;
                 }
-                has_children = (entry->d_type == DT_DIR || entry->d_type == DT_LNK);
+                has_children =
+                        (entry->d_type == DT_DIR || entry->d_type == DT_LNK);
             }
         }
         closedir(directory);
@@ -165,9 +183,11 @@ void FolderTreeModel::directoryHasChildren(const QString& path) {
     // If all files are of type DH_UNKNOWN then do a costlier analysis to
     // determine if the directory has subdirectories. This affects folders on
     // filesystems that do not fully implement readdir such as JFS.
-    if (directory == nullptr || (unknown_count == total_count && total_count > 0)) {
+    if (directory == nullptr ||
+            (unknown_count == total_count && total_count > 0)) {
         QDir dir(path);
-        QFileInfoList all = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+        QFileInfoList all =
+                dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
         has_children = all.count() > 0;
     }
 #endif
@@ -182,12 +202,14 @@ void FolderTreeModel::dirModified(const QString& str) {
     }
 }
 
-void FolderTreeModel::processFolder(const QModelIndex& parent, const QString& path) const {
+void FolderTreeModel::processFolder(
+        const QModelIndex& parent, const QString& path) const {
     std::lock_guard<std::mutex> lock(m_queueLock);
     m_folderQueue.enqueue(std::make_pair(parent, path));
 }
 
-void FolderTreeModel::addChildren(const QModelIndex& parent, TreeItemList children) {
+void FolderTreeModel::addChildren(
+        const QModelIndex& parent, TreeItemList children) {
     TreeItemModel::insertTreeItemRows(*children, 0, parent);
     delete children;
 }
