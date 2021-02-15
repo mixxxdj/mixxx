@@ -22,6 +22,10 @@
 FolderTreeModel::FolderTreeModel(QObject* parent)
         : TreeItemModel(parent), m_isRunning(true) {
     connect(&m_fsWatcher,
+            &QFileSystemWatcher::fileChanged,
+            this,
+            &FolderTreeModel::dirModified);
+    connect(&m_fsWatcher,
             &QFileSystemWatcher::directoryChanged,
             this,
             &FolderTreeModel::dirModified);
@@ -66,6 +70,7 @@ FolderTreeModel::FolderTreeModel(QObject* parent)
                     // init cache
                     if (m_directoryCache.find(absPath) ==
                             m_directoryCache.end()) {
+                        m_fsWatcher.addPath(absPath);
                         sync.addFuture(
                                 QtConcurrent::run(&m_pool, [this, absPath]() {
                                     this->directoryHasChildren(absPath);
@@ -197,8 +202,20 @@ void FolderTreeModel::directoryHasChildren(const QString& path) {
 }
 
 void FolderTreeModel::dirModified(const QString& str) {
-    if (m_directoryCache.count(str.toUtf8().data())) {
-        //m_directoryCache.erase(str);
+    if (m_directoryCache.count(str)) {
+        if (!QFileInfo::exists(str)) {
+            m_cacheLock.lockForWrite();
+            // TODO: when m_directoryCache is a prefix tree
+            // make sure that any item in the cache that starts
+            // with this path is dropped as well.
+            m_directoryCache.erase(str);
+            m_cacheLock.unlock();
+
+            // TODO: get the position of the path in the TreeItemModel
+            // using TreeItemModel::removeRows cleanup the tree. this will
+            // not only make the underlying data consistent
+            // but as well trigger a redrow of the tree.
+        }
     }
 }
 
