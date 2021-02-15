@@ -16,6 +16,7 @@
 #include "library/treeitemmodel.h"
 #include "util/mutex.h"
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
 namespace std {
 template<>
 struct hash<QString> {
@@ -24,6 +25,7 @@ struct hash<QString> {
     }
 };
 } // namespace std
+#endif
 
 class TreeItem;
 // This class represents a folder item within the Browse Feature
