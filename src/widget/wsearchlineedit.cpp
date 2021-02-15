@@ -277,9 +277,9 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
         if (keyEvent->key() == Qt::Key_Up) {
-            if (findCurrentTextIndex() == 0) {
-                setCurrentIndex(-1);
-                setCurrentText("");
+            if (findCurrentTextIndex() == 0 ||
+                    (findCurrentTextIndex() == -1 && !currentText().isEmpty())) {
+                slotClearSearch();
                 return true;
             }
         } else if (keyEvent->key() == Qt::Key_Down) {
@@ -521,7 +521,9 @@ void WSearchLineEdit::slotClearSearch() {
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
     // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
-    clear();
+    // Note that clear() would not just clear the line edit but
+    // erase all combobox items, thus clear the entire search history.
+    setCurrentText("");
     // Refocus the edit field
     setFocus(Qt::OtherFocusReason);
 }
