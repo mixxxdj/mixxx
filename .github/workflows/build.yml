@@ -7,11 +7,13 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: Ubuntu 18.04 (gcc)
             os: ubuntu-18.04
             cmake_args: >-
+              -DWARNINGS_FATAL=ON
               -DFAAD=ON
               -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
@@ -32,6 +34,7 @@ jobs:
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
             cmake_args: >-
+              -DWARNINGS_FATAL=ON
               -DFFMPEG=ON
               -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
