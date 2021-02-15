@@ -16,6 +16,7 @@ ApplicationWindow {
             key: "volume"
             parameter: slider.value
         }
+        orientation: Qt.Vertical
         value: volume.parameter
 
         wheelEnabled: true
@@ -27,7 +28,7 @@ ApplicationWindow {
             width: 42
             height: 19
             x: slider.leftPadding + slider.availableWidth / 2 - width / 2
-            y: (1 - slider.visualPosition) * (slider.height - height)
+            y: slider.visualPosition * (slider.height - height)
         }
         background: Image {
             source: "skins/LateNight/classic/sliders/slider_volume_deck.svg"
