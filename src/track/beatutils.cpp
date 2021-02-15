@@ -339,7 +339,10 @@ double BeatUtils::adjustPhase(
     double offsetAdjust = 0;
     double offsetAdjustCount = 0;
     for (const auto& beat : beats) {
-        double offset = fmod(beat, beatLength) - startOffset;
+        double offset = fmod(beat - startOffset, beatLength);
+        if (offset > beatLength / 2) {
+            offset -= beatLength;
+        }
         if (abs(offset) < (kMaxSecsPhaseError * sampleRate)) {
             offsetAdjust += offset;
             offsetAdjustCount++;
@@ -349,5 +352,5 @@ double BeatUtils::adjustPhase(
     qDebug() << "adjusting phase by" << offsetAdjust;
     DEBUG_ASSERT(abs(offsetAdjust) < (kMaxSecsPhaseError * sampleRate));
 
-    return firstBeat - offsetAdjust;
+    return firstBeat + offsetAdjust;
 }
