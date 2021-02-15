@@ -1,13 +1,13 @@
-#if defined (__WINDOWS__)
-#include <windows.h>
+#if defined(__WINDOWS__)
 #include <Shellapi.h>
 #include <Shlobj.h>
+#include <windows.h>
 #else
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <dirent.h>
-#include <unistd.h>
 #include <errno.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 #endif
 
 #include <QFileInfo>
@@ -17,26 +17,24 @@
 #include "library/browse/foldertreemodel.h"
 #include "library/treeitem.h"
 #include "moc_foldertreemodel.cpp"
-#include "util/logger.h"
 
-namespace {
-
-mixxx::Logger kLogger("FolderTreeModel");
-
-} // namespace
-
-FolderTreeModel::FolderTreeModel(QObject *parent)
+FolderTreeModel::FolderTreeModel(QObject* parent)
         : TreeItemModel(parent), m_isRunning(true) {
     QObject::connect(&m_fsWatcher, SIGNAL(directoryChanged(QString)), this, SLOT(dirModified(QString)));
     connect(this, &FolderTreeModel::newChildren, this, &FolderTreeModel::addChildren, Qt::QueuedConnection);
+    connect(this, &FolderTreeModel::hasSubDirectory, this, &FolderTreeModel::onHasSubDirectory, Qt::QueuedConnection);
 
     m_pool.setMaxThreadCount(4);
     QtConcurrent::run(&m_pool, [&]() {
         while (m_isRunning.load(std::memory_order_consume)) {
             if (!m_folderQueue.isEmpty()) {
-                const auto& [parent, dir] = m_folderQueue.dequeue();
-                kLogger.debug() << "processing " << dir.dir().dirName();
-                QFileInfoList all = dir.info().toQDir().entryInfoList(
+                m_queueLock.lock();
+                const auto& [parent, path] = m_folderQueue.dequeue();
+                m_queueLock.unlock();
+
+                m_cacheLock.lockForWrite();
+                const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
+                QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
                         QDir::Dirs | QDir::NoDotAndDotDot);
 
                 auto* folders = new QList<TreeItem*>();
@@ -50,18 +48,24 @@ FolderTreeModel::FolderTreeModel(QObject *parent)
                     // We here create new items for the sidebar models
                     // Once the items are added to the TreeItemModel,
                     // the models takes ownership of them and ensures their deletion
+                    const auto& absPath = one.absoluteFilePath();
                     auto* folder = new TreeItem(
                             one.fileName(),
-                            QVariant(one.absoluteFilePath() + QStringLiteral("/")));
+                            QVariant(absPath));
                     // init cache
-                    sync.addFuture(QtConcurrent::run(&m_pool, [&]() {
-                        this->directoryHasChildren(one.absoluteFilePath());
-                    }));
+                    if (m_directoryCache.find(absPath) == m_directoryCache.end()) {
+                        sync.addFuture(QtConcurrent::run(&m_pool, [this, absPath]() {
+                            this->directoryHasChildren(absPath);
+                        }));
+                    }
                     folders->push_back(folder);
                 }
                 if (!folders->isEmpty()) {
                     sync.waitForFinished();
+                    m_cacheLock.unlock();
                     emit newChildren(parent, folders);
+                } else {
+                    m_cacheLock.unlock();
                 }
             }
             QThread::sleep(1);
@@ -82,7 +86,7 @@ FolderTreeModel::~FolderTreeModel() {
  * is only called if necessary.
  */
 bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
-    TreeItem *item = static_cast<TreeItem*>(parent.internalPointer());
+    TreeItem* item = static_cast<TreeItem*>(parent.internalPointer());
     /* Usually the child count is 0 because we do lazy initialization
      * However, for, buid-in items such as 'Quick Links' there exist
      * child items at init time
@@ -97,18 +101,18 @@ bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
 
     // In all other cases the getData() points to a folder
     QString folder = item->getData().toString();
-    return directoryHasChildren(folder);
+    if (m_cacheLock.tryLockForRead()) {
+        const auto it = m_directoryCache.find(folder);
+        m_cacheLock.unlock();
+        if (it != m_directoryCache.end()) {
+            return it->second;
+        }
+        emit hasSubDirectory(folder);
+    }
+    return true;
 }
 
-bool FolderTreeModel::directoryHasChildren(const QString& path) const {
-    MReadLocker readLock(&m_cacheLock);
-    const auto it = m_directoryCache.find(path);
-    if (it != m_directoryCache.end()) {
-        return it->second;
-    }
-    readLock.unlock();
-
-    MWriteLocker writeLock(&m_cacheLock);
+void FolderTreeModel::directoryHasChildren(const QString& path) {
     // Acquire a security token for the path.
     const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
 
@@ -127,13 +131,13 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
 
     bool has_children = false;
 
-#if defined (__WINDOWS__)
+#if defined(__WINDOWS__)
     QString folder = path;
-    folder.replace("/","\\");
+    folder.replace("/", "\\");
 
     //quick subfolder test
     SHFILEINFOW sfi;
-    SHGetFileInfo((LPCWSTR) folder.constData(), NULL, &sfi, sizeof(sfi), SHGFI_ATTRIBUTES);
+    SHGetFileInfo((LPCWSTR)folder.constData(), NULL, &sfi, sizeof(sfi), SHGFI_ATTRIBUTES);
     has_children = (sfi.dwAttributes & SFGAO_HASSUBFOLDER);
 #else
     // For OS X and Linux
@@ -141,11 +145,11 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
 
     std::string dot("."), dotdot("..");
     QByteArray ba = QFile::encodeName(path);
-    DIR *directory = opendir(ba);
+    DIR* directory = opendir(ba);
     int unknown_count = 0;
     int total_count = 0;
     if (directory != nullptr) {
-        struct dirent *entry;
+        struct dirent* entry;
         while (!has_children && ((entry = readdir(directory)) != nullptr)) {
             if (entry->d_name != dot && entry->d_name != dotdot) {
                 total_count++;
@@ -168,8 +172,8 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     }
 #endif
 
-    // Cache and return the result
-    return m_directoryCache.emplace(path, has_children).first->second;
+    // Cache the result
+    m_directoryCache.emplace(path, has_children);
 }
 
 void FolderTreeModel::dirModified(const QString& str) {
@@ -178,13 +182,19 @@ void FolderTreeModel::dirModified(const QString& str) {
     }
 }
 
-void FolderTreeModel::processFolder(const QModelIndex& parent, const FileAccess& path) {
+void FolderTreeModel::processFolder(const QModelIndex& parent, const QString& path) const {
+    std::lock_guard<std::mutex> lock(m_queueLock);
     m_folderQueue.enqueue(std::make_pair(parent, path));
 }
 
 void FolderTreeModel::addChildren(const QModelIndex& parent, TreeItemList children) {
-    kLogger.debug() << "adding " << children->size() << " to the list";
     TreeItemModel::insertTreeItemRows(*children, 0, parent);
     delete children;
 }
 
+void FolderTreeModel::onHasSubDirectory(const QString& path) {
+    QtConcurrent::run(&m_pool, [this, path]() {
+        MWriteLocker lock(&m_cacheLock);
+        directoryHasChildren(path);
+    });
+}

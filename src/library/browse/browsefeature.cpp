@@ -104,7 +104,7 @@ BrowseFeature::BrowseFeature(
 #elif defined(__APPLE__)
     // Apple hides the base Linux file structure But all devices are mounted at
     // /Volumes
-    pRootItem->appendChild(tr("Devices"), "/Volumes/");
+    pRootItem->appendChild(tr("Devices"), "/Volumes");
 #else  // LINUX
     // DEVICE_NODE contents will be rendered lazily in onLazyChildExpandation.
     pRootItem->appendChild(tr("Removable Devices"), DEVICE_NODE);
@@ -403,8 +403,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
     if (path == DEVICE_NODE) {
         folders += getRemovableDevices();
     } else {
-        const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
-        m_childModel.processFolder(index, dirAccess);
+        m_childModel.processFolder(index, path);
         // FIXME: create QTimer to update label
         /*
         auto title = m_childModel.data(index, Qt::DisplayRole);

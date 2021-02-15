@@ -2,19 +2,17 @@
 
 #include <QAbstractItemModel>
 #include <QFileSystemWatcher>
-#include <QModelIndex>
-#include <QVariant>
-#include <QList>
 #include <QHash>
-#include <QThreadPool>
+#include <QList>
+#include <QModelIndex>
 #include <QQueue>
-
+#include <QThreadPool>
+#include <QVariant>
 #include <functional>
 #include <unordered_map>
 
-#include "library/treeitemmodel.h"
 #include "library/treeitem.h"
-#include "util/fileaccess.h"
+#include "library/treeitemmodel.h"
 #include "util/mutex.h"
 
 namespace std {
@@ -33,30 +31,37 @@ class TreeItem;
 class FolderTreeModel : public TreeItemModel {
     Q_OBJECT
 
-    using FolderQueue = QQueue<std::pair<QModelIndex, FileAccess&>>;
+    using FolderQueue = QQueue<std::pair<QModelIndex, QString>>;
+    using Cache = std::unordered_map<QString, bool>;
+
   public:
     using TreeItemList = QList<TreeItem*>*;
 
-    FolderTreeModel(QObject *parent = 0);
+    FolderTreeModel(QObject* parent = 0);
     virtual ~FolderTreeModel();
     virtual bool hasChildren(const QModelIndex& parent = QModelIndex()) const;
-    bool directoryHasChildren(const QString& path) const;
-    void processFolder(const QModelIndex& parent, const FileAccess& path);
+    void processFolder(const QModelIndex& parent, const QString& path) const;
+
+  private:
+    void directoryHasChildren(const QString& path);
 
   private slots:
     void dirModified(const QString& str);
-    void addChildren(const QModelIndex& parent, TreeItemList children); 
+    void addChildren(const QModelIndex& parent, TreeItemList children);
+    void onHasSubDirectory(const QString& path);
 
   signals:
-    void newChildren(const QModelIndex& parent, TreeItemList hildren); 
+    void newChildren(const QModelIndex& parent, TreeItemList hildren);
+    void hasSubDirectory(const QString& path) const;
 
   private:
     // Used for memoizing the results of directoryHasChildren
-    mutable std::unordered_map<QString, bool> m_directoryCache;
+    Cache m_directoryCache;
     mutable MReadWriteLock m_cacheLock;
-    mutable QFileSystemWatcher m_fsWatcher;
+    QFileSystemWatcher m_fsWatcher;
     QThreadPool m_pool;
-    FolderQueue m_folderQueue;
+    mutable FolderQueue m_folderQueue;
+    mutable std::mutex m_queueLock;
     std::atomic<bool> m_isRunning;
 };
 Q_DECLARE_METATYPE(FolderTreeModel::TreeItemList);
