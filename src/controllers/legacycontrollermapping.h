@@ -172,7 +172,6 @@ class LegacyControllerMapping {
 
     virtual bool saveMapping(const QString& filename) const = 0;
 
-    virtual void accept(LegacyControllerMappingVisitor* visitor) = 0;
     virtual void accept(ConstLegacyControllerMappingVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
