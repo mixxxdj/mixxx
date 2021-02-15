@@ -21,10 +21,10 @@
 
 FolderTreeModel::FolderTreeModel(QObject* parent)
         : TreeItemModel(parent), m_isRunning(true) {
-    QObject::connect(&m_fsWatcher,
-            SIGNAL(directoryChanged(QString)),
+    connect(&m_fsWatcher,
+            &QFileSystemWatcher::directoryChanged,
             this,
-            SLOT(dirModified(QString)));
+            &FolderTreeModel::dirModified);
     connect(this,
             &FolderTreeModel::newChildren,
             this,
@@ -33,8 +33,7 @@ FolderTreeModel::FolderTreeModel(QObject* parent)
     connect(this,
             &FolderTreeModel::hasSubDirectory,
             this,
-            &FolderTreeModel::onHasSubDirectory,
-            Qt::QueuedConnection);
+            &FolderTreeModel::onHasSubDirectory);
 
     m_pool.setMaxThreadCount(4);
     QtConcurrent::run(&m_pool, [&]() {
