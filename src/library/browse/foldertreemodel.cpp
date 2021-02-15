@@ -1,7 +1,7 @@
 #if defined(__WINDOWS__)
+#include <windows.h>
 #include <Shellapi.h>
 #include <Shlobj.h>
-#include <windows.h>
 #else
 #include <dirent.h>
 #include <errno.h>
@@ -17,6 +17,7 @@
 #include "library/browse/foldertreemodel.h"
 #include "library/treeitem.h"
 #include "moc_foldertreemodel.cpp"
+#include "util/qt.h"
 
 FolderTreeModel::FolderTreeModel(QObject* parent)
         : TreeItemModel(parent), m_isRunning(true) {
@@ -120,7 +121,7 @@ bool FolderTreeModel::hasChildren(const QModelIndex& parent) const {
         if (it != m_directoryCache.end()) {
             return it->second;
         }
-        emit hasSubDirectory(folder);
+        emit mixxx::thisAsNonConst(this)->hasSubDirectory(folder);
     }
     return true;
 }

@@ -36,6 +36,7 @@ class FolderTreeModel : public TreeItemModel {
     Q_OBJECT
 
     using FolderQueue = QQueue<std::pair<QModelIndex, QString>>;
+    // FIXME: this should be a Trie (prefix tree)
     using Cache = std::unordered_map<QString, bool>;
 
   public:
@@ -56,7 +57,7 @@ class FolderTreeModel : public TreeItemModel {
 
   signals:
     void newChildren(const QModelIndex& parent, TreeItemList hildren);
-    void hasSubDirectory(const QString& path) const;
+    void hasSubDirectory(const QString& path);
 
   private:
     // Used for memoizing the results of directoryHasChildren
