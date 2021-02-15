@@ -37,9 +37,9 @@ TraktorS3.PitchSliderRelativeMode = true;
 // button down.  Letting go will stop playback.
 TraktorS3.SamplerModePressAndHold = false;
 
-// When this option is true, touching the job wheel enables scratch mode. Pressing the jog button
-// still also enables scratching.
-TraktorS3.WheelTouchScratching = true;
+// When this option is true, start up with the jog button lit, which means touching the job wheel
+// enables scratch mode.
+TraktorS3.JogDefaultOn = true;
 
 // You can choose the colors you want for each channel. The list of colors is:
 // RED, CARROT, ORANGE, HONEY, YELLOW, LIME, GREEN, AQUA, CELESTE, SKY, BLUE,
@@ -165,6 +165,9 @@ TraktorS3.Deck = function(controller, deckNumber, group) {
     this.deckNumber = deckNumber;
     this.group = group;
     this.activeChannel = "[Channel" + deckNumber + "]";
+    // When true, touching the wheel enables scratch mode.  When off, touching the wheel
+    // has no special effect
+    this.jogToggled = TraktorS3.JogDefaultOn;
     this.shiftPressed = false;
 
     // State for pitch slider relative mode
@@ -614,11 +617,12 @@ TraktorS3.Deck.prototype.jogButtonHandler = function(field) {
     if (field.value === 0) {
         return;
     }
-    script.toggleControl(this.activeChannel, "scratch2_enable");
+    this.jogToggled = !this.jogToggled;
+    this.colorOutput(this.jogToggled, "!jogButton");
 };
 
 TraktorS3.Deck.prototype.jogTouchHandler = function(field) {
-    if (!TraktorS3.WheelTouchScratching) {
+    if (!this.jogToggled) {
         return;
     }
     if (this.wheelTouchInertiaTimer !== 0) {
@@ -808,7 +812,7 @@ TraktorS3.Deck.prototype.registerOutputs = function(outputA, _outputB) {
     this.defineOutput(outputA, "!LibraryFocus", 0x06, 0x1F);
     this.defineOutput(outputA, "!MaximizeLibrary", 0x07, 0x20);
     this.defineOutput(outputA, "quantize", 0x08, 0x21);
-    this.defineOutput(outputA, "scratch2_enable", 0x09, 0x22);
+    this.defineOutput(outputA, "!jogButton", 0x09, 0x22);
     this.defineOutput(outputA, "sync_enabled", 0x0C, 0x25);
     this.defineOutput(outputA, "keylock", 0x0D, 0x26);
     this.defineOutput(outputA, "hotcues", 0x0E, 0x27);
@@ -2069,6 +2073,7 @@ TraktorS3.Controller.prototype.lightDeck = function(group, sendPackets) {
         deck.colorOutput(0, "!PreviewTrack");
         deck.colorOutput(0, "!LibraryFocus");
         deck.colorOutput(0, "!MaximizeLibrary");
+        deck.colorOutput(TraktorS3.JogDefaultOn, "!jogButton");
         if (group === "[Channel4]") {
             this.basicOutput(0, "[Master]", "!extButton");
         }
