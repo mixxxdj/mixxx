@@ -11,10 +11,8 @@ jobs:
         include:
           - name: Ubuntu 18.04 (gcc)
             os: ubuntu-18.04
-            # FFMPEG version on 18.04 is too old
             cmake_args: >-
               -DFAAD=ON
-              -DFFMPEG=OFF
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
