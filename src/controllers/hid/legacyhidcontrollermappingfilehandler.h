@@ -1,7 +1,8 @@
 #pragma once
 
-#include "controllers/hid/legacyhidcontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
+
+class LegacyHidControllerMapping;
 
 class LegacyHidControllerMappingFileHandler : public LegacyControllerMappingFileHandler {
   public:

@@ -50,8 +50,7 @@ class BulkController : public Controller {
         return LegacyControllerMappingPointer(pClone);
     }
 
-    void visit(const LegacyMidiControllerMapping* mapping) override;
-    void visit(const LegacyHidControllerMapping* mapping) override;
+    void setMapping(LegacyControllerMapping* pMapping) override;
 
     bool isMappable() const override {
         return m_mapping.isMappable();

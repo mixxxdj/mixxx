@@ -1,5 +1,7 @@
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 
+#include "controllers/hid/legacyhidcontrollermapping.h"
+
 bool LegacyHidControllerMappingFileHandler::save(const LegacyHidControllerMapping& mapping,
         const QString& fileName) const {
     QDomDocument doc = buildRootWithScripts(mapping);

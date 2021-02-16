@@ -37,18 +37,23 @@ class FakeController : public Controller {
 
     LegacyControllerMappingPointer getMapping() const override;
 
-    void visit(const LegacyMidiControllerMapping* mapping) override {
-        m_bMidiMapping = true;
-        m_bHidMapping = false;
-        m_midiMapping = *mapping;
-        m_hidMapping = LegacyHidControllerMapping();
-    }
+    void setMapping(LegacyControllerMapping* pMapping) override {
+        auto pMidiMapping = dynamic_cast<LegacyMidiControllerMapping*>(pMapping);
+        if (pMidiMapping) {
+            m_bMidiMapping = true;
+            m_bHidMapping = false;
+            m_midiMapping = *pMidiMapping;
+            m_hidMapping = LegacyHidControllerMapping();
+            return;
+        }
 
-    void visit(const LegacyHidControllerMapping* mapping) override {
-        m_bMidiMapping = false;
-        m_bHidMapping = true;
-        m_midiMapping = LegacyMidiControllerMapping();
-        m_hidMapping = *mapping;
+        auto pHidMapping = dynamic_cast<LegacyHidControllerMapping*>(pMapping);
+        if (pHidMapping) {
+            m_bMidiMapping = false;
+            m_bHidMapping = true;
+            m_midiMapping = LegacyMidiControllerMapping();
+            m_hidMapping = *pHidMapping;
+        }
     }
 
     bool isMappable() const override;

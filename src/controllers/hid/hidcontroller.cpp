@@ -38,16 +38,10 @@ QString HidController::mappingExtension() {
     return HID_MAPPING_EXTENSION;
 }
 
-void HidController::visit(const LegacyMidiControllerMapping* mapping) {
-    Q_UNUSED(mapping);
-    // TODO(XXX): throw a hissy fit.
-    qWarning() << "ERROR: Attempting to load a LegacyMidiControllerMapping to an HidController!";
-}
-
-void HidController::visit(const LegacyHidControllerMapping* mapping) {
-    m_mapping = *mapping;
-    // Emit mappingLoaded with a clone of the mapping.
-    emit mappingLoaded(getMapping());
+void HidController::setMapping(LegacyControllerMapping* pMapping) {
+    auto pHidMapping = dynamic_cast<LegacyHidControllerMapping*>(pMapping);
+    DEBUG_ASSERT(pHidMapping);
+    m_mapping = *pHidMapping;
 }
 
 bool HidController::matchMapping(const MappingInfo& mapping) {

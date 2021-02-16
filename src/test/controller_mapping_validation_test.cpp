@@ -81,7 +81,7 @@ bool LegacyControllerMappingValidationTest::testLoadMapping(const MappingInfo& m
 
     FakeController controller;
     controller.setDeviceName("Test Controller");
-    controller.setMapping(*pMapping);
+    controller.setMapping(pMapping.data());
     bool result = controller.applyMapping();
     controller.stopEngine();
     return result;

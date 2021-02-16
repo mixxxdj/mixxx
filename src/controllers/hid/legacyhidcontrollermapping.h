@@ -1,6 +1,5 @@
 #pragma once
 
-#include "controllers/controllermappingvisitor.h"
 #include "controllers/hid/legacyhidcontrollermappingfilehandler.h"
 #include "controllers/legacycontrollermapping.h"
 
@@ -13,8 +12,11 @@ class LegacyHidControllerMapping : public LegacyControllerMapping {
     ~LegacyHidControllerMapping() override {
     }
 
+    LegacyControllerMapping* clone() const override {
+        return new LegacyHidControllerMapping(*this);
+    }
+
     bool saveMapping(const QString& fileName) const override;
 
-    void accept(ConstLegacyControllerMappingVisitor* visitor) const override;
     bool isMappable() const override;
 };

@@ -26,13 +26,10 @@ class MidiController : public Controller {
     QString mappingExtension() override;
 
     LegacyControllerMappingPointer getMapping() const override {
-        LegacyMidiControllerMapping* pClone = new LegacyMidiControllerMapping();
-        *pClone = m_mapping;
-        return LegacyControllerMappingPointer(pClone);
+        return LegacyControllerMappingPointer(m_mapping.clone());
     }
 
-    void visit(const LegacyMidiControllerMapping* mapping) override;
-    void visit(const LegacyHidControllerMapping* mapping) override;
+    void setMapping(LegacyControllerMapping* mapping) override;
 
     bool isMappable() const override {
         return m_mapping.isMappable();

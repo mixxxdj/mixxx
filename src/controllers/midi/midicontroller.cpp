@@ -30,20 +30,15 @@ QString MidiController::mappingExtension() {
     return MIDI_MAPPING_EXTENSION;
 }
 
-void MidiController::visit(const LegacyMidiControllerMapping* mapping) {
-    m_mapping = *mapping;
-    emit mappingLoaded(getMapping());
+void MidiController::setMapping(LegacyControllerMapping* pMapping) {
+    auto pMidiMapping = dynamic_cast<LegacyMidiControllerMapping*>(pMapping);
+    DEBUG_ASSERT(pMidiMapping);
+    m_mapping = *pMidiMapping;
 }
 
 int MidiController::close() {
     destroyOutputHandlers();
     return 0;
-}
-
-void MidiController::visit(const LegacyHidControllerMapping* mapping) {
-    Q_UNUSED(mapping);
-    qWarning() << "ERROR: Attempting to load an LegacyHidControllerMapping to a MidiController!";
-    // TODO(XXX): throw a hissy fit.
 }
 
 bool MidiController::matchMapping(const MappingInfo& mapping) {

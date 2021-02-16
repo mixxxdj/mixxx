@@ -269,7 +269,8 @@ void ControllerManager::slotSetUpDevices() {
             continue;
         }
 
-        pController->setMapping(*pMapping);
+        // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
+        pController->setMapping(pMapping->clone());
 
         // If we are in safe mode, skip opening controllers.
         if (CmdlineArgs::Instance().getSafeMode()) {
@@ -415,11 +416,13 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         qWarning() << "Mapping is dirty, changes might be lost on restart!";
     }
 
-    pController->setMapping(*pMapping);
 
     // Save the file path/name in the config so it can be auto-loaded at
     // startup next time
     m_pConfig->set(key, pMapping->filePath());
+
+    // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
+    pController->setMapping(pMapping->clone());
 
     if (bEnabled) {
         openController(pController);

@@ -4,7 +4,6 @@
 #include <QTimerEvent>
 
 #include "controllers/controllermappinginfo.h"
-#include "controllers/controllermappingvisitor.h"
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
@@ -15,7 +14,7 @@ class ControllerJSProxy;
 /// This is a base class representing a physical (or software) controller.  It
 /// must be inherited by a class that implements it on some API. Note that the
 /// subclass' destructor should call close() at a minimum.
-class Controller : public QObject, ConstLegacyControllerMappingVisitor {
+class Controller : public QObject {
     Q_OBJECT
   public:
     explicit Controller();
@@ -31,11 +30,7 @@ class Controller : public QObject, ConstLegacyControllerMappingVisitor {
     /// the controller (type.)
     virtual QString mappingExtension() = 0;
 
-    void setMapping(const LegacyControllerMapping& mapping) {
-        // We don't know the specific type of the mapping so we need to ask
-        // the mapping to call our visitor methods with its type.
-        mapping.accept(this);
-    }
+    virtual void setMapping(LegacyControllerMapping* pMapping) = 0;
 
     // Returns a clone of the Controller's loaded mapping.
     virtual LegacyControllerMappingPointer getMapping() const = 0;

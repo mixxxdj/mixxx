@@ -7,7 +7,6 @@
 #include <QVariant>
 #include <QVector>
 
-#include "controllers/controllermappingvisitor.h"
 #include "controllers/hid/legacyhidcontrollermapping.h"
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
