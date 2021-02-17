@@ -276,27 +276,31 @@ QString WSearchLineEdit::getSearchText() const {
 bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-        if (keyEvent->key() == Qt::Key_Up) {
-            // if we're at the top of the list the Up key clears the search bar,
-            // no matter if it's a saved and unsaved query
-            if (findCurrentTextIndex() == 0 ||
-                    (findCurrentTextIndex() == -1 && !currentText().isEmpty())) {
-                slotClearSearch();
-                return true;
+        // if the popup is open don't intercept Up/Down keys
+        if (!view()->isVisible()) {
+            if (keyEvent->key() == Qt::Key_Up) {
+                // if we're at the top of the list the Up key clears the search bar,
+                // no matter if it's a saved and unsaved query
+                if (findCurrentTextIndex() == 0 ||
+                        (findCurrentTextIndex() == -1 && !currentText().isEmpty())) {
+                    slotClearSearch();
+                    return true;
+                }
+            } else if (keyEvent->key() == Qt::Key_Down) {
+                // after clearing the text field the down key is expected to
+                // show the latest entry
+                if (currentText().isEmpty()) {
+                    setCurrentIndex(0);
+                    return true;
+                }
+                // in case the user entered a new search query
+                // and presses the down key, save the query for later recall
+                if (findCurrentTextIndex() == -1) {
+                    slotSaveSearch();
+                }
             }
-        } else if (keyEvent->key() == Qt::Key_Down) {
-            // after clearing the text field the down key is expected to
-            // show the latest entry
-            if (currentText().isEmpty()) {
-                setCurrentIndex(0);
-                return true;
-            }
-            // in case the user entered a new search query
-            // and presses the down key, save the query for later recall
-            if (findCurrentTextIndex() == -1) {
-                slotSaveSearch();
-            }
-        } else if (keyEvent->key() == Qt::Key_Enter) {
+        }
+        if (keyEvent->key() == Qt::Key_Enter) {
             if (findCurrentTextIndex() == -1) {
                 slotSaveSearch();
             }
