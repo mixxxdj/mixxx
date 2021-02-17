@@ -142,11 +142,11 @@ void HidController::processInputReport(int bytesRead) {
     unsigned char* pPreviousBuffer = m_pPollData[(m_PollingBufferIndex + 1) % kNumBuffers];
     unsigned char* pCurrentBuffer = m_pPollData[m_PollingBufferIndex];
     // Some controllers such as the Gemini GMX continuously send input reports even if it
-    // is identical to the previous send input report. If this loop processed all those redundant
-    // input report, it would be a big performance problem to run JS code for every  input report and
-    // would be unnecessary.
-    // This assumes that the redundant input report all use the same report ID. In practice we
-    // have not encountered any controllers that send redundant input report with different report
+    // is identical to the previous input report. If this loop processed all those redundant
+    // input reports, it would be a big performance problem to run JS code for every input report
+    // plus it would be unnecessary.
+    // This assumes that the redundant input reports all use the same report ID. In practice we
+    // have not encountered any controllers that send redundant input reports with different report
     // IDs. If any such devices exist, this may be changed to use a separate buffer to store
     // the last input report for each report ID.
     if (bytesRead == m_LastPollSize &&
