@@ -27,7 +27,8 @@ case "$COMMAND" in
         esac
 
         sudo apt-get update
-        if [ $(dpkg-query -W -f='${Status}' jackd2 2>/dev/null | grep -c "ok installed") -eq 1 ];
+        if [ $(dpkg-query -W -f='${Status}' jackd2 2>/dev/null | grep -c "ok installed") -eq 1 ]; 
+		# If jackd2 is installed as per dpkg database, install libjack-jackd2-dev.
         then
          sudo apt-get install libjack-jackd2-dev;
         fi
