@@ -73,7 +73,7 @@ class HidController final : public Controller {
     static constexpr int kBufferSize = 255;
     unsigned char m_pPollData[kNumBuffers][kBufferSize];
     int m_lastPollSize;
-    int m_PollingBufferIndex;
+    int m_pollingBufferIndex;
 
     friend class HidControllerJSProxy;
 };
