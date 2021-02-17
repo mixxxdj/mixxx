@@ -27,11 +27,12 @@ case "$COMMAND" in
         esac
 
         sudo apt-get update
+
+	# If jackd2 is installed as per dpkg database, install libjack-jackd2-dev.
+        # This avoids a package deadlock, resulting in jackd2 being removed, and jackd1 being installed,
+        # to satisfy portaudio19-dev's need for a jackd dev package. In short, portaudio19-dev needs a
+        # jackd dev library, so let's give it one..
         if [ $(dpkg-query -W -f='${Status}' jackd2 2>/dev/null | grep -c "ok installed") -eq 1 ]; 
-		# If jackd2 is installed as per dpkg database, install libjack-jackd2-dev.
-		# This avoids a package deadlock, resulting in jackd2 being removed, and jackd1 being installed, 
-		# to satisfy portaudio19-dev's need for a jackd dev package. In short, portaudio19-dev needs a 
-		# jackd dev library, so let's give it one..
         then
          sudo apt-get install libjack-jackd2-dev;
         fi
