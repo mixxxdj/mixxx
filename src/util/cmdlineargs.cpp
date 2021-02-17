@@ -39,7 +39,7 @@ CmdlineArgs::CmdlineArgs()
 
 namespace {
 bool parseLogLevel(
-        QString logLevel,
+        const QString& logLevel,
         mixxx::LogLevel* pLogLevel) {
     if (logLevel == QLatin1String("trace")) {
         *pLogLevel = mixxx::LogLevel::Trace;
