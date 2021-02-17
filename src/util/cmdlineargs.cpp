@@ -41,15 +41,15 @@ namespace {
 bool parseLogLevel(
         const QString& logLevel,
         mixxx::LogLevel* pLogLevel) {
-    if (logLevel == QLatin1String("trace")) {
+    if (logLevel.compare(QLatin1String("trace"), Qt::CaseInsensitive) == 0) {
         *pLogLevel = mixxx::LogLevel::Trace;
-    } else if (logLevel == QLatin1String("debug")) {
+    } else if (logLevel.compare(QLatin1String("debug"), Qt::CaseInsensitive) == 0) {
         *pLogLevel = mixxx::LogLevel::Debug;
-    } else if (logLevel == QLatin1String("info")) {
+    } else if (logLevel.compare(QLatin1String("info"), Qt::CaseInsensitive) == 0) {
         *pLogLevel = mixxx::LogLevel::Info;
-    } else if (logLevel == QLatin1String("warning")) {
+    } else if (logLevel.compare(QLatin1String("warning"), Qt::CaseInsensitive) == 0) {
         *pLogLevel = mixxx::LogLevel::Warning;
-    } else if (logLevel == QLatin1String("critical")) {
+    } else if (logLevel.compare(QLatin1String("critical"), Qt::CaseInsensitive) == 0) {
         *pLogLevel = mixxx::LogLevel::Critical;
     } else {
         return false;
