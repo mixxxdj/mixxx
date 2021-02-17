@@ -527,9 +527,9 @@ void WSearchLineEdit::slotClearSearch() {
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
     // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
-    // Note that clear() would not just clear the line edit but
-    // erase all combobox items, thus clear the entire search history.
-    setCurrentText("");
+    // Note that just clear() would also erase all combobox items,
+    // thus clear the entire search history.
+    lineEdit()->clear();
     // Refocus the edit field
     setFocus(Qt::OtherFocusReason);
 }
