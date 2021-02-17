@@ -109,7 +109,7 @@
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="66"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>添加至自动 Dj 队列（底部）</translation>
+        <translation>添加至自动 DJ 队列（底部）</translation>
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="39"/>
@@ -370,7 +370,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="209"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>采样率</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="213"/>
@@ -663,17 +663,17 @@
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="147"/>
         <source>The file &apos;%1&apos; could not be found.</source>
-        <translation type="unfinished"/>
+        <translation>找不到文件 &apos;%1&apos;。</translation>
     </message>
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="163"/>
         <source>The file &apos;%1&apos; could not be loaded.</source>
-        <translation type="unfinished"/>
+        <translation>无法加载文件 &apos;%1&apos;。</translation>
     </message>
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="180"/>
         <source>The file &apos;%1&apos; is empty and could not be loaded.</source>
-        <translation type="unfinished"/>
+        <translation>无法加载空文件 &apos;%1&apos;。</translation>
     </message>
 </context>
 <context>
@@ -681,12 +681,12 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="40"/>
         <source>Remove Color</source>
-        <translation type="unfinished"/>
+        <translation>移除颜色</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="53"/>
         <source>Add Color</source>
-        <translation type="unfinished"/>
+        <translation>添加颜色</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="61"/>
@@ -697,7 +697,7 @@
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="67"/>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="253"/>
         <source>Remove Palette</source>
-        <translation type="unfinished"/>
+        <translation>移除调色板</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="83"/>
@@ -712,7 +712,7 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
         <source>Edited</source>
-        <translation type="unfinished"/>
+        <translation>已编辑</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="254"/>
@@ -730,7 +730,7 @@
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="53"/>
         <source>%1 %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 %2</translation>
     </message>
 </context>
 <context>
@@ -788,7 +788,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="19"/>
         <source>Sampler %1</source>
-        <translation>采样 %1</translation>
+        <translation>采样器 %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="20"/>
@@ -1808,22 +1808,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="654"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>添加至自动 Dj 队列（底部）</translation>
+        <translation>添加至自动 DJ 队列（底部）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="655"/>
         <source>Append the selected track to the Auto DJ Queue</source>
-        <translation>将所选音轨追加到自动 Dj 队列</translation>
+        <translation>将所选音轨追加到自动 DJ 队列</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="658"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>添加至自动 Dj 队列（顶部）</translation>
+        <translation>添加至自动 DJ 队列（顶部）</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="659"/>
         <source>Prepend selected track to the Auto DJ Queue</source>
-        <translation>将所选音轨前置于自动 Dj 队列</translation>
+        <translation>将所选音轨前置于自动 DJ 队列</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="644"/>
@@ -2209,7 +2209,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="25"/>
         <source>Effect Unit %1</source>
-        <translation type="unfinished"/>
+        <translation>效果单元 %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="33"/>
@@ -2219,37 +2219,37 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="57"/>
         <source>Main Output</source>
-        <translation type="unfinished"/>
+        <translation>主输出</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="60"/>
         <source>Main Output Gain</source>
-        <translation type="unfinished"/>
+        <translation>主输出增益</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="61"/>
         <source>Main Output gain</source>
-        <translation type="unfinished"/>
+        <translation>主输出增益</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="66"/>
         <source>Main Output Balance</source>
-        <translation type="unfinished"/>
+        <translation>主输出均衡</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="67"/>
         <source>Main Output balance</source>
-        <translation type="unfinished"/>
+        <translation>主输出均衡</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="72"/>
         <source>Main Output Delay</source>
-        <translation type="unfinished"/>
+        <translation>主输出延迟</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="73"/>
         <source>Main Output delay</source>
-        <translation type="unfinished"/>
+        <translation>主输出延迟</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="77"/>
@@ -2275,17 +2275,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="247"/>
         <source>Speed</source>
-        <translation type="unfinished"/>
+        <translation>速度</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="269"/>
         <source>Pitch (Musical Key)</source>
-        <translation type="unfinished"/>
+        <translation>音高</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="277"/>
         <source>Increase Pitch</source>
-        <translation type="unfinished"/>
+        <translation>升高音调</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="278"/>
@@ -2305,7 +2305,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="285"/>
         <source>Decrease Pitch</source>
-        <translation type="unfinished"/>
+        <translation>降低音调</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="286"/>
@@ -2797,7 +2797,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1022"/>
         <source>Auto DJ Fade To Next</source>
-        <translation>自动 Dj 淡出至下一首</translation>
+        <translation>自动 DJ 淡出至下一首</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1023"/>
@@ -2953,7 +2953,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1245"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1249"/>
         <source>Samplers</source>
-        <translation type="unfinished"/>
+        <translation>采样器</translation>
     </message>
 </context>
 <context>
@@ -2971,12 +2971,12 @@
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="610"/>
-        <source>Controller Preset Error</source>
+        <source>Controller Mapping Error</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="611"/>
-        <source>The preset for your controller &quot;%1&quot; is not working properly.</source>
+        <source>The mapping for your controller &quot;%1&quot; is not working properly.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -2997,12 +2997,12 @@
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1104"/>
         <source>File:</source>
-        <translation type="unfinished"/>
+        <translation>文件:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="1105"/>
         <source>Error:</source>
-        <translation type="unfinished"/>
+        <translation>错误：</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="606"/>
@@ -3315,12 +3315,12 @@
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="110"/>
         <source>Credits</source>
-        <translation type="unfinished"/>
+        <translation>作者</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="145"/>
         <source>License</source>
-        <translation type="unfinished"/>
+        <translation>授权</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgaboutdlg.ui" line="176"/>
@@ -3385,12 +3385,12 @@
     <message>
         <location filename="../../src/library/dlganalysis.cpp" line="197"/>
         <source>Analyzing %1% %2/%3</source>
-        <translation type="unfinished"/>
+        <translation>分析 %1% %2/%3</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.cpp" line="203"/>
         <source>Analyzing %1/%2</source>
-        <translation type="unfinished"/>
+        <translation>分析 %1/%2</translation>
     </message>
 </context>
 <context>
@@ -3403,26 +3403,30 @@
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="95"/>
         <source>Random</source>
-        <translation type="unfinished"/>
+        <translation>随机</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="92"/>
         <source>Fade</source>
-        <translation type="unfinished"/>
+        <translation>淡出</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="97"/>
         <source>Enable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>启用自动 DJ
+
+快捷键：Shift+F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="101"/>
         <source>Disable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>禁用自动 DJ
+
+快捷键：Shift+F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="105"/>
@@ -3519,17 +3523,17 @@ last sound.</source>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="286"/>
         <source>Decks 3 and 4 must be stopped to enable Auto DJ mode.</source>
-        <translation>必须停止碟机 3 和碟机 4 以启用自动Dj 模式。</translation>
+        <translation>必须停止碟机 3 和碟机 4 以启用自动DJ 模式。</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="309"/>
         <source>Enable</source>
-        <translation type="unfinished"/>
+        <translation>启用</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="318"/>
         <source>Disable</source>
-        <translation type="unfinished"/>
+        <translation>禁用</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="363"/>
@@ -3936,7 +3940,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="119"/>
         <source>Duration after which a track is eligible for selection by Auto DJ again</source>
-        <translation>音轨播放后，自动 Dj 再次选择该音轨所需的时间间隔</translation>
+        <translation>音轨播放后，自动 DJ 再次选择该音轨所需的时间间隔</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="122"/>
@@ -3951,7 +3955,7 @@ You tried to learn: %1,%2</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="14"/>
         <source>Auto DJ Preferences</source>
-        <translation>自动 Dj 首选项</translation>
+        <translation>自动 DJ 首选项</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefautodjdlg.ui" line="21"/>
@@ -4406,13 +4410,13 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="26"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>颜色</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="32"/>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="42"/>
         <source>Edit…</source>
-        <translation type="unfinished"/>
+        <translation>编辑...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="49"/>
@@ -4432,7 +4436,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="90"/>
         <source>Replace…</source>
-        <translation type="unfinished"/>
+        <translation>替换...</translation>
     </message>
 </context>
 <context>
@@ -4480,16 +4484,6 @@ Apply settings and continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="528"/>
-        <source>Preset already exists.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="529"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; already exists in user preset folder.&lt;br&gt;Overwrite or save with a new name?</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="532"/>
         <source>Always overwrite during this session</source>
         <translation type="unfinished"/>
@@ -4497,12 +4491,12 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="544"/>
         <source>Save As</source>
-        <translation type="unfinished"/>
+        <translation>另存为</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="546"/>
         <source>Overwrite</source>
-        <translation type="unfinished"/>
+        <translation>覆盖</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="567"/>
@@ -4542,6 +4536,16 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="487"/>
         <source>Do you want to save the changes?</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="528"/>
+        <source>Mapping already exists.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="529"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; already exists in user mapping folder.&lt;br&gt;Overwrite or save with a new name?</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -7029,7 +7033,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="230"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>颜色</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="242"/>
@@ -8075,8 +8079,8 @@ Do you really want to overwrite it?</source>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="127"/>
-        <source>One or more MixxxControls specified in the outputs section of the loaded preset were invalid.</source>
-        <translation>载入预设中输出区域的一个或多个 Mixxx 控制器无效。</translation>
+        <source>One or more MixxxControls specified in the outputs section of the loaded mapping were invalid.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="129"/>
@@ -8950,7 +8954,7 @@ Default: flat top</source>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="37"/>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="38"/>
         <source>Speed</source>
-        <translation type="unfinished"/>
+        <translation>速度</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="64"/>
@@ -9629,12 +9633,12 @@ It is designed as a complement to the steep mixing equalizers.</source>
         <location filename="../../src/effects/builtin/parametriceqeffect.cpp" line="31"/>
         <location filename="../../src/effects/builtin/parametriceqeffect.cpp" line="32"/>
         <source>Gain 1</source>
-        <translation type="unfinished"/>
+        <translation>增益 1</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/parametriceqeffect.cpp" line="33"/>
         <source>Gain for Filter 1</source>
-        <translation type="unfinished"/>
+        <translation>滤波器增益 1</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/parametriceqeffect.cpp" line="45"/>
@@ -9664,12 +9668,12 @@ a higher Q affects a narrower band of frequencies.</source>
         <location filename="../../src/effects/builtin/parametriceqeffect.cpp" line="75"/>
         <location filename="../../src/effects/builtin/parametriceqeffect.cpp" line="76"/>
         <source>Gain 2</source>
-        <translation type="unfinished"/>
+        <translation>增益 2</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/parametriceqeffect.cpp" line="77"/>
         <source>Gain for Filter 2</source>
-        <translation type="unfinished"/>
+        <translation>滤波器增益 2</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/parametriceqeffect.cpp" line="89"/>
@@ -10105,7 +10109,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="391"/>
         <source>The history section automatically keeps a list of tracks you play in your DJ sets.</source>
-        <translation>历史记录部分将自动保存您在 Dj 碟机中播放的音轨列表。</translation>
+        <translation>历史记录部分将自动保存您在 DJ 碟机中播放的音轨列表。</translation>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="392"/>
@@ -10115,7 +10119,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="393"/>
         <source>Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.</source>
-        <translation>每次启动 Mixxx 时，将会自动创建一个历史列表。您可以将其导出为不同格式的播放列表，或用自动 Dj 再次播放它。</translation>
+        <translation>每次启动 Mixxx 时，将会自动创建一个历史列表。您可以将其导出为不同格式的播放列表，或用自动 DJ 再次播放它。</translation>
     </message>
     <message>
         <location filename="../../src/library/setlogfeature.cpp" line="394"/>
@@ -13608,12 +13612,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="129"/>
         <source>Adjust BPM</source>
-        <translation type="unfinished"/>
+        <translation>调节 BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="134"/>
         <source>Select Color</source>
-        <translation type="unfinished"/>
+        <translation>选择颜色</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="140"/>
@@ -13624,12 +13628,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="146"/>
         <source>Add to Auto DJ Queue (bottom)</source>
-        <translation>添加至自动 Dj 队列（底部）</translation>
+        <translation>添加至自动 DJ 队列（底部）</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="149"/>
         <source>Add to Auto DJ Queue (top)</source>
-        <translation>添加至自动 Dj 队列（顶部）</translation>
+        <translation>添加至自动 DJ 队列（顶部）</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="152"/>
@@ -13704,7 +13708,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="235"/>
         <source>Play Count</source>
-        <translation type="unfinished"/>
+        <translation>播放计数</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="238"/>
@@ -13799,7 +13803,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="302"/>
         <source>Reset BPM</source>
-        <translation type="unfinished"/>
+        <translation>重置 BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="571"/>
@@ -14013,7 +14017,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/util/taskmonitor.cpp" line="161"/>
         <source>Abort</source>
-        <translation type="unfinished"/>
+        <translation>中止</translation>
     </message>
 </context>
 <context>
@@ -14021,7 +14025,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/network/webtask.cpp" line="172"/>
         <source>No network access</source>
-        <translation type="unfinished"/>
+        <translation>无网络连接</translation>
     </message>
 </context>
 </TS>
