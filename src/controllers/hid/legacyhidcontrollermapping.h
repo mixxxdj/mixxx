@@ -12,8 +12,8 @@ class LegacyHidControllerMapping : public LegacyControllerMapping {
     ~LegacyHidControllerMapping() override {
     }
 
-    LegacyControllerMapping* clone() const override {
-        return new LegacyHidControllerMapping(*this);
+    std::shared_ptr<LegacyControllerMapping> clone() const override {
+        return std::make_shared<LegacyHidControllerMapping>(*this);
     }
 
     bool saveMapping(const QString& fileName) const override;

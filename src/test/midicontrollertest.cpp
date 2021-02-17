@@ -28,10 +28,11 @@ class MidiControllerTest : public MixxxTest {
   protected:
     void SetUp() override {
         m_pController.reset(new MockMidiController());
+        m_pMapping = std::make_shared<LegacyMidiControllerMapping>();
     }
 
     void addMapping(const MidiInputMapping& mapping) {
-        m_mapping.addInputMapping(mapping.key.key, mapping);
+        m_pMapping->addInputMapping(mapping.key.key, mapping);
     }
 
     void receivedShortMessage(unsigned char status, unsigned char control, unsigned char value) {
@@ -39,7 +40,7 @@ class MidiControllerTest : public MixxxTest {
         m_pController->receivedShortMessage(status, control, value, mixxx::Time::elapsed());
     }
 
-    LegacyMidiControllerMapping m_mapping;
+    std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
     QScopedPointer<MockMidiController> m_pController;
 };
 
@@ -56,7 +57,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOff) {
                                 MidiOptions(), key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 MidiOptions(), key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // Receive an on/off, sets the control on/off with each press.
     receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
@@ -82,7 +83,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOn) {
 
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_ON | channel, control),
                                 MidiOptions(), key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // Receive an on/off, sets the control on/off with each press.
     receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
@@ -113,7 +114,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_ButtonMidiOpt
                                 options, key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 options, key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // NOTE(rryan): This behavior is broken!
 
@@ -144,7 +145,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_SwitchMidiOpt
                                 options, key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 options, key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // NOTE(rryan): This behavior is broken!
 
@@ -188,7 +189,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushCC) {
 
     addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, control),
                                 MidiOptions(), key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // Receive an on/off, sets the control on/off with each press.
     receivedShortMessage(MIDI_CC | channel, control, 0x7F);
@@ -217,7 +218,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOff) {
                                 MidiOptions(), key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 MidiOptions(), key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // Receive an on/off, toggles the control.
     receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
@@ -244,7 +245,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOn) {
 
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_ON | channel, control),
                                 MidiOptions(), key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // Receive an on/off, toggles the control.
     receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
@@ -276,7 +277,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_ButtonMidiOption)
                                 options, key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 options, key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // NOTE(rryan): If the intended behavior of the button MIDI option is to
     // make a toggle MIDI button act like a push button then this isn't
@@ -310,7 +311,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_SwitchMidiOption)
                                 options, key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 options, key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // NOTE(rryan): If the intended behavior of switch MIDI option is to make a
     // toggle MIDI button act like a toggle button then this isn't working. The
@@ -355,7 +356,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushCC) {
 
     addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, control),
                                 MidiOptions(), key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // Receive an on/off, toggles the control.
     receivedShortMessage(MIDI_CC | channel, control, 0x7F);
@@ -383,7 +384,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_7BitCC) {
 
     addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, control),
                                 MidiOptions(), key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // Receive a 0, MIDI parameter should map to the min value.
     receivedShortMessage(MIDI_CC | channel, control, 0x00);
@@ -421,7 +422,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
                                 lsb, key));
     addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, msb_control),
                                 msb, key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // If kMinValue or kMaxValue are such that the middle value is 0 then the
     // set(0) commands below allow us to hide failures.
@@ -497,7 +498,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitPitchBend) {
     // of the payload.
     addMapping(MidiInputMapping(MidiKey(MIDI_PITCH_BEND | channel, 0xFF),
                                 MidiOptions(), key));
-    m_pController->setMapping(&m_mapping);
+    m_pController->setMapping(m_pMapping->clone());
 
     // Receive a 0x0000, MIDI parameter should map to the min value.
     receivedShortMessage(MIDI_PITCH_BEND | channel, 0x00, 0x00);

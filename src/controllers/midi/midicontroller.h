@@ -25,14 +25,14 @@ class MidiController : public Controller {
 
     QString mappingExtension() override;
 
-    LegacyControllerMappingPointer getMapping() const override {
-        return LegacyControllerMappingPointer(m_mapping.clone());
-    }
-
-    void setMapping(LegacyControllerMapping* mapping) override;
+    void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
+    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
 
     bool isMappable() const override {
-        return m_mapping.isMappable();
+        if (!m_pMapping) {
+            return false;
+        }
+        return m_pMapping->isMappable();
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
@@ -87,15 +87,9 @@ class MidiController : public Controller {
     void updateAllOutputs();
     void destroyOutputHandlers();
 
-    /// Returns a pointer to the currently loaded controller mapping. For internal
-    /// use only.
-    LegacyControllerMapping* mapping() override {
-        return &m_mapping;
-    }
-
     QHash<uint16_t, MidiInputMapping> m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
-    LegacyMidiControllerMapping m_mapping;
+    std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
 

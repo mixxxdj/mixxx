@@ -17,7 +17,7 @@ class ControllerMappingTableModel : public QAbstractTableModel {
     ControllerMappingTableModel(QObject* pParent);
     ~ControllerMappingTableModel() override;
 
-    void setMapping(LegacyControllerMappingPointer pMapping);
+    void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping);
 
     // Revert changes made since the last apply.
     virtual void cancel();
@@ -38,5 +38,5 @@ class ControllerMappingTableModel : public QAbstractTableModel {
     virtual void onMappingLoaded() = 0;
 
     QVector<QHash<int, QVariant> > m_headerInfo;
-    LegacyMidiControllerMapping* m_pMidiMapping;
+    std::shared_ptr<LegacyMidiControllerMapping> m_pMidiMapping;
 };

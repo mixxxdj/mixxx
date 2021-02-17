@@ -17,15 +17,14 @@ class HidController final : public Controller {
 
     QString mappingExtension() override;
 
-    LegacyControllerMappingPointer getMapping() const override {
-        return LegacyControllerMappingPointer(
-                new LegacyHidControllerMapping(m_mapping));
-    }
-
-    void setMapping(LegacyControllerMapping* pMapping) override;
+    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
+    void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
 
     bool isMappable() const override {
-        return m_mapping.isMappable();
+        if (!m_pMapping) {
+            return false;
+        }
+        return m_pMapping->isMappable();
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
@@ -48,16 +47,10 @@ class HidController final : public Controller {
     void sendBytesReport(QByteArray data, unsigned int reportID);
     void sendFeatureReport(const QList<int>& dataList, unsigned int reportID);
 
-    // Returns a pointer to the currently loaded controller mapping. For internal
-    // use only.
-    LegacyControllerMapping* mapping() override {
-        return &m_mapping;
-    }
-
     const mixxx::hid::DeviceInfo m_deviceInfo;
 
     hid_device* m_pHidDevice;
-    LegacyHidControllerMapping m_mapping;
+    std::shared_ptr<LegacyHidControllerMapping> m_pMapping;
 
     static constexpr int kNumBuffers = 2;
     static constexpr int kBufferSize = 255;

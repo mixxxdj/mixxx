@@ -6,6 +6,7 @@
 #include <QList>
 #include <QSharedPointer>
 #include <QString>
+#include <memory>
 
 #include "defs_urls.h"
 
@@ -18,7 +19,7 @@ class LegacyControllerMapping {
     }
     virtual ~LegacyControllerMapping() = default;
 
-    virtual LegacyControllerMapping* clone() const = 0;
+    virtual std::shared_ptr<LegacyControllerMapping> clone() const = 0;
 
     struct ScriptFileInfo {
         ScriptFileInfo()
@@ -192,5 +193,3 @@ class LegacyControllerMapping {
 
     QList<ScriptFileInfo> m_scripts;
 };
-
-typedef QSharedPointer<LegacyControllerMapping> LegacyControllerMappingPointer;

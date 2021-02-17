@@ -87,7 +87,8 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
           m_pollTimer(this),
           m_skipPoll(false) {
-    qRegisterMetaType<LegacyControllerMappingPointer>("LegacyControllerMappingPointer");
+    qRegisterMetaType<std::shared_ptr<LegacyControllerMapping>>(
+            "std::shared_ptr<LegacyControllerMapping>");
 
     // Create controller mapping paths in the user's home directory.
     QString userMappings = userMappingsPath(m_pConfig);
@@ -262,8 +263,9 @@ void ControllerManager::slotSetUpDevices() {
             continue;
         }
 
-        LegacyControllerMappingPointer pMapping = LegacyControllerMappingFileHandler::loadMapping(
-                mappingFile, resourceMappingsPath(m_pConfig));
+        std::shared_ptr<LegacyControllerMapping> pMapping =
+                LegacyControllerMappingFileHandler::loadMapping(
+                        mappingFile, resourceMappingsPath(m_pConfig));
 
         if (!pMapping) {
             continue;
@@ -397,7 +399,7 @@ void ControllerManager::closeController(Controller* pController) {
 }
 
 void ControllerManager::slotApplyMapping(Controller* pController,
-        LegacyControllerMappingPointer pMapping,
+        std::shared_ptr<LegacyControllerMapping> pMapping,
         bool bEnabled) {
     VERIFY_OR_DEBUG_ASSERT(pController) {
         qWarning() << "slotApplyMapping got invalid controller!";

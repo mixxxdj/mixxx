@@ -98,10 +98,22 @@ QString BulkController::mappingExtension() {
     return BULK_MAPPING_EXTENSION;
 }
 
-void BulkController::setMapping(LegacyControllerMapping* pMapping) {
-    auto pHidMapping = dynamic_cast<LegacyHidControllerMapping*>(pMapping);
-    DEBUG_ASSERT(pHidMapping);
-    m_mapping = *pHidMapping;
+void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    VERIFY_OR_DEBUG_ASSERT(pMapping.use_count() == 1) {
+        return;
+    }
+    auto pDowncastedMapping = std::dynamic_pointer_cast<LegacyHidControllerMapping>(pMapping);
+    VERIFY_OR_DEBUG_ASSERT(pDowncastedMapping) {
+        return;
+    }
+    m_pMapping = pDowncastedMapping;
+}
+
+std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
+    if (!m_pMapping) {
+        return nullptr;
+    }
+    return m_pMapping->clone();
 }
 
 bool BulkController::matchMapping(const MappingInfo& mapping) {

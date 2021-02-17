@@ -30,10 +30,10 @@ class Controller : public QObject {
     /// the controller (type.)
     virtual QString mappingExtension() = 0;
 
-    virtual void setMapping(LegacyControllerMapping* pMapping) = 0;
-
-    // Returns a clone of the Controller's loaded mapping.
-    virtual LegacyControllerMappingPointer getMapping() const = 0;
+    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() = 0;
+    /// WARNING: LegacyControllerMapping is not thread safe!
+    /// Clone the mapping before passing to setMapping for use in the controller polling thread.
+    virtual void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) = 0;
 
     inline bool isOpen() const {
         return m_bIsOpen;
@@ -58,10 +58,6 @@ class Controller : public QObject {
     virtual bool matchMapping(const MappingInfo& mapping) = 0;
 
   signals:
-    // Emitted when a new mapping is loaded. pMapping is a /clone/ of the loaded
-    // mapping, not a pointer to the mapping itself.
-    void mappingLoaded(LegacyControllerMappingPointer pMapping);
-
     /// Emitted when the controller is opened or closed.
     void openChanged(bool bOpen);
 
@@ -137,9 +133,6 @@ class Controller : public QObject {
     }
 
   private:
-    // Returns a pointer to the currently loaded controller mapping. For internal
-    // use only.
-    virtual LegacyControllerMapping* mapping() = 0;
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
 
     // Verbose and unique device name suitable for display.

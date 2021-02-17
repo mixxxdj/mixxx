@@ -8,21 +8,22 @@ bool LegacyHidControllerMappingFileHandler::save(const LegacyHidControllerMappin
     return writeDocument(doc, fileName);
 }
 
-LegacyControllerMappingPointer LegacyHidControllerMappingFileHandler::load(const QDomElement& root,
+std::shared_ptr<LegacyControllerMapping>
+LegacyHidControllerMappingFileHandler::load(const QDomElement& root,
         const QString& filePath,
         const QDir& systemMappingsPath) {
     if (root.isNull()) {
-        return LegacyControllerMappingPointer();
+        return nullptr;
     }
 
     QDomElement controller = getControllerNode(root);
     if (controller.isNull()) {
-        return LegacyControllerMappingPointer();
+        return nullptr;
     }
 
-    LegacyHidControllerMapping* mapping = new LegacyHidControllerMapping();
-    mapping->setFilePath(filePath);
-    parseMappingInfo(root, mapping);
-    addScriptFilesToMapping(controller, mapping, systemMappingsPath);
-    return LegacyControllerMappingPointer(mapping);
+    auto pMapping = std::make_shared<LegacyHidControllerMapping>();
+    pMapping->setFilePath(filePath);
+    parseMappingInfo(root, pMapping);
+    addScriptFilesToMapping(controller, pMapping, systemMappingsPath);
+    return pMapping;
 }
