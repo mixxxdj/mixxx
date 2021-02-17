@@ -79,6 +79,23 @@ class Controller : public QObject {
     void stopLearning();
 
   protected:
+    template<typename SpecificMappingType>
+    std::shared_ptr<SpecificMappingType> downcastAndTakeOwnership(
+            std::shared_ptr<LegacyControllerMapping>&& pMapping) {
+        // Controller cannot take ownership if pMapping is referenced elsewhere because
+        // the controller polling thread needs exclusive accesses to the non-thread safe
+        // LegacyControllerMapping.
+        // Trying to cast a std::shared_ptr to a std::unique_ptr is not worth the trouble.
+        VERIFY_OR_DEBUG_ASSERT(pMapping.use_count() == 1) {
+            return nullptr;
+        }
+        auto pDowncastedMapping = std::dynamic_pointer_cast<SpecificMappingType>(pMapping);
+        VERIFY_OR_DEBUG_ASSERT(pDowncastedMapping) {
+            return nullptr;
+        }
+        return pDowncastedMapping;
+    }
+
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
     virtual void send(const QList<int>& data, unsigned int length = 0);

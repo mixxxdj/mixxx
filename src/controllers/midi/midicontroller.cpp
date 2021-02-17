@@ -31,14 +31,7 @@ QString MidiController::mappingExtension() {
 }
 
 void MidiController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
-    VERIFY_OR_DEBUG_ASSERT(pMapping.use_count() == 1) {
-        return;
-    }
-    auto pDowncastedMapping = std::dynamic_pointer_cast<LegacyMidiControllerMapping>(pMapping);
-    VERIFY_OR_DEBUG_ASSERT(pDowncastedMapping) {
-        return;
-    }
-    m_pMapping = pDowncastedMapping;
+    m_pMapping = downcastAndTakeOwnership<LegacyMidiControllerMapping>(std::move(pMapping));
 }
 
 std::shared_ptr<LegacyControllerMapping> MidiController::cloneMapping() {

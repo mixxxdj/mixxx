@@ -39,14 +39,7 @@ QString HidController::mappingExtension() {
 }
 
 void HidController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
-    VERIFY_OR_DEBUG_ASSERT(pMapping.use_count() == 1) {
-        return;
-    }
-    auto pDowncastedMapping = std::dynamic_pointer_cast<LegacyHidControllerMapping>(pMapping);
-    VERIFY_OR_DEBUG_ASSERT(pDowncastedMapping) {
-        return;
-    }
-    m_pMapping = pDowncastedMapping;
+    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
 }
 
 std::shared_ptr<LegacyControllerMapping> HidController::cloneMapping() {
