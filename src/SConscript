@@ -1107,7 +1107,10 @@ def BuildUbuntuPackage(target, source, env):
         print("* Tarring source directory to '%s' ... (this can take a couple minutes)" % os.path.join(os.getcwd(), mixxx_tarball))
         print()
         os.system('rm -f "%s"' % mixxx_tarball) #Remove old tarball
-        os.system('tar --exclude build/debian --exclude=debian --exclude=debian/* -czf "%s" %s' % (mixxx_tarball, mixxx_dir))
+        #os.system('tar --exclude build/debian --exclude=debian --exclude=debian/* -czf "%s" %s' % (mixxx_tarball, mixxx_dir))
+        # download the tagged version 
+        os.system('wget https://launchpad.net/~mixxx/+archive/ubuntu/mixxx/+sourcefiles/mixxx/2.2.4-0ubuntu4~2.2~git6803~groovy/mixxx_2.2.4.orig.tar.gz')
+        
 
         os.chdir(mixxx_dir)
         # Copy the debian folder from /build/debian to exported source folder root
