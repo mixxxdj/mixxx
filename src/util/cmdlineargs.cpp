@@ -64,7 +64,6 @@ bool CmdlineArgs::Parse(const QStringList& arguments) {
             "Mixxx is an open source DJ software. For more information, see "
             "https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options)"));
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
-    parser.addVersionOption();
 
     // add options
     const QCommandLineOption fullscreen(QStringList() << "f"
@@ -163,6 +162,7 @@ bool CmdlineArgs::Parse(const QStringList& arguments) {
 #endif
 
     const QCommandLineOption helpOption = parser.addHelpOption();
+    const QCommandLineOption versionOption = parser.addVersionOption();
 
     parser.addPositionalArgument(QStringLiteral("file"),
             QCoreApplication::translate("main",
@@ -170,9 +170,18 @@ bool CmdlineArgs::Parse(const QStringList& arguments) {
                     "you specify will be loaded into the next virtual deck."));
 
     // process all arguments
-    parser.process(arguments);
+    if (!parser.parse(arguments)) {
+        qWarning() << parser.errorText();
+    }
 
-    if (parser.isSet(helpOption)) {
+    if (parser.isSet(helpOption) || parser.isSet(QStringLiteral("help-all"))) {
+        // we need to call process here otherwise there is no way to print the
+        // help-all informations
+        parser.process(arguments);
+        return false;
+    }
+    if (parser.isSet(versionOption)) {
+        parser.showVersion();
         return false;
     }
 
