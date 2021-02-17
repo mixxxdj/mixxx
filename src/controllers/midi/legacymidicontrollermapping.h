@@ -2,7 +2,6 @@
 
 #include <QMultiHash>
 
-#include "controllers/controllermappingvisitor.h"
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/midi/midimessage.h"
 
@@ -13,10 +12,12 @@ class LegacyMidiControllerMapping : public LegacyControllerMapping {
     LegacyMidiControllerMapping(){};
     virtual ~LegacyMidiControllerMapping(){};
 
+    std::shared_ptr<LegacyControllerMapping> clone() const override {
+        return std::make_shared<LegacyMidiControllerMapping>(*this);
+    }
+
     bool saveMapping(const QString& fileName) const override;
 
-    virtual void accept(LegacyControllerMappingVisitor* visitor) override;
-    virtual void accept(ConstLegacyControllerMappingVisitor* visitor) const override;
     virtual bool isMappable() const override;
 
     // Input mappings

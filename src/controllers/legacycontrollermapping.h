@@ -6,11 +6,9 @@
 #include <QList>
 #include <QSharedPointer>
 #include <QString>
+#include <memory>
 
 #include "defs_urls.h"
-
-class LegacyControllerMappingVisitor;
-class ConstLegacyControllerMappingVisitor;
 
 /// This class represents a controller mapping, containing the data elements that
 /// make it up.
@@ -20,6 +18,8 @@ class LegacyControllerMapping {
             : m_bDirty(false) {
     }
     virtual ~LegacyControllerMapping() = default;
+
+    virtual std::shared_ptr<LegacyControllerMapping> clone() const = 0;
 
     struct ScriptFileInfo {
         ScriptFileInfo()
@@ -172,8 +172,6 @@ class LegacyControllerMapping {
 
     virtual bool saveMapping(const QString& filename) const = 0;
 
-    virtual void accept(LegacyControllerMappingVisitor* visitor) = 0;
-    virtual void accept(ConstLegacyControllerMappingVisitor* visitor) const = 0;
     virtual bool isMappable() const = 0;
 
     // Optional list of controller device match details
@@ -195,5 +193,3 @@ class LegacyControllerMapping {
 
     QList<ScriptFileInfo> m_scripts;
 };
-
-typedef QSharedPointer<LegacyControllerMapping> LegacyControllerMappingPointer;

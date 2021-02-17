@@ -484,6 +484,9 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     queryInsertIntoDevicePlaylistTracks.bindValue(":playlist_id", playlistID);
 
+    if (!Sandbox::askForAccess(dbPath)) {
+        return QString();
+    }
     std::ifstream ifs(dbPath.toStdString(), std::ifstream::binary);
     kaitai::kstream ks(&ifs);
 

@@ -439,6 +439,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/dialog/dlgaboutdlg.ui
   src/dialog/dlgdevelopertools.cpp
   src/dialog/dlgdevelopertoolsdlg.ui
+  src/dialog/dlgkeywheel.cpp
+  src/dialog/dlgkeywheel.ui
   src/dialog/dlgreplacecuecolor.cpp
   src/dialog/dlgreplacecuecolordlg.ui
   src/effects/builtin/autopaneffect.cpp
@@ -1631,10 +1633,11 @@ if(ENGINEPRIME)
 
     set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
     set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
     ExternalProject_Add(libdjinterop
-      GIT_REPOSITORY https://github.com/xsco/libdjinterop.git
-      GIT_TAG tags/0.14.6
-      GIT_SHALLOW TRUE
+      URL "https://github.com/xsco/libdjinterop/archive/0.14.6.tar.gz"
+      URL_HASH SHA256=db2f57f6c06c801d1785280ede0f032d7280bedd72f2a30bc263a272e3269587
+      DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libdjinterop"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       CMAKE_ARGS
         -DBUILD_SHARED_LIBS=OFF
@@ -2373,12 +2376,15 @@ option(BROADCAST "Live Broadcasting (Shoutcast) support" ON)
 if(BROADCAST)
   find_package(Shout)
   if(UNIX AND NOT APPLE)
-    # Check if system lib is at least 2.4.4 and not suffering bug
+    # Check if system lib is at least 2.4.6 and not suffering bugs
     # https://bugs.launchpad.net/mixxx/+bug/1833225
+    # https://bugs.launchpad.net/mixxx/+bug/1913579
     if(Shout_FOUND AND Shout_VERSION VERSION_LESS 2.4.4)
-        message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1833225")
+        message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bugs lp1833225 and lp1913579")
+    elseif(Shout_FOUND AND Shout_VERSION VERSION_LESS 2.4.6)
+        message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1913579")
     endif()
-    if(NOT Shout_FOUND OR Shout_VERSION VERSION_LESS 2.4.4)
+    if(NOT Shout_FOUND OR Shout_VERSION VERSION_LESS 2.4.6)
       # Fall back to internal libraray in the lib tree
       message(STATUS "Using internal libshout")
       add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout")

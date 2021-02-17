@@ -421,7 +421,7 @@ QString Sandbox::migrateOldSettings() {
                     "This only needs to be done once."
                     "\n\n"
                     "If you do not want to grant Mixxx access, click Cancel "
-                    "on the file picker. Mixxx will create a new music library"
+                    "on the file picker. Mixxx will create a new music library "
                     "and use default settings."));
 
     QString result = QFileDialog::getExistingDirectory(

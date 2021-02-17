@@ -12,7 +12,7 @@ class LegacyMidiControllerMappingFileHandler : public LegacyControllerMappingFil
     bool save(const LegacyMidiControllerMapping& mapping, const QString& fileName) const;
 
   private:
-    virtual LegacyControllerMappingPointer load(const QDomElement& root,
+    virtual std::shared_ptr<LegacyControllerMapping> load(const QDomElement& root,
             const QString& filePath,
             const QDir& systemMappingPath);
 
