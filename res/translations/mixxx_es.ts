@@ -2066,7 +2066,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1087"/>
         <source>Show or hide the mixer.</source>
-        <translation type="unfinished"/>
+        <translation>Mostrar u ocultar el mezclador.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1091"/>
@@ -2897,7 +2897,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1105"/>
         <source>Toggle 4 Decks</source>
-        <translation type="unfinished"/>
+        <translation>Conmuta el modo de 4 platos</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1106"/>
@@ -6772,12 +6772,12 @@ Este volumen de referencia es aproximado y asume que la ganancia y el nivel de s
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="205"/>
         <source>Deck 1</source>
-        <translation type="unfinished"/>
+        <translation>Plato 1</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="231"/>
         <source>Deck 2</source>
-        <translation type="unfinished"/>
+        <translation>Plato 2</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="257"/>
@@ -9879,7 +9879,7 @@ Todo a la derecha: final del período</translation>
     <message>
         <location filename="../../src/effects/builtin/whitenoiseeffect.cpp" line="27"/>
         <source>Dry/Wet</source>
-        <translation type="unfinished"/>
+        <translation>Directo/Alterado</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/whitenoiseeffect.cpp" line="28"/>
@@ -13618,7 +13618,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="154"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="155"/>
@@ -13638,7 +13638,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="241"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Compositor</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="257"/>
@@ -14148,7 +14148,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/coreservices.cpp" line="447"/>
         <source>Cannot open database</source>
-        <translation type="unfinished"/>
+        <translation>No se puede abrir la base de datos</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="448"/>
