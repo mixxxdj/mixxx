@@ -4,14 +4,9 @@
 
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DCMAKE_BUILD_TYPE=RelWithDebInfo -DINSTALL_USER_UDEV_RULES=OFF
+	dh_auto_configure -- -DCMAKE_BUILD_TYPE=RelWithDebInfo -DINSTALL_USER_UDEV_RULES=OFF -DKEYFINDER=OFF -DENGINEPRIME=OFF
 
-override_dh_auto_build:
-	docbook-to-man debian/mixxx.sgml > mixxx.1
-	dh_auto_build
-
-override_dh_install:
-	dh_install
+override_dh_installudev:
 	dh_installudev --name=mixxx-usb-uaccess --priority 69
 
 %:

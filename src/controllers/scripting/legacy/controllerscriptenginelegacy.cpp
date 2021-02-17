@@ -7,6 +7,7 @@
 #include "controllers/scripting/legacy/controllerscriptinterfacelegacy.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_controllerscriptenginelegacy.cpp"
 
 ControllerScriptEngineLegacy::ControllerScriptEngineLegacy(Controller* controller)
         : ControllerScriptEngineBase(controller) {

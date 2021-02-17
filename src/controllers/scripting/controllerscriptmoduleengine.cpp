@@ -1,5 +1,7 @@
 #include "controllers/scripting/controllerscriptmoduleengine.h"
 
+#include "moc_controllerscriptmoduleengine.cpp"
+
 ControllerScriptModuleEngine::ControllerScriptModuleEngine(Controller* controller)
         : ControllerScriptEngineBase(controller) {
     connect(&m_fileWatcher,

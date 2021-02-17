@@ -30,6 +30,8 @@ This will define the following variables:
   Libraries needed to link to Shout.
 ``Shout_DEFINITIONS``
   Compile definitions needed to use Shout.
+``Shout_VERSION``
+  Shout Version.
 
 Cache Variables
 ^^^^^^^^^^^^^^^
@@ -73,6 +75,7 @@ if(Shout_FOUND)
   set(Shout_LIBRARIES "${Shout_LIBRARY}")
   set(Shout_INCLUDE_DIRS "${Shout_INCLUDE_DIR}")
   set(Shout_DEFINITIONS ${PC_Shout_CFLAGS_OTHER})
+  set(Shout_VERSION ${PC_Shout_VERSION})
 
   if(NOT TARGET Shout::Shout)
     add_library(Shout::Shout UNKNOWN IMPORTED)

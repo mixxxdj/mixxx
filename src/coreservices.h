@@ -16,7 +16,9 @@ class EngineMaster;
 class SoundManager;
 class PlayerManager;
 class RecordingManager;
+#ifdef __BROADCAST__
 class BroadcastManager;
+#endif
 class ControllerManager;
 class VinylControlManager;
 class TrackCollectionManager;
@@ -62,9 +64,11 @@ class CoreServices : public QObject {
         return m_pRecordingManager;
     }
 
+#ifdef __BROADCAST__
     std::shared_ptr<BroadcastManager> getBroadcastManager() const {
         return m_pBroadcastManager;
     }
+#endif
 
     std::shared_ptr<ControllerManager> getControllerManager() const {
         return m_pControllerManager;

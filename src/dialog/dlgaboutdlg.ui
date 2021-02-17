@@ -171,10 +171,7 @@ p, li { white-space: pre-wrap; }
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QLabel" name="label_2">
-       <property name="text">
-        <string>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</string>
-       </property>
+      <widget class="QLabel" name="textWebsiteLink">
        <property name="openExternalLinks">
         <bool>true</bool>
        </property>

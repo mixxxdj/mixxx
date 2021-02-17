@@ -5,7 +5,6 @@
 
 #include "controllers/controllermappinginfo.h"
 #include "controllers/controllermappingvisitor.h"
-#include "controllers/controllervisitor.h"
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
@@ -37,8 +36,6 @@ class Controller : public QObject, ConstLegacyControllerMappingVisitor {
         // the mapping to call our visitor methods with its type.
         mapping.accept(this);
     }
-
-    virtual void accept(ControllerVisitor* visitor) = 0;
 
     // Returns a clone of the Controller's loaded mapping.
     virtual LegacyControllerMappingPointer getMapping() const = 0;

@@ -48,14 +48,14 @@
       <WidgetGroup>
         <ObjectName>EffectSlotParameterLinkButtonsContainer</ObjectName>
         <Layout>horizontal</Layout>
-        <Size>-1,6f</Size>
+        <Size>-1,8f</Size>
         <Children>
           <Template src="skin:left_2state_button.xml">
             <!-- Button has no text/images, qss only -->
             <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
             <SetVariable name="ObjectName">EffectSlotParameterLinkInversionButton</SetVariable>
-            <SetVariable name="MinimumSize">6,4</SetVariable>
-            <SetVariable name="MaximumSize">10,4</SetVariable>
+            <SetVariable name="MinimumSize">6,6</SetVariable>
+            <SetVariable name="MaximumSize">10,6</SetVariable>
             <SetVariable name="SizePolicy">me,f</SetVariable>
             <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_inverse</SetVariable>
           </Template>
@@ -64,8 +64,8 @@
             <!-- Button has no text/images, qss only -->
             <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
             <SetVariable name="ObjectName">EffectSlotParameterLinkTypeButton</SetVariable>
-            <SetVariable name="MinimumSize">30,4</SetVariable>
-            <SetVariable name="MaximumSize">46,4</SetVariable>
+            <SetVariable name="MinimumSize">30,6</SetVariable>
+            <SetVariable name="MaximumSize">46,6</SetVariable>
             <SetVariable name="SizePolicy">me,f</SetVariable>
             <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
           </Template>

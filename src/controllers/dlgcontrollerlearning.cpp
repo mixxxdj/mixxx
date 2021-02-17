@@ -19,7 +19,6 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
         Controller* controller)
         : QDialog(parent),
           m_pController(controller),
-          m_pMidiController(nullptr),
           m_controlPickerMenu(this),
           m_messagesLearned(false) {
     qRegisterMetaType<MidiInputMappings>("MidiInputMappings");
@@ -206,9 +205,46 @@ void DlgControllerLearning::slotChooseControlPressed() {
 void DlgControllerLearning::startListening() {
     // Start listening as soon as we're on this page -- that way advanced
     // users don't have to specifically click the "Learn" button.
-    // Get the underlying type of the Controller. This will call
-    // one of the visit() methods below immediately.
-    m_pController->accept(this);
+    // Disconnect everything in both directions so we don't end up with duplicate connections
+    // after pressing the "Learn Another" button
+    MidiController* pMidiController = qobject_cast<MidiController*>(m_pController);
+    VERIFY_OR_DEBUG_ASSERT(pMidiController) {
+        // DlgControllerLearning should have only been created by DlgController if
+        // the Controller was a MidiController.
+        qWarning() << "Only MIDI controllers are supported by the learning wizard.";
+        return;
+    }
+    pMidiController->disconnect(this);
+    this->disconnect(pMidiController);
+
+    connect(pMidiController,
+            &MidiController::messageReceived,
+            this,
+            &DlgControllerLearning::slotMessageReceived);
+
+    connect(this,
+            &DlgControllerLearning::learnTemporaryInputMappings,
+            pMidiController,
+            &MidiController::learnTemporaryInputMappings);
+    connect(this,
+            &DlgControllerLearning::clearTemporaryInputMappings,
+            pMidiController,
+            &MidiController::clearTemporaryInputMappings);
+
+    connect(this,
+            &DlgControllerLearning::commitTemporaryInputMappings,
+            pMidiController,
+            &MidiController::commitTemporaryInputMappings);
+    connect(this,
+            &DlgControllerLearning::startLearning,
+            pMidiController,
+            &MidiController::startLearning);
+    connect(this,
+            &DlgControllerLearning::stopLearning,
+            pMidiController,
+            &MidiController::stopLearning);
+
+    emit startLearning();
     emit listenForClicks();
 }
 
@@ -393,54 +429,6 @@ void DlgControllerLearning::slotMidiOptionsChanged() {
 void DlgControllerLearning::commitMapping() {
     emit commitTemporaryInputMappings();
     emit inputMappingsLearned(m_mappings);
-}
-
-void DlgControllerLearning::visit(MidiController* pMidiController) {
-    // Disconnect everything in both directions so we don't end up with duplicate connections
-    // after pressing the "Learn Another" button
-    pMidiController->disconnect(this);
-    this->disconnect(pMidiController);
-
-    m_pMidiController = pMidiController;
-
-    connect(m_pMidiController,
-            &MidiController::messageReceived,
-            this,
-            &DlgControllerLearning::slotMessageReceived);
-
-    connect(this,
-            &DlgControllerLearning::learnTemporaryInputMappings,
-            m_pMidiController,
-            &MidiController::learnTemporaryInputMappings);
-    connect(this,
-            &DlgControllerLearning::clearTemporaryInputMappings,
-            m_pMidiController,
-            &MidiController::clearTemporaryInputMappings);
-
-    connect(this,
-            &DlgControllerLearning::commitTemporaryInputMappings,
-            m_pMidiController,
-            &MidiController::commitTemporaryInputMappings);
-    connect(this,
-            &DlgControllerLearning::startLearning,
-            m_pMidiController,
-            &MidiController::startLearning);
-    connect(this,
-            &DlgControllerLearning::stopLearning,
-            m_pMidiController,
-            &MidiController::stopLearning);
-
-    emit startLearning();
-}
-
-void DlgControllerLearning::visit(HidController* pHidController) {
-    qWarning() << "ERROR: DlgControllerLearning does not support HID devices.";
-    Q_UNUSED(pHidController);
-}
-
-void DlgControllerLearning::visit(BulkController* pBulkController) {
-    qWarning() << "ERROR: DlgControllerLearning does not support Bulk devices.";
-    Q_UNUSED(pBulkController);
 }
 
 DlgControllerLearning::~DlgControllerLearning() {

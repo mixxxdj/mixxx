@@ -40,7 +40,8 @@ LibLoader::LibLoader()
     // Using MacPorts ('sudo port install faad2' command):
     libnames << "/opt/local/lib/libfaad2.dylib";
 #else
-    libnames << "libfaad.so";
+    libnames << "libfaad.so.2"
+             << "libfaad.so";
 #endif
 
     for (const auto& libname : qAsConst(libnames)) {

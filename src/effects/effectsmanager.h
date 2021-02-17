@@ -23,6 +23,8 @@ class EffectsBackend;
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
+    static const QString kNoEffectString;
+
     typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
 
     EffectsManager(QObject* pParent,

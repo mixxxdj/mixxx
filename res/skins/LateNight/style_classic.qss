@@ -65,6 +65,7 @@ WLibrary,
 #SidebarBox,
 #PreviewDeck,
 #LibExpandBox,
+#LibrarySplitter::handle,
 #SearchLineBox {
   border-top: 1px solid #333;
   border-left: 1px solid #333;
@@ -125,6 +126,30 @@ WSearchLineEdit,
 #OverviewBoxMini[highlight="1"] {
   background-color: #080808;
 }
+
+/* Some tweaks to create a frameless library table */
+#LibrarySplitter {
+  border-width: 0px;
+  }
+  #LibrarySplitter::handle {
+    border-width: 1px 0px 0px 0px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+  }
+  #PreviewDeckRightSpacer,
+  #SearchTreeSpacer {
+    border-right: 1px solid #333;
+    background-color: transparent;
+    }
+    #PreviewDeckRightSpacer {
+      min-width: 4px;
+      max-width: 4px;
+    }
+    #SearchTreeSpacer {
+      min-height: 3px;
+      max-height: 3px;
+    }
 
 /* background of fillers */
 #FxRackFillerL,
@@ -225,10 +250,6 @@ WBeatSpinBox,
 
 WLibrary {
   border-top-left-radius: 0px;
-}
-WLibrary,
-#SearchLineBox {
-  border-top: 0px;
   }
   #SearchLineBox {
   padding-right: 2px;
@@ -239,9 +260,8 @@ WLibrary,
 
 #LibExpandBox {
   qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
-  border-width: 0px 0px 1px 0px;
+  border-width: 1px 0px 1px 0px;
   border-radius: 0px;
-  margin-bottom: 3px;
   padding: 0px 0px 2px 2px;
 }
 
@@ -312,8 +332,6 @@ WLibrary,
 #FxRackFillerL,
 #MicAuxRack,
 #SamplerRow,
-#LibExpandBox,
-#SearchLineBox,
 #PreviewDeck {
   margin-bottom: 4px;
 }
@@ -352,10 +370,6 @@ WLibrary,
 
 #MicRack, #AuxRack {
   qproperty-layoutSpacing: 3;
-}
-
-#PreviewDeck {
-  margin-right: 3px;
 }
 
 #SkinSettingsContainer {
@@ -942,7 +956,7 @@ WPushButton#FxSuperLinkInvertButton {
 
   #PreviewDeckTextBox {
     }
-    #PreviewLabel { /* Placeholder */
+    #PreviewLabel { /* Placeholder when no track is loaded */
       padding-left: 2px;
     }
     #PreviewTitle {
@@ -2278,13 +2292,7 @@ WSearchLineEdit {
 /* LibrarySplitter
   (the splitter itself is vertical)
   Used to split Library sidebar & Tracks table */
-#LibrarySplitter {
-  border-top: 1px solid #333333;
-}
-#LibrarySplitter::handle { /*
-  background-image: url(skin:/classic/style/library_splitter_handle_unchecked.svg);
-  background-position: center top;
-  background-repeat: no-repeat;  */
+#LibrarySplitter::handle {
   image: url(skin:/classic/style/splitter_handle_vertical.png);
   background-color: #1e1e1e;
 }

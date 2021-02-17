@@ -228,10 +228,12 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
                 currentIndex = i;
             }
         }
-        //: Displayed when no effect is selected
-        box->addItem(tr("None"), QVariant(QString("")));
+        // Add empty item, no effect
+        box->addItem(EffectsManager::kNoEffectString);
+
         if (selectedEffectId.isEmpty()) {
-            currentIndex = availableEQEffects.size(); // selects "None"
+            // Configured effect has no id, clear selection
+            currentIndex = availableEQEffects.size();
         } else if (currentIndex < 0 && !selectedEffectName.isEmpty() ) {
             // current selection is not part of the new list
             // So we need to add it
@@ -257,10 +259,12 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
                 currentIndex = i;
             }
         }
-        //: Displayed when no effect is selected
-        box->addItem(tr("None"), QVariant(QString("")));
+        // Add empty item, no effect
+        box->addItem(EffectsManager::kNoEffectString);
+
         if (selectedEffectId.isEmpty()) {
-            currentIndex = availableQuickEffects.size(); // selects "None"
+            // Configured effect has no id, clear selection
+            currentIndex = availableQuickEffects.size();
         } else if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
             // current selection is not part of the new list
             // So we need to add it
@@ -674,12 +678,13 @@ void DlgPrefEQ::setUpMasterEQ() {
     for (const auto& pManifest : availableMasterEQEffects) {
         comboBoxMasterEq->addItem(pManifest->name(), QVariant(pManifest->id()));
     }
-    //: Displayed when no effect is selected
-    comboBoxMasterEq->addItem(tr("None"), QVariant());
+    // Add empty item, no effect
+    comboBoxMasterEq->addItem(EffectsManager::kNoEffectString);
 
     int masterEqIndex = comboBoxMasterEq->findData(configuredEffect);
     if (masterEqIndex < 0) {
-        masterEqIndex = availableMasterEQEffects.size(); // selects "None"
+        // Configured effect not in list, clear selection
+        masterEqIndex = availableMasterEQEffects.size();
     }
     comboBoxMasterEq->setCurrentIndex(masterEqIndex);
 

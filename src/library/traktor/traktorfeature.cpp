@@ -2,10 +2,13 @@
 
 #include <QMap>
 #include <QMessageBox>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QXmlStreamReader>
 #include <QtDebug>
+#include <tuple>
 
 #include "library/library.h"
 #include "library/librarytablemodel.h"
@@ -24,6 +27,15 @@ QString fromTraktorSeparators(QString path) {
     return path.replace("/:", "/");
 }
 
+struct SemanticVersion {
+    uint major{0},
+            minor{0},
+            patch{0};
+};
+
+bool operator<(const SemanticVersion& a, const SemanticVersion& b) {
+    return std::tie(a.major, a.minor, a.patch) < std::tie(b.major, b.minor, b.patch);
+}
 
 } // anonymous namespace
 
@@ -204,7 +216,7 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
 
     //Parse Trakor XML file using SAX (for performance)
     QFile traktor_file(file);
-    if (!traktor_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (!Sandbox::askForAccess(file) || !traktor_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         qDebug() << "Cannot open Traktor music collection";
         return nullptr;
     }
@@ -556,7 +568,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 
     // As of version 2, Traktor has changed the path of the collection.nml
     // In general, the path is <Home>/Documents/Native Instruments/Traktor 2.x.y/collection.nml
-    //  where x and y denote the bug fix release numbers. For example, Traktor 2.0.3 has the
+    // where x and y denote the bug fix release numbers. For example, Traktor 2.0.3 has the
     // following path: <Home>/Documents/Native Instruments/Traktor 2.0.3/collection.nml
 
     //Let's try to detect the latest Traktor version and its collection.nml
@@ -572,7 +584,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 
     //Iterate over the subfolders
     QFileInfoList list = ni_directory.entryInfoList();
-    QMap<int, QString> installed_ts_map;
+    QMap<SemanticVersion, QString> installed_ts_map;
 
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
@@ -580,22 +592,27 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 
         if (folder_name == "Traktor") {
             //We found a Traktor 1 installation
-            installed_ts_map.insert(1, fileInfo.absoluteFilePath());
+            installed_ts_map.insert({1, 0, 0}, fileInfo.absoluteFilePath());
             continue;
         }
         if (folder_name.contains("Traktor")) {
             qDebug() << "Found " << folder_name;
-            QVariant sVersion = folder_name.right(5).remove(".");
-            if (sVersion.canConvert(QMetaType::Int)) {
-                installed_ts_map.insert(sVersion.toInt(), fileInfo.absoluteFilePath());
+            QRegularExpression re("(?<major>\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)");
+            QRegularExpressionMatch match = re.match(folder_name);
+            if (match.hasMatch()) {
+                const auto version = SemanticVersion{
+                        match.captured("major").toUInt(),
+                        match.captured("minor").toUInt(),
+                        match.captured("patch").toUInt()};
+                installed_ts_map.insert(version, fileInfo.absoluteFilePath());
             }
         }
     }
     //If no Traktor installation has been found, return some default string
     if (installed_ts_map.isEmpty()) {
-        musicFolder =  QDir::homePath() + "/collection.nml";
+        musicFolder = QDir::homePath() + "/collection.nml";
     } else { //Select the folder with the highest version as default Traktor folder
-        QList<int> versions = installed_ts_map.keys();
+        QList<SemanticVersion> versions = installed_ts_map.keys();
         std::sort(versions.begin(), versions.end());
         musicFolder = installed_ts_map.value(versions.last()) + "/collection.nml";
     }

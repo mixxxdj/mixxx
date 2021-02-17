@@ -51,11 +51,6 @@ class FakeController : public Controller {
         m_hidMapping = *mapping;
     }
 
-    void accept(ControllerVisitor* visitor) override {
-        // Do nothing since we aren't a normal controller.
-        Q_UNUSED(visitor);
-    }
-
     bool isMappable() const override;
 
     bool matchMapping(const MappingInfo& mapping) override {

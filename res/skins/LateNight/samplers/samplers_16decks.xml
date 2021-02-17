@@ -26,19 +26,19 @@
             <SizePolicy>min,min</SizePolicy>
             <Children>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">9</SetVariable>
               </Template>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">10</SetVariable>
               </Template>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">11</SetVariable>
               </Template>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">12</SetVariable>
               </Template>
 
@@ -46,19 +46,19 @@
                 <ObjectName>Samplers_Expander_9-16_Singleton</ObjectName>
               </SingletonContainer>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">13</SetVariable>
               </Template>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">14</SetVariable>
               </Template>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">15</SetVariable>
               </Template>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">16</SetVariable>
               </Template>
 
@@ -78,11 +78,11 @@
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">9</SetVariable>
                   </Template>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">10</SetVariable>
                   </Template>
 
@@ -90,11 +90,11 @@
                     <ObjectName>Samplers_Expander_9-16_Singleton</ObjectName>
                   </SingletonContainer>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">13</SetVariable>
                   </Template>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">14</SetVariable>
                   </Template>
 
@@ -108,11 +108,11 @@
                 <Layout>horizontal</Layout>
                 <Children>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">11</SetVariable>
                   </Template>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">12</SetVariable>
                   </Template>
 
@@ -121,11 +121,11 @@
                     <Size>20f,1me</Size>
                   </WidgetGroup>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">15</SetVariable>
                   </Template>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">16</SetVariable>
                   </Template>
 

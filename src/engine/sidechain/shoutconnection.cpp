@@ -715,10 +715,15 @@ void ShoutConnection::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         return;
     }
 
+    // Save a copy of the smart pointer in a local variable
+    // to prevent race conditions when resetting the member
+    // pointer while disconnecting in the worker thread!
+    const EncoderPointer pEncoder = m_encoder;
+
     // If we are connected, encode the samples.
-    if (iBufferSize > 0 && m_encoder) {
+    if (iBufferSize > 0 && pEncoder) {
         setFunctionCode(6);
-        m_encoder->encodeBuffer(pBuffer, iBufferSize);
+        pEncoder->encodeBuffer(pBuffer, iBufferSize);
         // the encoded frames are received by the write() callback.
     }
 

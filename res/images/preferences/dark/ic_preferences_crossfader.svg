@@ -1,0 +1,8 @@
+<svg width="32" height="32" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <title>Mixxx 1.12+ iconset</title>
+  <g fill="#0f0f0f">
+    <rect transform="rotate(90)" x="14" y="-30" width="4" height="9" rx=".5" ry=".5"/>
+    <rect transform="rotate(90)" x="14" y="-11" width="4" height="9" rx=".5" ry=".5"/>
+    <path d="m13 2c-0.46167 0-1 0.56764-1 1.2727v25.455c0 0.70509 0.53833 1.2727 1 1.2727h6c0.46167 0 1-0.56764 1-1.2727v-25.455c0-0.70509-0.53833-1.2727-1-1.2727zm2.5 2.5455h1s0.5 0.28382 0.5 0.63636v21.636c0 0.35254-0.5 0.63636-0.5 0.63636h-1s-0.5-0.28382-0.5-0.63636v-21.636c0-0.35255 0.5-0.63636 0.5-0.63636z"/>
+  </g>
+</svg>

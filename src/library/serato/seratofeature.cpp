@@ -353,7 +353,7 @@ QString parseCrate(
     }
 
     QFile crateFile(crateFilePath);
-    if (!crateFile.open(QIODevice::ReadOnly)) {
+    if (!Sandbox::askForAccess(crateFilePath) || !crateFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << crateFilePath
                    << " for reading.";
@@ -507,7 +507,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             LIBRARYTABLE_SAMPLERATE + ", " +
             LIBRARYTABLE_BPM + ", " +
             LIBRARYTABLE_KEY + ", " +
-            LIBRARYTABLE_LOCATION + ", " +
+            TRACKLOCATIONSTABLE_LOCATION + ", " +
             LIBRARYTABLE_BPM_LOCK + ", " +
             LIBRARYTABLE_DATETIMEADDED +
             ", "
@@ -534,7 +534,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             ")");
 
     QFile databaseFile(databaseFilePath);
-    if (!databaseFile.open(QIODevice::ReadOnly)) {
+    if (!Sandbox::askForAccess(databaseFilePath) || !databaseFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << databaseFilePath
                    << " for reading.";
@@ -866,7 +866,7 @@ SeratoFeature::SeratoFeature(
             << LIBRARYTABLE_BPM
             << LIBRARYTABLE_KEY
             << LIBRARYTABLE_TRACKNUMBER
-            << LIBRARYTABLE_LOCATION
+            << TRACKLOCATIONSTABLE_LOCATION
             << LIBRARYTABLE_BPM_LOCK;
 
     QStringList searchColumns;
@@ -877,7 +877,7 @@ SeratoFeature::SeratoFeature(
             << LIBRARYTABLE_YEAR
             << LIBRARYTABLE_GENRE
             << LIBRARYTABLE_TRACKNUMBER
-            << LIBRARYTABLE_LOCATION
+            << TRACKLOCATIONSTABLE_LOCATION
             << LIBRARYTABLE_COMMENT
             << LIBRARYTABLE_DURATION
             << LIBRARYTABLE_BITRATE

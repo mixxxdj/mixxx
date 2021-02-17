@@ -2,8 +2,8 @@
 
 #include <QButtonGroup>
 
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/effectsettingsmodel.h"
 #include "preferences/usersettings.h"
 

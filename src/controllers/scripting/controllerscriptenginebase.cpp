@@ -6,6 +6,7 @@
 #include "controllers/scripting/colormapperjsproxy.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_controllerscriptenginebase.cpp"
 
 ControllerScriptEngineBase::ControllerScriptEngineBase(Controller* controller)
         : m_bDisplayingExceptionDialog(false),

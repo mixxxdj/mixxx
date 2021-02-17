@@ -38,11 +38,11 @@ class MusicBrainzRecordingsTask : public network::WebTask {
             network::HttpStatusCode statusCode) override;
 
     void emitSucceeded(
-            QList<musicbrainz::TrackRelease>&& trackReleases);
+            const QList<musicbrainz::TrackRelease>& trackReleases);
     void emitFailed(
-            network::WebResponse&& response,
+            const network::WebResponse& response,
             int errorCode,
-            QString&& errorMessage);
+            const QString& errorMessage);
 
     void continueWithNextRequest();
 

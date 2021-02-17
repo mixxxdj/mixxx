@@ -156,7 +156,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     QSqlTableModel playlistTableModel(this,
             m_pLibrary->trackCollections()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
-    playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
+    playlistTableModel.setFilter("hidden=" + QString::number(PlaylistDAO::PLHT_SET_LOG));
     playlistTableModel.setSort(
             playlistTableModel.fieldIndex("id"), Qt::DescendingOrder);
     playlistTableModel.select();

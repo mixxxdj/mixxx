@@ -12,6 +12,9 @@
 #include "library/autodj/autodjfeature.h"
 #include "library/banshee/bansheefeature.h"
 #include "library/browse/browsefeature.h"
+#ifdef __ENGINEPRIME__
+#include "library/export/libraryexporter.h"
+#endif
 #include "library/externaltrackcollection.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/library_preferences.h"
@@ -91,12 +94,32 @@ Library::Library(
             this,
             m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
+#ifdef __ENGINEPRIME__
+    connect(m_pMixxxLibraryFeature,
+            &MixxxLibraryFeature::exportLibrary,
+            this,
+            &Library::exportLibrary,
+            Qt::DirectConnection /* signal-to-signal */);
+#endif
 
     addFeature(new AutoDJFeature(this, m_pConfig, pPlayerManager));
     m_pPlaylistFeature = new PlaylistFeature(this, UserSettingsPointer(m_pConfig));
     addFeature(m_pPlaylistFeature);
+
     m_pCrateFeature = new CrateFeature(this, m_pConfig);
     addFeature(m_pCrateFeature);
+#ifdef __ENGINEPRIME__
+    connect(m_pCrateFeature,
+            &CrateFeature::exportAllCrates,
+            this,
+            &Library::exportLibrary, // signal-to-signal
+            Qt::DirectConnection);
+    connect(m_pCrateFeature,
+            &CrateFeature::exportCrate,
+            this,
+            &Library::exportCrate, // signal-to-signal
+            Qt::DirectConnection);
+#endif
 
     BrowseFeature* browseFeature = new BrowseFeature(
             this, m_pConfig, pRecordingManager);
@@ -569,3 +592,11 @@ void Library::searchTracksInCollection(const QString& query) {
     emit switchToView(m_sTrackViewName);
     m_pSidebarModel->activateDefaultSelection();
 }
+
+#ifdef __ENGINEPRIME__
+std::unique_ptr<mixxx::LibraryExporter> Library::makeLibraryExporter(
+        QWidget* parent) {
+    return std::make_unique<mixxx::LibraryExporter>(
+            parent, m_pConfig, m_pTrackCollectionManager);
+}
+#endif

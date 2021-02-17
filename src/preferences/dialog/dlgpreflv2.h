@@ -1,12 +1,12 @@
 #pragma once
 
-#include <QWidget>
 #include <QCheckBox>
+#include <QWidget>
 
+#include "effects/lv2/lv2backend.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgpreflv2dlg.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
-#include "effects/lv2/lv2backend.h"
 
 class EffectsManager;
 

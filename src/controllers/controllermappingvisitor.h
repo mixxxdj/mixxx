@@ -3,14 +3,6 @@
 class LegacyMidiControllerMapping;
 class LegacyHidControllerMapping;
 
-class LegacyControllerMappingVisitor {
-  public:
-    virtual ~LegacyControllerMappingVisitor() {
-    }
-    virtual void visit(LegacyMidiControllerMapping* mapping) = 0;
-    virtual void visit(LegacyHidControllerMapping* mapping) = 0;
-};
-
 class ConstLegacyControllerMappingVisitor {
   public:
     virtual ~ConstLegacyControllerMappingVisitor() {

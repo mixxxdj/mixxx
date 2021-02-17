@@ -82,14 +82,16 @@ class CueControlTest : public BaseSignalPathTest {
 TEST_F(CueControlTest, LoadUnloadTrack) {
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(100.0));
-    auto pIntro = pTrack->createAndAddCue();
-    pIntro->setType(mixxx::CueType::Intro);
-    pIntro->setStartPosition(150.0);
-    pIntro->setEndPosition(200.0);
-    auto pOutro = pTrack->createAndAddCue();
-    pOutro->setType(mixxx::CueType::Outro);
-    pOutro->setStartPosition(250.0);
-    pOutro->setEndPosition(300.0);
+    auto pIntro = pTrack->createAndAddCue(
+            mixxx::CueType::Intro,
+            Cue::kNoHotCue,
+            150.0,
+            200.0);
+    auto pOutro = pTrack->createAndAddCue(
+            mixxx::CueType::Outro,
+            Cue::kNoHotCue,
+            250.0,
+            300.0);
 
     loadTrack(pTrack);
 
@@ -119,14 +121,16 @@ TEST_F(CueControlTest, LoadUnloadTrack) {
 TEST_F(CueControlTest, LoadTrackWithDetectedCues) {
     TrackPointer pTrack = createTestTrack();
     pTrack->setCuePoint(CuePosition(100.0));
-    auto pIntro = pTrack->createAndAddCue();
-    pIntro->setType(mixxx::CueType::Intro);
-    pIntro->setStartPosition(100.0);
-    pIntro->setEndPosition(Cue::kNoPosition);
-    auto pOutro = pTrack->createAndAddCue();
-    pOutro->setType(mixxx::CueType::Outro);
-    pOutro->setStartPosition(Cue::kNoPosition);
-    pOutro->setEndPosition(200.0);
+    auto pIntro = pTrack->createAndAddCue(
+            mixxx::CueType::Intro,
+            Cue::kNoHotCue,
+            100.0,
+            Cue::kNoPosition);
+    auto pOutro = pTrack->createAndAddCue(
+            mixxx::CueType::Outro,
+            Cue::kNoHotCue,
+            Cue::kNoPosition,
+            200.0);
 
     loadTrack(pTrack);
 
@@ -143,14 +147,16 @@ TEST_F(CueControlTest, LoadTrackWithDetectedCues) {
 
 TEST_F(CueControlTest, LoadTrackWithIntroEndAndOutroStart) {
     TrackPointer pTrack = createTestTrack();
-    auto pIntro = pTrack->createAndAddCue();
-    pIntro->setType(mixxx::CueType::Intro);
-    pIntro->setStartPosition(Cue::kNoPosition);
-    pIntro->setEndPosition(150.0);
-    auto pOutro = pTrack->createAndAddCue();
-    pOutro->setType(mixxx::CueType::Outro);
-    pOutro->setStartPosition(250.0);
-    pOutro->setEndPosition(Cue::kNoPosition);
+    auto pIntro = pTrack->createAndAddCue(
+            mixxx::CueType::Intro,
+            Cue::kNoHotCue,
+            Cue::kNoPosition,
+            150.0);
+    auto pOutro = pTrack->createAndAddCue(
+            mixxx::CueType::Outro,
+            Cue::kNoHotCue,
+            250.0,
+            Cue::kNoPosition);
 
     loadTrack(pTrack);
 
@@ -178,15 +184,17 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabled) {
 
     pTrack->setCuePoint(CuePosition(1.9 * beatLength));
 
-    auto pIntro = pTrack->createAndAddCue();
-    pIntro->setType(mixxx::CueType::Intro);
-    pIntro->setStartPosition(2.1 * beatLength);
-    pIntro->setEndPosition(3.7 * beatLength);
+    auto pIntro = pTrack->createAndAddCue(
+            mixxx::CueType::Intro,
+            Cue::kNoHotCue,
+            2.1 * beatLength,
+            3.7 * beatLength);
 
-    auto pOutro = pTrack->createAndAddCue();
-    pOutro->setType(mixxx::CueType::Outro);
-    pOutro->setStartPosition(11.1 * beatLength);
-    pOutro->setEndPosition(15.5 * beatLength);
+    auto pOutro = pTrack->createAndAddCue(
+            mixxx::CueType::Outro,
+            Cue::kNoHotCue,
+            11.1 * beatLength,
+            15.5 * beatLength);
 
     loadTrack(pTrack);
 
@@ -205,15 +213,17 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeEnabledNoBeats) {
 
     pTrack->setCuePoint(CuePosition(100.0));
 
-    auto pIntro = pTrack->createAndAddCue();
-    pIntro->setType(mixxx::CueType::Intro);
-    pIntro->setStartPosition(250.0);
-    pIntro->setEndPosition(400.0);
+    auto pIntro = pTrack->createAndAddCue(
+            mixxx::CueType::Intro,
+            Cue::kNoHotCue,
+            250.0,
+            400.0);
 
-    auto pOutro = pTrack->createAndAddCue();
-    pOutro->setType(mixxx::CueType::Outro);
-    pOutro->setStartPosition(550.0);
-    pOutro->setEndPosition(800.0);
+    auto pOutro = pTrack->createAndAddCue(
+            mixxx::CueType::Outro,
+            Cue::kNoHotCue,
+            550.0,
+            800.0);
 
     loadTrack(pTrack);
 
@@ -232,15 +242,17 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
 
     pTrack->setCuePoint(CuePosition(240.0));
 
-    auto pIntro = pTrack->createAndAddCue();
-    pIntro->setType(mixxx::CueType::Intro);
-    pIntro->setStartPosition(210.0);
-    pIntro->setEndPosition(330.0);
+    auto pIntro = pTrack->createAndAddCue(
+            mixxx::CueType::Intro,
+            Cue::kNoHotCue,
+            210.0,
+            330.0);
 
-    auto pOutro = pTrack->createAndAddCue();
-    pOutro->setType(mixxx::CueType::Outro);
-    pOutro->setStartPosition(770.0);
-    pOutro->setEndPosition(990.0);
+    auto pOutro = pTrack->createAndAddCue(
+            mixxx::CueType::Outro,
+            Cue::kNoHotCue,
+            770.0,
+            990.0);
 
     loadTrack(pTrack);
 
@@ -254,10 +266,11 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
 TEST_F(CueControlTest, SeekOnLoadDefault) {
     // Default is to load at the intro start
     TrackPointer pTrack = createTestTrack();
-    auto pIntro = pTrack->createAndAddCue();
-    pIntro->setType(mixxx::CueType::Intro);
-    pIntro->setStartPosition(250.0);
-    pIntro->setEndPosition(400.0);
+    auto pIntro = pTrack->createAndAddCue(
+            mixxx::CueType::Intro,
+            Cue::kNoHotCue,
+            250.0,
+            400.0);
 
     loadTrack(pTrack);
 

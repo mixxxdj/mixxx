@@ -16,9 +16,12 @@
  * @param isInput true if this is representing an AudioInput, false otherwise
  * @param index the index of the represented AudioPath, if applicable
  */
-DlgPrefSoundItem::DlgPrefSoundItem(QWidget* parent, AudioPathType type,
-                                   const QList<SoundDevicePointer>& devices, bool isInput,
-                                   unsigned int index)
+DlgPrefSoundItem::DlgPrefSoundItem(
+        QWidget* parent,
+        AudioPathType type,
+        const QList<SoundDevicePointer>& devices,
+        bool isInput,
+        unsigned int index)
         : QWidget(parent),
           m_type(type),
           m_index(index),
@@ -27,7 +30,8 @@ DlgPrefSoundItem::DlgPrefSoundItem(QWidget* parent, AudioPathType type,
     setupUi(this);
     typeLabel->setText(AudioPath::getTrStringFromType(type, index));
 
-    deviceComboBox->addItem(tr("None"), QVariant::fromValue(SoundDeviceId()));
+    deviceComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
+            QVariant::fromValue(SoundDeviceId()));
 
     // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
     // connect them to the custom event filter below so they don't accept focus

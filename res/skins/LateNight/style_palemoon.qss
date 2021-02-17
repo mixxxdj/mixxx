@@ -75,9 +75,7 @@
 #PreviewDeck,
 #SidebarCoverSplitter,
 #SidebarCoverSplitter:handle,
-/*#LibrarySplitter,*/
 #LibrarySplitter::handle,
-/*WLibrary,*/
 QAbstractScrollArea::corner {
   border-top: 1px solid #212123;
   border-right: 1px solid #111;
@@ -92,10 +90,8 @@ QAbstractScrollArea::corner {
   }
 
   #SidebarSearchPreviewContainer {
-    background-color: #0f0f0f;
+    margin-top: 1px;
   }
-
-  /*WLibrary,*/
   #SidebarBox {
     padding: 2px 0px 0px 2px;
     }
@@ -105,7 +101,6 @@ QAbstractScrollArea::corner {
       border-bottom-left-radius: 0px;
       border-top-left-radius: 0px;
     }
-  /*WLibrary,*/
   #SidebarCoverSplitter,
   #SidebarCoverSplitter::handle,
   #LibrarySplitter,
@@ -116,6 +111,7 @@ QAbstractScrollArea::corner {
     #SidebarCoverSplitter::handle {
       border-width: 0px;
     }
+    /* Some tweaks to create a frameless library table */
     #LibrarySplitter {
       border-width: 0px;
       }
@@ -125,12 +121,20 @@ QAbstractScrollArea::corner {
     WLibrary {
       border-width: 1px 0px 0px 0px;
     }
-/* Some tweaks to create a frameless library table */
+    #PreviewDeckRightSpacer,
+    #SearchTreeSpacer {
+      border-right: 1px solid #222;
+      background-color: transparent;
+      }
+      #PreviewDeckRightSpacer {
+        min-width: 3px;
+        max-width: 3px;
+      }
+      #SearchTreeSpacer {
+        min-height: 3px;
+        max-height: 3px;
+      }
 #LibraryContainer {
-  background-color: #151517;
-  background-image: url(skin:/palemoon/style/lib_bg.png);
-  background-position: top;
-  background-repeat: repeat-x;
 }
   #LibraryContainer QScrollBar::handle:horizontal,
   #LibraryContainer QScrollBar::handle:vertical,
@@ -173,6 +177,7 @@ WSearchLineEdit {
     padding: 5px 0px 0px 8px;
     border-top: 1px solid #212123;
   }
+
   #WaveformsFrame,
   #OverviewBox,
   #OverviewBoxMini,
@@ -242,7 +247,6 @@ WSearchLineEdit {
 }
 
 #SearchLineBox {
-  margin-top: 1px;
   padding-right: 2px;
   border-right: 0px;
   border-top-right-radius: 0px;
@@ -254,9 +258,7 @@ WSearchLineEdit {
   border-right: 0px;
   border-left: 0px;
   border-radius: 0px;
-  margin-bottom: 3px;
   padding: 0px 2px 2px 2px;
-  margin-top: 1px;
 }
 
 #SidebarBox {
@@ -397,8 +399,6 @@ WSearchLineEdit {
 #FxRackFillerL,
 #MicAuxRack,
 #SamplerRow,
-#LibExpandBox,
-#SearchLineBox,
 #PreviewDeck {
   margin-bottom: 3px;
 }
@@ -445,7 +445,8 @@ WSearchLineEdit {
 }
 
 #PreviewDeck {
-  margin-right: 3px;
+  /* right margin is managed by #PreviewDeckRightSpacer which
+    also generates the left border of the splitter handle */
 }
 
 #SkinSettingsContainer {
@@ -1089,7 +1090,7 @@ WPushButton#FxSuperLinkInvertButton {
 
   #PreviewDeckTextBox {
     }
-    #PreviewLabel { /* Placeholder */
+    #PreviewLabel { /* Placeholder when no track is loaded */
       padding-left: 2px;
     }
     #PreviewTitle {
@@ -1233,10 +1234,18 @@ WEffectSelector,
   font-size: 14px;
 }
   /* dim² ivory */
-  #Deck1 #PlayPositionText, #DeckCompact1 #PlayPositionTextSmall, #DeckMini1 #PlayPositionTextSmall,
-  #Deck1 #KeyText,  #DeckCompact1 #KeyText, #DeckMini1 #KeyTextSmall,
-  #Deck2 #PlayPositionText, #DeckCompact2 #PlayPositionTextSmall, #DeckMini2 #PlayPositionTextSmall,
-  #Deck2 #KeyText,  #DeckCompact2 #KeyText, #DeckMini2 #KeyTextSmall,
+  #Deck1 #PlayPositionText,
+    #DeckCompact1 #PlayPositionTextSmall,
+    #DeckMini1 #PlayPositionTextSmall,
+    #Deck1 #KeyText,
+    #DeckCompact1 #KeyText,
+    #DeckMini1 #KeyTextSmall,
+  #Deck2 #PlayPositionText,
+    #DeckCompact2 #PlayPositionTextSmall,
+    #DeckMini2 #PlayPositionTextSmall,
+    #Deck2 #KeyText,
+    #DeckCompact2 #KeyText,
+    #DeckMini2 #KeyTextSmall,
   #SamplerBpm, #SamplerBpmMini,
   #LibraryContainer QHeaderView {
     color: #766b65;
@@ -1248,16 +1257,30 @@ WEffectSelector,
   }
 
 /* pale blue */
-#Deck3 #TitleText, #Deck3 #ArtistText,
-  #DeckCompact3 #TitleText, #DeckCompact3 #ArtistText,
-  #DeckMini3 #TitleTextSmall, #DeckMini3 #ArtistTextSmall,
-  #Deck3 #BpmText, #DeckCompact3 #BpmText, #DeckMini3 #BpmTextSmall,
-  #Deck3 #KeyText,  #DeckCompact3 #KeyText, #DeckMini3 #KeyTextSmall,
-#Deck4 #TitleText, #Deck4 #ArtistText,
-  #DeckCompact4 #TitleText, #DeckCompact4 #ArtistText,
-  #DeckMini4 #TitleTextSmall, #DeckMini4 #ArtistTextSmall,
-  #Deck4 #BpmText, #DeckCompact4 #BpmText, #DeckMini4 #BpmTextSmall,
-  #Deck4 #KeyText,  #DeckCompact4 #KeyText, #DeckMini4 #KeyTextSmall {
+#Deck3 #TitleText,
+  #Deck3 #ArtistText,
+  #DeckCompact3 #TitleText,
+  #DeckCompact3 #ArtistText,
+  #DeckMini3 #TitleTextSmall,
+  #DeckMini3 #ArtistTextSmall,
+  #Deck3 #BpmText,
+  #DeckCompact3 #BpmText,
+  #DeckMini3 #BpmTextSmall,
+  #Deck3 #KeyText,
+  #DeckCompact3 #KeyText,
+  #DeckMini3 #KeyTextSmall,
+#Deck4 #TitleText,
+  #Deck4 #ArtistText,
+  #DeckCompact4 #TitleText,
+  #DeckCompact4 #ArtistText,
+  #DeckMini4 #TitleTextSmall,
+  #DeckMini4 #ArtistTextSmall,
+  #Deck4 #BpmText,
+  #DeckCompact4 #BpmText,
+  #DeckMini4 #BpmTextSmall,
+  #Deck4 #KeyText,
+  #DeckCompact4 #KeyText,
+  #DeckMini4 #KeyTextSmall {
   color: #85bdbb;
   }
   #Deck3 WStarRating, #DeckCompact3 WStarRating,
@@ -1457,9 +1480,7 @@ WEffectSelector,
 
   #LibraryContainer QHeaderView {
     border-bottom-right-radius: 1px solid #000;
-    outline: none; /*
-    border-width: 1px 0px 1px 0px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 1 1 1;  */
+    outline: none;
   }
   #LibraryContainer QHeaderView::section {
     outline: none;
@@ -1768,8 +1789,8 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
   }
 
 /* Yellow */
-#RecFeedback[displayValue="1"],   /* initialize recording */
-#BroadcastButton[displayValue="1"]   /* connecting */ {
+#RecFeedback[displayValue="1"],     /* initialize recording */
+#BroadcastButton[displayValue="1"]  /* connecting */ {
   background-color: #d09300;
 }
 
@@ -1778,15 +1799,14 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 }
 
 /* pink */
-#BroadcastButton[displayValue="3"],
-#RecFeedback[displayValue="3"] { /* failure */
+#BroadcastButton[displayValue="3"], /* failure */
+#RecFeedback[displayValue="3"] {
   background-color: #f856e7;
 }
 
 /* Grey for GUI toggles */
 #GuiToggleButton[displayValue="1"],
-#SkinSettingsToggle[displayValue="1"] { /*
-  background-color: #216e75; Pale blue */
+#SkinSettingsToggle[displayValue="1"] {
   background-color: #555;
 }
 

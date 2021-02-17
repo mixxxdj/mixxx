@@ -53,12 +53,6 @@ class BulkController : public Controller {
     void visit(const LegacyMidiControllerMapping* mapping) override;
     void visit(const LegacyHidControllerMapping* mapping) override;
 
-    void accept(ControllerVisitor* visitor) override {
-        if (visitor) {
-            visitor->visit(this);
-        }
-    }
-
     bool isMappable() const override {
         return m_mapping.isMappable();
     }

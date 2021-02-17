@@ -171,15 +171,17 @@ TEST_F(AnalyzerSilenceTest, RespectUserEdits) {
 
     pTrack->setCuePoint(CuePosition(kManualCuePosition));
 
-    CuePointer pIntroCue = pTrack->createAndAddCue();
-    pIntroCue->setType(mixxx::CueType::Intro);
-    pIntroCue->setStartPosition(kManualIntroPosition);
-    pIntroCue->setEndPosition(Cue::kNoPosition);
+    CuePointer pIntroCue = pTrack->createAndAddCue(
+            mixxx::CueType::Intro,
+            Cue::kNoHotCue,
+            kManualIntroPosition,
+            Cue::kNoPosition);
 
-    CuePointer pOutroCue = pTrack->createAndAddCue();
-    pOutroCue->setType(mixxx::CueType::Outro);
-    pOutroCue->setStartPosition(Cue::kNoPosition);
-    pOutroCue->setEndPosition(kManualOutroPosition);
+    CuePointer pOutroCue = pTrack->createAndAddCue(
+            mixxx::CueType::Outro,
+            Cue::kNoHotCue,
+            Cue::kNoPosition,
+            kManualOutroPosition);
 
     // Fill the first half with silence
     for (int i = 0; i < nTrackSampleDataLength / 2; i++) {

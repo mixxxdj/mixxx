@@ -12,16 +12,13 @@
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
 
-class ControllerMappingTableModel : public QAbstractTableModel,
-                                    public LegacyControllerMappingVisitor {
+class ControllerMappingTableModel : public QAbstractTableModel {
     Q_OBJECT
   public:
     ControllerMappingTableModel(QObject* pParent);
     ~ControllerMappingTableModel() override;
 
     void setMapping(LegacyControllerMappingPointer pMapping);
-    void visit(LegacyHidControllerMapping* pHidMapping) override;
-    void visit(LegacyMidiControllerMapping* pMidiMapping) override;
 
     // Revert changes made since the last apply.
     virtual void cancel();
@@ -42,7 +39,5 @@ class ControllerMappingTableModel : public QAbstractTableModel,
     virtual void onMappingLoaded() = 0;
 
     QVector<QHash<int, QVariant> > m_headerInfo;
-    LegacyControllerMappingPointer m_pMapping;
     LegacyMidiControllerMapping* m_pMidiMapping;
-    LegacyHidControllerMapping* m_pHidMapping;
 };

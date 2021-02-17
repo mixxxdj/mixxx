@@ -71,9 +71,8 @@ void WEffectSelector::populate() {
         setItemData(i, QVariant(QStringLiteral("<b>") + name + QStringLiteral("</b><br/>") +
                 description), Qt::ToolTipRole);
     }
-
-    //: Displayed when no effect is loaded
-    addItem(tr("None"), QVariant());
+    // Add empty item, no effect
+    addItem(EffectsManager::kNoEffectString);
     setItemData(visibleEffectManifests.size(), QVariant(tr("No effect loaded.")),
                 Qt::ToolTipRole);
 

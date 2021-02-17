@@ -30,14 +30,12 @@ add_library(shout_mixxx STATIC
   src/format_mp3.c
   src/codec_vorbis.c
   src/codec_opus.c
-  src/codec_theora.c
-  src/codec_speex.c
   src/tls.c
 )
 
 target_compile_definitions(shout_mixxx PRIVATE HAVE_CONFIG_H)
 target_compile_options(shout_mixxx PRIVATE -pthread -Wall)
 
-target_link_libraries(shout_mixxx ogg vorbis theora speex OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(shout_mixxx ogg vorbis OpenSSL::SSL OpenSSL::Crypto)
 
 

@@ -3,8 +3,8 @@
 #include <QWidget>
 #include <memory>
 
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 
 class MixxxMainWindow;

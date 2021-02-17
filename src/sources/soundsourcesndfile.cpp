@@ -23,22 +23,17 @@ const QStringList kSupportedFileExtensions = {
 };
 
 // SoundSourceProxyTest fails for version 1.0.30 and OGG files
-#if defined(__APPLE__)
+// https://github.com/libsndfile/libsndfile/issues/643
 const QLatin1String kVersionStringWithBrokenOggDecoding = QLatin1String("libsndfile-1.0.30");
-#endif
 
 QStringList getSupportedFileExtensionsFiltered() {
     auto supportedFileExtensions = kSupportedFileExtensions;
-    // Until now this issue was only confirmed for macOS and libsndfile
-    // installed from Homebrew during the SCons build on Travis CI.
-#if defined(__APPLE__)
     if (sf_version_string() == kVersionStringWithBrokenOggDecoding) {
         kLogger.info()
                 << "Disabling OGG decoding for"
                 << kVersionStringWithBrokenOggDecoding;
         supportedFileExtensions.removeAll(QStringLiteral("ogg"));
     }
-#endif
     return supportedFileExtensions;
 };
 

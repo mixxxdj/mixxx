@@ -11,7 +11,8 @@
 // this (7) represents latency values from 1 ms to about 80 ms -- bkgood
 const unsigned int SoundManagerConfig::kMaxAudioBufferSizeIndex = 7;
 
-const QString SoundManagerConfig::kDefaultAPI = QString("None");
+const QString SoundManagerConfig::kDefaultAPI = QStringLiteral("None");
+const QString SoundManagerConfig::kEmptyComboBox = QStringLiteral("---");
 // Sample Rate even the cheap sound Devices will support most likely
 const unsigned int SoundManagerConfig::kFallbackSampleRate = 48000;
 const unsigned int SoundManagerConfig::kDefaultDeckCount = 2;

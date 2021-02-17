@@ -106,7 +106,7 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
         const QString& filterAPI, bool bOutputDevices, bool bInputDevices) const {
     //qDebug() << "SoundManager::getDeviceList";
 
-    if (filterAPI == "None") {
+    if (filterAPI == SoundManagerConfig::kDefaultAPI) {
         return QList<SoundDevicePointer>();
     }
 

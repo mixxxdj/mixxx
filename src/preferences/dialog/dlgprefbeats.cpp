@@ -27,7 +27,7 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
 
     // Connections
     connect(comboBoxBeatPlugin,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefBeats::pluginSelected);
     connect(checkBoxAnalyzerEnabled,

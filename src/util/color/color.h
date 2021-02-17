@@ -36,4 +36,7 @@ inline QColor chooseColorByBrightness(QColor colorToChooseBy,
 // returns a lighter color, otherwise returns a darker color.
 QColor chooseContrastColor(QColor baseColor, int dimBrightThreshold);
 
+// Blends two color 50/50
+QColor blendColors(QColor color1, QColor color2);
+
 } // namespace Color

@@ -27,8 +27,10 @@ SettingsManager::SettingsManager(const QString& settingsPath)
 
     ControlDoublePrivate::setUserConfig(m_pSettings);
 
+#ifdef __BROADCAST__
     m_pBroadcastSettings = BroadcastSettingsPointer(
                                new BroadcastSettings(m_pSettings));
+#endif
 }
 
 SettingsManager::~SettingsManager() {

@@ -3,10 +3,10 @@
 #include <QButtonGroup>
 #include <QWidget>
 
+#include "control/controlproxy.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefreplaygaindlg.h"
 #include "preferences/replaygainsettings.h"
-#include "control/controlproxy.h"
-#include "preferences/dlgpreferencepage.h"
 
 class DlgPrefReplayGain: public DlgPreferencePage,
                          public Ui::DlgPrefReplayGainDlg {
