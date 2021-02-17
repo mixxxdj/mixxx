@@ -49,7 +49,7 @@ void Controller::stopEngine() {
 bool Controller::applyMapping() {
     qDebug() << "Applying controller mapping...";
 
-    const LegacyControllerMapping* pMapping = mapping();
+    const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
 
     // Load the script code into the engine
     if (!m_pScriptEngineLegacy) {

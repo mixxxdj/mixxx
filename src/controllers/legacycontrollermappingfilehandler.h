@@ -14,14 +14,15 @@ class LegacyControllerMappingFileHandler {
     LegacyControllerMappingFileHandler(){};
     virtual ~LegacyControllerMappingFileHandler(){};
 
-    static LegacyControllerMappingPointer loadMapping(const QFileInfo& mappingFile,
+    static std::shared_ptr<LegacyControllerMapping> loadMapping(const QFileInfo& mappingFile,
             const QDir& systemMappingsPath);
 
     ///  Overloaded function for convenience
     ///
     /// @param path The path to a controller mapping XML file.
     /// @param systemMappingsPath Fallback directory for searching script files.
-    LegacyControllerMappingPointer load(const QString& path, const QDir& systemMappingsPath);
+    std::shared_ptr<LegacyControllerMapping> load(
+            const QString& path, const QDir& systemMappingsPath);
 
     // Returns just the name of a given device (everything before the first
     // space)
@@ -33,7 +34,7 @@ class LegacyControllerMappingFileHandler {
     QDomElement getControllerNode(const QDomElement& root);
 
     void parseMappingInfo(const QDomElement& root,
-            LegacyControllerMapping* mapping) const;
+            std::shared_ptr<LegacyControllerMapping> mapping) const;
 
     /// Adds script files from XML to the LegacyControllerMapping.
     ///
@@ -45,7 +46,7 @@ class LegacyControllerMappingFileHandler {
     /// @param mapping The LegacyControllerMapping these scripts belong to.
     /// @param systemMappingsPath Fallback directory for searching script files.
     void addScriptFilesToMapping(const QDomElement& root,
-            LegacyControllerMapping* mapping,
+            std::shared_ptr<LegacyControllerMapping> mapping,
             const QDir& systemMappingsPath) const;
 
     /// Creates the XML document and includes what script files are currently
@@ -56,7 +57,7 @@ class LegacyControllerMappingFileHandler {
 
   private:
     // Sub-classes implement this.
-    virtual LegacyControllerMappingPointer load(const QDomElement& root,
+    virtual std::shared_ptr<LegacyControllerMapping> load(const QDomElement& root,
             const QString& filePath,
             const QDir& systemMappingPath) = 0;
 };
