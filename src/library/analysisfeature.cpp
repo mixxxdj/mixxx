@@ -1,22 +1,18 @@
-// analysisfeature.cpp
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
-// Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
+#include "library/analysisfeature.h"
 
 #include <QtDebug>
 
-#include "library/library.h"
-#include "library/analysisfeature.h"
-
+#include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/dlganalysis.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
-#include "library/dlganalysis.h"
-#include "widget/wlibrary.h"
-#include "controllers/keyboard/keyboardeventfilter.h"
+#include "moc_analysisfeature.cpp"
 #include "sources/soundsourceproxy.h"
-#include "util/dnd.h"
 #include "util/debug.h"
+#include "util/dnd.h"
 #include "util/logger.h"
+#include "widget/wlibrary.h"
 
 namespace {
 
@@ -67,9 +63,9 @@ void AnalysisFeature::resetTitle() {
 
 void AnalysisFeature::setTitleProgress(int currentTrackNumber, int totalTracksCount) {
     m_title = QString("%1 (%2 / %3)")
-            .arg(m_baseTitle)
-            .arg(QString::number(currentTrackNumber))
-            .arg(QString::number(totalTracksCount));
+                      .arg(m_baseTitle,
+                              QString::number(currentTrackNumber),
+                              QString::number(totalTracksCount));
     emit featureIsLoading(this, false);
 }
 
@@ -85,7 +81,7 @@ void AnalysisFeature::bindLibraryWidget(WLibrary* libraryWidget,
     connect(m_pAnalysisView,
             &DlgAnalysis::loadTrackToPlayer,
             this,
-            [=](TrackPointer track, QString group) {
+            [=](TrackPointer track, const QString& group) {
                 emit loadTrackToPlayer(track, group, false);
             });
     connect(m_pAnalysisView,
@@ -134,7 +130,7 @@ void AnalysisFeature::activate() {
     emit enableCoverArtDisplay(true);
 }
 
-void AnalysisFeature::analyzeTracks(QList<TrackId> trackIds) {
+void AnalysisFeature::analyzeTracks(const QList<TrackId>& trackIds) {
     if (!m_pTrackAnalysisScheduler) {
         const int numAnalyzerThreads = numberOfAnalyzerThreads();
         kLogger.info()
@@ -229,13 +225,13 @@ void AnalysisFeature::onTrackAnalysisSchedulerFinished() {
     emit analysisActive(false);
 }
 
-bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
+bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     QList<TrackId> trackIds = m_pLibrary->trackCollection().resolveTrackIdsFromUrls(urls,
             !pSource);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }
 
-bool AnalysisFeature::dragMoveAccept(QUrl url) {
+bool AnalysisFeature::dragMoveAccept(const QUrl& url) {
     return SoundSourceProxy::isUrlSupported(url);
 }

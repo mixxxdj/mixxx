@@ -1,11 +1,6 @@
-#ifndef MIXXX_SQLSUBSELECTMODE_H
-#define MIXXX_SQLSUBSELECTMODE_H
-
+#pragma once
 
 enum SqlSubselectMode {
     SQL_SUBSELECT_IN,
     SQL_SUBSELECT_NOT_IN,
 };
-
-
-#endif // MIXXX_SQLSUBSELECTMODE_H

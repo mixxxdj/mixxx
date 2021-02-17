@@ -1,32 +1,16 @@
-/***************************************************************************
-                          main.cpp  -  description
-                             -------------------
-    begin                : Mon Feb 18 09:48:17 CET 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include <QThread>
-#include <QDir>
-#include <QtDebug>
 #include <QApplication>
-#include <QStringList>
+#include <QDir>
 #include <QString>
+#include <QStringList>
 #include <QTextCodec>
+#include <QThread>
+#include <QtDebug>
 
+#include "coreservices.h"
+#include "errordialoghandler.h"
 #include "mixxx.h"
 #include "mixxxapplication.h"
 #include "sources/soundsourceproxy.h"
-#include "errordialoghandler.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
 #include "util/logging.h"
@@ -38,21 +22,24 @@
 
 namespace {
 
+// Exit codes
+constexpr int kFatalErrorOnStartupExitCode = 1;
+constexpr int kParseCmdlineArgsErrorExitCode = 2;
+
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
-    int result = -1;
-    MixxxMainWindow mainWindow(app, args);
+    auto coreServices = std::make_shared<mixxx::CoreServices>(args);
+    MixxxMainWindow mainWindow(app, coreServices);
     // If startup produced a fatal error, then don't even start the
     // Qt event loop.
     if (ErrorDialogHandler::instance()->checkError()) {
-        mainWindow.finalize();
+        return kFatalErrorOnStartupExitCode;
     } else {
         qDebug() << "Displaying main window";
         mainWindow.show();
 
         qDebug() << "Running Mixxx";
-        result = app->exec();
+        return app->exec();
     }
-    return result;
 }
 
 } // anonymous namespace
@@ -89,7 +76,7 @@ int main(int argc, char * argv[]) {
     CmdlineArgs& args = CmdlineArgs::Instance();
     if (!args.Parse(argc, argv)) {
         args.printUsage();
-        return 0;
+        return kParseCmdlineArgsErrorExitCode;
     }
 
     // If you change this here, you also need to change it in
@@ -101,14 +88,8 @@ int main(int argc, char * argv[]) {
     // the main thread. Bug #1748636.
     ErrorDialogHandler::instance();
 
-    mixxx::Logging::initialize(args.getSettingsPath(),
-                               args.getLogLevel(),
-                               args.getLogFlushLevel(),
-                               args.getDebugAssertBreak());
-
     MixxxApplication app(argc, argv);
 
-    SoundSourceProxy::registerSoundSourceProviders();
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());
@@ -130,11 +111,11 @@ int main(int argc, char * argv[]) {
     // When the last window is closed, terminate the Qt event loop.
     QObject::connect(&app, &MixxxApplication::lastWindowClosed, &app, &MixxxApplication::quit);
 
-    int result = runMixxx(&app, args);
+    int exitCode = runMixxx(&app, args);
 
-    qDebug() << "Mixxx shutdown complete with code" << result;
+    qDebug() << "Mixxx shutdown complete with code" << exitCode;
 
     mixxx::Logging::shutdown();
 
-    return result;
+    return exitCode;
 }

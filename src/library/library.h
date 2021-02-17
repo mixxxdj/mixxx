@@ -7,6 +7,9 @@
 #include <QPointer>
 
 #include "analyzer/analyzerprogress.h"
+#ifdef __ENGINEPRIME__
+#include "library/trackset/crate/crateid.h"
+#endif
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
@@ -32,6 +35,12 @@ class TrackModel;
 class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
+
+#ifdef __ENGINEPRIME__
+namespace mixxx {
+class LibraryExporter;
+} // namespace mixxx
+#endif
 
 // A Library class is a container for all the model-side aspects of the library.
 // A library widget can be attached to the Library object by calling bindLibraryWidget.
@@ -94,31 +103,39 @@ class Library: public QObject {
     /// and shows the results by switching the view.
     void searchTracksInCollection(const QString& query);
 
+#ifdef __ENGINEPRIME__
+    std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);
+#endif
+
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
-    void slotLoadLocationToPlayer(QString location, QString group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
+    void slotLoadLocationToPlayer(const QString& location, const QString& group);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
-    void slotRequestAddDir(QString directory);
-    void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
-    void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
+    void slotRequestAddDir(const QString& directory);
+    void slotRequestRemoveDir(const QString& directory, Library::RemovalType removalType);
+    void slotRequestRelocateDir(const QString& previousDirectory, const QString& newDirectory);
     void onSkinLoadFinished();
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
     void restoreSearch(const QString&);
     void search(const QString& text);
     void disableSearch();
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
+#ifdef __ENGINEPRIME__
+    void exportLibrary();
+    void exportCrate(CrateId crateId);
+#endif
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);

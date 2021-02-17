@@ -1,17 +1,18 @@
-#include <QPainter>
-#include <QGLContext>
-#include <QtDebug>
-
 #include "waveform/widgets/qthsvwaveformwidget.h"
 
-#include "waveform/renderers/waveformwidgetrenderer.h"
+#include <QGLContext>
+#include <QPainter>
+#include <QtDebug>
+
+#include "moc_qthsvwaveformwidget.cpp"
 #include "waveform/renderers/waveformrenderbackground.h"
-#include "waveform/renderers/waveformrendermark.h"
-#include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
 #include "waveform/renderers/waveformrendererhsv.h"
 #include "waveform/renderers/waveformrendererpreroll.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendermark.h"
+#include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 
 QtHSVWaveformWidget::QtHSVWaveformWidget(const QString& group, QWidget* parent)
         : QGLWidget(parent),
@@ -37,7 +38,7 @@ QtHSVWaveformWidget::~QtHSVWaveformWidget() {
 }
 
 void QtHSVWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = this;
 }
 
 void QtHSVWaveformWidget::paintEvent(QPaintEvent* event) {
@@ -53,7 +54,7 @@ mixxx::Duration QtHSVWaveformWidget::render() {
     // this may delayed until previous buffer swap finished
     QPainter painter(this);
     t1 = timer.restart();
-    draw(&painter, NULL);
+    draw(&painter, nullptr);
     //t2 = timer.restart();
     //qDebug() << "QtHSVWaveformWidget "<< t1 << t2;
     return t1; // return timer for painter setup

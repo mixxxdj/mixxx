@@ -1,5 +1,4 @@
-#ifndef WCOMBOBOX_H
-#define WCOMBOBOX_H
+#pragma once
 
 #include <QComboBox>
 #include <QDomNode>
@@ -23,5 +22,3 @@ class WComboBox : public QComboBox, public WBaseWidget {
   private slots:
     void slotCurrentIndexChanged(int index);
 };
-
-#endif /* WCOMBOBOX_H */

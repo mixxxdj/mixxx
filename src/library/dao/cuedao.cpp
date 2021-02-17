@@ -1,6 +1,3 @@
-// cuedao.cpp
-// Created 10/26/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "library/dao/cuedao.h"
 
 #include <QVariant>
@@ -19,18 +16,17 @@ namespace {
 
 const mixxx::Logger kLogger = mixxx::Logger("CueDAO");
 
-// The label column is not nullable!
-const QVariant kEmptyLabel = QVariant(QStringLiteral(""));
-
+/// Wrap a `QString` label in a `QVariant`. The label column is not nullable,
+/// so this function also makes sure that the label an empty string, not null.
 inline const QVariant labelToQVariant(const QString& label) {
     if (label.isNull()) {
-        return kEmptyLabel; // null -> empty
+        return QLatin1String(""); // null -> empty
     } else {
         return label;
     }
 }
 
-// Empty labels are read as null strings
+/// Empty labels are read as null strings
 inline QString labelFromQVariant(const QVariant& value) {
     const auto label = value.toString();
     if (label.isEmpty()) {
@@ -41,7 +37,7 @@ inline QString labelFromQVariant(const QVariant& value) {
 }
 
 CuePointer cueFromRow(const QSqlRecord& row) {
-    int id = row.value(row.indexOf("id")).toInt();
+    const auto id = DbId(row.value(row.indexOf("id")));
     TrackId trackId(row.value(row.indexOf("track_id")));
     int type = row.value(row.indexOf("type")).toInt();
     int position = row.value(row.indexOf("position")).toInt();
@@ -142,28 +138,11 @@ bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
     VERIFY_OR_DEBUG_ASSERT(cue) {
         return false;
     }
-    if (cue->getId() == -1) {
-        // New cue
-        QSqlQuery query(m_database);
-        query.prepare(QStringLiteral("INSERT INTO " CUE_TABLE " (track_id, type, position, length, hotcue, label, color) VALUES (:track_id, :type, :position, :length, :hotcue, :label, :color)"));
-        query.bindValue(":track_id", trackId.toVariant());
-        query.bindValue(":type", static_cast<int>(cue->getType()));
-        query.bindValue(":position", cue->getPosition());
-        query.bindValue(":length", cue->getLength());
-        query.bindValue(":hotcue", cue->getHotCue());
-        query.bindValue(":label", labelToQVariant(cue->getLabel()));
-        query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));
 
-        if (query.exec()) {
-            int id = query.lastInsertId().toInt();
-            cue->setId(id);
-            cue->setDirty(false);
-            return true;
-        }
-        qDebug() << query.executedQuery() << query.lastError();
-    } else {
+    // Prepare query
+    QSqlQuery query(m_database);
+    if (cue->getId().isValid()) {
         // Update cue
-        QSqlQuery query(m_database);
         query.prepare(QStringLiteral("UPDATE " CUE_TABLE " SET "
                         "track_id=:track_id,"
                         "type=:type,"
@@ -173,40 +152,53 @@ bool CueDAO::saveCue(TrackId trackId, Cue* cue) const {
                         "label=:label,"
                         "color=:color"
                         " WHERE id=:id"));
-        query.bindValue(":id", cue->getId());
-        query.bindValue(":track_id", trackId.toVariant());
-        query.bindValue(":type", static_cast<int>(cue->getType()));
-        query.bindValue(":position", cue->getPosition());
-        query.bindValue(":length", cue->getLength());
-        query.bindValue(":hotcue", cue->getHotCue());
-        query.bindValue(":label", labelToQVariant(cue->getLabel()));
-        query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));
-
-        if (query.exec()) {
-            cue->setDirty(false);
-            return true;
-        } else {
-            LOG_FAILED_QUERY(query);
-        }
+        query.bindValue(":id", cue->getId().toVariant());
+    } else {
+        // New cue
+        query.prepare(
+                QStringLiteral("INSERT INTO " CUE_TABLE
+                               " (track_id, type, position, length, hotcue, "
+                               "label, color) VALUES (:track_id, :type, "
+                               ":position, :length, :hotcue, :label, :color)"));
     }
-    return false;
+
+    // Bind values and execute query
+    query.bindValue(":track_id", trackId.toVariant());
+    query.bindValue(":type", static_cast<int>(cue->getType()));
+    query.bindValue(":position", cue->getPosition());
+    query.bindValue(":length", cue->getLength());
+    query.bindValue(":hotcue", cue->getHotCue());
+    query.bindValue(":label", labelToQVariant(cue->getLabel()));
+    query.bindValue(":color", mixxx::RgbColor::toQVariant(cue->getColor()));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    if (!cue->getId().isValid()) {
+        // New cue
+        const auto newId = DbId(query.lastInsertId());
+        DEBUG_ASSERT(newId.isValid());
+        cue->setId(newId);
+    }
+    DEBUG_ASSERT(cue->getId().isValid());
+    cue->setDirty(false);
+    return true;
 }
 
 bool CueDAO::deleteCue(Cue* cue) const {
     //qDebug() << "CueDAO::deleteCue" << QThread::currentThread() << m_database.connectionName();
-    if (cue->getId() != -1) {
-        QSqlQuery query(m_database);
-        query.prepare(QStringLiteral("DELETE FROM " CUE_TABLE " WHERE id=:id"));
-        query.bindValue(":id", cue->getId());
-        if (query.exec()) {
-            return true;
-        } else {
-            LOG_FAILED_QUERY(query);
-        }
-    } else {
-        return true;
+    if (!cue->getId().isValid()) {
+        return false;
     }
-    return false;
+    QSqlQuery query(m_database);
+    query.prepare(QStringLiteral("DELETE FROM " CUE_TABLE " WHERE id=:id"));
+    query.bindValue(":id", cue->getId().toVariant());
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    return true;
 }
 
 void CueDAO::saveTrackCues(
@@ -217,16 +209,16 @@ void CueDAO::saveTrackCues(
     cueIds.reserve(cueList.size());
     for (const auto& pCue : cueList) {
         // New cues (without an id) must always be marked as dirty
-        DEBUG_ASSERT(pCue->getId() >= 0 || pCue->isDirty());
+        DEBUG_ASSERT(pCue->getId().isValid() || pCue->isDirty());
         // Update or save cue
         if (pCue->isDirty()) {
             saveCue(trackId, pCue.get());
         }
         // After saving each cue must have a valid id
-        VERIFY_OR_DEBUG_ASSERT(pCue->getId() >= 0) {
+        VERIFY_OR_DEBUG_ASSERT(pCue->getId().isValid()) {
             continue;
         }
-        cueIds.append(QString::number(pCue->getId()));
+        cueIds.append(pCue->getId().toString());
     }
 
     // Delete orphaned cues

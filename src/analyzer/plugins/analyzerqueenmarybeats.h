@@ -1,5 +1,4 @@
-#ifndef ANALYZER_PLUGINS_ANALYZERQUEENMARYBEATS_H
-#define ANALYZER_PLUGINS_ANALYZERQUEENMARYBEATS_H
+#pragma once
 
 #include <vector>
 
@@ -56,5 +55,3 @@ class AnalyzerQueenMaryBeats : public AnalyzerBeatsPlugin {
 };
 
 } // namespace mixxx
-
-#endif /* ANALYZER_PLUGINS_ANALYZERQUEENMARYBEATS_H */

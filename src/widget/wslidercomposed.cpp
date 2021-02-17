@@ -1,36 +1,19 @@
-/***************************************************************************
-                          wslidercomposed.cpp  -  description
-                             -------------------
-    begin                : Tue Jun 25 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "widget/wslidercomposed.h"
 
-#include <QtDebug>
-#include <QStylePainter>
 #include <QStyleOption>
+#include <QStylePainter>
+#include <QtDebug>
 
-#include "widget/controlwidgetconnection.h"
-#include "widget/wpixmapstore.h"
-#include "widget/wskincolor.h"
+#include "moc_wslidercomposed.cpp"
 #include "util/debug.h"
 #include "util/duration.h"
 #include "util/math.h"
+#include "widget/controlwidgetconnection.h"
+#include "widget/wpixmapstore.h"
+#include "widget/wskincolor.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
-      m_bRightButtonPressed(false),
       m_dHandleLength(0.0),
       m_dSliderLength(0.0),
       m_bHorizontal(false),
@@ -49,8 +32,10 @@ WSliderComposed::WSliderComposed(QWidget * parent)
       m_pHandle(nullptr),
       m_renderTimer(mixxx::Duration::fromMillis(20),
                     mixxx::Duration::fromSeconds(1)) {
-    connect(&m_renderTimer, SIGNAL(update()),
-            this, SLOT(update()));
+    connect(&m_renderTimer,
+            &WidgetRenderTimer::update,
+            this,
+            QOverload<>::of(&QWidget::update));
 }
 
 WSliderComposed::~WSliderComposed() {
@@ -97,8 +82,8 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
             int comma = margins.indexOf(",");
             bool m1ok;
             bool m2ok;
-            double m1 = (margins.left(comma)).toDouble(&m1ok);
-            double m2 = (margins.mid(comma + 1)).toDouble(&m2ok);
+            double m1 = (margins.leftRef(comma)).toDouble(&m1ok);
+            double m2 = (margins.midRef(comma + 1)).toDouble(&m2ok);
             if (m1ok && m2ok) {
                 m_dBarStart = m1 * scaleFactor;
                 m_dBarEnd = m2 * scaleFactor;
@@ -122,8 +107,8 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
                 int comma = bgMargins.indexOf(",");
                 bool m1ok;
                 bool m2ok;
-                double m1 = (bgMargins.left(comma)).toDouble(&m1ok);
-                double m2 = (bgMargins.mid(comma + 1)).toDouble(&m2ok);
+                double m1 = (bgMargins.leftRef(comma)).toDouble(&m1ok);
+                double m2 = (bgMargins.midRef(comma + 1)).toDouble(&m2ok);
                 if (m1ok && m2ok) {
                     m_dBarBgStart = m1 * scaleFactor;
                     m_dBarBgEnd = m2 * scaleFactor;
@@ -165,9 +150,9 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     setFocusPolicy(Qt::NoFocus);
 }
 
-void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
-                                      Paintable::DrawMode drawMode,
-                                      double scaleFactor) {
+void WSliderComposed::setSliderPixmap(const PixmapSource& sourceSlider,
+        Paintable::DrawMode drawMode,
+        double scaleFactor) {
     m_pSlider = WPixmapStore::getPaintable(sourceSlider, drawMode, scaleFactor);
     if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << sourceSlider.getPath();
@@ -178,9 +163,9 @@ void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
 }
 
 void WSliderComposed::setHandlePixmap(bool bHorizontal,
-                                      PixmapSource sourceHandle,
-                                      Paintable::DrawMode mode,
-                                      double scaleFactor) {
+        const PixmapSource& sourceHandle,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     m_bHorizontal = bHorizontal;
     m_handler.setHorizontal(m_bHorizontal);
     m_pHandle = WPixmapStore::getPaintable(sourceHandle, mode, scaleFactor);

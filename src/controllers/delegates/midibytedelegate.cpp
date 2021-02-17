@@ -30,8 +30,8 @@ QString MidiByteDelegate::displayText(const QVariant& value,
 void MidiByteDelegate::setEditorData(QWidget* editor,
                                      const QModelIndex& index) const {
     int control = index.data(Qt::EditRole).toInt();
-    HexSpinBox* pSpinBox = dynamic_cast<HexSpinBox*>(editor);
-    if (pSpinBox == NULL) {
+    HexSpinBox* pSpinBox = qobject_cast<HexSpinBox*>(editor);
+    if (pSpinBox == nullptr) {
         return;
     }
     pSpinBox->setValue(control);
@@ -40,8 +40,8 @@ void MidiByteDelegate::setEditorData(QWidget* editor,
 void MidiByteDelegate::setModelData(QWidget* editor,
                                     QAbstractItemModel* model,
                                     const QModelIndex& index) const {
-    HexSpinBox* pSpinBox = dynamic_cast<HexSpinBox*>(editor);
-    if (pSpinBox == NULL) {
+    HexSpinBox* pSpinBox = qobject_cast<HexSpinBox*>(editor);
+    if (pSpinBox == nullptr) {
         return;
     }
     model->setData(index, pSpinBox->value(), Qt::EditRole);

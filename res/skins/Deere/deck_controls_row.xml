@@ -38,7 +38,7 @@
             <Layout>stacked</Layout>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <Template src="skin:left_right_2state_button.xml">
+              <Template src="skin:left_right_display_2state_button.xml">
                 <SetVariable name="TooltipId">play_cue_set</SetVariable>
                 <SetVariable name="ObjectName">PlayToggle</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
@@ -46,6 +46,14 @@
                 <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
                 <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
                 <SetVariable name="right_connection_control"><Variable name="group"/>,cue_set</SetVariable>
+                <SetVariable name="display_connection_control"><Variable name="group"/>,play_latched</SetVariable>
+              </Template>
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="HorizontalStretchButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="HorizontalStretchButtonSizePolicy"/></SetVariable>
+                <SetVariable name="left_connection_control"><Variable name="group"/>,play</SetVariable>
               </Template>
               <Template src="skin:left_2state_button.xml">
                 <SetVariable name="MinimumSize"><Variable name="HorizontalStretchButtonMinimumSize"/></SetVariable>

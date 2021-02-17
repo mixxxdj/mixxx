@@ -16,6 +16,7 @@
 
 #include "controllers/controllerdebug.h"
 #include "util/assert.h"
+#include "util/cmdlineargs.h"
 
 namespace {
 
@@ -32,9 +33,34 @@ QFile s_logfile;
 // Whether to break on debug assertions.
 bool s_debugAssertBreak = false;
 
+// Note:
+// you can customize this pattern by starting Mixxx with
+// QT_MESSAGE_PATTERN="%{message}" mixxx
+// For debugging timing related issues
+// QT_MESSAGE_PATTERN="%{time yyyyMMdd h:mm:ss.zzz} %{type} [{{threadname}}] %{message}"
+// Or for for finding the origin (in Debug builds)
+// QT_MESSAGE_PATTERN="%{type} [{{threadname}}] %{file}:%{line} %{message}"
+// QT_MESSAGE_PATTERN="%{type} [{{threadname}}] %{function} %{message}"
+// TODO: Adjust the default format and messages and collect file and function info in release builds as well.
+
 const QString kThreadNamePattern = QStringLiteral("{{threadname}}");
 const QString kDefaultMessagePattern = QStringLiteral("%{type} [") +
         kThreadNamePattern + QStringLiteral("] %{message}");
+
+const QString kDefaultMessagePatternColor =
+        QStringLiteral(
+                "%{if-category}\033[35m %{category}:\033[35m%{endif}"
+                "%{if-debug}\033[34m%{type}%{endif}"
+                "%{if-info}\033[32m%{type}%{endif}"
+                "%{if-warning}\033[93m%{type}%{endif}"
+                "%{if-critical}\033[91m%{type}%{endif}"
+                "\033[0m [\033[97m") +
+        kThreadNamePattern +
+        QStringLiteral(
+                "\033[0m] "
+                "%{if-fatal}\033[97m\033[41m%{type} "
+                "\033[30m%{file}:%{line}\033[0m %{endif}"
+                "%{message}");
 
 const QLoggingCategory kDefaultLoggingCategory = QLoggingCategory(nullptr);
 
@@ -126,7 +152,7 @@ inline void writeToStdErr(
                     .toLocal8Bit();
 
     QMutexLocker locked(&s_mutexStdErr);
-    const size_t written = fwrite(
+    const std::size_t written = fwrite(
             formattedMessage.constData(), sizeof(char), formattedMessage.size(), stderr);
     Q_UNUSED(written);
     DEBUG_ASSERT(written == static_cast<size_t>(formattedMessage.size()));
@@ -139,6 +165,45 @@ inline void writeToStdErr(
         Q_UNUSED(ret);
         DEBUG_ASSERT(ret == 0);
     }
+}
+
+/// Rotate existing logfiles and get the file path of the log file to write to.
+/// May return an invalid/empty QString if the log directory does not exist.
+QString rotateLogFilesAndGetFilePath(const QString& logDirPath) {
+    if (logDirPath.isEmpty()) {
+        fprintf(stderr, "No log directory specified!\n");
+        return QString();
+    }
+
+    QDir logDir(logDirPath);
+    if (!logDir.exists()) {
+        fprintf(stderr,
+                "Log directory %s does not exist!\n",
+                logDir.absolutePath().toLocal8Bit().constData());
+        return QString();
+    }
+
+    QString logFilePath;
+    // Rotate old logfiles.
+    for (int i = 9; i >= 0; --i) {
+        const QString logFileName = (i == 0) ? QString("mixxx.log")
+                                             : QString("mixxx.log.%1").arg(i);
+        logFilePath = logDir.absoluteFilePath(logFileName);
+        if (QFileInfo::exists(logFilePath)) {
+            QString olderLogFilePath =
+                    logDir.absoluteFilePath(QString("mixxx.log.%1").arg(i + 1));
+            // This should only happen with number 10
+            if (QFileInfo::exists(olderLogFilePath)) {
+                QFile::remove(olderLogFilePath);
+            }
+            if (!QFile::rename(logFilePath, olderLogFilePath)) {
+                fprintf(stderr,
+                        "Error rolling over logfile %s\n",
+                        logFilePath.toLocal8Bit().constData());
+            }
+        }
+    }
+    return logFilePath;
 }
 
 /// Handles writing to stderr and the log file.
@@ -269,10 +334,10 @@ LogLevel Logging::s_logFlushLevel = kLogFlushLevelDefault;
 
 // static
 void Logging::initialize(
-        const QDir& logDir,
+        const QString& logDirPath,
         LogLevel logLevel,
         LogLevel logFlushLevel,
-        bool debugAssertBreak) {
+        LogFlags flags) {
     VERIFY_OR_DEBUG_ASSERT(!s_logfile.isOpen()) {
         // Somebody already called Logging::initialize.
         return;
@@ -280,45 +345,27 @@ void Logging::initialize(
 
     setLogLevel(logLevel);
 
-    if (logDir.exists()) {
-        QString logFileName;
-
-        // Rotate old logfiles.
-        for (int i = 9; i >= 0; --i) {
-            if (i == 0) {
-                logFileName = logDir.filePath("mixxx.log");
-            } else {
-                logFileName = logDir.filePath(QString("mixxx.log.%1").arg(i));
-            }
-            QFileInfo logbackup(logFileName);
-            if (logbackup.exists()) {
-                QString olderlogname =
-                        logDir.filePath(QString("mixxx.log.%1").arg(i + 1));
-                // This should only happen with number 10
-                if (QFileInfo::exists(olderlogname)) {
-                    QFile::remove(olderlogname);
-                }
-                if (!QFile::rename(logFileName, olderlogname)) {
-                    fprintf(stderr,
-                            "Error rolling over logfile %s",
-                            logFileName.toLocal8Bit().constData());
-                }
-            }
-        }
-        // Since the message handler is not installed yet, we can touch s_logfile
-        // without the lock.
-        s_logfile.setFileName(logFileName);
-        s_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
-        s_logFlushLevel = logFlushLevel;
-    } else {
-        qInfo() << "No directory for writing a log file";
-        // No need to flush anything
-        s_logFlushLevel = LogLevel::Critical;
+    QString logFilePath;
+    if (flags.testFlag(LogFlag::LogToFile)) {
+        logFilePath = rotateLogFilesAndGetFilePath(logDirPath);
     }
 
-    s_debugAssertBreak = debugAssertBreak;
+    if (logFilePath.isEmpty()) {
+        // No need to flush anything
+        s_logFlushLevel = LogLevel::Critical;
+    } else {
+        // Since the message handler is not installed yet, we can touch s_logfile
+        // without the lock.
+        s_logfile.setFileName(logFilePath);
+        s_logfile.open(QIODevice::WriteOnly | QIODevice::Text);
+        s_logFlushLevel = logFlushLevel;
+    }
 
-    if (qgetenv("QT_MESSAGE_PATTERN").isEmpty()) {
+    s_debugAssertBreak = flags.testFlag(LogFlag::DebugAssertBreak);
+
+    if (CmdlineArgs::Instance().useColors()) {
+        qSetMessagePattern(kDefaultMessagePatternColor);
+    } else {
         qSetMessagePattern(kDefaultMessagePattern);
     }
 

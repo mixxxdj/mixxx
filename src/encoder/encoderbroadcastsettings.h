@@ -1,18 +1,10 @@
-/**
-* @file encoderbroadcastsettings.h
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief storage of broadcast settings for the encoders.
-*/
-
-
-#ifndef ENCODERBROADCASTSETTINGS_H
-#define ENCODERBROADCASTSETTINGS_H
+#pragma once
 
 #include "encoder/encodersettings.h"
 #include "encoder/encoder.h"
 #include "preferences/broadcastsettings.h"
 
+/// Storage of broadcast settings for the encoders.
 class EncoderBroadcastSettings : public EncoderSettings {
   public:
     explicit EncoderBroadcastSettings(BroadcastProfilePtr profile);
@@ -30,5 +22,3 @@ class EncoderBroadcastSettings : public EncoderSettings {
     QList<int> m_qualList;
     BroadcastProfilePtr m_pProfile;
 };
-
-#endif // ENCODERBROADCASTSETTINGS_H

@@ -4,8 +4,7 @@
 /// LibraryView is an abstract interface that all views to be used with the
 /// Library widget should support.
 
-#ifndef LIBRARYVIEW_H
-#define LIBRARYVIEW_H
+#pragma once
 
 #include <QString>
 
@@ -30,7 +29,7 @@ class LibraryView {
 
     /// If applicable, requests that the LibraryView load the selected track to
     /// the specified group. Does nothing otherwise.
-    virtual void loadSelectedTrackToGroup(QString group, bool play) {
+    virtual void loadSelectedTrackToGroup(const QString& group, bool play) {
         Q_UNUSED(group); Q_UNUSED(play);
     }
 
@@ -47,5 +46,3 @@ class LibraryView {
     virtual void assignPreviousTrackColor(){};
     virtual void assignNextTrackColor(){};
 };
-
-#endif /* LIBRARYVIEW_H */

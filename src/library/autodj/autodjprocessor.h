@@ -1,5 +1,4 @@
-#ifndef AUTODJPROCESSOR_H
-#define AUTODJPROCESSOR_H
+#pragma once
 
 #include <QModelIndexList>
 #include <QObject>
@@ -193,7 +192,6 @@ class AutoDJProcessor : public QObject {
 
     bool nextTrackLoaded();
 
-  public slots:
     void setTransitionTime(int seconds);
 
     void setTransitionMode(TransitionMode newMode);
@@ -204,8 +202,7 @@ class AutoDJProcessor : public QObject {
     AutoDJError toggleAutoDJ(bool enable);
 
   signals:
-    void loadTrackToPlayer(TrackPointer pTrack, QString group,
-                                   bool play);
+    void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
     void autoDJStateChanged(AutoDJProcessor::AutoDJState state);
     void transitionTimeChanged(int time);
     void randomTrackRequested(int tracksToAdd);
@@ -227,10 +224,11 @@ class AutoDJProcessor : public QObject {
     void controlFadeNow(double value);
     void controlShuffle(double value);
     void controlSkipNext(double value);
+    void controlAddRandomTrack(double value);
 
   protected:
     // The following virtual signal wrappers are used for testing
-    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+    virtual void emitLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play) {
         emit loadTrackToPlayer(pTrack, group, play);
     }
     virtual void emitAutoDJStateChanged(AutoDJProcessor::AutoDJState state) {
@@ -293,11 +291,10 @@ class AutoDJProcessor : public QObject {
     ControlProxy* m_pCOCrossfaderReverse;
 
     ControlPushButton* m_pSkipNext;
+    ControlPushButton* m_pAddRandomTrack;
     ControlPushButton* m_pFadeNow;
     ControlPushButton* m_pShufflePlaylist;
     ControlPushButton* m_pEnabledAutoDJ;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };
-
-#endif /* AUTODJPROCESSOR_H */

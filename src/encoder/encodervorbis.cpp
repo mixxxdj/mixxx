@@ -1,30 +1,9 @@
-/****************************************************************************
-                   encodervorbis.cpp  -  vorbis encoder for mixxx
-                             -------------------
-    copyright            : (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
-                           (C) 1994 Tobias Rafreider (broadcast and recording fixes)
- ***************************************************************************/
-
-/*
-Okay, so this is the vorbis encoder class...
-It's a real mess right now.
-
-When I get around to cleaning things up,
-I'll probably make an Encoder base class,
-so we can easily add in an EncoderLame (or something) too.
-
-A lot of stuff has been stolen from:
-http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
-*/
-
 #include <stdlib.h> // needed for random num gen
 #include <time.h> // needed for random num gen
 #include <QtDebug>
 
 #include "encoder/encodervorbis.h"
 #include "encoder/encodercallback.h"
-#include "errordialoghandler.h"
 
 // Automatic thresholds for switching the encoder to mono
 // They have been chosen by testing and to keep the same number
@@ -90,8 +69,9 @@ int EncoderVorbis::getSerial()
 {
     static int prevSerial = 0;
     int serial = rand();
-    while (prevSerial == serial)
+    while (prevSerial == serial) {
         serial = rand();
+    }
     prevSerial = serial;
     qDebug() << "RETURNING SERIAL " << serial;
     return serial;
@@ -114,8 +94,9 @@ void EncoderVorbis::writePage() {
     if (m_header_write) {
         while (true) {
             result = ogg_stream_flush(&m_oggs, &m_oggpage);
-            if (result == 0)
+            if (result == 0) {
                 break;
+            }
             m_pCallback->write(
                     m_oggpage.header,
                     m_oggpage.body,
@@ -126,7 +107,7 @@ void EncoderVorbis::writePage() {
     }
 
     while (vorbis_analysis_blockout(&m_vdsp, &m_vblock) == 1) {
-        vorbis_analysis(&m_vblock, 0);
+        vorbis_analysis(&m_vblock, nullptr);
         vorbis_bitrate_addblock(&m_vblock);
         while (vorbis_bitrate_flushpacket(&m_vdsp, &m_oggpacket)) {
             // weld packet into bitstream
@@ -135,12 +116,14 @@ void EncoderVorbis::writePage() {
             bool eos = false;
             while (!eos) {
                 int result = ogg_stream_pageout(&m_oggs, &m_oggpage);
-                if (result == 0)
+                if (result == 0) {
                     break;
+                }
                 m_pCallback->write(m_oggpage.header, m_oggpage.body,
                                    m_oggpage.header_len, m_oggpage.body_len);
-                if (ogg_page_eos(&m_oggpage))
+                if (ogg_page_eos(&m_oggpage)) {
                     eos = true;
+                }
             }
         }
     }
@@ -186,7 +169,7 @@ void EncoderVorbis::initStream() {
     vorbis_block_init(&m_vdsp, &m_vblock);
 
     // set up packet-to-stream encoder; attach a random serial number
-    srand(time(0));
+    srand(time(nullptr));
     ogg_stream_init(&m_oggs, getSerial());
 
     // add comment
@@ -217,7 +200,7 @@ void EncoderVorbis::initStream() {
     m_bStreamInitialized = true;
 }
 
-int EncoderVorbis::initEncoder(int samplerate, QString errorMessage) {
+int EncoderVorbis::initEncoder(int samplerate, QString& errorMessage) {
     vorbis_info_init(&m_vinfo);
 
     // initialize VBR quality based mode

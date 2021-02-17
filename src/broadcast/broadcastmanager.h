@@ -1,5 +1,4 @@
-#ifndef BROADCAST_BROADCASTMANAGER_H
-#define BROADCAST_BROADCASTMANAGER_H
+#pragma once
 
 #include <QObject>
 
@@ -56,5 +55,3 @@ class BroadcastManager : public QObject {
     ControlPushButton* m_pBroadcastEnabled;
     ControlObject* m_pStatusCO;
 };
-
-#endif /* BROADCAST_BROADCASTMANAGER_H */

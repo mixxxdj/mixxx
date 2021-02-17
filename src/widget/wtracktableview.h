@@ -37,7 +37,7 @@ class WTrackTableView : public WLibraryTableView {
     bool hasFocus() const override;
     void keyPressEvent(QKeyEvent* event) override;
     void loadSelectedTrack() override;
-    void loadSelectedTrackToGroup(QString group, bool play) override;
+    void loadSelectedTrackToGroup(const QString& group, bool play) override;
     void assignNextTrackColor() override;
     void assignPreviousTrackColor() override;
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
@@ -48,6 +48,11 @@ class WTrackTableView : public WLibraryTableView {
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
+    }
+
+    Q_PROPERTY(QColor focusBorderColor MEMBER m_pFocusBorderColor DESIGNABLE true);
+    QColor getFocusBorderColor() const {
+        return m_pFocusBorderColor;
     }
 
   public slots:
@@ -98,6 +103,7 @@ class WTrackTableView : public WLibraryTableView {
     parented_ptr<WTrackMenu> m_pTrackMenu;
 
     const double m_backgroundColorOpacity;
+    QColor m_pFocusBorderColor;
     bool m_sorting;
 
     // Control the delay to load a cover art.

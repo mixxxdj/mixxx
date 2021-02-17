@@ -1,41 +1,22 @@
-/***************************************************************************
-                          dlgprefeq.h  -  description
-                             -------------------
-    begin                : Thu Jun 7 2007
-    copyright            : (C) 2007 by John Sully
-    email                : jsully@scs.ryerson.ca
- ***************************************************************************/
+#pragma once
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef DLGPREFEQ_H
-#define DLGPREFEQ_H
-
-#include <QWidget>
 #include <QComboBox>
+#include <QWidget>
 
+#include "control/controlproxy.h"
+#include "effects/effectrack.h"
+#include "effects/effectsmanager.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefeqdlg.h"
 #include "preferences/usersettings.h"
-#include "control/controlproxy.h"
-#include "preferences/dlgpreferencepage.h"
-#include "effects/effectsmanager.h"
-#include "effects/effectrack.h"
 
-/**
-  *@author John Sully
-  */
 class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     Q_OBJECT
   public:
-    DlgPrefEQ(QWidget *parent, EffectsManager* pEffectsManager,
-              UserSettingsPointer _config);
+    DlgPrefEQ(
+            QWidget* parent,
+            std::shared_ptr<EffectsManager> pEffectsManager,
+            UserSettingsPointer _config);
     virtual ~DlgPrefEQ();
 
     QUrl helpUrl() const override;
@@ -69,7 +50,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
   signals:
     void apply(const QString &);
-    void effectOnChainSlot(const unsigned int, const unsigned int, QString);
+    void effectOnChainSlot(const unsigned int, const unsigned int, const QString&);
 
   private:
     void loadSettings();
@@ -87,7 +68,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     double m_lowEqFreq, m_highEqFreq;
 
     // Members needed for changing the effects loaded on the EQ Effect Rack
-    EffectsManager* m_pEffectsManager;
+    std::shared_ptr<EffectsManager> m_pEffectsManager;
     EqualizerRackPointer m_pEQEffectRack;
     QuickEffectRackPointer m_pQuickEffectRack;
     OutputEffectRackPointer m_pOutputEffectRack;
@@ -109,5 +90,3 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     bool m_bEqAutoReset;
     bool m_bGainAutoReset;
 };
-
-#endif

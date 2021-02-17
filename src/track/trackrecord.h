@@ -66,8 +66,15 @@ class TrackRecord final {
     TrackRecord& operator=(TrackRecord&&) = default;
     TrackRecord& operator=(const TrackRecord&) = default;
 
+    static constexpr int kMinRating = 0;
+    static constexpr int kMaxRating = 5;
+    static constexpr int kNoRating = kMinRating;
+
+    static bool isValidRating(int rating) {
+        return rating >= kMinRating && rating <= kMaxRating;
+    }
     bool hasRating() const {
-        return getRating() > 0;
+        return getRating() != kNoRating;
     }
 
     void setKeys(const Keys& keys);
@@ -107,8 +114,58 @@ class TrackRecord final {
     bool mergeImportedMetadata(
             const TrackMetadata& importedMetadata);
 
+    /// Update the stream info after opening the audio stream during
+    /// a session.
+    /// Returns true if the corresponding metadata properties have been
+    /// updated and false otherwise.
+    bool updateStreamInfoFromSource(
+            const mixxx::audio::StreamInfo& streamInfoFromSource);
+    /// Check if the stream info is supposed to be reliable and accurate.
+    /// TODO: Also flag the stream info as "accurate" in the database and
+    /// invoke updateStreamInfoFromSource() accordingly when loading tracks
+    /// from the database.
+    bool hasStreamInfoFromSource() const {
+        return static_cast<bool>(m_streamInfoFromSource);
+    }
+    const std::optional<audio::StreamInfo>& getStreamInfoFromSource() const {
+        return m_streamInfoFromSource;
+    }
+
 private:
     Keys m_keys;
+
+    // TODO: Use TrackMetadata as single source of truth and do not
+    // store this information redundantly.
+    //
+    // PROPOSAL (as implememted by https://gitlab.com/uklotzde/aoide-rs):
+    // This redesign requires to track the status of some or all track
+    // metadata (which includes the stream info properties) by a set of
+    // bitflags:
+    //  - UNRELIABLE = 0 (default)
+    //    Parsed from file tags which are considered inaccurate and
+    //    are often imprecise
+    //  - RELIABLE =   1 << 0
+    //    Reported by a decoder when opening an audio/video stream for
+    //    reading. Nevertheless different decoders may report slightly
+    //    differing values.
+    //  - LOCKED =     1 << 1
+    //    Locked metadata will not be updated automatically, neither when
+    //    parsing file tags nor when decoding an audio/video stream.
+    //    While locked the stale flag is never set.
+    //  - STALE =      1 << 2
+    //    Stale metadata should be re-imported depending on the other flags.
+    std::optional<audio::StreamInfo> m_streamInfoFromSource;
+
+    /// Equality comparison
+    ///
+    /// Exception: The member m_streamInfoFromSource must not be considered
+    /// for equality comparisons! It is only needed for verifying consistency
+    /// during updates and as a flags when a track is loaded.
+    friend bool operator==(const TrackRecord& lhs, const TrackRecord& rhs);
 };
+
+inline bool operator!=(const TrackRecord& lhs, const TrackRecord& rhs) {
+    return !(lhs == rhs);
+}
 
 } // namespace mixxx

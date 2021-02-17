@@ -1,10 +1,11 @@
+#include "library/scanner/recursivescandirectorytask.h"
+
 #include <QCryptographicHash>
 #include <QDirIterator>
 
-#include "library/scanner/recursivescandirectorytask.h"
-
-#include "library/scanner/libraryscanner.h"
 #include "library/scanner/importfilestask.h"
+#include "library/scanner/libraryscanner.h"
+#include "moc_recursivescandirectorytask.cpp"
 #include "util/timer.h"
 
 RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
@@ -73,7 +74,6 @@ void RecursiveScanDirectoryTask::run() {
         }
     }
 
-    // Note: A hash of "0" is a real hash if the directory contains no files!
     // Calculate a hash of the directory's file list.
     const mixxx::cache_key_t newHash = mixxx::cacheKeyFromMessageDigest(hasher.result());
 

@@ -1,17 +1,34 @@
 #include <gtest/gtest.h>
 
+#include <QDir>
+#include <QFile>
+
 #include "track/serato/tags.h"
+#include "util/color/predefinedcolorpalettes.h"
+
+namespace {
+
+bool dumpToFile(const QString& filename, const QByteArray& data) {
+    QFile outfile(filename);
+    const bool openOk = outfile.open(QIODevice::WriteOnly);
+    if (!openOk) {
+        return false;
+    }
+    return data.size() == outfile.write(data);
+}
+
+} // namespace
 
 class SeratoTagsTest : public testing::Test {
   protected:
-    void trackColorRoundtrip(mixxx::RgbColor::optional_t displayedColor) {
+    void trackColorRoundtrip(const mixxx::RgbColor::optional_t& displayedColor) {
         mixxx::RgbColor storedColor =
                 mixxx::SeratoTags::displayedToStoredTrackColor(displayedColor);
         mixxx::RgbColor::optional_t actualDisplayedColor = mixxx::SeratoTags::storedToDisplayedTrackColor(storedColor);
         EXPECT_EQ(displayedColor, actualDisplayedColor);
     }
     void trackColorRoundtripWithKnownStoredColor(
-            mixxx::RgbColor::optional_t displayedColor,
+            const mixxx::RgbColor::optional_t& displayedColor,
             mixxx::RgbColor storedColor) {
         mixxx::RgbColor actualStoredColor =
                 mixxx::SeratoTags::displayedToStoredTrackColor(displayedColor);
@@ -160,4 +177,91 @@ TEST_F(SeratoTagsTest, SetCueInfos) {
     seratoTags.setCueInfos(cueInfos);
     EXPECT_EQ(seratoTags.getCueInfos().size(), cueInfos.size());
     EXPECT_EQ(seratoTags.getCueInfos(), cueInfos);
+}
+
+TEST_F(SeratoTagsTest, CueColorConversionRoundtrip) {
+    for (const auto color : mixxx::PredefinedColorPalettes::
+                    kSeratoTrackMetadataHotcueColorPalette) {
+        const auto displayedColor = mixxx::SeratoTags::storedToDisplayedSeratoDJProCueColor(color);
+        const auto storedColor =
+                mixxx::SeratoTags::displayedToStoredSeratoDJProCueColor(
+                        displayedColor);
+        EXPECT_EQ(color, storedColor);
+    }
+
+    for (const auto color : mixxx::PredefinedColorPalettes::kSeratoDJProHotcueColorPalette) {
+        const auto storedColor = mixxx::SeratoTags::displayedToStoredSeratoDJProCueColor(color);
+        const auto displayedColor =
+                mixxx::SeratoTags::storedToDisplayedSeratoDJProCueColor(
+                        storedColor);
+        EXPECT_EQ(color, displayedColor);
+    }
+}
+
+TEST_F(SeratoTagsTest, MarkersParseDumpRoundtrip) {
+    const auto filetype = mixxx::taglib::FileType::MP3;
+    QDir dir(QStringLiteral("src/test/serato/data/mp3/markers_/"));
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << "*.octet-stream");
+    const QFileInfoList fileList = dir.entryInfoList();
+    for (const QFileInfo& fileInfo : fileList) {
+        mixxx::SeratoTags seratoTags;
+        EXPECT_TRUE(seratoTags.getCueInfos().isEmpty());
+
+        auto file = QFile(fileInfo.filePath());
+        const bool openOk = file.open(QIODevice::ReadOnly);
+        EXPECT_TRUE(openOk);
+        const QByteArray inputData = file.readAll();
+        const bool parseOk = seratoTags.parseMarkers(inputData, filetype);
+        EXPECT_TRUE(parseOk);
+
+        const auto trackColor = seratoTags.getTrackColor();
+        const auto cueInfos = seratoTags.getCueInfos();
+        seratoTags.setTrackColor(trackColor);
+        seratoTags.setCueInfos(cueInfos);
+
+        const QByteArray outputData = seratoTags.dumpMarkers(filetype);
+        EXPECT_EQ(inputData, outputData);
+        if (inputData != outputData) {
+            qWarning() << "parsed" << cueInfos;
+            EXPECT_TRUE(dumpToFile(
+                    file.fileName() + QStringLiteral(".seratotagstest.actual"),
+                    outputData));
+        }
+    }
+}
+
+TEST_F(SeratoTagsTest, Markers2RoundTrip) {
+    const auto filetype = mixxx::taglib::FileType::MP3;
+    QDir dir(QStringLiteral("src/test/serato/data/mp3/markers2/"));
+    dir.setFilter(QDir::Files);
+    dir.setNameFilters(QStringList() << "*.octet-stream");
+    const QFileInfoList fileList = dir.entryInfoList();
+    for (const QFileInfo& fileInfo : fileList) {
+        mixxx::SeratoTags seratoTags;
+        EXPECT_TRUE(seratoTags.getCueInfos().isEmpty());
+
+        auto file = QFile(fileInfo.filePath());
+        const bool openOk = file.open(QIODevice::ReadOnly);
+        EXPECT_TRUE(openOk);
+        const QByteArray inputData = file.readAll();
+        const bool parseOk = seratoTags.parseMarkers2(inputData, filetype);
+        EXPECT_TRUE(parseOk);
+
+        const auto bpmLocked = seratoTags.isBpmLocked();
+        const auto trackColor = seratoTags.getTrackColor();
+        const auto cueInfos = seratoTags.getCueInfos();
+        seratoTags.setBpmLocked(bpmLocked);
+        seratoTags.setTrackColor(trackColor);
+        seratoTags.setCueInfos(cueInfos);
+
+        const QByteArray outputData = seratoTags.dumpMarkers2(filetype);
+        EXPECT_EQ(inputData, outputData);
+        if (inputData != outputData) {
+            qWarning() << "parsed" << cueInfos;
+            EXPECT_TRUE(dumpToFile(
+                    file.fileName() + QStringLiteral(".seratotagstest.actual"),
+                    outputData));
+        }
+    }
 }

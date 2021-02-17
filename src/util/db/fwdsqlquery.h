@@ -36,7 +36,7 @@ class FwdSqlQuery: protected QSqlQuery {
 
   public:
     FwdSqlQuery(
-            QSqlDatabase database,
+            const QSqlDatabase& database,
             const QString& statement);
 
     bool isPrepared() const {
@@ -58,6 +58,10 @@ class FwdSqlQuery: protected QSqlQuery {
     // Overloaded function for type DbId
     void bindValue(const QString& placeholder, const DbId& value) {
         bindValue(placeholder, value.toVariant());
+    }
+
+    QString executedQuery() const {
+        return QSqlQuery::executedQuery();
     }
 
     // Execute the prepared query and log errors on failure.

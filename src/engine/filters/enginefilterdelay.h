@@ -1,5 +1,4 @@
-#ifndef ENGINEFILTERDELAY_H
-#define ENGINEFILTERDELAY_H
+#pragma once
 
 #include "engine/engineobject.h"
 #include "util/assert.h"
@@ -122,5 +121,3 @@ class EngineFilterDelay : public EngineObjectConstIn {
     CSAMPLE m_buf[SIZE];
     bool m_doStart;
 };
-
-#endif // ENGINEFILTERDELAY_H

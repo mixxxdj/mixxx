@@ -43,7 +43,7 @@ class DlgReplaceCueColor : public QDialog, public Ui::DlgReplaceCueColor {
     void setCurrentColor(mixxx::RgbColor color);
 
   signals:
-    void databaseTracksChanged(QSet<TrackId> Trackids);
+    void databaseTracksChanged(const QSet<TrackId>& Trackids);
 
   private slots:
     void slotApply();

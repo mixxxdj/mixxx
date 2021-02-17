@@ -1,23 +1,24 @@
-// mixxxlibraryfeature.h
-// Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
+#pragma once
 
-#ifndef MIXXXLIBRARYFEATURE_H
-#define MIXXXLIBRARYFEATURE_H
-
+#include <QAction>
+#include <QIcon>
+#include <QList>
+#include <QModelIndex>
+#include <QObject>
+#include <QPointer>
+#include <QSharedPointer>
+#include <QString>
 #include <QStringListModel>
 #include <QUrl>
 #include <QVariant>
-#include <QIcon>
-#include <QModelIndex>
-#include <QList>
-#include <QString>
-#include <QSharedPointer>
-#include <QObject>
 
-#include "library/libraryfeature.h"
 #include "library/dao/trackdao.h"
+#include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "preferences/usersettings.h"
+#ifdef __ENGINEPRIME__
+#include "util/parented_ptr.h"
+#endif
 
 class DlgHidden;
 class DlgMissing;
@@ -34,11 +35,14 @@ class MixxxLibraryFeature final : public LibraryFeature {
 
     QVariant title() override;
     QIcon getIcon() override;
-    bool dropAccept(QList<QUrl> urls, QObject* pSource) override;
-    bool dragMoveAccept(QUrl url) override;
+    bool dropAccept(const QList<QUrl>& urls, QObject* pSource) override;
+    bool dragMoveAccept(const QUrl& url) override;
     TreeItemModel* getChildModel() override;
     void bindLibraryWidget(WLibrary* pLibrary,
                     KeyboardEventFilter* pKeyboard) override;
+#ifdef __ENGINEPRIME__
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
+#endif
 
     bool hasTrackTable() override {
         return true;
@@ -49,7 +53,16 @@ class MixxxLibraryFeature final : public LibraryFeature {
   public slots:
     void activate() override;
     void activateChild(const QModelIndex& index) override;
+#ifdef __ENGINEPRIME__
+    void onRightClick(const QPoint& globalPos) override;
+#endif
     void refreshLibraryModels();
+
+#ifdef __ENGINEPRIME__
+  signals:
+    /// Inform that a request has been made to export the whole Mixxx library.
+    void exportLibrary();
+#endif
 
   private:
     const QString kMissingTitle;
@@ -64,6 +77,10 @@ class MixxxLibraryFeature final : public LibraryFeature {
 
     DlgMissing* m_pMissingView;
     DlgHidden* m_pHiddenView;
-};
 
-#endif /* MIXXXLIBRARYFEATURE_H */
+#ifdef __ENGINEPRIME__
+    parented_ptr<QAction> m_pExportLibraryAction;
+
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
+#endif
+};

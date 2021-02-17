@@ -13,70 +13,83 @@ const Logger kLogger("TrackMetadata");
 
 /*static*/ constexpr int TrackMetadata::kCalendarYearInvalid;
 
-bool TrackMetadata::updateAudioPropertiesFromStream(
+bool TrackMetadata::updateStreamInfoFromSource(
         const audio::StreamInfo& streamInfo) {
-    bool changed = false;
+    if (getStreamInfo() == streamInfo) {
+        return false;
+    }
     const auto streamChannelCount =
             streamInfo.getSignalInfo().getChannelCount();
     if (streamChannelCount.isValid() &&
-        streamChannelCount != getChannelCount()) {
-        if (getChannelCount().isValid()) {
-            kLogger.debug()
-                    << "Modifying channel count:"
-                    << getChannelCount()
-                    << "->"
-                    << streamChannelCount;
-        }
-        setChannelCount(streamChannelCount);
-        changed = true;
+            streamChannelCount != getStreamInfo().getSignalInfo().getChannelCount() &&
+            getStreamInfo().getSignalInfo().getChannelCount().isValid()) {
+        kLogger.debug()
+                << "Modifying channel count:"
+                << getStreamInfo().getSignalInfo().getChannelCount()
+                << "->"
+                << streamChannelCount;
     }
     const auto streamSampleRate =
             streamInfo.getSignalInfo().getSampleRate();
     if (streamSampleRate.isValid() &&
-        streamSampleRate != getSampleRate()) {
-        if (getSampleRate().isValid()) {
-            kLogger.debug()
-                    << "Modifying sample rate:"
-                    << getSampleRate()
-                    << "->"
-                    << streamSampleRate;
-        }
-        setSampleRate(streamSampleRate);
-        changed = true;
+            streamSampleRate != getStreamInfo().getSignalInfo().getSampleRate() &&
+            getStreamInfo().getSignalInfo().getSampleRate().isValid()) {
+        kLogger.debug()
+                << "Modifying sample rate:"
+                << getStreamInfo().getSignalInfo().getSampleRate()
+                << "->"
+                << streamSampleRate;
     }
     const auto streamBitrate =
             streamInfo.getBitrate();
     if (streamBitrate.isValid() &&
-        streamBitrate != getBitrate()) {
-        if (getBitrate().isValid()) {
-            kLogger.debug()
-                    << "Modifying bitrate:"
-                    << getBitrate()
-                    << "->"
-                    << streamBitrate;
-        }
-        setBitrate(streamBitrate);
-        changed = true;
+            streamBitrate != getStreamInfo().getBitrate() &&
+            getStreamInfo().getSignalInfo().isValid()) {
+        kLogger.debug()
+                << "Modifying bitrate:"
+                << getStreamInfo().getSignalInfo()
+                << "->"
+                << streamBitrate;
     }
     const auto streamDuration =
             streamInfo.getDuration();
     if (streamDuration > Duration::empty() &&
-        streamDuration != getDuration()) {
-        if (getDuration() > Duration::empty()) {
-            kLogger.debug()
-                    << "Modifying duration:"
-                    << getDuration()
-                    << "->"
-                    << streamDuration;
-        }
-        setDuration(streamDuration);
-        changed = true;
+            streamDuration != getStreamInfo().getDuration() &&
+            getStreamInfo().getDuration() > Duration::empty()) {
+        kLogger.debug()
+                << "Modifying duration:"
+                << getStreamInfo().getDuration()
+                << "->"
+                << streamDuration;
     }
-    return changed;
+    setStreamInfo(streamInfo);
+    return true;
 }
 
+QString TrackMetadata::getBitrateText() const {
+    if (!getStreamInfo().getBitrate().isValid()) {
+        return QString();
+    }
+    return QString::number(getStreamInfo().getBitrate()) +
+            QChar(' ') +
+            audio::Bitrate::unit();
+}
 
-int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
+QString TrackMetadata::getDurationText(
+        Duration::Precision precision) const {
+    double durationSeconds;
+    if (precision == Duration::Precision::SECONDS) {
+        // Round to full seconds before formatting for consistency
+        // getDurationText() should always display the same number
+        // as getDurationSecondsRounded()
+        durationSeconds = getDurationSecondsRounded();
+    } else {
+        durationSeconds = getStreamInfo().getDuration().toDoubleSeconds();
+    }
+    return Duration::formatTime(durationSeconds, precision);
+}
+
+int TrackMetadata::parseCalendarYear(const QString& year, bool* pValid) {
     const QDateTime dateTime(parseDateTime(year));
     if (0 < dateTime.date().year()) {
         if (pValid) {
@@ -104,7 +117,7 @@ int TrackMetadata::parseCalendarYear(QString year, bool* pValid) {
     }
 }
 
-QString TrackMetadata::formatCalendarYear(QString year, bool* pValid) {
+QString TrackMetadata::formatCalendarYear(const QString& year, bool* pValid) {
     bool calendarYearValid = false;
     int calendarYear = parseCalendarYear(year, &calendarYearValid);
     if (pValid) {
@@ -117,7 +130,7 @@ QString TrackMetadata::formatCalendarYear(QString year, bool* pValid) {
     }
 }
 
-QString TrackMetadata::reformatYear(QString year) {
+QString TrackMetadata::reformatYear(const QString& year) {
     const QDateTime dateTime(parseDateTime(year));
     if (dateTime.isValid()) {
         // date/time
@@ -155,22 +168,16 @@ bool TrackMetadata::anyFileTagsModified(
 }
 
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs) {
-    return lhs.getAlbumInfo() == rhs.getAlbumInfo() &&
-            lhs.getTrackInfo() == rhs.getTrackInfo() &&
-            lhs.getChannelCount() == rhs.getChannelCount() &&
-            lhs.getSampleRate() == rhs.getSampleRate() &&
-            lhs.getBitrate() == rhs.getBitrate() &&
-            lhs.getDuration() == rhs.getDuration();
+    return lhs.getStreamInfo() == rhs.getStreamInfo() &&
+            lhs.getAlbumInfo() == rhs.getAlbumInfo() &&
+            lhs.getTrackInfo() == rhs.getTrackInfo();
 }
 
 QDebug operator<<(QDebug dbg, const TrackMetadata& arg) {
     dbg << "TrackMetadata{";
+    arg.dbgStreamInfo(dbg);
     arg.dbgTrackInfo(dbg);
     arg.dbgAlbumInfo(dbg);
-    arg.dbgBitrate(dbg);
-    arg.dbgChannelCount(dbg);
-    arg.dbgDuration(dbg);
-    arg.dbgSampleRate(dbg);
     dbg << '}';
     return dbg;
 }

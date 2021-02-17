@@ -1,5 +1,4 @@
-#ifndef SEARCHQUERYPARSER_H
-#define SEARCHQUERYPARSER_H
+#pragma once
 
 #include <QRegExp>
 #include <QString>
@@ -45,5 +44,3 @@ class SearchQueryParser {
 
     DISALLOW_COPY_AND_ASSIGN(SearchQueryParser);
 };
-
-#endif /* SEARCHQUERYPARSER_H */

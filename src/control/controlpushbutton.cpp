@@ -1,27 +1,12 @@
-/***************************************************************************
-                          controlpushbutton.cpp  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "control/controlpushbutton.h"
+
+#include "moc_controlpushbutton.cpp"
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new simulated latching push-button.
    Input:   key - Key for the configuration file
    -------- ------------------------------------------------------ */
-ControlPushButton::ControlPushButton(ConfigKey key, bool bPersist, double defaultValue)
+ControlPushButton::ControlPushButton(const ConfigKey& key, bool bPersist, double defaultValue)
         : ControlObject(key, false, false, bPersist, defaultValue),
           m_buttonMode(PUSH),
           m_iNoStates(2) {

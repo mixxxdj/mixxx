@@ -1,98 +1,135 @@
 #include "database/schemamanager.h"
 
+#include "util/assert.h"
 #include "util/db/fwdsqlquery.h"
 #include "util/db/sqltransaction.h"
-#include "util/xml.h"
 #include "util/logger.h"
-#include "util/assert.h"
-
-
-const QString SchemaManager::SETTINGS_VERSION_STRING = "mixxx.schema.version";
-const QString SchemaManager::SETTINGS_MINCOMPATIBLE_STRING = "mixxx.schema.min_compatible_version";
+#include "util/math.h"
+#include "util/optional.h"
+#include "util/xml.h"
 
 namespace {
-    mixxx::Logger kLogger("SchemaManager");
+mixxx::Logger kLogger("SchemaManager");
 
-    int readCurrentSchemaVersion(const SettingsDAO& settings) {
-        QString settingsValue = settings.getValue(SchemaManager::SETTINGS_VERSION_STRING);
-        // May be a null string if the schema has not been created. We default the
-        // startVersion to 0 so that we automatically try to upgrade to revision 1.
-        if (settingsValue.isNull()) {
-            return 0; // initial version
-        } else {
-            bool ok = false;
-            int schemaVersion = settingsValue.toInt(&ok);
-            VERIFY_OR_DEBUG_ASSERT(ok && (schemaVersion >= 0)) {
-                kLogger.critical()
-                        << "Invalid database schema version" << settingsValue;
-            }
-            return schemaVersion;
-        }
+constexpr int INITIAL_VERSION = 0;
+
+// Reapplying previous schema migrations is only supported starting
+// with version 35. All following schema migrations must support to
+// be reapplied without any data loss.
+constexpr int MIN_REAPPLY_VERSION = 35;
+
+const QString SETTINGS_VERSION_KEY = QStringLiteral("mixxx.schema.version");
+const QString SETTINGS_LASTUSED_VERSION_KEY = QStringLiteral("mixxx.schema.last_used_version");
+const QString SETTINGS_MINCOMPATIBLE_KEY = QStringLiteral("mixxx.schema.min_compatible_version");
+
+std::optional<int> readSchemaVersion(
+        const SettingsDAO& settings,
+        const QString& key) {
+    QString settingsValue = settings.getValue(key);
+    // May be a null string if the schema has not been created yet.
+    if (settingsValue.isNull()) {
+        return std::nullopt;
     }
+    bool ok = false;
+    int schemaVersion = settingsValue.toInt(&ok);
+    VERIFY_OR_DEBUG_ASSERT(ok && (schemaVersion >= INITIAL_VERSION)) {
+        kLogger.critical()
+                << "Invalid database schema version"
+                << settingsValue;
+        return std::nullopt;
+    }
+    return schemaVersion;
 }
+
+} // namespace
 
 SchemaManager::SchemaManager(const QSqlDatabase& database)
-        : m_database(database),
-          m_settingsDao(m_database),
-          m_currentVersion(readCurrentSchemaVersion(m_settingsDao)) {
+        : m_settingsDao(database) {
 }
 
-bool SchemaManager::isBackwardsCompatibleWithVersion(int targetVersion) const {
-    QString backwardsCompatibleVersion =
-            m_settingsDao.getValue(SETTINGS_MINCOMPATIBLE_STRING);
-    bool ok = false;
-    int iBackwardsCompatibleVersion = backwardsCompatibleVersion.toInt(&ok);
+int SchemaManager::readCurrentVersion() const {
+    return readSchemaVersion(
+            m_settingsDao,
+            SETTINGS_VERSION_KEY)
+            .value_or(INITIAL_VERSION);
+}
 
+int SchemaManager::readLastUsedVersion() const {
+    const auto lastUsedVersion = readSchemaVersion(
+            m_settingsDao,
+            SETTINGS_LASTUSED_VERSION_KEY);
+    if (lastUsedVersion) {
+        return *lastUsedVersion;
+    }
+    // Fallback
+    return readCurrentVersion();
+}
+
+int SchemaManager::readMinBackwardsCompatibleVersion() const {
+    const auto minBackwardsCompatibleVersion = readSchemaVersion(
+            m_settingsDao,
+            SETTINGS_MINCOMPATIBLE_KEY);
+    if (minBackwardsCompatibleVersion) {
+        return *minBackwardsCompatibleVersion;
+    }
+    const auto currentVersion = readCurrentVersion();
+    if (currentVersion <= 7) {
+        // rryan 11/2010 We just added the backwards compatible flags, and some
+        // people using the Mixxx trunk are already on schema version 7. This
+        // special case is for them. Schema version 7 is backwards compatible
+        // with schema version 3.
+        return math_min(currentVersion, 3);
+    }
     // If the current backwards compatible schema version is not stored in the
     // settings table, assume the current schema version is only backwards
     // compatible with itself.
-    if (backwardsCompatibleVersion.isNull() || !ok) {
-        if (m_currentVersion == 7) {
-            // We only added the backwards compatible flags in November 2010,
-            // and some people using the Mixxx trunk are already on schema
-            // version 7 by then. This special case is for them. Schema version
-            // 7 is backwards compatible with schema version 3.
-            iBackwardsCompatibleVersion = 3;
-        } else {
-            iBackwardsCompatibleVersion = m_currentVersion;
-        }
-    }
-
-    return iBackwardsCompatibleVersion <= targetVersion;
+    return currentVersion;
 }
 
 SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
-        int targetVersion, const QString& schemaFilename) {
-    VERIFY_OR_DEBUG_ASSERT(m_currentVersion >= 0) {
+        int targetVersion,
+        const QString& schemaFilename) {
+    auto currentVersion = readCurrentVersion();
+    VERIFY_OR_DEBUG_ASSERT(currentVersion >= INITIAL_VERSION) {
         return Result::UpgradeFailed;
     }
 
-    if (m_currentVersion == targetVersion) {
-        kLogger.info()
-                << "Database schema is up-to-date"
-                << "at version" << m_currentVersion;
-        return Result::CurrentVersion;
-    } else if (m_currentVersion > targetVersion) {
-        if (isBackwardsCompatibleWithVersion(targetVersion)) {
+    const int lastUsedVersion = readLastUsedVersion();
+    VERIFY_OR_DEBUG_ASSERT(lastUsedVersion >= INITIAL_VERSION) {
+        return Result::UpgradeFailed;
+    }
+    VERIFY_OR_DEBUG_ASSERT(lastUsedVersion <= currentVersion) {
+        // Fix inconsistent value
+        m_settingsDao.setValue(
+                SETTINGS_LASTUSED_VERSION_KEY,
+                currentVersion);
+    }
+
+    if (targetVersion == currentVersion) {
+        if (lastUsedVersion >= targetVersion) {
+            if (lastUsedVersion > targetVersion) {
+                m_settingsDao.setValue(
+                        SETTINGS_LASTUSED_VERSION_KEY,
+                        targetVersion);
+            }
             kLogger.info()
-                    << "Current database schema is newer"
-                    << "at version" << m_currentVersion
-                    << "and backwards compatible"
-                    << "with version" << targetVersion;
-            return Result::NewerVersionBackwardsCompatible;
-        } else {
+                    << "Database schema is up-to-date"
+                    << "at version" << currentVersion;
+            return Result::CurrentVersion;
+        }
+        // Otherwise reapply migrations between lastUsedVersion
+        // and targetVersion.
+        DEBUG_ASSERT(lastUsedVersion < targetVersion);
+    } else if (targetVersion < currentVersion) {
+        if (targetVersion < readMinBackwardsCompatibleVersion()) {
             kLogger.warning()
                     << "Current database schema is newer"
-                    << "at version" << m_currentVersion
+                    << "at version" << currentVersion
                     << "and incompatible"
                     << "with version" << targetVersion;
             return Result::NewerVersionIncompatible;
         }
     }
-    kLogger.info()
-            << "Upgrading database schema"
-            << "from version" << m_currentVersion
-            << "to version" << targetVersion;
 
     if (kLogger.debugEnabled()) {
         kLogger.debug()
@@ -124,15 +161,37 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         revisionMap[iVersion] = revision;
     }
 
-    while (m_currentVersion < targetVersion) {
-        int nextVersion = m_currentVersion + 1;
+    if (currentVersion < targetVersion) {
+        kLogger.info()
+                << "Upgrading database schema"
+                << "from version" << currentVersion
+                << "to version" << targetVersion;
+    }
+    int nextVersion = lastUsedVersion;
+    while (nextVersion < targetVersion) {
+        nextVersion += 1;
         VERIFY_OR_DEBUG_ASSERT(revisionMap.contains(nextVersion)) {
             kLogger.critical()
-                     << "Migration path for upgrading database schema"
-                     << "from version" << m_currentVersion
-                     << "to version" << nextVersion
-                     << "is missing";
+                    << "Migration path for upgrading database schema"
+                    << "from version" << currentVersion
+                    << "to version" << nextVersion
+                    << "is missing";
             return Result::SchemaError;
+        }
+
+        if (nextVersion < currentVersion) {
+            if (nextVersion < MIN_REAPPLY_VERSION) {
+                kLogger.debug()
+                        << "Migration to version"
+                        << nextVersion
+                        << "cannot be reapplied";
+                continue;
+            } else {
+                kLogger.info()
+                        << "Reapplying database schema migration"
+                        << "to version"
+                        << nextVersion;
+            }
         }
 
         QDomElement revision = revisionMap[nextVersion];
@@ -161,7 +220,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
                 << nextVersion << ":"
                 << description.trimmed();
 
-        SqlTransaction transaction(m_database);
+        SqlTransaction transaction(m_settingsDao.database());
 
         // TODO(XXX) We can't have semicolons in schema.xml for anything other
         // than statement separators.
@@ -176,7 +235,7 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
                 // skip blank lines
                 continue;
             }
-            FwdSqlQuery query(m_database, statement);
+            FwdSqlQuery query(m_settingsDao.database(), statement);
             result = query.isPrepared() && query.execPrepared();
             if (!result &&
                     query.hasError() &&
@@ -199,20 +258,49 @@ SchemaManager::Result SchemaManager::upgradeToSchemaVersion(
         }
 
         if (result) {
-            m_settingsDao.setValue(SETTINGS_VERSION_STRING, nextVersion);
-            m_settingsDao.setValue(SETTINGS_MINCOMPATIBLE_STRING, minCompatibleVersion);
+            if (nextVersion > currentVersion) {
+                currentVersion = nextVersion;
+                m_settingsDao.setValue(
+                        SETTINGS_VERSION_KEY,
+                        currentVersion);
+                m_settingsDao.setValue(
+                        SETTINGS_LASTUSED_VERSION_KEY,
+                        currentVersion);
+                m_settingsDao.setValue(
+                        SETTINGS_MINCOMPATIBLE_KEY,
+                        minCompatibleVersion);
+                kLogger.info()
+                        << "Upgraded database schema"
+                        << "to version" << nextVersion;
+            } else {
+                kLogger.info()
+                        << "Reapplied database schema migration"
+                        << "to version" << nextVersion;
+            }
             transaction.commit();
-            m_currentVersion = nextVersion;
-            kLogger.info()
-                    << "Upgraded database schema"
-                    << "to version" << m_currentVersion;
         } else {
             kLogger.critical()
                     << "Failed to upgrade database schema from version"
-                    << m_currentVersion << "to version" << nextVersion;
+                    << currentVersion << "to version" << nextVersion;
             transaction.rollback();
             return Result::UpgradeFailed;
         }
     }
-    return Result::UpgradeSucceeded;
+
+    if (targetVersion != lastUsedVersion) {
+        m_settingsDao.setValue(
+                SETTINGS_LASTUSED_VERSION_KEY,
+                targetVersion);
+    }
+    if (targetVersion < currentVersion) {
+        kLogger.info()
+                << "Current database schema is newer"
+                << "at version" << currentVersion
+                << "and backwards compatible"
+                << "with version" << targetVersion;
+        return Result::NewerVersionBackwardsCompatible;
+    } else {
+        DEBUG_ASSERT(targetVersion == currentVersion);
+        return Result::UpgradeSucceeded;
+    }
 }

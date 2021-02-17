@@ -1,5 +1,4 @@
-#ifndef EFFECTMANIFESTPARAMETER_H
-#define EFFECTMANIFESTPARAMETER_H
+#pragma once
 
 #include <QVariant>
 #include <QString>
@@ -259,5 +258,3 @@ class EffectManifestParameter {
 };
 
 QDebug operator<<(QDebug dbg, const EffectManifestParameter& parameter);
-
-#endif /* EFFECTMANIFESTPARAMETER_H */

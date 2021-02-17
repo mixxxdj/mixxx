@@ -16,9 +16,8 @@ const SINT kVerifyReadableMaxFrameCount = 1;
 
 } // anonymous namespace
 
-AudioSource::AudioSource(QUrl url)
-        : UrlResource(url),
-          m_signalInfo(kSampleLayout) {
+AudioSource::AudioSource(const QUrl& url)
+        : UrlResource(url) {
 }
 
 AudioSource::AudioSource(
@@ -141,7 +140,6 @@ bool AudioSource::verifyReadable() {
     // No early return desired! All tests should be performed, even
     // if some fail.
     bool result = true;
-    DEBUG_ASSERT(m_signalInfo.getSampleLayout());
     if (!m_signalInfo.getChannelCount().isValid()) {
         kLogger.warning()
                 << "Invalid number of channels:"
@@ -201,11 +199,10 @@ bool AudioSource::verifyReadable() {
             frameIndexRange().splitAndShrinkFront(numSampleFrames),
             SampleBuffer::WritableSlice(sampleBuffer));
     auto readableSampleFrames = readSampleFrames(writableSampleFrames);
-    DEBUG_ASSERT(
-            readableSampleFrames.frameIndexRange() <=
-            writableSampleFrames.frameIndexRange());
-    if (readableSampleFrames.frameIndexRange() <
-            writableSampleFrames.frameIndexRange()) {
+    DEBUG_ASSERT(readableSampleFrames.frameIndexRange().isSubrangeOf(
+            writableSampleFrames.frameIndexRange()));
+    if (readableSampleFrames.frameIndexRange().length() <
+            writableSampleFrames.frameIndexRange().length()) {
         kLogger.warning()
                 << "Read test failed:"
                 << "expected ="
@@ -218,9 +215,10 @@ bool AudioSource::verifyReadable() {
 }
 
 std::optional<WritableSampleFrames> AudioSource::clampWritableSampleFrames(
-        WritableSampleFrames sampleFrames) const {
+        const WritableSampleFrames& sampleFrames) const {
     const auto clampedFrameIndexRange =
-            clampFrameIndexRange(sampleFrames.frameIndexRange());
+            intersect2(sampleFrames.frameIndexRange(), frameIndexRange());
+
     if (!clampedFrameIndexRange) {
         return std::nullopt;
     }
@@ -275,7 +273,7 @@ std::optional<WritableSampleFrames> AudioSource::clampWritableSampleFrames(
 }
 
 ReadableSampleFrames AudioSource::readSampleFrames(
-        WritableSampleFrames sampleFrames) {
+        const WritableSampleFrames& sampleFrames) {
     const auto clamped =
             clampWritableSampleFrames(sampleFrames);
     if (!clamped) {
@@ -293,7 +291,7 @@ ReadableSampleFrames AudioSource::readSampleFrames(
         // forward clamped request
         ReadableSampleFrames readable = readSampleFramesClamped(writable);
         DEBUG_ASSERT(readable.frameIndexRange().empty() ||
-                readable.frameIndexRange() <= writable.frameIndexRange());
+                readable.frameIndexRange().isSubrangeOf(writable.frameIndexRange()));
         if (readable.frameIndexRange() != writable.frameIndexRange()) {
             kLogger.warning()
                     << "Failed to read sample frames:"
@@ -322,7 +320,8 @@ ReadableSampleFrames AudioSource::readSampleFrames(
                             readable.frameIndexRange().end());
                 }
             }
-            DEBUG_ASSERT(shrinkedFrameIndexRange < m_frameIndexRange);
+            DEBUG_ASSERT(shrinkedFrameIndexRange.isSubrangeOf(m_frameIndexRange) &&
+                    shrinkedFrameIndexRange.length() < m_frameIndexRange.length());
             kLogger.info()
                     << "Shrinking readable frame index range:"
                     << "before =" << m_frameIndexRange
@@ -341,7 +340,7 @@ ReadableSampleFrames AudioSource::readSampleFrames(
 
 void AudioSource::adjustFrameIndexRange(
         IndexRange frameIndexRange) {
-    DEBUG_ASSERT(frameIndexRange <= m_frameIndexRange);
+    DEBUG_ASSERT(frameIndexRange.isSubrangeOf(m_frameIndexRange));
     m_frameIndexRange = frameIndexRange;
 }
 

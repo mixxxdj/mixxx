@@ -2,9 +2,11 @@
 # Autotools-added generated files
 Makefile.in
 aclocal.m4
+ar-lib
 autom4te.cache/
 config.*
 configure
+compile
 depcomp
 install-sh
 libusb/Makefile.in
@@ -18,3 +20,5 @@ windows/Makefile.in
 Makefile
 stamp-h1
 libtool
+
+.DS_Store

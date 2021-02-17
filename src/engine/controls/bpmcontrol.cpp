@@ -9,6 +9,7 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
+#include "moc_bpmcontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/duration.h"
@@ -38,9 +39,9 @@ constexpr int kBpmTapFilterLength = 5;
 // the actual number of beats is this x2.
 constexpr int kLocalBpmSpan = 4;
 constexpr SINT kSamplesPerFrame = 2;
-}
+} // namespace
 
-BpmControl::BpmControl(QString group,
+BpmControl::BpmControl(const QString& group,
         UserSettingsPointer pConfig)
         : EngineControl(group, pConfig),
           m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
@@ -515,8 +516,12 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
             (dThisPosition - dPrevBeat) / dBeatLength;
     // Because findNext and findPrev have an epsilon built in, sometimes
     // the beat percentage is out of range.  Fix it.
-    if (dBeatPercentage < 0) ++dBeatPercentage;
-    if (dBeatPercentage > 1) --dBeatPercentage;
+    if (dBeatPercentage < 0) {
+        ++dBeatPercentage;
+    }
+    if (dBeatPercentage > 1) {
+        --dBeatPercentage;
+    }
 
     return dBeatPercentage - m_dUserOffset.getValue();
 }
@@ -538,11 +543,11 @@ bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
         return false;
     }
 
-    if (dpPrevBeat != NULL) {
+    if (dpPrevBeat != nullptr) {
         *dpPrevBeat = dPrevBeat;
     }
 
-    if (dpNextBeat != NULL) {
+    if (dpNextBeat != nullptr) {
         *dpNextBeat = dNextBeat;
     }
 
@@ -562,17 +567,21 @@ bool BpmControl::getBeatContextNoLookup(
     }
 
     double dBeatLength = dNextBeat - dPrevBeat;
-    if (dpBeatLength != NULL) {
+    if (dpBeatLength != nullptr) {
         *dpBeatLength = dBeatLength;
     }
 
-    if (dpBeatPercentage != NULL) {
+    if (dpBeatPercentage != nullptr) {
         *dpBeatPercentage = dBeatLength == 0.0 ? 0.0 :
                 (dPosition - dPrevBeat) / dBeatLength;
         // Because findNext and findPrev have an epsilon built in, sometimes
         // the beat percentage is out of range.  Fix it.
-        if (*dpBeatPercentage < 0) ++*dpBeatPercentage;
-        if (*dpBeatPercentage > 1) --*dpBeatPercentage;
+        if (*dpBeatPercentage < 0) {
+            ++*dpBeatPercentage;
+        }
+        if (*dpBeatPercentage > 1) {
+            --*dpBeatPercentage;
+        }
     }
 
     return true;
@@ -604,15 +613,20 @@ double BpmControl::getNearestPositionInPhase(
         }
         // This happens if dThisPosition is the target position of a requested
         // seek command
-        if (!getBeatContext(pBeats, dThisPosition,
-                            &dThisPrevBeat, &dThisNextBeat,
-                            &dThisBeatLength, NULL)) {
+        if (!getBeatContext(pBeats,
+                    dThisPosition,
+                    &dThisPrevBeat,
+                    &dThisNextBeat,
+                    &dThisBeatLength,
+                    nullptr)) {
             return dThisPosition;
         }
     } else {
         if (!getBeatContextNoLookup(dThisPosition,
-                                    dThisPrevBeat, dThisNextBeat,
-                                    &dThisBeatLength, NULL)) {
+                    dThisPrevBeat,
+                    dThisNextBeat,
+                    &dThisBeatLength,
+                    nullptr)) {
             return dThisPosition;
         }
     }
@@ -651,9 +665,9 @@ double BpmControl::getNearestPositionInPhase(
 
         if (!BpmControl::getBeatContext(otherBeats,
                     dOtherPosition,
-                    NULL,
-                    NULL,
-                    NULL,
+                    nullptr,
+                    nullptr,
+                    nullptr,
                     &dOtherBeatFraction)) {
             return dThisPosition;
         }

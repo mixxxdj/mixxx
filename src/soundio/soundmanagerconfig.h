@@ -1,20 +1,4 @@
-/**
- * @file soundmanagerconfig.h
- * @author Bill Good <bkgood at gmail dot com>
- * @date 20100709
- */
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef SOUNDMANAGERCONFIG_H
-#define SOUNDMANAGERCONFIG_H
+#pragma once
 
 #ifndef SOUNDMANAGERCONFIG_FILENAME
 #define SOUNDMANAGERCONFIG_FILENAME "soundconfig.xml"
@@ -31,58 +15,61 @@ class SoundManager;
 
 class SoundManagerConfig {
 public:
-    explicit SoundManagerConfig(SoundManager* pSoundManager);
+  explicit SoundManagerConfig(
+          SoundManager* pSoundManager);
 
-    enum Defaults {
-        API = (1 << 0),
-        DEVICES = (1 << 1),
-        OTHER = (1 << 2),
-        ALL = (API | DEVICES | OTHER),
-    };
-    static const unsigned int kMaxAudioBufferSizeIndex;
-    static const QString kDefaultAPI;
-    static const unsigned int kFallbackSampleRate;
-    static const unsigned int kDefaultDeckCount;
-    static const int kDefaultAudioBufferSizeIndex;
-    static const int kDefaultSyncBuffers;
+  enum Defaults {
+      API = (1 << 0),
+      DEVICES = (1 << 1),
+      OTHER = (1 << 2),
+      ALL = (API | DEVICES | OTHER),
+  };
+  static const unsigned int kMaxAudioBufferSizeIndex;
+  static const QString kDefaultAPI;
+  static const QString kEmptyComboBox;
+  static const unsigned int kFallbackSampleRate;
+  static const unsigned int kDefaultDeckCount;
+  static const int kDefaultAudioBufferSizeIndex;
+  static const int kDefaultSyncBuffers;
 
-    SoundManagerConfig();
-    ~SoundManagerConfig();
+  SoundManagerConfig();
+  ~SoundManagerConfig();
 
-    bool readFromDisk();
-    bool writeToDisk() const;
-    QString getAPI() const;
-    void setAPI(const QString &api);
-    bool checkAPI();
-    unsigned int getSampleRate() const;
-    void setSampleRate(unsigned int sampleRate);
-    bool checkSampleRate(const SoundManager &soundManager);
+  bool readFromDisk();
+  bool writeToDisk() const;
+  QString getAPI() const;
+  void setAPI(const QString& api);
+  bool checkAPI();
+  unsigned int getSampleRate() const;
+  void setSampleRate(unsigned int sampleRate);
+  bool checkSampleRate(const SoundManager& soundManager);
 
-    // Record the number of decks configured with this setup so they can
-    // be created and configured.
-    unsigned int getDeckCount() const;
-    void setDeckCount(unsigned int deckCount);
-    void setCorrectDeckCount(int configuredDeckCount);
-    QSet<SoundDeviceId> getDevices() const;
+  // Record the number of decks configured with this setup so they can
+  // be created and configured.
+  unsigned int getDeckCount() const;
+  void setDeckCount(unsigned int deckCount);
+  void setCorrectDeckCount(int configuredDeckCount);
+  QSet<SoundDeviceId> getDevices() const;
 
-    unsigned int getAudioBufferSizeIndex() const;
-    unsigned int getFramesPerBuffer() const;
-    // Returns the processing latency in milliseconds
-    double getProcessingLatency() const;
-    void setAudioBufferSizeIndex(unsigned int latency);
-    unsigned int getSyncBuffers() const;
-    void setSyncBuffers(unsigned int sampleRate);
-    bool getForceNetworkClock() const;
-    void setForceNetworkClock(bool force);
-    void addOutput(const SoundDeviceId &device, const AudioOutput &out);
-    void addInput(const SoundDeviceId &device, const AudioInput &in);
-    QMultiHash<SoundDeviceId, AudioOutput> getOutputs() const;
-    QMultiHash<SoundDeviceId, AudioInput> getInputs() const;
-    void clearOutputs();
-    void clearInputs();
-    bool hasMicInputs();
-    bool hasExternalRecordBroadcast();
-    void loadDefaults(SoundManager *soundManager, unsigned int flags);
+  unsigned int getAudioBufferSizeIndex() const;
+  unsigned int getFramesPerBuffer() const;
+  // Returns the processing latency in milliseconds
+  double getProcessingLatency() const;
+  void setAudioBufferSizeIndex(unsigned int latency);
+  unsigned int getSyncBuffers() const;
+  void setSyncBuffers(unsigned int sampleRate);
+  bool getForceNetworkClock() const;
+  void setForceNetworkClock(bool force);
+  void addOutput(const SoundDeviceId& device, const AudioOutput& out);
+  void addInput(const SoundDeviceId& device, const AudioInput& in);
+  QMultiHash<SoundDeviceId, AudioOutput> getOutputs() const;
+  QMultiHash<SoundDeviceId, AudioInput> getInputs() const;
+  void clearOutputs();
+  void clearInputs();
+  bool hasMicInputs();
+  bool hasExternalRecordBroadcast();
+  void loadDefaults(SoundManager* soundManager, unsigned int flags);
+
 private:
     QFileInfo m_configFile;
     QString m_api;
@@ -103,4 +90,3 @@ private:
     bool m_bExternalRecordBroadcastConnected;
     SoundManager* m_pSoundManager;
 };
-#endif

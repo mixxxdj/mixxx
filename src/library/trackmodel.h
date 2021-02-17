@@ -5,6 +5,7 @@
 #include <QVector>
 #include <QtSql>
 
+#include "library/coverart.h"
 #include "library/dao/settingsdao.h"
 #include "track/track_decl.h"
 #include "track/trackref.h"
@@ -16,8 +17,8 @@ class TrackModel {
     static const int kHeaderWidthRole = Qt::UserRole + 0;
     static const int kHeaderNameRole = Qt::UserRole + 1;
 
-    TrackModel(QSqlDatabase db,
-               const char* settingsNamespace)
+    TrackModel(const QSqlDatabase& db,
+            const char* settingsNamespace)
             : m_db(db),
               m_settingsNamespace(settingsNamespace),
               m_iDefaultSortColumn(-1),
@@ -85,6 +86,7 @@ class TrackModel {
         FileCreationTime = 28,
         SampleRate = 29,
         Color = 30,
+        LastPlayedAt = 31,
 
         // IdMax terminates the list of columns, it must be always after the last item
         IdMax,
@@ -105,6 +107,8 @@ class TrackModel {
 
     // Gets the track ID of the track at the given QModelIndex
     virtual TrackId getTrackId(const QModelIndex& index) const = 0;
+
+    virtual CoverInfo getCoverInfo(const QModelIndex& index) const = 0;
 
     // Gets the rows of the track in the current result set. Returns an
     // empty list if the track ID is not present in the result set.
@@ -156,13 +160,13 @@ class TrackModel {
     /*non-virtual*/ bool hasCapabilities(Capabilities caps) const {
         return (getCapabilities() & caps) == caps;
     }
-    virtual QString getModelSetting(QString name) {
+    virtual QString getModelSetting(const QString& name) {
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
         return settings.getValue(key);
     }
 
-    virtual bool setModelSetting(QString name, QVariant value) {
+    virtual bool setModelSetting(const QString& name, const QVariant& value) {
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
         return settings.setValue(key, value);
@@ -181,20 +185,14 @@ class TrackModel {
         m_eDefaultSortOrder = sortOrder;
     }
 
-    virtual bool isColumnSortable(int column) {
+    virtual bool isColumnSortable(int column) const {
         Q_UNUSED(column);
         return true;
     }
 
-    virtual SortColumnId sortColumnIdFromColumnIndex(int index) {
-        Q_UNUSED(index);
-        return TrackModel::SortColumnId::Invalid;
-    }
+    virtual SortColumnId sortColumnIdFromColumnIndex(int index) const = 0;
 
-    virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) {
-        Q_UNUSED(sortColumn);
-        return -1;
-    }
+    virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const = 0;
 
     virtual int fieldIndex(const QString& fieldName) const {
         Q_UNUSED(fieldName);

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Author 2014 Tuukka Pasanen <pasanen.tuukka@gmail.com> -->
+<component type="desktop-application">
+  <id>org.mixxx.Mixxx</id>
+  <launchable type="desktop-id">mixxx.desktop</launchable>
+  <metadata_license>CC-BY-SA-3.0</metadata_license>
+  <project_license>GPL-2.0</project_license>
+  <name>Mixxx DJ Software</name>
+  <summary>Everything you need to perform live DJ mixes</summary>
+  <description>
+    <p>
+      Mixxx is free DJ software that gives you everything you need to perform
+      live DJ mixes. Blend songs together with automatic BPM matching and
+      remix on-the-fly with looping and hot cues.
+      Whether you're a pro DJ or just getting started, Mixxx has you covered.
+    </p>
+    <p>
+      Mixxx works with ALSA, JACK, OSS and supports many popular DJ
+      controllers. Key features include:
+    </p>
+    <ul>
+      <li>Parallel or split scratchable waveform displays</li>
+      <li>MP3, OGG, WAVE, FLAC, and optional AAC (M4A) playback</li>
+      <li>WAVE, OGG, and optional MP3 recording</li>
+      <li>Fast, database-powered library</li>
+      <li>Crates and playlists for organizing your music</li>
+      <li>Reads iTunes, Traktor, and Rhythmbox libraries</li>
+      <li>Cross-platform - works on Windows, Mac OS X and Linux</li>
+      <li>Shoutcast and Icecast broadcasting</li>
+      <li>Support for many DJ MIDI and HID controllers out-of-the-box</li>
+      <li>Advanced MIDI scripting engine for maximum flexibility</li>
+      <li>Vinyl emulation with Serato, Traktor, and Mixvibes timecode support</li>
+      <li>Beat and key detection</li>
+      <li>ReplayGain volume normalization</li>
+      <li>Automatic crossfading with Auto DJ</li>
+      <li>Skinnable interface with several skins bundled</li>
+    </ul>
+  </description>
+  <provides>
+    <!-- Keep these IDs in sync with res/linux/mixxx-usb-uaccess.rules -->
+    <modalias>usb:v22F0p0008d*</modalias>
+    <modalias>usb:v1C75p*</modalias>
+    <modalias>usb:v1397p*</modalias>
+    <modalias>usb:v154Ep*</modalias>
+    <modalias>usb:v1157p*</modalias>
+    <modalias>usb:v23C7p*</modalias>
+    <modalias>usb:v06F8p*</modalias>
+    <modalias>usb:v15E4p*</modalias>
+    <modalias>usb:v0944p*</modalias>
+    <modalias>usb:v17CCp*</modalias>
+    <modalias>usb:v057Ep*</modalias>
+    <modalias>usb:v08E4p*</modalias>
+    <modalias>usb:v2B73p*</modalias>
+    <modalias>usb:v13E5p*</modalias>
+    <modalias>usb:v200Cp*</modalias>
+    <modalias>usb:v0582p*</modalias>
+    <modalias>usb:v054Cp*</modalias>
+  </provides>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://www.mixxx.org/static/images/press_art/mixxx_200_deere_skin.png</image>
+      <caption>Mixxx with the default Deere skin</caption>
+    </screenshot>
+  </screenshots>
+  <url type="homepage">https://mixxx.org</url>
+  <url type="bugtracker">https://bugs.launchpad.net/mixxx</url>
+  <url type="donation">https://www.mixxx.org/support</url>
+  <url type="help">https://www.mixxx.org/support</url>
+  <url type="translate">https://www.transifex.com/mixxx-dj-software/public</url>
+  <update_contact>mixxx-devel@lists.sourceforge.net</update_contact>
+</component>

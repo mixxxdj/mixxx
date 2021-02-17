@@ -1,21 +1,3 @@
-/***************************************************************************
-                          enginesync.cpp  -  master sync control for
-                          maintaining beatmatching amongst n decks
-                             -------------------
-    begin                : Mon Mar 12 2012
-    copyright            : (C) 2012 by Owen Williams
-    email                : owilliams@mixxx.org
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "engine/sync/enginesync.h"
 
 #include <QStringList>
@@ -24,7 +6,6 @@
 #include "engine/enginebuffer.h"
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
-#include "util/defs.h"
 #include "util/logger.h"
 
 namespace {
@@ -49,7 +30,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     int stopped_deck_count = 0;
     int playing_deck_count = 0;
 
-    for (const auto& pSyncable : m_syncables) {
+    for (const auto& pSyncable : qAsConst(m_syncables)) {
         if (pSyncable->getBaseBpm() <= 0.0) {
             continue;
         }
@@ -477,7 +458,7 @@ Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
 
 bool EngineSync::otherSyncedPlaying(const QString& group) {
     bool othersInSync = false;
-    for (Syncable* theSyncable : m_syncables) {
+    for (Syncable* theSyncable : qAsConst(m_syncables)) {
         bool isSynchonized = theSyncable->isSynchronized();
         if (theSyncable->getGroup() == group) {
             if (!isSynchonized) {

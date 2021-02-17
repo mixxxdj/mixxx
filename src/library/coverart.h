@@ -74,7 +74,7 @@ class CoverInfoRelative {
     void setImageDigest(
             QByteArray imageDigest,
             quint16 legacyHash = defaultLegacyHash()) {
-        m_imageDigest = imageDigest;
+        m_imageDigest = std::move(imageDigest);
         m_legacyHash = legacyHash;
     }
 

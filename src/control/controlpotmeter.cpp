@@ -1,30 +1,17 @@
-/***************************************************************************
-                          controlpotmeter.cpp  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include "control/controlpushbutton.h"
 #include "control/controlpotmeter.h"
-#include "control/controlproxy.h"
 
-ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue,
-                                 bool allowOutOfBounds,
-                                 bool bIgnoreNops,
-                                 bool bTrack,
-                                 bool bPersist,
-                                 double defaultValue)
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "moc_controlpotmeter.cpp"
+
+ControlPotmeter::ControlPotmeter(const ConfigKey& key,
+        double dMinValue,
+        double dMaxValue,
+        bool allowOutOfBounds,
+        bool bIgnoreNops,
+        bool bTrack,
+        bool bPersist,
+        double defaultValue)
         : ControlObject(key, bIgnoreNops, bTrack, bPersist, defaultValue),
           m_controls(key) {
     setRange(dMinValue, dMaxValue, allowOutOfBounds);

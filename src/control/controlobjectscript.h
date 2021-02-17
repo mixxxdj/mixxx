@@ -1,11 +1,9 @@
-#ifndef CONTROLOBJECTSCRIPT_H
-#define CONTROLOBJECTSCRIPT_H
+#pragma once
 
 #include <QVector>
 
 #include "control/controlproxy.h"
-#include "controllers/controllerdebug.h"
-#include "controllers/engine/scriptconnection.h"
+#include "controllers/scripting/legacy/scriptconnection.h"
 
 // this is used for communicate with controller scripts
 class ControlObjectScript : public ControlProxy {
@@ -38,7 +36,5 @@ class ControlObjectScript : public ControlProxy {
     void slotValueChanged(double v, QObject*);
 
   private:
-    QList<ScriptConnection> m_scriptConnections;
+    QVector<ScriptConnection> m_scriptConnections;
 };
-
-#endif // CONTROLOBJECTSCRIPT_H

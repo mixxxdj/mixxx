@@ -1,17 +1,11 @@
-/**
-* @file dlgcontrollerlearning.cpp
-* @author Sean M. Pappalardo  spappalardo@mixxx.org
-* @date Thu 12 Apr 2012
-* @brief The controller mapping learning wizard
-*
-*/
+#include "controllers/dlgcontrollerlearning.h"
 
 #include <QCompleter>
 
 #include "control/controlobject.h"
-#include "controllers/dlgcontrollerlearning.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
+#include "moc_dlgcontrollerlearning.cpp"
 #include "util/version.h"
 
 namespace {
@@ -19,13 +13,12 @@ typedef QPair<QString, ConfigKey> NamedControl;
 bool namedControlComparator(const NamedControl& l1, const NamedControl& l2) {
     return l1.first < l2.first;
 }
-}
+} // namespace
 
-DlgControllerLearning::DlgControllerLearning(QWidget * parent,
-                                             Controller* controller)
+DlgControllerLearning::DlgControllerLearning(QWidget* parent,
+        Controller* controller)
         : QDialog(parent),
           m_pController(controller),
-          m_pMidiController(NULL),
           m_controlPickerMenu(this),
           m_messagesLearned(false) {
     qRegisterMetaType<MidiInputMappings>("MidiInputMappings");
@@ -71,25 +64,47 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     setAttribute(Qt::WA_DeleteOnClose);
     setWindowFlags(Qt::Tool | Qt::WindowStaysOnTopHint);
 
-    connect(&m_controlPickerMenu, SIGNAL(controlPicked(ConfigKey)),
-            this, SLOT(controlPicked(ConfigKey)));
+    connect(&m_controlPickerMenu,
+            &ControlPickerMenu::controlPicked,
+            this,
+            &DlgControllerLearning::controlPicked);
 
     comboBoxChosenControl->completer()->setCompletionMode(
         QCompleter::PopupCompletion);
     populateComboBox();
-    connect(comboBoxChosenControl, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(comboboxIndexChanged(int)));
+    connect(comboBoxChosenControl,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgControllerLearning::comboboxIndexChanged);
 
-    connect(pushButtonChooseControl, SIGNAL(clicked()), this, SLOT(showControlMenu()));
-    connect(pushButtonClose, SIGNAL(clicked()), this, SLOT(close()));
-    connect(pushButtonClose_2, SIGNAL(clicked()), this, SLOT(close()));
-    connect(pushButtonCancelLearn, SIGNAL(clicked()), this, SLOT(slotCancelLearn()));
-    connect(pushButtonRetry, SIGNAL(clicked()), this, SLOT(slotRetry()));
-    connect(pushButtonStartLearn, SIGNAL(clicked()), this, SLOT(slotStartLearningPressed()));
-    connect(pushButtonLearnAnother, SIGNAL(clicked()), this, SLOT(slotChooseControlPressed()));
+    connect(pushButtonChooseControl,
+            &QAbstractButton::clicked,
+            this,
+            &DlgControllerLearning::showControlMenu);
+    connect(pushButtonClose, &QAbstractButton::clicked, this, &DlgControllerLearning::close);
+    connect(pushButtonClose_2, &QAbstractButton::clicked, this, &DlgControllerLearning::close);
+    connect(pushButtonCancelLearn,
+            &QAbstractButton::clicked,
+            this,
+            &DlgControllerLearning::slotCancelLearn);
+    connect(pushButtonRetry, &QAbstractButton::clicked, this, &DlgControllerLearning::slotRetry);
+    connect(pushButtonStartLearn,
+            &QAbstractButton::clicked,
+            this,
+            &DlgControllerLearning::slotStartLearningPressed);
+    connect(pushButtonLearnAnother,
+            &QAbstractButton::clicked,
+            this,
+            &DlgControllerLearning::slotChooseControlPressed);
 #ifdef CONTROLLERLESSTESTING
-    connect(pushButtonFakeControl, SIGNAL(clicked()), this, SLOT(DEBUGFakeMidiMessage()));
-    connect(pushButtonFakeControl2, SIGNAL(clicked()), this, SLOT(DEBUGFakeMidiMessage2()));
+    connect(pushButtonFakeControl,
+            &QAbstractButton::clicked,
+            this,
+            &DlgControllerLearning::DEBUGFakeMidiMessage);
+    connect(pushButtonFakeControl2,
+            &QAbstractButton::clicked,
+            this,
+            &DlgControllerLearning::DEBUGFakeMidiMessage2);
 #else
     pushButtonFakeControl->hide();
     pushButtonFakeControl2->hide();
@@ -97,27 +112,36 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
 
     // We only want to listen to clicked() so we don't fire
     // slotMidiOptionsChanged when we change the checkboxes programmatically.
-    connect(midiOptionSwitchMode, SIGNAL(clicked()),
-            this, SLOT(slotMidiOptionsChanged()));
-    connect(midiOptionSoftTakeover, SIGNAL(clicked()),
-            this, SLOT(slotMidiOptionsChanged()));
-    connect(midiOptionInvert, SIGNAL(clicked()),
-            this, SLOT(slotMidiOptionsChanged()));
-    connect(midiOptionSelectKnob, SIGNAL(clicked()),
-            this, SLOT(slotMidiOptionsChanged()));
+    connect(midiOptionSwitchMode,
+            &QAbstractButton::clicked,
+            this,
+            &DlgControllerLearning::slotMidiOptionsChanged);
+    connect(midiOptionSoftTakeover,
+            &QAbstractButton::clicked,
+            this,
+            &DlgControllerLearning::slotMidiOptionsChanged);
+    connect(midiOptionInvert,
+            &QAbstractButton::clicked,
+            this,
+            &DlgControllerLearning::slotMidiOptionsChanged);
+    connect(midiOptionSelectKnob,
+            &QAbstractButton::clicked,
+            this,
+            &DlgControllerLearning::slotMidiOptionsChanged);
 
     slotChooseControlPressed();
 
     // Wait 1 second until we detect the control the user moved.
     m_lastMessageTimer.setInterval(1500);
     m_lastMessageTimer.setSingleShot(true);
-    connect(&m_lastMessageTimer, SIGNAL(timeout()),
-            this, SLOT(slotTimerExpired()));
+    connect(&m_lastMessageTimer, &QTimer::timeout, this, &DlgControllerLearning::slotTimerExpired);
 
     m_firstMessageTimer.setInterval(7000);
     m_firstMessageTimer.setSingleShot(true);
-    connect(&m_firstMessageTimer, SIGNAL(timeout()),
-            this, SLOT(slotFirstMessageTimeout()));
+    connect(&m_firstMessageTimer,
+            &QTimer::timeout,
+            this,
+            &DlgControllerLearning::slotFirstMessageTimeout);
 }
 
 void DlgControllerLearning::populateComboBox() {
@@ -181,9 +205,46 @@ void DlgControllerLearning::slotChooseControlPressed() {
 void DlgControllerLearning::startListening() {
     // Start listening as soon as we're on this page -- that way advanced
     // users don't have to specifically click the "Learn" button.
-    // Get the underlying type of the Controller. This will call
-    // one of the visit() methods below immediately.
-    m_pController->accept(this);
+    // Disconnect everything in both directions so we don't end up with duplicate connections
+    // after pressing the "Learn Another" button
+    MidiController* pMidiController = qobject_cast<MidiController*>(m_pController);
+    VERIFY_OR_DEBUG_ASSERT(pMidiController) {
+        // DlgControllerLearning should have only been created by DlgController if
+        // the Controller was a MidiController.
+        qWarning() << "Only MIDI controllers are supported by the learning wizard.";
+        return;
+    }
+    pMidiController->disconnect(this);
+    this->disconnect(pMidiController);
+
+    connect(pMidiController,
+            &MidiController::messageReceived,
+            this,
+            &DlgControllerLearning::slotMessageReceived);
+
+    connect(this,
+            &DlgControllerLearning::learnTemporaryInputMappings,
+            pMidiController,
+            &MidiController::learnTemporaryInputMappings);
+    connect(this,
+            &DlgControllerLearning::clearTemporaryInputMappings,
+            pMidiController,
+            &MidiController::clearTemporaryInputMappings);
+
+    connect(this,
+            &DlgControllerLearning::commitTemporaryInputMappings,
+            pMidiController,
+            &MidiController::commitTemporaryInputMappings);
+    connect(this,
+            &DlgControllerLearning::startLearning,
+            pMidiController,
+            &MidiController::startLearning);
+    connect(this,
+            &DlgControllerLearning::stopLearning,
+            pMidiController,
+            &MidiController::stopLearning);
+
+    emit startLearning();
     emit listenForClicks();
 }
 
@@ -370,42 +431,6 @@ void DlgControllerLearning::commitMapping() {
     emit inputMappingsLearned(m_mappings);
 }
 
-void DlgControllerLearning::visit(MidiController* pMidiController) {
-    // Disconnect everything in both directions so we don't end up with duplicate connections
-    // after pressing the "Learn Another" button
-    pMidiController->disconnect(this);
-    this->disconnect(pMidiController);
-
-    m_pMidiController = pMidiController;
-
-    connect(m_pMidiController, SIGNAL(messageReceived(unsigned char, unsigned char, unsigned char)),
-            this, SLOT(slotMessageReceived(unsigned char, unsigned char, unsigned char)));
-
-    connect(this, SIGNAL(learnTemporaryInputMappings(MidiInputMappings)),
-            m_pMidiController, SLOT(learnTemporaryInputMappings(MidiInputMappings)));
-    connect(this, SIGNAL(clearTemporaryInputMappings()),
-            m_pMidiController, SLOT(clearTemporaryInputMappings()));
-
-    connect(this, SIGNAL(commitTemporaryInputMappings()),
-            m_pMidiController, SLOT(commitTemporaryInputMappings()));
-    connect(this, SIGNAL(startLearning()),
-            m_pMidiController, SLOT(startLearning()));
-    connect(this, SIGNAL(stopLearning()),
-            m_pMidiController, SLOT(stopLearning()));
-
-    emit startLearning();
-}
-
-void DlgControllerLearning::visit(HidController* pHidController) {
-    qWarning() << "ERROR: DlgControllerLearning does not support HID devices.";
-    Q_UNUSED(pHidController);
-}
-
-void DlgControllerLearning::visit(BulkController* pBulkController) {
-    qWarning() << "ERROR: DlgControllerLearning does not support Bulk devices.";
-    Q_UNUSED(pBulkController);
-}
-
 DlgControllerLearning::~DlgControllerLearning() {
     // If the user hit done, we should save any pending mappings.
     if (m_messagesLearned) {
@@ -424,8 +449,8 @@ void DlgControllerLearning::showControlMenu() {
 }
 
 void DlgControllerLearning::loadControl(const ConfigKey& key,
-                                        QString title,
-                                        QString description) {
+        const QString& title,
+        QString description) {
     // If we have learned a mapping and the user picked a new control then we
     // should tell the controller to commit the existing ones.
     if (m_messagesLearned) {
@@ -450,7 +475,7 @@ void DlgControllerLearning::loadControl(const ConfigKey& key,
     pushButtonStartLearn->setFocus();
 }
 
-void DlgControllerLearning::controlPicked(ConfigKey control) {
+void DlgControllerLearning::controlPicked(const ConfigKey& control) {
     QString title = m_controlPickerMenu.controlTitleForConfigKey(control);
     QString description = m_controlPickerMenu.descriptionForConfigKey(control);
     loadControl(control, title, description);
@@ -466,13 +491,18 @@ void DlgControllerLearning::controlClicked(ControlObject* pControl) {
         qWarning() << "Mixxx UI element clicked for which there is no "
                       "learnable control " << key.group << " " << key.item;
         QMessageBox::warning(
-                    this,
-                    Version::applicationName(),
-                    tr("The control you clicked in Mixxx is not learnable.\n"
-                       "This could be because you are using an old skin"
-                       " and this control is no longer supported.\n"
-                       "\nYou tried to learn: %1,%2").arg(key.group, key.item),
-                    QMessageBox::Ok, QMessageBox::Ok);
+                this,
+                Version::applicationName(),
+                tr("The control you clicked in Mixxx is not learnable.\n"
+                   "This could be because you are either using an old skin"
+                   " and this control is no longer supported, "
+                   "or you clicked a control that provides visual feedback"
+                   " and can only be mapped to outputs like LEDs via"
+                   " scripts.\n"
+                   "\nYou tried to learn: %1,%2")
+                        .arg(key.group, key.item),
+                QMessageBox::Ok,
+                QMessageBox::Ok);
         return;
     }
     controlPicked(key);

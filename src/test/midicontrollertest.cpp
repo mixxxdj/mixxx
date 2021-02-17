@@ -1,13 +1,13 @@
-#include <QScopedPointer>
-
 #include <gmock/gmock.h>
 
-#include "test/mixxxtest.h"
-#include "controllers/midi/midicontroller.h"
-#include "controllers/midi/midicontrollerpreset.h"
-#include "controllers/midi/midimessage.h"
-#include "control/controlpushbutton.h"
+#include <QScopedPointer>
+
 #include "control/controlpotmeter.h"
+#include "control/controlpushbutton.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
+#include "controllers/midi/midicontroller.h"
+#include "controllers/midi/midimessage.h"
+#include "test/mixxxtest.h"
 #include "util/time.h"
 
 class MockMidiController : public MidiController {
@@ -30,21 +30,20 @@ class MidiControllerTest : public MixxxTest {
         m_pController.reset(new MockMidiController());
     }
 
-    void addMapping(MidiInputMapping mapping) {
-        m_preset.addInputMapping(mapping.key.key, mapping);
+    void addMapping(const MidiInputMapping& mapping) {
+        m_mapping.addInputMapping(mapping.key.key, mapping);
     }
 
-    void loadPreset(const MidiControllerPreset& preset) {
-        m_pController->visit(&preset);
+    void loadPreset(const LegacyMidiControllerMapping& mapping) {
+        m_pController->visit(&mapping);
     }
 
-    void receive(unsigned char status, unsigned char control,
-                 unsigned char value) {
+    void receivedShortMessage(unsigned char status, unsigned char control, unsigned char value) {
         // TODO(rryan): This test doesn't care about timestamps.
-        m_pController->receive(status, control, value, mixxx::Time::elapsed());
+        m_pController->receivedShortMessage(status, control, value, mixxx::Time::elapsed());
     }
 
-    MidiControllerPreset m_preset;
+    LegacyMidiControllerMapping m_mapping;
     QScopedPointer<MockMidiController> m_pController;
 };
 
@@ -61,18 +60,18 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOff) {
                                 MidiOptions(), key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 MidiOptions(), key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // Receive an on/off, sets the control on/off with each press.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
     EXPECT_LT(0.0, cpb.get());
-    receive(MIDI_NOTE_OFF | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_OFF | channel, control, 0x00);
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 
     // Receive an on/off, sets the control on/off with each press.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
     EXPECT_LT(0.0, cpb.get());
-    receive(MIDI_NOTE_OFF | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_OFF | channel, control, 0x00);
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
@@ -87,18 +86,18 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushOnOn) {
 
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_ON | channel, control),
                                 MidiOptions(), key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // Receive an on/off, sets the control on/off with each press.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
     EXPECT_LT(0.0, cpb.get());
-    receive(MIDI_NOTE_ON | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x00);
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 
     // Receive an on/off, sets the control on/off with each press.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
     EXPECT_LT(0.0, cpb.get());
-    receive(MIDI_NOTE_ON | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x00);
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
@@ -118,18 +117,18 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_ButtonMidiOpt
                                 options, key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 options, key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // NOTE(rryan): This behavior is broken!
 
     // Toggle the switch on, sets the push button on.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
     EXPECT_LT(0.0, cpb.get());
 
     // The push button is stuck down here!
 
     // Toggle the switch off, sets the push button off.
-    receive(MIDI_NOTE_OFF | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_OFF | channel, control, 0x00);
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
@@ -149,24 +148,24 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_SwitchMidiOpt
                                 options, key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 options, key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // NOTE(rryan): This behavior is broken!
 
     // Toggle the switch on, sets the push button on.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
     EXPECT_LT(0.0, cpb.get());
 
     // The push button is stuck down here!
 
     // Toggle the switch off, sets the push button on again.
-    receive(MIDI_NOTE_OFF | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_OFF | channel, control, 0x00);
     EXPECT_LT(0.0, cpb.get());
 
     // NOTE(rryan): What is supposed to happen in this case? It's an open
     // question I think. I think if you want to connect a switch MIDI control to
     // a push button CO then the switch should directly set the CO. After all,
-    // the preset author asked for the switch to be interpreted as a switch. If
+    // the mapping author asked for the switch to be interpreted as a switch. If
     // they want the switch to act like a push button, they should use the
     // button MIDI option.
     //
@@ -193,18 +192,18 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_PushCC) {
 
     addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, control),
                                 MidiOptions(), key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // Receive an on/off, sets the control on/off with each press.
-    receive(MIDI_CC | channel, control, 0x7F);
+    receivedShortMessage(MIDI_CC | channel, control, 0x7F);
     EXPECT_LT(0.0, cpb.get());
-    receive(MIDI_CC | channel, control, 0x00);
+    receivedShortMessage(MIDI_CC | channel, control, 0x00);
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 
     // Receive an on/off, sets the control on/off with each press.
-    receive(MIDI_CC | channel, control, 0x7F);
+    receivedShortMessage(MIDI_CC | channel, control, 0x7F);
     EXPECT_LT(0.0, cpb.get());
-    receive(MIDI_CC | channel, control, 0x00);
+    receivedShortMessage(MIDI_CC | channel, control, 0x00);
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
 
@@ -222,17 +221,17 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOff) {
                                 MidiOptions(), key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 MidiOptions(), key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // Receive an on/off, toggles the control.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
-    receive(MIDI_NOTE_OFF | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_OFF | channel, control, 0x00);
 
     EXPECT_LT(0.0, cpb.get());
 
     // Receive an on/off, toggles the control.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
-    receive(MIDI_NOTE_OFF | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_OFF | channel, control, 0x00);
 
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
@@ -249,17 +248,17 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushOnOn) {
 
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_ON | channel, control),
                                 MidiOptions(), key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // Receive an on/off, toggles the control.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
-    receive(MIDI_NOTE_ON | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x00);
 
     EXPECT_LT(0.0, cpb.get());
 
     // Receive an on/off, toggles the control.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
-    receive(MIDI_NOTE_ON | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x00);
 
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
@@ -281,7 +280,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_ButtonMidiOption)
                                 options, key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 options, key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // NOTE(rryan): If the intended behavior of the button MIDI option is to
     // make a toggle MIDI button act like a push button then this isn't
@@ -289,12 +288,12 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_ButtonMidiOption)
 
     // Toggle the switch on, since it is interpreted as a button press it
     // toggles the button on.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
     EXPECT_LT(0.0, cpb.get());
 
     // Toggle the switch off, since it is interpreted as a button release it
     // does nothing to the toggle button.
-    receive(MIDI_NOTE_OFF | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_OFF | channel, control, 0x00);
     EXPECT_LT(0.0, cpb.get());
 }
 
@@ -315,7 +314,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_SwitchMidiOption)
                                 options, key));
     addMapping(MidiInputMapping(MidiKey(MIDI_NOTE_OFF | channel, control),
                                 options, key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // NOTE(rryan): If the intended behavior of switch MIDI option is to make a
     // toggle MIDI button act like a toggle button then this isn't working. The
@@ -324,12 +323,12 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_SwitchMidiOption)
 
     // Toggle the switch on, since it is interpreted as a button press it
     // toggles the control on.
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
     EXPECT_LT(0.0, cpb.get());
 
     // Toggle the switch off, since it is interpreted as a button press it
     // toggles the control off.
-    receive(MIDI_NOTE_OFF | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_OFF | channel, control, 0x00);
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 
     // Meanwhile, the GUI toggles the control on again.
@@ -339,12 +338,12 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_SwitchMidiOption)
 
     // Toggle the switch on, since it is interpreted as a button press it
     // toggles the control off (since it was on).
-    receive(MIDI_NOTE_ON | channel, control, 0x7F);
+    receivedShortMessage(MIDI_NOTE_ON | channel, control, 0x7F);
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 
     // Toggle the switch off, since it is interpreted as a button press it
     // toggles the control on (since it was off).
-    receive(MIDI_NOTE_OFF | channel, control, 0x00);
+    receivedShortMessage(MIDI_NOTE_OFF | channel, control, 0x00);
     EXPECT_LT(0.0, cpb.get());
 }
 
@@ -360,17 +359,17 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_PushCC) {
 
     addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, control),
                                 MidiOptions(), key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // Receive an on/off, toggles the control.
-    receive(MIDI_CC | channel, control, 0x7F);
-    receive(MIDI_CC | channel, control, 0x00);
+    receivedShortMessage(MIDI_CC | channel, control, 0x7F);
+    receivedShortMessage(MIDI_CC | channel, control, 0x00);
 
     EXPECT_LT(0.0, cpb.get());
 
     // Receive an on/off, toggles the control.
-    receive(MIDI_CC | channel, control, 0x7F);
-    receive(MIDI_CC | channel, control, 0x00);
+    receivedShortMessage(MIDI_CC | channel, control, 0x7F);
+    receivedShortMessage(MIDI_CC | channel, control, 0x00);
 
     EXPECT_DOUBLE_EQ(0.0, cpb.get());
 }
@@ -388,18 +387,18 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_7BitCC) {
 
     addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, control),
                                 MidiOptions(), key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // Receive a 0, MIDI parameter should map to the min value.
-    receive(MIDI_CC | channel, control, 0x00);
+    receivedShortMessage(MIDI_CC | channel, control, 0x00);
     EXPECT_DOUBLE_EQ(kMinValue, potmeter.get());
 
     // Receive a 0x7F, MIDI parameter should map to the potmeter max value.
-    receive(MIDI_CC | channel, control, 0x7F);
+    receivedShortMessage(MIDI_CC | channel, control, 0x7F);
     EXPECT_DOUBLE_EQ(kMaxValue, potmeter.get());
 
     // Receive a 0x40, MIDI parameter should map to the potmeter middle value.
-    receive(MIDI_CC | channel, control, 0x40);
+    receivedShortMessage(MIDI_CC | channel, control, 0x40);
     EXPECT_DOUBLE_EQ(kMiddleValue, potmeter.get());
 }
 
@@ -426,7 +425,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
                                 lsb, key));
     addMapping(MidiInputMapping(MidiKey(MIDI_CC | channel, msb_control),
                                 msb, key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // If kMinValue or kMaxValue are such that the middle value is 0 then the
     // set(0) commands below allow us to hide failures.
@@ -434,40 +433,40 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
 
     // Receive a 0x0000 (lsb-first), MIDI parameter should map to the min value.
     potmeter.set(0);
-    receive(MIDI_CC | channel, lsb_control, 0x00);
-    receive(MIDI_CC | channel, msb_control, 0x00);
+    receivedShortMessage(MIDI_CC | channel, lsb_control, 0x00);
+    receivedShortMessage(MIDI_CC | channel, msb_control, 0x00);
     EXPECT_DOUBLE_EQ(kMinValue, potmeter.get());
 
     // Receive a 0x0000 (msb-first), MIDI parameter should map to the min value.
     potmeter.set(0);
-    receive(MIDI_CC | channel, msb_control, 0x00);
-    receive(MIDI_CC | channel, lsb_control, 0x00);
+    receivedShortMessage(MIDI_CC | channel, msb_control, 0x00);
+    receivedShortMessage(MIDI_CC | channel, lsb_control, 0x00);
     EXPECT_DOUBLE_EQ(kMinValue, potmeter.get());
 
     // Receive a 0x3FFF (lsb-first), MIDI parameter should map to the max value.
     potmeter.set(0);
-    receive(MIDI_CC | channel, lsb_control, 0x7F);
-    receive(MIDI_CC | channel, msb_control, 0x7F);
+    receivedShortMessage(MIDI_CC | channel, lsb_control, 0x7F);
+    receivedShortMessage(MIDI_CC | channel, msb_control, 0x7F);
     EXPECT_DOUBLE_EQ(kMaxValue, potmeter.get());
 
     // Receive a 0x3FFF (msb-first), MIDI parameter should map to the max value.
     potmeter.set(0);
-    receive(MIDI_CC | channel, msb_control, 0x7F);
-    receive(MIDI_CC | channel, lsb_control, 0x7F);
+    receivedShortMessage(MIDI_CC | channel, msb_control, 0x7F);
+    receivedShortMessage(MIDI_CC | channel, lsb_control, 0x7F);
     EXPECT_DOUBLE_EQ(kMaxValue, potmeter.get());
 
     // Receive a 0x2000 (lsb-first), MIDI parameter should map to the middle
     // value.
     potmeter.set(0);
-    receive(MIDI_CC | channel, lsb_control, 0x00);
-    receive(MIDI_CC | channel, msb_control, 0x40);
+    receivedShortMessage(MIDI_CC | channel, lsb_control, 0x00);
+    receivedShortMessage(MIDI_CC | channel, msb_control, 0x40);
     EXPECT_DOUBLE_EQ(kMiddleValue, potmeter.get());
 
     // Receive a 0x2000 (msb-first), MIDI parameter should map to the middle
     // value.
     potmeter.set(0);
-    receive(MIDI_CC | channel, msb_control, 0x40);
-    receive(MIDI_CC | channel, lsb_control, 0x00);
+    receivedShortMessage(MIDI_CC | channel, msb_control, 0x40);
+    receivedShortMessage(MIDI_CC | channel, lsb_control, 0x00);
     EXPECT_DOUBLE_EQ(kMiddleValue, potmeter.get());
 
     // Check the 14-bit resolution is actually present. Receive a 0x2001
@@ -475,8 +474,8 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
     // amount. Scaling is not quite linear for MIDI parameters so just check
     // that incrementing the LSB by 1 is greater than the middle value.
     potmeter.set(0);
-    receive(MIDI_CC | channel, msb_control, 0x40);
-    receive(MIDI_CC | channel, lsb_control, 0x01);
+    receivedShortMessage(MIDI_CC | channel, msb_control, 0x40);
+    receivedShortMessage(MIDI_CC | channel, lsb_control, 0x01);
     EXPECT_LT(kMiddleValue, potmeter.get());
 
     // Check the 14-bit resolution is actually present. Receive a 0x2001
@@ -484,8 +483,8 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
     // amount. Scaling is not quite linear for MIDI parameters so just check
     // that incrementing the LSB by 1 is greater than the middle value.
     potmeter.set(0);
-    receive(MIDI_CC | channel, lsb_control, 0x01);
-    receive(MIDI_CC | channel, msb_control, 0x40);
+    receivedShortMessage(MIDI_CC | channel, lsb_control, 0x01);
+    receivedShortMessage(MIDI_CC | channel, msb_control, 0x40);
     EXPECT_LT(kMiddleValue, potmeter.get());
 }
 
@@ -502,24 +501,24 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitPitchBend) {
     // of the payload.
     addMapping(MidiInputMapping(MidiKey(MIDI_PITCH_BEND | channel, 0xFF),
                                 MidiOptions(), key));
-    loadPreset(m_preset);
+    loadPreset(m_mapping);
 
     // Receive a 0x0000, MIDI parameter should map to the min value.
-    receive(MIDI_PITCH_BEND | channel, 0x00, 0x00);
+    receivedShortMessage(MIDI_PITCH_BEND | channel, 0x00, 0x00);
     EXPECT_DOUBLE_EQ(kMinValue, potmeter.get());
 
     // Receive a 0x3FFF, MIDI parameter should map to the potmeter max value.
-    receive(MIDI_PITCH_BEND | channel, 0x7F, 0x7F);
+    receivedShortMessage(MIDI_PITCH_BEND | channel, 0x7F, 0x7F);
     EXPECT_DOUBLE_EQ(kMaxValue, potmeter.get());
 
     // Receive a 0x2000, MIDI parameter should map to the potmeter middle value.
-    receive(MIDI_PITCH_BEND | channel, 0x00, 0x40);
+    receivedShortMessage(MIDI_PITCH_BEND | channel, 0x00, 0x40);
     EXPECT_DOUBLE_EQ(kMiddleValue, potmeter.get());
 
     // Check the 14-bit resolution is actually present. Receive a 0x2001, MIDI
     // parameter should map to the middle value plus a tiny amount. Scaling is
     // not quite linear for MIDI parameters so just check that incrementing the
     // LSB by 1 is greater than the middle value.
-    receive(MIDI_PITCH_BEND | channel, 0x01, 0x40);
+    receivedShortMessage(MIDI_PITCH_BEND | channel, 0x01, 0x40);
     EXPECT_LT(kMiddleValue, potmeter.get());
 }

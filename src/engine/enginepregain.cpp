@@ -20,11 +20,11 @@ constexpr float kMaxTotalGainBySpeed = 0.9f;
 const float kSpeedOneDiv = log10((1 * kSpeedGainMultiplier) + 1);
 } // anonymous namespace
 
-ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
-ControlPotmeter* EnginePregain::s_pDefaultBoost = NULL;
-ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
+ControlPotmeter* EnginePregain::s_pReplayGainBoost = nullptr;
+ControlPotmeter* EnginePregain::s_pDefaultBoost = nullptr;
+ControlObject* EnginePregain::s_pEnableReplayGain = nullptr;
 
-EnginePregain::EnginePregain(QString group)
+EnginePregain::EnginePregain(const QString& group)
         : m_dSpeed(1.0),
           m_dOldSpeed(1.0),
           m_dNonScratchSpeed(1.0),
@@ -37,7 +37,7 @@ EnginePregain::EnginePregain(QString group)
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
     m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough"));
 
-    if (s_pReplayGainBoost == NULL) {
+    if (s_pReplayGainBoost == nullptr) {
         s_pReplayGainBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]", "ReplayGainBoost"), -12, 12, 0.5);
         s_pDefaultBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]", "DefaultBoost"), -12, 12, 0.5);
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
@@ -50,11 +50,11 @@ EnginePregain::~EnginePregain() {
     delete m_pTotalGain;
 
     delete s_pEnableReplayGain;
-    s_pEnableReplayGain = NULL;
+    s_pEnableReplayGain = nullptr;
     delete s_pReplayGainBoost;
-    s_pReplayGainBoost = NULL;
+    s_pReplayGainBoost = nullptr;
     delete s_pDefaultBoost;
-    s_pDefaultBoost = NULL;
+    s_pDefaultBoost = nullptr;
 }
 
 void EnginePregain::setSpeedAndScratching(double speed, bool scratching) {

@@ -6,6 +6,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playermanager.h"
+#include "moc_cratetablemodel.cpp"
 #include "track/track.h"
 #include "util/db/fwdsqlquery.h"
 
@@ -59,7 +60,7 @@ void CrateTableModel::selectCrate(CrateId crateId) {
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
-bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
+bool CrateTableModel::addTrack(const QModelIndex& index, const QString& location) {
     Q_UNUSED(index);
 
     // This will only succeed if the file actually exist.
