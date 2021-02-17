@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QCoreApplication>
 #include <QDesktopServices>
 #include <QDir>
 #include <QList>
@@ -20,8 +21,7 @@ class CmdlineArgs final {
         return cla;
     }
 
-    bool Parse(int &argc, char **argv);
-    void printUsage();
+    bool Parse(const QStringList& arguments);
 
     const QList<QString>& getMusicFiles() const { return m_musicFiles; }
     bool getStartInFullscreen() const { return m_startInFullscreen; }
