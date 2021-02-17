@@ -27,6 +27,12 @@ case "$COMMAND" in
         esac
 
         sudo apt-get update
+        if [ $(dpkg-query -W -f='${Status}' jackd2 2>/dev/null | grep -c "ok installed") -eq 1 ];
+        then
+         sudo apt-get install libjack-jackd2-dev;
+        fi
+
+
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
             cmake \
