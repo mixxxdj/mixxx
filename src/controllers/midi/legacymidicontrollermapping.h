@@ -15,7 +15,6 @@ class LegacyMidiControllerMapping : public LegacyControllerMapping {
 
     bool saveMapping(const QString& fileName) const override;
 
-    virtual void accept(LegacyControllerMappingVisitor* visitor) override;
     virtual void accept(ConstLegacyControllerMappingVisitor* visitor) const override;
     virtual bool isMappable() const override;
 
