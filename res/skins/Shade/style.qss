@@ -826,11 +826,7 @@ WLibrary QRadioButton::indicator:unchecked {
   image: url(skin:/btn/btn_lib_radio_button_off.svg) center center;
 }
 
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
+#LibraryFeatureControls QPushButton {
   text-align: center;
   font-size: 9pt;
   font-weight: normal;
@@ -848,7 +844,7 @@ WLibrary QRadioButton::indicator:unchecked {
   background-color: #99a0a4;
   border: 1px solid #99a0a4;
   }
-  #DlgAutoDJ > QPushButton {
+  #DlgAutoDJ > #LibraryFeatureControls QPushButton {
     padding: 0px;
     width: 32px;
     height: 18px;
@@ -857,37 +853,20 @@ WLibrary QRadioButton::indicator:unchecked {
       width: 40px;
     }
 
-  #DlgMissing > QPushButton:!enabled,
-  #DlgHidden > QPushButton:!enabled,
-  #DlgAutoDJ > QPushButton:!enabled,
-  #DlgRecording > QPushButton:!enabled,
-  #DlgAnalysis > QPushButton:!enabled {
+  #LibraryFeatureControls QPushButton:!enabled {
     background-color: #72777A;
     border: 1px solid #72777A;
     }
-  #DlgMissing > QPushButton:unchecked,
-  #DlgHidden > QPushButton:unchecked,
-  #DlgAutoDJ > QPushButton:unchecked,
-  #DlgRecording > QPushButton:unchecked,
-  #DlgAnalysis > QPushButton:unchecked {
+  #LibraryFeatureControls QPushButton:unchecked {
     color: #888;
     background-color: #444;
     }
-  #DlgMissing > QPushButton:checked,
-  #DlgHidden > QPushButton:checked,
-  #DlgAutoDJ > QPushButton:checked,
-  #DlgRecording > QPushButton:checked,
-  #DlgAnalysis > QPushButton:checked {
+  #LibraryFeatureControls QPushButton:checked {
     color: #000;
     background-color: #F90562;
     border: 1px solid #F90562;
     }
-  #DlgAnalysis > QPushButton:focus,
-  #DlgMissing > QPushButton:focus,
-  #DlgHidden > QPushButton:focus,
-  #DlgAutoDJ > QPushButton:focus,
-  #DlgRecording > QPushButton:focus,
-  #DlgAnalysis > QPushButton:focus {
+  #LibraryFeatureControls QPushButton:focus {
     outline: none;
   }
   /* Space in between 'Recording'	button and recording label */

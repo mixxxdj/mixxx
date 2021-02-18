@@ -30,58 +30,60 @@
     <number>0</number>
    </property>
    <item>
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <property name="spacing">
-      <number>0</number>
-     </property>
-     <property name="leftMargin">
-      <number>0</number>
-     </property>
-     <property name="topMargin">
-      <number>0</number>
-     </property>
-     <property name="rightMargin">
-      <number>0</number>
-     </property>
-     <property name="bottomMargin">
-      <number>0</number>
-     </property>
-     <item>
-      <widget class="QPushButton" name="pushButtonRecording">
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
+    <widget class="QWidget" name="LibraryFeatureControls">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <property name="spacing">
+        <number>0</number>
        </property>
-       <property name="text">
-        <string>Start Recording</string>
+       <property name="leftMargin">
+        <number>0</number>
        </property>
-       <property name="checkable">
-        <bool>true</bool>
+       <property name="topMargin">
+        <number>0</number>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QLabel" name="labelRecPrefix"/>
-     </item>
-     <item>
-      <widget class="QLabel" name="labelRecFilename"/>
-     </item>
-     <item>
-      <widget class="QLabel" name="labelRecStatistics"/>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
+       <property name="rightMargin">
+        <number>0</number>
        </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
+       <property name="bottomMargin">
+        <number>0</number>
        </property>
-      </spacer>
-     </item>
-    </layout>
+       <item>
+        <widget class="QPushButton" name="pushButtonRecording">
+         <property name="focusPolicy">
+          <enum>Qt::NoFocus</enum>
+         </property>
+         <property name="text">
+          <string>Start Recording</string>
+         </property>
+         <property name="checkable">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelRecPrefix"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelRecFilename"/>
+       </item>
+       <item>
+        <widget class="QLabel" name="labelRecStatistics"/>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+    </widget>
    </item>
    <item>
     <widget class="QTableView" name="m_pTrackTablePlaceholder">
