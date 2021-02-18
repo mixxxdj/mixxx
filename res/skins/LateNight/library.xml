@@ -117,7 +117,7 @@
               <!-- Library Table-->
               <Library>
                 <ShowButtonText>false</ShowButtonText>
-                <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
+                <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
               </Library>
 
             </Children>
