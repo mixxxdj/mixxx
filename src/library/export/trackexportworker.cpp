@@ -30,6 +30,7 @@ const auto kResultCantCreateFile = QStringLiteral("Could not create file");
 const auto kDefaultPattern = QStringLiteral(
         "{{ track.basename }}{% if dup %}-{{dup}}{% endif %}"
         ".{{track.extension}}");
+const auto kEmptyMsg = QLatin1String("");
 } // namespace
 
 TrackExportWorker::TrackExportWorker(const QString& destDir,
@@ -120,31 +121,42 @@ void TrackExportWorker::setPattern(QString* pattern) {
     if (pattern == nullptr) {
         m_pattern = nullptr;
         if (!m_template.isNull()) {
+            m_template_valid = false;
             m_template.reset();
         }
         return;
     }
     if (!m_engine) {
         m_engine = Formatter::getEngine(this);
-        m_engine->setSmartTrimEnabled(true);
+        //  smartTrimEnabled would be good, but causes crashes on invalid pattern '{{ }}'
+        // m_engine->setSmartTrimEnabled(true);
     }
     m_pattern = pattern;
     updateTemplate();
 }
+
 void TrackExportWorker::updateTemplate() {
-    QString tmpl = m_destDir + QDir::separator().toLatin1() +
-            (m_pattern ? *m_pattern : kDefaultPattern);
-    m_template = m_engine->newTemplate(tmpl, QStringLiteral("export"));
+    QString fullPattern;
+    if (m_pattern) {
+        QString trimmed = m_pattern->trimmed();
+        fullPattern = m_destDir + QDir::separator().toLatin1() + trimmed;
+    } else {
+        fullPattern = m_destDir + QDir::separator().toLatin1() + kDefaultPattern;
+    }
+    m_template = m_engine->newTemplate(fullPattern, QStringLiteral("export"));
     if (m_template->error()) {
         m_errorMessage = m_template->errorString();
+        m_template_valid = false;
     } else {
         m_errorMessage = QString();
+        m_template_valid = true;
     }
 }
 
 void TrackExportWorker::run() {
     m_running = true;
     m_bStop = false;
+    m_overwriteMode = OverwriteMode::ASK;
     int i = 0;
     auto skippedTracks = TrackPointerList();
     QMap<QString, TrackFile> copy_list = createCopylist(m_tracks, &skippedTracks);
@@ -154,7 +166,7 @@ void TrackExportWorker::run() {
         jobsTotal++;
     }
 
-    for (TrackPointer track : qAsConst(skippedTracks)) {
+    for (const TrackPointer& track : qAsConst(skippedTracks)) {
         QString fileName = track->fileName();
         emit progress(fileName, nullptr, 0, jobsTotal);
         emit result(TrackExportWorker::ExportResult::SKIPPED, kResultEmptyPattern);
@@ -178,10 +190,10 @@ void TrackExportWorker::run() {
     }
     if (!m_playlist.isEmpty()) {
         const auto targetDir = QDir(m_destDir);
-        const QString plsPath = targetDir.filePath(m_playlist);
+        const QString plsPath = targetDir.filePath(FileUtils::escapeFileName(m_playlist));
         QFileInfo plsPathFileinfo(plsPath);
 
-        emit progress(QStringLiteral("export playlist"), m_playlist, i, jobsTotal);
+        emit progress(QStringLiteral("export playlist"), plsPath, i, jobsTotal);
 
         QDir plsDir = plsPathFileinfo.absoluteDir();
         if (!plsDir.mkpath(plsDir.absolutePath())) {
@@ -208,7 +220,7 @@ void TrackExportWorker::run() {
         i++;
     }
 
-    emit progress(QStringLiteral(""), QStringLiteral(""), i, jobsTotal);
+    emit progress(kEmptyMsg, kEmptyMsg, i, jobsTotal);
     emit result(TrackExportWorker::ExportResult::EXPORT_COMPLETE, kResultOk);
     m_running = false;
 }
@@ -223,19 +235,19 @@ QString TrackExportWorker::applyPattern(
         TrackPointer track,
         int index,
         int duplicateCounter) {
-    VERIFY_OR_DEBUG_ASSERT(!m_destDir.isEmpty()) {
-        qWarning() << "empty target directory";
+    if (!m_template_valid) {
         return QString();
     }
-    VERIFY_OR_DEBUG_ASSERT(!m_template.isNull()) {
-        qWarning() << "template missing";
+    VERIFY_OR_DEBUG_ASSERT(!m_destDir.isEmpty()) {
+        qWarning() << "empty target directory";
         return QString();
     }
     VERIFY_OR_DEBUG_ASSERT(m_engine) {
         qWarning() << "engine missing";
         return QString();
     }
-    // fill the context with the proper variables
+
+    // fill the context with the proper variables.
     m_context->push();
     m_context->insert(QStringLiteral("directory"), m_destDir);
     // this is safe since the context stack is popped after rendering
@@ -249,7 +261,7 @@ QString TrackExportWorker::applyPattern(
     m_context->pop();
 
     // replace bad filename characters with spaces
-    return newName;
+    return newName.trimmed();
 }
 
 void TrackExportWorker::copyFile(const QFileInfo& source_fileinfo,

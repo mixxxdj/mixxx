@@ -22,8 +22,8 @@ TEST_F(FileUtilsTest, TestSafeFilename) {
 
 TEST_F(FileUtilsTest, TestDirReplace) {
     // Generate a file name for the temporary file
-    const auto fileName = QStringLiteral("filename/with\\characters.mp3");
-    const auto expected = QStringLiteral("filename-with-characters.mp3");
+    const auto fileName = QStringLiteral("filename/with\\chara-cters.mp3");
+    const auto expected = QStringLiteral("filename-with-chara-cters.mp3");
     auto output = FileUtils::replaceDirChars(fileName);
     ASSERT_EQ(expected, output);
 }

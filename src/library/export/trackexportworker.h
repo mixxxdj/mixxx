@@ -141,6 +141,7 @@ class TrackExportWorker : public QThread {
     QString* m_pattern;
     Grantlee::Context* m_context;
     Grantlee::Template m_template;
+    bool m_template_valid{false};
     Grantlee::Engine* m_engine{nullptr};
     QString m_playlist;
 };
