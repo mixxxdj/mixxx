@@ -28,7 +28,7 @@ class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
             unsigned char control,
             unsigned char value,
             mixxx::Duration timestamp);
-    void receivedSysex(const QByteArray& data, mixxx::Duration timestamp);
+    void receive(const QByteArray& data, mixxx::Duration timestamp);
 
   private:
     QString m_sName;

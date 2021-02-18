@@ -33,9 +33,11 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
             case MIDI_CC:
             case MIDI_PITCH_BEND:
                 if (i + 2 < uBufferSize) {
-                    note = pBuffer[i+1];
-                    velocity = pBuffer[i+2];
-                    emit receivedShortMessage(status, note, velocity, timestamp);
+                    QByteArray data;
+                    data.append(status);
+                    data.append(pBuffer[i + 1]);
+                    data.append(pBuffer[i + 2]);
+                    emit receive(data, timestamp);
                 } else {
                     qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
                 }
@@ -44,7 +46,7 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
             default:
                 // Handle platter messages and any others that are not 3 bytes
                 QByteArray byteArray(reinterpret_cast<const char*>(pBuffer), uBufferSize);
-                emit receivedSysex(byteArray, timestamp);
+                emit receive(byteArray, timestamp);
                 i = uBufferSize;
                 break;
         }
@@ -106,11 +108,7 @@ int Hss1394Controller::open() {
 
     m_pChannelListener = new DeviceChannelListener(this, getName());
     connect(m_pChannelListener,
-            &DeviceChannelListener::receivedShortMessage,
-            this,
-            &Hss1394Controller::receivedShortMessage);
-    connect(m_pChannelListener,
-            &DeviceChannelListener::receivedSysex,
+            &DeviceChannelListener::receive,
             this,
             &Hss1394Controller::receive);
 
@@ -148,11 +146,7 @@ int Hss1394Controller::close() {
     }
 
     disconnect(m_pChannelListener,
-            &DeviceChannelListener::receivedShortMessage,
-            this,
-            &Hss1394Controller::receivedShortMessage);
-    disconnect(m_pChannelListener,
-            &DeviceChannelListener::receivedSysex,
+            &DeviceChannelListener::receive,
             this,
             &Hss1394Controller::receive);
 
