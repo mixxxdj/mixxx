@@ -26,7 +26,7 @@ namespace {
 
 const QString kViewName = QStringLiteral("Auto DJ");
 
-}
+} // namespace
 
 namespace {
     const int kMaxRetrieveAttempts = 3;

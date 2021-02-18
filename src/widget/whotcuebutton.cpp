@@ -10,7 +10,7 @@
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
-}
+} // namespace
 
 WHotcueButton::WHotcueButton(const QString& group, QWidget* pParent)
         : WPushButton(pParent),
@@ -58,7 +58,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
     m_pCoColor->connectValueChanged(this, &WHotcueButton::slotColorChanged);
     slotColorChanged(m_pCoColor->get());
 
-    auto pLeftConnection = new ControlParameterWidgetConnection(
+    auto* pLeftConnection = new ControlParameterWidgetConnection(
             this,
             createConfigKey(QStringLiteral("activate")),
             nullptr,
@@ -66,7 +66,7 @@ void WHotcueButton::setup(const QDomNode& node, const SkinContext& context) {
             ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE);
     addLeftConnection(pLeftConnection);
 
-    auto pDisplayConnection = new ControlParameterWidgetConnection(
+    auto* pDisplayConnection = new ControlParameterWidgetConnection(
             this,
             createConfigKey(QStringLiteral("enabled")),
             nullptr,

@@ -102,7 +102,8 @@ when a critical error occurs unless this is set properly.\n", stdout);
             m_safeMode = true;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
             m_debugAssertBreak = true;
-        } else {
+        } else if (i > 0) {
+            // Don't try to load the program name to a deck
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
     }
@@ -177,5 +178,8 @@ void CmdlineArgs::printUsage() {
 "\
 -h, --help              Display this help message and exit", stdout);
 
-    fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
+    fputs("\n\n(For more information, see "
+          "https://manual.mixxx.org/2.3/chapters/"
+          "appendix.html#command-line-options)\n",
+            stdout);
 }

@@ -28,7 +28,7 @@ double ValueTransformer::transformInverse(double argument) const {
 ValueTransformer* ValueTransformer::parseFromXml(const QDomElement& transformElement,
         const SkinContext& context) {
     if (transformElement.isNull() || !transformElement.hasChildNodes()) {
-        return NULL;
+        return nullptr;
     }
 
     ValueTransformer* pTransformer = new ValueTransformer();

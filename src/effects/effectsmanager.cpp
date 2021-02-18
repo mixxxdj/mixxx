@@ -13,6 +13,8 @@
 #include "moc_effectsmanager.cpp"
 #include "util/assert.h"
 
+const QString EffectsManager::kNoEffectString = QStringLiteral("---");
+
 namespace {
 const QString kEffectGroupSeparator = "_";
 const QString kGroupClose = "]";
@@ -26,8 +28,8 @@ EffectsManager::EffectsManager(QObject* pParent,
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0),
-          m_pLoEqFreq(NULL),
-          m_pHiEqFreq(NULL),
+          m_pLoEqFreq(nullptr),
+          m_pHiEqFreq(nullptr),
           m_underDestruction(false) {
     qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =

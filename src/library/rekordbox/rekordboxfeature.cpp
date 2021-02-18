@@ -481,6 +481,9 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     queryInsertIntoDevicePlaylistTracks.bindValue(":playlist_id", playlistID);
 
+    if (!Sandbox::askForAccess(dbPath)) {
+        return QString();
+    }
     std::ifstream ifs(dbPath.toStdString(), std::ifstream::binary);
     kaitai::kstream ks(&ifs);
 
@@ -863,7 +866,7 @@ void readAnalyze(TrackPointer track,
                 beats << (sampleRateKhz * static_cast<double>(time));
             }
 
-            auto pBeats = new mixxx::BeatMap(*track, static_cast<SINT>(sampleRate), beats);
+            auto* pBeats = new mixxx::BeatMap(*track, static_cast<SINT>(sampleRate), beats);
             pBeats->setSubVersion(mixxx::rekordboxconstants::beatsSubversion);
             track->setBeats(mixxx::BeatsPointer(pBeats));
         } break;
@@ -1071,7 +1074,7 @@ void RekordboxPlaylistModel::initSortColumnMapping() {
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::NativeLocation)] =
-            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
+            fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::Comment)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
@@ -1233,7 +1236,7 @@ RekordboxFeature::RekordboxFeature(
             << LIBRARYTABLE_YEAR
             << LIBRARYTABLE_GENRE
             << LIBRARYTABLE_TRACKNUMBER
-            << LIBRARYTABLE_LOCATION
+            << TRACKLOCATIONSTABLE_LOCATION
             << LIBRARYTABLE_COMMENT
             << LIBRARYTABLE_RATING
             << LIBRARYTABLE_DURATION
@@ -1252,7 +1255,7 @@ RekordboxFeature::RekordboxFeature(
             << LIBRARYTABLE_YEAR
             << LIBRARYTABLE_GENRE
             << LIBRARYTABLE_TRACKNUMBER
-            << LIBRARYTABLE_LOCATION
+            << TRACKLOCATIONSTABLE_LOCATION
             << LIBRARYTABLE_COMMENT
             << LIBRARYTABLE_DURATION
             << LIBRARYTABLE_BITRATE
@@ -1405,8 +1408,9 @@ void RekordboxFeature::activate() {
 }
 
 void RekordboxFeature::activateChild(const QModelIndex& index) {
-    if (!index.isValid())
+    if (!index.isValid()) {
         return;
+    }
 
     //access underlying TreeItem object
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());

@@ -204,8 +204,8 @@ bool LV2EffectProcessor::loadStatesForInputChannel(const ChannelHandle* inputCha
                      << this << "output" << outputChannel;
         }
 
-        auto pState = dynamic_cast<LV2EffectGroupState*>(
-                  pStatesMap->at(outputChannel.handle()));
+        auto* pState = dynamic_cast<LV2EffectGroupState*>(
+                pStatesMap->at(outputChannel.handle()));
         VERIFY_OR_DEBUG_ASSERT(pState != nullptr) {
               return false;
         }

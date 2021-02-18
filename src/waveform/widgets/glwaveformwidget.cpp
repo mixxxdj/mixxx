@@ -18,21 +18,17 @@
 #include "waveform/sharedglcontext.h"
 
 GLWaveformWidget::GLWaveformWidget(const QString& group, QWidget* parent)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
-          WaveformWidgetAbstract(group) {
+        : GLWaveformWidgetAbstract(group, parent) {
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
 
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
 #if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
-    addRenderer<GLWaveformRendererFilteredSignal>();
+    m_pGlRenderer = addRenderer<GLWaveformRendererFilteredSignal>();
 #endif // !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
     addRenderer<WaveformRenderBeat>();
     addRenderer<WaveformRenderMark>();
@@ -65,7 +61,7 @@ mixxx::Duration GLWaveformWidget::render() {
     // this may delayed until previous buffer swap finished
     QPainter painter(this);
     t1 = timer.restart();
-    draw(&painter, NULL);
+    draw(&painter, nullptr);
     //t2 = timer.restart();
     //qDebug() << "GLWaveformWidget" << t1 << t2;
     return t1; // return timer for painter setup

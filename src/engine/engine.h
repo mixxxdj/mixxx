@@ -7,8 +7,6 @@ namespace mixxx {
     // TODO(XXX): When we move from stereo to multi-channel this needs updating.
     static constexpr audio::ChannelCount kEngineChannelCount =
             audio::ChannelCount(2);
-    static constexpr audio::SampleLayout kEngineSampleLayout =
-            audio::SampleLayout::Interleaved;
 
     // Contains the information needed to process a buffer of audio
     class EngineParameters {
@@ -33,8 +31,7 @@ namespace mixxx {
                 SINT framesPerBuffer)
                 : m_outputSignal(
                           kEngineChannelCount,
-                          sampleRate,
-                          kEngineSampleLayout),
+                          sampleRate),
                   m_framesPerBuffer(framesPerBuffer) {
             DEBUG_ASSERT(framesPerBuffer > 0);
         }

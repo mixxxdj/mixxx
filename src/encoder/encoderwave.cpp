@@ -155,12 +155,12 @@ void EncoderWave::updateMetaData(const QString& artist, const QString& title, co
 void EncoderWave::initStream() {
 
     // Tell the encoder to automatically convert float input range to the correct output range.
-    sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_TRUE);
+    sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, nullptr, SF_TRUE);
     // Tell the encoder that, when converting to integer formats, clip
     // automatically the values that go outside of the allowed range.
     // Warning! Depending on how libsndfile is compiled autoclip may not work.
     // Ensure CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE is setup properly in the build.
-    sf_command(m_pSndfile, SFC_SET_CLIPPING, NULL, SF_TRUE) ;
+    sf_command(m_pSndfile, SFC_SET_CLIPPING, nullptr, SF_TRUE);
 
     // Strings passed to and retrieved from sf_get_string/sf_set_string are assumed to be utf-8.
     // However, while formats like Ogg/Vorbis and FLAC fully support utf-8, others like WAV and

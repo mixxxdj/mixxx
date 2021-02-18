@@ -109,8 +109,9 @@ void SampleUtil::free(CSAMPLE* pBuffer) {
 // static
 void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain,
         SINT numSamples) {
-    if (gain == CSAMPLE_GAIN_ONE)
+    if (gain == CSAMPLE_GAIN_ONE) {
         return;
+    }
     if (gain == CSAMPLE_GAIN_ZERO) {
         clear(pBuffer, numSamples);
         return;

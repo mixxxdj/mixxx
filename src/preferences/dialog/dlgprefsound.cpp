@@ -29,11 +29,17 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
           m_bSkipConfigClear(true),
           m_loading(false) {
     setupUi(this);
+    // Create text color for the wiki links
+    createLinkColor();
 
-    connect(m_pSoundManager, &SoundManager::devicesUpdated, this, &DlgPrefSound::refreshDevices);
+    connect(m_pSoundManager,
+            &SoundManager::devicesUpdated,
+            this,
+            &DlgPrefSound::refreshDevices);
 
     apiComboBox->clear();
-    apiComboBox->addItem(tr("None"), "None");
+    apiComboBox->addItem(SoundManagerConfig::kEmptyComboBox,
+            SoundManagerConfig::kDefaultAPI);
     updateAPIs();
     connect(apiComboBox,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -216,17 +222,24 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
 
     if (RLimit::isRtPrioAllowed()) {
-        limitsHint->setText(tr("Realtime scheduling is enabled."));
+        realtimeHint->setText(tr("Realtime scheduling is enabled."));
+    } else {
+        realtimeHint->setText(
+                tr("To enable Realtime scheduling (currently disabled), see the %1.")
+                        .arg(coloredLinkString(
+                                m_pLinkColor,
+                                QStringLiteral("Mixxx Wiki"),
+                                MIXXX_WIKI_AUDIO_LATENCY_URL)));
     }
 #else
     // the limits warning is a Linux only thing
-    limitsHint->hide();
+    realtimeHint->hide();
 #endif // __LINUX__
 
     // Set the focus policy for QComboBoxes (and wide QDoubleSpinBoxes) and
     // connect them to the custom event filter below so they don't accept focus
     // when we scroll the preferences page.
-    QObjectList objList = this->children();
+    QObjectList objList = children();
     for (int i = 0; i < objList.length(); ++i) {
         QComboBox* combo = qobject_cast<QComboBox*>(objList[i]);
         QDoubleSpinBox* spin = qobject_cast<QDoubleSpinBox*>(objList[i]);
@@ -238,6 +251,14 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             spin->installEventFilter(this);
         }
     }
+
+    hardwareGuide->setText(
+            tr("The %1 lists sound cards and controllers you may want to "
+               "consider for using Mixxx.")
+                    .arg(coloredLinkString(
+                            m_pLinkColor,
+                            tr("Mixxx DJ Hardware Guide"),
+                            MIXXX_WIKI_HARDWARE_COMPATIBILITY_URL)));
 }
 
 DlgPrefSound::~DlgPrefSound() {
@@ -298,7 +319,7 @@ void DlgPrefSound::slotApply() {
     }
     if (err != SOUNDDEVICE_ERROR_OK) {
         QString error = m_pSoundManager->getLastErrorMessage(err);
-        QMessageBox::warning(NULL, tr("Configuration error"), error);
+        QMessageBox::warning(nullptr, tr("Configuration error"), error);
     } else {
         m_settingsModified = false;
         m_bLatencyChanged = false;
@@ -405,7 +426,9 @@ void DlgPrefSound::insertItem(DlgPrefSoundItem *pItem, QVBoxLayout *pLayout) {
     for (pos = 0; pos < pLayout->count() - 1; ++pos) {
         DlgPrefSoundItem *pOther(qobject_cast<DlgPrefSoundItem*>(
             pLayout->itemAt(pos)->widget()));
-        if (!pOther) continue;
+        if (!pOther) {
+            continue;
+        }
         if (pItem->type() < pOther->type()) {
             break;
         } else if (pItem->type() == pOther->type()
@@ -609,7 +632,7 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
  * just changes and we need to display new devices.
  */
 void DlgPrefSound::refreshDevices() {
-    if (m_config.getAPI() == "None") {
+    if (m_config.getAPI() == SoundManagerConfig::kDefaultAPI) {
         m_outputDevices.clear();
         m_inputDevices.clear();
     } else {
@@ -628,12 +651,16 @@ void DlgPrefSound::refreshDevices() {
  * DlgPrefSound::slotApply knows to apply them.
  */
 void DlgPrefSound::settingChanged() {
-    if (m_loading) return; // doesn't count if we're just loading prefs
+    if (m_loading) {
+        return; // doesn't count if we're just loading prefs
+    }
     m_settingsModified = true;
 }
 
 void DlgPrefSound::deviceSettingChanged() {
-    if (m_loading) return;
+    if (m_loading) {
+        return;
+    }
     checkLatencyCompensation();
     m_settingsModified = true;
 }

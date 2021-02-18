@@ -69,7 +69,7 @@ void EffectRack::removeFromEngine() {
     pRequest->RemoveEffectRack.signalProcessingStage = m_signalProcessingStage;
     pRequest->RemoveEffectRack.pRack = m_pEngineEffectRack;
     m_pEffectsManager->writeRequest(pRequest);
-    m_pEngineEffectRack = NULL;
+    m_pEngineEffectRack = nullptr;
 }
 
 void EffectRack::registerInputChannel(const ChannelHandleAndGroup& handle_group) {

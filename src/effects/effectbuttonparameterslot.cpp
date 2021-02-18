@@ -95,7 +95,7 @@ void EffectButtonParameterSlot::clear() {
     //qDebug() << debugString() << "clear";
     if (m_pEffectParameter) {
         m_pEffectParameter->disconnect(this);
-        m_pEffectParameter = NULL;
+        m_pEffectParameter = nullptr;
     }
 
     m_pEffect.clear();

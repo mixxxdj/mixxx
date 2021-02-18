@@ -539,7 +539,7 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
                 lastIndex
                         .sibling(
                                 lastIndex.row(),
-                                m_pTrackModel->fieldIndex(LIBRARYTABLE_LOCATION))
+                                m_pTrackModel->fieldIndex(TRACKLOCATIONSTABLE_LOCATION))
                         .data()
                         .toString();
         return coverInfo;
@@ -927,7 +927,7 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
         if (!playlistDao.isHidden(it.value())) {
             // No leak because making the menu the parent means they will be
             // auto-deleted
-            auto pAction = new QAction(
+            auto* pAction = new QAction(
                     mixxx::escapeTextPropertyWithoutShortcuts(it.key()),
                     m_pPlaylistMenu);
             bool locked = playlistDao.isPlaylistLocked(it.value());
@@ -1054,7 +1054,7 @@ void WTrackMenu::slotPopulateCrateMenu() {
 }
 
 void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
-    auto pCheckBox = qobject_cast<QCheckBox*>(pWidget);
+    auto* pCheckBox = qobject_cast<QCheckBox*>(pWidget);
     VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
         qWarning() << "crateId is not of CrateId type";
         return;
