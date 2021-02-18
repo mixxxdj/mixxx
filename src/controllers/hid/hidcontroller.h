@@ -50,7 +50,7 @@ class HidController final : public Controller {
 
     QList<int> getInputReport(unsigned int reportID);
     QList<int> getFeatureReport(unsigned int reportID);
-  
+
     const mixxx::hid::DeviceInfo m_deviceInfo;
 
     hid_device* m_pHidDevice;

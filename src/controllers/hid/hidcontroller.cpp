@@ -19,7 +19,7 @@ HidController::HidController(
         mixxx::hid::DeviceInfo&& deviceInfo)
         : m_deviceInfo(std::move(deviceInfo)),
           m_pHidDevice(nullptr),
-          m_PollingBufferIndex(0) {
+          m_pollingBufferIndex(0) {
     setDeviceCategory(mixxx::hid::DeviceCategory::guessFromDeviceInfo(m_deviceInfo));
     setDeviceName(m_deviceInfo.formatName());
 
@@ -109,7 +109,7 @@ int HidController::open() {
     for (int i = 0; i < kNumBuffers; i++) {
         memset(m_pPollData[i], 0, kBufferSize);
     }
-    m_LastPollSize = 0;
+    m_lastPollSize = 0;
 
     setOpen(true);
     startEngine();
@@ -138,23 +138,23 @@ int HidController::close() {
 
 void HidController::processInputReport(int bytesRead) {
     Trace process("HidController processInputReport");
-    unsigned char* pPreviousBuffer = m_pPollData[(m_PollingBufferIndex + 1) % kNumBuffers];
-    unsigned char* pCurrentBuffer = m_pPollData[m_PollingBufferIndex];
+    unsigned char* pPreviousBuffer = m_pPollData[(m_pollingBufferIndex + 1) % kNumBuffers];
+    unsigned char* pCurrentBuffer = m_pPollData[m_pollingBufferIndex];
     // Some controllers such as the Gemini GMX continuously send input reports even if it
-    // is identical to the previous input report. If this loop processed all those redundant
-    // input reports, it would be a big performance problem to run JS code for every input report
-    // plus it would be unnecessary.
-    // This assumes that the redundant input reports all use the same report ID. In practice we
-    // have not encountered any controllers that send redundant input reports with different report
+    // is identical to the previous send input report. If this loop processed all those redundant
+    // input report, it would be a big performance problem to run JS code for every  input report and
+    // would be unnecessary.
+    // This assumes that the redundant input report all use the same report ID. In practice we
+    // have not encountered any controllers that send redundant input report with different report
     // IDs. If any such devices exist, this may be changed to use a separate buffer to store
     // the last input report for each report ID.
-    if (bytesRead == m_LastPollSize &&
+    if (bytesRead == m_lastPollSize &&
             memcmp(pCurrentBuffer, pPreviousBuffer, bytesRead) == 0) {
         return;
     }
     // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
-    m_PollingBufferIndex = (m_PollingBufferIndex + 1) % kNumBuffers;
-    m_LastPollSize = bytesRead;
+    m_pollingBufferIndex = (m_pollingBufferIndex + 1) % kNumBuffers;
+    m_lastPollSize = bytesRead;
     auto incomingData = QByteArray::fromRawData(
             reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
     receive(incomingData, mixxx::Time::elapsed());
@@ -164,8 +164,8 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
     Trace hidRead("HidController getInputReport");
     int bytesRead;
 
-    m_pPollData[m_PollingBufferIndex][0] = reportID;
-    bytesRead = hid_get_input_report(m_pHidDevice, m_pPollData[m_PollingBufferIndex], kBufferSize);
+    m_pPollData[m_pollingBufferIndex][0] = reportID;
+    bytesRead = hid_get_input_report(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
 
     controllerDebug(bytesRead
             << "bytes received by hid_get_input_report" << getName()
@@ -189,12 +189,12 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
     QList<int> dataList;
     dataList.reserve(bytesRead);
     for (int i = 0; i < bytesRead; i++) {
-        dataList.append(m_pPollData[m_PollingBufferIndex][i]);
+        dataList.append(m_pPollData[m_pollingBufferIndex][i]);
     }
 
     // Execute callback function in JavaScript mapping
     // and print to stdout in case of --controllerDebug
-    HidController::processInputReport(bytesRead);
+    processInputReport(bytesRead);
 
     return dataList;
 }
@@ -208,7 +208,7 @@ bool HidController::poll() {
     // There is no safety net for this because it has not been demonstrated to be
     // a problem in practice.
     while (true) {
-        int bytesRead = hid_read(m_pHidDevice, m_pPollData[m_PollingBufferIndex], kBufferSize);
+        int bytesRead = hid_read(m_pHidDevice, m_pPollData[m_pollingBufferIndex], kBufferSize);
         if (bytesRead < 0) {
             // -1 is the only error value according to hidapi documentation.
             DEBUG_ASSERT(bytesRead == -1);
