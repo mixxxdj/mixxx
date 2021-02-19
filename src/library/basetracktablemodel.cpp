@@ -422,7 +422,8 @@ QVariant BaseTrackTableModel::data(
     if (role != Qt::DisplayRole &&
             role != Qt::EditRole &&
             role != Qt::CheckStateRole &&
-            role != Qt::ToolTipRole) {
+            role != Qt::ToolTipRole &&
+            role != kDataExportRole) {
         return QVariant();
     }
 
@@ -547,19 +548,8 @@ QVariant BaseTrackTableModel::roleValue(
     }
     switch (role) {
     case Qt::ToolTipRole:
-        switch (field) {
-        case ColumnCache::COLUMN_LIBRARYTABLE_COLOR:
-            return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
-        case ColumnCache::COLUMN_LIBRARYTABLE_COVERART:
-            return composeCoverArtToolTipHtml(index);
-        case ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW:
-            return QVariant();
-        default:
-            // Same value as for Qt::DisplayRole (see below)
-            break;
-        }
-        M_FALLTHROUGH_INTENDED;
     case Qt::DisplayRole:
+    case kDataExportRole:
         switch (field) {
         case ColumnCache::COLUMN_LIBRARYTABLE_DURATION: {
             if (rawValue.isNull()) {
@@ -638,7 +628,7 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             }
             if (bpm.hasValue()) {
-                if (role == Qt::ToolTipRole) {
+                if (role == Qt::ToolTipRole || role == kDataExportRole) {
                     return QString::number(bpm.getValue(), 'f', 4);
                 } else {
                     return QString::number(bpm.getValue(), 'f', 1);
@@ -744,6 +734,24 @@ QVariant BaseTrackTableModel::roleValue(
         case ColumnCache::COLUMN_LIBRARYTABLE_URL:
             // Not yet supported
             DEBUG_ASSERT(rawValue.isNull());
+            break;
+        case ColumnCache::COLUMN_LIBRARYTABLE_COLOR:
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
+            }
+            // Otherwise, just use the column value
+            break;
+        case ColumnCache::COLUMN_LIBRARYTABLE_COVERART:
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return composeCoverArtToolTipHtml(index);
+            }
+            // Otherwise, just use the column value
+            break;
+        case ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW:
+            if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                return QVariant();
+            }
+            // Otherwise, just use the column value
             break;
         default:
             // Otherwise, just use the column value
