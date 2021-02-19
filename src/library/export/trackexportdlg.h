@@ -35,7 +35,6 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
             const QString* playlistName = nullptr);
     virtual ~TrackExportDlg();
     void open() override;
-    bool eventFilter(QObject* obj, QEvent* event) override;
 
   public slots:
     void slotProgress(const QString& from, const QString& to, int progress, int count);
@@ -53,7 +52,8 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     bool browseFolder();
 
   private slots:
-    void slotPatternSelected(QAction* action);
+    void slotPatternSelected(int index);
+    void slotPatternEdited(const QString& text);
 
   private:
     // Called when progress is complete or the procedure has been canceled.
@@ -65,12 +65,13 @@ class TrackExportDlg : public QDialog, public Ui::DlgTrackExport {
     void setEnableControls(bool enabled);
     void closeEvent(QCloseEvent* event) override;
     void populateDefaultPatterns();
+    void removeDups(const QVariant& data);
 
     UserSettingsPointer m_pConfig;
     TrackPointerList m_tracks;
     TrackExportWorker* m_worker;
-    QMenu* m_patternMenu;
     int m_errorCount = 0;
     int m_skippedCount = 0;
     int m_okCount = 0;
+    bool m_patternComboSwitched = 0;
 };

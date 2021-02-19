@@ -56,9 +56,6 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
 
     m_worker = new TrackExportWorker(folderEdit->text(), m_tracks, context);
 
-    m_patternMenu = new QMenu(patternButton);
-    m_patternMenu->installEventFilter(this);
-
     if (playlist) {
         // use the escaped version as suggestion for playlist name
         playlistName->setText(FileUtils::escapeFileName(*playlist));
@@ -97,17 +94,18 @@ TrackExportDlg::TrackExportDlg(QWidget* parent,
                 updatePreview();
             });
 
-    patternEdit->setText(kDefaultPatterns[0]);
-    connect(patternEdit,
-            &QLineEdit::textChanged,
+    connect(patternCombo,
+            &QComboBox::currentTextChanged,
             [this](const QString& x) {
                 Q_UNUSED(x);
                 updatePreview();
             });
-    patternButton->setMenu(m_patternMenu);
-
-    connect(m_patternMenu,
-            &QMenu::triggered,
+    connect(patternCombo,
+            &QComboBox::editTextChanged,
+            this,
+            &TrackExportDlg::slotPatternEdited);
+    connect(patternCombo,
+            QOverload<int>::of(&QComboBox::activated),
             this,
             &TrackExportDlg::slotPatternSelected);
 
@@ -138,22 +136,58 @@ TrackExportDlg::~TrackExportDlg() {
 
 void TrackExportDlg::populateDefaultPatterns() {
     for (const auto& pattern : kDefaultPatterns) {
-        m_patternMenu->addAction(pattern);
+        patternCombo->addItem(pattern, true);
     }
 }
 
-void TrackExportDlg::slotPatternSelected(QAction* action) {
-    patternEdit->setText(action->text());
+void TrackExportDlg::removeDups(const QVariant& data) {
+    for (int i = 0; i < patternCombo->count(); i++) {
+        if (patternCombo->itemData(i, Qt::DisplayRole) == data) {
+            // if the the item was user entered and is exactly the same,
+            // remove the old one
+            if (patternCombo->itemData(i, Qt::UserRole).toBool() == false) {
+                patternCombo->removeItem(i);
+                qDebug() << "remove i" << i;
+                i--;
+            }
+        }
+    }
 }
 
-bool TrackExportDlg::eventFilter(QObject* obj, QEvent* event) {
-    if (event->type() == QEvent::Show && obj == m_patternMenu) {
-        QPoint pos = m_patternMenu->pos();
-        pos.rx() -= m_patternMenu->width() - patternButton->width();
-        m_patternMenu->move(pos);
-        return true;
+void TrackExportDlg::slotPatternSelected(int index) {
+    QVariant data = patternCombo->itemData(index, Qt::DisplayRole);
+    removeDups(data);
+    patternCombo->insertItem(0, data.toString(), false);
+    patternCombo->setCurrentIndex(0);
+    m_patternComboSwitched = true;
+    // we can also remove the item 1 if it is not fixed and a fixed entry exists
+    QVariant oldEdit = patternCombo->itemData(1, Qt::DisplayRole);
+    bool found = false;
+    for (int i = patternCombo->count() - 1; i > 1; i--) {
+        if (patternCombo->itemData(i, Qt::DisplayRole) == oldEdit) {
+            found = true;
+            break;
+        }
     }
-    return false;
+    if (found && !patternCombo->itemData(1, Qt::UserRole).toBool()) {
+        patternCombo->removeItem(1);
+    }
+}
+
+void TrackExportDlg::slotPatternEdited(const QString& text) {
+    if (m_patternComboSwitched) {
+        m_patternComboSwitched = false;
+        return;
+    }
+    // in case the user tries to edit a protected pattern, make a copy first
+    if (patternCombo->currentIndex() == 0) {
+        bool fixed = patternCombo->itemData(0, Qt::UserRole).toBool();
+        if (fixed) {
+            patternCombo->insertItem(0, text, false);
+            patternCombo->setCurrentIndex(0);
+        }
+        patternCombo->setItemData(0, text, Qt::DisplayRole);
+    }
 }
 
 bool TrackExportDlg::browseFolder() {
@@ -174,13 +208,12 @@ void TrackExportDlg::closeEvent(QCloseEvent* event) {
 
 void TrackExportDlg::setEnableControls(bool enabled) {
     startButton->setEnabled(enabled);
-    patternEdit->setEnabled(enabled);
+    patternCombo->setEnabled(enabled);
     folderEdit->setEnabled(enabled);
     browseButton->setEnabled(enabled);
     playlistName->setEnabled(enabled);
     playlistExport->setEnabled(enabled);
     playlistSuffix->setEnabled(enabled);
-    patternButton->setEnabled(enabled);
 }
 
 void TrackExportDlg::slotStartExport() {
@@ -218,7 +251,7 @@ void TrackExportDlg::updatePreview() {
     VERIFY_OR_DEBUG_ASSERT(!m_tracks.isEmpty()) {
         return;
     }
-    QString pattern = patternEdit->text();
+    QString pattern = patternCombo->currentText();
     m_worker->setPattern(&pattern);
     m_worker->setDestDir(folderEdit->text());
     previewLabel->setText(m_worker->applyPattern(m_tracks[0], 1));

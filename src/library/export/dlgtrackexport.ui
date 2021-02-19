@@ -38,7 +38,7 @@
    <item row="0" column="0">
     <widget class="QTabWidget" name="tabWidget">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tabOptions">
       <attribute name="title">
@@ -170,33 +170,14 @@
              </layout>
             </item>
             <item row="1" column="1">
-             <layout class="QHBoxLayout" name="horizontalLayout_6">
-              <item>
-               <widget class="QLineEdit" name="patternEdit"/>
-              </item>
-              <item>
-               <widget class="QToolButton" name="patternButton">
-                <property name="text">
-                 <string/>
-                </property>
-                <property name="iconSize">
-                 <size>
-                  <width>15</width>
-                  <height>24</height>
-                 </size>
-                </property>
-                <property name="popupMode">
-                 <enum>QToolButton::InstantPopup</enum>
-                </property>
-                <property name="toolButtonStyle">
-                 <enum>Qt::ToolButtonIconOnly</enum>
-                </property>
-                <property name="arrowType">
-                 <enum>Qt::NoArrow</enum>
-                </property>
-               </widget>
-              </item>
-             </layout>
+             <widget class="QComboBox" name="patternCombo">
+              <property name="editable">
+               <bool>true</bool>
+              </property>
+              <property name="duplicatesEnabled">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
            </layout>
           </item>
@@ -331,8 +312,7 @@
   <tabstop>tabWidget</tabstop>
   <tabstop>folderEdit</tabstop>
   <tabstop>browseButton</tabstop>
-  <tabstop>patternEdit</tabstop>
-  <tabstop>patternButton</tabstop>
+  <tabstop>patternCombo</tabstop>
   <tabstop>playlistExport</tabstop>
   <tabstop>playlistName</tabstop>
   <tabstop>playlistSuffix</tabstop>
