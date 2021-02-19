@@ -20,6 +20,7 @@ QString buildWhatsThis(const QString& title, const QString& text) {
     return QString("%1\n\n%2").arg(preparedTitle.remove("&"), text);
 }
 
+#ifdef __VINYLCONTROL__
 QString vinylControlDefaultKeyBinding(int deck) {
     // More bindings need to be defined if you increment
     // kMaximumVinylControlInputs.
@@ -32,6 +33,7 @@ QString vinylControlDefaultKeyBinding(int deck) {
         default: return QString();
     }
 }
+#endif // __VINYLCONTROL__
 
 QString loadToDeckDefaultKeyBinding(int deck) {
     switch (deck) {
