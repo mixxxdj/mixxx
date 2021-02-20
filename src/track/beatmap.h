@@ -74,7 +74,6 @@ class BeatMap final : public Beats {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    void addBeat(double dBeatSample) override;
     void removeBeat(double dBeatSample) override;
     void translate(double dNumSamples) override;
     void scale(enum BPMScale scale) override;

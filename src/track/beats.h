@@ -25,7 +25,7 @@ class BeatIterator {
     virtual double next() = 0;
 };
 
-// Beats is a pure abstract base class for BPM and beat management classes. It
+// Beats is the base class for BPM and beat management classes. It
 // provides a specification of all methods a beat-manager class must provide, as
 // well as a capability model for representing optional features.
 class Beats : public QObject {
@@ -108,7 +108,7 @@ class Beats : public QObject {
     // then dSamples is returned. If no beat can be found, returns -1.
     virtual double findNthBeat(double dSamples, int n) const = 0;
 
-    int numBeatsInRange(double dStartSample, double dEndSample);
+    int numBeatsInRange(double dStartSample, double dEndSample) const;
 
     // Find the sample N beats away from dSample. The number of beats may be
     // negative and does not need to be an integer.
@@ -140,10 +140,6 @@ class Beats : public QObject {
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
-
-    // Add a beat at location dBeatSample. Beats instance must have the
-    // capability BEATSCAP_ADDREMOVE.
-    virtual void addBeat(double dBeatSample) = 0;
 
     // Remove a beat at location dBeatSample. Beats instance must have the
     // capability BEATSCAP_ADDREMOVE.

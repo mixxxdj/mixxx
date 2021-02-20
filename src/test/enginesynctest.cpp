@@ -2416,10 +2416,13 @@ TEST_F(EngineSyncTest, BeatMapQantizePlay) {
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(*m_pTrack1, 120, 0.0);
     m_pTrack1->setBeats(pBeats1);
 
-    mixxx::BeatsPointer pBeats2 = mixxx::BeatsPointer(new mixxx::BeatMap(*m_pTrack2, 44100));
-    // Add two beats at 120 Bpm
-    pBeats2->addBeat(44100 / 2);
-    pBeats2->addBeat(44100);
+    constexpr int kSampleRate = 44100;
+
+    mixxx::BeatsPointer pBeats2 = mixxx::BeatsPointer(new mixxx::BeatMap(
+            *m_pTrack2,
+            kSampleRate,
+            // Add two beats at 120 Bpm
+            QVector<double>({kSampleRate / 2, kSampleRate})));
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);

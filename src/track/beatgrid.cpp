@@ -298,12 +298,6 @@ double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
     return bpm();
 }
 
-void BeatGrid::addBeat(double dBeatSample) {
-    Q_UNUSED(dBeatSample);
-    //QMutexLocker locker(&m_mutex);
-    return;
-}
-
 void BeatGrid::removeBeat(double dBeatSample) {
     Q_UNUSED(dBeatSample);
     //QMutexLocker locker(&m_mutex);

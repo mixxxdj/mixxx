@@ -487,25 +487,6 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     return BeatUtils::calculateAverageBpm(numberOfBeats, m_iSampleRate, lowerFrame, upperFrame);
 }
 
-void BeatMap::addBeat(double dBeatSample) {
-    QMutexLocker locker(&m_mutex);
-    Beat beat;
-    beat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(dBeatSample)));
-    BeatList::iterator it = std::lower_bound(
-        m_beats.begin(), m_beats.end(), beat, BeatLessThan);
-
-    // Don't insert a duplicate beat. TODO(XXX) determine what epsilon to
-    // consider a beat identical to another.
-    if (it != m_beats.end() && it->frame_position() == beat.frame_position()) {
-        return;
-    }
-
-    m_beats.insert(it, beat);
-    onBeatlistChanged();
-    locker.unlock();
-    emit updated();
-}
-
 void BeatMap::removeBeat(double dBeatSample) {
     QMutexLocker locker(&m_mutex);
     Beat beat;
