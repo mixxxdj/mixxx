@@ -27,18 +27,18 @@ void WaveformBeatMarker::draw(QPainter* painter) const {
         float maxWidth = 0;
         for (int i = 0; i < m_textDisplayItems.size(); i++) {
             QString text = m_textDisplayItems.at(i);
-            int textWidth = painter->fontMetrics().width(text) +
+            int textWidth = painter->fontMetrics().horizontalAdvance(text) +
                     2 * boundingRectHorizontalPaddingPixels;
             labelText += text + "\n";
             if (textWidth > maxWidth) {
                 maxWidth = textWidth;
             }
         }
-        QRect textBoundingRect(m_position + boundingRectHorizontalPaddingPixels,
+        QRectF textBoundingRect(m_position + boundingRectHorizontalPaddingPixels,
                 kTriangleEdgeLength / 2 + painter->fontMetrics().height(),
                 maxWidth,
                 painter->fontMetrics().height() * m_textDisplayItems.size());
-        QRect textBoundingRectPadded(
+        QRectF textBoundingRectPadded(
                 textBoundingRect.x() - boundingRectHorizontalPaddingPixels,
                 textBoundingRect.y(),
                 textBoundingRect.width() +

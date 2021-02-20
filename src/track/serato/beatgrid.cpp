@@ -417,6 +417,119 @@ QByteArray SeratoBeatGrid::dumpBase64Encoded() const {
     return base64EncodedData;
 }
 
+void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
+        const audio::StreamInfo& streamInfo,
+        double timingOffsetMillis) {
+    VERIFY_OR_DEBUG_ASSERT(pBeats) {
+        return;
+    }
+
+    const double timingOffsetSecs = timingOffsetMillis / 1000;
+
+    FramePos firstBeatPosition = pBeats->getFirstBeatPosition();
+    // Check if the track doesn't contain any beats
+    if (firstBeatPosition == mixxx::kInvalidFramePos) {
+        setTerminalMarker(nullptr);
+        setNonTerminalMarkers({});
+        return;
+    }
+
+    FramePos currentBeatPosition = kInvalidFramePos;
+    FramePos previousBeatPosition = FramePos(0.0);
+    FrameDiff_t previousDeltaFrames = 1;
+    int beatsSinceLastMarker = 0;
+    QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers;
+    for (int beatIndex = 1;; beatIndex++) {
+        FramePos beatPosition =
+                pBeats->findNthBeat(mixxx::kStartFramePos, beatIndex)
+                        ->framePosition();
+        if (beatPosition == mixxx::kInvalidFramePos) {
+            break;
+        }
+
+        if (beatIndex > 1) {
+            previousBeatPosition = currentBeatPosition;
+        }
+        currentBeatPosition = beatPosition;
+        DEBUG_ASSERT(beatIndex != 1 || currentBeatPosition == firstBeatPosition);
+
+        // Calculate the delta between the current beat and the previous beat.
+        // If the distance is the same as the distance between the previous
+        // beat and the beat before that, we can just increment
+        // `beatsSinceLastMarker`. If not, we need to add a new marker.
+        const FrameDiff_t currentDeltaFrames = currentBeatPosition - previousBeatPosition;
+        if (currentDeltaFrames != previousDeltaFrames) {
+            // We are adding a new beat marker, therefore we need to update the
+            // `beatsSinceLastMarker` variable of the last marker we added.
+            if (!nonTerminalMarkers.isEmpty()) {
+                DEBUG_ASSERT(beatsSinceLastMarker > 0);
+                const auto pNonTerminalMarker =
+                        nonTerminalMarkers.at(nonTerminalMarkers.size() - 1);
+                DEBUG_ASSERT(pNonTerminalMarker);
+                pNonTerminalMarker->setBeatsTillNextMarker(beatsSinceLastMarker);
+
+                // After adding the first marker, the the sample delta won't
+                // match, because it compares the distance between beats 1 and
+                // two with the distance between the start of the track and the
+                // first beat. This special case makes sure that we don't add
+                // an unnecessary additional marker that has
+                // beatsSinceLastMarker set to 1.
+                if (nonTerminalMarkers.size() == 1 && beatsSinceLastMarker == 1) {
+                    previousDeltaFrames = currentDeltaFrames;
+                    beatsSinceLastMarker++;
+                    continue;
+                }
+            }
+            // Don't create a SeratoBeatGridNonTerminalMarker entry for the
+            // last beat, this needs to be a terminal marker entry.
+            FramePos nextBeatPosition =
+                    pBeats->findNthBeat(mixxx::kStartFramePos, beatIndex + 1)
+                            ->framePosition();
+            if (nextBeatPosition != mixxx::kInvalidFramePos) {
+                const double positionSecs =
+                        streamInfo.getSignalInfo().frames2secs(
+                                static_cast<SINT>(
+                                        currentBeatPosition.getValue())) -
+                        timingOffsetSecs;
+                nonTerminalMarkers.append(
+                        std::make_shared<SeratoBeatGridNonTerminalMarker>(positionSecs, 0));
+            }
+            beatsSinceLastMarker = 0;
+        }
+        beatsSinceLastMarker++;
+        previousDeltaFrames = currentDeltaFrames;
+    }
+
+    // The track has no beats. This isn't possible because the `pBeatsIterator`
+    // check above should have caught this case already.
+    VERIFY_OR_DEBUG_ASSERT(currentBeatPosition != kInvalidFramePos) {
+        return;
+    }
+
+    // Update the `beatsSinceLastMarker` of the last non-terminal marker we inserted.
+    DEBUG_ASSERT(!nonTerminalMarkers.isEmpty());
+    DEBUG_ASSERT(beatsSinceLastMarker > 0);
+    const auto pNonTerminalMarker = nonTerminalMarkers.at(nonTerminalMarkers.size() - 1);
+    DEBUG_ASSERT(pNonTerminalMarker);
+    // We need to subtract 1 from `beatsSinceLastMarker`, because at the end of
+    // the last iteration the counter is incremented even though we didn't move
+    // a beat forwards.
+    pNonTerminalMarker->setBeatsTillNextMarker(beatsSinceLastMarker - 1);
+
+    // Finally, create the terminal marker.
+    const double positionSecs =
+            streamInfo.getSignalInfo().frames2secs(
+                    static_cast<SINT>(currentBeatPosition.getValue())) -
+            timingOffsetSecs;
+    const Bpm bpm = pBeats->getBpmAtPosition(currentBeatPosition);
+    VERIFY_OR_DEBUG_ASSERT(bpm.hasValue()) {
+        return;
+    }
+
+    setTerminalMarker(std::make_shared<SeratoBeatGridTerminalMarker>(positionSecs, bpm.getValue()));
+    setNonTerminalMarkers(nonTerminalMarkers);
+}
+
 QDebug operator<<(QDebug dbg, const SeratoBeatGridTerminalMarker& arg) {
     return dbg << "SeratoBeatGridTerminalMarker"
                << "PositionSecs =" << arg.positionSecs()

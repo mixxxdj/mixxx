@@ -160,7 +160,7 @@ class ControlDoublePrivate : public QObject {
 
   private:
     ControlDoublePrivate(
-            ConfigKey key,
+            const ConfigKey& key,
             ControlObject* pCreatorCO,
             bool bIgnoreNops,
             bool bTrack,

@@ -11,42 +11,42 @@
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererAbstract(waveformWidgetRenderer),
-      m_pEQEnabled(NULL),
-      m_pLowFilterControlObject(NULL),
-      m_pMidFilterControlObject(NULL),
-      m_pHighFilterControlObject(NULL),
-      m_pLowKillControlObject(NULL),
-      m_pMidKillControlObject(NULL),
-      m_pHighKillControlObject(NULL),
-      m_alignment(Qt::AlignCenter),
-      m_orientation(Qt::Horizontal),
-      m_pColors(NULL),
-      m_axesColor_r(0),
-      m_axesColor_g(0),
-      m_axesColor_b(0),
-      m_axesColor_a(0),
-      m_signalColor_r(0),
-      m_signalColor_g(0),
-      m_signalColor_b(0),
-      m_lowColor_r(0),
-      m_lowColor_g(0),
-      m_lowColor_b(0),
-      m_midColor_r(0),
-      m_midColor_g(0),
-      m_midColor_b(0),
-      m_highColor_r(0),
-      m_highColor_g(0),
-      m_highColor_b(0),
-      m_rgbLowColor_r(0),
-      m_rgbLowColor_g(0),
-      m_rgbLowColor_b(0),
-      m_rgbMidColor_r(0),
-      m_rgbMidColor_g(0),
-      m_rgbMidColor_b(0),
-      m_rgbHighColor_r(0),
-      m_rgbHighColor_g(0),
-      m_rgbHighColor_b(0) {
+        : WaveformRendererAbstract(waveformWidgetRenderer),
+          m_pEQEnabled(nullptr),
+          m_pLowFilterControlObject(nullptr),
+          m_pMidFilterControlObject(nullptr),
+          m_pHighFilterControlObject(nullptr),
+          m_pLowKillControlObject(nullptr),
+          m_pMidKillControlObject(nullptr),
+          m_pHighKillControlObject(nullptr),
+          m_alignment(Qt::AlignCenter),
+          m_orientation(Qt::Horizontal),
+          m_pColors(nullptr),
+          m_axesColor_r(0),
+          m_axesColor_g(0),
+          m_axesColor_b(0),
+          m_axesColor_a(0),
+          m_signalColor_r(0),
+          m_signalColor_g(0),
+          m_signalColor_b(0),
+          m_lowColor_r(0),
+          m_lowColor_g(0),
+          m_lowColor_b(0),
+          m_midColor_r(0),
+          m_midColor_g(0),
+          m_midColor_b(0),
+          m_highColor_r(0),
+          m_highColor_g(0),
+          m_highColor_b(0),
+          m_rgbLowColor_r(0),
+          m_rgbLowColor_g(0),
+          m_rgbLowColor_b(0),
+          m_rgbMidColor_r(0),
+          m_rgbMidColor_g(0),
+          m_rgbMidColor_b(0),
+          m_rgbHighColor_r(0),
+          m_rgbHighColor_g(0),
+          m_rgbHighColor_b(0) {
 }
 
 WaveformRendererSignalBase::~WaveformRendererSignalBase() {
@@ -54,20 +54,27 @@ WaveformRendererSignalBase::~WaveformRendererSignalBase() {
 }
 
 void WaveformRendererSignalBase::deleteControls() {
-    if (m_pEQEnabled)
+    if (m_pEQEnabled) {
         delete m_pEQEnabled;
-    if (m_pLowFilterControlObject)
+    }
+    if (m_pLowFilterControlObject) {
         delete m_pLowFilterControlObject;
-    if (m_pMidFilterControlObject)
+    }
+    if (m_pMidFilterControlObject) {
         delete m_pMidFilterControlObject;
-    if (m_pHighFilterControlObject)
+    }
+    if (m_pHighFilterControlObject) {
         delete m_pHighFilterControlObject;
-    if (m_pLowKillControlObject)
+    }
+    if (m_pLowKillControlObject) {
         delete m_pLowKillControlObject;
-    if (m_pMidKillControlObject)
+    }
+    if (m_pMidKillControlObject) {
         delete m_pMidKillControlObject;
-    if (m_pHighKillControlObject)
+    }
+    if (m_pHighKillControlObject) {
         delete m_pHighKillControlObject;
+    }
 }
 
 bool WaveformRendererSignalBase::init() {
@@ -140,6 +147,21 @@ void WaveformRendererSignalBase::setup(const QDomNode& node,
     const QColor& rgbHigh = m_pColors->getRgbHighColor();
     rgbHigh.getRgbF(&m_rgbHighColor_r, &m_rgbHighColor_g, &m_rgbHighColor_b);
 
+    const QColor& rgbFilteredLow = m_pColors->getRgbLowFilteredColor();
+    rgbFilteredLow.getRgbF(&m_rgbLowFilteredColor_r,
+            &m_rgbLowFilteredColor_g,
+            &m_rgbLowFilteredColor_b);
+
+    const QColor& rgbFilteredMid = m_pColors->getRgbMidFilteredColor();
+    rgbFilteredMid.getRgbF(&m_rgbMidFilteredColor_r,
+            &m_rgbMidFilteredColor_g,
+            &m_rgbMidFilteredColor_b);
+
+    const QColor& rgbFilteredHigh = m_pColors->getRgbHighFilteredColor();
+    rgbFilteredHigh.getRgbF(&m_rgbHighFilteredColor_r,
+            &m_rgbHighFilteredColor_g,
+            &m_rgbHighFilteredColor_b);
+
     const QColor& axes = m_pColors->getAxesColor();
     axes.getRgbF(&m_axesColor_r, &m_axesColor_g, &m_axesColor_b,
                  &m_axesColor_a);
@@ -193,13 +215,13 @@ void WaveformRendererSignalBase::getGains(float* pAllGain, float* pLowGain,
             }
         }
 
-        if (pLowGain != NULL) {
+        if (pLowGain != nullptr) {
             *pLowGain = lowGain;
         }
-        if (pMidGain != NULL) {
+        if (pMidGain != nullptr) {
             *pMidGain = midGain;
         }
-        if (pHighGain != NULL) {
+        if (pHighGain != nullptr) {
             *pHighGain = highGain;
         }
     }

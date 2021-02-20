@@ -1,5 +1,4 @@
-#ifndef CLOCK_H
-#define CLOCK_H
+#pragma once
 
 class Clock {
   public:
@@ -11,5 +10,3 @@ class Clock {
     virtual double getBpm() const = 0;
     virtual void setMasterBpm(double bpm) = 0;
 };
-
-#endif /* CLOCK_H */

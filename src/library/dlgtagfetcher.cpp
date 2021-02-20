@@ -3,6 +3,7 @@
 #include <QTreeWidget>
 #include <QtDebug>
 
+#include "moc_dlgtagfetcher.cpp"
 #include "track/track.h"
 #include "track/tracknumbers.h"
 
@@ -234,14 +235,14 @@ void DlgTagFetcher::quit() {
     accept();
 }
 
-void DlgTagFetcher::fetchTagProgress(QString text) {
+void DlgTagFetcher::fetchTagProgress(const QString& text) {
     QString status = tr("Status: %1");
     loadingStatus->setText(status.arg(text));
 }
 
 void DlgTagFetcher::fetchTagFinished(
         TrackPointer pTrack,
-        QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases) {
+        const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases) {
     VERIFY_OR_DEBUG_ASSERT(pTrack == m_track) {
         return;
     }
@@ -251,7 +252,8 @@ void DlgTagFetcher::fetchTagFinished(
     updateStack();
 }
 
-void DlgTagFetcher::slotNetworkResult(int httpError, QString app, QString message, int code) {
+void DlgTagFetcher::slotNetworkResult(
+        int httpError, const QString& app, const QString& message, int code) {
     m_networkResult = httpError == 0 ? NetworkResult::UnknownError : NetworkResult::HttpError;
     m_data.m_pending = false;
     QString strError = tr("HTTP Status: %1");
@@ -329,8 +331,9 @@ void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* parent) const {
 }
 
 void DlgTagFetcher::resultSelected() {
-    if (!results->currentItem())
+    if (!results->currentItem()) {
         return;
+    }
 
     const int resultIndex = results->currentItem()->data(0, Qt::UserRole).toInt();
     m_data.m_selectedResult = resultIndex;

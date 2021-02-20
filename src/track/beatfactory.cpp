@@ -70,7 +70,7 @@ QString BeatFactory::getPreferredSubVersion(
         const bool bEnableOffsetCorrection,
         const int iMinBpm,
         const int iMaxBpm,
-        const QHash<QString, QString> extraVersionInfo) {
+        const QHash<QString, QString>& extraVersionInfo) {
     const char* kSubVersionKeyValueSeparator = "=";
     const char* kSubVersionFragmentSeparator = "|";
     QStringList fragments;
@@ -116,8 +116,8 @@ QString BeatFactory::getPreferredSubVersion(
 }
 
 mixxx::BeatsInternal BeatFactory::makePreferredBeats(const TrackPointer& track,
-        QVector<double> beats,
-        const QHash<QString, QString> extraVersionInfo,
+        const QVector<double>& beats,
+        const QHash<QString, QString>& extraVersionInfo,
         const bool bEnableFixedTempoCorrection,
         const bool bEnableOffsetCorrection,
         const int iTotalSamples,
@@ -144,7 +144,7 @@ mixxx::BeatsInternal BeatFactory::makePreferredBeats(const TrackPointer& track,
                 globalBpm.getValue()));
         mixxx::FrameDiff_t beatLength = iSampleRate * 60 / globalBpm.getValue();
         double trackLengthSeconds = track->getDuration();
-        int numberOfBeats = globalBpm.getValue() / 60.0 * trackLengthSeconds;
+        int numberOfBeats = static_cast<int>(globalBpm.getValue() / 60.0 * trackLengthSeconds);
         QVector<mixxx::FramePos> generatedBeats;
         for (int i = 0; i < numberOfBeats; i++) {
             generatedBeats.append(firstBeat + beatLength * i);

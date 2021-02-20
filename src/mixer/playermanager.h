@@ -58,7 +58,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     PlayerManager(UserSettingsPointer pConfig,
             SoundManager* pSoundManager,
             EffectsManager* pEffectsManager,
-            VisualsManager* pVisualsManager,
             EngineMaster* pEngine);
     ~PlayerManager() override;
 
@@ -135,36 +134,43 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     // must exist at least for the lifetime of this instance.
     void bindToLibrary(Library* pLibrary);
 
+    QStringList getVisualPlayerGroups();
+
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
-        return QString("[Sampler%1]").arg(i + 1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[Sampler") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith deck where i is zero indexed
     static QString groupForDeck(int i) {
-        return QString("[Channel%1]").arg(i + 1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[Channel") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
-        return QString("[PreviewDeck%1]").arg(i + 1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[PreviewDeck") + QString::number(i + 1) + ']';
     }
 
     // Returns the group for the ith Microphone where i is zero indexed
     static QString groupForMicrophone(int i) {
+        DEBUG_ASSERT(i >= 0);
         // Before Mixxx had multiple microphone support the first microphone had
         // the group [Microphone]. For backwards compatibility we keep it that
         // way.
-        QString group("[Microphone]");
         if (i > 0) {
-            group = QString("[Microphone%1]").arg(i + 1);
+            return QStringLiteral("[Microphone") + QString::number(i + 1) + ']';
+        } else {
+            return QStringLiteral("[Microphone]");
         }
-        return group;
     }
 
     // Returns the group for the ith Auxiliary where i is zero indexed
     static QString groupForAuxiliary(int i) {
-        return QString("[Auxiliary%1]").arg(i + 1);
+        DEBUG_ASSERT(i >= 0);
+        return QStringLiteral("[Auxiliary") + QString::number(i + 1) + ']';
     }
 
     static QAtomicPointer<ControlProxy> m_pCOPNumDecks;
@@ -173,21 +179,21 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
-    void slotLoadToPlayer(QString location, QString group);
-    void slotCloneDeck(QString source_group, QString target_group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play = false);
+    void slotLoadToPlayer(const QString& location, const QString& group);
+    void slotCloneDeck(const QString& source_group, const QString& target_group);
 
     // Slots for loading tracks to decks
     void slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack);
     // Loads the location to the deck. deckNumber is 1-indexed
-    void slotLoadToDeck(QString location, int deckNumber);
+    void slotLoadToDeck(const QString& location, int deckNumber);
 
     // Loads the location to the preview deck. previewDeckNumber is 1-indexed
-    void slotLoadToPreviewDeck(QString location, int previewDeckNumber);
+    void slotLoadToPreviewDeck(const QString& location, int previewDeckNumber);
     // Slots for loading tracks to samplers
     void slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack);
     // Loads the location to the sampler. samplerNumber is 1-indexed
-    void slotLoadToSampler(QString location, int samplerNumber);
+    void slotLoadToSampler(const QString& location, int samplerNumber);
 
     void slotChangeNumDecks(double v);
     void slotChangeNumSamplers(double v);
@@ -202,7 +208,7 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void onTrackAnalysisFinished();
 
   signals:
-    void loadLocationToPlayer(QString location, QString group);
+    void loadLocationToPlayer(const QString& location, const QString& group);
 
     // Emitted when the user tries to enable a microphone talkover control when
     // there is no input configured.
@@ -253,7 +259,6 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     UserSettingsPointer m_pConfig;
     SoundManager* m_pSoundManager;
     EffectsManager* m_pEffectsManager;
-    VisualsManager* m_pVisualsManager;
     EngineMaster* m_pEngine;
     SamplerBank* m_pSamplerBank;
     ControlObject* m_pCONumDecks;

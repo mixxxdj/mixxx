@@ -7,6 +7,7 @@
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
+#include "moc_bpmcontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/duration.h"
@@ -29,7 +30,8 @@ constexpr double kBpmAdjustStep = 0.01;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
 constexpr double kBpmTapMin = 30.0;
-const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kBpmTapMin));
+const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(
+        static_cast<qint64>(1000.0 * (60.0 / kBpmTapMin)));
 constexpr int kBpmTapFilterLength = 5;
 constexpr double kSmallBeatsTranslateFactor = 0.01;
 } // namespace
@@ -240,8 +242,8 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     pBeats->setBpm(averageBpm);
 }
 
-void BpmControl::slotControlBeatSyncPhase(double v) {
-    if (!v) {
+void BpmControl::slotControlBeatSyncPhase(double value) {
+    if (value == 0) {
         return;
     }
 
@@ -251,17 +253,19 @@ void BpmControl::slotControlBeatSyncPhase(double v) {
     getEngineBuffer()->requestSyncPhase();
 }
 
-void BpmControl::slotControlBeatSyncTempo(double v) {
-    if (!v) {
+void BpmControl::slotControlBeatSyncTempo(double value) {
+    if (value == 0) {
         return;
     }
+
     syncTempo();
 }
 
-void BpmControl::slotControlBeatSync(double v) {
-    if (!v) {
+void BpmControl::slotControlBeatSync(double value) {
+    if (value == 0) {
         return;
     }
+
     if (!syncTempo()) {
         // syncTempo failed, nothing else to do
         return;
@@ -271,7 +275,7 @@ void BpmControl::slotControlBeatSync(double v) {
     // this is used from controller scripts, where the latching behaviour of
     // the sync_enable CO cannot be used
     if (m_pPlayButton->toBool() && m_pQuantize->toBool()) {
-        slotControlBeatSyncPhase(v);
+        slotControlBeatSyncPhase(value);
     }
 }
 
@@ -395,15 +399,15 @@ double BpmControl::calcSyncedRate(double userTweak) {
     m_dUserTweakingSync = userTweak != 0.0;
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
-    if (m_pLocalBpm->get() != 0.0) {
+    if (m_pLocalBpm->toBool()) {
         rate = m_dSyncInstantaneousBpm / m_pLocalBpm->get();
     }
 
     // If we are not quantized, or there are no beats, or we're master,
     // or we're in reverse, just return the rate as-is.
     mixxx::BeatsPointer pBeats = m_pBeats;
-    if (!m_pQuantize->get() || isMaster(getSyncMode()) || !pBeats ||
-            m_pReverseButton->get()) {
+    if (!m_pQuantize->toBool() || isMaster(getSyncMode()) ||
+            !pBeats || m_pReverseButton->toBool()) {
         m_resetSyncAdjustment = true;
         return rate + userTweak;
     }
@@ -464,6 +468,7 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
         kLogger.trace() << m_group << "****************";
         kLogger.trace() << "master beat distance:" << syncTargetBeatDistance;
         kLogger.trace() << "my     beat distance:" << thisBeatDistance;
+        kLogger.trace() << "user offset distance:" << m_dUserOffset.getValue();
         kLogger.trace() << "error               :"
                         << (shortest_distance - m_dUserOffset.getValue());
         kLogger.trace() << "user offset         :" << m_dUserOffset.getValue();
@@ -589,11 +594,11 @@ bool BpmControl::getBeatContextNoLookup(
     }
 
     mixxx::FrameDiff_t dBeatLength = pNextBeat - pPrevBeat;
-    if (dpBeatLength != NULL) {
+    if (dpBeatLength != nullptr) {
         *dpBeatLength = dBeatLength;
     }
 
-    if (dpBeatPercentage != NULL) {
+    if (dpBeatPercentage != nullptr) {
         *dpBeatPercentage = dBeatLength == 0.0
                 ? 0.0
                 : (position - pPrevBeat) / dBeatLength;
@@ -641,7 +646,7 @@ mixxx::FramePos BpmControl::getNearestPositionInPhase(
                     &thisPrevBeat,
                     &thisNextBeat,
                     &dThisBeatLengthFrames,
-                    NULL)) {
+                    nullptr)) {
             return thisPosition;
         }
     } else {
@@ -649,7 +654,7 @@ mixxx::FramePos BpmControl::getNearestPositionInPhase(
                     thisPrevBeat,
                     thisNextBeat,
                     &dThisBeatLengthFrames,
-                    NULL)) {
+                    nullptr)) {
             return thisPosition;
         }
     }
@@ -689,9 +694,9 @@ mixxx::FramePos BpmControl::getNearestPositionInPhase(
 
         if (!BpmControl::getBeatContext(otherBeats,
                     otherPosition,
-                    NULL,
-                    NULL,
-                    NULL,
+                    nullptr,
+                    nullptr,
+                    nullptr,
                     &dOtherBeatFraction)) {
             return thisPosition;
         }
@@ -1053,6 +1058,9 @@ double BpmControl::updateBeatDistance() {
 }
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {
+    if (kLogger.traceEnabled()) {
+        qDebug() << getGroup() << "BpmControl::setTargetBeatDistance:" << beatDistance;
+    }
     m_dSyncTargetBeatDistance.setValue(beatDistance);
 }
 

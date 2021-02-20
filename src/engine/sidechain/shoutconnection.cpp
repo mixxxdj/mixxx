@@ -1,6 +1,3 @@
-// shoutconnection.cpp
-// Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
 #include <QUrl>
 
 // These includes are only required by ignoreSigpipe, which is unix-only
@@ -25,13 +22,13 @@
 #ifdef __OPUS__
 #include "encoder/encoderopus.h"
 #endif
+#include "engine/sidechain/shoutconnection.h"
 #include "mixer/playerinfo.h"
+#include "moc_shoutconnection.cpp"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
 #include "util/logger.h"
-
-#include <engine/sidechain/shoutconnection.h>
 
 namespace {
 
@@ -43,7 +40,7 @@ const int kMaxShoutFailures = 3;
 
 const mixxx::Logger kLogger("ShoutConnection");
 
-}
+} // namespace
 
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
         UserSettingsPointer pConfig)
@@ -109,8 +106,9 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
 ShoutConnection::~ShoutConnection() {
     delete m_pMasterSamplerate;
 
-    if (m_pShoutMetaData)
+    if (m_pShoutMetaData) {
         shout_metadata_free(m_pShoutMetaData);
+    }
 
     if (m_pShout) {
         shout_close(m_pShout);
@@ -131,8 +129,9 @@ ShoutConnection::~ShoutConnection() {
 bool ShoutConnection::isConnected() {
     if (m_pShout) {
         m_iShoutStatus = shout_get_connected(m_pShout);
-        if (m_iShoutStatus == SHOUTERR_CONNECTED)
+        if (m_iShoutStatus == SHOUTERR_CONNECTED) {
             return true;
+        }
     }
     return false;
 }
@@ -140,9 +139,9 @@ bool ShoutConnection::isConnected() {
 // Only called when applying settings while broadcasting is active
 void ShoutConnection::applySettings() {
     // Do nothing if profile or Live Broadcasting is disabled
-    if(!m_pBroadcastEnabled->toBool()
-            || !m_pProfile->getEnabled())
+    if (!m_pBroadcastEnabled->toBool() || !m_pProfile->getEnabled()) {
         return;
+    }
 
     // Setting the profile's enabled value to false tells the
     // connection's thread to exit, so no need to call
@@ -468,8 +467,9 @@ void ShoutConnection::updateFromPreferences() {
 }
 
 bool ShoutConnection::serverConnect() {
-    if(!m_pProfile->getEnabled())
+    if (!m_pProfile->getEnabled()) {
         return false;
+    }
 
     start(QThread::HighPriority);
     setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
@@ -704,19 +704,26 @@ bool ShoutConnection::writeSingle(const unsigned char* data, size_t len) {
 
 void ShoutConnection::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setFunctionCode(4);
-    if(!m_pProfile->getEnabled())
+    if (!m_pProfile->getEnabled()) {
         return;
+    }
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
     // If we aren't connected, bail.
-    if (m_iShoutStatus != SHOUTERR_CONNECTED)
+    if (m_iShoutStatus != SHOUTERR_CONNECTED) {
         return;
+    }
+
+    // Save a copy of the smart pointer in a local variable
+    // to prevent race conditions when resetting the member
+    // pointer while disconnecting in the worker thread!
+    const EncoderPointer pEncoder = m_encoder;
 
     // If we are connected, encode the samples.
-    if (iBufferSize > 0 && m_encoder) {
+    if (iBufferSize > 0 && pEncoder) {
         setFunctionCode(6);
-        m_encoder->encodeBuffer(pBuffer, iBufferSize);
+        pEncoder->encodeBuffer(pBuffer, iBufferSize);
         // the encoded frames are received by the write() callback.
     }
 
@@ -740,8 +747,9 @@ bool ShoutConnection::metaDataHasChanged() {
     m_iMetaDataLife = 0;
 
     pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
-    if (!pTrack)
+    if (!pTrack) {
         return false;
+    }
 
     if (m_pMetaData) {
         if (!pTrack->getId().isValid() || !m_pMetaData->getId().isValid()) {
@@ -865,7 +873,7 @@ void ShoutConnection::updateMetaData() {
     }
 }
 
-void ShoutConnection::errorDialog(QString text, QString detailedError) {
+void ShoutConnection::errorDialog(const QString& text, const QString& detailedError) {
     qWarning() << "Streaming error: " << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
@@ -881,7 +889,7 @@ void ShoutConnection::errorDialog(QString text, QString detailedError) {
     setState(NETWORKSTREAMWORKER_STATE_ERROR);
 }
 
-void ShoutConnection::infoDialog(QString text, QString detailedInfo) {
+void ShoutConnection::infoDialog(const QString& text, const QString& detailedInfo) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_INFO);
     props->setTitle(tr("Connection message"));

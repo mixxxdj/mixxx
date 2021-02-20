@@ -1,15 +1,20 @@
 #include "library/tableitemdelegate.h"
 
-#include <QTableView>
 #include <QPainter>
+#include <QTableView>
 
+#include "moc_tableitemdelegate.cpp"
 #include "util/painterscope.h"
-
+#include "widget/wtracktableview.h"
 
 TableItemDelegate::TableItemDelegate(QTableView* pTableView)
         : QStyledItemDelegate(pTableView),
           m_pTableView(pTableView) {
     DEBUG_ASSERT(m_pTableView);
+    auto* pTrackTableView = qobject_cast<WTrackTableView*>(m_pTableView);
+    if (pTrackTableView) {
+        m_pFocusBorderColor = pTrackTableView->getFocusBorderColor();
+    }
 }
 
 void TableItemDelegate::paint(

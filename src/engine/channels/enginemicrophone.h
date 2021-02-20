@@ -1,8 +1,4 @@
-// enginemicrophone.h
-// created 3/16/2011 by RJ Ryan (rryan@mit.edu)
-
-#ifndef ENGINEMICROPHONE_H
-#define ENGINEMICROPHONE_H
+#pragma once
 
 #include <QScopedPointer>
 
@@ -38,16 +34,17 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
     // the soundcard this AudioDestination was registered for! Beware, in the
     // case of multiple soundcards, this method is not re-entrant but it may be
     // concurrent with EngineMaster processing.
-    virtual void receiveBuffer(AudioInput input, const CSAMPLE* pBuffer,
-                               unsigned int iNumSamples);
+    virtual void receiveBuffer(const AudioInput& input,
+            const CSAMPLE* pBuffer,
+            unsigned int iNumSamples);
 
     // Called by SoundManager whenever the microphone input is connected to a
     // soundcard input.
-    virtual void onInputConfigured(AudioInput input);
+    virtual void onInputConfigured(const AudioInput& input);
 
     // Called by SoundManager whenever the microphone input is disconnected from
     // a soundcard input.
-    virtual void onInputUnconfigured(AudioInput input);
+    virtual void onInputUnconfigured(const AudioInput& input);
 
     bool isSolo();
     double getSoloDamping();
@@ -58,5 +55,3 @@ class EngineMicrophone : public EngineChannel, public AudioDestination {
 
     bool m_wasActive;
 };
-
-#endif /* ENGINEMICROPHONE_H */

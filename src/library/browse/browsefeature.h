@@ -1,8 +1,4 @@
-// browsefeature.h
-// Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef BROWSEFEATURE_H
-#define BROWSEFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QSortFilterProxyModel>
@@ -49,19 +45,19 @@ class BrowseFeature : public LibraryFeature {
     void slotAddToLibrary();
     void activate();
     void activateChild(const QModelIndex& index);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index);
     void onLazyChildExpandation(const QModelIndex& index);
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
 
   signals:
     void setRootIndex(const QModelIndex&);
-    void requestAddDir(QString);
+    void requestAddDir(const QString&);
     void scanLibrary();
 
   private:
     QString getRootViewHtml() const;
-    QString extractNameFromPath(QString spath);
+    QString extractNameFromPath(const QString& spath);
     QStringList getDefaultQuickLinks() const;
     void saveQuickLinks();
     void loadQuickLinks();
@@ -80,5 +76,3 @@ class BrowseFeature : public LibraryFeature {
     QIcon m_icon;
     QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
-
-#endif // BROWSEFEATURE_H

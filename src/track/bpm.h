@@ -1,5 +1,4 @@
-#ifndef MIXXX_BPM_H
-#define MIXXX_BPM_H
+#pragma once
 
 #include <QtDebug>
 
@@ -113,5 +112,3 @@ inline Bpm operator-(Bpm& bpm, double val) {
 
 Q_DECLARE_TYPEINFO(mixxx::Bpm, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(mixxx::Bpm)
-
-#endif // MIXXX_BPM_H

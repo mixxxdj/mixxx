@@ -1,21 +1,24 @@
-// ratecontrol.cpp
-// Created 7/4/2009 by RJ Ryan (rryan@mit.edu)
-
-#include "control/controlobject.h"
-#include "control/controlpushbutton.h"
-#include "control/controlpotmeter.h"
-#include "control/controlttrotary.h"
-#include "control/controlproxy.h"
-#include "util/rotary.h"
-#include "util/math.h"
-#include "vinylcontrol/defs_vinylcontrol.h"
-
-#include "engine/controls/bpmcontrol.h"
-#include "engine/controls/enginecontrol.h"
 #include "engine/controls/ratecontrol.h"
-#include "engine/positionscratchcontroller.h"
 
 #include <QtDebug>
+
+#include "control/controlobject.h"
+#include "control/controlpotmeter.h"
+#include "control/controlproxy.h"
+#include "control/controlpushbutton.h"
+#include "control/controlttrotary.h"
+#include "engine/controls/bpmcontrol.h"
+#include "engine/controls/enginecontrol.h"
+#include "engine/positionscratchcontroller.h"
+#include "moc_ratecontrol.cpp"
+#include "util/math.h"
+#include "util/rotary.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
+
+namespace {
+constexpr int kRateSensitivityMin = 100;
+constexpr int kRateSensitivityMax = 2500;
+} // namespace
 
 // Static default values for rate buttons (percents)
 ControlValueAtomic<double> RateControl::m_dTemporaryRateChangeCoarse;
@@ -28,13 +31,13 @@ RateControl::RampMode RateControl::m_eRateRampMode;
 const double RateControl::kWheelMultiplier = 40.0;
 const double RateControl::kPausedJogMultiplier = 18.0;
 
-RateControl::RateControl(QString group,
-                         UserSettingsPointer pConfig)
-    : EngineControl(group, pConfig),
-      m_pBpmControl(NULL),
-      m_bTempStarted(false),
-      m_tempRateRatio(0.0),
-      m_dRateTempRampChange(0.0) {
+RateControl::RateControl(const QString& group,
+        UserSettingsPointer pConfig)
+        : EngineControl(group, pConfig),
+          m_pBpmControl(nullptr),
+          m_bTempStarted(false),
+          m_tempRateRatio(0.0),
+          m_dRateTempRampChange(0.0) {
     m_pScratchController = new PositionScratchController(group);
 
     // This is the resulting rate ratio that can be used for display or calculations.
@@ -222,11 +225,11 @@ RateControl::RampMode RateControl::getRateRampMode() {
 void RateControl::setRateRampSensitivity(int sense) {
     // Reverse the actual sensitivity value passed.
     // That way the gui works in an intuitive manner.
-    sense = RATE_SENSITIVITY_MAX - sense + RATE_SENSITIVITY_MIN;
-    if (sense < RATE_SENSITIVITY_MIN) {
-        m_iRateRampSensitivity = RATE_SENSITIVITY_MIN;
-    } else if (sense > RATE_SENSITIVITY_MAX) {
-        m_iRateRampSensitivity = RATE_SENSITIVITY_MAX;
+    sense = kRateSensitivityMax - sense + kRateSensitivityMin;
+    if (sense < kRateSensitivityMin) {
+        m_iRateRampSensitivity = kRateSensitivityMin;
+    } else if (sense > kRateSensitivityMax) {
+        m_iRateRampSensitivity = kRateSensitivityMax;
     } else {
         m_iRateRampSensitivity = sense;
     }
@@ -366,8 +369,9 @@ double RateControl::getJogFactor() const {
     double jogValue = m_pJog->get();
 
     // Since m_pJog is an accumulator, reset it since we've used its value.
-    if(jogValue != 0.)
+    if (jogValue != 0.) {
         m_pJog->set(0.);
+    }
 
     double jogValueFiltered = m_pJogFilter->filter(jogValue);
     double jogFactor = jogValueFiltered * jogSensitivity;
@@ -393,21 +397,21 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
     processTempRate(iSamplesPerBuffer);
 
     double rate;
-    double searching = m_pRateSearch->get();
-    if (searching) {
+    const double searching = m_pRateSearch->get();
+    if (searching != 0) {
         // If searching is in progress, it overrides everything else
         rate = searching;
     } else {
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->toBool();
-        bool useScratch2Value = m_pScratch2Enable->get() != 0;
+        bool useScratch2Value = m_pScratch2Enable->toBool();
 
         // By default scratch2_enable is enough to determine if the user is
         // scratching or not. Moving platter controllers have to disable
         // "scratch2_indicates_scratching" if they are not scratching,
         // to allow things like key-lock.
-        if (useScratch2Value && m_pScratch2Scratching->get()) {
+        if (useScratch2Value && m_pScratch2Scratching->toBool()) {
             *pReportScratching = true;
         }
 
@@ -461,7 +465,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             // If master sync is on, respond to it -- but vinyl and scratch mode always override.
             if (getSyncMode() == SYNC_FOLLOWER && !paused &&
                     !bVinylControlEnabled && !useScratch2Value) {
-                if (m_pBpmControl == NULL) {
+                if (m_pBpmControl == nullptr) {
                     qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
                     return 1.0;
                 }
@@ -478,9 +482,9 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
             int vcmode = m_pVCMode ? static_cast<int>(m_pVCMode->get()) : MIXXX_VCMODE_ABSOLUTE;
             // TODO(owen): Instead of just ignoring reverse mode, should we
             // disable absolute mode instead?
-            if (m_pReverseButton->get()
-                    && !m_pScratch2Enable->get()
-                    && (!bVinylControlEnabled || vcmode != MIXXX_VCMODE_ABSOLUTE)) {
+            if (m_pReverseButton->toBool() && !m_pScratch2Enable->toBool() &&
+                    (!bVinylControlEnabled ||
+                            vcmode != MIXXX_VCMODE_ABSOLUTE)) {
                 rate = -rate;
                 *pReportReverse = true;
             }

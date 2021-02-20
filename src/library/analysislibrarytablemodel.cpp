@@ -1,5 +1,7 @@
 #include "library/analysislibrarytablemodel.h"
 
+#include "moc_analysislibrarytablemodel.cpp"
+
 namespace {
 
 const QString RECENT_FILTER = "datetime_added > datetime('now', '-7 days')";

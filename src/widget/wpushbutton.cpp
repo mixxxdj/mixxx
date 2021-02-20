@@ -1,34 +1,18 @@
-/***************************************************************************
-                          wpushbutton.cpp  -  description
-                             -------------------
-    begin                : Fri Jun 21 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "widget/wpushbutton.h"
 
-#include <QStylePainter>
-#include <QStyleOption>
-#include <QPixmap>
-#include <QtDebug>
-#include <QMouseEvent>
-#include <QTouchEvent>
-#include <QPaintEvent>
 #include <QApplication>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPixmap>
+#include <QStyleOption>
+#include <QStylePainter>
+#include <QTouchEvent>
+#include <QtDebug>
 
 #include "control/controlbehavior.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "moc_wpushbutton.cpp"
 #include "util/debug.h"
 #include "util/math.h"
 #include "widget/wpixmapstore.h"
@@ -162,7 +146,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         m_leftButtonMode = ControlPushButton::PUSH;
         if (!leftClickForcePush) {
             const ConfigKey& configKey = leftConnection->getKey();
-            ControlPushButton* p = dynamic_cast<ControlPushButton*>(
+            ControlPushButton* p = qobject_cast<ControlPushButton*>(
                     ControlObject::getControl(configKey));
             if (p) {
                 m_leftButtonMode = p->getButtonMode();
@@ -205,7 +189,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         m_rightButtonMode = ControlPushButton::PUSH;
         if (!rightClickForcePush) {
             const ConfigKey configKey = rightConnection->getKey();
-            ControlPushButton* p = dynamic_cast<ControlPushButton*>(
+            ControlPushButton* p = qobject_cast<ControlPushButton*>(
                     ControlObject::getControl(configKey));
             if (p) {
                 m_rightButtonMode = p->getButtonMode();
@@ -257,8 +241,11 @@ void WPushButton::setStates(int iStates) {
     m_align.resize(iStates);
 }
 
-void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource source,
-                            Paintable::DrawMode mode, double scaleFactor) {
+void WPushButton::setPixmap(int iState,
+        bool bPressed,
+        const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     QVector<PaintablePointer>& pixmaps = bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
@@ -279,9 +266,9 @@ void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource source,
     pixmaps.replace(iState, pPixmap);
 }
 
-void WPushButton::setPixmapBackground(PixmapSource source,
-                                      Paintable::DrawMode mode,
-                                      double scaleFactor) {
+void WPushButton::setPixmapBackground(const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!source.isEmpty() &&
@@ -436,6 +423,20 @@ bool WPushButton::event(QEvent* e) {
         m_bHovered = true;
         restyleAndRepaint();
     } else if (e->type() == QEvent::Leave) {
+        if (m_bPressed) {
+            // A Leave event is send instead of a mouseReleaseEvent()
+            // fake it to get not stucked in pressed state
+            QMouseEvent mouseEvent = QMouseEvent(
+                    QEvent::MouseButtonRelease,
+                    QPointF(),
+                    QPointF(),
+                    QPointF(),
+                    Qt::LeftButton,
+                    Qt::NoButton,
+                    Qt::NoModifier,
+                    Qt::MouseEventSynthesizedByApplication);
+            mouseReleaseEvent(&mouseEvent);
+        }
         m_bHovered = false;
         restyleAndRepaint();
     }

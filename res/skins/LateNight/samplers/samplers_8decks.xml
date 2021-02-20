@@ -46,19 +46,19 @@
                 <ObjectName>Samplers_Expander_1-8_Singleton</ObjectName>
               </SingletonContainer>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">5</SetVariable>
               </Template>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">6</SetVariable>
               </Template>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">7</SetVariable>
               </Template>
 
-              <Template src="skin:sampler_mini.xml">
+              <Template src="skin:/samplers/sampler_mini.xml">
                 <SetVariable name="SamplerNum">8</SetVariable>
               </Template>
 
@@ -90,11 +90,11 @@
                     <ObjectName>Samplers_Expander_1-8_Singleton</ObjectName>
                   </SingletonContainer>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">5</SetVariable>
                   </Template>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">6</SetVariable>
                   </Template>
 
@@ -121,11 +121,11 @@
                     <Size>20f,1me</Size>
                   </WidgetGroup>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">7</SetVariable>
                   </Template>
 
-                  <Template src="skin:sampler.xml">
+                  <Template src="skin:/samplers/sampler.xml">
                     <SetVariable name="SamplerNum">8</SetVariable>
                   </Template>
 

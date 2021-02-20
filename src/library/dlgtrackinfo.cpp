@@ -8,6 +8,7 @@
 #include "library/coverartutils.h"
 #include "library/dlgtagfetcher.h"
 #include "library/trackmodel.h"
+#include "moc_dlgtrackinfo.cpp"
 #include "preferences/beatdetectionsettings.h"
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
@@ -24,11 +25,14 @@
 #include "widget/wcoverartlabel.h"
 #include "widget/wstarrating.h"
 
-const int kFilterLength = 80;
-const int kMinBpm = 30;
+namespace {
+constexpr int kFilterLength = 80;
+constexpr int kMinBpm = 30;
+} // namespace
 
 // Maximum allowed interval between beats (calculated from kMinBpm).
-const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(1000.0 * (60.0 / kMinBpm));
+const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
+        static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
 
 DlgTrackInfo::DlgTrackInfo(UserSettingsPointer pConfig, const TrackModel* trackModel)
         // No parent because otherwise it inherits the style parent's
@@ -315,7 +319,7 @@ void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
     }
 }
 
-void DlgTrackInfo::loadTrack(QModelIndex index) {
+void DlgTrackInfo::loadTrack(const QModelIndex& index) {
     VERIFY_OR_DEBUG_ASSERT(m_pTrackModel) {
         return;
     }
@@ -370,8 +374,9 @@ void DlgTrackInfo::slotOpenInFileBrowser() {
 }
 
 void DlgTrackInfo::saveTrack() {
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
@@ -413,8 +418,9 @@ void DlgTrackInfo::saveTrack() {
 }
 
 void DlgTrackInfo::unloadTrack(bool save) {
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     if (save) {
         saveTrack();

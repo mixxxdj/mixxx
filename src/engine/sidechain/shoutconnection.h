@@ -1,8 +1,4 @@
-// shoutconnection.h
-// Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
-#ifndef ENGINE_SIDECHAIN_SHOUTCONNECTION_H
-#define ENGINE_SIDECHAIN_SHOUTCONNECTION_H
+#pragma once
 
 #include <engine/sidechain/networkoutputstreamworker.h>
 
@@ -74,7 +70,7 @@ class ShoutConnection
     }
 
     void setStatus(int newState) {
-        return m_pProfile->setConnectionStatus(newState);
+        m_pProfile->setConnectionStatus(newState);
     }
     int getStatus() {
         return m_pProfile->connectionStatus();
@@ -100,8 +96,8 @@ class ShoutConnection
     void updateMetaData();
     // Common error dialog creation code for run-time exceptions. Notify user
     // when connected or disconnected and so on
-    void errorDialog(QString text, QString detailedError);
-    void infoDialog(QString text, QString detailedError);
+    void errorDialog(const QString& text, const QString& detailedError);
+    void infoDialog(const QString& text, const QString& detailedError);
 
     void serverWrite(unsigned char *header, unsigned char *body,
                int headerLen, int bodyLen);
@@ -166,5 +162,3 @@ class ShoutConnection
 };
 
 typedef QSharedPointer<ShoutConnection> ShoutConnectionPtr;
-
-#endif // ENGINE_SIDECHAIN_SHOUTCONNECTION_H

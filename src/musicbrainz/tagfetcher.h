@@ -30,13 +30,13 @@ class TagFetcher : public QObject {
   signals:
     void resultAvailable(
             TrackPointer pTrack,
-            QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
     void fetchProgress(
-            QString message);
+            const QString& message);
     void networkError(
             int httpStatus,
-            QString app,
-            QString message,
+            const QString& app,
+            const QString& message,
             int code);
 
   private slots:
@@ -45,28 +45,29 @@ class TagFetcher : public QObject {
     void slotAcoustIdTaskSucceeded(
             QList<QUuid> recordingIds);
     void slotAcoustIdTaskFailed(
-            mixxx::network::JsonWebResponse response);
+            const mixxx::network::JsonWebResponse& response);
     void slotAcoustIdTaskAborted();
     void slotAcoustIdTaskNetworkError(
-            QUrl requestUrl,
             QNetworkReply::NetworkError errorCode,
-            QString errorString,
-            QByteArray errorContent);
+            const QString& errorString,
+            const mixxx::network::WebResponseWithContent& responseWithContent);
 
     void slotMusicBrainzTaskSucceeded(
-            QList<mixxx::musicbrainz::TrackRelease> guessedTrackReleases);
+            const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases);
     void slotMusicBrainzTaskFailed(
-            mixxx::network::WebResponse response,
+            const mixxx::network::WebResponse& response,
             int errorCode,
-            QString errorMessage);
+            const QString& errorMessage);
     void slotMusicBrainzTaskAborted();
     void slotMusicBrainzTaskNetworkError(
-            QUrl requestUrl,
             QNetworkReply::NetworkError errorCode,
-            QString errorString,
-            QByteArray errorContent);
+            const QString& errorString,
+            const mixxx::network::WebResponseWithContent& responseWithContent);
 
   private:
+    bool onAcoustIdTaskTerminated();
+    bool onMusicBrainzTaskTerminated();
+
     QNetworkAccessManager m_network;
 
     QFutureWatcher<QString> m_fingerprintWatcher;

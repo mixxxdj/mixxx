@@ -1,5 +1,4 @@
-#ifndef MIXER_MICROPHONE_H
-#define MIXER_MICROPHONE_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -33,5 +32,3 @@ class Microphone : public BasePlayer {
     parented_ptr<ControlProxy> m_pInputConfigured;
     parented_ptr<ControlProxy> m_pTalkoverEnabled;
 };
-
-#endif /* MIXER_MICROPHONE_H */

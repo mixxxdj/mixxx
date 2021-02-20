@@ -1,5 +1,6 @@
 #include "track/beats.h"
 
+#include "moc_beats.cpp"
 #include "track/beatutils.h"
 #include "track/track.h"
 #include "util/math.h"
@@ -190,9 +191,9 @@ std::optional<Beat> BeatsInternal::getBeatAtIndex(int index) const {
                 firstBeat.bpm(), getSampleRate(), firstBeat.timeSignature());
         const int beatInBarIndex = clockModulo(
                 distanceFromFirstDownbeat, beatsPerBar);
-        const int barIndex =
+        const int barIndex = static_cast<int>(
                 std::floor(static_cast<double>(distanceFromFirstDownbeat) /
-                        beatsPerBar);
+                        beatsPerBar));
         Beat generatedPseudoBeat(
                 firstBeat.framePosition() + index * beatLength,
                 (beatInBarIndex == 0) ? BeatType::Downbeat : BeatType::Beat,
@@ -211,9 +212,9 @@ std::optional<Beat> BeatsInternal::getBeatAtIndex(int index) const {
             lastBeat.bpm(), getSampleRate(), lastBeat.timeSignature());
     const int beatInBarIndex = clockModulo(
             distanceFromFirstDownbeat, beatsPerBar);
-    const int barIndex =
+    const int barIndex = static_cast<int>(
             std::floor(static_cast<double>(distanceFromFirstDownbeat) /
-                    beatsPerBar);
+                    beatsPerBar));
     Beat generatedPseudoBeat(
             lastBeat.framePosition() + (index - lastBeat.beatIndex()) * beatLength,
             (beatInBarIndex == 0) ? BeatType::Downbeat : BeatType::Beat,
@@ -325,8 +326,8 @@ std::optional<Beat> BeatsInternal::findNthBeat(FramePos frame, int offset) const
                 getSampleRate(),
                 firstBeat->timeSignature());
         double beatFraction = (frame - getFirstBeatPosition()) / beatLength;
-        int prevBeatIdx = floor(beatFraction);
-        int nextBeatIdx = ceil(beatFraction);
+        int prevBeatIdx = static_cast<int>(floor(beatFraction));
+        int nextBeatIdx = static_cast<int>(ceil(beatFraction));
 
         if (fabs(nextBeatIdx - beatFraction) < kBeatVicinityFactor) {
             // If we are going to pretend we were actually on nextBeat then prevBeat
@@ -353,8 +354,8 @@ std::optional<Beat> BeatsInternal::findNthBeat(FramePos frame, int offset) const
         const FrameDiff_t beatLength = getBeatLengthFrames(
                 lastBeat->bpm(), getSampleRate(), lastBeat->timeSignature());
         double beatFraction = (frame - getLastBeatPosition()) / beatLength;
-        int prevBeatIdxRelativeToLast = floor(beatFraction);
-        int nextBeatIdxRelativeToLast = ceil(beatFraction);
+        int prevBeatIdxRelativeToLast = static_cast<int>(floor(beatFraction));
+        int nextBeatIdxRelativeToLast = static_cast<int>(ceil(beatFraction));
 
         if (fabs(nextBeatIdxRelativeToLast - beatFraction) < kBeatVicinityFactor) {
             prevBeatIdxRelativeToLast = nextBeatIdxRelativeToLast;

@@ -7,22 +7,22 @@
 #include "widget/trackdroptarget.h"
 #include "widget/wwidgetgroup.h"
 
+class Library;
 class WTrackMenu;
-class TrackCollectionManager;
 
 class WTrackWidgetGroup : public WWidgetGroup, public TrackDropTarget {
     Q_OBJECT
   public:
     WTrackWidgetGroup(QWidget* pParent,
             UserSettingsPointer pConfig,
-            TrackCollectionManager* pTrackCollectionManager,
+            Library* pLibrary,
             const QString& group);
     ~WTrackWidgetGroup() override;
     void setup(const QDomNode& node, const SkinContext& context) override;
 
   signals:
-    void trackDropped(QString fileName, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+    void trackDropped(const QString& fileName, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);

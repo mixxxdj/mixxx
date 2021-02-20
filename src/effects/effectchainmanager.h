@@ -1,5 +1,4 @@
-#ifndef EFFECTCHAINMANAGER_H
-#define EFFECTCHAINMANAGER_H
+#pragma once
 
 #include <QObject>
 #include <QList>
@@ -85,5 +84,3 @@ class EffectChainManager : public QObject {
     QSet<ChannelHandleAndGroup> m_registeredOutputChannels;
     DISALLOW_COPY_AND_ASSIGN(EffectChainManager);
 };
-
-#endif /* EFFECTCHAINMANAGER_H */

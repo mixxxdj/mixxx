@@ -1,6 +1,3 @@
-// Created on: 30/nov/2011
-// Author: vittorio
-
 #pragma once
 
 #include <QVector>
@@ -24,20 +21,20 @@ class BeatUtils {
      * a pretty good guess of the global BPM value.
      */
     static mixxx::Bpm calculateBpm(const QVector<double>& beats,
-            int sampleRate,
+            int SampleRate,
             int min_bpm,
             int max_bpm);
     static double findFirstCorrectBeat(const QVector<double>& rawBeats,
-            int SampleRate,
-            double global_bpm);
+            const int SampleRate,
+            const double global_bpm);
 
     /* This implement a method to find the best offset so that
      * the grid generated from bpm is close enough to the one we get from vamp.
      */
     static double calculateOffset(const QVector<double>& beats1,
-            double bpm1,
+            const double bpm1,
             const QVector<double>& beats2,
-            int SampleRate);
+            const int SampleRate);
 
     // By default Vamp does not assume a 4/4 signature. This is basically a good
     // property of Vamp, however, it leads to inaccurate beat grids if a 4/4
@@ -48,9 +45,9 @@ class BeatUtils {
     static double calculateFixedTempoFirstBeat(
             bool enableOffsetCorrection,
             const QVector<double>& rawbeats,
-            int sampleRate,
-            int totalSamples,
-            double globalBpm);
+            const int sampleRate,
+            const int totalSamples,
+            const double globalBpm);
 
     static double samplesToFrames(double samples) {
         return samples / mixxx::kEngineChannelCount;
@@ -60,16 +57,16 @@ class BeatUtils {
     }
 
   private:
-    static double computeSampleMedian(QList<double> sortedItems);
+    static double computeSampleMedian(const QList<double>& sortedItems);
     static double computeFilteredWeightedAverage(
             const QMap<double, int>& frequencyTable,
-            double filterCenter,
-            double filterTolerance,
+            const double filterCenter,
+            const double filterTolerance,
             QMap<double, int>* filteredFrequencyTable);
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(
             const QVector<double>& beats,
-            int windowSize,
-            int windowStep,
-            int sampleRate,
+            const int windowSize,
+            const int windowStep,
+            const int sampleRate,
             QMap<double, int>* frequencyHistogram);
 };

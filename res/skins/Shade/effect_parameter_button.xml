@@ -13,20 +13,21 @@
 		<ObjectName>EffectParameterButton</ObjectName>
 		<Layout>vertical</Layout>
 		<SizePolicy>me,f</SizePolicy>
-		<MinimumSize>-1,45</MinimumSize>
-		<MaximumSize>-1,45</MaximumSize> 
+		<MinimumSize>38,45</MinimumSize>
+		<MaximumSize>60,45</MaximumSize>
 		<Children>
 			<EffectButtonParameterName>
 			<Style>
-				WEffectButtonParameter { 
-					font: 10px/8px sans-serif;
-					font-family: "Open Sans";
-					background-color: transparent; 
-					color: #191F24; 
-					padding-left: 1px; 
+				WEffectButtonParameter {
+          font-size: 10px;
+          line-height: 8px;
+					background-color: transparent;
+					color: #191F24;
+					padding-left: 1px;
 				}
 				QLabel { qproperty-alignment: AlignCenter; }
 			</Style>
+      <Elide>right</Elide>
 			<ObjectName>ButtonLabel</ObjectName>
 			<EffectRack>1</EffectRack>
 			<EffectUnit><Variable name="effectunitnum"/></EffectUnit>

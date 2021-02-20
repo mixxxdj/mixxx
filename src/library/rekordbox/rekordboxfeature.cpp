@@ -1,6 +1,3 @@
-// rekordboxfeature.cpp
-// Created 05/24/2019 by Evan Dekker
-
 #include "library/rekordbox/rekordboxfeature.h"
 
 #include <mp3guessenc.h>
@@ -21,6 +18,7 @@
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "library/treeitem.h"
+#include "moc_rekordboxfeature.cpp"
 #include "track/beatfactory.h"
 #include "track/cue.h"
 #include "track/keyfactory.h"
@@ -149,7 +147,7 @@ bool createPlaylistTracksTable(QSqlDatabase& database, const QString& tableName)
     return true;
 }
 
-bool dropTable(QSqlDatabase& database, QString tableName) {
+bool dropTable(QSqlDatabase& database, const QString& tableName) {
     qDebug() << "Dropping Rekordbox table: " << tableName;
 
     QSqlQuery query(database);
@@ -257,8 +255,9 @@ inline bool instanceof (const T* ptr) {
     return dynamic_cast<const Base*>(ptr) != nullptr;
 }
 
-QString toUnicode(std::string toConvert) {
-    return QTextCodec::codecForName("UTF-16BE")->toUnicode(QByteArray(toConvert.c_str(), toConvert.length()));
+QString toUnicode(const std::string& toConvert) {
+    return QTextCodec::codecForName("UTF-16BE")
+            ->toUnicode(toConvert.data(), static_cast<int>(toConvert.length()));
 }
 
 // Functions getText and parseDeviceDB are roughly based on the following Java file:
@@ -287,7 +286,7 @@ QString getText(rekordbox_pdb_t::device_sql_string_t* deviceString) {
     return text.remove(QChar('\x0'));
 }
 
-int createDevicePlaylist(QSqlDatabase& database, QString devicePath) {
+int createDevicePlaylist(QSqlDatabase& database, const QString& devicePath) {
     int playlistID = -1;
 
     QSqlQuery queryInsertIntoDevicePlaylist(database);
@@ -352,8 +351,8 @@ void insertTrack(
         QMap<uint32_t, QString>& albumsMap,
         QMap<uint32_t, QString>& genresMap,
         QMap<uint32_t, QString>& keysMap,
-        QString devicePath,
-        QString device,
+        const QString& devicePath,
+        const QString& device,
         int audioFilesCount) {
     int rbID = static_cast<int>(track->id());
     QString title = getText(track->title());
@@ -427,8 +426,8 @@ void buildPlaylistTree(QSqlDatabase& database,
         QMap<uint32_t, bool>& playlistIsFolderMap,
         QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTreeMap,
         QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTrackMap,
-        QString playlistPath,
-        QString device);
+        const QString& playlistPath,
+        const QString& device);
 
 QString parseDeviceDB(
         mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* deviceItem) {
@@ -484,6 +483,9 @@ QString parseDeviceDB(
 
     queryInsertIntoDevicePlaylistTracks.bindValue(":playlist_id", playlistID);
 
+    if (!Sandbox::askForAccess(dbPath)) {
+        return QString();
+    }
     std::ifstream ifs(dbPath.toStdString(), std::ifstream::binary);
     kaitai::kstream ks(&ifs);
 
@@ -519,8 +521,7 @@ QString parseDeviceDB(
 
     bool folderOrPlaylistFound = false;
 
-    for (int tableOrderIndex = 0; tableOrderIndex < totalTables;
-            tableOrderIndex++) {
+    for (int tableOrderIndex = 0; tableOrderIndex < totalTables; tableOrderIndex++) {
         for (std::vector<rekordbox_pdb_t::table_t*>::iterator table =
                         reckordboxDB.tables()->begin();
                 table != reckordboxDB.tables()->end();
@@ -553,8 +554,7 @@ QString parseDeviceDB(
                                                 static_cast<rekordbox_pdb_t::
                                                                 key_row_t*>(
                                                         (*rowRef)->body());
-                                        keysMap[key->id()] =
-                                                getText(key->name());
+                                        keysMap[key->id()] = getText(key->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_GENRES: {
                                         // Genre found, update map
@@ -562,8 +562,7 @@ QString parseDeviceDB(
                                                 static_cast<rekordbox_pdb_t::
                                                                 genre_row_t*>(
                                                         (*rowRef)->body());
-                                        genresMap[genre->id()] =
-                                                getText(genre->name());
+                                        genresMap[genre->id()] = getText(genre->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_ARTISTS: {
                                         // Artist found, update map
@@ -571,8 +570,7 @@ QString parseDeviceDB(
                                                 static_cast<rekordbox_pdb_t::
                                                                 artist_row_t*>(
                                                         (*rowRef)->body());
-                                        artistsMap[artist->id()] =
-                                                getText(artist->name());
+                                        artistsMap[artist->id()] = getText(artist->name());
                                     } break;
                                     case rekordbox_pdb_t::PAGE_TYPE_ALBUMS: {
                                         // Album found, update map
@@ -580,8 +578,7 @@ QString parseDeviceDB(
                                                 static_cast<rekordbox_pdb_t::
                                                                 album_row_t*>(
                                                         (*rowRef)->body());
-                                        albumsMap[album->id()] =
-                                                getText(album->name());
+                                        albumsMap[album->id()] = getText(album->name());
                                     } break;
                                     case rekordbox_pdb_t::
                                             PAGE_TYPE_PLAYLIST_ENTRIES: {
@@ -683,8 +680,8 @@ void buildPlaylistTree(QSqlDatabase& database,
         QMap<uint32_t, bool>& playlistIsFolderMap,
         QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTreeMap,
         QMap<uint32_t, QMap<uint32_t, uint32_t>>& playlistTrackMap,
-        QString playlistPath,
-        QString device) {
+        const QString& playlistPath,
+        const QString& device) {
     for (uint32_t childIndex = 0;
             childIndex < (uint32_t)playlistTreeMap[parentID].size();
             childIndex++) {
@@ -867,31 +864,31 @@ void setHotCue(TrackPointer track,
         double startPosition,
         double endPosition,
         int id,
-        QString label,
+        const QString& label,
         mixxx::RgbColor::optional_t color) {
     CuePointer pCue;
-    bool hotCueFound = false;
-
-    for (const CuePointer& trackCue : track->getCuePoints()) {
+    const QList<CuePointer> cuePoints = track->getCuePoints();
+    for (const CuePointer& trackCue : cuePoints) {
         if (trackCue->getHotCue() == id) {
             pCue = trackCue;
-            hotCueFound = true;
             break;
         }
     }
 
-    if (!hotCueFound) {
-        pCue = CuePointer(track->createAndAddCue());
+    mixxx::CueType type = mixxx::CueType::HotCue;
+    if (endPosition != Cue::kNoPosition) {
+        type = mixxx::CueType::Loop;
     }
 
-    pCue->setStartPosition(startPosition);
-    if (endPosition == Cue::kNoPosition) {
-        pCue->setType(mixxx::CueType::HotCue);
+    if (pCue) {
+        pCue->setStartAndEndPosition(startPosition, endPosition);
     } else {
-        pCue->setType(mixxx::CueType::Loop);
-        pCue->setEndPosition(endPosition);
+        pCue = track->createAndAddCue(
+                type,
+                id,
+                startPosition,
+                endPosition);
     }
-    pCue->setHotCue(id);
     pCue->setLabel(label);
     if (color) {
         pCue->setColor(*color);
@@ -902,7 +899,7 @@ void readAnalyze(TrackPointer track,
         double sampleRate,
         int timingOffset,
         bool ignoreCues,
-        QString anlzPath) {
+        const QString& anlzPath) {
     if (!QFile(anlzPath).exists()) {
         return;
     }
@@ -1039,8 +1036,7 @@ void readAnalyze(TrackPointer track,
                             cueExtendedEntry = cuesExtendedTag->cues()->begin();
                     cueExtendedEntry != cuesExtendedTag->cues()->end();
                     ++cueExtendedEntry) {
-                int time = static_cast<int>((*cueExtendedEntry)->time()) -
-                        timingOffset;
+                int time = static_cast<int>((*cueExtendedEntry)->time()) - timingOffset;
                 // Ensure no offset times are less than 1
                 if (time < 1) {
                     time = 1;
@@ -1054,8 +1050,7 @@ void readAnalyze(TrackPointer track,
                         memory_cue_loop_t memoryCue;
                         memoryCue.startPosition = position;
                         memoryCue.endPosition = Cue::kNoPosition;
-                        memoryCue.comment =
-                                toUnicode((*cueExtendedEntry)->comment());
+                        memoryCue.comment = toUnicode((*cueExtendedEntry)->comment());
                         memoryCue.color = colorFromID(static_cast<int>(
                                 (*cueExtendedEntry)->color_id()));
                         memoryCuesAndLoops << memoryCue;
@@ -1121,11 +1116,9 @@ void readAnalyze(TrackPointer track,
         for (int memoryCueOrLoopIndex = 0;
                 memoryCueOrLoopIndex < memoryCuesAndLoops.size();
                 memoryCueOrLoopIndex++) {
-            memory_cue_loop_t memoryCueOrLoop =
-                    memoryCuesAndLoops[memoryCueOrLoopIndex];
+            memory_cue_loop_t memoryCueOrLoop = memoryCuesAndLoops[memoryCueOrLoopIndex];
 
-            if (!mainCueFound &&
-                    memoryCueOrLoop.endPosition == Cue::kNoPosition) {
+            if (!mainCueFound && memoryCueOrLoop.endPosition == Cue::kNoPosition) {
                 // Set first chronological memory cue as Mixxx MainCue
                 track->setCuePoint(CuePosition(memoryCueOrLoop.startPosition));
                 CuePointer pMainCue =
@@ -1163,71 +1156,94 @@ RekordboxPlaylistModel::RekordboxPlaylistModel(QObject* parent,
 
 void RekordboxPlaylistModel::initSortColumnMapping() {
     // Add a bijective mapping between the SortColumnIds and column indices
-    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
+    for (int i = 0; i < static_cast<int>(TrackModel::SortColumnId::IdMax); ++i) {
         m_columnIndexBySortColumnId[i] = -1;
     }
 
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ARTIST] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Artist)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ARTIST);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_TITLE] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Title)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TITLE);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_ALBUM] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Album)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUM);
-    m_columnIndexBySortColumnId
-            [TrackModel::SortColumnId::SORTCOLUMN_ALBUMARTIST] =
-                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_YEAR] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::AlbumArtist)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_ALBUMARTIST);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Year)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_YEAR);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GENRE] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Genre)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GENRE);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMPOSER] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Composer)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_GROUPING] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Grouping)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING);
-    m_columnIndexBySortColumnId
-            [TrackModel::SortColumnId::SORTCOLUMN_TRACKNUMBER] =
-                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_FILETYPE] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::TrackNumber)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::FileType)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
-    m_columnIndexBySortColumnId
-            [TrackModel::SortColumnId::SORTCOLUMN_NATIVELOCATION] =
-                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COMMENT] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::NativeLocation)] =
+            fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Comment)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_DURATION] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Duration)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BITRATE] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::BitRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BITRATE);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_BPM] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Bpm)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM);
-    m_columnIndexBySortColumnId
-            [TrackModel::SortColumnId::SORTCOLUMN_REPLAYGAIN] =
-                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN);
-    m_columnIndexBySortColumnId
-            [TrackModel::SortColumnId::SORTCOLUMN_DATETIMEADDED] =
-                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
-    m_columnIndexBySortColumnId
-            [TrackModel::SortColumnId::SORTCOLUMN_TIMESPLAYED] =
-                    fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_RATING] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::ReplayGain)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::DateTimeAdded)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::TimesPlayed)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TIMESPLAYED);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::LastPlayedAt)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Rating)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_RATING);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_KEY] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Key)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_KEY);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_PREVIEW] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Preview)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COLOR] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Color)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_COVERART] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::CoverArt)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART);
-    m_columnIndexBySortColumnId[TrackModel::SortColumnId::SORTCOLUMN_POSITION] =
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::Position)] =
             fieldIndex(ColumnCache::COLUMN_PLAYLISTTRACKSTABLE_POSITION);
 
     m_sortColumnIdByColumnIndex.clear();
-    for (int i = 0; i < TrackModel::SortColumnId::NUM_SORTCOLUMNIDS; ++i) {
-        TrackModel::SortColumnId sortColumn =
-                static_cast<TrackModel::SortColumnId>(i);
+    for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
+            i < static_cast<int>(TrackModel::SortColumnId::IdMax);
+            ++i) {
+        TrackModel::SortColumnId sortColumn = static_cast<TrackModel::SortColumnId>(i);
         m_sortColumnIdByColumnIndex.insert(
-                m_columnIndexBySortColumnId[sortColumn], sortColumn);
+                m_columnIndexBySortColumnId[static_cast<int>(sortColumn)],
+                sortColumn);
     }
 }
 
@@ -1254,9 +1270,8 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
 
     int timingOffset = 0;
 
-    if (location.toLower().endsWith(".mp3")) {
-        int timingShiftCase =
-                mp3guessenc_timing_shift_case(location.toStdString().c_str());
+    if (location.endsWith(".mp3", Qt::CaseInsensitive)) {
+        int timingShiftCase = mp3guessenc_timing_shift_case(location.toStdString().c_str());
 
         qDebug() << "Timing shift case:" << timingShiftCase
                  << "for MP3 file:" << location;
@@ -1348,7 +1363,7 @@ RekordboxFeature::RekordboxFeature(
             << LIBRARYTABLE_YEAR
             << LIBRARYTABLE_GENRE
             << LIBRARYTABLE_TRACKNUMBER
-            << LIBRARYTABLE_LOCATION
+            << TRACKLOCATIONSTABLE_LOCATION
             << LIBRARYTABLE_COMMENT
             << LIBRARYTABLE_RATING
             << LIBRARYTABLE_DURATION
@@ -1367,7 +1382,7 @@ RekordboxFeature::RekordboxFeature(
             << LIBRARYTABLE_YEAR
             << LIBRARYTABLE_GENRE
             << LIBRARYTABLE_TRACKNUMBER
-            << LIBRARYTABLE_LOCATION
+            << TRACKLOCATIONSTABLE_LOCATION
             << LIBRARYTABLE_COMMENT
             << LIBRARYTABLE_DURATION
             << LIBRARYTABLE_BITRATE
@@ -1392,8 +1407,14 @@ RekordboxFeature::RekordboxFeature(
     createPlaylistTracksTable(database, kRekordboxPlaylistTracksTable);
     transaction.commit();
 
-    connect(&m_devicesFutureWatcher, SIGNAL(finished()), this, SLOT(onRekordboxDevicesFound()));
-    connect(&m_tracksFutureWatcher, SIGNAL(finished()), this, SLOT(onTracksFound()));
+    connect(&m_devicesFutureWatcher,
+            &QFutureWatcher<QList<TreeItem*>>::finished,
+            this,
+            &RekordboxFeature::onRekordboxDevicesFound);
+    connect(&m_tracksFutureWatcher,
+            &QFutureWatcher<QString>::finished,
+            this,
+            &RekordboxFeature::onTracksFound);
     // initialize the model
     m_childModel.setRootItem(TreeItem::newRoot(this));
 }
@@ -1419,7 +1440,7 @@ void RekordboxFeature::bindLibraryWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(formatRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit, SIGNAL(anchorClicked(const QUrl)), this, SLOT(htmlLinkClicked(const QUrl)));
+    connect(edit, &WLibraryTextBrowser::anchorClicked, this, &RekordboxFeature::htmlLinkClicked);
     libraryWidget->registerView("REKORDBOXHOME", edit);
 }
 
@@ -1431,7 +1452,7 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
     }
 }
 
-BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
     RekordboxPlaylistModel* model = new RekordboxPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
     model->setPlaylist(playlist);
     return model;
@@ -1456,11 +1477,15 @@ TreeItemModel* RekordboxFeature::getChildModel() {
 QString RekordboxFeature::formatRootViewHtml() const {
     QString title = tr("Rekordbox");
     QString summary = tr(
-            "Reads databases for Pioneer CDJ / XDJ players. <br/>"
-            "The database has to be exported to a USB or SD device <br/>"
-            "with a FAT or HFS file system using the Rekordbox Export mode. <br/>"
-            "Not supported are databases that have been moved to an external device via <br/>"
-            "Preferences > Advanced > Database management. <br/>"
+            "Reads databases exported for Pioneer CDJ / XDJ players using "
+            "the Rekordbox Export mode.<br/>"
+            "Rekordbox can only export to USB or SD devices with a FAT or "
+            "HFS file system.<br/>"
+            "Mixxx can read a database from any device that contains the "
+            "database folders (<tt>PIONEER</tt> and <tt>Contents</tt>).<br/>"
+            "Not supported are Rekordbox databases that have been moved to "
+            "an external device via<br/>"
+            "<i>Preferences > Advanced > Database management</i>.<br/>"
             "<br/>"
             "The following data is read:");
 
@@ -1479,7 +1504,7 @@ QString RekordboxFeature::formatRootViewHtml() const {
     html.append(QString("<h2>%1</h2>").arg(title));
     html.append(QString("<p>%1</p>").arg(summary));
     html.append(QString("<ul>"));
-    for (const auto& item : items) {
+    for (const auto& item : qAsConst(items)) {
         html.append(QString("<li>%1</li>").arg(item));
     }
     html.append(QString("</ul>"));
@@ -1510,8 +1535,9 @@ void RekordboxFeature::activate() {
 }
 
 void RekordboxFeature::activateChild(const QModelIndex& index) {
-    if (!index.isValid())
+    if (!index.isValid()) {
         return;
+    }
 
     //access underlying TreeItem object
     TreeItem* item = static_cast<TreeItem*>(index.internalPointer());

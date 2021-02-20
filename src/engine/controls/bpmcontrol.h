@@ -1,5 +1,4 @@
-#ifndef BPMCONTROL_H
-#define BPMCONTROL_H
+#pragma once
 
 #include <gtest/gtest_prod.h>
 
@@ -175,5 +174,3 @@ class BpmControl : public EngineControl {
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
 };
-
-#endif // BPMCONTROL_H

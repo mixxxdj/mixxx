@@ -1,5 +1,4 @@
-#ifndef WWAVEFORMVIEWER_H
-#define WWAVEFORMVIEWER_H
+#pragma once
 
 #include <QDateTime>
 #include <QDragEnterEvent>
@@ -46,8 +45,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void leaveEvent(QEvent* /*unused*/) override;
 
   signals:
-    void trackDropped(QString filename, QString group) override;
-    void cloneDeck(QString source_group, QString target_group) override;
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
   public slots:
     void slotTrackLoaded(TrackPointer track);
@@ -94,6 +93,8 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
 
     WaveformWidgetAbstract* m_waveformWidget;
 
+    int m_dimBrightThreshold;
+
     friend class WaveformWidgetFactory;
 
     // TODO(hacksdump): Make this an internal function of WaveformMark class.
@@ -102,5 +103,3 @@ class WWaveformViewer : public WWidget, public TrackDropTarget {
     void unhighlightMark(WaveformMarkPointer pMark);
     bool isPlaying() const;
 };
-
-#endif

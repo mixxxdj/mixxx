@@ -1,5 +1,7 @@
 #include "waveformrenderplaymarker.h"
 
+#include <QPainterPath>
+
 WaveformRenderPlayMarker::WaveformRenderPlayMarker(
         WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer) {

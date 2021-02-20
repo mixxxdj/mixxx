@@ -1,29 +1,37 @@
-#include <stdio.h>
+#include "util/cmdlineargs.h"
 
+#include <stdio.h>
+#ifndef __WINDOWS__
+#include <unistd.h>
+#else
+#include <io.h>
+#endif
+
+#include <QProcessEnvironment>
 #include <QStandardPaths>
 
-#include "util/cmdlineargs.h"
+#include "sources/soundsourceproxy.h"
 #include "util/version.h"
 
-#include "sources/soundsourceproxy.h"
-
-
 CmdlineArgs::CmdlineArgs()
-    : m_startInFullscreen(false), // Initialize vars
-      m_midiDebug(false),
-      m_developer(false),
-      m_safeMode(false),
-      m_debugAssertBreak(false),
-      m_settingsPathSet(false),
-      m_logLevel(mixxx::kLogLevelDefault),
-      m_logFlushLevel(mixxx::kLogFlushLevelDefault),
+        : m_startInFullscreen(false), // Initialize vars
+          m_midiDebug(false),
+          m_developer(false),
+          m_safeMode(false),
+          m_debugAssertBreak(false),
+          m_settingsPathSet(false),
+          m_useColors(false),
+          m_logLevel(mixxx::kLogLevelDefault),
+          m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
 #ifdef __LINUX__
-    m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
+          m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
 #else
-    // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
-    // to QDir::filePath elsewhere in the code. This is candidate for removal.
-    m_settingsPath(QStandardPaths::writableLocation(QStandardPaths::DataLocation).append("/")) {
+          // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
+          // to QDir::filePath elsewhere in the code. This is candidate for removal.
+          m_settingsPath(
+                  QStandardPaths::writableLocation(QStandardPaths::DataLocation)
+                          .append("/")) {
 #endif
 }
 
@@ -50,6 +58,7 @@ namespace {
 
 bool CmdlineArgs::Parse(int &argc, char **argv) {
     bool logLevelSet = false;
+    auto colorSettings = QString("auto");
     for (int i = 0; i < argc; ++i) {
         if (   argv[i] == QString("-h")
             || argv[i] == QString("--h")
@@ -103,9 +112,36 @@ when a critical error occurs unless this is set properly.\n", stdout);
             m_safeMode = true;
         } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
             m_debugAssertBreak = true;
-        } else {
+        } else if (QString::fromLocal8Bit(argv[i]).contains(
+                           "--color", Qt::CaseInsensitive) &&
+                i + 1 < argc) {
+            colorSettings = QString::fromLocal8Bit(argv[i + 1]);
+        } else if (i > 0) {
+            // Don't try to load the program name to a deck
             m_musicFiles += QString::fromLocal8Bit(argv[i]);
         }
+    }
+    if (colorSettings.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
+        // see https://no-color.org/
+        if (QProcessEnvironment::systemEnvironment().contains(QLatin1String("NO_COLOR"))) {
+            m_useColors = false;
+        } else {
+#ifndef __WINDOWS__
+            if (isatty(fileno(stderr))) {
+                m_useColors = true;
+            }
+#else
+            if (_isatty(_fileno(stderr))) {
+                m_useColors = true;
+            }
+#endif
+        }
+    } else if (colorSettings.compare(QLatin1String("always"), Qt::CaseInsensitive) == 0) {
+        m_useColors = true;
+    } else if (colorSettings.compare(QLatin1String("never"), Qt::CaseInsensitive) == 0) {
+        m_useColors = false;
+    } else {
+        qWarning() << "Unknown setting for color, ignoring";
     }
 
     // If --logLevel was unspecified and --developer is enabled then set
@@ -152,6 +188,8 @@ void CmdlineArgs::printUsage() {
                         and spinning vinyl widgets. Try this option if\n\
                         Mixxx is crashing on startup.\n\
 \n\
+--color auto            [auto|always|never] Use colors on the console output.\n\
+\n\
 --locale LOCALE         Use a custom locale for loading translations\n\
                         (e.g 'fr')\n\
 \n\
@@ -169,14 +207,18 @@ void CmdlineArgs::printUsage() {
                         defined at --logLevel above.\n\
 \n"
 #ifdef MIXXX_BUILD_DEBUG
-"\
+          "\
 --debugAssertBreak      Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT\n\
                         evaluates to false. Under a debugger you can\n\
                         continue afterwards.\
 \n"
 #endif
-"\
--h, --help              Display this help message and exit", stdout);
+          "\
+-h, --help              Display this help message and exit",
+            stdout);
 
-    fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
+    fputs("\n\n(For more information, see "
+          "https://manual.mixxx.org/2.3/chapters/"
+          "appendix.html#command-line-options)\n",
+            stdout);
 }

@@ -1,11 +1,13 @@
 #include "effects/effectchainmanager.h"
-#include "effects/effectsmanager.h"
-#include "effects/effectxmlelements.h"
 
-#include <QtDebug>
+#include <QDir>
 #include <QDomDocument>
 #include <QFile>
-#include <QDir>
+#include <QtDebug>
+
+#include "effects/effectsmanager.h"
+#include "effects/effectxmlelements.h"
+#include "moc_effectchainmanager.cpp"
 
 EffectChainManager::EffectChainManager(UserSettingsPointer pConfig,
                                        EffectsManager* pEffectsManager)
@@ -110,8 +112,9 @@ void EffectChainManager::removeEffectChain(EffectChainPointer pEffectChain) {
 }
 
 EffectChainPointer EffectChainManager::getNextEffectChain(EffectChainPointer pEffectChain) {
-    if (m_effectChains.isEmpty())
+    if (m_effectChains.isEmpty()) {
         return EffectChainPointer();
+    }
 
     if (!pEffectChain) {
         return m_effectChains[0];
@@ -127,8 +130,9 @@ EffectChainPointer EffectChainManager::getNextEffectChain(EffectChainPointer pEf
 }
 
 EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEffectChain) {
-    if (m_effectChains.isEmpty())
+    if (m_effectChains.isEmpty()) {
         return EffectChainPointer();
+    }
 
     if (!pEffectChain) {
         return m_effectChains[m_effectChains.size()-1];
@@ -144,13 +148,13 @@ EffectChainPointer EffectChainManager::getPrevEffectChain(EffectChainPointer pEf
 }
 
 void EffectChainManager::refeshAllRacks() {
-    for (const auto& pRack: m_standardEffectRacks) {
+    for (const auto& pRack : qAsConst(m_standardEffectRacks)) {
         pRack->refresh();
     }
-    for (const auto& pRack: m_equalizerEffectRacks) {
+    for (const auto& pRack : qAsConst(m_equalizerEffectRacks)) {
         pRack->refresh();
     }
-    for (const auto& pRack: m_quickEffectRacks) {
+    for (const auto& pRack : qAsConst(m_quickEffectRacks)) {
         pRack->refresh();
     }
 }
@@ -166,7 +170,7 @@ bool EffectChainManager::saveEffectChains() {
 
     QDomElement rootNode = doc.documentElement();
 
-    for (EffectRackPointer pRack : m_standardEffectRacks) {
+    for (const StandardEffectRackPointer& pRack : qAsConst(m_standardEffectRacks)) {
         rootNode.appendChild(pRack->toXml(&doc));
     }
     // TODO? Save QuickEffects in effects.xml too, or keep stored in ConfigObjects?

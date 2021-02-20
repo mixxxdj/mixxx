@@ -123,6 +123,12 @@ WOverview #PassthroughLabel {
 }
 
 
+#LibraryContainer QTableView,
+#LibraryContainer QTreeView {
+  /* background of Color delegate in selected row */
+  selection-background-color: #666;
+  /*outline: 1px solid yellow;*/
+}
 
 #LibraryContainer QTableView:focus,
 #LibraryContainer QTreeView:focus,
@@ -141,11 +147,27 @@ WSearchLineEdit QToolButton:focus {
 #LibraryContainer QTableView::item:selected,
 #LibraryContainer QTreeView::branch:selected,
 #LibraryBPMButton::item:selected {
-  border-image: none;
-  background-image: none;
   color: #000;
+  selection-color: #000;
   background-color: #666;
-  }
+}
+#LibraryContainer QTreeView,
+#LibraryContainer QTreeView::item:focus {
+  outline: none;
+}
+/* Use the native focus decoration */
+/* This is for all cells including Played and Location */
+#LibraryContainer QTableView,
+/* This is for the BPM cell */
+#LibraryContainer QTableView QCheckBox:focus {
+  outline: 1px solid #ccc;
+}
+/* This uses a custom qproperty to set the focus border
+  for Color and Cover Art cells, 1px solid, sharp corners.
+  See src/library/tableitemdelegate.cpp */
+WTrackTableView {
+  qproperty-focusBorderColor: #ccc;
+}
 
   /* Table cell in edit mode */
   WLibrary QLineEdit,
@@ -202,27 +224,15 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
   #LibraryContainer QHeaderView::down-arrow {
     image: url(skin:/btn/btn_lib_sort_down_green.png)
   }
-#DlgMissing > QPushButton:enabled,
-#DlgHidden > QPushButton:enabled,
-#DlgAutoDJ > QPushButton:enabled,
-#DlgRecording > QPushButton:enabled,
-#DlgAnalysis > QPushButton:enabled {
+#LibraryFeatureControls QPushButton:enabled {
   background-color: #5C5B5D;
   border: 1px solid #5C5B5D;
   }
-  #DlgMissing > QPushButton:!enabled,
-  #DlgHidden > QPushButton:!enabled,
-  #DlgAutoDJ > QPushButton:!enabled,
-  #DlgRecording > QPushButton:!enabled,
-  #DlgAnalysis > QPushButton:!enabled {
+  #LibraryFeatureControls QPushButton:!enabled {
     background-color: #3D3E3F;
     border: 1px solid #3D3E3F;
   }
-  #DlgMissing > QPushButton:checked,
-  #DlgHidden > QPushButton:checked,
-  #DlgAutoDJ > QPushButton:checked,
-  #DlgRecording > QPushButton:checked,
-  #DlgAnalysis > QPushButton:checked {
+  #LibraryFeatureControls QPushButton:checked {
     color: #000;
     background-color: #B79E00;
     border: 1px solid #B79E00;

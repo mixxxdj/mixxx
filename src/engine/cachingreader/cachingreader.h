@@ -1,6 +1,3 @@
-// cachingreader.h
-// Created 7/9/2009 by RJ Ryan (rryan@mit.edu)
-
 #pragma once
 
 #include <QAtomicInt>
@@ -75,8 +72,8 @@ class CachingReader : public QObject {
 
   public:
     // Construct a CachingReader with the given group.
-    CachingReader(QString group,
-                  UserSettingsPointer _config);
+    CachingReader(const QString& group,
+            UserSettingsPointer _config);
     ~CachingReader() override;
 
     void process();
@@ -115,7 +112,7 @@ class CachingReader : public QObject {
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();
     void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
-    void trackLoadFailed(TrackPointer pTrack, QString reason);
+    void trackLoadFailed(TrackPointer pTrack, const QString& reason);
 
   private:
     const UserSettingsPointer m_pConfig;
