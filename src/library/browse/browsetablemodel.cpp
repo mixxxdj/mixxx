@@ -335,7 +335,8 @@ TrackModel::Capabilities BrowseTableModel::getCapabilities() const {
             Capability::AddToAutoDJ |
             Capability::LoadToDeck |
             Capability::LoadToPreviewDeck |
-            Capability::LoadToSampler;
+            Capability::LoadToSampler |
+            Capability::RemoveFromDisk;
 }
 
 Qt::ItemFlags BrowseTableModel::flags(const QModelIndex& index) const {

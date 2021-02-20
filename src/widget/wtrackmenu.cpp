@@ -1705,10 +1705,13 @@ void WTrackMenu::slotRemoveFromDisk() {
                 QObject::tr("Track files deleted"),
                 nullptr);
         msgBoxPurgeTracks.setText(
-                QObject::tr("%1 track files were deleted from disk and purged "
-                            "from the Mixxx database.")
+                tr("%1 track files were deleted from disk and purged "
+                   "from the Mixxx database.")
                         .arg(QString::number(
-                                trackOperator.tr_tracksToPurge.length())));
+                                trackOperator.tr_tracksToPurge.length())) +
+                QString("<br><br>") +
+                tr("Note: if you are in Browse or Recording you need to "
+                   "click the current view again to see changes."));
         msgBoxPurgeTracks.setTextFormat(Qt::RichText);
         msgBoxPurgeTracks.exec();
     }
