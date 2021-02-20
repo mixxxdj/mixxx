@@ -30,6 +30,7 @@ class DlgPrefEffects;
 class DlgPrefCrossfader;
 class DlgPrefAutoDJ;
 class DlgPrefBroadcast;
+class DlgPrefMetadata;
 class DlgPrefRecord;
 class DlgPrefBeats;
 class DlgPrefKey;

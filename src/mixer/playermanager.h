@@ -6,6 +6,7 @@
 #include <QObject>
 
 #include "analyzer/trackanalysisscheduler.h"
+#include "broadcast/scrobblingmanager.h"
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"

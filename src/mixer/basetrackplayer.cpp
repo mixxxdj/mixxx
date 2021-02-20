@@ -618,8 +618,13 @@ void BaseTrackPlayerImpl::slotTrackColorChangeRequest(double v) {
 }
 
 void BaseTrackPlayerImpl::slotPlayToggled(double value) {
-    if (value == 0 && m_replaygainPending) {
-        setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+    if (value <= 0) {
+        emit trackPaused(m_pLoadedTrack);
+        if (m_replaygainPending) {
+            setReplayGain(m_pLoadedTrack->getReplayGain().getRatio());
+        }
+    } else {
+        emit trackResumed(m_pLoadedTrack);
     }
 }
 
@@ -702,4 +707,8 @@ void BaseTrackPlayerImpl::slotShiftCuesMillisButton(double value, double millise
 void BaseTrackPlayerImpl::setReplayGain(double value) {
     m_pReplayGain->set(value);
     m_replaygainPending = false;
+}
+
+bool BaseTrackPlayerImpl::isTrackPaused() const {
+    return !m_pPlay->toBool();
 }

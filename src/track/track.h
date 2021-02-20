@@ -1,6 +1,8 @@
 #pragma once
 
+#include <QElapsedTimer>
 #include <QList>
+#include <QMetaObject>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QObject>
@@ -13,9 +15,12 @@
 #include "track/cueinfoimporter.h"
 #include "track/track_decl.h"
 #include "track/trackfile.h"
+#include "track/trackplaytimers.h"
 #include "track/trackrecord.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
+
+struct Connection;
 
 class Track : public QObject {
     Q_OBJECT
@@ -479,6 +484,8 @@ class Track : public QObject {
 
     mixxx::BeatsImporterPointer m_pBeatsImporterPending;
     mixxx::CueInfoImporterPointer m_pCueInfoImporterPending;
+
+    QMetaObject::Connection m_timerConnection;
 
     friend class TrackDAO;
     friend class GlobalTrackCache;

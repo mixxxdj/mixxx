@@ -129,7 +129,7 @@ MixxxMainWindow::MixxxMainWindow(
             this,
             &MixxxMainWindow::initializationProgressUpdate);
 
-    m_pCoreServices->initialize(pApp);
+    m_pCoreServices->initialize(pApp, this);
 
     initializationProgressUpdate(65, tr("skin"));
 

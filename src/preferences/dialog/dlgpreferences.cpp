@@ -13,6 +13,7 @@
 #include "controllers/dlgprefcontrollers.h"
 #include "moc_dlgpreferences.cpp"
 #include "preferences/dialog/dlgpreflibrary.h"
+#include "preferences/dialog/dlgprefmetadata.h"
 #include "preferences/dialog/dlgprefsound.h"
 
 #ifdef __VINYLCONTROL__
@@ -201,6 +202,12 @@ DlgPreferences::DlgPreferences(
             tr("Live Broadcasting"),
             "ic_preferences_broadcast.svg");
 #endif /* __BROADCAST__ */
+
+    addPageWidget(PreferencesPage(
+                          new DlgPrefMetadata(this, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
+            tr("Metadata Output"),
+            "ic_preferences_broadcast.svg");
 
     addPageWidget(PreferencesPage(
                           new DlgPrefRecord(this, m_pConfig),

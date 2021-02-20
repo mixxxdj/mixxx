@@ -27,7 +27,7 @@ BroadcastManager::BroadcastManager(SettingsManager* pSettingsManager,
           m_pNetworkStream(pSoundManager->getNetworkStream()) {
     const bool persist = true;
     m_pBroadcastEnabled = new ControlPushButton(
-            ConfigKey(BROADCAST_PREF_KEY,"enabled"), persist);
+            ConfigKey(BROADCAST_PREF_KEY, "enabled"), persist);
     m_pBroadcastEnabled->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pBroadcastEnabled,
             &ControlPushButton::valueChanged,

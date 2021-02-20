@@ -375,6 +375,12 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/audio/types.cpp
   src/audio/signalinfo.cpp
   src/audio/streaminfo.cpp
+  src/broadcast/filelistener/filelistener.cpp
+  src/broadcast/filelistener/metadatafileworker.cpp
+  src/broadcast/listenbrainzlistener/listenbrainzservice.cpp
+  src/broadcast/listenbrainzlistener/networkrequest.cpp
+  src/broadcast/metadatabroadcast.cpp
+  src/broadcast/scrobblingmanager.cpp
   src/control/control.cpp
   src/control/controlaudiotaperpot.cpp
   src/control/controlbehavior.cpp
@@ -678,6 +684,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/network/networktask.cpp
   src/network/webtask.cpp
   src/preferences/configobject.cpp
+  src/preferences/dialog/dlgfilelistenerbox.ui
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
   src/preferences/dialog/dlgprefbeats.cpp
@@ -719,6 +726,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/colorpaletteeditor.cpp
   src/preferences/colorpaletteeditormodel.cpp
   src/preferences/colorpalettesettings.cpp
+  src/preferences/dialog/dlgprefmetadata.cpp
+  src/preferences/dialog/dlgprefmetadatadlg.ui
+  src/preferences/listenbrainzsettings.cpp
+  src/preferences/metadatafilesettings.cpp
   src/preferences/replaygainsettings.cpp
   src/preferences/settingsmanager.cpp
   src/preferences/upgrade.cpp
@@ -777,8 +788,10 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/trackinfo.cpp
   src/track/trackmetadata.cpp
   src/track/tracknumbers.cpp
+  src/track/trackplaytimers.cpp
   src/track/trackrecord.cpp
   src/track/trackref.cpp
+  src/track/tracktiminginfo.cpp
   src/track/taglib/trackmetadata_ape.cpp
   src/track/taglib/trackmetadata_common.cpp
   src/track/taglib/trackmetadata_file.cpp
@@ -2411,6 +2424,23 @@ if(BROADCAST)
     src/encoder/encoderbroadcastsettings.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __BROADCAST__)
+endif()
+
+if(UNIX AND NOT APPLE)
+  # MPRIS implementation using QtDbus
+  option(MPRIS "MPRIS implementation using QtDbus" ON)
+  if(MPRIS)
+    target_sources(mixxx-lib PRIVATE
+      src/broadcast/mpris/mediaplayer2.cpp
+      src/broadcast/mpris/mediaplayer2player.cpp
+      src/broadcast/mpris/mediaplayer2playlists.cpp
+      src/broadcast/mpris/mediaplayer2tracklist.cpp
+      src/broadcast/mpris/mpris.cpp
+      src/broadcast/mpris/mprisplayer.cpp
+      src/broadcast/mpris/mprisservice.cpp
+    )
+    target_compile_definitions(mixxx-lib PUBLIC __MPRIS__)
+  endif()
 endif()
 
 # Locale Aware Compare for SQLite

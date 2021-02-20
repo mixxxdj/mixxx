@@ -7,6 +7,7 @@
 #ifdef __BROADCAST__
 #include "broadcast/broadcastmanager.h"
 #endif
+#include "broadcast/scrobblingmanager.h"
 #include "controllers/controllermanager.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "database/mixxxdb.h"
@@ -116,7 +117,7 @@ void CoreServices::initializeSettings() {
     m_pSettingsManager = std::make_unique<SettingsManager>(settingsPath);
 }
 
-void CoreServices::initialize(QApplication* pApp) {
+void CoreServices::initialize(QApplication* pApp, MixxxMainWindow* pMixxx) {
     m_runtime_timer.start();
     mixxx::Time::start();
     ScopedTimer t("CoreServices::initialize");
@@ -281,6 +282,8 @@ void CoreServices::initialize(QApplication* pApp) {
     // been created. Otherwise Mixxx might hang when accessing
     // the uninitialized singleton instance!
     m_pPlayerManager->bindToLibrary(m_pLibrary.get());
+
+    m_pScrobblingManager = std::make_shared<ScrobblingManager>(pConfig, m_pPlayerManager, pMixxx);
 
     bool hasChanged_MusicDir = false;
 
@@ -473,6 +476,9 @@ void CoreServices::shutdown() {
     if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
         mixxx::ScreenSaverHelper::uninhibit();
     }
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting ScrobblingManager";
+    CLEAR_AND_CHECK_DELETED(m_pScrobblingManager);
 
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";

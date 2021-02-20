@@ -166,11 +166,16 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     int oldDeck = m_currentlyPlayingDeck.fetchAndStoreRelease(maxDeck);
     if (maxDeck != oldDeck) {
         emit currentPlayingDeckChanged(maxDeck);
-        emit currentPlayingTrackChanged(getCurrentPlayingTrack());
+        TrackPointer track;
+        if (maxDeck >= 0) {
+            track = getTrackInfo(PlayerManager::groupForDeck(maxDeck));
+        }
+        emit currentPlayingTrackChanged(track);
     }
 }
 
 int PlayerInfo::getCurrentPlayingDeck() {
+    updateCurrentPlayingDeck();
     return m_currentlyPlayingDeck;
 }
 
