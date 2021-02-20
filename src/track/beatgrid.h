@@ -65,7 +65,6 @@ class BeatGrid final : public Beats {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    void removeBeat(double dBeatSample) override;
     void translate(double dNumSamples) override;
     void scale(enum BPMScale scale) override;
     void setBpm(double dBpm) override;

@@ -141,10 +141,6 @@ class Beats : public QObject {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    // Remove a beat at location dBeatSample. Beats instance must have the
-    // capability BEATSCAP_ADDREMOVE.
-    virtual void removeBeat(double dBeatSample) = 0;
-
     // Translate all beats in the song by dNumSamples samples. Beats that lie
     // before the start of the track or after the end of the track are not
     // removed. Beats instance must have the capability BEATSCAP_TRANSLATE.
