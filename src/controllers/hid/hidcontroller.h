@@ -48,7 +48,22 @@ class HidController final : public Controller {
     void sendBytesReport(QByteArray data, unsigned int reportID);
     void sendFeatureReport(const QList<int>& dataList, unsigned int reportID);
 
+    // getInputReport receives an input report on request.
+    // This can be used on startup, to initialize the knob positions in Mixxx
+    // to the physical position of the hardware knobs on the controller.
+    // The returned data structure for the input reports is the same,
+    // as in the polling functionality (incl. ReportID in first byte).
+    // The returned list can be used, to call the incomingData
+    // function of the common-hid-packet-parser.
     QList<int> getInputReport(unsigned int reportID);
+
+    // getFeatureReport receives a feature reports on request.
+    // HID doesn't support polling feature reports, therefore this is the
+    // only method to get this information.
+    // Usually single bits in a feature report need to be set without
+    // changeing the other bits. The returned list matches the input
+    // format of sendFeatureReport, this allows it to read, modify
+    // and send it back to the controller.
     QList<int> getFeatureReport(unsigned int reportID);
 
     const mixxx::hid::DeviceInfo m_deviceInfo;
