@@ -328,7 +328,7 @@ bool BeatMap::findPrevNextBeats(double dSamples,
         qint32 delta = it->frame_position() - beat.frame_position();
 
         // We are "on" this beat.
-        if (abs(delta) < kFrameEpsilon) {
+        if (abs(delta) <= kFrameEpsilon) {
             on_beat = it;
             break;
         }

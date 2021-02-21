@@ -244,7 +244,7 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
         kEpsilon = .01;
     }
 
-    if (fabs(nextBeat - beatFraction) < kEpsilon) {
+    if (fabs(nextBeat - beatFraction) <= kEpsilon) {
         beatFraction = nextBeat;
         // If we are going to pretend we were actually on nextBeat then prevBeatFraction
         // needs to be re-calculated. Since it is floor(beatFraction), that's

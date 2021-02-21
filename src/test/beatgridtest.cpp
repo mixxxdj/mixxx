@@ -82,6 +82,11 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     EXPECT_NEAR(position, prevBeat, kMaxBeatError);
     EXPECT_NEAR(position + beatLength, nextBeat, kMaxBeatError);
 
+    // Also test prev/next beat calculation without tolerance
+    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, true);
+    EXPECT_NEAR(position, prevBeat, kMaxBeatError);
+    EXPECT_NEAR(position + beatLength, nextBeat, kMaxBeatError);
+
     // Both previous and next beat should return the current position.
     EXPECT_NEAR(position, pGrid->findNextBeat(position), kMaxBeatError);
     EXPECT_NEAR(position, pGrid->findPrevBeat(position), kMaxBeatError);
@@ -118,6 +123,11 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
     EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
+
+    // Also test prev/next beat calculation without tolerance
+    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, true);
+    EXPECT_NEAR(kClosestBeat - beatLength, prevBeat, kMaxBeatError);
+    EXPECT_NEAR(kClosestBeat, nextBeat, kMaxBeatError);
 
     // Both previous and next beat should return the closest beat.
     EXPECT_NEAR(kClosestBeat, pGrid->findNextBeat(position), kMaxBeatError);
@@ -156,6 +166,11 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
     EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
 
+    // Also test prev/next beat calculation without tolerance
+    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, true);
+    EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
+    EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
+
     // Both previous and next beat should return the closest beat.
     EXPECT_NEAR(kClosestBeat, pGrid->findNextBeat(position), kMaxBeatError);
     EXPECT_NEAR(kClosestBeat, pGrid->findPrevBeat(position), kMaxBeatError);
@@ -191,6 +206,11 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     // Also test prev/next beat calculation
     double foundPrevBeat, foundNextBeat;
     pGrid->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, false);
+    EXPECT_NEAR(previousBeat, foundPrevBeat, kMaxBeatError);
+    EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);
+
+    // Also test prev/next beat calculation without tolerance
+    pGrid->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, true);
     EXPECT_NEAR(previousBeat, foundPrevBeat, kMaxBeatError);
     EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);
 }

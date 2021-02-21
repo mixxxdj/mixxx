@@ -141,6 +141,11 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
     EXPECT_EQ(position, prevBeat);
     EXPECT_EQ(position + beatLengthSamples, nextBeat);
 
+    // Also test prev/next beat calculation without tolerance
+    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, true);
+    EXPECT_EQ(position, prevBeat);
+    EXPECT_EQ(position + beatLengthSamples, nextBeat);
+
     // Both previous and next beat should return the current position.
     EXPECT_EQ(position, pMap->findNextBeat(position));
     EXPECT_EQ(position, pMap->findPrevBeat(position));
@@ -178,6 +183,11 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_EQ(kClosestBeat, prevBeat);
     EXPECT_EQ(kClosestBeat + beatLengthSamples, nextBeat);
+
+    // Also test prev/next beat calculation without tolerance
+    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, true);
+    EXPECT_EQ(kClosestBeat - beatLengthSamples, prevBeat);
+    EXPECT_EQ(kClosestBeat, nextBeat);
 
     // Both previous and next beat should return the closest beat.
     EXPECT_EQ(kClosestBeat, pMap->findNextBeat(position));
@@ -220,6 +230,11 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     EXPECT_EQ(kClosestBeat, prevBeat);
     EXPECT_EQ(kClosestBeat + beatLengthSamples, nextBeat);
 
+    // Also test prev/next beat calculation without tolerance
+    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, true);
+    EXPECT_EQ(kClosestBeat, prevBeat);
+    EXPECT_EQ(kClosestBeat + beatLengthSamples, nextBeat);
+
     // Both previous and next beat should return the closest beat.
     EXPECT_EQ(kClosestBeat, pMap->findNextBeat(position));
     EXPECT_EQ(kClosestBeat, pMap->findPrevBeat(position));
@@ -257,6 +272,11 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     // Also test prev/next beat calculation
     double foundPrevBeat, foundNextBeat;
     pMap->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, false);
+    EXPECT_EQ(previousBeat, foundPrevBeat);
+    EXPECT_EQ(nextBeat, foundNextBeat);
+
+    // Also test prev/next beat calculation without tolerance
+    pMap->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, true);
     EXPECT_EQ(previousBeat, foundPrevBeat);
     EXPECT_EQ(nextBeat, foundNextBeat);
 }
