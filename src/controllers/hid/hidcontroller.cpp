@@ -152,11 +152,14 @@ void HidController::processInputReport(int bytesRead) {
             memcmp(pCurrentBuffer, pPreviousBuffer, bytesRead) == 0) {
         return;
     }
-    // Cycle between buffers so the memcmp below does not require deep copying to another buffer.
+    // Cycle between buffers so the memcmp above does not require deep copying to another buffer.
     m_pollingBufferIndex = (m_pollingBufferIndex + 1) % kNumBuffers;
     m_lastPollSize = bytesRead;
     auto incomingData = QByteArray::fromRawData(
             reinterpret_cast<char*>(pCurrentBuffer), bytesRead);
+
+    // Execute callback function in JavaScript mapping
+    // and print to stdout in case of --controllerDebug
     receive(incomingData, mixxx::Time::elapsed());
 }
 
@@ -174,9 +177,9 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
             << QString::number(static_cast<quint8>(reportID), 16)
                        .toUpper()
                        .rightJustified(2, QChar('0'))
-            << ")")
+            << ")");
 
-            if (bytesRead <= kReportIdSize) {
+    if (bytesRead <= kReportIdSize) {
         // -1 is the only error value according to hidapi documentation.
         // Otherwise minimum possible value is 1, because 1 byte is for the reportID,
         // the smallest report with data is therefore 2 bytes.
@@ -191,11 +194,6 @@ QList<int> HidController::getInputReport(unsigned int reportID) {
     for (int i = 0; i < bytesRead; i++) {
         dataList.append(m_pPollData[m_pollingBufferIndex][i]);
     }
-
-    // Execute callback function in JavaScript mapping
-    // and print to stdout in case of --controllerDebug
-    processInputReport(bytesRead);
-
     return dataList;
 }
 
