@@ -234,17 +234,14 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
     double beatFraction = (dSamples - dFirstBeatSample) / dBeatLength;
     double prevBeat = floor(beatFraction);
     double nextBeat = ceil(beatFraction);
-    double kEpsilon;
 
-    if (NoTolerance) {
-        kEpsilon = 0.0f;
-    } else {
-        // If the position is within 1/100th of the next or previous beat, treat it
-        // as if it is that beat.
-        kEpsilon = .01;
-    }
+    const double kEpsilon = .01;
 
-    if (fabs(nextBeat - beatFraction) <= kEpsilon) {
+    if ((NoTolerance && ((nextBeat - beatFraction) == 0.0)) ||
+            (!NoTolerance && (fabs(nextBeat - beatFraction) < kEpsilon))) {
+        // In tolerance mode: If the position is within 1/100th of the next or previous beat,
+        // treat it as if it is that beat.
+
         beatFraction = nextBeat;
         // If we are going to pretend we were actually on nextBeat then prevBeatFraction
         // needs to be re-calculated. Since it is floor(beatFraction), that's

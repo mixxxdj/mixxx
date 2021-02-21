@@ -305,15 +305,9 @@ bool BeatMap::findPrevNextBeats(double dSamples,
     BeatList::const_iterator it =
             std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
 
-    double kFrameEpsilon;
-
-    if (NoTolerance) {
-        kFrameEpsilon = 0.0f;
-    } else {
-        // If the position is within 1/10th of a second of the next or previous
-        // beat, pretend we are on that beat.
-        kFrameEpsilon = 0.1 * m_iSampleRate;
-    }
+    // If the position is within 1/10th of a second of the next or previous
+    // beat, pretend we are on that beat.
+    const double kFrameEpsilon = 0.1 * m_iSampleRate;
 
     // Back-up by one.
     if (it != m_beats.begin()) {
@@ -327,8 +321,9 @@ bool BeatMap::findPrevNextBeats(double dSamples,
     for (; it != m_beats.end(); ++it) {
         qint32 delta = it->frame_position() - beat.frame_position();
 
-        // We are "on" this beat.
-        if (abs(delta) <= kFrameEpsilon) {
+        if ((NoTolerance && (delta == 0)) ||
+                (!NoTolerance && (abs(delta) < kFrameEpsilon))) {
+            // We are "on" this beat.
             on_beat = it;
             break;
         }
