@@ -287,7 +287,7 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
     double currentFirstBeat = pCurrentBeats->findNextBeat(0);
     double newFirstBeat = pBeats->findNextBeat(0);
     if (currentFirstBeat == 0.0 && newFirstBeat > 0) {
-        pCurrentBeats->translate(newFirstBeat);
+        tio->setBeats(pCurrentBeats->translate(newFirstBeat));
     }
 }
 

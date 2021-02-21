@@ -65,7 +65,7 @@ class BeatGrid final : public Beats {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    void translate(double dNumSamples) override;
+    mixxx::BeatsPointer translate(double dNumSamples) const override;
     void scale(enum BPMScale scale) override;
     void setBpm(double dBpm) override;
 
@@ -75,6 +75,8 @@ class BeatGrid final : public Beats {
 
   private:
     BeatGrid(const BeatGrid& other);
+    // Constructor to update the beat grid
+    BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid);
     double firstBeatSample() const;
     double bpm() const;
 

@@ -58,13 +58,17 @@ BeatGrid::BeatGrid(
     readByteArray(byteArray);
 }
 
-BeatGrid::BeatGrid(const BeatGrid& other)
+BeatGrid::BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid)
         : m_mutex(QMutex::Recursive),
           m_subVersion(other.m_subVersion),
           m_iSampleRate(other.m_iSampleRate),
-          m_grid(other.m_grid),
+          m_grid(grid),
           m_dBeatLength(other.m_dBeatLength) {
     moveToThread(other.thread());
+}
+
+BeatGrid::BeatGrid(const BeatGrid& other)
+        : BeatGrid(other, other.m_grid) {
 }
 
 void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
@@ -298,16 +302,16 @@ double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
     return bpm();
 }
 
-void BeatGrid::translate(double dNumSamples) {
-    QMutexLocker locker(&m_mutex);
+mixxx::BeatsPointer BeatGrid::translate(double dNumSamples) const {
     if (!isValid()) {
-        return;
+        return mixxx::BeatsPointer(new BeatGrid(*this));
     }
+    mixxx::track::io::BeatGrid grid = m_grid;
     double newFirstBeatFrames = (firstBeatSample() + dNumSamples) / kFrameSize;
-    m_grid.mutable_first_beat()->set_frame_position(
+    grid.mutable_first_beat()->set_frame_position(
             static_cast<google::protobuf::int32>(newFirstBeatFrames));
-    locker.unlock();
-    emit updated();
+
+    return mixxx::BeatsPointer(new BeatGrid(*this, grid));
 }
 
 void BeatGrid::scale(enum BPMScale scale) {

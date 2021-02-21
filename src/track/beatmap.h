@@ -74,7 +74,7 @@ class BeatMap final : public Beats {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    void translate(double dNumSamples) override;
+    mixxx::BeatsPointer translate(double dNumSamples) const override;
     void scale(enum BPMScale scale) override;
     void setBpm(double dBpm) override;
 
@@ -84,6 +84,8 @@ class BeatMap final : public Beats {
 
   private:
     BeatMap(const BeatMap& other);
+    // Constructor to update the beat grid
+    BeatMap(const BeatMap& other, BeatList beats, double nominalBpm);
     bool readByteArray(const QByteArray& byteArray);
     void createFromBeatVector(const QVector<double>& beats);
     void onBeatlistChanged();

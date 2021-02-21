@@ -106,13 +106,17 @@ BeatMap::BeatMap(const Track& track, SINT iSampleRate,
     }
 }
 
-BeatMap::BeatMap(const BeatMap& other)
+BeatMap::BeatMap(const BeatMap& other, BeatList beats, double nominalBpm)
         : m_mutex(QMutex::Recursive),
           m_subVersion(other.m_subVersion),
           m_iSampleRate(other.m_iSampleRate),
-          m_nominalBpm(other.m_nominalBpm),
-          m_beats(other.m_beats) {
+          m_nominalBpm(nominalBpm),
+          m_beats(std::move(beats)) {
     moveToThread(other.thread());
+}
+
+BeatMap::BeatMap(const BeatMap& other)
+        : BeatMap(other, other.m_beats, other.m_nominalBpm) {
 }
 
 QByteArray BeatMap::toByteArray() const {
@@ -487,27 +491,26 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     return BeatUtils::calculateAverageBpm(numberOfBeats, m_iSampleRate, lowerFrame, upperFrame);
 }
 
-void BeatMap::translate(double dNumSamples) {
-    QMutexLocker locker(&m_mutex);
+mixxx::BeatsPointer BeatMap::translate(double dNumSamples) const {
     // Converting to frame offset
     if (!isValid()) {
-        return;
+        return mixxx::BeatsPointer(new BeatMap(*this));
     }
 
+    BeatList beats = m_beats;
     double dNumFrames = samplesToFrames(dNumSamples);
-    for (BeatList::iterator it = m_beats.begin();
-         it != m_beats.end(); ) {
+    for (BeatList::iterator it = beats.begin();
+            it != beats.end();) {
         double newpos = it->frame_position() + dNumFrames;
         if (newpos >= 0) {
             it->set_frame_position(static_cast<google::protobuf::int32>(newpos));
             ++it;
         } else {
-            it = m_beats.erase(it);
+            it = beats.erase(it);
         }
     }
-    onBeatlistChanged();
-    locker.unlock();
-    emit updated();
+
+    return mixxx::BeatsPointer(new BeatMap(*this, beats, m_nominalBpm));
 }
 
 void BeatMap::scale(enum BPMScale scale) {

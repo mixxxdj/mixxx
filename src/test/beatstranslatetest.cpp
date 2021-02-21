@@ -46,5 +46,6 @@ TEST_F(BeatsTranslateTest, SimpleTranslateMatch) {
     // Deck 1 is +delta away from its closest beat (which is at 0).
     // Deck 2 was left at 0. We translated grid 2 so that it is also +delta
     // away from its closest beat, so that beat should be at -delta.
-    ASSERT_DOUBLE_EQ(-delta, grid2->findClosestBeat(0));
+    mixxx::BeatsPointer beats = m_pTrack2->getBeats();
+    ASSERT_DOUBLE_EQ(-delta, beats->findClosestBeat(0));
 }
