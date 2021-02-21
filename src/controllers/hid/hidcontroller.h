@@ -60,10 +60,10 @@ class HidController final : public Controller {
     // getFeatureReport receives a feature reports on request.
     // HID doesn't support polling feature reports, therefore this is the
     // only method to get this information.
-    // Usually single bits in a feature report need to be set without
-    // changeing the other bits. The returned list matches the input
-    // format of sendFeatureReport, this allows it to read, modify
-    // and send it back to the controller.
+    // Usually, single bits in a feature report need to be set without
+    // changing the other bits. The returned list matches the input
+    // format of sendFeatureReport, allowing it to be read, modified
+    // and sent it back to the controller.
     QList<int> getFeatureReport(unsigned int reportID);
 
     const mixxx::hid::DeviceInfo m_deviceInfo;
