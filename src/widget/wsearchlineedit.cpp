@@ -276,19 +276,31 @@ QString WSearchLineEdit::getSearchText() const {
 bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
     if (event->type() == QEvent::KeyPress) {
         QKeyEvent* keyEvent = static_cast<QKeyEvent*>(event);
-        if (keyEvent->key() == Qt::Key_Down) {
-            // after clearing the text field the down key is expected to
-            // show the last entry
-            if (currentText().isEmpty()) {
-                setCurrentIndex(0);
-                return true;
+        // if the popup is open don't intercept Up/Down keys
+        if (!view()->isVisible()) {
+            if (keyEvent->key() == Qt::Key_Up) {
+                // if we're at the top of the list the Up key clears the search bar,
+                // no matter if it's a saved and unsaved query
+                if (findCurrentTextIndex() == 0 ||
+                        (findCurrentTextIndex() == -1 && !currentText().isEmpty())) {
+                    slotClearSearch();
+                    return true;
+                }
+            } else if (keyEvent->key() == Qt::Key_Down) {
+                // after clearing the text field the down key is expected to
+                // show the latest entry
+                if (currentText().isEmpty()) {
+                    setCurrentIndex(0);
+                    return true;
+                }
+                // in case the user entered a new search query
+                // and presses the down key, save the query for later recall
+                if (findCurrentTextIndex() == -1) {
+                    slotSaveSearch();
+                }
             }
-            // in case the user entered a new search query
-            // und presses the down key, save the query for later recall
-            if (findCurrentTextIndex() == -1) {
-                slotSaveSearch();
-            }
-        } else if (keyEvent->key() == Qt::Key_Enter) {
+        }
+        if (keyEvent->key() == Qt::Key_Enter) {
             if (findCurrentTextIndex() == -1) {
                 slotSaveSearch();
             }
@@ -298,7 +310,7 @@ bool WSearchLineEdit::eventFilter(QObject* obj, QEvent* event) {
             return true;
         } else if (keyEvent->key() == Qt::Key_Space &&
                 keyEvent->modifiers() == Qt::ControlModifier) {
-            // open popup on ctrl + space
+            // open/close popup on ctrl + space
             if (view()->isVisible()) {
                 hidePopup();
             } else {
@@ -515,7 +527,9 @@ void WSearchLineEdit::slotClearSearch() {
     // before returning the whole (and probably huge) library.
     // No need to manually trigger a search at this point!
     // See also: https://bugs.launchpad.net/mixxx/+bug/1635087
-    clear();
+    // Note that just clear() would also erase all combobox items,
+    // thus clear the entire search history.
+    lineEdit()->clear();
     // Refocus the edit field
     setFocus(Qt::OtherFocusReason);
 }

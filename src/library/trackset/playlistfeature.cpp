@@ -317,7 +317,7 @@ void PlaylistFeature::slotPlaylistTableRenamed(
 QString PlaylistFeature::getRootViewHtml() const {
     QString playlistsTitle = tr("Playlists");
     QString playlistsSummary =
-            tr("Playlists are ordered lists of songs that allow you to plan "
+            tr("Playlists are ordered lists of tracks that allow you to plan "
                "your DJ sets.");
     QString playlistsSummary2 =
             tr("Some DJs construct playlists before they perform live, but "
@@ -327,8 +327,8 @@ QString PlaylistFeature::getRootViewHtml() const {
                "pay close attention to how your audience reacts to the music "
                "you've chosen to play.");
     QString playlistsSummary4 =
-            tr("It may be necessary to skip some songs in your prepared "
-               "playlist or add some different songs in order to maintain the "
+            tr("It may be necessary to skip some tracks in your prepared "
+               "playlist or add some different tracks in order to maintain the "
                "energy of your audience.");
     QString createPlaylistLink = tr("Create New Playlist");
 

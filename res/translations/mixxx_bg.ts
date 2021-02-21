@@ -13553,7 +13553,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="154"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>Уд/мин (BPM)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="155"/>
@@ -13573,7 +13573,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="241"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Композитор</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="257"/>
@@ -14083,7 +14083,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/coreservices.cpp" line="447"/>
         <source>Cannot open database</source>
-        <translation type="unfinished"/>
+        <translation>Не може да се отвори базата данни</translation>
     </message>
     <message>
         <location filename="../../src/coreservices.cpp" line="448"/>

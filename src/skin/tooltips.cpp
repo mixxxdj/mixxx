@@ -639,7 +639,7 @@ void Tooltips::addStandardTooltips() {
 
     // AutoDJ status indicator
     add("autodj_status")
-            << tr("AutoDJ is active");
+            << tr("Auto DJ is active");
 
     add("passthrough_enabled")
             << tr("Enable Passthrough")

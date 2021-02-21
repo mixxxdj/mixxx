@@ -150,7 +150,8 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
         }
     }
 
-    if (!db.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (!Sandbox::askForAccess(QFileInfo(db).absoluteFilePath()) ||
+            !db.open(QIODevice::ReadOnly | QIODevice::Text)) {
         return nullptr;
     }
 
