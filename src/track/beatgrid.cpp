@@ -158,7 +158,7 @@ double BeatGrid::findClosestBeat(double dSamples) const {
     }
     double prevBeat;
     double nextBeat;
-    findPrevNextBeats(dSamples, &prevBeat, &nextBeat);
+    findPrevNextBeats(dSamples, &prevBeat, &nextBeat, false);
     if (prevBeat == -1) {
         // If both values are -1, we correctly return -1.
         return nextBeat;
@@ -214,8 +214,10 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
 }
 
 bool BeatGrid::findPrevNextBeats(double dSamples,
-                                 double* dpPrevBeatSamples,
-                                 double* dpNextBeatSamples) const {
+
+        double* dpPrevBeatSamples,
+        double* dpNextBeatSamples,
+        bool NoTolerance) const {
     double dFirstBeatSample;
     double dBeatLength;
     {
@@ -232,11 +234,15 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
     double beatFraction = (dSamples - dFirstBeatSample) / dBeatLength;
     double prevBeat = floor(beatFraction);
     double nextBeat = ceil(beatFraction);
+    double kEpsilon;
 
-    // If the position is within 1/1000,000,000th of the next or previous beat, treat it
-    // as if it is that beat. This value ensures safe float comparisation and that the
-    // accuracy is always better one sample.
-    const double kEpsilon = 1e-09;
+    if (NoTolerance) {
+        kEpsilon = 0.0f;
+    } else {
+        // If the position is within 1/100th of the next or previous beat, treat it
+        // as if it is that beat.
+        kEpsilon = .01;
+    }
 
     if (fabs(nextBeat - beatFraction) < kEpsilon) {
         beatFraction = nextBeat;
@@ -251,7 +257,6 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
     *dpNextBeatSamples = nextBeat * dBeatLength + dFirstBeatSample;
     return true;
 }
-
 
 std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);

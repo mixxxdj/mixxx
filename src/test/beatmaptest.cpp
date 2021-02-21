@@ -100,11 +100,11 @@ TEST_F(BeatMapTest, TestNthBeat) {
     EXPECT_EQ(-1, pMap->findNthBeat(firstBeat, -2));
 
     double prevBeat, nextBeat;
-    pMap->findPrevNextBeats(lastBeat, &prevBeat, &nextBeat);
+    pMap->findPrevNextBeats(lastBeat, &prevBeat, &nextBeat, false);
     EXPECT_EQ(lastBeat, prevBeat);
     EXPECT_EQ(-1, nextBeat);
 
-    pMap->findPrevNextBeats(firstBeat, &prevBeat, &nextBeat);
+    pMap->findPrevNextBeats(firstBeat, &prevBeat, &nextBeat, false);
     EXPECT_EQ(firstBeat, prevBeat);
     EXPECT_EQ(firstBeat + beatLengthSamples, nextBeat);
 }
@@ -137,7 +137,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
 
     // Also test prev/next beat calculation.
     double prevBeat, nextBeat;
-    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat);
+    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_EQ(position, prevBeat);
     EXPECT_EQ(position + beatLengthSamples, nextBeat);
 
@@ -175,7 +175,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
 
     // Also test prev/next beat calculation
     double prevBeat, nextBeat;
-    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat);
+    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_EQ(kClosestBeat, prevBeat);
     EXPECT_EQ(kClosestBeat + beatLengthSamples, nextBeat);
 
@@ -216,7 +216,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
 
     // Also test prev/next beat calculation.
     double prevBeat, nextBeat;
-    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat);
+    pMap->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
     EXPECT_EQ(kClosestBeat, prevBeat);
     EXPECT_EQ(kClosestBeat + beatLengthSamples, nextBeat);
 
@@ -256,7 +256,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
 
     // Also test prev/next beat calculation
     double foundPrevBeat, foundNextBeat;
-    pMap->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat);
+    pMap->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, false);
     EXPECT_EQ(previousBeat, foundPrevBeat);
     EXPECT_EQ(nextBeat, foundNextBeat);
 }

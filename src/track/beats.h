@@ -93,8 +93,9 @@ class Beats : public QObject {
     // even.  Returns false if *at least one* sample is -1.  (Can return false
     // with one beat successfully filled)
     virtual bool findPrevNextBeats(double dSamples,
-                                   double* dpPrevBeatSamples,
-                                   double* dpNextBeatSamples) const = 0;
+            double* dpPrevBeatSamples,
+            double* dpNextBeatSamples,
+            bool NoTolerance) const = 0;
 
     // Starting from sample dSamples, return the sample of the closest beat in
     // the track, or -1 if none exists.  Non- -1 values are guaranteed to be

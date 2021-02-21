@@ -188,7 +188,7 @@ double BeatMap::findClosestBeat(double dSamples) const {
     }
     double prevBeat;
     double nextBeat;
-    findPrevNextBeats(dSamples, &prevBeat, &nextBeat);
+    findPrevNextBeats(dSamples, &prevBeat, &nextBeat, false);
     if (prevBeat == -1) {
         // If both values are -1, we correctly return -1.
         return nextBeat;
@@ -286,8 +286,9 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
 }
 
 bool BeatMap::findPrevNextBeats(double dSamples,
-                                double* dpPrevBeatSamples,
-                                double* dpNextBeatSamples) const {
+        double* dpPrevBeatSamples,
+        double* dpNextBeatSamples,
+        bool NoTolerance) const {
     QMutexLocker locker(&m_mutex);
 
     if (!isValid()) {
@@ -304,9 +305,15 @@ bool BeatMap::findPrevNextBeats(double dSamples,
     BeatList::const_iterator it =
             std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), beat, BeatLessThan);
 
-    // If the position is within 1/10th of a second of the next or previous
-    // beat, pretend we are on that beat.
-    const double kFrameEpsilon = 0.1 * m_iSampleRate;
+    double kFrameEpsilon;
+
+    if (NoTolerance) {
+        kFrameEpsilon = 0.0f;
+    } else {
+        // If the position is within 1/10th of a second of the next or previous
+        // beat, pretend we are on that beat.
+        kFrameEpsilon = 0.1 * m_iSampleRate;
+    }
 
     // Back-up by one.
     if (it != m_beats.begin()) {

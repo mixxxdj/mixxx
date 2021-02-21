@@ -21,7 +21,7 @@ double Beats::findNBeatsFromSample(double fromSample, double beats) const {
     double prevBeat;
     double nextBeat;
 
-    if (!findPrevNextBeats(fromSample, &prevBeat, &nextBeat)) {
+    if (!findPrevNextBeats(fromSample, &prevBeat, &nextBeat, false)) {
         return fromSample;
     }
     double fromFractionBeats = (fromSample - prevBeat) / (nextBeat - prevBeat);

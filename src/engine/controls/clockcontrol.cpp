@@ -69,8 +69,10 @@ void ClockControl::updateIndicators(const double dRate,
                 (currentSample <= m_PrevBeatSamples)) {
             //qDebug() << "### findPrevNextBeats ### " << " currentSample: " << currentSample << " m_lastEvaluatedSample: " << m_lastEvaluatedSample << " m_PrevBeatSamples: " << m_PrevBeatSamples << " m_NextBeatSamples: " << m_NextBeatSamples;
 
-            pBeats->findPrevNextBeats(
-                    currentSample, &m_PrevBeatSamples, &m_NextBeatSamples);
+            pBeats->findPrevNextBeats(currentSample,
+                    &m_PrevBeatSamples,
+                    &m_NextBeatSamples,
+                    true); // Precise compare without tolerance needed
 
             m_blinkIntervalSamples = (m_NextBeatSamples - m_PrevBeatSamples) * kBlinkInterval;
         }
