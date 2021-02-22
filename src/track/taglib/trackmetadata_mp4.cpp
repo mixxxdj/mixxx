@@ -35,19 +35,14 @@ const TagLib::String kAtomKeySeratoBeatGrid = "----:com.serato.dj:beatgrid";
 const TagLib::String kAtomKeySeratoMarkers = "----:com.serato.dj:markers";
 const TagLib::String kAtomKeySeratoMarkers2 = "----:com.serato.dj:markersv2";
 
-// Workaround for missing const member function in TagLib
-inline const TagLib::MP4::ItemListMap& getItemListMap(
-        const TagLib::MP4::Tag& tag) {
-    return const_cast<TagLib::MP4::Tag&>(tag).itemListMap();
-}
 
 bool readAtom(
         const TagLib::MP4::Tag& tag,
         const TagLib::String& key,
         TagLib::String* pValue = nullptr) {
-    const TagLib::MP4::ItemListMap::ConstIterator it =
-            getItemListMap(tag).find(key);
-    if (it == getItemListMap(tag).end()) {
+    const auto itemMap = tag.itemMap();
+    const TagLib::MP4::ItemMap::ConstIterator it = itemMap.find(key);
+    if (it == itemMap.end()) {
         return false;
     }
     if (pValue) {
@@ -79,10 +74,10 @@ void writeAtom(
         const TagLib::String& value) {
     if (value.isEmpty()) {
         // Purge empty atoms
-        pTag->itemListMap().erase(key);
+        pTag->removeItem(key);
     } else {
         TagLib::StringList strList(value);
-        pTag->itemListMap()[key] = std::move(strList);
+        pTag->setItem(key, std::move(strList));
     }
 }
 
@@ -107,9 +102,9 @@ bool importCoverImageFromTag(
         return false; // nothing to do
     }
 
-    if (getItemListMap(tag).contains("covr")) {
+    if (tag.contains("covr")) {
         TagLib::MP4::CoverArtList coverArtList =
-                getItemListMap(tag)["covr"].toCoverArtList();
+                tag.item("covr").toCoverArtList();
         for (const auto& coverArt : coverArtList) {
             const QImage image(loadImageFromByteVector(coverArt.data()));
             if (image.isNull()) {
@@ -161,8 +156,8 @@ void importTrackMetadataFromTag(
     }
 
     // Read track number/total pair
-    if (getItemListMap(tag).contains("trkn")) {
-        const TagLib::MP4::Item trknItem = getItemListMap(tag)["trkn"];
+    if (tag.contains("trkn")) {
+        const TagLib::MP4::Item trknItem = tag.item("trkn");
         const TagLib::MP4::Item::IntPair trknPair = trknItem.toIntPair();
         const TrackNumbers trackNumbers(trknPair.first, trknPair.second);
         QString trackNumber;
@@ -174,8 +169,8 @@ void importTrackMetadataFromTag(
 
 #if defined(__EXTRA_METADATA__)
     // Read disc number/total pair
-    if (getItemListMap(tag).contains("disk")) {
-        const TagLib::MP4::Item trknItem = getItemListMap(tag)["disk"];
+    if (tag.contains("disk")) {
+        const TagLib::MP4::Item trknItem = tag.item("disk");
         const TagLib::MP4::Item::IntPair trknPair = trknItem.toIntPair();
         const TrackNumbers discNumbers(trknPair.first, trknPair.second);
         QString discNumber;
@@ -194,9 +189,9 @@ void importTrackMetadataFromTag(
         // BPM value that might have been read before is
         // overwritten.
         parseBpm(pTrackMetadata, bpm);
-    } else if (getItemListMap(tag).contains("tmpo")) {
+    } else if (tag.contains("tmpo")) {
         // Read the BPM as an integer value.
-        const TagLib::MP4::Item tmpoItem = getItemListMap(tag)["tmpo"];
+        const TagLib::MP4::Item tmpoItem = tag.item("tmpo");
         double bpmValue = tmpoItem.toInt();
         if (Bpm::isValidValue(bpmValue)) {
             pTrackMetadata->refTrackInfo().setBpm(Bpm(bpmValue));
@@ -365,12 +360,12 @@ bool exportTrackMetadataIntoTag(
                     &parsedTrackNumbers);
     switch (trackParseResult) {
     case TrackNumbers::ParseResult::EMPTY:
-        pTag->itemListMap().erase("trkn");
+        pTag->removeItem("trkn");
         break;
     case TrackNumbers::ParseResult::VALID:
-        pTag->itemListMap()["trkn"] = TagLib::MP4::Item(
-                parsedTrackNumbers.getActual(),
-                parsedTrackNumbers.getTotal());
+        pTag->setItem("trkn",
+                TagLib::MP4::Item(parsedTrackNumbers.getActual(),
+                        parsedTrackNumbers.getTotal()));
         break;
     default:
         kLogger.warning() << "Invalid track numbers in MP4 atom:"
@@ -390,9 +385,9 @@ bool exportTrackMetadataIntoTag(
         // 16-bit integer value
         const int tmpoValue =
                 Bpm::valueToInteger(trackMetadata.getTrackInfo().getBpm().getValue());
-        pTag->itemListMap()["tmpo"] = tmpoValue;
+        pTag->setItem("tmpo", tmpoValue);
     } else {
-        pTag->itemListMap().erase("tmpo");
+        pTag->removeItem("tmpo");
     }
     writeAtom(pTag, kAtomKeyBpm, toTString(formatBpm(trackMetadata)));
 
@@ -415,11 +410,12 @@ bool exportTrackMetadataIntoTag(
             &parsedDiscNumbers);
     switch (discParseResult) {
     case TrackNumbers::ParseResult::EMPTY:
-        pTag->itemListMap().erase("disk");
+        pTag->removeItem("disk");
         break;
     case TrackNumbers::ParseResult::VALID:
-        pTag->itemListMap()["disk"] =
-                TagLib::MP4::Item(parsedDiscNumbers.getActual(), parsedDiscNumbers.getTotal());
+        pTag->setItem("disk",
+                TagLib::MP4::Item(parsedDiscNumbers.getActual(),
+                        parsedDiscNumbers.getTotal()));
         break;
     default:
         kLogger.warning() << "Invalid disc numbers in MP4 atom:"

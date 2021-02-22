@@ -878,16 +878,14 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
             seekAbs(position);
             m_pPlay->set(1.0);
         }
-    } else if (m_iCurrentlyPreviewingHotcues) {
-        // This is a activate release and we are previewing at least one
-        // hotcue. If this hotcue is previewing:
-        if (pControl->isPreviewing()) {
-            // Mark this hotcue as not previewing.
-            double position = pControl->getPreviewingPosition();
-            pControl->setPreviewing(false);
-            pControl->setPreviewingPosition(Cue::kNoPosition);
-
-            // If this is the last hotcue to leave preview.
+    } else if (pControl->isPreviewing()) {
+        // Mark this hotcue as not previewing.
+        double position = pControl->getPreviewingPosition();
+        pControl->setPreviewing(false);
+        pControl->setPreviewingPosition(Cue::kNoPosition);
+        if (m_iCurrentlyPreviewingHotcues > 0) {
+            // This is a release of an active previewing hotcue.
+            // If this is the last hotcue, leave preview.
             if (--m_iCurrentlyPreviewingHotcues == 0 && !m_bPreviewing) {
                 m_pPlay->set(0.0);
                 // Need to unlock before emitting any signals to prevent deadlock.

@@ -19,7 +19,7 @@ class EncoderVorbis : public Encoder {
     EncoderVorbis(EncoderCallback* pCallback = nullptr);
     ~EncoderVorbis() override;
 
-    int initEncoder(int samplerate, QString& errorMessage) override;
+    int initEncoder(int samplerate, QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
