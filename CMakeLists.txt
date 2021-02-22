@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.13.0)
+cmake_minimum_required(VERSION 3.15.0)
 project(mixxx VERSION 2.3.0)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
@@ -484,10 +484,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/presets/effectpreset.cpp
   src/effects/presets/effectpresetmanager.cpp
   src/encoder/encoder.cpp
+  src/encoder/encoderfdkaac.cpp
+  src/encoder/encoderfdkaacsettings.cpp
   src/encoder/encoderflacsettings.cpp
   src/encoder/encodermp3.cpp
   src/encoder/encodermp3settings.cpp
-  src/encoder/encoderopussettings.cpp
   src/encoder/encodersndfileflac.cpp
   src/encoder/encodervorbis.cpp
   src/encoder/encodervorbissettings.cpp
@@ -828,6 +829,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/sample.cpp
   src/util/samplebuffer.cpp
   src/util/sandbox.cpp
+  src/util/semanticversion.cpp
   src/util/screensaver.cpp
   src/util/sleepableqthread.cpp
   src/util/stat.cpp
@@ -1368,6 +1370,27 @@ if(MSVC)
   )
 endif()
 
+if(WIN32)
+  # qt_de.qm is just one arbitrary file in the directory that needs to be located;
+  # there is no particular reason to look for this file versus any other one in the directory.
+  find_file(QT_TRANSLATION_FILE qt_de.qm PATH_SUFFIXES share/qt5/translations)
+  get_filename_component(QT_TRANSLATIONS ${QT_TRANSLATION_FILE} DIRECTORY)
+  install(
+    DIRECTORY "${QT_TRANSLATIONS}"
+    DESTINATION "${MIXXX_INSTALL_DATADIR}"
+    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
+    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
+    FILES_MATCHING REGEX
+      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtscript_.*\.qm|qtxmlpatterns_.*\.qm"
+  )
+
+  # Qt 5 loads these ANGLE DLLs at runtime if the graphics driver is blocklisted.
+  # Qt does not link these and vcpkg does not build them as a dependency of Qt,
+  # so copy them manually.
+  find_file(EGL_DLL libEGL.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
+  find_file(GLESv2_DLL libGLESv2.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
+  install(FILES ${EGL_DLL} ${GLESv2_DLL} DESTINATION "${MIXXX_INSTALL_BINDIR}")
+endif()
 
 #
 # Tests
@@ -1845,10 +1868,13 @@ set(OpenGL_GL_PREFERENCE "GLVND")
 find_package(OpenGL REQUIRED)
 target_link_libraries(mixxx-lib PUBLIC OpenGL::GL)
 
-# Ogg Vorbis
-find_package(OggVorbis REQUIRED)
-target_include_directories(mixxx-lib SYSTEM PUBLIC ${OggVorbis_INCLUDE_DIRS})
-target_link_libraries(mixxx-lib PUBLIC ${OggVorbis_LIBRARIES})
+# Ogg
+find_package(Ogg REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC Ogg::ogg)
+
+# Vorbis
+find_package(Vorbis REQUIRED)
+target_link_libraries(mixxx-lib PUBLIC Vorbis::vorbis Vorbis::vorbisenc Vorbis::vorbisfile)
 
 # PortAudio
 find_package(PortAudio REQUIRED)
@@ -2006,32 +2032,6 @@ elseif(WIN32)
       gdi32       # libshout
     )
   endif()
-endif()
-
-# Qt5_DIR is not set until now, so this cannot be moved above with the rest of the install commands
-if(WIN32)
-  install(
-    # I haven't seen a way to determine where the translations dir is, so I am making
-    # some assumptions here, and assuming that Qt5_DIR points to Qt-5.14.2/lib/cmake/Qt5
-    # which is what my configuration tells me.
-    DIRECTORY
-      "${Qt5_DIR}/../../../translations"
-    DESTINATION
-      "${MIXXX_INSTALL_DATADIR}"
-    # QT 5 translations have been separated into several files, and most of the qt_xx.qm files
-    # contain just shortcuts to load the qtbase, qtmultimedia etc files.
-    FILES_MATCHING REGEX
-      "qt_.+\.qm|qtbase_.*\.qm|qtmultimedia_.*\.qm|qtxmlpatterns_.*\.qm"
-  )
-
-  # ANGLE DLLs are dynamically linked even when the rest of Qt is built statically
-  install(
-    FILES
-        "${Qt5_DIR}/../../../bin/libEGL.dll"
-        "${Qt5_DIR}/../../../bin/libGLESv2.dll"
-    DESTINATION
-        "${MIXXX_INSTALL_DATADIR}"
-  )
 endif()
 
 # Queen Mary DSP
@@ -2297,29 +2297,49 @@ if(FAAD)
   endif()
 endif()
 
+# FDK-AAC is loaded dynamically at runtime by EncoderFdkAac using QLibrary,
+# so copy it into the Windows and macOS packages, but do not link to it.
+find_library(FDK_AAC_LIBRARY fdk-aac)
+# On Windows find_library finds the .lib file, but the installer needs the .dll file.
+find_file(FDK_AAC_DLL fdk-aac.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
+if(APPLE AND MACOS_BUNDLE AND FDK_AAC_LIBRARY)
+  message(STATUS "Found fdk-aac: ${FDK_AAC_LIBRARY}")
+  file(COPY ${FDK_AAC_LIBRARY}
+    DESTINATION ${MIXXX_INSTALL_PREFIX}/Contents/Frameworks
+    FOLLOW_SYMLINK_CHAIN
+  )
+elseif(WIN32 AND FDK_AAC_DLL)
+  message(STATUS "Found fdk-aac DLL: ${FDK_AAC_DLL}")
+  install(FILES ${FDK_AAC_DLL} DESTINATION ${MIXXX_INSTALL_BINDIR})
+elseif(FDK_AAC_LIBRARY)
+  message(STATUS "Found fdk-aac: ${FDK_AAC_LIBRARY}")
+else()
+  message(STATUS "Could NOT find fdk-aac")
+endif()
+
 # FFmpeg 4.x support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
 find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-option(FFMPEG "FFmpeg 4.x support" OFF)
+cmake_dependent_option(FFMPEG "FFmpeg 4.x support" ON "FFMPEG_FOUND;FFMPEG_libavcodec_VERSION VERSION_GREATER_EQUAL 58" OFF)
 if(FFMPEG)
   if(NOT FFMPEG_libavcodec_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libavcodec and its development headers.")
-  elseif(FFMPEG_libavcodec_VERSION VERSION_LESS 58)
+  elseif(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58)
     message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavcodec (found: ${AVCODEC_VERSION}).")
   endif()
   if(NOT FFMPEG_libavformat_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libavformat and its development headers.")
-  elseif(FFMPEG_libavformat_VERSION VERSION_LESS 58)
+  elseif(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58)
     message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavformat (found: ${AVFORMAT_VERSION}).")
   endif()
   if(NOT FFMPEG_libavutil_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libavutil and its development headers.")
-  elseif(FFMPEG_libavutil_VERSION VERSION_LESS 56)
+  elseif(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56)
     message(FATAL_ERROR "FFmpeg support requires at least version 56 of libavutil (found: ${AVUTIL_VERSION}).")
   endif()
   if(NOT FFMPEG_libswresample_FOUND)
     message(FATAL_ERROR "FFmpeg support requires libswresample and its development headers.")
-  elseif(FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
+  elseif(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
     message(FATAL_ERROR "FFmpeg support requires at least version 3.1 of libswresample (found: ${SWRESAMPLE_VERSION}).")
   endif()
 
@@ -2387,30 +2407,23 @@ endif()
 # Live Broadcasting (Shoutcast)
 option(BROADCAST "Live Broadcasting (Shoutcast) support" ON)
 if(BROADCAST)
-  find_package(Shout)
-  if(UNIX AND NOT APPLE)
-    # Check if system lib is at least 2.4.6 and not suffering bugs
-    # https://bugs.launchpad.net/mixxx/+bug/1833225
-    # https://bugs.launchpad.net/mixxx/+bug/1913579
-    if(Shout_FOUND AND Shout_VERSION VERSION_LESS 2.4.4)
-        message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bugs lp1833225 and lp1913579")
-    elseif(Shout_FOUND AND Shout_VERSION VERSION_LESS 2.4.6)
-        message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1913579")
-    endif()
-    if(NOT Shout_FOUND OR Shout_VERSION VERSION_LESS 2.4.6)
-      # Fall back to internal libraray in the lib tree
-      message(STATUS "Using internal libshout")
-      add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout")
-      target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout/include)
-      target_link_libraries(mixxx-lib PUBLIC shout_mixxx)
-    else()
-      target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
-    endif()
+  find_package(Shoutidjc)
+  # Check if system lib is at least 2.4.6 and not suffering bugs
+  # https://bugs.launchpad.net/mixxx/+bug/1833225
+  # https://bugs.launchpad.net/mixxx/+bug/1913579
+  if(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.4)
+      message(STATUS "Installed libshout-idjc version: ${Shoutidjc_VERSION} is suffering from bug lp1833225")
+  elseif(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.6)
+      message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1913579")
+  endif()
+  if(NOT Shsoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.6)
+    # Fall back to internal libraray in the lib tree
+    message(STATUS "Using internal libshout-idjc")
+    add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout-idjc")
+    target_include_directories(mixxx-lib SYSTEM PUBLIC lib/libshout-idjc/include)
+    target_link_libraries(mixxx-lib PUBLIC shout_mixxx)
   else()
-    if(NOT Shout_FOUND)
-      message(FATAL_ERROR "Live Broadcasting support requires the libshout and its development headers.")
-    endif()
-    target_link_libraries(mixxx-lib PUBLIC Shout::Shout)
+    target_link_libraries(mixxx-lib PUBLIC Shoutidjc::Shoutidjc)
   endif()
   target_sources(mixxx-lib PRIVATE
     src/preferences/dialog/dlgprefbroadcastdlg.ui
@@ -2455,6 +2468,7 @@ if(OPUS)
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourceopus.cpp
     src/encoder/encoderopus.cpp
+    src/encoder/encoderopussettings.cpp
   )
   target_compile_definitions(mixxx-lib PUBLIC __OPUS__)
   target_include_directories(mixxx-lib SYSTEM PUBLIC ${Opus_INCLUDE_DIRS})
