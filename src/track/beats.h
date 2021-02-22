@@ -148,7 +148,7 @@ class Beats : public QObject {
 
     // Scale the position of every beat in the song by dScalePercentage. Beats
     // class must have the capability BEATSCAP_SCALE.
-    virtual void scale(enum BPMScale scale) = 0;
+    virtual mixxx::BeatsPointer scale(enum BPMScale scale) const = 0;
 
     // Adjust the beats so the global average BPM matches dBpm. Beats class must
     // have the capability BEATSCAP_SET.

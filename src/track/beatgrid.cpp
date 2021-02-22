@@ -58,17 +58,17 @@ BeatGrid::BeatGrid(
     readByteArray(byteArray);
 }
 
-BeatGrid::BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid)
+BeatGrid::BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength)
         : m_mutex(QMutex::Recursive),
           m_subVersion(other.m_subVersion),
           m_iSampleRate(other.m_iSampleRate),
           m_grid(grid),
-          m_dBeatLength(other.m_dBeatLength) {
+          m_dBeatLength(beatLength) {
     moveToThread(other.thread());
 }
 
 BeatGrid::BeatGrid(const BeatGrid& other)
-        : BeatGrid(other, other.m_grid) {
+        : BeatGrid(other, other.m_grid, other.m_dBeatLength) {
 }
 
 void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
@@ -311,11 +311,12 @@ mixxx::BeatsPointer BeatGrid::translate(double dNumSamples) const {
     grid.mutable_first_beat()->set_frame_position(
             static_cast<google::protobuf::int32>(newFirstBeatFrames));
 
-    return mixxx::BeatsPointer(new BeatGrid(*this, grid));
+    return mixxx::BeatsPointer(new BeatGrid(*this, grid, m_dBeatLength));
 }
 
-void BeatGrid::scale(enum BPMScale scale) {
-    double bpm = getBpm();
+mixxx::BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
+    mixxx::track::io::BeatGrid grid = m_grid;
+    double bpm = grid.bpm().bpm();
 
     switch (scale) {
     case DOUBLE:
@@ -338,9 +339,16 @@ void BeatGrid::scale(enum BPMScale scale) {
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return;
+        return mixxx::BeatsPointer(new BeatGrid(*this));
     }
-    setBpm(bpm);
+
+    if (bpm > getMaxBpm()) {
+        return mixxx::BeatsPointer(new BeatGrid(*this));
+    }
+    grid.mutable_bpm()->set_bpm(bpm);
+
+    double beatLength = (60.0 * m_iSampleRate / bpm) * kFrameSize;
+    return mixxx::BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 
 void BeatGrid::setBpm(double dBpm) {

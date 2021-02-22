@@ -34,6 +34,99 @@ bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
 
+void scaleDouble(BeatList* pBeats) {
+    Beat prevBeat = pBeats->first();
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = pBeats->begin() + 1;
+    for (; it != pBeats->end(); ++it) {
+        // Need to not accrue fractional frames.
+        int distance = it->frame_position() - prevBeat.frame_position();
+        Beat beat;
+        beat.set_frame_position(prevBeat.frame_position() + distance / 2);
+        it = pBeats->insert(it, beat);
+        prevBeat = (++it)[0];
+    }
+}
+
+void scaleTriple(BeatList* pBeats) {
+    Beat prevBeat = pBeats->first();
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = pBeats->begin() + 1;
+    for (; it != pBeats->end(); ++it) {
+        // Need to not accrue fractional frames.
+        int distance = it->frame_position() - prevBeat.frame_position();
+        Beat beat;
+        beat.set_frame_position(prevBeat.frame_position() + distance / 3);
+        it = pBeats->insert(it, beat);
+        ++it;
+        beat.set_frame_position(prevBeat.frame_position() + distance * 2 / 3);
+        it = pBeats->insert(it, beat);
+        prevBeat = (++it)[0];
+    }
+}
+
+void scaleQuadruple(BeatList* pBeats) {
+    Beat prevBeat = pBeats->first();
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = pBeats->begin() + 1;
+    for (; it != pBeats->end(); ++it) {
+        // Need to not accrue fractional frames.
+        int distance = it->frame_position() - prevBeat.frame_position();
+        Beat beat;
+        for (int i = 1; i <= 3; i++) {
+            beat.set_frame_position(prevBeat.frame_position() + distance * i / 4);
+            it = pBeats->insert(it, beat);
+            ++it;
+        }
+        prevBeat = it[0];
+    }
+}
+
+void scaleHalve(BeatList* pBeats) {
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = pBeats->begin() + 1;
+    for (; it != pBeats->end(); ++it) {
+        it = pBeats->erase(it);
+        if (it == pBeats->end()) {
+            break;
+        }
+    }
+}
+
+void scaleThird(BeatList* pBeats) {
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = pBeats->begin() + 1;
+    for (; it != pBeats->end(); ++it) {
+        it = pBeats->erase(it);
+        if (it == pBeats->end()) {
+            break;
+        }
+        it = pBeats->erase(it);
+        if (it == pBeats->end()) {
+            break;
+        }
+    }
+}
+
+void scaleFourth(BeatList* pBeats) {
+    // Skip the first beat to preserve the first beat in a measure
+    BeatList::iterator it = pBeats->begin() + 1;
+    for (; it != pBeats->end(); ++it) {
+        it = pBeats->erase(it);
+        if (it == pBeats->end()) {
+            break;
+        }
+        it = pBeats->erase(it);
+        if (it == pBeats->end()) {
+            break;
+        }
+        it = pBeats->erase(it);
+        if (it == pBeats->end()) {
+            break;
+        }
+    }
+}
+
 double calculateNominalBpm(const BeatList& beats, SINT sampleRate) {
     QVector<double> beatvect;
     beatvect.reserve(beats.size());
@@ -513,146 +606,53 @@ mixxx::BeatsPointer BeatMap::translate(double dNumSamples) const {
     return mixxx::BeatsPointer(new BeatMap(*this, beats, m_nominalBpm));
 }
 
-void BeatMap::scale(enum BPMScale scale) {
-
+mixxx::BeatsPointer BeatMap::scale(enum BPMScale scale) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid() || m_beats.isEmpty()) {
-        return;
+        return mixxx::BeatsPointer(new BeatMap(*this));
     }
 
+    BeatList beats = m_beats;
     switch (scale) {
     case DOUBLE:
         // introduce a new beat into every gap
-        scaleDouble();
+        scaleDouble(&beats);
         break;
     case HALVE:
         // remove every second beat
-        scaleHalve();
+        scaleHalve(&beats);
         break;
     case TWOTHIRDS:
         // introduce a new beat into every gap
-        scaleDouble();
+        scaleDouble(&beats);
         // remove every second and third beat
-        scaleThird();
+        scaleThird(&beats);
         break;
     case THREEFOURTHS:
         // introduce two beats into every gap
-        scaleTriple();
+        scaleTriple(&beats);
         // remove every second third and forth beat
-        scaleFourth();
+        scaleFourth(&beats);
         break;
     case FOURTHIRDS:
         // introduce three beats into every gap
-        scaleQuadruple();
+        scaleQuadruple(&beats);
         // remove every second third and forth beat
-        scaleThird();
+        scaleThird(&beats);
         break;
     case THREEHALVES:
         // introduce two beats into every gap
-        scaleTriple();
+        scaleTriple(&beats);
         // remove every second beat
-        scaleHalve();
+        scaleHalve(&beats);
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return;
+        return mixxx::BeatsPointer(new BeatMap(*this));
     }
-    onBeatlistChanged();
-    locker.unlock();
-    emit updated();
-}
 
-void BeatMap::scaleDouble() {
-    Beat prevBeat = m_beats.first();
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
-        // Need to not accrue fractional frames.
-        int distance = it->frame_position() - prevBeat.frame_position();
-        Beat beat;
-        beat.set_frame_position(prevBeat.frame_position() + distance / 2);
-        it = m_beats.insert(it, beat);
-        prevBeat = (++it)[0];
-    }
-}
-
-void BeatMap::scaleTriple() {
-    Beat prevBeat = m_beats.first();
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
-        // Need to not accrue fractional frames.
-        int distance = it->frame_position() - prevBeat.frame_position();
-        Beat beat;
-        beat.set_frame_position(prevBeat.frame_position() + distance / 3);
-        it = m_beats.insert(it, beat);
-        ++it;
-        beat.set_frame_position(prevBeat.frame_position() + distance * 2 / 3);
-        it = m_beats.insert(it, beat);
-        prevBeat = (++it)[0];
-    }
-}
-
-void BeatMap::scaleQuadruple() {
-    Beat prevBeat = m_beats.first();
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
-        // Need to not accrue fractional frames.
-        int distance = it->frame_position() - prevBeat.frame_position();
-        Beat beat;
-        for (int i = 1; i <= 3; i++) {
-            beat.set_frame_position(prevBeat.frame_position() + distance * i / 4);
-            it = m_beats.insert(it, beat);
-            ++it;
-        }
-        prevBeat = it[0];
-    }
-}
-
-void BeatMap::scaleHalve() {
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
-        }
-    }
-}
-
-void BeatMap::scaleThird() {
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
-        }
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
-        }
-    }
-}
-
-void BeatMap::scaleFourth() {
-    // Skip the first beat to preserve the first beat in a measure
-    BeatList::iterator it = m_beats.begin() + 1;
-    for (; it != m_beats.end(); ++it) {
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
-        }
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
-        }
-        it = m_beats.erase(it);
-        if (it == m_beats.end()) {
-            break;
-        }
-    }
+    double bpm = calculateNominalBpm(beats, m_iSampleRate);
+    return mixxx::BeatsPointer(new BeatMap(*this, beats, bpm));
 }
 
 void BeatMap::setBpm(double dBpm) {

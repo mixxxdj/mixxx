@@ -55,25 +55,25 @@ TEST_F(BeatMapTest, Scale) {
     const int numBeats = 100;
     // Note beats must be in frames, not samples.
     QVector<double> beats = createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    auto pMap = std::make_unique<BeatMap>(*m_pTrack, 0, beats);
+    mixxx::BeatsPointer pMap(new BeatMap(*m_pTrack, 0, beats));
 
     EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
-    pMap->scale(Beats::DOUBLE);
+    pMap = pMap->scale(Beats::DOUBLE);
     EXPECT_DOUBLE_EQ(2 * bpm, pMap->getBpm());
 
-    pMap->scale(Beats::HALVE);
+    pMap = pMap->scale(Beats::HALVE);
     EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
 
-    pMap->scale(Beats::TWOTHIRDS);
+    pMap = pMap->scale(Beats::TWOTHIRDS);
     EXPECT_DOUBLE_EQ(bpm * 2 / 3, pMap->getBpm());
 
-    pMap->scale(Beats::THREEHALVES);
+    pMap = pMap->scale(Beats::THREEHALVES);
     EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
 
-    pMap->scale(Beats::THREEFOURTHS);
+    pMap = pMap->scale(Beats::THREEFOURTHS);
     EXPECT_DOUBLE_EQ(bpm * 3 / 4, pMap->getBpm());
 
-    pMap->scale(Beats::FOURTHIRDS);
+    pMap = pMap->scale(Beats::FOURTHIRDS);
     EXPECT_DOUBLE_EQ(bpm, pMap->getBpm());
 }
 

@@ -29,26 +29,26 @@ TEST(BeatGridTest, Scale) {
     double bpm = 60.0;
     pTrack->setBpm(bpm);
 
-    auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
+    mixxx::BeatsPointer pGrid(new BeatGrid(*pTrack, 0));
     pGrid->setBpm(bpm);
 
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
-    pGrid->scale(Beats::DOUBLE);
+    pGrid = pGrid->scale(Beats::DOUBLE);
     EXPECT_DOUBLE_EQ(2 * bpm, pGrid->getBpm());
 
-    pGrid->scale(Beats::HALVE);
+    pGrid = pGrid->scale(Beats::HALVE);
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 
-    pGrid->scale(Beats::TWOTHIRDS);
+    pGrid = pGrid->scale(Beats::TWOTHIRDS);
     EXPECT_DOUBLE_EQ(bpm * 2 / 3, pGrid->getBpm());
 
-    pGrid->scale(Beats::THREEHALVES);
+    pGrid = pGrid->scale(Beats::THREEHALVES);
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 
-    pGrid->scale(Beats::THREEFOURTHS);
+    pGrid = pGrid->scale(Beats::THREEFOURTHS);
     EXPECT_DOUBLE_EQ(bpm * 3 / 4, pGrid->getBpm());
 
-    pGrid->scale(Beats::FOURTHIRDS);
+    pGrid = pGrid->scale(Beats::FOURTHIRDS);
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 }
 

@@ -66,7 +66,7 @@ class BeatGrid final : public Beats {
     ////////////////////////////////////////////////////////////////////////////
 
     mixxx::BeatsPointer translate(double dNumSamples) const override;
-    void scale(enum BPMScale scale) override;
+    mixxx::BeatsPointer scale(enum BPMScale scale) const override;
     void setBpm(double dBpm) override;
 
     SINT getSampleRate() const override {
@@ -76,7 +76,7 @@ class BeatGrid final : public Beats {
   private:
     BeatGrid(const BeatGrid& other);
     // Constructor to update the beat grid
-    BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid);
+    BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength);
     double firstBeatSample() const;
     double bpm() const;
 

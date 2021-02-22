@@ -75,7 +75,7 @@ class BeatMap final : public Beats {
     ////////////////////////////////////////////////////////////////////////////
 
     mixxx::BeatsPointer translate(double dNumSamples) const override;
-    void scale(enum BPMScale scale) override;
+    mixxx::BeatsPointer scale(enum BPMScale scale) const override;
     void setBpm(double dBpm) override;
 
     SINT getSampleRate() const override {
@@ -92,13 +92,6 @@ class BeatMap final : public Beats {
 
     // For internal use only.
     bool isValid() const;
-
-    void scaleDouble();
-    void scaleTriple();
-    void scaleQuadruple();
-    void scaleHalve();
-    void scaleThird();
-    void scaleFourth();
 
     mutable QMutex m_mutex;
     QString m_subVersion;
