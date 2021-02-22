@@ -1,5 +1,7 @@
 #include "encoder/encoder.h"
 
+#include <QList>
+
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 // TODO(XXX): __FFMPEGFILE_ENCODERS__ is currently undefined because
@@ -23,10 +25,11 @@
 
 #ifdef __OPUS__
 #include "encoder/encoderopus.h"
-#endif
 #include "encoder/encoderopussettings.h"
+#endif
 
-#include <QList>
+#include "encoder/encoderfdkaac.h"
+#include "encoder/encoderfdkaacsettings.h"
 
 EncoderFactory EncoderFactory::factory;
 
@@ -37,15 +40,17 @@ const EncoderFactory& EncoderFactory::getFactory()
 
 EncoderFactory::EncoderFactory() {
     // Add new supported formats here. Also modify the getNewEncoder/getEncoderSettings method.
-    m_formats.append(Encoder::Format("WAV PCM", ENCODING_WAVE, true));
-    m_formats.append(Encoder::Format("AIFF PCM", ENCODING_AIFF, true));
-    m_formats.append(Encoder::Format("FLAC", ENCODING_FLAC, true));
-    m_formats.append(Encoder::Format("MP3", ENCODING_MP3, false));
-    m_formats.append(Encoder::Format("OGG Vorbis", ENCODING_OGG, false));
-
+    m_formats.append(Encoder::Format("WAV PCM", ENCODING_WAVE, true, "wav"));
+    m_formats.append(Encoder::Format("AIFF PCM", ENCODING_AIFF, true, "aiff"));
+    m_formats.append(Encoder::Format("FLAC", ENCODING_FLAC, true, "flac"));
+    m_formats.append(Encoder::Format("MP3", ENCODING_MP3, false, "mp3"));
+    m_formats.append(Encoder::Format("OGG Vorbis", ENCODING_OGG, false, "ogg"));
 #ifdef __OPUS__
-    m_formats.append(Encoder::Format("Opus", ENCODING_OPUS, false));
+    m_formats.append(Encoder::Format("Opus", ENCODING_OPUS, false, "opus"));
 #endif
+    m_formats.append(Encoder::Format("AAC", ENCODING_AAC, false, "aac"));
+    m_formats.append(Encoder::Format("HE-AAC", ENCODING_HEAAC, false, "aac"));
+    m_formats.append(Encoder::Format("HE-AACv2", ENCODING_HEAACV2, false, "aac"));
 }
 
 const QList<Encoder::Format> EncoderFactory::getFormats() const
@@ -104,25 +109,28 @@ EncoderPointer EncoderFactory::createEncoder(
         pEncoder = std::make_shared<EncoderVorbis>(pCallback);
 #endif
         pEncoder->setEncoderSettings(*pSettings);
-    }
 #ifdef __OPUS__
-    else if (pSettings && pSettings->getFormat() == ENCODING_OPUS) {
+    } else if (pSettings && pSettings->getFormat() == ENCODING_OPUS) {
         pEncoder = std::make_shared<EncoderOpus>(pCallback);
         pEncoder->setEncoderSettings(*pSettings);
-    }
 #endif
-    else {
+    } else if (pSettings &&
+            (pSettings->getFormat() == ENCODING_AAC ||
+                    pSettings->getFormat() == ENCODING_HEAAC ||
+                    pSettings->getFormat() == ENCODING_HEAACV2)) {
+        pEncoder = std::make_shared<EncoderFdkAac>(pCallback);
+        pEncoder->setEncoderSettings(*pSettings);
+    } else {
         qWarning() << "Unsupported format requested! "
                 << QString(pSettings ? pSettings->getFormat() : QString("NULL"));
         DEBUG_ASSERT(false);
-        pEncoder = std::make_shared<EncoderWave>(pCallback);;
+        pEncoder = std::make_shared<EncoderWave>(pCallback);
     }
     return pEncoder;
 }
 
 EncoderRecordingSettingsPointer EncoderFactory::getEncoderRecordingSettings(Encoder::Format format,
-    UserSettingsPointer pConfig) const
-{
+        UserSettingsPointer pConfig) const {
     if (format.internalName == ENCODING_WAVE) {
         return std::make_shared<EncoderWaveSettings>(pConfig, format.internalName);
     } else if (format.internalName == ENCODING_AIFF) {
@@ -133,8 +141,14 @@ EncoderRecordingSettingsPointer EncoderFactory::getEncoderRecordingSettings(Enco
         return std::make_shared<EncoderMp3Settings>(pConfig);
     } else if (format.internalName == ENCODING_OGG) {
         return std::make_shared<EncoderVorbisSettings>(pConfig);
+#ifdef __OPUS__
     } else if (format.internalName == ENCODING_OPUS) {
         return std::make_shared<EncoderOpusSettings>(pConfig);
+#endif
+    } else if (format.internalName == ENCODING_AAC ||
+            format.internalName == ENCODING_HEAAC ||
+            format.internalName == ENCODING_HEAACV2) {
+        return std::make_shared<EncoderFdkAacSettings>(pConfig, format.internalName);
     } else {
         qWarning() << "Unsupported format requested! " << format.internalName;
         DEBUG_ASSERT(false);
