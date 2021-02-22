@@ -437,18 +437,6 @@ double BeatMap::getBpm() const {
     return m_nominalBpm;
 }
 
-double BeatMap::getBpmRange(double startSample, double stopSample) const {
-    QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
-        return -1;
-    }
-    Beat startBeat, stopBeat;
-    startBeat.set_frame_position(
-            static_cast<google::protobuf::int32>(samplesToFrames(startSample)));
-    stopBeat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(stopSample)));
-    return calculateBpm(startBeat, stopBeat);
-}
-
 double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
