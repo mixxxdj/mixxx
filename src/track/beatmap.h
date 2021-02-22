@@ -107,7 +107,6 @@ class BeatMap final : public Beats {
     QString m_subVersion;
     SINT m_iSampleRate;
     double m_dCachedBpm;
-    double m_dLastFrame;
     BeatList m_beats;
 };
 
