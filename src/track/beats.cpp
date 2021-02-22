@@ -270,7 +270,7 @@ std::optional<Beat> BeatsInternal::findNthBeat(FramePos frame, int offset) const
         Beat beat(frame);
         // it points at the first occurrence of beat or the next largest beat
         BeatList::const_iterator it =
-                std::lower_bound(m_beats.cbegin(), m_beats.cend(), beat);
+                std::lower_bound(m_beats.begin(), m_beats.end(), beat);
 
         // Back-up by one.
         if (it != m_beats.begin()) {
@@ -278,9 +278,9 @@ std::optional<Beat> BeatsInternal::findNthBeat(FramePos frame, int offset) const
         }
 
         // Scan forward to find whether we are on a beat.
-        BeatList::const_iterator on_beat = m_beats.cend();
-        BeatList::const_iterator previous_beat = m_beats.cend();
-        BeatList::const_iterator next_beat = m_beats.cend();
+        BeatList::const_iterator on_beat = m_beats.end();
+        BeatList::const_iterator previous_beat = m_beats.end();
+        BeatList::const_iterator next_beat = m_beats.end();
         for (; it != m_beats.end(); ++it) {
             FrameDiff_t delta = it->framePosition() - beat.framePosition();
             // If the position is within a fraction of the local beat length,
@@ -606,7 +606,7 @@ void BeatsInternal::updateGlobalBpm() {
     // If we only have one BPM value, there is no need to find mode BPM.
     // Just use the BPM value in protobuf.
     if (m_beatsProto.bpm_markers_size() == 1) {
-        m_bpm = Bpm(m_beatsProto.bpm_markers().cbegin()->bpm());
+        m_bpm = Bpm(m_beatsProto.bpm_markers().begin()->bpm());
     } else {
         QMap<double, double> bpmDuration;
         for (int i = 0; i < m_beats.size() - 1; i++) {
@@ -734,8 +734,8 @@ void BeatsInternal::setSignature(TimeSignature sig, int downbeatIndex) {
             sig.getBeatsPerBar());
     markerToInsert.mutable_time_signature()->set_note_value(sig.getNoteValue());
     QVector<track::io::TimeSignatureMarker> timeSignatureMarkersMutableCopy;
-    copy(m_beatsProto.time_signature_markers().cbegin(),
-            m_beatsProto.time_signature_markers().cend(),
+    copy(m_beatsProto.time_signature_markers().begin(),
+            m_beatsProto.time_signature_markers().end(),
             std::back_inserter(timeSignatureMarkersMutableCopy));
 
     track::io::TimeSignatureMarker searchBeforeMarker;
@@ -778,8 +778,8 @@ void BeatsInternal::setBpm(Bpm bpm, int beatIndex) {
     markerToInsert.set_beat_index(beatIndex);
     markerToInsert.set_bpm(bpm.getValue());
     QVector<track::io::BpmMarker> bpmMarkersMutableCopy;
-    copy(m_beatsProto.bpm_markers().cbegin(),
-            m_beatsProto.bpm_markers().cend(),
+    copy(m_beatsProto.bpm_markers().begin(),
+            m_beatsProto.bpm_markers().end(),
             std::back_inserter(bpmMarkersMutableCopy));
 
     track::io::BpmMarker searchBeforeMarker;
