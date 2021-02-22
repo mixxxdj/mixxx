@@ -70,17 +70,17 @@ class BeatMap final : public Beats {
     double getBpm() const override;
     double getBpmAroundPosition(double curSample, int n) const override;
 
+    SINT getSampleRate() const override {
+        return m_iSampleRate;
+    }
+
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
     mixxx::BeatsPointer translate(double dNumSamples) const override;
     mixxx::BeatsPointer scale(enum BPMScale scale) const override;
-    void setBpm(double dBpm) override;
-
-    SINT getSampleRate() const override {
-        return m_iSampleRate;
-    }
+    mixxx::BeatsPointer setBpm(double dBpm) override;
 
   private:
     BeatMap(const BeatMap& other);

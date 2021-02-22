@@ -655,10 +655,10 @@ mixxx::BeatsPointer BeatMap::scale(enum BPMScale scale) const {
     return mixxx::BeatsPointer(new BeatMap(*this, beats, bpm));
 }
 
-void BeatMap::setBpm(double dBpm) {
+mixxx::BeatsPointer BeatMap::setBpm(double dBpm) {
     Q_UNUSED(dBpm);
     DEBUG_ASSERT(!"BeatMap::setBpm() not implemented");
-    return;
+    return mixxx::BeatsPointer(new BeatMap(*this));
 
     /*
      * One of the problems of beattracking algorithms is the so called "octave error"

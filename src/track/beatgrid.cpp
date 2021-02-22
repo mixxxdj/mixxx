@@ -351,15 +351,14 @@ mixxx::BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
     return mixxx::BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 
-void BeatGrid::setBpm(double dBpm) {
-    QMutexLocker locker(&m_mutex);
+mixxx::BeatsPointer BeatGrid::setBpm(double dBpm) {
     if (dBpm > getMaxBpm()) {
         dBpm = getMaxBpm();
     }
-    m_grid.mutable_bpm()->set_bpm(dBpm);
-    m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
-    locker.unlock();
-    emit updated();
+    mixxx::track::io::BeatGrid grid = m_grid;
+    grid.mutable_bpm()->set_bpm(dBpm);
+    double beatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
+    return mixxx::BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 
 } // namespace mixxx

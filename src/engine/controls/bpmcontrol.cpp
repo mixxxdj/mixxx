@@ -161,20 +161,34 @@ double BpmControl::getBpm() const {
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
+    if (v <= 0) {
+        return;
+    }
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
         double adjustedBpm = bpm + kBpmAdjustStep;
-        pBeats->setBpm(adjustedBpm);
+        pTrack->setBeats(pBeats->setBpm(adjustedBpm));
     }
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
+    if (v <= 0) {
+        return;
+    }
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
         double adjustedBpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
-        pBeats->setBpm(adjustedBpm);
+        pTrack->setBeats(pBeats->setBpm(adjustedBpm));
     }
 }
 
@@ -225,11 +239,14 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
         return;
     }
 
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (!pBeats) {
         return;
     }
-
     double rateRatio = m_pRateRatio->get();
     if (rateRatio == 0.0) {
         return;
@@ -238,7 +255,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength / rateRatio;
-    pBeats->setBpm(averageBpm);
+    pTrack->setBeats(pBeats->setBpm(averageBpm));
 }
 
 void BpmControl::slotControlBeatSyncPhase(double value) {

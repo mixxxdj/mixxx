@@ -295,11 +295,7 @@ double Track::setBpm(double bpmValue) {
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
-        m_pBeats->setBpm(bpmValue);
-        markDirtyAndUnlock(&lock);
-        // Tell the GUI to update the bpm label...
-        //qDebug() << "Track signaling BPM update to" << f;
-        emit bpmUpdated(bpmValue);
+        setBeatsMarkDirtyAndUnlock(&lock, m_pBeats->setBpm(bpmValue));
     }
 
     return bpmValue;

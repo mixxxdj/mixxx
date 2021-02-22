@@ -137,6 +137,8 @@ class Beats : public QObject {
         return kMaxBpm;
     }
 
+    virtual SINT getSampleRate() const = 0;
+
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
@@ -152,9 +154,7 @@ class Beats : public QObject {
 
     // Adjust the beats so the global average BPM matches dBpm. Beats class must
     // have the capability BEATSCAP_SET.
-    virtual void setBpm(double dBpm) = 0;
-
-    virtual SINT getSampleRate() const = 0;
+    virtual mixxx::BeatsPointer setBpm(double dBpm) = 0;
 
   signals:
     void updated();
