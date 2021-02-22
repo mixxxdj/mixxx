@@ -46,13 +46,7 @@ DlgPrefController::DlgPrefController(
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
 
-    connect(m_pController, &Controller::mappingLoaded, this, &DlgPrefController::slotShowMapping);
-    // TODO(rryan): Eh, this really isn't thread safe but it's the way it's been
-    // since 1.11.0. We shouldn't be calling Controller methods because it lives
-    // in a different thread. Booleans (like isOpen()) are fine but a complex
-    // object like a mapping involves QHash's and other data structures that
-    // really don't like concurrent access.
-    LegacyControllerMappingPointer pMapping = m_pController->getMapping();
+    std::shared_ptr<LegacyControllerMapping> pMapping = m_pController->cloneMapping();
     slotShowMapping(pMapping);
 
     m_ui.labelDeviceName->setText(m_pController->getName());
@@ -206,7 +200,7 @@ void DlgPrefController::midiInputMappingsLearned(
 }
 
 QString DlgPrefController::mappingShortName(
-        const LegacyControllerMappingPointer pMapping) const {
+        const std::shared_ptr<LegacyControllerMapping> pMapping) const {
     QString mappingName = tr("None");
     if (pMapping) {
         QString name = pMapping->name();
@@ -224,7 +218,7 @@ QString DlgPrefController::mappingShortName(
 }
 
 QString DlgPrefController::mappingName(
-        const LegacyControllerMappingPointer pMapping) const {
+        const std::shared_ptr<LegacyControllerMapping> pMapping) const {
     if (pMapping) {
         QString name = pMapping->name();
         if (name.length() > 0) {
@@ -235,7 +229,7 @@ QString DlgPrefController::mappingName(
 }
 
 QString DlgPrefController::mappingDescription(
-        const LegacyControllerMappingPointer pMapping) const {
+        const std::shared_ptr<LegacyControllerMapping> pMapping) const {
     if (pMapping) {
         QString description = pMapping->description();
         if (description.length() > 0) {
@@ -246,7 +240,7 @@ QString DlgPrefController::mappingDescription(
 }
 
 QString DlgPrefController::mappingAuthor(
-        const LegacyControllerMappingPointer pMapping) const {
+        const std::shared_ptr<LegacyControllerMapping> pMapping) const {
     if (pMapping) {
         QString author = pMapping->author();
         if (author.length() > 0) {
@@ -257,7 +251,7 @@ QString DlgPrefController::mappingAuthor(
 }
 
 QString DlgPrefController::mappingSupportLinks(
-        const LegacyControllerMappingPointer pMapping) const {
+        const std::shared_ptr<LegacyControllerMapping> pMapping) const {
     if (!pMapping) {
         return QString();
     }
@@ -299,7 +293,7 @@ QString DlgPrefController::mappingSupportLinks(
 }
 
 QString DlgPrefController::mappingFileLinks(
-        const LegacyControllerMappingPointer pMapping) const {
+        const std::shared_ptr<LegacyControllerMapping> pMapping) const {
     if (!pMapping) {
         return QString();
     }
@@ -526,8 +520,9 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
         }
     }
 
-    LegacyControllerMappingPointer pMapping = LegacyControllerMappingFileHandler::loadMapping(
-            mappingPath, QDir(resourceMappingsPath(m_pConfig)));
+    std::shared_ptr<LegacyControllerMapping> pMapping =
+            LegacyControllerMappingFileHandler::loadMapping(
+                    mappingPath, QDir(resourceMappingsPath(m_pConfig)));
 
     if (pMapping) {
         DEBUG_ASSERT(!pMapping->isDirty());
@@ -679,21 +674,21 @@ void DlgPrefController::initTableView(QTableView* pTable) {
     pTable->setAlternatingRowColors(true);
 }
 
-void DlgPrefController::slotShowMapping(LegacyControllerMappingPointer mapping) {
-    m_ui.labelLoadedMapping->setText(mappingName(mapping));
-    m_ui.labelLoadedMappingDescription->setText(mappingDescription(mapping));
-    m_ui.labelLoadedMappingAuthor->setText(mappingAuthor(mapping));
-    m_ui.labelLoadedMappingSupportLinks->setText(mappingSupportLinks(mapping));
-    m_ui.labelLoadedMappingScriptFileLinks->setText(mappingFileLinks(mapping));
+void DlgPrefController::slotShowMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_ui.labelLoadedMapping->setText(mappingName(pMapping));
+    m_ui.labelLoadedMappingDescription->setText(mappingDescription(pMapping));
+    m_ui.labelLoadedMappingAuthor->setText(mappingAuthor(pMapping));
+    m_ui.labelLoadedMappingSupportLinks->setText(mappingSupportLinks(pMapping));
+    m_ui.labelLoadedMappingScriptFileLinks->setText(mappingFileLinks(pMapping));
 
     // We mutate this mapping so keep a reference to it while we are using it.
     // TODO(rryan): Clone it? Technically a waste since nothing else uses this
     // copy but if someone did they might not expect it to change.
-    m_pMapping = mapping;
+    m_pMapping = pMapping;
 
     ControllerInputMappingTableModel* pInputModel =
             new ControllerInputMappingTableModel(this);
-    pInputModel->setMapping(mapping);
+    pInputModel->setMapping(pMapping);
 
     QSortFilterProxyModel* pInputProxyModel = new QSortFilterProxyModel(this);
     pInputProxyModel->setSortRole(Qt::UserRole);
@@ -717,7 +712,7 @@ void DlgPrefController::slotShowMapping(LegacyControllerMappingPointer mapping) 
 
     ControllerOutputMappingTableModel* pOutputModel =
             new ControllerOutputMappingTableModel(this);
-    pOutputModel->setMapping(mapping);
+    pOutputModel->setMapping(pMapping);
 
     QSortFilterProxyModel* pOutputProxyModel = new QSortFilterProxyModel(this);
     pOutputProxyModel->setSortRole(Qt::UserRole);

@@ -2543,7 +2543,12 @@ find_package(LibUSB)
 # USB HID controller support
 find_package(hidapi)
 option(HID "USB HID controller support" ON)
-cmake_dependent_option(HIDAPI_STATIC "Link HIDAPI library statically" OFF "HIDAPI_FOUND" ON)
+
+if(hidapi_VERSION VERSION_LESS "0.10.0")
+  set(HIDAPI_STATIC ON)
+else()
+  cmake_dependent_option(HIDAPI_STATIC "Link HIDAPI library statically" OFF "HIDAPI_FOUND" ON)
+endif()
 if(HID)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp

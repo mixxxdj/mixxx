@@ -115,7 +115,7 @@ Description:
                     <BgColor>#585858</BgColor>
                     <FgColor>#eece33</FgColor>
                     <ShowButtonText>false</ShowButtonText>
-                    <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
+                    <TrackTableBackgroundColorOpacity>0.2</TrackTableBackgroundColorOpacity>
                   </Library>
                 </Children>
               </WidgetGroup><!-- /Library Table -->

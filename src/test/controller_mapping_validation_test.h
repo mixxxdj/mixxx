@@ -35,26 +35,33 @@ class FakeController : public Controller {
         return new FakeControllerJSProxy();
     }
 
-    LegacyControllerMappingPointer getMapping() const override;
+    void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override {
+        auto pMidiMapping = std::dynamic_pointer_cast<LegacyMidiControllerMapping>(pMapping);
+        if (pMidiMapping) {
+            m_bMidiMapping = true;
+            m_bHidMapping = false;
+            m_pMidiMapping = pMidiMapping;
+            m_pHidMapping = nullptr;
+            return;
+        }
 
-    void visit(const LegacyMidiControllerMapping* mapping) override {
-        m_bMidiMapping = true;
-        m_bHidMapping = false;
-        m_midiMapping = *mapping;
-        m_hidMapping = LegacyHidControllerMapping();
+        auto pHidMapping = std::dynamic_pointer_cast<LegacyHidControllerMapping>(pMapping);
+        if (pHidMapping) {
+            m_bMidiMapping = false;
+            m_bHidMapping = true;
+            m_pMidiMapping = nullptr;
+            m_pHidMapping = pHidMapping;
+        }
     }
 
-    void visit(const LegacyHidControllerMapping* mapping) override {
-        m_bMidiMapping = false;
-        m_bHidMapping = true;
-        m_midiMapping = LegacyMidiControllerMapping();
-        m_hidMapping = *mapping;
-    }
-
-    void accept(ControllerVisitor* visitor) override {
-        // Do nothing since we aren't a normal controller.
-        Q_UNUSED(visitor);
-    }
+    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override {
+        if (m_pMidiMapping) {
+            return m_pMidiMapping->clone();
+        } else if (m_pHidMapping) {
+            return m_pHidMapping->clone();
+        }
+        return nullptr;
+    };
 
     bool isMappable() const override;
 
@@ -84,12 +91,10 @@ class FakeController : public Controller {
     }
 
   private:
-    LegacyControllerMapping* mapping() override;
-
     bool m_bMidiMapping;
     bool m_bHidMapping;
-    LegacyMidiControllerMapping m_midiMapping;
-    LegacyHidControllerMapping m_hidMapping;
+    std::shared_ptr<LegacyMidiControllerMapping> m_pMidiMapping;
+    std::shared_ptr<LegacyHidControllerMapping> m_pHidMapping;
 };
 
 class LegacyControllerMappingValidationTest : public MixxxTest {

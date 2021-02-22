@@ -650,12 +650,20 @@ void SoundSourceProxy::updateTrackFromSource(
                 << "from file name:"
                 << trackFile;
         if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(
-                    trackFile.fileName(), splitArtistTitle) &&
-                metadataImported.second.isNull()) {
-            // Since this is also some kind of metadata import, we mark the
-            // track's metadata as synchronized with the time stamp of the file.
-            metadataImported.second = trackFile.fileLastModified();
+                    trackFile.fileName(), splitArtistTitle)) {
+            // Pretend that metadata import succeeded
+            metadataImported.first = mixxx::MetadataSource::ImportResult::Succeeded;
+            if (metadataImported.second.isNull()) {
+                // Since this is also some kind of metadata import, we mark the
+                // track's metadata as synchronized with the time stamp of the file.
+                metadataImported.second = trackFile.fileLastModified();
+            }
         }
+    }
+
+    // Do not continue with unknown and maybe invalid metadata!
+    if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
+        return;
     }
 
     m_pTrack->importMetadata(trackMetadata, metadataImported.second);

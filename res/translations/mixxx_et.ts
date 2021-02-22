@@ -45,13 +45,13 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="26"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="110"/>
         <source>Banshee</source>
-        <translation type="unfinished"/>
+        <translation>Banshee</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
         <source>Error loading Banshee database</source>
-        <translation type="unfinished"/>
+        <translation>Viga Banshee andmebaasi laadimisel</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="77"/>
@@ -509,7 +509,7 @@
         <location filename="../../src/library/browse/browsefeature.cpp" line="141"/>
         <location filename="../../src/library/browse/browsefeature.cpp" line="435"/>
         <source>Computer</source>
-        <translation type="unfinished"/>
+        <translation>Arvuti</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="174"/>

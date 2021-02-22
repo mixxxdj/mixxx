@@ -164,6 +164,12 @@
             <SetVariable name="skinsetting">[Skin],show_xfader</SetVariable>
           </Template>
 
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">Large VU meter</SetVariable>
+            <SetVariable name="skinsetting">[Skin],large_vu</SetVariable>
+          </Template>
+
         </Children>
       </WidgetGroup>
 

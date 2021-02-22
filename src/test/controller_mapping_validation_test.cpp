@@ -36,34 +36,13 @@ FakeController::FakeController()
 FakeController::~FakeController() {
 }
 
-LegacyControllerMappingPointer FakeController::getMapping() const {
-    if (m_bHidMapping) {
-        LegacyHidControllerMapping* pClone = new LegacyHidControllerMapping();
-        *pClone = m_hidMapping;
-        return LegacyControllerMappingPointer(pClone);
-    } else {
-        LegacyMidiControllerMapping* pClone = new LegacyMidiControllerMapping();
-        *pClone = m_midiMapping;
-        return LegacyControllerMappingPointer(pClone);
-    }
-}
-
 bool FakeController::isMappable() const {
     if (m_bMidiMapping) {
-        return m_midiMapping.isMappable();
+        return m_pMidiMapping->isMappable();
     } else if (m_bHidMapping) {
-        return m_hidMapping.isMappable();
+        return m_pHidMapping->isMappable();
     }
     return false;
-}
-
-LegacyControllerMapping* FakeController::mapping() {
-    if (m_bHidMapping) {
-        return &m_hidMapping;
-    } else {
-        // Default to MIDI.
-        return &m_midiMapping;
-    }
 }
 
 void LegacyControllerMappingValidationTest::SetUp() {
@@ -73,15 +52,15 @@ void LegacyControllerMappingValidationTest::SetUp() {
 }
 
 bool LegacyControllerMappingValidationTest::testLoadMapping(const MappingInfo& mapping) {
-    LegacyControllerMappingPointer pMapping =
+    std::shared_ptr<LegacyControllerMapping> pMapping =
             LegacyControllerMappingFileHandler::loadMapping(mapping.getPath(), m_mappingPath);
-    if (pMapping.isNull()) {
+    if (!pMapping) {
         return false;
     }
 
     FakeController controller;
     controller.setDeviceName("Test Controller");
-    controller.setMapping(*pMapping);
+    controller.setMapping(pMapping);
     bool result = controller.applyMapping();
     controller.stopEngine();
     return result;

@@ -2041,42 +2041,42 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1066"/>
         <source>Microphone &amp; Auxiliary Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Prikaži/skrij mikrofon in pomožno AUX vodilo</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1067"/>
         <source>Show/hide the microphone &amp; auxiliary section</source>
-        <translation type="unfinished"/>
+        <translation>Prikaži/skrij sekcijo z mikrofoni in pomožnimi vodili</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1081"/>
         <source>4 Effect Units Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Prikaži/skrij štiri učinke</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1082"/>
         <source>Switches between showing 2 and 4 effect units</source>
-        <translation type="unfinished"/>
+        <translation>Preklopi med prikazom dveh ali štirih učinkov</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1086"/>
         <source>Mixer Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Mešalka prikaži/skrij</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1087"/>
         <source>Show or hide the mixer.</source>
-        <translation>Prikaži ali skrij mikser</translation>
+        <translation>Prikaži ali skrij mešalko</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1091"/>
         <source>Cover Art Show/Hide (Library)</source>
-        <translation type="unfinished"/>
+        <translation>Naslovnica prikaži/skrij (knjižnica)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1092"/>
         <source>Show/hide cover art in the library</source>
-        <translation type="unfinished"/>
+        <translation>Prikaži/skrij naslovnico v knjižnici</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1096"/>
@@ -2329,42 +2329,42 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="350"/>
         <source>Shift cue points earlier</source>
-        <translation type="unfinished"/>
+        <translation>Premakni iztočnice na prej</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
         <source>Shift cue points 10 milliseconds earlier</source>
-        <translation type="unfinished"/>
+        <translation>Premakni iztočnice za 10 milisekund nazaj</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="354"/>
         <source>Shift cue points earlier (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Premakni iztočnice nazaj (fino)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="355"/>
         <source>Shift cue points 1 millisecond earlier</source>
-        <translation type="unfinished"/>
+        <translation>Premakni iztočnice za 1 milisekundo nazaj</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="358"/>
         <source>Shift cue points later</source>
-        <translation type="unfinished"/>
+        <translation>Premakni iztočnice na kasneje</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="359"/>
         <source>Shift cue points 10 milliseconds later</source>
-        <translation type="unfinished"/>
+        <translation>Premakni iztočnice za 10 milisekund naprej</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="362"/>
         <source>Shift cue points later (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Premakni iztočnice naprej (fino)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="363"/>
         <source>Shift cue points 1 millisecond later</source>
-        <translation type="unfinished"/>
+        <translation>Premakni iztočnice za 1 milisekundo naprej</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="376"/>
@@ -2771,7 +2771,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="953"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="954"/>
         <source>Button Parameter Value</source>
-        <translation type="unfinished"/>
+        <translation>Vrednost parametra gumba</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="972"/>
@@ -2856,7 +2856,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1159"/>
         <source>Start/Stop Live Broadcasting</source>
-        <translation type="unfinished"/>
+        <translation>Začni/ustavi oddajanje v živo</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1160"/>
@@ -2866,7 +2866,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1165"/>
         <source>Start/stop recording your mix.</source>
-        <translation type="unfinished"/>
+        <translation>Začni/ustavi snemanje miksa.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1274"/>
@@ -2907,12 +2907,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1110"/>
         <source>Cover Art Show/Hide (Decks)</source>
-        <translation type="unfinished"/>
+        <translation>Naslovnica prikaži/skrij (predvajalniki)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1111"/>
         <source>Show/hide cover art in the main decks</source>
-        <translation type="unfinished"/>
+        <translation>Prikaži/skrij naslovnico v glavnih predvajalnikih</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1119"/>
@@ -2927,22 +2927,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1125"/>
         <source>Vinyl Spinners Show/Hide (All Decks)</source>
-        <translation type="unfinished"/>
+        <translation>Vrtenje gramofonov prikaži/skrij</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1126"/>
         <source>Show/Hide all spinnies</source>
-        <translation type="unfinished"/>
+        <translation>Prikaži/skrij vrtenje za vse gramofone</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1141"/>
         <source>Toggle Waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Preklop valovnih oblik</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1142"/>
         <source>Show/hide the scrolling waveforms.</source>
-        <translation type="unfinished"/>
+        <translation>Prikaži/skrij pomikajoče se valovne oblike</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1144"/>
@@ -3893,7 +3893,10 @@ by analyzing the beats to discard outliers.</source>
 This could be because you are either using an old skin and this control is no longer supported, or you clicked a control that provides visual feedback and can only be mapped to outputs like LEDs via scripts.
 
 You tried to learn: %1,%2</source>
-        <translation type="unfinished"/>
+        <translation>Kontrola, na katero ste kliknili v Mixxx ni učljiva.
+To je lahko posledica stare preobleke ali pa kontrola ni več podprta, lahko pa ste kliknili na kontrolo, ki podaja vizualni odziv in jo je mogoče mapirati na izhode, kot so LED, zgolj preko skript..
+
+Skušali ste učiti: %1, %2</translation>
     </message>
 </context>
 <context>
@@ -4563,7 +4566,7 @@ Potrdim nastavitve in nadaljujem?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="501"/>
         <source>Mapping has been edited</source>
-        <translation type="unfinished"/>
+        <translation>Mapiranje je bilo spremenjeno</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="543"/>
@@ -4578,42 +4581,42 @@ Potrdim nastavitve in nadaljujem?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="547"/>
         <source>Always overwrite during this session</source>
-        <translation type="unfinished"/>
+        <translation>Vedno prepiši medsejo</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="559"/>
         <source>Save As</source>
-        <translation type="unfinished"/>
+        <translation>Shrani kot</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="561"/>
         <source>Overwrite</source>
-        <translation type="unfinished"/>
+        <translation>Prepiši</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="582"/>
         <source>Save user mapping</source>
-        <translation type="unfinished"/>
+        <translation>Shrani mapiranje uporabnika</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="583"/>
         <source>Enter the name for saving the mapping to the user folder.</source>
-        <translation type="unfinished"/>
+        <translation>Vnesite ime za shranjevanje mapiranja v uporabnikovo mapo.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="584"/>
         <source>Saving mapping failed</source>
-        <translation type="unfinished"/>
+        <translation>Shranjevanje mapiranja ni uspelo</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="586"/>
         <source>A mapping cannot have a blank name and may not contain special characters.</source>
-        <translation type="unfinished"/>
+        <translation>Mapiranje ne more biti brez imena, ime pa ne sme vsebovati posebnih znakov.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="588"/>
         <source>A mapping file with that name already exists.</source>
-        <translation type="unfinished"/>
+        <translation>Mapiranje s tem imenom že obstaja.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="313"/>
@@ -4728,12 +4731,12 @@ Potrdim nastavitve in nadaljujem?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="119"/>
         <source>Load Mapping:</source>
-        <translation type="unfinished"/>
+        <translation>Naloži mapiranje:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="207"/>
         <source>Mapping Info</source>
-        <translation type="unfinished"/>
+        <translation>Podatki o mapiranju</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="260"/>
@@ -4753,7 +4756,7 @@ Potrdim nastavitve in nadaljujem?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="380"/>
         <source>Mapping Files:</source>
-        <translation type="unfinished"/>
+        <translation>Daoteke mapiranja:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="499"/>
@@ -4787,12 +4790,12 @@ Potrdim nastavitve in nadaljujem?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="79"/>
         <source>Mappings</source>
-        <translation type="unfinished"/>
+        <translation>Mapiranja</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="91"/>
         <source>Mixxx uses &quot;mappings&quot; to connect messages from your controller to controls in Mixxx. If you do not see a mapping for your controller in the &quot;Load Mapping&quot; menu when you click on your controller on the left sidebar, you may be able to download one online from the &lt;a href=&quot;https://mixxx.discourse.group/c/controller-mappings/10&quot;&gt;Mixxx Forum&lt;/a&gt;. Place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Mapping Folder&quot; then restart Mixxx. If you download a mapping in a ZIP file, extract the XML and Javascript file(s) from the ZIP file to your &quot;User Mapping Folder&quot; then restart Mixxx:</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx uporablja &quot;mapiranja&quot; za povezavo sporočil kontrolerja s kontrolami v Mixxx. Če ne vidite mapiranja za kontroler v meniju &quot;Naloži mapiranje&quot;, ko kliknete na kontroler v levem stranskempanoju, ga lahko tudi prenesete z &lt;a href=&quot;https://mixxx.discourse.group/c/controller-mappings/10&quot;&gt;Mixxx foruma&lt;/a&gt;. Dajte XML (.xml) in Javascript (.js) datoteke v &quot;Mapo z uporabnikovimi mapiranji&quot; in nato ponovno zaženite Mixxx. Če ste prenesli mapiranje v ZIP datoteki, razširite XML in Javascript datoteke iz ZIP datoteke v vašo mapo z uporabnikovimi mapiranji in nato ponovno zaženite Mixxx:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="110"/>
@@ -10806,7 +10809,7 @@ Popolnoma na desni: konec periode efekta</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="281"/>
         <source>Show or hide the mixer.</source>
-        <translation>Prikaži ali skrij mikser</translation>
+        <translation>Prikaži ali skrij mešalko</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="288"/>
