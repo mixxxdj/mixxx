@@ -106,7 +106,7 @@ class BeatMap final : public Beats {
     mutable QMutex m_mutex;
     QString m_subVersion;
     SINT m_iSampleRate;
-    double m_dCachedBpm;
+    double m_nominalBpm;
     BeatList m_beats;
 };
 

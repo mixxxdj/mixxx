@@ -66,7 +66,7 @@ class BeatMapIterator : public BeatIterator {
 BeatMap::BeatMap(const Track& track, SINT iSampleRate)
         : m_mutex(QMutex::Recursive),
           m_iSampleRate(iSampleRate > 0 ? iSampleRate : track.getSampleRate()),
-          m_dCachedBpm(0) {
+          m_nominalBpm(0) {
     // BeatMap should live in the same thread as the track it is associated
     // with.
     moveToThread(track.thread());
@@ -86,11 +86,11 @@ BeatMap::BeatMap(const Track& track, SINT iSampleRate,
     }
 }
 
-BeatMap::BeatMap (const BeatMap& other)
+BeatMap::BeatMap(const BeatMap& other)
         : m_mutex(QMutex::Recursive),
           m_subVersion(other.m_subVersion),
           m_iSampleRate(other.m_iSampleRate),
-          m_dCachedBpm(other.m_dCachedBpm),
+          m_nominalBpm(other.m_nominalBpm),
           m_beats(other.m_beats) {
     moveToThread(other.thread());
 }
@@ -414,7 +414,7 @@ double BeatMap::getBpm() const {
     if (!isValid()) {
         return -1;
     }
-    return m_dCachedBpm;
+    return m_nominalBpm;
 }
 
 double BeatMap::getBpmRange(double startSample, double stopSample) const {
@@ -696,12 +696,12 @@ void BeatMap::setBpm(double dBpm) {
 
 void BeatMap::onBeatlistChanged() {
     if (!isValid()) {
-        m_dCachedBpm = 0;
+        m_nominalBpm = 0;
         return;
     }
     Beat startBeat = m_beats.first();
     Beat stopBeat =  m_beats.last();
-    m_dCachedBpm = calculateBpm(startBeat, stopBeat);
+    m_nominalBpm = calculateBpm(startBeat, stopBeat);
 }
 
 double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const {
