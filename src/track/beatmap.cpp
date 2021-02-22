@@ -437,7 +437,11 @@ double BeatMap::getBpm() const {
     return m_nominalBpm;
 }
 
+// Note: Also called from the engine thread
 double BeatMap::getBpmAroundPosition(double curSample, int n) const {
+    // This function is only usable for one measure or such.
+    DEBUG_ASSERT(n <= 12);
+
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return -1;
@@ -463,11 +467,28 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
         }
     }
 
-    Beat startBeat, stopBeat;
-    startBeat.set_frame_position(
-            static_cast<google::protobuf::int32>(samplesToFrames(lower_bound)));
-    stopBeat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(upper_bound)));
-    return calculateBpm(startBeat, stopBeat);
+    VERIFY_OR_DEBUG_ASSERT(lower_bound < upper_bound) {
+        return -1;
+    }
+
+    const int kFrameEpsilon = m_iSampleRate / 20;
+
+    int numberOfBeats = 0;
+    for (const auto& beat : m_beats) {
+        double pos = framesToSamples(beat.frame_position() + kFrameEpsilon);
+        if (pos > upper_bound) {
+            break;
+        }
+        if (pos > lower_bound) {
+            numberOfBeats++;
+        }
+    }
+
+    if (numberOfBeats == 0) {
+        return -1;
+    }
+
+    return 60.0 * numberOfBeats * m_iSampleRate * kFrameSize / (upper_bound - lower_bound);
 }
 
 void BeatMap::addBeat(double dBeatSample) {
@@ -708,32 +729,6 @@ void BeatMap::onBeatlistChanged() {
         return;
     }
     m_nominalBpm = calculateNominalBpm(m_beats, m_iSampleRate);
-}
-
-double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const {
-    if (startBeat.frame_position() > stopBeat.frame_position()) {
-        return -1;
-    }
-
-    BeatList::const_iterator curBeat =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), startBeat, BeatLessThan);
-
-    BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), stopBeat, BeatLessThan);
-
-    QVector<double> beatvect;
-    for (; curBeat != lastBeat; ++curBeat) {
-        const Beat& beat = *curBeat;
-        if (beat.enabled()) {
-            beatvect.append(beat.frame_position());
-        }
-    }
-
-    if (beatvect.isEmpty()) {
-        return -1;
-    }
-
-    return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
 }
 
 } // namespace mixxx

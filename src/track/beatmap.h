@@ -90,8 +90,6 @@ class BeatMap final : public Beats {
     void createFromBeatVector(const QVector<double>& beats);
     void onBeatlistChanged();
 
-    double calculateBpm(const mixxx::track::io::Beat& startBeat,
-                        const mixxx::track::io::Beat& stopBeat) const;
     // For internal use only.
     bool isValid() const;
 

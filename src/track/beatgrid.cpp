@@ -286,6 +286,7 @@ double BeatGrid::getBpm() const {
     return bpm();
 }
 
+// Note: Also called from the engine thread
 double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
     Q_UNUSED(curSample);
     Q_UNUSED(n);
