@@ -740,7 +740,7 @@ void BeatsInternal::setSignature(const TimeSignature& sig, int downbeatIndex) {
 
     track::io::TimeSignatureMarker searchBeforeMarker;
     searchBeforeMarker.set_downbeat_index(downbeatIndex);
-    auto prevTimeSignatureMarker =
+    auto* prevTimeSignatureMarker =
             std::lower_bound(timeSignatureMarkersMutableCopy.begin(),
                     timeSignatureMarkersMutableCopy.end(),
                     searchBeforeMarker,
@@ -784,7 +784,7 @@ void BeatsInternal::setBpm(Bpm bpm, int beatIndex) {
 
     track::io::BpmMarker searchBeforeMarker;
     searchBeforeMarker.set_beat_index(beatIndex);
-    auto prevBpmMarker =
+    auto* prevBpmMarker =
             std::lower_bound(bpmMarkersMutableCopy.begin(),
                     bpmMarkersMutableCopy.end(),
                     searchBeforeMarker,

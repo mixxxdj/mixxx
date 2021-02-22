@@ -285,8 +285,9 @@ mixxx::Bpm BeatUtils::calculateBpm(
 
         // Time needed to count a bar (N beats)
         double time = (beat_end - beat_start) / sampleRate;
-        if (time == 0)
+        if (time == 0) {
             continue;
+        }
         double local_bpm = 60.0 * N / time;
         // round BPM to have two decimal places
         local_bpm = floor(local_bpm * kHistogramDecimalScale + 0.5) / kHistogramDecimalScale;
