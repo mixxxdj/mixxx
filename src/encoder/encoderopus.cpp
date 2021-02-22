@@ -148,8 +148,8 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderOpus::initEncoder(int samplerate, QString& errorMessage) {
-    Q_UNUSED(errorMessage);
+int EncoderOpus::initEncoder(int samplerate, QString* pUserErrorMessage) {
+    Q_UNUSED(pUserErrorMessage);
 
     if (samplerate != kMasterSamplerate) {
         kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";

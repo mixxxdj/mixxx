@@ -105,10 +105,10 @@ macro(find_component _component _pkgconfig _library _header)
   set(FFMPEG_${_component}_VERSION      ${PC_FFMPEG_${_component}_VERSION}      CACHE STRING "The ${_component} version number.")
 
   if (FFMPEG_${_component}_LIBRARIES AND FFMPEG_${_component}_INCLUDE_DIRS)
-    # message(STATUS "  - ${_component} found.")
+    message(STATUS "  - ${_component} found.")
     set(FFMPEG_${_component}_FOUND TRUE)
   else ()
-    # message(STATUS "  - ${_component} not found.")
+    message(STATUS "  - ${_component} not found.")
   endif ()
 
   mark_as_advanced(
@@ -119,7 +119,7 @@ macro(find_component _component _pkgconfig _library _header)
 
 endmacro()
 
-
+message(STATUS "Searching for FFMPEG components")
 # Check for all possible component.
 find_component(libavcodec    libavcodec    avcodec  libavcodec/avcodec.h)
 find_component(libavformat   libavformat   avformat libavformat/avformat.h)
