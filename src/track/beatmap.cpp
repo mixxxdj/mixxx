@@ -18,6 +18,8 @@
 
 using mixxx::track::io::Beat;
 
+namespace {
+
 const int kFrameSize = 2;
 
 inline double samplesToFrames(const double samples) {
@@ -31,6 +33,24 @@ inline double framesToSamples(const int frames) {
 bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
+
+double calculateNominalBpm(const BeatList& beats, SINT sampleRate) {
+    QVector<double> beatvect;
+    beatvect.reserve(beats.size());
+    for (const auto& beat : beats) {
+        if (beat.enabled()) {
+            beatvect.append(beat.frame_position());
+        }
+    }
+
+    if (beatvect.isEmpty()) {
+        return -1;
+    }
+
+    return BeatUtils::calculateBpm(beatvect, sampleRate, 0, 9999);
+}
+
+} // namespace
 
 namespace mixxx {
 
@@ -699,9 +719,7 @@ void BeatMap::onBeatlistChanged() {
         m_nominalBpm = 0;
         return;
     }
-    Beat startBeat = m_beats.first();
-    Beat stopBeat =  m_beats.last();
-    m_nominalBpm = calculateBpm(startBeat, stopBeat);
+    m_nominalBpm = calculateNominalBpm(m_beats, m_iSampleRate);
 }
 
 double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const {
