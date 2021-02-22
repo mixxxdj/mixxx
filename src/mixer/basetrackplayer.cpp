@@ -649,6 +649,8 @@ void BaseTrackPlayerImpl::slotVinylControlEnabled(double v) {
         m_pVinylControlStatus->set(VINYL_STATUS_DISABLED);
         emit noVinylControlInputConfigured();
     }
+#else
+    Q_UNUSED(v);
 #endif
 }
 
