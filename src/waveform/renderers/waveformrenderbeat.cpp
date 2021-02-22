@@ -107,10 +107,11 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     QList<WaveformBeat> beatsOnScreen;
 
     for (int i = displayBeatsStartIdxInclusive; i <= displayBeatsEndIdxInclusive; i++) {
-        if (!trackBeats->getBeatAtIndex(i)) {
+        const auto beatOptional = trackBeats->getBeatAtIndex(i);
+        if (!beatOptional) {
             continue;
         }
-        auto beat = trackBeats->getBeatAtIndex(i).value();
+        const auto beat = *beatOptional;
         double beatSamplePosition = framePosToSamplePos(beat.framePosition());
         int beatPixelPositionInWidgetSpace = qRound(
                 m_waveformRenderer->transformSamplePositionInRendererWorld(
