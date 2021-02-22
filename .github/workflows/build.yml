@@ -15,7 +15,6 @@ jobs:
             cmake_args: >-
               -DWARNINGS_FATAL=ON
               -DFAAD=ON
-              -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
@@ -78,7 +77,6 @@ jobs:
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
-              -DSTATIC_DEPS=ON
             cc: cl
             cxx: cl
             cmake_generator: Ninja
@@ -113,7 +111,7 @@ jobs:
       with:
         # This should always match the mininum required version in
         # our CMakeLists.txt
-        cmake-version: '3.13.x'
+        cmake-version: '3.15.x'
 
     - name: "[Windows] Install additional build tools"
       if: runner.os == 'Windows'

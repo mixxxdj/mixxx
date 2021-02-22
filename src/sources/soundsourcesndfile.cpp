@@ -3,6 +3,7 @@
 #include <QDir>
 
 #include "util/logger.h"
+#include "util/semanticversion.h"
 
 namespace mixxx {
 
@@ -22,16 +23,19 @@ const QStringList kSupportedFileExtensions = {
         QStringLiteral("wav"),
 };
 
-// SoundSourceProxyTest fails for version 1.0.30 and OGG files
+// SoundSourceProxyTest fails for version >= 1.0.30 and OGG files
 // https://github.com/libsndfile/libsndfile/issues/643
-const QLatin1String kVersionStringWithBrokenOggDecoding = QLatin1String("libsndfile-1.0.30");
+const mixxx::SemanticVersion kVersionStringWithBrokenOggDecoding(1, 0, 30);
 
 QStringList getSupportedFileExtensionsFiltered() {
     auto supportedFileExtensions = kSupportedFileExtensions;
-    if (sf_version_string() == kVersionStringWithBrokenOggDecoding) {
+    QString libsndfileVersion = sf_version_string();
+    int separatorIndex = libsndfileVersion.lastIndexOf("-");
+    auto semver = mixxx::SemanticVersion(libsndfileVersion.right(separatorIndex));
+    if (semver >= kVersionStringWithBrokenOggDecoding) {
         kLogger.info()
                 << "Disabling OGG decoding for"
-                << kVersionStringWithBrokenOggDecoding;
+                << libsndfileVersion;
         supportedFileExtensions.removeAll(QStringLiteral("ogg"));
     }
     return supportedFileExtensions;
