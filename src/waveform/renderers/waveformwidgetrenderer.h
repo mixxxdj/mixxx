@@ -151,7 +151,7 @@ class WaveformWidgetRenderer {
         m_markPositions = markPositions;
     }
 
-    void setBeatsOnScreen(QList<WaveformBeat> beatsOnScreen) {
+    void setBeatsOnScreen(const QList<WaveformBeat>& beatsOnScreen) {
         m_beatsOnScreen = beatsOnScreen;
     }
 

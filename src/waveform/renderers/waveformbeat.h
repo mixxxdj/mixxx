@@ -23,7 +23,7 @@ class WaveformBeat final : WaveformElementRightClickable {
     void setBeatGridMode(BeatGridMode mode) {
         m_beatGridMode = mode;
     }
-    void setBeat(mixxx::Beat beat) {
+    void setBeat(const mixxx::Beat& beat) {
         m_beat = beat;
     }
     mixxx::Beat getBeat() const {
