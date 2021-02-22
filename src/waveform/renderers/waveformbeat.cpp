@@ -6,7 +6,7 @@ namespace {
 constexpr int kTriangleEdgeLength = 6;
 constexpr int kClickableLinePaddingPixels = 5;
 const QColor downbeatTriangleFillBaseColor = Qt::red;
-constexpr double fontSizePixels = 10;
+constexpr int fontSizePixels = 10;
 } // namespace
 
 WaveformBeat::WaveformBeat()
