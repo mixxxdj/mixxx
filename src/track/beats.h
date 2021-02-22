@@ -65,7 +65,7 @@ class BeatsInternal {
     void setGrid(Bpm dBpm, FramePos firstBeatFrame = kStartFramePos);
     FramePos findClosestBeat(FramePos frame) const;
     Bpm getBpmAtPosition(FramePos curFrame) const;
-    void setSignature(TimeSignature sig, int downbeatIndex);
+    void setSignature(const TimeSignature& sig, int downbeatIndex);
     void translateBySeconds(double seconds);
     void setBpm(Bpm bpm, int beatIndex = kFirstBeatIndex);
     int size() const;

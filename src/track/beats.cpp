@@ -28,7 +28,7 @@ constexpr double kBeatVicinityFactor = 0.1;
 
 inline FrameDiff_t getBeatLengthFrames(Bpm bpm,
         double sampleRate,
-        TimeSignature timeSignature = TimeSignature()) {
+        const TimeSignature& timeSignature = TimeSignature()) {
     return kSecondsPerMinute * sampleRate *
             (4.0 / timeSignature.getNoteValue()) / bpm.getValue();
 }
@@ -724,7 +724,7 @@ Bpm BeatsInternal::getBpmAtPosition(FramePos curFrame) const {
     return findPrevBeat(curFrame)->bpm();
 }
 
-void BeatsInternal::setSignature(TimeSignature sig, int downbeatIndex) {
+void BeatsInternal::setSignature(const TimeSignature& sig, int downbeatIndex) {
     if (!isValid()) {
         return;
     }
@@ -752,7 +752,7 @@ void BeatsInternal::setSignature(TimeSignature sig, int downbeatIndex) {
                 prevTimeSignatureMarker, markerToInsert);
     }
     m_beatsProto.clear_time_signature_markers();
-    for (const auto& timeSignatureMarker : timeSignatureMarkersMutableCopy) {
+    for (const auto& timeSignatureMarker : qAsConst(timeSignatureMarkersMutableCopy)) {
         m_beatsProto.add_time_signature_markers()->CopyFrom(
                 timeSignatureMarker);
     }
@@ -796,7 +796,7 @@ void BeatsInternal::setBpm(Bpm bpm, int beatIndex) {
                 prevBpmMarker, markerToInsert);
     }
     m_beatsProto.clear_bpm_markers();
-    for (const auto& bpmMarker : bpmMarkersMutableCopy) {
+    for (const auto& bpmMarker : qAsConst(bpmMarkersMutableCopy)) {
         m_beatsProto.add_bpm_markers()->CopyFrom(
                 bpmMarker);
     }
