@@ -1542,9 +1542,10 @@ mixxx::audio::StreamInfo Track::streamInfo() const {
 QDebug operator<<(QDebug dbg, const Track& arg) {
     dbg << "Duration:" << arg.getDuration();
     dbg << "Sample Rate:" << arg.getSampleRate();
-    if (!arg.getCuePoints().empty()) {
+    const auto cuePoints = arg.getCuePoints();
+    if (!cuePoints.empty()) {
         dbg << "Cue Points:";
-        for (auto cuePoint : arg.getCuePoints()) {
+        for (const auto& cuePoint : cuePoints) {
             dbg << cuePoint->getPosition();
         }
     }

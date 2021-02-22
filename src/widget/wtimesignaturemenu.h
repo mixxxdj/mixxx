@@ -27,7 +27,7 @@ class WTimeSignatureMenu : public QWidget {
   private slots:
     void slotBeatCountChanged(int value);
     void slotBeatSizeChanged(int index);
-    void setTimeSignature(mixxx::TimeSignature timeSignature);
+    void setTimeSignature(const mixxx::TimeSignature& timeSignature);
     void slotTimeSignatureHalved();
     void slotTimeSignatureDoubled();
 

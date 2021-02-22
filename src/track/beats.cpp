@@ -131,7 +131,7 @@ Bpm Beats::getBpmAtPosition(FramePos curFrame) const {
     return m_beatsInternal.getBpmAtPosition(curFrame);
 }
 
-void Beats::setSignature(TimeSignature sig, int beatIndex) {
+void Beats::setSignature(const TimeSignature& sig, int beatIndex) {
     QMutexLocker locker(&m_mutex);
     m_beatsInternal.setSignature(sig, beatIndex);
     locker.unlock();
@@ -941,7 +941,7 @@ void BeatsInternal::consolidateMarkers() {
     }
 
     // Clear redundant markers
-    QList<track::io::TimeSignatureMarker> minimalTimeSignatureMarkers;
+    QVector<track::io::TimeSignatureMarker> minimalTimeSignatureMarkers;
     for (const auto& timeSignatureMarker :
             m_beatsProto.time_signature_markers()) {
         if (minimalTimeSignatureMarkers.empty() ||
@@ -957,7 +957,7 @@ void BeatsInternal::consolidateMarkers() {
                 minimalTimeSignatureMarker);
     }
 
-    QList<track::io::BpmMarker> minimalBpmMarkers;
+    QVector<track::io::BpmMarker> minimalBpmMarkers;
     for (const auto& bpmMarker :
             m_beatsProto.bpm_markers()) {
         if (minimalBpmMarkers.empty() ||

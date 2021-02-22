@@ -181,7 +181,7 @@ class Beats final : public QObject {
     Bpm getBpmAtPosition(FramePos curFrame) const;
 
     /// Sets the track signature starting at specified bar
-    void setSignature(TimeSignature sig, int downbeatIndex);
+    void setSignature(const TimeSignature& sig, int downbeatIndex);
 
     /// Translate all beats in the song by a time duration (can be negative).
     /// Beats that lie before the start of the track or after the end of the

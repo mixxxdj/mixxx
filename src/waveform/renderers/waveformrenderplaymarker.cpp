@@ -77,7 +77,7 @@ void WaveformRenderPlayMarker::draw(QPainter* painter, QPaintEvent* event) {
 }
 
 void WaveformRenderPlayMarker::drawTriangle(QPainter* painter,
-        QBrush fillColor,
+        const QBrush& fillColor,
         QPointF p0,
         QPointF p1,
         QPointF p2) {
