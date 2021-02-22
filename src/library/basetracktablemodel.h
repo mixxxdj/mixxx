@@ -16,9 +16,6 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     DISALLOW_COPY_AND_ASSIGN(BaseTrackTableModel);
 
   public:
-    // This role is used for data export like in CSV files
-    static constexpr int kDataExportRole = Qt::UserRole + 1;
-
     explicit BaseTrackTableModel(
             const char* settingsNamespace,
             TrackCollectionManager* const pTrackCollectionManager,
