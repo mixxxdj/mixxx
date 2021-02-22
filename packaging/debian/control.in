@@ -25,7 +25,7 @@ Build-Depends: debhelper (>= 11),
 # Only needed for running tests that use SQLite.
                libqt5sql5-sqlite,
                libqt5x11extras5-dev,
-               cmake (>= 3.13),
+               cmake (>= 3.15),
                libjack-dev,
                portaudio19-dev,
                libid3tag0-dev,
