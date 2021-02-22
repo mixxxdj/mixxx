@@ -1,6 +1,6 @@
 @ECHO OFF
 SETLOCAL ENABLEDELAYEDEXPANSION
-REM this � is just to force some editors to recognize this file as ANSI, not UTF8.
+REM this í is just to force some editors to recognize this file as ANSI, not UTF8.
 
 CALL :REALPATH %~dp0\..
 SET MIXXX_ROOT=%RETVAL%
@@ -146,7 +146,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     REM WARNING: Ensure that the script is saved as ANSI, or these characters will not
     REM contain the correct values. Correct values are EF BB BF (&iuml; &raquo; &iquest;) .
     REM The last character is an actual character for the file, the start "{"
-    >"%CMakeSettings%" echo ﻿{
+    >"%CMakeSettings%" echo ï»¿{
     CALL :SETUTF8CONSOLE
 
     >>%CMakeSettings% echo   "configurations": [
@@ -171,7 +171,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>%CMakeSettings% echo       "generator": "Ninja",
     >>%CMakeSettings% echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
     >>%CMakeSettings% echo       "installRoot": "!INSTALL_ROOT:\=\\!\\${name}",
-    >>%CMakeSettings% echo       "cmakeToolchain": "!BUILDENV_PATH!\scripts\buildsystems\vcpkg.cmake",
+    >>%CMakeSettings% echo       "cmakeToolchain": "!BUILDENV_PATH:\=\\!\\scripts\\buildsystems\\vcpkg.cmake",
     >>%CMakeSettings% echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>%CMakeSettings% echo       "variables": [
     SET variableElementTermination=,
