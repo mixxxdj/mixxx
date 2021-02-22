@@ -16,7 +16,7 @@ class TimeSignature final {
         setTimeSignature(beatsPerBar, noteValue);
     }
 
-    explicit TimeSignature(track::io::TimeSignature timeSignatureProto) {
+    explicit TimeSignature(const track::io::TimeSignature& timeSignatureProto) {
         m_timeSignature = timeSignatureProto;
     }
 
@@ -48,16 +48,16 @@ class TimeSignature final {
     track::io::TimeSignature m_timeSignature;
 };
 
-inline bool operator==(TimeSignature signature1, TimeSignature signature2) {
+inline bool operator==(const TimeSignature& signature1, const TimeSignature& signature2) {
     return signature1.getBeatsPerBar() == signature2.getBeatsPerBar() &&
             signature1.getNoteValue() == signature2.getNoteValue();
 }
 
-inline bool operator!=(TimeSignature signature1, TimeSignature signature2) {
+inline bool operator!=(const TimeSignature& signature1, const TimeSignature& signature2) {
     return !(signature1 == signature2);
 }
 
-inline QDebug operator<<(QDebug dbg, TimeSignature timeSignature) {
+inline QDebug operator<<(QDebug dbg, const TimeSignature& timeSignature) {
     return dbg << timeSignature.getBeatsPerBar() << "/" << timeSignature.getNoteValue();
 }
 

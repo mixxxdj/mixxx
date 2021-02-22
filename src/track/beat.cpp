@@ -19,7 +19,7 @@ Beat::Beat(FramePos framePos,
           m_eMarkers(markers) {
 }
 
-bool operator==(Beat beat1, Beat beat2) {
+bool operator==(const Beat& beat1, const Beat& beat2) {
     return beat1.framePosition() == beat2.framePosition() &&
             beat1.beatIndex() == beat2.beatIndex() &&
             beat1.markers() == beat2.markers() &&
@@ -31,7 +31,7 @@ bool operator==(Beat beat1, Beat beat2) {
             beat1.bpm() == beat2.bpm();
 }
 
-QDebug operator<<(QDebug dbg, Beat beat) {
+QDebug operator<<(QDebug dbg, const Beat& beat) {
     dbg << "[ Position:" << beat.framePosition()
         << " | Signature:" << beat.timeSignature()
         << " | Type:"
