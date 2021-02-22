@@ -14,7 +14,7 @@ class EncoderMp3 final : public Encoder {
     EncoderMp3(EncoderCallback* callback=nullptr);
     ~EncoderMp3() override;
 
-    int initEncoder(int samplerate, QString& errorMessage) override;
+    int initEncoder(int samplerate, QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
