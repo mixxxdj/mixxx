@@ -54,6 +54,7 @@ repos:
   - id: check-merge-conflict
   - id: check-xml
   - id: check-yaml
+    exclude: ^\.clang-format$
   - id: end-of-file-fixer
     stages:
     - commit
