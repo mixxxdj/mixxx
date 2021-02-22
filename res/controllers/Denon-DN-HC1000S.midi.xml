@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3">
     <info>
-        <name>Denon HC1000S mapping (edited)</name>
+        <name>Denon HC1000S mapping</name>
         <author>le3d, based on many existing Denon other mappings, re-using bits and pieces</author>
         <forums>https://mixxx.discourse.group/t/denon-dn-hc1000s-for-dvs/20217</forums>
     </info>
