@@ -13,7 +13,7 @@
 #define WIN32
 #endif
 #ifdef __BROADCAST__
-#include <shout/shout.h>
+#include <shoutidjc/shout.h>
 #endif
 #ifdef WIN64
 #undef WIN32

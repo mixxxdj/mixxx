@@ -1,5 +1,8 @@
 <Template>
   <WidgetGroup>
+    <!-- This extra wrapper with 'ignore' size policy allows to
+      shrink the library to zero height, while the inner LibraryContainer
+      expands to fill the available vertical space. -->
     <SizePolicy>me,i</SizePolicy>
     <Layout>vertical</Layout>
     <Children>
@@ -21,8 +24,9 @@
             <SplitSizesConfigKey>[Skin],librarySidebar_splitsize</SplitSizesConfigKey>
             <Collapsible>1,0</Collapsible>
             <Children>
+
               <WidgetGroup>
-                <ObjectName>SidebarSearchPreviewContainer</ObjectName>
+                <ObjectName>LibSidebarContainer</ObjectName>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,me</SizePolicy>
                 <MinimumSize>100,</MinimumSize>
@@ -30,8 +34,7 @@
 
                   <Template src="skin:/decks/preview_deck.xml"/>
 
-                  <!--Search Input Field + Library Expand toggle -->
-                  <WidgetGroup>
+                  <WidgetGroup><!--SearchBox + Library expand toggle -->
                     <ObjectName></ObjectName>
                     <Layout>horizontal</Layout>
                     <SizePolicy>min,max</SizePolicy>
@@ -50,26 +53,16 @@
                         <ObjectName>LibExpandBox</ObjectName>
                         <Layout>vertical</Layout>
                         <Children>
-                          <PushButton>
-                            <TooltipId>maximize_library</TooltipId>
-                            <ObjectName>LibExpand</ObjectName>
-                            <Size>16f,18me</Size>
-                            <NumberStates>2</NumberStates>
-                            <State>
-                              <Number>0</Number>
-                            </State>
-                            <State>
-                              <Number>1</Number>
-                            </State>
-                            <Connection>
-                              <ConfigKey>[Master],maximize_library</ConfigKey>
-                              <ButtonState>LeftButton</ButtonState>
-                            </Connection>
-                          </PushButton>
+                          <Template src="skin:/controls/button_2state.xml">
+                            <SetVariable name="TooltipId">maximize_library</SetVariable>
+                            <SetVariable name="ObjectName">LibExpand</SetVariable>
+                            <SetVariable name="Size">16f,18me</SetVariable>
+                            <SetVariable name="ConfigKey">[Master],maximize_library</SetVariable>
+                          </Template>
                         </Children>
                       </WidgetGroup><!-- LibExpandBox -->
                     </Children>
-                  </WidgetGroup><!-- SearchLineBox -->
+                  </WidgetGroup><!--SearchBox + Library expand toggle -->
 
                   <WidgetGroup>
                     <ObjectName>SearchTreeSpacer</ObjectName>
@@ -109,19 +102,19 @@
                         </Connection>
                       </WidgetGroup><!--Cover Art-->
                     </Children>
-                  </Splitter><!-- HorizontalSplitter -->
+                  </Splitter><!-- SidebarCoverSplitter -->
 
                 </Children>
-              </WidgetGroup><!-- SidebarSearchPreviewContainer -->
+              </WidgetGroup><!-- LibSidebarContainer -->
 
               <!-- Library Table-->
               <Library>
                 <ShowButtonText>false</ShowButtonText>
-                <TrackTableBackgroundColorOpacity>0.125</TrackTableBackgroundColorOpacity>
+                <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
               </Library>
 
             </Children>
-          </Splitter><!-- VerticalSplitter -->
+          </Splitter><!-- LibrarySplitter -->
 
         </Children>
       </WidgetGroup><!-- LibraryContainer -->

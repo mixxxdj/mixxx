@@ -93,7 +93,7 @@ P32.browseEncoder = function(_channel, _control, value, _status, _group) {
 
 P32.headMixEncoder = function(_channel, _control, value, _status, _group) {
     var direction = (value > 64) ? -1 : 1;
-    engine.setValue("[Master]", "headMix", engine.getValue("[Master]", "headMix") + (0.25 * direction));
+    engine.setValue("[Master]", "headMix", engine.getValue("[Master]", "headMix") + (0.1 * direction));
 };
 
 P32.recordButton = new components.Button({
