@@ -149,6 +149,18 @@ double BeatUtils::computeFilteredWeightedAverage(
     return filterWeightedAverage / static_cast<double>(filterSum);
 }
 
+double BeatUtils::calculateAverageBpm(int numberOfBeats,
+        int sampleRate,
+        double lowerFrame,
+        double upperFrame) {
+    double frames = upperFrame - lowerFrame;
+    DEBUG_ASSERT(frames > 0);
+    if (numberOfBeats < 1) {
+        return 0;
+    }
+    return 60.0 * numberOfBeats * sampleRate / frames;
+}
+
 double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
                                int min_bpm, int max_bpm) {
     /*
@@ -184,14 +196,10 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
      * BPM.
      */
 
-    if (beats.size() < 2) {
-        return 0;
-    }
-
     // If we don't have enough beats for our regular approach, just divide the #
     // of beats by the duration in minutes.
     if (beats.size() <= N) {
-        return 60.0 * (beats.size()-1) * SampleRate / (beats.last() - beats.first());
+        return calculateAverageBpm(beats.size() - 1, SampleRate, beats.first(), beats.last());
     }
 
     QMap<double, int> frequency_table;

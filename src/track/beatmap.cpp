@@ -43,7 +43,7 @@ double calculateNominalBpm(const BeatList& beats, SINT sampleRate) {
         }
     }
 
-    if (beatvect.isEmpty()) {
+    if (beatvect.size() < 2) {
         return -1;
     }
 
@@ -439,9 +439,6 @@ double BeatMap::getBpm() const {
 
 // Note: Also called from the engine thread
 double BeatMap::getBpmAroundPosition(double curSample, int n) const {
-    // This function is only usable for one measure or such.
-    DEBUG_ASSERT(n <= 12);
-
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return -1;
@@ -450,24 +447,27 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     // To make sure we are always counting n beats, iterate backward to the
     // lower bound, then iterate forward from there to the upper bound.
     // a value of -1 indicates we went off the map -- count from the beginning.
-    double lower_bound = findNthBeat(curSample, -n);
-    if (lower_bound == -1) {
-        lower_bound = framesToSamples(m_beats.first().frame_position());
+    double lowerSample = findNthBeat(curSample, -n);
+    if (lowerSample == -1) {
+        lowerSample = framesToSamples(m_beats.first().frame_position());
     }
 
     // If we hit the end of the beat map, recalculate the lower bound.
-    double upper_bound = findNthBeat(lower_bound, n * 2);
-    if (upper_bound == -1) {
-        upper_bound = framesToSamples(m_beats.last().frame_position());
-        lower_bound = findNthBeat(upper_bound, n * -2);
+    double upperSample = findNthBeat(lowerSample, n * 2);
+    if (upperSample == -1) {
+        upperSample = framesToSamples(m_beats.last().frame_position());
+        lowerSample = findNthBeat(upperSample, n * -2);
         // Super edge-case -- the track doesn't have n beats!  Do the best
         // we can.
-        if (lower_bound == -1) {
-            lower_bound = framesToSamples(m_beats.first().frame_position());
+        if (lowerSample == -1) {
+            lowerSample = framesToSamples(m_beats.first().frame_position());
         }
     }
 
-    VERIFY_OR_DEBUG_ASSERT(lower_bound < upper_bound) {
+    double lowerFrame = samplesToFrames(lowerSample);
+    double upperFrame = samplesToFrames(upperSample);
+
+    VERIFY_OR_DEBUG_ASSERT(lowerFrame < upperFrame) {
         return -1;
     }
 
@@ -475,20 +475,16 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
 
     int numberOfBeats = 0;
     for (const auto& beat : m_beats) {
-        double pos = framesToSamples(beat.frame_position() + kFrameEpsilon);
-        if (pos > upper_bound) {
+        double pos = beat.frame_position() + kFrameEpsilon;
+        if (pos > upperFrame) {
             break;
         }
-        if (pos > lower_bound) {
+        if (pos > lowerFrame) {
             numberOfBeats++;
         }
     }
 
-    if (numberOfBeats == 0) {
-        return -1;
-    }
-
-    return 60.0 * numberOfBeats * m_iSampleRate * kFrameSize / (upper_bound - lower_bound);
+    return BeatUtils::calculateAverageBpm(numberOfBeats, m_iSampleRate, lowerFrame, upperFrame);
 }
 
 void BeatMap::addBeat(double dBeatSample) {
