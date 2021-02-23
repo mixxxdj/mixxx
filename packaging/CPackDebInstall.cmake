@@ -17,9 +17,12 @@ if( NOT CPACK_DEBIAN_DOCBOOK_TO_MAN )
     message( FATAL_ERROR "docbook-to-man not found, required for cpack -G DEB" )
 endif()
 
-message( NOTICE "Creating debian folder" )
+# We create a temporary debian folder that the debhelper below run as usual.
+# The final debian folder is created indipendently by cpack
+message( NOTICE "Creating temporary debian folder for debhelper" )
 file(COPY ${CPACK_DEBIAN_SOURCE_DIR}/packaging/debian
     DESTINATION ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME})
+set(CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA "libavcodec-dev, libavutil-dev,")
 configure_file(${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control.in
                ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian/control
                @ONLY)
@@ -75,5 +78,6 @@ run_dh(dh_installchangelogs)
 run_dh(dh_installman)
 run_dh(dh_installudev --name=mixxx-usb-uaccess --priority=69)
 
+# Remove temporary files only needed by debhelpers
 file (REMOVE_RECURSE ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/debian)
 file (REMOVE ${CPACK_TOPLEVEL_DIRECTORY}/${CPACK_PACKAGE_FILE_NAME}/mixxx.1)
