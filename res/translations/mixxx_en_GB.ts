@@ -2973,13 +2973,13 @@
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="610"/>
-        <source>Controller Preset Error</source>
-        <translation>Controller Preset Error</translation>
+        <source>Controller Mapping Error</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="611"/>
-        <source>The preset for your controller &quot;%1&quot; is not working properly.</source>
-        <translation>The preset for your controller &quot;%1&quot; is not working properly.</translation>
+        <source>The mapping for your controller &quot;%1&quot; is not working properly.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="615"/>
@@ -4515,16 +4515,6 @@ Apply settings and continue?</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="528"/>
-        <source>Preset already exists.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="529"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; already exists in user preset folder.&lt;br&gt;Overwrite or save with a new name?</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="532"/>
         <source>Always overwrite during this session</source>
         <translation type="unfinished"/>
@@ -4578,6 +4568,16 @@ Apply settings and continue?</translation>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="487"/>
         <source>Do you want to save the changes?</source>
         <translation>Do you want to save the changes?</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="528"/>
+        <source>Mapping already exists.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="529"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; already exists in user mapping folder.&lt;br&gt;Overwrite or save with a new name?</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="671"/>
@@ -8113,8 +8113,8 @@ Do you really want to overwrite it?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="127"/>
-        <source>One or more MixxxControls specified in the outputs section of the loaded preset were invalid.</source>
-        <translation>One or more MixxxControls specified in the outputs section of the loaded preset were invalid.</translation>
+        <source>One or more MixxxControls specified in the outputs section of the loaded mapping were invalid.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="129"/>

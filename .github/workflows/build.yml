@@ -7,17 +7,19 @@ on:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         include:
           - name: Ubuntu 18.04 (gcc)
             os: ubuntu-18.04
             cmake_args: >-
+              -DWARNINGS_FATAL=ON
               -DFAAD=ON
-              -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
+              -INSTALL_USER_UDEV_RULES=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             ctest_args:
@@ -32,12 +34,14 @@ jobs:
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
             cmake_args: >-
+              -DWARNINGS_FATAL=ON
               -DFFMPEG=ON
               -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
+              -INSTALL_USER_UDEV_RULES=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             ctest_args:
@@ -75,7 +79,6 @@ jobs:
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
-              -DSTATIC_DEPS=ON
             cc: cl
             cxx: cl
             cmake_generator: Ninja
@@ -110,7 +113,7 @@ jobs:
       with:
         # This should always match the mininum required version in
         # our CMakeLists.txt
-        cmake-version: '3.13.x'
+        cmake-version: '3.15.x'
 
     - name: "[Windows] Install additional build tools"
       if: runner.os == 'Windows'
@@ -248,7 +251,8 @@ jobs:
         # Render analyzer waveform tests to an offscreen buffer
         QT_QPA_PLATFORM: ${{ matrix.qt_qpa_platform }}
         GTEST_COLOR: 1
-        CTEST_PARALLEL_LEVEL: 2
+        # Windows tests fail randomly if run in parallel
+        CTEST_PARALLEL_LEVEL: 1
         CTEST_OUTPUT_ON_FAILURE: 1
 
     - name: Benchmark

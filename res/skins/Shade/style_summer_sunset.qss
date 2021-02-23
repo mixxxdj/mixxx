@@ -119,31 +119,19 @@ WOverview #PassthroughLabel {
   color: #FF9900;
 }
 
-#DlgMissing > QPushButton:enabled,
-#DlgHidden > QPushButton:enabled,
-#DlgAutoDJ > QPushButton:enabled,
-#DlgRecording > QPushButton:enabled,
-#DlgAnalysis > QPushButton:enabled {
+#LibraryFeatureControls QPushButton:enabled {
   background-color: #998A3C;
   border: 1px solid #998A3C;
   }
-  #DlgMissing > QPushButton:!enabled,
-  #DlgHidden > QPushButton:!enabled,
-  #DlgAutoDJ > QPushButton:!enabled,
-  #DlgRecording > QPushButton:!enabled,
-  #DlgAnalysis > QPushButton:!enabled {
+  #LibraryFeatureControls QPushButton:!enabled {
     background-color: #706633;
     border: 1px solid #706633;
     }
-  WLibrary QPushButton:unchecked {
+  #LibraryFeatureControls QPushButton:unchecked {
     color: #888;
     background-color: #444;
     }
-  #DlgMissing > QPushButton:checked,
-  #DlgHidden > QPushButton:checked,
-  #DlgAutoDJ > QPushButton:checked,
-  #DlgRecording > QPushButton:checked,
-  #DlgAnalysis > QPushButton:checked {
+  #LibraryFeatureControls QPushButton:checked {
     color: #000;
     background-color: #52F904;
     border: 1px solid #52F904;

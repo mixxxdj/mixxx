@@ -81,38 +81,38 @@ bool MixxxDb::initDatabaseSchema(
     QString helpEmail = tr("For help with database issues contact:") + "\n" +
                            "mixxx-devel@lists.sourceforge.net";
 
-    switch (SchemaManager(database).upgradeToSchemaVersion(schemaFile, schemaVersion)) {
-        case SchemaManager::Result::CurrentVersion:
-        case SchemaManager::Result::UpgradeSucceeded:
-        case SchemaManager::Result::NewerVersionBackwardsCompatible:
-            return true; // done
-        case SchemaManager::Result::UpgradeFailed:
-            QMessageBox::warning(nullptr,
-                    upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                            tr("Your mixxxdb.sqlite file may be corrupt.") +
-                            "\n" + tr("Try renaming it and restarting Mixxx.") +
-                            "\n" + helpEmail + "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false; // abort
-        case SchemaManager::Result::NewerVersionIncompatible:
-            QMessageBox::warning(nullptr,
-                    upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                            tr("Your mixxxdb.sqlite file was created by a "
-                               "newer "
-                               "version of Mixxx and is incompatible.") +
-                            "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false; // abort
-        case SchemaManager::Result::SchemaError:
-            QMessageBox::warning(nullptr,
-                    upgradeFailed,
-                    upgradeToVersionFailed + "\n" +
-                            tr("The database schema file is invalid.") + "\n" +
-                            helpEmail + "\n\n" + okToExit,
-                    QMessageBox::Ok);
-            return false; // abort
+    switch (SchemaManager(database).upgradeToSchemaVersion(schemaVersion, schemaFile)) {
+    case SchemaManager::Result::CurrentVersion:
+    case SchemaManager::Result::UpgradeSucceeded:
+    case SchemaManager::Result::NewerVersionBackwardsCompatible:
+        return true; // done
+    case SchemaManager::Result::UpgradeFailed:
+        QMessageBox::warning(nullptr,
+                upgradeFailed,
+                upgradeToVersionFailed + "\n" +
+                        tr("Your mixxxdb.sqlite file may be corrupt.") +
+                        "\n" + tr("Try renaming it and restarting Mixxx.") +
+                        "\n" + helpEmail + "\n\n" + okToExit,
+                QMessageBox::Ok);
+        return false; // abort
+    case SchemaManager::Result::NewerVersionIncompatible:
+        QMessageBox::warning(nullptr,
+                upgradeFailed,
+                upgradeToVersionFailed + "\n" +
+                        tr("Your mixxxdb.sqlite file was created by a "
+                           "newer "
+                           "version of Mixxx and is incompatible.") +
+                        "\n\n" + okToExit,
+                QMessageBox::Ok);
+        return false; // abort
+    case SchemaManager::Result::SchemaError:
+        QMessageBox::warning(nullptr,
+                upgradeFailed,
+                upgradeToVersionFailed + "\n" +
+                        tr("The database schema file is invalid.") + "\n" +
+                        helpEmail + "\n\n" + okToExit,
+                QMessageBox::Ok);
+        return false; // abort
     }
     // Suppress compiler warning
     DEBUG_ASSERT(!"unhandled switch/case");
