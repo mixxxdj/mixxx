@@ -19,6 +19,7 @@ jobs:
               -DMAD=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
+              -INSTALL_USER_UDEV_RULES=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             ctest_args:
@@ -40,6 +41,7 @@ jobs:
               -DMAD=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
+              -INSTALL_USER_UDEV_RULES=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             ctest_args:
@@ -111,7 +113,7 @@ jobs:
       with:
         # This should always match the mininum required version in
         # our CMakeLists.txt
-        cmake-version: '3.15.x'
+        cmake-version: '3.13.x'
 
     - name: "[Windows] Install additional build tools"
       if: runner.os == 'Windows'

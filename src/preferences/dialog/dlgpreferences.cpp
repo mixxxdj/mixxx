@@ -17,9 +17,7 @@
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
-#else /* __VINYLCONTROL__ */
-#include "preferences/dialog/dlgprefnovinyl.h"
-#endif
+#endif // __VINYLCONTROL__
 
 #include "preferences/dialog/dlgprefautodj.h"
 #include "preferences/dialog/dlgprefcolors.h"
@@ -32,7 +30,7 @@
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
-#endif /* __BROADCAST__ */
+#endif // __BROADCAST__
 
 #include "preferences/dialog/dlgprefbeats.h"
 #include "preferences/dialog/dlgprefkey.h"
@@ -41,7 +39,7 @@
 
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
-#endif /* __MODPLUG__ */
+#endif // __MODPLUG__
 
 #include "controllers/controllermanager.h"
 #include "library/library.h"
@@ -121,19 +119,7 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Vinyl Control"),
             "ic_preferences_vinyl.svg");
-#else
-    addPageWidget(PreferencesPage(
-<<<<<<< HEAD
-            new DlgPrefNoVinyl(this, pSoundManager, m_pConfig),
-            createTreeItem(tr("Vinyl Control"),
-                    QIcon(":/images/preferences/ic_preferences_vinyl.svg"))));
-=======
-                          new DlgPrefNoVinyl(this, soundman, m_pConfig),
-                          new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
-            tr("Vinyl Control"),
-            "ic_preferences_vinyl.svg");
->>>>>>> upstream/main
-#endif
+#endif // __VINYLCONTROL__
 
             addPageWidget(PreferencesPage(
                                   new DlgPrefInterface(
@@ -191,7 +177,7 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Live Broadcasting"),
             "ic_preferences_broadcast.svg");
-#endif /* __BROADCAST__ */
+#endif // __BROADCAST__
 
     addPageWidget(PreferencesPage(
                           new DlgPrefRecord(this, m_pConfig),
@@ -222,7 +208,7 @@ DlgPreferences::DlgPreferences(
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),
             tr("Modplug Decoder"),
             "ic_preferences_modplug.svg");
-#endif /* __MODPLUG__ */
+#endif // __MODPLUG__
 
     // Find accept and apply buttons
     const auto buttons = buttonBox->buttons();
@@ -350,7 +336,7 @@ void DlgPreferences::onShow() {
     // Update geometry with last values
 #ifdef __WINDOWS__
     resize(m_geometry[2].toInt(), m_geometry[3].toInt());
-#else /* __WINDOWS__ */
+#else  // __WINDOWS__
     // On linux, when the window is opened for the first time by the window manager,
     // QT does not have information about the frame size so the offset is zero.
     // As such, the first time it opens the window does not include the offset,
@@ -360,11 +346,11 @@ void DlgPreferences::onShow() {
     int offsetY = geometry().top() - frameGeometry().top();
     newX += offsetX;
     newY += offsetY;
-    setGeometry(newX,               // x position
-            newY,                   // y position
-            m_geometry[2].toInt(),  // width
-            m_geometry[3].toInt()); // height
-#endif
+    setGeometry(newX,  // x position
+                newY,  // y position
+                m_geometry[2].toInt(),  // width
+                m_geometry[3].toInt()); // height
+#endif // __LINUX__ / __MACOS__
     // Move is also needed on linux.
     move(newX, newY);
 
@@ -485,7 +471,7 @@ void DlgPreferences::moveEvent(QMoveEvent* e) {
         Q_UNUSED(e);
         m_geometry[0] = QString::number(frameGeometry().left());
         m_geometry[1] = QString::number(frameGeometry().top());
-#else /* __WINDOWS__ */
+#else
         // Warning! geometry does NOT include the frame/title.
         int offsetX = geometry().left() - frameGeometry().left();
         int offsetY = geometry().top() - frameGeometry().top();

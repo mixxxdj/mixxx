@@ -18,6 +18,8 @@
 
 using mixxx::track::io::Beat;
 
+namespace {
+
 const int kFrameSize = 2;
 
 inline double samplesToFrames(const double samples) {
@@ -31,6 +33,24 @@ inline double framesToSamples(const int frames) {
 bool BeatLessThan(const Beat& beat1, const Beat& beat2) {
     return beat1.frame_position() < beat2.frame_position();
 }
+
+double calculateNominalBpm(const BeatList& beats, SINT sampleRate) {
+    QVector<double> beatvect;
+    beatvect.reserve(beats.size());
+    for (const auto& beat : beats) {
+        if (beat.enabled()) {
+            beatvect.append(beat.frame_position());
+        }
+    }
+
+    if (beatvect.size() < 2) {
+        return -1;
+    }
+
+    return BeatUtils::calculateBpm(beatvect, sampleRate, 0, 9999);
+}
+
+} // namespace
 
 namespace mixxx {
 
@@ -66,8 +86,7 @@ class BeatMapIterator : public BeatIterator {
 BeatMap::BeatMap(const Track& track, SINT iSampleRate)
         : m_mutex(QMutex::Recursive),
           m_iSampleRate(iSampleRate > 0 ? iSampleRate : track.getSampleRate()),
-          m_dCachedBpm(0),
-          m_dLastFrame(0) {
+          m_nominalBpm(0) {
     // BeatMap should live in the same thread as the track it is associated
     // with.
     moveToThread(track.thread());
@@ -87,12 +106,11 @@ BeatMap::BeatMap(const Track& track, SINT iSampleRate,
     }
 }
 
-BeatMap::BeatMap (const BeatMap& other)
+BeatMap::BeatMap(const BeatMap& other)
         : m_mutex(QMutex::Recursive),
           m_subVersion(other.m_subVersion),
           m_iSampleRate(other.m_iSampleRate),
-          m_dCachedBpm(other.m_dCachedBpm),
-          m_dLastFrame(other.m_dLastFrame),
+          m_nominalBpm(other.m_nominalBpm),
           m_beats(other.m_beats) {
     moveToThread(other.thread());
 }
@@ -416,21 +434,10 @@ double BeatMap::getBpm() const {
     if (!isValid()) {
         return -1;
     }
-    return m_dCachedBpm;
+    return m_nominalBpm;
 }
 
-double BeatMap::getBpmRange(double startSample, double stopSample) const {
-    QMutexLocker locker(&m_mutex);
-    if (!isValid()) {
-        return -1;
-    }
-    Beat startBeat, stopBeat;
-    startBeat.set_frame_position(
-            static_cast<google::protobuf::int32>(samplesToFrames(startSample)));
-    stopBeat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(stopSample)));
-    return calculateBpm(startBeat, stopBeat);
-}
-
+// Note: Also called from the engine thread
 double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid()) {
@@ -440,28 +447,44 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     // To make sure we are always counting n beats, iterate backward to the
     // lower bound, then iterate forward from there to the upper bound.
     // a value of -1 indicates we went off the map -- count from the beginning.
-    double lower_bound = findNthBeat(curSample, -n);
-    if (lower_bound == -1) {
-        lower_bound = framesToSamples(m_beats.first().frame_position());
+    double lowerSample = findNthBeat(curSample, -n);
+    if (lowerSample == -1) {
+        lowerSample = framesToSamples(m_beats.first().frame_position());
     }
 
     // If we hit the end of the beat map, recalculate the lower bound.
-    double upper_bound = findNthBeat(lower_bound, n * 2);
-    if (upper_bound == -1) {
-        upper_bound = framesToSamples(m_beats.last().frame_position());
-        lower_bound = findNthBeat(upper_bound, n * -2);
+    double upperSample = findNthBeat(lowerSample, n * 2);
+    if (upperSample == -1) {
+        upperSample = framesToSamples(m_beats.last().frame_position());
+        lowerSample = findNthBeat(upperSample, n * -2);
         // Super edge-case -- the track doesn't have n beats!  Do the best
         // we can.
-        if (lower_bound == -1) {
-            lower_bound = framesToSamples(m_beats.first().frame_position());
+        if (lowerSample == -1) {
+            lowerSample = framesToSamples(m_beats.first().frame_position());
         }
     }
 
-    Beat startBeat, stopBeat;
-    startBeat.set_frame_position(
-            static_cast<google::protobuf::int32>(samplesToFrames(lower_bound)));
-    stopBeat.set_frame_position(static_cast<google::protobuf::int32>(samplesToFrames(upper_bound)));
-    return calculateBpm(startBeat, stopBeat);
+    double lowerFrame = samplesToFrames(lowerSample);
+    double upperFrame = samplesToFrames(upperSample);
+
+    VERIFY_OR_DEBUG_ASSERT(lowerFrame < upperFrame) {
+        return -1;
+    }
+
+    const int kFrameEpsilon = m_iSampleRate / 20;
+
+    int numberOfBeats = 0;
+    for (const auto& beat : m_beats) {
+        double pos = beat.frame_position() + kFrameEpsilon;
+        if (pos > upperFrame) {
+            break;
+        }
+        if (pos > lowerFrame) {
+            numberOfBeats++;
+        }
+    }
+
+    return BeatUtils::calculateAverageBpm(numberOfBeats, m_iSampleRate, lowerFrame, upperFrame);
 }
 
 void BeatMap::addBeat(double dBeatSample) {
@@ -698,40 +721,10 @@ void BeatMap::setBpm(double dBpm) {
 
 void BeatMap::onBeatlistChanged() {
     if (!isValid()) {
-        m_dLastFrame = 0;
-        m_dCachedBpm = 0;
+        m_nominalBpm = 0;
         return;
     }
-    m_dLastFrame = m_beats.last().frame_position();
-    Beat startBeat = m_beats.first();
-    Beat stopBeat =  m_beats.last();
-    m_dCachedBpm = calculateBpm(startBeat, stopBeat);
-}
-
-double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const {
-    if (startBeat.frame_position() > stopBeat.frame_position()) {
-        return -1;
-    }
-
-    BeatList::const_iterator curBeat =
-            std::lower_bound(m_beats.constBegin(), m_beats.constEnd(), startBeat, BeatLessThan);
-
-    BeatList::const_iterator lastBeat =
-            std::upper_bound(m_beats.constBegin(), m_beats.constEnd(), stopBeat, BeatLessThan);
-
-    QVector<double> beatvect;
-    for (; curBeat != lastBeat; ++curBeat) {
-        const Beat& beat = *curBeat;
-        if (beat.enabled()) {
-            beatvect.append(beat.frame_position());
-        }
-    }
-
-    if (beatvect.isEmpty()) {
-        return -1;
-    }
-
-    return BeatUtils::calculateBpm(beatvect, m_iSampleRate, 0, 9999);
+    m_nominalBpm = calculateNominalBpm(m_beats, m_iSampleRate);
 }
 
 } // namespace mixxx

@@ -33,6 +33,10 @@ class BeatUtils {
         return bpm;
     }
 
+    static double calculateAverageBpm(int numberOfBeats,
+            int sampleRate,
+            double lowerFrame,
+            double upperFrame);
 
     /*
      * This method detects the BPM given a set of beat positions.

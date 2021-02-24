@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15.0)
+cmake_minimum_required(VERSION 3.13.0)
 project(mixxx VERSION 2.3.0)
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
@@ -706,8 +706,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/preferences/dialog/dlgprefkeydlg.ui
   src/preferences/dialog/dlgpreflibrary.cpp
   src/preferences/dialog/dlgpreflibrarydlg.ui
-  src/preferences/dialog/dlgprefnovinyl.cpp
-  src/preferences/dialog/dlgprefnovinyldlg.ui
   src/preferences/dialog/dlgprefrecord.cpp
   src/preferences/dialog/dlgprefrecorddlg.ui
   src/preferences/dialog/dlgprefreplaygain.cpp
@@ -1015,7 +1013,7 @@ if(MSVC)
     target_compile_options(mixxx-lib PUBLIC /W4)
   else()
     target_compile_options(mixxx-lib PUBLIC /W3)
-    target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
+    target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS /UTF8)
   endif()
 else()
   target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion -Werror=return-type)
@@ -2299,22 +2297,23 @@ endif()
 
 # FDK-AAC is loaded dynamically at runtime by EncoderFdkAac using QLibrary,
 # so copy it into the Windows and macOS packages, but do not link to it.
-find_library(FDK_AAC_LIBRARY fdk-aac)
-# On Windows find_library finds the .lib file, but the installer needs the .dll file.
-find_file(FDK_AAC_DLL fdk-aac.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
-if(APPLE AND MACOS_BUNDLE AND FDK_AAC_LIBRARY)
-  message(STATUS "Found fdk-aac: ${FDK_AAC_LIBRARY}")
-  file(COPY ${FDK_AAC_LIBRARY}
-    DESTINATION ${MIXXX_INSTALL_PREFIX}/Contents/Frameworks
-    FOLLOW_SYMLINK_CHAIN
-  )
-elseif(WIN32 AND FDK_AAC_DLL)
-  message(STATUS "Found fdk-aac DLL: ${FDK_AAC_DLL}")
-  install(FILES ${FDK_AAC_DLL} DESTINATION ${MIXXX_INSTALL_BINDIR})
-elseif(FDK_AAC_LIBRARY)
-  message(STATUS "Found fdk-aac: ${FDK_AAC_LIBRARY}")
-else()
-  message(STATUS "Could NOT find fdk-aac")
+if(APPLE AND MACOS_BUNDLE)
+  find_library(FDK_AAC_LIBRARY fdk-aac.2)
+  if(FDK_AAC_LIBRARY)
+    message(STATUS "Found fdk-aac: ${FDK_AAC_LIBRARY}")
+    install(FILES ${FDK_AAC_LIBRARY} DESTINATION ${MIXXX_INSTALL_PREFIX}/Contents/Frameworks)
+  else()
+    message(STATUS "Could NOT find libfdk-aac.2.dylib")
+  endif()
+elseif(WIN32)
+  # On Windows find_library finds the .lib file, but the installer needs the .dll file.
+  find_file(FDK_AAC_DLL fdk-aac.dll PATH_SUFFIXES ${CMAKE_INSTALL_BINDIR})
+  if(FDK_AAC_DLL)
+    message(STATUS "Found fdk-aac DLL: ${FDK_AAC_DLL}")
+    install(FILES ${FDK_AAC_DLL} DESTINATION ${MIXXX_INSTALL_BINDIR})
+  else()
+    message(STATUS "Could NOT find fdk-aac.dll")
+  endif()
 endif()
 
 # FFmpeg 4.x support
@@ -2698,6 +2697,7 @@ set(CPACK_DEBIAN_PACKAGE_REPLACES "mixxx-data")
 set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqt5sql5-sqlite, fonts-open-sans, fonts-ubuntu")
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "${CPACK_PACKAGE_HOMEPAGE_URL}")
+set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
 file(READ ${CPACK_PACKAGE_DESCRIPTION_FILE} CPACK_DEBIAN_PACKAGE_DESCRIPTION)
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_DEBIAN_PACKAGE_DESCRIPTION}")
 string(PREPEND CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_PACKAGE_DESCRIPTION_SUMMARY}" "\n")
@@ -2705,6 +2705,7 @@ string(REPLACE "\n\n" "\n.\n" CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_D
 string(REPLACE "\n" "\n " CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}")
 if("3.16.0" VERSION_GREATER CMAKE_VERSION)
   # This hack is no longer required with cpack version 3.16.3
+  set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}")
   set(CPACK_PACKAGE_DESCRIPTION "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}")
 endif()
 
@@ -2717,7 +2718,7 @@ set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_DEBIAN_UPSTREAM_VERSION}-ppa1~${GIT_BR
 set(CPACK_DEBIAN_DISTRIBUTION_RELEASES bionic focal groovy hirsute)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
-
+set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")
 
 set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
 set(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/LICENSE.rtf")

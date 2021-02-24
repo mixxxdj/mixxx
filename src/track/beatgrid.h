@@ -59,7 +59,6 @@ class BeatGrid final : public Beats {
     std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
     bool hasBeatInRange(double startSample, double stopSample) const override;
     double getBpm() const override;
-    double getBpmRange(double startSample, double stopSample) const override;
     double getBpmAroundPosition(double curSample, int n) const override;
 
     ////////////////////////////////////////////////////////////////////////////

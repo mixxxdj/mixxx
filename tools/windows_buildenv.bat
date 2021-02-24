@@ -171,7 +171,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>%CMakeSettings% echo       "generator": "Ninja",
     >>%CMakeSettings% echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
     >>%CMakeSettings% echo       "installRoot": "!INSTALL_ROOT:\=\\!\\${name}",
-    >>%CMakeSettings% echo       "cmakeToolchain": "!BUILDENV_PATH!\scripts\buildsystems\vcpkg.cmake",
+    >>%CMakeSettings% echo       "cmakeToolchain": "!BUILDENV_PATH:\=\\!\\scripts\\buildsystems\\vcpkg.cmake",
     >>%CMakeSettings% echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>%CMakeSettings% echo       "variables": [
     SET variableElementTermination=,
