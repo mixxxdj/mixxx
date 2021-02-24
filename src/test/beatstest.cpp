@@ -171,7 +171,7 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat) {
     FramePos position = m_startOffsetFrames + beatLength * curBeat;
 
     // The spec dictates that a value of 0 is always invalid
-    EXPECT_EQ(kInvalidFramePos, pBeats->findNthBeat(position, 0)->framePosition());
+    EXPECT_EQ(std::nullopt, pBeats->findNthBeat(position, 0));
 
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
@@ -240,7 +240,7 @@ TEST_F(BeatsTest, NthBeatWhenOnBeat_AfterEpsilon) {
             kClosestBeat + beatLength * 0.005;
 
     // The spec dictates that a value of 0 is always invalid
-    EXPECT_EQ(kInvalidFramePos, pBeats->findNthBeat(position, 0)->framePosition());
+    EXPECT_EQ(std::nullopt, pBeats->findNthBeat(position, 0));
 
     EXPECT_EQ(kClosestBeat, pBeats->findClosestBeat(position));
 
@@ -279,7 +279,7 @@ TEST_F(BeatsTest, NthBeatWhenNotOnBeat) {
     FramePos position = FramePos((previousBeat.getValue() + nextBeat.getValue()) / 2);
 
     // The spec dictates that a value of 0 is always invalid
-    EXPECT_EQ(kInvalidFramePos, pBeats->findNthBeat(position, 0)->framePosition());
+    EXPECT_EQ(std::nullopt, pBeats->findNthBeat(position, 0));
 
     // findNthBeat should return multiples of beats starting from the next or
     // previous beat, depending on whether N is positive or negative.
