@@ -121,13 +121,13 @@ DlgPreferences::DlgPreferences(
             "ic_preferences_vinyl.svg");
 #endif // __VINYLCONTROL__
 
-            addPageWidget(PreferencesPage(
-                                  new DlgPrefInterface(
-                                          this, mixxx, pSkinLoader, m_pConfig),
-                                  new QTreeWidgetItem(contentsTreeWidget,
-                                          QTreeWidgetItem::Type)),
-                    tr("Interface"),
-                    "ic_preferences_interface.svg");
+    addPageWidget(PreferencesPage(
+                          new DlgPrefInterface(
+                                  this, mixxx, pSkinLoader, m_pConfig),
+                          new QTreeWidgetItem(contentsTreeWidget,
+                                  QTreeWidgetItem::Type)),
+            tr("Interface"),
+            "ic_preferences_interface.svg");
 
     addPageWidget(PreferencesPage(
                           new DlgPrefWaveform(this, mixxx, m_pConfig, pLibrary),
