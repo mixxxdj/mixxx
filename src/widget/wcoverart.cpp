@@ -12,6 +12,7 @@
 #include "library/coverartcache.h"
 #include "library/coverartutils.h"
 #include "library/dlgcoverartfullsize.h"
+#include "moc_wcoverart.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
@@ -40,16 +41,12 @@ WCoverArt::WCoverArt(QWidget* parent,
                 this,
                 &WCoverArt::slotCoverFound);
     }
-    connect(m_pMenu, SIGNAL(coverInfoSelected(const CoverInfoRelative&)),
-            this, SLOT(slotCoverInfoSelected(const CoverInfoRelative&)));
-    connect(m_pMenu, SIGNAL(reloadCoverArt()),
-            this, SLOT(slotReloadCoverArt()));
+    connect(m_pMenu, &WCoverArtMenu::coverInfoSelected, this, &WCoverArt::slotCoverInfoSelected);
+    connect(m_pMenu, &WCoverArtMenu::reloadCoverArt, this, &WCoverArt::slotReloadCoverArt);
 
     if (m_pPlayer != nullptr) {
-        connect(m_pPlayer, SIGNAL(newTrackLoaded(TrackPointer)),
-                this, SLOT(slotLoadTrack(TrackPointer)));
-        connect(m_pPlayer, SIGNAL(loadingTrack(TrackPointer, TrackPointer)),
-                this, SLOT(slotLoadingTrack(TrackPointer, TrackPointer)));
+        connect(m_pPlayer, &BaseTrackPlayer::newTrackLoaded, this, &WCoverArt::slotLoadTrack);
+        connect(m_pPlayer, &BaseTrackPlayer::loadingTrack, this, &WCoverArt::slotLoadingTrack);
 
         // just in case a track is already loaded
         slotLoadTrack(m_pPlayer->getLoadedTrack());
@@ -174,8 +171,10 @@ void WCoverArt::slotCoverFound(
 
 void WCoverArt::slotLoadTrack(TrackPointer pTrack) {
     if (m_loadedTrack) {
-        disconnect(m_loadedTrack.get(), SIGNAL(coverArtUpdated()),
-                   this, SLOT(slotTrackCoverArtUpdated()));
+        disconnect(m_loadedTrack.get(),
+                &Track::coverArtUpdated,
+                this,
+                &WCoverArt::slotTrackCoverArtUpdated);
     }
     m_lastRequestedCover = CoverInfo();
     m_loadedCover = QPixmap();

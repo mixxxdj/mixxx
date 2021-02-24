@@ -18,7 +18,7 @@ namespace {
 constexpr double kMaxFloatingPointErrorLowPrecision = 0.005;
 constexpr double kMaxFloatingPointErrorHighPrecision = 0.0000000000000005;
 constexpr double kMaxBeatDistanceEpsilon = 1e-9;
-}
+} // namespace
 
 /// Tests for Master Sync.
 /// The following manual tests should probably be performed:
@@ -34,14 +34,14 @@ class EngineSyncTest : public MockedEngineBackendTest {
         }
         return QString();
     }
-    bool isExplicitMaster(QString group) {
+    bool isExplicitMaster(const QString& group) {
         return isMaster(group, true);
     }
-    bool isSoftMaster(QString group) {
+    bool isSoftMaster(const QString& group) {
         return isMaster(group, false);
     }
 
-    bool isFollower(QString group) {
+    bool isFollower(const QString& group) {
         if (group == m_sInternalClockGroup) {
             return !ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                       "sync_master"))
@@ -59,7 +59,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
         return true;
     }
 
-    void assertSyncOff(QString group) {
+    void assertSyncOff(const QString& group) {
         if (group == m_sInternalClockGroup) {
             ASSERT_EQ(0,
                     ControlObject::getControl(
@@ -84,7 +84,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
     }
 
   private:
-    bool isMaster(QString group, bool explicitMaster) {
+    bool isMaster(const QString& group, bool explicitMaster) {
         if (group == m_sInternalClockGroup) {
             if (!ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                    "sync_master"))

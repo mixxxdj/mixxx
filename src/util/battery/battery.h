@@ -1,5 +1,4 @@
-#ifndef UTIL_BATTERY_BATTERY_H
-#define UTIL_BATTERY_BATTERY_H
+#pragma once
 
 #include "util/timer.h"
 
@@ -46,5 +45,3 @@ class Battery : public QObject {
   private:
     GuiTickTimer m_timer;
 };
-
-#endif /* UTIL_BATTERY_BATTERY_H */

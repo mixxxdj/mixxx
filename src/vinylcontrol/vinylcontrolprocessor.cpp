@@ -1,8 +1,9 @@
-#include <QMutexLocker>
-
 #include "vinylcontrol/vinylcontrolprocessor.h"
 
+#include <QMutexLocker>
+
 #include "control/controlpushbutton.h"
+#include "moc_vinylcontrolprocessor.cpp"
 #include "util/defs.h"
 #include "util/event.h"
 #include "util/sample.h"
@@ -54,7 +55,7 @@ VinylControlProcessor::~VinylControlProcessor() {
             delete pProcessor;
 
             delete m_samplePipes[i];
-            m_samplePipes[i] = NULL;
+            m_samplePipes[i] = nullptr;
         }
     }
 
@@ -140,7 +141,7 @@ void VinylControlProcessor::reloadConfig() {
         QMutexLocker locker(&m_processorsLock);
         VinylControl* pCurrent = m_processors[i];
 
-        if (pCurrent == NULL) {
+        if (pCurrent == nullptr) {
             continue;
         }
 
@@ -153,7 +154,7 @@ void VinylControlProcessor::reloadConfig() {
     }
 }
 
-void VinylControlProcessor::onInputConfigured(AudioInput input) {
+void VinylControlProcessor::onInputConfigured(const AudioInput& input) {
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;
@@ -177,7 +178,7 @@ void VinylControlProcessor::onInputConfigured(AudioInput input) {
     delete pCurrent;
 }
 
-void VinylControlProcessor::onInputUnconfigured(AudioInput input) {
+void VinylControlProcessor::onInputUnconfigured(const AudioInput& input) {
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
         return;
@@ -203,9 +204,9 @@ bool VinylControlProcessor::deckConfigured(int index) const {
     return m_processors[index] != NULL;
 }
 
-void VinylControlProcessor::receiveBuffer(AudioInput input,
-                                          const CSAMPLE* pBuffer,
-                                          unsigned int nFrames) {
+void VinylControlProcessor::receiveBuffer(const AudioInput& input,
+        const CSAMPLE* pBuffer,
+        unsigned int nFrames) {
     ScopedTimer t("VinylControlProcessor::receiveBuffer");
     if (input.getType() != AudioInput::VINYLCONTROL) {
         qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";
@@ -221,7 +222,7 @@ void VinylControlProcessor::receiveBuffer(AudioInput input,
 
     FIFO<CSAMPLE>* pSamplePipe = m_samplePipes[vcIndex];
 
-    if (pSamplePipe == NULL) {
+    if (pSamplePipe == nullptr) {
         // Should not be possible.
         return;
     }

@@ -1,7 +1,3 @@
-// QuantizeControl.cpp
-// Created on Sat 5, 2011
-// Author: pwhelan
-
 #include "engine/controls/quantizecontrol.h"
 
 #include <QtDebug>
@@ -9,12 +5,12 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/controls/enginecontrol.h"
+#include "moc_quantizecontrol.cpp"
 #include "preferences/usersettings.h"
 #include "track/track.h"
-#include "util/assert.h"
 
-QuantizeControl::QuantizeControl(QString group,
-                                 UserSettingsPointer pConfig)
+QuantizeControl::QuantizeControl(const QString& group,
+        UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     // Turn quantize OFF by default. See Bug #898213
     m_pCOQuantizeEnabled = new ControlPushButton(ConfigKey(group, "quantize"), true);

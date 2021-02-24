@@ -10,6 +10,7 @@
 
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
+#include "moc_wwaveformviewer.cpp"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "util/math.h"
@@ -262,7 +263,7 @@ void WWaveformViewer::setWaveformWidget(WaveformWidgetAbstract* waveformWidget) 
 
 CuePointer WWaveformViewer::getCuePointerFromCueMark(WaveformMarkPointer pMark) const {
     if (pMark && pMark->getHotCue() != Cue::kNoHotCue) {
-        QList<CuePointer> cueList = m_waveformWidget->getTrackInfo()->getCuePoints();
+        const QList<CuePointer> cueList = m_waveformWidget->getTrackInfo()->getCuePoints();
         for (const auto& pCue : cueList) {
             if (pCue->getHotCue() == pMark->getHotCue()) {
                 return pCue;

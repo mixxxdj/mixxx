@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>851</width>
+    <width>885</width>
     <height>399</height>
    </rect>
   </property>
@@ -63,7 +63,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_2">
+      <spacer name="horizontalSpacer_1">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -108,27 +108,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="fadeModeCombobox">
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_4">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Fixed</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>10</width>
-         <height>1</height>
-        </size>
-       </property>
-      </spacer>
+      <widget class="QComboBox" name="fadeModeCombobox"/>
      </item>
      <item>
       <widget class="QSpinBox" name="spinBoxTransition">
@@ -137,9 +117,6 @@
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
-       </property>
-       <property name="focusPolicy">
-        <enum>Qt::ClickFocus</enum>
        </property>
        <property name="frame">
         <bool>false</bool>
@@ -153,14 +130,17 @@
       </widget>
      </item>
      <item>
-      <widget class="QComboBox" name="ComboBoxAutoDjTransitionUnit">
-       <property name="toolTip">
-        <string/>
+      <widget class="QComboBox" name="ComboBoxAutoDjTransitionUnit"/>
+     </item>
+     <item>
+      <widget class="QLabel" name="labelTransitionAppendix">
+       <property name="text">
+        <string>sec.</string>
        </property>
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer_3">
+      <spacer name="horizontalSpacer_2">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>
@@ -193,9 +173,6 @@
      </item>
      <item>
       <widget class="QPushButton" name="pushButtonAddRandomTrack">
-       <property name="focusPolicy">
-        <enum>Qt::NoFocus</enum>
-       </property>
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -224,7 +201,7 @@
       </widget>
      </item>
      <item>
-      <spacer name="horizontalSpacer">
+      <spacer name="horizontalSpacer_3">
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
        </property>

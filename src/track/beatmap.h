@@ -5,8 +5,7 @@
  *      Author: vittorio
  */
 
-#ifndef BEATMAP_H_
-#define BEATMAP_H_
+#pragma once
 
 #include <QMutex>
 
@@ -52,7 +51,7 @@ class BeatMap final : public Beats {
     BeatsPointer clone() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
-    virtual void setSubVersion(QString subVersion);
+    virtual void setSubVersion(const QString& subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -69,7 +68,6 @@ class BeatMap final : public Beats {
     bool hasBeatInRange(double startSample, double stopSample) const override;
 
     double getBpm() const override;
-    double getBpmRange(double startSample, double stopSample) const override;
     double getBpmAroundPosition(double curSample, int n) const override;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -92,8 +90,6 @@ class BeatMap final : public Beats {
     void createFromBeatVector(const QVector<double>& beats);
     void onBeatlistChanged();
 
-    double calculateBpm(const mixxx::track::io::Beat& startBeat,
-                        const mixxx::track::io::Beat& stopBeat) const;
     // For internal use only.
     bool isValid() const;
 
@@ -107,10 +103,8 @@ class BeatMap final : public Beats {
     mutable QMutex m_mutex;
     QString m_subVersion;
     SINT m_iSampleRate;
-    double m_dCachedBpm;
-    double m_dLastFrame;
+    double m_nominalBpm;
     BeatList m_beats;
 };
 
 } // namespace mixxx
-#endif /* BEATMAP_H_ */

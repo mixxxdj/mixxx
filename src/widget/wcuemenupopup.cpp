@@ -5,6 +5,7 @@
 #include <QVBoxLayout>
 
 #include "engine/engine.h"
+#include "moc_wcuemenupopup.cpp"
 #include "track/track.h"
 #include "util/color/color.h"
 
@@ -67,7 +68,7 @@ WCueMenuPopup::WCueMenuPopup(UserSettingsPointer pConfig, QWidget* parent)
     layout()->activate();
 }
 
-void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
+void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, const CuePointer& pCue) {
     if (pTrack && pCue) {
         m_pTrack = pTrack;
         m_pCue = pCue;
@@ -81,13 +82,14 @@ void WCueMenuPopup::setTrackAndCue(TrackPointer pTrack, CuePointer pCue) {
         m_pCueNumber->setText(hotcueNumberText);
 
         QString positionText = "";
-        double startPosition = m_pCue->getPosition();
-        double endPosition = m_pCue->getEndPosition();
-        if (startPosition != Cue::kNoPosition) {
-            double startPositionSeconds = startPosition / m_pTrack->getSampleRate() / mixxx::kEngineChannelCount;
+        Cue::StartAndEndPositions pos = m_pCue->getStartAndEndPosition();
+        if (pos.startPosition != Cue::kNoPosition) {
+            double startPositionSeconds = pos.startPosition /
+                    m_pTrack->getSampleRate() / mixxx::kEngineChannelCount;
             positionText = mixxx::Duration::formatTime(startPositionSeconds, mixxx::Duration::Precision::CENTISECONDS);
-            if (endPosition != Cue::kNoPosition) {
-                double endPositionSeconds = endPosition / m_pTrack->getSampleRate() / mixxx::kEngineChannelCount;
+            if (pos.endPosition != Cue::kNoPosition) {
+                double endPositionSeconds = pos.endPosition /
+                        m_pTrack->getSampleRate() / mixxx::kEngineChannelCount;
                 positionText = QString("%1 - %2").arg(
                     positionText,
                     mixxx::Duration::formatTime(endPositionSeconds, mixxx::Duration::Precision::CENTISECONDS)

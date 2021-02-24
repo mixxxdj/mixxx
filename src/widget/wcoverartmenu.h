@@ -1,5 +1,4 @@
-#ifndef WCOVERARTMENU_H
-#define WCOVERARTMENU_H
+#pragma once
 
 #include <QAction>
 #include <QMenu>
@@ -38,5 +37,3 @@ class WCoverArtMenu : public QMenu {
 
     CoverInfo m_coverInfo;
 };
-
-#endif // WCOVERARTMENU_H

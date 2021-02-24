@@ -25,6 +25,7 @@ class DlgCoverArtFullSize
     void mouseMoveEvent(QMouseEvent* ) override;
     void resizeEvent(QResizeEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
+    void closeEvent(QCloseEvent* event) override;
 
   public slots:
     void slotLoadTrack(TrackPointer);

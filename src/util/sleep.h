@@ -1,5 +1,4 @@
-#ifndef SLEEP_H
-#define SLEEP_H
+#pragma once
 
 #ifdef __WINDOWS__
 #include <windows.h>
@@ -8,5 +7,3 @@
 #else
 #include <unistd.h>
 #endif
-
-#endif /* SLEEP_H */

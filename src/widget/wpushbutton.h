@@ -1,22 +1,4 @@
-/***************************************************************************
-                          wpushbutton.h  -  description
-                             -------------------
-    begin                : Fri Jun 21 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef WPUSHBUTTON_H
-#define WPUSHBUTTON_H
+#pragma once
 
 #include <QPaintEvent>
 #include <QPixmap>
@@ -95,13 +77,16 @@ class WPushButton : public WWidget {
     virtual void restyleAndRepaint();
 
     // Associates a pixmap of a given state of the button with the widget
-    void setPixmap(int iState, bool bPressed, PixmapSource source,
-                   Paintable::DrawMode mode, double scaleFactor);
+    void setPixmap(int iState,
+            bool bPressed,
+            const PixmapSource& source,
+            Paintable::DrawMode mode,
+            double scaleFactor);
 
     // Associates a background pixmap with the widget. This is only needed if
     // the button pixmaps contains alpha channel values.
     void setPixmapBackground(
-            PixmapSource source,
+            const PixmapSource& source,
             Paintable::DrawMode mode,
             double scaleFactor);
 
@@ -126,5 +111,3 @@ class WPushButton : public WWidget {
     QTimer m_clickTimer;
     QVector<int> m_align;
 };
-
-#endif

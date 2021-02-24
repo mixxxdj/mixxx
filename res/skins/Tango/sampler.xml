@@ -18,16 +18,22 @@ Variables:
         <Layout>stacked</Layout>
         <Children>
           <Template src="skin:button_2state_right_display.xml">
-            <SetVariable name="ObjectName">SamplerPlayCue</SetVariable>
+            <SetVariable name="ObjectName">PlayCue</SetVariable>
             <SetVariable name="TooltipId">cue_gotoandplay_cue_default</SetVariable>
             <SetVariable name="Size">34f,34f</SetVariable>
             <SetVariable name="state_0_icon">play_sampler.svg</SetVariable>
             <SetVariable name="state_1_icon">pause_sampler.svg</SetVariable>
             <SetVariable name="ConfigKey"><Variable name="group"/>,cue_gotoandplay</SetVariable>
             <SetVariable name="ConfigKeyRight"><Variable name="group"/>,cue_default</SetVariable>
-            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play</SetVariable>
+            <SetVariable name="ConfigKeyDisp"><Variable name="group"/>,play_latched</SetVariable>
           </Template>
-          <!-- Second layer is CoverArt. DefaultCover is transparent, bg-color #333 -->
+          <!-- Preview indicator, indicates previewing from Cue or Hotcue -->
+          <Template src="skin:button_2state.xml">
+            <SetVariable name="ObjectName">PreviewIndicator</SetVariable>
+            <SetVariable name="Size">34f,34f</SetVariable>
+            <SetVariable name="ConfigKey"><Variable name="group"/>,play</SetVariable>
+          </Template>
+          <!-- DefaultCover is transparent, bg-color #333 -->
           <CoverArt>
             <ObjectName>SamplerCover</ObjectName>
             <Size>34f,34f</Size>

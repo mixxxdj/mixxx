@@ -1,5 +1,4 @@
-#ifndef HSVWAVEFORMWIDGET_H
-#define HSVWAVEFORMWIDGET_H
+#pragma once
 
 #include <QWidget>
 
@@ -26,5 +25,3 @@ class HSVWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     HSVWaveformWidget(const QString& group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
-
-#endif // HSVWAVEFORMWIDGET_H

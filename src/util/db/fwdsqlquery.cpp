@@ -33,10 +33,10 @@ bool prepareQuery(QSqlQuery& query, const QString& statement) {
 } // anonymous namespace
 
 FwdSqlQuery::FwdSqlQuery(
-        QSqlDatabase database,
+        const QSqlDatabase& database,
         const QString& statement)
-    : QSqlQuery(database),
-      m_prepared(prepareQuery(*this, statement)) {
+        : QSqlQuery(database),
+          m_prepared(prepareQuery(*this, statement)) {
     if (!m_prepared) {
         DEBUG_ASSERT(!database.isOpen() || hasError());
         kLogger.critical()

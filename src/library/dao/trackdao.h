@@ -1,5 +1,4 @@
-#ifndef TRACKDAO_H
-#define TRACKDAO_H
+#pragma once
 
 #include <QFileInfo>
 #include <QObject>
@@ -15,6 +14,7 @@
 #include "util/class.h"
 #include "util/memory.h"
 
+class FwdSqlQuery;
 class SqlTransaction;
 class PlaylistDAO;
 class AnalysisDao;
@@ -69,27 +69,32 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     // Only used by friend class TrackCollection, but public for testing!
     void saveTrack(Track* pTrack) const;
 
+    /// Update the play counter properties according to the corresponding
+    /// aggregated properties obtained from the played history.
+    bool updatePlayCounterFromPlayedHistory(
+            const QSet<TrackId>& trackIds) const;
+
   signals:
     // Forwarded from Track object
-    void trackDirty(TrackId trackId) const;
-    void trackClean(TrackId trackId) const;
+    void trackDirty(TrackId trackId);
+    void trackClean(TrackId trackId);
 
     // Multiple tracks
-    void tracksAdded(QSet<TrackId> trackIds) const;
-    void tracksChanged(QSet<TrackId> trackIds) const;
-    void tracksRemoved(QSet<TrackId> trackIds) const;
+    void tracksAdded(const QSet<TrackId>& trackIds);
+    void tracksChanged(const QSet<TrackId>& trackIds);
+    void tracksRemoved(const QSet<TrackId>& trackIds);
 
-    void progressVerifyTracksOutside(QString path);
-    void progressCoverArt(QString file);
+    void progressVerifyTracksOutside(const QString& path);
+    void progressCoverArt(const QString& file);
     void forceModelUpdate();
 
   public slots:
     // Slots to inform the TrackDAO about changes that
     // have been applied directly to the database.
     void slotDatabaseTracksChanged(
-            QSet<TrackId> changedTrackIds);
+            const QSet<TrackId>& changedTrackIds);
     void slotDatabaseTracksRelocated(
-            QList<RelocatedTrack> relocatedTracks);
+            const QList<RelocatedTrack>& relocatedTracks);
 
   private:
     friend class LibraryScanner;
@@ -160,7 +165,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     AnalysisDao& m_analysisDao;
     LibraryHashDAO& m_libraryHashDao;
 
-    UserSettingsPointer m_pConfig;
+    const UserSettingsPointer m_pConfig;
 
     std::unique_ptr<QSqlQuery> m_pQueryTrackLocationInsert;
     std::unique_ptr<QSqlQuery> m_pQueryTrackLocationSelect;
@@ -178,5 +183,3 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(TrackDAO::ResolveTrackIdFlags)
-
-#endif //TRACKDAO_H

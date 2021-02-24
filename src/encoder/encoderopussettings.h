@@ -1,8 +1,4 @@
-// encoderopussettings.h
-// Create on August 15th 2017 by Palakis
-
-#ifndef ENCODER_ENCODEROPUSSETTINGS_H
-#define ENCODER_ENCODEROPUSSETTINGS_H
+#pragma once
 
 #include "encoder/encoderrecordingsettings.h"
 #include "encoder/encoder.h"
@@ -34,10 +30,10 @@ class EncoderOpusSettings: public EncoderRecordingSettings {
     QList<OptionsGroup> getOptionGroups() const override;
     // Selects the option by its index. If it is a single-element option,
     // index 0 means disabled and 1 enabled.
-    void setGroupOption(QString groupCode, int optionIndex) override;
+    void setGroupOption(const QString& groupCode, int optionIndex) override;
     // Return the selected option of the group. If it is a single-element option,
     // 0 means disabled and 1 enabled.
-    int getSelectedOption(QString groupCode) const override;
+    int getSelectedOption(const QString& groupCode) const override;
 
     // Returns the format of this encoder settings.
     QString getFormat() const override {
@@ -51,5 +47,3 @@ class EncoderOpusSettings: public EncoderRecordingSettings {
     QList<int> m_qualList;
     QList<OptionsGroup> m_radioList;
 };
-
-#endif // ENCODER_ENCODEROPUSSETTINGS_H

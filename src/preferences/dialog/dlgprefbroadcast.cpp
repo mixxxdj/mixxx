@@ -11,17 +11,18 @@
 #define WIN32
 #endif
 // this is needed to define SHOUT_META_* macros used in version guard
-#include <shout/shout.h>
+#include <shoutidjc/shout.h>
 #ifdef WIN64
 #undef WIN32
 #endif
 
 #include "broadcast/defs_broadcast.h"
-#include "recording/defs_recording.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
-#include "preferences/dialog/dlgprefbroadcast.h"
 #include "encoder/encodersettings.h"
+#include "moc_dlgprefbroadcast.cpp"
+#include "preferences/dialog/dlgprefbroadcast.h"
+#include "recording/defs_recording.h"
 #include "util/logger.h"
 
 namespace {
@@ -29,7 +30,7 @@ const char* kSettingsGroupHeader = "Settings for %1";
 const int kColumnEnabled = 0;
 const int kColumnName = 1;
 const mixxx::Logger kLogger("DlgPrefBroadcast");
-}
+} // namespace
 
 DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
                                    BroadcastSettingsPointer pBroadcastSettings)
@@ -133,6 +134,9 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 #ifdef __OPUS__
      comboBoxEncodingFormat->addItem(tr("Opus"), ENCODING_OPUS);
 #endif
+     comboBoxEncodingFormat->addItem(tr("AAC"), ENCODING_AAC);
+     comboBoxEncodingFormat->addItem(tr("HE-AAC"), ENCODING_HEAAC);
+     comboBoxEncodingFormat->addItem(tr("HE-AACv2"), ENCODING_HEAACV2);
 
      // Encoding channels combobox
      comboBoxEncodingChannels->addItem(tr("Automatic"),
@@ -202,7 +206,8 @@ void DlgPrefBroadcast::slotApply() {
 
     // Check for Icecast connections with identical mountpoints on the same host
     QMap<QString, QString> mountpoints;
-    for(BroadcastProfilePtr profile : m_pSettingsModel->profiles()) {
+    const QList<BroadcastProfilePtr> broadcastProfiles = m_pSettingsModel->profiles();
+    for (const auto& profile : broadcastProfiles) {
         if (profile->getServertype() != BROADCAST_SERVER_ICECAST2) {
             continue;
         }
@@ -221,11 +226,13 @@ void DlgPrefBroadcast::slotApply() {
                     == profile->getHost().toLower()
                     && profileWithSameMountpoint->getPort()
                     == profile->getPort() ) {
-                    QMessageBox::warning(
-                        this, tr("Action failed"),
-                        tr("'%1' has the same Icecast mountpoint as '%2'.\n"
-                           "Two source connections to the same server can't have the same mountpoint.")
-                        .arg(profileName).arg(profileNameWithSameMountpoint));
+                    QMessageBox::warning(this,
+                            tr("Action failed"),
+                            tr("'%1' has the same Icecast mountpoint as '%2'.\n"
+                               "Two source connections to the same server "
+                               "can't have the same mountpoint.")
+                                    .arg(profileName,
+                                            profileNameWithSameMountpoint));
                     return;
                 }
             }
@@ -356,7 +363,7 @@ void DlgPrefBroadcast::selectConnectionRow(int row) {
     connectionListItemSelected(newSelection);
 }
 
-void DlgPrefBroadcast::selectConnectionRowByName(QString rowName) {
+void DlgPrefBroadcast::selectConnectionRowByName(const QString& rowName) {
     int row = -1;
     for (int i = 0; i < m_pSettingsModel->rowCount(); i++) {
         QModelIndex index = m_pSettingsModel->index(i, kColumnName);
@@ -500,8 +507,9 @@ void DlgPrefBroadcast::getValuesFromProfile(BroadcastProfilePtr profile) {
 }
 
 void DlgPrefBroadcast::setValuesToProfile(BroadcastProfilePtr profile) {
-    if (!profile)
+    if (!profile) {
         return;
+    }
 
     profile->setSecureCredentialStorage(rbPasswordKeychain->isChecked());
 
@@ -592,9 +600,10 @@ void DlgPrefBroadcast::btnRenameConnectionClicked() {
                 getValuesFromProfile(m_pProfileListSelection);
             } else {
                 // Requested name different from current name but already used
-                QMessageBox::warning(this, tr("Action failed"),
+                QMessageBox::warning(this,
+                        tr("Action failed"),
                         tr("Can't rename '%1' to '%2': name already in use")
-                        .arg(profileName).arg(newName));
+                                .arg(profileName, newName));
             }
         }
     }

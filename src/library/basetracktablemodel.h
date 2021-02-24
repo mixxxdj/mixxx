@@ -108,7 +108,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     // its data, not the title string itself.
     void setHeaderProperties(
             ColumnCache::Column column,
-            QString title,
+            const QString& title,
             int defaultWidth = 0);
 
     ColumnCache::Column mapColumn(int column) const {
@@ -149,8 +149,58 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     virtual Qt::ItemFlags readWriteFlags(
             const QModelIndex& index) const;
 
+    /// At least one of the following functions must be overridden,
+    /// because each default implementation will call the other
+    /// function!!
+    ///
+    /// Return the raw data value at the given index.
+    ///
+    /// Expected types by ColumnCache field (pass-through = not validated):
+    /// COLUMN_LIBRARYTABLE_ID: DbId::value_type (pass-through)
+    /// COLUMN_LIBRARYTABLE_ARTIST: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_TITLE: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_ALBUM: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_ALBUMARTIST: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_YEAR: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_GENRE: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_COMPOSER: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_GROUPING: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_TRACKNUMBER: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_FILETYPE: QString (pass-through)
+    /// COLUMN_TRACKLOCATIONSTABLE_LOCATION: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_COMMENT: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_DURATION: double (seconds)/mixxx::Duration
+    /// COLUMN_LIBRARYTABLE_BITRATE: int (kbps)/mixxx::audio::Bitrate
+    /// COLUMN_LIBRARYTABLE_BPM: double (beats per minute)/mixxx::Bpm
+    /// COLUMN_LIBRARYTABLE_REPLAYGAIN: double (ratio)/mixxx::ReplayGain
+    /// COLUMN_LIBRARYTABLE_URL: QString (unsupported)
+    /// COLUMN_LIBRARYTABLE_SAMPLERATE: int (Hz)/mixxx::audio::SampleRate (unsupported)
+    /// COLUMN_LIBRARYTABLE_WAVESUMMARYHEX: QVariant (pass-through)
+    /// COLUMN_LIBRARYTABLE_CHANNELS: int/mixxx::audio::ChannelCount (unsupported)
+    /// COLUMN_LIBRARYTABLE_MIXXXDELETED: bool (pass-through)
+    /// COLUMN_LIBRARYTABLE_DATETIMEADDED: QDateTime
+    /// COLUMN_LIBRARYTABLE_HEADERPARSED: bool (pass-through)
+    /// COLUMN_LIBRARYTABLE_TIMESPLAYED: int
+    /// COLUMN_LIBRARYTABLE_PLAYED: bool
+    /// COLUMN_LIBRARYTABLE_RATING: int
+    /// COLUMN_LIBRARYTABLE_KEY: QString (literal key name, pass-through)
+    /// COLUMN_LIBRARYTABLE_KEY_ID: int (internal key code)
+    /// COLUMN_LIBRARYTABLE_BPM_LOCK: bool
+    /// COLUMN_LIBRARYTABLE_PREVIEW: bool
+    /// COLUMN_LIBRARYTABLE_COLOR: mixxx::RgbColor::code_t
+    /// COLUMN_LIBRARYTABLE_COVERART: virtual column for CoverArtDelegate
+    /// COLUMN_LIBRARYTABLE_COVERART_SOURCE: int (pass-through)
+    /// COLUMN_LIBRARYTABLE_COVERART_TYPE: int (pass-through)
+    /// COLUMN_LIBRARYTABLE_COVERART_LOCATION: QString (pass-through)
+    /// COLUMN_LIBRARYTABLE_COVERART_COLOR: mixxx::RgbColor::code_t (pass-through)
+    /// COLUMN_LIBRARYTABLE_COVERART_DIGEST: QByteArray (pass-through)
+    /// COLUMN_LIBRARYTABLE_COVERART_HASH: quint16 (pass-through)
+    /// COLUMN_PLAYLISTTABLE_DATETIMEADDED: QDateTime
     virtual QVariant rawValue(
-            const QModelIndex& index) const = 0;
+            const QModelIndex& index) const;
+    virtual QVariant rawSiblingValue(
+            const QModelIndex& index,
+            ColumnCache::Column siblingField) const;
 
     // Reimplement in derived classes to handle columns other
     // then COLUMN_LIBRARYTABLE
@@ -173,11 +223,11 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
 
   private slots:
     void slotTrackLoaded(
-            QString group,
+            const QString& group,
             TrackPointer pTrack);
 
     void slotRefreshCoverRows(
-            QList<int> rows);
+            const QList<int>& rows);
 
     void slotRefreshAllRows();
 

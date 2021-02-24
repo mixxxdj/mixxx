@@ -1,5 +1,4 @@
-#ifndef BEATGRID_H
-#define BEATGRID_H
+#pragma once
 
 #include <QMutex>
 
@@ -44,7 +43,7 @@ class BeatGrid final : public Beats {
     BeatsPointer clone() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
-    virtual void setSubVersion(QString subVersion);
+    virtual void setSubVersion(const QString& subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -60,7 +59,6 @@ class BeatGrid final : public Beats {
     std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;
     bool hasBeatInRange(double startSample, double stopSample) const override;
     double getBpm() const override;
-    double getBpmRange(double startSample, double stopSample) const override;
     double getBpmAroundPosition(double curSample, int n) const override;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -98,5 +96,3 @@ class BeatGrid final : public Beats {
 };
 
 } // namespace mixxx
-
-#endif /* BEATGRID_H */

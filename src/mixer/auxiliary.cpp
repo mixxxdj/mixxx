@@ -1,8 +1,9 @@
 #include "mixer/auxiliary.h"
 
 #include "control/controlproxy.h"
-#include "engine/enginemaster.h"
 #include "engine/channels/engineaux.h"
+#include "engine/enginemaster.h"
+#include "moc_auxiliary.cpp"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
 
@@ -32,6 +33,6 @@ void Auxiliary::slotAuxMasterEnabled(double v) {
     // configured input.
     if (!configured && auxMasterEnable) {
         m_pAuxMasterEnabled->set(0.0);
-        emit(noAuxiliaryInputConfigured());
+        emit noAuxiliaryInputConfigured();
     }
 }

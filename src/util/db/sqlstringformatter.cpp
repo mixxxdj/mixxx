@@ -34,7 +34,7 @@ namespace {
         }
         return result;
     }
-}
+    } // namespace
 
 QString SqlStringFormatter::formatList(
         const QSqlDatabase& database,

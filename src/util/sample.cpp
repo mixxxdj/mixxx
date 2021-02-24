@@ -109,8 +109,9 @@ void SampleUtil::free(CSAMPLE* pBuffer) {
 // static
 void SampleUtil::applyGain(CSAMPLE* pBuffer, CSAMPLE_GAIN gain,
         SINT numSamples) {
-    if (gain == CSAMPLE_GAIN_ONE)
+    if (gain == CSAMPLE_GAIN_ONE) {
         return;
+    }
     if (gain == CSAMPLE_GAIN_ZERO) {
         clear(pBuffer, numSamples);
         return;
@@ -157,7 +158,8 @@ void SampleUtil::applyAlternatingGain(CSAMPLE* pBuffer, CSAMPLE gain1,
         CSAMPLE gain2, SINT numSamples) {
     // This handles gain1 == CSAMPLE_GAIN_ONE && gain2 == CSAMPLE_GAIN_ONE as well.
     if (gain1 == gain2) {
-        return applyGain(pBuffer, gain1, numSamples);
+        applyGain(pBuffer, gain1, numSamples);
+        return;
     }
 
     // note: LOOP VECTORIZED.
@@ -265,9 +267,11 @@ void SampleUtil::add2WithGain(CSAMPLE* M_RESTRICT pDest,
         const CSAMPLE* M_RESTRICT pSrc2, CSAMPLE_GAIN gain2,
         SINT numSamples) {
     if (gain1 == CSAMPLE_GAIN_ZERO) {
-        return addWithGain(pDest, pSrc2, gain2, numSamples);
+        addWithGain(pDest, pSrc2, gain2, numSamples);
+        return;
     } else if (gain2 == CSAMPLE_GAIN_ZERO) {
-        return addWithGain(pDest, pSrc1, gain1, numSamples);
+        addWithGain(pDest, pSrc1, gain1, numSamples);
+        return;
     }
 
     // note: LOOP VECTORIZED.
@@ -283,11 +287,14 @@ void SampleUtil::add3WithGain(CSAMPLE* pDest,
         const CSAMPLE* M_RESTRICT pSrc3, CSAMPLE_GAIN gain3,
         SINT numSamples) {
     if (gain1 == CSAMPLE_GAIN_ZERO) {
-        return add2WithGain(pDest, pSrc2, gain2, pSrc3, gain3, numSamples);
+        add2WithGain(pDest, pSrc2, gain2, pSrc3, gain3, numSamples);
+        return;
     } else if (gain2 == CSAMPLE_GAIN_ZERO) {
-        return add2WithGain(pDest, pSrc1, gain1, pSrc3, gain3, numSamples);
+        add2WithGain(pDest, pSrc1, gain1, pSrc3, gain3, numSamples);
+        return;
     } else if (gain3 == CSAMPLE_GAIN_ZERO) {
-        return add2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, numSamples);
+        add2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, numSamples);
+        return;
     }
 
     // note: LOOP VECTORIZED.
@@ -362,8 +369,8 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* M_RESTRICT pDest,
     // SAMPLE_MIN = -32768 is a valid low sample, whereas SAMPLE_MAX = 32767
     // is the highest valid sample. Note that this means that although some
     // sample values convert to -1.0, none will convert to +1.0.
-    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
-    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
+    DEBUG_ASSERT(-SAMPLE_MINIMUM >= SAMPLE_MAXIMUM);
+    const CSAMPLE kConversionFactor = -SAMPLE_MINIMUM;
     // note: LOOP VECTORIZED.
     for (SINT i = 0; i < numSamples; ++i) {
         pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
@@ -373,8 +380,8 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* M_RESTRICT pDest,
 //static
 void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
         SINT numSamples) {
-    DEBUG_ASSERT(-SAMPLE_MIN >= SAMPLE_MAX);
-    const CSAMPLE kConversionFactor = -SAMPLE_MIN;
+    DEBUG_ASSERT(-SAMPLE_MINIMUM >= SAMPLE_MAXIMUM);
+    const CSAMPLE kConversionFactor = -SAMPLE_MINIMUM;
     // note: LOOP VECTORIZED only with "int i"
     for (int i = 0; i < numSamples; ++i) {
         pDest[i] = SAMPLE(pSrc[i] * kConversionFactor);

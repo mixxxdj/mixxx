@@ -7,6 +7,7 @@
 #include "audio/types.h"
 #include "control/controlproxy.h"
 #include "library/trackset/crate/crateid.h"
+#include "moc_mixxxapplication.cpp"
 #include "soundio/soundmanagerutil.h"
 #include "track/track.h"
 #include "track/trackref.h"
@@ -66,8 +67,8 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
 void MixxxApplication::registerMetaTypes() {
     // PCM audio types
     qRegisterMetaType<mixxx::audio::ChannelCount>("mixxx::audio::ChannelCount");
+    qRegisterMetaType<mixxx::audio::ChannelLayout>("mixxx::audio::ChannelLayout");
     qRegisterMetaType<mixxx::audio::OptionalChannelLayout>("mixxx::audio::OptionalChannelLayout");
-    qRegisterMetaType<mixxx::audio::OptionalSampleLayout>("mixxx::audio::OptionalSampleLayout");
     qRegisterMetaType<mixxx::audio::SampleRate>("mixxx::audio::SampleRate");
     qRegisterMetaType<mixxx::audio::Bitrate>("mixxx::audio::Bitrate");
 

@@ -96,13 +96,6 @@
   padding: 3px;
   qproperty-layoutAlignment: 'AlignBottom';
 }
-#PlayGutterSmall {
-  padding: 3px;
-  background-color: none;
-  qproperty-layoutAlignment: 'AlignBottom'; /*
-  border-left: 1px solid #222;
-  background-color: #664988;  */
-}
 
 #MixerBorder {
   background-color: #222;
@@ -213,34 +206,46 @@
 #LibraryContainer QTableView,
 #LibraryContainer QTreeView {
   color: #d2d2d2;
-  background-color: #1F1F1F;
-  selection-background-color: #006596;
-  selection-color: #D6D6D6;
   border: 1px solid #1A1A1A;
-  gridline-color: red;
-  /* Suppresses that selected sidebar item's branch indicator shows wrong color
-     when out of focus, see lp:880588 */
-  show-decoration-selected: 1;
-}
-#LibraryContainer QTableView {
+  background-color: #1F1F1F;
   alternate-background-color: #1A1A1A;
+/* In selected library rows this sets the color of
+  * shapes in star rating delegate
+  * focus border of Cover Art and Color delegates
+   > See src/library/coverartdelegate.cpp: "option.palette.highlightedText().color();" */
+  selection-color: #D6D6D6;
+  /* background of Color delegate in selected row */
+  selection-background-color: #006596;
+}
+
+/* Selected rows in Tree and Tracks table */
+#LibraryContainer QTableView::item:selected,
+#LibraryContainer QTreeView::item:selected,
+#LibraryBPMButton::item:selected {
+  color: #D6D6D6;
+  background-color: #006596;
+}
+#LibraryContainer QTreeView::item:focus {
+  outline: none;
+}
+/* Use the native focus decoration */
+/* This is for all cells including Played and Location */
+#LibraryContainer QTableView,
+/* This is for the BPM cell */
+#LibraryContainer QTableView QCheckBox:focus {
+  outline: 1px solid #D6D6D6;
+}
+/* This uses a custom qproperty to set the focus border
+  for Color and Cover Art cells, 1px solid, sharp corners.
+  See src/library/tableitemdelegate.cpp */
+WTrackTableView {
+  qproperty-focusBorderColor: #D6D6D6;
 }
 
 #LibraryContainer QTableView:focus,
 #LibraryContainer QTreeView:focus,
 #LibraryContainer QTextBrowser:focus {
   border: 1px solid #FF6600;
-}
-
-/* Colors aren't applied to selected items, define them manually */
-#LibraryContainer QTableView::item:selected,
-#LibraryContainer QTreeView::item:selected,
-#LibraryBPMButton::item:selected,
-#LibraryContainer QTreeView::branch:selected,
-/* This won't style the Preview button */
-#LibraryPreviewButton::item:selected {
-  color: #D6D6D6;
-  background-color: #006596;
 }
 
 /* Table cell in edit mode */
@@ -414,8 +419,10 @@ WSearchLineEdit {
   qproperty-layoutSpacing: 0;
 }
 
+#LibraryContainer QTreeView,
+#LibraryContainer QTreeView::item:focus {
+  outline: none;
 /* Spacing between treeview and preview deck/search bar */
-#LibraryContainer QTreeView {
   margin: 0px;
 }
 
@@ -495,8 +502,6 @@ WSearchLineEdit {
   background-color: #1F1F1F;
   border: 1px solid #1A1A1A;
 }
-/* transition time in Auto DJ tab is styled pretty much the same as WBeatSpinBox above */
-#DlgAutoDJ QSpinBox {}
 
 /* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
 WLibrary QLabel, WLibrary QRadioButton {
@@ -521,40 +526,26 @@ WLibrary QRadioButton::indicator:unchecked {
 }
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
+#LibraryFeatureControls QPushButton {
   margin: 9px 3px 6px 3px;
+  padding: 3px 4px;
   color: #D2D2D2;
   background-color: #4B4B4B;
   border: 1px solid #4B4B4B;
   border-radius: 2px;
   outline: none;
   }
-  #DlgMissing > QPushButton,
-  #DlgHidden > QPushButton,
-  #DlgRecording > QPushButton,
-  #DlgAnalysis > QPushButton {
-    padding: 3px 4px;
-  }
-  #DlgAutoDJ > QPushButton {
+  #DlgAutoDJ > #LibraryFeatureControls QPushButton {
     padding: 0px 1px;
-  }
-  #DlgAutoDJ > QPushButton {
     width: 34px;
     height: 20px;
-  }
-  QPushButton#pushButtonAutoDJ {
-    width: 42px;
-  }
+    }
+    QPushButton#pushButtonAutoDJ {
+      width: 42px;
+    }
 
 
-#DlgMissing > QPushButton:!enabled,
-#DlgHidden > QPushButton:!enabled,
-#DlgAutoDJ > QPushButton:!enabled,
-#DlgAnalysis > QPushButton:!enabled {
+#LibraryFeatureControls QPushButton:!enabled {
   /* buttons in "disabled" (not click-able) state. They are nearly invisible
      by default QT palette, so style accordingly */
   color: #808080; /* Default #A3A3A3 -90L HSL*/
@@ -565,31 +556,24 @@ WLibrary QRadioButton::indicator:unchecked {
   outline: none;
 }
 
-#DlgMissing > QPushButton:hover,
-#DlgHidden > QPushButton:hover,
-#DlgAutoDJ > QPushButton:hover,
-#DlgRecording > QPushButton:hover,
-#DlgAnalysis > QPushButton:hover {
+#LibraryFeatureControls QPushButton:hover {
   color: #D2D2D2;
   background-color: #5F5F5F;
   border: 1px solid #5F5F5F;
   outline: none;
 }
 
-#DlgMissing > QPushButton:focus,
-#DlgHidden > QPushButton:focus,
-#DlgAutoDJ > QPushButton:focus,
-#DlgRecording > QPushButton:focus,
-#DlgAnalysis > QPushButton:focus,
+#LibraryFeatureControls QPushButton:focus,
 #fadeModeCombobox:focus,
-#ComboBoxAutoDjTransitionUnit:focus,
-#DlgAutoDJ QSpinBox:focus {
+#spinBoxTransition:focus {
   outline: none;
 }
 
-#DlgAutoDJ > QPushButton:checked,
-#DlgRecording > QPushButton:checked,
-#DlgAnalysis > QPushButton:checked {
+
+QPushButton#pushButtonAutoDJ:checked,
+QPushButton#pushButtonRepeatPlaylist:checked,
+QPushButton#pushButtonAnalyze:checked,
+QPushButton#pushButtonRecording:checked {
   /* checkbuttons in active state */
   color: #FDFDFD;
   background-color: #006596;
@@ -597,9 +581,10 @@ WLibrary QRadioButton::indicator:unchecked {
   outline: none;
 }
 
-#DlgAutoDJ > QPushButton:checked:hover,
-#DlgRecording > QPushButton:checked:hover,
-#DlgAnalysis > QPushButton:checked:hover {
+QPushButton#pushButtonAutoDJ:checked:hover,
+QPushButton#pushButtonRepeatPlaylist:checked:hover,
+QPushButton#pushButtonAnalyze:checked:hover,
+QPushButton#pushButtonRecording:checked:hover {
   /* checkbuttons hovered over in "active" state */
   margin: 9px 3px 6px 3px;
   color: #FDFDFD;
@@ -608,10 +593,7 @@ WLibrary QRadioButton::indicator:unchecked {
   outline: none;
 }
 
-#DlgMissing > QPushButton:pressed,
-#DlgHidden > QPushButton:pressed,
-#DlgAutoDJ > QPushButton:pressed,
-#DlgAnalysis > QPushButton:pressed {
+#LibraryFeatureControls QPushButton:pressed {
   /* pushbuttons in "down" state */
   margin: 9px 3px 6px 3px;
   color: #FDFDFD;
@@ -670,7 +652,6 @@ QPushButton#pushButtonRepeatPlaylist {
 /* Scroll bars */
 #LibraryContainer QScrollBar:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:horizontal {
   border-top: 1px solid #141414;
   min-width: 12px;
@@ -680,7 +661,6 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
 }
 #LibraryContainer QScrollBar:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar:vertical,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar:vertical {
   border-left: 1px solid #141414;
   min-height: 12px;
@@ -693,15 +673,12 @@ WEffectSelector QAbstractScrollArea QScrollBar:vertical,
 #LibraryContainer QScrollBar::sub-page,
 WEffectSelector QAbstractScrollArea QScrollBar::add-page,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::add-page,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::sub-page,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-page,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-page {
   background: none;
 }
 #LibraryContainer QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 25px;
   background: #5F5F5F;
@@ -710,7 +687,6 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 }
 #LibraryContainer QScrollBar::handle:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 25px;
   background: #5F5F5F;
@@ -721,8 +697,6 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
 #LibraryContainer QScrollBar::handle:vertical:hover,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:horizontal:hover,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::handle:vertical:hover,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal:hover,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical:hover {
   background: #B3B3B3;
@@ -737,10 +711,6 @@ WEffectSelector QAbstractScrollArea QScrollBar::add-line:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::add-line:vertical,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-line:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical ,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::add-line:horizontal,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::add-line:vertical,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::sub-line:horizontal,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea QScrollBar::sub-line:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::add-line:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::sub-line:horizontal,
@@ -752,7 +722,6 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-line:vertical ,
 /* Corner in between two scrollbars */
 #LibraryContainer QAbstractScrollArea::corner,
 WEffectSelector QAbstractScrollArea::corner,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea::corner,
 #fadeModeCombobox QAbstractScrollArea::corner {
   border-top: 1px solid #141414;
   border-left: 1px solid #141414;
@@ -823,17 +792,51 @@ WEffectSelector QAbstractScrollArea::corner,
 
 #Mixxx {
   background-color: black;
-  font-family: "Open Sans";
 }
 
 #WaveformSplitter {
   background-color: #222;
 }
 
+#Mixxx, WWidget,
+QToolTip,
+WLabel, QLabel,
+WNumber, WNumberPos,
+WPushButton,
+WKey,
+WTime,
+WTrackText,
+WTrackProperty,
+WRecordingDuration,
+QSpinBox,
+WBeatSpinBox,
+WOverview #PassthroughLabel,
+WBeatSpinBox QMenu,
+WCueMenuPopup,
+WCueMenuPopup QMenu,
+WCueMenuPopup QLabel,
+WCoverArtMenu,
+WTrackMenu,
+WTrackMenu QMenu,
+WOverview /* Hotcue labels in the overview */,
+QComboBox,
+WEffect,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea
+#LibraryContainer QPushButton,
+#LibraryContainer QLabel,
+#LibraryContainer QRadioButton,
+#LibraryContainer QHeaderView,
+#LibraryContainer QHeaderView::item,
+#LibraryContainer QMenu {
+  font-family: "Open Sans";
+}
+
 WWidget,
 WLibrary QLabel,
 WLibrary QPushButton {
-  font-family: "Open Sans";
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
@@ -911,7 +914,7 @@ WOverview #PassthroughLabel {
 }
 
 WBeatSpinBox,
-#DlgAutoDJ QSpinBox {
+#spinBoxTransition {
   color: #c1cabe;
   background-color: #1f1e1e;
   border: 1px solid #444342;
@@ -921,18 +924,18 @@ WBeatSpinBox,
   WBeatSpinBox {
     padding: 2px;
   }
-  #DlgAutoDJ QSpinBox {
+  #spinBoxTransition {
     padding: 1px 2px 2px 2px;
     margin: 3px 0px 0px 2px;
   }
   WBeatSpinBox:hover,
-  #DlgAutoDJ QSpinBox:hover,
+  #spinBoxTransition:hover,
   WBeatSpinBox:focus,
-  #DlgAutoDJ QSpinBox:focus {
+  #spinBoxTransition:focus {
     border: 1px ridge #015d8d;
   }
   WBeatSpinBox::down-button,
-  #DlgAutoDJ QSpinBox::down-button {
+  #spinBoxTransition::down-button {
     subcontrol-origin: border;
     subcontrol-position: bottom right; /* position at the top right corner */
     padding-right: 4px;
@@ -940,17 +943,17 @@ WBeatSpinBox,
     border: 0;
   }
   WBeatSpinBox::down-arrow,
-  #DlgAutoDJ QSpinBox::down-arrow {
+  #spinBoxTransition::down-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_down_selector.svg);
   }
   WBeatSpinBox::down-arrow:hover,
-  #DlgAutoDJ QSpinBox::down-arrow:hover {
+  #spinBoxTransition::down-arrow:hover {
     image: url(skin:/icon/ic_chevron_down_selector_hover.svg);
   }
   WBeatSpinBox::up-button,
-  #DlgAutoDJ QSpinBox::up-button {
+  #spinBoxTransition::up-button {
     subcontrol-origin: border;
     subcontrol-position: top right; /* position at the top right corner */
     padding-right: 4px;
@@ -958,13 +961,13 @@ WBeatSpinBox,
     border: 0;
   }
   WBeatSpinBox::up-arrow,
-  #DlgAutoDJ QSpinBox::up-arrow {
+  #spinBoxTransition::up-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_up_selector.svg);
   }
   WBeatSpinBox::up-arrow:hover,
-  #DlgAutoDJ QSpinBox::up-arrow:hover {
+  #spinBoxTransition::up-arrow:hover {
     image: url(skin:/icon/ic_chevron_up_selector_hover.svg);
   }
 
@@ -1610,12 +1613,24 @@ WPushButton[value="2"]:hover,
   border: 1px solid transparent;
 }
 
-#PlayToggle[value="0"] {
+WPushButton#PlayToggle[value="0"] {
   image: url(skin:/icon/ic_play_48px.svg) no-repeat center center;
+  background-color: transparent;
 }
 
-#PlayToggle[value="1"] {
+WPushButton#PlayToggle[value="1"] {
   image: url(skin:/icon/ic_pause_48px.svg) no-repeat center center;
+}
+WPushButton#PreviewIndicator {
+  background-color: transparent;
+}
+/* Blue border for Play buttons when previewing from
+  Cue or Hotcue */
+WPushButton#PreviewIndicator[value="1"] {
+  border: 2px solid #0080BE;
+}
+WPushButton#PreviewIndicator[value="0"] {
+  border: none;
 }
 
 #ToolbarButton[value="1"] {
@@ -1837,10 +1852,12 @@ do not highlight either state. */
 
 #EffectSlotParameterLinkInversionButton[value="1"] {
     background-color: #b90505;
+    border: 1px solid #b90505;
 }
 
 #EffectSlotParameterLinkInversionButton[value="1"]:hover {
     background-color: #e80808;
+    border: 1px solid #FF0808;
 }
 
 /* Special case "hide/show" button
@@ -1884,7 +1901,6 @@ do not highlight either state. */
 
 /* common styles for WEffectSelector, QMenu, QToolTip */
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
 #LibraryContainer QMenu,
@@ -1896,18 +1912,15 @@ WTrackMenu QMenu {
   padding: 2px;
 }
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   padding: 2px;
   font: 13px;
 }
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea {
   min-width: 180px;
 }
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
 #LibraryContainer QMenu,
@@ -1931,7 +1944,6 @@ WTrackMenu QMenu QCheckBox {
   background-color: #201f1f;
 }
 WEffectSelector QAbstractScrollArea,
-#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
 #LibraryContainer QMenu,
@@ -1948,7 +1960,6 @@ WTrackMenu QMenu {
 }
   /* hovered items */
   WEffectSelector::item:selected,
-  #ComboBoxAutoDjTransitionUnit::item:selected,
   #fadeModeCombobox::item:selected,
   WBeatSpinBox QMenu::item:selected,
   WCueMenuPopup QMenu::item:selected,
@@ -1974,7 +1985,6 @@ WTrackMenu QMenu {
 
 
 WEffectSelector,
-#ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox {
   color: #c1cabe;
   /* The 3D frame on the combo box becomes flat when you give it a border */
@@ -1990,7 +2000,6 @@ WEffectSelector {
   padding: 0px 6px;
   background-color: #404040;
 }
-#ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox {
   /* 1px is added in each dimension. 20+1+1 = 22 = button height */
   height: 20px;
@@ -1999,37 +2008,31 @@ WEffectSelector {
 }
 
   WEffectSelector:hover,
-  #ComboBoxAutoDjTransitionUnit:hover,
   #fadeModeCombobox:hover {
     border: 1px ridge #015d8d;
   }
   WEffectSelector::drop-down,
-  #ComboBoxAutoDjTransitionUnit::drop-down,
   #fadeModeCombobox::drop-down {
     /* This causes the Qt theme's widget style to magically not apply. Go figure. */
     border: 0;
   }
   WEffectSelector::down-arrow,
-  #ComboBoxAutoDjTransitionUnit::down-arrow,
   #fadeModeCombobox::down-arrow {
     width: 20px;
     height: 20px;
     image: url(skin:/icon/ic_chevron_down_48px.svg);
   }
   WEffectSelector::item:!selected,
-  #ComboBoxAutoDjTransitionUnit::item:!selected,
   #fadeModeCombobox::item:!selected {
     background-color: #201f1f;
   }
   /* currently loaded effect */
   WEffectSelector::checked,
-  #ComboBoxAutoDjTransitionUnit::checked,
   #fadeModeCombobox::checked {
     color: #4495F4;
     font-weight: bold;
   }
   WEffectSelector::indicator:checked,
-  #ComboBoxAutoDjTransitionUnit::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     /* checkbox container is 28 x 22px;
       use margin + border to create a square checkbox sized like kill buttons */
@@ -2045,10 +2048,6 @@ WEffectSelector {
   #fadeModeCombobox::indicator, /* checkbox, tick mark */
   #fadeModeCombobox::drop-down,
   #fadeModeCombobox::indicator:!checked,
-  #ComboBoxAutoDjTransitionUnit::checked, /* selected mode */
-  #ComboBoxAutoDjTransitionUnit::indicator, /* checkbox, tick mark */
-  #ComboBoxAutoDjTransitionUnit::drop-down,
-  #ComboBoxAutoDjTransitionUnit::indicator:!checked,
   #LibraryContainer QMenu::item,
   WBeatSpinBox QMenu::item,
   WCueMenuPopup QMenu::item,

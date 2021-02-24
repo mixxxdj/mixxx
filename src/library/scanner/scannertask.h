@@ -1,5 +1,4 @@
-#ifndef SCANNERTASK_H
-#define SCANNERTASK_H
+#pragma once
 
 #include <QObject>
 #include <QRunnable>
@@ -41,5 +40,3 @@ class ScannerTask : public QObject, public QRunnable {
   private:
     bool m_success;
 };
-
-#endif /* SCANNERTASK_H */

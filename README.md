@@ -31,21 +31,42 @@ Have a bug or feature request? [File a bug on Launchpad][fileabug].
 Want to get involved in Mixxx development? Assign yourself a bug from the [easy
 bug list][easybugs] and get started!
 
-## Compiling
+## Compiling on Linux
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ cmake --build .
+Please see our helpful guide on the [wiki] for more information: [Compiling on Linux]
 
-* macOS [![Build Status](https://travis-ci.org/mixxxdj/mixxx.svg)](https://travis-ci.org/mixxxdj/mixxx)
-* Ubuntu / Windows [![Build status](https://ci.appveyor.com/api/projects/status/j460rficblcaopwx?svg=true)](https://ci.appveyor.com/project/mixxxdj/mixxx)
-* Jenkins [![Build status](https://img.shields.io/jenkins/s/https/builds.mixxx.org/job/master-release.svg)](https://builds.mixxx.org/job/master-release)
+## Compiling on MacOS
+    $ mkdir build
+    $ cd build
+    $ cmake ..
+    $ cmake --build .
+Please see our helpful guide on the [wiki] for more information: [Compiling on MacOS]
 
-First, you must install all of Mixxx's dependencies. To compile Mixxx using
-[SCons], run:
+## Compiling on Windows
+### Build Requirements
+- Windows 7 or later
+- MS Visual Studio 2019 (Community Edition is free of charge)
+- At least 10G free diskspace
+- To create an .msi installer, you need to install the WiX toolkit from https://wixtoolset.org/releases/
+### Setup your build environment
+1. Download these sources (using git checkout as described in [Using Git])
+2. Run the batch file `tools\windows_buildenv.bat`
+   - This file downloads the prebuild Mixxx environment, defined in `cmake\windows_build_environment_name` from https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/
+   - Generates the `CMakeSettings.json` with the matching build configurations for Visual Studio
+3. Start Visual Studio, choose "Open a local folder" select the `mixxx` directory containing `CMakeSettings.json`
+4. Menu "Project" -> "Generate Cache for mixxx"
+5. Select the build configuration in the toolbar (`x64__fastbuild` is recommended)
+6. Menu "Build" -> "Build All"
+### Creating an .msi installer (optional)
+7. Than open the Visual Studio 'Developer Command Prompt' by Menu -> "Tools" -> "Command line" -> "Developer Command Prompt"
+8. Go to your build directory, e.g. by "cd .\build\x64-fastbuild"
+9. Run "cpack -G WIX"
 
-    $ scons
 
-Please see our helpful guides on the [wiki] for more information:
-- [Compiling on Linux]
-- [Compiling on macOS]
-- [Compiling on Windows]
+Please see also our helpful guide on the [wiki] for more information: [Compiling on Windows]
 
 ## Documentation
 
@@ -91,22 +112,23 @@ license.
 [facebook]: https://www.facebook.com/pages/Mixxx-DJ-Software/21723485212
 [blog]: https://mixxxblog.blogspot.com
 [manual]: https://www.mixxx.org/manual/latest/
-[wiki]: https://www.mixxx.org/wiki/
+[wiki]: https://github.com/mixxxdj/mixxx/wiki
 [faq]: https://mixxx.org/wiki/doku.php/faq
 [forums]: https://www.mixxx.org/forums/
-[compiling on linux]: https://mixxx.org/wiki/doku.php/compiling_on_linux
-[compiling on macOS]: https://mixxx.org/wiki/doku.php/compiling_on_os_x
-[compiling on windows]: https://mixxx.org/wiki/doku.php/compiling_on_windows
+[Compiling on Linux]: https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux
+[Compiling on MacOS]: https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20macOS
+[Compiling on Windows]: https://github.com/mixxxdj/mixxx/wiki/compiling-on-windows
+[Using Git]: https://github.com/mixxxdj/mixxx/wiki/Using-Git
 [mailing list]: https://lists.sourceforge.net/lists/listinfo/mixxx-devel
-[SCons]: https://www.scons.org/
+[CMake]: https://cmake.org/
 [launchpad 2.3.0]: https://launchpad.net/mixxx/+milestone/2.3.0
 [wiki roadmap]: https://mixxx.org/wiki/doku.php/development_roadmap
 [easybugs]: https://bugs.launchpad.net/mixxx/+bugs?field.searchtext=&orderby=-importance&search=Search&field.status%3Alist=NEW&field.status%3Alist=CONFIRMED&field.status%3Alist=TRIAGED&field.status%3Alist=INPROGRESS&field.status%3Alist=INCOMPLETE_WITH_RESPONSE&field.status%3Alist=INCOMPLETE_WITHOUT_RESPONSE&assignee_option=any&field.assignee=&field.bug_reporter=&field.bug_commenter=&field.subscriber=&field.structural_subscriber=&field.tag=easy&field.tags_combinator=ANY&field.has_cve.used=&field.omit_dupes.used=&field.omit_dupes=on&field.affects_me.used=&field.has_patch.used=&field.has_branches.used=&field.has_branches=on&field.has_no_branches.used=&field.has_no_branches=on&field.has_blueprints.used=&field.has_blueprints=on&field.has_no_blueprints.used=&field.has_no_blueprints=on
-[creating skins]: https://mixxx.org/wiki/doku.php/creating_skins
+[creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
 [help translate content]: https://www.transifex.com/projects/p/mixxxdj
 [Mixxx i18n wiki]: https://mixxx.org/wiki/doku.php/internationalization
 [Mixxx localization forum]: https://mixxx.org/forums/viewforum.php?f=10
 [Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
-[hardware compatibility]: https://mixxx.org/wiki/doku.php/hardware_compatibility
+[hardware compatibility]: https://mixxx.org/wiki/doku.php/Hardware-Compatibility
 [zulip]: https://mixxx.zulipchat.com/
 [discourse]: https://mixxx.discourse.group/

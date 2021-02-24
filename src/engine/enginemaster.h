@@ -1,22 +1,4 @@
-/***************************************************************************
-                          enginemaster.h  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEMASTER_H
-#define ENGINEMASTER_H
+#pragma once
 
 #include <QObject>
 #include <QVarLengthArray>
@@ -64,7 +46,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
-    const CSAMPLE* buffer(AudioOutput output) const;
+    const CSAMPLE* buffer(const AudioOutput& output) const;
 
     ChannelHandleAndGroup registerChannelGroup(const QString& group) {
         return ChannelHandleAndGroup(
@@ -79,10 +61,10 @@ class EngineMaster : public QObject, public AudioSource {
     // these methods are called the callback is guaranteed to be inactive
     // (SoundManager closes all devices before calling these). This may change
     // in the future.
-    virtual void onOutputConnected(AudioOutput output);
-    virtual void onOutputDisconnected(AudioOutput output);
-    void onInputConnected(AudioInput input);
-    void onInputDisconnected(AudioInput input);
+    virtual void onOutputConnected(const AudioOutput& output);
+    virtual void onOutputDisconnected(const AudioOutput& output);
+    void onInputConnected(const AudioInput& input);
+    void onInputDisconnected(const AudioInput& input);
 
     void process(const int iBufferSize);
 
@@ -116,7 +98,7 @@ class EngineMaster : public QObject, public AudioSource {
     const CSAMPLE* getHeadphoneBuffer() const;
     const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
-    const CSAMPLE* getChannelBuffer(QString name) const;
+    const CSAMPLE* getChannelBuffer(const QString& name) const;
     const CSAMPLE* getSidechainBuffer() const;
 
     EngineSideChain* getSideChain() const {
@@ -365,5 +347,3 @@ class EngineMaster : public QObject, public AudioSource {
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
 };
-
-#endif

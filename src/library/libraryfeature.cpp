@@ -1,13 +1,11 @@
-// libraryfeature.cpp
-// Created 8/17/2009 by RJ Ryan (rryan@mit.edu)
+#include "library/libraryfeature.h"
 
 #include <QStandardPaths>
-
-#include "library/libraryfeature.h"
 
 #include "library/library.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
+#include "moc_libraryfeature.cpp"
 #include "util/logger.h"
 
 // KEEP THIS cpp file to tell scons that moc should be called on the class!!!
@@ -33,16 +31,18 @@ QStringList LibraryFeature::getPlaylistFiles(QFileDialog::FileMode mode) const {
             ConfigKey("[Library]", "LastImportExportPlaylistDirectory"),
             QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
-    QFileDialog dialog(NULL,
-                     tr("Import Playlist"),
-                     lastPlaylistDirectory,
-                     tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
+    QFileDialog dialog(nullptr,
+            tr("Import Playlist"),
+            lastPlaylistDirectory,
+            tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     dialog.setAcceptMode(QFileDialog::AcceptOpen);
     dialog.setFileMode(mode);
     dialog.setModal(true);
 
     // If the user refuses return
-    if (! dialog.exec()) return QStringList();
+    if (!dialog.exec()) {
+        return QStringList();
+    }
     return dialog.selectedFiles();
 }
 
@@ -73,14 +73,14 @@ bool LibraryFeature::exportPlaylistItemsIntoFile(
                     << "No valid file extension for playlist export specified."
                     << "Appending .m3u and exporting to M3U.";
             playlistFilePath.append(QStringLiteral(".m3u"));
-            if (QFileInfo(playlistFilePath).exists()) {
+            if (QFileInfo::exists(playlistFilePath)) {
                 auto overwrite = QMessageBox::question(
-                        NULL,
+                        nullptr,
                         tr("Overwrite File?"),
                         tr("A playlist file with the name \"%1\" already exists.\n"
                            "The default \"m3u\" extension was added because none was specified.\n\n"
-                           "Do you really want to overwrite it?").arg(playlistFilePath)
-                );
+                           "Do you really want to overwrite it?")
+                                .arg(playlistFilePath));
                 if (overwrite != QMessageBox::StandardButton::Yes) {
                     return false;
                 }

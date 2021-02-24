@@ -1,7 +1,9 @@
+#include "control/controlproxy.h"
+
 #include <QtDebug>
 
-#include "control/controlproxy.h"
 #include "control/control.h"
+#include "moc_controlproxy.cpp"
 
 ControlProxy::ControlProxy(const QString& g, const QString& i, QObject* pParent, ControlFlags flags)
         : ControlProxy(ConfigKey(g, i), pParent, flags) {
