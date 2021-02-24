@@ -167,6 +167,12 @@ class AutoDJProcessor : public QObject {
         FixedSkipSilence
     };
 
+    enum class TransitionUnit {
+        Seconds,
+        Beats_OutgoingTrack,
+        Beats_IncomingTrack
+    };
+
     AutoDJProcessor(QObject* pParent,
                     UserSettingsPointer pConfig,
                     PlayerManagerInterface* pPlayerManager,
@@ -192,6 +198,11 @@ class AutoDJProcessor : public QObject {
 
     bool nextTrackLoaded();
 
+    TransitionUnit getTransitionUnit() const {
+        return m_transitionUnit;
+    }
+
+  public slots:
     void setTransitionTime(int seconds);
 
     void setTransitionMode(TransitionMode newMode);
@@ -200,6 +211,7 @@ class AutoDJProcessor : public QObject {
     AutoDJError skipNext();
     void fadeNow();
     AutoDJError toggleAutoDJ(bool enable);
+    void setAutoDJTransitionUnit(TransitionUnit transitionUnit);
 
   signals:
     void loadTrackToPlayer(TrackPointer pTrack, const QString& group, bool play);
@@ -284,6 +296,18 @@ class AutoDJProcessor : public QObject {
     double m_transitionProgress;
     double m_transitionTime; // the desired value set by the user
     TransitionMode m_transitionMode;
+    TransitionUnit m_transitionUnit;
+
+    void calculateFadeThresholds();
+
+    double getFadeTime();
+    double getFadeTimeArg(
+            DeckAttributes* pFromDeck,
+            DeckAttributes* pToDeck,
+            // TODO(c3n7): Remove these unused variables
+            double fromDeckSecond,
+            double fadeEndSecond,
+            double toDeckStartSecond);
 
     QList<DeckAttributes*> m_decks;
 
@@ -295,6 +319,9 @@ class AutoDJProcessor : public QObject {
     ControlPushButton* m_pFadeNow;
     ControlPushButton* m_pShufflePlaylist;
     ControlPushButton* m_pEnabledAutoDJ;
+
+    ControlProxy* m_pLeftSyncMode;
+    ControlProxy* m_pRightSyncMode;
 
     DISALLOW_COPY_AND_ASSIGN(AutoDJProcessor);
 };

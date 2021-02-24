@@ -28,6 +28,8 @@ QComboBox,
 WEffect,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 #LibraryContainer QPushButton,
@@ -63,6 +65,7 @@ WOverview #PassthroughLabel,
 #LibraryFeatureControls QPushButton,
 QLabel#labelRecFilename, /* needs QLabel to override previous QLabel font definition*/
 WEffectSelector,
+#ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox,
 WOverview #PassthroughLabel {
   font-weight: bold;
@@ -133,6 +136,8 @@ WKey,
 #DurationText,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
+#ComboBoxAutoDjTransitionUnit,
+#ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
 #LibraryFeatureControls QLabel,
@@ -495,6 +500,7 @@ WEffectSelector {
   /* The 3D frame on the combo box becomes flat when you give it a border
   border-radius: 3px; */
   }
+#ComboBoxAutoDjTransitionUnit,
 #fadeModeCombobox {
   height: 18px;
   margin: 0px 0px 3px 1px;
@@ -502,6 +508,7 @@ WEffectSelector {
   }
 
   WEffectSelector QAbstractScrollArea,
+  #ComboBoxAutoDjTransitionUnit QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
     width: 142px;
     /* padding-left: 6px; */
@@ -515,6 +522,7 @@ WEffectSelector {
   }
   /* selected item */
   WEffectSelector::checked,
+  #ComboBoxAutoDjTransitionUnit::checked,
   #fadeModeCombobox::checked {
     /* not applied
     padding-left: 5px;	*/
@@ -524,6 +532,7 @@ WEffectSelector {
   }
   /* hovered items */
   WEffectSelector::item:selected,
+  #ComboBoxAutoDjTransitionUnit::item:selected,
   #fadeModeCombobox::item:selected {
     background-color: #333;
   /* Already one of those properties destroys font config and
@@ -535,6 +544,7 @@ WEffectSelector {
     border: 0; */
   }
   WEffectSelector::indicator,
+  #ComboBoxAutoDjTransitionUnit::indicator,
   #fadeModeCombobox::indicator {
   /* This is sufficient to completely hide the tick mark, but
     this alone would show an empty, shadowed box instead of tick mark

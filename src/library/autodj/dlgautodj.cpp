@@ -121,9 +121,6 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             "Repeat the playlist");
     QString spinBoxTransitionTooltip = tr(
             "Determines the duration of the transition");
-    QString labelTransitionTooltip = tr(
-            // "sec" as in seconds
-            "Seconds");
     QString fadeModeTooltip = tr(
             "Auto DJ Fade Modes\n"
             "\n"
@@ -147,6 +144,12 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
             "Play the whole track except for silence at the beginning and end.\n"
             "Begin crossfading from the selected number of seconds before the\n"
             "last sound.");
+    QString transitionUnitToolTip = tr(
+            "Sets the units to use when specifying how long a transition should last.\n"
+            "\n"
+            "When using beats for the transition time, if the tracks do not "
+            "have the same BPM, this also specifies\n"
+            "before/from which point to calculate the transition period.");
 
     pushButtonFadeNow->setToolTip(fadeBtnTooltip);
     pushButtonSkipNext->setToolTip(skipBtnTooltip);
@@ -154,7 +157,6 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     pushButtonAddRandomTrack->setToolTip(addRandomTrackBtnTooltip);
     pushButtonRepeatPlaylist->setToolTip(repeatBtnTooltip);
     spinBoxTransition->setToolTip(spinBoxTransitionTooltip);
-    labelTransitionAppendix->setToolTip(labelTransitionTooltip);
     fadeModeCombobox->setToolTip(fadeModeTooltip);
 
     // Prevent the interactive widgets from being focused with Tab or Shift+Tab
@@ -211,6 +213,17 @@ DlgAutoDJ::DlgAutoDJ(WLibrary* parent,
     autoDJStateChanged(m_pAutoDJProcessor->getState());
 
     updateSelectionInfo();
+
+    ComboBoxAutoDjTransitionUnit->addItem(tr("Seconds"));
+    ComboBoxAutoDjTransitionUnit->addItem(tr("Beats (Outgoing track)"));
+    ComboBoxAutoDjTransitionUnit->addItem(tr("Beats (Incoming track)"));
+    ComboBoxAutoDjTransitionUnit->setToolTip(transitionUnitToolTip);
+    ComboBoxAutoDjTransitionUnit->setCurrentIndex(
+            static_cast<int>(m_pAutoDJProcessor->getTransitionUnit()));
+    connect(ComboBoxAutoDjTransitionUnit,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgAutoDJ::slotSetAutoDJTransitionUnit);
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -370,4 +383,9 @@ void DlgAutoDJ::updateSelectionInfo() {
 
 bool DlgAutoDJ::hasFocus() const {
     return m_pTrackTableView->hasFocus();
+}
+
+void DlgAutoDJ::slotSetAutoDJTransitionUnit(int transitionUnit) {
+    m_pAutoDJProcessor->setAutoDJTransitionUnit(
+            static_cast<AutoDJProcessor::TransitionUnit>(transitionUnit));
 }

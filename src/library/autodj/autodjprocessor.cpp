@@ -14,6 +14,7 @@
 namespace {
 const char* kTransitionPreferenceName = "Transition";
 const char* kTransitionModePreferenceName = "TransitionMode";
+const char* kTransitionUnitPreferenceName = "TransitionUnit";
 const double kTransitionPreferenceDefault = 10.0;
 const double kKeepPosition = -1.0;
 
@@ -184,6 +185,11 @@ AutoDJProcessor::AutoDJProcessor(
             ConfigKey(kConfigKey, kTransitionModePreferenceName),
             static_cast<int>(TransitionMode::FullIntroOutro));
     m_transitionMode = static_cast<TransitionMode>(configuredTransitionMode);
+
+    m_transitionUnit = static_cast<TransitionUnit>(
+            m_pConfig->getValue(
+                    ConfigKey(kConfigKey, kTransitionUnitPreferenceName),
+                    static_cast<int>(TransitionUnit::Seconds)));
 }
 
 AutoDJProcessor::~AutoDJProcessor() {
@@ -274,7 +280,7 @@ void AutoDJProcessor::fadeNow() {
 
     // If the user presses "Fade now", assume they want to fade *now*, not later.
     // So if the spinbox time is negative, do not insert silence.
-    double spinboxTime = fabs(m_transitionTime);
+    const double spinboxTime = fabs(getFadeTime());
 
     double fadeTime;
     if (m_transitionMode == TransitionMode::FullIntroOutro ||
@@ -564,6 +570,7 @@ AutoDJProcessor::AutoDJError AutoDJProcessor::toggleAutoDJ(bool enable) {
         m_pCOCrossfader->set(0);
         emitAutoDJStateChanged(m_eState);
     }
+
     return ADJ_OK;
 }
 
@@ -1396,13 +1403,18 @@ void AutoDJProcessor::useFixedFadeTime(
         double fromDeckSecond,
         double fadeEndSecond,
         double toDeckStartSecond) {
-    if (m_transitionTime > 0.0) {
+    const double fadeTime = getFadeTimeArg(pFromDeck,
+            pToDeck,
+            fromDeckSecond,
+            fadeEndSecond,
+            toDeckStartSecond);
+    if (fadeTime > 0.0) {
         // Guard against the next track being too short. This transition must finish
         // before the next transition starts.
         double toDeckOutroStart = pToDeck->fadeBeginPos;
         if (pToDeck->fadeBeginPos >= pToDeck->fadeEndPos) {
             // no outro defined, the toDeck will also use the transition time
-            toDeckOutroStart -= m_transitionTime;
+            toDeckOutroStart -= fadeTime;
         }
         if (toDeckOutroStart <= toDeckStartSecond) {
             // we are already too late
@@ -1421,7 +1433,7 @@ void AutoDJProcessor::useFixedFadeTime(
             toDeckOutroStart = (end - toDeckStartSecond) / 2 + toDeckStartSecond;
         }
         double transitionTime = math_min(toDeckOutroStart - toDeckStartSecond,
-                m_transitionTime);
+                fadeTime);
 
         pFromDeck->fadeBeginPos = math_max(fadeEndSecond - transitionTime, fromDeckSecond);
         pFromDeck->fadeEndPos = fadeEndSecond;
@@ -1429,7 +1441,7 @@ void AutoDJProcessor::useFixedFadeTime(
     } else {
         pFromDeck->fadeBeginPos = fadeEndSecond;
         pFromDeck->fadeEndPos = fadeEndSecond;
-        pToDeck->startPos = toDeckStartSecond + m_transitionTime;
+        pToDeck->startPos = toDeckStartSecond + fadeTime;
     }
 }
 
@@ -1574,6 +1586,10 @@ void AutoDJProcessor::setTransitionMode(TransitionMode newMode) {
             ConfigValue(static_cast<int>(newMode)));
     m_transitionMode = newMode;
 
+    calculateFadeThresholds();
+}
+
+void AutoDJProcessor::calculateFadeThresholds() {
     if (m_eState != ADJ_IDLE) {
         // We don't want to recalculate a running transition
         return;
@@ -1661,4 +1677,175 @@ bool AutoDJProcessor::nextTrackLoaded() {
     }
 
     return loadedTrack == getNextTrackFromQueue();
+}
+
+double AutoDJProcessor::getFadeTimeArg(
+        DeckAttributes* pFromDeck,
+        DeckAttributes* pToDeck,
+        double fromDeckSecond,
+        double fadeEndSecond,
+        double toDeckStartSecond) {
+    double fromBPM, toBPM;
+
+    const double transitionTime = m_transitionTime;
+    volatile double fadeTime;
+
+    double crossfader = getCrossfader();
+    DeckAttributes* pLeftDeck = m_decks[0];
+    DeckAttributes* pRightDeck = m_decks[1];
+
+    // Calculate the BPM for tracks in both decks
+    TrackPointer leftTrack = pLeftDeck->getLoadedTrack();
+    TrackPointer rightTrack = pRightDeck->getLoadedTrack();
+
+    volatile const double leftTrackBPM = leftTrack->getBpm();
+    volatile const double rightTrackBPM = rightTrack->getBpm();
+    volatile const double leftDeckRateRatio = pLeftDeck->rateRatio();
+    volatile const double rightDeckRateRatio = pRightDeck->rateRatio();
+
+    TrackPointer fromTrack = pFromDeck->getLoadedTrack();
+    TrackPointer toTrack = pToDeck->getLoadedTrack();
+
+    mixxx::BeatsPointer fromBeats = fromTrack->getBeats();
+    mixxx::BeatsPointer toBeats = toTrack->getBeats();
+
+    const double leftBPM = leftTrackBPM * leftDeckRateRatio;
+    const double rightBPM = rightTrackBPM * rightDeckRateRatio;
+
+    if (pLeftDeck->isPlaying() &&
+            (!pRightDeck->isPlaying() || crossfader < 0.0)) {
+        fromBPM = leftBPM;
+        toBPM = rightBPM;
+    } else if (pRightDeck->isPlaying()) {
+        fromBPM = rightBPM;
+        toBPM = leftBPM;
+    } else {
+        // Neither deck is playing. This state isn't reached.
+        // Use this as fallback though just in case.
+        fromBPM = leftBPM;
+        toBPM = rightBPM;
+    }
+
+    if (m_transitionUnit == TransitionUnit::Seconds) {
+        // The transition time is in seconds, no conversion needed
+        fadeTime = transitionTime;
+    } else {
+        // TODO(c3n7): Remove the volatile prefix
+        if (m_transitionMode == TransitionMode::FixedFullTrack) {
+            if (m_transitionUnit == TransitionUnit::Beats_IncomingTrack) {
+                volatile double trackDuration = pToDeck->trackSamples();
+
+                // TODO(c3n7): work on seek to start
+                volatile double playPos = pToDeck->playPosition();
+                volatile double startSample = trackDuration * playPos;
+
+                // TODO(c3n7): if magnet isn't enabled, do the necessary
+                volatile double toTransStartSample = fromBeats->findClosestBeat(
+                        startSample);
+                volatile double toTransEndSample = fromBeats->findNBeatsFromSample(
+                        toTransStartSample, transitionTime);
+
+                volatile double transitionStartSec = samplePositionToSeconds(
+                        toTransStartSample, pToDeck);
+                volatile double transitionEndSec = samplePositionToSeconds(
+                        toTransEndSample, pToDeck);
+
+                volatile double fadeTimeCalc = transitionEndSec - transitionStartSec;
+                fadeTime = fadeTimeCalc;
+            } else {
+                // get the sample for the last second
+                volatile double endSamplePos = pFromDeck->trackSamples();
+                // TODO(c3n7): if magnet isn't enabled, do the necessary
+                volatile double fromLastSample = fromBeats->findClosestBeat(
+                        endSamplePos);
+                volatile double fromTrackStartSample = fromBeats->findNBeatsFromSample(
+                        fromLastSample, -transitionTime);
+                volatile double transitionStart = samplePositionToSeconds(
+                        fromTrackStartSample, pFromDeck);
+                volatile double transitionEnd = samplePositionToSeconds(
+                        fromLastSample, pFromDeck);
+
+                volatile double fadeTimeCalc = transitionEnd - transitionStart;
+                fadeTime = fadeTimeCalc;
+            }
+        } else {
+            // TODO(c3n7): Work on the rest of the transition modes
+            switch (m_transitionUnit) {
+            case TransitionUnit::Beats_IncomingTrack:
+                fadeTime = (transitionTime * 60) / toBPM;
+                break;
+            default:
+                fadeTime = (transitionTime * 60) / fromBPM;
+            }
+        }
+    }
+
+    return fadeTime;
+}
+
+double AutoDJProcessor::getFadeTime() {
+    double fromBPM, toBPM;
+
+    const double transitionTime = m_transitionTime;
+    double fadeTime;
+
+    double crossfader = getCrossfader();
+    DeckAttributes* pLeftDeck = m_decks[0];
+    DeckAttributes* pRightDeck = m_decks[1];
+
+    // Calculate the BPM for tracks in both decks
+    TrackPointer leftTrack = pLeftDeck->getLoadedTrack();
+    TrackPointer rightTrack = pRightDeck->getLoadedTrack();
+
+    const double leftTrackBPM = leftTrack->getBpm();
+    const double rightTrackBPM = rightTrack->getBpm();
+    const double leftDeckRateRatio = pLeftDeck->rateRatio();
+    const double rightDeckRateRatio = pRightDeck->rateRatio();
+
+    mixxx::BeatsPointer leftBeats = leftTrack->getBeats();
+    mixxx::BeatsPointer rightBeats = rightTrack->getBeats();
+
+    const double leftBPM = leftTrackBPM * leftDeckRateRatio;
+    const double rightBPM = rightTrackBPM * rightDeckRateRatio;
+
+    if (pLeftDeck->isPlaying() &&
+            (!pRightDeck->isPlaying() || crossfader < 0.0)) {
+        fromBPM = leftBPM;
+        toBPM = rightBPM;
+    } else if (pRightDeck->isPlaying()) {
+        fromBPM = rightBPM;
+        toBPM = leftBPM;
+    } else {
+        // Neither deck is playing. This state isn't reached.
+        // Use this as fallback though just in case.
+        fromBPM = leftBPM;
+        toBPM = rightBPM;
+    }
+
+    if (m_transitionUnit == TransitionUnit::Seconds) {
+        // The transition time is in seconds, no conversion needed
+        fadeTime = transitionTime;
+    } else {
+        if (leftBPM == rightBPM) {
+            fadeTime = (transitionTime * 60) / leftBPM;
+        } else {
+            // Get the user's preference on which track's bpm to use
+            switch (m_transitionUnit) {
+            case TransitionUnit::Beats_IncomingTrack:
+                fadeTime = (transitionTime * 60) / toBPM;
+                break;
+            default:
+                fadeTime = (transitionTime * 60) / fromBPM;
+            }
+        }
+    }
+
+    return fadeTime;
+}
+
+void AutoDJProcessor::setAutoDJTransitionUnit(TransitionUnit transitionUnit) {
+    m_transitionUnit = transitionUnit;
+    m_pConfig->setValue(ConfigKey("[Auto DJ]", kTransitionUnitPreferenceName),
+            static_cast<int>(transitionUnit));
+    calculateFadeThresholds();
 }
