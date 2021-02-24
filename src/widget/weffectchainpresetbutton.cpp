@@ -21,6 +21,7 @@ WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManag
             &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
             &WEffectChainPresetButton::populateMenu);
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WEffectChainPresetButton::setup(const QDomNode& node, const SkinContext& context) {
