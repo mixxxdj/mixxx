@@ -113,7 +113,7 @@ jobs:
       with:
         # This should always match the mininum required version in
         # our CMakeLists.txt
-        cmake-version: '3.15.x'
+        cmake-version: '3.13.x'
 
     - name: "[Windows] Install additional build tools"
       if: runner.os == 'Windows'
