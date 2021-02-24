@@ -83,13 +83,13 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
 
     // Sharps
     EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
-              KeyUtils::guessKeyFromText("C#"));
+            KeyUtils::guessKeyFromText("C#"));
     EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
             KeyUtils::guessKeyFromText(QString::fromUtf8("C" MUSIC_SHARP_SIGN_UTF8)));
 
     // Flats
     EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
-              KeyUtils::guessKeyFromText("Db"));
+            KeyUtils::guessKeyFromText("Db"));
     EXPECT_EQ(mixxx::track::io::key::D_FLAT_MAJOR,
             KeyUtils::guessKeyFromText(QString::fromUtf8("D" MUSIC_FLAT_SIGN_UTF8)));
 
