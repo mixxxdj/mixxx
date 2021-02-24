@@ -849,6 +849,8 @@ double BpmControl::getBeatMatchPosition(
         return dThisPosition;
     }
 
+    DEBUG_ASSERT(getSampleOfTrack().rate > 0.0);
+
     double dThisSampleRate = m_pBeats->getSampleRate();
     double dThisRateRatio = m_pRateRatio->get();
 
