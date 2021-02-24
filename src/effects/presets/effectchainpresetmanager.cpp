@@ -127,7 +127,8 @@ void EffectChainPresetManager::importPreset() {
                                        "imported effect chain preset:"),
                             QLineEdit::Normal,
                             QString(),
-                            &okay);
+                            &okay)
+                                      .trimmed();
                     if (!okay) {
                         break;
                     }
