@@ -81,3 +81,14 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
 void WEffectChainPresetSelector::slotEffectChainNameChanged(const QString& name) {
     setCurrentIndex(findData(name));
 }
+
+bool WEffectChainPresetSelector::event(QEvent* pEvent) {
+    if (pEvent->type() == QEvent::ToolTip) {
+        updateTooltip();
+    } else if (pEvent->type() == QEvent::Wheel && !hasFocus()) {
+        // don't change preset by scrolling hovered preset selector
+        return true;
+    }
+
+    return QComboBox::event(pEvent);
+}
