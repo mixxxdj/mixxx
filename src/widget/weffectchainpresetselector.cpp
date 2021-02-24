@@ -61,11 +61,14 @@ void WEffectChainPresetSelector::populate() {
     } else {
         presetList = m_pEffectsManager->getChainPresetManager()->getPresetsSorted();
     }
-    for (const auto& pChainPreset : std::as_const(presetList)) {
+
+    for (int i = 0; i < presetList.size(); i++) {
+        auto pChainPreset = presetList.at(i);
         QString elidedDisplayName = metrics.elidedText(pChainPreset->name(),
                 Qt::ElideMiddle,
                 width() - 2);
         addItem(elidedDisplayName, QVariant(pChainPreset->name()));
+        setItemData(i, pChainPreset->name(), Qt::ToolTipRole);
     }
 
     slotEffectChainNameChanged(m_pChain->presetName());
@@ -76,10 +79,12 @@ void WEffectChainPresetSelector::slotEffectChainPresetSelected(int index) {
     Q_UNUSED(index);
     m_pChain->loadChainPreset(
             m_pChainPresetManager->getPreset(currentData().toString()));
+    setBaseTooltip(itemData(index, Qt::ToolTipRole).toString());
 }
 
 void WEffectChainPresetSelector::slotEffectChainNameChanged(const QString& name) {
     setCurrentIndex(findData(name));
+    setBaseTooltip(name);
 }
 
 bool WEffectChainPresetSelector::event(QEvent* pEvent) {
