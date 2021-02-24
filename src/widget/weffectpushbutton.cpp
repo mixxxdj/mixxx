@@ -21,10 +21,6 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
     auto pEffectSlot = EffectWidgetUtils::getEffectSlotFromNode(node, context, pChainSlot);
     m_pEffectParameterSlot = EffectWidgetUtils::getButtonParameterSlotFromNode(
             node, context, pEffectSlot);
-    VERIFY_OR_DEBUG_ASSERT(m_pEffectParameterSlot) {
-        SKIN_WARNING(node, context) << "Could not find effect parameter slot";
-        return;
-    }
     connect(m_pEffectParameterSlot.data(),
             &EffectParameterSlotBase::updated,
             this,
@@ -36,6 +32,9 @@ void WEffectPushButton::setup(const QDomNode& node, const SkinContext& context) 
             this,
             &WEffectPushButton::slotActionChosen);
     parameterUpdated();
+    VERIFY_OR_DEBUG_ASSERT(m_pEffectParameterSlot) {
+        SKIN_WARNING(node, context) << "Could not find effect parameter slot";
+    }
 }
 
 void WEffectPushButton::onConnectedControlChanged(double dParameter, double dValue) {
@@ -88,6 +87,10 @@ void WEffectPushButton::mouseReleaseEvent(QMouseEvent* e) {
 }
 
 void WEffectPushButton::parameterUpdated() {
+    VERIFY_OR_DEBUG_ASSERT(m_pEffectParameterSlot) {
+        return;
+    }
+
     // Set tooltip
     if (m_pEffectParameterSlot->isLoaded()) {
         setBaseTooltip(QString("%1\n%2").arg(
