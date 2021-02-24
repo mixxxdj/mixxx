@@ -34,6 +34,7 @@
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/defs.h"
+#include "util/frameadapter.h"
 #include "util/logger.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -1262,14 +1263,8 @@ void EngineBuffer::processSeek(bool paused) {
         }
         double requestedPosition = position;
         double syncPosition =
-                m_pBpmControl
-                        ->getBeatMatchPosition(
-                                mixxx::FramePos(
-                                        position / mixxx::kEngineChannelCount),
-                                true,
-                                true)
-                        .getValue() *
-                mixxx::kEngineChannelCount;
+                framePosToSamplePos(m_pBpmControl->getBeatMatchPosition(
+                        samplePosToFramePos(position), true, true));
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
         if (kLogger.traceEnabled()) {
             kLogger.trace()
