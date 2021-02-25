@@ -100,8 +100,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
     while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
         int deckNo = m_deckEqEffectSelectors.size() + 1;
 
-        QLabel* label = new QLabel(QObject::tr("Deck %1 EQ Effect").
-                             arg(deckNo), this);
+        QLabel* label = new QLabel(QObject::tr("Deck %1").arg(deckNo), this);
 
         QString group = PlayerManager::groupForDeck(
                 m_deckEqEffectSelectors.size());
@@ -129,7 +128,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         if (deckNo == 1) {
             m_firstSelectorLabel = label;
             if (CheckBoxEqOnly->isChecked()) {
-                m_firstSelectorLabel->setText(QObject::tr("EQ Effect"));
+                m_firstSelectorLabel->clear();
             }
         }
 
@@ -293,9 +292,9 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
 
     if (m_firstSelectorLabel != nullptr) {
         if (do_hide) {
-            m_firstSelectorLabel->setText(QObject::tr("EQ Effect"));
+            m_firstSelectorLabel->clear();
         } else {
-            m_firstSelectorLabel->setText(QObject::tr("Deck 1 EQ Effect"));
+            m_firstSelectorLabel->setText(QObject::tr("Deck 1"));
         }
     }
 
