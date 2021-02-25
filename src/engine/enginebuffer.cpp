@@ -52,7 +52,7 @@ const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent al
 const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
 // Rate at which the playpos slider is updated
-const int kiPlaypositionUpdateRate = 15; // updates per second
+const int kPlaypositionUpdateRate = 15; // updates per second
 
 } // anonymous namespace
 
@@ -1267,7 +1267,9 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
-    if (m_iSamplesSinceLastIndicatorUpdate > (kSamplesPerFrame * m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
+    if (m_iSamplesSinceLastIndicatorUpdate >
+            (kSamplesPerFrame * m_pSampleRate->get() /
+                    kPlaypositionUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
         m_pCueControl->updateIndicators();
     }
