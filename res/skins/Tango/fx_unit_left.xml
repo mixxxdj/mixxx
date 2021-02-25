@@ -26,8 +26,8 @@ Variables:
             <!--Size>200f,-1min</Size-->
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
-                <ObjectName>AlignRight</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <ObjectName>AlignRightCenter</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
@@ -47,8 +47,8 @@ Variables:
                 <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 2 -->
-                <ObjectName>AlignRight</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <ObjectName>AlignRightCenter</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
@@ -68,8 +68,8 @@ Variables:
                 <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 3 -->
-                <ObjectName>AlignRight</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <ObjectName>AlignRightCenter</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>0min,1min</Size></WidgetGroup>

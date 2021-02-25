@@ -2360,7 +2360,7 @@ WTrackMenu QMenu::right-arrow {
 #AlignTop {
   qproperty-layoutAlignment: 'AlignTop';
 }
-#AlignLeft{
+#AlignLeft {
   qproperty-layoutAlignment: 'AlignLeft | AlignVCenter';
 }
 #AlignTopLeft {

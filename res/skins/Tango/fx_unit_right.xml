@@ -158,7 +158,7 @@ Variables:
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
                 <ObjectName>AlignLeft</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
@@ -179,7 +179,7 @@ Variables:
 
               <WidgetGroup><!-- EffectSlot 2 -->
                 <ObjectName>AlignLeft</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
@@ -200,7 +200,7 @@ Variables:
 
               <WidgetGroup><!-- EffectSlot 3 -->
                 <ObjectName>AlignLeft</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
