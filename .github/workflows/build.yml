@@ -15,11 +15,11 @@ jobs:
             cmake_args: >-
               -DWARNINGS_FATAL=ON
               -DFAAD=ON
-              -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
+              -INSTALL_USER_UDEV_RULES=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             ctest_args:
@@ -41,6 +41,7 @@ jobs:
               -DMAD=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
+              -INSTALL_USER_UDEV_RULES=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             ctest_args:
@@ -78,7 +79,6 @@ jobs:
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
-              -DSTATIC_DEPS=ON
             cc: cl
             cxx: cl
             cmake_generator: Ninja

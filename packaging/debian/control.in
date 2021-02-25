@@ -3,6 +3,7 @@ Section: @CPACK_DEBIAN_PACKAGE_SECTION@
 Priority: @CPACK_DEBIAN_PACKAGE_PRIORITY@
 Maintainer: @CPACK_PACKAGE_CONTACT@
 Build-Depends: debhelper (>= 11),
+               @CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA@
                pkg-config,
                docbook-to-man,
                markdown,
@@ -38,7 +39,7 @@ Build-Depends: debhelper (>= 11),
                libfaad-dev,
                libportmidi-dev,
                libtag1-dev,
-               libshout-dev,
+               libshout-idjc-dev,
                libssl-dev,
                libprotobuf-dev,
                protobuf-compiler,
