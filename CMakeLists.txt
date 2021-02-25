@@ -132,6 +132,10 @@ if(MSVC)
       # Remove /RTC1 flag set by CMAKE by default (conflicts with /O2)
       string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG}")
+
+      # Needed for sccache
+      string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
+      string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS}")
     else()
       # Squeeze binary in Release builds
       add_link_options(/OPT:REF /OPT:ICF)
@@ -179,6 +183,9 @@ if(MSVC)
       string(REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELEASE  "${CMAKE_C_FLAGS_RELEASE}")
       add_compile_options(/Od) # this implies /Ob0
       add_compile_options(/RTC1)
+      # Needed for sccache
+      string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELEASE  "${CMAKE_CXX_FLAGS_DEBUG}")
+      string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELEASE  "${CMAKE_C_FLAGS}")
     elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
       #Remove optimize flags set by cmake defaults
       string(REPLACE "/O2" "" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
@@ -187,6 +194,9 @@ if(MSVC)
       string(REPLACE "/Ob2" "" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
       add_compile_options(/Od) # this implies /Ob0
       add_compile_options(/RTC1)
+      # Needed for sccache
+      string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELWITHDEBINFO  "${CMAKE_CXX_FLAGS_DEBUG}")
+      string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELWITHDEBINFO  "${CMAKE_C_FLAGS}")
     endif()
   endif()
 elseif(GNU_GCC OR LLVM_CLANG)
