@@ -595,7 +595,7 @@ WWidgetGroup {
 #DeckMini2,
 #DeckMini3,
 #DeckMini4 {
-  background-color: #0f0f0f;
+  background-color: #1e1e1e;
 }
 
 #DeckContainer {

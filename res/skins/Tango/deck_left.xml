@@ -115,6 +115,8 @@ Variables:
             <Size>110f,22f</Size>
             <EffectUnitGroup>[QuickEffectRack1_<Variable name="group"/>]</EffectUnitGroup>
           </EffectChainPresetSelector>
+
+          <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0min,0me</Size></WidgetGroup>
         </Children>
         <Connection>
           <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
