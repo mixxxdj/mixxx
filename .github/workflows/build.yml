@@ -117,11 +117,7 @@ jobs:
 
     - name: "[Windows] Install additional build tools"
       if: runner.os == 'Windows'
-      run: |
-        choco install sccache ninja
-        $Env:PATH="C:\msys64\usr\bin;$Env:PATH"
-        pacman -S --noconfirm coreutils bash rsync openssh
-        Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
+      run: choco install sccache ninja
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
@@ -298,6 +294,15 @@ jobs:
       run: signtool sign /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
       working-directory: build
 
+    - name: "[Windows] Install rsync and openssh"
+      env:
+        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+      if: runner.os == 'Windows' && env.SSH_PASSWORD != null
+      run: |
+        $Env:PATH="C:\msys64\usr\bin;$Env:PATH"
+        pacman -S --noconfirm coreutils bash rsync openssh
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
+
     - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
       # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
       if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_PASSWORD != null
@@ -310,6 +315,13 @@ jobs:
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
         SSH_USER: mixxx
         UPLOAD_ID: ${{ github.run_id }}
+
+    # Workaround for https://github.com/actions/cache/issues/531
+    - name: Use system tar & zstd from Chocolatey for caching
+      if: runner.os == 'Windows'
+      shell: bash
+      run: |
+        echo "C:/Windows/System32;C:/ProgramData/Chocolatey/bin" >> $GITHUB_PATH
 
     - name: "Upload GitHub Actions artifacts"
       uses: actions/upload-artifact@v2
