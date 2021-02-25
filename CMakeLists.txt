@@ -87,16 +87,18 @@ string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 message(STATUS "Optimization level: ${OPTIMIZE}")
 
 # CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
-# We keep CMAKE_INTERPROCEDURAL_OPTIMIZATION unset (IPO disabled) for Debug builds to save
-# build time during development at the cost of a bigger memory footprint at run-time.
-# Note: This is has caused issues on Fedora https://bugzilla.rpmfusion.org/show_bug.cgi?id=5829
-if(NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT OPTIMIZE STREQUAL "off")
-  include(CheckIPOSupported)
-  check_ipo_supported(RESULT HAVE_IPO)
-  if(HAVE_IPO)
-    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
-  endif()
-endif()
+# We keep CMAKE_INTERPROCEDURAL_OPTIMIZATION unset (IPO disabled) to save
+# build time at the cost of a bigger memory footprint at run-time.
+# See https://github.com/mixxxdj/mixxx/pull/3589 for some test results
+# Note: IPO has caused issues on Fedora https://bugzilla.rpmfusion.org/show_bug.cgi?id=5829
+# Uncomment the following code to enable IPO for Release builds
+#if(NOT DEFINED CMAKE_INTERPROCEDURAL_OPTIMIZATION AND NOT CMAKE_BUILD_TYPE STREQUAL "Debug" AND NOT OPTIMIZE STREQUAL "off")
+#  include(CheckIPOSupported)
+#  check_ipo_supported(RESULT HAVE_IPO)
+#  if(HAVE_IPO)
+#    set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+#  endif()
+#endif()
 
 if(MSVC)
   # Microsoft Visual Studio Compiler
