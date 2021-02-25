@@ -47,15 +47,6 @@ class EngineWorkerScheduler;
 class VisualPlayPosition;
 class EngineMaster;
 
-// Length of audio beat marks in samples
-const int audioBeatMarkLen = 40;
-
-// Temporary buffer length
-const int kiTempLength = 200000;
-
-// Rate at which the playpos slider is updated
-const int kiPlaypositionUpdateRate = 15; // updates per second
-
 class EngineBuffer : public EngineObject {
      Q_OBJECT
   private:
