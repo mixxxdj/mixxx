@@ -13,10 +13,6 @@ WEffectChainPresetButton::WEffectChainPresetButton(QWidget* parent, EffectsManag
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
           m_pMenu(make_parented<QMenu>(new QMenu(this))) {
     setMenu(m_pMenu.get());
-    connect(this,
-            &QPushButton::pressed,
-            this,
-            &QPushButton::showMenu);
     connect(m_pChainPresetManager.data(),
             &EffectChainPresetManager::effectChainPresetListUpdated,
             this,
