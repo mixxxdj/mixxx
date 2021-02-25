@@ -110,7 +110,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
                 new ControlObject(ConfigKey(group, "filterWaveformEnable")));
         m_filterWaveformEffectLoaded.append(false);
 
-        // Create the drop down list for EQs
+        // Create the drop down list for deck EQs
         QComboBox* eqComboBox = new QComboBox(this);
         m_deckEqEffectSelectors.append(eqComboBox);
         connect(eqComboBox,
@@ -118,7 +118,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
                 this,
                 &DlgPrefEQ::slotEqEffectChangedOnDeck);
 
-        // Create the drop down list for EQs
+        // Create the drop down list for Quick Effects
         QComboBox* quickEffectComboBox = new QComboBox(this);
         m_deckQuickEffectSelectors.append(quickEffectComboBox);
         connect(quickEffectComboBox,
@@ -217,20 +217,20 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         box->clear();
         int currentIndex = -1; // Nothing selected
 
+        // Add empty item at the top: no deck EQ
+        box->addItem(EffectsManager::kNoEffectString);
         int i;
         for (i = 0; i < availableEQEffects.size(); ++i) {
             EffectManifestPointer pManifest = availableEQEffects.at(i);
             box->addItem(pManifest->name(), QVariant(pManifest->id()));
             if (selectedEffectId == pManifest->id()) {
-                currentIndex = i;
+                currentIndex = i + 1;
             }
         }
-        // Add empty item, no effect
-        box->addItem(EffectsManager::kNoEffectString);
 
         if (selectedEffectId.isEmpty()) {
             // Configured effect has no id, clear selection
-            currentIndex = availableEQEffects.size();
+            currentIndex = 0;
         } else if (currentIndex < 0 && !selectedEffectName.isEmpty() ) {
             // current selection is not part of the new list
             // So we need to add it
@@ -248,20 +248,21 @@ void DlgPrefEQ::slotPopulateDeckEffectSelectors() {
         box->clear();
         int currentIndex = -1;// Nothing selected
 
+        // Add empty item at the top: no Quick Effect
+        box->addItem(EffectsManager::kNoEffectString);
+
         int i;
         for (i = 0; i < availableQuickEffects.size(); ++i) {
             EffectManifestPointer pManifest = availableQuickEffects.at(i);
             box->addItem(pManifest->name(), QVariant(pManifest->id()));
             if (selectedEffectId == pManifest->id()) {
-                currentIndex = i;
+                currentIndex = i + 1;
             }
         }
-        // Add empty item, no effect
-        box->addItem(EffectsManager::kNoEffectString);
 
         if (selectedEffectId.isEmpty()) {
             // Configured effect has no id, clear selection
-            currentIndex = availableQuickEffects.size();
+            currentIndex = 0;
         } else if (currentIndex < 0 && !selectedEffectName.isEmpty()) {
             // current selection is not part of the new list
             // So we need to add it
@@ -672,16 +673,16 @@ void DlgPrefEQ::setUpMasterEQ() {
     const QList<EffectManifestPointer> availableMasterEQEffects =
         m_pEffectsManager->getAvailableEffectManifestsFiltered(isMasterEQ);
 
+    // Add empty item at the top: no Master EQ
+    comboBoxMasterEq->addItem(EffectsManager::kNoEffectString);
     for (const auto& pManifest : availableMasterEQEffects) {
         comboBoxMasterEq->addItem(pManifest->name(), QVariant(pManifest->id()));
     }
-    // Add empty item, no effect
-    comboBoxMasterEq->addItem(EffectsManager::kNoEffectString);
 
     int masterEqIndex = comboBoxMasterEq->findData(configuredEffect);
     if (masterEqIndex < 0) {
         // Configured effect not in list, clear selection
-        masterEqIndex = availableMasterEQEffects.size();
+        masterEqIndex = 0;
     }
     comboBoxMasterEq->setCurrentIndex(masterEqIndex);
 
