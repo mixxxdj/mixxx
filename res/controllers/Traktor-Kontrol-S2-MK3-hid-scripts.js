@@ -188,7 +188,7 @@ TraktorS2MK3.registerInputPackets = function () {
     /*
     do NOT map the "master" button because it also drives the analog output gain.
     Disabling this mapping is the only way to have independant controls for the
-    digital master gain and the ouput level - the latter usually needs to be set
+    digital master gain and the output level - the latter usually needs to be set
     at 100%.
     */
     // this.registerInputScaler(messageLong, "[Master]", "gain", 0x15, 0xFFFF, this.parameterHandler);
