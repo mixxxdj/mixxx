@@ -20,17 +20,20 @@ class BeatGrid final : public Beats {
     // Construct a BeatGrid. If a more accurate sample rate is known, provide it
     // in the iSampleRate parameter -- otherwise pass 0.
     BeatGrid(const Track& track, SINT iSampleRate);
-    // Construct a BeatGrid. If a more accurate sample rate is known, provide it
-    // in the iSampleRate parameter -- otherwise pass 0. The BeatGrid will be
-    // deserialized from the byte array.
-    BeatGrid(const Track& track, SINT iSampleRate,
-             const QByteArray& byteArray);
     ~BeatGrid() override = default;
 
     // Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
     // of dFirstBeatSample. Does not generate an updated() signal, since it is
     // meant for initialization.
-    void setGrid(double dBpm, double dFirstBeatSample);
+    static mixxx::BeatsPointer makeBeatGrid(const Track& track,
+            SINT iSampleRate,
+            double dBpm,
+            double dFirstBeatSample);
+    // Construct a BeatGrid. If a more accurate sample rate is known, provide it
+    // in the iSampleRate parameter -- otherwise pass 0. The BeatGrid will be
+    // deserialized from the byte array.
+    static mixxx::BeatsPointer makeBeatGrid(
+            const Track& track, SINT iSampleRate, const QByteArray& byteArray);
 
     // The following are all methods from the Beats interface, see method
     // comments in beats.h
@@ -43,7 +46,7 @@ class BeatGrid final : public Beats {
     BeatsPointer clone() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
-    virtual void setSubVersion(const QString& subVersion);
+    void setSubVersion(const QString& subVersion) override;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -77,10 +80,13 @@ class BeatGrid final : public Beats {
     BeatGrid(const BeatGrid& other);
     // Constructor to update the beat grid
     BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength);
+    BeatGrid(const Track& track,
+            SINT iSampleRate,
+            const mixxx::track::io::BeatGrid& grid,
+            double beatLength);
     double firstBeatSample() const;
     double bpm() const;
 
-    void readByteArray(const QByteArray& byteArray);
     // For internal use only.
     bool isValid() const;
 

@@ -53,9 +53,15 @@ BeatGrid::BeatGrid(
 BeatGrid::BeatGrid(
         const Track& track,
         SINT iSampleRate,
-        const QByteArray& byteArray)
-        : BeatGrid(track, iSampleRate) {
-    readByteArray(byteArray);
+        const mixxx::track::io::BeatGrid& grid,
+        double beatLength)
+        : m_mutex(QMutex::Recursive),
+          m_iSampleRate(iSampleRate > 0 ? iSampleRate : track.getSampleRate()),
+          m_grid(grid),
+          m_dBeatLength(beatLength) {
+    // BeatGrid should live in the same thread as the track it is associated
+    // with.
+    moveToThread(track.thread());
 }
 
 BeatGrid::BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength)
@@ -71,17 +77,51 @@ BeatGrid::BeatGrid(const BeatGrid& other)
         : BeatGrid(other, other.m_grid, other.m_dBeatLength) {
 }
 
-void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
+// static
+mixxx::BeatsPointer BeatGrid::makeBeatGrid(const Track& track,
+        SINT iSampleRate,
+        double dBpm,
+        double dFirstBeatSample) {
     if (dBpm < 0) {
         dBpm = 0.0;
     }
 
-    QMutexLocker lock(&m_mutex);
-    m_grid.mutable_bpm()->set_bpm(dBpm);
-    m_grid.mutable_first_beat()->set_frame_position(
+    if (iSampleRate <= 0) {
+        iSampleRate = track.getSampleRate();
+    }
+
+    mixxx::track::io::BeatGrid grid;
+
+    grid.mutable_bpm()->set_bpm(dBpm);
+    grid.mutable_first_beat()->set_frame_position(
             static_cast<google::protobuf::int32>(dFirstBeatSample / kFrameSize));
     // Calculate beat length as sample offsets
-    m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
+    double beatLength = (60.0 * iSampleRate / dBpm) * kFrameSize;
+
+    return mixxx::BeatsPointer(new BeatGrid(track, iSampleRate, grid, beatLength));
+}
+
+// static
+mixxx::BeatsPointer BeatGrid::makeBeatGrid(
+        const Track& track, SINT sampleRate, const QByteArray& byteArray) {
+    if (sampleRate <= 0) {
+        sampleRate = track.getSampleRate();
+    }
+
+    mixxx::track::io::BeatGrid grid;
+    if (grid.ParseFromArray(byteArray.constData(), byteArray.length())) {
+        double beatLength = (60.0 * sampleRate / grid.bpm().bpm()) * kFrameSize;
+        return mixxx::BeatsPointer(new BeatGrid(track, sampleRate, grid, beatLength));
+    }
+
+    // Legacy fallback for BeatGrid-1.0
+    if (byteArray.size() != sizeof(BeatGridData)) {
+        return mixxx::BeatsPointer(new BeatGrid(track, sampleRate));
+    }
+    const BeatGridData* blob = reinterpret_cast<const BeatGridData*>(byteArray.constData());
+
+    // We serialize into frame offsets but use sample offsets at runtime
+    return makeBeatGrid(track, sampleRate, blob->bpm, blob->firstBeat * kFrameSize);
 }
 
 QByteArray BeatGrid::toByteArray() const {
@@ -95,24 +135,6 @@ BeatsPointer BeatGrid::clone() const {
     QMutexLocker locker(&m_mutex);
     BeatsPointer other(new BeatGrid(*this));
     return other;
-}
-
-void BeatGrid::readByteArray(const QByteArray& byteArray) {
-    mixxx::track::io::BeatGrid grid;
-    if (grid.ParseFromArray(byteArray.constData(), byteArray.length())) {
-        m_grid = grid;
-        m_dBeatLength = (60.0 * m_iSampleRate / bpm()) * kFrameSize;
-        return;
-    }
-
-    // Legacy fallback for BeatGrid-1.0
-    if (byteArray.size() != sizeof(BeatGridData)) {
-        return;
-    }
-    const BeatGridData* blob = reinterpret_cast<const BeatGridData*>(byteArray.constData());
-
-    // We serialize into frame offsets but use sample offsets at runtime
-    setGrid(blob->bpm, blob->firstBeat * kFrameSize);
 }
 
 double BeatGrid::firstBeatSample() const {

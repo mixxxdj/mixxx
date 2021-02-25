@@ -51,7 +51,7 @@ class BeatMap final : public Beats {
     BeatsPointer clone() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
-    virtual void setSubVersion(const QString& subVersion);
+    void setSubVersion(const QString& subVersion) override;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
