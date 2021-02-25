@@ -4,6 +4,7 @@
 
 #include <QAtomicInt>
 #include <QMutex>
+#include <cfloat>
 
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
@@ -80,6 +81,8 @@ class EngineBuffer : public EngineObject {
         RUBBERBAND,
         KEYLOCK_ENGINE_COUNT,
     };
+
+    static constexpr double kInitalSample = DBL_MIN;
 
     EngineBuffer(const QString& group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);
