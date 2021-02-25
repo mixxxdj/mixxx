@@ -170,6 +170,18 @@ double BeatUtils::computeFilteredWeightedAverage(
     return filterWeightedAverage / static_cast<double>(filterSum);
 }
 
+mixxx::Bpm BeatUtils::calculateAverageBpm(int numberOfBeats,
+        int sampleRate,
+        double lowerFrame,
+        double upperFrame) {
+    double frames = upperFrame - lowerFrame;
+    DEBUG_ASSERT(frames > 0);
+    if (numberOfBeats < 1) {
+        return mixxx::Bpm();
+    }
+    return mixxx::Bpm(60.0 * numberOfBeats * sampleRate / frames);
+}
+
 // TODO(JVC) Use Bpm class internally instead of only convert the calculated on return
 mixxx::Bpm BeatUtils::calculateBpm(
         const QVector<double>& beats, int sampleRate, int min_bpm, int max_bpm) {
@@ -209,15 +221,11 @@ mixxx::Bpm BeatUtils::calculateBpm(
         qDebug() << "Analysis data(Frame numbers):" << beats;
     }
 
-    if (beats.size() < 2) {
-        return mixxx::Bpm();
-    }
-
     // If we don't have enough beats for our regular approach, just divide the #
     // of beats by the duration in minutes.
     if (beats.size() <= N) {
-        mixxx::Bpm result(60.0 * (beats.size() - 1) * sampleRate /
-                (beats.last() - beats.first()));
+        mixxx::Bpm result = calculateAverageBpm(
+                beats.size() - 1, sampleRate, beats.first(), beats.last());
         if (sDebug) {
             qDebug() << "Simplified calculation. BPM:" << result;
         }

@@ -82,9 +82,6 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
         } else if (argv[i] == QString("--resourcePath") && i+1 < argc) {
             m_resourcePath = QString::fromLocal8Bit(argv[i+1]);
             i++;
-        } else if (argv[i] == QString("--pluginPath") && i+1 < argc) {
-            m_pluginPath = QString::fromLocal8Bit(argv[i+1]);
-            i++;
         } else if (argv[i] == QString("--timelinePath") && i+1 < argc) {
             m_timelinePath = QString::fromLocal8Bit(argv[i+1]);
             i++;
@@ -167,10 +164,6 @@ void CmdlineArgs::printUsage() {
 --resourcePath PATH     Top-level directory where Mixxx should look\n\
                         for its resource files such as MIDI mappings,\n\
                         overriding the default installation location.\n\
-\n\
---pluginPath PATH       Top-level directory where Mixxx should look\n\
-                        for sound source plugins in addition to default\n\
-                        locations.\n\
 \n\
 --settingsPath PATH     Top-level directory where Mixxx should look\n\
                         for settings. Default is:\n", stdout);

@@ -13,6 +13,11 @@ class BeatUtils {
     static void printBeatStatistics(const QVector<double>& beats, int SampleRate);
     static double constrainBpm(double bpm, int minBpm, int maxBpm, bool aboveRange);
 
+    static mixxx::Bpm calculateAverageBpm(int numberOfBeats,
+            int sampleRate,
+            double lowerFrame,
+            double upperFrame);
+
     /*
      * This method detects the BPM given a set of beat positions.
      * We compute the average local BPM of by considering 8 beats

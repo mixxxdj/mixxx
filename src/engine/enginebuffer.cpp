@@ -617,6 +617,10 @@ void EngineBuffer::notifyTrackLoaded(
     // Note: we are still in a worker thread.
     for (const auto& pControl : qAsConst(m_engineControls)) {
         pControl->trackLoaded(pNewTrack);
+        pControl->setCurrentSample(0.0,
+                m_pTrackSamples->get(),
+                mixxx::audio::SampleRate::fromDouble(
+                        m_pTrackSampleRate->get()));
     }
 
     if (pNewTrack) {
