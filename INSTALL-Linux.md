@@ -22,27 +22,15 @@ sudo dnf builddep mixxx
 
 ## Arch & Derivatives
 
-If you are developing on Arch, you should have the
-[base-devel group](https://www.archlinux.org/groups/x86_64/base-devel)
-installed.
+First, you need to install the development tools:
 
-The tools you are going to need for working with Mixxx are:
-``` sh
-sudo pacman -S --needed git gcc cmake
-```
-Alternatively, you can substitute gcc with clang.
+    # pacman -S base-devel git cmake ccache
 
-Then install the dependencies:
-``` sh
-sudo pacman -S --needed protobuf vamp-plugin-sdk rubberband soundtouch \
-    chromaprint libid3tag taglib \
-    lame libogg libmad libvorbis libmp4v2 faad2 opusfile wavpack \
-    libshout libsndfile portmidi portaudio \
-    sqlite upower lilv libopenmpt-modplug \
-    qt5-declarative qtkeychain-qt5 qt5-svg
-```
+Mixxx dependencies can be installed from the [AUR package](https://aur.archlinux.org/packages/mixxx-git/):
 
-> Note: This will soon be integrated with the AUR packages (https://aur.archlinux.org/packages/mixxx-git and https://aur.archlinux.org/packages/mixxx_beta-git)
+    $ git clone https://aur.archlinux.org/mixxx-git.git
+    $ cd mixxx-git
+    $ makepkg -soe
 
 ## Nix & NixOS
 
