@@ -134,10 +134,6 @@ jobs:
         # our CMakeLists.txt
         cmake-version: '3.13.x'
 
-    - name: "[Windows] Install additional build tools"
-      if: runner.os == 'Windows'
-      run: choco install ninja
-
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
       uses: seanmiddleditch/gha-setup-vsdevenv@v3
