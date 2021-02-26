@@ -202,9 +202,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const QModelIndex& index,
             ColumnCache::Column siblingField) const;
 
-    // Reimplement in derived classes to handle columns other
-    // then COLUMN_LIBRARYTABLE
-    virtual QVariant roleValue(
+    QVariant roleValue(
             const QModelIndex& index,
             QVariant&& rawValue,
             int role) const;
