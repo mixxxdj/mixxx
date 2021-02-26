@@ -426,7 +426,8 @@ QVariant BaseTrackTableModel::data(
     if (role != Qt::DisplayRole &&
             role != Qt::EditRole &&
             role != Qt::CheckStateRole &&
-            role != Qt::ToolTipRole) {
+            role != Qt::ToolTipRole &&
+            role != kDataExportRole) {
         return QVariant();
     }
 
@@ -551,6 +552,7 @@ QVariant BaseTrackTableModel::roleValue(
     }
     switch (role) {
     case Qt::ToolTipRole:
+    case kDataExportRole:
         switch (field) {
         case ColumnCache::COLUMN_LIBRARYTABLE_COLOR:
             return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
@@ -657,7 +659,11 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             }
             if (bpm.hasValue()) {
-                return QString("%1").arg(bpm.getValue(), 0, 'f', 1);
+                if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                    return QString::number(bpm.getValue(), 'f', 4);
+                } else {
+                    return QString::number(bpm.getValue(), 'f', 1);
+                }
             } else {
                 return QChar('-');
             }
