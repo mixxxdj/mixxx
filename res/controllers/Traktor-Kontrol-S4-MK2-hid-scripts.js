@@ -20,7 +20,7 @@
 //    released playback will resume where the track would have been without the loop.
 // To choose sample launching, set the word in quotes below to SAMPLES, all caps.  For
 // rolls, change the word to LOOPROLLS (no space).
-RemixSlotButtonAction = "LOOPROLLS";
+RemixSlotButtonAction = "SAMPLES";
 // The Cue button, when Shift is also held, can have two possible functions:
 // 1. "REWIND": seeks to the very start of the track.
 // 2. "REVERSEROLL": performs a temporary reverse or "censor" effect, where the track
@@ -1296,7 +1296,6 @@ TraktorS4MK2.callbackPregain = function(field) {
             for (var i = 0; i < bpm_sensitivity_multipler; i++) {
                 engine.setValue(group, "beats_adjust_faster", true);
             }
-
         } else if (delta < 0) {
             for (var i = 1; i < bpm_sensitivity_multipler; i++) {
                 engine.setValue(group, "beats_adjust_slower", true);
@@ -1735,7 +1734,7 @@ TraktorS4MK2.resetHandler = function(field) {
 TraktorS4MK2.pregainResetHandler = function(field) {
 
 
-    // Don't do something on push up
+    // Don't do something on push release
     if (field.value === 0) {
         return;
     }
