@@ -109,6 +109,18 @@ if(MSVC)
     add_compile_definitions("__SSE__" "__SSE2__")
   endif()
 
+  # Needed for sccache
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+  elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+  elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+  endif()
+
   if(NOT OPTIMIZE STREQUAL "off")
     # Use the fastest floating point math library
     # http://msdn.microsoft.com/en-us/library/e7s85ffb.aspx
@@ -331,19 +343,18 @@ if(GIT_WORKTREE_DIRTY EQUAL "1")
 endif()
 message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
 if(MSVC)
-  # clcache support
-  find_program(CLCACHE_EXECUTABLE "clcache")
-  if(CLCACHE_EXECUTABLE)
-    message(STATUS "Found clcache: ${CLCACHE_EXECUTABLE}")
+  # sccache support
+  find_program(SCCACHE_EXECUTABLE "sccache")
+  if(SCCACHE_EXECUTABLE)
+    message(STATUS "Found sccache: ${SCCACHE_EXECUTABLE}")
   else()
-      message(STATUS "Could NOT find clcache (missing executable)")
+    message(STATUS "Could NOT find sccache (missing executable)")
   endif()
-  cmake_dependent_option(CLCACHE_SUPPORT "Enable clcache support" ON "CLCACHE_EXECUTABLE" OFF)
-  if(CLCACHE_SUPPORT)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "clcache")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "clcache")
+  cmake_dependent_option(SCCACHE_SUPPORT "Enable sccache support" ON "SCCACHE_EXECUTABLE" OFF)
+  message(STATUS "Support for sccache: ${SCCACHE_SUPPORT}")
+  if(SCCACHE_SUPPORT)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "sccache")
   endif()
-  message(STATUS "Support for clcache: ${CLCACHE_SUPPORT}")
 else()
   # ccache support
   find_program(CCACHE_EXECUTABLE "ccache")
@@ -1121,8 +1132,6 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC shell32)
 
   if(MSVC)
-    # needed for clcache
-    target_compile_options(mixxx-lib PUBLIC /c)
     if(NOT STATIC_DEPS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
       target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
     endif()
@@ -1629,6 +1638,11 @@ if(WIN32)
     src/mixxx.rc
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
   )
+  # sccache fails with RC files
+  # https://github.com/mozilla/sccache/issues/947
+  if(SCCACHE_SUPPORT)
+    set_target_properties(mixxx PROPERTIES RULE_LAUNCH_COMPILE "")
+  endif()
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
