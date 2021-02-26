@@ -103,6 +103,25 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
     steps:
+
+    # sccache's handling of the /fp:fast MSVC compiler option is broken, so use our fork with the fix.
+    # https://github.com/mozilla/sccache/issues/950
+    - name: "[Windows] Set up cargo cache"
+      if: runner.os == 'Windows'
+      uses: actions/cache@v2
+      id: sccache-build-cache
+      with:
+        path: C:\Users\runneradmin\.cargo
+        # hash of commit to build
+        key: e12434e4db24ccbe52b83fb6e37afcb94fc8d37b
+
+    # This needs to be done first because something later messes with $PATH in a way that breaks cargo
+    # by causing it to find link.exe from Git for Windows instead of MSVC.
+    - name: "[Windows] Build fixed sccache"
+      shell: bash
+      if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
+      run: cargo install --git https://github.com/Be-ing/sccache.git --branch fix_msvc_fp
+
     - name: "Check out repository"
       uses: actions/checkout@v2
       with:
@@ -117,7 +136,7 @@ jobs:
 
     - name: "[Windows] Install additional build tools"
       if: runner.os == 'Windows'
-      run: choco install sccache ninja
+      run: choco install ninja
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
