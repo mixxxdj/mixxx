@@ -1512,8 +1512,10 @@ class ResetWaveformTrackPointerOperation : public mixxx::TrackPointerOperation {
 void WTrackMenu::slotClearWaveform() {
     const auto progressLabelText =
             tr("Resetting waveform of %n track(s)", "", getTrackCount());
+    AnalysisDao& analysisDao =
+            m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
     const auto trackOperator =
-            ResetReplayGainTrackPointerOperation();
+            ResetWaveformTrackPointerOperation(analysisDao);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
