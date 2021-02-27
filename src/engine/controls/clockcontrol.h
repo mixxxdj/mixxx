@@ -20,13 +20,19 @@ class ClockControl: public EngineControl {
             const int iBufferSize) override;
 
     void updateIndicators(const double dRate,
-            const double currentSample);
+            const double currentSample,
+            const double sampleRate);
 
     void trackLoaded(TrackPointer pNewTrack) override;
     void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private:
     ControlObject* m_pCOBeatActive;
+
+    // ControlObjects that come from LoopingControl
+    ControlProxy* m_pLoopEnabled;
+    ControlProxy* m_pLoopStartPosition;
+    ControlProxy* m_pLoopEndPosition;
 
     double m_lastEvaluatedSample;
 
