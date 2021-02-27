@@ -1513,7 +1513,7 @@ void WTrackMenu::slotClearWaveform() {
     const auto progressLabelText =
             tr("Resetting waveform of %n track(s)", "", getTrackCount());
     AnalysisDao& analysisDao =
-            m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
+            m_pLibrary->trackCollections()->internalCollection()->getAnalysisDAO();
     const auto trackOperator =
             ResetWaveformTrackPointerOperation(analysisDao);
     applyTrackPointerOperation(
