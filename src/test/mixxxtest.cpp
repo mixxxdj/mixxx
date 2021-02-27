@@ -30,7 +30,7 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
         argList << QString::fromLocal8Bit(argv[i]);
     }
 
-    const bool argsParsed = args.Parse(argList);
+    const bool argsParsed = args.parse(argList);
     Q_UNUSED(argsParsed);
     DEBUG_ASSERT(argsParsed);
 

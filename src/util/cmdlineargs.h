@@ -21,7 +21,7 @@ class CmdlineArgs final {
         return cla;
     }
 
-    bool Parse(const QStringList& arguments);
+    bool parse(const QStringList& arguments);
 
     const QList<QString>& getMusicFiles() const { return m_musicFiles; }
     bool getStartInFullscreen() const { return m_startInFullscreen; }

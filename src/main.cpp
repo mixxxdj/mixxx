@@ -86,7 +86,7 @@ int main(int argc, char * argv[]) {
 
     // Construct a list of strings based on the command line arguments
     CmdlineArgs& args = CmdlineArgs::Instance();
-    if (!args.Parse(app.arguments())) {
+    if (!args.parse(app.arguments())) {
         return kParseCmdlineArgsErrorExitCode;
     }
 

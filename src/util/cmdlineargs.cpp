@@ -58,15 +58,17 @@ bool parseLogLevel(
 }
 } // namespace
 
-bool CmdlineArgs::Parse(const QStringList& arguments) {
+bool CmdlineArgs::parse(const QStringList& arguments) {
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("main",
             "Mixxx is an open source DJ software. For more information, see "
-            "https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options)"));
+            "https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options)."
+            "CamelCase arguments are deprecated and will be removed in 2.5"));
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 
     // add options
     const QCommandLineOption fullscreen(QStringList() << "f"
+                                                      << "full-screen"
                                                       << "fullScreen",
             QCoreApplication::translate("main", "Starts Mixxx in full-screen mode"));
     parser.addOption(fullscreen);
@@ -78,7 +80,8 @@ bool CmdlineArgs::Parse(const QStringList& arguments) {
     parser.addOption(locale);
 
     // An option with a value
-    const QCommandLineOption settingsPath(QStringLiteral("settingsPath"),
+    const QCommandLineOption settingsPath(QStringList() << "settings-path"
+                                                        << "settingsPath",
             QCoreApplication::translate("main",
                     "Top-level directory where Mixxx should look for settings. "
                     "Default is:") +
@@ -86,14 +89,8 @@ bool CmdlineArgs::Parse(const QStringList& arguments) {
             QStringLiteral("settingsPath"));
     parser.addOption(settingsPath);
 
-    const QCommandLineOption pluginPath(QStringLiteral("pluginPath"),
-            QCoreApplication::translate("main",
-                    "Top-level directory where Mixxx should look for sound "
-                    "source plugins in addition to default locations."),
-            QStringLiteral("pluginPath"));
-    parser.addOption(pluginPath);
-
-    QCommandLineOption resourcePath(QStringLiteral("resourcePath"),
+    QCommandLineOption resourcePath(QStringList() << "resource-path"
+                                                  << "resourcePath",
             QCoreApplication::translate("main",
                     "Top-level directory where Mixxx should look for its "
                     "resource files such as MIDI mappings, overriding the "
@@ -101,11 +98,14 @@ bool CmdlineArgs::Parse(const QStringList& arguments) {
             QStringLiteral("resourcePath"));
     parser.addOption(resourcePath);
 
-    const QCommandLineOption timelinePath(QStringLiteral("timelinePath"),
+    const QCommandLineOption timelinePath(QStringList() << "timeline-path"
+                                                        << "timelinePath",
             QCoreApplication::translate("main", "Path the timeline is written to"));
     parser.addOption(timelinePath);
 
-    const QCommandLineOption controllerDebug(QStringList() << "controllerDebug"
+    const QCommandLineOption controllerDebug(QStringList() << "controller-debug"
+                                                           << "controllerDebug"
+                                                           << "midi-debug"
                                                            << "midiDebug",
             QCoreApplication::translate("main",
                     "Causes Mixxx to display/log all of the controller data it "
@@ -118,7 +118,8 @@ bool CmdlineArgs::Parse(const QStringList& arguments) {
                     "performance, and a Developer tools menu."));
     parser.addOption(developer);
 
-    const QCommandLineOption safeMode(QStringLiteral("safeMode"),
+    const QCommandLineOption safeMode(QStringList() << "safe-mode"
+                                                    << "safeMode",
             QCoreApplication::translate("main",
                     "Enables safe-mode. Disables OpenGL waveforms, and "
                     "spinning vinyl widgets. Try this option if Mixxx is "
@@ -134,7 +135,8 @@ bool CmdlineArgs::Parse(const QStringList& arguments) {
             QStringLiteral("auto"));
     parser.addOption(color);
 
-    const QCommandLineOption logLevel(QStringLiteral("logLevel"),
+    const QCommandLineOption logLevel(QStringList() << "log-level"
+                                                    << "logLevel",
             QCoreApplication::translate("main",
                     "Sets the verbosity of command line logging.\n"
                     "critical - Critical/Fatal only\n"
@@ -145,7 +147,8 @@ bool CmdlineArgs::Parse(const QStringList& arguments) {
             QStringLiteral("logLevel"));
     parser.addOption(logLevel);
 
-    const QCommandLineOption logFlushLevel(QStringLiteral("logFlushLevel"),
+    const QCommandLineOption logFlushLevel(QStringList() << "log-flush-level"
+                                                         << "logFlushLevel",
             QCoreApplication::translate("main",
                     "Sets the the logging level at which the log buffer is "
                     "flushed to mixxx.log. LEVEL is one of the values defined "
@@ -154,7 +157,8 @@ bool CmdlineArgs::Parse(const QStringList& arguments) {
     parser.addOption(logFlushLevel);
 
 #ifdef MIXXX_BUILD_DEBUG
-    QCommandLineOption debugAssertBreak(QStringLiteral("debugAssertBreak"),
+    QCommandLineOption debugAssertBreak(QStringList() << "debug-assert-break"
+                                                      << "debugAssertBreak",
             QCoreApplication::translate("main",
                     "Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to "
                     "false. Under a debugger you can continue afterwards."));
@@ -203,9 +207,6 @@ bool CmdlineArgs::Parse(const QStringList& arguments) {
         m_resourcePath = parser.value(resourcePath);
     }
 
-    if (parser.isSet(pluginPath)) {
-        m_pluginPath = parser.value(pluginPath);
-    }
     m_midiDebug = parser.isSet(controllerDebug);
     m_developer = parser.isSet(developer);
     m_safeMode = parser.isSet(safeMode);
