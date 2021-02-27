@@ -42,6 +42,13 @@ DlgPrefController::DlgPrefController(QWidget* parent,
     // Create text color for the file and wiki links
     createLinkColor();
 
+    // Check the text color of the palette for whether to use dark or light icons
+    if (!Color::isDimColor(palette().text().color())) {
+        m_iconsPath.setPath(":/images/preferences/light/");
+    } else {
+        m_iconsPath.setPath(":/images/preferences/dark/");
+    }
+
     initTableView(m_ui.m_pInputMappingTableView);
     initTableView(m_ui.m_pOutputMappingTableView);
 
@@ -125,22 +132,41 @@ void DlgPrefController::showLearningWizard() {
     // apply it yet, prompt them to apply the settings before we open the
     // learning dialog. If we don't apply the settings first and open the
     // device, the dialog won't react to controller messages.
-    if (m_ui.chkEnabledDevice->isChecked() && !m_pController->isOpen()) {
-        QMessageBox::StandardButton result = QMessageBox::question(this,
-                tr("Apply device settings?"),
-                tr("Your settings must be applied before starting the learning "
-                   "wizard.\n"
-                   "Apply settings and continue?"),
-                QMessageBox::Ok |
-                        QMessageBox::Cancel, // Buttons to be displayed
-                QMessageBox::Ok);            // Default button
-        // Stop if the user has not pressed the Ok button,
-        // which could be the Cancel or the Close Button.
-        if (result != QMessageBox::Ok) {
-            return;
+    if (!m_pController->isOpen()) {
+        if (m_ui.chkEnabledDevice->isChecked()) {
+            QMessageBox::StandardButton result = QMessageBox::question(this,
+                    tr("Apply device settings?"),
+                    tr("Your settings must be applied before starting the learning "
+                       "wizard.\n"
+                       "Apply settings and continue?"),
+                    QMessageBox::Ok |
+                            QMessageBox::Cancel, // Buttons to be displayed
+                    QMessageBox::Ok);            // Default button
+            // Stop if the user has not pressed the Ok button,
+            // which could be the Cancel or the Close Button.
+            if (result != QMessageBox::Ok) {
+                return;
+            }
+            slotApply();
+        } else {
+            // Create a new preset and load it
+            //           blockSignals(true);
+            m_pPreset = m_pController->getPreset();
+            askForNewPresetName();
+            m_ui.comboBoxPreset->blockSignals(true);
+            m_ui.comboBoxPreset->insertItem(0,
+                    m_iconsPath.filePath("ic_custom.svg"),
+                    m_pPreset->name());
+            m_ui.comboBoxPreset->setCurrentIndex(0);
+            m_ui.comboBoxPreset->blockSignals(false);
+            applyPresetChanges();
+            //           m_ui.chkEnabledDevice->blockSignals(true);
+            m_ui.chkEnabledDevice->setChecked(true);
+            //           m_ui.chkEnabledDevice->blockSignals(false);
+            //           blockSignals(false);
+            emit applyPreset(m_pController, m_pPreset, true);
         }
     }
-    slotApply();
 
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
@@ -320,23 +346,15 @@ void DlgPrefController::enumeratePresets(const QString& selectedPresetPath) {
 
     // qDebug() << "Enumerating presets for controller" << m_pController->getName();
 
-    // Check the text color of the palette for whether to use dark or light icons
-    QDir iconsPath;
-    if (!Color::isDimColor(palette().text().color())) {
-        iconsPath.setPath(":/images/preferences/light/");
-    } else {
-        iconsPath.setPath(":/images/preferences/dark/");
-    }
-
     // Insert a dummy item at the top to try to make it less confusing.
     // (We don't want the first found file showing up as the default item when a
     // user has their controller plugged in)
-    QIcon noPresetIcon(iconsPath.filePath("ic_none.svg"));
+    QIcon noPresetIcon(m_iconsPath.filePath("ic_none.svg"));
     m_ui.comboBoxPreset->addItem(noPresetIcon, tr("No Preset"));
 
     PresetInfo match;
     // Enumerate user presets
-    QIcon userPresetIcon(iconsPath.filePath("ic_custom.svg"));
+    QIcon userPresetIcon(m_iconsPath.filePath("ic_custom.svg"));
 
     // Reload user presets to detect added, changed or removed mappings
     m_pControllerManager->getMainThreadUserPresetEnumerator()->loadSupportedPresets();
@@ -352,7 +370,7 @@ void DlgPrefController::enumeratePresets(const QString& selectedPresetPath) {
     m_ui.comboBoxPreset->insertSeparator(m_ui.comboBoxPreset->count());
 
     // Enumerate system presets
-    QIcon systemPresetIcon(iconsPath.filePath("ic_mixxx_symbolic.svg"));
+    QIcon systemPresetIcon(m_iconsPath.filePath("ic_mixxx_symbolic.svg"));
     PresetInfo systemPresetsMatch = enumeratePresetsFromEnumerator(
             m_pControllerManager->getMainThreadSystemPresetEnumerator(),
             systemPresetIcon);
@@ -581,51 +599,7 @@ void DlgPrefController::savePreset() {
     if (!saveAsNew) {
         newFilePath = oldFilePath;
     } else {
-        QString savePresetTitle = tr("Save user mapping");
-        QString savePresetLabel = tr("Enter the name for saving the mapping to the user folder.");
-        QString savingFailedTitle = tr("Saving mapping failed");
-        QString invalidNameLabel =
-                tr("A mapping cannot have a blank name and may not contain "
-                   "special characters.");
-        QString fileExistsLabel = tr("A mapping file with that name already exists.");
-        // Only allow the name to contain letters, numbers, whitespaces and _-+()/
-        const QRegExp rxRemove = QRegExp("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]");
-
-        // Choose a new file (base) name
-        bool validPresetName = false;
-        while (!validPresetName) {
-            QString userDir = m_pUserDir;
-            bool ok = false;
-            presetName = QInputDialog::getText(nullptr,
-                    savePresetTitle,
-                    savePresetLabel,
-                    QLineEdit::Normal,
-                    presetName,
-                    &ok)
-                                 .remove(rxRemove)
-                                 .trimmed();
-            if (!ok) {
-                return;
-            }
-            if (presetName.isEmpty()) {
-                QMessageBox::warning(nullptr,
-                        savingFailedTitle,
-                        invalidNameLabel);
-                continue;
-            }
-            // While / is allowed for the display name we can't use it for the file name.
-            QString fileName = presetName.replace(QString("/"), QString("-"));
-            newFilePath = userDir + fileName + kPresetExt;
-            if (QFile::exists(newFilePath)) {
-                QMessageBox::warning(nullptr,
-                        savingFailedTitle,
-                        fileExistsLabel);
-                continue;
-            }
-            validPresetName = true;
-        }
-        m_pPreset->setName(presetName);
-        qDebug() << "Mapping renamed to" << m_pPreset->name();
+        newFilePath = askForNewPresetName();
     }
 
     if (!m_pPreset->savePreset(newFilePath)) {
@@ -638,6 +612,61 @@ void DlgPrefController::savePreset() {
     m_pPreset->setDirty(false);
 
     enumeratePresets(m_pPreset->filePath());
+}
+
+QString DlgPrefController::askForNewPresetName() {
+    VERIFY_OR_DEBUG_ASSERT(m_pPreset) {
+        return QString();
+    }
+
+    QString savePresetTitle = tr("Save user mapping");
+    QString savePresetLabel = tr("Enter the name for saving the mapping to the user folder.");
+    QString savingFailedTitle = tr("Saving mapping failed");
+    QString invalidNameLabel =
+            tr("A mapping cannot have a blank name and may not contain "
+               "special characters.");
+    QString fileExistsLabel = tr("A mapping file with that name already exists.");
+    // Only allow the name to contain letters, numbers, whitespaces and _-+()/
+    const QRegExp rxRemove = QRegExp("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]");
+
+    QString presetName;
+    QString newFilePath;
+    // Choose a new file (base) name
+    bool validPresetName = false;
+    while (!validPresetName) {
+        QString userDir = m_pUserDir;
+        bool ok = false;
+        presetName = QInputDialog::getText(nullptr,
+                savePresetTitle,
+                savePresetLabel,
+                QLineEdit::Normal,
+                presetName,
+                &ok)
+                             .remove(rxRemove)
+                             .trimmed();
+        if (!ok) {
+            return QString();
+        }
+        if (presetName.isEmpty()) {
+            QMessageBox::warning(nullptr,
+                    savingFailedTitle,
+                    invalidNameLabel);
+            continue;
+        }
+        // While / is allowed for the display name we can't use it for the file name.
+        QString fileName = presetName.replace(QString("/"), QString("-"));
+        newFilePath = userDir + fileName + kPresetExt;
+        if (QFile::exists(newFilePath)) {
+            QMessageBox::warning(nullptr,
+                    savingFailedTitle,
+                    fileExistsLabel);
+            continue;
+        }
+        validPresetName = true;
+    }
+    m_pPreset->setName(presetName);
+    qDebug() << "Mapping renamed to" << m_pPreset->name();
+    return newFilePath;
 }
 
 void DlgPrefController::initTableView(QTableView* pTable) {

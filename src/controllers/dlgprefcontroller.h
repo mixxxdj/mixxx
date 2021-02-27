@@ -68,6 +68,8 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetDescription(const ControllerPresetPointer pPreset) const;
     QString presetSupportLinks(const ControllerPresetPointer pPreset) const;
     QString presetFileLinks(const ControllerPresetPointer pPreset) const;
+    /// returns path of new file
+    QString askForNewPresetName();
     void applyPresetChanges();
     void savePreset();
     void initTableView(QTableView* pTable);
@@ -113,5 +115,6 @@ class DlgPrefController : public DlgPreferencePage {
     QSortFilterProxyModel* m_pInputProxyModel;
     ControllerOutputMappingTableModel* m_pOutputTableModel;
     QSortFilterProxyModel* m_pOutputProxyModel;
+    QDir m_iconsPath;
     bool m_bDirty;
 };
