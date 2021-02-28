@@ -40,27 +40,17 @@ TagLib::String firstNonEmptyStringListItem(
 /// Returns a QByteArray that owns the data.
 inline QByteArray toQByteArray(
         const TagLib::ByteVector& tByteVector) {
-    if (tByteVector.isNull()) {
-        // null -> null
-        return QByteArray();
-    } else {
         return QByteArray(
                 tByteVector.data(),
                 tByteVector.size());
-    }
 }
 
 /// Returns a QByteArray that directly accesses the underlying byte vector!
 inline QByteArray toQByteArrayRaw(
         const TagLib::ByteVector& tByteVector) {
-    if (tByteVector.isNull()) {
-        // null -> null
-        return QByteArray();
-    } else {
         return QByteArray::fromRawData(
                 tByteVector.data(),
                 tByteVector.size());
-    }
 }
 
 inline TagLib::ByteVector toTByteVector(

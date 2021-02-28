@@ -16,9 +16,7 @@
 
 #ifdef __VINYLCONTROL__
 #include "preferences/dialog/dlgprefvinyl.h"
-#else /* __VINYLCONTROL__ */
-#include "preferences/dialog/dlgprefnovinyl.h"
-#endif
+#endif // __VINYLCONTROL__
 
 #include "preferences/dialog/dlgprefcolors.h"
 #include "preferences/dialog/dlgprefcrossfader.h"
@@ -28,13 +26,13 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 #ifdef __LILV__
 #include "preferences/dialog/dlgpreflv2.h"
-#endif /* __LILV__ */
+#endif // __LILV__
 #include "preferences/dialog/dlgprefeffects.h"
 #include "preferences/dialog/dlgprefautodj.h"
 
 #ifdef __BROADCAST__
 #include "preferences/dialog/dlgprefbroadcast.h"
-#endif /* __BROADCAST__ */
+#endif // __BROADCAST__
 
 #include "preferences/dialog/dlgprefrecord.h"
 #include "preferences/dialog/dlgprefbeats.h"
@@ -43,7 +41,7 @@
 
 #ifdef __MODPLUG__
 #include "preferences/dialog/dlgprefmodplug.h"
-#endif /* __MODPLUG__ */
+#endif // __MODPLUG__
 
 #include "controllers/controllermanager.h"
 #include "library/library.h"
@@ -65,9 +63,12 @@ DlgPreferences::DlgPreferences(
         SettingsManager* pSettingsManager,
         Library* pLibrary)
         : m_pConfig(pSettingsManager->settings()), m_pageSizeHint(QSize(0, 0)) {
+#ifndef __VINYLCONTROL__
+    Q_UNUSED(pVCManager);
+#endif // __VINYLCONTROL__
 #ifndef __LILV__
     Q_UNUSED(pLV2Backend);
-#endif /* __LILV__ */
+#endif // __LILV__
     Q_UNUSED(pPlayerManager);
     setupUi(this);
     contentsTreeWidget->setHeaderHidden(true);
@@ -126,15 +127,7 @@ DlgPreferences::DlgPreferences(
             m_pVinylControlButton,
             tr("Vinyl Control"),
             "ic_preferences_vinyl.svg");
-#else /* __VINYLCONTROL__ */
-
-    m_pVinylControlButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_noVinylControlPage = new DlgPrefNoVinyl(this, pSoundManager, m_pConfig);
-    addPageWidget(m_noVinylControlPage,
-            m_pVinylControlButton,
-            tr("Vinyl Control"),
-            "ic_preferences_vinyl.svg");
-#endif
+#endif // __VINYLCONTROL__
 
     m_pInterfaceButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_interfacePage = new DlgPrefInterface(this, pMixxx, pSkinLoader, m_pConfig);
@@ -192,7 +185,7 @@ DlgPreferences::DlgPreferences(
             m_pLV2Button,
             tr("LV2 Plugins"),
             "ic_preferences_lv2.svg");
-#endif /* __LILV__ */
+#endif // __LILV__
 
     m_pAutoDJButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_autoDjPage = new DlgPrefAutoDJ(this, m_pConfig);
@@ -208,7 +201,7 @@ DlgPreferences::DlgPreferences(
             m_pBroadcastButton,
             tr("Live Broadcasting"),
             "ic_preferences_broadcast.svg");
-#endif /* __BROADCAST__ */
+#endif // __BROADCAST__
 
     m_pRecordingButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_recordingPage = new DlgPrefRecord(this, m_pConfig);
@@ -245,7 +238,7 @@ DlgPreferences::DlgPreferences(
             m_pModplugButton,
             tr("Modplug Decoder"),
             "ic_preferences_modplug.svg");
-#endif /* __MODPLUG__ */
+#endif // __MODPLUG__
 
     connect(contentsTreeWidget,
             &QTreeWidget::currentItemChanged,
@@ -288,10 +281,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
 #ifdef __VINYLCONTROL__
     } else if (pCurrent == m_pVinylControlButton) {
         switchToPage(m_vinylControlPage);
-#else /* __VINYLCONTROL__ */
-    } else if (pCurrent == m_pVinylControlButton) {
-        switchToPage(m_noVinylControlPage);
-#endif
+#endif // __VINYLCONTROL__
     } else if (pCurrent == m_pInterfaceButton) {
         switchToPage(m_interfacePage);
     } else if (pCurrent == m_pWaveformButton) {
@@ -309,13 +299,13 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
 #ifdef __LILV__
     } else if (pCurrent == m_pLV2Button) {
         switchToPage(m_lv2Page);
-#endif /* __LILV__ */
+#endif // __LILV__
     } else if (pCurrent == m_pAutoDJButton) {
         switchToPage(m_autoDjPage);
 #ifdef __BROADCAST__
     } else if (pCurrent == m_pBroadcastButton) {
         switchToPage(m_broadcastingPage);
-#endif /* __BROADCAST__ */
+#endif // __BROADCAST__
     } else if (pCurrent == m_pRecordingButton) {
         switchToPage(m_recordingPage);
     } else if (pCurrent == m_pBeatDetectionButton) {
@@ -327,7 +317,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPre
 #ifdef __MODPLUG__
     } else if (pCurrent == m_pModplugButton) {
         switchToPage(m_modplugPage);
-#endif /* __MODPLUG__ */
+#endif // __MODPLUG__
     }
 }
 
@@ -391,7 +381,7 @@ void DlgPreferences::onShow() {
     // Update geometry with last values
 #ifdef __WINDOWS__
     resize(m_geometry[2].toInt(), m_geometry[3].toInt());
-#else /* __WINDOWS__ */
+#else  // __WINDOWS__
     // On linux, when the window is opened for the first time by the window manager,
     // QT does not have information about the frame size so the offset is zero.
     // As such, the first time it opens the window does not include the offset,
@@ -405,7 +395,7 @@ void DlgPreferences::onShow() {
                 newY,  // y position
                 m_geometry[2].toInt(),  // width
                 m_geometry[3].toInt()); // height
-#endif
+#endif // __LINUX__ / __MACOS__
     // Move is also needed on linux.
     move(newX, newY);
 
@@ -524,7 +514,7 @@ void DlgPreferences::moveEvent(QMoveEvent* e) {
     Q_UNUSED(e);
         m_geometry[0] = QString::number(frameGeometry().left());
         m_geometry[1] = QString::number(frameGeometry().top());
-#else /* __WINDOWS__ */
+#else
         // Warning! geometry does NOT include the frame/title.
         int offsetX = geometry().left() - frameGeometry().left();
         int offsetY = geometry().top() - frameGeometry().top();

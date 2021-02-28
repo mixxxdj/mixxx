@@ -2973,12 +2973,12 @@
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="610"/>
-        <source>Controller Preset Error</source>
+        <source>Controller Mapping Error</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="611"/>
-        <source>The preset for your controller &quot;%1&quot; is not working properly.</source>
+        <source>The mapping for your controller &quot;%1&quot; is not working properly.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -4488,16 +4488,6 @@ Apply settings and continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="528"/>
-        <source>Preset already exists.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="529"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; already exists in user preset folder.&lt;br&gt;Overwrite or save with a new name?</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="532"/>
         <source>Always overwrite during this session</source>
         <translation type="unfinished"/>
@@ -4551,6 +4541,16 @@ Apply settings and continue?</source>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="487"/>
         <source>Do you want to save the changes?</source>
         <translation>Quieres guardar los cambios?</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="528"/>
+        <source>Mapping already exists.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="529"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; already exists in user mapping folder.&lt;br&gt;Overwrite or save with a new name?</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="671"/>
@@ -5881,7 +5881,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="224"/>
         <source>Search-as-you-type timeout:</source>
-        <translation type="unfinished"/>
+        <translation>Search-as-you-type timeout:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="234"/>
@@ -6959,12 +6959,12 @@ Elija entre los distintos tipos de visualización para la forma de onda, que se 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="483"/>
         <source>Beat grid opacity</source>
-        <translation type="unfinished"/>
+        <translation>Beat grid opacity</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="506"/>
         <source>Set amount of opacity on beat grid lines.</source>
-        <translation type="unfinished"/>
+        <translation>Set amount of opacity on beat grid lines.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="509"/>
@@ -6974,12 +6974,12 @@ Elija entre los distintos tipos de visualización para la forma de onda, que se 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="522"/>
         <source>Play marker position</source>
-        <translation type="unfinished"/>
+        <translation>Play marker position</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="529"/>
         <source>Moves the play marker position on the waveforms to the left, right or center (default).</source>
-        <translation type="unfinished"/>
+        <translation>Moves the play marker position on the waveforms to the left, right or center (default).</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefwaveformdlg.ui" line="434"/>
@@ -8017,7 +8017,7 @@ de OpenGL.</translation>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="79"/>
         <source>Overwrite File?</source>
-        <translation type="unfinished"/>
+        <translation>Overwrite File?</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="80"/>
@@ -8025,7 +8025,10 @@ de OpenGL.</translation>
 The default &quot;m3u&quot; extension was added because none was specified.
 
 Do you really want to overwrite it?</source>
-        <translation type="unfinished"/>
+        <translation>A playlist file with the name &quot;%1&quot; already exists.
+The default &quot;m3u&quot; extension was added because none was specified.
+
+Do you really want to overwrite it?</translation>
     </message>
 </context>
 <context>
@@ -8078,8 +8081,8 @@ Do you really want to overwrite it?</source>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="127"/>
-        <source>One or more MixxxControls specified in the outputs section of the loaded preset were invalid.</source>
-        <translation>Uno o más MixxxControls incluidos en la sección outputs del preajuste cargados no son válidos.</translation>
+        <source>One or more MixxxControls specified in the outputs section of the loaded mapping were invalid.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="129"/>
@@ -8330,7 +8333,7 @@ Do you want to select an input device?</source>
     <message>
         <location filename="../../src/mixxx.cpp" line="1592"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
-        <translation type="unfinished"/>
+        <translation>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</translation>
     </message>
     <message>
         <location filename="../../src/mixxx.cpp" line="1626"/>
@@ -9142,7 +9145,7 @@ Valores más altos no atenuaran tanto las altas frecuencias.</translation>
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="69"/>
         <source>How much of the signal to send in to the effect</source>
-        <translation type="unfinished"/>
+        <translation>How much of the signal to send in to the effect</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/reverbeffect.cpp" line="40"/>
@@ -9809,12 +9812,12 @@ Todo a la derecha: final del período</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2.cpp" line="47"/>
         <source>This plugin does not support stereo samples as input/output</source>
-        <translation type="unfinished"/>
+        <translation>This plugin does not support stereo samples as input/output</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2.cpp" line="51"/>
         <source>This plugin has features which are not yet supported</source>
-        <translation type="unfinished"/>
+        <translation>This plugin has features which are not yet supported</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2.cpp" line="55"/>
@@ -9929,7 +9932,7 @@ Todo a la derecha: final del período</translation>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="275"/>
         <source>There is less than 1 GiB of useable space in the recording folder</source>
-        <translation type="unfinished"/>
+        <translation>There is less than 1 GiB of useable space in the recording folder</translation>
     </message>
     <message>
         <location filename="../../src/recording/recordingmanager.cpp" line="296"/>
@@ -11134,7 +11137,7 @@ Todo a la derecha: final del período</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="449"/>
         <source>Toggle visibility of Rate Control</source>
-        <translation type="unfinished"/>
+        <translation>Toggle visibility of Rate Control</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="473"/>
@@ -11505,17 +11508,17 @@ Todo a la derecha: final del período</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="873"/>
         <source>Adjust the mixing of the dry (input) signal with the wet (output) signal of the effect unit</source>
-        <translation type="unfinished"/>
+        <translation>Adjust the mixing of the dry (input) signal with the wet (output) signal of the effect unit</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="874"/>
         <source>D/W mode: Crossfade between dry and wet</source>
-        <translation type="unfinished"/>
+        <translation>D/W mode: Crossfade between dry and wet</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="875"/>
         <source>D+W mode: Add wet to dry</source>
-        <translation type="unfinished"/>
+        <translation>D+W mode: Add wet to dry</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="879"/>
@@ -11525,19 +11528,21 @@ Todo a la derecha: final del período</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="880"/>
         <source>Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit</source>
-        <translation type="unfinished"/>
+        <translation>Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="881"/>
         <source>Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet
 Use this to change the sound of the track with EQ and filter effects.</source>
-        <translation type="unfinished"/>
+        <translation>Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet
+Use this to change the sound of the track with EQ and filter effects.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="883"/>
         <source>Dry+Wet mode (flat dry line): Mix knob adds wet to dry
 Use this to change only the effected (wet) signal with EQ and filter effects.</source>
-        <translation type="unfinished"/>
+        <translation>Dry+Wet mode (flat dry line): Mix knob adds wet to dry
+Use this to change only the effected (wet) signal with EQ and filter effects.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="920"/>
@@ -12186,7 +12191,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="445"/>
         <source>Changes the number of hotcue buttons displayed in the deck</source>
-        <translation type="unfinished"/>
+        <translation>Changes the number of hotcue buttons displayed in the deck</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="468"/>
@@ -14016,12 +14021,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="890"/>
         <source>(GLSL ES)</source>
-        <translation type="unfinished"/>
+        <translation>(GLSL ES)</translation>
     </message>
     <message>
         <location filename="../../src/waveform/waveformwidgetfactory.cpp" line="892"/>
         <source>(GL ES)</source>
-        <translation type="unfinished"/>
+        <translation>(GL ES)</translation>
     </message>
 </context>
 <context>

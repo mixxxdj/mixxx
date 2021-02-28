@@ -20,6 +20,11 @@ class BeatUtils {
             const QVector<double>& coarseBeats,
             const mixxx::audio::SampleRate& sampleRate);
 
+    static double calculateAverageBpm(int numberOfBeats,
+            int sampleRate,
+            double lowerFrame,
+            double upperFrame);
+
     static double makeConstBpm(
             const QVector<ConstRegion>& constantRegions,
             const mixxx::audio::SampleRate& sampleRate,

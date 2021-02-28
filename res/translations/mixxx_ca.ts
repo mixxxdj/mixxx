@@ -372,7 +372,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="209"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>Rati de mostreig</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="213"/>
@@ -665,17 +665,17 @@
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="147"/>
         <source>The file &apos;%1&apos; could not be found.</source>
-        <translation type="unfinished"/>
+        <translation>El fitxer &apos;%1&apos; no s&apos;ha pogut trobar.</translation>
     </message>
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="163"/>
         <source>The file &apos;%1&apos; could not be loaded.</source>
-        <translation type="unfinished"/>
+        <translation>El fitxer &apos;%1&apos; no s&apos;ha pogut carregar.</translation>
     </message>
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="180"/>
         <source>The file &apos;%1&apos; is empty and could not be loaded.</source>
-        <translation type="unfinished"/>
+        <translation>El fitxer &apos;%1&apos; està buit i no es pot carregar.</translation>
     </message>
 </context>
 <context>
@@ -732,7 +732,7 @@
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="53"/>
         <source>%1 %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 %2</translation>
     </message>
 </context>
 <context>
@@ -2029,27 +2029,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1037"/>
         <source>Microphone &amp; Auxiliary Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation> Mostra/Amaga Micròfon i Línia auxiliar</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1038"/>
         <source>Show/hide the microphone &amp; auxiliary section</source>
-        <translation type="unfinished"/>
+        <translation>Mostra/Amaga la secció del micròfon i la línia auxiliar</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1052"/>
         <source>4 Effect Units Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>4 Unitats d&apos;efecte Mostra/Amaga</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1053"/>
         <source>Switches between showing 2 and 4 effect units</source>
-        <translation type="unfinished"/>
+        <translation>Canvia entre les opcions de mostrar 2 o 4 unitats d&apos;efectes</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1057"/>
         <source>Mixer Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Mostra/amaga el mesclador</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1058"/>
@@ -2973,13 +2973,13 @@
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="610"/>
-        <source>Controller Preset Error</source>
-        <translation>Error de configuració predefinida</translation>
+        <source>Controller Mapping Error</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="611"/>
-        <source>The preset for your controller &quot;%1&quot; is not working properly.</source>
-        <translation>La configuració predefinida pel vostre controlador «%1» no funciona correctament.</translation>
+        <source>The mapping for your controller &quot;%1&quot; is not working properly.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/controllerengine.cpp" line="615"/>
@@ -4517,16 +4517,6 @@ Volue aplicar la configuració i continuar?</translation>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="528"/>
-        <source>Preset already exists.</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="529"/>
-        <source>&lt;b&gt;%1&lt;/b&gt; already exists in user preset folder.&lt;br&gt;Overwrite or save with a new name?</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="532"/>
         <source>Always overwrite during this session</source>
         <translation type="unfinished"/>
@@ -4580,6 +4570,16 @@ Volue aplicar la configuració i continuar?</translation>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="487"/>
         <source>Do you want to save the changes?</source>
         <translation>Voleu desar els canvis?</translation>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="528"/>
+        <source>Mapping already exists.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../src/controllers/dlgprefcontroller.cpp" line="529"/>
+        <source>&lt;b&gt;%1&lt;/b&gt; already exists in user mapping folder.&lt;br&gt;Overwrite or save with a new name?</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="671"/>
@@ -8112,8 +8112,8 @@ Voleu sobreescriure aquesta llista?</translation>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="127"/>
-        <source>One or more MixxxControls specified in the outputs section of the loaded preset were invalid.</source>
-        <translation>Un o més controls de Mixxx utilitzats en la secció de sortida de la configuració preestablerta carregada són invàlids.</translation>
+        <source>One or more MixxxControls specified in the outputs section of the loaded mapping were invalid.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../src/controllers/midi/midicontroller.cpp" line="129"/>

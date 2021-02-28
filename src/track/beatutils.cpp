@@ -28,6 +28,18 @@ constexpr int kMinRegionBeatCount = 16;
 
 } // namespace
 
+double BeatUtils::calculateAverageBpm(int numberOfBeats,
+        int sampleRate,
+        double lowerFrame,
+        double upperFrame) {
+    double frames = upperFrame - lowerFrame;
+    DEBUG_ASSERT(frames > 0);
+    if (numberOfBeats < 1) {
+        return 0;
+    }
+    return 60.0 * numberOfBeats * sampleRate / frames;
+}
+
 double BeatUtils::calculateBpm(const QVector<double>& beats,
         const mixxx::audio::SampleRate& sampleRate) {
     if (beats.size() < 2) {
@@ -37,7 +49,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats,
     // If we don't have enough beats for our regular approach, just divide the #
     // of beats by the duration in minutes.
     if (beats.size() < kMinRegionBeatCount) {
-        return 60.0 * (beats.size() - 1) * sampleRate / (beats.last() - beats.first());
+        return calculateAverageBpm(beats.size() - 1, sampleRate, beats.first(), beats.last());
     }
 
     QVector<BeatUtils::ConstRegion> constantRegions =
