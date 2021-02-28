@@ -57,7 +57,6 @@ class Beats : public QObject {
 
     // Serialization
     virtual QByteArray toByteArray() const = 0;
-    virtual BeatsPointer clone() const = 0;
 
     // A string representing the version of the beat-processing code that
     // produced this Beats instance. Used by BeatsFactory for associating a
@@ -144,18 +143,20 @@ class Beats : public QObject {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
+    virtual BeatsPointer clone() const = 0;
+
     // Translate all beats in the song by dNumSamples samples. Beats that lie
     // before the start of the track or after the end of the track are not
     // removed. Beats instance must have the capability BEATSCAP_TRANSLATE.
-    virtual mixxx::BeatsPointer translate(double dNumSamples) const = 0;
+    virtual BeatsPointer translate(double dNumSamples) const = 0;
 
     // Scale the position of every beat in the song by dScalePercentage. Beats
     // class must have the capability BEATSCAP_SCALE.
-    virtual mixxx::BeatsPointer scale(enum BPMScale scale) const = 0;
+    virtual BeatsPointer scale(enum BPMScale scale) const = 0;
 
     // Adjust the beats so the global average BPM matches dBpm. Beats class must
     // have the capability BEATSCAP_SET.
-    virtual mixxx::BeatsPointer setBpm(double dBpm) = 0;
+    virtual BeatsPointer setBpm(double dBpm) = 0;
 
   signals:
     void updated();

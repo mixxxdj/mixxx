@@ -25,14 +25,14 @@ class BeatGrid final : public Beats {
     // Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
     // of dFirstBeatSample. Does not generate an updated() signal, since it is
     // meant for initialization.
-    static mixxx::BeatsPointer makeBeatGrid(const Track& track,
+    static BeatsPointer makeBeatGrid(const Track& track,
             SINT iSampleRate,
             double dBpm,
             double dFirstBeatSample);
     // Construct a BeatGrid. If a more accurate sample rate is known, provide it
     // in the iSampleRate parameter -- otherwise pass 0. The BeatGrid will be
     // deserialized from the byte array.
-    static mixxx::BeatsPointer makeBeatGrid(
+    static BeatsPointer makeBeatGrid(
             const Track& track, SINT iSampleRate, const QByteArray& byteArray);
 
     // The following are all methods from the Beats interface, see method
@@ -43,7 +43,6 @@ class BeatGrid final : public Beats {
     }
 
     QByteArray toByteArray() const override;
-    BeatsPointer clone() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
     void setSubVersion(const QString& subVersion) override;
@@ -72,9 +71,10 @@ class BeatGrid final : public Beats {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    mixxx::BeatsPointer translate(double dNumSamples) const override;
-    mixxx::BeatsPointer scale(enum BPMScale scale) const override;
-    mixxx::BeatsPointer setBpm(double dBpm) override;
+    BeatsPointer clone() const override;
+    BeatsPointer translate(double dNumSamples) const override;
+    BeatsPointer scale(enum BPMScale scale) const override;
+    BeatsPointer setBpm(double dBpm) override;
 
   private:
     BeatGrid(const BeatGrid& other);

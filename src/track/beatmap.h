@@ -48,7 +48,6 @@ class BeatMap final : public Beats {
     }
 
     QByteArray toByteArray() const override;
-    BeatsPointer clone() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
     void setSubVersion(const QString& subVersion) override;
@@ -78,9 +77,10 @@ class BeatMap final : public Beats {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    mixxx::BeatsPointer translate(double dNumSamples) const override;
-    mixxx::BeatsPointer scale(enum BPMScale scale) const override;
-    mixxx::BeatsPointer setBpm(double dBpm) override;
+    BeatsPointer clone() const override;
+    BeatsPointer translate(double dNumSamples) const override;
+    BeatsPointer scale(enum BPMScale scale) const override;
+    BeatsPointer setBpm(double dBpm) override;
 
   private:
     BeatMap(const BeatMap& other);

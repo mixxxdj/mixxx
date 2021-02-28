@@ -78,7 +78,7 @@ BeatGrid::BeatGrid(const BeatGrid& other)
 }
 
 // static
-mixxx::BeatsPointer BeatGrid::makeBeatGrid(const Track& track,
+BeatsPointer BeatGrid::makeBeatGrid(const Track& track,
         SINT iSampleRate,
         double dBpm,
         double dFirstBeatSample) {
@@ -98,11 +98,11 @@ mixxx::BeatsPointer BeatGrid::makeBeatGrid(const Track& track,
     // Calculate beat length as sample offsets
     double beatLength = (60.0 * iSampleRate / dBpm) * kFrameSize;
 
-    return mixxx::BeatsPointer(new BeatGrid(track, iSampleRate, grid, beatLength));
+    return BeatsPointer(new BeatGrid(track, iSampleRate, grid, beatLength));
 }
 
 // static
-mixxx::BeatsPointer BeatGrid::makeBeatGrid(
+BeatsPointer BeatGrid::makeBeatGrid(
         const Track& track, SINT sampleRate, const QByteArray& byteArray) {
     if (sampleRate <= 0) {
         sampleRate = track.getSampleRate();
@@ -111,12 +111,12 @@ mixxx::BeatsPointer BeatGrid::makeBeatGrid(
     mixxx::track::io::BeatGrid grid;
     if (grid.ParseFromArray(byteArray.constData(), byteArray.length())) {
         double beatLength = (60.0 * sampleRate / grid.bpm().bpm()) * kFrameSize;
-        return mixxx::BeatsPointer(new BeatGrid(track, sampleRate, grid, beatLength));
+        return BeatsPointer(new BeatGrid(track, sampleRate, grid, beatLength));
     }
 
     // Legacy fallback for BeatGrid-1.0
     if (byteArray.size() != sizeof(BeatGridData)) {
-        return mixxx::BeatsPointer(new BeatGrid(track, sampleRate));
+        return BeatsPointer(new BeatGrid(track, sampleRate));
     }
     const BeatGridData* blob = reinterpret_cast<const BeatGridData*>(byteArray.constData());
 
@@ -324,19 +324,19 @@ double BeatGrid::getBpmAroundPosition(double curSample, int n) const {
     return bpm();
 }
 
-mixxx::BeatsPointer BeatGrid::translate(double dNumSamples) const {
+BeatsPointer BeatGrid::translate(double dNumSamples) const {
     if (!isValid()) {
-        return mixxx::BeatsPointer(new BeatGrid(*this));
+        return BeatsPointer(new BeatGrid(*this));
     }
     mixxx::track::io::BeatGrid grid = m_grid;
     double newFirstBeatFrames = (firstBeatSample() + dNumSamples) / kFrameSize;
     grid.mutable_first_beat()->set_frame_position(
             static_cast<google::protobuf::int32>(newFirstBeatFrames));
 
-    return mixxx::BeatsPointer(new BeatGrid(*this, grid, m_dBeatLength));
+    return BeatsPointer(new BeatGrid(*this, grid, m_dBeatLength));
 }
 
-mixxx::BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
+BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
     mixxx::track::io::BeatGrid grid = m_grid;
     double bpm = grid.bpm().bpm();
 
@@ -361,26 +361,26 @@ mixxx::BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return mixxx::BeatsPointer(new BeatGrid(*this));
+        return BeatsPointer(new BeatGrid(*this));
     }
 
     if (bpm > getMaxBpm()) {
-        return mixxx::BeatsPointer(new BeatGrid(*this));
+        return BeatsPointer(new BeatGrid(*this));
     }
     grid.mutable_bpm()->set_bpm(bpm);
 
     double beatLength = (60.0 * m_iSampleRate / bpm) * kFrameSize;
-    return mixxx::BeatsPointer(new BeatGrid(*this, grid, beatLength));
+    return BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 
-mixxx::BeatsPointer BeatGrid::setBpm(double dBpm) {
+BeatsPointer BeatGrid::setBpm(double dBpm) {
     if (dBpm > getMaxBpm()) {
         dBpm = getMaxBpm();
     }
     mixxx::track::io::BeatGrid grid = m_grid;
     grid.mutable_bpm()->set_bpm(dBpm);
     double beatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
-    return mixxx::BeatsPointer(new BeatGrid(*this, grid, beatLength));
+    return BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 
 } // namespace mixxx

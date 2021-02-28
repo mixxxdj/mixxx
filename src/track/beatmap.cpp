@@ -584,10 +584,10 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
     return BeatUtils::calculateAverageBpm(numberOfBeats, m_iSampleRate, lowerFrame, upperFrame);
 }
 
-mixxx::BeatsPointer BeatMap::translate(double dNumSamples) const {
+BeatsPointer BeatMap::translate(double dNumSamples) const {
     // Converting to frame offset
     if (!isValid()) {
-        return mixxx::BeatsPointer(new BeatMap(*this));
+        return BeatsPointer(new BeatMap(*this));
     }
 
     BeatList beats = m_beats;
@@ -603,13 +603,13 @@ mixxx::BeatsPointer BeatMap::translate(double dNumSamples) const {
         }
     }
 
-    return mixxx::BeatsPointer(new BeatMap(*this, beats, m_nominalBpm));
+    return BeatsPointer(new BeatMap(*this, beats, m_nominalBpm));
 }
 
-mixxx::BeatsPointer BeatMap::scale(enum BPMScale scale) const {
+BeatsPointer BeatMap::scale(enum BPMScale scale) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid() || m_beats.isEmpty()) {
-        return mixxx::BeatsPointer(new BeatMap(*this));
+        return BeatsPointer(new BeatMap(*this));
     }
 
     BeatList beats = m_beats;
@@ -648,17 +648,17 @@ mixxx::BeatsPointer BeatMap::scale(enum BPMScale scale) const {
         break;
     default:
         DEBUG_ASSERT(!"scale value invalid");
-        return mixxx::BeatsPointer(new BeatMap(*this));
+        return BeatsPointer(new BeatMap(*this));
     }
 
     double bpm = calculateNominalBpm(beats, m_iSampleRate);
-    return mixxx::BeatsPointer(new BeatMap(*this, beats, bpm));
+    return BeatsPointer(new BeatMap(*this, beats, bpm));
 }
 
-mixxx::BeatsPointer BeatMap::setBpm(double dBpm) {
+BeatsPointer BeatMap::setBpm(double dBpm) {
     Q_UNUSED(dBpm);
     DEBUG_ASSERT(!"BeatMap::setBpm() not implemented");
-    return mixxx::BeatsPointer(new BeatMap(*this));
+    return BeatsPointer(new BeatMap(*this));
 
     /*
      * One of the problems of beattracking algorithms is the so called "octave error"
