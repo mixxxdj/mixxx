@@ -281,14 +281,6 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
         tio->setBeats(pBeats);
         return;
     }
-
-    // If we got here then the user doesn't want to replace the beatgrid but
-    // since the first beat is zero we'll apply the offset we just detected.
-    double currentFirstBeat = pCurrentBeats->findNextBeat(0);
-    double newFirstBeat = pBeats->findNextBeat(0);
-    if (currentFirstBeat == 0.0 && newFirstBeat > 0) {
-        pCurrentBeats->translate(newFirstBeat);
-    }
 }
 
 // static
