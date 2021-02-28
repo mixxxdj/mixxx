@@ -277,7 +277,7 @@ double Track::setBpm(double bpmValue) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
         setBeats(mixxx::BeatsPointer());
-        return bpmValue;
+        return mixxx::Bpm::kValueUndefined;
     }
 
     QMutexLocker lock(&m_qMutex);
@@ -290,15 +290,16 @@ double Track::setBpm(double bpmValue) {
         return bpmValue;
     }
 
-    // Continue with the regular case
-    if (m_pBeats->getBpm() != bpmValue) {
+    // Continue with the regular cases
+    if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
+            m_pBeats->getBpm() != bpmValue) {
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
         setBeatsMarkDirtyAndUnlock(&lock, m_pBeats->setBpm(bpmValue));
     }
 
-    return bpmValue;
+    return m_pBeats->getBpm();
 }
 
 QString Track::getBpmText() const {
