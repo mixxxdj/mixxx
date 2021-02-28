@@ -142,10 +142,10 @@ void Track::importMetadata(
         mixxx::TrackMetadata importedMetadata,
         const QDateTime& metadataSynchronized) {
     // Safe some values that are needed after move assignment and unlocking(see below)
-    const auto newBpm = importedMetadata.getTrackInfo().getBpm();
     const auto newKey = importedMetadata.getTrackInfo().getKey();
     const auto newReplayGain = importedMetadata.getTrackInfo().getReplayGain();
     const auto newSeratoTags = importedMetadata.getTrackInfo().getSeratoTags();
+    // Note: We do not import BPM here, because we don't know the mandatory phase.
     {
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
@@ -194,13 +194,6 @@ void Track::importMetadata(
         }
 
         // implicitly unlocked when leaving scope
-    }
-
-    // Need to set BPM after sample rate since beat grid creation depends on
-    // knowing the sample rate. Bug #1020438.
-    const auto actualBpm = getActualBpm(newBpm, m_pBeats);
-    if (actualBpm.hasValue()) {
-        setBpm(actualBpm.getValue());
     }
 
     if (!newKey.isEmpty()

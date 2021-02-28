@@ -48,7 +48,6 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
     QString album = index.sibling(index.row(), fieldIndex("album")).data().toString();
     QString year = index.sibling(index.row(), fieldIndex("year")).data().toString();
     QString genre = index.sibling(index.row(), fieldIndex("genre")).data().toString();
-    float bpm = index.sibling(index.row(), fieldIndex("bpm")).data().toString().toFloat();
 
     QString nativeLocation = index.sibling(index.row(), fieldIndex("location")).data().toString();
     QString location = QDir::fromNativeSeparators(nativeLocation);
@@ -74,7 +73,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
             pTrack->setAlbum(album);
             pTrack->setYear(year);
             pTrack->setGenre(genre);
-            pTrack->setBpm(bpm);
+            // Note: We do not import BPM here, because we don't know the mandatory phase.
         }
     } else {
         qWarning() << "Failed to load external track" << location;
