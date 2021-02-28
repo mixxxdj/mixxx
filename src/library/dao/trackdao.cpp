@@ -1082,7 +1082,6 @@ bool setTrackAudioProperties(
 
 bool setTrackBeats(const QSqlRecord& record, const int column,
                    TrackPointer pTrack) {
-    double bpm = record.value(column).toDouble();
     QString beatsVersion = record.value(column + 1).toString();
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();
@@ -1091,8 +1090,6 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
             *pTrack, beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
         pTrack->setBeats(pBeats);
-    } else {
-        pTrack->setBpm(bpm);
     }
     pTrack->setBpmLocked(bpmLocked);
     return false;
@@ -1169,60 +1166,58 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
     QSqlQuery query(m_database);
 
     ColumnPopulator columns[] = {
-        // Location must be first.
-        { "track_locations.location", nullptr },
-        { "artist", setTrackArtist },
-        { "title", setTrackTitle },
-        { "album", setTrackAlbum },
-        { "album_artist", setTrackAlbumArtist },
-        { "year", setTrackYear },
-        { "genre", setTrackGenre },
-        { "composer", setTrackComposer },
-        { "grouping", setTrackGrouping },
-        { "tracknumber", setTrackNumber },
-        { "tracktotal", setTrackTotal },
-        { "filetype", setTrackFiletype },
-        { "rating", setTrackRating },
-        { "color", setTrackColor },
-        { "comment", setTrackComment },
-        { "url", setTrackUrl },
-        { "cuepoint", setTrackCuePoint },
-        { "replaygain", setTrackReplayGainRatio },
-        { "replaygain_peak", setTrackReplayGainPeak },
-        { "timesplayed", setTrackTimesPlayed },
-        { "played", setTrackPlayed },
-        { "datetime_added", setTrackDateAdded },
-        { "header_parsed", setTrackMetadataSynchronized },
+            // Location must be first.
+            {"track_locations.location", nullptr},
+            {"artist", setTrackArtist},
+            {"title", setTrackTitle},
+            {"album", setTrackAlbum},
+            {"album_artist", setTrackAlbumArtist},
+            {"year", setTrackYear},
+            {"genre", setTrackGenre},
+            {"composer", setTrackComposer},
+            {"grouping", setTrackGrouping},
+            {"tracknumber", setTrackNumber},
+            {"tracktotal", setTrackTotal},
+            {"filetype", setTrackFiletype},
+            {"rating", setTrackRating},
+            {"color", setTrackColor},
+            {"comment", setTrackComment},
+            {"url", setTrackUrl},
+            {"cuepoint", setTrackCuePoint},
+            {"replaygain", setTrackReplayGainRatio},
+            {"replaygain_peak", setTrackReplayGainPeak},
+            {"timesplayed", setTrackTimesPlayed},
+            {"played", setTrackPlayed},
+            {"datetime_added", setTrackDateAdded},
+            {"header_parsed", setTrackMetadataSynchronized},
 
-        // Audio properties are set together at once. Do not change the
-        // ordering of these columns or put other columns in between them!
-        { "channels", setTrackAudioProperties },
-        { "samplerate", nullptr },
-        { "bitrate", nullptr },
-        { "duration", nullptr },
+            // Audio properties are set together at once. Do not change the
+            // ordering of these columns or put other columns in between them!
+            {"channels", setTrackAudioProperties},
+            {"samplerate", nullptr},
+            {"bitrate", nullptr},
+            {"duration", nullptr},
 
-        // Beat detection columns are handled by setTrackBeats. Do not change
-        // the ordering of these columns or put other columns in between them!
-        { "bpm", setTrackBeats },
-        { "beats_version", nullptr },
-        { "beats_sub_version", nullptr },
-        { "beats", nullptr },
-        { "bpm_lock", nullptr },
+            // Beat detection columns are handled by setTrackBeats. Do not change
+            // the ordering of these columns or put other columns in between them!
+            {"beats_version", setTrackBeats},
+            {"beats_sub_version", nullptr},
+            {"beats", nullptr},
+            {"bpm_lock", nullptr},
 
-        // Beat detection columns are handled by setTrackKey. Do not change the
-        // ordering of these columns or put other columns in between them!
-        { "key", setTrackKey },
-        { "keys_version", nullptr },
-        { "keys_sub_version", nullptr },
-        { "keys", nullptr },
+            // Beat detection columns are handled by setTrackKey. Do not change the
+            // ordering of these columns or put other columns in between them!
+            {"key", setTrackKey},
+            {"keys_version", nullptr},
+            {"keys_sub_version", nullptr},
+            {"keys", nullptr},
 
-        // Cover art columns are handled by setTrackCoverInfo. Do not change the
-        // ordering of these columns or put other columns in between them!
-        { "coverart_source", setTrackCoverInfo },
-        { "coverart_type", nullptr },
-        { "coverart_location", nullptr },
-        { "coverart_hash", nullptr }
-    };
+            // Cover art columns are handled by setTrackCoverInfo. Do not change the
+            // ordering of these columns or put other columns in between them!
+            {"coverart_source", setTrackCoverInfo},
+            {"coverart_type", nullptr},
+            {"coverart_location", nullptr},
+            {"coverart_hash", nullptr}};
 
     QString columnsStr;
     int columnsSize = 0;
