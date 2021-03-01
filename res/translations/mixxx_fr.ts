@@ -51,7 +51,7 @@
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
         <source>Error loading Banshee database</source>
-        <translation>Erreur au chargement de la base de données de Banshee</translation>
+        <translation>Erreur lors du chargement de la base de données de Banshee</translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="77"/>
@@ -164,7 +164,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="235"/>
         <source>Enter new name for playlist:</source>
-        <translation>Introduisez le nouveau nom de la liste de lecture :</translation>
+        <translation>Entrer le nouveau nom de la liste de lecture :</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="276"/>
@@ -204,7 +204,7 @@
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="292"/>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="344"/>
         <source>A playlist by that name already exists.</source>
-        <translation>Il existe déjà une liste de lecture avec ce nom</translation>
+        <translation>Une liste de lecture du même nom exise déjà</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="253"/>
@@ -2042,27 +2042,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1066"/>
         <source>Microphone &amp; Auxiliary Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Affiche/Masque Microphone/Auxiliaire</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1067"/>
         <source>Show/hide the microphone &amp; auxiliary section</source>
-        <translation type="unfinished"/>
+        <translation>Affiche/Masque la section Microphone/Auxiliaire</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1081"/>
         <source>4 Effect Units Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Afficher/Masquer les 4 unités d&apos;effets</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1082"/>
         <source>Switches between showing 2 and 4 effect units</source>
-        <translation type="unfinished"/>
+        <translation>Basculer entre l&apos;affichage de 2 et 4 unités d&apos;effets</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1086"/>
         <source>Mixer Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Afficher/Cacher le mixer</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1087"/>
@@ -2072,12 +2072,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1091"/>
         <source>Cover Art Show/Hide (Library)</source>
-        <translation type="unfinished"/>
+        <translation>Affiche/Masque la pochette d&apos;album (bibliothèque)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1092"/>
         <source>Show/hide cover art in the library</source>
-        <translation type="unfinished"/>
+        <translation>Afficher/Masquer la pochette d&apos;album dans la bibliothèque</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1096"/>
@@ -2265,7 +2265,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="210"/>
         <source>Sync / Sync Lock</source>
-        <translation type="unfinished"/>
+        <translation>Synchroniser/Vérouiller synchronisation</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="247"/>
@@ -2330,42 +2330,43 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="350"/>
         <source>Shift cue points earlier</source>
-        <translation type="unfinished"/>
+        <translation>Décaler les points de repère plus tôt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
         <source>Shift cue points 10 milliseconds earlier</source>
-        <translation type="unfinished"/>
+        <translation>Décale les points de repère 10 millisecondes plus tôt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="354"/>
         <source>Shift cue points earlier (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Décaler les points de repère plus tôt (finement)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="355"/>
         <source>Shift cue points 1 millisecond earlier</source>
-        <translation type="unfinished"/>
+        <translation>Décale les points de repère 1 milliseconde plus tôt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="358"/>
         <source>Shift cue points later</source>
-        <translation type="unfinished"/>
+        <translation>Décaler les points de repère plus tard</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="359"/>
         <source>Shift cue points 10 milliseconds later</source>
-        <translation type="unfinished"/>
+        <translation>Décaler les points de repère 10 millisecondes plus tard</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="362"/>
         <source>Shift cue points later (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Décaler les points de repère plus tard (finement)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="363"/>
         <source>Shift cue points 1 millisecond later</source>
-        <translation type="unfinished"/>
+        <translation> 
+Ajouter la piste à la file Auto DJ (fin)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="376"/>
@@ -2857,7 +2858,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1159"/>
         <source>Start/Stop Live Broadcasting</source>
-        <translation type="unfinished"/>
+        <translation>Démarrer/Arrêter la Diffusion en Direct</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1160"/>
@@ -2867,7 +2868,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1165"/>
         <source>Start/stop recording your mix.</source>
-        <translation type="unfinished"/>
+        <translation>Démarrer/Arrêter l&apos;Enregistrement du Mix</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1274"/>
@@ -2908,12 +2909,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1110"/>
         <source>Cover Art Show/Hide (Decks)</source>
-        <translation type="unfinished"/>
+        <translation>Montrer/Cacher Jaquette (Decks)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1111"/>
         <source>Show/hide cover art in the main decks</source>
-        <translation type="unfinished"/>
+        <translation>Montre/Cache la pochette d&apos;album sur les decks principaux</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1119"/>
@@ -2928,22 +2929,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1125"/>
         <source>Vinyl Spinners Show/Hide (All Decks)</source>
-        <translation type="unfinished"/>
+        <translation>Monter/Cacher les spinner des vinyles (Toutes les platines)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1126"/>
         <source>Show/Hide all spinnies</source>
-        <translation type="unfinished"/>
+        <translation>Montrer/Cacher tous les spinners</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1141"/>
         <source>Toggle Waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Basculer de forme d&apos;ondes</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1142"/>
         <source>Show/hide the scrolling waveforms.</source>
-        <translation type="unfinished"/>
+        <translation>Montrer/Cacher les formes d&apos;ondes défilantes</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1144"/>
@@ -3897,7 +3898,10 @@ en analysant les &quot;battements&quot; pour extraire les valeurs aberrantes.</t
 This could be because you are either using an old skin and this control is no longer supported, or you clicked a control that provides visual feedback and can only be mapped to outputs like LEDs via scripts.
 
 You tried to learn: %1,%2</source>
-        <translation type="unfinished"/>
+        <translation>Le contrôle sur lequel vous avez cliqué dans Mixxx n&apos;est pas assignable.
+La raison peut être que vous utilisé un thème d&apos;interface ancien et que ce contrôle n&apos;est plus pris en charge, ou que vous avez cliqué un contrôle utilisant un retour visuel  tels que des LEDs via des scripts.
+
+Vous avez tenté d&apos;assigner : %1,%2</translation>
     </message>
 </context>
 <context>
@@ -4567,7 +4571,7 @@ Appliquer les paramètres et continuer ?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="501"/>
         <source>Mapping has been edited</source>
-        <translation type="unfinished"/>
+        <translation>Le mappage à été modifié</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="543"/>
@@ -4582,42 +4586,42 @@ Appliquer les paramètres et continuer ?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="547"/>
         <source>Always overwrite during this session</source>
-        <translation type="unfinished"/>
+        <translation>Toujours écraser durant cette session</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="559"/>
         <source>Save As</source>
-        <translation type="unfinished"/>
+        <translation>Enregistrer sous</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="561"/>
         <source>Overwrite</source>
-        <translation type="unfinished"/>
+        <translation>Écraser </translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="582"/>
         <source>Save user mapping</source>
-        <translation type="unfinished"/>
+        <translation>Enregistrer le mappage utilisateur</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="583"/>
         <source>Enter the name for saving the mapping to the user folder.</source>
-        <translation type="unfinished"/>
+        <translation>Entrer le nom pour enregistrer le mappage dans le dossier de l&apos;utilisateur</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="584"/>
         <source>Saving mapping failed</source>
-        <translation type="unfinished"/>
+        <translation>L&apos;enregistrement du mappage à échoué</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="586"/>
         <source>A mapping cannot have a blank name and may not contain special characters.</source>
-        <translation type="unfinished"/>
+        <translation>Un mappage ne peut pas avoir un nom vide et ne peut pas contenir des caractères spéciaux.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="588"/>
         <source>A mapping file with that name already exists.</source>
-        <translation type="unfinished"/>
+        <translation>Un fichier de mappage utilise déjà ce nom.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="313"/>
@@ -4732,12 +4736,12 @@ Appliquer les paramètres et continuer ?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="119"/>
         <source>Load Mapping:</source>
-        <translation type="unfinished"/>
+        <translation>Charger le mappage:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="207"/>
         <source>Mapping Info</source>
-        <translation type="unfinished"/>
+        <translation>Informations du mappage</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="260"/>
@@ -4757,7 +4761,7 @@ Appliquer les paramètres et continuer ?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="380"/>
         <source>Mapping Files:</source>
-        <translation type="unfinished"/>
+        <translation>Fichiers de mappage:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollerdlg.ui" line="499"/>
@@ -4791,17 +4795,17 @@ Appliquer les paramètres et continuer ?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="79"/>
         <source>Mappings</source>
-        <translation type="unfinished"/>
+        <translation>Mappages</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="91"/>
         <source>Mixxx uses &quot;mappings&quot; to connect messages from your controller to controls in Mixxx. If you do not see a mapping for your controller in the &quot;Load Mapping&quot; menu when you click on your controller on the left sidebar, you may be able to download one online from the &lt;a href=&quot;https://mixxx.discourse.group/c/controller-mappings/10&quot;&gt;Mixxx Forum&lt;/a&gt;. Place the XML (.xml) and Javascript (.js) file(s) in the &quot;User Mapping Folder&quot; then restart Mixxx. If you download a mapping in a ZIP file, extract the XML and Javascript file(s) from the ZIP file to your &quot;User Mapping Folder&quot; then restart Mixxx:</source>
-        <translation type="unfinished"/>
+        <translation>Mixxx utilise des &quot; mappages &quot; pour établir le lien entre les messages de votre contrôleur et les contrôles de Mixxx. Si après avoir cliqué sur votre contrôleur dans la barre de menu gauche, vous ne voyez pas de mappage pour votre contrôleur dans le menu &quot; Charger un mappage &quot; vous devriez pouvoir en charger un en ligne à partir du &lt;a href=&quot;https://mixxx.discourse.group/c/controller-mappings/10&quot;&gt;Mixxx Forum&lt;/a&gt;. Placer les fichiers XML (.xml) et Javascript (.js) dans le &quot;User Mapping Folder&quot; puis redémarrer Mixxx. Si vous téléchargez un mappage depuis un fichier ZIP, extrayez les fichiers XML et Javascript de l&apos;archive ZIP vers votre &quot;User Mapping Folder&quot;, puis redémarrez Mixxx :</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="110"/>
         <source>Open User Mapping Folder</source>
-        <translation type="unfinished"/>
+        <translation>Ouvrir le répertoire des mappages utilisateur</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontrollersdlg.ui" line="142"/>
@@ -5613,7 +5617,8 @@ Vous pouvez toujours glisser-déposer des pistes sur l&apos;écran pour cloner u
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="21"/>
         <source>When key detection is enabled, Mixxx detects the musical key of your tracks
 and allows you to pitch adjust them for harmonic mixing.</source>
-        <translation type="unfinished"/>
+        <translation>Lorsque la détection de tonalité est activée, Mixxx détecte le tonalité de vos pistes.
+vous permettant ainsi d&apos;ajuster la tonalité afin de produire une mixage harmonique.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="25"/>
@@ -6008,28 +6013,28 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="134"/>
         <source>Automatically write modified track metadata from the library into file tags</source>
-        <translation type="unfinished"/>
+        <translation>Écrit automatiquement les métadonnées modifiées depuis la librairie dans les tags des fichiers</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="247"/>
         <source>Track Double-Click Action</source>
         <extracomment>Sets default action when double-clicking a track in the library.</extracomment>
-        <translation type="unfinished"/>
+        <translation>Double clic sur une piste</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="263"/>
         <source>Add track to Auto DJ queue (bottom)</source>
-        <translation type="unfinished"/>
+        <translation>Ajouter la piste à la file Auto DJ (fin)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="270"/>
         <source>Add track to Auto DJ queue (top)</source>
-        <translation type="unfinished"/>
+        <translation>Ajouter la piste à la file Auto DJ (début)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="277"/>
         <source>Ignore</source>
-        <translation type="unfinished"/>
+        <translation>Pas d&apos;effet</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="303"/>
@@ -6658,7 +6663,7 @@ Le niveau sonore visé est approximatif et suppose que les gains d&apos;entrée 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="358"/>
         <source>The &lt;a href=&quot;https://github.com/mixxxdj/mixxx/wiki/Hardware%20compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt; lists sound cards and controllers you may want to consider for using Mixxx.</source>
-        <translation type="unfinished"/>
+        <translation>&lt;a href=&quot;https://github.com/mixxxdj/mixxx/wiki/Hardware%20compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt; liste les cartes son et contrôleurs  que vous pouvez utiliser avec Mixxx.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="388"/>
@@ -6825,12 +6830,12 @@ Le niveau sonore visé est approximatif et suppose que les gains d&apos;entrée 
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="257"/>
         <source>Deck 3</source>
-        <translation type="unfinished"/>
+        <translation>Platine 3</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="283"/>
         <source>Deck 4</source>
-        <translation type="unfinished"/>
+        <translation>Platine 4</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="553"/>
@@ -10066,7 +10071,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1367"/>
         <source>Loops (only the first loop is currently usable in Mixxx)</source>
-        <translation type="unfinished"/>
+        <translation>Boucles (actuellement, seule la première boucle est disponible dans Mixxx)</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1370"/>
@@ -10511,7 +10516,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="37"/>
         <source>Shift-key</source>
-        <translation type="unfinished"/>
+        <translation>Touche Majuscule</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="38"/>
@@ -11096,7 +11101,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="473"/>
         <source>(while previewing)</source>
-        <translation type="unfinished"/>
+        <translation>(pendant la pré-écoute)</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="474"/>
@@ -11146,12 +11151,12 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="619"/>
         <source>Delete selected hotcue.</source>
-        <translation type="unfinished"/>
+        <translation>Supprime le repère rapide sélectionné.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="642"/>
         <source>AutoDJ is active</source>
-        <translation type="unfinished"/>
+        <translation>Auto DJ actif</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="1041"/>
@@ -11166,7 +11171,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="32"/>
         <source>Right-click to open the track context menu.</source>
-        <translation type="unfinished"/>
+        <translation>Clic droit pour ouvrir le menu contextuel des pistes.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="78"/>
@@ -11258,32 +11263,32 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="255"/>
         <source>Show/hide Cover Art of the selected track in the library.</source>
-        <translation type="unfinished"/>
+        <translation>Affiche/masque la pochette d&apos;album de la piste sélectionnée dans la bibliothèque.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="262"/>
         <source>Show/hide the scrolling waveforms</source>
-        <translation type="unfinished"/>
+        <translation>Affiche/masque la forme d&apos;onde filante</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="265"/>
         <source>Show/hide the beatgrid controls section</source>
-        <translation type="unfinished"/>
+        <translation>Affiche/masque la section de contrôle de la grille rythmique</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="277"/>
         <source>Hide all skin sections except the decks to have more screen space for the track library.</source>
-        <translation type="unfinished"/>
+        <translation>Masque toutes les sections sauf les platines afin d&apos;offrir la plus grande place à la bibliothèque.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="284"/>
         <source>Volume Meters</source>
-        <translation type="unfinished"/>
+        <translation>Vu-mètres</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="285"/>
         <source>Show/hide volume meters for channels and master output.</source>
-        <translation type="unfinished"/>
+        <translation>Affiche/masque les vu-mètres des pistes et de la sortie principale</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="305"/>
@@ -11293,7 +11298,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="310"/>
         <source>Auto: Automatically reduce music volume when microphone volume rises above threshold.</source>
-        <translation type="unfinished"/>
+        <translation>Auto : Réduit automatiquement le niveau sonore de la musique lorsque le volume sonore du micro dépasse le seuil.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="312"/>
@@ -11304,48 +11309,48 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="319"/>
         <source>Auto: Sets how much to reduce the music volume when the volume of active microphones rises above threshold.</source>
-        <translation type="unfinished"/>
+        <translation>Auto : Règle le niveau de réduction du volume sonore de la musique lorsque le(s) micro(s) actif(s) dépasse le seuil.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="320"/>
         <source>Manual: Sets how much to reduce the music volume, when talkover is activated regardless of volume of microphone inputs.</source>
-        <translation type="unfinished"/>
+        <translation>Manuel : Règle le niveau d&apos;atténuation du volume sonore de la musique, lorsque le talkover (ParlerParDessus) est activé, ce quelque soit le volume sonore des entrées microphone.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="424"/>
         <source>Shift cues earlier</source>
-        <translation type="unfinished"/>
+        <translation>Décaler les repères plus tôt</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="425"/>
         <location filename="../../src/skin/tooltips.cpp" line="431"/>
         <source>Shift cues imported from Serato or Rekordbox if they are slightly off time.</source>
-        <translation type="unfinished"/>
+        <translation>Décale les repères importés de Serato et Rekordbox lorsqu&apos;ils sont légèrement désynchronisés.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="426"/>
         <source>Left click: shift 10 milliseconds earlier</source>
-        <translation type="unfinished"/>
+        <translation>Clic gauche : décale 10 ms plus tôt</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="427"/>
         <source>Right click: shift 1 millisecond earlier</source>
-        <translation type="unfinished"/>
+        <translation>Clic-droit : décale 10 ms plus tard</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="430"/>
         <source>Shift cues later</source>
-        <translation type="unfinished"/>
+        <translation>Décaler les repères plus tard</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="432"/>
         <source>Left click: shift 10 milliseconds later</source>
-        <translation type="unfinished"/>
+        <translation>Clic-gauche : décale 1O ms plus tard</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="433"/>
         <source>Right click: shift 1 millisecond later</source>
-        <translation type="unfinished"/>
+        <translation>Clic-droit : décale 1 ms plus tard</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="519"/>
@@ -11530,7 +11535,7 @@ Complètement à droite: fin de la période d&apos;effet</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="758"/>
         <source>Hint: Change the time format in Preferences -&gt; Decks.</source>
-        <translation type="unfinished"/>
+        <translation>Astuce : Changez le format des temps dans Préférences -&gt; Platines.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="829"/>
@@ -14230,7 +14235,7 @@ Cliquez sur OK pour sortir.</translation>
     <message>
         <location filename="../../src/util/taskmonitor.cpp" line="161"/>
         <source>Abort</source>
-        <translation type="unfinished"/>
+        <translation>Annuler</translation>
     </message>
 </context>
 <context>

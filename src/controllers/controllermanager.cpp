@@ -87,7 +87,8 @@ ControllerManager::ControllerManager(UserSettingsPointer pConfig)
           m_pControllerLearningEventFilter(new ControllerLearningEventFilter()),
           m_pollTimer(this),
           m_skipPoll(false) {
-    qRegisterMetaType<LegacyControllerMappingPointer>("LegacyControllerMappingPointer");
+    qRegisterMetaType<std::shared_ptr<LegacyControllerMapping>>(
+            "std::shared_ptr<LegacyControllerMapping>");
 
     // Create controller mapping paths in the user's home directory.
     QString userMappings = userMappingsPath(m_pConfig);
@@ -262,14 +263,16 @@ void ControllerManager::slotSetUpDevices() {
             continue;
         }
 
-        LegacyControllerMappingPointer pMapping = LegacyControllerMappingFileHandler::loadMapping(
-                mappingFile, resourceMappingsPath(m_pConfig));
+        std::shared_ptr<LegacyControllerMapping> pMapping =
+                LegacyControllerMappingFileHandler::loadMapping(
+                        mappingFile, resourceMappingsPath(m_pConfig));
 
         if (!pMapping) {
             continue;
         }
 
-        pController->setMapping(*pMapping);
+        // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
+        pController->setMapping(pMapping->clone());
 
         // If we are in safe mode, skip opening controllers.
         if (CmdlineArgs::Instance().getSafeMode()) {
@@ -396,7 +399,7 @@ void ControllerManager::closeController(Controller* pController) {
 }
 
 void ControllerManager::slotApplyMapping(Controller* pController,
-        LegacyControllerMappingPointer pMapping,
+        std::shared_ptr<LegacyControllerMapping> pMapping,
         bool bEnabled) {
     VERIFY_OR_DEBUG_ASSERT(pController) {
         qWarning() << "slotApplyMapping got invalid controller!";
@@ -415,11 +418,13 @@ void ControllerManager::slotApplyMapping(Controller* pController,
         qWarning() << "Mapping is dirty, changes might be lost on restart!";
     }
 
-    pController->setMapping(*pMapping);
 
     // Save the file path/name in the config so it can be auto-loaded at
     // startup next time
     m_pConfig->set(key, pMapping->filePath());
+
+    // This runs on the main thread but LegacyControllerMapping is not thread safe, so clone it.
+    pController->setMapping(pMapping->clone());
 
     if (bEnabled) {
         openController(pController);

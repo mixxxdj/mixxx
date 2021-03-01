@@ -200,18 +200,22 @@ void EncoderVorbis::initStream() {
     m_bStreamInitialized = true;
 }
 
-int EncoderVorbis::initEncoder(int samplerate, QString& errorMessage) {
+int EncoderVorbis::initEncoder(int samplerate, QString* pUserErrorMessage) {
     vorbis_info_init(&m_vinfo);
 
     // initialize VBR quality based mode
     int ret = vorbis_encode_init(&m_vinfo, m_channels, samplerate, -1, m_bitrate*1000, -1);
 
-    if (ret == 0) {
-        initStream();
-    } else {
+    if (ret != 0) {
         qDebug() << "Error initializing OGG recording. IS OGG/Vorbis library installed? Error code: " << ret;
-        errorMessage  = "OGG recording is not supported. OGG/Vorbis library could not be initialized.";
-        ret = -1;
-    };
-    return ret;
+        if (pUserErrorMessage) {
+            *pUserErrorMessage = QObject::tr(
+                    "OGG recording is not supported. OGG/Vorbis library could "
+                    "not be initialized.");
+        }
+        return -1;
+    }
+
+    initStream();
+    return 0;
 }

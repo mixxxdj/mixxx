@@ -62,7 +62,7 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("main",
             "Mixxx is an open source DJ software. For more information, see "
-            "https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options)."
+            "https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options).\n"
             "CamelCase arguments are deprecated and will be removed in 2.5"));
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 

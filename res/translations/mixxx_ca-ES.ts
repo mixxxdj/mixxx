@@ -302,7 +302,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="151"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>Color</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="155"/>
@@ -683,12 +683,12 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="40"/>
         <source>Remove Color</source>
-        <translation type="unfinished"/>
+        <translation>Suprimeix el color</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="53"/>
         <source>Add Color</source>
-        <translation type="unfinished"/>
+        <translation>Afegeix un color</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="61"/>
@@ -699,12 +699,12 @@
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="67"/>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="253"/>
         <source>Remove Palette</source>
-        <translation type="unfinished"/>
+        <translation>Suprimeix la paleta</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="83"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>Color</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="84"/>
@@ -714,7 +714,7 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
         <source>Edited</source>
-        <translation type="unfinished"/>
+        <translation>Editat</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="254"/>
@@ -1617,7 +1617,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="16"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="57"/>
         <source>Main Output</source>
-        <translation type="unfinished"/>
+        <translation>Sortida principal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="66"/>
@@ -3036,12 +3036,12 @@
     <message>
         <location filename="../../src/controllers/engine/controllerengine.cpp" line="898"/>
         <source>File:</source>
-        <translation type="unfinished"/>
+        <translation>Fitxer:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/engine/controllerengine.cpp" line="899"/>
         <source>Error:</source>
-        <translation type="unfinished"/>
+        <translation>Error:</translation>
     </message>
     <message>
         <location filename="../../src/controllers/engine/controllerengine.cpp" line="495"/>
@@ -3424,12 +3424,12 @@
     <message>
         <location filename="../../src/library/dlganalysis.cpp" line="197"/>
         <source>Analyzing %1% %2/%3</source>
-        <translation type="unfinished"/>
+        <translation>Analitzant %1% %2/%3</translation>
     </message>
     <message>
         <location filename="../../src/library/dlganalysis.cpp" line="203"/>
         <source>Analyzing %1/%2</source>
-        <translation type="unfinished"/>
+        <translation>Analitzant %1/%2</translation>
     </message>
 </context>
 <context>
@@ -3437,31 +3437,35 @@
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="93"/>
         <source>Skip</source>
-        <translation type="unfinished"/>
+        <translation>Omet</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="95"/>
         <source>Random</source>
-        <translation type="unfinished"/>
+        <translation>Aleatori</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="92"/>
         <source>Fade</source>
-        <translation type="unfinished"/>
+        <translation>Fos</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="97"/>
         <source>Enable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>Habilita el DJ automàtic
+
+Drecera: Maj+F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="101"/>
         <source>Disable Auto DJ
 
 Shortcut: Shift+F12</source>
-        <translation type="unfinished"/>
+        <translation>Inhabilita el DJ automàtic
+
+Drecera: Maj+F12</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="105"/>
@@ -3487,7 +3491,7 @@ Shortcut: Shift+F9</source>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="120"/>
         <source>Repeat the playlist</source>
-        <translation type="unfinished"/>
+        <translation>Repeteix la llista de reproducció</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="122"/>
@@ -3512,12 +3516,12 @@ Shortcut: Shift+F9</source>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="175"/>
         <source>Full Track</source>
-        <translation type="unfinished"/>
+        <translation>Pista completa</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="177"/>
         <source>Skip Silence</source>
-        <translation type="unfinished"/>
+        <translation>Omet el silenci</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="127"/>
@@ -3563,12 +3567,12 @@ last sound.</source>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="309"/>
         <source>Enable</source>
-        <translation type="unfinished"/>
+        <translation>Habilita</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="318"/>
         <source>Disable</source>
-        <translation type="unfinished"/>
+        <translation>Inhabilita</translation>
     </message>
     <message>
         <location filename="../../src/library/autodj/dlgautodj.cpp" line="362"/>
@@ -4435,7 +4439,7 @@ Dues connexions font al mateix servidor no poden tenir el mateix punt de muntatg
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="319"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>Color</translation>
     </message>
 </context>
 <context>
@@ -4443,18 +4447,18 @@ Dues connexions font al mateix servidor no poden tenir el mateix punt de muntatg
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="20"/>
         <source>Color Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Preferències de color</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="26"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>Colors</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="46"/>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="56"/>
         <source>Edit…</source>
-        <translation type="unfinished"/>
+        <translation>Edita...</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="80"/>
@@ -4479,7 +4483,7 @@ Dues connexions font al mateix servidor no poden tenir el mateix punt de muntatg
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolorsdlg.ui" line="39"/>
         <source>Replace…</source>
-        <translation type="unfinished"/>
+        <translation>Reemplaça…</translation>
     </message>
 </context>
 <context>
@@ -4549,12 +4553,12 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="559"/>
         <source>Save As</source>
-        <translation type="unfinished"/>
+        <translation>Anomena i desa</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="561"/>
         <source>Overwrite</source>
-        <translation type="unfinished"/>
+        <translation>Sobreescriu</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="582"/>
@@ -4584,7 +4588,7 @@ Volue aplicar la configuració i continuar?</translation>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="313"/>
         <source>missing</source>
-        <translation type="unfinished"/>
+        <translation>no s&apos;ha trobat</translation>
     </message>
     <message>
         <location filename="../../src/controllers/dlgprefcontroller.cpp" line="294"/>
@@ -5146,7 +5150,7 @@ Mode CUP:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="114"/>
         <source>Time Format</source>
-        <translation type="unfinished"/>
+        <translation>Format de temps</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="69"/>
@@ -5986,7 +5990,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="277"/>
         <source>Ignore</source>
-        <translation type="unfinished"/>
+        <translation>Ignora</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="303"/>
@@ -6762,7 +6766,7 @@ El valor desitjat és aproximat i assumeix que els pre-guanys i el volum de sort
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="159"/>
         <source>Vinyl Type</source>
-        <translation type="unfinished"/>
+        <translation>Tipus de vinil</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="182"/>
@@ -6772,22 +6776,22 @@ El valor desitjat és aproximat i assumeix que els pre-guanys i el volum de sort
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="205"/>
         <source>Deck 1</source>
-        <translation type="unfinished"/>
+        <translation>Plat 1</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="231"/>
         <source>Deck 2</source>
-        <translation type="unfinished"/>
+        <translation>Plat 2</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="257"/>
         <source>Deck 3</source>
-        <translation type="unfinished"/>
+        <translation>Plat 3</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="283"/>
         <source>Deck 4</source>
-        <translation type="unfinished"/>
+        <translation>Plat 4</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefvinyldlg.ui" line="553"/>
@@ -7086,7 +7090,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="134"/>
         <source>Colors</source>
-        <translation type="unfinished"/>
+        <translation>Colors</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="146"/>
@@ -7214,13 +7218,13 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="56"/>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="80"/>
         <source>is</source>
-        <translation type="unfinished"/>
+        <translation>és</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="61"/>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="85"/>
         <source>is not</source>
-        <translation type="unfinished"/>
+        <translation>no és</translation>
     </message>
     <message>
         <location filename="../../src/dialog/dlgreplacecuecolordlg.ui" line="69"/>
@@ -7379,7 +7383,7 @@ Seleccioneu entre els diferents tipus de gràfics per a la forma d&apos;ona loca
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="260"/>
         <source>Code: %1</source>
-        <translation type="unfinished"/>
+        <translation>Codi: %1</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtagfetcher.cpp" line="262"/>
@@ -8037,7 +8041,7 @@ OpenGL.</translation>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="79"/>
         <source>Overwrite File?</source>
-        <translation type="unfinished"/>
+        <translation>Sobreescriure el fitxer?</translation>
     </message>
     <message>
         <location filename="../../src/library/libraryfeature.cpp" line="80"/>
@@ -9828,13 +9832,13 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2.cpp" line="97"/>
         <source>Parameters of %1</source>
-        <translation type="unfinished"/>
+        <translation>Paràmetres de %1</translation>
     </message>
     <message>
         <location filename="../../src/analyzer/plugins/analyzerqueenmarybeats.h" line="23"/>
         <location filename="../../src/analyzer/plugins/analyzerqueenmarykey.h" line="23"/>
         <source>Queen Mary University London</source>
-        <translation type="unfinished"/>
+        <translation>Queen Mary Universitat de Londres</translation>
     </message>
     <message>
         <location filename="../../src/analyzer/plugins/analyzerqueenmarybeats.h" line="24"/>
@@ -9992,7 +9996,7 @@ Tot a la dreta: Al final del període</translation>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1345"/>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1519"/>
         <source>Rekordbox</source>
-        <translation type="unfinished"/>
+        <translation>Rekordbox</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1363"/>
@@ -10002,7 +10006,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1362"/>
         <source>Folders</source>
-        <translation type="unfinished"/>
+        <translation>Carpetes</translation>
     </message>
     <message>
         <location filename="../../src/library/rekordbox/rekordboxfeature.cpp" line="1346"/>
@@ -10099,7 +10103,7 @@ Tot a la dreta: Al final del període</translation>
         <location filename="../../src/library/serato/seratofeature.cpp" line="976"/>
         <location filename="../../src/library/serato/seratofeature.cpp" line="1121"/>
         <source>Serato</source>
-        <translation type="unfinished"/>
+        <translation>Serato</translation>
     </message>
     <message>
         <location filename="../../src/library/serato/seratofeature.cpp" line="977"/>
@@ -11102,7 +11106,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="642"/>
         <source>AutoDJ is active</source>
-        <translation type="unfinished"/>
+        <translation>DJ automàtic habilitat</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="1041"/>
@@ -11229,7 +11233,7 @@ Tot a la dreta: Al final del període</translation>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="284"/>
         <source>Volume Meters</source>
-        <translation type="unfinished"/>
+        <translation>Nivells de volum</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="285"/>
@@ -12925,12 +12929,12 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wcolorpicker.cpp" line="175"/>
         <source>No color</source>
-        <translation type="unfinished"/>
+        <translation>Cap color</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcolorpicker.cpp" line="197"/>
         <source>Custom color</source>
-        <translation type="unfinished"/>
+        <translation>Color personalitzat</translation>
     </message>
 </context>
 <context>
@@ -12984,7 +12988,7 @@ Ho pots utilitzar per canviar només la senyal processada amb EQs i efectes de f
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="33"/>
         <source>Label...</source>
-        <translation type="unfinished"/>
+        <translation>Etiqueta...</translation>
     </message>
     <message>
         <location filename="../../src/widget/wcuemenupopup.cpp" line="42"/>
@@ -14182,7 +14186,7 @@ Feu click a Acceptar per sortir.</translation>
     <message>
         <location filename="../../src/util/taskmonitor.cpp" line="161"/>
         <source>Abort</source>
-        <translation type="unfinished"/>
+        <translation>Avorta</translation>
     </message>
 </context>
 <context>
@@ -14253,7 +14257,7 @@ Feu click a Acceptar per sortir.</translation>
     <message>
         <location filename="../../src/network/webtask.cpp" line="172"/>
         <source>No network access</source>
-        <translation type="unfinished"/>
+        <translation>Sense accés a la xarxa</translation>
     </message>
 </context>
 </TS>

@@ -46,6 +46,7 @@ EXIT /B 0
     CALL :READ_ENVNAME
     SET BUILDENV_NAME=%RETVAL%
     SET BUILDENV_PATH=%BUILDENV_BASEPATH%\%BUILDENV_NAME%
+    SET CMAKE_TOOLCHAIN_FILE=%BUILDENV_PATH%\scripts\buildsystems\vcpkg.cmake
 
     IF NOT EXIST %BUILDENV_BASEPATH% (
         ECHO ### Create subdirectory buildenv ###
@@ -54,7 +55,7 @@ EXIT /B 0
 
     IF NOT EXIST %BUILDENV_PATH% (
         ECHO ### Download prebuild build environment ###
-        SET BUILDENV_URL=https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/!BUILDENV_NAME!.zip
+        SET BUILDENV_URL=https://downloads.mixxx.org/dependencies/2.3/Windows/!BUILDENV_NAME!.zip
         IF NOT EXIST !BUILDENV_PATH!.zip (
             ECHO ### Download prebuild build environment from !BUILDENV_URL! to !BUILDENV_PATH!.zip ###
             BITSADMIN /transfer buildenvjob /download /priority normal !BUILDENV_URL! !BUILDENV_PATH!.zip
@@ -70,9 +71,7 @@ EXIT /B 0
     ENDLOCAL
 
     SET PATH=!BUILDENV_PATH!\bin;!PATH!
-
-    FOR /D %%G IN (%BUILDENV_PATH%\Qt-*) DO (SET Qt5_DIR=%%G)
-    SET CMAKE_PREFIX_PATH=!BUILDENV_PATH!;!Qt5_DIR!
+    SET CMAKE_PREFIX_PATH=!BUILDENV_PATH!
 
     ECHO ^Environent Variables:
     ECHO ^- PATH=!PATH!
@@ -80,7 +79,7 @@ EXIT /B 0
     ECHO ^- CMAKE_PREFIX_PATH=!CMAKE_PREFIX_PATH!
 
     IF DEFINED GITHUB_ENV (
-        ECHO CMAKE_PREFIX_PATH=!CMAKE_PREFIX_PATH!>>!GITHUB_ENV!
+        ECHO CMAKE_ARGS_EXTRA=-DX_VCPKG_APPLOCAL_DEPS_INSTALL=ON -DCMAKE_TOOLCHAIN_FILE=!CMAKE_TOOLCHAIN_FILE! -DVCPKG_TARGET_TRIPLET=x64-windows>>!GITHUB_ENV!
         ECHO PATH=!PATH!>>!GITHUB_ENV!
     ) else (
         CALL :GENERATE_CMakeSettings_JSON
@@ -172,9 +171,12 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     >>%CMakeSettings% echo       "generator": "Ninja",
     >>%CMakeSettings% echo       "inheritEnvironments": [ "msvc_!PLATFORM!_!PLATFORM!" ],
     >>%CMakeSettings% echo       "installRoot": "!INSTALL_ROOT:\=\\!\\${name}",
+    >>%CMakeSettings% echo       "cmakeToolchain": "!BUILDENV_PATH:\=\\!\\scripts\\buildsystems\\vcpkg.cmake",
     >>%CMakeSettings% echo       "intelliSenseMode": "windows-msvc-!PLATFORM!",
     >>%CMakeSettings% echo       "variables": [
     SET variableElementTermination=,
+    CALL :AddCMakeVar2CMakeSettings_JSON "X_VCPKG_APPLOCAL_DEPS_INSTALL"      "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "VCPKG_TARGET_TRIPLET"               "STRING" "x64-windows"
     CALL :AddCMakeVar2CMakeSettings_JSON "BATTERY"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BROADCAST"                          "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "BULK"                               "BOOL"   "True"
@@ -192,7 +194,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :AddCMakeVar2CMakeSettings_JSON "OPUS"                               "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "OPTIMIZE"                           "STRING" "%1"
     CALL :AddCMakeVar2CMakeSettings_JSON "QTKEYCHAIN"                         "BOOL"   "True"
-    CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "STATIC_DEPS"                        "BOOL"   "False"
     SET variableElementTermination=
     CALL :AddCMakeVar2CMakeSettings_JSON "VINYLCONTROL"                       "BOOL"   "True"
     >>%CMakeSettings% echo       ]

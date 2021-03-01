@@ -153,7 +153,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="109"/>
         <source>Export Track Files</source>
-        <translation>Esporta Files Tracce</translation>
+        <translation>Esporta Track Files</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="88"/>
@@ -256,7 +256,7 @@
     <message>
         <location filename="../../src/library/basesqltablemodel.cpp" line="59"/>
         <source>Timestamp</source>
-        <translation type="unfinished"/>
+        <translation>Timestamp</translation>
     </message>
 </context>
 <context>
@@ -312,7 +312,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="159"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Compositore</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="163"/>
@@ -322,7 +322,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="167"/>
         <source>Date Added</source>
-        <translation type="unfinished"/>
+        <translation>Aggiunto il</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="171"/>
@@ -342,7 +342,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="183"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Raggruppamento</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="187"/>
@@ -362,7 +362,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="199"/>
         <source>Rating</source>
-        <translation type="unfinished"/>
+        <translation>Classifica</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="203"/>
@@ -372,7 +372,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="207"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>Campionamento</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="211"/>
@@ -400,7 +400,7 @@
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="112"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Azione fallita</translation>
     </message>
     <message>
         <location filename="../../src/broadcast/broadcastmanager.cpp" line="113"/>
@@ -579,7 +579,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="44"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Compositore</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="45"/>
@@ -629,7 +629,7 @@
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="53"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Raggruppamento</translation>
     </message>
     <message>
         <location filename="../../src/library/browse/browsetablemodel.cpp" line="54"/>
@@ -665,12 +665,12 @@
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="147"/>
         <source>The file &apos;%1&apos; could not be found.</source>
-        <translation type="unfinished"/>
+        <translation>Il file &apos;%1&apos; non è stato trovato</translation>
     </message>
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="163"/>
         <source>The file &apos;%1&apos; could not be loaded.</source>
-        <translation type="unfinished"/>
+        <translation>Il file &apos;%1&apos; non può essere caricato</translation>
     </message>
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="180"/>
@@ -2066,7 +2066,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1087"/>
         <source>Show or hide the mixer.</source>
-        <translation type="unfinished"/>
+        <translation>Mostra o nasconde mixer.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1091"/>
@@ -4133,7 +4133,7 @@ You tried to learn: %1,%2</source>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="566"/>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="601"/>
         <source>Action failed</source>
-        <translation type="unfinished"/>
+        <translation>Azione fallita</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbroadcast.cpp" line="228"/>
@@ -7511,7 +7511,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="240"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Compositore</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="72"/>
@@ -7521,7 +7521,7 @@ Select from different types of displays for the waveform, which differ primarily
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="340"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Raggruppamento</translation>
     </message>
     <message>
         <location filename="../../src/library/dlgtrackinfo.ui" line="315"/>
@@ -13594,7 +13594,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="154"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="155"/>
@@ -13614,7 +13614,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="241"/>
         <source>Composer</source>
-        <translation type="unfinished"/>
+        <translation>Compositore</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="257"/>
@@ -13629,7 +13629,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="283"/>
         <source>Grouping</source>
-        <translation type="unfinished"/>
+        <translation>Raggruppamento</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="300"/>
@@ -13793,7 +13793,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="265"/>
         <source>Rating</source>
-        <translation type="unfinished"/>
+        <translation>Classifica</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="268"/>

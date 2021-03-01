@@ -13551,7 +13551,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="154"/>
         <source>BPM</source>
-        <translation type="unfinished"/>
+        <translation>BPM</translation>
     </message>
     <message>
         <location filename="../../src/widget/wsearchrelatedtracksmenu.cpp" line="155"/>
