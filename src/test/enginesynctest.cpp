@@ -2276,6 +2276,8 @@ TEST_F(EngineSyncTest, QuantizeHotCueActivate) {
 
     m_pTrack2->setBeats(pBeats2);
 
+    ProcessBuffer();
+
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
 
     // store a hot cue at 0:00

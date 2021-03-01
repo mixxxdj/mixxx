@@ -55,6 +55,10 @@ void WEffectSelector::populate() {
     const QList<EffectManifestPointer> visibleEffectManifests = m_pVisibleEffectsList->getList();
     QFontMetrics metrics(font());
 
+    // Add empty item: no effect
+    addItem(kNoEffectString);
+    setItemData(0, QVariant(tr("No effect loaded.")), Qt::ToolTipRole);
+
     for (int i = 0; i < visibleEffectManifests.size(); ++i) {
         const EffectManifestPointer pManifest = visibleEffectManifests.at(i);
         QString elidedDisplayName = metrics.elidedText(pManifest->displayName(),
@@ -66,14 +70,11 @@ void WEffectSelector::populate() {
         QString description = pManifest->description();
         // <b> makes the effect name bold. Also, like <span> it serves as hack
         // to get Qt to treat the string as rich text so it automatically wraps long lines.
-        setItemData(i,
+        setItemData(i + 1,
                 QVariant(QStringLiteral("<b>") + name +
                         QStringLiteral("</b><br/>") + description),
                 Qt::ToolTipRole);
     }
-    addItem(kNoEffectString);
-    setItemData(visibleEffectManifests.size(), QVariant(tr("No effect loaded.")),
-                Qt::ToolTipRole);
 
     slotEffectUpdated();
     blockSignals(false);

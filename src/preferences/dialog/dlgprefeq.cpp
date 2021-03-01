@@ -101,9 +101,9 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
     while (m_deckEqEffectSelectors.size() < static_cast<int>(numDecks)) {
         int deckNo = m_deckEqEffectSelectors.size() + 1;
 
-        QLabel* label = new QLabel(QObject::tr("Deck %1 EQ Effect").arg(deckNo), this);
+        QLabel* label = new QLabel(QObject::tr("Deck %1").arg(deckNo), this);
 
-        // Create the drop down list for EQs
+        // Create the drop down list for deck EQs
         QComboBox* eqComboBox = new QComboBox(this);
         m_deckEqEffectSelectors.append(eqComboBox);
         connect(eqComboBox,
@@ -114,7 +114,7 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         if (deckNo == 1) {
             m_firstSelectorLabel = label;
             if (CheckBoxEqOnly->isChecked()) {
-                m_firstSelectorLabel->setText(QObject::tr("EQ Effect"));
+                m_firstSelectorLabel->clear();
             }
         }
 
@@ -186,7 +186,9 @@ void DlgPrefEQ::populateDeckBoxList(
         box->clear();
         int currentIndex = -1; // Nothing selected
 
-        int i = 0;
+        // Add empty item at the top: no effect
+        box->addItem(kNoEffectString);
+        int i = 1;
         for (const auto& pManifest : pManifestList) {
             box->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
             if (pCurrentlySelectedManifest &&
@@ -195,9 +197,9 @@ void DlgPrefEQ::populateDeckBoxList(
             }
             ++i;
         }
-        box->addItem(kNoEffectString, QVariant());
         if (pCurrentlySelectedManifest == nullptr) {
-            currentIndex = box->count() - 1; // selects "None"
+            // Configured effect has no id, clear selection
+            currentIndex = 0;
         } else if (currentIndex < 0) {
             // current selection is not part of the new list
             // So we need to add it
@@ -227,9 +229,9 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
 
     if (m_firstSelectorLabel != nullptr) {
         if (do_hide) {
-            m_firstSelectorLabel->setText(QObject::tr("EQ Effect"));
+            m_firstSelectorLabel->clear();
         } else {
-            m_firstSelectorLabel->setText(QObject::tr("Deck 1 EQ Effect"));
+            m_firstSelectorLabel->setText(QObject::tr("Deck 1"));
         }
     }
 
@@ -542,13 +544,12 @@ void DlgPrefEQ::setUpMasterEQ() {
     const QList<EffectManifestPointer> availableMasterEQEffects =
             getFilteredManifests(isMasterEQ);
 
+    // Add empty item at the top: no Master EQ
+    comboBoxMasterEq->addItem(kNoEffectString);
     for (const auto& pManifest : availableMasterEQEffects) {
         comboBoxMasterEq->addItem(pManifest->name(), QVariant(pManifest->uniqueId()));
     }
-    // Add empty item, no effect
-    comboBoxMasterEq->addItem(kNoEffectString);
-
-    int masterEqIndex = availableMasterEQEffects.size(); // selects "None" by default
+    int masterEqIndex = 0; // selects "None" by default
     if (configuredEffectManifest) {
         masterEqIndex = comboBoxMasterEq->findData(configuredEffectManifest->uniqueId());
     }
