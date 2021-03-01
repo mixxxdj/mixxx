@@ -456,6 +456,10 @@ void DlgPrefController::slotApply() {
         return;
     }
 
+    QString presetPath = presetPathFromIndex(m_ui.comboBoxPreset->currentIndex());
+    m_pPreset = ControllerPresetFileHandler::loadPreset(
+            presetPath, QDir(resourcePresetsPath(m_pConfig)));
+
     // Load the resulting preset (which has been mutated by the input/output
     // table models). The controller clones the preset so we aren't touching
     // the same preset.
@@ -469,9 +473,18 @@ QUrl DlgPrefController::helpUrl() const {
     return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
 }
 
+QString DlgPrefController::presetPathFromIndex(int index) const {
+    if (index == 0) {
+        // "No Preset" item
+        return QString();
+    }
+
+    return m_ui.comboBoxPreset->itemData(index).toString();
+}
+
 void DlgPrefController::slotPresetSelected(int chosenIndex) {
-    QString presetPath;
-    if (chosenIndex == 0) {
+    QString presetPath = presetPathFromIndex(chosenIndex);
+    if (presetPath.isEmpty()) {
         // User picked "No Preset" item
         m_ui.chkEnabledDevice->setEnabled(false);
 
@@ -487,8 +500,6 @@ void DlgPrefController::slotPresetSelected(int chosenIndex) {
             m_ui.chkEnabledDevice->setChecked(true);
             setDirty(true);
         }
-
-        presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
     }
 
     // Check if the preset is different from the configured preset
