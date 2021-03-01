@@ -178,7 +178,7 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
 
     if (parser.isSet(helpOption) || parser.isSet(QStringLiteral("help-all"))) {
         // we need to call process here otherwise there is no way to print the
-        // help-all informations
+        // help-all information
         parser.process(arguments);
         return false;
     }
