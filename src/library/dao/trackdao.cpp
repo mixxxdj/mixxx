@@ -1082,10 +1082,10 @@ bool setTrackAudioProperties(
 
 bool setTrackBeats(const QSqlRecord& record, const int column,
                    TrackPointer pTrack) {
-    QString beatsVersion = record.value(column + 1).toString();
-    QString beatsSubVersion = record.value(column + 2).toString();
-    QByteArray beatsBlob = record.value(column + 3).toByteArray();
-    bool bpmLocked = record.value(column + 4).toBool();
+    QString beatsVersion = record.value(column).toString();
+    QString beatsSubVersion = record.value(column + 1).toString();
+    QByteArray beatsBlob = record.value(column + 2).toByteArray();
+    bool bpmLocked = record.value(column + 3).toBool();
     mixxx::BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
             *pTrack, beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
