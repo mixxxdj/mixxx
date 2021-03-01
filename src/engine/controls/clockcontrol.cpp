@@ -79,7 +79,7 @@ void ClockControl::updateIndicators(const double dRate,
             pBeats->findPrevNextBeats(currentSample,
                     &m_PrevBeatSamples,
                     &m_NextBeatSamples,
-                    true); // Precise compare without tolerance needed
+                    false); // Precise compare without tolerance needed
         }
     } else {
         m_PrevBeatSamples = -1;

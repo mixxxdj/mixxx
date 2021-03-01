@@ -62,7 +62,7 @@ class BeatMap final : public Beats {
     bool findPrevNextBeats(double dSamples,
             double* dpPrevBeatSamples,
             double* dpNextBeatSamples,
-            bool NoTolerance) const override;
+            bool snapToNearBeats) const override;
     double findClosestBeat(double dSamples) const override;
     double findNthBeat(double dSamples, int n) const override;
     std::unique_ptr<BeatIterator> findBeats(double startSample, double stopSample) const override;

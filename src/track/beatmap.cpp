@@ -188,7 +188,7 @@ double BeatMap::findClosestBeat(double dSamples) const {
     }
     double prevBeat;
     double nextBeat;
-    findPrevNextBeats(dSamples, &prevBeat, &nextBeat, false);
+    findPrevNextBeats(dSamples, &prevBeat, &nextBeat, true);
     if (prevBeat == -1) {
         // If both values are -1, we correctly return -1.
         return nextBeat;
@@ -288,7 +288,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
 bool BeatMap::findPrevNextBeats(double dSamples,
         double* dpPrevBeatSamples,
         double* dpNextBeatSamples,
-        bool NoTolerance) const {
+        bool snapToNearBeats) const {
     QMutexLocker locker(&m_mutex);
 
     if (!isValid()) {
@@ -321,8 +321,8 @@ bool BeatMap::findPrevNextBeats(double dSamples,
     for (; it != m_beats.end(); ++it) {
         qint32 delta = it->frame_position() - beat.frame_position();
 
-        if ((NoTolerance && (delta == 0)) ||
-                (!NoTolerance && (abs(delta) < kFrameEpsilon))) {
+        if ((!snapToNearBeats && (delta == 0)) ||
+                (snapToNearBeats && (abs(delta) < kFrameEpsilon))) {
             // We are "on" this beat.
             on_beat = it;
             break;

@@ -158,7 +158,7 @@ double BeatGrid::findClosestBeat(double dSamples) const {
     }
     double prevBeat;
     double nextBeat;
-    findPrevNextBeats(dSamples, &prevBeat, &nextBeat, false);
+    findPrevNextBeats(dSamples, &prevBeat, &nextBeat, true);
     if (prevBeat == -1) {
         // If both values are -1, we correctly return -1.
         return nextBeat;
@@ -214,10 +214,9 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
 }
 
 bool BeatGrid::findPrevNextBeats(double dSamples,
-
         double* dpPrevBeatSamples,
         double* dpNextBeatSamples,
-        bool NoTolerance) const {
+        bool snapToNearBeats) const {
     double dFirstBeatSample;
     double dBeatLength;
     {
@@ -237,9 +236,9 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
 
     const double kEpsilon = .01;
 
-    if ((NoTolerance && ((nextBeat - beatFraction) == 0.0)) ||
-            (!NoTolerance && (fabs(nextBeat - beatFraction) < kEpsilon))) {
-        // In tolerance mode: If the position is within 1/100th of the next or previous beat,
+    if ((!snapToNearBeats && ((nextBeat - beatFraction) == 0.0)) ||
+            (snapToNearBeats && (fabs(nextBeat - beatFraction) < kEpsilon))) {
+        // In snapToNearBeats mode: If the position is within 1/100th of the next or previous beat,
         // treat it as if it is that beat.
 
         beatFraction = nextBeat;

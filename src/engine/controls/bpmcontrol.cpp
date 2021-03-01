@@ -539,7 +539,7 @@ bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
 
     double dPrevBeat;
     double dNextBeat;
-    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat, true)) {
+    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat, false)) {
         return false;
     }
 
