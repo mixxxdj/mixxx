@@ -71,6 +71,7 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetSupportLinks(const ControllerPresetPointer pPreset) const;
     QString presetFileLinks(const ControllerPresetPointer pPreset) const;
     QString presetPathFromIndex(int index) const;
+    QString askForPresetName(const QString& prefilledName = QString()) const;
     void applyPresetChanges();
     void savePreset();
     void initTableView(QTableView* pTable);
