@@ -47,6 +47,8 @@ class DlgPrefController : public DlgPreferencePage {
     /// Used to selected the current preset in the combobox and display the
     /// preset information.
     void slotShowPreset(ControllerPresetPointer preset);
+    /// Called when the Controller Learning Wizard is closed.
+    void slotStopLearning();
 
     // Input mappings
     void addInputMapping();

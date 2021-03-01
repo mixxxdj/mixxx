@@ -14,6 +14,7 @@
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/midi/midicontrollerpreset.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
@@ -121,11 +122,7 @@ DlgPrefController::~DlgPrefController() {
 }
 
 void DlgPrefController::showLearningWizard() {
-    // If the user has checked the "Enabled" checkbox but they haven't hit OK to
-    // apply it yet, prompt them to apply the settings before we open the
-    // learning dialog. If we don't apply the settings first and open the
-    // device, the dialog won't react to controller messages.
-    if (m_ui.chkEnabledDevice->isChecked() && !m_pController->isOpen()) {
+    if (isDirty()) {
         QMessageBox::StandardButton result = QMessageBox::question(this,
                 tr("Apply device settings?"),
                 tr("Your settings must be applied before starting the learning "
@@ -141,6 +138,11 @@ void DlgPrefController::showLearningWizard() {
         }
     }
     slotApply();
+
+    if (!m_pPreset) {
+        m_pPreset = ControllerPresetPointer(new MidiControllerPreset());
+        emit applyPreset(m_pController, m_pPreset, true);
+    }
 
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
@@ -174,7 +176,27 @@ void DlgPrefController::showLearningWizard() {
     connect(m_pDlgControllerLearning,
             &DlgControllerLearning::stopLearning,
             this,
-            &DlgPrefController::mappingEnded);
+            &DlgPrefController::slotStopLearning);
+}
+
+void DlgPrefController::slotStopLearning() {
+    VERIFY_OR_DEBUG_ASSERT(m_pPreset) {
+        emit mappingEnded();
+        return;
+    }
+
+    applyPresetChanges();
+    if (m_pPreset->filePath().isEmpty()) {
+        // This is a shiny new mapping *tada*
+        if (!m_pPreset->isDirty()) {
+            // No changes made to the new mapping, reset it and disable the
+            // controller again
+            m_pPreset.reset();
+            emit applyPreset(m_pController, m_pPreset, false);
+        }
+    }
+
+    emit mappingEnded();
 }
 
 void DlgPrefController::midiInputMappingsLearned(
