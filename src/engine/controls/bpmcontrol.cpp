@@ -539,7 +539,7 @@ bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
 
     double dPrevBeat;
     double dNextBeat;
-    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat, false)) {
+    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat, true)) {
         return false;
     }
 
@@ -574,14 +574,6 @@ bool BpmControl::getBeatContextNoLookup(
     if (dpBeatPercentage != nullptr) {
         *dpBeatPercentage = dBeatLength == 0.0 ? 0.0 :
                 (dPosition - dPrevBeat) / dBeatLength;
-        // Because findNext and findPrev have an epsilon built in, sometimes
-        // the beat percentage is out of range.  Fix it.
-        if (*dpBeatPercentage < 0) {
-            ++*dpBeatPercentage;
-        }
-        if (*dpBeatPercentage > 1) {
-            --*dpBeatPercentage;
-        }
     }
 
     return true;
