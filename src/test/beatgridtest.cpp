@@ -190,4 +190,22 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);
 }
 
+TEST(BeatGridTest, FromMetadata) {
+    int sampleRate = 44100;
+    TrackPointer pTrack = newTrack(sampleRate);
+
+    double bpm = 60.1;
+    double echoBpm = pTrack->setBpm(bpm);
+    EXPECT_DOUBLE_EQ(echoBpm, bpm);
+
+    auto pBeats = pTrack->getBeats();
+    EXPECT_DOUBLE_EQ(pBeats->getBpm(), bpm);
+
+    echoBpm = pTrack->setBpm(-60.1);
+    EXPECT_DOUBLE_EQ(echoBpm, mixxx::Bpm::kValueUndefined);
+
+    pBeats = pTrack->getBeats();
+    EXPECT_EQ(pBeats.isNull(), true);
+}
+
 }  // namespace
