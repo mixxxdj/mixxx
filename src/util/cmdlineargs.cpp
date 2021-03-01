@@ -128,9 +128,7 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
 
     const QCommandLineOption color(QStringLiteral("color"),
             QCoreApplication::translate("main",
-                    "Enables safe-mode. Disables OpenGL waveforms, and "
-                    "spinning vinyl widgets. Try this option if Mixxx is "
-                    "crashing on startup."),
+                    "[auto|always|never] Use colors on the console output."),
             QStringLiteral("color"),
             QStringLiteral("auto"));
     parser.addOption(color);
