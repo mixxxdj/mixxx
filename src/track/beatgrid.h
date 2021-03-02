@@ -86,7 +86,6 @@ class BeatGrid final : public Beats {
     // For internal use only.
     bool isValid() const;
 
-    mutable QMutex m_mutex;
     // The sub-version of this beatgrid.
     const QString m_subVersion;
     // The number of samples per second

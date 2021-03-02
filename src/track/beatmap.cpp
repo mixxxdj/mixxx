@@ -181,16 +181,14 @@ BeatMap::BeatMap(
         const QString& subVersion,
         BeatList beats,
         double nominalBpm)
-        : m_mutex(QMutex::Recursive),
-          m_subVersion(subVersion),
+        : m_subVersion(subVersion),
           m_iSampleRate(sampleRate),
           m_nominalBpm(nominalBpm),
           m_beats(std::move(beats)) {
 }
 
 BeatMap::BeatMap(const BeatMap& other, BeatList beats, double nominalBpm)
-        : m_mutex(QMutex::Recursive),
-          m_subVersion(other.m_subVersion),
+        : m_subVersion(other.m_subVersion),
           m_iSampleRate(other.m_iSampleRate),
           m_nominalBpm(nominalBpm),
           m_beats(std::move(beats)) {
@@ -249,7 +247,6 @@ BeatsPointer BeatMap::makeBeatMap(
 }
 
 QByteArray BeatMap::toByteArray() const {
-    QMutexLocker locker(&m_mutex);
     // No guarantees BeatLists are made of a data type which located adjacent
     // items in adjacent memory locations.
     mixxx::track::io::BeatMap map;
@@ -264,18 +261,15 @@ QByteArray BeatMap::toByteArray() const {
 }
 
 BeatsPointer BeatMap::clone() const {
-    QMutexLocker locker(&m_mutex);
     BeatsPointer other(new BeatMap(*this));
     return other;
 }
 
 QString BeatMap::getVersion() const {
-    QMutexLocker locker(&m_mutex);
     return BEAT_MAP_VERSION;
 }
 
 QString BeatMap::getSubVersion() const {
-    QMutexLocker locker(&m_mutex);
     return m_subVersion;
 }
 
@@ -292,7 +286,6 @@ double BeatMap::findPrevBeat(double dSamples) const {
 }
 
 double BeatMap::findClosestBeat(double dSamples) const {
-    QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return -1;
     }
@@ -309,8 +302,6 @@ double BeatMap::findClosestBeat(double dSamples) const {
 }
 
 double BeatMap::findNthBeat(double dSamples, int n) const {
-    QMutexLocker locker(&m_mutex);
-
     if (!isValid() || n == 0) {
         return -1;
     }
@@ -395,11 +386,10 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
     return -1;
 }
 
-bool BeatMap::findPrevNextBeats(double dSamples,
-                                double* dpPrevBeatSamples,
-                                double* dpNextBeatSamples) const {
-    QMutexLocker locker(&m_mutex);
-
+bool BeatMap::findPrevNextBeats(
+        double dSamples,
+        double* dpPrevBeatSamples,
+        double* dpNextBeatSamples) const {
     if (!isValid()) {
         *dpPrevBeatSamples = -1;
         *dpNextBeatSamples = -1;
@@ -483,7 +473,6 @@ bool BeatMap::findPrevNextBeats(double dSamples,
 }
 
 std::unique_ptr<BeatIterator> BeatMap::findBeats(double startSample, double stopSample) const {
-    QMutexLocker locker(&m_mutex);
     //startSample and stopSample are sample offsets, converting them to
     //frames
     if (!isValid() || startSample > stopSample) {
@@ -510,7 +499,6 @@ std::unique_ptr<BeatIterator> BeatMap::findBeats(double startSample, double stop
 }
 
 bool BeatMap::hasBeatInRange(double startSample, double stopSample) const {
-    QMutexLocker locker(&m_mutex);
     if (!isValid() || startSample > stopSample) {
         return false;
     }
@@ -522,7 +510,6 @@ bool BeatMap::hasBeatInRange(double startSample, double stopSample) const {
 }
 
 double BeatMap::getBpm() const {
-    QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return -1;
     }
@@ -531,7 +518,6 @@ double BeatMap::getBpm() const {
 
 // Note: Also called from the engine thread
 double BeatMap::getBpmAroundPosition(double curSample, int n) const {
-    QMutexLocker locker(&m_mutex);
     if (!isValid()) {
         return -1;
     }
@@ -602,7 +588,6 @@ BeatsPointer BeatMap::translate(double dNumSamples) const {
 }
 
 BeatsPointer BeatMap::scale(enum BPMScale scale) const {
-    QMutexLocker locker(&m_mutex);
     if (!isValid() || m_beats.isEmpty()) {
         return BeatsPointer(new BeatMap(*this));
     }

@@ -86,7 +86,6 @@ class BeatMap final : public Beats {
     // For internal use only.
     bool isValid() const;
 
-    mutable QMutex m_mutex;
     const QString m_subVersion;
     const SINT m_iSampleRate;
     const double m_nominalBpm;
