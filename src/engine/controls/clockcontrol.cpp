@@ -7,6 +7,12 @@
 #include "preferences/usersettings.h"
 #include "track/track.h"
 
+namespace {
+constexpr double kBlinkInterval = 0.20; // LED is on 20% of the beat period
+constexpr double kStandStillTolerance =
+        0.0025; // (seconds) Minimum change, to he last evaluated position
+} // namespace
+
 ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
         : EngineControl(group, pConfig) {
     m_pCOBeatActive = new ControlObject(ConfigKey(group, "beat_active"));
@@ -57,11 +63,6 @@ void ClockControl::updateIndicators(const double dRate,
     *  0.0 --> No beat indication (ouside 20% area or play direction changed while indication was on)
     * -1.0 --> Reverse playing, set at the beat and set back to 0.0 at -20% of beat distance
     */
-
-    // TODO(XXX) should this be customizable, or latency dependent?
-    const double kBlinkInterval = 0.20; // LED is on 20% of the beat period
-    const double kStandStillTolerance =
-            0.0025; // (seconds) Minimum change, to he last evaluated position
 
     if (((currentSample <= (m_lastEvaluatedSample + kStandStillTolerance * sampleRate)) &&
                 (currentSample >= (m_lastEvaluatedSample - kStandStillTolerance * sampleRate))) ||
