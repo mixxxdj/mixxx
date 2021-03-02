@@ -88,13 +88,13 @@ class BeatGrid final : public Beats {
 
     mutable QMutex m_mutex;
     // The sub-version of this beatgrid.
-    QString m_subVersion;
+    const QString m_subVersion;
     // The number of samples per second
-    SINT m_iSampleRate;
+    const SINT m_iSampleRate;
     // Data storage for BeatGrid
-    mixxx::track::io::BeatGrid m_grid;
+    const mixxx::track::io::BeatGrid m_grid;
     // The length of a beat in samples
-    double m_dBeatLength;
+    const double m_dBeatLength;
 };
 
 } // namespace mixxx

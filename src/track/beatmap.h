@@ -87,10 +87,10 @@ class BeatMap final : public Beats {
     bool isValid() const;
 
     mutable QMutex m_mutex;
-    QString m_subVersion;
-    SINT m_iSampleRate;
-    double m_nominalBpm;
-    BeatList m_beats;
+    const QString m_subVersion;
+    const SINT m_iSampleRate;
+    const double m_nominalBpm;
+    const BeatList m_beats;
 };
 
 } // namespace mixxx
