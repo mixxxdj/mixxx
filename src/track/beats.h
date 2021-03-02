@@ -65,7 +65,6 @@ class Beats : public QObject {
     // A sub-version can be used to represent the preferences used to generate
     // the beats object.
     virtual QString getSubVersion() const = 0;
-    virtual void setSubVersion(const QString& subVersion) = 0;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations

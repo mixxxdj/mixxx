@@ -176,12 +176,16 @@ class BeatMapIterator : public BeatIterator {
     BeatList::const_iterator m_endBeat;
 };
 
-BeatMap::BeatMap(const Track& track, SINT iSampleRate)
+BeatMap::BeatMap(const Track& track,
+        SINT sampleRate,
+        const QString& subVersion,
+        BeatList beats,
+        double nominalBpm)
         : m_mutex(QMutex::Recursive),
-          m_iSampleRate(iSampleRate > 0 ? iSampleRate : track.getSampleRate()),
-          m_nominalBpm(0) {
-    // BeatMap should live in the same thread as the track it is associated
-    // with.
+          m_subVersion(subVersion),
+          m_iSampleRate(sampleRate),
+          m_nominalBpm(nominalBpm),
+          m_beats(std::move(beats)) {
     moveToThread(track.thread());
 }
 
@@ -196,19 +200,6 @@ BeatMap::BeatMap(const BeatMap& other, BeatList beats, double nominalBpm)
 
 BeatMap::BeatMap(const BeatMap& other)
         : BeatMap(other, other.m_beats, other.m_nominalBpm) {
-}
-
-BeatMap::BeatMap(const Track& track,
-        SINT sampleRate,
-        const QString& subVersion,
-        BeatList beats,
-        double nominalBpm)
-        : m_mutex(QMutex::Recursive),
-          m_subVersion(subVersion),
-          m_iSampleRate(sampleRate),
-          m_nominalBpm(nominalBpm),
-          m_beats(std::move(beats)) {
-    moveToThread(track.thread());
 }
 
 // static
@@ -296,10 +287,6 @@ QString BeatMap::getVersion() const {
 QString BeatMap::getSubVersion() const {
     QMutexLocker locker(&m_mutex);
     return m_subVersion;
-}
-
-void BeatMap::setSubVersion(const QString& subVersion) {
-    m_subVersion = subVersion;
 }
 
 bool BeatMap::isValid() const {

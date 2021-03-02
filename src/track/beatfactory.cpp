@@ -12,8 +12,7 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const Track& track,
         const QByteArray& beatsSerialized) {
     if (beatsVersion == BEAT_GRID_1_VERSION ||
         beatsVersion == BEAT_GRID_2_VERSION) {
-        auto pGrid = mixxx::BeatGrid::makeBeatGrid(track, 0, beatsSerialized);
-        pGrid->setSubVersion(beatsSubVersion);
+        auto pGrid = mixxx::BeatGrid::makeBeatGrid(track, 0, beatsSubVersion, beatsSerialized);
         qDebug() << "Successfully deserialized BeatGrid";
         return pGrid;
     } else if (beatsVersion == BEAT_MAP_VERSION) {
@@ -27,7 +26,7 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const Track& track,
 
 mixxx::BeatsPointer BeatFactory::makeBeatGrid(
         const Track& track, double dBpm, double dFirstBeatSample) {
-    return mixxx::BeatGrid::makeBeatGrid(track, 0, dBpm, dFirstBeatSample);
+    return mixxx::BeatGrid::makeBeatGrid(track, 0, QString(), dBpm, dFirstBeatSample);
 }
 
 // static
@@ -110,8 +109,8 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
             bEnableOffsetCorrection,
             beats, iSampleRate, iTotalSamples, globalBpm);
-        auto pGrid = mixxx::BeatGrid::makeBeatGrid(track, iSampleRate, globalBpm, firstBeat * 2);
-        pGrid->setSubVersion(subVersion);
+        auto pGrid = mixxx::BeatGrid::makeBeatGrid(
+                track, iSampleRate, subVersion, globalBpm, firstBeat * 2);
         return pGrid;
     } else if (version == BEAT_MAP_VERSION) {
         auto pBeatMap = mixxx::BeatMap::makeBeatMap(track, iSampleRate, subVersion, beats);

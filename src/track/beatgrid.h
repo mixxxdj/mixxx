@@ -19,7 +19,6 @@ class BeatGrid final : public Beats {
   public:
     // Construct a BeatGrid. If a more accurate sample rate is known, provide it
     // in the iSampleRate parameter -- otherwise pass 0.
-    BeatGrid(const Track& track, SINT iSampleRate);
     ~BeatGrid() override = default;
 
     // Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
@@ -27,13 +26,16 @@ class BeatGrid final : public Beats {
     // meant for initialization.
     static BeatsPointer makeBeatGrid(const Track& track,
             SINT iSampleRate,
+            const QString& subVersion,
             double dBpm,
             double dFirstBeatSample);
     // Construct a BeatGrid. If a more accurate sample rate is known, provide it
     // in the iSampleRate parameter -- otherwise pass 0. The BeatGrid will be
     // deserialized from the byte array.
-    static BeatsPointer makeBeatGrid(
-            const Track& track, SINT iSampleRate, const QByteArray& byteArray);
+    static BeatsPointer makeBeatGrid(const Track& track,
+            SINT iSampleRate,
+            const QString& subVersion,
+            const QByteArray& byteArray);
 
     // The following are all methods from the Beats interface, see method
     // comments in beats.h
@@ -45,7 +47,6 @@ class BeatGrid final : public Beats {
     QByteArray toByteArray() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
-    void setSubVersion(const QString& subVersion) override;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -82,6 +83,7 @@ class BeatGrid final : public Beats {
     BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength);
     BeatGrid(const Track& track,
             SINT iSampleRate,
+            const QString& subVersion,
             const mixxx::track::io::BeatGrid& grid,
             double beatLength);
     double firstBeatSample() const;

@@ -60,7 +60,6 @@ class BeatMap final : public Beats {
     QByteArray toByteArray() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
-    void setSubVersion(const QString& subVersion) override;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
