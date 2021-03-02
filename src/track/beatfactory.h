@@ -36,7 +36,4 @@ class BeatFactory {
             const int iTotalSamples,
             const int iMinBpm,
             const int iMaxBpm);
-
-  private:
-    static void deleteBeats(mixxx::Beats* pBeats);
 };
