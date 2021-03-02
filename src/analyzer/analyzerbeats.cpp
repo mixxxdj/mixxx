@@ -237,7 +237,6 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
                 m_pluginId, m_bPreferencesFastAnalysis);
         pBeats = BeatFactory::makePreferredBeats(
-                *tio,
                 beats,
                 extraVersionInfo,
                 m_bPreferencesFixedTempo,
@@ -251,7 +250,7 @@ void AnalyzerBeats::storeResults(TrackPointer tio) {
     } else {
         float bpm = m_pPlugin->getBpm();
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;
-        pBeats = BeatFactory::makeBeatGrid(*tio, bpm, 0.0f);
+        pBeats = BeatFactory::makeBeatGrid(m_iSampleRate, bpm, 0.0f);
     }
 
     mixxx::BeatsPointer pCurrentBeats = tio->getBeats();

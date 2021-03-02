@@ -25,20 +25,12 @@ class BeatMap final : public Beats {
 
     ~BeatMap() override = default;
 
-    // Construct a BeatMap. iSampleRate may be provided if a more accurate
-    // sample rate is known than the one associated with the Track. If it is
-    // zero then the track's sample rate will be used. The BeatMap will be
-    // deserialized from the byte array.
-    static BeatsPointer makeBeatMap(const Track& track,
+    static BeatsPointer makeBeatMap(
             SINT sampleRate,
             const QString& subVersion,
             const QByteArray& byteArray);
 
-    // Construct a BeatMap. iSampleRate may be provided if a more accurate
-    // sample rate is known than the one associated with the Track. If it is
-    // zero then the track's sample rate will be used. A list of beat locations
-    // in audio frames may be provided.
-    static BeatsPointer makeBeatMap(const Track& track,
+    static BeatsPointer makeBeatMap(
             SINT sampleRate,
             const QString& subVersion,
             const QVector<double>& beats);
@@ -83,12 +75,11 @@ class BeatMap final : public Beats {
     BeatsPointer setBpm(double dBpm) override;
 
   private:
-    BeatMap(const Track& track,
-            SINT sampleRate,
+    BeatMap(SINT sampleRate,
             const QString& subVersion,
             BeatList beats,
             double nominalBpm);
-    // Constructor to update the beat grid
+    // Constructor to update the beat map
     BeatMap(const BeatMap& other, BeatList beats, double nominalBpm);
     BeatMap(const BeatMap& other);
 

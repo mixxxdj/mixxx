@@ -17,22 +17,15 @@ namespace mixxx {
 // first beat and the song's average beats-per-minute.
 class BeatGrid final : public Beats {
   public:
-    // Construct a BeatGrid. If a more accurate sample rate is known, provide it
-    // in the iSampleRate parameter -- otherwise pass 0.
     ~BeatGrid() override = default;
 
-    // Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
-    // of dFirstBeatSample. Does not generate an updated() signal, since it is
-    // meant for initialization.
-    static BeatsPointer makeBeatGrid(const Track& track,
+    static BeatsPointer makeBeatGrid(
             SINT iSampleRate,
             const QString& subVersion,
             double dBpm,
             double dFirstBeatSample);
-    // Construct a BeatGrid. If a more accurate sample rate is known, provide it
-    // in the iSampleRate parameter -- otherwise pass 0. The BeatGrid will be
-    // deserialized from the byte array.
-    static BeatsPointer makeBeatGrid(const Track& track,
+
+    static BeatsPointer makeBeatGrid(
             SINT iSampleRate,
             const QString& subVersion,
             const QByteArray& byteArray);
@@ -78,14 +71,15 @@ class BeatGrid final : public Beats {
     BeatsPointer setBpm(double dBpm) override;
 
   private:
-    BeatGrid(const BeatGrid& other);
-    // Constructor to update the beat grid
-    BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength);
-    BeatGrid(const Track& track,
+    BeatGrid(
             SINT iSampleRate,
             const QString& subVersion,
             const mixxx::track::io::BeatGrid& grid,
             double beatLength);
+    // Constructor to update the beat grid
+    BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength);
+    BeatGrid(const BeatGrid& other);
+
     double firstBeatSample() const;
     double bpm() const;
 

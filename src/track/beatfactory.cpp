@@ -6,17 +6,18 @@
 #include "track/beatfactory.h"
 #include "track/beatutils.h"
 
-mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const Track& track,
+mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
+        SINT sampleRate,
         const QString& beatsVersion,
         const QString& beatsSubVersion,
         const QByteArray& beatsSerialized) {
     if (beatsVersion == BEAT_GRID_1_VERSION ||
         beatsVersion == BEAT_GRID_2_VERSION) {
-        auto pGrid = mixxx::BeatGrid::makeBeatGrid(track, 0, beatsSubVersion, beatsSerialized);
+        auto pGrid = mixxx::BeatGrid::makeBeatGrid(sampleRate, beatsSubVersion, beatsSerialized);
         qDebug() << "Successfully deserialized BeatGrid";
         return pGrid;
     } else if (beatsVersion == BEAT_MAP_VERSION) {
-        auto pMap = mixxx::BeatMap::makeBeatMap(track, 0, beatsSubVersion, beatsSerialized);
+        auto pMap = mixxx::BeatMap::makeBeatMap(sampleRate, beatsSubVersion, beatsSerialized);
         qDebug() << "Successfully deserialized BeatMap";
         return pMap;
     }
@@ -25,8 +26,8 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const Track& track,
 }
 
 mixxx::BeatsPointer BeatFactory::makeBeatGrid(
-        const Track& track, double dBpm, double dFirstBeatSample) {
-    return mixxx::BeatGrid::makeBeatGrid(track, 0, QString(), dBpm, dFirstBeatSample);
+        SINT sampleRate, double dBpm, double dFirstBeatSample) {
+    return mixxx::BeatGrid::makeBeatGrid(sampleRate, QString(), dBpm, dFirstBeatSample);
 }
 
 // static
@@ -88,7 +89,7 @@ QString BeatFactory::getPreferredSubVersion(
                                   : "";
 }
 
-mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
+mixxx::BeatsPointer BeatFactory::makePreferredBeats(
         const QVector<double>& beats,
         const QHash<QString, QString>& extraVersionInfo,
         const bool bEnableFixedTempoCorrection,
@@ -110,10 +111,10 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
             bEnableOffsetCorrection,
             beats, iSampleRate, iTotalSamples, globalBpm);
         auto pGrid = mixxx::BeatGrid::makeBeatGrid(
-                track, iSampleRate, subVersion, globalBpm, firstBeat * 2);
+                iSampleRate, subVersion, globalBpm, firstBeat * 2);
         return pGrid;
     } else if (version == BEAT_MAP_VERSION) {
-        auto pBeatMap = mixxx::BeatMap::makeBeatMap(track, iSampleRate, subVersion, beats);
+        auto pBeatMap = mixxx::BeatMap::makeBeatMap(iSampleRate, subVersion, beats);
         return pBeatMap;
     } else {
         qDebug() << "ERROR: Could not determine what type of beatgrid to create.";

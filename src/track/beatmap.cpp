@@ -176,7 +176,7 @@ class BeatMapIterator : public BeatIterator {
     BeatList::const_iterator m_endBeat;
 };
 
-BeatMap::BeatMap(const Track& track,
+BeatMap::BeatMap(
         SINT sampleRate,
         const QString& subVersion,
         BeatList beats,
@@ -201,14 +201,10 @@ BeatMap::BeatMap(const BeatMap& other)
 }
 
 // static
-BeatsPointer BeatMap::makeBeatMap(const Track& track,
+BeatsPointer BeatMap::makeBeatMap(
         SINT sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {
-    if (sampleRate <= 0) {
-        sampleRate = track.getSampleRate();
-    }
-
     double nominalBpm = 0.0;
     BeatList beatList;
 
@@ -223,18 +219,14 @@ BeatsPointer BeatMap::makeBeatMap(const Track& track,
         qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
                 << byteArray.size();
     }
-    return BeatsPointer(new BeatMap(track, sampleRate, subVersion, beatList, nominalBpm));
+    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm));
 }
 
 // static
-BeatsPointer BeatMap::makeBeatMap(const Track& track,
+BeatsPointer BeatMap::makeBeatMap(
         SINT sampleRate,
         const QString& subVersion,
         const QVector<double>& beats) {
-    if (sampleRate <= 0) {
-        sampleRate = track.getSampleRate();
-    }
-
     BeatList beatList;
 
     double previous_beatpos = -1;
@@ -253,7 +245,7 @@ BeatsPointer BeatMap::makeBeatMap(const Track& track,
         }
     }
     double nominalBpm = calculateNominalBpm(beatList, sampleRate);
-    return BeatsPointer(new BeatMap(track, sampleRate, subVersion, beatList, nominalBpm));
+    return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm));
 }
 
 QByteArray BeatMap::toByteArray() const {

@@ -29,7 +29,7 @@ TEST(BeatGridTest, Scale) {
     double bpm = 60.0;
     pTrack->setBpm(bpm);
 
-    auto pGrid = BeatGrid::makeBeatGrid(*pTrack, 0, QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
     pGrid = pGrid->scale(Beats::DOUBLE);
@@ -60,7 +60,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     pTrack->setBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(*pTrack, 0, QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
     // Pretend we're on the 20th beat;
     double position = beatLength * 20;
 
@@ -94,7 +94,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     pTrack->setBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(*pTrack, 0, QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     // Pretend we're just before the 20th beat.
     const double kClosestBeat = 20 * beatLength;
@@ -130,7 +130,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     pTrack->setBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(*pTrack, 0, QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     // Pretend we're just before the 20th beat.
     const double kClosestBeat = 20 * beatLength;
@@ -166,7 +166,7 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     pTrack->setBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = BeatGrid::makeBeatGrid(*pTrack, 0, QString(), bpm, 0);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     // Pretend we're half way between the 20th and 21st beat
     double previousBeat = beatLength * 20.0;
