@@ -318,16 +318,11 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
         return false;
     }
 
-    if (m_pBeats) {
-        disconnect(m_pBeats.data(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
-    }
-
     m_pBeats = std::move(pBeats);
 
     auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
         bpmValue = m_pBeats->getBpm();
-        connect(m_pBeats.data(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
     return true;
@@ -350,20 +345,6 @@ void Track::setBeatsMarkDirtyAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer 
 mixxx::BeatsPointer Track::getBeats() const {
     QMutexLocker lock(&m_qMutex);
     return m_pBeats;
-}
-
-void Track::slotBeatsUpdated() {
-    QMutexLocker lock(&m_qMutex);
-
-    auto bpmValue = mixxx::Bpm::kValueUndefined;
-    if (m_pBeats) {
-        bpmValue = m_pBeats->getBpm();
-    }
-    m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
-
-    markDirtyAndUnlock(&lock);
-    emit bpmUpdated(bpmValue);
-    emit beatsUpdated();
 }
 
 void Track::setMetadataSynchronized(bool metadataSynchronized) {

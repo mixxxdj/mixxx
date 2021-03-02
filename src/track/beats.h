@@ -156,9 +156,6 @@ class Beats : public QObject {
     // Adjust the beats so the global average BPM matches dBpm. Beats class must
     // have the capability BEATSCAP_SET.
     virtual BeatsPointer setBpm(double dBpm) = 0;
-
-  signals:
-    void updated();
 };
 
 } // namespace mixxx
