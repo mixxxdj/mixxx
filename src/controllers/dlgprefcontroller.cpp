@@ -194,7 +194,7 @@ void DlgPrefController::slotStopLearning() {
 
     applyPresetChanges();
     if (m_pPreset->filePath().isEmpty()) {
-        // This is a shiny new mapping *tada*
+        // This mapping was created when the learning wizard was started
         if (m_pPreset->isDirty()) {
             QString presetName = askForPresetName();
             QString presetPath = presetNameToPath(m_pUserDir, presetName);
