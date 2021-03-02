@@ -1,13 +1,14 @@
+#include "widget/wsplitter.h"
+
 #include <QList>
 
-#include "widget/wsplitter.h"
+#include "moc_wsplitter.cpp"
 
 WSplitter::WSplitter(QWidget* pParent, UserSettingsPointer pConfig)
         : QSplitter(pParent),
           WBaseWidget(this),
           m_pConfig(pConfig) {
-    connect(this, SIGNAL(splitterMoved(int,int)),
-            this, SLOT(slotSplitterMoved()));
+    connect(this, &WSplitter::splitterMoved, this, &WSplitter::slotSplitterMoved);
 }
 
 void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
@@ -104,7 +105,8 @@ void WSplitter::setup(const QDomNode& node, const SkinContext& context) {
 void WSplitter::slotSplitterMoved() {
     if (!m_configKey.group.isEmpty() && !m_configKey.item.isEmpty()) {
         QStringList sizeStrList;
-        for (const int& sizeInt : sizes()) {
+        const auto sizesIntList = sizes();
+        for (const int& sizeInt : sizesIntList) {
             sizeStrList.push_back(QString::number(sizeInt));
         }
         QString sizesStr = sizeStrList.join(",");

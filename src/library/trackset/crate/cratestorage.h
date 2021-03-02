@@ -216,10 +216,10 @@ class CrateStorage : public virtual /*implements*/ SqlStorage {
     ~CrateStorage() override = default;
 
     void repairDatabase(
-            QSqlDatabase database) override;
+            const QSqlDatabase& database) override;
 
     void connectDatabase(
-            QSqlDatabase database) override;
+            const QSqlDatabase& database) override;
     void disconnectDatabase() override;
 
     /////////////////////////////////////////////////////////////////////////

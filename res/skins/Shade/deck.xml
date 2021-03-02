@@ -59,15 +59,15 @@
                         <Children>
                           <WidgetGroup>
                             <ObjectName>ArtistAndTimeRow</ObjectName>
-                            <Size>0e,19f</Size>
+                            <Size>0e,23f</Size>
                             <Layout>horizontal</Layout>
                             <Children>
                               <TrackProperty>
                                 <TooltipId>track_title</TooltipId>
                                 <Style>QLabel {
-                                  font: bold 13px sans-serif;
-                                  font-family: "Open Sans";
-                                  background-color: transparent;
+                                  font-size: 13px;
+                                  line-height: 13px;
+                                  font-weight: bold;
                                   color: #191F24;
                                   text-align: left;
                                   padding-left: 1px;
@@ -111,13 +111,13 @@
                               <TrackProperty>
                                 <TooltipId>track_artist</TooltipId>
                                 <Style>QLabel {
-                                  font: bold 13px sans-serif;
-                                  font-family: "Open Sans";
+                                  font-size: 13px;
+                                  line-height: 13px;
+                                  font-weight: bold;
                                   background-color: transparent;
                                   color: #191F24;
                                   text-align: left;
                                   padding-left: 1px;
-                                  padding-top: 0px;
                                 }
                                 </Style>
                                 <Property>artist</Property>
@@ -128,13 +128,12 @@
                               <NumberPos>
                                 <TooltipId>track_time</TooltipId>
                                 <Style>QLabel {
-                                  font: bold 13px sans-serif;
-                                  font-family: Open Sans;
+                                  font-size: 13px;
+                                  font-weight: bold;
                                   background-color: transparent;
                                   color: #191F24;
                                   text-align: right;
                                   padding-left: 1px;
-                                  padding-top: 0px;
                                 }
                                 </Style>
                                 <Group><Variable name="group"/></Group>
@@ -181,9 +180,7 @@
                                 <Layout>horizontal</Layout>
                                 <Size>0e,81f</Size>
                                 <Children>
-                                  <SingletonContainer>
-                                    <ObjectName>Waveform<Variable name="channum"/></ObjectName>
-                                  </SingletonContainer>
+                                  <Template src="skin:waveform.xml"/>
                                 </Children>
                               </WidgetGroup>
 
@@ -428,8 +425,8 @@
                     <Pos>3,30</Pos>
                     <Size>47f,26f</Size>
                     <Style>QLabel {
-                        font: bold 12px sans-serif;
-                        font-family: "Open Sans";
+                        font-size: 12px;
+                        font-weight: bold;
                         background-color: transparent;
                         color: #191F24;
                         padding-bottom: -2px;

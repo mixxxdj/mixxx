@@ -71,12 +71,12 @@ void WTimeSignatureMenu::slotBeatCountChanged(int value) {
 }
 
 void WTimeSignatureMenu::slotBeatSizeChanged(int index) {
-    int beatSize = pow(2, index);
+    int beatSize = static_cast<int>(pow(2, index));
     mixxx::TimeSignature newTimeSignature(m_beat->timeSignature().getBeatsPerBar(), beatSize);
     setTimeSignature(newTimeSignature);
 }
 
-void WTimeSignatureMenu::setTimeSignature(mixxx::TimeSignature timeSignature) {
+void WTimeSignatureMenu::setTimeSignature(const mixxx::TimeSignature& timeSignature) {
     if (m_pBeats && m_beat->framePosition() != mixxx::kInvalidFramePos &&
             kMinBeatsPerBar <= timeSignature.getBeatsPerBar() &&
             timeSignature.getBeatsPerBar() <= kMaxBeatsPerBar) {

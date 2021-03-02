@@ -1,8 +1,9 @@
-#include <QDir>
-
 #include "sources/soundsourcesndfile.h"
 
+#include <QDir>
+
 #include "util/logger.h"
+#include "util/semanticversion.h"
 
 namespace mixxx {
 
@@ -10,7 +11,60 @@ namespace {
 
 const Logger kLogger("SoundSourceSndFile");
 
+const QStringList kSupportedFileExtensions = {
+        QStringLiteral("aif"),
+        QStringLiteral("aiff"),
+        // ALAC/CAF has been added in version 1.0.26
+        // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
+        // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
+        QStringLiteral("caf"),
+        QStringLiteral("flac"),
+        QStringLiteral("ogg"),
+        QStringLiteral("wav"),
+};
+
+// SoundSourceProxyTest fails for version >= 1.0.30 and OGG files
+// https://github.com/libsndfile/libsndfile/issues/643
+const mixxx::SemanticVersion kVersionStringWithBrokenOggDecoding(1, 0, 30);
+
+QStringList getSupportedFileExtensionsFiltered() {
+    auto supportedFileExtensions = kSupportedFileExtensions;
+    QString libsndfileVersion = sf_version_string();
+    int separatorIndex = libsndfileVersion.lastIndexOf("-");
+    auto semver = mixxx::SemanticVersion(libsndfileVersion.right(separatorIndex));
+    if (semver >= kVersionStringWithBrokenOggDecoding) {
+        kLogger.info()
+                << "Disabling OGG decoding for"
+                << libsndfileVersion;
+        supportedFileExtensions.removeAll(QStringLiteral("ogg"));
+    }
+    return supportedFileExtensions;
+};
+
 } // anonymous namespace
+
+//static
+const QString SoundSourceProviderSndFile::kDisplayName = QStringLiteral("libsndfile");
+
+SoundSourceProviderSndFile::SoundSourceProviderSndFile()
+        : m_supportedFileExtensions(getSupportedFileExtensionsFiltered()) {
+}
+
+QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
+    return m_supportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    if (supportedFileExtension.startsWith(QStringLiteral("aif")) ||
+            supportedFileExtension == QLatin1String("wav")) {
+        // Default decoder for AIFF and WAV
+        return SoundSourceProviderPriority::Default;
+    } else {
+        // Otherwise only used as fallback
+        return SoundSourceProviderPriority::Lower;
+    }
+}
 
 SoundSourceSndFile::SoundSourceSndFile(const QUrl& url)
         : SoundSource(url),
@@ -87,7 +141,7 @@ void SoundSourceSndFile::close() {
 }
 
 ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {
@@ -124,36 +178,6 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
                 IndexRange::between(
                         m_curFrameIndex,
                         m_curFrameIndex));
-    }
-}
-
-QString SoundSourceProviderSndFile::getName() const {
-    return "libsndfile";
-}
-
-QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("aif");
-    supportedFileExtensions.append("aiff");
-    // ALAC/CAF has been added in version 1.0.26
-    // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
-    // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
-    supportedFileExtensions.append("caf");
-    supportedFileExtensions.append("flac");
-    supportedFileExtensions.append("ogg");
-    supportedFileExtensions.append("wav");
-    return supportedFileExtensions;
-}
-
-SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
-        const QString& supportedFileExtension) const {
-    if (supportedFileExtension.startsWith("aif") ||
-            supportedFileExtension == "wav") {
-        // Default decoder for AIFF and WAV
-        return SoundSourceProviderPriority::DEFAULT;
-    } else {
-        // Otherwise only used as fallback
-        return SoundSourceProviderPriority::LOWER;
     }
 }
 

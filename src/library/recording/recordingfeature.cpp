@@ -1,14 +1,13 @@
-// recordingfeature.cpp
-// Created 03/26/2010 by Tobias Rafreider
-
-#include "library/recording/dlgrecording.h"
-#include "track/track.h"
-#include "library/treeitem.h"
 #include "library/recording/recordingfeature.h"
-#include "library/library.h"
-#include "widget/wlibrary.h"
+
 #include "controllers/keyboard/keyboardeventfilter.h"
+#include "library/library.h"
+#include "library/recording/dlgrecording.h"
+#include "library/treeitem.h"
+#include "moc_recordingfeature.cpp"
 #include "recording/recordingmanager.h"
+#include "track/track.h"
+#include "widget/wlibrary.h"
 
 namespace {
 

@@ -4,12 +4,14 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "moc_wtrackproperty.cpp"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
 
 namespace {
-const WTrackMenu::Features kTrackMenuFeatures =
+constexpr WTrackMenu::Features kTrackMenuFeatures =
+        WTrackMenu::Feature::SearchRelated |
         WTrackMenu::Feature::Playlist |
         WTrackMenu::Feature::Crate |
         WTrackMenu::Feature::Metadata |
@@ -18,18 +20,18 @@ const WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
         WTrackMenu::Feature::Properties;
-}
+} // namespace
 
 WTrackProperty::WTrackProperty(
         QWidget* pParent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         const QString& group)
         : WLabel(pParent),
           m_group(group),
           m_pConfig(pConfig),
           m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pTrackCollectionManager, kTrackMenuFeatures)) {
+                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
     setAcceptDrops(true);
 }
 

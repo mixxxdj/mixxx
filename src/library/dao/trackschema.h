@@ -3,6 +3,7 @@
 #include <QString>
 
 #define LIBRARY_TABLE "library"
+#define TRACKLOCATIONS_TABLE "track_locations"
 
 const QString LIBRARYTABLE_ID = QStringLiteral("id");
 const QString LIBRARYTABLE_ARTIST = QStringLiteral("artist");
@@ -30,6 +31,7 @@ const QString LIBRARYTABLE_MIXXXDELETED = QStringLiteral("mixxx_deleted");
 const QString LIBRARYTABLE_DATETIMEADDED = QStringLiteral("datetime_added");
 const QString LIBRARYTABLE_HEADERPARSED = QStringLiteral("header_parsed");
 const QString LIBRARYTABLE_TIMESPLAYED = QStringLiteral("timesplayed");
+const QString LIBRARYTABLE_LAST_PLAYED_AT = QStringLiteral("last_played_at");
 const QString LIBRARYTABLE_PLAYED = QStringLiteral("played");
 const QString LIBRARYTABLE_RATING = QStringLiteral("rating");
 const QString LIBRARYTABLE_KEY = QStringLiteral("key");
@@ -54,3 +56,10 @@ const QString TRACKLOCATIONSTABLE_FSDELETED = QStringLiteral("fs_deleted");
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = QStringLiteral("needs_verification");
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
+
+namespace mixxx {
+namespace trackschema {
+// TableForColumn returns the name of the table that contains the named column.
+QString tableForColumn(const QString& columnName);
+} // namespace trackschema
+} // namespace mixxx

@@ -1,5 +1,4 @@
-#ifndef BIQUADFULLKILLEQEFFECT_H
-#define BIQUADFULLKILLEQEFFECT_H
+#pragma once
 
 #include "control/controlproxy.h"
 #include "effects/effect.h"
@@ -17,14 +16,14 @@
 #include "util/memory.h"
 #include "util/samplebuffer.h"
 
-static const int kMaxDelay2 = 3300; // allows a 30 Hz filter at 97346;
-
 class BiquadFullKillEQEffectGroupState : public EffectState {
   public:
     BiquadFullKillEQEffectGroupState(const mixxx::EngineParameters& bufferParameters);
 
     void setFilters(
-            int sampleRate, double lowFreqCorner, double highFreqCorner);
+            mixxx::audio::SampleRate sampleRate,
+            double lowFreqCorner,
+            double highFreqCorner);
 
     std::unique_ptr<EngineFilterBiquad1Peaking> m_lowBoost;
     std::unique_ptr<EngineFilterBiquad1Peaking> m_midBoost;
@@ -52,10 +51,10 @@ class BiquadFullKillEQEffectGroupState : public EffectState {
     double m_loFreqCorner;
     double m_highFreqCorner;
 
-    int m_rampHoldOff;
-    int m_groupDelay;
+    SINT m_rampHoldOff;
+    SINT m_groupDelay;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 };
 
 class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffectGroupState> {
@@ -65,7 +64,10 @@ class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffect
     static QString getId();
     static EffectManifestPointer getManifest();
 
-    void setFilters(int sampleRate, double lowFreqCorner, double highFreqCorner);
+    void setFilters(
+            mixxx::audio::SampleRate sampleRate,
+            double lowFreqCorner,
+            double highFreqCorner);
 
     void processChannel(const ChannelHandle& handle,
                         BiquadFullKillEQEffectGroupState* pState,
@@ -93,5 +95,3 @@ class BiquadFullKillEQEffect : public EffectProcessorImpl<BiquadFullKillEQEffect
     std::unique_ptr<ControlProxy> m_pLoFreqCorner;
     std::unique_ptr<ControlProxy> m_pHiFreqCorner;
 };
-
-#endif // BIQUADFULLKILLEQEFFECT_H

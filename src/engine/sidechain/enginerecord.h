@@ -1,12 +1,4 @@
-/***************************************************************************
-                          enginerecord.h  -  description
-                             -------------------
-    copyright            : (C) 2007 by John Sully
-    email                :
- ***************************************************************************/
-
-#ifndef ENGINERECORD_H
-#define ENGINERECORD_H
+#pragma once
 
 #include <QDataStream>
 #include <QFile>
@@ -43,7 +35,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     bool openFile();
     // closes the audio file
     void closeFile();
-    void updateFromPreferences();
+    int updateFromPreferences();
     bool fileOpen();
     bool openCueFile();
     void closeCueFile();
@@ -94,5 +86,3 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     quint64 m_cueTrack;
     bool m_bCueIsEnabled;
 };
-
-#endif

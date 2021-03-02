@@ -32,8 +32,10 @@ class CrateFeature : public BaseTrackSetFeature {
     QVariant title() override;
     QIcon getIcon() override;
 
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource) override;
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url) override;
+    bool dropAcceptChild(const QModelIndex& index,
+            const QList<QUrl>& urls,
+            QObject* pSource) override;
+    bool dragMoveAcceptChild(const QModelIndex& index, const QUrl& url) override;
 
     void bindLibraryWidget(WLibrary* libraryWidget,
             KeyboardEventFilter* keyboard) override;
@@ -44,8 +46,14 @@ class CrateFeature : public BaseTrackSetFeature {
   public slots:
     void activateChild(const QModelIndex& index) override;
     void onRightClick(const QPoint& globalPos) override;
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index) override;
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index) override;
     void slotCreateCrate();
+
+#ifdef __ENGINEPRIME__
+  signals:
+    void exportAllCrates();
+    void exportCrate(CrateId crateId);
+#endif
 
   private slots:
     void slotDeleteCrate();
@@ -110,6 +118,10 @@ class CrateFeature : public BaseTrackSetFeature {
     parented_ptr<QAction> m_pCreateImportPlaylistAction;
     parented_ptr<QAction> m_pExportPlaylistAction;
     parented_ptr<QAction> m_pExportTrackFilesAction;
+#ifdef __ENGINEPRIME__
+    parented_ptr<QAction> m_pExportAllCratesAction;
+    parented_ptr<QAction> m_pExportCrateAction;
+#endif
     parented_ptr<QAction> m_pAnalyzeCrateAction;
 
     QPointer<WLibrarySidebar> m_pSidebarWidget;

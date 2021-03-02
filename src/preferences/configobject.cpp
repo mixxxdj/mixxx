@@ -13,42 +13,45 @@
 
 // TODO(rryan): Move to a utility file.
 namespace {
+const QString kTempFilenameExtension = QStringLiteral(".tmp");
+const QString kCMakeCacheFile = QStringLiteral("CMakeCache.txt");
+const QLatin1String kSourceDirLine = QLatin1String("mixxx_SOURCE_DIR:STATIC=");
 
 QString computeResourcePath() {
     // Try to read in the resource directory from the command line
     QString qResourcePath = CmdlineArgs::Instance().getResourcePath();
 
     if (qResourcePath.isEmpty()) {
-        QDir mixxxDir(QCoreApplication::applicationDirPath());
+        QDir mixxxDir = QCoreApplication::applicationDirPath();
         // We used to support using the mixxx.cfg's [Config],Path setting but
         // this causes issues if you try and use two different versions of Mixxx
-        // on the same computer. See Bug #1392854. We start by checking if we're
-        // running out of a build root ('res' dir exists or our path ends with
-        // '_build') and if not then we fall back on a platform-specific method
-        // of determining the resource path (see comments below).
-        if (mixxxDir.cd("res")) {
-            // We are running out of the repository root.
-            qResourcePath = mixxxDir.absolutePath();
-        } else if (mixxxDir.absolutePath().endsWith("_build") &&
-                   mixxxDir.cdUp() && mixxxDir.cd("res")) {
-            // We are running out of the (lin|win|osx)XX_build folder.
+        // on the same computer.
+        auto cmakecache = QFile(mixxxDir.filePath(kCMakeCacheFile));
+        if (cmakecache.open(QFile::ReadOnly | QFile::Text)) {
+            // We are running form a build dir (CMAKE_CURRENT_BINARY_DIR),
+            // Look up the source path from CMakeCache.txt (mixxx_SOURCE_DIR)
+            QTextStream in(&cmakecache);
+            QString line = in.readLine();
+            while (!line.isNull()) {
+                if (line.startsWith(kSourceDirLine)) {
+                    qResourcePath = line.mid(kSourceDirLine.size()) + QStringLiteral("/res");
+                    break;
+                }
+                line = in.readLine();
+            }
+            DEBUG_ASSERT(QDir(qResourcePath).exists());
+        }
+#if defined(__UNIX__)
+        else if (mixxxDir.cdUp() && mixxxDir.cd(QStringLiteral("share/mixxx"))) {
             qResourcePath = mixxxDir.absolutePath();
         }
-#ifdef __UNIX__
-        // On Linux if all of the above fail the /usr/share path is the logical
-        // place to look.
-        else {
-            qResourcePath = UNIX_SHARE_PATH;
-        }
-#endif
-#ifdef __WINDOWS__
+#elif defined(__WINDOWS__)
         // On Windows, set the config dir relative to the application dir if all
         // of the above fail.
         else {
             qResourcePath = QCoreApplication::applicationDirPath();
         }
-#endif
-#ifdef __APPLE__
+#elif defined(__APPLE__)
         else if (mixxxDir.cdUp() && mixxxDir.cd("Resources")) {
             // Release configuration
             qResourcePath = mixxxDir.absolutePath();
@@ -186,34 +189,71 @@ template <class ValueType> void ConfigObject<ValueType>::reopen(const QString& f
     }
 }
 
-template <class ValueType> void ConfigObject<ValueType>::save() {
+/// Save the ConfigObject to disk.
+/// Returns true on success
+template<class ValueType>
+bool ConfigObject<ValueType>::save() {
     QReadLocker lock(&m_valuesLock); // we only read the m_values here.
-    QFile file(m_filename);
-    if (!QDir(QFileInfo(file).absolutePath()).exists()) {
-        QDir().mkpath(QFileInfo(file).absolutePath());
+    QFile tmpFile(m_filename + kTempFilenameExtension);
+    if (!QDir(QFileInfo(tmpFile).absolutePath()).exists()) {
+        QDir().mkpath(QFileInfo(tmpFile).absolutePath());
     }
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-        qDebug() << "Could not write file" << m_filename << ", don't worry.";
-        return;
-    } else {
-        QTextStream stream(&file);
-        stream.setCodec("UTF-8");
+    if (!tmpFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qWarning() << "Could not write config file: " << tmpFile.fileName();
+        return false;
+    }
+    QTextStream stream(&tmpFile);
+    stream.setCodec("UTF-8");
 
-        QString grp = "";
+    QString group = "";
 
-        for (auto i = m_values.constBegin(); i != m_values.constEnd(); ++i) {
-            //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
-            if (i.key().group != grp) {
-                grp = i.key().group;
-                stream << "\n" << grp << "\n";
-            }
-            stream << i.key().item << " " << i.value().value << "\n";
+    // Since it is legit to have a ConfigObject with 0 values, checking
+    // the stream.pos alone will yield wrong warnings. We therefore estimate
+    // a minimum length as an additional safety check.
+    qint64 minLength = 0;
+    for (auto i = m_values.constBegin(); i != m_values.constEnd(); ++i) {
+        //qDebug() << "group:" << it.key().group << "item" << it.key().item << "val" << it.value()->value;
+        if (i.key().group != group) {
+            group = i.key().group;
+            stream << "\n"
+                   << group << "\n";
+            minLength += i.key().group.length() + 2;
         }
-        file.close();
-        if (file.error()!=QFile::NoError) { //could be better... should actually say what the error was..
-            qDebug() << "Error while writing configuration file:" << file.errorString();
+        stream << i.key().item << " " << i.value().value << "\n";
+        minLength += i.key().item.length() + i.value().value.length() + 1;
+    }
+
+    stream.flush();
+    // the stream is usually longer, depending on the amount of encoded data.
+    if (stream.pos() < minLength || QFileInfo(tmpFile).size() != stream.pos()) {
+        qWarning().nospace() << "Error while writing configuration file: " << tmpFile.fileName();
+        return false;
+    }
+
+    tmpFile.close();
+    if (tmpFile.error() !=
+            QFile::NoError) { //could be better... should actually say what the error was..
+        qWarning().nospace() << "Error while writing configuration file: "
+                             << tmpFile.fileName() << ": " << tmpFile.errorString();
+        return false;
+    }
+
+    QFile oldConfig(m_filename);
+    // Trying to remove a file that does not exist would fail
+    if (oldConfig.exists()) {
+        if (!oldConfig.remove()) {
+            qWarning().nospace() << "Could not remove old config file: "
+                                 << oldConfig.fileName() << ": " << oldConfig.errorString();
+            return false;
         }
     }
+    if (!tmpFile.rename(m_filename)) {
+        qWarning().nospace() << "Could not rename tmp file to config file: "
+                             << tmpFile.fileName() << ": " << tmpFile.errorString();
+        return false;
+    }
+
+    return true;
 }
 
 template<class ValueType>
@@ -227,7 +267,7 @@ QSet<QString> ConfigObject<ValueType>::getGroups() {
 }
 
 template<class ValueType>
-QList<ConfigKey> ConfigObject<ValueType>::getKeysWithGroup(QString group) const {
+QList<ConfigKey> ConfigObject<ValueType>::getKeysWithGroup(const QString& group) const {
     QWriteLocker lock(&m_valuesLock);
     QList<ConfigKey> filteredList;
     for (const ConfigKey& key : m_values.keys()) {

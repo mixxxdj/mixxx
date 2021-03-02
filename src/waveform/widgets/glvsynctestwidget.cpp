@@ -1,24 +1,24 @@
-#include "glvsynctestwidget.h"
+#include "waveform/widgets/glvsynctestwidget.h"
 
 #include <QPainter>
+#include <QtDebug>
 
-#include "waveform/sharedglcontext.h"
-#include "waveform/renderers/waveformrenderbackground.h"
-#include "waveform/renderers/glvsynctestrenderer.h"
-#include "waveform/renderers/waveformrendermark.h"
-#include "waveform/renderers/waveformrendererendoftrack.h"
-
+#include "moc_glvsynctestwidget.cpp"
 #include "util/performancetimer.h"
+#include "waveform/renderers/glvsynctestrenderer.h"
+#include "waveform/renderers/glwaveformrenderersimplesignal.h"
+#include "waveform/renderers/waveformrenderbackground.h"
+#include "waveform/renderers/waveformrenderbeat.h"
+#include "waveform/renderers/waveformrendererendoftrack.h"
+#include "waveform/renderers/waveformrendermark.h"
+#include "waveform/renderers/waveformrendermarkrange.h"
+#include "waveform/sharedglcontext.h"
 
 GLVSyncTestWidget::GLVSyncTestWidget(const QString& group, QWidget* parent)
-        : QGLWidget(parent, SharedGLContext::getWidget()),
-          WaveformWidgetAbstract(group) {
+        : GLWaveformWidgetAbstract(group, parent) {
     qDebug() << "Created QGLWidget. Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
-    if (QGLContext::currentContext() != context()) {
-        makeCurrent();
-    }
 
     addRenderer<WaveformRenderBackground>(); // 172 µs
 //  addRenderer<WaveformRendererEndOfTrack>(); // 677 µs 1145 µs (active)
@@ -45,7 +45,7 @@ GLVSyncTestWidget::~GLVSyncTestWidget() {
 }
 
 void GLVSyncTestWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(static_cast<QGLWidget*>(this));
+    m_widget = this;
 }
 
 void GLVSyncTestWidget::paintEvent(QPaintEvent* event) {
@@ -61,7 +61,7 @@ mixxx::Duration GLVSyncTestWidget::render() {
     // this may delayed until previous buffer swap finished
     QPainter painter(this);
     t1 = timer.restart();
-    draw(&painter, NULL);
+    draw(&painter, nullptr);
     //t2 = timer.restart();
     //qDebug() << "GLVSyncTestWidget "<< t1 << t2;
     return t1; // return timer for painter setup

@@ -85,7 +85,7 @@ void WBeatMenu::setBeatsPointer(mixxx::BeatsPointer pBeats) {
     }
 }
 
-void WBeatMenu::setBeat(std::optional<mixxx::Beat> beat) {
+void WBeatMenu::setBeat(const std::optional<mixxx::Beat>& beat) {
     if (m_pBeats) {
         m_beat = beat;
         m_pTimeSignatureMenu->setBeat(beat);

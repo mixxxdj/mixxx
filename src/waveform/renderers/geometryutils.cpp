@@ -4,7 +4,7 @@
 
 namespace {
 inline float getEquilateralTriangleAltitude(float triangleEdgeLength) {
-    return sqrt(3) / 2 * triangleEdgeLength;
+    return sqrtf(3) / 2 * triangleEdgeLength;
 }
 } // namespace
 

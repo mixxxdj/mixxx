@@ -1,5 +1,4 @@
-#ifndef QTWAVEFORMRENDERERSIMPLESIGNAL_H
-#define QTWAVEFORMRENDERERSIMPLESIGNAL_H
+#pragma once
 
 #include "waveformrenderersignalbase.h"
 
@@ -26,5 +25,3 @@ private:
     QPen m_borderPen;
     QVector<QPointF> m_polygon;
 };
-
-#endif // QTWAVEFORMRENDERERSIMPLESIGNAL_H

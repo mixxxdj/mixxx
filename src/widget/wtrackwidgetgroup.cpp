@@ -1,4 +1,3 @@
-
 #include "widget/wtrackwidgetgroup.h"
 
 #include <QDebug>
@@ -6,6 +5,7 @@
 #include <QUrl>
 
 #include "control/controlobject.h"
+#include "moc_wtrackwidgetgroup.cpp"
 #include "track/track.h"
 #include "util/dnd.h"
 #include "widget/wtrackmenu.h"
@@ -14,7 +14,8 @@ namespace {
 
 constexpr int kDefaultTrackColorAlpha = 255;
 
-const WTrackMenu::Features kTrackMenuFeatures =
+constexpr WTrackMenu::Features kTrackMenuFeatures =
+        WTrackMenu::Feature::SearchRelated |
         WTrackMenu::Feature::Playlist |
         WTrackMenu::Feature::Crate |
         WTrackMenu::Feature::Metadata |
@@ -28,14 +29,14 @@ const WTrackMenu::Features kTrackMenuFeatures =
 
 WTrackWidgetGroup::WTrackWidgetGroup(QWidget* pParent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         const QString& group)
         : WWidgetGroup(pParent),
           m_group(group),
           m_pConfig(pConfig),
           m_trackColorAlpha(kDefaultTrackColorAlpha),
           m_pTrackMenu(make_parented<WTrackMenu>(
-                  this, pConfig, pTrackCollectionManager, kTrackMenuFeatures)) {
+                  this, pConfig, pLibrary, kTrackMenuFeatures)) {
     setAcceptDrops(true);
 }
 

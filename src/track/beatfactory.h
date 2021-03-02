@@ -1,5 +1,4 @@
-#ifndef BEATFACTORY_H
-#define BEATFACTORY_H
+#pragma once
 
 #include <QHash>
 
@@ -19,19 +18,18 @@ class BeatFactory {
     static QString getPreferredVersion(const bool bEnableFixedTempoCorrection);
 
     static QString getPreferredSubVersion(
-        const bool bEnableFixedTempoCorrection,
-        const bool bEnableOffsetCorrection,
-        const int iMinBpm, const int iMaxBpm,
-        const QHash<QString, QString> extraVersionInfo);
+            const bool bEnableFixedTempoCorrection,
+            const bool bEnableOffsetCorrection,
+            const int iMinBpm,
+            const int iMaxBpm,
+            const QHash<QString, QString>& extraVersionInfo);
 
     static mixxx::BeatsInternal makePreferredBeats(const TrackPointer& track,
-            QVector<double> beats,
-            const QHash<QString, QString> extraVersionInfo,
+            const QVector<double>& beats,
+            const QHash<QString, QString>& extraVersionInfo,
             const bool bEnableFixedTempoCorrection,
             const bool bEnableOffsetCorrection,
             const int iTotalSamples,
             const int iMinBpm,
             const int iMaxBpm);
 };
-
-#endif /* BEATFACTORY_H */

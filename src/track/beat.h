@@ -80,28 +80,28 @@ Q_DECLARE_OPERATORS_FOR_FLAGS(BeatMarkers);
 
 using BeatList = QList<Beat>;
 
-inline bool operator<(Beat beat1, Beat beat2) {
+inline bool operator<(const Beat& beat1, const Beat& beat2) {
     return beat1.framePosition() < beat2.framePosition();
 }
 
-inline bool operator<=(Beat beat1, Beat beat2) {
+inline bool operator<=(const Beat& beat1, const Beat& beat2) {
     return beat1.framePosition() <= beat2.framePosition();
 }
 
-inline bool operator>(Beat beat1, Beat beat2) {
+inline bool operator>(const Beat& beat1, const Beat& beat2) {
     return beat1.framePosition() > beat2.framePosition();
 }
 
-inline bool operator>=(Beat beat1, Beat beat2) {
+inline bool operator>=(const Beat& beat1, const Beat& beat2) {
     return beat1.framePosition() >= beat2.framePosition();
 }
 
-bool operator==(Beat beat1, Beat beat2);
+bool operator==(const Beat& beat1, const Beat& beat2);
 
-inline bool operator!=(Beat beat1, Beat beat2) {
+inline bool operator!=(const Beat& beat1, const Beat& beat2) {
     return !(beat1 == beat2);
 }
 
-QDebug operator<<(QDebug dbg, Beat beat);
+QDebug operator<<(QDebug dbg, const Beat& beat);
 constexpr int kFirstBeatIndex = 0;
 }; // namespace mixxx

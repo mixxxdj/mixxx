@@ -1,15 +1,4 @@
-/***************************************************************************
-                     encoderffmpegcore.h  -  core code for ffmpeg encoders
-                             -------------------
-    copyright            : (C) 2012-2013 by Tuukka Pasanen
-                           (C) 2007 by Wesley Stessens
-                           (C) 1994 by Xiph.org (encoder example)
-                           (C) ???? Tobias Rafreider (broadcast and recording fixes)
- ***************************************************************************/
-
-
-#ifndef ENCODERFFMPEGCORE_H
-#define ENCODERFFMPEGCORE_H
+#pragma once
 
 #include <encoder/encoderffmpegresample.h>
 
@@ -40,6 +29,10 @@ extern "C" {
 
 class EncoderCallback;
 
+/// FFmpeg encoder class
+///
+/// Supports what FFmpeg is compiled to support and provides the same
+/// interface for all codecs.
 class EncoderFfmpegCore : public Encoder {
 public:
 #if LIBAVCODEC_VERSION_INT > 3544932
@@ -50,7 +43,7 @@ public:
                       CodecID codec = CODEC_ID_MP2);
 #endif
     ~EncoderFfmpegCore();
-    int initEncoder(int samplerate, QString errorMessage) override;
+    int initEncoder(int samplerate, QString* pUserErrorMessage) override;
     void encodeBuffer(const CSAMPLE *samples, const int size) override;
     void updateMetaData(const QString& artist, const QString& title, const QString& album) override;
     void flush() override;
@@ -113,5 +106,3 @@ private:
     EncoderFfmpegResample *m_pResample;
     AVStream *m_pStream;
 };
-
-#endif

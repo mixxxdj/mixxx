@@ -6,6 +6,7 @@
 #include <QTimerEvent>
 #include <mutex> // std::once_flag
 
+#include "moc_jsonwebtask.cpp"
 #include "util/counter.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
@@ -28,72 +29,67 @@ const QString JSON_CONTENT_TYPE = "application/json";
 
 const QMimeType JSON_MIME_TYPE = QMimeDatabase().mimeTypeForName(JSON_CONTENT_TYPE);
 
-QMimeType readContentType(
-        const QNetworkReply* reply) {
-    DEBUG_ASSERT(reply);
-    const QVariant contentTypeHeader = reply->header(QNetworkRequest::ContentTypeHeader);
-    if (!contentTypeHeader.isValid() || contentTypeHeader.isNull()) {
-        kLogger.warning()
-                << "Missing content type header";
-        return QMimeType();
-    }
-    const QString contentTypeString = contentTypeHeader.toString();
-    const QString contentTypeWithoutParams = contentTypeString.left(contentTypeString.indexOf(';'));
-    const QMimeType contentType = QMimeDatabase().mimeTypeForName(contentTypeWithoutParams);
-    if (!contentType.isValid()) {
-        kLogger.warning()
-                << "Unknown content type"
-                << contentTypeWithoutParams;
-    }
-    return contentType;
-}
-
-bool readJsonContent(
+/// If parsing fails the functions returns std::nullopt and optionally
+/// the response content in pInvalidResponseContent for further processing.
+std::optional<QJsonDocument> readJsonContent(
         QNetworkReply* reply,
-        QJsonDocument* jsonContent) {
+        std::pair<QMimeType, QByteArray>* pInvalidResponseContent = nullptr) {
     DEBUG_ASSERT(reply);
-    DEBUG_ASSERT(jsonContent);
     DEBUG_ASSERT(JSON_MIME_TYPE.isValid());
-    const auto contentType = readContentType(reply);
+    auto contentType = WebTask::readContentType(*reply);
+    auto optContentData = WebTask::readContentData(reply);
     if (contentType != JSON_MIME_TYPE) {
-        kLogger.warning()
-                << "Unexpected content type"
-                << contentType;
-        return false;
+        kLogger.debug()
+                << "Received content type"
+                << contentType
+                << "instead of"
+                << JSON_MIME_TYPE;
+        if (pInvalidResponseContent) {
+            *pInvalidResponseContent = std::make_pair(
+                    std::move(contentType),
+                    optContentData.value_or(QByteArray{}));
+        }
+        return std::nullopt;
     }
-    QByteArray jsonData = reply->readAll();
-    if (jsonData.isEmpty()) {
-        kLogger.warning()
-                << "Empty reply";
-        return false;
+    if (!optContentData || optContentData->isEmpty()) {
+        kLogger.debug() << "Empty JSON network reply";
+        return QJsonDocument{};
     }
     QJsonParseError parseError;
-    const auto jsonDoc = QJsonDocument::fromJson(
-            jsonData,
+    auto jsonDocument = QJsonDocument::fromJson(
+            *optContentData,
             &parseError);
     // QJsonDocument::fromJson() returns a non-null document
     // if parsing succeeds and otherwise null on error. The
     // parse error must only be evaluated if the returned
     // document is null!
-    if (jsonDoc.isNull() &&
+    if (jsonDocument.isNull() &&
             parseError.error != QJsonParseError::NoError) {
         kLogger.warning()
                 << "Failed to parse JSON data:"
                 << parseError.errorString()
                 << "at offset"
                 << parseError.offset;
-        return false;
+        if (pInvalidResponseContent) {
+            *pInvalidResponseContent = std::make_pair(
+                    std::move(contentType),
+                    std::move(*optContentData));
+        }
+        return std::nullopt;
     }
-    *jsonContent = jsonDoc;
-    return true;
+    return jsonDocument;
 }
 
 // TODO: Allow to customize headers and attributes?
 QNetworkRequest newRequest(
         const QUrl& url) {
     QNetworkRequest request(url);
-    request.setHeader(QNetworkRequest::ContentTypeHeader, JSON_CONTENT_TYPE);
-    request.setAttribute(QNetworkRequest::FollowRedirectsAttribute, true);
+    request.setHeader(
+            QNetworkRequest::ContentTypeHeader,
+            JSON_CONTENT_TYPE);
+    request.setAttribute(
+            QNetworkRequest::RedirectPolicyAttribute,
+            QNetworkRequest::NoLessSafeRedirectPolicy);
     return request;
 }
 
@@ -105,48 +101,39 @@ QNetworkRequest newRequest(
 
 QDebug operator<<(QDebug dbg, const JsonWebResponse& arg) {
     return dbg
-        << "CustomWebResponse{"
-        << static_cast<const WebResponse&>(arg)
-        << arg.content
-        << '}';
+            << "WebResponseWithContent{"
+            << arg.m_response
+            << arg.m_content
+            << '}';
 }
 
 JsonWebTask::JsonWebTask(
         QNetworkAccessManager* networkAccessManager,
-        const QUrl& baseUrl,
+        QUrl baseUrl,
         JsonWebRequest&& request,
         QObject* parent)
         : WebTask(networkAccessManager, parent),
-          m_baseUrl(baseUrl),
-          m_request(std::move(request)),
-          m_pendingNetworkReply(nullptr) {
+          m_baseUrl(std::move(baseUrl)),
+          m_request(request) {
     std::call_once(registerMetaTypesOnceFlag, registerMetaTypesOnce);
     DEBUG_ASSERT(!m_baseUrl.isEmpty());
 }
 
-JsonWebTask::~JsonWebTask() {
-    if (m_pendingNetworkReply) {
-        m_pendingNetworkReply->deleteLater();
-    }
-}
-
 void JsonWebTask::onFinished(
-        JsonWebResponse&& response) {
+        const JsonWebResponse& jsonResponse) {
     kLogger.info()
-            << "Response received"
-            << response.replyUrl
-            << response.statusCode
-            << response.content;
+            << this
+            << "Received JSON response"
+            << jsonResponse;
     deleteLater();
 }
 
 void JsonWebTask::onFinishedCustom(
-        CustomWebResponse&& response) {
+        const WebResponseWithContent& customResponse) {
     kLogger.info()
-            << "Custom response received"
-            << response.replyUrl
-            << response.statusCode
-            << response.content;
+            << this
+            << "Received custom response"
+            << customResponse;
     deleteLater();
 }
 
@@ -160,6 +147,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
         DEBUG_ASSERT(m_request.content.isEmpty());
         if (kLogger.debugEnabled()) {
             kLogger.debug()
+                    << this
                     << "GET"
                     << url;
         }
@@ -170,6 +158,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
         const auto body = content.toJson(QJsonDocument::Compact);
         if (kLogger.debugEnabled()) {
             kLogger.debug()
+                    << this
                     << "PUT"
                     << url
                     << body;
@@ -182,6 +171,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
         const auto body = content.toJson(QJsonDocument::Compact);
         if (kLogger.debugEnabled()) {
             kLogger.debug()
+                    << this
                     << "POST"
                     << url
                     << body;
@@ -194,6 +184,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
         const auto body = m_request.content.toJson(QJsonDocument::Compact);
         if (kLogger.debugEnabled()) {
             kLogger.debug()
+                    << this
                     << "PATCH"
                     << url
                     << body;
@@ -207,6 +198,7 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
         DEBUG_ASSERT(content.isEmpty());
         if (kLogger.debugEnabled()) {
             kLogger.debug()
+                    << this
                     << "DELETE"
                     << url;
         }
@@ -218,126 +210,78 @@ QNetworkReply* JsonWebTask::sendNetworkRequest(
     return nullptr;
 }
 
-bool JsonWebTask::doStart(
+QNetworkReply* JsonWebTask::doStartNetworkRequest(
         QNetworkAccessManager* networkAccessManager,
         int parentTimeoutMillis) {
     Q_UNUSED(parentTimeoutMillis);
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     DEBUG_ASSERT(networkAccessManager);
-    VERIFY_OR_DEBUG_ASSERT(!m_pendingNetworkReply) {
-        kLogger.warning()
-                << "Task has already been started";
-        return false;
-    }
 
-    DEBUG_ASSERT(m_baseUrl.isValid());
+    VERIFY_OR_DEBUG_ASSERT(m_baseUrl.isValid()) {
+        kLogger.warning() << "Invalid base URL" << m_baseUrl;
+        return nullptr;
+    }
     QUrl url = m_baseUrl;
     url.setPath(m_request.path);
+    VERIFY_OR_DEBUG_ASSERT(url.isValid()) {
+        kLogger.warning() << "Invalid request path" << m_request.path;
+        return nullptr;
+    }
     if (!m_request.query.isEmpty()) {
         url.setQuery(m_request.query);
+        VERIFY_OR_DEBUG_ASSERT(url.isValid()) {
+            kLogger.warning() << "Invalid query string" << m_request.query.toString();
+            return nullptr;
+        }
     }
+    // Already validated while composing (see above)
     DEBUG_ASSERT(url.isValid());
 
-    m_pendingNetworkReply = sendNetworkRequest(
+    return sendNetworkRequest(
             networkAccessManager,
             m_request.method,
             url,
             m_request.content);
-    VERIFY_OR_DEBUG_ASSERT(m_pendingNetworkReply) {
-        kLogger.warning()
-                << "Request not sent";
-        return false;
-    }
-
-    connect(m_pendingNetworkReply,
-            &QNetworkReply::finished,
-            this,
-            &JsonWebTask::slotNetworkReplyFinished,
-            Qt::UniqueConnection);
-
-    connect(m_pendingNetworkReply,
-#if QT_VERSION >= QT_VERSION_CHECK(5, 15, 0)
-            &QNetworkReply::errorOccurred,
-#else
-            QOverload<QNetworkReply::NetworkError>::of(&QNetworkReply::error),
-#endif
-            this,
-            &JsonWebTask::slotNetworkReplyFinished,
-            Qt::UniqueConnection);
-
-    return true;
 }
 
-QUrl JsonWebTask::doAbort() {
-    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    QUrl requestUrl;
-    if (m_pendingNetworkReply) {
-        requestUrl = abortPendingNetworkReply(m_pendingNetworkReply);
-        if (requestUrl.isValid()) {
-            // Already finished
-            m_pendingNetworkReply->deleteLater();
-            m_pendingNetworkReply = nullptr;
+void JsonWebTask::doNetworkReplyFinished(
+        QNetworkReply* finishedNetworkReply,
+        HttpStatusCode statusCode) {
+    DEBUG_ASSERT(finishedNetworkReply);
+    std::optional<QJsonDocument> optJsonContent;
+    auto webResponse = WebResponse{
+            finishedNetworkReply->url(),
+            finishedNetworkReply->request().url(),
+            statusCode};
+    if (statusCode != kHttpStatusCodeInvalid) {
+        std::pair<QMimeType, QByteArray> contentTypeAndBytes;
+        optJsonContent = readJsonContent(finishedNetworkReply, &contentTypeAndBytes);
+        if (!optJsonContent) {
+            // Failed to read JSON content
+            onFinishedCustom(WebResponseWithContent{
+                    std::move(webResponse),
+                    std::move(contentTypeAndBytes.first),
+                    std::move(contentTypeAndBytes.second)});
+            return;
         }
     }
-    return requestUrl;
-}
-
-QUrl JsonWebTask::doTimeOut() {
-    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    QUrl requestUrl;
-    if (m_pendingNetworkReply) {
-        requestUrl = timeOutPendingNetworkReply(m_pendingNetworkReply);
-        // Don't wait until finished
-        m_pendingNetworkReply->deleteLater();
-        m_pendingNetworkReply = nullptr;
-    }
-    return requestUrl;
-}
-
-void JsonWebTask::slotNetworkReplyFinished() {
-    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    const QPair<QNetworkReply*, HttpStatusCode> networkReplyWithStatusCode =
-            receiveNetworkReply();
-    auto* const networkReply = networkReplyWithStatusCode.first;
-    if (!networkReply) {
-        // already aborted
-        return;
-    }
-    const auto statusCode = networkReplyWithStatusCode.second;
-    VERIFY_OR_DEBUG_ASSERT(networkReply == m_pendingNetworkReply) {
-        return;
-    }
-    m_pendingNetworkReply = nullptr;
-
-    QJsonDocument content;
-    if (statusCode != kHttpStatusCodeInvalid &&
-            networkReply->bytesAvailable() > 0 &&
-            !readJsonContent(networkReply, &content)) {
-        onFinishedCustom(CustomWebResponse{
-                WebResponse{
-                        networkReply->url(),
-                        statusCode},
-                networkReply->readAll()});
-    } else {
-        onFinished(JsonWebResponse{
-                WebResponse{
-                        networkReply->url(),
-                        statusCode},
-                std::move(content)});
-    }
+    onFinished(JsonWebResponse{
+            std::move(webResponse),
+            optJsonContent.value_or(QJsonDocument{})});
 }
 
 void JsonWebTask::emitFailed(
-        network::JsonWebResponse&& response) {
+        const network::JsonWebResponse& response) {
     VERIFY_OR_DEBUG_ASSERT(
             isSignalFuncConnected(&JsonWebTask::failed)) {
         kLogger.warning()
+                << this
                 << "Unhandled failed signal"
                 << response;
         deleteLater();
         return;
     }
-    emit failed(std::move(response));
+    emit failed(response);
 }
 
 } // namespace network

@@ -1,35 +1,23 @@
-/***************************************************************************
-                          controlobject.cpp  -  description
-                             -------------------
-    begin                : Wed Feb 20 2002
-    copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                :
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include <QtDebug>
-#include <QHash>
-#include <QSet>
-#include <QMutexLocker>
-
 #include "control/controlobject.h"
+
+#include <QHash>
+#include <QMutexLocker>
+#include <QSet>
+#include <QtDebug>
+
 #include "control/control.h"
+#include "moc_controlobject.cpp"
 #include "util/stat.h"
 #include "util/timer.h"
 
 ControlObject::ControlObject() {
 }
 
-ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack,
-                             bool bPersist, double defaultValue)
+ControlObject::ControlObject(const ConfigKey& key,
+        bool bIgnoreNops,
+        bool bTrack,
+        bool bPersist,
+        double defaultValue)
         : m_key(key) {
     // Don't bother looking up the control if key is invalid. Prevents log spew.
     if (m_key.isValid()) {
@@ -75,7 +63,7 @@ ControlObject* ControlObject::getControl(const ConfigKey& key, ControlFlags flag
     if (pCDP) {
         return pCDP->getCreatorCO();
     }
-    return NULL;
+    return nullptr;
 }
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
@@ -122,7 +110,7 @@ void ControlObject::setParameterFrom(double v, QObject* pSender) {
 void ControlObject::set(const ConfigKey& key, const double& value) {
     QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
     if (pCop) {
-        pCop->set(value, NULL);
+        pCop->set(value, nullptr);
     }
 }
 

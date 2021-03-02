@@ -1,19 +1,3 @@
-/***************************************************************************
-                          enginesidechain.cpp
-                             -------------------
-    copyright            : (C) 2008 Albert Santoni
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 // This class provides a way to do audio processing that does not need
 // to be executed in real-time. For example, broadcast encoding
 // and recording encoding can be done here. This class uses double-buffering
@@ -24,11 +8,12 @@
 
 #include "engine/sidechain/enginesidechain.h"
 
-#include <QtDebug>
 #include <QMutexLocker>
+#include <QtDebug>
 
-#include "engine/sidechain/sidechainworker.h"
 #include "engine/engine.h"
+#include "engine/sidechain/sidechainworker.h"
+#include "moc_enginesidechain.cpp"
 #include "util/counter.h"
 #include "util/event.h"
 #include "util/sample.h"
@@ -79,9 +64,9 @@ void EngineSideChain::addSideChainWorker(SideChainWorker* pWorker) {
     m_workers.append(pWorker);
 }
 
-void EngineSideChain::receiveBuffer(AudioInput input,
-                                    const CSAMPLE* pBuffer,
-                                    unsigned int iFrames) {
+void EngineSideChain::receiveBuffer(const AudioInput& input,
+        const CSAMPLE* pBuffer,
+        unsigned int iFrames) {
     VERIFY_OR_DEBUG_ASSERT(input.getType() == AudioInput::RECORD_BROADCAST) {
         qDebug() << "WARNING: AudioInput type is not RECORD_BROADCAST. Ignoring incoming buffer.";
         return;

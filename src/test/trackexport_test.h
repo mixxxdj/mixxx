@@ -1,3 +1,5 @@
+#pragma once
+
 #include "library/export/trackexportworker.h"
 
 #include <future>
@@ -13,21 +15,20 @@ class FakeOverwriteAnswerer : public QObject {
     Q_OBJECT
   public:
     FakeOverwriteAnswerer(TrackExportWorker* worker) : m_worker(worker) {
-        connect(m_worker, SIGNAL(progress(QString, int, int)), this,
-            SLOT(slotProgress(QString, int, int)));
+        connect(m_worker, &TrackExportWorker::progress, this, &FakeOverwriteAnswerer::slotProgress);
         connect(m_worker,
-            SIGNAL(askOverwriteMode(
-                    QString, std::promise<TrackExportWorker::OverwriteAnswer>*)),
-            this,
-            SLOT(slotAskOverwriteMode(
-                    QString,
-                    std::promise<TrackExportWorker::OverwriteAnswer>*)));
-        connect(m_worker, SIGNAL(canceled()), this, SLOT(cancelButtonClicked()));
+                &TrackExportWorker::askOverwriteMode,
+                this,
+                &FakeOverwriteAnswerer::slotAskOverwriteMode);
+        connect(m_worker,
+                &TrackExportWorker::canceled,
+                this,
+                &FakeOverwriteAnswerer::cancelButtonClicked);
     }
     virtual ~FakeOverwriteAnswerer();
 
-    void setAnswer(QString expected_filename,
-                   TrackExportWorker::OverwriteAnswer answer) {
+    void setAnswer(const QString& expected_filename,
+            TrackExportWorker::OverwriteAnswer answer) {
         // We should never copy a duplicate filename, so if a name already
         // exists that's a bug in the test.
         Q_ASSERT(m_answers.find(expected_filename) == m_answers.end());
@@ -47,9 +48,9 @@ class FakeOverwriteAnswerer : public QObject {
     }
 
   public slots:
-    void slotProgress(QString filename, int progress, int count);
+    void slotProgress(const QString& filename, int progress, int count);
     void slotAskOverwriteMode(
-            QString filename,
+            const QString& filename,
             std::promise<TrackExportWorker::OverwriteAnswer>* promise);
     void cancelButtonClicked();
 

@@ -24,7 +24,7 @@ class WBeatMenu : public QMenu {
 
     void setBeatsPointer(mixxx::BeatsPointer pBeats);
 
-    void setBeat(std::optional<mixxx::Beat> beat);
+    void setBeat(const std::optional<mixxx::Beat>& beat);
 
     void setOptions(Options selectedOptions) {
         m_eSelectedOptions = selectedOptions;

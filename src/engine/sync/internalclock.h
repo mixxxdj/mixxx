@@ -1,5 +1,4 @@
-#ifndef INTERNALCLOCK_H
-#define INTERNALCLOCK_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -75,7 +74,6 @@ class InternalClock : public QObject, public Clock, public Syncable {
     int m_iOldSampleRate;
     double m_dOldBpm;
     double m_dBaseBpm;
-    QAtomicInteger<bool> m_bClockUpdated;
 
     // The internal clock rate is stored in terms of samples per beat.
     // Fractional values are allowed.
@@ -85,5 +83,3 @@ class InternalClock : public QObject, public Clock, public Syncable {
     // distance is m_dClockPosition / m_dBeatLength).
     double m_dClockPosition;
 };
-
-#endif /* INTERNALCLOCK_H */

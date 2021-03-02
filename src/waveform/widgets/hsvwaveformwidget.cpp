@@ -2,6 +2,7 @@
 
 #include <QPainter>
 
+#include "moc_hsvwaveformwidget.cpp"
 #include "waveform/renderers/waveformrenderbackground.h"
 #include "waveform/renderers/waveformrenderbeat.h"
 #include "waveform/renderers/waveformrendererendoftrack.h"
@@ -10,6 +11,7 @@
 #include "waveform/renderers/waveformrendermark.h"
 #include "waveform/renderers/waveformrendermarkrange.h"
 #include "waveform/renderers/waveformrenderplaymarker.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
 
 HSVWaveformWidget::HSVWaveformWidget(const QString& group, QWidget* parent)
         : QWidget(parent),
@@ -33,7 +35,7 @@ HSVWaveformWidget::~HSVWaveformWidget() {
 }
 
 void HSVWaveformWidget::castToQWidget() {
-    m_widget = static_cast<QWidget*>(this);
+    m_widget = this;
 }
 
 void HSVWaveformWidget::paintEvent(QPaintEvent* event) {

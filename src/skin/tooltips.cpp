@@ -1,5 +1,7 @@
 #include "skin/tooltips.h"
 
+#include "moc_tooltips.cpp"
+
 Tooltips::Tooltips() {
     addStandardTooltips();
 }
@@ -7,7 +9,7 @@ Tooltips::Tooltips() {
 Tooltips::~Tooltips() {
 }
 
-QString Tooltips::tooltipForId(QString id) const {
+QString Tooltips::tooltipForId(const QString& id) const {
     // We always add a separator at the end.
     QString joined = m_tooltips.value(id, QStringList()).join(tooltipSeparator());
     if (joined.length() > 0) {
@@ -20,7 +22,7 @@ QString Tooltips::tooltipSeparator() const {
     return "\n";
 }
 
-QList<QString>& Tooltips::add(QString id) {
+QList<QString>& Tooltips::add(const QString& id) {
     return m_tooltips[id];
 }
 
@@ -32,6 +34,7 @@ void Tooltips::addStandardTooltips() {
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
     QString scrollWheel = tr("Scroll-wheel");
+    QString shift = tr("Shift-key");
     QString loopActive = "(" + tr("loop active") + ")";
     QString loopInactive = "(" + tr("loop inactive") + ")";
     QString effectsWithinUnit = tr("Effects within the chain must be enabled to hear them.");
@@ -473,16 +476,19 @@ void Tooltips::addStandardTooltips() {
 
     QString whilePlaying = tr("(while playing)");
     QString whileStopped = tr("(while stopped)");
+    QString whilePreviewing = tr("(while previewing)");
     QString cueSet = tr("Places a cue point at the current position on the waveform.");
     QString cueWhilePlaying = tr("Stops track at cue point, OR go to cue point and play after release (CUP mode).");
     QString cueWhileStopped = tr("Set cue point (Pioneer/Mixxx/Numark mode), set cue point and play after release (CUP mode) "
             "OR preview from it (Denon mode).");
     QString cueHint = tr("Hint: Change the default cue mode in Preferences -> Interface.");
+    QString latchingPlay = tr("Is latching the playing state.");
 
     // Currently used for decks
     add("play_cue_set")
             << tr("Play/Pause")
             << QString("%1: %2").arg(leftClick, tr("Plays or pauses the track."))
+            << QString("%1 %2: %3").arg(leftClick, whilePreviewing, latchingPlay)
             << QString("%1: %2").arg(rightClick, cueSet);
 
     // Currently used for minimal decks
@@ -499,7 +505,8 @@ void Tooltips::addStandardTooltips() {
             << QString("%1 %2: %3").arg(leftClick, whileStopped, cueWhileStopped)
             << cueHint
             << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."));
+            << QString("%1: %2").arg(rightClick, tr("Seeks the track to the cue point and stops."))
+            << QString("%1 %2: %3").arg(rightClick, whilePreviewing, latchingPlay);
     add("cue_gotoandplay_cue_default")
             << tr("Play")
             << QString("%1: %2").arg(leftClick, tr("Plays track from the cue point."))
@@ -582,24 +589,22 @@ void Tooltips::addStandardTooltips() {
                         "tempo is affected.")
                   << QString("%1: %2").arg(rightClick, resetToDefault);
 
-      add("pitch") << tr("Pitch Control")
-                   << tr("Changes the track pitch independent of the tempo.")
-                   << QString("%1: %2").arg(rightClick, resetToDefault);
+      add("pitch")
+              << tr("Pitch Control")
+              << tr("Changes the track pitch independent of the tempo.")
+              << QString("%1: %2").arg(rightClick, resetToDefault);
 
-      add("pitch_up") << tr("Pitch Control")
-                      << tr("Changes the track pitch independent of the tempo.")
-                      << QString("%1: %2").arg(leftClick,
-                                 tr("Increases the pitch by one semitone."))
-                      << QString("%1: %2").arg(rightClick,
-                                 tr("Increases the pitch by 10 cents."));
+      add("pitch_up")
+              << tr("Pitch Control")
+              << tr("Changes the track pitch independent of the tempo.")
+              << QString("%1: %2").arg(leftClick, tr("Increases the pitch by one semitone."))
+              << QString("%1: %2").arg(rightClick, tr("Increases the pitch by 10 cents."));
 
       add("pitch_down")
               << tr("Pitch Control")
               << tr("Changes the track pitch independent of the tempo.")
-              << QString("%1: %2").arg(
-                         leftClick, tr("Decreases the pitch by one semitone."))
-              << QString("%1: %2").arg(
-                         rightClick, tr("Decreases the pitch by 10 cents."));
+              << QString("%1: %2").arg(leftClick, tr("Decreases the pitch by one semitone."))
+              << QString("%1: %2").arg(rightClick, tr("Decreases the pitch by 10 cents."));
 
       add("pitch_adjust")
               << tr("Pitch Adjust")
@@ -614,17 +619,23 @@ void Tooltips::addStandardTooltips() {
                     << tr("When active the track will repeat if you go past "
                           "the end or reverse before the start.");
 
-      add("eject") << tr("Eject") << tr("Ejects track from the player.");
+      add("eject")
+              << tr("Eject")
+              << tr("Ejects track from the player.");
 
       add("hotcue") << tr("Hotcue")
                     << QString("%1: %2").arg(leftClick,
                                tr("If hotcue is set, jumps to the hotcue."))
-                    << tr("If hotcue is not set, sets the hotcue to the "
-                          "current play position.")
+                    << tr("If hotcue is not set, sets the hotcue to the current "
+                          "play position.")
                     << quantizeSnap
                     << QString("%1: %2").arg(rightClick,
                                tr("Opens a menu to clear hotcues or edit their "
-                                  "labels and colors."));
+                                  "labels and colors."))
+                    << QString("%1 + %2: %3")
+                               .arg(rightClick,
+                                       shift,
+                                       tr("Delete selected hotcue."));
 
       // Status displays and toggle buttons
       add("toggle_recording")
@@ -645,403 +656,448 @@ void Tooltips::addStandardTooltips() {
                   << tr("disabled, connecting, connected, failure.");
       }
 
-    add("passthrough_enabled")
-            << tr("Enable Passthrough")
-            << tr("When enabled, the deck directly plays the audio arriving on the vinyl input.");
-
-    add("vinylcontrol_enabled")
-            << tr("Enable Vinyl Control")
-            << tr("When disabled, the track is controlled by Mixxx playback controls.")
-            << tr("When enabled, the track responds to external vinyl control.");
-
-    add("vinylcontrol_status")
-            << tr("Vinyl Status")
-            << tr("Provides visual feedback for vinyl control status:")
-            << tr("Green for control enabled.")
-            << tr("Blinking yellow for when the needle reaches the end of the record.")
-            << tr("Blue for passthrough enabled.");
-
-    add("vinylcontrol_mode")
-            << tr("Vinyl Control Mode")
-            << tr("Absolute mode - track position equals needle position and speed.")
-            << tr("Relative mode - track speed equals needle speed regardless of needle position.")
-            << tr("Constant mode - track speed equals last known-steady speed regardless of needle input.");
-
-    add("vinylcontrol_cueing")
-            << tr("Vinyl Cueing Mode")
-            << tr("Determines how cue points are treated in vinyl control Relative mode:")
-            << tr("Off - Cue points ignored.")
-            << tr("One Cue - If needle is dropped after the cue point, track will seek to that cue point.")
-            << tr("Hot Cue - Track will seek to nearest previous hotcue point.");
-
-    add("loop_in")
-            << tr("Loop-In Marker")
-            << QString("%1: %2").arg(leftClick + " " + loopInactive,
-                      tr("Sets the track Loop-In Marker to the current play position."))
-            << quantizeSnap
-            << QString("%1: %2").arg(leftClick + " " + loopActive,
-                      tr("Press and hold to move Loop-In Marker."))
-            << QString("%1: %2").arg(rightClick, tr("Jump to Loop-In Marker."));
-
-    add("loop_out")
-            << tr("Loop-Out Marker")
-            << QString("%1: %2").arg(leftClick + " " + loopInactive,
-                      tr("Sets the track Loop-Out Marker to the current play position."))
-            << quantizeSnap
-            << QString("%1: %2").arg(leftClick + " " + loopActive,
-                      tr("Press and hold to move Loop-Out Marker."))
-            << QString("%1: %2").arg(rightClick, tr("Jump to Loop-Out Marker."));
-
-    add("loop_halve")
-            << tr("Loop Halve")
-            << tr("Halves the current loop's length by moving the end marker.")
-            << tr("Deck immediately loops if past the new endpoint.");
-
-    add("loop_double")
-            << tr("Loop Double")
-            << tr("Doubles the current loop's length by moving the end marker.");
-
-    add("beatloop_size")
-            << tr("Beatloop Size")
-            << tr("Select the size of the loop in beats to set with the Beatloop button.")
-            << tr("Changing this resizes the loop if the loop already matches this size.");
-
-    add("beatloop_halve")
-            << tr("Halve the size of an existing beatloop, or halve the size of the next beatloop set with the Beatloop button.");
-
-    add("beatloop_double")
-            << tr("Double the size of an existing beatloop, or double the size of the next beatloop set with the Beatloop button.");
-
-    //beatloop and beatlooproll
-    add("beatloop_activate")
-            << tr("Beatloop")
-            << QString("%1: %2").arg(leftClick, tr("Start a loop over the set number of beats."))
-            << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("Temporarily enable a rolling loop over the set number of beats."))
-            << tr("Playback will resume where the track would have been if it had not entered the loop.");
-
-    add("beatjump_size")
-            << tr("Beatjump/Loop Move Size")
-            << tr("Select the number of beats to jump or move the loop with the Beatjump Forward/Backward buttons.");
-
-    add("beatjump_forward")
-            << tr("Beatjump Forward")
-            << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump forward by the set number of beats."))
-            << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop forward by the set number of beats."))
-            << QString("%1: %2").arg(rightClick + " " + loopInactive, tr("Jump forward by 1 beat."))
-            << QString("%1: %2").arg(rightClick + " " + loopActive, tr("Move the loop forward by 1 beat."));
-
-    add("beatjump_backward")
-            << tr("Beatjump Backward")
-            << QString("%1: %2").arg(leftClick + " " + loopInactive, tr("Jump backward by the set number of beats."))
-            << QString("%1: %2").arg(leftClick + " " + loopActive, tr("Move the loop backward by the set number of beats."))
-            << QString("%1: %2").arg(rightClick + " " + loopInactive, tr("Jump backward by 1 beat."))
-            << QString("%1: %2").arg(rightClick + " " + loopActive, tr("Move the loop backward by 1 beat."));
-
-    add("loop_exit")
-            << tr("Loop Exit")
-            << tr("Turns the current loop off.")
-            << tr("Works only if Loop-In and Loop-Out marker are set.");
-
-    add("reloop_toggle")
-            << tr("Reloop")
-            << QString("%1: %2").arg(leftClick, tr("Toggles the current loop on or off."))
-            << tr("If the loop is ahead of the current position, looping will start when the loop is reached.")
-            << tr("Works only if Loop-In and Loop-Out Marker are set.")
-            << QString("%1: %2").arg(rightClick, tr("Enable loop, jump to Loop-In Marker, and stop playback."));
-
-    add("slip_mode")
-            << tr("Slip Mode")
-            << tr("When active, the playback continues muted in the background during a loop, reverse, scratch etc.")
-            << tr("Once disabled, the audible playback will resume where the track would have been.");
-
-    add("track_time")
-            << tr("Track Time")
-            << tr("Displays the elapsed and/or remaining time of the track loaded.")
-            << tr("Click to toggle between time elapsed/remaining time/both.")
-            << tr("Hint: Change the time format in Preferences -> Decks.");
-
-    add("track_duration")
-            << tr("Track Duration")
-            << tr("Displays the duration of the loaded track.");
-
-    QString trackTags = tr("Information is loaded from the track's metadata tags.");
-    add("track_artist")
-            << tr("Track Artist")
-            << tr("Displays the artist of the loaded track.")
-            << trackTags
-            << dropTracksHere
-            << dragItem
-            << trackMenu;
-
-    add("track_title")
-            << tr("Track Title")
-            << tr("Displays the title of the loaded track.")
-            << trackTags
-            << dropTracksHere
-            << dragItem
-            << trackMenu;
-
-    add("track_album")
-            << tr("Track Album")
-            << tr("Displays the album name of the loaded track.")
-            << trackTags
-            << dropTracksHere
-            << dragItem
-            << trackMenu;
-
-    add("track_key")
-            //: The musical key of a track
-            << tr("Track Key")
-            << tr("Displays the musical key of the loaded track.")
-            << trackTags;
-
-    add("text")
-            << tr("Track Artist/Title")
-            << tr("Displays the artist and title of the loaded track.")
-            << trackTags
-            << dropTracksHere
-            << dragItem;
-
-    add("time")
-            << tr("Clock")
-            << tr("Displays the current time.");
-
-    add("audio_latency_usage")
-            << tr("Audio Latency Usage Meter")
-            << tr("Displays the fraction of latency used for audio processing.")
-            << tr("A high value indicates that audible glitches are likely.")
-            << tr("Do not enable keylock, effects or additional decks in this situation.");
-
-    add("audio_latency_overload")
-            << tr("Audio Latency Overload Indicator")
-            << tr("Indicates that the audio buffer is too small to do all audio processing.");
-
-    add("coverart")
-            << tr("Cover Art")
-            << tr("Displays cover artwork of the loaded track.")
-            << QString("%1: %2").arg(rightClick, tr("Displays options for editing cover artwork."))
-            << dropTracksHere
-            << dragItem;
-
-    add("starrating")
-            << tr("Star Rating")
-            << tr("Assign ratings to individual tracks by clicking the stars.");
-
-    // Intro & outro cues
-    add("show_intro_outro_cues")
-            << tr("Show/hide intro & outro markers and associated buttons.");
-
-    add("intro_start")
-            << tr("Intro Start Marker")
-            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
-            << tr("If marker is not set, sets the marker to the current play position.")
-            << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
-
-    add("intro_end")
-            << tr("Intro End Marker")
-            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
-            << tr("If marker is not set, sets the marker to the current play position.")
-            << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
-
-    add("outro_start")
-            << tr("Outro Start Marker")
-            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
-            << tr("If marker is not set, sets the marker to the current play position.")
-            << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
-
-    add("outro_end")
-            << tr("Outro End Marker")
-            << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
-            << tr("If marker is not set, sets the marker to the current play position.")
-            << quantizeSnap
-            << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
-
-    // Effect Unit Controls
-    add("EffectUnit_clear")
-            << tr("Clear Unit")
-            << tr("Clear effect unit.");
-
-    add("EffectUnit_show_parameters")
-            << tr("Show Effect Parameters")
-            << tr("Show/hide parameters for effects in this unit.");
-
-    add("EffectUnit_enabled")
-            << tr("Toggle Unit")
-            << tr("Enable or disable this whole effect unit.");
-    add("EffectUnit_mix")
-            << tr("Mix")
-            << tr("Adjust the mixing of the dry (input) signal with the wet (output) signal of the effect unit")
-            << tr("D/W mode: Crossfade between dry and wet")
-            << tr("D+W mode: Add wet to dry")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("EffectUnit_mix_mode")
-            << tr("Mix Mode")
-            << tr("Adjust how the dry (input) signal is mixed with the wet (output) signal of the effect unit") + "\n"
-            << tr("Dry/Wet mode (crossed lines): Mix knob crossfades between dry and wet\n"
-                  "Use this to change the sound of the track with EQ and filter effects.") + "\n"
-            << tr("Dry+Wet mode (flat dry line): Mix knob adds wet to dry\n"
-                  "Use this to change only the effected (wet) signal with EQ and filter effects.");
-
-    add("EffectUnit_super1")
-            << tr("Super Knob")
-            << tr("Controls the Meta Knob of all effects in this unit together.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("EffectUnit_next_chain")
-            << tr("Next Chain")
-            << tr("Load next effect chain preset into this effect unit.");
-
-    add("EffectUnit_prev_chain")
-            << tr("Previous Chain")
-            << tr("Load previous effect chain preset into this effect unit.");
-
-    add("EffectUnit_chain_selector")
-            << tr("Next/Previous Chain")
-            << tr("Load next or previous effect chain preset into this effect unit.");
-
-    add("EffectUnit_group_enabled")
-            << tr("Assign Effect Unit")
-            << tr("Assign this effect unit to the channel output.")
-            << effectsWithinUnit;
-
-    add("EffectUnit_headphones_enabled")
-            << tr("Assign Effect Unit")
-            << tr("Route the headphone channel through this effect unit.")
-            << effectsWithinUnit;
-
-    add("EffectUnit_master_enabled")
-            << tr("Assign Effect Unit")
-            << tr("Route the main mix through this effect unit.")
-            << effectsWithinUnit;
-
-    add("EffectUnit_BusLeft_enabled")
-            << tr("Assign Effect Unit")
-            << tr("Route the left crossfader bus through this effect unit.")
-            << effectsWithinUnit;
-
-    add("EffectUnit_BusRight_enabled")
-            << tr("Assign Effect Unit")
-            << tr("Route the right crossfader bus through this effect unit.")
-            << effectsWithinUnit;
-
-    add("EffectUnit_deck_enabled")
-            << tr("Assign Effect Unit")
-            << tr("Route this deck through the indicated effect unit.")
-            << effectsWithinUnit;
-
-    add("EffectUnit_sampler_enabled")
-            << tr("Assign Effect Unit")
-            << tr("Route this sampler through the indicated effect unit.")
-            << effectsWithinUnit;
-
-    add("EffectUnit_microphone_enabled")
-            << tr("Assign Effect Unit")
-            << tr("Route this microphone through the indicated effect unit.")
-            << effectsWithinUnit;
-
-    add("EffectUnit_auxiliary_enabled")
-            << tr("Assign Effect Unit")
-            << tr("Route this auxiliary input through the indicated effect unit.")
-            << effectsWithinUnit;
-
-    // Effect Slot Controls
-    add("EffectSlot_clear")
-            << tr("Clear")
-            << tr("Clear the current effect.");
-
-    add("EffectSlot_enabled")
-            << tr("Enable Effect")
-            << tr("The effect unit must also be assigned to a deck or other sound source to hear the effect.");
-
-    add("EffectSlot_next_effect")
-            << tr("Next")
-            << tr("Switch to the next effect.");
-
-    add("EffectSlot_prev_effect")
-            << tr("Previous")
-            << tr("Switch to the previous effect.");
-
-    add("EffectSlot_effect_selector")
-            << tr("Next or Previous")
-            << tr("Switch to either the next or previous effect.");
-
-    add("EffectSlot_metaknob")
-            << tr("Meta Knob")
-            << tr("Controls linked parameters of this effect")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("EffectSlot_focus")
-            << tr("Effect Focus Button")
-            << QString("%1: %2").arg(leftClick, tr("Focuses this effect."))
-            << QString("%1: %2").arg(rightClick, tr("Unfocuses this effect."))
-            << tr("Refer to the web page on the Mixxx wiki for your controller for more information.");
-
-    add("EffectSlot_parameter")
-            << tr("Effect Parameter")
-            << tr("Adjusts a parameter of the effect.")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("EffectSlot_parameter_link_type")
-            << tr("Meta Knob Link")
-            << tr("Set how this parameter is linked to the effect's Meta Knob.")
-            << tr("Inactive: parameter not linked")
-            << tr("Active: parameter moves with Meta Knob")
-            << tr("Left side active: parameter moves with left half of Meta Knob turn")
-            << tr("Right side active: parameter moves with right half of Meta Knob turn")
-            << tr("Left and right side active: parameter moves across range with half of Meta Knob turn and back with the other half");
-
-    add("EffectSlot_parameter_inversion")
-            << tr("Meta Knob Link Inversion")
-            << tr("Inverts the direction this parameter moves when turning the effect's Meta Knob.");
-
-    add("EffectSlot_button_parameter")
-            << tr("Equalizer Parameter Kill")
-            << tr("Holds the gain of the EQ to zero while active.")
-            << eqKillLatch;
-
-    // Quick Effect Rack Controls
-    add("QuickEffectRack_super1")
-            << tr("Quick Effect Super Knob")
-            << tr("Quick Effect Super Knob (control linked effect parameters).")
-            << QString("%1: %2").arg(rightClick, resetToDefault)
-            << tr("Hint: Change the default Quick Effect mode in Preferences -> Equalizers.");
-
-    add("QuickEffectRack_enabled")
-            << tr("Toggle")
-            << tr("Toggle the current effect.")
-            << eqKillLatch;
-
-    // Equalizer Rack Controls
-    add("EqualizerRack_effect_parameter")
-            << tr("Equalizer Parameter")
-            << tr("Adjusts the gain of the EQ filter.")
-            << QString("%1: %2").arg(rightClick, resetToDefault)
-            << tr("Hint: Change the default EQ mode in Preferences -> Equalizers.");
-
-    add("EqualizerRack_effect_button_parameter")
-            << tr("Equalizer Parameter Kill")
-            << tr("Holds the gain of the EQ to zero while active.")
-            << eqKillLatch;
-
-    add("skin_settings")
-            << tr("Skin Settings Menu")
-            << tr("Show/hide skin settings menu");
-
-    // Sampler Bank Controls
-    add("SaveSamplerBank")
-            << tr("Save Sampler Bank")
-            << tr("Save the collection of samples loaded in the samplers.");
-
-    add("LoadSamplerBank")
-            << tr("Load Sampler Bank")
-            << tr("Load a previously saved collection of samples into the samplers.");
-
-    add("configure_input")
-            << tr("Select and configure a hardware device for this input");
-
+      // AutoDJ status indicator
+      add("autodj_status")
+              << tr("Auto DJ is active");
+
+      add("passthrough_enabled")
+              << tr("Enable Passthrough")
+              << tr("When enabled, the deck directly plays the audio arriving on the vinyl input.");
+
+      add("vinylcontrol_enabled")
+              << tr("Enable Vinyl Control")
+              << tr("When disabled, the track is controlled by Mixxx playback controls.")
+              << tr("When enabled, the track responds to external vinyl control.");
+
+      add("vinylcontrol_status")
+              << tr("Vinyl Status")
+              << tr("Provides visual feedback for vinyl control status:")
+              << tr("Green for control enabled.")
+              << tr("Blinking yellow for when the needle reaches the end of the record.")
+              << tr("Blue for passthrough enabled.");
+
+      add("vinylcontrol_mode")
+              << tr("Vinyl Control Mode")
+              << tr("Absolute mode - track position equals needle position and "
+                    "speed.")
+              << tr("Relative mode - track speed equals needle speed "
+                    "regardless of needle position.")
+              << tr("Constant mode - track speed equals last known-steady "
+                    "speed regardless of needle input.");
+
+      add("vinylcontrol_cueing")
+              << tr("Vinyl Cueing Mode")
+              << tr("Determines how cue points are treated in vinyl control "
+                    "Relative mode:")
+              << tr("Off - Cue points ignored.")
+              << tr("One Cue - If needle is dropped after the cue point, track "
+                    "will seek to that cue point.")
+              << tr("Hot Cue - Track will seek to nearest previous hotcue "
+                    "point.");
+
+      add("loop_in")
+              << tr("Loop-In Marker")
+              << QString("%1: %2").arg(leftClick + " " + loopInactive,
+                         tr("Sets the track Loop-In Marker to the current play position."))
+              << quantizeSnap
+              << QString("%1: %2").arg(leftClick + " " + loopActive,
+                         tr("Press and hold to move Loop-In Marker."))
+              << QString("%1: %2").arg(rightClick, tr("Jump to Loop-In Marker."));
+
+      add("loop_out")
+              << tr("Loop-Out Marker")
+              << QString("%1: %2").arg(leftClick + " " + loopInactive,
+                         tr("Sets the track Loop-Out Marker to the current play position."))
+              << quantizeSnap
+              << QString("%1: %2").arg(leftClick + " " + loopActive,
+                         tr("Press and hold to move Loop-Out Marker."))
+              << QString("%1: %2").arg(rightClick, tr("Jump to Loop-Out Marker."));
+
+      add("loop_halve")
+              << tr("Loop Halve")
+              << tr("Halves the current loop's length by moving the end marker.")
+              << tr("Deck immediately loops if past the new endpoint.");
+
+      add("loop_double")
+              << tr("Loop Double")
+              << tr("Doubles the current loop's length by moving the end marker.");
+
+      add("beatloop_size")
+              << tr("Beatloop Size")
+              << tr("Select the size of the loop in beats to set with the Beatloop button.")
+              << tr("Changing this resizes the loop if the loop already matches this size.");
+
+      add("beatloop_halve")
+              << tr("Halve the size of an existing beatloop, or halve the size "
+                    "of the next beatloop set with the Beatloop button.");
+
+      add("beatloop_double")
+              << tr("Double the size of an existing beatloop, or double the "
+                    "size of the next beatloop set with the Beatloop button.");
+
+      //beatloop and beatlooproll
+      add("beatloop_activate")
+              << tr("Beatloop")
+              << QString("%1: %2").arg(leftClick,
+                         tr("Start a loop over the set number of beats."))
+              << quantizeSnap
+              << QString("%1: %2").arg(rightClick,
+                         tr("Temporarily enable a rolling loop over the set "
+                            "number of beats."))
+              << tr("Playback will resume where the track would have been if "
+                    "it had not entered the loop.");
+
+      add("beatjump_size")
+              << tr("Beatjump/Loop Move Size")
+              << tr("Select the number of beats to jump or move the loop with "
+                    "the Beatjump Forward/Backward buttons.");
+
+      add("beatjump_forward")
+              << tr("Beatjump Forward")
+              << QString("%1: %2").arg(leftClick + " " + loopInactive,
+                         tr("Jump forward by the set number of beats."))
+              << QString("%1: %2").arg(leftClick + " " + loopActive,
+                         tr("Move the loop forward by the set number of "
+                            "beats."))
+              << QString("%1: %2").arg(rightClick + " " + loopInactive,
+                         tr("Jump forward by 1 beat."))
+              << QString("%1: %2").arg(rightClick + " " + loopActive,
+                         tr("Move the loop forward by 1 beat."));
+
+      add("beatjump_backward")
+              << tr("Beatjump Backward")
+              << QString("%1: %2").arg(leftClick + " " + loopInactive,
+                         tr("Jump backward by the set number of beats."))
+              << QString("%1: %2").arg(leftClick + " " + loopActive,
+                         tr("Move the loop backward by the set number of "
+                            "beats."))
+              << QString("%1: %2").arg(rightClick + " " + loopInactive,
+                         tr("Jump backward by 1 beat."))
+              << QString("%1: %2").arg(rightClick + " " + loopActive,
+                         tr("Move the loop backward by 1 beat."));
+
+      add("loop_exit")
+              << tr("Loop Exit")
+              << tr("Turns the current loop off.")
+              << tr("Works only if Loop-In and Loop-Out marker are set.");
+
+      add("reloop_toggle")
+              << tr("Reloop")
+              << QString("%1: %2").arg(
+                         leftClick, tr("Toggles the current loop on or off."))
+              << tr("If the loop is ahead of the current position, looping "
+                    "will start when the loop is reached.")
+              << tr("Works only if Loop-In and Loop-Out Marker are set.")
+              << QString("%1: %2").arg(rightClick,
+                         tr("Enable loop, jump to Loop-In Marker, and stop "
+                            "playback."));
+
+      add("slip_mode") << tr("Slip Mode")
+                       << tr("When active, the playback continues muted in the "
+                             "background during a loop, reverse, scratch etc.")
+                       << tr("Once disabled, the audible playback will resume "
+                             "where the track would have been.");
+
+      add("track_time")
+              << tr("Track Time")
+              << tr("Displays the elapsed and/or remaining time of the track loaded.")
+              << tr("Click to toggle between time elapsed/remaining time/both.")
+              << tr("Hint: Change the time format in Preferences -> Decks.");
+
+      add("track_duration")
+              << tr("Track Duration")
+              << tr("Displays the duration of the loaded track.");
+
+      QString trackTags = tr("Information is loaded from the track's metadata tags.");
+      add("track_artist")
+              << tr("Track Artist")
+              << tr("Displays the artist of the loaded track.")
+              << trackTags
+              << dropTracksHere
+              << dragItem
+              << trackMenu;
+
+      add("track_title")
+              << tr("Track Title")
+              << tr("Displays the title of the loaded track.")
+              << trackTags
+              << dropTracksHere
+              << dragItem
+              << trackMenu;
+
+      add("track_album")
+              << tr("Track Album")
+              << tr("Displays the album name of the loaded track.")
+              << trackTags
+              << dropTracksHere
+              << dragItem
+              << trackMenu;
+
+      add("track_key")
+              //: The musical key of a track
+              << tr("Track Key")
+              << tr("Displays the musical key of the loaded track.")
+              << trackTags;
+
+      add("text")
+              << tr("Track Artist/Title")
+              << tr("Displays the artist and title of the loaded track.")
+              << trackTags
+              << dropTracksHere
+              << dragItem;
+
+      add("time")
+              << tr("Clock")
+              << tr("Displays the current time.");
+
+      add("audio_latency_usage")
+              << tr("Audio Latency Usage Meter")
+              << tr("Displays the fraction of latency used for audio processing.")
+              << tr("A high value indicates that audible glitches are likely.")
+              << tr("Do not enable keylock, effects or additional decks in this situation.");
+
+      add("audio_latency_overload")
+              << tr("Audio Latency Overload Indicator")
+              << tr("Indicates that the audio buffer is too small to do all audio processing.");
+
+      add("coverart")
+              << tr("Cover Art")
+              << tr("Displays cover artwork of the loaded track.")
+              << QString("%1: %2").arg(rightClick,
+                         tr("Displays options for editing cover artwork."))
+              << dropTracksHere << dragItem;
+
+      add("starrating")
+              << tr("Star Rating")
+              << tr("Assign ratings to individual tracks by clicking the stars.");
+
+      // Intro & outro cues
+      add("show_intro_outro_cues")
+              << tr("Show/hide intro & outro markers and associated buttons.");
+
+      add("intro_start")
+              << tr("Intro Start Marker")
+              << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+              << tr("If marker is not set, sets the marker to the current play position.")
+              << quantizeSnap
+              << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+      add("intro_end")
+              << tr("Intro End Marker")
+              << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+              << tr("If marker is not set, sets the marker to the current play position.")
+              << quantizeSnap
+              << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+      add("outro_start")
+              << tr("Outro Start Marker")
+              << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+              << tr("If marker is not set, sets the marker to the current play position.")
+              << quantizeSnap
+              << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+      add("outro_end")
+              << tr("Outro End Marker")
+              << QString("%1: %2").arg(leftClick, tr("If marker is set, jumps to the marker."))
+              << tr("If marker is not set, sets the marker to the current play position.")
+              << quantizeSnap
+              << QString("%1: %2").arg(rightClick, tr("If marker is set, clears the marker."));
+
+      // Effect Unit Controls
+      add("EffectUnit_clear")
+              << tr("Clear Unit")
+              << tr("Clear effect unit.");
+
+      add("EffectUnit_show_parameters")
+              << tr("Show Effect Parameters")
+              << tr("Show/hide parameters for effects in this unit.");
+
+      add("EffectUnit_enabled")
+              << tr("Toggle Unit")
+              << tr("Enable or disable this whole effect unit.");
+      add("EffectUnit_mix")
+              << tr("Mix")
+              << tr("Adjust the mixing of the dry (input) signal with the wet "
+                    "(output) signal of the effect unit")
+              << tr("D/W mode: Crossfade between dry and wet")
+              << tr("D+W mode: Add wet to dry")
+              << QString("%1: %2").arg(rightClick, resetToDefault);
+
+      add("EffectUnit_mix_mode")
+              << tr("Mix Mode")
+              << tr("Adjust how the dry (input) signal is mixed with the wet "
+                    "(output) signal of the effect unit") +
+                      "\n"
+              << tr("Dry/Wet mode (crossed lines): Mix knob crossfades between "
+                    "dry and wet\n"
+                    "Use this to change the sound of the track with EQ and "
+                    "filter effects.") +
+                      "\n"
+              << tr("Dry+Wet mode (flat dry line): Mix knob adds wet to dry\n"
+                    "Use this to change only the effected (wet) signal with EQ "
+                    "and filter effects.");
+
+      add("EffectUnit_super1")
+              << tr("Super Knob")
+              << tr("Controls the Meta Knob of all effects in this unit together.")
+              << QString("%1: %2").arg(rightClick, resetToDefault);
+
+      add("EffectUnit_next_chain")
+              << tr("Next Chain")
+              << tr("Load next effect chain preset into this effect unit.");
+
+      add("EffectUnit_prev_chain")
+              << tr("Previous Chain")
+              << tr("Load previous effect chain preset into this effect unit.");
+
+      add("EffectUnit_chain_selector")
+              << tr("Next/Previous Chain")
+              << tr("Load next or previous effect chain preset into this effect unit.");
+
+      add("EffectUnit_group_enabled")
+              << tr("Assign Effect Unit")
+              << tr("Assign this effect unit to the channel output.")
+              << effectsWithinUnit;
+
+      add("EffectUnit_headphones_enabled")
+              << tr("Assign Effect Unit")
+              << tr("Route the headphone channel through this effect unit.")
+              << effectsWithinUnit;
+
+      add("EffectUnit_master_enabled")
+              << tr("Assign Effect Unit")
+              << tr("Route the main mix through this effect unit.")
+              << effectsWithinUnit;
+
+      add("EffectUnit_BusLeft_enabled")
+              << tr("Assign Effect Unit")
+              << tr("Route the left crossfader bus through this effect unit.")
+              << effectsWithinUnit;
+
+      add("EffectUnit_BusRight_enabled")
+              << tr("Assign Effect Unit")
+              << tr("Route the right crossfader bus through this effect unit.")
+              << effectsWithinUnit;
+
+      add("EffectUnit_deck_enabled")
+              << tr("Assign Effect Unit")
+              << tr("Route this deck through the indicated effect unit.")
+              << effectsWithinUnit;
+
+      add("EffectUnit_sampler_enabled")
+              << tr("Assign Effect Unit")
+              << tr("Route this sampler through the indicated effect unit.")
+              << effectsWithinUnit;
+
+      add("EffectUnit_microphone_enabled")
+              << tr("Assign Effect Unit")
+              << tr("Route this microphone through the indicated effect unit.")
+              << effectsWithinUnit;
+
+      add("EffectUnit_auxiliary_enabled")
+              << tr("Assign Effect Unit")
+              << tr("Route this auxiliary input through the indicated effect unit.")
+              << effectsWithinUnit;
+
+      // Effect Slot Controls
+      add("EffectSlot_clear")
+              << tr("Clear")
+              << tr("Clear the current effect.");
+
+      add("EffectSlot_enabled")
+              << tr("Enable Effect")
+              << tr("The effect unit must also be assigned to a deck or other "
+                    "sound source to hear the effect.");
+
+      add("EffectSlot_next_effect")
+              << tr("Next")
+              << tr("Switch to the next effect.");
+
+      add("EffectSlot_prev_effect")
+              << tr("Previous")
+              << tr("Switch to the previous effect.");
+
+      add("EffectSlot_effect_selector")
+              << tr("Next or Previous")
+              << tr("Switch to either the next or previous effect.");
+
+      add("EffectSlot_metaknob")
+              << tr("Meta Knob")
+              << tr("Controls linked parameters of this effect")
+              << QString("%1: %2").arg(rightClick, resetToDefault);
+
+      add("EffectSlot_focus")
+              << tr("Effect Focus Button")
+              << QString("%1: %2").arg(leftClick, tr("Focuses this effect."))
+              << QString("%1: %2").arg(rightClick, tr("Unfocuses this effect."))
+              << tr("Refer to the web page on the Mixxx wiki for your "
+                    "controller for more information.");
+
+      add("EffectSlot_parameter")
+              << tr("Effect Parameter")
+              << tr("Adjusts a parameter of the effect.")
+              << QString("%1: %2").arg(rightClick, resetToDefault);
+
+      add("EffectSlot_parameter_link_type")
+              << tr("Meta Knob Link")
+              << tr("Set how this parameter is linked to the effect's Meta "
+                    "Knob.")
+              << tr("Inactive: parameter not linked")
+              << tr("Active: parameter moves with Meta Knob")
+              << tr("Left side active: parameter moves with left half of Meta "
+                    "Knob turn")
+              << tr("Right side active: parameter moves with right half of "
+                    "Meta Knob turn")
+              << tr("Left and right side active: parameter moves across range "
+                    "with half of Meta Knob turn and back with the other half");
+
+      add("EffectSlot_parameter_inversion")
+              << tr("Meta Knob Link Inversion")
+              << tr("Inverts the direction this parameter moves when turning "
+                    "the effect's Meta Knob.");
+
+      add("EffectSlot_button_parameter")
+              << tr("Equalizer Parameter Kill")
+              << tr("Holds the gain of the EQ to zero while active.")
+              << eqKillLatch;
+
+      // Quick Effect Rack Controls
+      add("QuickEffectRack_super1")
+              << tr("Quick Effect Super Knob")
+              << tr("Quick Effect Super Knob (control linked effect parameters).")
+              << QString("%1: %2").arg(rightClick, resetToDefault)
+              << tr("Hint: Change the default Quick Effect mode in Preferences -> Equalizers.");
+
+      add("QuickEffectRack_enabled")
+              << tr("Toggle")
+              << tr("Toggle the current effect.")
+              << eqKillLatch;
+
+      // Equalizer Rack Controls
+      add("EqualizerRack_effect_parameter")
+              << tr("Equalizer Parameter")
+              << tr("Adjusts the gain of the EQ filter.")
+              << QString("%1: %2").arg(rightClick, resetToDefault)
+              << tr("Hint: Change the default EQ mode in Preferences -> Equalizers.");
+
+      add("EqualizerRack_effect_button_parameter")
+              << tr("Equalizer Parameter Kill")
+              << tr("Holds the gain of the EQ to zero while active.")
+              << eqKillLatch;
+
+      add("skin_settings")
+              << tr("Skin Settings Menu")
+              << tr("Show/hide skin settings menu");
+
+      // Sampler Bank Controls
+      add("SaveSamplerBank")
+              << tr("Save Sampler Bank")
+              << tr("Save the collection of samples loaded in the samplers.");
+
+      add("LoadSamplerBank")
+              << tr("Load Sampler Bank")
+              << tr("Load a previously saved collection of samples into the samplers.");
+
+      add("configure_input")
+              << tr("Select and configure a hardware device for this input");
 }

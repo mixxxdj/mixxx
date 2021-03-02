@@ -1,5 +1,4 @@
-#ifndef STATMODEL_H
-#define STATMODEL_H
+#pragma once
 
 #include <QAbstractTableModel>
 #include <QVariant>
@@ -31,9 +30,6 @@ class StatModel final : public QAbstractTableModel {
     StatModel(QObject* pParent=NULL);
     virtual ~StatModel();
 
-  public slots:
-    void statUpdated(const Stat& stat);
-
     ////////////////////////////////////////////////////////////////////////////
     // QAbstractItemModel methods
     ////////////////////////////////////////////////////////////////////////////
@@ -45,10 +41,11 @@ class StatModel final : public QAbstractTableModel {
     QVariant headerData(int section, Qt::Orientation orientation,
                         int role = Qt::DisplayRole) const;
 
+  public slots:
+    void statUpdated(const Stat& stat);
+
   private:
     QVector<QHash<int, QVariant> > m_headerInfo;
     QList<Stat> m_stats;
     QHash<QString, int> m_statNameToRow;
 };
-
-#endif /* STATMODEL_H */

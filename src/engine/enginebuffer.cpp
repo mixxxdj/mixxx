@@ -26,6 +26,7 @@
 #include "engine/readaheadmanager.h"
 #include "engine/sync/enginesync.h"
 #include "engine/sync/synccontrol.h"
+#include "moc_enginebuffer.cpp"
 #include "preferences/usersettings.h"
 #include "track/beatfactory.h"
 #include "track/keyutils.h"
@@ -33,6 +34,7 @@
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/defs.h"
+#include "util/frameadapter.h"
 #include "util/logger.h"
 #include "util/math.h"
 #include "util/sample.h"
@@ -232,6 +234,22 @@ EngineBuffer::EngineBuffer(const QString& group,
     m_pCueControl = new CueControl(group, pConfig);
     addControl(m_pCueControl);
 
+    connect(m_pLoopingControl,
+            &LoopingControl::loopReset,
+            m_pCueControl,
+            &CueControl::slotLoopReset,
+            Qt::DirectConnection);
+    connect(m_pLoopingControl,
+            &LoopingControl::loopUpdated,
+            m_pCueControl,
+            &CueControl::slotLoopUpdated,
+            Qt::DirectConnection);
+    connect(m_pLoopingControl,
+            &LoopingControl::loopEnabledChanged,
+            m_pCueControl,
+            &CueControl::slotLoopEnabledChanged,
+            Qt::DirectConnection);
+
     m_pReadAheadManager = new ReadAheadManager(m_pReader,
                                                m_pLoopingControl);
     m_pReadAheadManager->addRateControl(m_pRateControl);
@@ -349,6 +367,14 @@ double EngineBuffer::getBpm() const {
 
 double EngineBuffer::getLocalBpm() const {
     return m_pBpmControl->getLocalBpm();
+}
+
+void EngineBuffer::setBeatLoop(double startPosition, bool enabled) {
+    return m_pLoopingControl->setBeatLoop(startPosition, enabled);
+}
+
+void EngineBuffer::setLoop(double startPosition, double endPositon, bool enabled) {
+    return m_pLoopingControl->setLoop(startPosition, endPositon, enabled);
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
@@ -523,6 +549,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_dSlipPosition = 0.;
     m_dSlipRate = 0;
 
+    m_iSeekQueued.storeRelease(SEEK_NONE);
+
     // Reset the pitch value for the new track.
     m_pause.unlock();
 
@@ -534,7 +562,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
-                                       QString reason) {
+        const QString& reason) {
     m_iTrackLoading = 0;
     // Loading of a new track failed.
     // eject the currently loaded track (the old Track) as well
@@ -562,6 +590,8 @@ void EngineBuffer::ejectTrack() {
     m_playposSlider->set(0);
     m_pCueControl->resetIndicators();
 
+    m_iSeekQueued.storeRelease(SEEK_NONE);
+
     m_pause.unlock();
 
     // Close open file handles by unloading the current track
@@ -587,6 +617,10 @@ void EngineBuffer::notifyTrackLoaded(
     // Note: we are still in a worker thread.
     for (const auto& pControl : qAsConst(m_engineControls)) {
         pControl->trackLoaded(pNewTrack);
+        pControl->setCurrentSample(0.0,
+                m_pTrackSamples->get(),
+                mixxx::audio::SampleRate::fromDouble(
+                        m_pTrackSampleRate->get()));
     }
 
     if (pNewTrack) {
@@ -603,7 +637,7 @@ void EngineBuffer::notifyTrackLoaded(
 }
 
 void EngineBuffer::slotPassthroughChanged(double enabled) {
-    if (enabled) {
+    if (enabled != 0) {
         // If passthrough was enabled, stop playing the current track.
         slotControlStop(1.0);
     }
@@ -626,7 +660,7 @@ void EngineBuffer::slotControlSeekExact(double playPosition) {
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     double fFractionalPlaypos = 0.0;
-    if (m_trackSamplesOld) {
+    if (m_trackSamplesOld != 0) {
         fFractionalPlaypos = math_min<double>(absolutePlaypos, m_trackSamplesOld);
         fFractionalPlaypos /= m_trackSamplesOld;
     }
@@ -654,25 +688,26 @@ void EngineBuffer::doSeekPlayPos(double new_playpos, enum SeekRequest seekType) 
     queueNewPlaypos(new_playpos, seekType);
 }
 
-bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay) {
+bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     bool playPossible = true;
     if ((!m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0) ||
             (m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0 &&
-             m_filepos_play >= m_pTrackSamples->get() &&
-             !atomicLoadRelaxed(m_iSeekQueued)) || m_pPassthroughEnabled->toBool()) {
+                    m_filepos_play >= m_pTrackSamples->get() &&
+                    !atomicLoadRelaxed(m_iSeekQueued)) ||
+            m_pPassthroughEnabled->toBool()) {
         // play not possible
         playPossible = false;
     }
 
-    return m_pCueControl->updateIndicatorsAndModifyPlay(newPlay, playPossible);
+    return m_pCueControl->updateIndicatorsAndModifyPlay(newPlay, oldPlay, playPossible);
 }
 
 void EngineBuffer::verifyPlay() {
     bool play = m_playButton->toBool();
-    bool verifiedPlay = updateIndicatorsAndModifyPlay(play);
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(play, play);
     if (play != verifiedPlay) {
         m_playButton->setAndConfirm(verifiedPlay ? 1.0 : 0.0);
     }
@@ -680,7 +715,7 @@ void EngineBuffer::verifyPlay() {
 
 void EngineBuffer::slotControlPlayRequest(double v) {
     bool oldPlay = m_playButton->toBool();
-    bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0);
+    bool verifiedPlay = updateIndicatorsAndModifyPlay(v > 0.0, oldPlay);
 
     if (!oldPlay && verifiedPlay) {
         if (m_pQuantize->toBool()
@@ -751,7 +786,7 @@ void EngineBuffer::processTrackLocked(
         CSAMPLE* pOutput, const int iBufferSize, int sample_rate) {
     ScopedTimer t("EngineBuffer::process_pauselock");
 
-    m_trackSampleRateOld = mixxx::audio::SampleRate(m_pTrackSampleRate->get());
+    m_trackSampleRateOld = mixxx::audio::SampleRate::fromDouble(m_pTrackSampleRate->get());
     m_trackSamplesOld = m_pTrackSamples->get();
 
     double baserate = 0.0;
@@ -826,7 +861,7 @@ void EngineBuffer::processTrackLocked(
     } else {
         // We might have have temporary speed change, so adjust pitch if not locked
         // Note: This will not update key and tempo widgets
-        if (tempoRatio) {
+        if (tempoRatio != 0) {
             pitchRatio *= (speed / tempoRatio);
         }
 
@@ -848,7 +883,7 @@ void EngineBuffer::processTrackLocked(
         // Do not switch scaler when we have no transport
         enableIndependentPitchTempoScaling(useIndependentPitchAndTempoScaling,
                 iBufferSize);
-    } else if (m_speed_old && !is_scratching) {
+    } else if (m_speed_old != 0 && !is_scratching) {
         // we are stopping, collect samples for fade out
         readToCrossfadeBuffer(iBufferSize);
         // Clear the scaler information
@@ -1071,7 +1106,7 @@ void EngineBuffer::process(CSAMPLE* pOutput, const int iBufferSize) {
     // - Set last sample value (m_fLastSampleValue) so that rampOut works? Other
     //   miscellaneous upkeep issues.
 
-    m_iSampleRate = static_cast<mixxx::audio::SampleRate>(m_pSampleRate->get());
+    m_iSampleRate = mixxx::audio::SampleRate::fromDouble(m_pSampleRate->get());
 
     // If the sample rate has changed, force Rubberband to reset so that
     // it doesn't reallocate when the user engages keylock during playback.
@@ -1232,14 +1267,8 @@ void EngineBuffer::processSeek(bool paused) {
         }
         double requestedPosition = position;
         double syncPosition =
-                m_pBpmControl
-                        ->getBeatMatchPosition(
-                                mixxx::FramePos(
-                                        position / mixxx::kEngineChannelCount),
-                                true,
-                                true)
-                        .getValue() *
-                mixxx::kEngineChannelCount;
+                framePosToSamplePos(m_pBpmControl->getBeatMatchPosition(
+                        samplePosToFramePos(position), true, true));
         position = m_pLoopingControl->getSyncPositionInsideLoop(requestedPosition, syncPosition);
         if (kLogger.traceEnabled()) {
             kLogger.trace()
@@ -1291,7 +1320,7 @@ bool EngineBuffer::getQueuedSeekPosition(double* pSeekPosition) const {
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
-    if (!m_trackSampleRateOld) {
+    if (m_trackSampleRateOld == 0) {
         // This happens if Deck Passthrough is active but no track is loaded.
         // We skip indicator updates.
         return;

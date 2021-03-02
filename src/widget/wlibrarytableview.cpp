@@ -7,17 +7,17 @@
 #include <QScrollBar>
 
 #include "library/trackmodel.h"
+#include "moc_wlibrarytableview.cpp"
 #include "util/math.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
-                                     UserSettingsPointer pConfig,
-                                     ConfigKey vScrollBarPosKey)
+        UserSettingsPointer pConfig,
+        const ConfigKey& vScrollBarPosKey)
         : QTableView(parent),
           m_pConfig(pConfig),
           m_vScrollBarPosKey(vScrollBarPosKey) {
-
     loadVScrollBarPosState();
 
     // Setup properties for table
@@ -44,8 +44,10 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
     setAlternatingRowColors(true);
 
-    connect(verticalScrollBar(), SIGNAL(valueChanged(int)),
-            this, SIGNAL(scrollValueChanged(int)));
+    connect(verticalScrollBar(),
+            &QScrollBar::valueChanged,
+            this,
+            &WLibraryTableView::scrollValueChanged);
 
     setTabKeyNavigation(false);
 }
@@ -130,14 +132,13 @@ void WLibraryTableView::restoreVScrollBarPos(TrackModel* key){
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
     setFont(font);
-    setTrackTableRowHeight(verticalHeader()->defaultSectionSize());
+    QFontMetrics metrics(font);
+    verticalHeader()->setMinimumSectionSize(metrics.height());
 }
 
 void WLibraryTableView::setTrackTableRowHeight(int rowHeight) {
-    QFontMetrics metrics(font());
-    int fontHeightPx = metrics.height();
     verticalHeader()->setDefaultSectionSize(math_max(
-                                                rowHeight, fontHeightPx));
+            rowHeight, verticalHeader()->minimumSectionSize()));
 }
 
 void WLibraryTableView::setSelectedClick(bool enable) {
@@ -172,8 +173,12 @@ void WLibraryTableView::focusInEvent(QFocusEvent* event) {
                     selectRow(0);
                     DEBUG_ASSERT(currentIndex().row() == 0);
                 } else {
-                    // Select the focused row
-                    selectRow(currentIndex().row());
+                    // Select the row of the currently focused index.
+                    // For some reason selectRow(currentIndex().row()) would not
+                    // select for the first Qt::BacktabFocusReason in a session
+                    // even though currentIndex() is valid.
+                    selectionModel()->select(currentIndex(),
+                            QItemSelectionModel::Select | QItemSelectionModel::Rows);
                 }
             }
             DEBUG_ASSERT(currentIndex().isValid());

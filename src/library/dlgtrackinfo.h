@@ -34,7 +34,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     // Not thread safe. Only invoke via AutoConnection or QueuedConnection, not
     // directly!
     void loadTrack(TrackPointer pTrack);
-    void loadTrack(QModelIndex index);
+    void loadTrack(const QModelIndex& index);
 
   signals:
     void next();

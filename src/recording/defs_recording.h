@@ -1,5 +1,4 @@
-#ifndef __RECORDING_DEFS_H__
-#define __RECORDING_DEFS_H__
+#pragma once
 
 #define RECORDING_PREF_KEY "[Recording]"
 #define ENCODING_WAVE "WAV"
@@ -8,6 +7,9 @@
 #define ENCODING_OGG "OGG"
 #define ENCODING_MP3 "MP3"
 #define ENCODING_OPUS "Opus"
+#define ENCODING_AAC "AAC"
+#define ENCODING_HEAAC "HE-AAC"
+#define ENCODING_HEAACV2 "HE-AACv2"
 
 #define RECORD_OFF 0.0
 #define RECORD_READY 1.0
@@ -32,5 +34,3 @@
 #define SIZE_1GB Q_UINT64_C(1'070'000'000)
 #define SIZE_2GB Q_UINT64_C(2'140'000'000)
 #define SIZE_4GB Q_UINT64_C(4'280'000'000)
-
-#endif

@@ -16,7 +16,7 @@ class WaveformBeatMarker final {
         m_length = length;
     }
 
-    void setTextDisplayItems(QStringList items) {
+    void setTextDisplayItems(const QStringList& items) {
         m_textDisplayItems = items;
     }
 
