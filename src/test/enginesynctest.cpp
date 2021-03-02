@@ -1790,14 +1790,14 @@ TEST_F(EngineSyncTest, HalfDoubleConsistency) {
     const int numBeats = 100;
     QVector<double> beats1 =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    auto pBeats1 = new mixxx::BeatMap(*m_pTrack1, 0, beats1);
-    m_pTrack1->setBeats(mixxx::BeatsPointer(pBeats1));
+    auto pBeats1 = mixxx::BeatMap::makeBeatMap(*m_pTrack1, 0, QString(), beats1);
+    m_pTrack1->setBeats(pBeats1);
 
     beatLengthFrames = 60.0 * 44100 / 145.0;
     QVector<double> beats2 =
             createBeatVector(startOffsetFrames, numBeats, beatLengthFrames);
-    auto pBeats2 = new mixxx::BeatMap(*m_pTrack2, 0, beats2);
-    m_pTrack2->setBeats(mixxx::BeatsPointer(pBeats2));
+    auto pBeats2 = mixxx::BeatMap::makeBeatMap(*m_pTrack2, 0, QString(), beats2);
+    m_pTrack2->setBeats(pBeats2);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
@@ -2418,11 +2418,12 @@ TEST_F(EngineSyncTest, BeatMapQantizePlay) {
 
     constexpr int kSampleRate = 44100;
 
-    mixxx::BeatsPointer pBeats2 = mixxx::BeatsPointer(new mixxx::BeatMap(
+    auto pBeats2 = mixxx::BeatMap::makeBeatMap(
             *m_pTrack2,
             kSampleRate,
+            QString(),
             // Add two beats at 120 Bpm
-            QVector<double>({kSampleRate / 2, kSampleRate})));
+            QVector<double>({kSampleRate / 2, kSampleRate}));
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);

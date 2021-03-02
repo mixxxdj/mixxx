@@ -185,20 +185,6 @@ BeatMap::BeatMap(const Track& track, SINT iSampleRate)
     moveToThread(track.thread());
 }
 
-BeatMap::BeatMap(const Track& track, SINT iSampleRate,
-                 const QByteArray& byteArray)
-    : BeatMap(track, iSampleRate) {
-    readByteArray(byteArray);
-}
-
-BeatMap::BeatMap(const Track& track, SINT iSampleRate,
-                 const QVector<double>& beats)
-        : BeatMap(track, iSampleRate) {
-    if (beats.size() > 0) {
-        createFromBeatVector(beats);
-    }
-}
-
 BeatMap::BeatMap(const BeatMap& other, BeatList beats, double nominalBpm)
         : m_mutex(QMutex::Recursive),
           m_subVersion(other.m_subVersion),
@@ -210,6 +196,75 @@ BeatMap::BeatMap(const BeatMap& other, BeatList beats, double nominalBpm)
 
 BeatMap::BeatMap(const BeatMap& other)
         : BeatMap(other, other.m_beats, other.m_nominalBpm) {
+}
+
+BeatMap::BeatMap(const Track& track,
+        SINT sampleRate,
+        const QString& subVersion,
+        BeatList beats,
+        double nominalBpm)
+        : m_mutex(QMutex::Recursive),
+          m_subVersion(subVersion),
+          m_iSampleRate(sampleRate),
+          m_nominalBpm(nominalBpm),
+          m_beats(std::move(beats)) {
+    moveToThread(track.thread());
+}
+
+// static
+BeatsPointer BeatMap::makeBeatMap(const Track& track,
+        SINT sampleRate,
+        const QString& subVersion,
+        const QByteArray& byteArray) {
+    if (sampleRate <= 0) {
+        sampleRate = track.getSampleRate();
+    }
+
+    double nominalBpm = 0.0;
+    BeatList beatList;
+
+    track::io::BeatMap map;
+    if (map.ParseFromArray(byteArray.constData(), byteArray.size())) {
+        for (int i = 0; i < map.beat_size(); ++i) {
+            const Beat& beat = map.beat(i);
+            beatList.append(beat);
+        }
+        nominalBpm = calculateNominalBpm(beatList, sampleRate);
+    } else {
+        qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
+                << byteArray.size();
+    }
+    return BeatsPointer(new BeatMap(track, sampleRate, subVersion, beatList, nominalBpm));
+}
+
+// static
+BeatsPointer BeatMap::makeBeatMap(const Track& track,
+        SINT sampleRate,
+        const QString& subVersion,
+        const QVector<double>& beats) {
+    if (sampleRate <= 0) {
+        sampleRate = track.getSampleRate();
+    }
+
+    BeatList beatList;
+
+    double previous_beatpos = -1;
+    Beat beat;
+
+    foreach (double beatpos, beats) {
+        // beatpos is in frames. Do not accept fractional frames.
+        beatpos = floor(beatpos);
+        if (beatpos <= previous_beatpos || beatpos < 0) {
+            qDebug() << "BeatMap::createFromVector: beats not in increasing order or negative";
+            qDebug() << "discarding beat " << beatpos;
+        } else {
+            beat.set_frame_position(static_cast<google::protobuf::int32>(beatpos));
+            beatList.append(beat);
+            previous_beatpos = beatpos;
+        }
+    }
+    double nominalBpm = calculateNominalBpm(beatList, sampleRate);
+    return BeatsPointer(new BeatMap(track, sampleRate, subVersion, beatList, nominalBpm));
 }
 
 QByteArray BeatMap::toByteArray() const {
@@ -231,43 +286,6 @@ BeatsPointer BeatMap::clone() const {
     QMutexLocker locker(&m_mutex);
     BeatsPointer other(new BeatMap(*this));
     return other;
-}
-
-bool BeatMap::readByteArray(const QByteArray& byteArray) {
-    mixxx::track::io::BeatMap map;
-    if (!map.ParseFromArray(byteArray.constData(), byteArray.size())) {
-        qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
-                << byteArray.size();
-        return false;
-    }
-    for (int i = 0; i < map.beat_size(); ++i) {
-        const Beat& beat = map.beat(i);
-        m_beats.append(beat);
-    }
-    onBeatlistChanged();
-    return true;
-}
-
-void BeatMap::createFromBeatVector(const QVector<double>& beats) {
-    if (beats.isEmpty()) {
-       return;
-    }
-    double previous_beatpos = -1;
-    Beat beat;
-
-    foreach (double beatpos, beats) {
-        // beatpos is in frames. Do not accept fractional frames.
-        beatpos = floor(beatpos);
-        if (beatpos <= previous_beatpos || beatpos < 0) {
-            qDebug() << "BeatMap::createFromVector: beats not in increasing order or negative";
-            qDebug() << "discarding beat " << beatpos;
-        } else {
-            beat.set_frame_position(static_cast<google::protobuf::int32>(beatpos));
-            m_beats.append(beat);
-            previous_beatpos = beatpos;
-        }
-    }
-    onBeatlistChanged();
 }
 
 QString BeatMap::getVersion() const {
@@ -683,14 +701,6 @@ BeatsPointer BeatMap::setBpm(double dBpm) {
      *
      * - vittorio.
      */
-}
-
-void BeatMap::onBeatlistChanged() {
-    if (!isValid()) {
-        m_nominalBpm = 0;
-        return;
-    }
-    m_nominalBpm = calculateNominalBpm(m_beats, m_iSampleRate);
 }
 
 } // namespace mixxx

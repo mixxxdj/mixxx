@@ -25,22 +25,32 @@ class BeatMap final : public Beats {
     // Construct a BeatMap. iSampleRate may be provided if a more accurate
     // sample rate is known than the one associated with the Track.
     BeatMap(const Track& track, SINT iSampleRate);
+
+    BeatMap(const Track& track,
+            SINT sampleRate,
+            const QString& subVersion,
+            BeatList beats,
+            double nominalBpm);
+
+    ~BeatMap() override = default;
+
     // Construct a BeatMap. iSampleRate may be provided if a more accurate
     // sample rate is known than the one associated with the Track. If it is
     // zero then the track's sample rate will be used. The BeatMap will be
     // deserialized from the byte array.
-    BeatMap(const Track& track, SINT iSampleRate,
+    static BeatsPointer makeBeatMap(const Track& track,
+            SINT sampleRate,
+            const QString& subVersion,
             const QByteArray& byteArray);
+
     // Construct a BeatMap. iSampleRate may be provided if a more accurate
     // sample rate is known than the one associated with the Track. If it is
     // zero then the track's sample rate will be used. A list of beat locations
     // in audio frames may be provided.
-    BeatMap(const Track& track, SINT iSampleRate,
+    static BeatsPointer makeBeatMap(const Track& track,
+            SINT sampleRate,
+            const QString& subVersion,
             const QVector<double>& beats);
-
-    ~BeatMap() override = default;
-
-    // See method comments in beats.h
 
     Beats::CapabilitiesFlags getCapabilities() const override {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
@@ -86,9 +96,6 @@ class BeatMap final : public Beats {
     BeatMap(const BeatMap& other);
     // Constructor to update the beat grid
     BeatMap(const BeatMap& other, BeatList beats, double nominalBpm);
-    bool readByteArray(const QByteArray& byteArray);
-    void createFromBeatVector(const QVector<double>& beats);
-    void onBeatlistChanged();
 
     // For internal use only.
     bool isValid() const;

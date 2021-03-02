@@ -17,10 +17,9 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const Track& track,
         qDebug() << "Successfully deserialized BeatGrid";
         return pGrid;
     } else if (beatsVersion == BEAT_MAP_VERSION) {
-        mixxx::BeatMap* pMap = new mixxx::BeatMap(track, 0, beatsSerialized);
-        pMap->setSubVersion(beatsSubVersion);
+        auto pMap = mixxx::BeatMap::makeBeatMap(track, 0, beatsSubVersion, beatsSerialized);
         qDebug() << "Successfully deserialized BeatMap";
-        return mixxx::BeatsPointer(pMap, &BeatFactory::deleteBeats);
+        return pMap;
     }
     qDebug() << "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
     return mixxx::BeatsPointer();
@@ -115,9 +114,8 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         pGrid->setSubVersion(subVersion);
         return pGrid;
     } else if (version == BEAT_MAP_VERSION) {
-        mixxx::BeatMap* pBeatMap = new mixxx::BeatMap(track, iSampleRate, beats);
-        pBeatMap->setSubVersion(subVersion);
-        return mixxx::BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
+        auto pBeatMap = mixxx::BeatMap::makeBeatMap(track, iSampleRate, subVersion, beats);
+        return pBeatMap;
     } else {
         qDebug() << "ERROR: Could not determine what type of beatgrid to create.";
         return mixxx::BeatsPointer();

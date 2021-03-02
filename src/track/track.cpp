@@ -960,10 +960,12 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
-    mixxx::BeatsPointer pBeats(new mixxx::BeatMap(*this,
+    auto pBeats = mixxx::BeatMap::makeBeatMap(
+            *this,
             static_cast<SINT>(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate()),
+            QString(),
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
-                    getLocation(), *m_record.getStreamInfoFromSource())));
+                    getLocation(), *m_record.getStreamInfoFromSource()));
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
     m_pBeatsImporterPending.reset();
     return setBeatsWhileLocked(pBeats);
