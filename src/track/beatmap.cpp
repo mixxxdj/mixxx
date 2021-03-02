@@ -186,7 +186,6 @@ BeatMap::BeatMap(const Track& track,
           m_iSampleRate(sampleRate),
           m_nominalBpm(nominalBpm),
           m_beats(std::move(beats)) {
-    moveToThread(track.thread());
 }
 
 BeatMap::BeatMap(const BeatMap& other, BeatList beats, double nominalBpm)
@@ -195,7 +194,6 @@ BeatMap::BeatMap(const BeatMap& other, BeatList beats, double nominalBpm)
           m_iSampleRate(other.m_iSampleRate),
           m_nominalBpm(nominalBpm),
           m_beats(std::move(beats)) {
-    moveToThread(other.thread());
 }
 
 BeatMap::BeatMap(const BeatMap& other)

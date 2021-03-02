@@ -28,11 +28,9 @@ class BeatIterator {
 // Beats is the base class for BPM and beat management classes. It
 // provides a specification of all methods a beat-manager class must provide, as
 // well as a capability model for representing optional features.
-class Beats : public QObject {
-    Q_OBJECT
+class Beats {
   public:
-    Beats() { }
-    ~Beats() override = default;
+    virtual ~Beats() = default;
 
     enum Capabilities {
         BEATSCAP_NONE          = 0x0000,

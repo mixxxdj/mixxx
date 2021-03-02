@@ -52,7 +52,6 @@ BeatGrid::BeatGrid(
           m_dBeatLength(beatLength) {
     // BeatGrid should live in the same thread as the track it is associated
     // with.
-    moveToThread(track.thread());
 }
 
 BeatGrid::BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength)
@@ -61,7 +60,6 @@ BeatGrid::BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid
           m_iSampleRate(other.m_iSampleRate),
           m_grid(grid),
           m_dBeatLength(beatLength) {
-    moveToThread(other.thread());
 }
 
 BeatGrid::BeatGrid(const BeatGrid& other)
