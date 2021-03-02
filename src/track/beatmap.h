@@ -22,15 +22,6 @@ namespace mixxx {
 
 class BeatMap final : public Beats {
   public:
-    // Construct a BeatMap. iSampleRate may be provided if a more accurate
-    // sample rate is known than the one associated with the Track.
-    BeatMap(const Track& track, SINT iSampleRate);
-
-    BeatMap(const Track& track,
-            SINT sampleRate,
-            const QString& subVersion,
-            BeatList beats,
-            double nominalBpm);
 
     ~BeatMap() override = default;
 
@@ -92,9 +83,14 @@ class BeatMap final : public Beats {
     BeatsPointer setBpm(double dBpm) override;
 
   private:
-    BeatMap(const BeatMap& other);
+    BeatMap(const Track& track,
+            SINT sampleRate,
+            const QString& subVersion,
+            BeatList beats,
+            double nominalBpm);
     // Constructor to update the beat grid
     BeatMap(const BeatMap& other, BeatList beats, double nominalBpm);
+    BeatMap(const BeatMap& other);
 
     // For internal use only.
     bool isValid() const;
