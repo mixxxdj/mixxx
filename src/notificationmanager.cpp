@@ -35,8 +35,10 @@ NotificationManager::NotificationManager()
     m_pNumNotificationsControl->connectValueChangeRequest(
             this, &NotificationManager::slotNumNotificationsChangeRequested);
     m_pShowControl->connectValueChangeRequest(this, &NotificationManager::slotShowChangeRequested);
-    m_pStatusControl->connectValueChangeRequest(this, [](double value) {
-        qWarning() << "Status" << value;
+    m_pStatusControl->connectValueChangeRequest(this, [this](double value) {
+        if (value == 0.0 || value == 1.0 || value == 2.0) {
+            m_pStatusControl->setAndConfirm(value);
+        }
     });
 };
 
