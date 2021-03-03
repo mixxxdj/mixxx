@@ -215,7 +215,7 @@ BeatsPointer BeatMap::makeBeatMap(
         nominalBpm = calculateNominalBpm(beatList, sampleRate);
     } else {
         qDebug() << "ERROR: Could not parse BeatMap from QByteArray of size"
-                << byteArray.size();
+                 << byteArray.size();
     }
     return BeatsPointer(new BeatMap(sampleRate, subVersion, beatList, nominalBpm));
 }
