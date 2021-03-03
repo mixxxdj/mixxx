@@ -793,6 +793,8 @@ TEST_F(LoopingControlTest, LegacyBeatLoopControl) {
 
 TEST_F(LoopingControlTest, Beatjump_JumpsByBeats) {
     m_pTrack1->setBpm(120.0);
+    ProcessBuffer();
+
     double beatLength = m_pNextBeat->get();
     EXPECT_NE(0, beatLength);
 
@@ -809,6 +811,8 @@ TEST_F(LoopingControlTest, Beatjump_JumpsByBeats) {
 
 TEST_F(LoopingControlTest, Beatjump_MovesActiveLoop) {
     m_pTrack1->setBpm(120.0);
+    ProcessBuffer();
+
     m_pBeatLoopSize->set(4.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
@@ -839,6 +843,8 @@ TEST_F(LoopingControlTest, Beatjump_MovesLoopBoundaries) {
     // Holding down the loop in/out buttons and using beatjump should
     // move only the loop in/out point, but not shift the entire loop forward/backward
     m_pTrack1->setBpm(120.0);
+    ProcessBuffer();
+
     m_pBeatLoopSize->set(4.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
