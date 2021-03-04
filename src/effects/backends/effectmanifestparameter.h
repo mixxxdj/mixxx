@@ -101,7 +101,6 @@ class EffectManifestParameter {
     }
 
     ~EffectManifestParameter() {
-        //qDebug() << debugString() << "destroyed";
     }
 
     ////////////////////////////////////////////////////////////////////////////////
