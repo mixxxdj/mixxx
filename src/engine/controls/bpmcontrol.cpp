@@ -164,7 +164,7 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
     if (v <= 0) {
         return;
     }
-    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         return;
     }
@@ -180,7 +180,7 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
     if (v <= 0) {
         return;
     }
-    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         return;
     }
@@ -196,7 +196,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (v <= 0) {
         return;
     }
-    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         return;
     }
@@ -212,7 +212,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
     if (v <= 0) {
         return;
     }
-    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         return;
     }
@@ -239,7 +239,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
         return;
     }
 
-    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         return;
     }
