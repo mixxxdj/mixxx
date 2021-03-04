@@ -44,15 +44,6 @@ QString Version::applicationTitle() {
 #else
     QString base("Mixxx " GIT_COMMIT_DESCRIPTION);
 #endif
-
-#ifdef MIXXX_BUILD_NUMBER_IN_TITLE_BAR
-    QString branch = developmentBranch();
-    QString branch_revision = developmentRevision();
-    if (!branch.isEmpty() && !branch_revision.isEmpty()) {
-        base.append(QString(" (build %1-r%2)")
-                    .arg(branch).arg(branch_revision));
-    }
-#endif
     return base;
 }
 
