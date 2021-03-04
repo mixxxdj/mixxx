@@ -425,20 +425,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         }
     }
 
-    if (configVersion.startsWith("1.12") ||
-        configVersion.startsWith("2.0") ||
-        configVersion.startsWith("2.1.0")) {
-        // No special upgrade required, just update the value.
-        configVersion = Version::gitTag();
-        config->set(ConfigKey("[Config]", "Version"), ConfigValue(Version::gitTag()));
-    }
-
-    if (configVersion == Version::gitTag()) {
-        qDebug() << "Configuration file is now at the current version" << Version::gitTag();
-    } else {
-        qWarning() << "Configuration file is at version" << configVersion
-                   << "instead of the current" << Version::gitTag();
-    }
+    // No special upgrade has been required since Mixxx 2.0
+    configVersion = Version::gitTag();
+    config->set(ConfigKey("[Config]", "Version"), ConfigValue(Version::gitTag()));
 
     return config;
 }
