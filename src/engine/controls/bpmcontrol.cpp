@@ -161,39 +161,67 @@ double BpmControl::getBpm() const {
 }
 
 void BpmControl::slotAdjustBeatsFaster(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
         double adjustedBpm = bpm + kBpmAdjustStep;
-        pBeats->setBpm(adjustedBpm);
+        pTrack->setBeats(pBeats->setBpm(adjustedBpm));
     }
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
         double adjustedBpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
-        pBeats->setBpm(adjustedBpm);
+        pTrack->setBeats(pBeats->setBpm(adjustedBpm));
     }
 }
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats &&
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (pBeats &&
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         const double translate_dist = getSampleOfTrack().rate * -.01;
-        pBeats->translate(translate_dist);
+        pTrack->setBeats(pBeats->translate(translate_dist));
     }
 }
 
 void BpmControl::slotTranslateBeatsLater(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats &&
+    if (v <= 0) {
+        return;
+    }
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (pBeats &&
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const double translate_dist = getSampleOfTrack().rate * .01;
-        pBeats->translate(translate_dist);
+        pTrack->setBeats(pBeats->translate(translate_dist));
     }
 }
 
@@ -211,11 +239,14 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
         return;
     }
 
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (!pBeats) {
         return;
     }
-
     double rateRatio = m_pRateRatio->get();
     if (rateRatio == 0.0) {
         return;
@@ -224,7 +255,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength / rateRatio;
-    pBeats->setBpm(averageBpm);
+    pTrack->setBeats(pBeats->setBpm(averageBpm));
 }
 
 void BpmControl::slotControlBeatSyncPhase(double value) {
@@ -590,7 +621,7 @@ bool BpmControl::getBeatContextNoLookup(
 double BpmControl::getNearestPositionInPhase(
         double dThisPosition, bool respectLoops, bool playing) {
     // Without a beatgrid, we don't know the phase offset.
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return dThisPosition;
     }
@@ -977,34 +1008,45 @@ void BpmControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 }
 
 void BpmControl::slotBeatsTranslate(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (v <= 0) {
+        return;
+    }
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         double currentSample = getSampleOfTrack().current;
         double closestBeat = pBeats->findClosestBeat(currentSample);
         int delta = static_cast<int>(currentSample - closestBeat);
         if (delta % 2 != 0) {
             delta--;
         }
-        pBeats->translate(delta);
+        pTrack->setBeats(pBeats->translate(delta));
     }
 }
 
 void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
-    if (v > 0 && pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
+    if (v <= 0) {
+        return;
+    }
+    TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         // Must reset the user offset *before* calling getPhaseOffset(),
         // otherwise it will always return 0 if master sync is active.
         m_dUserOffset.setValue(0.0);
 
         double offset = getPhaseOffset(getSampleOfTrack().current);
-        pBeats->translate(-offset);
+        pTrack->setBeats(pBeats->translate(-offset));
     }
 }
 
 double BpmControl::updateLocalBpm() {
     double prev_local_bpm = m_pLocalBpm->get();
     double local_bpm = 0;
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         local_bpm = pBeats->getBpmAroundPosition(
                 getSampleOfTrack().current, kLocalBpmSpan);
