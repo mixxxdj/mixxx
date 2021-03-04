@@ -225,11 +225,11 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
 
         //qDebug() << "onEffectMetaParameterChanged" << debugString() << parameter << "force?" << force;
         if (force) {
-            m_pControlValue->setParameterFrom(parameter, NULL);
+            m_pControlValue->setParameterFrom(parameter, nullptr);
             // This ensures that softtakover is in sync for following updates
             m_pMetaknobSoftTakeover->ignore(m_pControlValue, parameter);
         } else if (!m_pMetaknobSoftTakeover->ignore(m_pControlValue, parameter)) {
-            m_pControlValue->setParameterFrom(parameter, NULL);
+            m_pControlValue->setParameterFrom(parameter, nullptr);
         }
     }
 }
