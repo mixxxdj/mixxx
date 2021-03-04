@@ -65,7 +65,6 @@ std::unique_ptr<EffectProcessor> BuiltInBackend::createProcessor(
 }
 
 BuiltInBackend::~BuiltInBackend() {
-    //qDebug() << debugString() << "destroyed";
     m_registeredEffects.clear();
     m_effectIds.clear();
 }
