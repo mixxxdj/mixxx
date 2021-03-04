@@ -152,7 +152,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
 
     // If the track already has a Beats object then we need to decide whether to
     // analyze this track or not.
-    mixxx::BeatsPointer pBeats = pTrack->getBeats();
+    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (!pBeats) {
         return true;
     }

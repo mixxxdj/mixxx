@@ -866,7 +866,7 @@ void readAnalyze(TrackPointer track,
                 beats << (sampleRateKhz * static_cast<double>(time));
             }
 
-            auto pBeats = mixxx::BeatMap::makeBeatMap(
+            const auto pBeats = mixxx::BeatMap::makeBeatMap(
                     static_cast<SINT>(sampleRate),
                     mixxx::rekordboxconstants::beatsSubversion,
                     beats);

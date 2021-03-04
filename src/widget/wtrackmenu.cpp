@@ -1127,7 +1127,7 @@ class ScaleBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (pTrack->isBpmLocked()) {
             return;
         }
-        mixxx::BeatsPointer pBeats = pTrack->getBeats();
+        const mixxx::BeatsPointer pBeats = pTrack->getBeats();
         if (!pBeats) {
             return;
         }

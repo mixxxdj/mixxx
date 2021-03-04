@@ -285,7 +285,7 @@ double Track::setBpm(double bpmValue) {
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
         double cue = getCuePoint().getPosition();
-        mixxx::BeatsPointer pBeats(BeatFactory::makeBeatGrid(getSampleRate(), bpmValue, cue));
+        const auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(), bpmValue, cue);
         setBeatsMarkDirtyAndUnlock(&lock, pBeats);
         return bpmValue;
     }
@@ -941,7 +941,7 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
-    auto pBeats = mixxx::BeatMap::makeBeatMap(
+    const auto pBeats = mixxx::BeatMap::makeBeatMap(
             static_cast<SINT>(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate()),
             QString(),
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(

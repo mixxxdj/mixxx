@@ -268,7 +268,7 @@ void DlgTrackInfo::populateFields(const Track& track) {
 }
 
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
-    mixxx::BeatsPointer pBeats = track.getBeats();
+    const mixxx::BeatsPointer pBeats = track.getBeats();
     if (pBeats) {
         spinBpm->setValue(pBeats->getBpm());
         m_pBeatsClone = pBeats->clone();
