@@ -42,6 +42,7 @@
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
+#include "notificationmanager.h"
 #include "preferences/settingsmanager.h"
 #include "recording/recordingmanager.h"
 #include "skin/launchimage.h"
@@ -324,6 +325,8 @@ MixxxMainWindow::MixxxMainWindow(
             &PlayerInfo::currentPlayingDeckChanged,
             this,
             &MixxxMainWindow::slotChangedPlayingDeck);
+
+    m_pCoreServices->getNotificationManager()->notify(new mixxx::Notification("Mixxx started!"));
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
@@ -962,6 +965,9 @@ void MixxxMainWindow::rebootMixxxView() {
     // safe geometry for later restoration
     const QRect initGeometry = geometry();
 
+    // Delay notification popups until skin if fully loaded
+    m_pCoreServices->getNotificationManager()->setInhibitNotifications(true);
+
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
     // that need to be deleted -- otherwise we can't tell what features the skin
@@ -1014,6 +1020,8 @@ void MixxxMainWindow::rebootMixxxView() {
         setGeometry(initGeometry);
     }
 
+    m_pCoreServices->getNotificationManager()->setInhibitNotifications(false);
+
     qDebug() << "rebootMixxxView DONE";
 }
 
@@ -1023,6 +1031,7 @@ bool MixxxMainWindow::loadConfiguredSkin() {
             &m_skinCreatedControls,
             m_pCoreServices->getKeyboardEventFilter().get(),
             m_pCoreServices->getPlayerManager().get(),
+            m_pCoreServices->getNotificationManager().get(),
             m_pCoreServices->getControllerManager().get(),
             m_pCoreServices->getLibrary().get(),
             m_pCoreServices->getVinylControlManager().get(),
@@ -1031,7 +1040,9 @@ bool MixxxMainWindow::loadConfiguredSkin() {
     if (centralWidget() == m_pLaunchImage) {
         initializationProgressUpdate(100, "");
     }
+    m_pCoreServices->getNotificationManager()->setInhibitNotifications(false);
     emit skinLoaded();
+
     return m_pCentralWidget != nullptr;
 }
 

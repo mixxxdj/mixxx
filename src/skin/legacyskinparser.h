@@ -27,6 +27,10 @@ class ControlObject;
 class LaunchImage;
 class WWidgetGroup;
 
+namespace mixxx {
+class NotificationManager;
+}
+
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
@@ -35,6 +39,7 @@ class LegacySkinParser : public QObject, public SkinParser {
             QSet<ControlObject*>* pSkinCreatedControls,
             KeyboardEventFilter* pKeyboard,
             PlayerManager* pPlayerManager,
+            mixxx::NotificationManager* pNotificationManager,
             ControllerManager* pControllerManager,
             Library* pLibrary,
             VinylControlManager* pVCMan,
@@ -92,6 +97,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseEffectPushButton(const QDomElement& node);
     QWidget* parseEffectSelector(const QDomElement& node);
     QWidget* parseHotcueButton(const QDomElement& node);
+    QWidget* parseNotificationButton(const QDomElement& node);
 
     // Legacy pre-1.12.0 skin support.
     QWidget* parseBackground(const QDomElement& node, QWidget* pOuterWidget, QWidget* pInnerWidget);
@@ -149,6 +155,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QSet<ControlObject*>* m_pSkinCreatedControls;
     KeyboardEventFilter* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
+    mixxx::NotificationManager* m_pNotificationManager;
     ControllerManager* m_pControllerManager;
     Library* m_pLibrary;
     VinylControlManager* m_pVCManager;

@@ -28,6 +28,7 @@ class LV2Backend;
 namespace mixxx {
 
 class DbConnectionPool;
+class NotificationManager;
 
 class CoreServices : public QObject {
     Q_OBJECT
@@ -67,6 +68,10 @@ class CoreServices : public QObject {
         return m_pBroadcastManager;
     }
 #endif
+
+    std::shared_ptr<NotificationManager> getNotificationManager() const {
+        return m_pNotificationManager;
+    }
 
     std::shared_ptr<ControllerManager> getControllerManager() const {
         return m_pControllerManager;
@@ -109,6 +114,7 @@ class CoreServices : public QObject {
   private:
     bool initializeDatabase();
 
+    std::shared_ptr<mixxx::NotificationManager> m_pNotificationManager;
     std::shared_ptr<SettingsManager> m_pSettingsManager;
     std::shared_ptr<EffectsManager> m_pEffectsManager;
     // owned by EffectsManager

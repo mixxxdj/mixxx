@@ -715,6 +715,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/network/jsonwebtask.cpp
   src/network/networktask.cpp
   src/network/webtask.cpp
+  src/notification.cpp
+  src/notificationmanager.cpp
   src/preferences/configobject.cpp
   src/preferences/dialog/dlgprefautodj.cpp
   src/preferences/dialog/dlgprefautodjdlg.ui
@@ -961,6 +963,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wlibrarytableview.cpp
   src/widget/wlibrarytextbrowser.cpp
   src/widget/wmainmenubar.cpp
+  src/widget/wnotification.cpp
+  src/widget/wnotificationmenupopup.cpp
+  src/widget/wnotificationbutton.cpp
   src/widget/wnumber.cpp
   src/widget/wnumberdb.cpp
   src/widget/wnumberpos.cpp

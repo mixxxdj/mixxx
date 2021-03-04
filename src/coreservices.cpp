@@ -22,6 +22,7 @@
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
 #include "moc_coreservices.cpp"
+#include "notificationmanager.h"
 #include "preferences/settingsmanager.h"
 #include "soundio/soundmanager.h"
 #include "sources/soundsourceproxy.h"
@@ -167,6 +168,8 @@ void CoreServices::initialize(QApplication* pApp) {
 
     FontUtils::initializeFonts(resourcePath); // takes a long time
 
+    m_pNotificationManager = std::make_shared<NotificationManager>();
+
     // Set the visibility of tooltips, default "1" = ON
     m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
             pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
@@ -293,15 +296,21 @@ void CoreServices::initialize(QApplication* pApp) {
         // resolves to) and a user hitting 'cancel'. If we get a blank return
         // but the user didn't hit cancel, we need to know this and let the
         // user take some course of action -- bkgood
-        QString fd = QFileDialog::getExistingDirectory(nullptr,
-                tr("Choose music library directory"),
-                QStandardPaths::writableLocation(
-                        QStandardPaths::MusicLocation));
-        if (!fd.isEmpty()) {
-            // adds Folder to database.
-            m_pLibrary->slotRequestAddDir(fd);
-            hasChanged_MusicDir = true;
-        }
+        mixxx::Notification* pNotification =
+                new mixxx::Notification("No music directory configured!",
+                        mixxx::NotificationFlag::Sticky);
+        pNotification->addButton(tr("Choose Directory"), this, [this]() {
+            QString fd = QFileDialog::getExistingDirectory(nullptr,
+                    tr("Choose music library directory"),
+                    QStandardPaths::writableLocation(
+                            QStandardPaths::MusicLocation));
+            if (!fd.isEmpty()) {
+                // adds Folder to database.
+                m_pLibrary->slotRequestAddDir(fd);
+                m_pTrackCollectionManager->startLibraryScan();
+            }
+        });
+        m_pNotificationManager->notify(pNotification);
     }
 
     emit initializationProgressUpdate(60, tr("controllers"));
@@ -539,6 +548,9 @@ void CoreServices::shutdown() {
     // beforehand!
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "detaching all track collections";
     CLEAR_AND_CHECK_DELETED(m_pTrackCollectionManager);
+
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting NotificationManager";
+    CLEAR_AND_CHECK_DELETED(m_pNotificationManager);
 
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "closing database connection(s)";
     m_pDbConnectionPool->destroyThreadLocalConnection();

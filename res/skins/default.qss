@@ -73,3 +73,14 @@ WOverview #PassthroughLabel {
 #SearchClearButton:focus {
   image: url(:/images/library/ic_library_cross_orange.svg)
 }
+WNotificationMenuPopup #NotificationsEmptyLabel,
+WNotificationMenuPopup #NotificationsLoadingLabel {
+    padding: 5px;
+}
+
+WNotification {
+    width: 600px;
+}
+WNotification #CloseButton {
+  qproperty-icon: url(:/images/ic_none.svg);
+}

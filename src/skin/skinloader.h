@@ -17,6 +17,10 @@ class EffectsManager;
 class RecordingManager;
 class LaunchImage;
 
+namespace mixxx {
+class NotificationManager;
+}
+
 class SkinLoader {
   public:
     SkinLoader(UserSettingsPointer pConfig);
@@ -26,6 +30,7 @@ class SkinLoader {
             QSet<ControlObject*>* skinCreatedControls,
             KeyboardEventFilter* pKeyboard,
             PlayerManager* pPlayerManager,
+            mixxx::NotificationManager* pNotificationManager,
             ControllerManager* pControllerManager,
             Library* pLibrary,
             VinylControlManager* pVCMan,
