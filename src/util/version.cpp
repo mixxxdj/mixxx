@@ -38,11 +38,11 @@ QString Version::applicationTitle() {
 #ifdef __APPLE__
     QString base("Mixxx");
 #elif defined(AMD64) || defined(EM64T) || defined(x86_64)
-    QString base("Mixxx " GIT_TAG " x64");
+    QString base("Mixxx " GIT_COMMIT_DESCRIPTION " x64");
 #elif defined(IA64)
-    QString base("Mixxx " GIT_TAG " Itanium");
+    QString base("Mixxx " GIT_COMMIT_DESCRIPTION " Itanium");
 #else
-    QString base("Mixxx " GIT_TAG);
+    QString base("Mixxx " GIT_COMMIT_DESCRIPTION);
 #endif
 
 #ifdef MIXXX_BUILD_NUMBER_IN_TITLE_BAR
