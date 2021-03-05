@@ -372,7 +372,7 @@ void EffectSlot::unloadEffect() {
         pControlNumParameters->forceSet(0.0);
     }
 
-    for (auto& slotList : std::as_const(m_parameterSlots)) {
+    for (const auto& slotList : std::as_const(m_parameterSlots)) {
         // Do not delete the slots; clear the parameters from the slots
         // The parameter slots are used by the next effect, but the EffectParameters
         // are deleted below.
