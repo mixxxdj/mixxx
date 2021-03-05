@@ -59,9 +59,9 @@ void ClockControl::updateIndicators(const double dRate,
         const double currentSample,
         const double sampleRate) {
     /* This method sets the control beat_active is set to the following values:
-    * +1.0 --> Forward playing, set at the beat and set back to 0.0 at 20% of beat distance
     *  0.0 --> No beat indication (ouside 20% area or play direction changed while indication was on)
-    * -1.0 --> Reverse playing, set at the beat and set back to 0.0 at -20% of beat distance
+    *  1.0 --> Forward playing, set at the beat and set back to 0.0 at 20% of beat distance
+    *  2.0 --> Reverse playing, set at the beat and set back to 0.0 at -20% of beat distance
     */
 
     // No position change since last indicator update (e.g. deck stopped) -> No indicator update needed
@@ -171,7 +171,7 @@ void ClockControl::updateIndicators(const double dRate,
                     (m_InternalState != StateMachine::beforeBeatActive) &&
                     (m_InternalState != StateMachine::beforeBeatDirectionChanged)) {
                 m_InternalState = StateMachine::beforeBeatActive;
-                m_pCOBeatActive->forceSet(-1.0);
+                m_pCOBeatActive->forceSet(2.0);
             } else if ((currentSample < nextIndicatorSamples -
                                        m_blinkIntervalSamples) &&
                     ((m_InternalState == StateMachine::beforeBeatActive) ||
