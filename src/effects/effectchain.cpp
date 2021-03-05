@@ -388,7 +388,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup
     // thread but the EffectStates for an EngineEffect would not be received by
     // EngineEffectsManager until the next audio callback cycle.
 
-    auto pEffectStatesMapArray = new EffectStatesMapArray;
+    auto* pEffectStatesMapArray = new EffectStatesMapArray;
     for (int i = 0; i < m_effectSlots.size(); ++i) {
         m_effectSlots[i]->fillEffectStatesMap(&(*pEffectStatesMapArray)[i]);
     }
