@@ -28,7 +28,9 @@
 /// Each EffectState instance tracks the state for one combination of input signal
 /// and output signal. Input signals can be any EngineChannel, but output channels
 /// are hardcoded in EngineMaster as the post-fader processing for the main mix
-/// and pre-fader processing for headphones.
+/// and pre-fader processing for headphones. There can be many EffectStates for one
+/// EffectProcessorImpl, allowing a single EffectProcessorImpl to maintain
+/// independent state for different channels.
 ///
 /// EffectStates allocated on the main thread are passed as pointers to the
 /// EffectProcessorImpl in the audio callback thread via the EffectsMessenger.
