@@ -62,7 +62,6 @@ void EngineEffect::loadStatesForInputChannel(const ChannelHandle* inputChannel,
     m_pProcessor->loadStatesForInputChannel(inputChannel, pStatesMap);
 }
 
-// Called from the main thread for garbage collection after an input channel is disabled
 void EngineEffect::deleteStatesForInputChannel(const ChannelHandle* inputChannel) {
     m_pProcessor->deleteStatesForInputChannel(inputChannel);
 }

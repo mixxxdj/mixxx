@@ -16,29 +16,36 @@
 #include "engine/effects/message.h"
 #include "util/memory.h"
 
+/// EngineEffect is a generic wrapper around an EffectProcessor which intermediates
+/// between an EffectSlot and the EffectProcessor. It implements the logic to handle
+/// changes of state (enable switch, chain routing switches, parameters' state) so
+/// so EffectProcessors only need to implement their specific DSP logic.
 class EngineEffect : public EffectsRequestHandler {
   public:
+    /// Called in main thread by EffectSlot
     EngineEffect(EffectManifestPointer pManifest,
             EffectsBackendManagerPointer pBackendManager,
             const QSet<ChannelHandleAndGroup>& activeInputChannels,
             const QSet<ChannelHandleAndGroup>& registeredInputChannels,
             const QSet<ChannelHandleAndGroup>& registeredOutputChannels);
-    virtual ~EngineEffect();
+    /// Called in main thread by EffectSlot
+    ~EngineEffect();
 
-    const QString& name() const {
-        return m_pManifest->name();
-    }
-
+    /// Called in main thread to allocate an EffectState
     EffectState* createState(const mixxx::EngineParameters& bufferParameters);
 
+    /// Called in audio thread to load EffectStates received from the main thread
     void loadStatesForInputChannel(const ChannelHandle* inputChannel,
             EffectStatesMap* pStatesMap);
+    /// Called from the main thread for garbage collection after an input channel is disabled
     void deleteStatesForInputChannel(const ChannelHandle* inputChannel);
 
+    /// Called in audio thread
     bool processEffectsRequest(
             EffectsRequest& message,
             EffectsResponsePipe* pResponsePipe);
 
+    /// Called in audio thread
     bool process(const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
             const CSAMPLE* pInput,
@@ -50,6 +57,10 @@ class EngineEffect : public EffectsRequestHandler {
 
     const EffectManifestPointer getManifest() const {
         return m_pManifest;
+    }
+
+    const QString& name() const {
+        return m_pManifest->name();
     }
 
   private:
