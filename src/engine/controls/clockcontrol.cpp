@@ -10,7 +10,7 @@
 namespace {
 constexpr double kBlinkInterval = 0.20; // LED is on 20% of the beat period
 constexpr double kStandStillTolerance =
-        0.0025; // (seconds) Minimum change, to he last evaluated position
+        0.005; // (seconds) Minimum change, to he last evaluated position
 } // namespace
 
 ClockControl::ClockControl(const QString& group, UserSettingsPointer pConfig)
@@ -64,10 +64,18 @@ void ClockControl::updateIndicators(const double dRate,
     * -1.0 --> Reverse playing, set at the beat and set back to 0.0 at -20% of beat distance
     */
 
-    if (((currentSample <= (m_lastEvaluatedSample + kStandStillTolerance * sampleRate)) &&
-                (currentSample >= (m_lastEvaluatedSample - kStandStillTolerance * sampleRate))) ||
-            (dRate == 0.0)) {
-        return; // No position change since last indicator update (e.g. deck stopped) -> No indicator update needed
+    // No position change since last indicator update (e.g. deck stopped) -> No indicator update needed
+    if ((currentSample <= (m_lastEvaluatedSample + kStandStillTolerance * sampleRate)) &&
+                (currentSample >= (m_lastEvaluatedSample - kStandStillTolerance * sampleRate))) {
+        return;
+    }
+
+    // Position change more significiantly, but rate is zero. Occurs when pressing a cue point
+    // The m_InternalState needs to be taken into account here to prevent uneccessary events (state 0 -> state 0)
+    if ((dRate == 0.0)
+        && (m_InternalState != StateMachine::outsideIndicationArea)) {
+        m_InternalState = StateMachine::outsideIndicationArea;
+        m_pCOBeatActive->forceSet(0.0);
     }
 
     double prevIndicatorSamples;
