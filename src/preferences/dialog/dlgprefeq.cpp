@@ -19,7 +19,8 @@ const QString kConfigKeyPrefix = "EffectForGroup_";
 const QString kEnableEqs = "EnableEQs";
 const QString kEqsOnly = "EQsOnly";
 const QString kSingleEq = "SingleEQEffect";
-const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " Built-in";
+const QString kDefaultEqId = BiquadFullKillEQEffect::getId() + " " +
+        EffectsBackend::backendTypeToString(EffectBackendType::BuiltIn);
 const QString kDefaultMasterEqId = QString();
 
 const int kFrequencyUpperLimit = 20050;
