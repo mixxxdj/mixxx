@@ -32,8 +32,6 @@ class EngineEffectChain : public EffectsRequestHandler {
             const unsigned int sampleRate,
             const GroupFeatureState& groupFeatures);
 
-    bool enabledForChannel(const ChannelHandle& handle) const;
-
     void deleteStatesForInputChannel(const ChannelHandle* channel);
 
   private:
