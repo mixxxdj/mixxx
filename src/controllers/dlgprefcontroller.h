@@ -47,6 +47,8 @@ class DlgPrefController : public DlgPreferencePage {
     /// Used to selected the current preset in the combobox and display the
     /// preset information.
     void slotShowPreset(ControllerPresetPointer preset);
+    /// Called when the Controller Learning Wizard is closed.
+    void slotStopLearning();
 
     // Input mappings
     void addInputMapping();
@@ -68,6 +70,8 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetDescription(const ControllerPresetPointer pPreset) const;
     QString presetSupportLinks(const ControllerPresetPointer pPreset) const;
     QString presetFileLinks(const ControllerPresetPointer pPreset) const;
+    QString presetPathFromIndex(int index) const;
+    QString askForPresetName(const QString& prefilledName = QString()) const;
     void applyPresetChanges();
     void savePreset();
     void initTableView(QTableView* pTable);

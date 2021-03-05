@@ -12,31 +12,28 @@ const QString kRoundingVersion = QStringLiteral("V2");
 
 } // namespace
 
-mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const Track& track,
+mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
+        SINT sampleRate,
         const QString& beatsVersion,
         const QString& beatsSubVersion,
         const QByteArray& beatsSerialized) {
     if (beatsVersion == BEAT_GRID_1_VERSION ||
         beatsVersion == BEAT_GRID_2_VERSION) {
-        mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, 0, beatsSerialized);
-        pGrid->setSubVersion(beatsSubVersion);
+        auto pGrid = mixxx::BeatGrid::makeBeatGrid(sampleRate, beatsSubVersion, beatsSerialized);
         qDebug() << "Successfully deserialized BeatGrid";
-        return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
+        return pGrid;
     } else if (beatsVersion == BEAT_MAP_VERSION) {
-        mixxx::BeatMap* pMap = new mixxx::BeatMap(track, 0, beatsSerialized);
-        pMap->setSubVersion(beatsSubVersion);
+        auto pMap = mixxx::BeatMap::makeBeatMap(sampleRate, beatsSubVersion, beatsSerialized);
         qDebug() << "Successfully deserialized BeatMap";
-        return mixxx::BeatsPointer(pMap, &BeatFactory::deleteBeats);
+        return pMap;
     }
     qDebug() << "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
     return mixxx::BeatsPointer();
 }
 
 mixxx::BeatsPointer BeatFactory::makeBeatGrid(
-        const Track& track, double dBpm, double dFirstBeatSample) {
-    mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, 0);
-    pGrid->setGrid(dBpm, dFirstBeatSample);
-    return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
+        SINT sampleRate, double dBpm, double dFirstBeatSample) {
+    return mixxx::BeatGrid::makeBeatGrid(sampleRate, QString(), dBpm, dFirstBeatSample);
 }
 
 // static
@@ -77,7 +74,7 @@ QString BeatFactory::getPreferredSubVersion(
                                   : "";
 }
 
-mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
+mixxx::BeatsPointer BeatFactory::makePreferredBeats(
         const QVector<double>& beats,
         const QHash<QString, QString>& extraVersionInfo,
         bool fixedTempo,
@@ -92,27 +89,15 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
         double firstBeat = 0;
         double constBPM = BeatUtils::makeConstBpm(constantRegions, sampleRate, &firstBeat);
         firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
-        mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, sampleRate);
-        // firstBeat is in frames here and setGrid() takes samples.
-        pGrid->setGrid(constBPM, firstBeat * 2);
-        pGrid->setSubVersion(subVersion);
-        return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
+        auto pGrid = mixxx::BeatGrid::makeBeatGrid(
+                sampleRate, subVersion, constBPM, firstBeat * 2);
+        return pGrid;
     } else if (version == BEAT_MAP_VERSION) {
         QVector<double> ironedBeats = BeatUtils::getBeats(constantRegions);
-        mixxx::BeatMap* pBeatMap = new mixxx::BeatMap(track, sampleRate, ironedBeats);
-        pBeatMap->setSubVersion(subVersion);
-        return mixxx::BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
+        auto pBeatMap = mixxx::BeatMap::makeBeatMap(sampleRate, subVersion, ironedBeats);
+        return pBeatMap;
     } else {
         qDebug() << "ERROR: Could not determine what type of beatgrid to create.";
         return mixxx::BeatsPointer();
     }
-}
-
-void BeatFactory::deleteBeats(mixxx::Beats* pBeats) {
-    // BeatGrid/BeatMap objects have no parent and live in the same thread as
-    // their associated TIO. QObject::deleteLater does not have the desired
-    // effect when the QObject's thread does not have an event loop (i.e. when
-    // the main thread has already shut down) so we delete the BeatMap/BeatGrid
-    // directly when its reference count drops to zero.
-    delete pBeats;
 }

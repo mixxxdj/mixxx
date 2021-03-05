@@ -17,20 +17,18 @@ namespace mixxx {
 // first beat and the song's average beats-per-minute.
 class BeatGrid final : public Beats {
   public:
-    // Construct a BeatGrid. If a more accurate sample rate is known, provide it
-    // in the iSampleRate parameter -- otherwise pass 0.
-    BeatGrid(const Track& track, SINT iSampleRate);
-    // Construct a BeatGrid. If a more accurate sample rate is known, provide it
-    // in the iSampleRate parameter -- otherwise pass 0. The BeatGrid will be
-    // deserialized from the byte array.
-    BeatGrid(const Track& track, SINT iSampleRate,
-             const QByteArray& byteArray);
     ~BeatGrid() override = default;
 
-    // Initializes the BeatGrid to have a BPM of dBpm and the first beat offset
-    // of dFirstBeatSample. Does not generate an updated() signal, since it is
-    // meant for initialization.
-    void setGrid(double dBpm, double dFirstBeatSample);
+    static BeatsPointer makeBeatGrid(
+            SINT iSampleRate,
+            const QString& subVersion,
+            double dBpm,
+            double dFirstBeatSample);
+
+    static BeatsPointer makeBeatGrid(
+            SINT iSampleRate,
+            const QString& subVersion,
+            const QByteArray& byteArray);
 
     // The following are all methods from the Beats interface, see method
     // comments in beats.h
@@ -40,10 +38,8 @@ class BeatGrid final : public Beats {
     }
 
     QByteArray toByteArray() const override;
-    BeatsPointer clone() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
-    virtual void setSubVersion(const QString& subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -61,38 +57,43 @@ class BeatGrid final : public Beats {
     double getBpm() const override;
     double getBpmAroundPosition(double curSample, int n) const override;
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Beat mutations
-    ////////////////////////////////////////////////////////////////////////////
-
-    void addBeat(double dBeatSample) override;
-    void removeBeat(double dBeatSample) override;
-    void translate(double dNumSamples) override;
-    void scale(enum BPMScale scale) override;
-    void setBpm(double dBpm) override;
-
     SINT getSampleRate() const override {
         return m_iSampleRate;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Beat mutations
+    ////////////////////////////////////////////////////////////////////////////
+
+    BeatsPointer clone() const override;
+    BeatsPointer translate(double dNumSamples) const override;
+    BeatsPointer scale(enum BPMScale scale) const override;
+    BeatsPointer setBpm(double dBpm) override;
+
   private:
+    BeatGrid(
+            SINT iSampleRate,
+            const QString& subVersion,
+            const mixxx::track::io::BeatGrid& grid,
+            double beatLength);
+    // Constructor to update the beat grid
+    BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength);
     BeatGrid(const BeatGrid& other);
+
     double firstBeatSample() const;
     double bpm() const;
 
-    void readByteArray(const QByteArray& byteArray);
     // For internal use only.
     bool isValid() const;
 
-    mutable QMutex m_mutex;
     // The sub-version of this beatgrid.
-    QString m_subVersion;
+    const QString m_subVersion;
     // The number of samples per second
-    SINT m_iSampleRate;
+    const SINT m_iSampleRate;
     // Data storage for BeatGrid
-    mixxx::track::io::BeatGrid m_grid;
+    const mixxx::track::io::BeatGrid m_grid;
     // The length of a beat in samples
-    double m_dBeatLength;
+    const double m_dBeatLength;
 };
 
 } // namespace mixxx
