@@ -441,7 +441,7 @@ namespace {
         pTrackLibraryQuery->bindValue(":replaygain_peak", track.getReplayGain().getPeak());
 
         pTrackLibraryQuery->bindValue(":channels", track.getChannels());
-        pTrackLibraryQuery->bindValue(":samplerate", track.getSampleRate());
+        pTrackLibraryQuery->bindValue(":samplerate", static_cast<int>(track.getSampleRate()));
         pTrackLibraryQuery->bindValue(":bitrate", track.getBitrate());
         pTrackLibraryQuery->bindValue(":duration", track.getDuration());
 

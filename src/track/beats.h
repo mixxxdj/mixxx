@@ -1,11 +1,11 @@
 #pragma once
 
-#include <QObject>
-#include <QString>
-#include <QList>
 #include <QByteArray>
+#include <QList>
 #include <QSharedPointer>
+#include <QString>
 
+#include "audio/types.h"
 #include "util/memory.h"
 #include "util/types.h"
 
@@ -134,7 +134,7 @@ class Beats {
         return kMaxBpm;
     }
 
-    virtual SINT getSampleRate() const = 0;
+    virtual audio::SampleRate getSampleRate() const = 0;
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations

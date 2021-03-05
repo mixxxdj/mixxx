@@ -2417,7 +2417,7 @@ TEST_F(EngineSyncTest, BeatMapQantizePlay) {
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 120, 0.0);
     m_pTrack1->setBeats(pBeats1);
 
-    constexpr int kSampleRate = 44100;
+    constexpr auto kSampleRate = mixxx::audio::SampleRate(44100);
 
     auto pBeats2 = mixxx::BeatMap::makeBeatMap(
             kSampleRate,

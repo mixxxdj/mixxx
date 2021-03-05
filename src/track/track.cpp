@@ -623,7 +623,7 @@ void Track::setType(const QString& sType) {
     }
 }
 
-int Track::getSampleRate() const {
+mixxx::audio::SampleRate Track::getSampleRate() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
 }
@@ -942,7 +942,7 @@ bool Track::importPendingBeatsWhileLocked() {
     DEBUG_ASSERT(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
     const auto pBeats = mixxx::BeatMap::makeBeatMap(
-            static_cast<SINT>(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate()),
+            m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate(),
             QString(),
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
                     getLocation(), *m_record.getStreamInfoFromSource()));
