@@ -32,7 +32,7 @@ class OutputEffectChain : public EffectChain {
     static QString formatEffectChainGroup(const QString& group);
 };
 
-/// PerGroupEffectChain are hardwired for one input channel. The routing
+/// PerGroupEffectChain is hardwired for one input channel. The routing
 /// switches are not presented to the user.
 class PerGroupEffectChain : public EffectChain {
   public:
