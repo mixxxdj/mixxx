@@ -66,14 +66,13 @@ void ClockControl::updateIndicators(const double dRate,
 
     // No position change since last indicator update (e.g. deck stopped) -> No indicator update needed
     if ((currentSample <= (m_lastEvaluatedSample + kStandStillTolerance * sampleRate)) &&
-                (currentSample >= (m_lastEvaluatedSample - kStandStillTolerance * sampleRate))) {
+            (currentSample >= (m_lastEvaluatedSample - kStandStillTolerance * sampleRate))) {
         return;
     }
 
     // Position change more significiantly, but rate is zero. Occurs when pressing a cue point
     // The m_InternalState needs to be taken into account here to prevent uneccessary events (state 0 -> state 0)
-    if ((dRate == 0.0)
-        && (m_InternalState != StateMachine::outsideIndicationArea)) {
+    if ((dRate == 0.0) && (m_InternalState != StateMachine::outsideIndicationArea)) {
         m_InternalState = StateMachine::outsideIndicationArea;
         m_pCOBeatActive->forceSet(0.0);
     }
