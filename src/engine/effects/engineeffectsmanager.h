@@ -15,7 +15,7 @@ class EngineEffect;
 /// EngineEffectsManager is the entry point for processing effects in the audio
 /// thread. It also passes EffectsRequests down to the EngineEffectChains and
 /// EngineEffects at the beginning of the audio thread cycle.
-class EngineEffectsManager : public EffectsRequestHandler {
+class EngineEffectsManager final : public EffectsRequestHandler {
   public:
     EngineEffectsManager(EffectsResponsePipe* pResponsePipe);
     ~EngineEffectsManager();
@@ -59,7 +59,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
 
     bool processEffectsRequest(
             EffectsRequest& message,
-            EffectsResponsePipe* pResponsePipe);
+            EffectsResponsePipe* pResponsePipe) override;
 
   private:
     QString debugString() const {

@@ -21,7 +21,7 @@ class EngineEffect;
 /// EngineEffectChain processes a list of EngineEffects in series.
 /// EngineEffectChain manages the input channel routing switches,
 /// the mix knob, and the chain enable switch.
-class EngineEffectChain : public EffectsRequestHandler {
+class EngineEffectChain final : public EffectsRequestHandler {
   public:
     /// called from main thread
     EngineEffectChain(const QString& group,
@@ -33,7 +33,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     /// called from audio thread
     bool processEffectsRequest(
             EffectsRequest& message,
-            EffectsResponsePipe* pResponsePipe);
+            EffectsResponsePipe* pResponsePipe) override;
 
     /// called from audio thread
     bool process(const ChannelHandle& inputHandle,

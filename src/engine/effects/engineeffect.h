@@ -20,7 +20,7 @@
 /// between an EffectSlot and the EffectProcessor. It implements the logic to handle
 /// changes of state (enable switch, chain routing switches, parameters' state) so
 /// so EffectProcessors only need to implement their specific DSP logic.
-class EngineEffect : public EffectsRequestHandler {
+class EngineEffect final : public EffectsRequestHandler {
   public:
     /// Called in main thread by EffectSlot
     EngineEffect(EffectManifestPointer pManifest,
@@ -43,7 +43,7 @@ class EngineEffect : public EffectsRequestHandler {
     /// Called in audio thread
     bool processEffectsRequest(
             EffectsRequest& message,
-            EffectsResponsePipe* pResponsePipe);
+            EffectsResponsePipe* pResponsePipe) override;
 
     /// Called in audio thread
     bool process(const ChannelHandle& inputHandle,
