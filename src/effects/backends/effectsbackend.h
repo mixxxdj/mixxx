@@ -10,7 +10,7 @@
 class EffectProcessor;
 
 /// EffectsBackend is an abstract base class that enumerates available effects
-/// which are identified by EffectManifests. EffectsBackend create an
+/// which are identified by EffectManifests. EffectsBackends create an
 /// EffectProcessor when provided with an EffectManifest indicating which
 /// specific EffectProcessor type to create. EffectProcessors implement the DSP
 /// logic specific to each effect.
