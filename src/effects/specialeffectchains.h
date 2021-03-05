@@ -6,6 +6,11 @@
 #include "effects/effectsmanager.h"
 #include "util/memory.h"
 
+/// StandardEffectChain is a chain shown in the GUI with the
+/// detail of the input routing switches, mix knob, superknob,
+/// all effects, their parameters, enable switches, and metaknob
+/// linkings. However, the chain enable switch is hidden because it
+/// is redundant with the input routing switches and effect enable switches.
 class StandardEffectChain : public EffectChain {
   public:
     StandardEffectChain(unsigned int iChainNumber,
@@ -16,6 +21,8 @@ class StandardEffectChain : public EffectChain {
             const int iEffectSlotNumber);
 };
 
+/// OutputEffectChain is hardwired to only one of Mixxx's outputs.
+/// This is used for the main mix equalizer.
 class OutputEffectChain : public EffectChain {
   public:
     OutputEffectChain(EffectsManager* pEffectsManager,
@@ -25,6 +32,8 @@ class OutputEffectChain : public EffectChain {
     static QString formatEffectChainGroup(const QString& group);
 };
 
+/// PerGroupEffectChain are hardwired for one input channel. The routing
+/// switches are not presented to the user.
 class PerGroupEffectChain : public EffectChain {
   public:
     PerGroupEffectChain(const QString& group,
@@ -34,6 +43,11 @@ class PerGroupEffectChain : public EffectChain {
             EffectsMessengerPointer pEffectsMessenger);
 };
 
+/// QuickEffectChain is a simplified interface for effect chains.
+/// It only presents the superknob and chain enable switch to the user.
+/// The user can design complex EffectChainPresets with a StandardEffectChain
+/// then load it into QuickEffectChain. QuickEffectChain is hardwired to one
+/// input channel with the mix knob fully enabled.
 class QuickEffectChain : public PerGroupEffectChain {
   public:
     QuickEffectChain(const QString& group,
@@ -51,6 +65,12 @@ class QuickEffectChain : public PerGroupEffectChain {
     int numPresets() const override;
 };
 
+/// EqualizerEffectChain is specifically for the equalizers only.
+/// It only has a single effect in the chain. The user can pick the
+/// effect in the preferences. In the main GUI, only the parameters of
+/// that single effect are presented, not the metaknob nor superknob.
+/// EqualizerEffectChain is hardwired to one input channel, always
+/// enabled, and has the mix knob fully enabled.
 class EqualizerEffectChain : public PerGroupEffectChain {
   public:
     EqualizerEffectChain(const QString& group,
