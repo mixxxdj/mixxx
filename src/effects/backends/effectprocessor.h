@@ -126,8 +126,8 @@ class EffectProcessorImpl : public EffectProcessor {
         m_channelStateMatrix.clear();
     };
 
-    /// NOTE: Subclasses must implement the following static methods for
-    /// EffectInstantiator to work:
+    /// NOTE: Subclasses for Built-In effects must implement the following static methods for
+    /// BuiltInBackend to work:
     /// static QString getId();
     /// static EffectManifest getManifest();
 
