@@ -13,17 +13,29 @@
 
 class EngineEffect;
 
+/// EngineEffectChain is the audio thread counterpart of EffectChain.
+/// The lifetime of EngineEffectChain corresponds to the lifetime of
+/// its EffectChain counterpart; EngineEffectChains are neither created
+/// nor destroyed apart from Mixxx startup and shutdown.
+///
+/// EngineEffectChain processes a list of EngineEffects in series.
+/// EngineEffectChain manages the input channel routing switches,
+/// the mix knob, and the chain enable switch.
 class EngineEffectChain : public EffectsRequestHandler {
   public:
+    /// called from main thread
     EngineEffectChain(const QString& group,
             const QSet<ChannelHandleAndGroup>& registeredInputChannels,
             const QSet<ChannelHandleAndGroup>& registeredOutputChannels);
-    virtual ~EngineEffectChain();
+    /// called from main thread
+    ~EngineEffectChain();
 
+    /// called from audio thread
     bool processEffectsRequest(
             EffectsRequest& message,
             EffectsResponsePipe* pResponsePipe);
 
+    /// called from audio thread
     bool process(const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
             CSAMPLE* pIn,
@@ -32,6 +44,7 @@ class EngineEffectChain : public EffectsRequestHandler {
             const unsigned int sampleRate,
             const GroupFeatureState& groupFeatures);
 
+    /// called from main thread
     void deleteStatesForInputChannel(const ChannelHandle* channel);
 
   private:
