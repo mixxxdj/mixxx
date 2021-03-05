@@ -26,7 +26,6 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     depth->setDescription(QObject::tr(
             "The bit depth of the samples"));
     depth->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     depth->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
@@ -42,7 +41,6 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     frequency->setDescription(QObject::tr(
             "The sample rate to which the signal is downsampled"));
     frequency->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    frequency->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
     frequency->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     frequency->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);

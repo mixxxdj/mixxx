@@ -32,7 +32,6 @@ EffectManifestPointer FilterEffect::getManifest() {
     lpf->setDescription(QObject::tr(
             "Corner frequency ratio of the low pass filter"));
     lpf->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    lpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     lpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
     lpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_LEFT);
     lpf->setNeutralPointOnScale(1);
@@ -46,7 +45,6 @@ EffectManifestPointer FilterEffect::getManifest() {
             "Resonance of the filters\n"
             "Default: flat top")); // What does this mean?
     q->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    q->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     q->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
     q->setRange(0.4, 0.707106781, 4.0); // 0.707106781 = Butterworth
 
@@ -57,7 +55,6 @@ EffectManifestPointer FilterEffect::getManifest() {
     hpf->setDescription(QObject::tr(
             "Corner frequency ratio of the high pass filter"));
     hpf->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    hpf->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     hpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
     hpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_RIGHT);
     hpf->setNeutralPointOnScale(0.0);

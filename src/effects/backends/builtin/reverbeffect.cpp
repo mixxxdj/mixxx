@@ -29,7 +29,6 @@ EffectManifestPointer ReverbEffect::getManifest() {
     decay->setDescription(QObject::tr(
             "Lower decay values cause reverberations to fade out more quickly."));
     decay->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    decay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     decay->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     decay->setRange(0, 0.5, 1);
 
@@ -41,7 +40,6 @@ EffectManifestPointer ReverbEffect::getManifest() {
             "Bandwidth of the low pass filter at the input.\n"
             "Higher values result in less attenuation of high frequencies."));
     bandwidth->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    bandwidth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     bandwidth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     bandwidth->setRange(0, 1, 1);
 
@@ -53,7 +51,6 @@ EffectManifestPointer ReverbEffect::getManifest() {
             QObject::tr("Higher damping values cause high frequencies to decay "
                         "more quickly than low frequencies."));
     damping->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    damping->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     damping->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     damping->setRange(0, 0, 1);
 
@@ -64,7 +61,6 @@ EffectManifestPointer ReverbEffect::getManifest() {
     send->setDescription(QObject::tr(
             "How much of the signal to send in to the effect"));
     send->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     send->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::NOT_INVERTED);

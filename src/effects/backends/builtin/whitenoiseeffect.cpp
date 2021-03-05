@@ -27,7 +27,6 @@ EffectManifestPointer WhiteNoiseEffect::getManifest() {
     drywet->setName(QObject::tr("Dry/Wet"));
     drywet->setDescription(QObject::tr("Crossfade the noise with the dry signal"));
     drywet->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    drywet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     drywet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     drywet->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     drywet->setRange(0, 1, 1);

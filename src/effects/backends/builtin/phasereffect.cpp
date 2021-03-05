@@ -36,7 +36,6 @@ EffectManifestPointer PhaserEffect::getManifest() {
             "1/4 - 4 beats rounded to 1/2 beat if tempo is detected\n"
             "1/4 - 4 seconds if no tempo is detected"));
     period->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
     period->setRange(0.0, 1.0, 4.0);
 
@@ -47,7 +46,6 @@ EffectManifestPointer PhaserEffect::getManifest() {
     fb->setDescription(QObject::tr(
             "Controls how much of the output signal is looped"));
     fb->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    fb->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     fb->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     fb->setRange(-1.0, 0.0, 1.0);
 
@@ -58,7 +56,6 @@ EffectManifestPointer PhaserEffect::getManifest() {
     range->setDescription(QObject::tr(
             "Controls the frequency range across which the notches sweep."));
     range->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    range->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     range->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     range->setRange(0.05, 1.0, 1.0);
 
@@ -69,7 +66,6 @@ EffectManifestPointer PhaserEffect::getManifest() {
     stages->setDescription(QObject::tr(
             "Number of stages")); // stages of what?
     stages->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    stages->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     stages->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     stages->setRange(1.0, 3.5, 6.0);
 
@@ -80,7 +76,6 @@ EffectManifestPointer PhaserEffect::getManifest() {
     depth->setDescription(QObject::tr(
             "Intensity of the effect"));
     depth->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    depth->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     depth->setRange(0.5, 0.5, 1.0);
@@ -92,7 +87,6 @@ EffectManifestPointer PhaserEffect::getManifest() {
     triplet->setDescription(QObject::tr(
             "Divide rounded 1/2 beats of the Period parameter by 3."));
     triplet->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-    triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     triplet->setRange(0, 0, 1);
 
@@ -104,7 +98,6 @@ EffectManifestPointer PhaserEffect::getManifest() {
             "Sets the LFOs (low frequency oscillators) for the left and right "
             "channels out of phase with each others"));
     stereo->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-    stereo->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     stereo->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     stereo->setRange(0, 0, 1);
 

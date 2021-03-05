@@ -32,7 +32,6 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
     low->setDescription(QObject::tr(
             "Gain for Low Filter"));
     low->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    low->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     low->setNeutralPointOnScale(0.5);
     low->setRange(-12, 0, 12);
@@ -53,7 +52,6 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
                 "Gain for Band Filter %1")
                                     .arg(i + 1));
         mid->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-        mid->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
         mid->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
         mid->setNeutralPointOnScale(0.5);
         mid->setRange(-12, 0, 12);
@@ -65,7 +63,6 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
     high->setDescription(QObject::tr(
             "Gain for High Filter"));
     high->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    high->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     high->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     high->setRange(-12, 0, 12);
 

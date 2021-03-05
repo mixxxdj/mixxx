@@ -34,7 +34,6 @@ EffectManifestPointer AutoPanEffect::getManifest() {
             "1/4 - 4 beats rounded to 1/2 beat if tempo is detected\n"
             "1/4 - 4 seconds if no tempo is detected"));
     period->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    period->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     period->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     period->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
@@ -47,7 +46,6 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     smoothing->setDescription(QObject::tr(
             "How smoothly the signal goes from one side to the other"));
     smoothing->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    smoothing->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     smoothing->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     smoothing->setRange(0.25, 0.50, 0.50); // There are two steps per period so max is half
@@ -63,7 +61,6 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     width->setDescription(QObject::tr(
             "How far the signal goes to each side"));
     width->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    width->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     width->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     width->setRange(0.0, 0.5, 1.0); // 0.02 * sampleRate => 20ms

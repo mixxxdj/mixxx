@@ -49,7 +49,6 @@ EffectManifestPointer EchoEffect::getManifest() {
             "1/8 - 2 beats if tempo is detected\n"
             "1/8 - 2 seconds if no tempo is detected"));
     delay->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    delay->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
     delay->setRange(0.0, 0.5, 2.0);
 
@@ -60,7 +59,6 @@ EffectManifestPointer EchoEffect::getManifest() {
     feedback->setDescription(QObject::tr(
             "Amount the echo fades each time it loops"));
     feedback->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    feedback->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     feedback->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     feedback->setRange(0.00, db2ratio(-3.0), 1.00);
 
@@ -72,7 +70,6 @@ EffectManifestPointer EchoEffect::getManifest() {
             QObject::tr("How much the echoed sound bounces between the left "
                         "and right sides of the stereo field"));
     pingpong->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    pingpong->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     pingpong->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     pingpong->setRange(0.0, 0.0, 1.0);
 
@@ -83,7 +80,6 @@ EffectManifestPointer EchoEffect::getManifest() {
     send->setDescription(QObject::tr(
             "How much of the signal to send into the delay buffer"));
     send->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    send->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
     send->setRange(0.0, db2ratio(-3.0), 1.0);
@@ -95,7 +91,6 @@ EffectManifestPointer EchoEffect::getManifest() {
     quantize->setDescription(QObject::tr(
             "Round the Time parameter to the nearest 1/4 beat."));
     quantize->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-    quantize->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     quantize->setRange(0, 1, 1);
 
@@ -107,7 +102,6 @@ EffectManifestPointer EchoEffect::getManifest() {
             QObject::tr("When the Quantize parameter is enabled, divide "
                         "rounded 1/4 beats of Time parameter by 3."));
     triplet->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-    triplet->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
     triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
     triplet->setRange(0, 0, 1);
 

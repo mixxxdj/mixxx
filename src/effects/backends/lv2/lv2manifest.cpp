@@ -68,7 +68,6 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             param->setId(symbol);
             // node must not be freed here, it is owned by port
 
-            param->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
             param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
             if (isnan(m_default[i]) || m_default[i] < m_minimum[i] || m_default[i] > m_maximum[i]) {
                 m_default[i] = m_minimum[i];
@@ -110,7 +109,6 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             param->setId(symbol);
             // info must not be freed here, it is owned by port
 
-            param->setSemanticHint(EffectManifestParameter::SemanticHint::UNKNOWN);
             param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
             param->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
             if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {

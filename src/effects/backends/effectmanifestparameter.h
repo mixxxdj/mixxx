@@ -32,12 +32,6 @@ class EffectManifestParameter {
                   /// from many controllers, no linking to meta knob
     };
 
-    enum class SemanticHint {
-        UNKNOWN = 0,
-        SAMPLES,
-        NOTE,
-    };
-
     enum class UnitsHint {
         UNKNOWN = 0,
         TIME,
@@ -90,7 +84,6 @@ class EffectManifestParameter {
 
     EffectManifestParameter()
             : m_valueScaler(ValueScaler::UNKNOWN),
-              m_semanticHint(SemanticHint::UNKNOWN),
               m_unitsHint(UnitsHint::UNKNOWN),
               m_defaultLinkType(LinkType::NONE),
               m_defaultLinkInversion(LinkInversion::NOT_INVERTED),
@@ -164,13 +157,6 @@ class EffectManifestParameter {
         } else {
             setParameterType(ParameterType::KNOB);
         }
-    }
-
-    SemanticHint semanticHint() const {
-        return m_semanticHint;
-    }
-    void setSemanticHint(SemanticHint semanticHint) {
-        m_semanticHint = semanticHint;
     }
 
     UnitsHint unitsHint() const {
@@ -261,7 +247,6 @@ class EffectManifestParameter {
 
     ParameterType m_parameterType;
     ValueScaler m_valueScaler;
-    SemanticHint m_semanticHint;
     UnitsHint m_unitsHint;
     LinkType m_defaultLinkType;
     LinkInversion m_defaultLinkInversion;
