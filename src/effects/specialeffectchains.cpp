@@ -27,6 +27,8 @@ StandardEffectChain::StandardEffectChain(unsigned int iChainNumber,
 }
 
 QString StandardEffectChain::formatEffectChainGroup(const int iChainNumber) {
+    // EffectRacks never did anything and there was never more than one of them,
+    // but it remains in the ControlObject group name for backwards compatibility.
     return QString("[EffectRack1_EffectUnit%1]")
             .arg(QString::number(iChainNumber + 1));
 }
