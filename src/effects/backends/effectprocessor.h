@@ -55,7 +55,8 @@ class EffectProcessor {
     virtual ~EffectProcessor() {
     }
 
-    /// Called from main thread to avoid allocating memory in the audio callback thread
+    /// All of these methods for managing EffectStates and EngineEffectParameters
+    /// are called from the main thread.
     virtual void initialize(
             const QSet<ChannelHandleAndGroup>& activeInputChannels,
             const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
@@ -63,15 +64,13 @@ class EffectProcessor {
     virtual EffectState* createState(const mixxx::EngineParameters& bufferParameters) = 0;
     virtual bool loadStatesForInputChannel(const ChannelHandle* inputChannel,
             const EffectStatesMap* pStatesMap) = 0;
-    /// Called from main thread for garbage collection after the last audio thread
-    /// callback executes process() with EffectEnableState::Disabling
     virtual void deleteStatesForInputChannel(const ChannelHandle* inputChannel) = 0;
-
     virtual void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) = 0;
 
-    /// Take a buffer of audio samples as pInput, process the buffer according to
-    /// Effect-specific logic, and output it to the buffer pOutput. Both pInput
+    /// This is the only public method called from the audio thread.
+    /// It takes a buffer of audio samples as pInput, processes the buffer according
+    /// to Effect-specific logic, and outputs it to the buffer pOutput. Both pInput
     /// and pOutput are represented as stereo interleaved samples for now, but
     /// effects should not be written assuming this will remain true. The properties
     /// of the buffer necessary for determining how to process it (frames per
