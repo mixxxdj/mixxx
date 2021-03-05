@@ -46,7 +46,7 @@ bool EngineEffectChain::addEffect(EngineEffect* pEffect, int iIndex) {
     }
 
     while (iIndex >= m_effects.size()) {
-        m_effects.append(NULL);
+        m_effects.append(nullptr);
     }
     m_effects.replace(iIndex, pEffect);
     return true;
@@ -69,7 +69,7 @@ bool EngineEffectChain::removeEffect(EngineEffect* pEffect, int iIndex) {
         return false;
     }
 
-    m_effects.replace(iIndex, NULL);
+    m_effects.replace(iIndex, nullptr);
     return true;
 }
 
