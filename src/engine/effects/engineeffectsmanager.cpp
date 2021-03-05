@@ -235,6 +235,8 @@ bool EngineEffectsManager::addEffectChain(EngineEffectChain* pChain,
     VERIFY_OR_DEBUG_ASSERT(!chains.contains(pChain)) {
         return false;
     }
+    // This might allocate in the audio thread, but it is only used when Mixxx
+    // is starting up so there is no issue.
     chains.append(pChain);
     return true;
 }
