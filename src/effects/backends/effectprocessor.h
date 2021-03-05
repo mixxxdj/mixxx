@@ -16,23 +16,28 @@
 /// an EffectProcessorImpl subclass. Separating state from the DSP code allows
 /// memory allocation and deletion on the heap, which is slow, to be done on the
 /// main thread instead of potentially blocking the audio engine callback thread
-/// and causing audible glitches. EffectStates allocated on the main thread are
-/// passed as pointers to the EffectProcessorImpl in the audio callback thread
-/// via the EffectsMessenger.
+/// and causing audible glitches.
 ///
-/// Each EffectState instance is responsible for one routing of input signal to
-/// output signal. The base EffectProcessorImpl class handles the management
-/// of EffectStates. EffectProcessorImpl subclasses only need to be concerned
-/// with implementing the signal processing logic and providing metadata for
-/// describing the effect and its parameters with an EffectManifest.
+/// The base EffectState class does nothing on its own; each effect is responsible
+/// for subclassing it with whatever state it needs to maintain between cycles of
+/// the audio thread. The base EffectProcessorImpl class handles the management of
+/// EffectStates. EffectProcessorImpl subclasses only need to be concerned with
+/// implementing the signal processing logic and providing metadata for describing
+/// the effect and its parameters with an EffectManifest.
 ///
-/// Input signals can be any EngineChannel, but output channels are hardcoded in
-/// EngineMaster as the post-fader processing for the master mix and pre-fader
-/// processing for headphones. EffectStates are allocated when an input signal
-/// is enabled for a chain. Also, when a new effect is loaded to a chain,
-/// EffectStates are only allocated for input signals that are enabled at that
-/// time. This allows for scaling up to an arbitrary number of input signals
-/// without wasting a lot of memory.
+/// Each EffectState instance tracks the state for one combination of input signal
+/// and output signal. Input signals can be any EngineChannel, but output channels
+/// are hardcoded in EngineMaster as the post-fader processing for the main mix
+/// and pre-fader processing for headphones.
+///
+/// EffectStates allocated on the main thread are passed as pointers to the
+/// EffectProcessorImpl in the audio callback thread via the EffectsMessenger.
+/// EffectStates are allocated and deallocated when a routing switch for an
+/// EffectChain is toggled and when a new EngineEffect is loaded into an EffectSlot.
+/// This allows for scaling up to an arbitrary number of input signals
+/// without wasting a lot of memory. (They could be (de)allocated when toggling
+/// the enable switches for EffectSlots as well, but the memory savings would be
+/// relatively small compared to the additional code complexity.)
 class EffectState {
   public:
     EffectState(const mixxx::EngineParameters& bufferParameters) {
