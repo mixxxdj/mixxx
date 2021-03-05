@@ -2,6 +2,7 @@
 
 #include <QMimeData>
 
+#include "effects/backends/effectsbackend.h"
 #include "effects/backends/effectsbackendmanager.h"
 
 namespace {
@@ -64,7 +65,7 @@ QVariant EffectManifestTableModel::data(
     if (column == kColumnName && role == Qt::DisplayRole) {
         return pManifest->displayName();
     } else if (column == kColumnType && role == Qt::DisplayRole) {
-        return pManifest->translatedBackendName();
+        return EffectsBackend::translatedBackendName(pManifest->backendType());
     }
     return QVariant();
 }

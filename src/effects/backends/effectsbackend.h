@@ -36,4 +36,6 @@ class EffectsBackend {
 
     static EffectBackendType backendTypeFromString(const QString& typeName);
     static QString backendTypeToString(EffectBackendType backendType);
+    /// Use this when showing the string in the GUI
+    static QString translatedBackendName(EffectBackendType backendType);
 };

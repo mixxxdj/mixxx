@@ -2,7 +2,8 @@
 
 namespace {
 const QString backendTypeNameLV2 = QStringLiteral("LV2");
-const QString backendTypeNameBuiltIn = QStringLiteral("BuiltIn");
+// QString::tr requires const char* rather than QString
+const char* backendTypeNameBuiltIn = "Built-In";
 const QString backendTypeNameUnknown = QStringLiteral("Unknown");
 } // anonymous namespace
 
@@ -22,5 +23,17 @@ QString EffectsBackend::backendTypeToString(EffectBackendType backendType) {
         return backendTypeNameLV2;
     default:
         return backendTypeNameUnknown;
+    }
+}
+
+QString EffectsBackend::translatedBackendName(EffectBackendType backendType) {
+    switch (backendType) {
+    case EffectBackendType::BuiltIn:
+        //: Used for effects that are built into Mixxx
+        return QObject::tr(backendTypeNameBuiltIn);
+    case EffectBackendType::LV2:
+        return backendTypeNameLV2;
+    default:
+        return QLatin1String("");
     }
 }

@@ -6,6 +6,7 @@
 #include <QtDebug>
 
 #include "effects/backends/effectmanifestparameter.h"
+#include "effects/backends/effectsbackend.h"
 #include "effects/defs.h"
 
 /// An EffectManifest is a description of the metadata associated with an effect
@@ -34,7 +35,7 @@ class EffectManifest {
 
     /// Hack to store unique IDs in QComboBox models
     const QString uniqueId() const {
-        return m_id + " " + backendName();
+        return m_id + " " + EffectsBackend::backendTypeToString(m_backendType);
     }
 
     /// WARNING! Effects must not be identified solely by ID string or name.
@@ -152,41 +153,6 @@ class EffectManifest {
     }
     void setMetaknobDefault(double metaknobDefault) {
         m_metaknobDefault = metaknobDefault;
-    }
-
-    /// For internal use only
-    /// To display the backend name in the UI, use translatedBackendName()
-    QString backendName() const {
-        switch (m_backendType) {
-        case EffectBackendType::BuiltIn:
-            return QLatin1String("Built-in");
-        case EffectBackendType::LV2:
-            return QLatin1String("LV2");
-        default:
-            return QLatin1String("Unknown");
-        }
-    }
-
-    /// Use this when showing the string in the GUI
-    QString translatedBackendName() const {
-        switch (m_backendType) {
-        case EffectBackendType::BuiltIn:
-            //: Used for effects that are built into Mixxx
-            return QObject::tr("Built-in");
-        case EffectBackendType::LV2:
-            return QLatin1String("LV2");
-        default:
-            return QLatin1String("");
-        }
-    }
-    static EffectBackendType backendTypeFromString(const QString& name) {
-        if (name == QLatin1String("Built-in")) {
-            return EffectBackendType::BuiltIn;
-        } else if (name == QLatin1String("LV2")) {
-            return EffectBackendType::LV2;
-        } else {
-            return EffectBackendType::Unknown;
-        }
     }
 
     bool operator==(const EffectManifest& other) const {

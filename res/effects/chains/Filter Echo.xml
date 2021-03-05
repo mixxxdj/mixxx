@@ -7,7 +7,7 @@
   <Effect>
    <MetaParameterValue>0.5</MetaParameterValue>
    <Id>org.mixxx.effects.filter</Id>
-   <BackendType>BuiltIn</BackendType>
+   <BackendType>Built-In</BackendType>
    <Parameters>
     <Parameter>
      <Id>lpf</Id>
@@ -35,7 +35,7 @@
   <Effect>
    <MetaParameterValue>0.5</MetaParameterValue>
    <Id>org.mixxx.effects.echo</Id>
-   <BackendType>BuiltIn</BackendType>
+   <BackendType>Built-In</BackendType>
    <Parameters>
     <Parameter>
      <Id>delay_time</Id>

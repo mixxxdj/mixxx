@@ -60,7 +60,7 @@ EffectManifestPointer EffectsBackendManager::getManifestFromUniqueId(
     }
     int delimiterIndex = uid.lastIndexOf(" ");
     EffectBackendType backendType =
-            EffectManifest::backendTypeFromString(uid.mid(delimiterIndex + 1));
+            EffectsBackend::backendTypeFromString(uid.mid(delimiterIndex + 1));
     if (backendType == EffectBackendType::Unknown) {
         // Mixxx 2.0 - 2.3 did not store the backend type in mixxx.cfg,
         // so this code will be executed once when upgrading to Mixxx 2.4.

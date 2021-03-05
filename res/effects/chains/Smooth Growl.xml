@@ -7,7 +7,7 @@
   <Effect>
    <MetaParameterValue>0</MetaParameterValue>
    <Id>org.mixxx.effects.bitcrusher</Id>
-   <BackendType>BuiltIn</BackendType>
+   <BackendType>Built-In</BackendType>
    <Parameters>
     <Parameter>
      <Id>bit_depth</Id>
@@ -28,7 +28,7 @@
   <Effect>
    <MetaParameterValue>0</MetaParameterValue>
    <Id>org.mixxx.effects.moogladder4filter</Id>
-   <BackendType>BuiltIn</BackendType>
+   <BackendType>Built-In</BackendType>
    <Parameters>
     <Parameter>
      <Id>lpf</Id>
@@ -56,7 +56,7 @@
   <Effect>
    <MetaParameterValue>0</MetaParameterValue>
    <Id>org.mixxx.effects.echo</Id>
-   <BackendType>BuiltIn</BackendType>
+   <BackendType>Built-In</BackendType>
    <Parameters>
     <Parameter>
      <Id>delay_time</Id>

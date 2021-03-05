@@ -175,7 +175,7 @@ void DlgPrefEffects::effectsTableItemSelected(const QModelIndex& selected) {
     effectAuthor->setText(pManifest->author());
     effectDescription->setText(pManifest->description());
     effectVersion->setText(pManifest->version());
-    effectType->setText(pManifest->translatedBackendName());
+    effectType->setText(EffectsBackend::translatedBackendName(pManifest->backendType()));
 }
 
 void DlgPrefEffects::slotChainPresetSelected(const QModelIndex& selected) {
