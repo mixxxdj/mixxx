@@ -17,7 +17,8 @@ class EngineEffectsManager;
 /// EffectsManager initializes and shuts down the effects system. It creates and
 /// destroys a fixed set of StandardEffectChains on Mixxx startup/shutdown
 /// and creates a QuickEffectChain and EqualizerEffectChain when
-/// PlayerManager creates decks.
+/// PlayerManager creates decks. It also initializes a handful of sub-manager classes
+/// responsible for specific parts of the effects system.
 class EffectsManager {
   public:
     EffectsManager(UserSettingsPointer pConfig,
