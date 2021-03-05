@@ -2,6 +2,7 @@
 
 #include "proto/keys.pb.h"
 
+/// GroupFeatureState communicates metadata about EngineChannels to EffectProcessors.
 struct GroupFeatureState {
     GroupFeatureState()
             : has_beat_length_sec(false),
