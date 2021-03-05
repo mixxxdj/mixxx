@@ -4,7 +4,7 @@
 
 namespace mixxx {
 
-int Beats::numBeatsInRange(double dStartSample, double dEndSample) {
+int Beats::numBeatsInRange(double dStartSample, double dEndSample) const {
     double dLastCountedBeat = 0.0;
     int iBeatsCounter;
     for (iBeatsCounter = 1; dLastCountedBeat < dEndSample; iBeatsCounter++) {

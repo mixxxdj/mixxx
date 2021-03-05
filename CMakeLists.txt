@@ -106,6 +106,7 @@ message(STATUS "Optimization level: ${OPTIMIZE}")
 
 if(MSVC)
   # Microsoft Visual Studio Compiler
+  add_compile_options(/UTF8)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     # Target architecture is x64 -> x64 has alsways SSE and SSE2 instruction sets
     message(STATUS "x64 Enabling SS2 CPU optimizations (>= Pentium 4)")
@@ -1043,7 +1044,7 @@ if(MSVC)
     target_compile_options(mixxx-lib PUBLIC /W4)
   else()
     target_compile_options(mixxx-lib PUBLIC /W3)
-    target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS /UTF8)
+    target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
 else()
   target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion -Werror=return-type)

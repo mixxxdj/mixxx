@@ -22,25 +22,18 @@ namespace mixxx {
 
 class BeatMap final : public Beats {
   public:
-    // Construct a BeatMap. iSampleRate may be provided if a more accurate
-    // sample rate is known than the one associated with the Track.
-    BeatMap(const Track& track, SINT iSampleRate);
-    // Construct a BeatMap. iSampleRate may be provided if a more accurate
-    // sample rate is known than the one associated with the Track. If it is
-    // zero then the track's sample rate will be used. The BeatMap will be
-    // deserialized from the byte array.
-    BeatMap(const Track& track, SINT iSampleRate,
-            const QByteArray& byteArray);
-    // Construct a BeatMap. iSampleRate may be provided if a more accurate
-    // sample rate is known than the one associated with the Track. If it is
-    // zero then the track's sample rate will be used. A list of beat locations
-    // in audio frames may be provided.
-    BeatMap(const Track& track, SINT iSampleRate,
-            const QVector<double>& beats);
 
     ~BeatMap() override = default;
 
-    // See method comments in beats.h
+    static BeatsPointer makeBeatMap(
+            SINT sampleRate,
+            const QString& subVersion,
+            const QByteArray& byteArray);
+
+    static BeatsPointer makeBeatMap(
+            SINT sampleRate,
+            const QString& subVersion,
+            const QVector<double>& beats);
 
     Beats::CapabilitiesFlags getCapabilities() const override {
         return BEATSCAP_TRANSLATE | BEATSCAP_SCALE | BEATSCAP_ADDREMOVE |
@@ -48,10 +41,8 @@ class BeatMap final : public Beats {
     }
 
     QByteArray toByteArray() const override;
-    BeatsPointer clone() const override;
     QString getVersion() const override;
     QString getSubVersion() const override;
-    virtual void setSubVersion(const QString& subVersion);
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat calculations
@@ -70,41 +61,35 @@ class BeatMap final : public Beats {
     double getBpm() const override;
     double getBpmAroundPosition(double curSample, int n) const override;
 
-    ////////////////////////////////////////////////////////////////////////////
-    // Beat mutations
-    ////////////////////////////////////////////////////////////////////////////
-
-    void addBeat(double dBeatSample) override;
-    void removeBeat(double dBeatSample) override;
-    void translate(double dNumSamples) override;
-    void scale(enum BPMScale scale) override;
-    void setBpm(double dBpm) override;
-
     SINT getSampleRate() const override {
         return m_iSampleRate;
     }
 
+    ////////////////////////////////////////////////////////////////////////////
+    // Beat mutations
+    ////////////////////////////////////////////////////////////////////////////
+
+    BeatsPointer clone() const override;
+    BeatsPointer translate(double dNumSamples) const override;
+    BeatsPointer scale(enum BPMScale scale) const override;
+    BeatsPointer setBpm(double dBpm) override;
+
   private:
+    BeatMap(SINT sampleRate,
+            const QString& subVersion,
+            BeatList beats,
+            double nominalBpm);
+    // Constructor to update the beat map
+    BeatMap(const BeatMap& other, BeatList beats, double nominalBpm);
     BeatMap(const BeatMap& other);
-    bool readByteArray(const QByteArray& byteArray);
-    void createFromBeatVector(const QVector<double>& beats);
-    void onBeatlistChanged();
 
     // For internal use only.
     bool isValid() const;
 
-    void scaleDouble();
-    void scaleTriple();
-    void scaleQuadruple();
-    void scaleHalve();
-    void scaleThird();
-    void scaleFourth();
-
-    mutable QMutex m_mutex;
-    QString m_subVersion;
-    SINT m_iSampleRate;
-    double m_nominalBpm;
-    BeatList m_beats;
+    const QString m_subVersion;
+    const SINT m_iSampleRate;
+    const double m_nominalBpm;
+    const BeatList m_beats;
 };
 
 } // namespace mixxx

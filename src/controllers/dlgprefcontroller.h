@@ -51,6 +51,8 @@ class DlgPrefController : public DlgPreferencePage {
     /// Used to selected the current mapping in the combobox and display the
     /// mapping information.
     void slotShowMapping(std::shared_ptr<LegacyControllerMapping> mapping);
+    /// Called when the Controller Learning Wizard is closed.
+    void slotStopLearning();
 
     // Input mappings
     void addInputMapping();
@@ -72,6 +74,8 @@ class DlgPrefController : public DlgPreferencePage {
     QString mappingDescription(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
     QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingPathFromIndex(int index) const;
+    QString askForMappingName(const QString& prefilledName = QString()) const;
     void applyMappingChanges();
     void saveMapping();
     void initTableView(QTableView* pTable);
