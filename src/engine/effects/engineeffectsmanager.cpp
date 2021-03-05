@@ -100,10 +100,7 @@ void EngineEffectsManager::processPreFaderInPlace(const ChannelHandle& inputHand
         const unsigned int numSamples,
         const unsigned int sampleRate) {
     // Feature state is gathered after prefader effects processing.
-    // This is okay because the equalizer and filter effects do not make use of it.
-    // However, if an effect is loaded into a QuickEffectChainSlot that could make use
-    // of the GroupFeatureState, it will not sound the same as if it is loaded into
-    // a StandardEffectChainSlot.
+    // This is okay because the equalizer effects do not make use of it.
     GroupFeatureState featureState;
     processInner(SignalProcessingStage::Prefader,
             inputHandle,
@@ -191,7 +188,7 @@ void EngineEffectsManager::processInner(
         // Do not modify the input buffer.
         // 1. Copy input buffer to a temporary buffer
         // 2. Apply gain to temporary buffer
-        // 2. Process temporary buffer with each effect rack in series
+        // 2. Process temporary buffer with each effect chain in series
         // 3. Mix the temporary buffer into pOut
         //    ChannelMixer::applyEffectsAndMixChannels use
         //    this to mix channels into pOut regardless of whether any effects were processed.
