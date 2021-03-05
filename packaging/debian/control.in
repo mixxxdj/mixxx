@@ -3,6 +3,7 @@ Section: @CPACK_DEBIAN_PACKAGE_SECTION@
 Priority: @CPACK_DEBIAN_PACKAGE_PRIORITY@
 Maintainer: @CPACK_PACKAGE_CONTACT@
 Build-Depends: debhelper (>= 11),
+               @CPACK_DEBIAN_PACKAGE_BUILD_DEPENDS_EXTRA@
                pkg-config,
                docbook-to-man,
                markdown,
@@ -26,7 +27,7 @@ Build-Depends: debhelper (>= 11),
 # Only needed for running tests that use SQLite.
                libqt5sql5-sqlite,
                libqt5x11extras5-dev,
-               cmake (>= 3.15),
+               cmake (>= 3.13),
                libjack-dev,
                portaudio19-dev,
                libid3tag0-dev,

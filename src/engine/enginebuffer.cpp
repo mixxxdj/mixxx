@@ -1,7 +1,6 @@
 #include "engine/enginebuffer.h"
 
 #include <QtDebug>
-#include <cfloat>
 
 #include "control/controlindicator.h"
 #include "control/controllinpotmeter.h"
@@ -52,6 +51,9 @@ const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent al
 
 const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
+// Rate at which the playpos slider is updated
+const int kPlaypositionUpdateRate = 15; // updates per second
+
 } // anonymous namespace
 
 EngineBuffer::EngineBuffer(const QString& group,
@@ -68,7 +70,7 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_pKeyControl(nullptr),
           m_pReadAheadManager(nullptr),
           m_pReader(nullptr),
-          m_filepos_play(DBL_MIN),
+          m_filepos_play(kInitalSamplePosition),
           m_speed_old(0),
           m_tempo_ratio_old(1.),
           m_scratching_old(false),
@@ -535,8 +537,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pause.lock();
 
     m_visualPlayPos->setInvalid();
-    m_filepos_play = DBL_MIN; // for execute seeks to 0.0
-
+    m_filepos_play = kInitalSamplePosition; // for execute seeks to 0.0
     m_pCurrentTrack = pTrack;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
@@ -616,6 +617,9 @@ void EngineBuffer::notifyTrackLoaded(
     // Note: we are still in a worker thread.
     for (const auto& pControl : qAsConst(m_engineControls)) {
         pControl->trackLoaded(pNewTrack);
+        pControl->setCurrentSample(m_filepos_play,
+                m_pTrackSamples->get(),
+                m_pTrackSampleRate->get());
     }
 
     if (pNewTrack) {
@@ -1339,7 +1343,9 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
-    if (m_iSamplesSinceLastIndicatorUpdate > (kSamplesPerFrame * m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
+    if (m_iSamplesSinceLastIndicatorUpdate >
+            (kSamplesPerFrame * m_pSampleRate->get() /
+                    kPlaypositionUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
         m_pCueControl->updateIndicators();
     }

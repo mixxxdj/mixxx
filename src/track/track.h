@@ -377,7 +377,6 @@ class Track : public QObject {
 
   private slots:
     void slotCueUpdated();
-    void slotBeatsUpdated();
 
   private:
     /// Set a unique identifier for the track.

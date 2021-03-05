@@ -114,7 +114,6 @@ void ColumnCache::setColumns(const QStringList& columns) {
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_FILETYPE, kSortNoCase);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_COMMENT, kSortNoCaseLex);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_BITRATE, kSortInt);
-    insertColumnSortByEnum(COLUMN_LIBRARYTABLE_BPM, kSortInt);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_SAMPLERATE, kSortInt);
     insertColumnSortByEnum(COLUMN_LIBRARYTABLE_TIMESPLAYED, kSortInt);
 

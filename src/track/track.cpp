@@ -285,7 +285,7 @@ double Track::setBpm(double bpmValue) {
     if (!m_pBeats) {
         // No beat grid available -> create and initialize
         double cue = getCuePoint().getPosition();
-        mixxx::BeatsPointer pBeats(BeatFactory::makeBeatGrid(*this, bpmValue, cue));
+        const auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(), bpmValue, cue);
         setBeatsMarkDirtyAndUnlock(&lock, pBeats);
         return bpmValue;
     }
@@ -295,11 +295,7 @@ double Track::setBpm(double bpmValue) {
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
-        m_pBeats->setBpm(bpmValue);
-        markDirtyAndUnlock(&lock);
-        // Tell the GUI to update the bpm label...
-        //qDebug() << "Track signaling BPM update to" << f;
-        emit bpmUpdated(bpmValue);
+        setBeatsMarkDirtyAndUnlock(&lock, m_pBeats->setBpm(bpmValue));
     }
 
     return bpmValue;
@@ -322,16 +318,11 @@ bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
         return false;
     }
 
-    if (m_pBeats) {
-        disconnect(m_pBeats.data(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
-    }
-
     m_pBeats = std::move(pBeats);
 
     auto bpmValue = mixxx::Bpm::kValueUndefined;
     if (m_pBeats) {
         bpmValue = m_pBeats->getBpm();
-        connect(m_pBeats.data(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
     }
     m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
     return true;
@@ -354,20 +345,6 @@ void Track::setBeatsMarkDirtyAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer 
 mixxx::BeatsPointer Track::getBeats() const {
     QMutexLocker lock(&m_qMutex);
     return m_pBeats;
-}
-
-void Track::slotBeatsUpdated() {
-    QMutexLocker lock(&m_qMutex);
-
-    auto bpmValue = mixxx::Bpm::kValueUndefined;
-    if (m_pBeats) {
-        bpmValue = m_pBeats->getBpm();
-    }
-    m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
-
-    markDirtyAndUnlock(&lock);
-    emit bpmUpdated(bpmValue);
-    emit beatsUpdated();
 }
 
 void Track::setMetadataSynchronized(bool metadataSynchronized) {
@@ -963,10 +940,11 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
-    mixxx::BeatsPointer pBeats(new mixxx::BeatMap(*this,
+    const auto pBeats = mixxx::BeatMap::makeBeatMap(
             static_cast<SINT>(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate()),
+            QString(),
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
-                    getLocation(), *m_record.getStreamInfoFromSource())));
+                    getLocation(), *m_record.getStreamInfoFromSource()));
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
     m_pBeatsImporterPending.reset();
     return setBeatsWhileLocked(pBeats);

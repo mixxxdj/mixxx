@@ -81,7 +81,7 @@ void ClockControl::updateIndicators(const double dRate,
     double prevIndicatorSamples;
     double nextIndicatorSamples;
 
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         if ((currentSample >= m_NextBeatSamples) ||
                 (currentSample <= m_PrevBeatSamples)) {
