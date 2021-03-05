@@ -89,7 +89,6 @@ void WEffectChainPresetButton::populateMenu() {
 
                 auto pAction = make_parented<QWidgetAction>(pEffectMenu);
                 pAction->setDefaultWidget(pCheckbox.get());
-                connect(pAction.get(), &QAction::triggered, this, handler);
 
                 pEffectMenu->addAction(pAction.get());
             }
@@ -109,7 +108,6 @@ void WEffectChainPresetButton::populateMenu() {
 
                 auto pAction = make_parented<QWidgetAction>(pEffectMenu);
                 pAction->setDefaultWidget(pCheckbox.get());
-                connect(pAction.get(), &QAction::triggered, this, handler);
 
                 pEffectMenu->addAction(pAction.get());
             }
