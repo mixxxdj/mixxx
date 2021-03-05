@@ -14,6 +14,7 @@
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
@@ -21,6 +22,13 @@
 
 namespace {
 const QString kMappingExt(".midi.xml");
+
+QString mappingNameToPath(const QString& directory, const QString& mappingName) {
+    // While / is allowed for the display name we can't use it for the file name.
+    QString fileName = QString(mappingName).replace(QChar('/'), QChar('-'));
+    return directory + fileName + kMappingExt;
+}
+
 } // namespace
 
 DlgPrefController::DlgPrefController(
@@ -134,11 +142,7 @@ DlgPrefController::~DlgPrefController() {
 }
 
 void DlgPrefController::showLearningWizard() {
-    // If the user has checked the "Enabled" checkbox but they haven't hit OK to
-    // apply it yet, prompt them to apply the settings before we open the
-    // learning dialog. If we don't apply the settings first and open the
-    // device, the dialog won't react to controller messages.
-    if (m_ui.chkEnabledDevice->isChecked() && !m_pController->isOpen()) {
+    if (isDirty()) {
         QMessageBox::StandardButton result = QMessageBox::question(this,
                 tr("Apply device settings?"),
                 tr("Your settings must be applied before starting the learning "
@@ -154,6 +158,11 @@ void DlgPrefController::showLearningWizard() {
         }
     }
     slotApply();
+
+    if (!m_pMapping) {
+        m_pMapping = std::shared_ptr<LegacyControllerMapping>(new LegacyMidiControllerMapping());
+        emit applyMapping(m_pController, m_pMapping, true);
+    }
 
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
@@ -187,7 +196,43 @@ void DlgPrefController::showLearningWizard() {
     connect(m_pDlgControllerLearning,
             &DlgControllerLearning::stopLearning,
             this,
-            &DlgPrefController::mappingEnded);
+            &DlgPrefController::slotStopLearning);
+}
+
+void DlgPrefController::slotStopLearning() {
+    VERIFY_OR_DEBUG_ASSERT(m_pMapping) {
+        emit mappingEnded();
+        return;
+    }
+
+    applyMappingChanges();
+    if (m_pMapping->filePath().isEmpty()) {
+        // This mapping was created when the learning wizard was started
+        if (m_pMapping->isDirty()) {
+            QString mappingName = askForMappingName();
+            QString mappingPath = mappingNameToPath(m_pUserDir, mappingName);
+            m_pMapping->setName(mappingName);
+            if (m_pMapping->saveMapping(mappingPath)) {
+                qDebug() << "Mapping saved as" << mappingPath;
+                m_pMapping->setFilePath(mappingPath);
+                m_pMapping->setDirty(false);
+                emit applyMapping(m_pController, m_pMapping, true);
+                enumerateMappings(mappingPath);
+            } else {
+                qDebug() << "Failed to save mapping as" << mappingPath;
+                // Discard the new mapping and disable the controller
+                m_pMapping.reset();
+                emit applyMapping(m_pController, m_pMapping, false);
+            }
+        } else {
+            // No changes made to the new mapping, discard it and disable the
+            // controller
+            m_pMapping.reset();
+            emit applyMapping(m_pController, m_pMapping, false);
+        }
+    }
+
+    emit mappingEnded();
 }
 
 void DlgPrefController::midiInputMappingsLearned(
@@ -329,6 +374,7 @@ QString DlgPrefController::mappingFileLinks(
 }
 
 void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
+    m_ui.comboBoxMapping->blockSignals(true);
     m_ui.comboBoxMapping->clear();
 
     // qDebug() << "Enumerating mappings for controller" << m_pController->getName();
@@ -386,6 +432,8 @@ void DlgPrefController::enumerateMappings(const QString& selectedMappingPath) {
         m_ui.comboBoxMapping->setCurrentIndex(index);
         m_ui.chkEnabledDevice->setEnabled(true);
     }
+    m_ui.comboBoxMapping->blockSignals(false);
+    slotMappingSelected(m_ui.comboBoxMapping->currentIndex());
 }
 
 MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
@@ -413,13 +461,13 @@ MappingInfo DlgPrefController::enumerateMappingsFromEnumerator(
 }
 
 void DlgPrefController::slotUpdate() {
-    enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
-            m_pController->getName()));
-
     // Check if the controller is open.
     bool deviceOpen = m_pController->isOpen();
     // Check/uncheck the "Enabled" box
     m_ui.chkEnabledDevice->setChecked(deviceOpen);
+
+    enumerateMappings(m_pControllerManager->getConfiguredMappingFileForDevice(
+            m_pController->getName()));
 
     // If the controller is not mappable, disable the input and output mapping
     // sections and the learning wizard button.
@@ -469,6 +517,10 @@ void DlgPrefController::slotApply() {
         return;
     }
 
+    QString mappingPath = mappingPathFromIndex(m_ui.comboBoxMapping->currentIndex());
+    m_pMapping = LegacyControllerMappingFileHandler::loadMapping(
+            mappingPath, QDir(resourceMappingsPath(m_pConfig)));
+
     // Load the resulting mapping (which has been mutated by the input/output
     // table models). The controller clones the mapping so we aren't touching
     // the same mapping.
@@ -482,9 +534,18 @@ QUrl DlgPrefController::helpUrl() const {
     return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
 }
 
+QString DlgPrefController::mappingPathFromIndex(int index) const {
+    if (index == 0) {
+        // "No Mapping" item
+        return QString();
+    }
+
+    return m_ui.comboBoxMapping->itemData(index).toString();
+}
+
 void DlgPrefController::slotMappingSelected(int chosenIndex) {
-    QString mappingPath;
-    if (chosenIndex == 0) {
+    QString mappingPath = mappingPathFromIndex(chosenIndex);
+    if (mappingPath.isEmpty()) {
         // User picked "No Mapping" item
         m_ui.chkEnabledDevice->setEnabled(false);
 
@@ -500,8 +561,6 @@ void DlgPrefController::slotMappingSelected(int chosenIndex) {
             m_ui.chkEnabledDevice->setChecked(true);
             setDirty(true);
         }
-
-        mappingPath = m_ui.comboBoxMapping->itemData(chosenIndex).toString();
     }
 
     // Check if the mapping is different from the configured mapping
@@ -595,49 +654,8 @@ void DlgPrefController::saveMapping() {
     if (!saveAsNew) {
         newFilePath = oldFilePath;
     } else {
-        QString saveMappingTitle = tr("Save user mapping");
-        QString saveMappingLabel = tr("Enter the name for saving the mapping to the user folder.");
-        QString savingFailedTitle = tr("Saving mapping failed");
-        QString invalidNameLabel =
-                tr("A mapping cannot have a blank name and may not contain "
-                   "special characters.");
-        QString fileExistsLabel = tr("A mapping file with that name already exists.");
-        // Only allow the name to contain letters, numbers, whitespaces and _-+()/
-        const QRegExp rxRemove = QRegExp("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]");
-
-        // Choose a new file (base) name
-        bool validMappingName = false;
-        while (!validMappingName) {
-            QString userDir = m_pUserDir;
-            bool ok = false;
-            mappingName = QInputDialog::getText(nullptr,
-                    saveMappingTitle,
-                    saveMappingLabel,
-                    QLineEdit::Normal,
-                    mappingName,
-                    &ok)
-                                  .remove(rxRemove)
-                                  .trimmed();
-            if (!ok) {
-                return;
-            }
-            if (mappingName.isEmpty()) {
-                QMessageBox::warning(nullptr,
-                        savingFailedTitle,
-                        invalidNameLabel);
-                continue;
-            }
-            // While / is allowed for the display name we can't use it for the file name.
-            QString fileName = mappingName.replace(QString("/"), QString("-"));
-            newFilePath = userDir + fileName + kMappingExt;
-            if (QFile::exists(newFilePath)) {
-                QMessageBox::warning(nullptr,
-                        savingFailedTitle,
-                        fileExistsLabel);
-                continue;
-            }
-            validMappingName = true;
-        }
+        mappingName = askForMappingName(mappingName);
+        newFilePath = mappingNameToPath(m_pUserDir, mappingName);
         m_pMapping->setName(mappingName);
         qDebug() << "Mapping renamed to" << m_pMapping->name();
     }
@@ -652,6 +670,53 @@ void DlgPrefController::saveMapping() {
     m_pMapping->setDirty(false);
 
     enumerateMappings(m_pMapping->filePath());
+}
+
+QString DlgPrefController::askForMappingName(const QString& prefilledName) const {
+    QString saveMappingTitle = tr("Save user mapping");
+    QString saveMappingLabel = tr("Enter the name for saving the mapping to the user folder.");
+    QString savingFailedTitle = tr("Saving mapping failed");
+    QString invalidNameLabel =
+            tr("A mapping cannot have a blank name and may not contain "
+               "special characters.");
+    QString fileExistsLabel = tr("A mapping file with that name already exists.");
+    // Only allow the name to contain letters, numbers, whitespaces and _-+()/
+    const QRegExp rxRemove = QRegExp("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]");
+
+    // Choose a new file (base) name
+    bool validMappingName = false;
+    QString mappingName = prefilledName;
+    while (!validMappingName) {
+        QString userDir = m_pUserDir;
+        bool ok = false;
+        mappingName = QInputDialog::getText(nullptr,
+                saveMappingTitle,
+                saveMappingLabel,
+                QLineEdit::Normal,
+                mappingName,
+                &ok)
+                              .remove(rxRemove)
+                              .trimmed();
+        if (!ok) {
+            continue;
+        }
+        if (mappingName.isEmpty()) {
+            QMessageBox::warning(nullptr,
+                    savingFailedTitle,
+                    invalidNameLabel);
+            continue;
+        }
+        // While / is allowed for the display name we can't use it for the file name.
+        QString newFilePath = mappingNameToPath(userDir, mappingName);
+        if (QFile::exists(newFilePath)) {
+            QMessageBox::warning(nullptr,
+                    savingFailedTitle,
+                    fileExistsLabel);
+            continue;
+        }
+        validMappingName = true;
+    }
+    return mappingName;
 }
 
 void DlgPrefController::initTableView(QTableView* pTable) {
