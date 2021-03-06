@@ -25,19 +25,28 @@
 /// implementing the signal processing logic and providing metadata for describing
 /// the effect and its parameters with an EffectManifest.
 ///
+/// EffectProcessorImpl interfaces with the main thread through the EffectProcessor
+/// abstract base class. EngineEffect passes state changes between the
+/// ControlObjects in EffectSlot on the main thread and EffectProcessor in the audio
+/// thread via EffectsMessenger.
+///
 /// Each EffectState instance tracks the state for one combination of input signal
 /// and output signal. Input signals can be any EngineChannel, but output channels
-/// are hardcoded in EngineMaster as the post-fader processing for the main mix
-/// and pre-fader processing for headphones. There can be many EffectStates for one
+/// are hardcoded in EngineMaster as the postfader processing for the main mix
+/// and prefader processing for headphones. There can be many EffectStates for one
 /// EffectProcessorImpl, allowing a single EffectProcessorImpl to maintain
-/// independent state for different channels.
+/// independent state for each combination of input and output signal. This allows
+/// each EffectProcessor to handle an arbitrary number of input signals. Tracking
+/// state separately for the main mix and the headphone output allows effects to be
+/// processed postfader for the main mix and prefader for the headphone output in
+/// parallel so there is no need for a prefader/postfader toggle switch.
 ///
 /// EffectStates allocated on the main thread are passed as pointers to the
 /// EffectProcessorImpl in the audio callback thread via the EffectsMessenger.
 /// EffectStates are allocated and deallocated when a routing switch for an
 /// EffectChain is toggled and when a new EngineEffect is loaded into an EffectSlot.
 /// This allows for scaling up to an arbitrary number of input signals
-/// without wasting a lot of memory. (They could be (de)allocated when toggling
+/// without wasting a lot of memory. (EffectStates could be (de)allocated when toggling
 /// the enable switches for EffectSlots as well, but the memory savings would be
 /// relatively small compared to the additional code complexity.)
 class EffectState {
@@ -49,32 +58,33 @@ class EffectState {
     virtual ~EffectState(){};
 };
 
-/// EffectProcessor is an abstract base class for interfacing with the main
-/// thread without needing to specify a specific EffectState subclass for the
-/// template in EffectProcessorImpl.
+/// EffectProcessor is an abstract base class for interfacing with an EffectSlot
+/// in the main thread without needing to specify a specific EffectState subclass
+/// for the template in EffectProcessorImpl.
 class EffectProcessor {
   public:
     virtual ~EffectProcessor() {
     }
 
-    /// All of these methods for managing EffectStates and EngineEffectParameters
-    /// are called from the main thread.
+    /// These methods are called from the main thread
     virtual void initialize(
             const QSet<ChannelHandleAndGroup>& activeInputChannels,
             const QSet<ChannelHandleAndGroup>& registeredOutputChannels,
             const mixxx::EngineParameters& bufferParameters) = 0;
-    virtual EffectState* createState(const mixxx::EngineParameters& bufferParameters) = 0;
-    virtual bool loadStatesForInputChannel(const ChannelHandle* inputChannel,
-            const EffectStatesMap* pStatesMap) = 0;
-    virtual void deleteStatesForInputChannel(const ChannelHandle* inputChannel) = 0;
     virtual void loadEngineEffectParameters(
             const QMap<QString, EngineEffectParameterPointer>& parameters) = 0;
+    virtual EffectState* createState(const mixxx::EngineParameters& bufferParameters) = 0;
+    virtual void deleteStatesForInputChannel(const ChannelHandle* inputChannel) = 0;
 
-    /// This is the only public method called from the audio thread.
-    /// It takes a buffer of audio samples as pInput, processes the buffer according
-    /// to Effect-specific logic, and outputs it to the buffer pOutput. Both pInput
-    /// and pOutput are represented as stereo interleaved samples for now, but
-    /// effects should not be written assuming this will remain true. The properties
+    // Called from the audio thread
+    virtual bool loadStatesForInputChannel(const ChannelHandle* inputChannel,
+            const EffectStatesMap* pStatesMap) = 0;
+
+    /// Called from the audio thread
+    /// This method takes a buffer of audio samples as pInput, processes the buffer
+    /// according to effect-specific logic, and outputs it to the buffer pOutput.
+    /// Both pInput and pOutput are represented as stereo interleaved samples for now,
+    /// but effects should not be written assuming this will remain true. The properties
     /// of the buffer necessary for determining how to process it (frames per
     /// buffer, number of channels, and sample rate) are available on the
     /// mixxx::EngineParameters argument. The provided channel handles allow
@@ -90,7 +100,7 @@ class EffectProcessor {
             const GroupFeatureState& groupFeatures) = 0;
 };
 
-/// EffectProcessorImpl manages a separate EffectState for every routing of
+/// EffectProcessorImpl manages a separate EffectState for every combination of
 /// input channel to output channel. This allows for processing effects in
 /// parallel for PFL and post-fader for the master output.
 /// EffectSpecificState must be a subclass of EffectState.
@@ -129,7 +139,7 @@ class EffectProcessorImpl : public EffectProcessor {
     /// NOTE: Subclasses for Built-In effects must implement the following static methods for
     /// BuiltInBackend to work:
     /// static QString getId();
-    /// static EffectManifest getManifest();
+    /// static EffectManifestPointer getManifest();
 
     /// This is the only non-static method that subclasses need to implement.
     virtual void processChannel(EffectSpecificState* channelState,
@@ -200,7 +210,7 @@ class EffectProcessorImpl : public EffectProcessor {
         }
 
         // NOTE: ChannelHandleMap is like a map in that it associates an
-        // object with a ChannelHandle key, but it actually backed by a
+        // object with a ChannelHandle key, but it is actually backed by a
         // QVarLengthArray, not a QMap. So it is okay that
         // m_channelStateMatrix may be accessed concurrently in the main
         // thread in deleteStatesForInputChannel.
@@ -253,7 +263,7 @@ class EffectProcessorImpl : public EffectProcessor {
         }
 
         // NOTE: ChannelHandleMap is like a map in that it associates an
-        // object with a ChannelHandle key, but it actually backed by a
+        // object with a ChannelHandle key, but it is actually backed by a
         // QVarLengthArray, not a QMap. So it is okay that
         // m_channelStateMatrix may be accessed concurrently in the audio
         // engine thread in loadStatesForInputChannel.
