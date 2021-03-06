@@ -15,6 +15,11 @@ class EngineEffect;
 /// EngineEffectsManager is the entry point for processing effects in the audio
 /// thread. It also passes EffectsRequests from EffectsMessenger down to the
 /// EngineEffectChains and EngineEffects at the beginning of the audio thread cycle.
+///
+/// Signal flow diagram (disable word wrapping in your editor to read):
+/// EngineChannel ---> EqualizerEffectChains --> channel faders & crossfader --> QuickEffectChains & StandardEffectChains --> mix channels into main mix --> main mix effect processing
+///                                          |
+///                                      PFL switch --> QuickEffectChains & StandardEffectChains --> mix channels into headphone mix --> headphone effect processing
 class EngineEffectsManager final : public EffectsRequestHandler {
   public:
     EngineEffectsManager(EffectsResponsePipe* pResponsePipe);
