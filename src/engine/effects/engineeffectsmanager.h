@@ -13,8 +13,8 @@ class EngineEffectChain;
 class EngineEffect;
 
 /// EngineEffectsManager is the entry point for processing effects in the audio
-/// thread. It also passes EffectsRequests down to the EngineEffectChains and
-/// EngineEffects at the beginning of the audio thread cycle.
+/// thread. It also passes EffectsRequests from EffectsMessenger down to the
+/// EngineEffectChains and EngineEffects at the beginning of the audio thread cycle.
 class EngineEffectsManager final : public EffectsRequestHandler {
   public:
     EngineEffectsManager(EffectsResponsePipe* pResponsePipe);
