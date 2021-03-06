@@ -2419,11 +2419,11 @@ TEST_F(EngineSyncTest, BeatMapQantizePlay) {
 
     constexpr auto kSampleRate = mixxx::audio::SampleRate(44100);
 
-    auto pBeats2 = mixxx::BeatMap::makeBeatMap(
-            kSampleRate,
+    auto pBeats2 = mixxx::BeatMap::makeBeatMap(kSampleRate,
             QString(),
             // Add two beats at 120 Bpm
-            QVector<double>({kSampleRate / 2, kSampleRate}));
+            QVector<double>({static_cast<double>(kSampleRate) / 2,
+                    static_cast<double>(kSampleRate)}));
     m_pTrack2->setBeats(pBeats2);
 
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
