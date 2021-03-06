@@ -19,7 +19,7 @@
 /// EngineEffect is a generic wrapper around an EffectProcessor which intermediates
 /// between an EffectSlot and the EffectProcessor. It implements the logic to handle
 /// changes of state (enable switch, chain routing switches, parameters' state) so
-/// so EffectProcessors only need to implement their specific DSP logic.
+/// so EffectProcessor subclasses only need to implement their specific DSP logic.
 class EngineEffect final : public EffectsRequestHandler {
   public:
     /// Called in main thread by EffectSlot
