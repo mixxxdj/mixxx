@@ -1,17 +1,12 @@
-/*
- * beatutils.cpp
- *
- *  Created on: 30/nov/2011
- *      Author: vittorio
- */
+#include "track/beatutils.h"
 
-#include <algorithm>
-#include <QtDebug>
-#include <QString>
 #include <QList>
 #include <QMap>
+#include <QString>
+#include <QtDebug>
+#include <algorithm>
 
-#include "track/beatutils.h"
+#include "track/bpm.h"
 #include "util/math.h"
 
 // we are generous and assume the global_BPM to be at most 0.05 BPM far away
@@ -167,6 +162,9 @@ double BeatUtils::calculateBpm(
         mixxx::audio::SampleRate sampleRate,
         int min_bpm,
         int max_bpm) {
+    if (beats.isEmpty()) {
+        return mixxx::Bpm::kValueUndefined;
+    }
     /*
      * Let's compute the average local
      * BPM for N subsequent beats.
