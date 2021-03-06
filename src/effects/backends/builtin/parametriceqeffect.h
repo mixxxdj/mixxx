@@ -26,6 +26,8 @@ class ParametricEQEffectGroupState final : public EffectState {
 
     void setFilters(int sampleRate);
 
+    // These containers are only appended in the constructor which is called on
+    // the main thread, so there is no risk of allocation in the audio thread.
     std::vector<std::unique_ptr<EngineFilterBiquad1Peaking> > m_bands;
     QList<double> m_oldGain;
     QList<double> m_oldCenter;
@@ -60,6 +62,8 @@ class ParametricEQEffect : public EffectProcessorImpl<ParametricEQEffectGroupSta
         return getId();
     }
 
+    // These QLists are only appended on the main thread in loadEngineEffectParameters,
+    // so there is no risk of allocation in the audio thread.
     QList<EngineEffectParameterPointer> m_pPotGain;
     QList<EngineEffectParameterPointer> m_pPotQ;
     QList<EngineEffectParameterPointer> m_pPotCenter;
