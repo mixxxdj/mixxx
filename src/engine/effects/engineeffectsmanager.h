@@ -22,13 +22,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
 
     void onCallbackStart();
 
-    // Take a buffer of numSamples samples of audio from a channel, provided as
-    // pInput, and apply each EffectChain enabled for this channel to it,
-    // putting the resulting output in pOutput. If pInput is equal to pOutput,
-    // then the operation must occur in-place. Both pInput and pOutput are
-    // represented as stereo interleaved samples. There are numSamples total
-    // samples, so numSamples/2 left channel samples and numSamples/2 right
-    // channel samples.
+    /// Process the prefader EngineEffectChains on the pInOut buffer, modifying
+    /// the contents of the input buffer.
     void processPreFaderInPlace(
             const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
@@ -36,6 +31,8 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const unsigned int numSamples,
             const unsigned int sampleRate);
 
+    /// Process the postfader EngineEffectChains on the pInOut buffer, modifying
+    /// the contents of the input buffer.
     void processPostFaderInPlace(
             const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
@@ -46,6 +43,11 @@ class EngineEffectsManager final : public EffectsRequestHandler {
             const CSAMPLE_GAIN oldGain = CSAMPLE_GAIN_ONE,
             const CSAMPLE_GAIN newGain = CSAMPLE_GAIN_ONE);
 
+    /// Process the postfader EngineEffectChains, leaving the pIn buffer unmodified
+    /// and mixing the output into the pOut buffer. Using EngineEffectsManager's
+    /// temporary buffers for this avoids the need for ChannelMixer to allocate a
+    /// buffer for every channel, which would potentially require allocation on the
+    /// audio thread because ChannelMixer supports an arbitrary number of channels.
     void processPostFaderAndMix(
             const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
@@ -69,6 +71,13 @@ class EngineEffectsManager final : public EffectsRequestHandler {
     bool addEffectChain(EngineEffectChain* pChain, SignalProcessingStage stage);
     bool removeEffectChain(EngineEffectChain* pChain, SignalProcessingStage stage);
 
+    // Take a buffer of numSamples samples of audio from a channel, provided as
+    // pInput, and apply each EngineEffectChain enabled for this channel to it,
+    // putting the resulting output in pOutput. If pInput is equal to pOutput,
+    // then the operation must occur in-place. Both pInput and pOutput are
+    // represented as stereo interleaved samples. There are numSamples total
+    // samples, so numSamples/2 left channel samples and numSamples/2 right
+    // channel samples.
     void processInner(const SignalProcessingStage stage,
             const ChannelHandle& inputHandle,
             const ChannelHandle& outputHandle,
