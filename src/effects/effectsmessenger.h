@@ -8,7 +8,9 @@
 /// avoid blocking the audio thread and causing audible glitches.
 /// Refer to
 /// http://www.rossbencina.com/code/real-time-audio-programming-101-time-waits-for-nothing
-/// for background information.
+/// for background information and
+/// https://github.com/mixxxdj/mixxx/pull/180#issuecomment-37435684
+/// for why this design is used for effects rather than alternatives.
 class EffectsMessenger {
   public:
     EffectsMessenger(EffectsRequestPipe* pRequestPipe, EffectsResponsePipe* m_pResponsePipe);
