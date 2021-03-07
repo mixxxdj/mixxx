@@ -134,6 +134,8 @@ if(MSVC)
       string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG}")
     else()
       # Reduce the size of the binary in Release & RelWithDebInfo builds
+      # Do not use /OPT:ICF because it has no effect.
+      # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
       add_link_options(/OPT:REF)
       # /INCREMENTAL is incompatible with /OPT:REF
       string(REPLACE "/INCREMENTAL" "/INCREMENTAL:NO" CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
