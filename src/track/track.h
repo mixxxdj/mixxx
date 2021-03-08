@@ -53,7 +53,7 @@ class Track : public QObject {
     Q_PROPERTY(QString track_total READ getTrackTotal WRITE setTrackTotal)
     Q_PROPERTY(int times_played READ getTimesPlayed)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
-    Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
+    Q_PROPERTY(double bpm READ getBpm)
     Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false)
     Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(double duration READ getDuration)
@@ -125,8 +125,8 @@ class Track : public QObject {
         return getDurationText(mixxx::Duration::Precision::MILLISECONDS);
     }
 
-    // Set BPM
-    double setBpm(double);
+    // Sets the BPM if not locked.
+    double trySetBpm(double bpm, bool lockBpmAfterSet);
     // Returns BPM
     double getBpm() const;
     // Returns BPM as a string
@@ -134,7 +134,7 @@ class Track : public QObject {
 
     // A track with a locked BPM will not be re-analyzed by the beats or bpm
     // analyzer.
-    void setBpmLocked(bool bpmLocked = true);
+    void setBpmLocked(bool bpmLocked);
     bool isBpmLocked() const;
 
     // Set ReplayGain
@@ -283,8 +283,8 @@ class Track : public QObject {
     // Get the track's Beats list
     mixxx::BeatsPointer getBeats() const;
 
-    // Set the track's Beats
-    void setBeats(mixxx::BeatsPointer beats);
+    // Set the track's Beats if not locked
+    bool trySetBeats(mixxx::BeatsPointer beats, bool lockBpmAfterSet);
 
     /// Imports the given list of cue infos as cue points,
     /// thereby replacing all existing cue points!
@@ -292,7 +292,8 @@ class Track : public QObject {
     /// If the list is empty it tries to complete any pending
     /// import and returns the corresponding status.
     ImportStatus importBeats(
-            mixxx::BeatsImporterPointer pBeatsImporter);
+            mixxx::BeatsImporterPointer pBeatsImporter,
+            bool bpmLocked);
     ImportStatus getBeatsImportStatus() const;
 
     void resetKeys();
@@ -399,7 +400,6 @@ class Track : public QObject {
 
     /// Imports pending beats from a BeatImporter and returns a boolean to
     /// indicate if BPM/beats were updated. Only supposed to be called while
-    /// the caller guards this a lock.
     bool importPendingBeatsWhileLocked();
 
     /// Sets cue points and returns a boolean to indicate if cues were updated.
@@ -411,10 +411,13 @@ class Track : public QObject {
     /// caller guards this a lock.
     bool importPendingCueInfosWhileLocked();
 
-    void setBeatsMarkDirtyAndUnlock(
+    bool trySetBeatsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
-            mixxx::BeatsPointer pBeats);
-    void importPendingBeatsMarkDirtyAndUnlock(QMutexLocker* pLock);
+            mixxx::BeatsPointer pBeats,
+            bool lockBpmAfterSet);
+    void importPendingBeatsMarkDirtyAndUnlock(
+            QMutexLocker* pLock,
+            bool bpmLocked);
 
     void setCuePointsMarkDirtyAndUnlock(
             QMutexLocker* pLock,

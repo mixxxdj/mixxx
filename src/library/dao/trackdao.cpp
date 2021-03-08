@@ -1090,11 +1090,10 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     const mixxx::BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
             pTrack->getSampleRate(), beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
-        pTrack->setBeats(pBeats);
+        pTrack->trySetBeats(pBeats, bpmLocked);
     } else {
-        pTrack->setBpm(bpm);
+        pTrack->trySetBpm(bpm, bpmLocked);
     }
-    pTrack->setBpmLocked(bpmLocked);
     return false;
 }
 

@@ -27,7 +27,7 @@ TEST(BeatGridTest, Scale) {
     TrackPointer pTrack = newTrack(sampleRate);
 
     double bpm = 60.0;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm, false);
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
@@ -57,7 +57,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm, false);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
@@ -91,7 +91,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm, false);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
@@ -127,7 +127,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm, false);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
@@ -163,7 +163,7 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm, false);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
@@ -195,13 +195,13 @@ TEST(BeatGridTest, FromMetadata) {
     TrackPointer pTrack = newTrack(sampleRate);
 
     double bpm = 60.1;
-    double echoBpm = pTrack->setBpm(bpm);
+    double echoBpm = pTrack->trySetBpm(bpm, false);
     EXPECT_DOUBLE_EQ(echoBpm, bpm);
 
     auto pBeats = pTrack->getBeats();
     EXPECT_DOUBLE_EQ(pBeats->getBpm(), bpm);
 
-    echoBpm = pTrack->setBpm(-60.1);
+    echoBpm = pTrack->trySetBpm(-60.1, false);
     EXPECT_DOUBLE_EQ(echoBpm, mixxx::Bpm::kValueUndefined);
 
     pBeats = pTrack->getBeats();

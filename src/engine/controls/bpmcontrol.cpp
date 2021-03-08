@@ -172,7 +172,7 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
     if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
         double adjustedBpm = bpm + kBpmAdjustStep;
-        pTrack->setBeats(pBeats->setBpm(adjustedBpm));
+        pTrack->trySetBeats(pBeats->setBpm(adjustedBpm), false);
     }
 }
 
@@ -188,7 +188,7 @@ void BpmControl::slotAdjustBeatsSlower(double v) {
     if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
         double adjustedBpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
-        pTrack->setBeats(pBeats->setBpm(adjustedBpm));
+        pTrack->trySetBeats(pBeats->setBpm(adjustedBpm), false);
     }
 }
 
@@ -204,7 +204,7 @@ void BpmControl::slotTranslateBeatsEarlier(double v) {
     if (pBeats &&
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         const double translate_dist = getSampleOfTrack().rate * -.01;
-        pTrack->setBeats(pBeats->translate(translate_dist));
+        pTrack->trySetBeats(pBeats->translate(translate_dist), false);
     }
 }
 
@@ -221,7 +221,7 @@ void BpmControl::slotTranslateBeatsLater(double v) {
             (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         // TODO(rryan): Track::getSampleRate is possibly inaccurate!
         const double translate_dist = getSampleOfTrack().rate * .01;
-        pTrack->setBeats(pBeats->translate(translate_dist));
+        pTrack->trySetBeats(pBeats->translate(translate_dist), false);
     }
 }
 
@@ -255,7 +255,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength / rateRatio;
-    pTrack->setBeats(pBeats->setBpm(averageBpm));
+    pTrack->trySetBeats(pBeats->setBpm(averageBpm), false);
 }
 
 void BpmControl::slotControlBeatSyncPhase(double value) {
@@ -1020,7 +1020,7 @@ void BpmControl::slotBeatsTranslate(double v) {
         if (delta % 2 != 0) {
             delta--;
         }
-        pTrack->setBeats(pBeats->translate(delta));
+        pTrack->trySetBeats(pBeats->translate(delta), false);
     }
 }
 
@@ -1039,7 +1039,7 @@ void BpmControl::slotBeatsTranslateMatchAlignment(double v) {
         m_dUserOffset.setValue(0.0);
 
         double offset = getPhaseOffset(getSampleOfTrack().current);
-        pTrack->setBeats(pBeats->translate(-offset));
+        pTrack->trySetBeats(pBeats->translate(-offset), false);
     }
 }
 

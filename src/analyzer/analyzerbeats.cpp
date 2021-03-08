@@ -256,23 +256,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
         pBeats = BeatFactory::makeBeatGrid(m_iSampleRate, bpm, 0.0f);
     }
 
-    mixxx::BeatsPointer pCurrentBeats = pTrack->getBeats();
-
-    // If the track has no beats object then set our newly generated one
-    // regardless of beat lock.
-    if (!pCurrentBeats) {
-        pTrack->setBeats(pBeats);
-        return;
-    }
-
-    // If the track received the beat lock while we were analyzing it then we
-    // abort setting it.
-    if (pTrack->isBpmLocked()) {
-        qDebug() << "Track was BPM-locked as we were analyzing it. Aborting analysis.";
-        return;
-    }
-
-    pTrack->setBeats(pBeats);
+    pTrack->trySetBeats(pBeats, false);
 }
 
 // static
