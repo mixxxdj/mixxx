@@ -56,6 +56,12 @@ DlgPrefLibrary::DlgPrefLibrary(
             &QPushButton::clicked,
             this,
             &DlgPrefLibrary::slotRelocateDir);
+    const QString& settingsDir = m_pConfig->getSettingsPath();
+    connect(PushButtonOpenSettingsDir,
+            &QPushButton::clicked,
+            [settingsDir] {
+                QDesktopServices::openUrl(QUrl::fromLocalFile(settingsDir));
+            });
 
     // Set default direction as stored in config file
     int rowHeight = m_pLibrary->getTrackTableRowHeight();
