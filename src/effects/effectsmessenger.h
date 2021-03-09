@@ -19,7 +19,7 @@ class EffectsMessenger {
     /// ownership of request and deletes it once a response is received.
     bool writeRequest(EffectsRequest* request);
 
-    void startShutdownProcess();
+    void initiateShutdown();
     void processEffectsResponses();
 
   private:

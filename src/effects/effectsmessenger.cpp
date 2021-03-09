@@ -17,7 +17,7 @@ EffectsMessenger::~EffectsMessenger() {
     }
 }
 
-void EffectsMessenger::startShutdownProcess() {
+void EffectsMessenger::initiateShutdown() {
     m_bShuttingDown = true;
 }
 

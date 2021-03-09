@@ -45,7 +45,7 @@ EffectsManager::EffectsManager(
 }
 
 EffectsManager::~EffectsManager() {
-    m_pMessenger->startShutdownProcess();
+    m_pMessenger->initiateShutdown();
 
     saveEffectsXml();
 
