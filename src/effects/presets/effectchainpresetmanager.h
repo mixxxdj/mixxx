@@ -82,8 +82,6 @@ class EffectChainPresetManager : public QObject {
 
     UserSettingsPointer m_pConfig;
     EffectsBackendManagerPointer m_pBackendManager;
-
-    EffectChainPresetPointer m_pDefaultQuickEffectChainPreset;
 };
 
 typedef QSharedPointer<EffectChainPresetManager> EffectChainPresetManagerPointer;
