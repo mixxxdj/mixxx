@@ -343,7 +343,7 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
         bool okay = false;
         name = QInputDialog::getText(nullptr,
                 tr("Save preset for effect chain"),
-                errorText + tr("Name for new effect chain preset:"),
+                errorText + "\n" + tr("Name for new effect chain preset:"),
                 QLineEdit::Normal,
                 pPreset->name(),
                 &okay)
