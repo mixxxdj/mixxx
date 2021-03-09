@@ -20,12 +20,13 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
           m_pBackendManager(pEffectsManager->getBackendManager()) {
     setupUi(this);
 
-    m_pVisibleEffectsModel = new EffectManifestTableModel(
+    m_pVisibleEffectsModel = make_parented<EffectManifestTableModel>(
             visibleEffectsTableView, m_pBackendManager);
     visibleEffectsTableView->setModel(m_pVisibleEffectsModel);
     setupManifestTableView(visibleEffectsTableView);
 
-    m_pHiddenEffectsModel = new EffectManifestTableModel(hiddenEffectsTableView, m_pBackendManager);
+    m_pHiddenEffectsModel = make_parented<EffectManifestTableModel>(
+            hiddenEffectsTableView, m_pBackendManager);
     hiddenEffectsTableView->setModel(m_pHiddenEffectsModel);
     setupManifestTableView(hiddenEffectsTableView);
 
@@ -72,7 +73,7 @@ void DlgPrefEffects::setupManifestTableView(QTableView* pTableView) {
 }
 
 void DlgPrefEffects::setupChainListView(QListView* pListView) {
-    EffectChainPresetListModel* pModel = new EffectChainPresetListModel(pListView);
+    auto pModel = make_parented<EffectChainPresetListModel>(pListView);
     pListView->setModel(pModel);
     pListView->setDropIndicatorShown(true);
     pListView->setDragDropMode(QAbstractItemView::DragDrop);

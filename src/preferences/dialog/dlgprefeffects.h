@@ -6,6 +6,7 @@
 #include "preferences/dialog/ui_dlgprefeffectsdlg.h"
 #include "preferences/effectmanifesttablemodel.h"
 #include "preferences/usersettings.h"
+#include "util/parented_ptr.h"
 
 class EffectsManager;
 
@@ -47,6 +48,6 @@ class DlgPrefEffects : public DlgPreferencePage, public Ui::DlgPrefEffectsDlg {
     VisibleEffectsListPointer m_pVisibleEffectsList;
     EffectChainPresetManagerPointer m_pChainPresetManager;
     EffectsBackendManagerPointer m_pBackendManager;
-    EffectManifestTableModel* m_pVisibleEffectsModel;
-    EffectManifestTableModel* m_pHiddenEffectsModel;
+    parented_ptr<EffectManifestTableModel> m_pVisibleEffectsModel;
+    parented_ptr<EffectManifestTableModel> m_pHiddenEffectsModel;
 };
