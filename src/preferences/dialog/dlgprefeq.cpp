@@ -26,11 +26,11 @@ const QString kDefaultMasterEqId = QString();
 const int kFrequencyUpperLimit = 20050;
 const int kFrequencyLowerLimit = 16;
 
-static bool isMixingEQ(EffectManifest* pManifest) {
+bool isMixingEQ(EffectManifest* pManifest) {
     return pManifest->isMixingEQ();
 }
 
-static bool isMasterEQ(EffectManifest* pManifest) {
+bool isMasterEQ(EffectManifest* pManifest) {
     return pManifest->isMasterEQ();
 }
 } // anonymous namespace
