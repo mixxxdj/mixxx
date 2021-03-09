@@ -76,7 +76,5 @@ class EngineEffect final : public EffectsRequestHandler {
     QVector<EngineEffectParameterPointer> m_parameters;
     QMap<QString, EngineEffectParameterPointer> m_parametersById;
 
-    const EffectsManager* m_pEffectsManager;
-
     DISALLOW_COPY_AND_ASSIGN(EngineEffect);
 };
