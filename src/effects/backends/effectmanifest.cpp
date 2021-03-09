@@ -14,7 +14,7 @@ bool EffectManifest::hasMetaKnobLinking() const {
     return false;
 }
 
-bool EffectManifest::alphabetize(
+bool EffectManifest::sortLexigraphically(
         EffectManifestPointer pManifest1, EffectManifestPointer pManifest2) {
     // Sort built-in effects first before external plugins
     int backendNameComparision = static_cast<int>(pManifest1->backendType()) -

@@ -166,7 +166,8 @@ class EffectManifest {
         return other.id() < m_id;
     }
 
-    static bool alphabetize(EffectManifestPointer pManifest1, EffectManifestPointer pManifest2);
+    static bool sortLexigraphically(
+            EffectManifestPointer pManifest1, EffectManifestPointer pManifest2);
 
   private:
     QString debugString() const {

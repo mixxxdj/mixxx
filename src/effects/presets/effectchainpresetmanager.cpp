@@ -510,7 +510,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
                 manifestList.append(pManifest);
             }
         }
-        std::sort(manifestList.begin(), manifestList.end(), EffectManifest::alphabetize);
+        std::sort(manifestList.begin(), manifestList.end(), EffectManifest::sortLexigraphically);
         for (const auto& pManifest : manifestList) {
             auto pChainPreset = EffectChainPresetPointer(new EffectChainPreset(pManifest));
             pChainPreset->setName(pManifest->displayName());

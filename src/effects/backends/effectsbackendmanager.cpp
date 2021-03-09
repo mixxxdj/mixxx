@@ -34,7 +34,7 @@ void EffectsBackendManager::addBackend(EffectsBackendPointer pBackend) {
 
     std::sort(m_manifests.begin(),
             m_manifests.end(),
-            EffectManifest::alphabetize);
+            EffectManifest::sortLexigraphically);
 }
 
 const QList<EffectManifestPointer> EffectsBackendManager::getManifestsForBackend(
@@ -44,7 +44,7 @@ const QList<EffectManifestPointer> EffectsBackendManager::getManifestsForBackend
         return QList<EffectManifestPointer>();
     }
     auto list = pBackend->getManifests();
-    std::sort(list.begin(), list.end(), EffectManifest::alphabetize);
+    std::sort(list.begin(), list.end(), EffectManifest::sortLexigraphically);
     return list;
 }
 
