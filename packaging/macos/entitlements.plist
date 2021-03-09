@@ -10,7 +10,11 @@
     <true/>
     <key>com.apple.security.device.firewire</key>
     <true/>
+    <!-- Required for microphone access in sandboxed app -->
     <key>com.apple.security.device.microphone</key>
+    <true/>
+    <!-- Required for microphone access in app built with the hardened runtime -->
+    <key>com.apple.security.device.audio-input</key>
     <true/>
     <key>com.apple.security.device.usb</key>
     <true/>
