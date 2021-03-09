@@ -2126,6 +2126,7 @@ WOverview #PassthroughLabel {
 
 QToolTip,
 #LibraryContainer QMenu,
+WEffectChainPresetButton QMenu,
 WBeatSpinBox QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
@@ -2134,12 +2135,14 @@ WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 #LibraryContainer QMenu::item,
+WEffectChainPresetButton QMenu::item,
 WBeatSpinBox QMenu::item,
 WCueMenuPopup QMenu::item,
 WCoverArtMenu::item,
 WTrackMenu::item,
 WTrackMenu QMenu::item,
 #LibraryContainer QMenu QCheckBox,
+WEffectChainPresetButton QMenu QCheckBox,
 WTrackMenu QCheckBox,
 WTrackMenu QMenu QCheckBox,
 #SkinSettings,
@@ -2153,6 +2156,7 @@ WEffectChainPresetSelector, WEffectChainPresetSelector QAbstractScrollArea,
   }
 QToolTip,
 #LibraryContainer QMenu,
+WEffectChainPresetButton QMenu,
 WBeatSpinBox QMenu,
 WCueMenuPopup,
 WCueMenuPopup QMenu,
@@ -2174,6 +2178,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
     border-right: 0px;
   }
   #LibraryContainer QMenu::separator,
+  WEffectChainPresetButton QMenu::separator,
   WBeatSpinBox QMenu::separator,
   WCueMenuPopup QMenu::separator,
   WCoverArtMenu::separator,
@@ -2186,6 +2191,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
     }
   /* actually this only needs to be set for QCheckBox */
   #LibraryContainer QMenu::item,
+  WEffectChainPresetButton QMenu::item,
   WBeatSpinBox QMenu::item,
   WCueMenuPopup QMenu::item,
   WCoverArtMenu::item,
@@ -2203,6 +2209,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
     margin: 0px;
   }
   #LibraryContainer QMenu::item,
+  WEffectChainPresetButton QMenu::item,
   WBeatSpinBox QMenu::item,
   WCueMenuPopup QMenu::item,
   WCoverArtMenu::item,
@@ -2214,6 +2221,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
     padding: 5px 12px 5px 25px;
     }
   #LibraryContainer QMenu QCheckBox,
+  WEffectChainPresetButton QMenu QCheckBox,
   WTrackMenu QCheckBox,
   WTrackMenu QMenu QCheckBox {
     padding: 2px 10px 2px 3px;
@@ -2221,6 +2229,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
   /* icons in editline menu (searchbox, editable track properties)
     and color squares in cue color menu */
   #LibraryContainer QMenu::icon,
+  WEffectChainPresetButton QMenu::icon,
   WBeatSpinBox QMenu::icon,
   WCueMenuPopup QMenu::icon,
   /* checkbox in Crate name context menu:
@@ -2231,6 +2240,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
     margin: 0px 4px 0px 2px;
     }
   #LibraryContainer QMenu::item:selected,
+  WEffectChainPresetButton QMenu::item:selected,
   WBeatSpinBox QMenu::item:selected,
   WCueMenuPopup QMenu::item:selected,
   WCoverArtMenu::item:selected,
@@ -2256,6 +2266,7 @@ WEffectChainPresetSelector QAbstractScrollArea,
     outline: none;
   }
 #LibraryContainer QMenu QCheckBox::indicator,
+WEffectChainPresetButton QMenu QCheckBox::indicator,
 WTrackMenu QCheckBox::indicator,
 WTrackMenu QMenu QCheckBox::indicator,
 #LibraryContainer QMenu::indicator,
@@ -2268,6 +2279,7 @@ WTrackMenu QMenu::indicator{
   border-radius: 1px;
   }
   #LibraryContainer QMenu QCheckBox::indicator:checked,
+  WEffectChainPresetButton QMenu QCheckBox::indicator:checked,
   WTrackMenu QCheckBox::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
   #LibraryContainer QMenu::indicator:checked,
@@ -2278,18 +2290,21 @@ WTrackMenu QMenu::indicator{
   }
   /* disabled menu checkbox */
   #LibraryContainer QMenu QCheckBox::indicator:!enabled,
+  WEffectChainPresetButton QMenu::indicator:!enabled,
   WTrackMenu QCheckBox::indicator:!enabled,
   WTrackMenu QMenu QCheckBox::indicator:!enabled {
     background-color: #333;
     border: 1px solid #222;
   }
   #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked,
+  WEffectChainPresetButton QMenu QCheckBox::indicator:!enabled:checked,
   WTrackMenu QCheckBox::indicator:!enabled:checked,
   WTrackMenu QMenu QCheckBox::indicator:!enabled:checked {
     image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
   }
 
 #LibraryContainer QMenu::item:!enabled,
+WEffectChainPresetButton QMenu::item:!enabled,
 WBeatSpinBox QMenu::item:!enabled,
 WCueMenuPopup QMenu::item:!enabled,
 WCoverArtMenu::item:!enabled,
@@ -2309,6 +2324,7 @@ WTrackMenu QMenu QCheckBox:!enabled,
   image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
   }
 #LibraryContainer QMenu::right-arrow,
+WEffectChainPresetButton QMenu::right-arrow,
 WTrackMenu::right-arrow,
 WTrackMenu QMenu::right-arrow {
   width: 8px;
@@ -2317,6 +2333,7 @@ WTrackMenu QMenu::right-arrow {
   image: url(skin:/buttons/btn_arrow_right.svg);
   }
 #LibraryContainer QMenu::right-arrow,
+WEffectChainPresetButton QMenu::right-arrow,
 WTrackMenu::right-arrow,
 WTrackMenu QMenu::right-arrow {
   image: url(skin:/buttons/btn_arrow_right_hover.svg);
