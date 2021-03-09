@@ -291,9 +291,9 @@ class Track : public QObject {
     ///
     /// If the list is empty it tries to complete any pending
     /// import and returns the corresponding status.
-    ImportStatus importBeats(
+    ImportStatus tryImportBeats(
             mixxx::BeatsImporterPointer pBeatsImporter,
-            bool bpmLocked);
+            bool lockBpmAfterSet);
     ImportStatus getBeatsImportStatus() const;
 
     void resetKeys();
@@ -415,9 +415,9 @@ class Track : public QObject {
             QMutexLocker* pLock,
             mixxx::BeatsPointer pBeats,
             bool lockBpmAfterSet);
-    void importPendingBeatsMarkDirtyAndUnlock(
+    bool tryImportPendingBeatsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
-            bool bpmLocked);
+            bool lockBpmAfterSet);
 
     void setCuePointsMarkDirtyAndUnlock(
             QMutexLocker* pLock,

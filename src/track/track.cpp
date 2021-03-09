@@ -187,7 +187,7 @@ void Track::importMetadata(
         // If the Serato tags are empty they are not present. In this case
         // all existing metadata must be preserved!
         if (!newSeratoTags.isEmpty()) {
-            importBeats(newSeratoTags.importBeats(), newSeratoTags.isBpmLocked());
+            tryImportBeats(newSeratoTags.importBeats(), newSeratoTags.isBpmLocked());
             importCueInfos(newSeratoTags.importCueInfos());
             setColor(newSeratoTags.getTrackColor());
         }
@@ -909,9 +909,9 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
             cuePoints);
 }
 
-Track::ImportStatus Track::importBeats(
+Track::ImportStatus Track::tryImportBeats(
         mixxx::BeatsImporterPointer pBeatsImporter,
-        bool bpmLocked) {
+        bool lockBpmAfterSet) {
     QMutexLocker lock(&m_qMutex);
     VERIFY_OR_DEBUG_ASSERT(pBeatsImporter) {
         return ImportStatus::Complete;
@@ -923,7 +923,7 @@ Track::ImportStatus Track::importBeats(
         return ImportStatus::Complete;
     } else if (m_record.hasStreamInfoFromSource()) {
         // Replace existing beats with imported beats immediately
-        importPendingBeatsMarkDirtyAndUnlock(&lock, bpmLocked);
+        tryImportPendingBeatsMarkDirtyAndUnlock(&lock, lockBpmAfterSet);
         return ImportStatus::Complete;
     } else {
         kLogger.debug()
@@ -932,7 +932,7 @@ Track::ImportStatus Track::importBeats(
         // to be replaced with the imported beats soon.
         if (trySetBeatsMarkDirtyAndUnlock(&lock,
                     nullptr,
-                    bpmLocked)) {
+                    lockBpmAfterSet)) {
             return ImportStatus::Pending;
         } else {
             return ImportStatus::Complete;
@@ -973,22 +973,29 @@ bool Track::importPendingBeatsWhileLocked() {
     return setBeatsWhileLocked(pBeats);
 }
 
-void Track::importPendingBeatsMarkDirtyAndUnlock(
+bool Track::tryImportPendingBeatsMarkDirtyAndUnlock(
         QMutexLocker* pLock,
-        bool bpmLocked) {
-    DEBUG_ASSERT(pLock);
+        bool lockBpmAfterSet) {
+    DEBUG_ASSERT(lockBpmAfterSet);
 
     if (m_record.getBpmLocked()) {
-        return;
+        return false;
     }
 
-    if (!importPendingBeatsWhileLocked()) {
+    bool dirty = false;
+
+    if (importPendingBeatsWhileLocked()) {
+        dirty = true;
+    }
+
+    if (compareAndSet(m_record.ptrBpmLocked(), lockBpmAfterSet)) {
+        dirty = true;
+    }
+
+    if (!dirty) {
+        // Already set, nothing todo
         pLock->unlock();
-        return;
-    }
-
-    if (bpmLocked) {
-        *(m_record.ptrBpmLocked()) = bpmLocked;
+        return true;
     }
 
     auto bpmValue = m_pBeats ? m_pBeats->getBpm() : mixxx::Bpm::kValueUndefined;
@@ -996,6 +1003,8 @@ void Track::importPendingBeatsMarkDirtyAndUnlock(
     markDirtyAndUnlock(pLock);
     emit bpmUpdated(bpmValue);
     emit beatsUpdated();
+
+    return true;
 }
 
 Track::ImportStatus Track::importCueInfos(
