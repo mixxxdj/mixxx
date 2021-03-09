@@ -10,6 +10,8 @@
     <true/>
     <key>com.apple.security.device.firewire</key>
     <true/>
+    <!-- Both microphone and audio-input are required for confusing overlap between sandboxing and hardended runtime.
+    https://stackoverflow.com/a/57060745 -->
     <key>com.apple.security.device.microphone</key>
     <true/>
     <key>com.apple.security.device.audio-input</key>
