@@ -825,7 +825,7 @@ void setHotCue(TrackPointer track,
 }
 
 void readAnalyze(TrackPointer track,
-        double sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         int timingOffset,
         bool ignoreCues,
         const QString& anlzPath) {
@@ -867,7 +867,7 @@ void readAnalyze(TrackPointer track,
             }
 
             const auto pBeats = mixxx::BeatMap::makeBeatMap(
-                    static_cast<SINT>(sampleRate),
+                    sampleRate,
                     mixxx::rekordboxconstants::beatsSubversion,
                     beats);
             track->setBeats(pBeats);
@@ -1187,7 +1187,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     }
 #endif
 
-    double sampleRate = static_cast<double>(track->getSampleRate());
+    mixxx::audio::SampleRate sampleRate = track->getSampleRate();
 
     QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
     QString anlzPathExt = anlzPath.left(anlzPath.length() - 3) + "EXT";

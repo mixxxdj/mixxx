@@ -127,7 +127,7 @@ void scaleFourth(BeatList* pBeats) {
     }
 }
 
-double calculateNominalBpm(const BeatList& beats, SINT sampleRate) {
+double calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate sampleRate) {
     QVector<double> beatvect;
     beatvect.reserve(beats.size());
     for (const auto& beat : beats) {
@@ -177,19 +177,19 @@ class BeatMapIterator : public BeatIterator {
 };
 
 BeatMap::BeatMap(
-        SINT sampleRate,
+        audio::SampleRate sampleRate,
         const QString& subVersion,
         BeatList beats,
         double nominalBpm)
         : m_subVersion(subVersion),
-          m_iSampleRate(sampleRate),
+          m_sampleRate(sampleRate),
           m_nominalBpm(nominalBpm),
           m_beats(std::move(beats)) {
 }
 
 BeatMap::BeatMap(const BeatMap& other, BeatList beats, double nominalBpm)
         : m_subVersion(other.m_subVersion),
-          m_iSampleRate(other.m_iSampleRate),
+          m_sampleRate(other.m_sampleRate),
           m_nominalBpm(nominalBpm),
           m_beats(std::move(beats)) {
 }
@@ -200,7 +200,7 @@ BeatMap::BeatMap(const BeatMap& other)
 
 // static
 BeatsPointer BeatMap::makeBeatMap(
-        SINT sampleRate,
+        audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {
     double nominalBpm = 0.0;
@@ -222,7 +222,7 @@ BeatsPointer BeatMap::makeBeatMap(
 
 // static
 BeatsPointer BeatMap::makeBeatMap(
-        SINT sampleRate,
+        audio::SampleRate sampleRate,
         const QString& subVersion,
         const QVector<double>& beats) {
     BeatList beatList;
@@ -274,7 +274,7 @@ QString BeatMap::getSubVersion() const {
 }
 
 bool BeatMap::isValid() const {
-    return m_iSampleRate > 0 && m_beats.size() > 0;
+    return m_sampleRate.isValid() && m_beats.size() > 0;
 }
 
 double BeatMap::findNextBeat(double dSamples) const {
@@ -316,7 +316,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
-    const double kFrameEpsilon = 0.1 * m_iSampleRate;
+    const double kFrameEpsilon = 0.1 * m_sampleRate;
 
     // Back-up by one.
     if (it != m_beats.begin()) {
@@ -406,7 +406,7 @@ bool BeatMap::findPrevNextBeats(
 
     // If the position is within 1/10th of a second of the next or previous
     // beat, pretend we are on that beat.
-    const double kFrameEpsilon = 0.1 * m_iSampleRate;
+    const double kFrameEpsilon = 0.1 * m_sampleRate;
 
     // Back-up by one.
     if (it != m_beats.begin()) {
@@ -549,7 +549,7 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
         return -1;
     }
 
-    const int kFrameEpsilon = m_iSampleRate / 20;
+    const int kFrameEpsilon = m_sampleRate / 20;
 
     int numberOfBeats = 0;
     for (const auto& beat : m_beats) {
@@ -562,7 +562,7 @@ double BeatMap::getBpmAroundPosition(double curSample, int n) const {
         }
     }
 
-    return BeatUtils::calculateAverageBpm(numberOfBeats, m_iSampleRate, lowerFrame, upperFrame);
+    return BeatUtils::calculateAverageBpm(numberOfBeats, m_sampleRate, lowerFrame, upperFrame);
 }
 
 BeatsPointer BeatMap::translate(double dNumSamples) const {
@@ -631,7 +631,7 @@ BeatsPointer BeatMap::scale(enum BPMScale scale) const {
         return BeatsPointer(new BeatMap(*this));
     }
 
-    double bpm = calculateNominalBpm(beats, m_iSampleRate);
+    double bpm = calculateNominalBpm(beats, m_sampleRate);
     return BeatsPointer(new BeatMap(*this, beats, bpm));
 }
 

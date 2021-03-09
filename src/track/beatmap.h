@@ -7,8 +7,6 @@
 
 #pragma once
 
-#include <QMutex>
-
 #include "proto/beats.pb.h"
 #include "track/beats.h"
 
@@ -26,12 +24,12 @@ class BeatMap final : public Beats {
     ~BeatMap() override = default;
 
     static BeatsPointer makeBeatMap(
-            SINT sampleRate,
+            audio::SampleRate sampleRate,
             const QString& subVersion,
             const QByteArray& byteArray);
 
     static BeatsPointer makeBeatMap(
-            SINT sampleRate,
+            audio::SampleRate sampleRate,
             const QString& subVersion,
             const QVector<double>& beats);
 
@@ -61,8 +59,8 @@ class BeatMap final : public Beats {
     double getBpm() const override;
     double getBpmAroundPosition(double curSample, int n) const override;
 
-    SINT getSampleRate() const override {
-        return m_iSampleRate;
+    audio::SampleRate getSampleRate() const override {
+        return m_sampleRate;
     }
 
     ////////////////////////////////////////////////////////////////////////////
@@ -75,7 +73,7 @@ class BeatMap final : public Beats {
     BeatsPointer setBpm(double dBpm) override;
 
   private:
-    BeatMap(SINT sampleRate,
+    BeatMap(audio::SampleRate sampleRate,
             const QString& subVersion,
             BeatList beats,
             double nominalBpm);
@@ -87,7 +85,7 @@ class BeatMap final : public Beats {
     bool isValid() const;
 
     const QString m_subVersion;
-    const SINT m_iSampleRate;
+    const audio::SampleRate m_sampleRate;
     const double m_nominalBpm;
     const BeatList m_beats;
 };
