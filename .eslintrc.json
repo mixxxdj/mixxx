@@ -1,8 +1,11 @@
 {
   "extends": "eslint:recommended",
   "parserOptions": {
-    "ecmaVersion": 5,
+    "ecmaVersion": 7,
     "sourceType": "script"
+  },
+  "env": {
+    "es6": true
   },
   "rules": {
     "array-bracket-spacing" : "warn",
