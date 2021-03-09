@@ -571,7 +571,7 @@ void DlgTrackInfo::slotSpinBpmValueChanged(double value) {
     }
 
     if (m_pBeatsClone->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) {
-        m_pBeatsClone->setBpm(value);
+        m_pBeatsClone = m_pBeatsClone->setBpm(value);
     }
 
     // read back the actual value
