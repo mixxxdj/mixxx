@@ -5,7 +5,7 @@
 #include "util/xml.h"
 
 EffectChainPreset::EffectChainPreset()
-        : m_name(QObject::tr("None")) {
+        : m_name(kNoEffectString) {
 }
 
 EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
