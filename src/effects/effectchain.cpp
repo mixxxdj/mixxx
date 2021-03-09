@@ -259,7 +259,7 @@ EffectChainMixMode EffectChain::mixMode() const {
 }
 
 void EffectChain::setMixMode(EffectChainMixMode mixMode) {
-    m_pControlChainMixMode->set(static_cast<int>(mixMode));
+    m_pControlChainMixMode->set(static_cast<double>(mixMode));
     sendParameterUpdate();
 }
 
