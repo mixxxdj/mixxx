@@ -70,7 +70,6 @@ void EffectButtonParameterSlot::clear() {
         m_pManifestParameter.clear();
     }
 
-    m_pEffectSlot = nullptr;
     m_pControlLoaded->forceSet(0.0);
     m_pControlValue->set(0.0);
     m_pControlValue->setDefaultValue(0.0);

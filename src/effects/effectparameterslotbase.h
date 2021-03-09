@@ -62,7 +62,6 @@ class EffectParameterSlotBase : public QObject {
   protected:
     const unsigned int m_iParameterSlotNumber;
     QString m_group;
-    EffectSlot* m_pEffectSlot;
     EffectParameterPointer m_pEffectParameter;
     EffectManifestParameterPointer m_pManifestParameter;
     EffectParameterType m_parameterType;
