@@ -63,10 +63,6 @@ DlgPrefLibrary::DlgPrefLibrary(
                 QDesktopServices::openUrl(QUrl::fromLocalFile(settingsDir));
             });
 
-#if defined(__EXPORT_SERATO_MARKERS__)
-    checkBox_SeratoMetadataExport->show();
-#endif
-
     // Set default direction as stored in config file
     int rowHeight = m_pLibrary->getTrackTableRowHeight();
     spinBoxRowHeight->setValue(rowHeight);

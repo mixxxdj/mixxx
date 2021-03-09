@@ -450,9 +450,6 @@ bool exportTrackMetadataIntoTag(
     writeAtom(pTag, "\251mvn", toTString(trackMetadata.getTrackInfo().getMovement()));
 #endif // __EXTRA_METADATA__
 
-    // Export of Serato markers is disabled, because Mixxx
-    // does not modify them.
-#if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
     if (trackMetadata.getTrackInfo().getSeratoTags().status() != SeratoTags::ParserStatus::Failed) {
         writeAtom(
@@ -468,7 +465,6 @@ bool exportTrackMetadataIntoTag(
                 kAtomKeySeratoMarkers2,
                 dumpSeratoMarkers2(trackMetadata, FileType::MP4));
     }
-#endif // __EXPORT_SERATO_MARKERS__
 
     return true;
 }

@@ -1363,7 +1363,6 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Skipped;
     }
 
-#if defined(__EXPORT_SERATO_MARKERS__)
     if (pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
         const auto streamInfo = m_record.getStreamInfoFromSource();
         VERIFY_OR_DEBUG_ASSERT(streamInfo && streamInfo->isValid()) {
@@ -1397,9 +1396,6 @@ ExportTrackMetadataResult Track::exportMetadata(
             seratoTags->setCueInfos(cueInfos, timingOffset);
         }
     }
-#else
-    Q_UNUSED(pConfig);
-#endif
 
     // Normalize metadata before exporting to adjust the precision of
     // floating values, ... Otherwise the following comparisons may
