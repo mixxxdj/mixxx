@@ -3,6 +3,7 @@
 #include <QMap>
 #include <vector>
 
+#include "audio/types.h"
 #include "control/controlproxy.h"
 #include "effects/backends/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
@@ -33,7 +34,7 @@ class ParametricEQEffectGroupState final : public EffectState {
     QList<double> m_oldCenter;
     QList<double> m_oldQ;
 
-    unsigned int m_oldSampleRate;
+    mixxx::audio::SampleRate m_oldSampleRate;
 
     QList<CSAMPLE*> m_pBufs;
 };
