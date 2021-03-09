@@ -141,15 +141,11 @@ void DlgPrefEQ::slotNumDecksChanged(double numDecks) {
         const EffectManifestPointer pEQManifest =
                 m_pBackendManager->getManifestFromUniqueId(configuredEffect);
 
-        int selectedEQEffectIndex = 0;
+        int selectedEQEffectIndex = 0; // placeholder for no effect
         if (pEQManifest) {
             selectedEQEffectIndex = m_deckEqEffectSelectors[i]->findData(
                     QVariant(pEQManifest->uniqueId()));
-        } else {
-            // Select "None"
-            selectedEQEffectIndex = m_deckEqEffectSelectors[i]->count() - 1;
         }
-
         m_deckEqEffectSelectors[i]->setCurrentIndex(selectedEQEffectIndex);
     }
     applySelections();
