@@ -25,7 +25,12 @@ QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
 MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     // Construct a list of strings based on the command line arguments
     CmdlineArgs args;
-    const bool argsParsed = args.Parse(argc, argv);
+    QStringList argList;
+    for (int i = 0; i < argc; i++) {
+        argList << QString::fromLocal8Bit(argv[i]);
+    }
+
+    const bool argsParsed = args.parse(argList);
     Q_UNUSED(argsParsed);
     DEBUG_ASSERT(argsParsed);
 
