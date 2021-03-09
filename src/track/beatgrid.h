@@ -63,7 +63,6 @@ class BeatGrid final : public Beats {
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    BeatsPointer clone() const override;
     BeatsPointer translate(double dNumSamples) const override;
     BeatsPointer scale(enum BPMScale scale) const override;
     BeatsPointer setBpm(double dBpm) override;

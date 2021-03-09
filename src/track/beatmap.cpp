@@ -260,11 +260,6 @@ QByteArray BeatMap::toByteArray() const {
     return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
-BeatsPointer BeatMap::clone() const {
-    BeatsPointer other(new BeatMap(*this));
-    return other;
-}
-
 QString BeatMap::getVersion() const {
     return BEAT_MAP_VERSION;
 }

@@ -111,11 +111,6 @@ QByteArray BeatGrid::toByteArray() const {
     return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
-BeatsPointer BeatGrid::clone() const {
-    BeatsPointer other(new BeatGrid(*this));
-    return other;
-}
-
 double BeatGrid::firstBeatSample() const {
     return m_grid.first_beat().frame_position() * kFrameSize;
 }
