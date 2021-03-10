@@ -7,6 +7,10 @@
 namespace {
 
 mixxx::Logger kLogger("SeratoBeatGrid");
+
+/// Max difference of two beat distances so that they can still be considered equal
+constexpr double kEpsilon = 1.0;
+
 constexpr quint16 kVersion = 0x0100;
 constexpr int kMarkerSizeID3 = 8;
 constexpr char kSeratoBeatGridBase64EncodedPrefixStr[] =
@@ -456,7 +460,9 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
         // beat and the beat before that, we can just increment
         // `beatsSinceLastMarker`. If not, we need to add a new marker.
         const double currentDeltaFrames = currentBeatPositionFrames - previousBeatPositionFrames;
-        if (currentDeltaFrames != previousDeltaFrames) {
+        const double differenceBetweenCurrentAndPreviousDelta =
+                abs(currentDeltaFrames - previousDeltaFrames);
+        if (differenceBetweenCurrentAndPreviousDelta > kEpsilon) {
             // We are adding a new beat marker, therefore we need to update the
             // `beatsSinceLastMarker` variable of the last marker we added.
             if (!nonTerminalMarkers.isEmpty()) {
