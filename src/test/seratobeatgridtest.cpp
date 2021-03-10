@@ -5,6 +5,7 @@
 #include <QDir>
 #include <QtDebug>
 
+#include "track/beatgrid.h"
 #include "track/serato/beatgrid.h"
 #include "util/memory.h"
 
@@ -101,4 +102,22 @@ TEST_F(SeratoBeatGridTest, ParseEmptyDataFLAC) {
     parseEmptyBeatGridData(mixxx::taglib::FileType::FLAC);
 }
 
+TEST_F(SeratoBeatGridTest, SerializeConstBeatgrid) {
+    // Create a const beatgrid at 120 BPM
+    constexpr double bpm = 120.0;
+    const auto sampleRate = mixxx::audio::SampleRate(44100);
+    EXPECT_EQ(sampleRate.isValid(), true);
+    const auto pBeats = mixxx::BeatGrid::makeBeatGrid(sampleRate, QString("Test"), bpm, 0);
+    const auto streamInfo = mixxx::audio::StreamInfo(
+            mixxx::audio::SignalInfo(mixxx::audio::ChannelCount(2), sampleRate),
+            mixxx::audio::Bitrate(320),
+            mixxx::Duration::fromSeconds<int>(300));
+
+    // Serialize that beatgrid into Serato BeatGrid data and check if it's correct
+    mixxx::SeratoBeatGrid seratoBeatGrid;
+    seratoBeatGrid.setBeats(pBeats, streamInfo, 0);
+    EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 0);
+    EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
+    EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm));
+}
 } // namespace
