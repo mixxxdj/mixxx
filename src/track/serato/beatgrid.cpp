@@ -506,15 +506,24 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
         return;
     }
 
+    // If the beatgrid is constant, i.e. if there is only a single non-terminal
+    // beatgrid marker at the start of the beatgrid and a terminal marker at
+    // the end, then Serato discards the non-terminal marker and just saves the
+    // terminal marker instead.
+    if (nonTerminalMarkers.size() == 1) {
+        nonTerminalMarkers.clear();
+    }
+
     // Update the `beatsSinceLastMarker` of the last non-terminal marker we inserted.
-    DEBUG_ASSERT(!nonTerminalMarkers.isEmpty());
-    DEBUG_ASSERT(beatsSinceLastMarker > 0);
-    const auto pNonTerminalMarker = nonTerminalMarkers.at(nonTerminalMarkers.size() - 1);
-    DEBUG_ASSERT(pNonTerminalMarker);
-    // We need to subtract 1 from `beatsSinceLastMarker`, because at the end of
-    // the last iteration the counter is incremented even though we didn't move
-    // a beat forwards.
-    pNonTerminalMarker->setBeatsTillNextMarker(beatsSinceLastMarker - 1);
+    if (!nonTerminalMarkers.isEmpty()) {
+        DEBUG_ASSERT(beatsSinceLastMarker > 0);
+        const auto pNonTerminalMarker = nonTerminalMarkers.at(nonTerminalMarkers.size() - 1);
+        DEBUG_ASSERT(pNonTerminalMarker);
+        // We need to subtract 1 from `beatsSinceLastMarker`, because at the end of
+        // the last iteration the counter is incremented even though we didn't move
+        // a beat forwards.
+        pNonTerminalMarker->setBeatsTillNextMarker(beatsSinceLastMarker - 1);
+    }
 
     // Finally, create the terminal marker.
     const double positionSecs =
