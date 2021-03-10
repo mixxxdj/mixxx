@@ -43,6 +43,12 @@ class SignalInfo final {
         return samples / getChannelCount();
     }
 
+    // Conversion: #samples / sample offset -> #frames / frame offset
+    double samples2framesFractional(double samples) const {
+        DEBUG_ASSERT(getChannelCount().isValid());
+        return samples / getChannelCount();
+    }
+
     // Conversion: #frames / frame offset -> #samples / sample offset
     SINT frames2samples(SINT frames) const {
         DEBUG_ASSERT(getChannelCount().isValid());
