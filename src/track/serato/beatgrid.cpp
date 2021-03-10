@@ -439,6 +439,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
 
     // This might be null if the track doesn't contain any beats
     if (!pBeatsIterator) {
+        qWarning() << "Serato Beatgrid: No beats available, exporting empty beatgrid!";
         setTerminalMarker(nullptr);
         setNonTerminalMarkers({});
         return;
