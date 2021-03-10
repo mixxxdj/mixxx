@@ -482,8 +482,8 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
             // last beat, this needs to be a terminal marker entry.
             if (pBeatsIterator->hasNext()) {
                 const double positionSecs =
-                        streamInfo.getSignalInfo().frames2secs(
-                                static_cast<SINT>(currentBeatPositionFrames)) -
+                        streamInfo.getSignalInfo().frames2secsFractional(
+                                currentBeatPositionFrames) -
                         timingOffsetSecs;
                 nonTerminalMarkers.append(
                         std::make_shared<SeratoBeatGridNonTerminalMarker>(positionSecs, 0));
@@ -512,8 +512,8 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
 
     // Finally, create the terminal marker.
     const double positionSecs =
-            streamInfo.getSignalInfo().frames2secs(
-                    static_cast<SINT>(currentBeatPositionFrames)) -
+            streamInfo.getSignalInfo().frames2secsFractional(
+                    currentBeatPositionFrames) -
             timingOffsetSecs;
     const double bpm = pBeats->getBpmAroundPosition(
             streamInfo.getSignalInfo().frames2samples(
