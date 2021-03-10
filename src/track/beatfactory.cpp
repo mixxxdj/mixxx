@@ -7,7 +7,7 @@
 #include "track/beatutils.h"
 
 mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
-        SINT sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         const QString& beatsVersion,
         const QString& beatsSubVersion,
         const QByteArray& beatsSerialized) {
@@ -26,13 +26,15 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
 }
 
 mixxx::BeatsPointer BeatFactory::makeBeatGrid(
-        SINT sampleRate, double dBpm, double dFirstBeatSample) {
+        mixxx::audio::SampleRate sampleRate,
+        double dBpm,
+        double dFirstBeatSample) {
     return mixxx::BeatGrid::makeBeatGrid(sampleRate, QString(), dBpm, dFirstBeatSample);
 }
 
 // static
 QString BeatFactory::getPreferredVersion(
-        const bool bEnableFixedTempoCorrection) {
+        bool bEnableFixedTempoCorrection) {
     if (bEnableFixedTempoCorrection) {
         return BEAT_GRID_2_VERSION;
     }
@@ -40,10 +42,10 @@ QString BeatFactory::getPreferredVersion(
 }
 
 QString BeatFactory::getPreferredSubVersion(
-        const bool bEnableFixedTempoCorrection,
-        const bool bEnableOffsetCorrection,
-        const int iMinBpm,
-        const int iMaxBpm,
+        bool bEnableFixedTempoCorrection,
+        bool bEnableOffsetCorrection,
+        int iMinBpm,
+        int iMaxBpm,
         const QHash<QString, QString>& extraVersionInfo) {
     const char* kSubVersionKeyValueSeparator = "=";
     const char* kSubVersionFragmentSeparator = "|";
@@ -92,29 +94,32 @@ QString BeatFactory::getPreferredSubVersion(
 mixxx::BeatsPointer BeatFactory::makePreferredBeats(
         const QVector<double>& beats,
         const QHash<QString, QString>& extraVersionInfo,
-        const bool bEnableFixedTempoCorrection,
-        const bool bEnableOffsetCorrection,
-        const int iSampleRate,
-        const int iTotalSamples,
-        const int iMinBpm,
-        const int iMaxBpm) {
+        bool bEnableFixedTempoCorrection,
+        bool bEnableOffsetCorrection,
+        mixxx::audio::SampleRate sampleRate,
+        SINT totalSamples,
+        int iMinBpm,
+        int iMaxBpm) {
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
     const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
                                                       bEnableOffsetCorrection,
                                                       iMinBpm, iMaxBpm,
                                                       extraVersionInfo);
 
-    BeatUtils::printBeatStatistics(beats, iSampleRate);
+    BeatUtils::printBeatStatistics(beats, sampleRate);
     if (version == BEAT_GRID_2_VERSION) {
-        double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
+        double globalBpm = BeatUtils::calculateBpm(beats, sampleRate, iMinBpm, iMaxBpm);
         double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
-            bEnableOffsetCorrection,
-            beats, iSampleRate, iTotalSamples, globalBpm);
+                bEnableOffsetCorrection,
+                beats,
+                sampleRate,
+                totalSamples,
+                globalBpm);
         auto pGrid = mixxx::BeatGrid::makeBeatGrid(
-                iSampleRate, subVersion, globalBpm, firstBeat * 2);
+                sampleRate, subVersion, globalBpm, firstBeat * 2);
         return pGrid;
     } else if (version == BEAT_MAP_VERSION) {
-        auto pBeatMap = mixxx::BeatMap::makeBeatMap(iSampleRate, subVersion, beats);
+        auto pBeatMap = mixxx::BeatMap::makeBeatMap(sampleRate, subVersion, beats);
         return pBeatMap;
     } else {
         qDebug() << "ERROR: Could not determine what type of beatgrid to create.";
