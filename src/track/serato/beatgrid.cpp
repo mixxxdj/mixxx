@@ -430,8 +430,10 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
 
     const double timingOffsetSecs = timingOffsetMillis / 1000;
 
-    // Find at least the track duration in samples. This value might be longer
-    // than the actual track, to make sure we get all beats.
+    // Beats::findBeats expects a sample range. We want to retrieve all beats
+    // in the track, therefore we calculate the track duration in samples and
+    // round up. This value might be longer than the actual track, but that's
+    // okay because we want to make sure we get all beats.
     const SINT trackDurationSamples = streamInfo.getSignalInfo().frames2samples(
             static_cast<SINT>(streamInfo.getSignalInfo().secs2frames(
                     std::ceil(streamInfo.getDuration().toDoubleSeconds()))));
