@@ -58,9 +58,9 @@ void WRateRange::setValue(double range) {
     if (m_nodeDisplay == DisplayType::Prefix) {
         m_nodeText = prefix;
     } else if (m_nodeDisplay == DisplayType::Range) {
-        m_nodeText = QString::number(range * 100).append("\%");
+        m_nodeText = QString::number(range * 100);
     } else {
-        m_nodeText = prefix.append(QString::number(range * 100)).append("\%");
+        m_nodeText = prefix.append(QString::number(range * 100));
     }
 
     setText(m_nodeText);
