@@ -48,7 +48,7 @@ class BeatMapTest : public testing::Test {
 
 TEST_F(BeatMapTest, Scale) {
     const double bpm = 60.0;
-    m_pTrack->setBpm(bpm);
+    m_pTrack->trySetBpm(bpm);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     const int numBeats = 100;
@@ -78,7 +78,7 @@ TEST_F(BeatMapTest, Scale) {
 
 TEST_F(BeatMapTest, TestNthBeat) {
     const double bpm = 60.0;
-    m_pTrack->setBpm(bpm);
+    m_pTrack->trySetBpm(bpm);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
@@ -110,7 +110,7 @@ TEST_F(BeatMapTest, TestNthBeat) {
 
 TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
     const double bpm = 60.0;
-    m_pTrack->setBpm(bpm);
+    m_pTrack->trySetBpm(bpm);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
@@ -147,7 +147,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat) {
 
 TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     const double bpm = 60.0;
-    m_pTrack->setBpm(bpm);
+    m_pTrack->trySetBpm(bpm);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
@@ -186,7 +186,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
 
 TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     const double bpm = 60.0;
-    m_pTrack->setBpm(bpm);
+    m_pTrack->trySetBpm(bpm);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
@@ -226,7 +226,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
 
 TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
     const double bpm = 60.0;
-    m_pTrack->setBpm(bpm);
+    m_pTrack->trySetBpm(bpm);
     double beatLengthFrames = getBeatLengthFrames(bpm);
     double startOffsetFrames = 7;
     double beatLengthSamples = getBeatLengthSamples(bpm);
@@ -263,7 +263,7 @@ TEST_F(BeatMapTest, TestNthBeatWhenNotOnBeat) {
 TEST_F(BeatMapTest, TestBpmAround) {
     const double filebpm = 60.0;
     double approx_beat_length = getBeatLengthSamples(filebpm);
-    m_pTrack->setBpm(filebpm);
+    m_pTrack->trySetBpm(filebpm);
     const int numBeats = 64;
 
     QVector<double> beats;
