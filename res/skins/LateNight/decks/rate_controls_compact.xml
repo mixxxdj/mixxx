@@ -106,7 +106,7 @@
                     <Children>
 
                       <WidgetGroup><!-- Rate slider + center indicator -->
-                        <Size>53f,81f</Size>
+                        <Size>56f,81f</Size>
                         <Children>
                           <Label>
                             <ObjectName>RateCenter</ObjectName>
@@ -159,7 +159,7 @@
                             <Channel><Variable name="ChanNum" /></Channel>
                             <Position>Top</Position>
                             <Display>range</Display>
-                            <Size>17f,16f</Size>
+                            <Size>20f,16f</Size>
                             <Pos>35,1</Pos>
                           </RateRange>
                           <!-- Bottom range limit + prefix -->
@@ -178,7 +178,7 @@
                             <Channel><Variable name="ChanNum" /></Channel>
                             <Position>Bottom</Position>
                             <Display>range</Display>
-                            <Size>17f,16f</Size>
+                            <Size>20f,16f</Size>
                             <Pos>35,65</Pos>
                           </RateRange>
                         </Children>
@@ -198,7 +198,7 @@
                 <Children>
                   <WidgetGroup><!-- Rate slider + center indicator -->
                     <ObjectName></ObjectName>
-                    <Size>53f,97f</Size>
+                    <Size>56f,97f</Size>
                     <Children>
                       <Label>
                         <ObjectName>RateCenter</ObjectName>
@@ -252,7 +252,7 @@
                         <Channel><Variable name="ChanNum" /></Channel>
                         <Position>Top</Position>
                         <Display>range</Display>
-                        <Size>17f,16f</Size>
+                        <Size>20f,16f</Size>
                         <Pos>35,1</Pos>
                       </RateRange>
                       <!-- Bottom range limit + prefix -->
@@ -271,7 +271,7 @@
                         <Channel><Variable name="ChanNum" /></Channel>
                         <Position>Bottom</Position>
                         <Display>range</Display>
-                        <Size>17f,16f</Size>
+                        <Size>20f,16f</Size>
                         <Pos>35,81</Pos>
                       </RateRange>
                     </Children>

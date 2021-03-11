@@ -102,7 +102,7 @@
                   <!-- Rate slider + center indicator -->
                   <WidgetGroup>
                     <ObjectName>RateSliderBox</ObjectName>
-                    <Size>53f,121f</Size>
+                    <Size>56f,121f</Size>
                     <Children>
                       <Label>
                         <ObjectName>RateCenter</ObjectName>
@@ -155,7 +155,7 @@
                         <Channel><Variable name="ChanNum" /></Channel>
                         <Position>Top</Position>
                         <Display>range</Display>
-                        <Size>17f,16f</Size>
+                        <Size>20f,16f</Size>
                         <Pos>35,1</Pos>
                       </RateRange>
                       <!-- Bottom range limit + prefix -->
@@ -174,7 +174,7 @@
                         <Channel><Variable name="ChanNum" /></Channel>
                         <Position>Bottom</Position>
                         <Display>range</Display>
-                        <Size>17f,16f</Size>
+                        <Size>20f,16f</Size>
                         <Pos>35,99</Pos>
                       </RateRange>
                     </Children>
