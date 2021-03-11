@@ -61,10 +61,18 @@ bool parseLogLevel(
 
 bool CmdlineArgs::parse(const QStringList& arguments) {
     QCommandLineParser parser;
+
+    QString info = QStringLiteral(
+                           "Mixxx is an open source DJ software. For more "
+                           "information, see https://manual.mixxx.org/") +
+            Version::versionMajorMinor() +
+            QStringLiteral(
+                    "/chapters/appendix.html#command-line-options).\n"
+                    "CamelCase arguments are deprecated and will be removed in "
+                    "2.5");
+    QByteArray infoArray = info.toLocal8Bit();
     parser.setApplicationDescription(QCoreApplication::translate("main",
-            "Mixxx is an open source DJ software. For more information, see "
-            "https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options).\n"
-            "CamelCase arguments are deprecated and will be removed in 2.5"));
+            infoArray.data()));
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 
     // add options

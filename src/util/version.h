@@ -7,6 +7,9 @@ class Version {
     // Returns the current Mixxx version (e.g. 1.12.0-alpha)
     static QString version();
 
+    /// Returns the major.minor part of the version e.g 2.4
+    static QString versionMajorMinor();
+
     // Returns the application name. (e.g. "Mixxx")
     static QString applicationName();
 
