@@ -329,6 +329,13 @@ WSpinny { /*
   background: none;*/
 }
 
+#RateDisplayTop, #RateDisplayBottom {
+  qproperty-alignment: 'AlignRight';
+  color: #888;
+  font-size: 12px;
+  line-height: 10px;
+}
+
 #BpmText,
 #RateText {
   qproperty-alignment: 'AlignCenter';
