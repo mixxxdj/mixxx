@@ -269,7 +269,7 @@ QString BeatMap::getSubVersion() const {
 }
 
 bool BeatMap::isValid() const {
-    return m_sampleRate.isValid() && m_beats.size() > 0;
+    return m_sampleRate.isValid() && m_beats.size() > 1;
 }
 
 double BeatMap::findNextBeat(double dSamples) const {
