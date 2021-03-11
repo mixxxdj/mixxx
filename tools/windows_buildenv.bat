@@ -83,8 +83,6 @@ EXIT /B 0
         ECHO PATH=!PATH!>>!GITHUB_ENV!
     ) else (
         CALL :GENERATE_CMakeSettings_JSON
-        echo WARNING: CMakeSettings.json will include an invalid CMAKE_PREFIX_PATH
-        echo          for settings other than %CONFIGURATION% .
 
         IF NOT EXIST %BUILD_ROOT% (
             ECHO ### Create subdirectory build ###
@@ -154,7 +152,6 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     CALL :Configuration2CMakeSettings_JSON off       Debug
     CALL :Configuration2CMakeSettings_JSON legacy    RelWithDebInfo
     CALL :Configuration2CMakeSettings_JSON portable  RelWithDebInfo
-    CALL :Configuration2CMakeSettings_JSON fastbuild RelWithDebInfo
     SET configElementTermination=
     CALL :Configuration2CMakeSettings_JSON native    Release
     >>%CMakeSettings% echo   ]
@@ -213,7 +210,8 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     for /f "tokens=2 delims=:" %%I in ('chcp') do set "_codepage=%%I"
 
     >NUL chcp 1252
-
+    REM Remove suffix dot
+    set _codepage=%_codepage:.=%
     SET RETVAL=%_codepage%
   GOTO :EOF
 

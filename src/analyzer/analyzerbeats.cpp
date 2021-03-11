@@ -38,8 +38,7 @@ AnalyzerBeats::AnalyzerBeats(UserSettingsPointer pConfig, bool enforceBpmDetecti
           m_bPreferencesFixedTempo(true),
           m_bPreferencesOffsetCorrection(false),
           m_bPreferencesFastAnalysis(false),
-          m_iSampleRate(0),
-          m_iTotalSamples(0),
+          m_totalSamples(0),
           m_iMaxSamplesToProcess(0),
           m_iCurrentSample(0),
           m_iMinBpm(0),
@@ -93,15 +92,15 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSam
              << "\nRe-analyze when settings change:" << m_bPreferencesReanalyzeOldBpm
              << "\nFast analysis:" << m_bPreferencesFastAnalysis;
 
-    m_iSampleRate = sampleRate;
-    m_iTotalSamples = totalSamples;
+    m_sampleRate = sampleRate;
+    m_totalSamples = totalSamples;
     // In fast analysis mode, skip processing after
     // kFastAnalysisSecondsToAnalyze seconds are analyzed.
     if (m_bPreferencesFastAnalysis) {
         m_iMaxSamplesToProcess =
-                mixxx::kFastAnalysisSecondsToAnalyze * m_iSampleRate * mixxx::kAnalysisChannels;
+                mixxx::kFastAnalysisSecondsToAnalyze * m_sampleRate * mixxx::kAnalysisChannels;
     } else {
-        m_iMaxSamplesToProcess = m_iTotalSamples;
+        m_iMaxSamplesToProcess = m_totalSamples;
     }
     m_iCurrentSample = 0;
 
@@ -244,8 +243,8 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
                 extraVersionInfo,
                 m_bPreferencesFixedTempo,
                 m_bPreferencesOffsetCorrection,
-                m_iSampleRate,
-                m_iTotalSamples,
+                m_sampleRate,
+                m_totalSamples,
                 m_iMinBpm,
                 m_iMaxBpm);
         qDebug() << "AnalyzerBeats plugin detected" << beats.size()
@@ -253,7 +252,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
     } else {
         float bpm = m_pPlugin->getBpm();
         qDebug() << "AnalyzerBeats plugin detected constant BPM: " << bpm;
-        pBeats = BeatFactory::makeBeatGrid(m_iSampleRate, bpm, 0.0f);
+        pBeats = BeatFactory::makeBeatGrid(m_sampleRate, bpm, 0.0f);
     }
 
     pTrack->trySetBeats(pBeats);

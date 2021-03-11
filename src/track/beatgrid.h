@@ -1,7 +1,5 @@
 #pragma once
 
-#include <QMutex>
-
 #include "proto/beats.pb.h"
 #include "track/beats.h"
 
@@ -20,13 +18,13 @@ class BeatGrid final : public Beats {
     ~BeatGrid() override = default;
 
     static BeatsPointer makeBeatGrid(
-            SINT iSampleRate,
+            audio::SampleRate sampleRate,
             const QString& subVersion,
             double dBpm,
             double dFirstBeatSample);
 
     static BeatsPointer makeBeatGrid(
-            SINT iSampleRate,
+            audio::SampleRate sampleRate,
             const QString& subVersion,
             const QByteArray& byteArray);
 
@@ -57,22 +55,21 @@ class BeatGrid final : public Beats {
     double getBpm() const override;
     double getBpmAroundPosition(double curSample, int n) const override;
 
-    SINT getSampleRate() const override {
-        return m_iSampleRate;
+    audio::SampleRate getSampleRate() const override {
+        return m_sampleRate;
     }
 
     ////////////////////////////////////////////////////////////////////////////
     // Beat mutations
     ////////////////////////////////////////////////////////////////////////////
 
-    BeatsPointer clone() const override;
     BeatsPointer translate(double dNumSamples) const override;
     BeatsPointer scale(enum BPMScale scale) const override;
     BeatsPointer setBpm(double dBpm) override;
 
   private:
     BeatGrid(
-            SINT iSampleRate,
+            audio::SampleRate sampleRate,
             const QString& subVersion,
             const mixxx::track::io::BeatGrid& grid,
             double beatLength);
@@ -89,7 +86,7 @@ class BeatGrid final : public Beats {
     // The sub-version of this beatgrid.
     const QString m_subVersion;
     // The number of samples per second
-    const SINT m_iSampleRate;
+    const audio::SampleRate m_sampleRate;
     // Data storage for BeatGrid
     const mixxx::track::io::BeatGrid m_grid;
     // The length of a beat in samples
