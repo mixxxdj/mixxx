@@ -397,7 +397,7 @@ bool BrowseTableModel::setData(
         pTrack->setAlbum(value.toString());
         break;
     case COLUMN_BPM:
-        pTrack->trySetBpm(value.toDouble(), false);
+        pTrack->trySetBpm(value.toDouble());
         break;
     case COLUMN_KEY:
         pTrack->setKeyText(value.toString());

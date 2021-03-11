@@ -199,7 +199,7 @@ void Track::importMetadata(
     // knowing the sample rate. Bug #1020438.
     const auto actualBpm = getActualBpm(newBpm, m_pBeats);
     if (actualBpm.hasValue()) {
-        trySetBpm(actualBpm.getValue(), false);
+        trySetBpm(actualBpm.getValue());
     }
 
     if (!newKey.isEmpty()
@@ -271,25 +271,25 @@ double Track::getBpm() const {
     return bpm;
 }
 
-double Track::trySetBpm(double bpmValue, bool lockBpmAfterSet) {
+double Track::trySetBpm(double bpmValue) {
     QMutexLocker lock(&m_qMutex);
 
     if (!mixxx::Bpm::isValidValue(bpmValue)) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
-        trySetBeatsMarkDirtyAndUnlock(&lock, nullptr, lockBpmAfterSet);
+        trySetBeatsMarkDirtyAndUnlock(&lock, nullptr, false);
     } else if (!m_pBeats) {
         // No beat grid available -> create and initialize
         double cue = getCuePoint().getPosition();
         const auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(), bpmValue, cue);
-        trySetBeatsMarkDirtyAndUnlock(&lock, pBeats, lockBpmAfterSet);
+        trySetBeatsMarkDirtyAndUnlock(&lock, pBeats, false);
     } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
             m_pBeats->getBpm() != bpmValue) {
         // Continue with the regular cases
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
-        trySetBeatsMarkDirtyAndUnlock(&lock, m_pBeats->setBpm(bpmValue), lockBpmAfterSet);
+        trySetBeatsMarkDirtyAndUnlock(&lock, m_pBeats->setBpm(bpmValue), false);
     }
 
     if (m_pBeats) {

@@ -1092,7 +1092,9 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     if (pBeats) {
         pTrack->trySetBeats(pBeats, bpmLocked);
     } else {
-        pTrack->trySetBpm(bpm, bpmLocked);
+        // Load a temorary beat grid without offset that will be replaced by the analyzer.
+        const auto pBeats = BeatFactory::makeBeatGrid(pTrack->getSampleRate(), bpm, 0.0);
+        pTrack->trySetBeats(pBeats, false);
     }
     return false;
 }

@@ -126,7 +126,7 @@ class Track : public QObject {
     }
 
     // Sets the BPM if not locked.
-    double trySetBpm(double bpm, bool lockBpmAfterSet);
+    double trySetBpm(double bpm);
     // Returns BPM
     double getBpm() const;
     // Returns BPM as a string
