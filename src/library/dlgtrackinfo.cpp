@@ -396,7 +396,7 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
     m_pLoadedTrack->setComment(txtComment->toPlainText());
 
-    m_pLoadedTrack->trySetBeats(m_pBeatsClone, false);
+    m_pLoadedTrack->trySetBeats(m_pBeatsClone);
     reloadTrackBeats(*m_pLoadedTrack);
 
     // If the user is editing the key and hits enter to close DlgTrackInfo, the

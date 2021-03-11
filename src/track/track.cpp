@@ -302,9 +302,14 @@ QString Track::getBpmText() const {
     return QString("%1").arg(getBpm(), 3,'f',1);
 }
 
-bool Track::trySetBeats(mixxx::BeatsPointer pBeats, bool lockBpmAfterSet) {
+bool Track::trySetBeats(mixxx::BeatsPointer pBeats) {
     QMutexLocker lock(&m_qMutex);
-    return trySetBeatsMarkDirtyAndUnlock(&lock, pBeats, lockBpmAfterSet);
+    return trySetBeatsMarkDirtyAndUnlock(&lock, pBeats, false);
+}
+
+bool Track::trySetAndLockBeats(mixxx::BeatsPointer pBeats) {
+    QMutexLocker lock(&m_qMutex);
+    return trySetBeatsMarkDirtyAndUnlock(&lock, pBeats, true);
 }
 
 bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {

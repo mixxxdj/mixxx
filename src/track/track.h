@@ -284,7 +284,8 @@ class Track : public QObject {
     mixxx::BeatsPointer getBeats() const;
 
     // Set the track's Beats if not locked
-    bool trySetBeats(mixxx::BeatsPointer beats, bool lockBpmAfterSet);
+    bool trySetBeats(mixxx::BeatsPointer pBeats);
+    bool trySetAndLockBeats(mixxx::BeatsPointer pBeats);
 
     /// Imports the given list of cue infos as cue points,
     /// thereby replacing all existing cue points!

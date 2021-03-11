@@ -256,7 +256,7 @@ void AnalyzerBeats::storeResults(TrackPointer pTrack) {
         pBeats = BeatFactory::makeBeatGrid(m_iSampleRate, bpm, 0.0f);
     }
 
-    pTrack->trySetBeats(pBeats, false);
+    pTrack->trySetBeats(pBeats);
 }
 
 // static

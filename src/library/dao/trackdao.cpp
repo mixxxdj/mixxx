@@ -1090,11 +1090,15 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     const mixxx::BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
             pTrack->getSampleRate(), beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
-        pTrack->trySetBeats(pBeats, bpmLocked);
+        if (bpmLocked) {
+            pTrack->trySetAndLockBeats(pBeats);
+        } else {
+            pTrack->trySetBeats(pBeats);
+        }
     } else {
         // Load a temorary beat grid without offset that will be replaced by the analyzer.
         const auto pBeats = BeatFactory::makeBeatGrid(pTrack->getSampleRate(), bpm, 0.0);
-        pTrack->trySetBeats(pBeats, false);
+        pTrack->trySetBeats(pBeats);
     }
     return false;
 }
