@@ -506,7 +506,7 @@ bool BeatMap::hasBeatInRange(double startSample, double stopSample) const {
 
 double BeatMap::getBpm() const {
     if (!isValid()) {
-        return -1;
+        return mixxx::Bpm::kValueUndefined;
     }
     return m_nominalBpm;
 }
