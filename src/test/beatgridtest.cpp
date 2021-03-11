@@ -27,7 +27,7 @@ TEST(BeatGridTest, Scale) {
     TrackPointer pTrack = newTrack(sampleRate);
 
     double bpm = 60.0;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm);
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
@@ -57,7 +57,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
@@ -91,7 +91,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
@@ -127,7 +127,7 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
@@ -163,7 +163,7 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
     auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
@@ -188,6 +188,24 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     pGrid->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat);
     EXPECT_NEAR(previousBeat, foundPrevBeat, kMaxBeatError);
     EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);
+}
+
+TEST(BeatGridTest, FromMetadata) {
+    int sampleRate = 44100;
+    TrackPointer pTrack = newTrack(sampleRate);
+
+    double bpm = 60.1;
+    double echoBpm = pTrack->trySetBpm(bpm);
+    EXPECT_DOUBLE_EQ(echoBpm, bpm);
+
+    auto pBeats = pTrack->getBeats();
+    EXPECT_DOUBLE_EQ(pBeats->getBpm(), bpm);
+
+    echoBpm = pTrack->trySetBpm(-60.1);
+    EXPECT_DOUBLE_EQ(echoBpm, mixxx::Bpm::kValueUndefined);
+
+    pBeats = pTrack->getBeats();
+    EXPECT_EQ(pBeats.isNull(), true);
 }
 
 }  // namespace
