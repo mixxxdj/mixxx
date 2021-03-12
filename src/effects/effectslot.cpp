@@ -84,11 +84,14 @@ EffectSlot::EffectSlot(const QString& group,
             &EffectSlot::slotPrevEffect);
 
     m_pControlLoadEffectAtListIndex = std::make_unique<ControlObject>(
-            ConfigKey(m_group, "load_effect"));
-    connect(m_pControlLoadEffectAtListIndex.get(),
-            &ControlObject::valueChanged,
+            ConfigKey(m_group, "loaded_effect"));
+    m_pControlLoadEffectAtListIndex->connectValueChangeRequest(this,
+            &EffectSlot::slotLoadEffectAtListIndexRequest);
+
+    connect(m_pVisibleEffects.get(),
+            &VisibleEffectsList::visibleEffectsListChanged,
             this,
-            &EffectSlot::slotLoadEffectAtListIndex);
+            &EffectSlot::visibleEffectsListChanged);
 
     // Ignoring no-ops is important since this is for +/- tickers.
     m_pControlEffectSelector = std::make_unique<ControlEncoder>(
@@ -358,6 +361,9 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
         slotEffectMetaParameter(pEffectPreset->metaParameter(), true);
     }
 
+    // ControlObjects are 1-indexed
+    m_pControlLoadEffectAtListIndex->setAndConfirm(m_pVisibleEffects->indexOf(pManifest) + 1);
+
     emit effectChanged();
     updateEngineState();
 }
@@ -497,9 +503,22 @@ void EffectSlot::slotNextEffect(double v) {
     }
 }
 
-void EffectSlot::slotLoadEffectAtListIndex(double value) {
+void EffectSlot::slotLoadEffectAtListIndexRequest(double value) {
     // ControlObjects are 1-indexed
-    loadEffectWithDefaults(m_pVisibleEffects->at(static_cast<int>(value) - 1));
+    int index = static_cast<int>(value) - 1;
+    if (index < 0 || index >= m_pVisibleEffects->getList().size()) {
+        return;
+    }
+    // loadEffectInner calls setAndConfirm
+    loadEffectWithDefaults(m_pVisibleEffects->at(index));
+}
+
+void EffectSlot::visibleEffectsListChanged() {
+    if (isLoaded()) {
+        // ControlObjects are 1-indexed
+        m_pControlLoadEffectAtListIndex->setAndConfirm(
+                m_pVisibleEffects->indexOf(m_pManifest) + 1);
+    }
 }
 
 void EffectSlot::slotEffectSelector(double v) {

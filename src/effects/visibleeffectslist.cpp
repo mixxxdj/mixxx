@@ -11,6 +11,10 @@ void VisibleEffectsList::setList(const QList<EffectManifestPointer>& newList) {
     emit visibleEffectsListChanged();
 }
 
+int VisibleEffectsList::indexOf(EffectManifestPointer pManifest) const {
+    return m_list.indexOf(pManifest);
+}
+
 const EffectManifestPointer VisibleEffectsList::at(int index) const {
     if (index < 0) {
         index = 0;

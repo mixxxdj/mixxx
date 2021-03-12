@@ -136,7 +136,7 @@ class EffectSlot : public QObject {
 
     void slotNextEffect(double v);
     void slotPrevEffect(double v);
-    void slotLoadEffectAtListIndex(double value);
+    void slotLoadEffectAtListIndexRequest(double value);
     void slotClear(double v);
     void slotEffectSelector(double v);
     void slotEffectMetaParameter(double v, bool force = false);
@@ -147,6 +147,7 @@ class EffectSlot : public QObject {
 
   private slots:
     void updateEngineState();
+    void visibleEffectsListChanged();
 
   private:
     QString debugString() const {

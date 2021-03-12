@@ -13,6 +13,8 @@ class VisibleEffectsList : public QObject {
     const QList<EffectManifestPointer>& getList() const {
         return m_list;
     }
+
+    int indexOf(EffectManifestPointer pManifest) const;
     const EffectManifestPointer at(int index) const;
     const EffectManifestPointer next(const EffectManifestPointer pManifest) const;
     const EffectManifestPointer previous(const EffectManifestPointer pManifest) const;
