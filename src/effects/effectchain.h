@@ -135,7 +135,7 @@ class EffectChain : public QObject {
     void slotPresetListUpdated();
 
   private slots:
-    void slotControlLoadChainPreset(double value);
+    void slotControlLoadedChainPresetRequest(double value);
     void slotControlChainSelector(double value);
     void slotControlChainNextPreset(double value);
     void slotControlChainPrevPreset(double value);
@@ -156,7 +156,6 @@ class EffectChain : public QObject {
     std::unique_ptr<ControlObject> m_pControlChainLoaded;
     std::unique_ptr<ControlPushButton> m_pControlChainEnabled;
     std::unique_ptr<ControlPushButton> m_pControlChainMixMode;
-    std::unique_ptr<ControlObject> m_pControlLoadPreset;
     std::unique_ptr<ControlObject> m_pControlLoadedPreset;
     std::unique_ptr<ControlEncoder> m_pControlChainSelector;
     std::unique_ptr<ControlPushButton> m_pControlChainNextPreset;
