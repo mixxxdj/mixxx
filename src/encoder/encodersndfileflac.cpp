@@ -1,11 +1,40 @@
+#include "encoder/encodersndfileflac.h"
+
 #include <QtDebug>
 
-#include "encoder/encodersndfileflac.h"
 #include "encoder/encodercallback.h"
+#include "util/sample.h"
 
+namespace {
+constexpr SINT kEncBufferSize = 8192; // used inside libsndfile for flac
+
+//static
+void convertFloat32ToIntFormat(int* pDest, const CSAMPLE* pSrc, SINT numSamples, int format) {
+    const CSAMPLE kConversionFactor = INT_MIN * -1.0f;
+    if (format & SF_FORMAT_PCM_16) {
+        // note: LOOP VECTORIZED only with "int i"
+        for (int i = 0; i < numSamples; ++i) {
+            pDest[i] = static_cast<int>(math_clamp(pSrc[i] * kConversionFactor,
+                    static_cast<CSAMPLE>(static_cast<int>(INT_MIN & 0xFFFF0000)),
+                    static_cast<CSAMPLE>(static_cast<int>(INT_MAX & 0xFFFF0000))));
+        }
+    } else if (format & SF_FORMAT_PCM_24) {
+        // note: LOOP VECTORIZED only with "int i"
+        for (int i = 0; i < numSamples; ++i) {
+            pDest[i] = static_cast<int>(math_clamp(pSrc[i] * kConversionFactor,
+                    static_cast<CSAMPLE>(static_cast<int>(INT_MIN & 0xFFFFFF00)),
+                    static_cast<CSAMPLE>(static_cast<int>(INT_MAX & 0xFFFFFF00))));
+        }
+    } else {
+        DEBUG_ASSERT(!"Not implemented");
+    }
+}
+
+} // namespace
 
 EncoderSndfileFlac::EncoderSndfileFlac(EncoderCallback* pCallback)
-    :EncoderWave(pCallback) {
+        : EncoderWave(pCallback),
+          m_compression(0) {
 }
 
 void EncoderSndfileFlac::setEncoderSettings(const EncoderSettings& settings)
@@ -30,10 +59,38 @@ void EncoderSndfileFlac::setEncoderSettings(const EncoderSettings& settings)
     m_compression = static_cast<double>(settings.getCompression()) / 8.0;
 }
 
+void EncoderSndfileFlac::encodeBuffer(const CSAMPLE* pBuffer, const int iBufferSize) {
+    if (m_pClampBuffer) {
+        SINT numSamplesLeft = iBufferSize;
+        while (numSamplesLeft > kEncBufferSize) {
+            convertFloat32ToIntFormat(m_pClampBuffer.get(),
+                    pBuffer,
+                    kEncBufferSize,
+                    m_sfInfo.format);
+            sf_write_int(m_pSndfile, m_pClampBuffer.get(), kEncBufferSize);
+            pBuffer += kEncBufferSize;
+            numSamplesLeft -= kEncBufferSize;
+        }
+        convertFloat32ToIntFormat(m_pClampBuffer.get(), pBuffer, numSamplesLeft, m_sfInfo.format);
+        sf_write_int(m_pSndfile, m_pClampBuffer.get(), numSamplesLeft);
+    } else {
+        sf_write_float(m_pSndfile, pBuffer, iBufferSize);
+    }
+}
+
 void EncoderSndfileFlac::initStream() {
     EncoderWave::initStream();
 #if defined SFC_SUPPORTS_SET_COMPRESSION_LEVEL // Seems that this only exists since version 1.0.26
     // Tell the compression setting to use.
     sf_command(m_pSndfile, SFC_SET_COMPRESSION_LEVEL, &m_compression, sizeof(double));
 #endif //SFC_SUPPORTS_SET_COMPRESSION_LEVEL
+
+    // Version 1.0.28 suffers broken clamping https://bugs.launchpad.net/mixxx/+bug/1915298
+    // We receive "libsndfile-1.0.28" on Ubuntu Bionic/Focal/Grovy
+    // Older versions are not expected. All newer version have a working internal clamping
+    const char* sf_version = sf_version_string();
+    if (strstr(sf_version, "-1.0.28") != nullptr) {
+        m_pClampBuffer = std::make_unique<int[]>(kEncBufferSize);
+        sf_command(m_pSndfile, SFC_SET_CLIPPING, nullptr, SF_FALSE);
+    }
 }
