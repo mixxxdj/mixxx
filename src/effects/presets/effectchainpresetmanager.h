@@ -77,6 +77,7 @@ class EffectChainPresetManager : public QObject {
     void savePresetXml(EffectChainPresetPointer pPreset);
 
     QHash<QString, EffectChainPresetPointer> m_effectChainPresets;
+    // The sort orders are chosen by the user in DlgPrefEffects.
     QList<EffectChainPresetPointer> m_effectChainPresetsSorted;
     QList<EffectChainPresetPointer> m_quickEffectChainPresetsSorted;
 
