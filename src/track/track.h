@@ -128,7 +128,10 @@ class Track : public QObject {
     // Sets the BPM if not locked.
     bool trySetBpm(double bpm);
     // Returns BPM
-    double getBpm() const;
+    double getBpm() const {
+        const QMutexLocker lock(&m_qMutex);
+        return getBpmWhileLocked();
+    }
     // Returns BPM as a string
     QString getBpmText() const;
 
@@ -401,6 +404,7 @@ class Track : public QObject {
 
     /// Imports pending beats from a BeatImporter and returns a boolean to
     /// indicate if BPM/beats were updated. Only supposed to be called while
+    /// the caller guards this a lock.
     bool importPendingBeatsWhileLocked();
 
     /// Sets cue points and returns a boolean to indicate if cues were updated.
@@ -412,6 +416,12 @@ class Track : public QObject {
     /// caller guards this a lock.
     bool importPendingCueInfosWhileLocked();
 
+    double getBpmWhileLocked() const;
+    bool trySetBpmWhileLocked(double bpmValue);
+    bool trySetBeatsWhileLocked(
+            mixxx::BeatsPointer pBeats,
+            bool lockBpmAfterSet = false);
+
     bool trySetBeatsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
             mixxx::BeatsPointer pBeats,
@@ -419,6 +429,9 @@ class Track : public QObject {
     bool tryImportPendingBeatsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
             bool lockBpmAfterSet);
+
+    void afterBeatsOrBpmUpdated(
+            QMutexLocker* pLock);
 
     void setCuePointsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
