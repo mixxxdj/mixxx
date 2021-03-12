@@ -39,7 +39,6 @@ EffectManifestPointer EchoEffect::getManifest() {
     pManifest->setVersion("1.0");
     pManifest->setDescription(QObject::tr(
             "Stores the input signal in a temporary buffer and outputs it after a short time"));
-    pManifest->setMetaknobDefault(db2ratio(-3.0));
 
     EffectManifestParameterPointer delay = pManifest->addParameter();
     delay->setId("delay_time");
