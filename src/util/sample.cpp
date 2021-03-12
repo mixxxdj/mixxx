@@ -496,7 +496,8 @@ void SampleUtil::linearCrossfadeBuffersIn(
 }
 
 // static
-void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
+void SampleUtil::mixStereoToMono(CSAMPLE* M_RESTRICT pDest,
+        const CSAMPLE* M_RESTRICT pSrc,
         SINT numSamples) {
     const CSAMPLE_GAIN mixScale = CSAMPLE_GAIN_ONE
             / (CSAMPLE_GAIN_ONE + CSAMPLE_GAIN_ONE);
@@ -504,6 +505,16 @@ void SampleUtil::mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
     for (SINT i = 0; i < numSamples / 2; ++i) {
         pDest[i * 2] = (pSrc[i * 2] + pSrc[i * 2 + 1]) * mixScale;
         pDest[i * 2 + 1] = pDest[i * 2];
+    }
+}
+
+// static
+void SampleUtil::mixStereoToMono(CSAMPLE* pBuffer, SINT numSamples) {
+    const CSAMPLE_GAIN mixScale = CSAMPLE_GAIN_ONE / (CSAMPLE_GAIN_ONE + CSAMPLE_GAIN_ONE);
+    // note: LOOP VECTORIZED
+    for (SINT i = 0; i < numSamples / 2; ++i) {
+        pBuffer[i * 2] = (pBuffer[i * 2] + pBuffer[i * 2 + 1]) * mixScale;
+        pBuffer[i * 2 + 1] = pBuffer[i * 2];
     }
 }
 

@@ -234,6 +234,8 @@ class SampleUtil {
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
     static void mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numSamples);
+    // In place version of the above.
+    static void mixStereoToMono(CSAMPLE* pBuffer, SINT numSamples);
 
     // In-place doubles the mono samples in pBuffer to dual mono samples.
     // (numFrames) samples will be read from pBuffer
