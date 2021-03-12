@@ -6,8 +6,8 @@
   </g>
   <path d="m6 6.99985h10v1h-10z" color="#000000" fill="#404040" stroke-width=".999998"/>
   <path d="m19.2763 6.27632h1.44735v82.4474h-1.44735z" color="#000000" stroke="#000" stroke-linejoin="round" stroke-width="1.55265"/>
-  <path d="m24 6.49985h10v1h-10z" color="#000000" fill="#050505" stroke-width=".999998"/>
-  <path d="m24 6.99985h10v1h-10z" color="#000000" fill="#404040" stroke-width=".999998"/>
+  <path d="m24 6.49985h8v1h-8z" color="#000000" fill="#050505" stroke-width=".999998"/>
+  <path d="m24 6.99985h8v1h-8z" color="#000000" fill="#404040" stroke-width=".999998"/>
   <path d="m4 47.0002 12 2.02e-4v0.999596l-12-2.02e-4z" color="#000000" fill="#636363" stroke-width=".95327"/>
   <path d="m36 47.0004h-12v0.999596h12z" color="#000000" fill="#636363" stroke-width=".999798"/>
   <g stroke-width=".999998">
@@ -37,7 +37,7 @@
     <path d="m24 77h10v1h-10z" color="#000000" fill="#404040"/>
     <path d="m6 86.5h10v1h-10z" color="#000000" fill="#050505"/>
     <path d="m6 87h10v1h-10z" color="#000000" fill="#404040"/>
-    <path d="m24 86.5h10v1h-10z" color="#000000" fill="#050505"/>
-    <path d="m24 87h10v1h-10z" color="#000000" fill="#404040"/>
+    <path d="m24 86.5h8v1h-8z" color="#000000" fill="#050505"/>
+    <path d="m24 87h8v1h-8z" color="#000000" fill="#404040"/>
   </g>
 </svg>
