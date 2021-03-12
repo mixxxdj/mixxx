@@ -16,9 +16,10 @@ int VisibleEffectsList::indexOf(EffectManifestPointer pManifest) const {
 }
 
 const EffectManifestPointer VisibleEffectsList::at(int index) const {
-    if (index < 0) {
+    VERIFY_OR_DEBUG_ASSERT(index >= 0) {
         index = 0;
-    } else if (index >= m_list.size()) {
+    }
+    VERIFY_OR_DEBUG_ASSERT(index < m_list.size()) {
         index = m_list.size() - 1;
     }
     return m_list.at(index);
