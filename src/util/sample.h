@@ -202,9 +202,7 @@ class SampleUtil {
             const CSAMPLE* pBuffer, SINT numSamples);
 
     // Copies every sample in pSrc to pDest, limiting the values in pDest
-    // to the valid range of CSAMPLE. If pDest and pSrc are aliases, will
-    // not copy will only clamp. Returns true if any samples in pSrc were
-    // outside the valid range of CSAMPLE.
+    // to the valid range of CSAMPLE. pDest and pSrc must not overlap.
     static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numSamples);
 
