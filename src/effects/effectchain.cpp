@@ -370,6 +370,8 @@ void EffectChain::slotChannelStatusChanged(
 }
 
 void EffectChain::slotPresetListUpdated() {
+    // add 1 to make the ControlObject 1-indexed like other ControlObjects
+    m_pControlLoadedPreset->setAndConfirm(presetIndex() + 1);
     m_pControlNumPresetsAvailable->forceSet(numPresets());
 }
 
