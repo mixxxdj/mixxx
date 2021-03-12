@@ -19,7 +19,11 @@ bool EffectManifest::sortLexigraphically(
     // Sort built-in effects first before external plugins
     int backendNameComparision = static_cast<int>(pManifest1->backendType()) -
             static_cast<int>(pManifest2->backendType());
+    if (backendNameComparision != 0) {
+        return backendNameComparision < 0;
+    }
+
     int displayNameComparision = QString::localeAwareCompare(
             pManifest1->displayName(), pManifest2->displayName());
-    return (backendNameComparision ? (backendNameComparision < 0) : (displayNameComparision < 0));
+    return displayNameComparision < 0;
 }
