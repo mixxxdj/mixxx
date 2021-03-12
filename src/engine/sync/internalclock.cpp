@@ -149,6 +149,7 @@ void InternalClock::setMasterParams(double beatDistance, double baseBpm, double 
 }
 
 void InternalClock::slotBaseBpmChanged(double baseBpm) {
+    qDebug() << "InternalClock::slotBaseBpmChanged" << baseBpm;
     m_dBaseBpm = baseBpm;
     updateBeatLength(m_iOldSampleRate, m_dBaseBpm);
     if (!isSynchronized()) {

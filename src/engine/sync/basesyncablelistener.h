@@ -55,10 +55,11 @@ class BaseSyncableListener : public SyncableListener {
     // pSource.
     void setMasterBeatDistance(Syncable* pSource, double beatDistance);
 
-    void setMasterParams(Syncable* pSource, double beatDistance, double baseBpm, double bpm);
+    // Update the master parameters using the provided syncable as the source.
+    void setMasterParams(Syncable* pSource);
 
-    // Check if there is only one playing syncable deck, and notify it if so.
-    void checkUniquePlayingSyncable();
+    // Check if there is only one playing syncable deck, and return it if so.
+    Syncable* getUniquePlayingSyncable();
 
     UserSettingsPointer m_pConfig;
     // The InternalClock syncable.

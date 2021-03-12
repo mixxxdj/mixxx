@@ -85,7 +85,7 @@ double BaseSyncableListener::masterBaseBpm() const {
 }
 
 void BaseSyncableListener::setMasterBpm(Syncable* pSource, double bpm) {
-    //qDebug() << "BaseSyncableListener::setMasterBpm" << pSource << bpm;
+    qDebug() << "BaseSyncableListener::setMasterBpm" << pSource << bpm;
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterBpm(bpm);
     }
@@ -124,22 +124,34 @@ void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beatD
     }
 }
 
-void BaseSyncableListener::setMasterParams(
-        Syncable* pSource, double beatDistance, double baseBpm, double bpm) {
-    //qDebug() << "BaseSyncableListener::setMasterParams, source is" << pSource->getGroup() << beatDistance << baseBpm << bpm;
+void BaseSyncableListener::setMasterParams(Syncable* pSource) {
+    const double beatDistance = pSource->getBeatDistance();
+    const double baseBpm = pSource->getBaseBpm();
+    const double bpm = pSource->getBpm() > 0 ? pSource->getBpm() : pSource->getBaseBpm();
+    qDebug() << "BaseSyncableListener::setMasterParams, source is"
+             << pSource->getGroup() << beatDistance << baseBpm << bpm;
     if (pSource != m_pInternalClock) {
+        qDebug() << "------- setMasterParams Internal Clock";
         m_pInternalClock->setMasterParams(beatDistance, baseBpm, bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
-        if (pSyncable == pSource ||
-                !pSyncable->isSynchronized()) {
+        if (pSyncable == pSource || !pSyncable->isSynchronized()) {
+            qDebug() << "skipping setMasterParams" << pSyncable->getGroup();
             continue;
         }
+        qDebug() << "setMasterParams" << pSyncable->getGroup();
         pSyncable->setMasterParams(beatDistance, baseBpm, bpm);
     }
+    // Updating the master params may cause the master syncable to change its
+    // base bpm because it might have changed half/double multiplier.  Therefore
+    // we set those values once more just in case.
+    // if (m_pMasterSyncable) {
+    //     qDebug() << "UPDATING AGAIN FROM POSSIBLE CHANGE?";
+    //     setMasterBpm(m_pMasterSyncable, m_pMasterSyncable->getBaseBpm());
+    // }
 }
 
-void BaseSyncableListener::checkUniquePlayingSyncable() {
+Syncable* BaseSyncableListener::getUniquePlayingSyncable() {
     int playing_sync_decks = 0;
     Syncable* unique_syncable = nullptr;
     foreach (Syncable* pSyncable, m_syncables) {
@@ -149,13 +161,14 @@ void BaseSyncableListener::checkUniquePlayingSyncable() {
 
         if (pSyncable->isPlaying()) {
             if (playing_sync_decks > 0) {
-                return;
+                return nullptr;
             }
             unique_syncable = pSyncable;
             ++playing_sync_decks;
         }
     }
     if (playing_sync_decks == 1) {
-        unique_syncable->notifyOnlyPlayingSyncable();
+        return unique_syncable;
     }
+    return nullptr;
 }
