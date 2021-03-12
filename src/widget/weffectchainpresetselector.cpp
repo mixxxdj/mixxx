@@ -2,8 +2,8 @@
 
 #include <QtDebug>
 
-#include "effects/effectsmanager.h"
 #include "effects/chains/quickeffectchain.h"
+#include "effects/effectsmanager.h"
 #include "widget/effectwidgetutils.h"
 
 WEffectChainPresetSelector::WEffectChainPresetSelector(

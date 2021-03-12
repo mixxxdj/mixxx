@@ -1,9 +1,9 @@
 #include "controllers/controlpickermenu.h"
 
-#include "effects/defs.h"
-#include "effects/effectslot.h"
 #include "effects/chains/equalizereffectchain.h"
 #include "effects/chains/standardeffectchain.h"
+#include "effects/defs.h"
+#include "effects/effectslot.h"
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/loopingcontrol.h"
 #include "mixer/playermanager.h"

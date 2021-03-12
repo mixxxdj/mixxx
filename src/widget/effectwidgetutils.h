@@ -2,10 +2,10 @@
 
 #include <QDomNode>
 
-#include "effects/effectsmanager.h"
-#include "effects/effectchain.h"
 #include "effects/defs.h"
+#include "effects/effectchain.h"
 #include "effects/effectslot.h"
+#include "effects/effectsmanager.h"
 #include "skin/skincontext.h"
 
 class EffectWidgetUtils {

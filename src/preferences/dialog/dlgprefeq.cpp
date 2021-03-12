@@ -8,8 +8,8 @@
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "effects/backends/builtin/biquadfullkilleqeffect.h"
-#include "effects/effectslot.h"
 #include "effects/chains/equalizereffectchain.h"
+#include "effects/effectslot.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefeq.cpp"
 

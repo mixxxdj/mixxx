@@ -4,12 +4,12 @@
 #include <QMetaType>
 
 #include "control/controlpotmeter.h"
+#include "effects/chains/equalizereffectchain.h"
+#include "effects/chains/outputeffectchain.h"
+#include "effects/chains/quickeffectchain.h"
+#include "effects/chains/standardeffectchain.h"
 #include "effects/effectslot.h"
 #include "effects/effectsmessenger.h"
-#include "effects/chains/standardeffectchain.h"
-#include "effects/chains/quickeffectchain.h"
-#include "effects/chains/outputeffectchain.h"
-#include "effects/chains/equalizereffectchain.h"
 #include "effects/presets/effectpresetmanager.h"
 #include "effects/presets/effectxmlelements.h"
 #include "effects/visibleeffectslist.h"
