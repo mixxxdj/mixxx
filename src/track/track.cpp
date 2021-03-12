@@ -280,7 +280,7 @@ bool Track::trySetBpm(double bpmValue) {
         return trySetBeatsMarkDirtyAndUnlock(&lock, nullptr, false);
     } else if (!m_pBeats) {
         // No beat grid available -> create and initialize
-        double cue = getCuePoint().getPosition();
+        double cue = m_record.getCuePoint().getPosition();
         const auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(), bpmValue, cue);
         return trySetBeatsMarkDirtyAndUnlock(&lock, pBeats, false);
     } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
