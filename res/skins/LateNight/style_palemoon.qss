@@ -1329,7 +1329,8 @@ WEffectSelector,
 
 /* Grey. default for all deck labels */
 #PlayPositionText, #PlayPositionTextSmall,
-#DurationText, #RateText,
+#DurationText,
+#RateText, #RateRangePrefix, #RateRangeText,
 #MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"],
 #PreviewLabel,
 WEffectSelector QAbstractScrollArea,
