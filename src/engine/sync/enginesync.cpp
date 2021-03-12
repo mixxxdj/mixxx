@@ -30,18 +30,12 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
 
     // The syncable that will be used to initialize the master params, if needed.
     Syncable* pParamsSyncable = m_pMasterSyncable;
-    if (pParamsSyncable) {
-        qDebug() << "@@@@@@@@@@@@@ set pparams from master" << pParamsSyncable->getGroup();
-    } else {
-        qDebug() << "@@@@@@@@@@@@@ pparams is null to start";
-    }
 
     switch (mode) {
     case SYNC_MASTER_EXPLICIT: {
         if (pSyncable->getBaseBpm() > 0 || pSyncable == m_pInternalClock) {
             activateMaster(pSyncable, SYNC_MASTER_EXPLICIT);
             pParamsSyncable = pSyncable;
-            qDebug() << "@@@@@@@@@@@@@ set pparams from ourselves!";
         } else {
             // If we have no bpm, we can't be a valid master. Override.
             activateFollower(pSyncable);
@@ -50,7 +44,6 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     }
     case SYNC_FOLLOWER:
     case SYNC_MASTER_SOFT: {
-        qDebug() << "I think we are here";
         // A request for follower mode may be converted into an enabling of soft
         // master mode.
         // Note: SYNC_MASTER_SOFT and SYNC_FOLLOWER cannot be set explicitly,
@@ -67,7 +60,6 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             // if the master has changed, activate it.
             activateMaster(newMaster, SYNC_MASTER_SOFT);
             pParamsSyncable = newMaster;
-            qDebug() << "@@@@@@@@@@@@@ set pparams from new master";
         }
         // If we are the new master, we need to match to some other deck.
         if (newMaster == pSyncable) {
@@ -75,15 +67,12 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             // match the first available bpm -- sync won't be enabled on these decks,
             // otherwise there would have been a master.
             pParamsSyncable = findBpmMatchTarget(pSyncable);
-            qDebug() << "@@@@@@@@@@@@@ set pparams from bpmmatch?";
             if (!pParamsSyncable) {
                 // We weren't able to find anything to match to, so set ourselves as the
                 // target.  That way we'll use our own params when we setMasterParams below.
                 pParamsSyncable = pSyncable;
-                qDebug() << "@@@@@@@@@@@@@ set pparams from ourselves";
             }
         } else {
-            qDebug() << "this one?";
             // This happens if this Deck has no valid BPM
             activateFollower(pSyncable);
         }
@@ -99,22 +88,16 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     }
 
     if (auto unique_syncable = getUniquePlayingSyncable(); unique_syncable) {
-        //     // should we init master params here? seems like we should.
         unique_syncable->notifyOnlyPlayingSyncable();
-        //     setMasterParams(unique_syncable);
     }
 
     // Now that all of the decks have their assignments, reinit master params if needed.
     if (pParamsSyncable) {
-        qDebug() << "@@@@@@@@@@@@@ pParamsSyncable!!! " << pParamsSyncable->getGroup();
         setMasterParams(pParamsSyncable);
         pSyncable->setInstantaneousBpm(pParamsSyncable->getBpm());
         if (pParamsSyncable != pSyncable) {
-            qDebug() << "Requesting sync";
             pSyncable->requestSync();
         }
-    } else {
-        qDebug() << "@@@@@@@@@@@@@ no pparams";
     }
 }
 
@@ -137,8 +120,6 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
     }
 
     pSyncable->setSyncMode(SYNC_FOLLOWER);
-    // pSyncable->setMasterParams(masterBeatDistance(), masterBaseBpm(), masterBpm());
-    // pSyncable->setInstantaneousBpm(masterBpm());
 }
 
 void EngineSync::activateMaster(Syncable* pSyncable, SyncMode masterType) {
@@ -171,17 +152,8 @@ void EngineSync::activateMaster(Syncable* pSyncable, SyncMode masterType) {
         pOldChannelMaster->setSyncMode(SYNC_FOLLOWER);
     }
 
-    qDebug() << "Setting up master " << pSyncable->getGroup();
     m_pMasterSyncable = pSyncable;
     pSyncable->setSyncMode(masterType);
-    // This code is a little wonky.  Really we should reinit master params at the
-    //basesyncablelistener level.   We want to have a clearer
-    // set of times when we reinit the internal clock.
-    // The problem this causes is that setting a deck as master reinits
-    // all of the master params -- we don't actually want that to happen unless
-    // this is the first deck.
-    // pSyncable->setMasterParams(masterBeatDistance(), masterBaseBpm(), masterBpm());
-    // pSyncable->setInstantaneousBpm(masterBpm());
 
     if (m_pMasterSyncable != m_pInternalClock) {
         // the internal clock gets activated and its values are overwritten with this
@@ -221,19 +193,9 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
 
 Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     // If there is an explicit master, and it is playing, keep it.
-    qDebug() << "pickmaster";
-    if (m_pMasterSyncable) {
-        qDebug() << "already a master: " << m_pMasterSyncable->getGroup()
-                 << m_pMasterSyncable->isPlaying();
-
-        qDebug() << m_pMasterSyncable->getSyncMode() << " and "
-                 << (m_pMasterSyncable->isPlaying() ||
-                            m_pMasterSyncable == m_pInternalClock);
-    }
     if (m_pMasterSyncable &&
             isMaster(m_pMasterSyncable->getSyncMode()) &&
             (m_pMasterSyncable->isPlaying() || m_pMasterSyncable == m_pInternalClock)) {
-        qDebug() << "returning the existing master" << m_pMasterSyncable->getGroup();
         return m_pMasterSyncable;
     }
 
@@ -288,31 +250,25 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
 
 Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
     Syncable* pStoppedTarget = nullptr;
-    qDebug() << "EngineSync::findBpmMatchTarget";
 
     for (const auto& pOtherSyncable : qAsConst(m_syncables)) {
         if (pOtherSyncable == requester) {
             continue;
         }
-        qDebug() << "@@@@@@@@@@@ findBpmMatchTarget" << pOtherSyncable->getGroup();
         // Skip non-master decks, like preview decks.
         if (!pOtherSyncable->getChannel()->isMasterEnabled()) {
-            qDebug() << "not a master deck";
             continue;
         }
         if (!pOtherSyncable->getChannel()->isPrimaryDeck()) {
-            qDebug() << "not primary";
             continue;
         }
         if (pOtherSyncable->getBaseBpm() == 0.0) {
-            qDebug() << "no basebpm";
             continue;
         }
 
         // If the other deck is playing we stop looking immediately. Otherwise continue looking
         // for a playing deck with bpm > 0.0.
         if (pOtherSyncable->isPlaying()) {
-            qDebug() << "playing! use it";
             return pOtherSyncable;
         }
 
@@ -322,14 +278,10 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         // Exception: if the requester is playing, we don't want to match it
         // against a stopped deck.
         if (!pStoppedTarget && !requester->isPlaying()) {
-            qDebug() << "first stopped.";
             pStoppedTarget = pOtherSyncable;
-        } else {
-            qDebug() << "uhhhh" << pStoppedTarget << requester->isPlaying();
         }
     }
 
-    qDebug() << "returning first stopped";
     return pStoppedTarget;
 }
 
@@ -348,7 +300,6 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
         activateMaster(newMaster, SYNC_MASTER_SOFT);
-        // setMasterParams(newMaster);
     }
 
     if (auto unique_syncable = getUniquePlayingSyncable(); unique_syncable) {
@@ -372,10 +323,7 @@ void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, double bpm) {
         kLogger.trace() << "EngineSync::notifyBaseBpmChanged" << pSyncable->getGroup() << bpm;
     }
 
-    qDebug() << "hmmm " << pSyncable->getSyncMode() << isMaster(pSyncable->getSyncMode());
-
     if (isMaster(pSyncable->getSyncMode())) {
-        qDebug() << "it's the master, so setting master bpm for everyone";
         setMasterBpm(pSyncable, bpm);
     }
 }
@@ -397,9 +345,6 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
     double mbpm = 0.0;
     double beatDistance = 0.0;
     if (m_pMasterSyncable) {
-        // OK this isn't working because if the master is not playing (it can happen)
-        // then bpm is 0.
-        qDebug() << "bpm coming from master which is: " << m_pMasterSyncable->getGroup();
         mbaseBpm = m_pMasterSyncable->getBaseBpm();
         mbpm = m_pMasterSyncable->getBpm();
         beatDistance = m_pMasterSyncable->getBeatDistance();
@@ -407,11 +352,9 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
 
     if (mbaseBpm != 0.0) {
         // resync to current master
-        qDebug() << "resetting from master";
         pSyncable->setMasterParams(beatDistance, mbaseBpm, mbpm);
     } else {
         // There is no other master, adopt this bpm as master
-        qDebug() << "lacking another, adopting our own";
         pSyncable->setMasterParams(0.0, 0.0, bpm);
     }
 }
@@ -420,10 +363,6 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
     }
-    // if (!isMaster(pSyncable->getSyncMode())) {
-    //     return;
-    // }
-    // This might be messing up the half/double tests somehow??
     if (pSyncable != m_pInternalClock) {
         return;
     }
@@ -438,12 +377,6 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beatDista
         kLogger.trace() << "EngineSync::notifyBeatDistanceChanged"
                         << pSyncable->getGroup() << beatDistance;
     }
-    // This is breaking UserTweakBeatDistance because
-    // the deck uses this method to seed the beat distance once the other track stops
-    // or something.  Feels wrong.
-    // if (!isMaster(pSyncable->getSyncMode())) {
-    //     return;
-    // }
     if (pSyncable != m_pInternalClock) {
         return;
     }

@@ -85,7 +85,7 @@ double BaseSyncableListener::masterBaseBpm() const {
 }
 
 void BaseSyncableListener::setMasterBpm(Syncable* pSource, double bpm) {
-    qDebug() << "BaseSyncableListener::setMasterBpm" << pSource << bpm;
+    //qDebug() << "BaseSyncableListener::setMasterBpm" << pSource << bpm;
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterBpm(bpm);
     }
@@ -128,27 +128,17 @@ void BaseSyncableListener::setMasterParams(Syncable* pSource) {
     const double beatDistance = pSource->getBeatDistance();
     const double baseBpm = pSource->getBaseBpm();
     const double bpm = pSource->getBpm() > 0 ? pSource->getBpm() : pSource->getBaseBpm();
-    qDebug() << "BaseSyncableListener::setMasterParams, source is"
-             << pSource->getGroup() << beatDistance << baseBpm << bpm;
+    // qDebug() << "BaseSyncableListener::setMasterParams, source is"
+    //          << pSource->getGroup() << beatDistance << baseBpm << bpm;
     if (pSource != m_pInternalClock) {
-        qDebug() << "------- setMasterParams Internal Clock";
         m_pInternalClock->setMasterParams(beatDistance, baseBpm, bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource || !pSyncable->isSynchronized()) {
-            qDebug() << "skipping setMasterParams" << pSyncable->getGroup();
             continue;
         }
-        qDebug() << "setMasterParams" << pSyncable->getGroup();
         pSyncable->setMasterParams(beatDistance, baseBpm, bpm);
     }
-    // Updating the master params may cause the master syncable to change its
-    // base bpm because it might have changed half/double multiplier.  Therefore
-    // we set those values once more just in case.
-    // if (m_pMasterSyncable) {
-    //     qDebug() << "UPDATING AGAIN FROM POSSIBLE CHANGE?";
-    //     setMasterBpm(m_pMasterSyncable, m_pMasterSyncable->getBaseBpm());
-    // }
 }
 
 Syncable* BaseSyncableListener::getUniquePlayingSyncable() {

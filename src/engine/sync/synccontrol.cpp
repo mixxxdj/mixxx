@@ -254,33 +254,17 @@ void SyncControl::setMasterBpm(double bpm) {
 
 void SyncControl::setMasterParams(
         double beatDistance, double baseBpm, double bpm) {
-    qDebug() << "SyncControl::setMasterParams" << beatDistance << baseBpm << bpm;
     double masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
-    qDebug() << "SyncControl::setMasterParams" << getGroup()
-             << "adjust factor currently" << masterBpmAdjustFactor;
     if (isMaster(getSyncMode())) {
         // In Master mode we adjust the incoming Bpm for the initial sync.
         bpm *= masterBpmAdjustFactor;
         m_masterBpmAdjustFactor = kBpmUnity;
-        qDebug() << "unity!" << bpm;
     } else {
         // in Follower mode we keep the factor when reporting our BPM
         m_masterBpmAdjustFactor = masterBpmAdjustFactor;
-        qDebug() << "using the factor" << masterBpmAdjustFactor;
     }
-    // We've updated the adjustment factor, so we need to alert enginesync that
-    // the base bpm may have changed.
-    //  XXXXXXXXXXX DANGER: I think this causes signal loops
-    // set master params should only absorb changes, never cause them.
-    // so how do we deal with the updated multiplier issue?
-    // what's happening is the new master is syncing against something else,
-    // and that might cause a change in value, which then needs to be reflected
-    // in the master params.  The problem is that enginesync assumes that base bpm
-    // updates from the master are canonical.  But that's not what's happening here.
-    // m_pEngineSync->notifyBaseBpmChanged(this, bpm / m_masterBpmAdjustFactor);
     setMasterBpm(bpm);
     setMasterBeatDistance(beatDistance);
-    qDebug() << "------------------------ done setting psyncable params";
 }
 
 double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
@@ -336,11 +320,6 @@ double SyncControl::getBpm() const {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::getBpm()";
     }
-    // if (!isPlaying() || m_pBpm->get() == 0) {
-    //     qDebug() << "return local * rateratio" << m_pLocalBpm->get() << m_pRateRatio->get();
-    //     return m_pLocalBpm->get() * m_pRateRatio->get();
-    // }
-    qDebug() << "return adjusted current" << (m_pBpm->get() / m_masterBpmAdjustFactor);
     return m_pBpm->get() / m_masterBpmAdjustFactor;
 }
 
@@ -352,10 +331,9 @@ void SyncControl::setInstantaneousBpm(double bpm) {
 void SyncControl::reportTrackPosition(double fractionalPlaypos) {
     // If we're close to the end, and master, disable master so we don't stop
     // the party.
-    if (fractionalPlaypos > kTrackPositionMasterHandoff) {
-        if (isMaster(getSyncMode())) {
-            m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
-        }
+    if (isMaster(getSyncMode()) &&
+            fractionalPlaypos > kTrackPositionMasterHandoff) {
+        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
 }
 
@@ -389,13 +367,11 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     if (isMaster(syncMode)) {
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     } else if (isFollower(syncMode)) {
-        qDebug() << "rerequesting sync mode? does this work?";
         // If we were a follower, requesting sync mode refreshes
         // the soft master -- if we went from having no bpm to having
         // a bpm, we might need to become master.
         m_pChannel->getEngineBuffer()->requestSyncMode(syncMode);
     }
-    qDebug() << "now setting the local bpm";
     m_pBpmControl->updateLocalBpm();
 }
 

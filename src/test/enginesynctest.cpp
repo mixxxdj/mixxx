@@ -152,8 +152,8 @@ class EngineSyncTest : public MockedEngineBackendTest {
         if (double master = ControlObject::getControl(
                     ConfigKey(group, "sync_master"))
                                     ->get();
-                master != 2) {
-            qWarning() << "master should be 2.0, is" << master;
+                master != 1.0) {
+            qWarning() << "master should be 1.0, is" << master;
             return false;
         }
         return true;
@@ -704,7 +704,6 @@ TEST_F(EngineSyncTest, RateChangeTestOrder3) {
             120.0, ControlObject::get(ConfigKey(m_sGroup2, "file_bpm")));
 
     // Turn on Master and Follower.
-    qDebug() << "1";
     auto pButtonMasterSync1 =
             std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->set(SYNC_MASTER_EXPLICIT);
@@ -712,7 +711,6 @@ TEST_F(EngineSyncTest, RateChangeTestOrder3) {
 
     ASSERT_TRUE(isExplicitMaster(m_sGroup1));
 
-    qDebug() << "2";
     auto pButtonMasterSync2 =
             std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
     pButtonMasterSync2->set(SYNC_FOLLOWER);
@@ -1896,7 +1894,6 @@ TEST_F(EngineSyncTest, HalfDoubleConsistency) {
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(0);
     ProcessBuffer();
-    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~~~1";
     ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1);
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(90.0,
@@ -2453,7 +2450,6 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
-    qDebug() << "------------ stop deck 1";
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
 
     ProcessBuffer();
@@ -2461,7 +2457,6 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     ASSERT_TRUE(isSoftMaster(m_sGroup1));
     ASSERT_TRUE(isFollower(m_sGroup2));
 
-    qDebug() << "--------------------------------------- change the beats";
     // Load a new beatgrid during playing, this happens when the analyser is finished
     mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2->getSampleRate(), 140, 0.0);
     m_pTrack2->trySetBeats(pBeats2);
