@@ -7,7 +7,6 @@
 #include "control/controlpotmeter.h"
 #include "effects/backends/effectsbackendmanager.h"
 #include "effects/presets/effectchainpresetmanager.h"
-#include "effects/specialeffectchains.h"
 #include "engine/channelhandle.h"
 #include "preferences/usersettings.h"
 #include "util/class.h"

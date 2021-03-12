@@ -5,6 +5,7 @@
 #include <QtDebug>
 
 #include "effects/effectsmanager.h"
+#include "effects/effectslot.h"
 
 namespace {
 const QString kMimeTextDelimiter = QStringLiteral("\n");

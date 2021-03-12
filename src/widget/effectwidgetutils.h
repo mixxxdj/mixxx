@@ -3,6 +3,7 @@
 #include <QDomNode>
 
 #include "effects/effectsmanager.h"
+#include "effects/effectchain.h"
 #include "effects/defs.h"
 #include "effects/effectslot.h"
 #include "skin/skincontext.h"

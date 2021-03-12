@@ -9,7 +9,7 @@
 #include "defs_urls.h"
 #include "effects/backends/builtin/biquadfullkilleqeffect.h"
 #include "effects/effectslot.h"
-#include "effects/specialeffectchains.h"
+#include "effects/chains/equalizereffectchain.h"
 #include "mixer/playermanager.h"
 #include "moc_dlgprefeq.cpp"
 

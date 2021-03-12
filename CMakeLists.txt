@@ -494,7 +494,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/effectslot.cpp
   src/effects/effectsmanager.cpp
   src/effects/effectsmessenger.cpp
-  src/effects/specialeffectchains.cpp
   src/effects/visibleeffectslist.cpp
   src/effects/backends/effectsbackend.cpp
   src/effects/backends/effectmanifest.cpp
@@ -521,6 +520,11 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/backends/builtin/tremoloeffect.cpp
   src/effects/backends/builtin/whitenoiseeffect.cpp
   src/effects/backends/effectsbackendmanager.cpp
+  src/effects/chains/equalizereffectchain.cpp
+  src/effects/chains/outputeffectchain.cpp
+  src/effects/chains/pergroupeffectchain.cpp
+  src/effects/chains/quickeffectchain.cpp
+  src/effects/chains/standardeffectchain.cpp
   src/effects/presets/effectchainpreset.cpp
   src/effects/presets/effectchainpresetmanager.cpp
   src/effects/presets/effectparameterpreset.cpp
