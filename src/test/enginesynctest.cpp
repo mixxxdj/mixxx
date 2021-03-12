@@ -1329,11 +1329,16 @@ TEST_F(EngineSyncTest, FileBpmChangesDontAffectMaster) {
     pButtonSyncEnabled2->set(1.0);
     ProcessBuffer();
 
+    ASSERT_TRUE(isSoftMaster(m_sGroup1));
+    ASSERT_TRUE(isFollower(m_sGroup2));
+
     // Update the master's beats -- update the internal clock
     pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 160, 0.0);
     m_pTrack1->trySetBeats(pBeats1);
     EXPECT_DOUBLE_EQ(
             160.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
+
+    ASSERT_TRUE(isSoftMaster(m_sGroup1));
 
     // Update follower beats -- don't update internal clock.
     pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2->getSampleRate(), 140, 0.0);
@@ -1894,7 +1899,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
 
     // Set the sync deck playing with nothing else active.
     // Next Deck becomes master and the Master clock is set to 100 BPM
-    // The 130 BPM Track should be played at 100 BPM, rate = 0,769230769
+    // The 130 BPM Track should be played at 100 BPM, rate = 0.769230769
     pButtonSyncEnabled1->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     // Beat length: 40707.692307692305
@@ -1937,11 +1942,10 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     // seek to 0, thus resetting the beat distance.
     ProcessBuffer();
 
-    // We expect that the second deck (master) has adjusted the "beat_distance" of the
-    // internal clock and the fist deck is advanced slightly but slower to slowly get
-    // rid of the additional buffer ahead
+    // The first deck is still the only one with sync active.
     // TODO: It does sounds odd to start the track 1 at a random position and adjust the
     // phase later. Seeking into phase is the best option even with quantize off.
+    ASSERT_TRUE(isSoftMaster(m_sGroup1));
     EXPECT_DOUBLE_EQ(100.0,
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     // The adjustment is calculated here: BpmControl::calcSyncAdjustment
@@ -1967,7 +1971,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     pButtonSyncEnabled2->set(0.0);
     ControlObject::set(ConfigKey(m_sGroup2, "rate_ratio"), 1.0);
 
-    // But if there is a third deck that is sync-enabled, we match that.
+    // If we enable sync on the third deck, it will match the first, which has been reset to 130.
     auto pButtonSyncEnabled3 =
             std::make_unique<ControlProxy>(m_sGroup3, "sync_enabled");
     ControlObject::set(ConfigKey(m_sGroup3, "beat_distance"), 0.6);
@@ -1976,6 +1980,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     m_pTrack3->trySetBeats(pBeats3);
     // This will sync to the first deck here and not the second (lp1784185)
     pButtonSyncEnabled3->set(1.0);
+    ASSERT_TRUE(isSoftMaster(m_sGroup3));
     ProcessBuffer();
     EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup3, "bpm")));
     // revert that
@@ -1986,13 +1991,16 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
 
     pButtonSyncEnabled1->set(1.0);
     ProcessBuffer();
+    // Soft master is now deck one because that was the last one we enabled and none of them
+    // are playing.
+    ASSERT_TRUE(isSoftMaster(m_sGroup1));
 
     ControlObject::getControl(ConfigKey(m_sGroup3, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
 
-    // We expect Deck 1 is Deck 3 bpm
+    // When deck 1 activated, it should have matched deck 3.
     EXPECT_DOUBLE_EQ(140.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
                     ->get());
@@ -2455,7 +2463,7 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
 
     // We expect that the second deck is still playing at unity -- it was the master
     // and it should not change speed just because it reloaded and the bpm changed.
-    EXPECT_DOUBLE_EQ(150.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(75.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     // Expect to sync on half beats
     EXPECT_DOUBLE_EQ(75.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_DOUBLE_EQ(75.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));

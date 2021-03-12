@@ -63,9 +63,6 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         }
         // If we are the new master, we need to match to some other deck.
         if (newMaster == pSyncable) {
-            // There is no other synced deck. If any other deck is playing we will
-            // match the first available bpm -- sync won't be enabled on these decks,
-            // otherwise there would have been a master.
             pParamsSyncable = findBpmMatchTarget(pSyncable);
             if (!pParamsSyncable) {
                 // We weren't able to find anything to match to, so set ourselves as the
@@ -247,7 +244,15 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
 }
 
 Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
-    Syncable* pStoppedTarget = nullptr;
+    // First preference: playing synced deck
+    // Second preferene: stopped synced deck
+    // Third preference: playing nonsync deck
+    // Fourth preference: stopped nonsync deck
+    // This could probably be rewritten with a nicer algorithm.
+
+    Syncable* pStoppedSyncTarget = nullptr;
+    Syncable* pPlayingNonSyncTarget = nullptr;
+    Syncable* pStoppedNonSyncTarget = nullptr;
 
     for (const auto& pOtherSyncable : qAsConst(m_syncables)) {
         if (pOtherSyncable == requester) {
@@ -267,7 +272,12 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         // If the other deck is playing we stop looking immediately. Otherwise continue looking
         // for a playing deck with bpm > 0.0.
         if (pOtherSyncable->isPlaying()) {
-            return pOtherSyncable;
+            if (pOtherSyncable->isSynchronized()) {
+                return pOtherSyncable;
+            }
+            if (!pPlayingNonSyncTarget) {
+                pPlayingNonSyncTarget = pOtherSyncable;
+            }
         }
 
         // The target is not playing. If this is the first one we have seen,
@@ -275,12 +285,24 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         // this one as a fallback.
         // Exception: if the requester is playing, we don't want to match it
         // against a stopped deck.
-        if (!pStoppedTarget && !requester->isPlaying()) {
-            pStoppedTarget = pOtherSyncable;
+        if (!requester->isPlaying()) {
+            if (!pStoppedSyncTarget && pOtherSyncable->isSynchronized()) {
+                pStoppedSyncTarget = pOtherSyncable;
+            } else if (!pStoppedNonSyncTarget) {
+                pStoppedNonSyncTarget = pOtherSyncable;
+            }
         }
     }
 
-    return pStoppedTarget;
+    if (pStoppedSyncTarget) {
+        return pStoppedSyncTarget;
+    }
+
+    if (pPlayingNonSyncTarget) {
+        return pPlayingNonSyncTarget;
+    }
+
+    return pStoppedNonSyncTarget;
 }
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {

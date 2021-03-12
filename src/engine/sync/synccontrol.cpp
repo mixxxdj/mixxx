@@ -364,17 +364,23 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     m_masterBpmAdjustFactor = kBpmUnity;
 
     SyncMode syncMode = getSyncMode();
-    // If we change or remove beats while master, hand off to prevent
-    // sudden change in other decks.
     if (isMaster(syncMode)) {
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+        if (!m_pBeats) {
+            // If the track was ejected or suddenly has no beats, we can no longer
+            // be master.
+            m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+        } else {
+            // We are remaining master, so notify the engine with our update.
+            m_pBpmControl->updateLocalBpm();
+            m_pEngineSync->notifyBaseBpmChanged(this, getBaseBpm());
+        }
     } else if (isFollower(syncMode)) {
         // If we were a follower, requesting sync mode refreshes
         // the soft master -- if we went from having no bpm to having
         // a bpm, we might need to become master.
         m_pChannel->getEngineBuffer()->requestSyncMode(syncMode);
+        m_pBpmControl->updateLocalBpm();
     }
-    m_pBpmControl->updateLocalBpm();
 }
 
 void SyncControl::slotControlPlay(double play) {
