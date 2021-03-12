@@ -271,31 +271,28 @@ double Track::getBpm() const {
     return bpm;
 }
 
-double Track::trySetBpm(double bpmValue) {
+bool Track::trySetBpm(double bpmValue) {
     QMutexLocker lock(&m_qMutex);
 
     if (!mixxx::Bpm::isValidValue(bpmValue)) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
-        trySetBeatsMarkDirtyAndUnlock(&lock, nullptr, false);
+        return trySetBeatsMarkDirtyAndUnlock(&lock, nullptr, false);
     } else if (!m_pBeats) {
         // No beat grid available -> create and initialize
         double cue = getCuePoint().getPosition();
         const auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(), bpmValue, cue);
-        trySetBeatsMarkDirtyAndUnlock(&lock, pBeats, false);
+        return trySetBeatsMarkDirtyAndUnlock(&lock, pBeats, false);
     } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
             m_pBeats->getBpm() != bpmValue) {
         // Continue with the regular cases
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
-        trySetBeatsMarkDirtyAndUnlock(&lock, m_pBeats->setBpm(bpmValue), false);
+        return trySetBeatsMarkDirtyAndUnlock(&lock, m_pBeats->setBpm(bpmValue), false);
     }
 
-    if (m_pBeats) {
-        return m_pBeats->getBpm();
-    }
-    return mixxx::Bpm::kValueUndefined;
+    return false;
 }
 
 QString Track::getBpmText() const {
