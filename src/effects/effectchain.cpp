@@ -193,11 +193,6 @@ const QString& EffectChain::presetName() const {
     return m_presetName;
 }
 
-void EffectChain::setPresetName(const QString& name) {
-    m_presetName = name;
-    emit presetNameChanged(name);
-}
-
 void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
     VERIFY_OR_DEBUG_ASSERT(pPreset) {
         return;
@@ -219,7 +214,8 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
     setMixMode(pPreset->mixMode());
     m_pControlChainSuperParameter->setDefaultValue(pPreset->superKnob());
 
-    setPresetName(pPreset->name());
+    m_presetName = pPreset->name();
+    emit presetNameChanged(m_presetName);
     // add 1 to make the ControlObject 1-indexed like other ControlObjects
     m_pControlLoadedPreset->setAndConfirm(presetIndex() + 1);
 }

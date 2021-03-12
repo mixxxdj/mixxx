@@ -66,7 +66,6 @@ class EffectChain : public QObject {
     }
 
     const QString& presetName() const;
-    void setPresetName(const QString& name);
 
     // Get the human-readable description of the EffectChain
     QString description() const;
