@@ -189,7 +189,7 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
         }
     } else {
         // not vectorized: vectorization not profitable.
-        for (int i = 0; i < numSamples; ++i) {
+        for (int i = 0; i < numSamples / 2; ++i) {
             pBuffer[i * 2] *= gain1Old;
         }
     }
@@ -205,7 +205,7 @@ void SampleUtil::applyRampingAlternatingGain(CSAMPLE* pBuffer,
         }
     } else {
         // not vectorized: vectorization not profitable.
-        for (int i = 0; i < numSamples; ++i) {
+        for (int i = 0; i < numSamples / 2; ++i) {
             pBuffer[i * 2 + 1] *= gain2Old;
         }
     }
