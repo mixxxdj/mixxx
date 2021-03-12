@@ -352,7 +352,7 @@ bool Track::trySetBeatsMarkDirtyAndUnlock(
     if (!dirty) {
         // Already set, nothing todo
         pLock->unlock();
-        return true;
+        return false;
     }
 
     auto bpmValue = m_pBeats ? m_pBeats->getBpm() : mixxx::Bpm::kValueUndefined;
