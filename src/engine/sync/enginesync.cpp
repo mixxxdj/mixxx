@@ -238,10 +238,8 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     }
 
     // No valid playing sync decks
-    if (stopped_deck_count == 1) {
+    if (stopped_deck_count >= 1) {
         return first_stopped_deck;
-    } else if (stopped_deck_count > 1) {
-        return nullptr;
     }
 
     // No valid stopped sync decks
