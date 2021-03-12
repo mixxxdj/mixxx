@@ -370,7 +370,7 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* M_RESTRICT pDest,
     // is the highest valid sample. Note that this means that although some
     // sample values convert to -1.0, none will convert to +1.0.
     DEBUG_ASSERT(-SAMPLE_MINIMUM >= SAMPLE_MAXIMUM);
-    const CSAMPLE kConversionFactor = -SAMPLE_MINIMUM;
+    const CSAMPLE kConversionFactor = SAMPLE_MINIMUM * -1.0f;
     // note: LOOP VECTORIZED.
     for (SINT i = 0; i < numSamples; ++i) {
         pDest[i] = CSAMPLE(pSrc[i]) / kConversionFactor;
@@ -380,11 +380,15 @@ void SampleUtil::convertS16ToFloat32(CSAMPLE* M_RESTRICT pDest,
 //static
 void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
         SINT numSamples) {
+    // We use here -SAMPLE_MINIMUM for a perfect round trip with convertS16ToFloat32
+    // +1.0 is clamped to 32767 (0.99996942)
     DEBUG_ASSERT(-SAMPLE_MINIMUM >= SAMPLE_MAXIMUM);
-    const CSAMPLE kConversionFactor = -SAMPLE_MINIMUM;
+    const CSAMPLE kConversionFactor = SAMPLE_MINIMUM * -1.0f;
     // note: LOOP VECTORIZED only with "int i"
     for (int i = 0; i < numSamples; ++i) {
-        pDest[i] = SAMPLE(pSrc[i] * kConversionFactor);
+        pDest[i] = static_cast<SAMPLE>(math_clamp(pSrc[i] * kConversionFactor,
+                static_cast<CSAMPLE>(SAMPLE_MINIMUM),
+                static_cast<CSAMPLE>(SAMPLE_MAXIMUM)));
     }
 }
 
