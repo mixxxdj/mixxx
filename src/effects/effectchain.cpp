@@ -220,7 +220,8 @@ void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
     m_pControlChainSuperParameter->setDefaultValue(pPreset->superKnob());
 
     setPresetName(pPreset->name());
-    m_pControlLoadedPreset->setAndConfirm(presetIndex());
+    // add 1 to make the ControlObject 1-indexed like other ControlObjects
+    m_pControlLoadedPreset->setAndConfirm(presetIndex() + 1);
 }
 
 void EffectChain::sendParameterUpdate() {
