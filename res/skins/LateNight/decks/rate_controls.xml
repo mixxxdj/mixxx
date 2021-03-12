@@ -107,7 +107,7 @@
                       <Label>
                         <ObjectName>RateCenter</ObjectName>
                         <Size>5f,5f</Size>
-                        <Pos>2,57</Pos>
+                        <Pos>2,59</Pos>
                         <Connection>
                           <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
                           <Transform><IsEqual>0.5</IsEqual></Transform>
@@ -116,7 +116,7 @@
                       </Label>
                       <SliderComposed>
                         <ObjectName>RateSlider</ObjectName>
-                        <Size>40f,113f</Size>
+                        <Size>40f,119f</Size>
                         <Pos>5,2</Pos>
                         <TooltipId>rate</TooltipId>
                         <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
@@ -124,8 +124,8 @@
                         <Horizontal>false</Horizontal>
                         <BarWidth><Variable name="BarWidth"/></BarWidth>
                         <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
-                        <BarColor><Variable name="BarColorPitch"/>
-                        </BarColor><BarRoundCaps>true</BarRoundCaps>
+                        <BarColor><Variable name="BarColorPitch"/></BarColor>
+                        <BarRoundCaps>true</BarRoundCaps>
                         <BarAxisPos>20.0</BarAxisPos>
                         <BarUnipolar>false</BarUnipolar>
                         <Connection>
@@ -135,50 +135,19 @@
                     </Children>
                   </WidgetGroup><!-- Rate slider + center indicator -->
 
-                  <!-- Pitch range indicators: prefix / spacer / range number -->
-                  <WidgetGroup>
+                  <WidgetGroup><!-- Rate range indicators -->
                     <SizePolicy>min,me</SizePolicy>
+                    <Layout>vertical</Layout>
                     <Children>
-                      <!-- Top range limit + prefix -->
-                      <RateRange>
-                        <TooltipId>rate_range_display</TooltipId>
-                        <ObjectName>RateDisplayTop</ObjectName>
-                        <Channel><Variable name="ChanNum" /></Channel>
-                        <Position>Top</Position>
-                        <Display>prefix</Display>
-                        <Size>7f,16f</Size>
-                        <Pos>3,0</Pos>
-                      </RateRange>
-                      <RateRange>
-                        <TooltipId>rate_range_display</TooltipId>
-                        <ObjectName>RateDisplayTop</ObjectName>
-                        <Channel><Variable name="ChanNum" /></Channel>
-                        <Position>Top</Position>
-                        <Display>range</Display>
-                        <Size>18f,16f</Size>
-                        <Pos>35,1</Pos>
-                      </RateRange>
-                      <!-- Bottom range limit + prefix -->
-                      <RateRange>
-                        <TooltipId>rate_range_display</TooltipId>
-                        <ObjectName>RateDisplayBottom</ObjectName>
-                        <Channel><Variable name="ChanNum" /></Channel>
-                        <Position>Bottom</Position>
-                        <Display>prefix</Display>
-                        <Size>7f,16f</Size>
-                        <Pos>3,99</Pos>
-                      </RateRange>
-                      <RateRange>
-                        <TooltipId>rate_range_display</TooltipId>
-                        <ObjectName>RateDisplayBottom</ObjectName>
-                        <Channel><Variable name="ChanNum" /></Channel>
-                        <Position>Bottom</Position>
-                        <Display>range</Display>
-                        <Size>18f,16f</Size>
-                        <Pos>35,99</Pos>
-                      </RateRange>
+                      <SingletonContainer>
+                        <ObjectName>RateRangeDisplayTop<Variable name="ChanNum"/></ObjectName>
+                      </SingletonContainer>
+                      <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+                      <SingletonContainer>
+                        <ObjectName>RateRangeDisplayBottom<Variable name="ChanNum"/></ObjectName>
+                      </SingletonContainer>
                     </Children>
-                  </WidgetGroup><!-- Pitch range indicators -->
+                  </WidgetGroup><!-- Rate range indicators -->
                 </Children>
               </WidgetGroup><!-- Rate slider + range displays -->
 

@@ -107,6 +107,7 @@ QLabel#labelRecStatistics {
 #KnobLabel,
 #FxKnobLabel,
 #FxButtonLabel,
+#RateRangeText,
 #LatencyLabel {
   font-size: 10px;
   text-align: center;
@@ -119,6 +120,7 @@ WPushButton,
   font-size: 11px;
 }
 
+#RateRangePrefix,
 #RecDuration[highlight="2"],
 #SamplerTitleMini,
 #EQKillButton,
@@ -329,14 +331,10 @@ WSpinny { /*
   background: none;*/
 }
 
-#RateDisplayTop, #RateDisplayBottom {
-  qproperty-alignment: 'AlignCenter';
-  color: #888;
-  font-size: 10px;
-}
-
 #BpmText,
-#RateText {
+#RateText,
+#RateRangePrefix,
+#RateRangeText {
   qproperty-alignment: 'AlignCenter';
 }
 
