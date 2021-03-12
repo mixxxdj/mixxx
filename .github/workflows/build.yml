@@ -99,8 +99,8 @@ jobs:
     - name: "[Windows] Build fixed sccache"
       shell: bash
       if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
-      # TODO: change this to simply `cargo install sccache` when this branch is merged upstream
-      run: cargo install --git https://github.com/Be-ing/sccache.git --branch fix_msvc_fp
+      # TODO: change this to simply `cargo install sccache` after 0.2.16 has been released
+      run: cargo install --git https://github.com/mozilla/sccache.git --branch master
 
     - name: "Check out repository"
       uses: actions/checkout@v2
