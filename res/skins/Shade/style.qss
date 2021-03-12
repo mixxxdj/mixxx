@@ -917,6 +917,7 @@ QPushButton#pushButtonRepeatPlaylist {
 }
 
 WRateRange {
+  color: #4B515F;
   font-size: 10px;
   qproperty-alignment: 'AlignCenter';
 }
