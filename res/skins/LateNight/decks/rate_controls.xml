@@ -85,25 +85,22 @@
               </Template>
               <PushButton>
                   <TooltipId>sync_master</TooltipId>
-                  <ObjectName>SyncMaster</ObjectName>
+                  <ObjectName>SyncLeader</ObjectName>
                   <Size>48f,22f</Size>
                   <NumberStates>2</NumberStates>
                   <State>
                       <Number>0</Number>
-                      <Text>FOLLOWER</Text>
                       <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync.svg</Unpressed>
                       <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Pressed>
                   </State>
                   <State>
                       <Number>1</Number>
-                      <Text>LEADER</Text>
                       <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Unpressed>
                       <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Pressed>
                   </State>
                   <Connection>
                       <ConfigKey><Variable name="Group"/>,sync_master</ConfigKey>
                       <ButtonState>LeftButton</ButtonState>
-                      <ConnectValueFromWidget>true</ConnectValueFromWidget>
                   </Connection>
               </PushButton>
             </Children>

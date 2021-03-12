@@ -137,7 +137,7 @@ void SyncControl::setSyncMode(SyncMode mode) {
         break;
     case SYNC_MASTER_SOFT:
     case SYNC_MASTER_EXPLICIT:
-        m_pSyncMasterEnabled->setAndConfirm(2);
+        m_pSyncMasterEnabled->setAndConfirm(1);
         break;
     case SYNC_NUM_MODES:
         break;
@@ -397,7 +397,6 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     }
     qDebug() << "now setting the local bpm";
     m_pBpmControl->updateLocalBpm();
-    //setLocalBpm(m_pLocalBpm->get());
 }
 
 void SyncControl::slotControlPlay(double play) {
