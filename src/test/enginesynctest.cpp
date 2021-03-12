@@ -149,11 +149,29 @@ class EngineSyncTest : public MockedEngineBackendTest {
             qWarning() << "sync_enabled should be true, isn't";
             return false;
         }
-        if (double master = ControlObject::getControl(
-                    ConfigKey(group, "sync_master"))
-                                    ->get();
-                master != 1.0) {
-            qWarning() << "master should be 1.0, is" << master;
+        switch (masterType) {
+        case SYNC_MASTER_SOFT: {
+            if (double master = ControlObject::getControl(
+                        ConfigKey(group, "sync_master"))
+                                        ->get();
+                    master != 1.0) {
+                qWarning() << "master should be 1.0, is" << master;
+                return false;
+            }
+            break;
+        }
+        case SYNC_MASTER_EXPLICIT: {
+            if (double master = ControlObject::getControl(
+                        ConfigKey(group, "sync_master"))
+                                        ->get();
+                    master != 2.0) {
+                qWarning() << "master should be 2.0, is" << master;
+                return false;
+            }
+            break;
+        }
+        default:
+            qWarning() << "bad master type specified";
             return false;
         }
         return true;
@@ -1319,7 +1337,7 @@ TEST_F(EngineSyncTest, FileBpmChangesDontAffectMaster) {
 
     // Update follower beats -- don't update internal clock.
     pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2->getSampleRate(), 140, 0.0);
-    m_pTrack2->setBeats(pBeats2);
+    m_pTrack2->trySetBeats(pBeats2);
     EXPECT_DOUBLE_EQ(
             160.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }

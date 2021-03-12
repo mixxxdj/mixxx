@@ -136,8 +136,10 @@ void SyncControl::setSyncMode(SyncMode mode) {
         m_pSyncMasterEnabled->setAndConfirm(0);
         break;
     case SYNC_MASTER_SOFT:
-    case SYNC_MASTER_EXPLICIT:
         m_pSyncMasterEnabled->setAndConfirm(1);
+        break;
+    case SYNC_MASTER_EXPLICIT:
+        m_pSyncMasterEnabled->setAndConfirm(2);
         break;
     case SYNC_NUM_MODES:
         break;
