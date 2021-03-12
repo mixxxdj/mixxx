@@ -70,7 +70,8 @@ EffectChain::EffectChain(const QString& group,
 
     m_pControlChainMix = std::make_unique<ControlPotmeter>(
             ConfigKey(m_group, "mix"), 0.0, 1.0, false, true, false, true, 1.0);
-    m_pControlChainMix->set(static_cast<int>(EffectChainMixMode::DrySlashWet));
+    m_pControlChainMix->setDefaultValue(0.0);
+    m_pControlChainMix->set(0.0);
     connect(m_pControlChainMix.get(),
             &ControlObject::valueChanged,
             this,
@@ -93,6 +94,9 @@ EffectChain::EffectChain(const QString& group,
     m_pControlChainMixMode->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlChainMixMode->setStates(
             static_cast<int>(EffectChainMixMode::NumMixModes));
+    double mixModeCODefault = static_cast<double>(EffectChainMixMode::DrySlashWet);
+    m_pControlChainMixMode->setDefaultValue(mixModeCODefault);
+    m_pControlChainMixMode->set(mixModeCODefault);
     connect(m_pControlChainMixMode.get(),
             &ControlObject::valueChanged,
             this,
