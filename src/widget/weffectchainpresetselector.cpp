@@ -38,7 +38,7 @@ void WEffectChainPresetSelector::setup(const QDomNode& node, const SkinContext& 
             this,
             &WEffectChainPresetSelector::populate);
     connect(m_pChain.data(),
-            &EffectChain::nameChanged,
+            &EffectChain::presetNameChanged,
             this,
             &WEffectChainPresetSelector::slotEffectChainNameChanged);
     connect(this,

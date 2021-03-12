@@ -28,7 +28,7 @@ void WEffectChain::setEffectChain(EffectChainPointer pEffectChain) {
     if (pEffectChain) {
         m_pEffectChain = pEffectChain;
         connect(pEffectChain.data(),
-                &EffectChain::nameChanged,
+                &EffectChain::presetNameChanged,
                 this,
                 &WEffectChain::presetNameChanged);
         presetNameChanged(m_pEffectChain->presetName());

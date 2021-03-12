@@ -195,7 +195,7 @@ const QString& EffectChain::presetName() const {
 
 void EffectChain::setPresetName(const QString& name) {
     m_presetName = name;
-    emit nameChanged(name);
+    emit presetNameChanged(name);
 }
 
 void EffectChain::loadChainPreset(EffectChainPresetPointer pPreset) {
