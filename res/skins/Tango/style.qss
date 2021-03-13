@@ -1691,6 +1691,10 @@ decks, samplers, mic, aux, fx */
       border-radius: 2px;
       height: 20px;
     }
+  WEffectChainPresetSelector {
+    background-color: #252525;
+    color: #888;
+  }
   WEffectSelector:hover,
   WEffectChainPresetSelector:hover {
     background-color: #0f0f0f;
@@ -2148,7 +2152,7 @@ WTrackMenu QMenu QCheckBox,
 #SkinSettings,
 WEffectChainPresetButton,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
-WEffectChainPresetSelector, WEffectChainPresetSelector QAbstractScrollArea,
+WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea::item {
   background-color: #1a1a1a;

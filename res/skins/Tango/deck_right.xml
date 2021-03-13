@@ -147,10 +147,20 @@ Variables:
         <Children>
           <Template src="skin:mixer_channel_right.xml"/>
 
-          <EffectChainPresetSelector>
-            <Size>110f,22f</Size>
-            <EffectUnitGroup>[QuickEffectRack1_<Variable name="group"/>]</EffectUnitGroup>
-          </EffectChainPresetSelector>
+          <WidgetGroup><!-- QuickEffect selector -->
+            <Size>0i,22f</Size>
+            <Layout>vertical</Layout>
+            <Children>
+              <EffectChainPresetSelector>
+                <Size>40me,22f</Size>
+                <EffectUnitGroup>[QuickEffectRack1_<Variable name="group"/>]</EffectUnitGroup>
+              </EffectChainPresetSelector>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
 
           <WidgetGroup><ObjectName>Spacer1e</ObjectName><Size>0min,0me</Size></WidgetGroup>
         </Children>
