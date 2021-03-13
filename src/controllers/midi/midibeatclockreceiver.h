@@ -17,10 +17,13 @@ class MidiBeatClockReceiver {
         return m_bpm;
     }
 
+    double beatDistance() const;
+
   private:
     Bpm m_bpm;
     bool m_isPlaying;
     Duration m_lastTimestamp;
+    int m_clockTickIndex;
 };
 
 } // namespace mixxx
