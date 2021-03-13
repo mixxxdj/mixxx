@@ -16,6 +16,8 @@ typedef qint32 int32_t;
 // https://gcc.gnu.org/projects/tree-ssa/vectorization.html
 // This also utilizes AVX registers when compiled for a recent 64-bit CPU
 // using scons optimize=native.
+// "SINT i" is the prefered loop index type that should allow vectoszation in
+// general. Unfortunatly there are expetions where "int i" is required for some reasons.
 
 namespace {
 
@@ -345,7 +347,7 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* M_RESTRICT pDest,
             / CSAMPLE_GAIN(numSamples / 2);
     if (gain_delta != 0) {
         const CSAMPLE_GAIN start_gain = old_gain + gain_delta;
-        // note: LOOP VECTORIZED only with "int i"
+        // note: LOOP VECTORIZED only with "int i" (not SINT i)
         for (int i = 0; i < numSamples / 2; ++i) {
             const CSAMPLE_GAIN gain = start_gain + gain_delta * i;
             pDest[i * 2] = pSrc[i * 2] * gain;
@@ -384,7 +386,7 @@ void SampleUtil::convertFloat32ToS16(SAMPLE* pDest, const CSAMPLE* pSrc,
     // +1.0 is clamped to 32767 (0.99996942)
     DEBUG_ASSERT(-SAMPLE_MINIMUM >= SAMPLE_MAXIMUM);
     const CSAMPLE kConversionFactor = SAMPLE_MINIMUM * -1.0f;
-    // note: LOOP VECTORIZED only with "int i"
+    // note: LOOP VECTORIZED only with "int i" (not SINT i)
     for (int i = 0; i < numSamples; ++i) {
         pDest[i] = static_cast<SAMPLE>(math_clamp(pSrc[i] * kConversionFactor,
                 static_cast<CSAMPLE>(SAMPLE_MINIMUM),
@@ -464,13 +466,13 @@ void SampleUtil::linearCrossfadeBuffersOut(
     // M_RESTRICT unoptimizes the function for some reason.
     const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE
             / CSAMPLE_GAIN(numSamples / 2);
-    // note: LOOP VECTORIZED. only with "int i"
+    // note: LOOP VECTORIZED only with "int i" (not SINT i)
     for (int i = 0; i < numSamples / 2; ++i) {
         const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 2] *= (CSAMPLE_GAIN_ONE - cross_mix);
         pDestSrcFadeOut[i * 2] += pSrcFadeIn[i * 2] * cross_mix;
     }
-    // note: LOOP VECTORIZED. only with "int i"
+    // note: LOOP VECTORIZED only with "int i" (not SINT i)
     for (int i = 0; i < numSamples / 2; ++i) {
         const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeOut[i * 2 + 1] *= (CSAMPLE_GAIN_ONE - cross_mix);
@@ -485,13 +487,13 @@ void SampleUtil::linearCrossfadeBuffersIn(
         SINT numSamples) {
     // M_RESTRICT unoptimizes the function for some reason.
     const CSAMPLE_GAIN cross_inc = CSAMPLE_GAIN_ONE / CSAMPLE_GAIN(numSamples / 2);
-    // note: LOOP VECTORIZED. only with "int i"  TODO
+    /// note: LOOP VECTORIZED only with "int i" (not SINT i)
     for (int i = 0; i < numSamples / 2; ++i) {
         const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeIn[i * 2] *= cross_mix;
         pDestSrcFadeIn[i * 2] += pSrcFadeOut[i * 2] * (CSAMPLE_GAIN_ONE - cross_mix);
     }
-    // note: LOOP VECTORIZED. only with "int i"
+    // note: LOOP VECTORIZED only with "int i" (not SINT i)
     for (int i = 0; i < numSamples / 2; ++i) {
         const CSAMPLE_GAIN cross_mix = cross_inc * i;
         pDestSrcFadeIn[i * 2 + 1] *= cross_mix;
