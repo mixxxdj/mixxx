@@ -897,6 +897,14 @@
                     if (this.MSB !== undefined) {
                         value = (this.MSB << 7) + value;
                     }
+
+                    // Prevent attempt to set the effect_selector CO to NaN
+                    if (this.valueAtLastEffectSwitch === undefined) {
+                        this.valueAtLastEffectSwitch = value;
+                        this.previousValueReceived = value;
+                        return;
+                    }
+
                     var change = value - this.valueAtLastEffectSwitch;
                     if (Math.abs(change) >= this.changeThreshold
                         // this.valueAtLastEffectSwitch can be undefined if
