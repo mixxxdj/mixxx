@@ -142,7 +142,7 @@ void Track::importMetadata(
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
 
-        // Preserve the current bpm temprarily (see below) to avoid overwriting
+        // Preserve the current bpm temporarily (see below) to avoid overwriting
         // it with an inconsistent value compared to the beat grid, e.g. after
         // reloading the bpm from file tags.
         importedMetadata.refTrackInfo().setBpm(mixxx::Bpm(getBpmWhileLocked()));
@@ -258,7 +258,7 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
 }
 
 double Track::getBpmWhileLocked() const {
-    // BPM values must synchronized at all times!
+    // BPM values must be synchronized at all times!
     DEBUG_ASSERT(m_record.getMetadata().getTrackInfo().getBpm() == getBeatsPointerBpm(m_pBeats));
     return m_record.getMetadata().getTrackInfo().getBpm().getValue();
 }
