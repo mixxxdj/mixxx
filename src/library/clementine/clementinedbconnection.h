@@ -34,7 +34,7 @@ struct ClementinePlaylistEntry {
 
 class ClementineDbConnection {
   public:
-    ClementineDbConnection(const TrackCollectionManager* pTrackCollection);
+    ClementineDbConnection();
     ~ClementineDbConnection();
 
     static QString getDatabaseFile();
@@ -45,5 +45,4 @@ class ClementineDbConnection {
 
   private:
     QSqlDatabase m_database;
-    const TrackCollectionManager* m_pTrackCollectionManager;
 };

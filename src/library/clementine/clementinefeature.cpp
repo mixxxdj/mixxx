@@ -14,8 +14,7 @@
 ClementineFeature::ClementineFeature(
         Library* pLibrary, UserSettingsPointer pConfig)
         : BaseExternalLibraryFeature(pLibrary, pConfig),
-          m_connection(std::make_shared<ClementineDbConnection>(
-                  m_pLibrary->trackCollections())),
+          m_connection(std::make_shared<ClementineDbConnection>()),
           m_isActivated(false),
           m_pClementinePlaylistModel(make_parented<ClementinePlaylistModel>(
                   this, m_pLibrary->trackCollections(), m_connection)),

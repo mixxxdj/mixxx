@@ -15,9 +15,8 @@ constexpr int kClementineUndefinedBpm = -1;      // clementine saves undefined b
 constexpr int kClementineUndefinedDuration = -1; // clementine saves undefined duration as -1
 } // namespace
 
-ClementineDbConnection::ClementineDbConnection(const TrackCollectionManager* pTrackCollection)
-        : m_database(),
-          m_pTrackCollectionManager(pTrackCollection) {
+ClementineDbConnection::ClementineDbConnection()
+        : m_database() {
 }
 
 ClementineDbConnection::~ClementineDbConnection() {
