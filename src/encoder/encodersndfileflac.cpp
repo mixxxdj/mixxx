@@ -7,21 +7,21 @@
 
 namespace {
 constexpr SINT kEncBufferSize = 8192; // used inside libsndfile for flac
+constexpr CSAMPLE_GAIN kFloatToIntConversionFactor = INT_MIN * -1.0f;
 
 //static
 void convertFloat32ToIntFormat(int* pDest, const CSAMPLE* pSrc, SINT numSamples, int format) {
-    const CSAMPLE kConversionFactor = INT_MIN * -1.0f;
     if (format & SF_FORMAT_PCM_16) {
-        // note: LOOP VECTORIZED only with "int i"
-        for (int i = 0; i < numSamples; ++i) {
-            pDest[i] = static_cast<int>(math_clamp(pSrc[i] * kConversionFactor,
+        // note: LOOP VECTORIZED"
+        for (SINT i = 0; i < numSamples; ++i) {
+            pDest[i] = static_cast<int>(math_clamp(pSrc[i] * kFloatToIntConversionFactor,
                     static_cast<CSAMPLE>(static_cast<int>(INT_MIN & 0xFFFF0000)),
                     static_cast<CSAMPLE>(static_cast<int>(INT_MAX & 0xFFFF0000))));
         }
     } else if (format & SF_FORMAT_PCM_24) {
-        // note: LOOP VECTORIZED only with "int i"
-        for (int i = 0; i < numSamples; ++i) {
-            pDest[i] = static_cast<int>(math_clamp(pSrc[i] * kConversionFactor,
+        // note: LOOP VECTORIZED"
+        for (SINT i = 0; i < numSamples; ++i) {
+            pDest[i] = static_cast<int>(math_clamp(pSrc[i] * kFloatToIntConversionFactor,
                     static_cast<CSAMPLE>(static_cast<int>(INT_MIN & 0xFFFFFF00)),
                     static_cast<CSAMPLE>(static_cast<int>(INT_MAX & 0xFFFFFF00))));
         }
