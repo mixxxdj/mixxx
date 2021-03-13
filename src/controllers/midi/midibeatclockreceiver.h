@@ -19,6 +19,7 @@ class MidiBeatClockReceiver {
   private:
     Bpm m_bpm;
     bool m_isPlaying;
+    Duration m_lastTimestamp;
 };
 
 } // namespace mixxx
