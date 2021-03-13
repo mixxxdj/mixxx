@@ -1,13 +1,15 @@
 #pragma once
 
 // to tell the msvs compiler about `isnan`
-#include "util/math.h"
-
 #include <QVector>
+
+#include "audio/types.h"
+#include "util/math.h"
 
 class BeatUtils {
   public:
-    static void printBeatStatistics(const QVector<double>& beats, int SampleRate);
+    static void printBeatStatistics(
+            const QVector<double>& beats, mixxx::audio::SampleRate sampleRate);
 
     static double constrainBpm(double bpm, const int min_bpm,
                                const int max_bpm, bool aboveRange) {
@@ -33,6 +35,10 @@ class BeatUtils {
         return bpm;
     }
 
+    static double calculateAverageBpm(int numberOfBeats,
+            mixxx::audio::SampleRate sampleRate,
+            double lowerFrame,
+            double upperFrame);
 
     /*
      * This method detects the BPM given a set of beat positions.
@@ -41,8 +47,11 @@ class BeatUtils {
      * from which the statistical median is computed. This value provides
      * a pretty good guess of the global BPM value.
      */
-    static double calculateBpm(const QVector<double>& beats, int SampleRate,
-                               int min_bpm, int max_bpm);
+    static double calculateBpm(
+            const QVector<double>& beats,
+            mixxx::audio::SampleRate sampleRate,
+            int min_bpm,
+            int max_bpm);
     static double findFirstCorrectBeat(const QVector<double>& rawBeats,
             const int SampleRate,
             const double global_bpm);
@@ -64,21 +73,21 @@ class BeatUtils {
     static double calculateFixedTempoFirstBeat(
             bool enableOffsetCorrection,
             const QVector<double>& rawbeats,
-            const int sampleRate,
-            const int totalSamples,
-            const double globalBpm);
+            mixxx::audio::SampleRate sampleRate,
+            SINT totalSamples,
+            double globalBpm);
 
   private:
     static double computeSampleMedian(const QList<double>& sortedItems);
     static double computeFilteredWeightedAverage(
             const QMap<double, int>& frequencyTable,
-            const double filterCenter,
-            const double filterTolerance,
+            double filterCenter,
+            double filterTolerance,
             QMap<double, int>* filteredFrequencyTable);
     static QList<double> computeWindowedBpmsAndFrequencyHistogram(
             const QVector<double>& beats,
-            const int windowSize,
-            const int windowStep,
-            const int sampleRate,
+            int windowSize,
+            int windowStep,
+            mixxx::audio::SampleRate sampleRate,
             QMap<double, int>* frequencyHistogram);
 };

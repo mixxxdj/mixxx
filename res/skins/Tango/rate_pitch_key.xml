@@ -163,20 +163,83 @@ Variables:
             </Connection>
           </WidgetGroup><!-- /Rate adjust buttons -->
 
-          <SliderComposed>
-            <ObjectName>PitchSlider</ObjectName>
-            <MinimumSize>50,75</MinimumSize>
-            <MaximumSize>50,136</MaximumSize>
-            <SizePolicy>f,me</SizePolicy>
-            <TooltipId>rate</TooltipId>
-            <Handle scalemode="STRETCH_ASPECT">knobs_sliders/pitch_handle.svg</Handle>
-            <Slider scalemode="STRETCH">knobs_sliders/pitch_scale.svg</Slider>
-            <Horizontal>false</Horizontal>
-            <Connection>
-              <ConfigKey><Variable name="group"/>,rate</ConfigKey>
-            </Connection>
-          </SliderComposed><!-- /PitchSlider -->
+          <WidgetGroup><!-- Rate slider + range displays -->
+            <Layout>stacked</Layout>
+            <SizePolicy>max,me</SizePolicy>
+            <ObjectName>PitchSliderGroup</ObjectName>
+            <Children>
+              <SliderComposed>
+                <ObjectName>PitchSlider</ObjectName>
+                <MinimumSize>50,75</MinimumSize>
+                <MaximumSize>50,136</MaximumSize>
+                <SizePolicy>f,me</SizePolicy>
+                <TooltipId>rate</TooltipId>
+                <Handle scalemode="STRETCH_ASPECT">knobs_sliders/pitch_handle.svg</Handle>
+                <Slider scalemode="STRETCH">knobs_sliders/pitch_scale.svg</Slider>
+                <Horizontal>false</Horizontal>
+                <Connection>
+                  <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+                </Connection>
+              </SliderComposed><!-- /PitchSlider -->
 
+              <!-- Pitch range indicators: prefix / spacer / range number -->
+              <WidgetGroup>
+                <SizePolicy>me,me</SizePolicy>
+                <Layout>vertical</Layout>
+                <Size>50f,-1me</Size>
+                <Children>
+                  <WidgetGroup>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <!-- Top range limit + prefix -->
+                      <RateRange>
+                        <TooltipId>rate_range_display</TooltipId>
+                        <ObjectName>RateDisplayTopPrefix</ObjectName>
+                        <Channel><Variable name="chanNum" /></Channel>
+                        <Position>Top</Position>
+                        <Display>prefix</Display>
+                        <SizePolicy>me,me</SizePolicy>
+                      </RateRange>
+                      <RateRange>
+                        <TooltipId>rate_range_display</TooltipId>
+                        <ObjectName>RateDisplayTopRate</ObjectName>
+                        <Channel><Variable name="chanNum" /></Channel>
+                        <Position>Top</Position>
+                        <Display>range</Display>
+                        <SizePolicy>me,me</SizePolicy>
+                      </RateRange>
+                    </Children>
+                  </WidgetGroup><!-- Pitch range indicators -->
+
+                  <WidgetGroup>
+                    <SizePolicy>me,me</SizePolicy>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <!-- Bottom range limit + prefix -->
+                      <RateRange>
+                        <TooltipId>rate_range_display</TooltipId>
+                        <ObjectName>RateDisplayBottomPrefix</ObjectName>
+                        <Channel><Variable name="chanNum" /></Channel>
+                        <Position>Bottom</Position>
+                        <Align>Bottom</Align>
+                        <Display>prefix</Display>
+                        <SizePolicy>me,me</SizePolicy>
+                      </RateRange>
+                      <RateRange>
+                        <TooltipId>rate_range_display</TooltipId>
+                        <ObjectName>RateDisplayBottomRate</ObjectName>
+                        <Channel><Variable name="chanNum" /></Channel>
+                        <Align>Bottom</Align>
+                        <Display>range</Display>
+                        <SizePolicy>me,me</SizePolicy>
+                      </RateRange>
+                    </Children>
+                  </WidgetGroup><!-- Pitch range indicators -->
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup>
         </Children>
       </WidgetGroup><!-- /BPM, Key & Pitch fader -->
 

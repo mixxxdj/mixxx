@@ -1,17 +1,12 @@
-/*
- * beatutils.cpp
- *
- *  Created on: 30/nov/2011
- *      Author: vittorio
- */
+#include "track/beatutils.h"
 
-#include <algorithm>
-#include <QtDebug>
-#include <QString>
 #include <QList>
 #include <QMap>
+#include <QString>
+#include <QtDebug>
+#include <algorithm>
 
-#include "track/beatutils.h"
+#include "track/bpm.h"
 #include "util/math.h"
 
 // we are generous and assume the global_BPM to be at most 0.05 BPM far away
@@ -29,7 +24,8 @@ const int kHistogramDecimalPlaces = 2;
 const double kHistogramDecimalScale = pow(10.0, kHistogramDecimalPlaces);
 const double kBpmFilterTolerance = 1.0;
 
-void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate) {
+void BeatUtils::printBeatStatistics(
+        const QVector<double>& beats, mixxx::audio::SampleRate sampleRate) {
     if (!sDebug) {
         return;
     }
@@ -40,7 +36,7 @@ void BeatUtils::printBeatStatistics(const QVector<double>& beats, int SampleRate
         double beat_end = beats.at(i);
 
         // Time needed to count a bar (N beats)
-        const double time = (beat_end - beat_start) / SampleRate;
+        const double time = (beat_end - beat_start) / sampleRate;
         if (time == 0) {
             continue;
         }
@@ -85,9 +81,9 @@ double BeatUtils::computeSampleMedian(const QList<double>& sortedItems) {
 
 QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
         const QVector<double>& beats,
-        const int windowSize,
-        const int windowStep,
-        const int sampleRate,
+        int windowSize,
+        int windowStep,
+        mixxx::audio::SampleRate sampleRate,
         QMap<double, int>* frequencyHistogram) {
     QList<double> averageBpmList;
     for (int i = windowSize; i < beats.size(); i += windowStep) {
@@ -115,8 +111,8 @@ QList<double> BeatUtils::computeWindowedBpmsAndFrequencyHistogram(
 
 double BeatUtils::computeFilteredWeightedAverage(
         const QMap<double, int>& frequencyTable,
-        const double filterCenter,
-        const double filterTolerance,
+        double filterCenter,
+        double filterTolerance,
         QMap<double, int>* filteredFrequencyTable) {
     double filterWeightedAverage = 0.0;
     int filterSum = 0;
@@ -149,8 +145,26 @@ double BeatUtils::computeFilteredWeightedAverage(
     return filterWeightedAverage / static_cast<double>(filterSum);
 }
 
-double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
-                               int min_bpm, int max_bpm) {
+double BeatUtils::calculateAverageBpm(int numberOfBeats,
+        mixxx::audio::SampleRate sampleRate,
+        double lowerFrame,
+        double upperFrame) {
+    double frames = upperFrame - lowerFrame;
+    DEBUG_ASSERT(frames > 0);
+    if (numberOfBeats < 1) {
+        return 0;
+    }
+    return 60.0 * numberOfBeats * sampleRate / frames;
+}
+
+double BeatUtils::calculateBpm(
+        const QVector<double>& beats,
+        mixxx::audio::SampleRate sampleRate,
+        int min_bpm,
+        int max_bpm) {
+    if (beats.isEmpty()) {
+        return mixxx::Bpm::kValueUndefined;
+    }
     /*
      * Let's compute the average local
      * BPM for N subsequent beats.
@@ -184,19 +198,15 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
      * BPM.
      */
 
-    if (beats.size() < 2) {
-        return 0;
-    }
-
     // If we don't have enough beats for our regular approach, just divide the #
     // of beats by the duration in minutes.
     if (beats.size() <= N) {
-        return 60.0 * (beats.size()-1) * SampleRate / (beats.last() - beats.first());
+        return calculateAverageBpm(beats.size() - 1, sampleRate, beats.first(), beats.last());
     }
 
     QMap<double, int> frequency_table;
     QList<double> average_bpm_list = computeWindowedBpmsAndFrequencyHistogram(
-        beats, N, 1, SampleRate, &frequency_table);
+            beats, N, 1, sampleRate, &frequency_table);
 
     // Get the median BPM.
     std::sort(average_bpm_list.begin(), average_bpm_list.end());
@@ -256,7 +266,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
          double beat_end = beats.at(i);
 
          // Time needed to count a bar (N beats)
-         double time = (beat_end - beat_start) / SampleRate;
+         double time = (beat_end - beat_start) / sampleRate;
          if (time == 0) {
              continue;
          }
@@ -282,7 +292,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate,
              } else {
                  counter += 1;
              }
-             double time2 = (beat_end - firstCorrectBeatSample) / SampleRate;
+             double time2 = (beat_end - firstCorrectBeatSample) / sampleRate;
              double correctedBpm = 60 * counter / time2;
 
              if (fabs(correctedBpm - filterWeightedAverageBpm) <= BPM_ERROR) {
@@ -397,9 +407,9 @@ double BeatUtils::findFirstCorrectBeat(const QVector<double>& rawbeats,
 double BeatUtils::calculateFixedTempoFirstBeat(
         bool enableOffsetCorrection,
         const QVector<double>& rawbeats,
-        const int sampleRate,
-        const int totalSamples,
-        const double globalBpm) {
+        mixxx::audio::SampleRate sampleRate,
+        SINT totalSamples,
+        double globalBpm) {
     if (rawbeats.size() == 0) {
         return 0;
     }

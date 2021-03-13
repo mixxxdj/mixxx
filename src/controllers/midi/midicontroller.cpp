@@ -30,20 +30,20 @@ QString MidiController::mappingExtension() {
     return MIDI_MAPPING_EXTENSION;
 }
 
-void MidiController::visit(const LegacyMidiControllerMapping* mapping) {
-    m_mapping = *mapping;
-    emit mappingLoaded(getMapping());
+void MidiController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMapping = downcastAndTakeOwnership<LegacyMidiControllerMapping>(std::move(pMapping));
+}
+
+std::shared_ptr<LegacyControllerMapping> MidiController::cloneMapping() {
+    if (!m_pMapping) {
+        return nullptr;
+    }
+    return m_pMapping->clone();
 }
 
 int MidiController::close() {
     destroyOutputHandlers();
     return 0;
-}
-
-void MidiController::visit(const LegacyHidControllerMapping* mapping) {
-    Q_UNUSED(mapping);
-    qWarning() << "ERROR: Attempting to load an LegacyHidControllerMapping to a MidiController!";
-    // TODO(XXX): throw a hissy fit.
 }
 
 bool MidiController::matchMapping(const MappingInfo& mapping) {
@@ -68,11 +68,15 @@ bool MidiController::applyMapping() {
 }
 
 void MidiController::createOutputHandlers() {
-    if (m_mapping.getOutputMappings().isEmpty()) {
+    if (!m_pMapping) {
         return;
     }
 
-    QHashIterator<ConfigKey, MidiOutputMapping> outIt(m_mapping.getOutputMappings());
+    if (m_pMapping->getOutputMappings().isEmpty()) {
+        return;
+    }
+
+    QHashIterator<ConfigKey, MidiOutputMapping> outIt(m_pMapping->getOutputMappings());
     QStringList failures;
     while (outIt.hasNext()) {
         outIt.next();
@@ -180,12 +184,16 @@ void MidiController::clearTemporaryInputMappings() {
 }
 
 void MidiController::commitTemporaryInputMappings() {
+    if (!m_pMapping) {
+        return;
+    }
+
     // We want to replace duplicates that exist in m_mapping but allow duplicates
     // in m_temporaryInputMappings. To do this, we first remove every key in
     // m_temporaryInputMappings from m_mapping's input mappings.
     for (auto it = m_temporaryInputMappings.constBegin();
          it != m_temporaryInputMappings.constEnd(); ++it) {
-        m_mapping.removeInputMapping(it.key());
+        m_pMapping->removeInputMapping(it.key());
     }
 
     // Now, we can just use add all mappings from m_temporaryInputMappings
@@ -193,7 +201,7 @@ void MidiController::commitTemporaryInputMappings() {
     for (auto it = m_temporaryInputMappings.constBegin();
             it != m_temporaryInputMappings.constEnd();
             ++it) {
-        m_mapping.addInputMapping(it.key(), it.value());
+        m_pMapping->addInputMapping(it.key(), it.value());
     }
     m_temporaryInputMappings.clear();
 }
@@ -233,8 +241,8 @@ void MidiController::receivedShortMessage(unsigned char status,
         }
     }
 
-    auto it = m_mapping.getInputMappings().constFind(mappingKey.key);
-    for (; it != m_mapping.getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
+    auto it = m_pMapping->getInputMappings().constFind(mappingKey.key);
+    for (; it != m_pMapping->getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
     }
 }
@@ -493,8 +501,8 @@ void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) 
         }
     }
 
-    auto it = m_mapping.getInputMappings().constFind(mappingKey.key);
-    for (; it != m_mapping.getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
+    auto it = m_pMapping->getInputMappings().constFind(mappingKey.key);
+    for (; it != m_pMapping->getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), data, timestamp);
     }
 }

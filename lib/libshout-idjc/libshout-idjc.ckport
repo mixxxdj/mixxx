@@ -1,0 +1,90 @@
+#ckport(1) database for libshout -- A Cross-platform library for media streaming:
+!NAME: libshout-idjc
+!TYPE: func
+!TARGET: libshout-idjc3
+
+# Global libshout management:
+shout_init			ok
+shout_shutdown			ok
+shout_version			ok
+
+# shout_t* object management:
+shout_free			ok
+shout_new			ok
+shout_get_error			ok
+shout_get_errno			ok
+shout_get_connected		ok
+
+# Connection parameters:
+shout_set_host			ok
+shout_get_host			ok
+shout_set_port			ok
+shout_get_port			ok
+shout_set_agent			ok
+shout_get_agent			ok
+shout_set_protocol		ok
+shout_get_protocol		ok
+shout_set_nonblocking		ok
+shout_get_nonblocking		ok
+
+# TLS (Transport Layer Security):
+# See also 'Authentication parameters'.
+shout_set_tls			ok
+shout_get_tls			ok
+shout_set_ca_directory		ok
+shout_get_ca_directory		ok
+shout_set_ca_file		ok
+shout_get_ca_file		ok
+shout_set_allowed_ciphers	maybe	This is for advanced applications only. If used this setting MUST be exposed to the user. Otherwise you will harm security.
+shout_get_allowed_ciphers	ok
+
+# Authentication parameters:
+shout_set_user			ok
+shout_get_user			ok
+shout_set_password		ok
+shout_get_password		ok
+shout_set_client_certificate	ok
+shout_get_client_certificate	ok
+
+# Source parameters:
+shout_set_format		ok
+shout_get_format		ok
+shout_set_mount			ok
+shout_get_mount			ok
+
+# Other parameters:
+shout_set_dumpfile		ok
+shout_get_dumpfile		ok
+shout_set_audio_info		ok
+shout_get_audio_info		ok
+shout_set_meta			ok
+shout_get_meta			ok
+shout_set_public		ok
+shout_get_public		ok
+
+# Sending data:
+shout_open			ok
+shout_close			ok
+shout_send			ok
+shout_send_raw			maybe	Do not use this unless you know what you are doing.
+shout_queuelen			likely	Only useful in non-blocking mode.
+shout_sync			ok
+shout_delay			ok
+
+# MP3 Metadata:
+shout_set_metadata		maybe	Only useful for MP3 streams.
+shout_metadata_new		maybe	Only useful for MP3 streams.
+shout_metadata_free		maybe	Only useful for MP3 streams.
+shout_metadata_add		maybe	Only useful for MP3 streams.
+
+# Obsolete functions:
+shout_set_name			legacy	Replaced by shout_set_meta().
+shout_get_name			legacy	Replaced by shout_get_meta().
+shout_set_url			legacy	Replaced by shout_set_meta().
+shout_get_url			legacy	Replaced by shout_get_meta().
+shout_set_genre			legacy	Replaced by shout_set_meta().
+shout_get_genre			legacy	Replaced by shout_get_meta().
+shout_set_description		legacy	Replaced by shout_set_meta().
+shout_get_description		legacy	Replaced by shout_get_meta().
+
+#ll

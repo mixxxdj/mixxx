@@ -6,36 +6,35 @@
 #include "track/beatfactory.h"
 #include "track/beatutils.h"
 
-mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(const Track& track,
+mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
+        mixxx::audio::SampleRate sampleRate,
         const QString& beatsVersion,
         const QString& beatsSubVersion,
         const QByteArray& beatsSerialized) {
     if (beatsVersion == BEAT_GRID_1_VERSION ||
         beatsVersion == BEAT_GRID_2_VERSION) {
-        mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, 0, beatsSerialized);
-        pGrid->setSubVersion(beatsSubVersion);
+        auto pGrid = mixxx::BeatGrid::makeBeatGrid(sampleRate, beatsSubVersion, beatsSerialized);
         qDebug() << "Successfully deserialized BeatGrid";
-        return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
+        return pGrid;
     } else if (beatsVersion == BEAT_MAP_VERSION) {
-        mixxx::BeatMap* pMap = new mixxx::BeatMap(track, 0, beatsSerialized);
-        pMap->setSubVersion(beatsSubVersion);
+        auto pMap = mixxx::BeatMap::makeBeatMap(sampleRate, beatsSubVersion, beatsSerialized);
         qDebug() << "Successfully deserialized BeatMap";
-        return mixxx::BeatsPointer(pMap, &BeatFactory::deleteBeats);
+        return pMap;
     }
     qDebug() << "BeatFactory::loadBeatsFromByteArray could not parse serialized beats.";
     return mixxx::BeatsPointer();
 }
 
 mixxx::BeatsPointer BeatFactory::makeBeatGrid(
-        const Track& track, double dBpm, double dFirstBeatSample) {
-    mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, 0);
-    pGrid->setGrid(dBpm, dFirstBeatSample);
-    return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
+        mixxx::audio::SampleRate sampleRate,
+        double dBpm,
+        double dFirstBeatSample) {
+    return mixxx::BeatGrid::makeBeatGrid(sampleRate, QString(), dBpm, dFirstBeatSample);
 }
 
 // static
 QString BeatFactory::getPreferredVersion(
-        const bool bEnableFixedTempoCorrection) {
+        bool bEnableFixedTempoCorrection) {
     if (bEnableFixedTempoCorrection) {
         return BEAT_GRID_2_VERSION;
     }
@@ -43,10 +42,10 @@ QString BeatFactory::getPreferredVersion(
 }
 
 QString BeatFactory::getPreferredSubVersion(
-        const bool bEnableFixedTempoCorrection,
-        const bool bEnableOffsetCorrection,
-        const int iMinBpm,
-        const int iMaxBpm,
+        bool bEnableFixedTempoCorrection,
+        bool bEnableOffsetCorrection,
+        int iMinBpm,
+        int iMaxBpm,
         const QHash<QString, QString>& extraVersionInfo) {
     const char* kSubVersionKeyValueSeparator = "=";
     const char* kSubVersionFragmentSeparator = "|";
@@ -92,47 +91,38 @@ QString BeatFactory::getPreferredSubVersion(
                                   : "";
 }
 
-mixxx::BeatsPointer BeatFactory::makePreferredBeats(const Track& track,
+mixxx::BeatsPointer BeatFactory::makePreferredBeats(
         const QVector<double>& beats,
         const QHash<QString, QString>& extraVersionInfo,
-        const bool bEnableFixedTempoCorrection,
-        const bool bEnableOffsetCorrection,
-        const int iSampleRate,
-        const int iTotalSamples,
-        const int iMinBpm,
-        const int iMaxBpm) {
+        bool bEnableFixedTempoCorrection,
+        bool bEnableOffsetCorrection,
+        mixxx::audio::SampleRate sampleRate,
+        SINT totalSamples,
+        int iMinBpm,
+        int iMaxBpm) {
     const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
     const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
                                                       bEnableOffsetCorrection,
                                                       iMinBpm, iMaxBpm,
                                                       extraVersionInfo);
 
-    BeatUtils::printBeatStatistics(beats, iSampleRate);
+    BeatUtils::printBeatStatistics(beats, sampleRate);
     if (version == BEAT_GRID_2_VERSION) {
-        double globalBpm = BeatUtils::calculateBpm(beats, iSampleRate, iMinBpm, iMaxBpm);
+        double globalBpm = BeatUtils::calculateBpm(beats, sampleRate, iMinBpm, iMaxBpm);
         double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
-            bEnableOffsetCorrection,
-            beats, iSampleRate, iTotalSamples, globalBpm);
-        mixxx::BeatGrid* pGrid = new mixxx::BeatGrid(track, iSampleRate);
-        // firstBeat is in frames here and setGrid() takes samples.
-        pGrid->setGrid(globalBpm, firstBeat * 2);
-        pGrid->setSubVersion(subVersion);
-        return mixxx::BeatsPointer(pGrid, &BeatFactory::deleteBeats);
+                bEnableOffsetCorrection,
+                beats,
+                sampleRate,
+                totalSamples,
+                globalBpm);
+        auto pGrid = mixxx::BeatGrid::makeBeatGrid(
+                sampleRate, subVersion, globalBpm, firstBeat * 2);
+        return pGrid;
     } else if (version == BEAT_MAP_VERSION) {
-        mixxx::BeatMap* pBeatMap = new mixxx::BeatMap(track, iSampleRate, beats);
-        pBeatMap->setSubVersion(subVersion);
-        return mixxx::BeatsPointer(pBeatMap, &BeatFactory::deleteBeats);
+        auto pBeatMap = mixxx::BeatMap::makeBeatMap(sampleRate, subVersion, beats);
+        return pBeatMap;
     } else {
         qDebug() << "ERROR: Could not determine what type of beatgrid to create.";
         return mixxx::BeatsPointer();
     }
-}
-
-void BeatFactory::deleteBeats(mixxx::Beats* pBeats) {
-    // BeatGrid/BeatMap objects have no parent and live in the same thread as
-    // their associated TIO. QObject::deleteLater does not have the desired
-    // effect when the QObject's thread does not have an event loop (i.e. when
-    // the main thread has already shut down) so we delete the BeatMap/BeatGrid
-    // directly when its reference count drops to zero.
-    delete pBeats;
 }

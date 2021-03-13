@@ -40,7 +40,7 @@ class DlgPrefController : public DlgPreferencePage {
 
   signals:
     void applyMapping(Controller* pController,
-            LegacyControllerMappingPointer pMapping,
+            std::shared_ptr<LegacyControllerMapping> pMapping,
             bool bEnabled);
     void mappingStarted();
     void mappingEnded();
@@ -50,7 +50,9 @@ class DlgPrefController : public DlgPreferencePage {
     void slotMappingSelected(int index);
     /// Used to selected the current mapping in the combobox and display the
     /// mapping information.
-    void slotShowMapping(LegacyControllerMappingPointer mapping);
+    void slotShowMapping(std::shared_ptr<LegacyControllerMapping> mapping);
+    /// Called when the Controller Learning Wizard is closed.
+    void slotStopLearning();
 
     // Input mappings
     void addInputMapping();
@@ -66,12 +68,14 @@ class DlgPrefController : public DlgPreferencePage {
     void midiInputMappingsLearned(const MidiInputMappings& mappings);
 
   private:
-    QString mappingShortName(const LegacyControllerMappingPointer pMapping) const;
-    QString mappingName(const LegacyControllerMappingPointer pMapping) const;
-    QString mappingAuthor(const LegacyControllerMappingPointer pMapping) const;
-    QString mappingDescription(const LegacyControllerMappingPointer pMapping) const;
-    QString mappingSupportLinks(const LegacyControllerMappingPointer pMapping) const;
-    QString mappingFileLinks(const LegacyControllerMappingPointer pMapping) const;
+    QString mappingShortName(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingName(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingAuthor(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingDescription(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingSupportLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingFileLinks(const std::shared_ptr<LegacyControllerMapping> pMapping) const;
+    QString mappingPathFromIndex(int index) const;
+    QString askForMappingName(const QString& prefilledName = QString()) const;
     void applyMappingChanges();
     void saveMapping();
     void initTableView(QTableView* pTable);
@@ -111,7 +115,7 @@ class DlgPrefController : public DlgPreferencePage {
     std::shared_ptr<ControllerManager> m_pControllerManager;
     Controller* m_pController;
     DlgControllerLearning* m_pDlgControllerLearning;
-    LegacyControllerMappingPointer m_pMapping;
+    std::shared_ptr<LegacyControllerMapping> m_pMapping;
     QMap<QString, bool> m_pOverwriteMappings;
     ControllerInputMappingTableModel* m_pInputTableModel;
     QSortFilterProxyModel* m_pInputProxyModel;

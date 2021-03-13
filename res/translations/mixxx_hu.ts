@@ -83,7 +83,7 @@
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="36"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>Hozzáadás az Auto DJ listához (csere)</translation>
     </message>
     <message>
         <location filename="../../src/library/baseexternallibraryfeature.cpp" line="42"/>
@@ -185,7 +185,7 @@
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="82"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>Hozzáadás az Auto DJ listához (csere)</translation>
     </message>
     <message>
         <location filename="../../src/library/trackset/baseplaylistfeature.cpp" line="234"/>
@@ -302,7 +302,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="151"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>Szín</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="155"/>
@@ -372,7 +372,7 @@
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="207"/>
         <source>Samplerate</source>
-        <translation type="unfinished"/>
+        <translation>Mintavételezési sebesség</translation>
     </message>
     <message>
         <location filename="../../src/library/basetracktablemodel.cpp" line="211"/>
@@ -665,17 +665,17 @@
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="147"/>
         <source>The file &apos;%1&apos; could not be found.</source>
-        <translation type="unfinished"/>
+        <translation>A &apos;%1&apos; fájlt nem sikerült megtalálni.</translation>
     </message>
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="163"/>
         <source>The file &apos;%1&apos; could not be loaded.</source>
-        <translation type="unfinished"/>
+        <translation>A &apos;%1&apos; fájlt nem sikerült betölteni.</translation>
     </message>
     <message>
         <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="180"/>
         <source>The file &apos;%1&apos; is empty and could not be loaded.</source>
-        <translation type="unfinished"/>
+        <translation>A &apos;%1&apos; fájl üres, így nem sikerült betölteni.</translation>
     </message>
 </context>
 <context>
@@ -683,12 +683,12 @@
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="40"/>
         <source>Remove Color</source>
-        <translation type="unfinished"/>
+        <translation>Szín eltávolítása</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="53"/>
         <source>Add Color</source>
-        <translation type="unfinished"/>
+        <translation>Szín hozzáadása</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="61"/>
@@ -699,27 +699,27 @@
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="67"/>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="253"/>
         <source>Remove Palette</source>
-        <translation type="unfinished"/>
+        <translation>Paletta eltávolítása</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="83"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>Szín</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="84"/>
         <source>Assign to Hotcue Number</source>
-        <translation type="unfinished"/>
+        <translation>Hozzárendelés Hotcue számhoz</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="151"/>
         <source>Edited</source>
-        <translation type="unfinished"/>
+        <translation>Szerkesztve</translation>
     </message>
     <message>
         <location filename="../../src/preferences/colorpaletteeditor.cpp" line="254"/>
         <source>Do you really want to remove the palette permanently?</source>
-        <translation type="unfinished"/>
+        <translation>Biztosan el akarod véglegesen távolítani a palettát?</translation>
     </message>
 </context>
 <context>
@@ -732,7 +732,7 @@
     <message>
         <location filename="../../src/controllers/delegates/controldelegate.cpp" line="53"/>
         <source>%1 %2</source>
-        <translation type="unfinished"/>
+        <translation>%1 %2</translation>
     </message>
 </context>
 <context>
@@ -998,22 +998,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="242"/>
         <source>Toggle sync master</source>
-        <translation type="unfinished"/>
+        <translation>Ütem igazítása mesterhez</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="244"/>
         <source>Sync mode 3-state toggle (OFF, FOLLOWER, MASTER)</source>
-        <translation type="unfinished"/>
+        <translation>Ütemigazítás kapcsolása három állapot között (KI, KÖVETŐ, MESTER)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="220"/>
         <source>One-time beat sync (tempo only)</source>
-        <translation type="unfinished"/>
+        <translation>Egyszeres ütemigazítás (csak BPM)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="224"/>
         <source>One-time beat sync (phase only)</source>
-        <translation type="unfinished"/>
+        <translation>Egyszeres ütemigazítás (csak fázis)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="300"/>
@@ -1028,7 +1028,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="303"/>
         <source>Vinyl Control</source>
-        <translation type="unfinished"/>
+        <translation>Bakelit vezérlés</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="309"/>
@@ -1038,7 +1038,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="307"/>
         <source>Toggle vinyl-control mode (ABS/REL/CONST)</source>
-        <translation type="unfinished"/>
+        <translation>Bakelit vezérlési mód váltása (ABSZ/REL/KONST)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="311"/>
@@ -1048,42 +1048,42 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="316"/>
         <source>Cues</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontok</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="317"/>
         <source>Cue button</source>
-        <translation type="unfinished"/>
+        <translation>Cue gomb</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="318"/>
         <source>Set cue point</source>
-        <translation type="unfinished"/>
+        <translation>Cue pont beállítása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="319"/>
         <source>Go to cue point</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontra ugrás</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="321"/>
         <source>Go to cue point and play</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontra ugrás és lejátszás</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="323"/>
         <source>Go to cue point and stop</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontra ugrás és megállítás</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="325"/>
         <source>Preview from cue point</source>
-        <translation type="unfinished"/>
+        <translation>Előhallgatás cue ponttól</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="327"/>
         <source>Cue button (CDJ mode)</source>
-        <translation type="unfinished"/>
+        <translation>Cue gomb (CDJ mód)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="329"/>
@@ -1093,7 +1093,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="334"/>
         <source>Hotcues</source>
-        <translation type="unfinished"/>
+        <translation>Hotcue pontok</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="342"/>
@@ -1103,12 +1103,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="343"/>
         <source>Clear hotcue %1</source>
-        <translation type="unfinished"/>
+        <translation>Hotcue %1 törlése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="344"/>
         <source>Set hotcue %1</source>
-        <translation type="unfinished"/>
+        <translation>Hotcue %1 beállítása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="345"/>
@@ -1134,27 +1134,27 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="335"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="383"/>
         <source>Hotcue %1</source>
-        <translation type="unfinished"/>
+        <translation>Hotcue %1</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="419"/>
         <source>Looping</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlés</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="476"/>
         <source>Loop In button</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlés kezdete gomb</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="477"/>
         <source>Loop Out button</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlés vége gomb</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="478"/>
         <source>Loop Exit button</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlésből kilépés gomb</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="438"/>
@@ -1214,7 +1214,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="429"/>
         <source>Create temporary %1-beat loop roll</source>
-        <translation type="unfinished"/>
+        <translation>%1 ütem ismétlésének átmeneti létrehozása csúsztatással</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="28"/>
@@ -1235,7 +1235,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="92"/>
         <source>Headphone Split Cue</source>
-        <translation type="unfinished"/>
+        <translation>Megosztott fejhallgató</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="97"/>
@@ -1285,7 +1285,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="174"/>
         <source>Reverse Roll (Censor)</source>
-        <translation type="unfinished"/>
+        <translation>Visszafele játszás csúsztatással (Cenzúra)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="176"/>
@@ -1349,7 +1349,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="153"/>
         <source>Track Gain</source>
-        <translation type="unfinished"/>
+        <translation>Szám erősítése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="154"/>
@@ -1386,7 +1386,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="186"/>
         <source>Slip Mode</source>
-        <translation type="unfinished"/>
+        <translation>Csúsztató mód</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="41"/>
@@ -1440,52 +1440,52 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="197"/>
         <source>Adjust Beatgrid Faster +.01</source>
-        <translation type="unfinished"/>
+        <translation>Beatgrid felgyorsítása +.01</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="197"/>
         <source>Increase track&apos;s average BPM by 0.01</source>
-        <translation type="unfinished"/>
+        <translation>Szám átlagos BPM-jének növelése 0.01-gyel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="198"/>
         <source>Adjust Beatgrid Slower -.01</source>
-        <translation type="unfinished"/>
+        <translation>Ütemrács lelassítása -.01</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="198"/>
         <source>Decrease track&apos;s average BPM by 0.01</source>
-        <translation type="unfinished"/>
+        <translation>Szám átlagos BPM-jének csökkentése 0.01-gyel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="199"/>
         <source>Move Beatgrid Earlier</source>
-        <translation type="unfinished"/>
+        <translation>Ütemrács csúsztatása korábbra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="199"/>
         <source>Adjust the beatgrid to the left</source>
-        <translation type="unfinished"/>
+        <translation>Ütemrács mozgatása balra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="200"/>
         <source>Move Beatgrid Later</source>
-        <translation type="unfinished"/>
+        <translation>Ütemrács csúsztatása későbbre</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="200"/>
         <source>Adjust the beatgrid to the right</source>
-        <translation type="unfinished"/>
+        <translation>Ütemrács mozgatása jobbra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="201"/>
         <source>Adjust Beatgrid</source>
-        <translation type="unfinished"/>
+        <translation>Ütemrács igazítása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="202"/>
         <source>Align beatgrid to current position</source>
-        <translation type="unfinished"/>
+        <translation>Ütemrács igazítása a jelenlegi pozícióra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="203"/>
@@ -1495,22 +1495,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="204"/>
         <source>Adjust beatgrid to match another playing deck.</source>
-        <translation type="unfinished"/>
+        <translation>Ütemrács igazítása másik futó lemezjátszóhoz.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="206"/>
         <source>Quantize Mode</source>
-        <translation type="unfinished"/>
+        <translation>Kvantált mód</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="208"/>
         <source>Sync</source>
-        <translation type="unfinished"/>
+        <translation>Szinkron</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="243"/>
         <source>Sync Mode</source>
-        <translation type="unfinished"/>
+        <translation>Szinkron mód</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="227"/>
@@ -1586,22 +1586,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="298"/>
         <source>Match musical key</source>
-        <translation type="unfinished"/>
+        <translation>Zenei hangnem illesztése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="298"/>
         <source>Match Key</source>
-        <translation type="unfinished"/>
+        <translation>Hangnem illesztése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="299"/>
         <source>Reset Key</source>
-        <translation type="unfinished"/>
+        <translation>Hangnem visszaállítása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="299"/>
         <source>Resets key to original</source>
-        <translation type="unfinished"/>
+        <translation>Visszaállítja a hangnemet az eredetire</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="114"/>
@@ -1617,22 +1617,22 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="16"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="57"/>
         <source>Main Output</source>
-        <translation type="unfinished"/>
+        <translation>Fő kimenet</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="66"/>
         <source>Main Output Balance</source>
-        <translation type="unfinished"/>
+        <translation>Fő kimenet egyensúlya</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="72"/>
         <source>Main Output Delay</source>
-        <translation type="unfinished"/>
+        <translation>Fő kimenet késleltetése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="60"/>
         <source>Main Output Gain</source>
-        <translation type="unfinished"/>
+        <translation>Fő kimenet erősítése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="112"/>
@@ -1642,17 +1642,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="304"/>
         <source>Toggle Vinyl Control</source>
-        <translation type="unfinished"/>
+        <translation>Bakelit vezérlés kapcsolása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="305"/>
         <source>Toggle Vinyl Control (ON/OFF)</source>
-        <translation type="unfinished"/>
+        <translation>Bakelit vezérlés kapcsolása (BE/KI)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="306"/>
         <source>Vinyl Control Mode</source>
-        <translation type="unfinished"/>
+        <translation>Bakelit vezérlés mód</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="308"/>
@@ -1667,47 +1667,47 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="312"/>
         <source>Vinyl Control Next Deck</source>
-        <translation type="unfinished"/>
+        <translation>Bakelit vezérlés következő lejátszó</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="313"/>
         <source>Single deck mode - Switch vinyl control to next deck</source>
-        <translation type="unfinished"/>
+        <translation>Egylejátszós mód - Bakelit vezérlés váltása a következő lejátszóra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="317"/>
         <source>Cue</source>
-        <translation type="unfinished"/>
+        <translation>Cue</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="318"/>
         <source>Set Cue</source>
-        <translation type="unfinished"/>
+        <translation>Cue pont beállítása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="319"/>
         <source>Go-To Cue</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontra ugrás</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="320"/>
         <source>Go-To Cue And Play</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontra ugrás és lejátszás</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="322"/>
         <source>Go-To Cue And Stop</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontra ugrás és megállítás</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="324"/>
         <source>Preview Cue</source>
-        <translation type="unfinished"/>
+        <translation>Cue pont előhallgatása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="326"/>
         <source>Cue (CDJ Mode)</source>
-        <translation type="unfinished"/>
+        <translation>Cue (CDJ mód)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="328"/>
@@ -1752,32 +1752,32 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="476"/>
         <source>Loop In</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlést kezd</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="477"/>
         <source>Loop Out</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlést zár</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="478"/>
         <source>Loop Exit</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlésből kilép</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="480"/>
         <source>Reloop/Exit Loop</source>
-        <translation type="unfinished"/>
+        <translation>Újraismétlés/kilépés</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="488"/>
         <source>Loop Halve</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlés felezése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="489"/>
         <source>Loop Double</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlés kétszerezése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="434"/>
@@ -1802,22 +1802,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="520"/>
         <source>Move Loop +%1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlés mozgatása +%1 ütemmel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="521"/>
         <source>Move Loop -%1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlés mozgatása -%1 ütemmel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="426"/>
         <source>Loop %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>%1 ütem ismétlése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="427"/>
         <source>Loop Roll %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>%1 ütem ismétlése csúsztatással</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="654"/>
@@ -1827,7 +1827,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="655"/>
         <source>Append the selected track to the Auto DJ Queue</source>
-        <translation type="unfinished"/>
+        <translation>A kiválasztott szám hozzáadása az Auto DJ lejátszási listájának végére</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="658"/>
@@ -1837,33 +1837,33 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="659"/>
         <source>Prepend selected track to the Auto DJ Queue</source>
-        <translation type="unfinished"/>
+        <translation>A kiválasztott szám hozzáadása az Auto DJ lejátszási listájának elejére</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="644"/>
         <source>Load Track</source>
-        <translation type="unfinished"/>
+        <translation>Szám betöltése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="645"/>
         <source>Load selected track</source>
-        <translation type="unfinished"/>
+        <translation>Kiválasztott szám betöltése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="649"/>
         <source>Load selected track and play</source>
-        <translation type="unfinished"/>
+        <translation>Kiválasztott szám betöltése és lejátszás</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="691"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1164"/>
         <source>Record Mix</source>
-        <translation type="unfinished"/>
+        <translation>Mix felvétele</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="692"/>
         <source>Toggle mix recording</source>
-        <translation type="unfinished"/>
+        <translation>Mix felvételének kapcsolása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="696"/>
@@ -1873,7 +1873,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="699"/>
         <source>Quick Effects</source>
-        <translation type="unfinished"/>
+        <translation>Gyors effektek</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="702"/>
@@ -1889,7 +1889,7 @@
         <location filename="../../src/controllers/controlpickermenu.cpp" line="704"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="708"/>
         <source>Quick Effect</source>
-        <translation type="unfinished"/>
+        <translation>Gyors effekt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="965"/>
@@ -1904,7 +1904,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="734"/>
         <source>Clear Unit</source>
-        <translation type="unfinished"/>
+        <translation>Egység ürítése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="735"/>
@@ -1914,7 +1914,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="738"/>
         <source>Toggle Unit</source>
-        <translation type="unfinished"/>
+        <translation>Egység kapcsolása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="742"/>
@@ -1934,7 +1934,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="757"/>
         <source>Next Chain</source>
-        <translation type="unfinished"/>
+        <translation>Következő lánc</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="774"/>
@@ -2021,32 +2021,32 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1041"/>
         <source>Shuffle the content of the Auto DJ queue</source>
-        <translation type="unfinished"/>
+        <translation>Az Auto DJ lejátszási lista tartalmának összekeverése.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1044"/>
         <source>Skip the next track in the Auto DJ queue</source>
-        <translation type="unfinished"/>
+        <translation>Az Auto DJ lejátszási lista következő számának átugrása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1054"/>
         <source>Auto DJ Toggle</source>
-        <translation type="unfinished"/>
+        <translation>Auto DJ kapcsolása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1055"/>
         <source>Toggle Auto DJ On/Off</source>
-        <translation type="unfinished"/>
+        <translation>Auto DJ be/kikapcsolása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1066"/>
         <source>Microphone &amp; Auxiliary Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Mikrofon és külső bemenetek mutatása/rejtése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1067"/>
         <source>Show/hide the microphone &amp; auxiliary section</source>
-        <translation type="unfinished"/>
+        <translation>Megmutatja/elrejti a mikrofon és külső bemenet részt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1081"/>
@@ -2061,32 +2061,32 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1086"/>
         <source>Mixer Show/Hide</source>
-        <translation type="unfinished"/>
+        <translation>Keverő mutatása/rejtése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1087"/>
         <source>Show or hide the mixer.</source>
-        <translation type="unfinished"/>
+        <translation>Megmutatja vagy elrejti a keverőt</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1091"/>
         <source>Cover Art Show/Hide (Library)</source>
-        <translation type="unfinished"/>
+        <translation>Borítókép mutatása/rejtése (Könyvtár)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1092"/>
         <source>Show/hide cover art in the library</source>
-        <translation type="unfinished"/>
+        <translation>Megmutatja vagy elrejti a könyvtárban a borítóképet</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1096"/>
         <source>Library Maximize/Restore</source>
-        <translation type="unfinished"/>
+        <translation>Könyvtár maximalizálása/visszaállítása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1097"/>
         <source>Maximize the track library to take up all the available screen space.</source>
-        <translation type="unfinished"/>
+        <translation>Maximalizálja a számkönyvtárat, hogy minden elérhető helyet elfoglaljon a képernyőn.</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="1076"/>
@@ -2106,12 +2106,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="80"/>
         <source>Headphone Gain</source>
-        <translation type="unfinished"/>
+        <translation>Fejhallgató erősítés</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="81"/>
         <source>Headphone gain</source>
-        <translation type="unfinished"/>
+        <translation>Fejhallgató erősítés</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="211"/>
@@ -2136,48 +2136,48 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="271"/>
         <source>Pitch (Musical key)</source>
-        <translation type="unfinished"/>
+        <translation>Hangmagasság (Zenei hangnem)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="251"/>
         <source>Increase Speed</source>
-        <translation type="unfinished"/>
+        <translation>Sebesség növelése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="252"/>
         <source>Adjust speed faster (coarse)</source>
-        <translation type="unfinished"/>
+        <translation>Sebesség növelése (durva)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="253"/>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="257"/>
         <source>Increase Speed (Fine)</source>
-        <translation type="unfinished"/>
+        <translation>Sebesség növelése (finom)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="254"/>
         <source>Adjust speed faster (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Sebesség növelése (finom)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="255"/>
         <source>Decrease Speed</source>
-        <translation type="unfinished"/>
+        <translation>Sebesség csökkentése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="256"/>
         <source>Adjust speed slower (coarse)</source>
-        <translation type="unfinished"/>
+        <translation>Sebesség csökkentése (durva)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="258"/>
         <source>Adjust speed slower (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Sebesség csökkentése (finom)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="260"/>
         <source>Temporarily Increase Speed</source>
-        <translation type="unfinished"/>
+        <translation>Sebesség csökkentése (finom)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="261"/>
@@ -2233,22 +2233,22 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="61"/>
         <source>Main Output gain</source>
-        <translation type="unfinished"/>
+        <translation>Fő kimenet erősítése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="67"/>
         <source>Main Output balance</source>
-        <translation type="unfinished"/>
+        <translation>Fő kimenet egyensúlya</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="73"/>
         <source>Main Output delay</source>
-        <translation type="unfinished"/>
+        <translation>Fő kimenet késleltetése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="77"/>
         <source>Headphone</source>
-        <translation type="unfinished"/>
+        <translation>Fejhallgató</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="133"/>
@@ -2259,7 +2259,7 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="189"/>
         <source>BPM / Beatgrid</source>
-        <translation type="unfinished"/>
+        <translation>BPM / Ütemrács</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="210"/>
@@ -2269,27 +2269,27 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="247"/>
         <source>Speed</source>
-        <translation type="unfinished"/>
+        <translation>Sebesség</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="269"/>
         <source>Pitch (Musical Key)</source>
-        <translation type="unfinished"/>
+        <translation>Hangmagasság (Zenei hangnem)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="277"/>
         <source>Increase Pitch</source>
-        <translation type="unfinished"/>
+        <translation>Hangmagasság növelése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="278"/>
         <source>Increases the pitch by one semitone</source>
-        <translation type="unfinished"/>
+        <translation>Hangmagasság növelése félhanggal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="281"/>
         <source>Increase Pitch (Fine)</source>
-        <translation type="unfinished"/>
+        <translation>Hangmagasság növelése (finom)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="282"/>
@@ -2299,17 +2299,17 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="285"/>
         <source>Decrease Pitch</source>
-        <translation type="unfinished"/>
+        <translation>Hangmagasság csökkentése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="286"/>
         <source>Decreases the pitch by one semitone</source>
-        <translation type="unfinished"/>
+        <translation>Hangmagasság csökkentése félhanggal</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="289"/>
         <source>Decrease Pitch (Fine)</source>
-        <translation type="unfinished"/>
+        <translation>Hangmagasság csökkentése (finom)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="290"/>
@@ -2319,127 +2319,127 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="300"/>
         <source>Keylock</source>
-        <translation type="unfinished"/>
+        <translation>Hangnemzár</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="330"/>
         <source>CUP (Cue + Play)</source>
-        <translation type="unfinished"/>
+        <translation>CUP (Cue + Lejátszás)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="350"/>
         <source>Shift cue points earlier</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontok igazítása korábbra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="351"/>
         <source>Shift cue points 10 milliseconds earlier</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontok igazítása 10 milliszekundummal korábbra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="354"/>
         <source>Shift cue points earlier (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontok igazítása korábbra (finom)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="355"/>
         <source>Shift cue points 1 millisecond earlier</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontok igazítása 1 milliszekundummal korábbra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="358"/>
         <source>Shift cue points later</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontok igazítása későbbre</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="359"/>
         <source>Shift cue points 10 milliseconds later</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontok igazítása 10 milliszekundummal későbbre</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="362"/>
         <source>Shift cue points later (fine)</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontok igazítása későbbre (finom)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="363"/>
         <source>Shift cue points 1 millisecond later</source>
-        <translation type="unfinished"/>
+        <translation>Cue pontok igazítása 1 milliszekundummal későbbre</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="376"/>
         <source>Hotcues %1-%2</source>
-        <translation type="unfinished"/>
+        <translation>Hotcuek %1-%2</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="422"/>
         <source>Loop Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Kiválasztott ütemek ismétlése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="423"/>
         <source>Create a beat loop of selected beat size</source>
-        <translation type="unfinished"/>
+        <translation>Kiválasztott ütemszámú ismétlés indítása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="424"/>
         <source>Loop Roll Selected Beats</source>
-        <translation type="unfinished"/>
+        <translation>Kiválasztott ütemek ismétlése csúsztatással</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="425"/>
         <source>Create a rolling beat loop of selected beat size</source>
-        <translation type="unfinished"/>
+        <translation>Kiválasztott ütemszámú ismétlés indítása csúsztatással</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="452"/>
         <source>Loop Beats</source>
-        <translation type="unfinished"/>
+        <translation>Ütemek ismétlése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="466"/>
         <source>Loop Roll Beats</source>
-        <translation type="unfinished"/>
+        <translation>Ütemek ismétlése csúsztatással</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="481"/>
         <source>Toggle loop on/off and jump to Loop In point if loop is behind play position</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlés be/kikapcsolása és ugrás az ismétlés kezdőpontjára, ha az ismétlés a lejátszótű mögött van</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="485"/>
         <source>Reloop And Stop</source>
-        <translation type="unfinished"/>
+        <translation>Újraismétlés és megállítás</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="486"/>
         <source>Enable loop, jump to Loop In point, and stop</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlés bekapcsolása, kezdetére ugrás és megállítása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="488"/>
         <source>Halve the loop length</source>
-        <translation type="unfinished"/>
+        <translation>Az ismétlés hosszának felezése</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="489"/>
         <source>Double the loop length</source>
-        <translation type="unfinished"/>
+        <translation>Az ismétlés hosszának duplázása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="492"/>
         <source>Beat Jump / Loop Move</source>
-        <translation type="unfinished"/>
+        <translation>Ütemugrás / Ismétlés mozgatása</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="493"/>
         <source>Jump / Move Loop Forward %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Ugorj / Mozgasd az ismétlést %1 ütemmel előre</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="494"/>
         <source>Jump / Move Loop Backward %1 Beats</source>
-        <translation type="unfinished"/>
+        <translation>Ugorj / Mozgasd az ismétlést %1 ütemmel vissza</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="495"/>
@@ -2494,127 +2494,127 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="547"/>
         <source>Navigation</source>
-        <translation type="unfinished"/>
+        <translation>Navigáció</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="550"/>
         <source>Move up</source>
-        <translation type="unfinished"/>
+        <translation>Mozgás fel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="551"/>
         <source>Equivalent to pressing the UP key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Megegyezik a FEL billentyűvel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="557"/>
         <source>Move down</source>
-        <translation type="unfinished"/>
+        <translation>Mozgás le</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="558"/>
         <source>Equivalent to pressing the DOWN key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Megegyezik a LE billentyűvel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="564"/>
         <source>Move up/down</source>
-        <translation type="unfinished"/>
+        <translation>Fel/le mozgás</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="565"/>
         <source>Move vertically in either direction using a knob, as if pressing UP/DOWN keys</source>
-        <translation type="unfinished"/>
+        <translation>Mozogj függőlegesen mindkét irányba enkóder használatával, mintha a FEL/LE gombokat nyomkodnád</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="572"/>
         <source>Scroll Up</source>
-        <translation type="unfinished"/>
+        <translation>Tekerés fel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="573"/>
         <source>Equivalent to pressing the PAGE UP key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Megegyezik a PAGE UP billentyűvel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="579"/>
         <source>Scroll Down</source>
-        <translation type="unfinished"/>
+        <translation>Tekerés le</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="580"/>
         <source>Equivalent to pressing the PAGE DOWN key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Megegyezik a PAGE DOWN billentyűvel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="586"/>
         <source>Scroll up/down</source>
-        <translation type="unfinished"/>
+        <translation>Tekerés fel/le</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="587"/>
         <source>Scroll vertically in either direction using a knob, as if pressing PGUP/PGDOWN keys</source>
-        <translation type="unfinished"/>
+        <translation>Tekerj függőlegesen mindkét irányba enkóder használatával, mintha a PGUP/PGDOWN gombokat nyomkodnád</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="594"/>
         <source>Move left</source>
-        <translation type="unfinished"/>
+        <translation>Mozgás balra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="595"/>
         <source>Equivalent to pressing the LEFT key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Megegyezik a BAL billentyűvel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="601"/>
         <source>Move right</source>
-        <translation type="unfinished"/>
+        <translation>Mozgás jobbra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="602"/>
         <source>Equivalent to pressing the RIGHT key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Megegyezik a JOBB billentyűvel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="608"/>
         <source>Move left/right</source>
-        <translation type="unfinished"/>
+        <translation>Mozgás balra/jobbra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="609"/>
         <source>Move horizontally in either direction using a knob, as if pressing LEFT/RIGHT keys</source>
-        <translation type="unfinished"/>
+        <translation>Mozogj vízszintesen mindkét irányba enkóder használatával, mintha a BAL/JOBB gombokat nyomkodnád</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="617"/>
         <source>Move focus to right pane</source>
-        <translation type="unfinished"/>
+        <translation>Fókusz mozgatása a jobb panelra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="618"/>
         <source>Equivalent to pressing the TAB key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Megegyezik a TAB billentyűvel</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="624"/>
         <source>Move focus to left pane</source>
-        <translation type="unfinished"/>
+        <translation>Fókusz mozgatása a bal panelra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="625"/>
         <source>Equivalent to pressing the SHIFT+TAB key on the keyboard</source>
-        <translation type="unfinished"/>
+        <translation>Megegyezik a SHIFT+TAB billentyűkombinációval</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="631"/>
         <source>Move focus to right/left pane</source>
-        <translation type="unfinished"/>
+        <translation>Fókusz mozgatása a jobb/bal panelra</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="632"/>
         <source>Move focus one pane to right or left using a knob, as if pressing TAB/SHIFT+TAB keys</source>
-        <translation type="unfinished"/>
+        <translation>Fókusz mozgatása egy panellal jobbra vagy balra, mintha a TAB/SHIFT+TAB billentyűket nyomkodnád</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="639"/>
@@ -2629,12 +2629,12 @@
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="648"/>
         <source>Load Track and Play</source>
-        <translation type="unfinished"/>
+        <translation>Szám betöltése és lejátszás</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="662"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>Hozzáadás az Auto DJ listához (csere)</translation>
     </message>
     <message>
         <location filename="../../src/controllers/controlpickermenu.cpp" line="663"/>
@@ -3650,7 +3650,7 @@ by analyzing the beats to discard outliers.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="165"/>
         <source>Choose Analyzer</source>
-        <translation type="unfinished"/>
+        <translation>Válassz elemzőt</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="186"/>
@@ -3660,12 +3660,12 @@ by analyzing the beats to discard outliers.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="103"/>
         <source>Analyzer Settings</source>
-        <translation type="unfinished"/>
+        <translation>Elemző beállítások</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="114"/>
         <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
-        <translation type="unfinished"/>
+        <translation>Gyors elemzés engedélyezése (lassú számítógépekhez, pontatlanabb lehet)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefbeatsdlg.ui" line="126"/>
@@ -4432,7 +4432,7 @@ Two source connections to the same server can&apos;t have the same mountpoint.</
     <message>
         <location filename="../../src/preferences/dialog/dlgprefcolors.cpp" line="319"/>
         <source>Color</source>
-        <translation type="unfinished"/>
+        <translation>Szín</translation>
     </message>
 </context>
 <context>
@@ -5018,7 +5018,7 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="222"/>
         <source>6% (semitone)</source>
-        <translation>6% (semitone)</translation>
+        <translation>6% (félhang)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeck.cpp" line="223"/>
@@ -5056,17 +5056,17 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="14"/>
         <source>Deck Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Lejátszó beállítások</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="20"/>
         <source>Deck options</source>
-        <translation type="unfinished"/>
+        <translation>Lejátszó beállítások</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="39"/>
         <source>Cue mode</source>
-        <translation type="unfinished"/>
+        <translation>Cue mód</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="79"/>
@@ -5089,7 +5089,25 @@ CUP mode:
 - Cue button while pause not at cue point = set cue point and play after release
 - Cue button while playing = go to cue point and play after release
 </source>
-        <translation type="unfinished"/>
+        <translation>Mixxx mód:
+- Cue gomb amíg szünetel a cue ponton = előhallgatás
+- Cue gomb amíg szünetel akárhol máshol = cue pont beállítása
+- Cue gomb lejátszás közben = megállítás és cue pontra ugrás
+Mixxx mód (nincs villogás):
+- Megegyezik a Mixxx móddal, csak villogó visszajelzők nélkül
+Pioneer mód:
+- Megegyezik a Mixxx móddal, csak villogó lejátszógombbal
+Denon mód:
+- Cue gomb a cue ponton = előhallgatás
+- Cue gomb akárhol máshol = megállítás és cue pontra ugrás
+- Lejátszás = cue pont beállítása
+Numark mód:
+- Megegyezik a Denon móddal, csak villogó lejátszógomb nélkül
+CUP mód:
+- Cue gomb amíg szünetel a cue ponton = lejátszás a gomb felengedésekor
+- Cue gomb amíg szünetel akárhol máshol = cue pont beállítása és lejátszás a gomb felengedésekor
+- Cue gomb lejátszás közben = cue pontra ugrás és lejátszás a gomb felengedésekor
+</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="137"/>
@@ -5099,7 +5117,7 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="159"/>
         <source>Elapsed</source>
-        <translation type="unfinished"/>
+        <translation>Eltelt</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="169"/>
@@ -5109,22 +5127,22 @@ CUP mode:
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="179"/>
         <source>Elapsed and Remaining</source>
-        <translation type="unfinished"/>
+        <translation>Eltelt és hátralevő</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="29"/>
         <source>Playing track protection</source>
-        <translation type="unfinished"/>
+        <translation>Futó lejátszó védelme</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="150"/>
         <source>Do not load tracks into playing decks</source>
-        <translation type="unfinished"/>
+        <translation>Ne tölts be számokat futó lejátszókba</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="114"/>
         <source>Time Format</source>
-        <translation type="unfinished"/>
+        <translation>Idő formátum</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="69"/>
@@ -5148,28 +5166,29 @@ If this option is disabled, the intro start point is automatically placed at the
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="124"/>
         <source>Track load point</source>
-        <translation type="unfinished"/>
+        <translation>Szám betöltési pont</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="104"/>
         <source>Clone deck</source>
-        <translation type="unfinished"/>
+        <translation>Lejátszó klónozása</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="191"/>
         <source>Create a playing clone of the first playing deck by double-tapping a Load button on a controller or keyboard.
 You can always drag-and-drop tracks on screen to clone a deck.</source>
-        <translation type="unfinished"/>
+        <translation>Készíts egy futó másolatot az első futó lejátszóról a betöltés gomb kétszeri lenyomásával.
+Fogd-és-vidd módszerrel mindig másolhatsz lejátszókat.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="195"/>
         <source>Double-press Load button to clone playing track</source>
-        <translation type="unfinished"/>
+        <translation>Kétszer nyomd le a betöltés gombot, hogy lemásold az éppen futó számot</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="205"/>
         <source>Speed (Tempo) and Key (Pitch) options</source>
-        <translation type="unfinished"/>
+        <translation>Sebesség (ütem) és hangnem (magasság) beállítások</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="213"/>
@@ -5197,7 +5216,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="279"/>
         <source>Current key</source>
-        <translation type="unfinished"/>
+        <translation>Jelenlegi hangnem</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="292"/>
@@ -5217,7 +5236,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="381"/>
         <source>Temporary</source>
-        <translation type="unfinished"/>
+        <translation>Átmeneti</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="391"/>
@@ -5237,7 +5256,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="424"/>
         <source>Original key</source>
-        <translation type="unfinished"/>
+        <translation>Eredeti hangnem</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="437"/>
@@ -5252,7 +5271,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="472"/>
         <source>Key/Pitch</source>
-        <translation type="unfinished"/>
+        <translation>Hangnem/magasság</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="479"/>
@@ -5262,12 +5281,12 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="495"/>
         <source>Coarse</source>
-        <translation type="unfinished"/>
+        <translation>Durva</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="520"/>
         <source>Fine</source>
-        <translation type="unfinished"/>
+        <translation>Finom</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="536"/>
@@ -5292,7 +5311,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="575"/>
         <source>Abrupt jump</source>
-        <translation type="unfinished"/>
+        <translation>Hirtelen ugrás</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="585"/>
@@ -5312,12 +5331,12 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="605"/>
         <source>Reset key</source>
-        <translation type="unfinished"/>
+        <translation>Hangnem visszaállítása</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefdeckdlg.ui" line="615"/>
         <source>Keep key</source>
-        <translation type="unfinished"/>
+        <translation>Hangnem tartása</translation>
     </message>
 </context>
 <context>
@@ -5381,7 +5400,7 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="90"/>
         <source>Quick Effect</source>
-        <translation type="unfinished"/>
+        <translation>Gyors effekt</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefeqdlg.ui" line="103"/>
@@ -5504,27 +5523,27 @@ You can always drag-and-drop tracks on screen to clone a deck.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="112"/>
         <source>The minimum size of the selected skin is bigger than your screen resolution.</source>
-        <translation type="unfinished"/>
+        <translation>A kiválasztott kinézet mérete nagyobb, mint a képernyőd felbontása.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="176"/>
         <source>Allow screensaver to run</source>
-        <translation type="unfinished"/>
+        <translation>Képernyővédő engedése</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="178"/>
         <source>Prevent screensaver from running</source>
-        <translation type="unfinished"/>
+        <translation>Képernyővédő letiltása</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="180"/>
         <source>Prevent screensaver while playing</source>
-        <translation type="unfinished"/>
+        <translation>Képernyővédő letiltása lejátszás közben</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="227"/>
         <source>This skin does not support color schemes</source>
-        <translation type="unfinished"/>
+        <translation>Ez a kinézet nem támogat színsémákat</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefinterface.cpp" line="344"/>
@@ -5553,32 +5572,32 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="25"/>
         <source>Enable Key Detection</source>
-        <translation type="unfinished"/>
+        <translation>Hangnem észlelésének engedélyezése</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="33"/>
         <source>Choose Analyzer</source>
-        <translation type="unfinished"/>
+        <translation>Válassz elemzőt</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="54"/>
         <source>Key Analyzer:</source>
-        <translation type="unfinished"/>
+        <translation>Hangnem elemző:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="73"/>
         <source>Choose between different algorithms to detect keys.</source>
-        <translation type="unfinished"/>
+        <translation>Válassz különböző hangnem elemző algoritmusok között.</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="87"/>
         <source>Analyzer Settings</source>
-        <translation type="unfinished"/>
+        <translation>Elemző beállítások</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="93"/>
         <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
-        <translation type="unfinished"/>
+        <translation>Gyors elemzés engedélyezése (lassú számítógépekhez, pontatlanabb lehet)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="100"/>
@@ -5588,37 +5607,37 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="117"/>
         <source>Key Notation</source>
-        <translation type="unfinished"/>
+        <translation>Hangnem jelölés</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="126"/>
         <source>Lancelot</source>
-        <translation type="unfinished"/>
+        <translation>Lancelot</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="133"/>
         <source>Lancelot/Traditional</source>
-        <translation type="unfinished"/>
+        <translation>Lancelot/Tradicionális</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="140"/>
         <source>OpenKey</source>
-        <translation type="unfinished"/>
+        <translation>OpenKey</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="152"/>
         <source>OpenKey/Traditional</source>
-        <translation type="unfinished"/>
+        <translation>OpenKey/Tradicionális</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="159"/>
         <source>Traditional</source>
-        <translation type="unfinished"/>
+        <translation>Tradicionális</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="166"/>
         <source>Custom</source>
-        <translation type="unfinished"/>
+        <translation>Egyedi</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="178"/>
@@ -5628,12 +5647,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="201"/>
         <source>Bb</source>
-        <translation>Bb</translation>
+        <translation>Hb</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="224"/>
         <source>B</source>
-        <translation>B</translation>
+        <translation>H</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="247"/>
@@ -5688,12 +5707,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="477"/>
         <source>Bbm</source>
-        <translation>Bbm</translation>
+        <translation>Hbm</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="500"/>
         <source>Bm</source>
-        <translation>Bm</translation>
+        <translation>Hm</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefkeydlg.ui" line="523"/>
@@ -5751,7 +5770,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflv2dlg.ui" line="31"/>
         <source>Discovered LV2 effects</source>
-        <translation type="unfinished"/>
+        <translation>Észlelt LV2 effektek</translation>
     </message>
 </context>
 <context>
@@ -5774,7 +5793,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="237"/>
         <source>Choose a music directory</source>
-        <translation type="unfinished"/>
+        <translation>Válassz zenei gyűjtemény könyvtárat</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="252"/>
@@ -5794,12 +5813,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="273"/>
         <source>Hide Tracks</source>
-        <translation type="unfinished"/>
+        <translation>Számok elrejtése</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="275"/>
         <source>Delete Track Metadata</source>
-        <translation type="unfinished"/>
+        <translation>Számok adatainak törlése</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="277"/>
@@ -5863,7 +5882,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="106"/>
         <source>Audio File Formats</source>
-        <translation type="unfinished"/>
+        <translation>Zenei fájlformátumok</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="128"/>
@@ -5984,17 +6003,17 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="333"/>
         <source>Show Rekordbox Library</source>
-        <translation type="unfinished"/>
+        <translation>Rekordbox könyvtár megjelenítése</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="343"/>
         <source>Show Serato Library</source>
-        <translation type="unfinished"/>
+        <translation>Serato könyvtár megjelenítése</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreflibrarydlg.ui" line="360"/>
         <source>All external libraries shown are write protected.</source>
-        <translation type="unfinished"/>
+        <translation>Minden megjelenített külső könyvtár írásvédett.</translation>
     </message>
 </context>
 <context>
@@ -6002,7 +6021,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="14"/>
         <source>Modplug Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Modplug beállítások</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="403"/>
@@ -6029,7 +6048,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="183"/>
         <source>Reverb Delay:</source>
-        <translation type="unfinished"/>
+        <translation>Visszhang késleltetés:</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="197"/>
@@ -6141,12 +6160,12 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="428"/>
         <source>Decoding Options</source>
-        <translation type="unfinished"/>
+        <translation>Dekódolási beállítások</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="485"/>
         <source>Resampling mode (interpolation)</source>
-        <translation type="unfinished"/>
+        <translation>Újramintavételezési mód (interpoláció)</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="512"/>
@@ -6176,7 +6195,7 @@ and allows you to pitch adjust them for harmonic mixing.</source>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefmodplugdlg.ui" line="505"/>
         <source>Memory limit for single track (MB)</source>
-        <translation type="unfinished"/>
+        <translation>Memórialimit egy számra (MB)</translation>
     </message>
 </context>
 <context>
@@ -6641,7 +6660,7 @@ The loudness target is approximate and assumes track pregain and master output l
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="151"/>
         <source>Main Output Delay</source>
-        <translation type="unfinished"/>
+        <translation>Fő kimenet késleltetése</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgprefsounddlg.ui" line="174"/>
@@ -7106,7 +7125,7 @@ Select from different types of displays for the waveform, which differ primarily
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="117"/>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="121"/>
         <source>Vinyl Control</source>
-        <translation type="unfinished"/>
+        <translation>Bakelit vezérlés</translation>
     </message>
     <message>
         <location filename="../../src/preferences/dialog/dlgpreferences.cpp" line="165"/>
@@ -8657,7 +8676,7 @@ Do you want to scan your library for cover files now?</source>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="164"/>
         <source>Vinyl Control</source>
-        <translation type="unfinished"/>
+        <translation>Bakelit vezérlés</translation>
     </message>
     <message>
         <location filename="../../src/soundio/soundmanagerutil.cpp" line="167"/>
@@ -8918,7 +8937,7 @@ Default: flat top</source>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="37"/>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="38"/>
         <source>Speed</source>
-        <translation type="unfinished"/>
+        <translation>Sebesség</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/flangereffect.cpp" line="64"/>
@@ -9015,7 +9034,7 @@ With width at zero, this allows for manually sweeping over the entire delay rang
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="43"/>
         <source>Sync</source>
-        <translation type="unfinished"/>
+        <translation>Szinkron</translation>
     </message>
     <message>
         <location filename="../../src/effects/builtin/metronomeeffect.cpp" line="44"/>
@@ -10583,7 +10602,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="212"/>
         <source>Headphone Gain</source>
-        <translation type="unfinished"/>
+        <translation>Fejhallgató erősítés</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="213"/>
@@ -10598,7 +10617,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="222"/>
         <source>Headphone Split Cue</source>
-        <translation type="unfinished"/>
+        <translation>Megosztott fejhallgató</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="225"/>
@@ -10628,7 +10647,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="241"/>
         <source>Vinyl Control</source>
-        <translation type="unfinished"/>
+        <translation>Bakelit vezérlés</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="242"/>
@@ -10695,7 +10714,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="281"/>
         <source>Show or hide the mixer.</source>
-        <translation type="unfinished"/>
+        <translation>Megmutatja vagy elrejti a keverőt</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="288"/>
@@ -10967,7 +10986,7 @@ Fully right: end of the effect period</source>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="440"/>
         <source>Keylock</source>
-        <translation type="unfinished"/>
+        <translation>Hangnemzár</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="442"/>
@@ -11113,7 +11132,7 @@ Fully right: end of the effect period</source>
         <location filename="../../src/skin/tooltips.cpp" line="180"/>
         <location filename="../../src/skin/tooltips.cpp" line="185"/>
         <source>Main Output Gain</source>
-        <translation type="unfinished"/>
+        <translation>Fő kimenet erősítése</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="181"/>
@@ -11597,7 +11616,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="892"/>
         <source>Next Chain</source>
-        <translation type="unfinished"/>
+        <translation>Következő lánc</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="896"/>
@@ -11637,7 +11656,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="861"/>
         <source>Clear Unit</source>
-        <translation type="unfinished"/>
+        <translation>Egység ürítése</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="862"/>
@@ -11652,7 +11671,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="869"/>
         <source>Toggle Unit</source>
-        <translation type="unfinished"/>
+        <translation>Egység kapcsolása</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="870"/>
@@ -11858,7 +11877,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/skin/tooltips.cpp" line="409"/>
         <location filename="../../src/skin/tooltips.cpp" line="414"/>
         <source>Adjust Beatgrid</source>
-        <translation type="unfinished"/>
+        <translation>Ütemrács igazítása</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="410"/>
@@ -11869,7 +11888,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <location filename="../../src/skin/tooltips.cpp" line="411"/>
         <location filename="../../src/skin/tooltips.cpp" line="415"/>
         <source>Adjust beatgrid to match another playing deck.</source>
-        <translation type="unfinished"/>
+        <translation>Ütemrács igazítása másik futó lemezjátszóhoz.</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="452"/>
@@ -12162,12 +12181,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="497"/>
         <source>Cue</source>
-        <translation type="unfinished"/>
+        <translation>Cue</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="513"/>
         <source>Headphone</source>
-        <translation type="unfinished"/>
+        <translation>Fejhallgató</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="518"/>
@@ -12274,7 +12293,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="623"/>
         <source>Record Mix</source>
-        <translation type="unfinished"/>
+        <translation>Mix felvétele</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="624"/>
@@ -12319,7 +12338,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="738"/>
         <source>Loop Exit</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlésből kilép</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="739"/>
@@ -12329,7 +12348,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="750"/>
         <source>Slip Mode</source>
-        <translation type="unfinished"/>
+        <translation>Csúsztató mód</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="751"/>
@@ -12517,7 +12536,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="661"/>
         <source>Vinyl Control Mode</source>
-        <translation type="unfinished"/>
+        <translation>Bakelit vezérlés mód</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="662"/>
@@ -12567,7 +12586,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="692"/>
         <source>Loop Halve</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlés felezése</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="693"/>
@@ -12582,7 +12601,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="697"/>
         <source>Loop Double</source>
-        <translation type="unfinished"/>
+        <translation>Ismétlés kétszerezése</translation>
     </message>
     <message>
         <location filename="../../src/skin/tooltips.cpp" line="698"/>
@@ -13170,7 +13189,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="246"/>
         <source>Maximize the track library to take up all the available screen space.</source>
-        <translation type="unfinished"/>
+        <translation>Maximalizálja a számkönyvtárat, hogy minden elérhető helyet elfoglaljon a képernyőn.</translation>
     </message>
     <message>
         <location filename="../../src/widget/wmainmenubar.cpp" line="253"/>
@@ -13677,7 +13696,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="178"/>
         <source>Add to Auto DJ Queue (replace)</source>
-        <translation type="unfinished"/>
+        <translation>Hozzáadás az Auto DJ listához (csere)</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="183"/>
@@ -13762,7 +13781,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="271"/>
         <source>Hotcues</source>
-        <translation type="unfinished"/>
+        <translation>Hotcue pontok</translation>
     </message>
     <message>
         <location filename="../../src/widget/wtrackmenu.cpp" line="274"/>

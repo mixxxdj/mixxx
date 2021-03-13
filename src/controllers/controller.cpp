@@ -49,7 +49,7 @@ void Controller::stopEngine() {
 bool Controller::applyMapping() {
     qDebug() << "Applying controller mapping...";
 
-    const LegacyControllerMapping* pMapping = mapping();
+    const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
 
     // Load the script code into the engine
     if (!m_pScriptEngineLegacy) {
@@ -125,7 +125,8 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
             } else {
                 spacer = QStringLiteral(" ");
             }
-            message += QString::number(data.at(i), 16)
+            // cast to quint8 to avoid that negative chars are for instance displayed as ffffffff instead of the desired ff
+            message += QString::number(static_cast<quint8>(data.at(i)), 16)
                                .toUpper()
                                .rightJustified(2, QChar('0')) +
                     spacer;

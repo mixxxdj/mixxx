@@ -2,7 +2,8 @@
 
 /************** font settings *************************************************/
 
-#Mixxx, WWidget,
+#Mixxx,
+WWidget,
 QToolTip,
 WLabel, QLabel,
 WNumber, WNumberPos,
@@ -28,7 +29,7 @@ WEffect,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
-#fadeModeCombobox QAbstractScrollArea
+#fadeModeCombobox QAbstractScrollArea,
 #LibraryContainer QPushButton,
 #LibraryContainer QLabel,
 #LibraryContainer QRadioButton,
@@ -59,12 +60,8 @@ WOverview #PassthroughLabel,
 /* SKin settings & Library */
 #SkinSettingsToggle,
 #SkinSettingsNumToggle[value="1"],
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton,
-#labelRecFilename,
+#LibraryFeatureControls QPushButton,
+QLabel#labelRecFilename, /* needs QLabel to override previous QLabel font definition*/
 WEffectSelector,
 #fadeModeCombobox,
 WOverview #PassthroughLabel {
@@ -82,7 +79,7 @@ WOverview #PassthroughLabel {
 #RecFeedback, #RecDuration,
 #BroadcastButton,
 #SkinSettingsToggle,
-WLibrary QPushButton {
+#LibraryFeatureControls QPushButton {
   text-transform: uppercase;
 }
 /* regular font weight */
@@ -98,8 +95,8 @@ WCoverArtMenu,
 WTrackMenu,
 WTrackMenu QMenu,
 WBeatSpinBox QMenu,
-#labelRecPrefix,
-#labelRecStatistics {
+QLabel#labelRecPrefix,
+QLabel#labelRecStatistics {
   font-weight: normal;
 }
 
@@ -110,24 +107,27 @@ WBeatSpinBox QMenu,
 #KnobLabel,
 #FxKnobLabel,
 #FxButtonLabel,
+#RateRangeText,
 #LatencyLabel {
   font-size: 10px;
   text-align: center;
 }
 
-WPushButton, WLibrary QPushButton,
+WPushButton,
+#LibraryFeatureControls QPushButton,
 #RecDuration[highlight="0"],
 #RecDuration[highlight="1"] {
   font-size: 11px;
 }
 
+#RateRangePrefix,
 #RecDuration[highlight="2"],
 #SamplerTitleMini,
 #EQKillButton,
 #RateText,
 #SamplerBpmMini,
 #PreviewBPM,
-WLibrary QRadioButton {
+#LibraryFeatureControls QRadioButton {
 	font-size: 12px;
 }
 
@@ -137,9 +137,7 @@ WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-#labelRecPrefix,
-#labelRecFilename,
-#labelRecStatistics,
+#LibraryFeatureControls QLabel,
 #SkinSettingsButton,
 #SkinSettingsNumToggle,
 #SkinSettingsMixerToggle,
@@ -186,20 +184,17 @@ WRecordingDuration {
 #MicAuxLabel,
 #MicAuxLabelUnconfigured,
 #PreviewTitle,
-#PreviewLabel,
-WBeatSpinBox,
-#spinBoxTransition {
+#PreviewLabel {
   text-align: left;
 }
 
 #RateText,
 #MicAuxLabel,
-#PreviewBPM,
-WBeatSpinBox,
-#spinBoxTransition {
+#PreviewBPM {
   text-align: center;
   }
-  WBeatSpinBox,#spinBoxTransition {
+  WBeatSpinBox,
+  #spinBoxTransition {
     qproperty-alignment: 'AlignHCenter';
   }
 
@@ -337,7 +332,9 @@ WSpinny { /*
 }
 
 #BpmText,
-#RateText {
+#RateText,
+#RateRangePrefix,
+#RateRangeText {
   qproperty-alignment: 'AlignCenter';
 }
 
@@ -698,66 +695,58 @@ WEffectSelector {
 
 /************ Library feature controls / tree view / table view *************/
 /* Extra declaration for QRadioButton otherwise it shows up with wrong colors in Linux with Gnome */
-WLibrary QLabel, WLibrary QRadioButton {
-  background: transparent;
-}
-
-/* Additional space for QRadionButtons */
-WLibrary QRadioButton {
-  /* bottom margin! */
-  margin: 2px 3px 2px 3px;
-}
-
-/* Additional space for QLabels */
-#DlgAnalysis QLabel,
-#DlgAutoDJ QLabel {
-  margin: 2px 5px 5px 1px;
-}
 
 /* Library feature pushbuttons
   Don't use 'WLibrary QPushButton' here, as this would apply padding
   to the Preview & BPM lock buttons as well.
   Define the buttons fore every Library feature instead. */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
+#LibraryFeatureControls QPushButton {
   margin: 0px 2px 3px 0px;
-  padding: 0px;
+  padding: 0px 5px;
   /* Note: border-width is added, so the effective minimal size
     is 24 x 36 px */
   height: 20px;
   min-width: 32px;
   }
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
-  padding: 0px 5px;
-  }
-  QPushButton#pushButtonAutoDJ {
-    min-width: 40px;
-  }
-  /* Space in between 'Enable AutoDJ' and transition time spinbox */
-  #DlgAutoDJ > #horizontalSpacer {
-    width: 100px;
+  #DlgAutoDJ #LibraryFeatureControls QPushButton {
+    padding: 0px;
+    }
+    QPushButton#pushButtonAutoDJ {
+      min-width: 40px;
+    }
+
+#LibraryFeatureControls QLabel,
+#LibraryFeatureControls QRadioButton {
+  background: transparent;
+}
+
+/* Additional space for QRadionButtons */
+#LibraryFeatureControls QRadioButton {
+  margin: 2px 3px 2px 3px;
   }
   /* Push 'New' radio button away from corner */
-  #radioButtonRecentlyAdded {
-    margin-left: 10px;
+  QRadioButton#radioButtonRecentlyAdded {
+    margin-left: 5px;
   }
   /* Space in between 'All' radio button and 'Select All' button */
-  QPushButton#pushButtonSelectAll {
-    margin-left: 12px;
+  QRadioButton#radioButtonAllSongs {
+    margin-right: 10px;
   }
 
-#labelRecPrefix,
-#labelRecFilename,
-#labelRecStatistics {
+/* Additional space for QLabels */
+QLabel#labelTransitionAppendix {
+  margin-left: 3px;
+}
+QLabel#labelProgress, /* Analysis progress */
+QLabel#labelSelectionInfo /* AutoDJ track selection info */ {
+  margin: 2px 5px 5px 1px;
+}
+QLabel#labelRecPrefix,
+QLabel#labelRecFilename,
+QLabel#labelRecStatistics {
   text-transform: none;
-  padding: 0px 0px 3px 0px;
-  }
+  margin: 3px 0px 3px 0px;
+}
 
 #LibraryContainer QTreeView {
   show-decoration-selected: 0;
