@@ -19,17 +19,6 @@ constexpr SAMPLE SAMPLE_ZERO = 0;
 constexpr SAMPLE SAMPLE_MINIMUM = SHRT_MIN;
 constexpr SAMPLE SAMPLE_MAXIMUM = SHRT_MAX;
 
-// Limits the range of a SAMPLE value to [SAMPLE_MIN, SAMPLE_MAX].
-inline
-SAMPLE SAMPLE_clamp(SAMPLE in) {
-    return math_clamp(in, SAMPLE_MINIMUM, SAMPLE_MAXIMUM);
-}
-
-// Limits the range of a SAMPLE value to [-SAMPLE_MAX, SAMPLE_MAX].
-inline
-SAMPLE SAMPLE_clampSymmetric(SAMPLE in) {
-    return math_clamp(in, static_cast<SAMPLE>(-SAMPLE_MAXIMUM), SAMPLE_MAXIMUM);
-}
 
 // 32-bit single precision floating-point sample data
 // normalized within the range [-1.0, 1.0] with a peak
