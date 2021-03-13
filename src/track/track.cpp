@@ -43,9 +43,8 @@ inline bool compareAndSet(T* pField, const T& value) {
 }
 
 inline mixxx::Bpm getBeatsPointerBpm(
-        const mixxx::BeatsPointer& pBeats,
-        mixxx::Bpm defaultBpm = mixxx::Bpm{}) {
-    return pBeats ? mixxx::Bpm{pBeats->getBpm()} : defaultBpm;
+        const mixxx::BeatsPointer& pBeats) {
+    return pBeats ? mixxx::Bpm{pBeats->getBpm()} : mixxx::Bpm{};
 }
 
 } // anonymous namespace
@@ -198,9 +197,8 @@ void Track::importMetadata(
     // Only use the imported BPM if the beat grid is not valid!
     // Reason: The BPM value in the metadata might be normalized
     // or rounded, e.g. ID3v2 only supports integer values.
-    const auto actualBpm = getBeatsPointerBpm(m_pBeats, newBpm);
-    if (actualBpm.hasValue()) {
-        trySetBpm(actualBpm.getValue());
+    if (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm())) {
+        trySetBpm(newBpm.getValue());
     }
 
     if (!newKey.isEmpty()
