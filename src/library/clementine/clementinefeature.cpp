@@ -87,6 +87,7 @@ void ClementineFeature::activate() {
     m_childModel.setRootItem(std::move(pRootItem));
 
     m_pClementinePlaylistModel->setTableModel(0); // Gets the master playlist
+    m_pClementinePlaylistModel->select();
 
     //calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.
     m_title = tr("Clementine");
@@ -94,8 +95,6 @@ void ClementineFeature::activate() {
     qDebug() << "Clementine library loaded: success";
 
     emit showTrackModel(m_pClementinePlaylistModel);
-    emit showTrackModel(
-            m_pClementinePlaylistModel); // TODO find bug which doesnt show master playlist on first emit showTrackModel()
     emit enableCoverArtDisplay(false);
 }
 
