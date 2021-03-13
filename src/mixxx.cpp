@@ -389,6 +389,11 @@ MixxxMainWindow::~MixxxMainWindow() {
         qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DeveloperToolsDlg";
+    if (m_pDeveloperToolsDlg) {
+        delete m_pDeveloperToolsDlg;
+    }
+
 #ifdef __ENGINEPRIME__
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting LibraryExporter";
     m_pLibraryExporter.reset();

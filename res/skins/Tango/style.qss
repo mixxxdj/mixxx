@@ -1196,7 +1196,7 @@ WBeatSpinBox,
 #Bpm, #KeyDisplayMatch,
 #RateUp, #RateDown,
 #KeyUp, #KeyDown,
-#PitchSlider {
+#PitchSliderGroup {
   background-color: #252525;
   border-radius: 3px;
 }
@@ -3030,3 +3030,17 @@ WOverview {
   color: #eeeeee;
   font-size is considered, color not.
 } */
+
+WRateRange {
+    font-size: 11px;
+}
+
+#RateDisplayTopPrefix,
+#RateDisplayTopRate {
+    qproperty-alignment: 'AlignHCenter | AlignTop';
+}
+
+#RateDisplayBottomPrefix,
+#RateDisplayBottomRate {
+    qproperty-alignment: 'AlignHCenter | AlignBottom';
+}

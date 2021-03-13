@@ -202,9 +202,7 @@ class SampleUtil {
             const CSAMPLE* pBuffer, SINT numSamples);
 
     // Copies every sample in pSrc to pDest, limiting the values in pDest
-    // to the valid range of CSAMPLE. If pDest and pSrc are aliases, will
-    // not copy will only clamp. Returns true if any samples in pSrc were
-    // outside the valid range of CSAMPLE.
+    // to the valid range of CSAMPLE. pDest and pSrc must not overlap.
     static void copyClampBuffer(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numSamples);
 
@@ -234,6 +232,8 @@ class SampleUtil {
     // "mono-compatible", ie there are no major out-of-phase parts of the signal.
     static void mixStereoToMono(CSAMPLE* pDest, const CSAMPLE* pSrc,
             SINT numSamples);
+    // In place version of the above.
+    static void mixStereoToMono(CSAMPLE* pBuffer, SINT numSamples);
 
     // In-place doubles the mono samples in pBuffer to dual mono samples.
     // (numFrames) samples will be read from pBuffer

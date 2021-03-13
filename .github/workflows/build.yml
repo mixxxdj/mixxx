@@ -10,27 +10,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - name: Ubuntu 18.04 (gcc)
-            os: ubuntu-18.04
-            cmake_args: >-
-              -DWARNINGS_FATAL=ON
-              -DFAAD=ON
-              -DLOCALECOMPARE=ON
-              -DMAD=ON
-              -DMODPLUG=ON
-              -DWAVPACK=ON
-              -INSTALL_USER_UDEV_RULES=OFF
-            cmake_generator: Unix Makefiles
-            cmake_build_type: RelWithDebInfo
-            ctest_args:
-            compiler_cache: ccache
-            compiler_cache_path: ~/.ccache
-            cpack_generator: DEB
-            buildenv_basepath: /home/runner/buildenv
-            buildenv_script: tools/debian_buildenv.sh
-            artifacts_name: Ubuntu 18.04 DEB
-            artifacts_path: build/*.deb
-            qt_qpa_platform: offscreen
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
             cmake_args: >-
@@ -120,8 +99,8 @@ jobs:
     - name: "[Windows] Build fixed sccache"
       shell: bash
       if: runner.os == 'Windows' && steps.sccache-build-cache.outputs.cache-hit != 'true'
-      # TODO: change this to simply `cargo install sccache` when this branch is merged upstream
-      run: cargo install --git https://github.com/Be-ing/sccache.git --branch fix_msvc_fp
+      # TODO: change this to simply `cargo install sccache` after 0.2.16 has been released
+      run: cargo install --git https://github.com/mozilla/sccache.git --branch master
 
     - name: "Check out repository"
       uses: actions/checkout@v2

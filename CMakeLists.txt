@@ -138,6 +138,9 @@ if(MSVC)
     # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
     add_compile_options(/Gy)
 
+    # For repeated local development builds, /INCREMENTAL offers much faster build times with the same performance of the executable,
+    # unless link time code generation (like CMAKE_INTERPROCEDURAL_OPTIMIZATION) is used, which is contrary to incremental linking.
+
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
       #optimize Debug Builds as well, to have "normal" behaviour of mixxx during development
       string(REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
@@ -149,15 +152,25 @@ if(MSVC)
       # Remove /RTC1 flag set by CMAKE by default (conflicts with /O2)
       string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG}")
-    else()
-      # Reduce the size of the binary in Release & RelWithDebInfo builds
+    elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+      # Reduce the size of the binary in RelWithDebInfo builds
       # Do not use /OPT:ICF because it has no effect.
       # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
       add_link_options(/OPT:REF)
-      # /INCREMENTAL is incompatible with /OPT:REF
-      string(REPLACE "/INCREMENTAL" "/INCREMENTAL:NO" CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
-      string(REPLACE "/INCREMENTAL" "/INCREMENTAL:NO" CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
+
+      # /INCREMENTAL is incompatible with /OPT:REF, but it's the CMake default for RelWithDebInfo
+      # The CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO can be defined by the user in the GUI or in CMakeSettings.json,
+      # therefore we can't rely on the default.
+      string(FIND CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "/INCREMENTAL:NO" INCREMENTAL_NO_POSITION)
+      if(INCREMENTAL_NO_POSITION EQUAL -1)
+        message(STATUS "Overwriting /INCREMENTAL by /INCREMENTAL:NO to allow link time code optimization")
+        string(REPLACE "/INCREMENTAL" "/INCREMENTAL:NO" CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
+      endif()
       # Note: CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the /GL and /LTCG flags for us
+    elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+      # Settings for MinSizeRel builds
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+      # Settings for Release builds
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
@@ -1011,6 +1024,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
+  src/widget/wraterange.cpp
 )
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")

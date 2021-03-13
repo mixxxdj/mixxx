@@ -268,15 +268,14 @@ void DlgTrackInfo::populateFields(const Track& track) {
 }
 
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
-    const mixxx::BeatsPointer pBeats = track.getBeats();
-    if (pBeats) {
-        spinBpm->setValue(pBeats->getBpm());
-        m_pBeatsClone = pBeats->clone();
+    m_pBeatsClone = track.getBeats();
+    if (m_pBeatsClone) {
+        spinBpm->setValue(m_pBeatsClone->getBpm());
     } else {
-        m_pBeatsClone.clear();
         spinBpm->setValue(0.0);
     }
-    m_trackHasBeatMap = pBeats && !(pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM);
+    m_trackHasBeatMap = m_pBeatsClone &&
+            !(m_pBeatsClone->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM);
     bpmConst->setChecked(!m_trackHasBeatMap);
     bpmConst->setEnabled(m_trackHasBeatMap); // We cannot make turn a BeatGrid to a BeatMap
     spinBpm->setEnabled(!m_trackHasBeatMap); // We cannot change bpm continuously or tab them
@@ -396,10 +395,8 @@ void DlgTrackInfo::saveTrack() {
     m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
     m_pLoadedTrack->setComment(txtComment->toPlainText());
 
-    if (!m_pLoadedTrack->isBpmLocked()) {
-        m_pLoadedTrack->setBeats(m_pBeatsClone);
-        reloadTrackBeats(*m_pLoadedTrack);
-    }
+    m_pLoadedTrack->trySetBeats(m_pBeatsClone);
+    reloadTrackBeats(*m_pLoadedTrack);
 
     // If the user is editing the key and hits enter to close DlgTrackInfo, the
     // editingFinished signal will not fire in time. Run the key text changed

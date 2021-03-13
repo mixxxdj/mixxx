@@ -10,6 +10,9 @@
 DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);
 
+    mixxx_icon->load(QString(":/images/mixxx_icon.svg"));
+    mixxx_logo->load(QString(":/images/mixxx_logo.svg"));
+
     QString mixxxVersion = Version::version();
     QString buildBranch = Version::developmentBranch();
     QString buildRevision = Version::developmentRevision();

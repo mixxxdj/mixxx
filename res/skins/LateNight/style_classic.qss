@@ -1089,10 +1089,7 @@ WTrackMenu QMenu QCheckBox,
     color: #0795b5;
   }
 
-/* Grey. default for all deck labels */
-#PlayPositionText, #PlayPositionTextSmall,
-#DurationText, #RateText,
-#KeyText, #KeyTextSmall,
+/* Grey */
 #PreviewLabel,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,

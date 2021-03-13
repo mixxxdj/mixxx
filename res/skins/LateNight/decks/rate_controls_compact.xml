@@ -78,16 +78,11 @@
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <!-- show_sync_button_compact -->
+              <!-- Rate controls with Sync button -->
               <WidgetGroup>
-                <Connection>
-                  <ConfigKey persist="true">[LateNight],show_sync_button_compact</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
                 <SizePolicy>min,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
-
                   <WidgetGroup>
                     <ObjectName>SyncBoxCompact</ObjectName>
                     <Layout>horizontal</Layout>
@@ -105,19 +100,18 @@
                     </Children>
                   </WidgetGroup>
 
-                  <WidgetGroup>
-                    <ObjectName>AlignCenter</ObjectName>
-                    <SizePolicy>min,min</SizePolicy>
-                    <Layout>vertical</Layout>
+                  <WidgetGroup><!-- Rate slider + range displays -->
+                    <Layout>stacked</Layout>
+                    <SizePolicy>max,me</SizePolicy>
                     <Children>
+
                       <WidgetGroup><!-- Rate slider + center indicator -->
-                        <ObjectName></ObjectName>
-                        <Size>50f,79f</Size>
+                        <Size>54f,81f</Size>
                         <Children>
                           <Label>
                             <ObjectName>RateCenter</ObjectName>
                             <Size>5f,5f</Size>
-                            <Pos>2,37</Pos>
+                            <Pos>2,39</Pos>
                             <Connection>
                               <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
                               <Transform><IsEqual>0.5</IsEqual></Transform>
@@ -127,7 +121,7 @@
                           <SliderComposed>
                             <ObjectName>RateSlider</ObjectName>
                             <Size>40f,79f</Size>
-                            <Pos>5,0</Pos>
+                            <Pos>5,2</Pos>
                             <TooltipId>rate</TooltipId>
                             <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
                             <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact_sync.svg</Slider>
@@ -144,29 +138,41 @@
                           </SliderComposed>
                         </Children>
                       </WidgetGroup><!-- Rate slider + center indicator -->
-                    </Children>
-                  </WidgetGroup>
-                </Children>
-              </WidgetGroup><!-- show_sync_button_compact -->
 
-              <WidgetGroup><!-- !show_sync_button_compact -->
-                <ObjectName>AlignCenter</ObjectName>
+                      <WidgetGroup><!-- Rate range indicators -->
+                        <SizePolicy>min,me</SizePolicy>
+                        <Layout>vertical</Layout>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>RateRangeDisplayTop<Variable name="ChanNum"/></ObjectName>
+                          </SingletonContainer>
+                          <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+                          <SingletonContainer>
+                            <ObjectName>RateRangeDisplayBottom<Variable name="ChanNum"/></ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                      </WidgetGroup><!-- Rate range indicators -->
+                    </Children>
+                  </WidgetGroup><!-- Rate slider + range displays -->
+                </Children>
                 <Connection>
                   <ConfigKey persist="true">[LateNight],show_sync_button_compact</ConfigKey>
-                  <Transform><Not/></Transform>
                   <BindProperty>visible</BindProperty>
                 </Connection>
-                <SizePolicy>min,min</SizePolicy>
-                <Layout>horizontal</Layout>
+              </WidgetGroup><!-- Rate controls with Sync button -->
+
+              <WidgetGroup><!-- Rate controls (no Sync button) -->
+                <SizePolicy>max,min</SizePolicy>
+                <Layout>stacked</Layout>
                 <Children>
                   <WidgetGroup><!-- Rate slider + center indicator -->
                     <ObjectName></ObjectName>
-                    <Size>50f,95f</Size>
+                    <Size>54f,97f</Size>
                     <Children>
                       <Label>
                         <ObjectName>RateCenter</ObjectName>
                         <Size>5f,5f</Size>
-                        <Pos>2,45</Pos>
+                        <Pos>2,47</Pos>
                         <Connection>
                           <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
                           <Transform><IsEqual>0.5</IsEqual></Transform>
@@ -177,7 +183,7 @@
                       <SliderComposed>
                         <ObjectName>RateSlider</ObjectName>
                         <Size>40f,95f</Size>
-                        <Pos>5,0</Pos>
+                        <Pos>5,2</Pos>
                         <TooltipId>rate</TooltipId>
                         <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
                         <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck_compact.svg</Slider>
@@ -194,8 +200,27 @@
                       </SliderComposed>
                     </Children>
                   </WidgetGroup><!-- Rate slider + center indicator -->
+
+                  <WidgetGroup><!-- Rate range indicators -->
+                    <SizePolicy>min,me</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>RateRangeDisplayTop<Variable name="ChanNum"/></ObjectName>
+                      </SingletonContainer>
+                      <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+                      <SingletonContainer>
+                        <ObjectName>RateRangeDisplayBottom<Variable name="ChanNum"/></ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                  </WidgetGroup><!-- Rate range indicators -->
                 </Children>
-              </WidgetGroup><!-- !show_sync_button_compact -->
+                <Connection>
+                  <ConfigKey persist="true">[LateNight],show_sync_button_compact</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- Rate controls (no Sync button) -->
             </Children>
           </WidgetGroup><!-- RateControls -->
 

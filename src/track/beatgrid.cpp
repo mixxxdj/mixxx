@@ -40,12 +40,12 @@ class BeatGridIterator : public BeatIterator {
 };
 
 BeatGrid::BeatGrid(
-        SINT iSampleRate,
+        audio::SampleRate sampleRate,
         const QString& subVersion,
         const mixxx::track::io::BeatGrid& grid,
         double beatLength)
         : m_subVersion(subVersion),
-          m_iSampleRate(iSampleRate),
+          m_sampleRate(sampleRate),
           m_grid(grid),
           m_dBeatLength(beatLength) {
     // BeatGrid should live in the same thread as the track it is associated
@@ -54,7 +54,7 @@ BeatGrid::BeatGrid(
 
 BeatGrid::BeatGrid(const BeatGrid& other, const mixxx::track::io::BeatGrid& grid, double beatLength)
         : m_subVersion(other.m_subVersion),
-          m_iSampleRate(other.m_iSampleRate),
+          m_sampleRate(other.m_sampleRate),
           m_grid(grid),
           m_dBeatLength(beatLength) {
 }
@@ -65,7 +65,7 @@ BeatGrid::BeatGrid(const BeatGrid& other)
 
 // static
 BeatsPointer BeatGrid::makeBeatGrid(
-        SINT iSampleRate,
+        audio::SampleRate sampleRate,
         const QString& subVersion,
         double dBpm,
         double dFirstBeatSample) {
@@ -79,14 +79,14 @@ BeatsPointer BeatGrid::makeBeatGrid(
     grid.mutable_first_beat()->set_frame_position(
             static_cast<google::protobuf::int32>(dFirstBeatSample / kFrameSize));
     // Calculate beat length as sample offsets
-    double beatLength = (60.0 * iSampleRate / dBpm) * kFrameSize;
+    double beatLength = (60.0 * sampleRate / dBpm) * kFrameSize;
 
-    return BeatsPointer(new BeatGrid(iSampleRate, subVersion, grid, beatLength));
+    return BeatsPointer(new BeatGrid(sampleRate, subVersion, grid, beatLength));
 }
 
 // static
 BeatsPointer BeatGrid::makeBeatGrid(
-        SINT sampleRate,
+        audio::SampleRate sampleRate,
         const QString& subVersion,
         const QByteArray& byteArray) {
     mixxx::track::io::BeatGrid grid;
@@ -111,11 +111,6 @@ QByteArray BeatGrid::toByteArray() const {
     return QByteArray(output.data(), static_cast<int>(output.length()));
 }
 
-BeatsPointer BeatGrid::clone() const {
-    BeatsPointer other(new BeatGrid(*this));
-    return other;
-}
-
 double BeatGrid::firstBeatSample() const {
     return m_grid.first_beat().frame_position() * kFrameSize;
 }
@@ -134,7 +129,7 @@ QString BeatGrid::getSubVersion() const {
 
 // internal use only
 bool BeatGrid::isValid() const {
-    return m_iSampleRate > 0 && bpm() > 0;
+    return m_sampleRate.isValid() && bpm() > 0;
 }
 
 // This could be implemented in the Beats Class itself.
@@ -333,7 +328,7 @@ BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
     }
     grid.mutable_bpm()->set_bpm(bpm);
 
-    double beatLength = (60.0 * m_iSampleRate / bpm) * kFrameSize;
+    double beatLength = (60.0 * m_sampleRate / bpm) * kFrameSize;
     return BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 
@@ -343,7 +338,7 @@ BeatsPointer BeatGrid::setBpm(double dBpm) {
     }
     mixxx::track::io::BeatGrid grid = m_grid;
     grid.mutable_bpm()->set_bpm(dBpm);
-    double beatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
+    double beatLength = (60.0 * m_sampleRate / dBpm) * kFrameSize;
     return BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
 

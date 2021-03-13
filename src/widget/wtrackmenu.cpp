@@ -1201,7 +1201,7 @@ class ScaleBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (!pBeats) {
             return;
         }
-        pTrack->setBeats(pBeats->scale(m_bpmScale));
+        pTrack->trySetBeats(pBeats->scale(m_bpmScale));
     }
 
     const mixxx::Beats::BPMScale m_bpmScale;
@@ -1333,10 +1333,7 @@ class ResetBeatsTrackPointerOperation : public mixxx::TrackPointerOperation {
   private:
     void doApply(
             const TrackPointer& pTrack) const override {
-        if (pTrack->isBpmLocked()) {
-            return;
-        }
-        pTrack->setBeats(mixxx::BeatsPointer());
+        pTrack->trySetBeats(mixxx::BeatsPointer());
     }
 };
 
