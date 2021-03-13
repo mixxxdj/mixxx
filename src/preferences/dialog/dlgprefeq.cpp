@@ -53,6 +53,9 @@ DlgPrefEQ::DlgPrefEQ(
           m_bEqAutoReset(false),
           m_bGainAutoReset(false) {
     setupUi(this);
+
+    loadSettings();
+
     // Connection
     connect(SliderHiEQ, &QSlider::valueChanged, this, &DlgPrefEQ::slotUpdateHiEQ);
     connect(SliderHiEQ, &QSlider::sliderMoved, this, &DlgPrefEQ::slotUpdateHiEQ);
@@ -87,7 +90,6 @@ DlgPrefEQ::DlgPrefEQ(
 
     setUpMasterEQ();
 
-    loadSettings();
     slotUpdate();
     slotApply();
 }
@@ -258,7 +260,6 @@ void DlgPrefEQ::loadSettings() {
                                        ConfigKey(kConfigKey, kEqsOnly), "yes") == "yes");
     CheckBoxSingleEqEffect->setChecked(m_pConfig->getValue(
                                                ConfigKey(kConfigKey, kSingleEq), "yes") == "yes");
-    slotSingleEqChecked(CheckBoxSingleEqEffect->isChecked());
 
     double lowEqFreq = 0.0;
     double highEqFreq = 0.0;
