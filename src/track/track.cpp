@@ -142,6 +142,11 @@ void Track::importMetadata(
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
 
+        // Preserve the current bpm temprarily (see below) to avoid overwriting
+        // it with an inconsistent value compared to the beat grid, e.g. after
+        // reloading the bpm from file tags.
+        importedMetadata.refTrackInfo().setBpm(mixxx::Bpm(getBpmWhileLocked()));
+
         bool modified = false;
         // Only set the metadata synchronized flag (column `header_parsed`
         // in the database) from false to true, but never reset it back to
