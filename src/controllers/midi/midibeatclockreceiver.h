@@ -6,6 +6,7 @@ namespace mixxx {
 class MidiBeatClockReceiver {
   public:
     MidiBeatClockReceiver();
+    static bool canReceiveMidiStatus(unsigned char status);
     void receive(unsigned char status, Duration timestamp);
 
     bool isPlaying() const {

@@ -13,6 +13,18 @@ MidiBeatClockReceiver::MidiBeatClockReceiver()
           m_isPlaying(false) {
 }
 
+// static
+bool MidiBeatClockReceiver::canReceiveMidiStatus(unsigned char status) {
+    switch (status) {
+    case MidiOpCode::MIDI_START:
+    case MidiOpCode::MIDI_STOP:
+    case MidiOpCode::MIDI_TIMING_CLK:
+        return true;
+    default:
+        return false;
+    }
+}
+
 void MidiBeatClockReceiver::receive(unsigned char status, Duration timestamp) {
     switch (status) {
     case MidiOpCode::MIDI_START:
