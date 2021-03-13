@@ -182,16 +182,10 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
             }
         }
 
-        //Search for track in mixxx lib to provide bpm information
         QString location = QUrl::fromEncoded(
                 trackDataSource->value(2).toByteArray(), QUrl::StrictMode)
                                    .toLocalFile();
         qDebug() << "location " << location;
-
-        bool trackAlreadyInLibrary = false;
-        TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-                TrackRef::fromFileInfo(location),
-                &trackAlreadyInLibrary);
 
         entry.artist = trackDataSource->value(4).toString();
         entry.title = trackDataSource->value(1).toString();
@@ -230,12 +224,6 @@ ClementineDbConnection::getPlaylistEntries(int playlistId) const {
             entry.duration = 0;
         } else {
             entry.duration = int(duration / 1000000000);
-        }
-
-        //If found in mixxx lib overwrite information
-        if (trackAlreadyInLibrary) {
-            entry.bpm = pTrack->getBpm();
-            entry.duration = pTrack->getDurationInt();
         }
 
         list.append(entry);
