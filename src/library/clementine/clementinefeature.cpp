@@ -105,6 +105,7 @@ void ClementineFeature::activateChild(const QModelIndex& index) {
     if (playlistID > 0) {
         qDebug() << "Activating " << item->getLabel();
         m_pClementinePlaylistModel->setTableModel(playlistID);
+        m_pClementinePlaylistModel->select();
         emit showTrackModel(m_pClementinePlaylistModel);
         emit enableCoverArtDisplay(false);
     }
@@ -128,20 +129,19 @@ void ClementineFeature::appendTrackIdsFromRightClickIndex(
         return;
     }
 
-    std::unique_ptr<ClementinePlaylistModel> pPlaylistModelToAdd =
-            std::make_unique<ClementinePlaylistModel>(
-                    this,
-                    m_pLibrary->trackCollections(),
-                    m_connection);
-    pPlaylistModelToAdd->setTableModel(playlistID);
-    pPlaylistModelToAdd->select();
+    m_pClementinePlaylistModel->setTableModel(playlistID);
 
     // Copy Tracks
-    int rows = pPlaylistModelToAdd->rowCount();
+    int rows = m_pClementinePlaylistModel->rowCount();
     for (int i = 0; i < rows; ++i) {
-        QModelIndex index = pPlaylistModelToAdd->index(i, 0);
+        QModelIndex index = m_pClementinePlaylistModel->index(i, 0);
         if (index.isValid()) {
-            TrackPointer track = pPlaylistModelToAdd->getTrack(index);
+            QString trackLocation = m_pClementinePlaylistModel->getTrackLocation(index);
+            bool fileExists = QFile::exists(trackLocation);
+            if (!fileExists) {
+                continue;
+            }
+            TrackPointer track = m_pClementinePlaylistModel->getTrack(index);
             trackIds->append(track->getId());
         }
     }
