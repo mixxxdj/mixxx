@@ -16,7 +16,7 @@ typedef qint32 int32_t;
 // https://gcc.gnu.org/projects/tree-ssa/vectorization.html
 // This also utilizes AVX registers when compiled for a recent 64-bit CPU
 // using scons optimize=native.
-// "SINT i" is the prefered loop index type that should allow vectoszation in
+// "SINT i" is the preferred loop index type that should allow vectorization in
 // general. Unfortunatly there are expetions where "int i" is required for some reasons.
 
 namespace {
