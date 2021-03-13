@@ -62,6 +62,7 @@
 #include "widget/woverviewrgb.h"
 #include "widget/wpixmapstore.h"
 #include "widget/wpushbutton.h"
+#include "widget/wraterange.h"
 #include "widget/wrecordingduration.h"
 #include "widget/wsearchlineedit.h"
 #include "widget/wsingletoncontainer.h"
@@ -534,6 +535,8 @@ QList<QWidget*> LegacySkinParser::parseNode(const QDomElement& node) {
         result = wrapWidget(parseBeatSpinBox(node));
     } else if (nodeName == "NumberRate") {
         result = wrapWidget(parseNumberRate(node));
+    } else if (nodeName == "RateRange") {
+        result = wrapWidget(parseRateRange(node));
     } else if (nodeName == "NumberPos") {
         result = wrapWidget(parseNumberPos(node));
     } else if (nodeName == "Number" || nodeName == "NumberBpm") {
@@ -1119,6 +1122,19 @@ QWidget* LegacySkinParser::parseStarRating(const QDomElement& node) {
     }
 
     return pStarRating;
+}
+
+QWidget* LegacySkinParser::parseRateRange(const QDomElement& node) {
+    QString group = lookupNodeGroup(node);
+    QPalette palette;
+
+    palette.setBrush(QPalette::Button, Qt::NoBrush);
+
+    WRateRange* pRateRange = new WRateRange(group, m_pParent);
+    setupLabelWidget(node, pRateRange);
+    pRateRange->setPalette(palette);
+
+    return pRateRange;
 }
 
 QWidget* LegacySkinParser::parseNumberRate(const QDomElement& node) {
