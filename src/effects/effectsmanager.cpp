@@ -163,7 +163,7 @@ EffectChainPointer EffectsManager::getEffectChain(
     return m_effectChainSlotsByGroup.value(group);
 }
 
-bool EffectsManager::isAdoptMetaknobValueEnabled() const {
+bool EffectsManager::isAdoptMetaknobSettingEnabled() const {
     return m_pConfig->getValue(ConfigKey("[Effects]", "AdoptMetaknobValue"), true);
 }
 

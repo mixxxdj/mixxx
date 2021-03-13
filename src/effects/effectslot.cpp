@@ -348,7 +348,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
 
     m_pControlLoaded->forceSet(1.0);
 
-    if (m_pEffectsManager->isAdoptMetaknobValueEnabled()) {
+    if (m_pEffectsManager->isAdoptMetaknobSettingEnabled()) {
         if (adoptMetaknobFromPreset) {
             // Update the ControlObject value, but do not sync the parameters
             // with slotEffectMetaParameter. This allows presets to intentionally

@@ -69,7 +69,7 @@ class EffectsManager {
         return m_registeredOutputChannels;
     }
 
-    bool isAdoptMetaknobValueEnabled() const;
+    bool isAdoptMetaknobSettingEnabled() const;
 
   private:
     void addStandardEffectChains();
