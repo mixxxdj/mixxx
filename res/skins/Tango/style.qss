@@ -1714,7 +1714,40 @@ decks, samplers, mic, aux, fx */
       #fadeModeCombobox::drop-down {
         margin: 0px 0px 0px 0px;
       }
-    WEffectChainPresetButton,
+      /* QuickEffect selector in left-hand decks has it's down arrow
+        on the left side, below the QuickEffect toggle */
+      #EffectChainselectorLeft::drop-down {
+        subcontrol-origin: margin;
+        subcontrol-position: left center;
+      }
+    WEffectChainPresetButton {
+      padding: 0px;
+      margin: 0px;
+      border-color: #0f0f0f;
+      border-style: solid;
+      border-width: 0px 1px 1px 1px;
+      border-radius: 2px;
+      background-color: #333;
+      }
+      WEffectChainPresetButton#EffectChainPresetButtonLeft {
+        border-width: 1px 0px 1px 1px;
+      }
+      WEffectChainPresetButton#EffectChainPresetButtonRight {
+        border-width: 1px 1px 1px 0px;
+      }
+      WEffectChainPresetButton:hover {
+        background-color: #151515;
+      }
+      WEffectChainPresetButton::menu-indicator {
+        subcontrol-position: center center;
+        subcontrol-origin: margin;
+        margin: 0px 2px 0px 0px;
+        padding: 0px;
+        border: 0px;
+        outline: none;
+      }
+
+    WEffectChainPresetButton::menu-indicator,
     WEffectSelector::down-arrow,
     WEffectChainPresetSelector::down-arrow,
     #fadeModeCombobox::down-arrow {
@@ -1725,7 +1758,7 @@ decks, samplers, mic, aux, fx */
       height: 20px; */
       image: url(skin:/buttons/btn_menu_arrow.svg) no-repeat center center;
       }
-      WEffectChainPresetButton:hover,
+      WEffectChainPresetButton::menu-indicator:hover,
       WEffectSelector::down-arrow:hover,
       WEffectChainPresetSelector::down-arrow:hover,
       #fadeModeCombobox::down-arrow:hover {
@@ -2150,7 +2183,6 @@ WEffectChainPresetButton QMenu QCheckBox,
 WTrackMenu QCheckBox,
 WTrackMenu QMenu QCheckBox,
 #SkinSettings,
-WEffectChainPresetButton,
 WEffectSelector, WEffectSelector QAbstractScrollArea,
 WEffectChainPresetSelector QAbstractScrollArea,
 #fadeModeCombobox, #fadeModeCombobox QAbstractScrollArea,

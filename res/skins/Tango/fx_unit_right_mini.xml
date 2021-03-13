@@ -104,11 +104,6 @@ Variables:
             <SetVariable name="Color">red</SetVariable>
           </Template>
 
-          <EffectChainPresetButton>
-            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-            <Size>30f,30f</Size>
-          </EffectChainPresetButton>
-
           <Template src="skin:button_2state_persist.xml">
             <SetVariable name="ObjectName">MixModeButton</SetVariable>
             <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
@@ -117,6 +112,19 @@ Variables:
             <SetVariable name="state_1_icon">fx_mixmode_d+w.svg</SetVariable>
             <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
           </Template>
+
+          <WidgetGroup><!-- Effect chain selector -->
+            <ObjectName>AlignCenter</ObjectName>
+            <SizePolicy>max,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <EffectChainPresetButton>
+                <ObjectName>EffectChainPresetButtonRight</ObjectName>
+                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+                <Size>18f,18f</Size>
+              </EffectChainPresetButton>
+            </Children>
+          </WidgetGroup>
 
           <WidgetGroup>
             <Size>3f,1min</Size>
