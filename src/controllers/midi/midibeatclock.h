@@ -1,6 +1,7 @@
 #include <QObject>
 #include <QString>
 
+#include "control/controlobject.h"
 #include "controllers/midi/midibeatclockreceiver.h"
 #include "engine/sync/syncable.h"
 
@@ -9,6 +10,8 @@ namespace mixxx {
 class MidiBeatClock : public QObject, public Syncable, public MidiBeatClockReceiver {
   public:
     MidiBeatClock(const QString& group);
+
+    void receive(unsigned char status, Duration timestamp);
 
     const QString& getGroup() const override {
         return m_group;
@@ -22,6 +25,7 @@ class MidiBeatClock : public QObject, public Syncable, public MidiBeatClockRecei
     /// this mode and return the latest mode in response to getMode().
     void setSyncMode(SyncMode mode) override {
         m_syncMode = mode;
+        m_pSyncLeaderEnabled->setAndConfirm(isMaster(mode));
     }
 
     /// Must NEVER return a mode that was not set directly via
@@ -80,6 +84,10 @@ class MidiBeatClock : public QObject, public Syncable, public MidiBeatClockRecei
   private:
     QString m_group;
     SyncMode m_syncMode;
+
+    QScopedPointer<ControlObject> m_pClockBpm;
+    QScopedPointer<ControlObject> m_pClockBeatDistance;
+    QScopedPointer<ControlObject> m_pSyncLeaderEnabled;
 };
 
 } // namespace mixxx
