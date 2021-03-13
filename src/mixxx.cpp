@@ -226,6 +226,9 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
 }
 
 MixxxMainWindow::~MixxxMainWindow() {
+    if (m_pDeveloperToolsDlg) {
+        delete m_pDeveloperToolsDlg;
+    }
     finalize();
     // SkinLoader depends on Config;
     delete m_pSkinLoader;
