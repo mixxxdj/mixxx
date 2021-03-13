@@ -12,7 +12,8 @@
 #include "util/screensaver.h"
 
 MidiController::MidiController(const QString& group)
-        : Controller(group) {
+        : Controller(group),
+          m_beatClock(group) {
     setDeviceCategory(tr("MIDI Controller"));
 }
 
@@ -214,8 +215,8 @@ void MidiController::receivedShortMessage(unsigned char status,
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
-    if (m_beatClockReceiver.canReceiveMidiStatus(status)) {
-        m_beatClockReceiver.receive(status, timestamp);
+    if (m_beatClock.canReceiveMidiStatus(status)) {
+        m_beatClock.receive(status, timestamp);
     }
 
     // Ignore MIDI beat clock messages (0xF8) until we have proper MIDI sync in

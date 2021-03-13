@@ -3,7 +3,7 @@
 #include "controllers/controller.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
-#include "controllers/midi/midibeatclockreceiver.h"
+#include "controllers/midi/midibeatclock.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
@@ -93,7 +93,7 @@ class MidiController : public Controller {
     std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
-    mixxx::MidiBeatClockReceiver m_beatClockReceiver;
+    mixxx::MidiBeatClock m_beatClock;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;

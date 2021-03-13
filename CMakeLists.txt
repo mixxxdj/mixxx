@@ -468,6 +468,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/learningutils.cpp
   src/controllers/midi/legacymidicontrollermapping.cpp
   src/controllers/midi/legacymidicontrollermappingfilehandler.cpp
+  src/controllers/midi/midibeatclock.cpp
   src/controllers/midi/midibeatclockreceiver.cpp
   src/controllers/midi/midicontroller.cpp
   src/controllers/midi/midienumerator.cpp
