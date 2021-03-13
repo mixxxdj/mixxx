@@ -62,17 +62,16 @@ void EncoderSndfileFlac::setEncoderSettings(const EncoderSettings& settings)
 void EncoderSndfileFlac::encodeBuffer(const CSAMPLE* pBuffer, const int iBufferSize) {
     if (m_pClampBuffer) {
         SINT numSamplesLeft = iBufferSize;
-        while (numSamplesLeft > kEncBufferSize) {
+        while (numSamplesLeft > 0) {
+            const SINT numSamplesToWrite = math_min(numSamplesLeft, kEncBufferSize);
             convertFloat32ToIntFormat(m_pClampBuffer.get(),
                     pBuffer,
-                    kEncBufferSize,
+                    numSamplesToWrite,
                     m_sfInfo.format);
-            sf_write_int(m_pSndfile, m_pClampBuffer.get(), kEncBufferSize);
-            pBuffer += kEncBufferSize;
-            numSamplesLeft -= kEncBufferSize;
+            sf_write_int(m_pSndfile, m_pClampBuffer.get(), numSamplesToWrite);
+            pBuffer += numSamplesToWrite;
+            numSamplesLeft -= numSamplesToWrite;
         }
-        convertFloat32ToIntFormat(m_pClampBuffer.get(), pBuffer, numSamplesLeft, m_sfInfo.format);
-        sf_write_int(m_pSndfile, m_pClampBuffer.get(), numSamplesLeft);
     } else {
         sf_write_float(m_pSndfile, pBuffer, iBufferSize);
     }
