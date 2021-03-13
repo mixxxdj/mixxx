@@ -59,17 +59,17 @@ EffectManifestPointer EffectsBackendManager::getManifestFromUniqueId(
         return EffectManifestPointer();
     }
     int delimiterIndex = uid.lastIndexOf(" ");
-    EffectBackendType backendType =
-            EffectsBackend::backendTypeFromString(uid.mid(delimiterIndex + 1));
-    if (backendType == EffectBackendType::Unknown) {
-        // Mixxx 2.0 - 2.3 did not store the backend type in mixxx.cfg,
-        // so this code will be executed once when upgrading to Mixxx 2.4.
-        // If it is triggered at any later time, there is a bug somewhere.
-        // Do not manipulate the string passed to this function, just pass
-        // it directly to BuiltInBackend.
+    auto backendType = EffectBackendType::BuiltIn;
+    // Mixxx 2.0 - 2.3 did not store the backend type in mixxx.cfg,
+    // so this code will be executed once when upgrading to Mixxx 2.4.
+    // If it is triggered at any later time, there is a bug somewhere.
+    // Do not manipulate the string passed to this function, just pass
+    // it directly to BuiltInBackend.
+    if (delimiterIndex == -1) {
         return m_effectsBackends.value(EffectBackendType::BuiltIn)
                 ->getManifest(uid);
     }
+    backendType = EffectsBackend::backendTypeFromString(uid.mid(delimiterIndex + 1));
     return m_effectsBackends.value(backendType)
             ->getManifest(uid.mid(-1, delimiterIndex + 1));
 }
