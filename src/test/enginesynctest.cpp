@@ -550,14 +550,14 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     ASSERT_TRUE(isExplicitMaster(m_sGroup1));
     ASSERT_TRUE(isFollower(m_sGroup2));
 
-    // Now set channel 1 to not-master, it will become a follower.
-    // master is handed over to Internal clock
+    // Now set channel 1 to not-master. The system will choose deck 2 as the next best
+    // option for soft master
     pButtonSyncMaster1->slotSet(0);
     ProcessBuffer();
 
     ASSERT_TRUE(isFollower(m_sInternalClockGroup));
     ASSERT_TRUE(isFollower(m_sGroup1));
-    ASSERT_TRUE(isFollower(m_sGroup2));
+    ASSERT_TRUE(isSoftMaster(m_sGroup2));
 }
 
 TEST_F(EngineSyncTest, SetExplicitMasterByLightsNoTracks) {

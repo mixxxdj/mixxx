@@ -196,8 +196,14 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
         return m_pMasterSyncable;
     }
 
-    Syncable* first_stopped_deck = nullptr;
+    // First preference: some other sync deck that is not playing.
+    Syncable* first_other_playing_deck = nullptr;
+    // Second preference: whatever the first playing sync deck is, even if it's us.
     Syncable* first_playing_deck = nullptr;
+    // Third preference: the first stopped sync deck.
+    Syncable* first_stopped_deck = nullptr;
+    // Last resort: nullptr.
+
     int stopped_deck_count = 0;
     int playing_deck_count = 0;
 
@@ -219,6 +225,9 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
             if (playing_deck_count == 0) {
                 first_playing_deck = pSyncable;
             }
+            if (!first_other_playing_deck && pSyncable != enabling_syncable) {
+                first_other_playing_deck = pSyncable;
+            }
             playing_deck_count++;
         } else {
             if (stopped_deck_count == 0) {
@@ -231,7 +240,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     if (playing_deck_count == 1) {
         return first_playing_deck;
     } else if (playing_deck_count > 1) {
-        return nullptr;
+        return first_other_playing_deck;
     }
 
     // No valid playing sync decks
