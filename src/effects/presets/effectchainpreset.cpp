@@ -11,9 +11,11 @@ EffectChainPreset::EffectChainPreset()
 EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
     // chainElement can come from untrusted input from the filesystem, so do not DEBUG_ASSERT
     if (chainElement.tagName() != EffectXml::Chain) {
+        qWarning() << "Effect chain preset has no" << EffectXml::Chain << "XML element";
         return;
     }
     if (!chainElement.hasChildNodes()) {
+        qWarning() << "Effect chain preset has no child XML nodes";
         return;
     }
 
@@ -34,6 +36,9 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
             EffectPresetPointer pPreset(new EffectPreset(effectElement));
             m_effectPresets.append(pPreset);
         }
+    }
+    if (isEmpty()) {
+        qWarning() << "Effect chain preset has no effects";
     }
 }
 

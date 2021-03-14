@@ -19,11 +19,13 @@ const QString kFolderDelimiter = QStringLiteral("/");
 EffectChainPresetPointer loadPresetFromFile(const QString& filePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly)) {
+        qWarning() << "Could not open chain preset file" << filePath;
         return nullptr;
     }
     QDomDocument doc;
     if (!doc.setContent(&file)) {
         file.close();
+        qWarning() << "Could not read XML from chain preset file" << filePath;
         return nullptr;
     }
     EffectChainPresetPointer pEffectChainPreset(
