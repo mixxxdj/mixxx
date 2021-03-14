@@ -663,7 +663,7 @@ double BpmControl::getNearestPositionInPhase(
     }
 
     double dOtherBeatFraction;
-    if (syncMode == SYNC_FOLLOWER) {
+    if (isFollower(syncMode)) {
         // If we're a follower, it's easy to get the other beat fraction
         dOtherBeatFraction = m_dSyncTargetBeatDistance.getValue();
     } else {
@@ -797,6 +797,14 @@ double BpmControl::getBeatMatchPosition(
     // explicit master always syncs to itself, so keep it null
     if (getSyncMode() != SYNC_MASTER_EXPLICIT) {
         pOtherEngineBuffer = pickSyncTarget();
+        if (kLogger.traceEnabled()) {
+            if (pOtherEngineBuffer) {
+                kLogger.trace() << "BpmControl::getBeatMatchPosition sync target"
+                                << pOtherEngineBuffer->getGroup();
+            } else {
+                kLogger.trace() << "BpmControl::getBeatMatchPosition no sync target found";
+            }
+        }
     }
     if (playing) {
         if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
@@ -1068,15 +1076,15 @@ double BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
-    double beat_distance = getBeatDistance(getSampleOfTrack().current);
-    m_pThisBeatDistance->set(beat_distance);
+    double beatDistance = getBeatDistance(getSampleOfTrack().current);
+    m_pThisBeatDistance->set(beatDistance);
     if (!isSynchronized()) {
         m_dUserOffset.setValue(0.0);
     }
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::updateBeatDistance" << beat_distance;
+        kLogger.trace() << getGroup() << "BpmControl::updateBeatDistance" << beatDistance;
     }
-    return beat_distance;
+    return beatDistance;
 }
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {

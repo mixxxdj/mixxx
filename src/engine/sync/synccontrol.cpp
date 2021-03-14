@@ -306,7 +306,7 @@ void SyncControl::updateTargetBeatDistance() {
 
 double SyncControl::getBpm() const {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::getBpm()" << m_pBpm->get();
+        kLogger.trace() << getGroup() << "SyncControl::getBpm()";
     }
     return m_pBpm->get() / m_masterBpmAdjustFactor;
 }
@@ -360,6 +360,9 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 }
 
 void SyncControl::slotControlPlay(double play) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::slotControlPlay" << getSyncMode() << play;
+    }
     m_pEngineSync->notifyPlaying(this, play > 0.0);
 }
 
@@ -398,6 +401,9 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
 }
 
 void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::slotSyncMasterEnabledChangeRequest" << getGroup();
+    }
     SyncMode mode = getSyncMode();
     if (state > 0.0) {
         if (mode == SYNC_MASTER_EXPLICIT) {
@@ -425,6 +431,9 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
 }
 
 void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::slotSyncEnabledChangeRequest" << getGroup();
+    }
     bool bEnabled = enabled > 0.0;
 
     // Allow a request for state change even if it's the same as the current
@@ -449,7 +458,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
 
     double bpm = local_bpm * m_pRateRatio->get();
 
-    if (syncMode == SYNC_FOLLOWER) {
+    if (isFollower(syncMode)) {
         // In this case we need an update from the current master to adjust
         // the rate that we continue with the master BPM. If there is no
         // master bpm, our bpm value is adopted and the m_masterBpmAdjustFactor
@@ -459,7 +468,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
         DEBUG_ASSERT(isMaster(syncMode));
         // We might have adopted an adjust factor when becoming master.
         // Keep it when reporting our bpm.
-        m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
+        m_pEngineSync->notifyBaseBpmChanged(this, bpm / m_masterBpmAdjustFactor);
     }
 }
 
@@ -471,7 +480,7 @@ void SyncControl::slotRateChanged() {
     if (bpm > 0 && isSynchronized()) {
         // When reporting our bpm, remove the multiplier so the masters all
         // think the followers have the same bpm.
-        m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
+        m_pEngineSync->notifyBaseBpmChanged(this, bpm / m_masterBpmAdjustFactor);
     }
 }
 

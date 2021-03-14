@@ -25,10 +25,17 @@ class EngineSync : public BaseSyncableListener {
     // Syncables notify EngineSync directly about various events. EngineSync
     // does not have a say in whether these succeed or not, they are simply
     // notifications.
-    void notifyBpmChanged(Syncable* pSyncable, double bpm) override;
+    void notifyBaseBpmChanged(Syncable* pSyncable, double bpm) override;
     void requestBpmUpdate(Syncable* pSyncable, double bpm) override;
+
+    // Instantaneous BPM refers to the actual, honest-to-god speed of playback
+    // at any moment, including any scratching that may be happening.
     void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) override;
+
+    // the beat distance is updated on every callback.
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) override;
+
+    // Notify the engine that a syncable has started or stopped playing
     void notifyPlaying(Syncable* pSyncable, bool playing) override;
     void notifyScratching(Syncable* pSyncable, bool scratching) override;
 
@@ -54,6 +61,8 @@ class EngineSync : public BaseSyncableListener {
 
     // Find a deck to match against, used in the case where there is no sync master.
     // Looks first for a playing deck, and falls back to the first non-playing deck.
+    // If the requester is playing, don't match against a non-playing deck because
+    // that would be strange behavior for the user.
     // Returns nullptr if none can be found.
     Syncable* findBpmMatchTarget(Syncable* requester);
 
@@ -61,7 +70,7 @@ class EngineSync : public BaseSyncableListener {
     void activateMaster(Syncable* pSyncable, bool explicitMaster);
 
     // Activate a specific channel as Follower. Sets the syncable's bpm and
-    // beat_distance to match the master.
+    // beatDistance to match the master.
     void activateFollower(Syncable* pSyncable);
 
     // Unsets all sync state on a Syncable.
