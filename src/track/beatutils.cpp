@@ -291,7 +291,7 @@ double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double ma
 
     // Probe the reasonable multipliers for 0.5
     const double roundBpmWidth = maxBpm - minBpm;
-    if (roundBpmWidth > 1.0 / 2) {
+    if (roundBpmWidth > 0.5) {
         // 0.5 BPM are only reasonable if the double value is not insane
         // or the 2/3 value is not too small.
         if (centerBpm < 85) {
