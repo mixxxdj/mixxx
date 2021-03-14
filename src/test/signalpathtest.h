@@ -217,6 +217,7 @@ class BaseSignalPathTest : public MixxxTest {
     }
 
     void ProcessBuffer() {
+        qDebug() << "------- Process Buffer -------";
         m_pEngineMaster->process(kProcessBufferSize);
     }
 
