@@ -57,7 +57,8 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Be"
             << "S&eacute;bastien Blaisot"
             << "ronso0"
-            << "Jan Holthuis";
+            << "Jan Holthuis"
+            << "Nikolaus Einhauser";
 
     // This list should contains all contributors committed
     // code to the Mixxx core within the past two years.
@@ -82,7 +83,6 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "beenisss"
             << "Bernd Binder"
             << "Pradyuman"
-            << "Nikolaus Einhauser"
             << "Nik Martin"
             << "Kerrick Staley"
             << "Raphael Graf"
