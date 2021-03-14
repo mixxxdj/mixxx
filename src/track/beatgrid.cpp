@@ -267,7 +267,7 @@ bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
 
 double BeatGrid::getBpm() const {
     if (!isValid()) {
-        return 0;
+        return mixxx::Bpm::kValueUndefined;
     }
     return bpm();
 }

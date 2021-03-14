@@ -195,14 +195,15 @@ TEST(BeatGridTest, FromMetadata) {
     TrackPointer pTrack = newTrack(sampleRate);
 
     double bpm = 60.1;
-    double echoBpm = pTrack->trySetBpm(bpm);
-    EXPECT_DOUBLE_EQ(echoBpm, bpm);
+    ASSERT_TRUE(pTrack->trySetBpm(bpm));
+    EXPECT_DOUBLE_EQ(pTrack->getBpm(), bpm);
 
     auto pBeats = pTrack->getBeats();
     EXPECT_DOUBLE_EQ(pBeats->getBpm(), bpm);
 
-    echoBpm = pTrack->trySetBpm(-60.1);
-    EXPECT_DOUBLE_EQ(echoBpm, mixxx::Bpm::kValueUndefined);
+    // Invalid bpm resets the bpm
+    ASSERT_TRUE(pTrack->trySetBpm(-60.1));
+    EXPECT_DOUBLE_EQ(pTrack->getBpm(), mixxx::Bpm::kValueUndefined);
 
     pBeats = pTrack->getBeats();
     EXPECT_EQ(pBeats.isNull(), true);
