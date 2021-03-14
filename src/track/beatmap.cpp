@@ -20,7 +20,8 @@ using mixxx::track::io::Beat;
 
 namespace {
 
-const int kFrameSize = 2;
+constexpr int kFrameSize = 2;
+constexpr int kMinNumberOfBeats = 2; // a map needs at least two beats to have a tempo
 
 inline double samplesToFrames(const double samples) {
     return floor(samples / kFrameSize);
@@ -269,7 +270,7 @@ QString BeatMap::getSubVersion() const {
 }
 
 bool BeatMap::isValid() const {
-    return m_sampleRate.isValid() && m_beats.size() > 1;
+    return m_sampleRate.isValid() && m_beats.size() >= kMinNumberOfBeats;
 }
 
 double BeatMap::findNextBeat(double dSamples) const {
