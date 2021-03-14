@@ -74,6 +74,7 @@ jobs:
           - name: Windows 2019 (MSVC)
             os: windows-2019
             cmake_args: >-
+              -DFFMPEG=ON
               -DHSS1394=ON
               -DKEYFINDER=OFF
               -DLOCALECOMPARE=ON
