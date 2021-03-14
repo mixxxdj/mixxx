@@ -283,7 +283,7 @@ double BeatUtils::makeConstBpm(
 // static
 double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double maxBpm) {
     // First try to snap to a full integer BPM
-    const double snapBpm = round(centerBpm);
+    double snapBpm = round(centerBpm);
     if (snapBpm > minBpm && snapBpm < maxBpm) {
         // Success
         return snapBpm;
@@ -310,7 +310,7 @@ double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double ma
     } else {
         // We are here if we have more that ~75 beats and ~30 s
         // try to snap to a 1/12 Bpm
-        const double snapBpm = round(centerBpm * 12) / 12;
+        snapBpm = round(centerBpm * 12) / 12;
         if (snapBpm > minBpm && snapBpm < maxBpm) {
             // Success
             return snapBpm;
