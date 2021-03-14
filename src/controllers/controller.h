@@ -2,11 +2,13 @@
 
 #include <QElapsedTimer>
 #include <QTimerEvent>
+#include <memory>
 
 #include "controllers/controllermappinginfo.h"
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
+#include "engine/sync/syncable.h"
 #include "util/duration.h"
 
 class ControllerJSProxy;
@@ -115,6 +117,10 @@ class Controller : public QObject {
     // To be called in sub-class' close() functions after stopping any input
     // polling/processing but before closing the device.
     virtual void stopEngine();
+
+    virtual std::shared_ptr<Syncable> syncable() const {
+        return nullptr;
+    }
 
     // To be called when receiving events
     void triggerActivity();

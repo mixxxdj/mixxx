@@ -38,6 +38,10 @@ class MidiController : public Controller {
 
     bool matchMapping(const MappingInfo& mapping) override;
 
+    std::shared_ptr<Syncable> syncable() const override {
+        return m_pBeatClock;
+    }
+
   signals:
     void messageReceived(unsigned char status, unsigned char control, unsigned char value);
 
@@ -93,7 +97,7 @@ class MidiController : public Controller {
     std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
-    mixxx::MidiBeatClock m_beatClock;
+    std::shared_ptr<mixxx::MidiBeatClock> m_pBeatClock;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;

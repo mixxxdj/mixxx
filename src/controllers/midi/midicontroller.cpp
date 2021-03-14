@@ -13,7 +13,7 @@
 
 MidiController::MidiController(const QString& group)
         : Controller(group),
-          m_beatClock(group) {
+          m_pBeatClock(std::make_shared<mixxx::MidiBeatClock>(group)) {
     setDeviceCategory(tr("MIDI Controller"));
 }
 
@@ -215,8 +215,8 @@ void MidiController::receivedShortMessage(unsigned char status,
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
-    if (m_beatClock.canReceiveMidiStatus(status)) {
-        m_beatClock.receive(status, timestamp);
+    if (m_pBeatClock->canReceiveMidiStatus(status)) {
+        m_pBeatClock->receive(status, timestamp);
     }
 
     // Ignore MIDI beat clock messages (0xF8) until we have proper MIDI sync in
