@@ -185,24 +185,25 @@ double BeatUtils::makeConstBpm(
 
     // Find a region at the beginning of the track with a similar tempo and phase
     for (int i = 0; i < midRegion; ++i) {
-        double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
-        int numberOfBeats = static_cast<int>((length / constantRegions[i].beatLength) + 0.5);
+        const double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
+        const int numberOfBeats = static_cast<int>((length / constantRegions[i].beatLength) + 0.5);
         if (numberOfBeats < kMinRegionBeatCount) {
             // Request short regions, too unstable.
             continue;
         }
-        double minRoundSamples = constantRegions[i].beatLength -
+        const double minRoundSamples = constantRegions[i].beatLength -
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
-        double maxRoundSamples = constantRegions[i].beatLength +
+        const double maxRoundSamples = constantRegions[i].beatLength +
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
         // check if the tempo of the longest region is part of the rounding range of this region
         if (longesRegionBeatLenth > minRoundSamples &&
                 longesRegionBeatLenth < maxRoundSamples) {
             // Now check if both regions are at the same phase.
-            double newLength = constantRegions[midRegion + 1].firstBeat -
+            const double newLength = constantRegions[midRegion + 1].firstBeat -
                     constantRegions[i].firstBeat;
-            int numberOfOldBeats = static_cast<int>((newLength / longesRegionBeatLenth) + 0.5);
-            double newBeatLength = newLength / numberOfOldBeats;
+            const int numberOfOldBeats =
+                    static_cast<int>((newLength / longesRegionBeatLenth) + 0.5);
+            const double newBeatLength = newLength / numberOfOldBeats;
             if (newBeatLength > longestRegionMinRoundSamples &&
                     newBeatLength < longestRegionMaxRoundSamples) {
                 longesRegionLength = newLength;
@@ -223,22 +224,23 @@ double BeatUtils::makeConstBpm(
 
     // Find a region at the end of the track with similar tempo and phase
     for (int i = constantRegions.size() - 2; i > midRegion; --i) {
-        double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
-        int numberOfBeats = static_cast<int>((length / constantRegions[i].beatLength) + 0.5);
+        const double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
+        const int numberOfBeats = static_cast<int>((length / constantRegions[i].beatLength) + 0.5);
         if (numberOfBeats < kMinRegionBeatCount) {
             continue;
         }
-        double minRoundSamples = constantRegions[i].beatLength -
+        const double minRoundSamples = constantRegions[i].beatLength -
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
-        double maxRoundSamples = constantRegions[i].beatLength +
+        const double maxRoundSamples = constantRegions[i].beatLength +
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
         if (longesRegionLength > minRoundSamples &&
                 longesRegionLength < maxRoundSamples) {
             // Now check if both regions are at the same phase.
-            double newLength = constantRegions[i + 1].firstBeat -
+            const double newLength = constantRegions[i + 1].firstBeat -
                     constantRegions[startRegion].firstBeat;
-            int numberOfOldBeats = static_cast<int>((newLength / longesRegionBeatLenth) + 0.5);
-            double newBeatLength = newLength / numberOfOldBeats;
+            const int numberOfOldBeats =
+                    static_cast<int>((newLength / longesRegionBeatLenth) + 0.5);
+            const double newBeatLength = newLength / numberOfOldBeats;
             if (newBeatLength > longestRegionMinRoundSamples &&
                     newBeatLength < longestRegionMaxRoundSamples) {
                 longesRegionLength = newLength;
@@ -264,13 +266,13 @@ double BeatUtils::makeConstBpm(
 
     // Create a const region region form the first beat of the first region to the last beat of the last region.
 
-    double minRoundBpm = 60 * sampleRate / longestRegionMaxRoundSamples;
-    double maxRoundBpm = 60 * sampleRate / longestRegionMinRoundSamples;
-    double centerBpm = 60 * sampleRate / longesRegionBeatLenth;
+    const double minRoundBpm = 60 * sampleRate / longestRegionMaxRoundSamples;
+    const double maxRoundBpm = 60 * sampleRate / longestRegionMinRoundSamples;
+    const double centerBpm = 60 * sampleRate / longesRegionBeatLenth;
 
     qDebug() << "minRoundBpm" << minRoundBpm;
     qDebug() << "maxRoundBpm" << maxRoundBpm;
-    double roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
+    const double roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
 
     if (pFirstBeat) {
         *pFirstBeat = constantRegions[startRegion].firstBeat;
@@ -281,14 +283,14 @@ double BeatUtils::makeConstBpm(
 // static
 double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double maxBpm) {
     // First try to snap to a full integer BPM
-    double snapBpm = round(centerBpm);
+    const double snapBpm = round(centerBpm);
     if (snapBpm > minBpm && snapBpm < maxBpm) {
         // Success
         return snapBpm;
     }
 
     // Probe the reasonable multipliers for 0.5
-    double roundBpmWidth = maxBpm - minBpm;
+    const double roundBpmWidth = maxBpm - minBpm;
     if (roundBpmWidth > 1.0 / 2) {
         // 0.5 BPM are only reasonable if the double value is not insane
         // or the 2/3 value is not too small.
@@ -308,7 +310,7 @@ double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double ma
     } else {
         // We are here if we have more that ~75 beats and ~30 s
         // try to snap to a 1/12 Bpm
-        double snapBpm = round(centerBpm * 12) / 12;
+        const double snapBpm = round(centerBpm * 12) / 12;
         if (snapBpm > minBpm && snapBpm < maxBpm) {
             // Success
             return snapBpm;
@@ -342,8 +344,8 @@ double BeatUtils::adjustPhase(
         double bpm,
         mixxx::audio::SampleRate sampleRate,
         const QVector<double>& beats) {
-    double beatLength = 60 * sampleRate / bpm;
-    double startOffset = fmod(firstBeat, beatLength);
+    const double beatLength = 60 * sampleRate / bpm;
+    const double startOffset = fmod(firstBeat, beatLength);
     double offsetAdjust = 0;
     double offsetAdjustCount = 0;
     for (const auto& beat : beats) {
