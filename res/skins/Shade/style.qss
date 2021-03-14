@@ -915,3 +915,9 @@ QPushButton#pushButtonRepeatPlaylist {
 #HotcueButton {
     background-color: #aab2b7;
 }
+
+WRateRange {
+  color: #4B515F;
+  font-size: 10px;
+  qproperty-alignment: 'AlignCenter';
+}

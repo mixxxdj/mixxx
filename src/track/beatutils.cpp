@@ -1,17 +1,12 @@
-/*
- * beatutils.cpp
- *
- *  Created on: 30/nov/2011
- *      Author: vittorio
- */
+#include "track/beatutils.h"
 
-#include <algorithm>
-#include <QtDebug>
-#include <QString>
 #include <QList>
 #include <QMap>
+#include <QString>
+#include <QtDebug>
+#include <algorithm>
 
-#include "track/beatutils.h"
+#include "track/bpm.h"
 #include "util/math.h"
 
 namespace {
@@ -29,7 +24,7 @@ constexpr int kMinRegionBeatCount = 16;
 } // namespace
 
 double BeatUtils::calculateAverageBpm(int numberOfBeats,
-        int sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         double lowerFrame,
         double upperFrame) {
     double frames = upperFrame - lowerFrame;
@@ -40,8 +35,9 @@ double BeatUtils::calculateAverageBpm(int numberOfBeats,
     return 60.0 * numberOfBeats * sampleRate / frames;
 }
 
-double BeatUtils::calculateBpm(const QVector<double>& beats,
-        const mixxx::audio::SampleRate& sampleRate) {
+double BeatUtils::calculateBpm(
+        const QVector<double>& beats,
+        mixxx::audio::SampleRate sampleRate) {
     if (beats.size() < 2) {
         return 0;
     }
@@ -59,7 +55,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats,
 
 QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
         const QVector<double>& coarseBeats,
-        const mixxx::audio::SampleRate& sampleRate) {
+        mixxx::audio::SampleRate sampleRate) {
     // The QM Beat detector has a step size of 512 frames @ 44100 Hz. This means that
     // Single beats have has a jitter of +- 12 ms around the actual position.
     // Expressed in BPM it means we have for instance steps of these BPM value around 120 BPM
@@ -145,7 +141,7 @@ QVector<BeatUtils::ConstRegion> BeatUtils::retrieveConstRegions(
 // static
 double BeatUtils::makeConstBpm(
         const QVector<BeatUtils::ConstRegion>& constantRegions,
-        const mixxx::audio::SampleRate& sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         double* pFirstBeat) {
     // We assume her the track was recorded with an unhear-able static metronome.
     // This metronome is likely at a full BPM.
@@ -344,7 +340,7 @@ QVector<double> BeatUtils::getBeats(const QVector<BeatUtils::ConstRegion>& const
 double BeatUtils::adjustPhase(
         double firstBeat,
         double bpm,
-        const mixxx::audio::SampleRate& sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         const QVector<double>& beats) {
     double beatLength = 60 * sampleRate / bpm;
     double startOffset = fmod(firstBeat, beatLength);

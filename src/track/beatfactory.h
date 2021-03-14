@@ -10,12 +10,12 @@ class Track;
 class BeatFactory {
   public:
     static mixxx::BeatsPointer loadBeatsFromByteArray(
-            SINT sampleRat,
+            mixxx::audio::SampleRate sampleRate,
             const QString& beatsVersion,
             const QString& beatsSubVersion,
             const QByteArray& beatsSerialized);
     static mixxx::BeatsPointer makeBeatGrid(
-            SINT sampleRat,
+            mixxx::audio::SampleRate sampleRate,
             double dBpm,
             double dFirstBeatSample);
 
@@ -28,5 +28,5 @@ class BeatFactory {
             const QVector<double>& beats,
             const QHash<QString, QString>& extraVersionInfo,
             bool fixedTempo,
-            const mixxx::audio::SampleRate& sampleRate);
+            mixxx::audio::SampleRate sampleRate);
 };

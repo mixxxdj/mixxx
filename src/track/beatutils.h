@@ -5,7 +5,6 @@
 #include "audio/types.h"
 #include "util/math.h"
 
-
 class BeatUtils {
   public:
     struct ConstRegion {
@@ -14,26 +13,26 @@ class BeatUtils {
     };
 
     static double calculateBpm(const QVector<double>& beats,
-            const mixxx::audio::SampleRate& sampleRate);
+            mixxx::audio::SampleRate sampleRate);
 
     static QVector<ConstRegion> retrieveConstRegions(
             const QVector<double>& coarseBeats,
-            const mixxx::audio::SampleRate& sampleRate);
+            mixxx::audio::SampleRate sampleRate);
 
     static double calculateAverageBpm(int numberOfBeats,
-            int sampleRate,
+            mixxx::audio::SampleRate sampleRate,
             double lowerFrame,
             double upperFrame);
 
     static double makeConstBpm(
             const QVector<ConstRegion>& constantRegions,
-            const mixxx::audio::SampleRate& sampleRate,
+            mixxx::audio::SampleRate sampleRate,
             double* pFirstBeat);
 
     static double adjustPhase(
             double firstBeat,
             double bpm,
-            const mixxx::audio::SampleRate& sampleRate,
+            mixxx::audio::SampleRate sampleRate,
             const QVector<double>& beats);
 
     static QVector<double> getBeats(const QVector<ConstRegion>& constantRegions);

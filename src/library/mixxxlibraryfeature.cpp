@@ -24,6 +24,7 @@ namespace {
 
 const QStringList DEFAULT_COLUMNS = {
         LIBRARYTABLE_ID,
+        LIBRARYTABLE_COLOR,
         LIBRARYTABLE_PLAYED,
         LIBRARYTABLE_TIMESPLAYED,
         //has to be up here otherwise Played and TimesPlayed are not shown
@@ -50,7 +51,6 @@ const QStringList DEFAULT_COLUMNS = {
         TRACKLOCATIONSTABLE_FSDELETED,
         LIBRARYTABLE_COMMENT,
         LIBRARYTABLE_MIXXXDELETED,
-        LIBRARYTABLE_COLOR,
         LIBRARYTABLE_COVERART_SOURCE,
         LIBRARYTABLE_COVERART_TYPE,
         LIBRARYTABLE_COVERART_LOCATION,

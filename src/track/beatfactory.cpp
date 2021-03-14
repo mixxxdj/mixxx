@@ -13,7 +13,7 @@ const QString kRoundingVersion = QStringLiteral("V2");
 } // namespace
 
 mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
-        SINT sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         const QString& beatsVersion,
         const QString& beatsSubVersion,
         const QByteArray& beatsSerialized) {
@@ -32,7 +32,9 @@ mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
 }
 
 mixxx::BeatsPointer BeatFactory::makeBeatGrid(
-        SINT sampleRate, double dBpm, double dFirstBeatSample) {
+        mixxx::audio::SampleRate sampleRate,
+        double dBpm,
+        double dFirstBeatSample) {
     return mixxx::BeatGrid::makeBeatGrid(sampleRate, QString(), dBpm, dFirstBeatSample);
 }
 
@@ -78,7 +80,7 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
         const QVector<double>& beats,
         const QHash<QString, QString>& extraVersionInfo,
         bool fixedTempo,
-        const mixxx::audio::SampleRate& sampleRate) {
+        mixxx::audio::SampleRate sampleRate) {
     const QString version = getPreferredVersion(fixedTempo);
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
