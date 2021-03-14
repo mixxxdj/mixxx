@@ -294,11 +294,11 @@ double BeatUtils::roundBpmWithinRange(double minBpm, double centerBpm, double ma
     if (roundBpmWidth > 0.5) {
         // 0.5 BPM are only reasonable if the double value is not insane
         // or the 2/3 value is not too small.
-        if (centerBpm < 85) {
+        if (centerBpm < 85.0) {
             // this cane be actually up to 175 BPM
             // allow halve BPM values
             return round(centerBpm * 2) / 2;
-        } else if (centerBpm > 127) {
+        } else if (centerBpm > 127.0) {
             // optimize for 2/3 going down to 85
             return round(centerBpm / 3 * 2) * 3 / 2;
         }
