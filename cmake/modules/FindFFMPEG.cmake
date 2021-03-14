@@ -33,6 +33,7 @@
 #   libavutil
 #   libpostproc
 #   libswscale
+#   libswresample
 #
 # the following variables will be defined
 #
