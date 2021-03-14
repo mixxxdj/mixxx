@@ -60,6 +60,11 @@ bool BaseSyncableListener::syncDeckExists() const {
             return true;
         }
     }
+    for (const auto& pSyncable : qAsConst(m_controllerSyncables)) {
+        if (pSyncable->isSynchronized() && pSyncable->getBaseBpm() > 0) {
+            return true;
+        }
+    }
     return false;
 }
 
@@ -96,6 +101,13 @@ void BaseSyncableListener::setMasterBpm(Syncable* pSource, double bpm) {
         }
         pSyncable->setMasterBpm(bpm);
     }
+    for (const auto& pSyncable : qAsConst(m_controllerSyncables)) {
+        if (pSyncable.get() == pSource ||
+                !pSyncable->isSynchronized()) {
+            continue;
+        }
+        pSyncable->setMasterBpm(bpm);
+    }
 }
 
 void BaseSyncableListener::setMasterInstantaneousBpm(Syncable* pSource, double bpm) {
@@ -109,6 +121,13 @@ void BaseSyncableListener::setMasterInstantaneousBpm(Syncable* pSource, double b
         }
         pSyncable->setInstantaneousBpm(bpm);
     }
+    for (const auto& pSyncable : qAsConst(m_controllerSyncables)) {
+        if (pSyncable.get() == pSource ||
+                !pSyncable->isSynchronized()) {
+            continue;
+        }
+        pSyncable->setInstantaneousBpm(bpm);
+    }
 }
 
 void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beat_distance) {
@@ -117,6 +136,13 @@ void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beat_
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
+                !pSyncable->isSynchronized()) {
+            continue;
+        }
+        pSyncable->setMasterBeatDistance(beat_distance);
+    }
+    for (const auto& pSyncable : qAsConst(m_controllerSyncables)) {
+        if (pSyncable.get() == pSource ||
                 !pSyncable->isSynchronized()) {
             continue;
         }
@@ -137,6 +163,13 @@ void BaseSyncableListener::setMasterParams(Syncable* pSource, double beat_distan
         }
         pSyncable->setMasterParams(beat_distance, base_bpm, bpm);
     }
+    for (const auto& pSyncable : qAsConst(m_controllerSyncables)) {
+        if (pSyncable.get() == pSource ||
+                !pSyncable->isSynchronized()) {
+            continue;
+        }
+        pSyncable->setMasterParams(beat_distance, base_bpm, bpm);
+    }
 }
 
 void BaseSyncableListener::checkUniquePlayingSyncable() {
@@ -152,6 +185,19 @@ void BaseSyncableListener::checkUniquePlayingSyncable() {
                 return;
             }
             unique_syncable = pSyncable;
+            ++playing_sync_decks;
+        }
+    }
+    for (const auto& pSyncable : qAsConst(m_controllerSyncables)) {
+        if (!pSyncable->isSynchronized()) {
+            continue;
+        }
+
+        if (pSyncable->isPlaying()) {
+            if (playing_sync_decks > 0) {
+                return;
+            }
+            unique_syncable = pSyncable.get();
             ++playing_sync_decks;
         }
     }

@@ -12,6 +12,7 @@
 // Forward declaration(s)
 class Controller;
 class ControllerLearningEventFilter;
+class EngineMaster;
 
 /// Function to sort controllers by name
 bool controllerCompare(Controller *a, Controller *b);
@@ -20,7 +21,7 @@ bool controllerCompare(Controller *a, Controller *b);
 class ControllerManager : public QObject {
     Q_OBJECT
   public:
-    ControllerManager(UserSettingsPointer pConfig);
+    ControllerManager(UserSettingsPointer pConfig, EngineMaster* pMixingEngine);
     virtual ~ControllerManager();
 
     static const mixxx::Duration kPollInterval;
@@ -73,6 +74,7 @@ class ControllerManager : public QObject {
 
   private:
     UserSettingsPointer m_pConfig;
+    EngineMaster* m_pMixingEngine;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;
     QTimer m_pollTimer;
     mutable QMutex m_mutex;

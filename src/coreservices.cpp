@@ -309,7 +309,7 @@ void CoreServices::initialize(QApplication* pApp) {
     // but do not set up controllers until the end of the application startup
     // (long)
     qDebug() << "Creating ControllerManager";
-    m_pControllerManager = std::make_shared<ControllerManager>(pConfig);
+    m_pControllerManager = std::make_shared<ControllerManager>(pConfig, m_pEngine.get());
 
     // Inhibit the screensaver if the option is set. (Do it before creating the preferences dialog)
     int inhibit = pConfig->getValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), -1);

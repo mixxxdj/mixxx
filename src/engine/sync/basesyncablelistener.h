@@ -1,5 +1,8 @@
 #pragma once
 
+#include <QList>
+#include <memory>
+
 #include "engine/sync/syncable.h"
 #include "preferences/usersettings.h"
 
@@ -20,6 +23,10 @@ class BaseSyncableListener : public SyncableListener {
     EngineChannel* getMaster() const;
     void onCallbackStart(int sampleRate, int bufferSize);
     void onCallbackEnd(int sampleRate, int bufferSize);
+
+    void setControllerSyncables(const QList<std::shared_ptr<Syncable>>& syncables) {
+        m_controllerSyncables = syncables;
+    }
 
     // Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);
@@ -69,4 +76,5 @@ class BaseSyncableListener : public SyncableListener {
     // The list of all Syncables registered with BaseSyncableListener via
     // addSyncableDeck.
     QList<Syncable*> m_syncables;
+    QList<std::shared_ptr<Syncable>> m_controllerSyncables;
 };
