@@ -5,6 +5,8 @@ namespace mixxx {
 
 class MidiBeatClockReceiver {
   public:
+    static constexpr int kPulsesPerQuarterNote = 24;
+
     MidiBeatClockReceiver();
     static bool canReceiveMidiStatus(unsigned char status);
     void receive(unsigned char status, Duration timestamp);
@@ -24,6 +26,7 @@ class MidiBeatClockReceiver {
     bool m_isPlaying;
     Duration m_lastTimestamp;
     int m_clockTickIndex;
+    Duration m_intervalRingBuffer[kPulsesPerQuarterNote];
 };
 
 } // namespace mixxx

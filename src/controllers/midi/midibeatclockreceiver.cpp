@@ -2,10 +2,6 @@
 
 #include "controllers/midi/midimessage.h"
 
-namespace {
-constexpr int kPulsesPerQuarterNote = 24;
-}
-
 namespace mixxx {
 
 MidiBeatClockReceiver::MidiBeatClockReceiver()
@@ -37,8 +33,21 @@ void MidiBeatClockReceiver::receive(unsigned char status, Duration timestamp) {
         break;
     case MidiOpCode::MIDI_TIMING_CLK:
         if (m_lastTimestamp != Duration::empty() && timestamp != Duration::empty()) {
-            Duration interval = timestamp - m_lastTimestamp;
-            m_bpm = Bpm(1000000000.0 / interval.toDoubleNanos() / kPulsesPerQuarterNote * 60.0);
+            m_intervalRingBuffer[m_clockTickIndex] = timestamp - m_lastTimestamp;
+
+            int numValues = 0;
+            Duration sumIntervals;
+            for (int i = 0; i < kPulsesPerQuarterNote; i++) {
+                if (m_intervalRingBuffer[i] != Duration::empty()) {
+                    sumIntervals += m_intervalRingBuffer[i];
+                    numValues++;
+                }
+            }
+            DEBUG_ASSERT(numValues >= 1);
+
+            m_bpm = Bpm(1000000000.0 /
+                    (sumIntervals.toDoubleNanos() / numValues) /
+                    kPulsesPerQuarterNote * 60.0);
         }
         m_clockTickIndex = (m_clockTickIndex + 1) % kPulsesPerQuarterNote;
         m_lastTimestamp = timestamp;
