@@ -245,21 +245,29 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
         return;
     }
 
-    QString directoryPath = m_pConfig->getSettingsPath() +
-            kEffectChainPresetDirectory + kFolderDelimiter;
-    QFile file(directoryPath + oldName + kXmlFileExtension);
-    if (newName.isEmpty() || !file.rename(directoryPath + newName + kXmlFileExtension)) {
-        QMessageBox::critical(
-                nullptr,
-                tr("Could not rename effect chain preset"),
-                tr("Could not rename effect chain preset \"%1\"").arg(oldName));
+    EffectChainPresetPointer pPreset = m_effectChainPresets.take(oldName);
+    int index = m_effectChainPresetsSorted.indexOf(pPreset);
+
+    pPreset->setName(newName);
+    m_effectChainPresets.insert(newName, pPreset);
+
+    if (!savePresetXml(pPreset)) {
+        m_effectChainPresets.take(newName);
+        pPreset->setName(oldName);
+        m_effectChainPresets.insert(oldName, pPreset);
         return;
     }
 
-    EffectChainPresetPointer pPreset = m_effectChainPresets.take(oldName);
-    int index = m_effectChainPresetsSorted.indexOf(pPreset);
-    pPreset->setName(newName);
-    m_effectChainPresets.insert(newName, pPreset);
+    QString directoryPath = m_pConfig->getSettingsPath() + kEffectChainPresetDirectory;
+    QFile oldFile(directoryPath + kFolderDelimiter +
+            mixxx::filename::sanitize(oldName) + kXmlFileExtension);
+    if (!oldFile.remove()) {
+        QMessageBox::warning(
+                nullptr,
+                tr("Could not remove old effect chain preset"),
+                tr("Could not remove old effect chain preset \"%1\"").arg(oldName));
+    }
+
     if (index != -1) {
         m_effectChainPresetsSorted.removeAt(index);
         m_effectChainPresetsSorted.insert(index, pPreset);
@@ -374,7 +382,7 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
     savePresetXml(pPreset);
 }
 
-void EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
+bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     QString path(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
     QDir effectsChainsDir(path);
     if (!effectsChainsDir.exists()) {
@@ -386,7 +394,12 @@ void EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     QFile file(path + kFolderDelimiter +
             mixxx::filename::sanitize(pPreset->name()) + kXmlFileExtension);
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-        return;
+        QMessageBox::critical(
+                nullptr,
+                tr("Could not save effect chain preset"),
+                tr("Could not save effect chain preset \"%1\"").arg(pPreset->name()));
+        qWarning() << "Could not save effect chain preset" << file.fileName();
+        return false;
     }
 
     QDomDocument doc(EffectXml::Chain);
@@ -394,6 +407,7 @@ void EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     doc.appendChild(pPreset->toXml(&doc));
     file.write(doc.toString().toUtf8());
     file.close();
+    return true;
 }
 
 EffectsXmlData EffectChainPresetManager::readEffectsXml(
