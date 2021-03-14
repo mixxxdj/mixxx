@@ -295,7 +295,7 @@ void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
     }
 
     QFile file(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory +
-            kFolderDelimiter + chainPresetName + kXmlFileExtension);
+            kFolderDelimiter + mixxx::filename::sanitize(chainPresetName) + kXmlFileExtension);
     if (!file.remove()) {
         QMessageBox::critical(
                 nullptr,
