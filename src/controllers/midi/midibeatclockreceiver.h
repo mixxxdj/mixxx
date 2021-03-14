@@ -1,3 +1,5 @@
+#include <atomic>
+
 #include "track/bpm.h"
 #include "util/duration.h"
 
@@ -22,10 +24,11 @@ class MidiBeatClockReceiver {
     double beatDistance() const;
 
   private:
-    Bpm m_bpm;
-    bool m_isPlaying;
+    std::atomic<Bpm> m_bpm;
+    std::atomic<bool> m_isPlaying;
+    std::atomic<int> m_clockTickIndex;
+
     Duration m_lastTimestamp;
-    int m_clockTickIndex;
     Duration m_intervalRingBuffer[kPulsesPerQuarterNote];
 };
 

@@ -5,7 +5,7 @@
 namespace mixxx {
 
 MidiBeatClockReceiver::MidiBeatClockReceiver()
-        : m_bpm(Bpm::kValueUndefined),
+        : m_bpm(Bpm(Bpm::kValueUndefined)),
           m_isPlaying(false),
           m_clockTickIndex(0) {
 }
@@ -25,13 +25,14 @@ bool MidiBeatClockReceiver::canReceiveMidiStatus(unsigned char status) {
 void MidiBeatClockReceiver::receive(unsigned char status, Duration timestamp) {
     switch (status) {
     case MidiOpCode::MIDI_START:
-        m_clockTickIndex = 0;
-        m_isPlaying = true;
+        m_clockTickIndex.store(0);
+        m_isPlaying.store(true);
         break;
     case MidiOpCode::MIDI_STOP:
-        m_isPlaying = false;
+        m_isPlaying.store(false);
         break;
-    case MidiOpCode::MIDI_TIMING_CLK:
+    case MidiOpCode::MIDI_TIMING_CLK: {
+        const int index = m_clockTickIndex.load();
         if (m_lastTimestamp != Duration::empty() && timestamp != Duration::empty()) {
             m_intervalRingBuffer[m_clockTickIndex] = timestamp - m_lastTimestamp;
 
@@ -43,15 +44,18 @@ void MidiBeatClockReceiver::receive(unsigned char status, Duration timestamp) {
                     numValues++;
                 }
             }
-            DEBUG_ASSERT(numValues >= 1);
 
-            m_bpm = Bpm(1000000000.0 /
-                    (sumIntervals.toDoubleNanos() / numValues) /
-                    kPulsesPerQuarterNote * 60.0);
+            if (numValues > 0) {
+                const Bpm bpm = Bpm(1000000000.0 /
+                        (sumIntervals.toDoubleNanos() / numValues) /
+                        kPulsesPerQuarterNote * 60.0);
+                m_bpm.store(bpm);
+            }
         }
-        m_clockTickIndex = (m_clockTickIndex + 1) % kPulsesPerQuarterNote;
+        m_clockTickIndex.store((index + 1) % kPulsesPerQuarterNote);
         m_lastTimestamp = timestamp;
         break;
+    }
     default:
         DEBUG_ASSERT(!"Unhandled message type");
     }
