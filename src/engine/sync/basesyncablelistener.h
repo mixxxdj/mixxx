@@ -53,10 +53,9 @@ class BaseSyncableListener : public SyncableListener {
 
     // Set the master beat distance on every sync-enabled Syncable except
     // pSource.
-    void setMasterBeatDistance(Syncable* pSource, double beat_distance);
+    void setMasterBeatDistance(Syncable* pSource, double beatDistance);
 
-    void setMasterParams(Syncable* pSource, double beat_distance,
-                         double base_bpm, double bpm);
+    void setMasterParams(Syncable* pSource, double beatDistance, double baseBpm, double bpm);
 
     // Check if there is only one playing syncable deck, and notify it if so.
     void checkUniquePlayingSyncable();

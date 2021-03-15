@@ -88,8 +88,10 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         // tempo, the tempo of the old master remains until we know better
         activateMaster(pSyncable, true);
         if (pSyncable->getBaseBpm() > 0) {
-            setMasterParams(pSyncable, pSyncable->getBeatDistance(),
-                            pSyncable->getBaseBpm(), pSyncable->getBpm());
+            setMasterParams(pSyncable,
+                    pSyncable->getBeatDistance(),
+                    pSyncable->getBaseBpm(),
+                    pSyncable->getBpm());
         }
     } else if (mode == SYNC_FOLLOWER ||
             mode == SYNC_MASTER_SOFT ||
@@ -252,7 +254,10 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
 
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
         activateMaster(newMaster, false);
-        setMasterParams(newMaster, newMaster->getBeatDistance(), newMaster->getBaseBpm(), newMaster->getBpm());
+        setMasterParams(newMaster,
+                newMaster->getBeatDistance(),
+                newMaster->getBaseBpm(),
+                newMaster->getBpm());
     }
 
     pSyncable->requestSync();
@@ -264,9 +269,9 @@ void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
     Q_UNUSED(scratching);
 }
 
-void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm) {
+void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, double bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
+        kLogger.trace() << "EngineSync::notifyBaseBpmChanged" << pSyncable->getGroup() << bpm;
     }
 
     // Master Base BPM shouldn't be updated for every random deck that twiddles
@@ -310,15 +315,16 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
     setMasterInstantaneousBpm(pSyncable, bpm);
 }
 
-void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
+void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
+        kLogger.trace() << "EngineSync::notifyBeatDistanceChanged"
+                        << pSyncable->getGroup() << beatDistance;
     }
     if (!isMaster(pSyncable->getSyncMode())) {
         return;
     }
 
-    setMasterBeatDistance(pSyncable, beat_distance);
+    setMasterBeatDistance(pSyncable, beatDistance);
 }
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
@@ -380,7 +386,7 @@ void EngineSync::activateMaster(Syncable* pSyncable, bool explicitMaster) {
         activateFollower(m_pInternalClock);
     }
 
-    // It is up to callers of this function to initialize bpm and beat_distance
+    // It is up to callers of this function to initialize bpm and beatDistance
     // if necessary.
 }
 

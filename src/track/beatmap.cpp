@@ -20,7 +20,8 @@ using mixxx::track::io::Beat;
 
 namespace {
 
-const int kFrameSize = 2;
+constexpr int kFrameSize = 2;
+constexpr int kMinNumberOfBeats = 2; // a map needs at least two beats to have a tempo
 
 inline double samplesToFrames(const double samples) {
     return floor(samples / kFrameSize);
@@ -140,7 +141,7 @@ double calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate sampl
         return -1;
     }
 
-    return BeatUtils::calculateBpm(beatvect, sampleRate, 0, 9999);
+    return BeatUtils::calculateBpm(beatvect, mixxx::audio::SampleRate(sampleRate));
 }
 
 } // namespace
@@ -269,7 +270,7 @@ QString BeatMap::getSubVersion() const {
 }
 
 bool BeatMap::isValid() const {
-    return m_sampleRate.isValid() && m_beats.size() > 0;
+    return m_sampleRate.isValid() && m_beats.size() >= kMinNumberOfBeats;
 }
 
 double BeatMap::findNextBeat(double dSamples) const {
@@ -506,7 +507,7 @@ bool BeatMap::hasBeatInRange(double startSample, double stopSample) const {
 
 double BeatMap::getBpm() const {
     if (!isValid()) {
-        return -1;
+        return mixxx::Bpm::kValueUndefined;
     }
     return m_nominalBpm;
 }

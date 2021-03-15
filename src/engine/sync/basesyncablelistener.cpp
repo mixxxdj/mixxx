@@ -111,31 +111,31 @@ void BaseSyncableListener::setMasterInstantaneousBpm(Syncable* pSource, double b
     }
 }
 
-void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beat_distance) {
+void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beatDistance) {
     if (pSource != m_pInternalClock) {
-        m_pInternalClock->setMasterBeatDistance(beat_distance);
+        m_pInternalClock->setMasterBeatDistance(beatDistance);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 !pSyncable->isSynchronized()) {
             continue;
         }
-        pSyncable->setMasterBeatDistance(beat_distance);
+        pSyncable->setMasterBeatDistance(beatDistance);
     }
 }
 
-void BaseSyncableListener::setMasterParams(Syncable* pSource, double beat_distance,
-                                           double base_bpm, double bpm) {
-    //qDebug() << "BaseSyncableListener::setMasterParams, source is" << pSource->getGroup() << beat_distance << base_bpm << bpm;
+void BaseSyncableListener::setMasterParams(
+        Syncable* pSource, double beatDistance, double baseBpm, double bpm) {
+    //qDebug() << "BaseSyncableListener::setMasterParams, source is" << pSource->getGroup() << beatDistance << baseBpm << bpm;
     if (pSource != m_pInternalClock) {
-        m_pInternalClock->setMasterParams(beat_distance, base_bpm, bpm);
+        m_pInternalClock->setMasterParams(beatDistance, baseBpm, bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 !pSyncable->isSynchronized()) {
             continue;
         }
-        pSyncable->setMasterParams(beat_distance, base_bpm, bpm);
+        pSyncable->setMasterParams(beatDistance, baseBpm, bpm);
     }
 }
 

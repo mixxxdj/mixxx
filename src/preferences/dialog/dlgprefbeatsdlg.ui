@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>564</width>
+    <width>576</width>
     <height>400</height>
    </rect>
   </property>
@@ -38,83 +38,12 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
      </property>
     </spacer>
    </item>
-   <item row="4" column="0">
-    <widget class="QGroupBox" name="groupBox_3">
-     <property name="title">
-      <string>BPM Range</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Min:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="txtMinBpm">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="minimum">
-         <number>50</number>
-        </property>
-        <property name="maximum">
-         <number>200</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_3">
-        <property name="text">
-         <string>Max:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="txtMaxBpm">
-        <property name="minimum">
-         <number>50</number>
-        </property>
-        <property name="maximum">
-         <number>300</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item row="3" column="0">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
       <string>Analyzer Settings</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QCheckBox" name="checkBoxFastAnalysis">
-        <property name="toolTip">
-         <string>Enable fast beat detection.
-If activated Mixxx only analyzes the first minute of a track for beat information.
-This can speed up beat detection on slower computers but may result in lower quality beatgrids.</string>
-        </property>
-        <property name="text">
-         <string>Enable Fast Analysis (For slow computers, may be less accurate)</string>
-        </property>
-       </widget>
-      </item>
       <item>
        <widget class="QCheckBox" name="checkBoxFixedTempo">
         <property name="toolTip">
@@ -128,18 +57,19 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBoxOffsetCorr">
+       <widget class="QCheckBox" name="checkBoxFastAnalysis">
         <property name="toolTip">
-         <string>Attempts to correct the phase (first beat) of fixed-tempo beatgrids
-by analyzing the beats to discard outliers.</string>
+         <string>Enable fast beat detection.
+If activated Mixxx only analyzes the first minute of a track for beat information.
+This can speed up beat detection on slower computers but may result in lower quality beatgrids.</string>
         </property>
         <property name="text">
-         <string>Enable Offset Correction (Recommended)</string>
+         <string>Enable Fast Analysis (For slow computers, may be less accurate)</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBoxReanalyse">
+       <widget class="QCheckBox" name="checkBoxReanalyze">
         <property name="toolTip">
          <string>e.g. from 3rd-party programs or Mixxx versions before 1.11.
 (Not checked: Analyze only, if no beats exist.)</string>
@@ -150,7 +80,7 @@ by analyzing the beats to discard outliers.</string>
        </widget>
       </item>
       <item>
-       <widget class="QCheckBox" name="checkBoxReanalyseImported">
+       <widget class="QCheckBox" name="checkBoxReanalyzeImported">
         <property name="text">
          <string>Re-analyze beatgrids imported from other DJ software</string>
         </property>
@@ -199,13 +129,9 @@ by analyzing the beats to discard outliers.</string>
  <tabstops>
   <tabstop>checkBoxAnalyzerEnabled</tabstop>
   <tabstop>comboBoxBeatPlugin</tabstop>
-  <tabstop>checkBoxFastAnalysis</tabstop>
   <tabstop>checkBoxFixedTempo</tabstop>
-  <tabstop>checkBoxOffsetCorr</tabstop>
-  <tabstop>checkBoxReanalyse</tabstop>
-  <tabstop>checkBoxReanalyseImported</tabstop>
-  <tabstop>txtMinBpm</tabstop>
-  <tabstop>txtMaxBpm</tabstop>
+  <tabstop>checkBoxReanalyze</tabstop>
+  <tabstop>checkBoxReanalyzeImported</tabstop>
  </tabstops>
  <resources/>
  <connections/>
