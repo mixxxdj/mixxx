@@ -532,35 +532,15 @@ void WMainMenuBar::initialize() {
             this, [this] { slotVisitUrl(MIXXX_SUPPORT_URL); });
     pHelpMenu->addAction(pHelpSupport);
 
-    QDir resourceDir(m_pConfig->getResourcePath());
-    // Default to the mixxx.org hosted version of the manual.
-    QUrl qManualUrl(MIXXX_MANUAL_URL);
-#if defined(__APPLE__)
-    // FIXME: We don't include the PDF manual in the bundle on OSX.
-    // Default to the web-hosted version.
-#elif defined(__WINDOWS__)
-    // On Windows, the manual PDF sits in the same folder as the 'skins' folder.
-    if (resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
-        qManualUrl = QUrl::fromLocalFile(
-                resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
-    }
-#elif defined(__LINUX__)
-    // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
-    if (resourceDir.cd("../doc/mixxx") && resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
-        qManualUrl = QUrl::fromLocalFile(
-                resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
-    }
-#else
-    // No idea, default to the mixxx.org hosted version.
-#endif
-
     QString manualTitle = tr("&User Manual") + externalLinkSuffix;
     QString manualText = tr("Read the Mixxx user manual.");
     auto* pHelpManual = new QAction(manualTitle, this);
     pHelpManual->setStatusTip(manualText);
     pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
-    connect(pHelpManual, &QAction::triggered,
-            this, [this, qManualUrl] { slotVisitUrl(qManualUrl.toString()); });
+    connect(pHelpManual,
+            &QAction::triggered,
+            this,
+            [this] { slotVisitUrl(MIXXX_MANUAL_URL); });
     pHelpMenu->addAction(pHelpManual);
 
     QString shortcutsTitle = tr("&Keyboard Shortcuts") + externalLinkSuffix;
