@@ -19,6 +19,8 @@
 src/mixxx.rc.include
 src/mixxx.res
 
+target
+
 *.sqlite
 
 *.cfg

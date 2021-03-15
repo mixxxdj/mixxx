@@ -1,0 +1,10 @@
+[package]
+name = "mixxx"
+version = "2.3.0"
+authors = ["Mixxx DJ Software maintainers"]
+edition = "2018"
+
+[dependencies]
+# sccache's handling of the /fp:fast MSVC compiler option is broken, but this is fixed in the master branch.
+# https://github.com/mozilla/sccache/pull/962
+sccache = { git = "https://github.com/mozilla/sccache.git", branch = "master" }
