@@ -76,6 +76,16 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     libnames << bundlePath.absoluteFilePath();
 #endif
     libnames << QStringLiteral("fdk-aac");
+    // Although the line above should suffice, detection of the fdk-aac library
+    // does not work on Ubuntu 18.04 LTS and Ubuntu 20.04 LTS:
+    //
+    //     $ dpkg -L libfdk-aac1 | grep so
+    //     /usr/lib/x86_64-linux-gnu/libfdk-aac.so.1.0.0
+    //     /usr/lib/x86_64-linux-gnu/libfdk-aac.so.1
+    //
+    // As a workaround, we have to hardcode the filenames here.
+    libnames << QStringLiteral("libfdk-aac.so.1")
+             << QStringLiteral("libfdk-aac.so.2");
 
     QStringList errorMessages;
     for (const auto& libname : qAsConst(libnames)) {
