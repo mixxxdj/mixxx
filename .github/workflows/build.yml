@@ -73,8 +73,9 @@ jobs:
             qt_qpa_platform: offscreen
           - name: Windows 2019 (MSVC)
             os: windows-2019
+            # TODO: Reenable FFmpeg after licensing issues have been clarified
             cmake_args: >-
-              -DFFMPEG=ON
+              -DFFMPEG=OFF
               -DHSS1394=ON
               -DKEYFINDER=OFF
               -DLOCALECOMPARE=ON
