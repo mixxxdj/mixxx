@@ -8,7 +8,7 @@
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
-#include "engine/sync/syncable.h"
+#include "engine/sync/controllersyncable.h"
 #include "util/duration.h"
 
 class ControllerJSProxy;
@@ -118,7 +118,7 @@ class Controller : public QObject {
     // polling/processing but before closing the device.
     virtual void stopEngine();
 
-    virtual std::shared_ptr<Syncable> syncable() const {
+    virtual std::shared_ptr<ControllerSyncable> syncable() const {
         return nullptr;
     }
 

@@ -38,7 +38,7 @@ class MidiController : public Controller {
 
     bool matchMapping(const MappingInfo& mapping) override;
 
-    std::shared_ptr<Syncable> syncable() const override {
+    std::shared_ptr<ControllerSyncable> syncable() const override {
         return m_pBeatClock;
     }
 

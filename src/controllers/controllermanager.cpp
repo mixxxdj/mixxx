@@ -200,8 +200,12 @@ void ControllerManager::updateControllerList() {
 
         QList<std::shared_ptr<Syncable>> controllerSyncables;
         for (const auto* pController : qAsConst(m_controllers)) {
-            const std::shared_ptr<Syncable> pSyncable = pController->syncable();
+            const std::shared_ptr<ControllerSyncable> pSyncable = pController->syncable();
             if (pSyncable != nullptr) {
+                connect(pSyncable.get(),
+                        &ControllerSyncable::syncModeRequested,
+                        this,
+                        &ControllerManager::slotControllerRequestSyncMode);
                 controllerSyncables.append(pSyncable);
             }
         }
@@ -209,6 +213,11 @@ void ControllerManager::updateControllerList() {
         locker.unlock();
         emit devicesChanged();
     }
+}
+
+void ControllerManager::slotControllerRequestSyncMode(SyncMode mode) {
+    ControllerSyncable* pSyncable = qobject_cast<ControllerSyncable*>(QObject::sender());
+    m_pMixingEngine->getEngineSync()->requestSyncMode(pSyncable, mode);
 }
 
 QList<Controller*> ControllerManager::getControllers() const {

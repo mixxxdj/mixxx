@@ -72,6 +72,8 @@ class ControllerManager : public QObject {
     void stopPolling();
     void maybeStartOrStopPolling();
 
+    void slotControllerRequestSyncMode(SyncMode mode);
+
   private:
     UserSettingsPointer m_pConfig;
     EngineMaster* m_pMixingEngine;
