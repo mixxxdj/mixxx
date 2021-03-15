@@ -196,7 +196,7 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
 
     QFileDialog saveFileDialog(
             nullptr,
-            tr("Save effect chain preset"),
+            tr("Export effect chain preset"),
             QString(),
             tr("Mixxx Effect Chain Presets") + QStringLiteral(" (*") +
                     kXmlFileExtension + QStringLiteral(")"));
