@@ -3,8 +3,8 @@
 #include <QMimeData>
 
 namespace {
-const QString kMimeTextDelimiter = QStringLiteral("\n");
-const QStringList kAcceptedMimeTypes = {QLatin1String("text/plain")};
+constexpr QChar kMimeTextDelimiter('\n');
+const QStringList kAcceptedMimeTypes = {QStringLiteral("text/plain")};
 } // anonymous namespace
 
 EffectChainPresetListModel::EffectChainPresetListModel(QObject* parent)

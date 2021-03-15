@@ -9,8 +9,8 @@ namespace {
 const int kColumnType = 0;
 const int kColumnName = 1;
 const int kNumberOfColumns = 2;
-const QString kMimeTextDelimiter = QStringLiteral("\n");
-const QStringList kAcceptedMimeTypes = {QLatin1String("text/plain")};
+constexpr QChar kMimeTextDelimiter('\n');
+const QStringList kAcceptedMimeTypes = {QStringLiteral("text/plain")};
 } // anonymous namespace
 
 EffectManifestTableModel::EffectManifestTableModel(QObject* parent,
