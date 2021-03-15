@@ -141,7 +141,7 @@ double calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate sampl
         return -1;
     }
 
-    return BeatUtils::calculateBpm(beatvect, sampleRate, 0, 9999);
+    return BeatUtils::calculateBpm(beatvect, mixxx::audio::SampleRate(sampleRate));
 }
 
 } // namespace
