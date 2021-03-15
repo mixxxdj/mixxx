@@ -421,7 +421,7 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
     }
     SyncMode mode = getSyncMode();
     if (state > 0.0) {
-        if (m_pPassthroughEnabled->get()) {
+        if (m_pPassthroughEnabled->toBool()) {
             qDebug() << "Disallowing enabling of sync mode when passthrough active";
             return;
         }
