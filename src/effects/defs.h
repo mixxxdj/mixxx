@@ -35,12 +35,6 @@ inline uint qHash(
     return qHash(static_cast<uint>(stage), seed);
 };
 
-enum class EffectChainMixMode {
-    DrySlashWet = 0, // Crossfade between dry and wet
-    DryPlusWet,      // Add wet to dry
-    NumMixModes      // The number of mix modes. Also used to represent "unknown".
-};
-
 constexpr int kNumStandardEffectUnits = 4;
 constexpr int kNumEffectsPerUnit = 4;
 

@@ -501,6 +501,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/dialog/dlgreplacecuecolordlg.ui
   src/effects/effectbuttonparameterslot.cpp
   src/effects/effectchain.cpp
+  src/effects/effectchainmixmode.cpp
   src/effects/effectparameter.cpp
   src/effects/effectknobparameterslot.cpp
   src/effects/effectparameterslotbase.cpp

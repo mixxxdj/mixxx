@@ -2,6 +2,7 @@
 #include <QDomElement>
 
 #include "effects/defs.h"
+#include "effects/effectchainmixmode.h"
 #include "effects/presets/effectpreset.h"
 
 class EffectChain;
@@ -33,7 +34,7 @@ class EffectChainPreset {
     const QString& name() const {
         return m_name;
     }
-    EffectChainMixMode mixMode() const {
+    EffectChainMixMode::Type mixMode() const {
         return m_mixMode;
     }
     double superKnob() const {
@@ -47,6 +48,6 @@ class EffectChainPreset {
   private:
     QString m_name;
     double m_dSuper;
-    EffectChainMixMode m_mixMode;
+    EffectChainMixMode::Type m_mixMode;
     QList<EffectPresetPointer> m_effectPresets;
 };

@@ -93,7 +93,7 @@ EffectChain::EffectChain(const QString& group,
             std::make_unique<ControlPushButton>(ConfigKey(m_group, "mix_mode"));
     m_pControlChainMixMode->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlChainMixMode->setStates(
-            static_cast<int>(EffectChainMixMode::NumMixModes));
+            static_cast<int>(EffectChainMixMode::DryPlusWet) + 1);
     double mixModeCODefault = static_cast<double>(EffectChainMixMode::DrySlashWet);
     m_pControlChainMixMode->setDefaultValue(mixModeCODefault);
     m_pControlChainMixMode->set(mixModeCODefault);
@@ -247,13 +247,13 @@ void EffectChain::setSuperParameter(double value, bool force) {
     slotControlChainSuperParameter(value, force);
 }
 
-EffectChainMixMode EffectChain::mixMode() const {
-    return static_cast<EffectChainMixMode>(
+EffectChainMixMode::Type EffectChain::mixMode() const {
+    return static_cast<EffectChainMixMode::Type>(
             static_cast<int>(
                     m_pControlChainMixMode->get()));
 }
 
-void EffectChain::setMixMode(EffectChainMixMode mixMode) {
+void EffectChain::setMixMode(EffectChainMixMode::Type mixMode) {
     m_pControlChainMixMode->set(static_cast<double>(mixMode));
     sendParameterUpdate();
 }

@@ -22,7 +22,7 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
     m_name = XmlParse::selectNodeQString(chainElement, EffectXml::ChainName);
 
     QString mixModeStr = XmlParse::selectNodeQString(chainElement, EffectXml::ChainMixMode);
-    m_mixMode = EffectChain::mixModeFromString(mixModeStr);
+    m_mixMode = EffectChainMixMode::fromString(mixModeStr);
 
     m_dSuper = XmlParse::selectNodeDouble(chainElement, EffectXml::ChainSuperParameter);
 
@@ -75,7 +75,7 @@ const QDomElement EffectChainPreset::toXml(QDomDocument* doc) const {
     XmlParse::addElement(*doc,
             chainElement,
             EffectXml::ChainMixMode,
-            EffectChain::mixModeToString(m_mixMode));
+            EffectChainMixMode::toString(m_mixMode));
     XmlParse::addElement(*doc,
             chainElement,
             EffectXml::ChainSuperParameter,

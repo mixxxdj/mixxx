@@ -8,6 +8,7 @@
 
 #include "control/controlobject.h"
 #include "effects/defs.h"
+#include "effects/effectchainmixmode.h"
 #include "effects/presets/effectchainpreset.h"
 #include "engine/channelhandle.h"
 #include "util/class.h"
@@ -58,8 +59,8 @@ class EffectChain : public QObject {
     double getSuperParameter() const;
     void setSuperParameter(double value, bool force = false);
 
-    EffectChainMixMode mixMode() const;
-    void setMixMode(EffectChainMixMode mixMode);
+    EffectChainMixMode::Type mixMode() const;
+    void setMixMode(EffectChainMixMode::Type mixMode);
 
     const QString& getGroup() const {
         return m_group;
@@ -70,26 +71,6 @@ class EffectChain : public QObject {
     // Get the human-readable description of the EffectChain
     QString description() const;
     void setDescription(const QString& description);
-
-    static QString mixModeToString(EffectChainMixMode type) {
-        switch (type) {
-        case EffectChainMixMode::DrySlashWet:
-            return "DRY/WET";
-        case EffectChainMixMode::DryPlusWet:
-            return "DRY+WET";
-        default:
-            return "UNKNOWN";
-        }
-    }
-    static EffectChainMixMode mixModeFromString(const QString& typeStr) {
-        if (typeStr == "DRY/WET") {
-            return EffectChainMixMode::DrySlashWet;
-        } else if (typeStr == "DRY+WET") {
-            return EffectChainMixMode::DryPlusWet;
-        } else {
-            return EffectChainMixMode::NumMixModes;
-        }
-    }
 
     const QList<EffectSlotPointer>& getEffectSlots() const {
         return m_effectSlots;

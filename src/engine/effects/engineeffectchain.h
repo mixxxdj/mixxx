@@ -75,7 +75,7 @@ class EngineEffectChain final : public EffectsRequestHandler {
 
     QString m_group;
     EffectEnableState m_enableState;
-    EffectChainMixMode m_mixMode;
+    EffectChainMixMode::Type m_mixMode;
     CSAMPLE m_dMix;
     QList<EngineEffect*> m_effects;
     mixxx::SampleBuffer m_buffer1;

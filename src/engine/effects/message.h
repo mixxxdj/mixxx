@@ -5,6 +5,7 @@
 #include <QtGlobal>
 
 #include "effects/defs.h"
+#include "effects/effectchainmixmode.h"
 #include "engine/channelhandle.h"
 #include "util/memory.h"
 #include "util/messagepipe.h"
@@ -111,7 +112,7 @@ struct EffectsRequest {
         } RemoveEffectFromChain;
         struct {
             bool enabled;
-            EffectChainMixMode mix_mode;
+            EffectChainMixMode::Type mix_mode;
             double mix;
         } SetEffectChainParameters;
         struct {
