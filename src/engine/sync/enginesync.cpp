@@ -19,7 +19,7 @@ EngineSync::EngineSync(UserSettingsPointer pConfig)
           m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
           m_pMasterSyncable(nullptr) {
     qRegisterMetaType<SyncMode>("SyncMode");
-    m_pInternalClock->setMasterBpm(124.0);
+    m_pInternalClock->updateMasterBpm(124.0);
 }
 
 EngineSync::~EngineSync() {
@@ -90,14 +90,19 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         pParamsSyncable = findBpmMatchTarget(pSyncable);
         if (!pParamsSyncable) {
             // We weren't able to find anything to match to, so set ourselves as the
-            // target.  That way we'll use our own params when we setMasterParams below.
+            // target.  That way we'll use our own params when we updateMasterBpm below.
             pParamsSyncable = pSyncable;
         }
     }
     // Now that all of the decks have their assignments, reinit master params if needed.
     if (pParamsSyncable) {
-        setMasterParams(pParamsSyncable);
-        pSyncable->setInstantaneousBpm(pParamsSyncable->getBpm());
+        if (kLogger.traceEnabled()) {
+            kLogger.trace()
+                    << "EngineSync::requestSyncMode setting master params from "
+                    << pParamsSyncable->getGroup();
+        }
+        reinitMasterParams(pParamsSyncable);
+        pSyncable->updateInstantaneousBpm(pParamsSyncable->getBpm());
         if (pParamsSyncable != pSyncable) {
             pSyncable->requestSync();
         }
@@ -194,6 +199,9 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
 }
 
 Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "EngineSync::pickMaster";
+    }
     if (m_pMasterSyncable &&
             m_pMasterSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT &&
             m_pMasterSyncable->getBaseBpm() != 0.0) {
@@ -354,14 +362,14 @@ void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) 
 
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
         activateMaster(newMaster, SYNC_MASTER_SOFT);
-        setMasterParams(newMaster);
+        reinitMasterParams(newMaster);
     } else {
         Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
         if (pOnlyPlayer) {
             // Even if we didn't change master, if there is only one player (us), then we should
-            // reinit the beat distance.
+            // update the beat distance.
             pOnlyPlayer->notifyUniquePlaying();
-            setMasterBeatDistance(pOnlyPlayer, pOnlyPlayer->getBeatDistance());
+            updateMasterBeatDistance(pOnlyPlayer, pOnlyPlayer->getBeatDistance());
         }
     }
 
@@ -380,7 +388,7 @@ void EngineSync::notifyBaseBpmChanged(Syncable* pSyncable, double bpm) {
     }
 
     if (isSyncMaster(pSyncable)) {
-        setMasterBpm(pSyncable, bpm);
+        updateMasterBpm(pSyncable, bpm);
     }
 }
 
@@ -389,7 +397,7 @@ void EngineSync::notifyRateChanged(Syncable* pSyncable, double bpm) {
         kLogger.trace() << "EngineSync::notifyRateChanged" << pSyncable->getGroup() << bpm;
     }
 
-    setMasterBpm(pSyncable, bpm);
+    updateMasterBpm(pSyncable, bpm);
 }
 
 void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
@@ -408,10 +416,10 @@ void EngineSync::requestBpmUpdate(Syncable* pSyncable, double bpm) {
 
     if (mbaseBpm != 0.0) {
         // resync to current master
-        pSyncable->setMasterParams(beatDistance, mbaseBpm, mbpm);
+        pSyncable->reinitMasterParams(beatDistance, mbaseBpm, mbpm);
     } else {
         // There is no other master, adopt this bpm as master
-        pSyncable->setMasterParams(0.0, 0.0, bpm);
+        pSyncable->reinitMasterParams(0.0, 0.0, bpm);
     }
 }
 
@@ -425,7 +433,7 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
 
     // Do not update the master rate slider because instantaneous changes are
     // not user visible.
-    setMasterInstantaneousBpm(pSyncable, bpm);
+    updateMasterInstantaneousBpm(pSyncable, bpm);
 }
 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) {
@@ -437,7 +445,7 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beatDista
         return;
     }
 
-    setMasterBeatDistance(pSyncable, beatDistance);
+    updateMasterBeatDistance(pSyncable, beatDistance);
 }
 
 Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
@@ -564,52 +572,52 @@ double EngineSync::masterBaseBpm() const {
     return m_pInternalClock->getBaseBpm();
 }
 
-void EngineSync::setMasterBpm(Syncable* pSource, double bpm) {
-    //qDebug() << "EngineSync::setMasterBpm" << pSource << bpm;
+void EngineSync::updateMasterBpm(Syncable* pSource, double bpm) {
+    //qDebug() << "EngineSync::updateMasterBpm" << pSource << bpm;
     if (pSource != m_pInternalClock) {
-        m_pInternalClock->setMasterBpm(bpm);
+        m_pInternalClock->updateMasterBpm(bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 !pSyncable->isSynchronized()) {
             continue;
         }
-        pSyncable->setMasterBpm(bpm);
+        pSyncable->updateMasterBpm(bpm);
     }
 }
 
-void EngineSync::setMasterInstantaneousBpm(Syncable* pSource, double bpm) {
+void EngineSync::updateMasterInstantaneousBpm(Syncable* pSource, double bpm) {
     if (pSource != m_pInternalClock) {
-        m_pInternalClock->setInstantaneousBpm(bpm);
+        m_pInternalClock->updateInstantaneousBpm(bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 !pSyncable->isSynchronized()) {
             continue;
         }
-        pSyncable->setInstantaneousBpm(bpm);
+        pSyncable->updateInstantaneousBpm(bpm);
     }
 }
 
-void EngineSync::setMasterBeatDistance(Syncable* pSource, double beatDistance) {
+void EngineSync::updateMasterBeatDistance(Syncable* pSource, double beatDistance) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "EngineSync::setMasterBeatDistance"
                         << (pSource ? pSource->getGroup() : "null")
                         << beatDistance;
     }
     if (pSource != m_pInternalClock) {
-        m_pInternalClock->setMasterBeatDistance(beatDistance);
+        m_pInternalClock->updateMasterBeatDistance(beatDistance);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 !pSyncable->isSynchronized()) {
             continue;
         }
-        pSyncable->setMasterBeatDistance(beatDistance);
+        pSyncable->updateMasterBeatDistance(beatDistance);
     }
 }
 
-void EngineSync::setMasterParams(Syncable* pSource) {
+void EngineSync::reinitMasterParams(Syncable* pSource) {
     // Important note! Because of the way sync works, the new master is usually not the same
     // as the Syncable setting the master parameters (here, pSource). Notify the proper Syncable
     // so it can prepare itself.  (This is a hack to undo half/double math so that we initialize
@@ -644,17 +652,17 @@ void EngineSync::setMasterParams(Syncable* pSource) {
         bpm = baseBpm;
     }
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "BaseSyncableListener::setMasterParams, source is"
+        kLogger.trace() << "BaseSyncableListener::reinitMasterParams, source is"
                         << pSource->getGroup() << beatDistance << baseBpm << bpm;
     }
     if (pSource != m_pInternalClock) {
-        m_pInternalClock->setMasterParams(beatDistance, baseBpm, bpm);
+        m_pInternalClock->reinitMasterParams(beatDistance, baseBpm, bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
         if (!pSyncable->isSynchronized()) {
             continue;
         }
-        pSyncable->setMasterParams(beatDistance, baseBpm, bpm);
+        pSyncable->reinitMasterParams(beatDistance, baseBpm, bpm);
     }
 }
 
