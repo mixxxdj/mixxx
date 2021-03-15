@@ -6,6 +6,12 @@
 #include "track/beatfactory.h"
 #include "track/beatutils.h"
 
+namespace {
+
+const QString kRoundingVersion = QStringLiteral("V2");
+
+} // namespace
+
 mixxx::BeatsPointer BeatFactory::loadBeatsFromByteArray(
         mixxx::audio::SampleRate sampleRate,
         const QString& beatsVersion,
@@ -33,33 +39,18 @@ mixxx::BeatsPointer BeatFactory::makeBeatGrid(
 }
 
 // static
-QString BeatFactory::getPreferredVersion(
-        bool bEnableFixedTempoCorrection) {
-    if (bEnableFixedTempoCorrection) {
+QString BeatFactory::getPreferredVersion(bool fixedTempo) {
+    if (fixedTempo) {
         return BEAT_GRID_2_VERSION;
     }
     return BEAT_MAP_VERSION;
 }
 
 QString BeatFactory::getPreferredSubVersion(
-        bool bEnableFixedTempoCorrection,
-        bool bEnableOffsetCorrection,
-        int iMinBpm,
-        int iMaxBpm,
         const QHash<QString, QString>& extraVersionInfo) {
     const char* kSubVersionKeyValueSeparator = "=";
     const char* kSubVersionFragmentSeparator = "|";
     QStringList fragments;
-
-    // min/max BPM limits only apply to fixed-tempo assumption
-    if (bEnableFixedTempoCorrection) {
-        fragments << QString("min_bpm%1%2")
-                             .arg(kSubVersionKeyValueSeparator,
-                                     QString::number(iMinBpm));
-        fragments << QString("max_bpm%1%2")
-                             .arg(kSubVersionKeyValueSeparator,
-                                     QString::number(iMaxBpm));
-    }
 
     QHashIterator<QString, QString> it(extraVersionInfo);
     while (it.hasNext()) {
@@ -76,15 +67,9 @@ QString BeatFactory::getPreferredSubVersion(
         fragments << QString("%1%2%3").arg(
                 it.key(), kSubVersionKeyValueSeparator, it.value());
     }
-    if (bEnableFixedTempoCorrection && bEnableOffsetCorrection) {
-        fragments << QString("offset_correction%1%2")
-                             .arg(kSubVersionKeyValueSeparator,
-                                     QString::number(1));
-    }
 
     fragments << QString("rounding%1%2")
-                         .arg(kSubVersionKeyValueSeparator,
-                                 QString::number(0.05));
+                         .arg(kSubVersionKeyValueSeparator, kRoundingVersion);
 
     std::sort(fragments.begin(), fragments.end());
     return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator)
@@ -94,32 +79,24 @@ QString BeatFactory::getPreferredSubVersion(
 mixxx::BeatsPointer BeatFactory::makePreferredBeats(
         const QVector<double>& beats,
         const QHash<QString, QString>& extraVersionInfo,
-        bool bEnableFixedTempoCorrection,
-        bool bEnableOffsetCorrection,
-        mixxx::audio::SampleRate sampleRate,
-        SINT totalSamples,
-        int iMinBpm,
-        int iMaxBpm) {
-    const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
-    const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
-                                                      bEnableOffsetCorrection,
-                                                      iMinBpm, iMaxBpm,
-                                                      extraVersionInfo);
+        bool fixedTempo,
+        mixxx::audio::SampleRate sampleRate) {
+    const QString version = getPreferredVersion(fixedTempo);
+    const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
-    BeatUtils::printBeatStatistics(beats, sampleRate);
+    QVector<BeatUtils::ConstRegion> constantRegions =
+            BeatUtils::retrieveConstRegions(beats, sampleRate);
+
     if (version == BEAT_GRID_2_VERSION) {
-        double globalBpm = BeatUtils::calculateBpm(beats, sampleRate, iMinBpm, iMaxBpm);
-        double firstBeat = BeatUtils::calculateFixedTempoFirstBeat(
-                bEnableOffsetCorrection,
-                beats,
-                sampleRate,
-                totalSamples,
-                globalBpm);
+        double firstBeat = 0;
+        double constBPM = BeatUtils::makeConstBpm(constantRegions, sampleRate, &firstBeat);
+        firstBeat = BeatUtils::adjustPhase(firstBeat, constBPM, sampleRate, beats);
         auto pGrid = mixxx::BeatGrid::makeBeatGrid(
-                sampleRate, subVersion, globalBpm, firstBeat * 2);
+                sampleRate, subVersion, constBPM, firstBeat * 2);
         return pGrid;
     } else if (version == BEAT_MAP_VERSION) {
-        auto pBeatMap = mixxx::BeatMap::makeBeatMap(sampleRate, subVersion, beats);
+        QVector<double> ironedBeats = BeatUtils::getBeats(constantRegions);
+        auto pBeatMap = mixxx::BeatMap::makeBeatMap(sampleRate, subVersion, ironedBeats);
         return pBeatMap;
     } else {
         qDebug() << "ERROR: Could not determine what type of beatgrid to create.";
