@@ -384,6 +384,108 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
     savePresetXml(pPreset);
 }
 
+void EffectChainPresetManager::importSavedPresets() {
+    QString savedPresetsPath(
+            m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
+    QDir savedPresetsDir(savedPresetsPath);
+    if (!savedPresetsDir.exists()) {
+        savedPresetsDir.mkpath(savedPresetsPath);
+        return;
+    }
+    savedPresetsDir.setFilter(QDir::Files | QDir::Readable);
+    const QStringList fileList = savedPresetsDir.entryList();
+    for (const auto& filePath : fileList) {
+        EffectChainPresetPointer pEffectChainPreset = loadPresetFromFile(
+                savedPresetsPath + kFolderDelimiter + filePath);
+        if (pEffectChainPreset && !pEffectChainPreset->isEmpty()) {
+            m_effectChainPresets.insert(
+                    pEffectChainPreset->name(), pEffectChainPreset);
+        }
+    }
+}
+
+void EffectChainPresetManager::importDefaultPresets() {
+    QString savedPresetsPath(
+            m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
+    QString defaultPresetsPath(
+            m_pConfig->getResourcePath() + kEffectChainPresetDirectory);
+    QDir defaultChainPresetsDir(defaultPresetsPath);
+    defaultChainPresetsDir.setFilter(QDir::Files | QDir::Readable);
+    const auto& fileNames = defaultChainPresetsDir.entryList();
+    for (const auto& fileName : fileNames) {
+        QString copiedFileName = savedPresetsPath + kFolderDelimiter + fileName;
+        QFileInfo copiedFileInfo(copiedFileName);
+        if (copiedFileInfo.exists()) {
+            continue;
+        }
+        QFile::copy(defaultPresetsPath + kFolderDelimiter + fileName,
+                copiedFileName);
+
+        EffectChainPresetPointer pEffectChainPreset = loadPresetFromFile(copiedFileName);
+        if (pEffectChainPreset && !pEffectChainPreset->isEmpty()) {
+            m_effectChainPresets.insert(pEffectChainPreset->name(), pEffectChainPreset);
+            m_effectChainPresetsSorted.append(pEffectChainPreset);
+        }
+    }
+    emit effectChainPresetListUpdated();
+}
+
+void EffectChainPresetManager::generateDefaultQuickEffectPresets() {
+    // importDefaultPresets should be called before this function
+    DEBUG_ASSERT(!m_effectChainPresetsSorted.isEmpty());
+
+    for (const auto& presetName : std::as_const(m_effectChainPresetsSorted)) {
+        m_quickEffectChainPresetsSorted.append(presetName);
+    }
+    // On first run of Mixxx, generate QuickEffect chain presets for every
+    // effect with a default metaknob linking. These are generated rather
+    // than included with Mixxx in res/effects/chains so the translated
+    // names are used.
+    QVector<EffectManifestPointer> manifestList;
+    for (const auto& pManifest : m_pBackendManager->getManifests()) {
+        if (pManifest->hasMetaKnobLinking()) {
+            manifestList.append(pManifest);
+        }
+    }
+    std::sort(manifestList.begin(), manifestList.end(), EffectManifest::sortLexigraphically);
+    for (const auto& pManifest : manifestList) {
+        auto pChainPreset = EffectChainPresetPointer(new EffectChainPreset(pManifest));
+        pChainPreset->setName(pManifest->displayName());
+        m_effectChainPresets.insert(pChainPreset->name(), pChainPreset);
+        m_quickEffectChainPresetsSorted.append(pChainPreset);
+        savePresetXml(pChainPreset);
+    }
+}
+
+void EffectChainPresetManager::prependRemainingPresetsToLists() {
+    // This function should be called after these lists are populated.
+    DEBUG_ASSERT(!m_effectChainPresetsSorted.isEmpty());
+    DEBUG_ASSERT(!m_quickEffectChainPresetsSorted.isEmpty());
+
+    // If there are any preset files in the user settings folder that are not
+    // in either preset list, the user has placed them there since the last
+    // time Mixxx was run. Prepend these presets to the lists for both the
+    // regular effect units and QuickEffects.
+    for (const EffectChainPresetPointer& pPreset : std::as_const(m_effectChainPresets)) {
+        if (!m_effectChainPresetsSorted.contains(pPreset) &&
+                !m_quickEffectChainPresetsSorted.contains(pPreset)) {
+            m_effectChainPresetsSorted.prepend(pPreset);
+            m_quickEffectChainPresetsSorted.prepend(pPreset);
+        }
+    }
+}
+
+void EffectChainPresetManager::resetToDefaults() {
+    m_effectChainPresetsSorted.clear();
+    m_quickEffectChainPresetsSorted.clear();
+    m_effectChainPresets.clear();
+
+    importSavedPresets();
+    importDefaultPresets();
+    generateDefaultQuickEffectPresets();
+    prependRemainingPresetsToLists();
+}
+
 bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     QString path(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
     QDir effectsChainsDir(path);
@@ -443,20 +545,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
         }
     }
 
-    // Parse saved preset files
-    QString savedPresetsPath(
-            m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
-    QDir savedPresetsDir(savedPresetsPath);
-    savedPresetsDir.setFilter(QDir::Files | QDir::Readable);
-    const QStringList fileList = savedPresetsDir.entryList();
-    for (const auto& filePath : fileList) {
-        EffectChainPresetPointer pEffectChainPreset = loadPresetFromFile(
-                savedPresetsPath + kFolderDelimiter + filePath);
-        if (pEffectChainPreset && !pEffectChainPreset->isEmpty()) {
-            m_effectChainPresets.insert(
-                    pEffectChainPreset->name(), pEffectChainPreset);
-        }
-    }
+    importSavedPresets();
 
     // Reload order of custom chain presets
     QStringList chainPresetsSorted;
@@ -467,36 +556,25 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     for (int i = 0; i < presetNameList.count(); ++i) {
         QDomNode presetNameNode = presetNameList.at(i);
         if (presetNameNode.isElement()) {
-            chainPresetsSorted << presetNameNode.toElement().text();
+            QString presetName = presetNameNode.toElement().text();
+            auto pPreset = m_effectChainPresets.value(presetName);
+            if (!pPreset) {
+                qWarning() << presetName
+                           << "specified in list of effect chain presets in "
+                              "effects.xml but no such preset was found.";
+                continue;
+            }
+            m_effectChainPresetsSorted.append(pPreset);
         }
     }
 
-    if (chainPresetsSorted.isEmpty()) {
+    if (m_effectChainPresetsSorted.isEmpty()) {
         // On first run of Mixxx, copy chain presets from the resource folder to the
         // user settings folder. This allows us to ship default chain presets with
         // Mixxx while letting the user delete our defaults if they do not want them.
         // The user can always copy the files again manually or use the Import
         // button in DlgPrefEffects.
-        if (!savedPresetsDir.exists()) {
-            savedPresetsDir.mkpath(savedPresetsPath);
-        }
-
-        QString defaultPresetsPath(
-                m_pConfig->getResourcePath() + kEffectChainPresetDirectory);
-        QDir defaultChainPresetsDir(defaultPresetsPath);
-        defaultChainPresetsDir.setFilter(QDir::Files | QDir::Readable);
-        const auto& fileNames = defaultChainPresetsDir.entryList();
-        for (const auto& fileName : fileNames) {
-            QString copiedFileName = savedPresetsPath + kFolderDelimiter + fileName;
-            QFile::copy(defaultPresetsPath + kFolderDelimiter + fileName,
-                    copiedFileName);
-
-            EffectChainPresetPointer pEffectChainPreset = loadPresetFromFile(copiedFileName);
-            if (pEffectChainPreset && !pEffectChainPreset->isEmpty()) {
-                m_effectChainPresets.insert(pEffectChainPreset->name(), pEffectChainPreset);
-                chainPresetsSorted.append(pEffectChainPreset->name());
-            }
-        }
+        importDefaultPresets();
     }
 
     // Reload order of QuickEffect chain presets
@@ -508,48 +586,23 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     for (int i = 0; i < quickEffectPresetNameList.count(); ++i) {
         QDomNode presetNameNode = quickEffectPresetNameList.at(i);
         if (presetNameNode.isElement()) {
-            quickEffectChainPresetsSorted << presetNameNode.toElement().text();
-        }
-    }
-
-    if (quickEffectChainPresetsSorted.empty()) {
-        for (const auto& presetName : std::as_const(chainPresetsSorted)) {
-            quickEffectChainPresetsSorted.append(presetName);
-        }
-        // On first run of Mixxx, generate QuickEffect chain presets for every
-        // effect with a default metaknob linking. These are generated rather
-        // than included with Mixxx in res/effects/chains so the translated
-        // names are used.
-        QVector<EffectManifestPointer> manifestList;
-        for (const auto& pManifest : m_pBackendManager->getManifests()) {
-            if (pManifest->hasMetaKnobLinking()) {
-                manifestList.append(pManifest);
+            QString presetName = presetNameNode.toElement().text();
+            auto pPreset = m_effectChainPresets.value(presetName);
+            if (!pPreset) {
+                qWarning() << presetName
+                           << "specified in list of QuickEffect chain presets "
+                              "in effects.xml but no such preset was found.";
+                continue;
             }
-        }
-        std::sort(manifestList.begin(), manifestList.end(), EffectManifest::sortLexigraphically);
-        for (const auto& pManifest : manifestList) {
-            auto pChainPreset = EffectChainPresetPointer(new EffectChainPreset(pManifest));
-            pChainPreset->setName(pManifest->displayName());
-            m_effectChainPresets.insert(pChainPreset->name(), pChainPreset);
-            quickEffectChainPresetsSorted.append(pChainPreset->name());
-            savePresetXml(pChainPreset);
+            m_quickEffectChainPresetsSorted.append(pPreset);
         }
     }
 
-    // If there are any preset files in the user settings folder that are not
-    // in either preset list, the user has placed them there since the last
-    // time Mixxx was run. Prepend these presets to the lists for both the
-    // regular effect units and QuickEffects.
-    for (const EffectChainPresetPointer& pPreset : std::as_const(m_effectChainPresets)) {
-        if (!chainPresetsSorted.contains(pPreset->name()) &&
-                !quickEffectChainPresetsSorted.contains(pPreset->name())) {
-            chainPresetsSorted.prepend(pPreset->name());
-            quickEffectChainPresetsSorted.prepend(pPreset->name());
-        }
+    if (m_quickEffectChainPresetsSorted.empty()) {
+        generateDefaultQuickEffectPresets();
     }
 
-    setPresetOrder(chainPresetsSorted);
-    setQuickEffectPresetOrder(quickEffectChainPresetsSorted);
+    prependRemainingPresetsToLists();
 
     // Reload presets that were loaded into QuickEffects on last shutdown
     QDomElement quickEffectPresetsElement =

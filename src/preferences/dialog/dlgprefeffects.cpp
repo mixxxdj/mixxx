@@ -134,6 +134,7 @@ void DlgPrefEffects::saveChainPresetLists() {
 
 void DlgPrefEffects::slotResetToDefaults() {
     radioButtonKeepMetaknobPosition->setChecked(true);
+    m_pChainPresetManager->resetToDefaults();
 
     slotUpdate();
 }

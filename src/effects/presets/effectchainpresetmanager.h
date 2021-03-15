@@ -56,6 +56,8 @@ class EffectChainPresetManager : public QObject {
     void renamePreset(const QString& oldName);
     void deletePreset(const QString& chainPresetName);
 
+    void resetToDefaults();
+
     void setPresetOrder(const QStringList& chainPresetList);
     void setQuickEffectPresetOrder(const QStringList& chainPresetList);
 
@@ -75,6 +77,11 @@ class EffectChainPresetManager : public QObject {
 
   private:
     bool savePresetXml(EffectChainPresetPointer pPreset);
+
+    void importSavedPresets();
+    void importDefaultPresets();
+    void generateDefaultQuickEffectPresets();
+    void prependRemainingPresetsToLists();
 
     QHash<QString, EffectChainPresetPointer> m_effectChainPresets;
     // The sort orders are chosen by the user in DlgPrefEffects.
