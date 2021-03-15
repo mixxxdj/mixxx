@@ -106,26 +106,28 @@ class Syncable {
     // current Sync Master.
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
-    virtual void setMasterBeatDistance(double beatDistance) = 0;
+    virtual void updateMasterBeatDistance(double beatDistance) = 0;
 
+    // Update the current playback speed (not including scratch values)
+    // of the current master.
     // Must never result in a call to SyncableListener::notifyBpmChanged or
     // signal loops could occur.
-    virtual void setMasterBpm(double bpm) = 0;
+    virtual void updateMasterBpm(double bpm) = 0;
 
     // Tells a Syncable that it's going to be used as a source for master
     // params. This is a gross hack so that the SyncControl can undo its
     // half/double adjustment so bpms are initialized correctly.
     virtual void notifyMasterParamSource() = 0;
 
-    // Combines the above three calls into one, since they are often set
-    // simultaneously.  Avoids redundant recalculation that would occur by
-    // using the three calls separately.
-    virtual void setMasterParams(double beatDistance, double baseBpm, double bpm) = 0;
+    // Perform a reset of Master parameters. This function also triggers recalculation
+    // of half-double multiplier.
+    virtual void reinitMasterParams(double beatDistance, double baseBpm, double bpm) = 0;
 
+    // Update the playback speed of the master, including scratch values.
     // Must never result in a call to
     // SyncableListener::notifyInstantaneousBpmChanged or signal loops could
     // occur.
-    virtual void setInstantaneousBpm(double bpm) = 0;
+    virtual void updateInstantaneousBpm(double bpm) = 0;
 };
 
 /// SyncableListener is an interface class used by EngineSync to receive
