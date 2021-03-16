@@ -127,7 +127,10 @@ void BaseSyncableListener::setMasterBeatDistance(Syncable* pSource, double beatD
 void BaseSyncableListener::setMasterParams(Syncable* pSource) {
     const double beatDistance = pSource->getBeatDistance();
     const double baseBpm = pSource->getBaseBpm();
-    const double bpm = pSource->getBpm() > 0 ? pSource->getBpm() : pSource->getBaseBpm();
+    double bpm = pSource->getBpm();
+    if (bpm <= 0) {
+        bpm = baseBpm;
+    }
     // qDebug() << "BaseSyncableListener::setMasterParams, source is"
     //          << pSource->getGroup() << beatDistance << baseBpm << bpm;
     if (pSource != m_pInternalClock) {
