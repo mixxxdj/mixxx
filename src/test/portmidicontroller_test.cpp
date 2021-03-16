@@ -15,11 +15,15 @@ using ::testing::SetArrayArgument;
 
 class MockPortMidiController : public PortMidiController {
   public:
-    MockPortMidiController(const PmDeviceInfo* inputDeviceInfo,
+    MockPortMidiController(
+            const QString& group,
+            const PmDeviceInfo* inputDeviceInfo,
             const PmDeviceInfo* outputDeviceInfo,
             int inputDeviceIndex,
             int outputDeviceIndex)
-            : PortMidiController(inputDeviceInfo,
+            : PortMidiController(
+                      group,
+                      inputDeviceInfo,
                       outputDeviceInfo,
                       inputDeviceIndex,
                       outputDeviceIndex) {
@@ -78,7 +82,11 @@ class PortMidiControllerTest : public MixxxTest {
         m_outputDeviceInfo.opened = 0;
 
         m_pController.reset(new MockPortMidiController(
-                &m_inputDeviceInfo, &m_outputDeviceInfo, 0, 0));
+                "[MockPortMidiController]",
+                &m_inputDeviceInfo,
+                &m_outputDeviceInfo,
+                0,
+                0));
         m_pController->setPortMidiInputDevice(m_mockInput);
         m_pController->setPortMidiOutputDevice(m_mockOutput);
     }

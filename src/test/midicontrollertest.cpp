@@ -12,7 +12,9 @@
 
 class MockMidiController : public MidiController {
   public:
-    explicit MockMidiController(): MidiController() {}
+    explicit MockMidiController(const QString& group)
+            : MidiController(group) {
+    }
     ~MockMidiController() override { }
 
     MOCK_METHOD0(open, int());
@@ -27,7 +29,7 @@ class MockMidiController : public MidiController {
 class MidiControllerTest : public MixxxTest {
   protected:
     void SetUp() override {
-        m_pController.reset(new MockMidiController());
+        m_pController.reset(new MockMidiController("[MockMidiController]"));
         m_pMapping = std::make_shared<LegacyMidiControllerMapping>();
     }
 

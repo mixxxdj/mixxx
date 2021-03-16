@@ -224,6 +224,7 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
     }
 
     // Search for input devices and pair them with output devices if applicable
+    int index = 1;
     for (int i = 0; i < iNumDevices; i++) {
         const PmDeviceInfo* pDeviceInfo = Pm_GetDeviceInfo(i);
         VERIFY_OR_DEBUG_ASSERT(pDeviceInfo) {
@@ -264,13 +265,19 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
             }
         }
 
+        // Generate a group for this controller
+        QString group = QStringLiteral("[PortMidiController") +
+                QString::number(index) + QChar(']');
+        index++;
+
         // So at this point, we either have an input-only MIDI device
         // (outputDeviceInfo == NULL) or we've found a matching output MIDI
         // device (outputDeviceInfo != NULL).
 
         //.... so create our (aggregate) MIDI device!
         PortMidiController* currentDevice =
-                new PortMidiController(inputDeviceInfo,
+                new PortMidiController(group,
+                        inputDeviceInfo,
                         outputDeviceInfo,
                         inputDevIndex,
                         outputDevIndex);

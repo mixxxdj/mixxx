@@ -36,6 +36,7 @@ QList<Controller*> BulkEnumerator::queryDevices() {
     ssize_t i = 0;
     int err = 0;
 
+    int index = 1;
     for (i = 0; i < cnt; i++) {
         libusb_device *device = list[i];
         struct libusb_device_descriptor desc;
@@ -49,8 +50,13 @@ QList<Controller*> BulkEnumerator::queryDevices() {
                 continue;
             }
 
+            // Generate a group for this controller
+            QString group = QStringLiteral("[BulkController") +
+                    QString::number(index) + QChar(']');
+            index++;
+
             BulkController* currentDevice =
-                    new BulkController(m_context, handle, &desc);
+                    new BulkController(group, m_context, handle, &desc);
             m_devices.push_back(currentDevice);
         }
     }

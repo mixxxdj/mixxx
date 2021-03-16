@@ -65,6 +65,7 @@ HidEnumerator::~HidEnumerator() {
 QList<Controller*> HidEnumerator::queryDevices() {
     qInfo() << "Scanning USB HID devices";
 
+    int index = 1;
     hid_device_info* device_info_list = hid_enumerate(0x0, 0x0);
     for (const auto* device_info = device_info_list;
             device_info;
@@ -85,8 +86,13 @@ QList<Controller*> HidEnumerator::queryDevices() {
             continue;
         }
 
-        HidController* newDevice = new HidController(std::move(deviceInfo));
+        // Generate a group for this controller
+        QString group = QStringLiteral("[HidController") +
+                QString::number(index) + QChar(']');
+
+        HidController* newDevice = new HidController(group, std::move(deviceInfo));
         m_devices.push_back(newDevice);
+        index++;
     }
     hid_free_enumeration(device_info_list);
 

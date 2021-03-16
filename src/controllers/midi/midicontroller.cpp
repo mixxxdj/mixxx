@@ -11,8 +11,9 @@
 #include "util/math.h"
 #include "util/screensaver.h"
 
-MidiController::MidiController()
-        : Controller() {
+MidiController::MidiController(const QString& group)
+        : Controller(group),
+          m_pBeatClock(std::make_shared<mixxx::MidiBeatClock>(group)) {
     setDeviceCategory(tr("MIDI Controller"));
 }
 
@@ -214,13 +215,17 @@ void MidiController::receivedShortMessage(unsigned char status,
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
+    if (m_pBeatClock->canReceiveMidiStatus(status)) {
+        m_pBeatClock->receive(status, timestamp);
+    }
+
     // Ignore MIDI beat clock messages (0xF8) until we have proper MIDI sync in
     // Mixxx. These messages are not suitable to use in JS anyway, as they are
     // sent at 24 ppqn (i.e. one message every 20.83 ms for a 120 BPM track)
     // and require real-time code. Currently, they are only spam on the
     // console, inhibit the screen saver unintentionally, could potentially
     // slow down Mixxx or interfere with the learning wizard.
-    if (status == 0xF8) {
+    if (status == MidiOpCode::MIDI_TIMING_CLK) {
         return;
     }
 

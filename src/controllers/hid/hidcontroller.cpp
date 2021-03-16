@@ -16,8 +16,10 @@ constexpr int kMaxHidErrorMessageSize = 512;
 } // namespace
 
 HidController::HidController(
+        const QString& group,
         mixxx::hid::DeviceInfo&& deviceInfo)
-        : m_deviceInfo(std::move(deviceInfo)),
+        : Controller(group),
+          m_deviceInfo(std::move(deviceInfo)),
           m_pHidDevice(nullptr),
           m_pollingBufferIndex(0) {
     setDeviceCategory(mixxx::hid::DeviceCategory::guessFromDeviceInfo(m_deviceInfo));

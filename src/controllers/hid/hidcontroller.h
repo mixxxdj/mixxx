@@ -10,6 +10,7 @@ class HidController final : public Controller {
     Q_OBJECT
   public:
     explicit HidController(
+            const QString& group,
             mixxx::hid::DeviceInfo&& deviceInfo);
     ~HidController() override;
 

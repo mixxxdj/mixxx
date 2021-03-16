@@ -60,10 +60,11 @@ void DeviceChannelListener::Reconnected() {
 }
 
 Hss1394Controller::Hss1394Controller(
+        const QString& group,
         const hss1394::TNodeInfo& deviceInfo,
         int deviceIndex,
         UserSettingsPointer pConfig)
-        : MidiController(),
+        : MidiController(group),
           m_deviceInfo(deviceInfo),
           m_iDeviceIndex(deviceIndex) {
     // Note: We prepend the input stream's index to the device's name to prevent

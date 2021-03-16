@@ -3,6 +3,7 @@
 #include "controllers/controller.h"
 #include "controllers/midi/legacymidicontrollermapping.h"
 #include "controllers/midi/legacymidicontrollermappingfilehandler.h"
+#include "controllers/midi/midibeatclock.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
@@ -18,7 +19,7 @@ class DlgControllerLearning;
 class MidiController : public Controller {
     Q_OBJECT
   public:
-    explicit MidiController();
+    explicit MidiController(const QString& group);
     ~MidiController() override;
 
     ControllerJSProxy* jsProxy() override;
@@ -36,6 +37,10 @@ class MidiController : public Controller {
     }
 
     bool matchMapping(const MappingInfo& mapping) override;
+
+    std::shared_ptr<ControllerSyncable> syncable() const override {
+        return m_pBeatClock;
+    }
 
   signals:
     void messageReceived(unsigned char status, unsigned char control, unsigned char value);
@@ -92,6 +97,7 @@ class MidiController : public Controller {
     std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
+    std::shared_ptr<mixxx::MidiBeatClock> m_pBeatClock;
 
     // So it can access sendShortMsg()
     friend class MidiOutputHandler;

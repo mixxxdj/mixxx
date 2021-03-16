@@ -56,6 +56,29 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
             stopped_deck_count++;
         }
     }
+    for (const auto& pSyncable : qAsConst(m_controllerSyncables)) {
+        if (pSyncable->getBaseBpm() <= 0.0) {
+            continue;
+        }
+
+        if (pSyncable.get() != enabling_syncable) {
+            if (!pSyncable->isSynchronized()) {
+                continue;
+            }
+        }
+
+        if (pSyncable->isPlaying()) {
+            if (playing_deck_count == 0) {
+                first_playing_deck = pSyncable.get();
+            }
+            playing_deck_count++;
+        } else {
+            if (stopped_deck_count == 0) {
+                first_stopped_deck = pSyncable.get();
+            }
+            stopped_deck_count++;
+        }
+    }
 
     if (playing_deck_count == 1) {
         return first_playing_deck;
@@ -146,6 +169,28 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         // this one as a fallback.
         if (!pStoppedTarget && !requester->isPlaying()) {
             pStoppedTarget = pOtherSyncable;
+        }
+    }
+
+    for (const auto& pOtherSyncable : qAsConst(m_controllerSyncables)) {
+        if (pOtherSyncable.get() == requester) {
+            continue;
+        }
+        if (pOtherSyncable->getBaseBpm() == 0.0) {
+            continue;
+        }
+
+        // If the other deck is playing we stop looking immediately. Otherwise continue looking
+        // for a playing deck with bpm > 0.0.
+        if (pOtherSyncable->isPlaying()) {
+            return pOtherSyncable.get();
+        }
+
+        // The target is not playing. If this is the first one we have seen,
+        // record it. If we never find a playing target, we'll return
+        // this one as a fallback.
+        if (!pStoppedTarget && !requester->isPlaying()) {
+            pStoppedTarget = pOtherSyncable.get();
         }
     }
 
@@ -465,6 +510,18 @@ Syncable* EngineSync::pickNonSyncSyncTarget(EngineChannel* pDontPick) const {
 bool EngineSync::otherSyncedPlaying(const QString& group) {
     bool othersInSync = false;
     for (Syncable* theSyncable : qAsConst(m_syncables)) {
+        bool isSynchonized = theSyncable->isSynchronized();
+        if (theSyncable->getGroup() == group) {
+            if (!isSynchonized) {
+                return false;
+            }
+            continue;
+        }
+        if (theSyncable->isPlaying() && isSynchonized) {
+            othersInSync = true;
+        }
+    }
+    for (const auto& theSyncable : qAsConst(m_controllerSyncables)) {
         bool isSynchonized = theSyncable->isSynchronized();
         if (theSyncable->getGroup() == group) {
             if (!isSynchonized) {

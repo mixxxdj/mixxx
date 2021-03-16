@@ -38,6 +38,7 @@ class Hss1394Controller : public MidiController {
     Q_OBJECT
   public:
     Hss1394Controller(
+            const QString& group,
             const hss1394::TNodeInfo& deviceInfo,
             int deviceIndex,
             UserSettingsPointer pConfig);

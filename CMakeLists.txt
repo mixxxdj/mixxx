@@ -481,6 +481,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/controllers/learningutils.cpp
   src/controllers/midi/legacymidicontrollermapping.cpp
   src/controllers/midi/legacymidicontrollermappingfilehandler.cpp
+  src/controllers/midi/midibeatclock.cpp
+  src/controllers/midi/midibeatclockreceiver.cpp
   src/controllers/midi/midicontroller.cpp
   src/controllers/midi/midienumerator.cpp
   src/controllers/midi/midimessage.cpp
@@ -598,6 +600,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/sidechain/networkinputstreamworker.cpp
   src/engine/sidechain/networkoutputstreamworker.cpp
   src/engine/sync/basesyncablelistener.cpp
+  src/engine/sync/controllersyncable.cpp
   src/engine/sync/enginesync.cpp
   src/engine/sync/internalclock.cpp
   src/engine/sync/synccontrol.cpp
@@ -1506,6 +1509,7 @@ add_executable(mixxx-test
   src/test/metadatatest.cpp
   src/test/metaknob_link_test.cpp
   src/test/midicontrollertest.cpp
+  src/test/midibeatclockreceivertest.cpp
   src/test/mixxxtest.cpp
   src/test/movinginterquartilemean_test.cpp
   src/test/nativeeffects_test.cpp

@@ -27,7 +27,8 @@ void FakeControllerJSProxy::sendShortMsg(unsigned char status,
 }
 
 FakeController::FakeController()
-        : m_bMidiMapping(false),
+        : Controller("[FakeController]"),
+          m_bMidiMapping(false),
           m_bHidMapping(false) {
     startEngine();
     getScriptEngine()->setTesting(true);
