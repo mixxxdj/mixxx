@@ -211,7 +211,7 @@ void BrowseThread::populateModel() {
             QString duration = pTrack->getDurationText(mixxx::Duration::Precision::SECONDS);
             item = new QStandardItem(duration);
             item->setToolTip(item->text());
-            item->setData(item->text(), Qt::UserRole);
+            item->setData(pTrack->getDuration(), Qt::UserRole);
             row_data.insert(COLUMN_DURATION, item);
 
             item = new QStandardItem(pTrack->getBpmText());
