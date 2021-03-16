@@ -428,7 +428,6 @@ void EffectChainPresetManager::importDefaultPresets() {
             qWarning() << "Could not load default effect chain preset" << copiedFileName;
         }
     }
-    emit effectChainPresetListUpdated();
 }
 
 void EffectChainPresetManager::generateDefaultQuickEffectPresets() {
@@ -485,6 +484,9 @@ void EffectChainPresetManager::resetToDefaults() {
     importDefaultPresets();
     generateDefaultQuickEffectPresets();
     prependRemainingPresetsToLists();
+
+    emit effectChainPresetListUpdated();
+    emit quickEffectChainPresetListUpdated();
 }
 
 bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
@@ -604,6 +606,9 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     }
 
     prependRemainingPresetsToLists();
+
+    emit effectChainPresetListUpdated();
+    emit quickEffectChainPresetListUpdated();
 
     // Reload presets that were loaded into QuickEffects on last shutdown
     QDomElement quickEffectPresetsElement =
