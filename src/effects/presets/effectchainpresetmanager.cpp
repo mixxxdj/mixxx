@@ -424,6 +424,8 @@ void EffectChainPresetManager::importDefaultPresets() {
         if (pEffectChainPreset && !pEffectChainPreset->isEmpty()) {
             m_effectChainPresets.insert(pEffectChainPreset->name(), pEffectChainPreset);
             m_effectChainPresetsSorted.append(pEffectChainPreset);
+        } else {
+            qWarning() << "Could not load default effect chain preset" << copiedFileName;
         }
     }
     emit effectChainPresetListUpdated();
