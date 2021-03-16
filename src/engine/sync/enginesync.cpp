@@ -28,50 +28,47 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         return;
     }
 
-    // The syncable that will be used to initialize the master params, if needed.
-    Syncable* pParamsSyncable = m_pMasterSyncable;
-
+    // There are two stages to setting the mode: first, figuring out
+    // the pSyncable's new mode (it may not be the one they requested),
+    // and activating the appropriate modes in it as well as possibly other
+    // decks that need to change as a result.
+    Syncable* oldMaster = nullptr;
     switch (mode) {
     case SYNC_MASTER_EXPLICIT: {
         if (pSyncable->getBaseBpm() > 0 || pSyncable == m_pInternalClock) {
             activateMaster(pSyncable, SYNC_MASTER_EXPLICIT);
-            pParamsSyncable = pSyncable;
         } else {
             // If we have no bpm, we can't be a valid master. Override.
             activateFollower(pSyncable);
         }
         break;
     }
-    case SYNC_FOLLOWER:
     case SYNC_MASTER_SOFT: {
+        if (m_pMasterSyncable == pSyncable &&
+                pSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT) {
+            pSyncable->setSyncMode(mode);
+        } else if (pSyncable->getBaseBpm() > 0.0) {
+            activateMaster(pSyncable, SYNC_MASTER_SOFT);
+        } else {
+            activateFollower(pSyncable);
+        }
+        break;
+    }
+    case SYNC_FOLLOWER: {
         // A request for follower mode may be converted into an enabling of soft
         // master mode.
-        // Note: SYNC_MASTER_SOFT and SYNC_FOLLOWER cannot be set explicitly,
-        // they are calculated by pickMaster.
-        // Internal clock cannot be disabled, it is always listening
         if (m_pMasterSyncable == pSyncable) {
-            // This Syncable was master before. Hand off.
             m_pMasterSyncable = nullptr;
-            pSyncable->setSyncMode(mode);
-        }
-
-        Syncable* newMaster = pickMaster(pSyncable);
-        if (newMaster && newMaster != m_pMasterSyncable) {
-            // if the master has changed, activate it.
-            activateMaster(newMaster, SYNC_MASTER_SOFT);
-            pParamsSyncable = newMaster;
-        }
-        // If we are the new master, we need to match to some other deck.
-        if (newMaster == pSyncable) {
-            pParamsSyncable = findBpmMatchTarget(pSyncable);
-            if (!pParamsSyncable) {
-                // We weren't able to find anything to match to, so set ourselves as the
-                // target.  That way we'll use our own params when we setMasterParams below.
-                pParamsSyncable = pSyncable;
-            }
-        } else {
-            // This happens if this Deck has no valid BPM
             activateFollower(pSyncable);
+        } else {
+            Syncable* newMaster = pickMaster(pSyncable);
+            if (newMaster && newMaster != m_pMasterSyncable) {
+                // if the master has changed, activate it (this updates m_pMasterSyncable)
+                activateMaster(newMaster, SYNC_MASTER_SOFT);
+            }
+            if (newMaster != pSyncable) {
+                activateFollower(pSyncable);
+            }
         }
         break;
     }
@@ -84,10 +81,18 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     default:;
     }
 
-    if (auto unique_syncable = getUniquePlayingSyncable(); unique_syncable) {
-        unique_syncable->notifyOnlyPlayingSyncable();
+    // Second, figure out what Syncable should be used to initialize the master
+    // parameters, if any. Usually this is the new master. (Note, that pointer might be null!)
+    Syncable* pParamsSyncable = m_pMasterSyncable;
+    // But If we are newly soft master, we need to match to some other deck.
+    if (pSyncable == m_pMasterSyncable && pSyncable != oldMaster && mode != SYNC_MASTER_EXPLICIT) {
+        pParamsSyncable = findBpmMatchTarget(pSyncable);
+        if (!pParamsSyncable) {
+            // We weren't able to find anything to match to, so set ourselves as the
+            // target.  That way we'll use our own params when we setMasterParams below.
+            pParamsSyncable = pSyncable;
+        }
     }
-
     // Now that all of the decks have their assignments, reinit master params if needed.
     if (pParamsSyncable) {
         setMasterParams(pParamsSyncable);
@@ -95,6 +100,10 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         if (pParamsSyncable != pSyncable) {
             pSyncable->requestSync();
         }
+    }
+
+    if (auto unique_syncable = getUniquePlayingSyncable(); unique_syncable) {
+        unique_syncable->notifyOnlyPlayingSyncable();
     }
 }
 

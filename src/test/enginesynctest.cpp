@@ -556,8 +556,8 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
     ProcessBuffer();
 
     ASSERT_TRUE(isFollower(m_sInternalClockGroup));
-    ASSERT_TRUE(isFollower(m_sGroup1));
-    ASSERT_TRUE(isSoftMaster(m_sGroup2));
+    ASSERT_TRUE(isSoftMaster(m_sGroup1));
+    ASSERT_TRUE(isFollower(m_sGroup2));
 }
 
 TEST_F(EngineSyncTest, SetExplicitMasterByLightsNoTracks) {
@@ -669,14 +669,16 @@ TEST_F(EngineSyncTest, RateChangeTestOrder3) {
     EXPECT_DOUBLE_EQ(
             120.0, ControlObject::get(ConfigKey(m_sGroup2, "file_bpm")));
 
-    // Turn on Master and Follower.
+    // Turn on Master. Setting explicit master causes this track's rate to be adopted instead
+    // of matching against the other deck.
     auto pButtonMasterSync1 =
             std::make_unique<ControlProxy>(m_sGroup1, "sync_mode");
     pButtonMasterSync1->set(SYNC_MASTER_EXPLICIT);
     ProcessBuffer();
-
     ASSERT_TRUE(isExplicitMaster(m_sGroup1));
+    EXPECT_DOUBLE_EQ(160.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
 
+    // Turn on follower.
     auto pButtonMasterSync2 =
             std::make_unique<ControlProxy>(m_sGroup2, "sync_mode");
     pButtonMasterSync2->set(SYNC_FOLLOWER);
