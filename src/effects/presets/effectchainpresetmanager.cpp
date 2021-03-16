@@ -415,11 +415,10 @@ void EffectChainPresetManager::importDefaultPresets() {
     for (const auto& fileName : fileNames) {
         QString copiedFileName = savedPresetsPath + kFolderDelimiter + fileName;
         QFileInfo copiedFileInfo(copiedFileName);
-        if (copiedFileInfo.exists()) {
-            continue;
+        if (!copiedFileInfo.exists()) {
+            QFile::copy(defaultPresetsPath + kFolderDelimiter + fileName,
+                    copiedFileName);
         }
-        QFile::copy(defaultPresetsPath + kFolderDelimiter + fileName,
-                copiedFileName);
 
         EffectChainPresetPointer pEffectChainPreset = loadPresetFromFile(copiedFileName);
         if (pEffectChainPreset && !pEffectChainPreset->isEmpty()) {
