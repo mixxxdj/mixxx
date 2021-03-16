@@ -166,7 +166,7 @@ double BeatUtils::makeConstBpm(
             longestRegionBeatLenth = constantRegions[i].beatLength;
             midRegion = i;
         }
-        qDebug() << i << length << constantRegions[i].beatLength;
+        //qDebug() << i << length << constantRegions[i].beatLength;
     }
 
     if (longestRegionLength == 0) {
@@ -220,8 +220,6 @@ double BeatUtils::makeConstBpm(
     longestRegionMaxRoundSamples = longestRegionBeatLenth +
             ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
 
-    int endRegion = midRegion;
-
     // Find a region at the end of the track with similar tempo and phase
     for (int i = constantRegions.size() - 2; i > midRegion; --i) {
         const double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
@@ -246,7 +244,6 @@ double BeatUtils::makeConstBpm(
                 longestRegionLength = newLength;
                 longestRegionBeatLenth = newBeatLength;
                 longestRegionNumberOfBeats = numberOfOldBeats;
-                endRegion = i;
                 break;
             }
         }
@@ -257,12 +254,11 @@ double BeatUtils::makeConstBpm(
     longestRegionMaxRoundSamples = longestRegionBeatLenth +
             ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
 
-    qDebug() << startRegion << midRegion << endRegion << constantRegions.size()
-             << longestRegionLength << "<<<<<<<<<<<<<<<<<<<<<<<<<";
+    // qDebug() << startRegion << midRegion << constantRegions.size()
+    //         << longestRegionLength << "<<<<<<<<<<<<<<<<<<<<<<<<<";
 
-    qDebug() << "First beat" << constantRegions[startRegion].firstBeat;
-    qDebug() << "Last beat" << constantRegions[endRegion + 1].firstBeat;
-    qDebug() << longestRegionLength << longestRegionNumberOfBeats;
+    //qDebug() << "First beat" << constantRegions[startRegion].firstBeat;
+    //qDebug() << longestRegionLength << longestRegionNumberOfBeats;
 
     // Create a const region region form the first beat of the first region to the last beat of the last region.
 
@@ -270,8 +266,8 @@ double BeatUtils::makeConstBpm(
     const double maxRoundBpm = 60 * sampleRate / longestRegionMinRoundSamples;
     const double centerBpm = 60 * sampleRate / longestRegionBeatLenth;
 
-    qDebug() << "minRoundBpm" << minRoundBpm;
-    qDebug() << "maxRoundBpm" << maxRoundBpm;
+    //qDebug() << "minRoundBpm" << minRoundBpm;
+    //qDebug() << "maxRoundBpm" << maxRoundBpm;
     const double roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
 
     if (pFirstBeat) {
