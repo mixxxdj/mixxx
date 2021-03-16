@@ -76,8 +76,18 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
     libnames << bundlePath.absoluteFilePath();
 #endif
     libnames << QStringLiteral("fdk-aac");
+    // Although the line above should suffice, detection of the fdk-aac library
+    // does not work on Ubuntu 18.04 LTS and Ubuntu 20.04 LTS:
+    //
+    //     $ dpkg -L libfdk-aac1 | grep so
+    //     /usr/lib/x86_64-linux-gnu/libfdk-aac.so.1.0.0
+    //     /usr/lib/x86_64-linux-gnu/libfdk-aac.so.1
+    //
+    // As a workaround, we have to hardcode the filenames here.
+    libnames << QStringLiteral("libfdk-aac.so.1")
+             << QStringLiteral("libfdk-aac.so.2");
 
-    QString failedMsg = QStringLiteral("Failed to load AAC encoder library");
+    QStringList errorMessages;
     for (const auto& libname : qAsConst(libnames)) {
         m_pLibrary = std::make_unique<QLibrary>(libname, 2);
         if (m_pLibrary->load()) {
@@ -92,12 +102,14 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
             break;
         }
         // collect error messages for the case we have no success
-        failedMsg.append("\n" + m_pLibrary->errorString());
+        errorMessages.append(m_pLibrary->errorString());
         m_pLibrary = nullptr;
     }
 
     if (!m_pLibrary || !m_pLibrary->isLoaded()) {
-        kLogger.warning() << failedMsg;
+        for (const auto& errorMessage : qAsConst(errorMessages)) {
+            kLogger.warning() << "Failed to load AAC encoder library:" << errorMessage;
+        }
         return;
     }
 
@@ -119,8 +131,8 @@ EncoderFdkAac::EncoderFdkAac(EncoderCallback* pCallback)
         m_pLibrary->unload();
         m_pLibrary = nullptr;
 
-        failedMsg.append(", the interface is not as expected");
-        kLogger.warning() << failedMsg;
+        kLogger.warning() << "Failed to load AAC encoder library: Interface of"
+                          << m_pLibrary->fileName() << "is not as expected";
 
         kLogger.debug() << "aacEncGetLibInfo:" << aacEncGetLibInfo;
         kLogger.debug() << "aacEncOpen:" << aacEncOpen;
