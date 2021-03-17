@@ -2622,7 +2622,7 @@ endif()
 
 # WavPack audio file support
 find_package(wavpack)
-cmake_dependent_option(BULK "WavPack audio file support" ON "wavpack_FOUND" OFF)
+cmake_dependent_option(WAVPACK "WavPack audio file support" ON "wavpack_FOUND" OFF)
 if(WAVPACK)
   if(NOT wavpack_FOUND)
     message(FATAL_ERROR "WavPack audio file support requires libwv and its development headers.")
