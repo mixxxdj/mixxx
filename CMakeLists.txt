@@ -2622,9 +2622,9 @@ endif()
 
 # WavPack audio file support
 find_package(wavpack)
-option(WAVPACK "WavPack audio file support" OFF)
+cmake_dependent_option(BULK "WavPack audio file support" ON "wavpack_FOUND" OFF)
 if(WAVPACK)
-  if(NOT TARGET WavPack::wavpack)
+  if(NOT wavpack_FOUND)
     message(FATAL_ERROR "WavPack audio file support requires libwv and its development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcewv.cpp)
