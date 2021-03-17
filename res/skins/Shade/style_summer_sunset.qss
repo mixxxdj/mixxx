@@ -147,3 +147,7 @@ QPushButton#pushButtonRecording:hover,
 QPushButton#pushButtonAnalyze:hover {
    border: 1px solid #52F904;
   }
+
+WRateRange {
+  color: #4B515F;
+}

@@ -29,43 +29,22 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QLabel" name="mixxx_icon">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+      <widget class="QSvgWidget" name="mixxx_icon">
        <property name="maximumSize">
         <size>
-         <width>48</width>
-         <height>68</height>
+         <width>32</width>
+         <height>32</height>
         </size>
-       </property>
-       <property name="pixmap">
-        <pixmap resource="../../res/mixxx.qrc">:/images/mixxx_icon.svg</pixmap>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="mixxx_logo">
-       <property name="sizePolicy">
-        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-         <horstretch>0</horstretch>
-         <verstretch>0</verstretch>
-        </sizepolicy>
-       </property>
+      <widget class="QSvgWidget" name="mixxx_logo">
        <property name="maximumSize">
         <size>
          <width>170</width>
          <height>68</height>
         </size>
-       </property>
-       <property name="pixmap">
-        <pixmap resource="../../res/mixxx.qrc">:/images/mixxx_logo.svg</pixmap>
-       </property>
-       <property name="scaledContents">
-        <bool>true</bool>
        </property>
       </widget>
      </item>

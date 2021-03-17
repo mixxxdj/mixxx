@@ -209,7 +209,7 @@ TrackPointer BaseTrackPlayerImpl::loadFakeTrack(bool bPlay, double filebpm) {
             mixxx::audio::Bitrate(),
             mixxx::Duration::fromSeconds(10));
     if (filebpm > 0) {
-        pTrack->setBpm(filebpm);
+        pTrack->trySetBpm(filebpm);
     }
 
     TrackPointer pOldTrack = m_pLoadedTrack;
