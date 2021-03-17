@@ -55,15 +55,15 @@ void WEffectChainPresetButton::populateMenu() {
     m_pMenu->addSeparator();
 
     // Effect parameter hiding/showing and saving snapshots
-    int effectSlotIndex = 0;
-    for (const auto& pEffectSlot : m_pChain->getEffectSlots()) {
+    // TODO: get number of currently visible effect slots from skin
+    for (int effectSlotIndex = 0; effectSlotIndex < 3; effectSlotIndex++) {
+        auto pEffectSlot = m_pChain->getEffectSlots().at(effectSlotIndex);
         const ParameterMap loadedParameters = pEffectSlot->getLoadedParameters();
         const ParameterMap hiddenParameters = pEffectSlot->getHiddenParameters();
 
         auto pManifest = pEffectSlot->getManifest();
         if (pManifest == nullptr) {
             m_pMenu->addAction(tr("Empty Effect Slot %1").arg(effectSlotIndex + 1));
-            effectSlotIndex++;
             continue;
         }
 
@@ -117,6 +117,5 @@ void WEffectChainPresetButton::populateMenu() {
             m_pEffectsManager->getEffectPresetManager()->saveDefaultForEffect(pEffectSlot);
         });
         m_pMenu->addMenu(pEffectMenu);
-        effectSlotIndex++;
     }
 }
