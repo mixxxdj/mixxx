@@ -244,7 +244,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
         return;
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (!pBeats) {
+    if (!pBeats || !(m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         return;
     }
     double rateRatio = m_pRateRatio->get();
