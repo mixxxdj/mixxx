@@ -102,8 +102,9 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         }
     }
 
-    if (auto unique_syncable = getUniquePlayingSyncable(); unique_syncable) {
-        unique_syncable->notifyOnlyPlayingSyncable();
+    auto* uniqueSyncable = getUniquePlayingSyncable();
+    if (uniqueSyncable != nullptr) {
+        uniqueSyncable->notifyOnlyPlayingSyncable();
     }
 }
 
