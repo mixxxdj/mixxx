@@ -2480,22 +2480,24 @@ if(MAD)
 endif()
 
 # Media Foundation AAC Decoder Plugin
-find_package(MediaFoundation)
-cmake_dependent_option(MEDIAFOUNDATION "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" ON "MediaFoundation_FOUND" OFF)
-if(MEDIAFOUNDATION)
-  if(NOT MediaFoundation_FOUND)
-      message(FATAL_ERROR "MediaFoundation support requires the MediaFoundation libraries and its development headers.")
+if(WIN32)
+  find_package(MediaFoundation)
+  cmake_dependent_option(MEDIAFOUNDATION "Media Foundation AAC decoder plugin" ON "MediaFoundation_FOUND" OFF)
+  if(MEDIAFOUNDATION)
+    if(NOT MediaFoundation_FOUND)
+        message(FATAL_ERROR "MediaFoundation support requires the MediaFoundation libraries and its development headers.")
+    endif()
+    target_sources(mixxx-lib PRIVATE
+      src/sources/soundsourcemediafoundation.cpp
+    )
+    target_compile_definitions(mixxx-lib PUBLIC __MEDIAFOUNDATION__)
+    target_include_directories(mixxx-lib SYSTEM PRIVATE
+      ${MediaFoundation_INCLUDE_DIRS}
+    )
+    target_link_libraries(mixxx-lib PUBLIC
+      ${MediaFoundation_LIBRARIES}
+    )
   endif()
-  target_sources(mixxx-lib PRIVATE
-    src/sources/soundsourcemediafoundation.cpp
-  )
-  target_compile_definitions(mixxx-lib PUBLIC __MEDIAFOUNDATION__)
-  target_include_directories(mixxx-lib SYSTEM PRIVATE
-    ${MediaFoundation_INCLUDE_DIRS}
-  )
-  target_link_libraries(mixxx-lib PUBLIC
-    ${MediaFoundation_LIBRARIES}
-  )
 endif()
 
 # Modplug support
