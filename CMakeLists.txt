@@ -2301,27 +2301,26 @@ endif()
 # FFmpeg 4.x support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
 find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-cmake_dependent_option(FFMPEG "FFmpeg 4.x support" ON "FFMPEG_FOUND;FFMPEG_libavcodec_VERSION VERSION_GREATER_EQUAL 58" OFF)
+cmake_dependent_option(FFMPEG "FFmpeg 4.x support" ON "FFMPEG_FOUND" OFF)
 if(FFMPEG)
-  if(NOT FFMPEG_libavcodec_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libavcodec and its development headers.")
-  elseif(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58)
-    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavcodec (found: ${AVCODEC_VERSION}).")
+  if(NOT FFMPEG_FOUND)
+    message(FATAL_ERROR "FFMPEG was not found")
   endif()
-  if(NOT FFMPEG_libavformat_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libavformat and its development headers.")
-  elseif(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58)
-    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavformat (found: ${AVFORMAT_VERSION}).")
+
+  # Check minimum required versions
+  # Windows: Version numbers are not available!?
+  # macOS: Untested
+  if(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58)
+    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavcodec (found: ${FFMPEG_libavcodec_VERSION}).")
   endif()
-  if(NOT FFMPEG_libavutil_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libavutil and its development headers.")
-  elseif(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56)
-    message(FATAL_ERROR "FFmpeg support requires at least version 56 of libavutil (found: ${AVUTIL_VERSION}).")
+  if(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58)
+    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavformat (found: ${FFMPEG_libavformat_VERSION}).")
   endif()
-  if(NOT FFMPEG_libswresample_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libswresample and its development headers.")
-  elseif(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
-    message(FATAL_ERROR "FFmpeg support requires at least version 3.1 of libswresample (found: ${SWRESAMPLE_VERSION}).")
+  if(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56)
+    message(FATAL_ERROR "FFmpeg support requires at least version 56 of libavutil (found: ${FFMPEG_libavutil_VERSION}).")
+  endif()
+  if(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
+    message(FATAL_ERROR "FFmpeg support requires at least version 3.1 of libswresample (found: ${FFMPEG_libswresample_VERSION}).")
   endif()
 
   target_sources(mixxx-lib PRIVATE src/sources/soundsourceffmpeg.cpp)
@@ -2332,7 +2331,6 @@ if(FFMPEG)
     __STDC_LIMIT_MACROS
     __STDC_FORMAT_MACROS
   )
-
   target_link_libraries(mixxx-lib PUBLIC "${FFMPEG_LIBRARIES}")
   target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
@@ -2421,11 +2419,7 @@ find_package(SQLite3)
 # FIXME
 # It is difficult to get qmake to link Qt to a custom built SQLite on macOS instead of the system SQLite,
 # which results in a crash on startup when LOCALECOMPARE is enabled.
-if(APPLE)
-  cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" OFF "SQLite3_FOUND" OFF)
-else()
-  cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" ON "SQLite3_FOUND" OFF)
-endif()
+cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" ON "SQLite3_FOUND AND NOT APPLE" OFF)
 if(LOCALECOMPARE)
   if(NOT SQLite3_FOUND)
     message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
@@ -2482,22 +2476,24 @@ if(MAD)
 endif()
 
 # Media Foundation AAC Decoder Plugin
-find_package(MediaFoundation)
-cmake_dependent_option(MEDIAFOUNDATION "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" ON "MediaFoundation_FOUND" OFF)
-if(MEDIAFOUNDATION)
-  if(NOT MediaFoundation_FOUND)
-      message(FATAL_ERROR "MediaFoundation support requires the MediaFoundation libraries and its development headers.")
+if(WIN32)
+  find_package(MediaFoundation)
+  cmake_dependent_option(MEDIAFOUNDATION "Media Foundation AAC decoder plugin" ON "MediaFoundation_FOUND" OFF)
+  if(MEDIAFOUNDATION)
+    if(NOT MediaFoundation_FOUND)
+        message(FATAL_ERROR "MediaFoundation support requires the MediaFoundation libraries and its development headers.")
+    endif()
+    target_sources(mixxx-lib PRIVATE
+      src/sources/soundsourcemediafoundation.cpp
+    )
+    target_compile_definitions(mixxx-lib PUBLIC __MEDIAFOUNDATION__)
+    target_include_directories(mixxx-lib SYSTEM PRIVATE
+      ${MediaFoundation_INCLUDE_DIRS}
+    )
+    target_link_libraries(mixxx-lib PUBLIC
+      ${MediaFoundation_LIBRARIES}
+    )
   endif()
-  target_sources(mixxx-lib PRIVATE
-    src/sources/soundsourcemediafoundation.cpp
-  )
-  target_compile_definitions(mixxx-lib PUBLIC __MEDIAFOUNDATION__)
-  target_include_directories(mixxx-lib SYSTEM PRIVATE
-    ${MediaFoundation_INCLUDE_DIRS}
-  )
-  target_link_libraries(mixxx-lib PUBLIC
-    ${MediaFoundation_LIBRARIES}
-  )
 endif()
 
 # Modplug support
@@ -2626,9 +2622,9 @@ endif()
 
 # WavPack audio file support
 find_package(wavpack)
-option(WAVPACK "WavPack audio file support" OFF)
+cmake_dependent_option(BULK "WavPack audio file support" ON "wavpack_FOUND" OFF)
 if(WAVPACK)
-  if(NOT TARGET WavPack::wavpack)
+  if(NOT wavpack_FOUND)
     message(FATAL_ERROR "WavPack audio file support requires libwv and its development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcewv.cpp)

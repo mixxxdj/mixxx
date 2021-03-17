@@ -15,6 +15,7 @@ jobs:
             cmake_args: >-
               -DWARNINGS_FATAL=ON
               -DFAAD=ON
+              -DFFMPEG=OFF
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
@@ -73,7 +74,9 @@ jobs:
             qt_qpa_platform: offscreen
           - name: Windows 2019 (MSVC)
             os: windows-2019
+            # TODO: Reenable FFmpeg after licensing issues have been clarified
             cmake_args: >-
+              -DFFMPEG=OFF
               -DHSS1394=ON
               -DKEYFINDER=OFF
               -DLOCALECOMPARE=ON
@@ -216,7 +219,7 @@ jobs:
         cmake
         -G "${{ matrix.cmake_generator }}"
         -DCMAKE_BUILD_TYPE=${{ matrix.cmake_build_type }}
-        "-DCMAKE_PREFIX_PATH=${{ env.CMAKE_PREFIX_PATH }}"
+        -DCMAKE_PREFIX_PATH="${{ env.CMAKE_PREFIX_PATH }}"
         -DDEBUG_ASSERTIONS_FATAL=ON
         -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DBATTERY=ON
