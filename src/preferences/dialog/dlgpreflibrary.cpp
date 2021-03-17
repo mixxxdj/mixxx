@@ -56,6 +56,10 @@ DlgPrefLibrary::DlgPrefLibrary(
             &QPushButton::clicked,
             this,
             &DlgPrefLibrary::slotRelocateDir);
+    connect(checkBox_SeratoMetadataExport,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefLibrary::slotSeratoMetadataExportClicked);
     const QString& settingsDir = m_pConfig->getSettingsPath();
     connect(PushButtonOpenSettingsDir,
             &QPushButton::clicked,
@@ -327,6 +331,23 @@ void DlgPrefLibrary::slotRelocateDir() {
     if (!fd.isEmpty()) {
         emit requestRelocateDir(currentFd, fd);
         slotUpdate();
+    }
+}
+
+void DlgPrefLibrary::slotSeratoMetadataExportClicked(bool checked) {
+    if (checked) {
+        if (QMessageBox::warning(this,
+                    QStringLiteral("Serato Metadata Export"),
+                    QStringLiteral(
+                            "Exporting Serato Metadata from Mixxx is highly "
+                            "experimental. There is no official documentation "
+                            "of the format. Files with Serato metadata written "
+                            "by Mixxx might crash Serato DJ, therefore caution "
+                            "is advised. Do you really want to enable this "
+                            "option?"),
+                    QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
+            checkBox_SeratoMetadataExport->setChecked(false);
+        }
     }
 }
 
