@@ -573,15 +573,6 @@ void WMainMenuBar::initialize() {
     });
     pHelpMenu->addAction(pHelpShortcuts);
 
-    QString feedbackTitle = tr("Send Us &Feedback") + externalLinkSuffix;
-    QString feedbackText = tr("Send feedback to the Mixxx team.");
-    auto* pHelpFeedback = new QAction(feedbackTitle, this);
-    pHelpFeedback->setStatusTip(feedbackText);
-    pHelpFeedback->setWhatsThis(buildWhatsThis(feedbackTitle, feedbackText));
-    connect(pHelpFeedback, &QAction::triggered,
-            this, [this] { slotVisitUrl(MIXXX_FEEDBACK_URL); });
-    pHelpMenu->addAction(pHelpFeedback);
-
     QString translateTitle = tr("&Translate This Application") + externalLinkSuffix;
     QString translateText = tr("Help translate this application into your language.");
     auto* pHelpTranslation = new QAction(translateTitle, this);
