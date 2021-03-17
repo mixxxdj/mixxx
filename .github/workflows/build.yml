@@ -15,6 +15,7 @@ jobs:
             cmake_args: >-
               -DWARNINGS_FATAL=ON
               -DFAAD=ON
+              -DFFMPEG=OFF
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON

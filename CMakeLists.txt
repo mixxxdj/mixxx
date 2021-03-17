@@ -2301,31 +2301,25 @@ endif()
 # FFmpeg 4.x support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
 find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-# On Windows version numbers are not available!
-if(FFMPEG_libavcodec_VERSION)
-  cmake_dependent_option(FFMPEG "FFmpeg 4.x support" ON "FFMPEG_FOUND;FFMPEG_libavcodec_VERSION VERSION_GREATER_EQUAL 58" OFF)
-else()
-  cmake_dependent_option(FFMPEG "FFmpeg 4.x support" ON "FFMPEG_FOUND" OFF)
-endif()
+cmake_dependent_option(FFMPEG "FFmpeg 4.x support" ON "FFMPEG_FOUND" OFF)
 if(FFMPEG)
-  if(NOT FFMPEG_libavcodec_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libavcodec and its development headers.")
-  elseif(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58)
+  if(NOT FFMPEG_FOUND)
+    message(FATAL_ERROR "FFMPEG was not found")
+  endif()
+
+  # Check minimum required versions
+  # Windows: Version numbers are not available!?
+  # macOS: Untested
+  if(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58)
     message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavcodec (found: ${FFMPEG_libavcodec_VERSION}).")
   endif()
-  if(NOT FFMPEG_libavformat_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libavformat and its development headers.")
-  elseif(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58)
+  if(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58)
     message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavformat (found: ${FFMPEG_libavformat_VERSION}).")
   endif()
-  if(NOT FFMPEG_libavutil_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libavutil and its development headers.")
-  elseif(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56)
+  if(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56)
     message(FATAL_ERROR "FFmpeg support requires at least version 56 of libavutil (found: ${FFMPEG_libavutil_VERSION}).")
   endif()
-  if(NOT FFMPEG_libswresample_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libswresample and its development headers.")
-  elseif(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
+  if(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
     message(FATAL_ERROR "FFmpeg support requires at least version 3.1 of libswresample (found: ${FFMPEG_libswresample_VERSION}).")
   endif()
 
@@ -2337,7 +2331,6 @@ if(FFMPEG)
     __STDC_LIMIT_MACROS
     __STDC_FORMAT_MACROS
   )
-
   target_link_libraries(mixxx-lib PUBLIC "${FFMPEG_LIBRARIES}")
   target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
