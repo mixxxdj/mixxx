@@ -70,8 +70,8 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Speed up builds on HDDs and prevent wearing of SDDs
 #
-# This is only applies to gcc/clang, therefore this option is forcibly set on on
-# all other compilers.
+# This is only applies to gcc/clang, therefore this option is forcibly set to
+# ON on all other compilers.
 cmake_dependent_option(BUILD_LOW_MEMORY "Store temporary build files on disk by disabling the build option -pipe" OFF "GNU_GCC OR LLVM_CLANG" ON)
 if(NOT BUILD_LOW_MEMORY)
   add_compile_options(-pipe)
@@ -79,8 +79,8 @@ endif()
 
 # Profiling
 #
-# This is only available on Linux, therefore this option is forcibly set off on
-# all other platforms.
+# This is only available on Linux, therefore this option is forcibly set to OFF
+# on all other platforms.
 cmake_dependent_option(PROFILING "Profiling (e.g. gprof) support" OFF "UNIX;NOT APPLE" OFF)
 if(PROFILING)
   add_compile_options(-pg)
@@ -1092,6 +1092,9 @@ target_compile_definitions(mixxx-lib PUBLIC
 )
 
 # Mac-specific options
+#
+# These options are OFF by default, and since they are only available on macOS,
+# they are forcibly set to OFF on all other platforms.
 cmake_dependent_option(MACOS_BUNDLE "Install files to proper locations to make an .app bundle" OFF "APPLE" OFF)
 cmake_dependent_option(MACAPPSTORE "Build for Mac App Store" OFF "APPLE" OFF)
 if(MACAPPSTORE)
@@ -2178,7 +2181,7 @@ endif()
 # Battery meter
 #
 # The battery meter is only available on Linux, macOS and Windows, therefore
-# this option is forcibly set off on all other platforms.
+# this option is forcibly set to OFF on all other platforms.
 cmake_dependent_option(BATTERY "Battery meter support" ON "WIN32 OR UNIX" OFF)
 if(BATTERY)
   if(WIN32)
@@ -2240,8 +2243,8 @@ endif()
 
 # CoreAudio MP3/AAC Decoder
 #
-# The CoreAudio API is only available on macOS, therefore
-# this option is forcibly set off on all other platforms.
+# The CoreAudio API is only available on macOS, therefore this option is
+# forcibly set to OFF on all other platforms.
 cmake_dependent_option(COREAUDIO "CoreAudio MP3/AAC Decoder" ON "APPLE" OFF)
 if(COREAUDIO)
   target_sources(mixxx-lib PRIVATE
@@ -2352,7 +2355,7 @@ endif()
 # HSS1394 MIDI device
 #
 # The HSS1394 library is only available on macOS, therefore this option is
-# forcibly set off on all other platforms.
+# forcibly set to OFF on all other platforms.
 if(WIN32 OR APPLE)
   find_package(HSS1394)
 else()
@@ -2422,7 +2425,8 @@ endif()
 find_package(SQLite3)
 # FIXME: It is difficult to get qmake to link Qt to a custom built SQLite on
 # macOS instead of the system SQLite, which results in a crash on startup when
-# LOCALECOMPARE is enabled, therefore this option is forcibly set off on macOS.
+# LOCALECOMPARE is enabled, therefore this option is forcibly set to OFF on
+# macOS.
 cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" "${SQLite3_FOUND}" "NOT APPLE" OFF)
 if(LOCALECOMPARE)
   if(NOT SQLite3_FOUND)
@@ -2482,7 +2486,7 @@ endif()
 # Media Foundation AAC Decoder Plugin
 #
 # The Media Foundtation API is only available on Windows, therefore this option
-# is forcibly set off on all other platforms.
+# is forcibly set to OFF on all other platforms.
 cmake_dependent_option(MEDIAFOUNDATION "Media Foundation AAC decoder plugin" ON "WIN32" OFF)
 if(MEDIAFOUNDATION)
   find_package(MediaFoundation REQUIRED)
