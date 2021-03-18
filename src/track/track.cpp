@@ -972,7 +972,7 @@ bool Track::importPendingBeatsWhileLocked() {
 bool Track::tryImportPendingBeatsMarkDirtyAndUnlock(
         QMutexLocker* pLock,
         bool lockBpmAfterSet) {
-    DEBUG_ASSERT(lockBpmAfterSet);
+    DEBUG_ASSERT(pLock);
 
     if (m_record.getBpmLocked()) {
         return false;
