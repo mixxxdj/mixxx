@@ -189,7 +189,7 @@ void Track::importMetadata(
 
         // Only update the current key with a valid value. Otherwise preserve
         // the existing value.
-        const bool keysModified = !importedKeyText.isEmpty() &&
+        const bool keysModified =
                 KeyUtils::guessKeyFromText(importedKeyText) != mixxx::track::io::key::INVALID &&
                 m_record.updateGlobalKeyText(importedKeyText, mixxx::track::io::key::FILE_METADATA);
         modified |= keysModified;
