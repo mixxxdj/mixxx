@@ -141,7 +141,7 @@
       <item row="1" column="0">
        <widget class="QCheckBox" name="checkBox_SeratoMetadataExport">
         <property name="text">
-         <string>Write Serato Metadata to files</string>
+         <string>Write Serato Metadata to files (experimental)</string>
         </property>
        </widget>
       </item>
