@@ -251,7 +251,9 @@ void DlgTrackInfo::populateFields(const Track& track) {
     txtDateAdded->setText(mixxx::displayLocalDateTime(track.getDateAdded()));
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
     txtType->setText(track.getType());
-    txtBitrate->setText(QString(track.getBitrateText()) + (" ") +
+    txtBitrate->setText(
+            track.getBitrateText() +
+            QChar(' ') +
             tr(mixxx::audio::Bitrate::unit()));
     txtBpm->setText(track.getBpmText());
     m_keysClone = track.getKeys();
