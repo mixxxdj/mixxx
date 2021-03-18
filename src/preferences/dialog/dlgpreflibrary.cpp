@@ -339,11 +339,13 @@ void DlgPrefLibrary::slotSeratoMetadataExportClicked(bool checked) {
         if (QMessageBox::warning(this,
                     QStringLiteral("Serato Metadata Export"),
                     QStringLiteral(
-                            "Exporting Serato Metadata from Mixxx is highly "
+                            "Exporting Serato Metadata from Mixxx is "
                             "experimental. There is no official documentation "
-                            "of the format. Files with Serato metadata written "
-                            "by Mixxx might crash Serato DJ, therefore caution "
-                            "is advised. Do you really want to enable this "
+                            "of the format. Existing Serato Metadata might be "
+                            "lost and files with Serato metadata written by "
+                            "Mixxx could potentially crash Serato DJ, "
+                            "therefore caution is advised and backups are "
+                            "recommended. Do you really want to enable this "
                             "option?"),
                     QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
             checkBox_SeratoMetadataExport->setChecked(false);
