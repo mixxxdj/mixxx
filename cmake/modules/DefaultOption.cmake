@@ -24,6 +24,10 @@ Example invocation:
 
 If ``USE_BAR`` is true and ``USE_ZOT`` is false, the option called ``USE_FOO``
 will default to ``ON``, otherwise it will default to ``OFF``.
+
+In contrast to ``cmake_dependent_option`` which disables the option completely
+if the ``<depends>`` condition evaluates to false, ``default_option`` will only
+set a default and the value may be overridden by the user.
 #]=======================================================================]
 
 macro(DEFAULT_OPTION option doc depends)
