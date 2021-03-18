@@ -4,6 +4,7 @@
 
 #include <QAtomicInt>
 #include <QMutex>
+#include <cfloat>
 
 #include "control/controlvalue.h"
 #include "engine/cachingreader/cachingreader.h"
@@ -47,15 +48,6 @@ class EngineWorkerScheduler;
 class VisualPlayPosition;
 class EngineMaster;
 
-// Length of audio beat marks in samples
-const int audioBeatMarkLen = 40;
-
-// Temporary buffer length
-const int kiTempLength = 200000;
-
-// Rate at which the playpos slider is updated
-const int kiPlaypositionUpdateRate = 15; // updates per second
-
 class EngineBuffer : public EngineObject {
      Q_OBJECT
   private:
@@ -88,6 +80,11 @@ class EngineBuffer : public EngineObject {
         RUBBERBAND,
         KEYLOCK_ENGINE_COUNT,
     };
+
+    // This value is used to make sure the initial seek after loading a track is
+    // not omitted. Therefore this value must be different for 0.0 or any likely
+    // value for the main cue
+    static constexpr double kInitalSamplePosition = -DBL_MAX;
 
     EngineBuffer(const QString& group, UserSettingsPointer pConfig,
                  EngineChannel* pChannel, EngineMaster* pMixingEngine);

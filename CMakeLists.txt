@@ -106,11 +106,24 @@ message(STATUS "Optimization level: ${OPTIMIZE}")
 
 if(MSVC)
   # Microsoft Visual Studio Compiler
+  add_compile_options(/UTF8)
   if(CMAKE_SIZEOF_VOID_P EQUAL 8)
     # Target architecture is x64 -> x64 has alsways SSE and SSE2 instruction sets
     message(STATUS "x64 Enabling SS2 CPU optimizations (>= Pentium 4)")
     # Define gcc/clang style defines for SSE and SSE2 for compatibility
     add_compile_definitions("__SSE__" "__SSE2__")
+  endif()
+
+  # Needed for sccache
+  if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+  elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+  elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}")
   endif()
 
   if(NOT OPTIMIZE STREQUAL "off")
@@ -125,6 +138,9 @@ if(MSVC)
     # http://msdn.microsoft.com/en-us/library/bxwfs976.aspx
     add_compile_options(/Gy)
 
+    # For repeated local development builds, /INCREMENTAL offers much faster build times with the same performance of the executable,
+    # unless link time code generation (like CMAKE_INTERPROCEDURAL_OPTIMIZATION) is used, which is contrary to incremental linking.
+
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
       #optimize Debug Builds as well, to have "normal" behaviour of mixxx during development
       string(REPLACE "/Od" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
@@ -136,10 +152,25 @@ if(MSVC)
       # Remove /RTC1 flag set by CMAKE by default (conflicts with /O2)
       string(REPLACE "/RTC1" "" CMAKE_CXX_FLAGS_DEBUG  "${CMAKE_CXX_FLAGS_DEBUG}")
       string(REPLACE "/RTC1" "" CMAKE_C_FLAGS_DEBUG  "${CMAKE_C_FLAGS_DEBUG}")
-    else()
-      # Squeeze binary in Release builds
-      add_link_options(/OPT:REF /OPT:ICF)
+    elseif(CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
+      # Reduce the size of the binary in RelWithDebInfo builds
+      # Do not use /OPT:ICF because it has no effect.
+      # https://github.com/mixxxdj/mixxx/pull/3660#pullrequestreview-600137258
+      add_link_options(/OPT:REF)
+
+      # /INCREMENTAL is incompatible with /OPT:REF, but it's the CMake default for RelWithDebInfo
+      # The CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO can be defined by the user in the GUI or in CMakeSettings.json,
+      # therefore we can't rely on the default.
+      string(FIND CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "/INCREMENTAL:NO" INCREMENTAL_NO_POSITION)
+      if(INCREMENTAL_NO_POSITION EQUAL -1)
+        message(STATUS "Overwriting /INCREMENTAL by /INCREMENTAL:NO to allow link time code optimization")
+        string(REPLACE "/INCREMENTAL" "/INCREMENTAL:NO" CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO "${CMAKE_EXE_LINKER_FLAGS_RELWITHDEBINFO}")
+      endif()
       # Note: CMAKE_INTERPROCEDURAL_OPTIMIZATION sets the /GL and /LTCG flags for us
+    elseif(CMAKE_BUILD_TYPE STREQUAL "MinSizeRel")
+      # Settings for MinSizeRel builds
+    elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
+      # Settings for Release builds
     endif()
 
     if(OPTIMIZE STREQUAL "portable")
@@ -335,19 +366,18 @@ if(GIT_WORKTREE_DIRTY EQUAL "1")
 endif()
 message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
 if(MSVC)
-  # clcache support
-  find_program(CLCACHE_EXECUTABLE "clcache")
-  if(CLCACHE_EXECUTABLE)
-    message(STATUS "Found clcache: ${CLCACHE_EXECUTABLE}")
+  # sccache support
+  find_program(SCCACHE_EXECUTABLE "sccache")
+  if(SCCACHE_EXECUTABLE)
+    message(STATUS "Found sccache: ${SCCACHE_EXECUTABLE}")
   else()
-      message(STATUS "Could NOT find clcache (missing executable)")
+    message(STATUS "Could NOT find sccache (missing executable)")
   endif()
-  cmake_dependent_option(CLCACHE_SUPPORT "Enable clcache support" ON "CLCACHE_EXECUTABLE" OFF)
-  if(CLCACHE_SUPPORT)
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "clcache")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK "clcache")
+  cmake_dependent_option(SCCACHE_SUPPORT "Enable sccache support" ON "SCCACHE_EXECUTABLE" OFF)
+  message(STATUS "Support for sccache: ${SCCACHE_SUPPORT}")
+  if(SCCACHE_SUPPORT)
+    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "sccache")
   endif()
-  message(STATUS "Support for clcache: ${CLCACHE_SUPPORT}")
 else()
   # ccache support
   find_program(CCACHE_EXECUTABLE "ccache")
@@ -983,6 +1013,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wwidget.cpp
   src/widget/wwidgetgroup.cpp
   src/widget/wwidgetstack.cpp
+  src/widget/wraterange.cpp
 )
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
@@ -1032,7 +1063,7 @@ if(MSVC)
     target_compile_options(mixxx-lib PUBLIC /W4)
   else()
     target_compile_options(mixxx-lib PUBLIC /W3)
-    target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS /UTF8)
+    target_compile_definitions(mixxx-lib PUBLIC _SILENCE_CXX17_ITERATOR_BASE_CLASS_DEPRECATION_WARNING _CRT_SECURE_NO_WARNINGS)
   endif()
 else()
   target_compile_options(mixxx-lib PUBLIC -Wall -Wextra -Woverloaded-virtual -Wfloat-conversion -Werror=return-type)
@@ -1132,8 +1163,6 @@ if(WIN32)
   target_link_libraries(mixxx-lib PUBLIC shell32)
 
   if(MSVC)
-    # needed for clcache
-    target_compile_options(mixxx-lib PUBLIC /c)
     if(NOT STATIC_DEPS OR CMAKE_BUILD_TYPE STREQUAL "Debug")
       target_link_options(mixxx-lib PUBLIC /nodefaultlib:LIBCMT.lib /nodefaultlib:LIBCMTd.lib)
     endif()
@@ -1634,6 +1663,11 @@ if(WIN32)
     src/mixxx.rc
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
   )
+  # sccache fails with RC files
+  # https://github.com/mozilla/sccache/issues/947
+  if(SCCACHE_SUPPORT)
+    set_target_properties(mixxx PROPERTIES RULE_LAUNCH_COMPILE "")
+  endif()
   target_include_directories(mixxx PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 endif()
 
@@ -2428,7 +2462,7 @@ if(BROADCAST)
   elseif(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.6)
       message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1913579")
   endif()
-  if(NOT Shsoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.6)
+  if(NOT Shoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.6)
     # Fall back to internal libraray in the lib tree
     message(STATUS "Using internal libshout-idjc")
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout-idjc")

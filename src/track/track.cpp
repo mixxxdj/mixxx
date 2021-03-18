@@ -33,8 +33,7 @@ SecurityTokenPointer openSecurityToken(
 }
 
 template<typename T>
-inline
-bool compareAndSet(T* pField, const T& value) {
+inline bool compareAndSet(T* pField, const T& value) {
     if (*pField != value) {
         *pField = value;
         return true;
@@ -43,17 +42,9 @@ bool compareAndSet(T* pField, const T& value) {
     }
 }
 
-inline mixxx::Bpm getActualBpm(
-        mixxx::Bpm bpm,
-        mixxx::BeatsPointer pBeats = mixxx::BeatsPointer()) {
-    // Only use the imported BPM if the beat grid is not valid!
-    // Reason: The BPM value in the metadata might be normalized
-    // or rounded, e.g. ID3v2 only supports integer values.
-    if (pBeats) {
-        return mixxx::Bpm(pBeats->getBpm());
-    } else {
-        return bpm;
-    }
+inline mixxx::Bpm getBeatsPointerBpm(
+        const mixxx::BeatsPointer& pBeats) {
+    return pBeats ? mixxx::Bpm{pBeats->getBpm()} : mixxx::Bpm{};
 }
 
 } // anonymous namespace
@@ -150,6 +141,11 @@ void Track::importMetadata(
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
 
+        // Preserve the current bpm temporarily (see below) to avoid overwriting
+        // it with an inconsistent value compared to the beat grid, e.g. after
+        // reloading the bpm from file tags.
+        importedMetadata.refTrackInfo().setBpm(mixxx::Bpm(getBpmWhileLocked()));
+
         bool modified = false;
         // Only set the metadata synchronized flag (column `header_parsed`
         // in the database) from false to true, but never reset it back to
@@ -187,10 +183,9 @@ void Track::importMetadata(
         // If the Serato tags are empty they are not present. In this case
         // all existing metadata must be preserved!
         if (!newSeratoTags.isEmpty()) {
-            importBeats(newSeratoTags.importBeats());
+            tryImportBeats(newSeratoTags.importBeats(), newSeratoTags.isBpmLocked());
             importCueInfos(newSeratoTags.importCueInfos());
             setColor(newSeratoTags.getTrackColor());
-            setBpmLocked(newSeratoTags.isBpmLocked());
         }
 
         // implicitly unlocked when leaving scope
@@ -198,9 +193,12 @@ void Track::importMetadata(
 
     // Need to set BPM after sample rate since beat grid creation depends on
     // knowing the sample rate. Bug #1020438.
-    const auto actualBpm = getActualBpm(newBpm, m_pBeats);
-    if (actualBpm.hasValue()) {
-        setBpm(actualBpm.getValue());
+
+    // Only use the imported BPM if the beat grid is not valid!
+    // Reason: The BPM value in the metadata might be normalized
+    // or rounded, e.g. ID3v2 only supports integer values.
+    if (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm())) {
+        trySetBpm(newBpm.getValue());
     }
 
     if (!newKey.isEmpty()
@@ -257,98 +255,96 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     }
 }
 
-double Track::getBpm() const {
-    double bpm = mixxx::Bpm::kValueUndefined;
-    QMutexLocker lock(&m_qMutex);
-    if (m_pBeats) {
-        // BPM from beat grid overrides BPM from metadata
-        // Reason: The BPM value in the metadata might be imprecise,
-        // e.g. ID3v2 only supports integer values!
-        double beatsBpm = m_pBeats->getBpm();
-        if (mixxx::Bpm::isValidValue(beatsBpm)) {
-            bpm = beatsBpm;
-        }
-    }
-    return bpm;
+double Track::getBpmWhileLocked() const {
+    // BPM values must be synchronized at all times!
+    DEBUG_ASSERT(m_record.getMetadata().getTrackInfo().getBpm() == getBeatsPointerBpm(m_pBeats));
+    return m_record.getMetadata().getTrackInfo().getBpm().getValue();
 }
 
-double Track::setBpm(double bpmValue) {
+bool Track::trySetBpmWhileLocked(double bpmValue) {
     if (!mixxx::Bpm::isValidValue(bpmValue)) {
         // If the user sets the BPM to an invalid value, we assume
         // they want to clear the beatgrid.
-        setBeats(mixxx::BeatsPointer());
-        return bpmValue;
-    }
-
-    QMutexLocker lock(&m_qMutex);
-
-    if (!m_pBeats) {
+        return trySetBeatsWhileLocked(nullptr);
+    } else if (!m_pBeats) {
         // No beat grid available -> create and initialize
-        double cue = getCuePoint().getPosition();
-        mixxx::BeatsPointer pBeats(BeatFactory::makeBeatGrid(*this, bpmValue, cue));
-        setBeatsMarkDirtyAndUnlock(&lock, pBeats);
-        return bpmValue;
-    }
-
-    // Continue with the regular case
-    if (m_pBeats->getBpm() != bpmValue) {
+        double cue = m_record.getCuePoint().getPosition();
+        auto pBeats = BeatFactory::makeBeatGrid(getSampleRate(), bpmValue, cue);
+        return trySetBeatsWhileLocked(std::move(pBeats));
+    } else if ((m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM) &&
+            m_pBeats->getBpm() != bpmValue) {
+        // Continue with the regular cases
         if (kLogger.debugEnabled()) {
             kLogger.debug() << "Updating BPM:" << getLocation();
         }
-        m_pBeats->setBpm(bpmValue);
-        markDirtyAndUnlock(&lock);
-        // Tell the GUI to update the bpm label...
-        //qDebug() << "Track signaling BPM update to" << f;
-        emit bpmUpdated(bpmValue);
+        return trySetBeatsWhileLocked(m_pBeats->setBpm(bpmValue));
     }
-
-    return bpmValue;
+    return false;
 }
 
 QString Track::getBpmText() const {
     return QString("%1").arg(getBpm(), 3,'f',1);
 }
 
-void Track::setBeats(mixxx::BeatsPointer pBeats) {
+bool Track::trySetBpm(double bpmValue) {
     QMutexLocker lock(&m_qMutex);
-    setBeatsMarkDirtyAndUnlock(&lock, pBeats);
-}
-
-bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
-    // This whole method is not so great. The fact that Beats is an ABC is
-    // limiting with respect to QObject and signals/slots.
-
-    if (m_pBeats == pBeats) {
+    if (!trySetBpmWhileLocked(bpmValue)) {
         return false;
     }
-
-    if (m_pBeats) {
-        disconnect(m_pBeats.data(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
-    }
-
-    m_pBeats = std::move(pBeats);
-
-    auto bpmValue = mixxx::Bpm::kValueUndefined;
-    if (m_pBeats) {
-        bpmValue = m_pBeats->getBpm();
-        connect(m_pBeats.data(), &mixxx::Beats::updated, this, &Track::slotBeatsUpdated);
-    }
-    m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
+    afterBeatsOrBpmUpdated(&lock);
     return true;
 }
 
-void Track::setBeatsMarkDirtyAndUnlock(QMutexLocker* pLock, mixxx::BeatsPointer pBeats) {
-    DEBUG_ASSERT(pLock);
-    if (!setBeatsWhileLocked(pBeats)) {
-        pLock->unlock();
-        return;
+bool Track::trySetBeats(mixxx::BeatsPointer pBeats) {
+    QMutexLocker lock(&m_qMutex);
+    return trySetBeatsMarkDirtyAndUnlock(&lock, pBeats, false);
+}
+
+bool Track::trySetAndLockBeats(mixxx::BeatsPointer pBeats) {
+    QMutexLocker lock(&m_qMutex);
+    return trySetBeatsMarkDirtyAndUnlock(&lock, pBeats, true);
+}
+
+bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
+    if (m_pBeats == pBeats) {
+        return false;
+    }
+    m_pBeats = std::move(pBeats);
+    m_record.refMetadata().refTrackInfo().setBpm(getBeatsPointerBpm(m_pBeats));
+    return true;
+}
+
+bool Track::trySetBeatsWhileLocked(
+        mixxx::BeatsPointer pBeats,
+        bool lockBpmAfterSet) {
+    if (m_pBeats && m_record.getBpmLocked()) {
+        // Track has already a valid and locked beats object, abbort.
+        qDebug() << "Track beats is already set and BPM-locked. Discard the new beats";
+        return false;
     }
 
-    auto bpmValue = m_pBeats ? m_pBeats->getBpm() : mixxx::Bpm::kValueUndefined;
+    bool dirty = false;
+    if (setBeatsWhileLocked(pBeats)) {
+        dirty = true;
+    }
+    if (compareAndSet(m_record.ptrBpmLocked(), lockBpmAfterSet)) {
+        dirty = true;
+    }
+    return dirty;
+}
 
-    markDirtyAndUnlock(pLock);
-    emit bpmUpdated(bpmValue);
-    emit beatsUpdated();
+bool Track::trySetBeatsMarkDirtyAndUnlock(
+        QMutexLocker* pLock,
+        mixxx::BeatsPointer pBeats,
+        bool lockBpmAfterSet) {
+    DEBUG_ASSERT(pLock);
+
+    if (!trySetBeatsWhileLocked(pBeats, lockBpmAfterSet)) {
+        return false;
+    }
+
+    afterBeatsOrBpmUpdated(pLock);
+    return true;
 }
 
 mixxx::BeatsPointer Track::getBeats() const {
@@ -356,16 +352,12 @@ mixxx::BeatsPointer Track::getBeats() const {
     return m_pBeats;
 }
 
-void Track::slotBeatsUpdated() {
-    QMutexLocker lock(&m_qMutex);
+void Track::afterBeatsOrBpmUpdated(
+        QMutexLocker* pLock) {
+    DEBUG_ASSERT(pLock);
 
-    auto bpmValue = mixxx::Bpm::kValueUndefined;
-    if (m_pBeats) {
-        bpmValue = m_pBeats->getBpm();
-    }
-    m_record.refMetadata().refTrackInfo().setBpm(mixxx::Bpm(bpmValue));
-
-    markDirtyAndUnlock(&lock);
+    const auto bpmValue = getBpmWhileLocked();
+    markDirtyAndUnlock(pLock);
     emit bpmUpdated(bpmValue);
     emit beatsUpdated();
 }
@@ -646,7 +638,7 @@ void Track::setType(const QString& sType) {
     }
 }
 
-int Track::getSampleRate() const {
+mixxx::audio::SampleRate Track::getSampleRate() const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate();
 }
@@ -912,8 +904,9 @@ void Track::setCuePoints(const QList<CuePointer>& cuePoints) {
             cuePoints);
 }
 
-Track::ImportStatus Track::importBeats(
-        mixxx::BeatsImporterPointer pBeatsImporter) {
+Track::ImportStatus Track::tryImportBeats(
+        mixxx::BeatsImporterPointer pBeatsImporter,
+        bool lockBpmAfterSet) {
     QMutexLocker lock(&m_qMutex);
     VERIFY_OR_DEBUG_ASSERT(pBeatsImporter) {
         return ImportStatus::Complete;
@@ -921,22 +914,24 @@ Track::ImportStatus Track::importBeats(
     DEBUG_ASSERT(!m_pBeatsImporterPending);
     m_pBeatsImporterPending = pBeatsImporter;
     if (m_pBeatsImporterPending->isEmpty()) {
-        // Just return the current import status without clearing any
-        // existing cue points.
         m_pBeatsImporterPending.reset();
         return ImportStatus::Complete;
     } else if (m_record.hasStreamInfoFromSource()) {
-        // Replace existing cue points with imported cue
-        // points immediately
-        importPendingBeatsMarkDirtyAndUnlock(&lock);
+        // Replace existing beats with imported beats immediately
+        tryImportPendingBeatsMarkDirtyAndUnlock(&lock, lockBpmAfterSet);
         return ImportStatus::Complete;
     } else {
         kLogger.debug()
                 << "Import of beats is pending until the actual sample rate becomes available";
-        // Clear all existing cue points, that are supposed
-        // to be replaced with the imported cue points soon.
-        setBeatsMarkDirtyAndUnlock(&lock, nullptr);
-        return ImportStatus::Pending;
+        // Clear all existing beats, that are supposed
+        // to be replaced with the imported beats soon.
+        if (trySetBeatsMarkDirtyAndUnlock(&lock,
+                    nullptr,
+                    lockBpmAfterSet)) {
+            return ImportStatus::Pending;
+        } else {
+            return ImportStatus::Complete;
+        }
     }
 }
 
@@ -963,28 +958,43 @@ bool Track::importPendingBeatsWhileLocked() {
     // The sample rate is supposed to be consistent
     DEBUG_ASSERT(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate() ==
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
-    mixxx::BeatsPointer pBeats(new mixxx::BeatMap(*this,
-            static_cast<SINT>(m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate()),
+    const auto pBeats = mixxx::BeatMap::makeBeatMap(
+            m_record.getStreamInfoFromSource()->getSignalInfo().getSampleRate(),
+            QString(),
             m_pBeatsImporterPending->importBeatsAndApplyTimingOffset(
-                    getLocation(), *m_record.getStreamInfoFromSource())));
+                    getLocation(), *m_record.getStreamInfoFromSource()));
     DEBUG_ASSERT(m_pBeatsImporterPending->isEmpty());
     m_pBeatsImporterPending.reset();
     return setBeatsWhileLocked(pBeats);
 }
 
-void Track::importPendingBeatsMarkDirtyAndUnlock(
-        QMutexLocker* pLock) {
-    DEBUG_ASSERT(pLock);
-    if (!importPendingBeatsWhileLocked()) {
-        pLock->unlock();
-        return;
+bool Track::tryImportPendingBeatsMarkDirtyAndUnlock(
+        QMutexLocker* pLock,
+        bool lockBpmAfterSet) {
+    DEBUG_ASSERT(lockBpmAfterSet);
+
+    if (m_record.getBpmLocked()) {
+        return false;
     }
 
-    auto bpmValue = m_pBeats ? m_pBeats->getBpm() : mixxx::Bpm::kValueUndefined;
+    bool dirty = false;
 
-    markDirtyAndUnlock(pLock);
-    emit bpmUpdated(bpmValue);
-    emit beatsUpdated();
+    if (importPendingBeatsWhileLocked()) {
+        dirty = true;
+    }
+
+    if (compareAndSet(m_record.ptrBpmLocked(), lockBpmAfterSet)) {
+        dirty = true;
+    }
+
+    if (!dirty) {
+        // Already set, nothing todo
+        pLock->unlock();
+        return true;
+    }
+
+    afterBeatsOrBpmUpdated(pLock);
+    return true;
 }
 
 Track::ImportStatus Track::importCueInfos(
@@ -1064,10 +1074,12 @@ void Track::setCuePointsMarkDirtyAndUnlock(
         QMutexLocker* pLock,
         const QList<CuePointer>& cuePoints) {
     DEBUG_ASSERT(pLock);
+
     if (!setCuePointsWhileLocked(cuePoints)) {
         pLock->unlock();
         return;
     }
+
     markDirtyAndUnlock(pLock);
     emit cuesUpdated();
 }
@@ -1469,8 +1481,8 @@ void Track::updateStreamInfoFromSource(
     QMutexLocker lock(&m_qMutex);
     bool updated = m_record.updateStreamInfoFromSource(streamInfo);
 
-    bool importBeats = m_pBeatsImporterPending && !m_pBeatsImporterPending->isEmpty();
-    bool importCueInfos = m_pCueInfoImporterPending && !m_pCueInfoImporterPending->isEmpty();
+    const bool importBeats = m_pBeatsImporterPending && !m_pBeatsImporterPending->isEmpty();
+    const bool importCueInfos = m_pCueInfoImporterPending && !m_pCueInfoImporterPending->isEmpty();
 
     if (!importBeats && !importCueInfos) {
         // Nothing more to do
@@ -1480,36 +1492,33 @@ void Track::updateStreamInfoFromSource(
         return;
     }
 
-    auto bpmValue = mixxx::Bpm::kValueUndefined;
-
+    auto beatsImported = false;
     if (importBeats) {
         kLogger.debug() << "Finishing deferred import of beats because stream "
                            "audio properties are available now";
-        importBeats = importPendingBeatsWhileLocked();
-        if (m_pBeats) {
-            bpmValue = m_pBeats->getBpm();
-        }
+        beatsImported = importPendingBeatsWhileLocked();
     }
 
+    auto cuesImported = false;
     if (importCueInfos) {
         DEBUG_ASSERT(m_cuePoints.isEmpty());
         kLogger.debug()
                 << "Finishing deferred import of"
                 << m_pCueInfoImporterPending->size()
                 << "cue(s) because stream audio properties are available now";
-        importCueInfos = importPendingCueInfosWhileLocked();
+        cuesImported = importPendingCueInfosWhileLocked();
     }
 
-    if (!importBeats && !importCueInfos) {
+    if (!beatsImported && !cuesImported) {
         return;
     }
 
-    markDirtyAndUnlock(&lock);
-    if (importBeats) {
-        emit bpmUpdated(bpmValue);
-        emit beatsUpdated();
+    if (beatsImported) {
+        afterBeatsOrBpmUpdated(&lock);
+    } else {
+        markDirtyAndUnlock(&lock);
     }
-    if (importCueInfos) {
+    if (cuesImported) {
         emit cuesUpdated();
     }
 }
