@@ -999,19 +999,19 @@ bool Track::tryImportPendingBeatsMarkDirtyAndUnlock(
         return false;
     }
 
-    bool dirty = false;
-
+    bool modified = false;
+    // Both functions must be invoked even if one of them
+    // returns false!
     if (importPendingBeatsWhileLocked()) {
-        dirty = true;
+        modified = true;
     }
-
     if (compareAndSet(m_record.ptrBpmLocked(), lockBpmAfterSet)) {
-        dirty = true;
+        modified = true;
     }
-
-    if (!dirty) {
-        // Already set, nothing todo
-        pLock->unlock();
+    if (!modified) {
+        // Unmodified, nothing todo. Yet the internal dirty flag
+        // might have been set by a preceding operation!
+        markDirtyAndUnlock(pLock, false);
         return true;
     }
 
