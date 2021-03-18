@@ -14,6 +14,7 @@ jobs:
             os: ubuntu-18.04
             cmake_args: >-
               -DWARNINGS_FATAL=ON
+              -DBULK=ON
               -DFAAD=ON
               -DFFMPEG=OFF
               -DLOCALECOMPARE=ON
@@ -36,6 +37,7 @@ jobs:
             os: ubuntu-20.04
             cmake_args: >-
               -DWARNINGS_FATAL=ON
+              -DBULK=ON
               -DFFMPEG=ON
               -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
@@ -57,6 +59,7 @@ jobs:
           - name: macOS 10.15
             os: macos-10.15
             cmake_args: >-
+              -DBULK=ON
               -DCOREAUDIO=ON
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
@@ -76,6 +79,7 @@ jobs:
             os: windows-2019
             # TODO: Reenable FFmpeg after licensing issues have been clarified
             cmake_args: >-
+              -DBULK=OFF
               -DFFMPEG=OFF
               -DHSS1394=ON
               -DKEYFINDER=OFF
@@ -224,13 +228,13 @@ jobs:
         -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DBATTERY=ON
         -DBROADCAST=ON
-        -DBULK=ON
         -DHID=ON
         -DLILV=ON
         -DOPUS=ON
         -DQTKEYCHAIN=ON
         -DVINYLCONTROL=ON
         -DCMAKE_VERBOSE_MAKEFILE=OFF
+        -L
         ..
       working-directory: build
       env:
