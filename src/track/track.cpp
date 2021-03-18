@@ -217,8 +217,16 @@ void Track::importMetadata(
     // all existing metadata must be preserved. Importing Serato metadata
     // is done last to override any previously imported metadata.
     if (!importedSeratoTags.isEmpty()) {
-        tryImportBeats(importedSeratoTags.importBeats(), importedSeratoTags.isBpmLocked());
-        importCueInfos(importedSeratoTags.importCueInfos());
+        auto pBeatsImporter = importedSeratoTags.importBeats();
+        if (pBeatsImporter) {
+            kLogger.debug() << "Importing Serato beats";
+            tryImportBeats(std::move(pBeatsImporter), importedSeratoTags.isBpmLocked());
+        }
+        auto pCuesImporter = importedSeratoTags.importCueInfos();
+        if (pCuesImporter) {
+            kLogger.debug() << "Importing Serato cues";
+            importCueInfos(std::move(pCuesImporter));
+        }
         setColor(importedSeratoTags.getTrackColor());
     }
 }
