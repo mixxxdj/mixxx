@@ -1357,22 +1357,32 @@ ExportTrackMetadataResult Track::exportMetadata(
     }
 #endif
 
-    // Normalize metadata before exporting to adjust the precision of
-    // floating values, ... Otherwise the following comparisons may
-    // repeatedly indicate that values have changed only due to
-    // rounding errors.
-    m_record.refMetadata().normalizeBeforeExport();
     // Check if the metadata has actually been modified. Otherwise
     // we don't need to write it back. Exporting unmodified metadata
     // would needlessly update the file's time stamp and should be
     // avoided. Since we don't know in which state the file's metadata
     // is we import it again into a temporary variable.
     mixxx::TrackMetadata importedFromFile;
+    // Normalize metadata before exporting to adjust the precision of
+    // floating values, ... Otherwise the following comparisons may
+    // repeatedly indicate that values have changed only due to
+    // rounding errors.
+    // The normalization has to be performed on a copy of the metadata.
+    // Otherwise floating-point values like the bpm value might become
+    // inconsistent with the actual value stored by the beat grid!
+    mixxx::TrackMetadata normalizedFromRecord;
     if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
             mixxx::MetadataSource::ImportResult::Succeeded)) {
         // Prevent overwriting any file tags that are not yet stored in the
-        // library database!
+        // library database! This will in turn update the current metadata
+        // that is stored in the database. New columns that need to be populated
+        // from file tags cannot be filled during a database migration.
         m_record.mergeImportedMetadata(importedFromFile);
+
+        // Prepare export by cloning and normalizing the metadata
+        normalizedFromRecord = m_record.getMetadata();
+        normalizedFromRecord.normalizeBeforeExport();
+
         // Finally the track's current metadata and the imported/adjusted metadata
         // can be compared for differences to decide whether the tags in the file
         // would change if we perform the write operation. This function will also
@@ -1387,9 +1397,9 @@ ExportTrackMetadataResult Track::exportMetadata(
         // trigger the re-export of file tags or they could modify other metadata
         // properties.
         if (!m_bMarkedForMetadataExport &&
-                !m_record.getMetadata().anyFileTagsModified(
+                !normalizedFromRecord.anyFileTagsModified(
                         importedFromFile,
-                        mixxx::Bpm::Comparison::Integer))  {
+                        mixxx::Bpm::Comparison::Integer)) {
             // The file tags are in-sync with the track's metadata and don't need
             // to be updated.
             if (kLogger.debugEnabled()) {
@@ -1407,7 +1417,9 @@ ExportTrackMetadataResult Track::exportMetadata(
             kLogger.info()
                     << "Adding or overwriting tags after failure to import tags from file:"
                     << getLocation();
-            // ...and continue
+            // Prepare export by cloning and normalizing the metadata
+            normalizedFromRecord = m_record.getMetadata();
+            normalizedFromRecord.normalizeBeforeExport();
         } else {
             kLogger.warning()
                     << "Skip exporting of track metadata after failure to import tags from file:"
@@ -1424,9 +1436,9 @@ ExportTrackMetadataResult Track::exportMetadata(
             << importedFromFile;
     kLogger.debug()
             << "New metadata (modified)"
-            << m_record.getMetadata();
+            << normalizedFromRecord;
     const auto trackMetadataExported =
-            pMetadataSource->exportTrackMetadata(m_record.getMetadata());
+            pMetadataSource->exportTrackMetadata(normalizedFromRecord);
     switch (trackMetadataExported.first) {
     case mixxx::MetadataSource::ExportResult::Succeeded:
         // After successfully exporting the metadata we record the fact
