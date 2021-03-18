@@ -1365,10 +1365,12 @@ ExportTrackMetadataResult Track::exportMetadata(
 
     if (pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
         const auto streamInfo = m_record.getStreamInfoFromSource();
-        VERIFY_OR_DEBUG_ASSERT(streamInfo && streamInfo->isValid()) {
-            kLogger.warning()
-                    << "Cannot write Serato metadata because stream info is not available:"
-                    << getLocation();
+        VERIFY_OR_DEBUG_ASSERT(streamInfo &&
+                streamInfo->getSignalInfo().isValid() &&
+                streamInfo->getDuration() > mixxx::Duration::empty()) {
+            kLogger.warning() << "Cannot write Serato metadata because signal "
+                                 "info and/or duration is not available:"
+                              << getLocation();
             return ExportTrackMetadataResult::Skipped;
         }
 
@@ -1395,7 +1397,10 @@ ExportTrackMetadataResult Track::exportMetadata(
                     getLocation(), streamInfo->getSignalInfo());
             seratoTags->setCueInfos(cueInfos, timingOffset);
 
-            seratoTags->setBeats(m_pBeats, *streamInfo, timingOffset);
+            seratoTags->setBeats(m_pBeats,
+                    streamInfo->getSignalInfo(),
+                    streamInfo->getDuration(),
+                    timingOffset);
         }
     }
 
