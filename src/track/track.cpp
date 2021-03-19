@@ -1110,8 +1110,8 @@ bool Track::importPendingCueInfosWhileLocked() {
     QList<CuePointer> cuePoints;
     cuePoints.reserve(m_pCueInfoImporterPending->size() + m_cuePoints.size());
 
-    // Avoid unnecessary data loss by not discarding/overwriting existing cues
-    // can't be returned by CueInfoImporter.
+    // Preserve all existing cues with types that are not available for
+    // importing.
     for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
         if (!m_pCueInfoImporterPending->canImportCueType(pCue->getType())) {
             cuePoints.append(pCue);
