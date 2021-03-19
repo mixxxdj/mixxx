@@ -219,18 +219,19 @@ void Track::importMetadata(
     //
     // TODO: Import Serato metadata within the locking scope and not
     // as a post-processing step.
-    if (!importedSeratoTags.isEmpty()) {
-        auto pBeatsImporter = importedSeratoTags.importBeats();
-        if (pBeatsImporter) {
-            kLogger.debug() << "Importing Serato beats";
-            tryImportBeats(std::move(pBeatsImporter), importedSeratoTags.isBpmLocked());
-        }
-        auto pCuesImporter = importedSeratoTags.importCueInfos();
-        if (pCuesImporter) {
-            kLogger.debug() << "Importing Serato cues";
-            importCueInfos(std::move(pCuesImporter));
-        }
-        setColor(importedSeratoTags.getTrackColor());
+    auto pBeatsImporter = importedSeratoTags.importBeats();
+    if (pBeatsImporter) {
+        kLogger.debug() << "Importing Serato beats";
+        tryImportBeats(std::move(pBeatsImporter), importedSeratoTags.isBpmLocked());
+    }
+    auto pCuesImporter = importedSeratoTags.importCueInfos();
+    if (pCuesImporter) {
+        kLogger.debug() << "Importing Serato cues";
+        importCueInfos(std::move(pCuesImporter));
+    }
+    const mixxx::RgbColor::optional_t optColor = importedSeratoTags.getTrackColor();
+    if (optColor) {
+        setColor(*optColor);
     }
 }
 
