@@ -521,7 +521,14 @@ void WMainMenuBar::initialize() {
     // HELP MENU
     QMenu* pHelpMenu = new QMenu(tr("&Help"), this);
 
-    QString externalLinkSuffix = QChar(' ') + QChar(0x2197); // north-east arrow
+    QString externalLinkSuffix;
+#ifndef __APPLE__
+    // According to Apple's Human Interface Guidelines devs are encouraged
+    // to not use custom icons in menus.
+    // https://developer.apple.com/design/human-interface-guidelines/macos/menus/menu-anatomy/
+    externalLinkSuffix = QChar(' ') + QChar(0x2197); // north-east arrow
+#endif
+
     QString supportTitle = tr("&Community Support") + externalLinkSuffix;
     QString supportText = tr("Get help with Mixxx");
     auto* pHelpSupport = new QAction(supportTitle, this);
