@@ -209,10 +209,6 @@ void Track::importMetadata(
         }
     }
 
-    // FIXME: Move the Track::setCuePoints call to another location,
-    // because we need the sample rate to calculate sample
-    // positions for cues (and *correct* sample rate isn't known here).
-    //
     // If the Serato tags are empty they are not present. In this case
     // all existing metadata must be preserved. Importing Serato metadata
     // is done last to override any previously imported metadata.
