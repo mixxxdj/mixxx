@@ -71,7 +71,7 @@ find_package_handle_standard_args(
 )
 
 # Version detection
-if (EXISTS "${hidapi_INCLUDE_DIR}/hidapi.h")
+if (NOT hidapi_VERSION AND EXISTS "${hidapi_INCLUDE_DIR}/hidapi.h")
     file(READ "${hidapi_INCLUDE_DIR}/hidapi.h" hidapi_H_CONTENTS)
     string(REGEX MATCH "#define HID_API_VERSION_MAJOR ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
     set(hidapi_VERSION_MAJOR "${CMAKE_MATCH_1}")
