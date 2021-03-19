@@ -345,7 +345,7 @@ void DlgPrefLibrary::slotSeratoMetadataExportClicked(bool checked) {
                             "lost and files with Serato metadata written by "
                             "Mixxx could potentially crash Serato DJ, "
                             "therefore caution is advised and backups are "
-                            "recommended. Do you really want to enable this "
+                            "recommended. Are you sure you want to enable this "
                             "option?"),
                     QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
             checkBox_SeratoMetadataExport->setChecked(false);
