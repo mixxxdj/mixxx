@@ -2536,7 +2536,8 @@ find_package(LibUSB)
 # USB HID controller support
 find_package(hidapi)
 option(HID "USB HID controller support" ON)
-default_option(HIDAPI_STATIC "Link HIDAPI library statically" "NOT HIDAPI_FOUND")
+# hidapi_VERSION is only available starting with 0.10.0
+default_option(HIDAPI_STATIC "Link HIDAPI library statically" "NOT hidapi_FOUND OR NOT hidapi_VERSION OR hidapi_VERSION VERSION_LESS 0.10.0")
 if(HID)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
