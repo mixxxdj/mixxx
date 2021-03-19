@@ -138,7 +138,6 @@ void Track::importMetadata(
     auto pSeratoBeatsImporter = importedMetadata.getTrackInfo().getSeratoTags().importBeats();
     const bool seratoBpmLocked = importedMetadata.getTrackInfo().getSeratoTags().isBpmLocked();
     auto pSeratoCuesImporter = importedMetadata.getTrackInfo().getSeratoTags().importCueInfos();
-    const auto optSeratoColor = importedMetadata.getTrackInfo().getSeratoTags().getTrackColor();
 
     {
         // enter locking scope
@@ -198,6 +197,12 @@ void Track::importMetadata(
         modified |= keysModified;
         const auto newKey = m_record.getGlobalKey();
 
+        // Import track color from Serato tags if available
+        const auto newColor = m_record.getMetadata().getTrackInfo().getSeratoTags().getTrackColor();
+        const bool colorModified = compareAndSet(m_record.ptrColor(), newColor);
+        modified |= colorModified;
+        DEBUG_ASSERT(!colorModified || m_record.getColor() == newColor);
+
         // explicitly unlock before emitting signals
         markDirtyAndUnlock(&lock, modified);
 
@@ -209,6 +214,9 @@ void Track::importMetadata(
         }
         if (oldReplayGain != newReplayGain) {
             emit replayGainUpdated(newReplayGain);
+        }
+        if (colorModified) {
+            emit colorUpdated(newColor);
         }
     }
 
@@ -225,9 +233,6 @@ void Track::importMetadata(
     if (pSeratoCuesImporter) {
         kLogger.debug() << "Importing Serato cues";
         importCueInfos(std::move(pSeratoCuesImporter));
-    }
-    if (optSeratoColor) {
-        setColor(optSeratoColor);
     }
 }
 
