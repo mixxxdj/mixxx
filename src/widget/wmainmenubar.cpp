@@ -521,8 +521,7 @@ void WMainMenuBar::initialize() {
     // HELP MENU
     QMenu* pHelpMenu = new QMenu(tr("&Help"), this);
 
-    QString externalLinkSuffix = " =>";
-
+    QString externalLinkSuffix = QChar(' ') + QChar(0x2197); // north-east arrow
     QString supportTitle = tr("&Community Support") + externalLinkSuffix;
     QString supportText = tr("Get help with Mixxx");
     auto* pHelpSupport = new QAction(supportTitle, this);
@@ -545,7 +544,7 @@ void WMainMenuBar::initialize() {
                 resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
     }
 #elif defined(__LINUX__)
-    // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
+    // On GNU/Linux, the manual is installed to e.g. /usr/share/doc/mixxx/
     if (resourceDir.cd("../doc/mixxx") && resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
         qManualUrl = QUrl::fromLocalFile(
                 resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
