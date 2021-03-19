@@ -135,7 +135,10 @@ void Track::importMetadata(
     // Information stored in Serato tags is imported separately after
     // importing the metadata (see below). The Serato tags BLOB itself
     // is updated together with the metadata.
-    const auto importedSeratoTags = importedMetadata.getTrackInfo().getSeratoTags();
+    auto pSeratoBeatsImporter = importedMetadata.getTrackInfo().getSeratoTags().importBeats();
+    const bool seratoBpmLocked = importedMetadata.getTrackInfo().getSeratoTags().isBpmLocked();
+    auto pSeratoCuesImporter = importedMetadata.getTrackInfo().getSeratoTags().importCueInfos();
+    const auto optSeratoColor = importedMetadata.getTrackInfo().getSeratoTags().getTrackColor();
 
     {
         // enter locking scope
@@ -215,19 +218,16 @@ void Track::importMetadata(
     //
     // TODO: Import Serato metadata within the locking scope and not
     // as a post-processing step.
-    auto pBeatsImporter = importedSeratoTags.importBeats();
-    if (pBeatsImporter) {
+    if (pSeratoBeatsImporter) {
         kLogger.debug() << "Importing Serato beats";
-        tryImportBeats(std::move(pBeatsImporter), importedSeratoTags.isBpmLocked());
+        tryImportBeats(std::move(pSeratoBeatsImporter), seratoBpmLocked);
     }
-    auto pCuesImporter = importedSeratoTags.importCueInfos();
-    if (pCuesImporter) {
+    if (pSeratoCuesImporter) {
         kLogger.debug() << "Importing Serato cues";
-        importCueInfos(std::move(pCuesImporter));
+        importCueInfos(std::move(pSeratoCuesImporter));
     }
-    const mixxx::RgbColor::optional_t optColor = importedSeratoTags.getTrackColor();
-    if (optColor) {
-        setColor(*optColor);
+    if (optSeratoColor) {
+        setColor(optSeratoColor);
     }
 }
 
