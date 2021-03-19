@@ -1112,16 +1112,8 @@ bool Track::importPendingCueInfosWhileLocked() {
 
     // Avoid unnecessary data loss by not discarding/overwriting existing cues
     // can't be returned by CueInfoImporter.
-    //
-    // TODO: The types of cue points to overwrite or retain should be a
-    // property of CueInfoImporter. The current implementation ony works for
-    // Serato.
     for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
-        switch (pCue->getType()) {
-        case mixxx::CueType::HotCue:
-        case mixxx::CueType::Loop:
-            continue;
-        default:
+        if (!m_pCueInfoImporterPending->canImportCueType(pCue->getType())) {
             cuePoints.append(pCue);
         }
     }
