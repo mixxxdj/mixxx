@@ -1108,7 +1108,24 @@ bool Track::importPendingCueInfosWhileLocked() {
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
     const auto trackId = m_record.getId();
     QList<CuePointer> cuePoints;
-    cuePoints.reserve(m_pCueInfoImporterPending->size());
+    cuePoints.reserve(m_pCueInfoImporterPending->size() + m_cuePoints.size());
+
+    // Avoid unnecessary data loss by not discarding/overwriting existing cues
+    // can't be returned by CueInfoImporter.
+    //
+    // TODO: The types of cue points to overwrite or retain should be a
+    // property of CueInfoImporter. The current implementation ony works for
+    // Serato.
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+        switch (pCue->getType()) {
+        case mixxx::CueType::HotCue:
+        case mixxx::CueType::Loop:
+            continue;
+        default:
+            cuePoints.append(pCue);
+        }
+    }
+
     const auto cueInfos =
             m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
                     getLocation(), m_record.getStreamInfoFromSource()->getSignalInfo());
