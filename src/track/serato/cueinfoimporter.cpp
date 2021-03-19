@@ -14,14 +14,4 @@ double SeratoCueInfoImporter::guessTimingOffsetMillis(
     return SeratoTags::guessTimingOffsetMillis(filePath, signalInfo);
 }
 
-bool SeratoCueInfoImporter::canImportCueType(mixxx::CueType cueType) const {
-    switch (cueType) {
-    case mixxx::CueType::HotCue:
-    case mixxx::CueType::Loop:
-        return true;
-    default:
-        return false;
-    }
-}
-
 } // namespace mixxx

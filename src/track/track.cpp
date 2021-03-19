@@ -1113,7 +1113,7 @@ bool Track::importPendingCueInfosWhileLocked() {
     // Preserve all existing cues with types that are not available for
     // importing.
     for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
-        if (!m_pCueInfoImporterPending->canImportCueType(pCue->getType())) {
+        if (!m_pCueInfoImporterPending->hasCueOfType(pCue->getType())) {
             cuePoints.append(pCue);
         }
     }

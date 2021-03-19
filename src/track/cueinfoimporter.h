@@ -14,7 +14,8 @@ class CueInfoImporter {
     explicit CueInfoImporter(const QList<CueInfo>& cueInfos);
     virtual ~CueInfoImporter() = default;
 
-    virtual bool canImportCueType(mixxx::CueType) const = 0;
+    /// Returns true if the importer has any cue(s) of the given cueType.
+    bool hasCueOfType(CueType cueType) const;
 
     /// Returns audio signal dependent timing offset correction.
     /// The default implementation just returns 0, but this can be overridden
