@@ -216,6 +216,9 @@ void Track::importMetadata(
     // If the Serato tags are empty they are not present. In this case
     // all existing metadata must be preserved. Importing Serato metadata
     // is done last to override any previously imported metadata.
+    //
+    // TODO: Import Serato metadata within the locking scope and not
+    // as a post-processing step.
     if (!importedSeratoTags.isEmpty()) {
         auto pBeatsImporter = importedSeratoTags.importBeats();
         if (pBeatsImporter) {
