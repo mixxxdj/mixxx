@@ -1108,7 +1108,16 @@ bool Track::importPendingCueInfosWhileLocked() {
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
     const auto trackId = m_record.getId();
     QList<CuePointer> cuePoints;
-    cuePoints.reserve(m_pCueInfoImporterPending->size());
+    cuePoints.reserve(m_pCueInfoImporterPending->size() + m_cuePoints.size());
+
+    // Preserve all existing cues with types that are not available for
+    // importing.
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+        if (!m_pCueInfoImporterPending->hasCueOfType(pCue->getType())) {
+            cuePoints.append(pCue);
+        }
+    }
+
     const auto cueInfos =
             m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
                     getLocation(), m_record.getStreamInfoFromSource()->getSignalInfo());
