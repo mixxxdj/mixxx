@@ -132,19 +132,25 @@ void Track::relocate(
 void Track::importMetadata(
         mixxx::TrackMetadata importedMetadata,
         const QDateTime& metadataSynchronized) {
-    // Safe some values that are needed after move assignment and unlocking(see below)
-    const auto newBpm = importedMetadata.getTrackInfo().getBpm();
-    const auto newKey = importedMetadata.getTrackInfo().getKey();
-    const auto newReplayGain = importedMetadata.getTrackInfo().getReplayGain();
-    const auto newSeratoTags = importedMetadata.getTrackInfo().getSeratoTags();
+    // Information stored in Serato tags is imported separately after
+    // importing the metadata (see below). The Serato tags BLOB itself
+    // is updated together with the metadata.
+    auto pSeratoBeatsImporter = importedMetadata.getTrackInfo().getSeratoTags().importBeats();
+    const bool seratoBpmLocked = importedMetadata.getTrackInfo().getSeratoTags().isBpmLocked();
+    auto pSeratoCuesImporter = importedMetadata.getTrackInfo().getSeratoTags().importCueInfos();
+
     {
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
 
-        // Preserve the current bpm temporarily (see below) to avoid overwriting
-        // it with an inconsistent value compared to the beat grid, e.g. after
-        // reloading the bpm from file tags.
-        importedMetadata.refTrackInfo().setBpm(mixxx::Bpm(getBpmWhileLocked()));
+        // Preserve the both current bpm and key temporarily to avoid
+        // overwriting with an inconsistent value. The bpm must always be
+        // set together with the beat grid and the key text must be parsed
+        // and validated.
+        const auto importedBpm = importedMetadata.getTrackInfo().getBpm();
+        importedMetadata.refTrackInfo().setBpm(getBpmWhileLocked());
+        const auto importedKeyText = importedMetadata.getTrackInfo().getKey();
+        importedMetadata.refTrackInfo().setKey(m_record.getMetadata().getTrackInfo().getKey());
 
         bool modified = false;
         // Only set the metadata synchronized flag (column `header_parsed`
@@ -160,50 +166,77 @@ void Track::importMetadata(
                     m_record.ptrMetadataSynchronized(),
                     true);
         }
-        bool modifiedReplayGain = false;
+
+        const auto oldReplayGain =
+                m_record.getMetadata().getTrackInfo().getReplayGain();
         if (m_record.getMetadata() != importedMetadata) {
-            modifiedReplayGain =
-                    (m_record.getMetadata().getTrackInfo().getReplayGain() != newReplayGain);
             m_record.setMetadata(std::move(importedMetadata));
             // Don't use importedMetadata after move assignment!!
             modified = true;
         }
-        if (modified) {
-            // explicitly unlock before emitting signals
-            markDirtyAndUnlock(&lock);
-            if (modifiedReplayGain) {
-                emit replayGainUpdated(newReplayGain);
-            }
-        }
+        const auto newReplayGain =
+                m_record.getMetadata().getTrackInfo().getReplayGain();
 
-        // FIXME: Move the Track::setCuePoints call to another location,
-        // because we need the sample rate to calculate sample
-        // positions for cues (and *correct* sample rate isn't known here).
-        //
-        // If the Serato tags are empty they are not present. In this case
-        // all existing metadata must be preserved!
-        if (!newSeratoTags.isEmpty()) {
-            tryImportBeats(newSeratoTags.importBeats(), newSeratoTags.isBpmLocked());
-            importCueInfos(newSeratoTags.importCueInfos());
-            setColor(newSeratoTags.getTrackColor());
+        // Need to set BPM after sample rate since beat grid creation depends on
+        // knowing the sample rate. Bug #1020438.
+        auto beatsAndBpmModified = false;
+        if (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm())) {
+            // Only use the imported BPM if the current beat grid is either
+            // missing or not valid! The BPM value in the metadata might be
+            // imprecise (normalized or rounded), e.g. ID3v2 only supports
+            // integer values.
+            beatsAndBpmModified = trySetBpmWhileLocked(importedBpm.getValue());
         }
+        modified |= beatsAndBpmModified;
+        const auto newBpm = getBpmWhileLocked();
 
-        // implicitly unlocked when leaving scope
+        auto keysModified = false;
+        if (KeyUtils::guessKeyFromText(importedKeyText) != mixxx::track::io::key::INVALID) {
+            // Only update the current key with a valid value. Otherwise preserve
+            // the existing value.
+            keysModified = m_record.updateGlobalKeyText(
+                    importedKeyText,
+                    mixxx::track::io::key::FILE_METADATA);
+        }
+        modified |= keysModified;
+        const auto newKey = m_record.getGlobalKey();
+
+        // Import track color from Serato tags if available
+        const auto newColor = m_record.getMetadata().getTrackInfo().getSeratoTags().getTrackColor();
+        const bool colorModified = compareAndSet(m_record.ptrColor(), newColor);
+        modified |= colorModified;
+        DEBUG_ASSERT(!colorModified || m_record.getColor() == newColor);
+
+        if (!modified) {
+            // Unmodified, nothing todo
+            return;
+        }
+        // Explicitly unlock before emitting signals
+        markDirtyAndUnlock(&lock);
+
+        if (beatsAndBpmModified) {
+            emitBeatsAndBpmUpdated(newBpm);
+        }
+        if (keysModified) {
+            emitKeysUpdated(newKey);
+        }
+        if (oldReplayGain != newReplayGain) {
+            emit replayGainUpdated(newReplayGain);
+        }
+        if (colorModified) {
+            emit colorUpdated(newColor);
+        }
     }
 
-    // Need to set BPM after sample rate since beat grid creation depends on
-    // knowing the sample rate. Bug #1020438.
-
-    // Only use the imported BPM if the beat grid is not valid!
-    // Reason: The BPM value in the metadata might be normalized
-    // or rounded, e.g. ID3v2 only supports integer values.
-    if (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm())) {
-        trySetBpm(newBpm.getValue());
+    // TODO: Import Serato metadata within the locking scope and not
+    // as a post-processing step.
+    if (pSeratoBeatsImporter) {
+        kLogger.debug() << "Importing Serato beats";
+        tryImportBeats(std::move(pSeratoBeatsImporter), seratoBpmLocked);
     }
-
-    if (!newKey.isEmpty()
-            && KeyUtils::guessKeyFromText(newKey) != mixxx::track::io::key::INVALID) {
-        setKeyText(newKey, mixxx::track::io::key::FILE_METADATA);
+    if (pSeratoCuesImporter) {
+        kLogger.debug() << "Importing Serato cues";
+        importCueInfos(std::move(pSeratoCuesImporter));
     }
 }
 
@@ -255,10 +288,10 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     }
 }
 
-double Track::getBpmWhileLocked() const {
+mixxx::Bpm Track::getBpmWhileLocked() const {
     // BPM values must be synchronized at all times!
     DEBUG_ASSERT(m_record.getMetadata().getTrackInfo().getBpm() == getBeatsPointerBpm(m_pBeats));
-    return m_record.getMetadata().getTrackInfo().getBpm().getValue();
+    return m_record.getMetadata().getTrackInfo().getBpm();
 }
 
 bool Track::trySetBpmWhileLocked(double bpmValue) {
@@ -291,7 +324,7 @@ bool Track::trySetBpm(double bpmValue) {
     if (!trySetBpmWhileLocked(bpmValue)) {
         return false;
     }
-    afterBeatsOrBpmUpdated(&lock);
+    afterBeatsAndBpmUpdated(&lock);
     return true;
 }
 
@@ -343,7 +376,7 @@ bool Track::trySetBeatsMarkDirtyAndUnlock(
         return false;
     }
 
-    afterBeatsOrBpmUpdated(pLock);
+    afterBeatsAndBpmUpdated(pLock);
     return true;
 }
 
@@ -352,13 +385,18 @@ mixxx::BeatsPointer Track::getBeats() const {
     return m_pBeats;
 }
 
-void Track::afterBeatsOrBpmUpdated(
+void Track::afterBeatsAndBpmUpdated(
         QMutexLocker* pLock) {
     DEBUG_ASSERT(pLock);
 
-    const auto bpmValue = getBpmWhileLocked();
+    const auto bpm = getBpmWhileLocked();
     markDirtyAndUnlock(pLock);
-    emit bpmUpdated(bpmValue);
+    emitBeatsAndBpmUpdated(bpm);
+}
+
+void Track::emitBeatsAndBpmUpdated(
+        mixxx::Bpm newBpm) {
+    emit bpmUpdated(newBpm.getValue());
     emit beatsUpdated();
 }
 
@@ -978,23 +1016,21 @@ bool Track::tryImportPendingBeatsMarkDirtyAndUnlock(
         return false;
     }
 
-    bool dirty = false;
-
+    bool modified = false;
+    // Both functions must be invoked even if one of them
+    // returns false!
     if (importPendingBeatsWhileLocked()) {
-        dirty = true;
+        modified = true;
     }
-
     if (compareAndSet(m_record.ptrBpmLocked(), lockBpmAfterSet)) {
-        dirty = true;
+        modified = true;
     }
-
-    if (!dirty) {
-        // Already set, nothing todo
-        pLock->unlock();
+    if (!modified) {
+        // Unmodified, nothing todo
         return true;
     }
 
-    afterBeatsOrBpmUpdated(pLock);
+    afterBeatsAndBpmUpdated(pLock);
     return true;
 }
 
@@ -1158,11 +1194,6 @@ void Track::markClean() {
     setDirtyAndUnlock(&lock, false);
 }
 
-void Track::markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
-    bool result = m_bDirty || bDirty;
-    setDirtyAndUnlock(pLock, result);
-}
-
 void Track::setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
     const bool dirtyChanged = m_bDirty != bDirty;
     m_bDirty = bDirty;
@@ -1218,9 +1249,13 @@ void Track::setRating (int rating) {
 }
 
 void Track::afterKeysUpdated(QMutexLocker* pLock) {
-    // New key might be INVALID. We don't care.
-    mixxx::track::io::key::ChromaticKey newKey = m_record.getGlobalKey();
+    const auto newKey = m_record.getGlobalKey();
     markDirtyAndUnlock(pLock);
+    emitKeysUpdated(newKey);
+}
+
+void Track::emitKeysUpdated(mixxx::track::io::key::ChromaticKey newKey) {
+    // New key might be INVALID. We don't care.
     emit keyUpdated(KeyUtils::keyToNumericValue(newKey));
     emit keysUpdated();
 }
@@ -1545,7 +1580,7 @@ void Track::updateStreamInfoFromSource(
     }
 
     if (beatsImported) {
-        afterBeatsOrBpmUpdated(&lock);
+        afterBeatsAndBpmUpdated(&lock);
     } else {
         markDirtyAndUnlock(&lock);
     }
