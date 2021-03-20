@@ -72,6 +72,9 @@ const QString kFormatTDAT = QStringLiteral("ddMM");
 // See also: https://picard.musicbrainz.org/docs/mappings
 const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 
+// Mixxx frames
+const QString kFrameDescriptionMixxxCustomTags = QStringLiteral("Mixxx CustomTags");
+
 // Serato frames
 const QString kFrameDescriptionSeratoBeatGrid = QStringLiteral("Serato BeatGrid");
 const QString kFrameDescriptionSeratoMarkers = QStringLiteral("Serato Markers_");
@@ -1002,6 +1005,18 @@ void importTrackMetadataFromTag(
     }
 #endif // __EXTRA_METADATA__
 
+    // Mixxx custom tags
+    const QByteArray dumpCustomTags =
+            readFirstGeneralEncapsulatedObjectFrame(
+                    tag,
+                    kFrameDescriptionMixxxCustomTags,
+                    QStringLiteral("application/json;charset=UTF-8"));
+    if (!dumpCustomTags.isEmpty()) {
+        parseCustomTagsFromUtf8Dump(
+                pTrackMetadata,
+                dumpCustomTags);
+    }
+
     // Serato tags
     const QByteArray seratoBeatGrid =
             readFirstGeneralEncapsulatedObjectFrame(
@@ -1292,6 +1307,25 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             "TSSE",
             trackMetadata.getTrackInfo().getEncoderSettings());
 #endif // __EXTRA_METADATA__
+
+    // Mixxx custom tags
+    // Writing an empty COMM frame will remove this frame. This became
+    // necessary after switching from COMM frames to GEOB frames
+    // during development. This will procedure will gradually cleanup
+    // up the now obsolete and redundant COMM frames when re-exporting
+    // such a file.
+    // TODO: Remove this workaround in a later version. If in doubt keep
+    // it, since the impact is negligible.
+    writeCommentsFrame(
+            pTag,
+            TagLib::String(),
+            kFrameDescriptionMixxxCustomTags);
+    // Write the serialized JSON data into a GEOB frame
+    writeGeneralEncapsulatedObjectFrame(
+            pTag,
+            kFrameDescriptionMixxxCustomTags,
+            dumpCustomTagsUtf8(trackMetadata),
+            "application/json;charset=UTF-8");
 
     // Export of Serato markers is disabled, because Mixxx
     // does not modify them.

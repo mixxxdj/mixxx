@@ -2,6 +2,8 @@
 
 #include <taglib/tmap.h>
 
+#include <QJsonDocument>
+
 #include "track/tracknumbers.h"
 #include "util/assert.h"
 #include "util/duration.h"
@@ -148,6 +150,46 @@ bool parseAlbumPeak(
     return isPeakValid;
 }
 #endif // __EXTRA_METADATA__
+
+QByteArray dumpCustomTagsUtf8(
+        const TrackMetadata& trackMetadata) {
+    if (trackMetadata.hasFacets()) {
+        return trackMetadata.getFacets().dumpJsonData();
+    } else {
+        // Do not write a tag with an empty JSON object "{}"
+        return QByteArray{};
+    }
+}
+
+TagLib::String dumpCustomTagsString(
+        const TrackMetadata& trackMetadata) {
+    return TagLib::String(
+            dumpCustomTagsUtf8(trackMetadata).constData(),
+            TagLib::String::UTF8);
+}
+
+bool parseCustomTagsFromUtf8Dump(
+        TrackMetadata* pTrackMetadata,
+        const QByteArray& dump) {
+    DEBUG_ASSERT(pTrackMetadata);
+    // FIXME: Handle or propagate errors?
+    auto facets = Facets::parseJsonData(dump).first;
+    if (!facets) {
+        kLogger.warning()
+                << "Failed to parse custom tags from JSON data";
+        return false;
+    }
+    pTrackMetadata->refFacets() = std::move(*facets);
+    return true;
+}
+
+bool parseCustomTagsFromStringDump(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::String& dump) {
+    DEBUG_ASSERT(pTrackMetadata);
+    const TagLib::ByteVector byteVec = dump.data(TagLib::String::UTF8);
+    return parseCustomTagsFromUtf8Dump(pTrackMetadata, toQByteArrayRaw(byteVec));
+}
 
 bool parseSeratoBeatGrid(
         TrackMetadata* pTrackMetadata,
