@@ -455,7 +455,8 @@ class Track : public QObject {
     double getDuration(DurationRounding rounding) const;
 
     ExportTrackMetadataResult exportMetadata(
-            mixxx::MetadataSourcePointer pMetadataSource);
+            mixxx::MetadataSourcePointer pMetadataSource,
+            UserSettingsPointer pConfig);
 
     // Information about the actual properties of the
     // audio stream is only available after opening the

@@ -507,7 +507,6 @@ void writeUniqueFileIdentifierFrame(
 }
 #endif // __EXTRA_METADATA__
 
-#if defined(__EXPORT_SERATO_MARKERS__)
 void writeGeneralEncapsulatedObjectFrame(
         TagLib::ID3v2::Tag* pTag,
         const QString& description,
@@ -537,7 +536,6 @@ void writeGeneralEncapsulatedObjectFrame(
         }
     }
 }
-#endif // __EXPORT_SERATO_MARKERS__
 
 template<typename T>
 const T* downcastFrame(TagLib::ID3v2::Frame* frame) {
@@ -1282,21 +1280,21 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
 
     // Export of Serato markers is disabled, because Mixxx
     // does not modify them.
-#if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
-    writeGeneralEncapsulatedObjectFrame(
-            pTag,
-            kFrameDescriptionSeratoBeatGrid,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
-    writeGeneralEncapsulatedObjectFrame(
-            pTag,
-            kFrameDescriptionSeratoMarkers,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
-    writeGeneralEncapsulatedObjectFrame(
-            pTag,
-            kFrameDescriptionSeratoMarkers2,
-            trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
-#endif // __EXPORT_SERATO_MARKERS__
+    if (trackMetadata.getTrackInfo().getSeratoTags().status() != SeratoTags::ParserStatus::Failed) {
+        writeGeneralEncapsulatedObjectFrame(
+                pTag,
+                kFrameDescriptionSeratoBeatGrid,
+                trackMetadata.getTrackInfo().getSeratoTags().dumpBeatGrid(FileType::MP3));
+        writeGeneralEncapsulatedObjectFrame(
+                pTag,
+                kFrameDescriptionSeratoMarkers,
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers(FileType::MP3));
+        writeGeneralEncapsulatedObjectFrame(
+                pTag,
+                kFrameDescriptionSeratoMarkers2,
+                trackMetadata.getTrackInfo().getSeratoTags().dumpMarkers2(FileType::MP3));
+    }
 
     return true;
 }
