@@ -179,21 +179,25 @@ void Track::importMetadata(
 
         // Need to set BPM after sample rate since beat grid creation depends on
         // knowing the sample rate. Bug #1020438.
-        const bool beatsAndBpmModified =
-                // Only use the imported BPM if the current beat grid is either
-                // missing or not valid! The BPM value in the metadata might be
-                // imprecise (normalized or rounded), e.g. ID3v2 only supports
-                // integer values.
-                !(m_pBeats && mixxx::Bpm::isValidValue(m_pBeats->getBpm())) &&
-                trySetBpmWhileLocked(importedBpm.getValue());
+        auto beatsAndBpmModified = false;
+        if (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm())) {
+            // Only use the imported BPM if the current beat grid is either
+            // missing or not valid! The BPM value in the metadata might be
+            // imprecise (normalized or rounded), e.g. ID3v2 only supports
+            // integer values.
+            beatsAndBpmModified = trySetBpmWhileLocked(importedBpm.getValue());
+        }
         modified |= beatsAndBpmModified;
         const auto newBpm = getBpmWhileLocked();
 
-        // Only update the current key with a valid value. Otherwise preserve
-        // the existing value.
-        const bool keysModified =
-                KeyUtils::guessKeyFromText(importedKeyText) != mixxx::track::io::key::INVALID &&
-                m_record.updateGlobalKeyText(importedKeyText, mixxx::track::io::key::FILE_METADATA);
+        auto keysModified = false;
+        if (KeyUtils::guessKeyFromText(importedKeyText) != mixxx::track::io::key::INVALID) {
+            // Only update the current key with a valid value. Otherwise preserve
+            // the existing value.
+            keysModified = m_record.updateGlobalKeyText(
+                    importedKeyText,
+                    mixxx::track::io::key::FILE_METADATA);
+        }
         modified |= keysModified;
         const auto newKey = m_record.getGlobalKey();
 
