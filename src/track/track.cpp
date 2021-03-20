@@ -203,8 +203,12 @@ void Track::importMetadata(
         modified |= colorModified;
         DEBUG_ASSERT(!colorModified || m_record.getColor() == newColor);
 
-        // explicitly unlock before emitting signals
-        markDirtyAndUnlock(&lock, modified);
+        if (!modified) {
+            // Unmodified, nothing todo
+            return;
+        }
+        // Explicitly unlock before emitting signals
+        markDirtyAndUnlock(&lock);
 
         if (beatsAndBpmModified) {
             emitBeatsAndBpmUpdated(newBpm);
@@ -1018,9 +1022,7 @@ bool Track::tryImportPendingBeatsMarkDirtyAndUnlock(
         modified = true;
     }
     if (!modified) {
-        // Unmodified, nothing todo. Yet the internal dirty flag
-        // might have been set by a preceding operation!
-        markDirtyAndUnlock(pLock, false);
+        // Unmodified, nothing todo
         return true;
     }
 
@@ -1186,11 +1188,6 @@ void Track::markDirty() {
 void Track::markClean() {
     QMutexLocker lock(&m_qMutex);
     setDirtyAndUnlock(&lock, false);
-}
-
-void Track::markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
-    bool result = m_bDirty || bDirty;
-    setDirtyAndUnlock(pLock, result);
 }
 
 void Track::setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {

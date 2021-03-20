@@ -394,7 +394,9 @@ class Track : public QObject {
     // Set whether the TIO is dirty or not and unlock before emitting
     // any signals. This must only be called from member functions
     // while the TIO is locked.
-    void markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
+    void markDirtyAndUnlock(QMutexLocker* pLock) {
+        setDirtyAndUnlock(pLock, true);
+    }
     void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
     void afterKeysUpdated(QMutexLocker* pLock);
