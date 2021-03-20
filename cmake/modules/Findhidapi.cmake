@@ -70,6 +70,21 @@ find_package_handle_standard_args(
   hidapi_INCLUDE_DIR
 )
 
+# Version detection
+if (EXISTS "${hidapi_INCLUDE_DIR}/hidapi.h")
+    file(READ "${hidapi_INCLUDE_DIR}/hidapi.h" hidapi_H_CONTENTS)
+    string(REGEX MATCH "#define HID_API_VERSION_MAJOR ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
+    set(hidapi_VERSION_MAJOR "${CMAKE_MATCH_1}")
+    string(REGEX MATCH "#define HID_API_VERSION_MINOR ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
+    set(hidapi_VERSION_MINOR "${CMAKE_MATCH_1}")
+    string(REGEX MATCH "#define HID_API_VERSION_PATCH ([0-9]+)" _dummy "${hidapi_H_CONTENTS}")
+    set(hidapi_VERSION_PATCH "${CMAKE_MATCH_1}")
+    # hidapi_VERSION is only available starting with 0.10.0
+    if (hidapi_VERSION_MAJOR AND hidapi_VERSION_MINOR AND hidapi_VERSION_PATCH)
+      set(hidapi_VERSION "${hidapi_VERSION_MAJOR}.${hidapi_VERSION_MINOR}.${hidapi_VERSION_PATCH}")
+    endif()
+endif ()
+
 if(hidapi_FOUND)
   set(hidapi_LIBRARIES "${hidapi_LIBRARY}")
   set(hidapi_INCLUDE_DIRS "${hidapi_INCLUDE_DIR}")
