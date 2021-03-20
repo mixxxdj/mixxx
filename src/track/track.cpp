@@ -203,7 +203,11 @@ void Track::importMetadata(
 
         // Import track color from Serato tags if available
         const auto newColor = m_record.getMetadata().getTrackInfo().getSeratoTags().getTrackColor();
-        const bool colorModified = compareAndSet(m_record.ptrColor(), newColor);
+        auto colorModified = false;
+        if (newColor) {
+            // Only update the color if available
+            colorModified = compareAndSet(m_record.ptrColor(), newColor);
+        }
         modified |= colorModified;
         DEBUG_ASSERT(!colorModified || m_record.getColor() == newColor);
 
