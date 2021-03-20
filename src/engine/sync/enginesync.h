@@ -1,7 +1,9 @@
 #pragma once
 
-#include "preferences/usersettings.h"
+#include <gtest/gtest_prod.h>
+
 #include "engine/sync/syncable.h"
+#include "preferences/usersettings.h"
 
 class InternalClock;
 class EngineChannel;
@@ -60,14 +62,6 @@ class EngineSync : public SyncableListener {
     void onCallbackStart(int sampleRate, int bufferSize);
     void onCallbackEnd(int sampleRate, int bufferSize);
 
-    /// Only for testing. Do not use.
-    Syncable* getSyncableForGroup(const QString& group);
-
-    /// Only for testing. Do not use.
-    Syncable* getMasterSyncable() override {
-        return m_pMasterSyncable;
-    }
-
   private:
     /// Iterate over decks, and based on sync and play status, pick a new master.
     /// if enabling_syncable is not null, we treat it as if it were enabled because we may
@@ -122,6 +116,21 @@ class EngineSync : public SyncableListener {
 
     /// Check if there is only one playing syncable deck, and notify it if so.
     void checkUniquePlayingSyncable();
+
+    /// Only for testing. Do not use.
+    Syncable* getSyncableForGroup(const QString& group);
+
+    /// Only for testing. Do not use.
+    Syncable* getMasterSyncable() override {
+        return m_pMasterSyncable;
+    }
+
+    FRIEND_TEST(EngineSyncTest, EnableOneDeckInitsMaster);
+    FRIEND_TEST(EngineSyncTest, EnableOneDeckInitializesMaster);
+    FRIEND_TEST(EngineSyncTest, SyncToNonSyncDeck);
+    FRIEND_TEST(EngineSyncTest, SetFileBpmUpdatesLocalBpm);
+    FRIEND_TEST(EngineSyncTest, BpmAdjustFactor);
+    friend class EngineSyncTest;
 
     UserSettingsPointer m_pConfig;
     /// The InternalClock syncable.
