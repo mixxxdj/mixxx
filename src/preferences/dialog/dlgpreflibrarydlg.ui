@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>593</width>
-    <height>1049</height>
+    <width>661</width>
+    <height>1203</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -138,10 +138,16 @@
         </property>
        </widget>
       </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBox_SeratoMetadataExport">
+        <property name="text">
+         <string>Write Serato Metadata to files (experimental)</string>
+        </property>
+       </widget>
+      </item>
      </layout>
     </widget>
    </item>
-
    <item>
     <widget class="QGroupBox" name="groupBox_Miscellaneous">
      <property name="title">

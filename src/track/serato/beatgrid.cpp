@@ -422,9 +422,12 @@ QByteArray SeratoBeatGrid::dumpBase64Encoded() const {
 }
 
 void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
-        const audio::StreamInfo& streamInfo,
+        const audio::SignalInfo& signalInfo,
+        const Duration& duration,
         double timingOffsetMillis) {
-    VERIFY_OR_DEBUG_ASSERT(pBeats) {
+    if (!pBeats) {
+        setTerminalMarker(nullptr);
+        setNonTerminalMarkers({});
         return;
     }
 
@@ -434,9 +437,9 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
     // in the track, therefore we calculate the track duration in samples and
     // round up. This value might be longer than the actual track, but that's
     // okay because we want to make sure we get all beats.
-    const SINT trackDurationSamples = streamInfo.getSignalInfo().frames2samples(
-            static_cast<SINT>(streamInfo.getSignalInfo().secs2frames(
-                    std::ceil(streamInfo.getDuration().toDoubleSeconds()))));
+    const SINT trackDurationSamples = signalInfo.frames2samples(
+            static_cast<SINT>(signalInfo.secs2frames(
+                    std::ceil(duration.toDoubleSeconds()))));
     auto pBeatsIterator = pBeats->findBeats(0, trackDurationSamples);
 
     // This might be null if the track doesn't contain any beats
@@ -455,7 +458,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
     while (pBeatsIterator->hasNext()) {
         previousBeatPositionFrames = currentBeatPositionFrames;
         currentBeatPositionFrames =
-                streamInfo.getSignalInfo().samples2framesFractional(
+                signalInfo.samples2framesFractional(
                         pBeatsIterator->next());
 
         // Calculate the delta between the current beat and the previous beat.
@@ -491,7 +494,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
             // last beat, this needs to be a terminal marker entry.
             if (pBeatsIterator->hasNext()) {
                 const double positionSecs =
-                        streamInfo.getSignalInfo().frames2secsFractional(
+                        signalInfo.frames2secsFractional(
                                 currentBeatPositionFrames) -
                         timingOffsetSecs;
                 nonTerminalMarkers.append(
@@ -530,11 +533,11 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
 
     // Finally, create the terminal marker.
     const double positionSecs =
-            streamInfo.getSignalInfo().frames2secsFractional(
+            signalInfo.frames2secsFractional(
                     currentBeatPositionFrames) -
             timingOffsetSecs;
     const double bpm = pBeats->getBpmAroundPosition(
-            streamInfo.getSignalInfo().frames2samples(
+            signalInfo.frames2samples(
                     static_cast<SINT>(currentBeatPositionFrames)),
             1);
 

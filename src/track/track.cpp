@@ -17,6 +17,7 @@ namespace {
 const mixxx::Logger kLogger("Track");
 
 constexpr bool kLogStats = false;
+const ConfigKey kConfigKeySeratoMetadataExport("[Library]", "SeratoMetadataExport");
 
 // Count the number of currently existing instances for detecting
 // memory leaks.
@@ -1365,7 +1366,8 @@ quint16 Track::getCoverHash() const {
 }
 
 ExportTrackMetadataResult Track::exportMetadata(
-        mixxx::MetadataSourcePointer pMetadataSource) {
+        mixxx::MetadataSourcePointer pMetadataSource,
+        UserSettingsPointer pConfig) {
     VERIFY_OR_DEBUG_ASSERT(pMetadataSource) {
         kLogger.warning()
                 << "Cannot export track metadata:"
@@ -1393,13 +1395,46 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Skipped;
     }
 
-#if defined(__EXPORT_SERATO_MARKERS__)
-    {
+    if (pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
+        const auto streamInfo = m_record.getStreamInfoFromSource();
+        VERIFY_OR_DEBUG_ASSERT(streamInfo &&
+                streamInfo->getSignalInfo().isValid() &&
+                streamInfo->getDuration() > mixxx::Duration::empty()) {
+            kLogger.warning() << "Cannot write Serato metadata because signal "
+                                 "info and/or duration is not available:"
+                              << getLocation();
+            return ExportTrackMetadataResult::Skipped;
+        }
+
+        const mixxx::audio::SampleRate sampleRate =
+                streamInfo->getSignalInfo().getSampleRate();
+
         mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
-        seratoTags->setTrackColor(getColor());
-        seratoTags->setBpmLocked(isBpmLocked());
+        DEBUG_ASSERT(seratoTags);
+
+        if (seratoTags->status() == mixxx::SeratoTags::ParserStatus::Failed) {
+            kLogger.warning()
+                    << "Refusing to overwrite Serato metadata that failed to parse:"
+                    << getLocation();
+        } else {
+            seratoTags->setTrackColor(getColor());
+            seratoTags->setBpmLocked(isBpmLocked());
+
+            QList<mixxx::CueInfo> cueInfos;
+            for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+                cueInfos.append(pCue->getCueInfo(sampleRate));
+            }
+
+            const double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
+                    getLocation(), streamInfo->getSignalInfo());
+            seratoTags->setCueInfos(cueInfos, timingOffset);
+
+            seratoTags->setBeats(m_pBeats,
+                    streamInfo->getSignalInfo(),
+                    streamInfo->getDuration(),
+                    timingOffset);
+        }
     }
-#endif
 
     // Check if the metadata has actually been modified. Otherwise
     // we don't need to write it back. Exporting unmodified metadata
