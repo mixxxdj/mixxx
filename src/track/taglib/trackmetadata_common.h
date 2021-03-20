@@ -129,6 +129,18 @@ bool parseAlbumPeak(
         const QString& strPeak);
 #endif // __EXTRA_METADATA__
 
+QByteArray dumpCustomTagsUtf8(
+        const TrackMetadata& trackMetadata);
+TagLib::String dumpCustomTagsString(
+        const TrackMetadata& trackMetadata);
+
+bool parseCustomTagsFromUtf8Dump(
+        TrackMetadata* pTrackMetadata,
+        const QByteArray& dump);
+bool parseCustomTagsFromStringDump(
+        TrackMetadata* pTrackMetadata,
+        const TagLib::String& dump);
+
 bool parseSeratoBeatGrid(
         TrackMetadata* pTrackMetadata,
         const QByteArray& data,

@@ -72,6 +72,9 @@ const QString kFormatTDAT = QStringLiteral("ddMM");
 // See also: https://picard.musicbrainz.org/docs/mappings
 const QString kMusicBrainzOwner = QStringLiteral("http://musicbrainz.org");
 
+// Mixxx frames
+const QString kFrameDescriptionMixxxCustomTags = QStringLiteral("Mixxx CustomTags");
+
 // Serato frames
 const QString kFrameDescriptionSeratoBeatGrid = QStringLiteral("Serato BeatGrid");
 const QString kFrameDescriptionSeratoMarkers = QStringLiteral("Serato Markers_");
@@ -283,6 +286,7 @@ QByteArray readFirstUniqueFileIdentifierFrame(
 TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjectFrame(
         const TagLib::ID3v2::Tag& tag,
         const QString& description,
+        const TagLib::String& mimeType,
         bool preferNotEmpty = true) {
     DEBUG_ASSERT(!description.isEmpty());
     TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pFirstFrame = nullptr;
@@ -298,6 +302,10 @@ TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjec
             const QString frameDescription(
                     toQString(pFrame->description()));
             if (0 == frameDescription.compare(description, Qt::CaseInsensitive)) {
+                if (!mimeType.isEmpty() && mimeType != pFrame->mimeType()) {
+                    // MIME type mismatch
+                    continue;
+                }
                 if (preferNotEmpty && pFrame->toString().isEmpty()) {
                     // we might need the first matching frame later
                     // even if it is empty
@@ -317,9 +325,10 @@ TagLib::ID3v2::GeneralEncapsulatedObjectFrame* findFirstGeneralEncapsulatedObjec
 
 inline QByteArray readFirstGeneralEncapsulatedObjectFrame(
         const TagLib::ID3v2::Tag& tag,
-        const QString& description) {
+        const QString& description,
+        const QString& mimeType = QString()) {
     const TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pGeobFrame =
-            findFirstGeneralEncapsulatedObjectFrame(tag, description);
+            findFirstGeneralEncapsulatedObjectFrame(tag, description, toTString(mimeType));
     if (pGeobFrame) {
         return toQByteArrayRaw(pGeobFrame->object());
     } else {
@@ -510,9 +519,10 @@ void writeUniqueFileIdentifierFrame(
 void writeGeneralEncapsulatedObjectFrame(
         TagLib::ID3v2::Tag* pTag,
         const QString& description,
-        const QByteArray& data) {
+        const QByteArray& data,
+        const TagLib::String& mimeType = TagLib::String()) {
     TagLib::ID3v2::GeneralEncapsulatedObjectFrame* pFrame =
-            findFirstGeneralEncapsulatedObjectFrame(*pTag, description);
+            findFirstGeneralEncapsulatedObjectFrame(*pTag, description, mimeType);
     if (pFrame) {
         // Modify existing frame
         if (data.isEmpty()) {
@@ -521,19 +531,25 @@ void writeGeneralEncapsulatedObjectFrame(
         } else {
             pFrame->setDescription(toTString(description));
             pFrame->setObject(toTByteVector(data));
+            VERIFY_OR_DEBUG_ASSERT(pFrame->mimeType() == mimeType) {
+                pFrame->setMimeType(mimeType);
+            }
         }
     } else {
-        // Add a new (non-empty) frame
-        if (!data.isEmpty()) {
-            auto pFrame =
-                    std::make_unique<TagLib::ID3v2::GeneralEncapsulatedObjectFrame>();
-            pFrame->setDescription(toTString(description));
-            pFrame->setObject(toTByteVector(data));
-            pTag->addFrame(pFrame.get());
-            // Now that the plain pointer in pFrame is owned and managed by
-            // pTag we need to release the ownership to avoid double deletion!
-            pFrame.release();
+        if (data.isEmpty()) {
+            // Don't add an empty frame
+            return;
         }
+        // Add a new, non-empty frame
+        auto pFrame =
+                std::make_unique<TagLib::ID3v2::GeneralEncapsulatedObjectFrame>();
+        pFrame->setDescription(toTString(description));
+        pFrame->setObject(toTByteVector(data));
+        pFrame->setMimeType(mimeType);
+        pTag->addFrame(pFrame.get());
+        // Now that the plain pointer in pFrame is owned and managed by
+        // pTag we need to release the ownership to avoid double deletion!
+        pFrame.release();
     }
 }
 
@@ -987,6 +1003,18 @@ void importTrackMetadataFromTag(
     }
 #endif // __EXTRA_METADATA__
 
+    // Mixxx custom tags
+    const QByteArray dumpCustomTags =
+            readFirstGeneralEncapsulatedObjectFrame(
+                    tag,
+                    kFrameDescriptionMixxxCustomTags,
+                    QStringLiteral("application/json;charset=UTF-8"));
+    if (!dumpCustomTags.isEmpty()) {
+        parseCustomTagsFromUtf8Dump(
+                pTrackMetadata,
+                dumpCustomTags);
+    }
+
     // Serato tags
     const QByteArray seratoBeatGrid =
             readFirstGeneralEncapsulatedObjectFrame(
@@ -1277,6 +1305,25 @@ bool exportTrackMetadataIntoTag(TagLib::ID3v2::Tag* pTag,
             "TSSE",
             trackMetadata.getTrackInfo().getEncoderSettings());
 #endif // __EXTRA_METADATA__
+
+    // Mixxx custom tags
+    // Writing an empty COMM frame will remove this frame. This became
+    // necessary after switching from COMM frames to GEOB frames
+    // during development. This will procedure will gradually cleanup
+    // up the now obsolete and redundant COMM frames whenr re-exporting
+    // such a file.
+    // TODO: Remove this workaround in a later version. If in doubt keep
+    // it, since the impact is negligible.
+    writeCommentsFrame(
+            pTag,
+            TagLib::String(),
+            kFrameDescriptionMixxxCustomTags);
+    // Write the serialized JSON data into a GEOB frame
+    writeGeneralEncapsulatedObjectFrame(
+            pTag,
+            kFrameDescriptionMixxxCustomTags,
+            dumpCustomTagsUtf8(trackMetadata),
+            "application/json;charset=UTF-8");
 
     // Export of Serato markers is disabled, because Mixxx
     // does not modify them.
