@@ -1194,7 +1194,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
         // The closest beat might be ahead of play position and will cause a catching loop.
         double prevBeat;
         double nextBeat;
-        pBeats->findPrevNextBeats(currentSample, &prevBeat, &nextBeat);
+        pBeats->findPrevNextBeats(currentSample, &prevBeat, &nextBeat, true);
 
         if (m_pQuantizeEnabled->toBool() && prevBeat != -1) {
             double beatLength = nextBeat - prevBeat;
