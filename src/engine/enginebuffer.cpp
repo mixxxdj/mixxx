@@ -1356,6 +1356,12 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
             (double)iBufferSize / m_trackSamplesOld,
             fractionalPlayposFromAbsolute(m_dSlipPosition),
             tempoTrackSeconds);
+
+    // TODO: Especially with long audio buffers, jitter is visible. This can be fixed by moving the
+    // ClockControl::updateIndicators into the waveform update loop which is synced with the display refresh rate.
+    // Via the visual play position it's possible to access to the sample that is currently played,
+    // and not the one that have been processed as in the current solution.
+    m_pClockControl->updateIndicators(speed * m_baserate_old, m_filepos_play, m_pSampleRate->get());
 }
 
 void EngineBuffer::hintReader(const double dRate) {

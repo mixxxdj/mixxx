@@ -119,7 +119,7 @@ class TrackRecord final {
     /// Returns true if the corresponding metadata properties have been
     /// updated and false otherwise.
     bool updateStreamInfoFromSource(
-            const mixxx::audio::StreamInfo& streamInfoFromSource);
+            mixxx::audio::StreamInfo streamInfoFromSource);
     /// Check if the stream info is supposed to be reliable and accurate.
     /// TODO: Also flag the stream info as "accurate" in the database and
     /// invoke updateStreamInfoFromSource() accordingly when loading tracks
