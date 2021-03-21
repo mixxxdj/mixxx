@@ -261,10 +261,10 @@ int EncoderFdkAac::initEncoder(int samplerate, QString* pUserErrorMessage) {
             // TODO(Palakis): write installation guide on Mixxx's wiki
             // and include link in message below
             *pUserErrorMessage = QObject::tr(
-                    "Mixxx cannot record or stream in AAC "
+                    "<html>Mixxx cannot record or stream in AAC "
                     "or HE-AAC without the FDK-AAC encoder. "
                     "In order to record or stream in AAC or AAC+, you need to "
-                    "download the libfdk-aac codec library "
+                    "download <b>libfdk-aac</b> "
                     "and install it on your system.");
         }
         return -1;
