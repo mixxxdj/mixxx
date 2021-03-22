@@ -23,18 +23,14 @@ namespace mixxx {
 /// This class adds support for the higher-level concept of a "location"
 /// that is used to reference a permanent file path.
 ///
+/// All single-argument are declared as explicit to prevent implicit conversions.
+///
 /// Implementation note: Inheriting from QFileInfo would violate the
 /// Liskov Substition Principle. It is also invalid, because QFileInfo
 /// has a non-virtual destructor and we cannot override non-virtual
 /// member functions.
 class FileInfo final {
   public:
-    /////////////////////////////////////////////////////////////////////////
-    /// Construction & Assignment
-    ///
-    /// Constructor arguments are passed to QFileInfo. All single-argument
-    /// are declared as explicit to prevent implicit conversions.
-    /////////////////////////////////////////////////////////////////////////
     explicit FileInfo(
             QFileInfo&& fileInfo)
             : m_fileInfo(std::move(fileInfo)) {
@@ -62,22 +58,17 @@ class FileInfo final {
     FileInfo& operator=(FileInfo&&) = default;
     FileInfo& operator=(const FileInfo&) = default;
 
-    /////////////////////////////////////////////////////////////////////////
-    /// Direct access to the wrapped QFileInfo (immutable)
-    /////////////////////////////////////////////////////////////////////////
+    /// Directly access to the wrapped QFileInfo (immutable)
     const QFileInfo& asQFileInfo() const {
         return m_fileInfo;
     }
-
-    /////////////////////////////////////////////////////////////////////////
-    /// Explicit conversion from/to QFile/QDir/QUrl
-    /////////////////////////////////////////////////////////////////////////
 
     /// Explicit conversion from QFile.
     static FileInfo fromQFile(const QFile& file) {
         return FileInfo(file);
     }
 
+    /// Explicit conversion to QFile.
     QFile toQFile(QObject* parent = nullptr) const {
         return QFile(location(), parent);
     }
@@ -87,6 +78,7 @@ class FileInfo final {
         return FileInfo(dir);
     }
 
+    /// Explicit conversion to QDir.
     QDir toQDir() const {
         // Due to false negatives we must assert for !isFile() instead
         // of isDir()!
@@ -101,13 +93,10 @@ class FileInfo final {
         return FileInfo(url.toLocalFile());
     }
 
+    /// Explicit conversion to a local file QUrl.
     QUrl toQUrl() const {
         return QUrl::fromLocalFile(location());
     }
-
-    /////////////////////////////////////////////////////////////////////////
-    /// Location
-    /////////////////////////////////////////////////////////////////////////
 
     /// Check that the given QFileInfo is context-insensitive to avoid
     /// implicitly acccessing any transient working directory to resolve
@@ -187,26 +176,12 @@ class FileInfo final {
     /// See also: FileInfoTest
     QString freshCanonicalLocation();
 
-    /////////////////////////////////////////////////////////////////////////
-    /// File system
-    /////////////////////////////////////////////////////////////////////////
-
     /// Check if the file actually exists on the file system,
     /// bypassing any internal caching.
     bool checkFileExists() const {
         // Using filePath() is faster than location()
         return QFileInfo::exists(filePath());
     }
-
-    /////////////////////////////////////////////////////////////////////////
-    /// QFileInfo pass-through
-    ///
-    /// Selected member function from QFileInfo that are exposed by the
-    /// public API with deliberate exceptions.
-    ///
-    /// All functions that refer to the path are hidden! Instead the
-    /// location should be used to avoid inconsistencies.
-    /////////////////////////////////////////////////////////////////////////
 
     void refresh() {
         m_fileInfo.refresh();
