@@ -13,53 +13,6 @@
 
 namespace mixxx {
 
-/// Helper functions and extensions for QFileInfo using Mixxx terminology.
-namespace fileinfo {
-
-/// Only intended for internal usage.
-inline const QFileInfo& assertNotRelative(const QFileInfo& fileInfo) {
-    // Detect potential, unintended side-effects by the outer context,
-    // i.e. when accessing the transient working directory to resolve
-    // of relative paths. The path should either be empty or absolute,
-    // i.e. not relative.
-    DEBUG_ASSERT(!fileInfo.isRelative());
-    return fileInfo;
-}
-
-/// Returns the permanent location of a file.
-inline QString location(const QFileInfo& fileInfo) {
-    return assertNotRelative(fileInfo).absoluteFilePath();
-}
-
-/// The directory part of the location, i.e. excluding the file name.
-inline QString locationPath(const QFileInfo& fileInfo) {
-    return assertNotRelative(fileInfo).absolutePath();
-}
-
-/// Returns the current location of a physical file, i.e.
-/// without aliasing by symbolic links and without any redundant
-/// relative paths.
-inline QString canonicalLocation(const QFileInfo& fileInfo) {
-    return assertNotRelative(fileInfo).canonicalFilePath();
-}
-
-/// The directory part of the canonical location, i.e. excluding the file name.
-inline QString canonicalLocationPath(const QFileInfo& fileInfo) {
-    return assertNotRelative(fileInfo).canonicalPath();
-}
-
-/// Decide if two canonical locations have a parent/child
-/// relationship, i.e. if the sub location is contained
-/// within the tree originating from the root location.
-///
-/// Both canonical locations must not be empty, otherwise
-/// false is returned.
-bool isRootSubCanonicalLocation(
-        const QString& rootCanonicalLocation,
-        const QString& subCanonicalLocation);
-
-} // namespace fileinfo
-
 /// A thin wrapper (shim) around QFileInfo with additional methods.
 ///
 /// Could be used as a drop-in replacement of QFileInfo with very
@@ -151,21 +104,67 @@ class FileInfo final {
     /// Location
     /////////////////////////////////////////////////////////////////////////
 
+    /// Check that the given QFileInfo is context-insensitive to avoid
+    /// implicitly acccessing any transient working directory to resolve
+    /// relative paths. We need to exclude these unintended side-effects!
+    ///
+    /// Please note that isAbsolute() != !isRelative(), e.g. an empty
+    /// path is not absolute and yet still a valid location.
+    static bool hasLocation(const QFileInfo& fileInfo) {
+        return !fileInfo.isRelative();
+    }
+    bool hasLocation() const {
+        return hasLocation(m_fileInfo);
+    }
+
+    /// Returns the permanent location of a file.
+    static QString location(const QFileInfo& fileInfo) {
+        DEBUG_ASSERT(hasLocation(fileInfo));
+        return fileInfo.absoluteFilePath();
+    }
     QString location() const {
-        return fileinfo::location(m_fileInfo);
+        return location(m_fileInfo);
     }
 
+    /// The directory part of the location, i.e. excluding the file name.
+    static QString locationPath(const QFileInfo& fileInfo) {
+        DEBUG_ASSERT(hasLocation(fileInfo));
+        return fileInfo.absolutePath();
+    }
     QString locationPath() const {
-        return fileinfo::locationPath(m_fileInfo);
+        return locationPath(m_fileInfo);
     }
 
+    /// Returns the current location of a physical file, i.e.
+    /// without aliasing by symbolic links and without any redundant
+    /// relative paths.
+    static QString canonicalLocation(const QFileInfo& fileInfo) {
+        DEBUG_ASSERT(hasLocation(fileInfo));
+        return fileInfo.canonicalFilePath();
+    }
     QString canonicalLocation() const {
-        return fileinfo::canonicalLocation(m_fileInfo);
+        return canonicalLocation(m_fileInfo);
     }
 
-    QString canonicalLocationPath() const {
-        return fileinfo::canonicalLocationPath(m_fileInfo);
+    /// The directory part of the canonical location, i.e. excluding
+    /// the file name.
+    static QString canonicalLocationPath(const QFileInfo& fileInfo) {
+        DEBUG_ASSERT(hasLocation(fileInfo));
+        return fileInfo.canonicalPath();
     }
+    QString canonicalLocationPath() const {
+        return canonicalLocationPath(m_fileInfo);
+    }
+
+    /// Decide if two canonical locations have a parent/child
+    /// relationship, i.e. if the sub location is contained
+    /// within the tree originating from the root location.
+    ///
+    /// Both canonical locations must not be empty, otherwise
+    /// false is returned.
+    static bool isRootSubCanonicalLocation(
+            const QString& rootCanonicalLocation,
+            const QString& subCanonicalLocation);
 
     /// Refresh the canonical location if it is still empty, i.e. if
     /// the file may have re-appeared after mounting the corresponding

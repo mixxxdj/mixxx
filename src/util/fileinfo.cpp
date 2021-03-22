@@ -2,9 +2,8 @@
 
 namespace mixxx {
 
-namespace fileinfo {
-
-bool isRootSubCanonicalLocation(
+// static
+bool FileInfo::isRootSubCanonicalLocation(
         const QString& rootCanonicalLocation,
         const QString& subCanonicalLocation) {
     VERIFY_OR_DEBUG_ASSERT(!rootCanonicalLocation.isEmpty()) {
@@ -24,8 +23,6 @@ bool isRootSubCanonicalLocation(
     }
     return subCanonicalLocation.startsWith(rootCanonicalLocation);
 }
-
-} // namespace fileinfo
 
 QString FileInfo::freshCanonicalLocation() {
     // Note: We return here the cached value, that was calculated just after
