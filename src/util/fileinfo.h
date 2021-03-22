@@ -292,12 +292,6 @@ inline bool operator!=(const FileInfo& lhs, const FileInfo& rhs) {
     return !(lhs == rhs);
 }
 
-inline uint qHash(
-        const FileInfo& key,
-        uint seed = 0) {
-    return qHash(key.location(), seed);
-}
-
 } // namespace mixxx
 
 Q_DECLARE_TYPEINFO(mixxx::FileInfo, Q_MOVABLE_TYPE); // QFileInfo is movable
