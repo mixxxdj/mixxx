@@ -171,8 +171,9 @@ class FileInfo final {
     ///
     /// Note: Refreshing will never invalidate the canonical location
     /// once it has been set, even after the corresponding file has
-    /// been deleted! A non-empty canonical location is immutable.
-    /// See also: FileInfoTest
+    /// been deleted! A non-empty canonical location is immutable and
+    /// does not disappear, other than by explicitly refresh()ing the
+    /// file info manually. See also: FileInfoTest
     QString freshCanonicalLocation();
 
     /// Check if the file actually exists on the file system,
