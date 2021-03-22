@@ -13,15 +13,20 @@
 
 namespace mixxx {
 
-/// A thin wrapper (shim) around QFileInfo with additional methods.
+/// A thin wrapper (shim) around QFileInfo with a limited API and
+/// some additional methods.
 ///
 /// Could be used as a drop-in replacement of QFileInfo with very
 /// few exceptions where the name of member functions differ. Despite
 /// the name it represents either a file, a directory, or a symbolic link.
 ///
-/// It adds support for the concept of a "location" that is used
-/// to persistently reference a permanent file path. The location
-/// is used for calculating a hash key with qHash().
+/// This class adds support for the higher-level concept of a "location"
+/// that is used to reference a permanent file path.
+///
+/// Implementation note: Inheriting from QFileInfo would violate the
+/// Liskov Substition Principle. It is also invalid, because QFileInfo
+/// has a non-virtual destructor and we cannot override non-virtual
+/// member functions.
 class FileInfo final {
   public:
     /////////////////////////////////////////////////////////////////////////
