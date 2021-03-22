@@ -99,13 +99,12 @@ class FileInfo final {
     }
 
     /// Check that the given QFileInfo is context-insensitive to avoid
-    /// implicitly acccessing any transient working directory to resolve
-    /// relative paths. We need to exclude these unintended side-effects!
-    ///
-    /// Please note that isAbsolute() != !isRelative(), e.g. an empty
-    /// path is not absolute and yet still a valid location.
+    /// implicitly acccessing any transient working directory when
+    /// resolving relative paths. We need to exclude these unintended
+    /// side-effects!
     static bool hasLocation(const QFileInfo& fileInfo) {
-        return !fileInfo.isRelative();
+        DEBUG_ASSERT(QFileInfo().isRelative()); // special case (should be excluded)
+        return fileInfo.isAbsolute();
     }
     bool hasLocation() const {
         return hasLocation(m_fileInfo);

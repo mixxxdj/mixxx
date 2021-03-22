@@ -48,6 +48,15 @@ TEST_F(FileInfoTest, nonEmptyPathIsEitherAbsoluteOrRelative) {
     EXPECT_TRUE(FileInfo(m_relativePathMissing).isRelative());
 }
 
+TEST_F(FileInfoTest, hasLocation) {
+    EXPECT_FALSE(FileInfo().hasLocation());
+    EXPECT_TRUE(FileInfo(m_absolutePath).hasLocation());
+    EXPECT_TRUE(FileInfo(m_absolutePath).hasLocation());
+    EXPECT_FALSE(FileInfo(m_relativePath).hasLocation());
+    EXPECT_TRUE(FileInfo(m_absolutePathMissing).hasLocation());
+    EXPECT_FALSE(FileInfo(m_relativePathMissing).hasLocation());
+}
+
 TEST_F(FileInfoTest, freshCanonicalFileInfo) {
     FileInfo fileInfo(m_absolutePathMissing);
     // This test assumes that caching is enabled resulting
