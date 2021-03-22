@@ -195,6 +195,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
     /// COLUMN_LIBRARYTABLE_COVERART_COLOR: mixxx::RgbColor::code_t (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_DIGEST: QByteArray (pass-through)
     /// COLUMN_LIBRARYTABLE_COVERART_HASH: quint16 (pass-through)
+    /// COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: QDateTime
     /// COLUMN_PLAYLISTTABLE_DATETIMEADDED: QDateTime
     virtual QVariant rawValue(
             const QModelIndex& index) const;
