@@ -13,6 +13,7 @@
 #include "track/trackref.h"
 #include "util/cache.h"
 #include "util/color/rgbcolor.h"
+#include "util/fileinfo.h"
 #include "util/math.h"
 
 // When linking Qt statically on Windows we have to Q_IMPORT_PLUGIN all the
@@ -96,6 +97,7 @@ void MixxxApplication::registerMetaTypes() {
     qRegisterMetaType<mixxx::Bpm>("mixxx::Bpm");
     qRegisterMetaType<mixxx::Duration>("mixxx::Duration");
     qRegisterMetaType<std::optional<mixxx::RgbColor>>("std::optional<mixxx::RgbColor>");
+    qRegisterMetaType<mixxx::FileInfo>("mixxx::FileInfo");
 }
 
 bool MixxxApplication::notify(QObject* target, QEvent* event) {
