@@ -333,11 +333,11 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
         activateMaster(newMaster, SYNC_MASTER_SOFT);
     }
 
-    if (auto PUniqueSyncable = getUniquePlayingSyncable(); PUniqueSyncable) {
+    if (auto pUniqueSyncable = getUniquePlayingSyncable(); pUniqueSyncable) {
         // If there is only one remaining syncable, it should reinit the
         // master parameters.
-        PUniqueSyncable->notifyOnlyPlayingSyncable();
-        setMasterParams(PUniqueSyncable);
+        pUniqueSyncable->notifyOnlyPlayingSyncable();
+        setMasterParams(pUniqueSyncable);
     }
 
     pSyncable->requestSync();
