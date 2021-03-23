@@ -128,9 +128,29 @@ class FileInfo final {
         return locationPath(m_fileInfo);
     }
 
+    /// Refresh the canonical location if it is still empty, i.e. if
+    /// the file may have re-appeared after mounting the corresponding
+    /// drive while Mixxx is already running.
+    ///
+    /// We ignore the case when the user changes a symbolic link to
+    /// point a file to an other location, since this is a user action.
+    /// We also don't care if a file disappears while Mixxx is running.
+    /// Opening a non-existent file is already handled and doesn't cause
+    /// any malfunction.
+    ///
+    /// Note: Refreshing will never invalidate the canonical location
+    /// once it has been set, even after the corresponding file has
+    /// been deleted! A non-empty canonical location is immutable and
+    /// does not disappear, other than by explicitly refresh()ing the
+    /// file info manually. See also: FileInfoTest
+    QString resolveCanonicalLocation();
+
     /// Returns the current location of a physical file, i.e.
     /// without aliasing by symbolic links and without any redundant
     /// relative paths.
+    ///
+    /// Does only access the file system if file metadata is not
+    /// already cached, depending on the caching mode of QFileInfo.
     static QString canonicalLocation(const QFileInfo& fileInfo) {
         DEBUG_ASSERT(hasLocation(fileInfo));
         return fileInfo.canonicalFilePath();
@@ -141,6 +161,9 @@ class FileInfo final {
 
     /// The directory part of the canonical location, i.e. excluding
     /// the file name.
+    ///
+    /// Does only access the file system if file metadata is not
+    /// already cached, depending on the caching mode of QFileInfo.
     static QString canonicalLocationPath(const QFileInfo& fileInfo) {
         DEBUG_ASSERT(hasLocation(fileInfo));
         return fileInfo.canonicalPath();
@@ -158,23 +181,6 @@ class FileInfo final {
     static bool isRootSubCanonicalLocation(
             const QString& rootCanonicalLocation,
             const QString& subCanonicalLocation);
-
-    /// Refresh the canonical location if it is still empty, i.e. if
-    /// the file may have re-appeared after mounting the corresponding
-    /// drive while Mixxx is already running.
-    ///
-    /// We ignore the case when the user changes a symbolic link to
-    /// point a file to an other location, since this is a user action.
-    /// We also don't care if a file disappears while Mixxx is running.
-    /// Opening a non-existent file is already handled and doesn't cause
-    /// any malfunction.
-    ///
-    /// Note: Refreshing will never invalidate the canonical location
-    /// once it has been set, even after the corresponding file has
-    /// been deleted! A non-empty canonical location is immutable and
-    /// does not disappear, other than by explicitly refresh()ing the
-    /// file info manually. See also: FileInfoTest
-    QString freshCanonicalLocation();
 
     /// Check if the file actually exists on the file system,
     /// bypassing any internal caching.

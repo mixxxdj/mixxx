@@ -64,7 +64,7 @@ TEST_F(FileInfoTest, freshCanonicalFileInfo) {
     ASSERT_TRUE(fileInfo.m_fileInfo.caching());
 
     ASSERT_TRUE(fileInfo.canonicalLocation().isEmpty());
-    ASSERT_TRUE(fileInfo.freshCanonicalLocation().isEmpty());
+    ASSERT_TRUE(fileInfo.resolveCanonicalLocation().isEmpty());
 
     // Restore the missing file
     QFile file(m_absolutePathMissing);
@@ -75,7 +75,7 @@ TEST_F(FileInfoTest, freshCanonicalFileInfo) {
     // The cached canonical location should still be invalid
     EXPECT_TRUE(fileInfo.canonicalLocation().isEmpty());
     // The refreshed canonical location should be valid
-    EXPECT_FALSE(fileInfo.freshCanonicalLocation().isEmpty());
+    EXPECT_FALSE(fileInfo.resolveCanonicalLocation().isEmpty());
     // The cached canonical location should have been updated
     EXPECT_FALSE(fileInfo.canonicalLocation().isEmpty());
 
@@ -95,7 +95,7 @@ TEST_F(FileInfoTest, freshCanonicalFileInfo) {
     EXPECT_FALSE(fileInfo.canonicalLocation().isEmpty());
     // The canonical location should not be refreshed again, i.e. it remains
     // valid after the file has disappeared
-    EXPECT_FALSE(fileInfo.freshCanonicalLocation().isEmpty());
+    EXPECT_FALSE(fileInfo.resolveCanonicalLocation().isEmpty());
 }
 
 } // namespace mixxx

@@ -24,7 +24,7 @@ bool FileInfo::isRootSubCanonicalLocation(
     return subCanonicalLocation.startsWith(rootCanonicalLocation);
 }
 
-QString FileInfo::freshCanonicalLocation() {
+QString FileInfo::resolveCanonicalLocation() {
     // Note: We return here the cached value, that was calculated just after
     // init this FileInfo object. This will avoid repeated use of the time
     // consuming file I/O.
