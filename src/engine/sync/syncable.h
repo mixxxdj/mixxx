@@ -109,10 +109,6 @@ class SyncableListener {
     // Syncable::notifySyncModeChanged.
     virtual void requestSyncMode(Syncable* pSyncable, SyncMode mode) = 0;
 
-    // Used by Syncables to tell EngineSync it wants to be enabled in any mode
-    // (master/follower).
-    virtual void requestEnableSync(Syncable* pSyncable, bool enabled) = 0;
-
     // A Syncable must never call notifyBpmChanged in response to a setMasterBpm()
     // call.
     virtual void notifyBaseBpmChanged(Syncable* pSyncable, double bpm) = 0;

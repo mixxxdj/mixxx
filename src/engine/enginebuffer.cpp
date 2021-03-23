@@ -406,7 +406,11 @@ void EngineBuffer::requestSyncPhase() {
 void EngineBuffer::requestEnableSync(bool enabled) {
     // If we're not playing, the queued event won't get processed so do it now.
     if (m_playButton->get() == 0.0) {
-        m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
+        if (enabled) {
+            m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
+        } else {
+            m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
+        }
         return;
     }
     SyncRequestQueued enable_request =
@@ -1191,14 +1195,14 @@ void EngineBuffer::processSyncRequests() {
             static_cast<SyncMode>(m_iSyncModeQueued.fetchAndStoreRelease(SYNC_INVALID));
     switch (enable_request) {
     case SYNC_REQUEST_ENABLE:
-        m_pEngineSync->requestEnableSync(m_pSyncControl, true);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
         break;
     case SYNC_REQUEST_DISABLE:
-        m_pEngineSync->requestEnableSync(m_pSyncControl, false);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
         break;
     case SYNC_REQUEST_ENABLEDISABLE:
-        m_pEngineSync->requestEnableSync(m_pSyncControl, true);
-        m_pEngineSync->requestEnableSync(m_pSyncControl, false);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
         break;
     case SYNC_REQUEST_NONE:
         break;

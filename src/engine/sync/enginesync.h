@@ -22,10 +22,6 @@ class EngineSync : public SyncableListener {
     /// Syncable::notifySyncModeChanged.
     void requestSyncMode(Syncable* pSyncable, SyncMode state) override;
 
-    /// Used by Syncables to tell EngineSync it wants to be enabled in any mode
-    /// (master/follower).
-    void requestEnableSync(Syncable* pSyncable, bool enabled) override;
-
     /// Syncables notify EngineSync directly about various events. EngineSync
     /// does not have a say in whether these succeed or not, they are simply
     /// notifications.
@@ -127,6 +123,14 @@ class EngineSync : public SyncableListener {
     /// Only for testing. Do not use.
     Syncable* getMasterSyncable() override {
         return m_pMasterSyncable;
+    }
+
+    bool isSyncMaster(Syncable* pSyncable) {
+        if (isMaster(pSyncable->getSyncMode())) {
+            DEBUG_ASSERT(m_pMasterSyncable == pSyncable);
+            return true;
+        }
+        return false;
     }
 
     FRIEND_TEST(EngineSyncTest, EnableOneDeckInitsMaster);

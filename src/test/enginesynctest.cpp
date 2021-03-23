@@ -862,8 +862,8 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
 
     // Enable Sync.  We have to call requestEnableSync directly
     // because calling ProcessBuffer() tries to advance the beat_distance values.
-    m_pEngineSync->requestEnableSync(
-            m_pEngineSync->getSyncableForGroup(m_sGroup1), true);
+    m_pEngineSync->requestSyncMode(
+            m_pEngineSync->getSyncableForGroup(m_sGroup1), SYNC_FOLLOWER);
 
     // Internal is no longer master because there is exactly one playing deck.
     EXPECT_TRUE(isSoftMaster(m_sGroup1));
@@ -887,8 +887,8 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.2);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
 
-    m_pEngineSync->requestEnableSync(
-            m_pEngineSync->getSyncableForGroup(m_sGroup2), true);
+    m_pEngineSync->requestSyncMode(
+            m_pEngineSync->getSyncableForGroup(m_sGroup2), SYNC_FOLLOWER);
     // Deck 1 is still soft master.
     EXPECT_TRUE(isFollower(m_sInternalClockGroup));
     EXPECT_TRUE(isSoftMaster(m_sGroup1));
@@ -916,8 +916,8 @@ TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
 
     // Set the deck to follower.
     // As above, use direct call to avoid advancing beat distance.
-    m_pEngineSync->requestEnableSync(
-            m_pEngineSync->getSyncableForGroup(m_sGroup1), true);
+    m_pEngineSync->requestSyncMode(
+            m_pEngineSync->getSyncableForGroup(m_sGroup1), SYNC_FOLLOWER);
 
     // That first deck is now master
     EXPECT_TRUE(isSoftMaster(m_sGroup1));
