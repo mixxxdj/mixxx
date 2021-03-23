@@ -75,12 +75,10 @@ target_link_libraries(${PROJECT_NAME} PUBLIC Ogg::ogg)
 find_package(Vorbis REQUIRED)
 target_link_libraries(${PROJECT_NAME} PUBLIC Vorbis::vorbis Vorbis::vorbisenc)
 
-# Optional system dependencies
-find_package(OpenSSL)
-if(TARGET OpenSSL::SSL)
-    target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_OPENSSL)
-    target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
-endif()
+# OpenSSL
+find_package(OpenSSL REQUIRED)
+target_compile_definitions(${PROJECT_NAME} PRIVATE HAVE_OPENSSL)
+target_link_libraries(${PROJECT_NAME} PRIVATE OpenSSL::SSL OpenSSL::Crypto)
 
 option(SPEEX "Speex support" OFF)
 if(SPEEX)

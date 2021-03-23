@@ -244,7 +244,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
         return;
     }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (!pBeats) {
+    if (!pBeats || !(m_pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         return;
     }
     double rateRatio = m_pRateRatio->get();
@@ -570,7 +570,7 @@ bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
 
     double dPrevBeat;
     double dNextBeat;
-    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat)) {
+    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat, false)) {
         return false;
     }
 
@@ -605,14 +605,6 @@ bool BpmControl::getBeatContextNoLookup(
     if (dpBeatPercentage != nullptr) {
         *dpBeatPercentage = dBeatLength == 0.0 ? 0.0 :
                 (dPosition - dPrevBeat) / dBeatLength;
-        // Because findNext and findPrev have an epsilon built in, sometimes
-        // the beat percentage is out of range.  Fix it.
-        if (*dpBeatPercentage < 0) {
-            ++*dpBeatPercentage;
-        }
-        if (*dpBeatPercentage > 1) {
-            --*dpBeatPercentage;
-        }
     }
 
     return true;

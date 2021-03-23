@@ -32,6 +32,13 @@ if(POLICY CMP0069)
   cmake_policy(SET CMP0069 NEW)
 endif()
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
+include(CMakeDependentOption)
+include(CheckSymbolExists)
+include(ExternalProject)
+include(GNUInstallDirs)
+include(DefaultOption)
+
 #######################################################################
 # Compilers and toolchains
 
@@ -66,20 +73,22 @@ if(MSVC)
 endif()
 
 # Speed up builds on HDDs and prevent wearing of SDDs
-if(GNU_GCC OR LLVM_CLANG)
-  option(BUILD_LOW_MEMORY "Store temporary build files on disk by disabling the build option -pipe" OFF)
-  if(NOT BUILD_LOW_MEMORY)
-    add_compile_options(-pipe)
-  endif()
+#
+# This is only applies to gcc/clang, therefore this option is forcibly set to
+# ON on all other compilers.
+cmake_dependent_option(BUILD_LOW_MEMORY "Store temporary build files on disk by disabling the build option -pipe" OFF "GNU_GCC OR LLVM_CLANG" ON)
+if(NOT BUILD_LOW_MEMORY)
+  add_compile_options(-pipe)
 endif()
 
 # Profiling
-if(UNIX AND NOT APPLE)
-  option(PROFILING "Profiling (e.g. gprof) support" OFF)
-  if(PROFILING)
-    add_compile_options(-pg)
-    add_link_options(-pg)
-  endif()
+#
+# This is only available on Linux, therefore this option is forcibly set to OFF
+# on all other platforms.
+cmake_dependent_option(PROFILING "Profiling (e.g. gprof) support" OFF "UNIX;NOT APPLE" OFF)
+if(PROFILING)
+  add_compile_options(-pg)
+  add_link_options(-pg)
 endif()
 
 #
@@ -304,13 +313,6 @@ elseif(GNU_GCC OR LLVM_CLANG)
   endif()
 endif()
 
-include(CMakeDependentOption)
-include(CheckSymbolExists)
-include(ExternalProject)
-include(GNUInstallDirs)
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
-
 if(WIN32)
   # Add support for lib prefix on Windows
   set(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
@@ -373,7 +375,7 @@ if(MSVC)
   else()
     message(STATUS "Could NOT find sccache (missing executable)")
   endif()
-  cmake_dependent_option(SCCACHE_SUPPORT "Enable sccache support" ON "SCCACHE_EXECUTABLE" OFF)
+  default_option(SCCACHE_SUPPORT "Enable sccache support" "SCCACHE_EXECUTABLE")
   message(STATUS "Support for sccache: ${SCCACHE_SUPPORT}")
   if(SCCACHE_SUPPORT)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "sccache")
@@ -386,7 +388,7 @@ else()
   else()
       message(STATUS "Could NOT find ccache (missing executable)")
   endif()
-  cmake_dependent_option(CCACHE_SUPPORT "Enable ccache support" ON "CCACHE_EXECUTABLE" OFF)
+  default_option(CCACHE_SUPPORT "Enable ccache support" "CCACHE_EXECUTABLE")
   if(CCACHE_SUPPORT)
     if(GNU_GCC OR LLVM_CLANG)
       # without this compiler messages in `make` backend would be uncolored
@@ -597,7 +599,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/sidechain/enginesidechain.cpp
   src/engine/sidechain/networkinputstreamworker.cpp
   src/engine/sidechain/networkoutputstreamworker.cpp
-  src/engine/sync/basesyncablelistener.cpp
   src/engine/sync/enginesync.cpp
   src/engine/sync/internalclock.cpp
   src/engine/sync/synccontrol.cpp
@@ -1101,12 +1102,13 @@ target_compile_definitions(mixxx-lib PUBLIC
 )
 
 # Mac-specific options
-if(APPLE)
-  option(MACOS_BUNDLE "Install files to proper locations to make an .app bundle" OFF)
-  option(MACAPPSTORE "Build for Mac App Store" OFF)
-  if(MACAPPSTORE)
-    target_compile_definitions(mixxx-lib PUBLIC __MACAPPSTORE__)
-  endif()
+#
+# These options are OFF by default, and since they are only available on macOS,
+# they are forcibly set to OFF on all other platforms.
+cmake_dependent_option(MACOS_BUNDLE "Install files to proper locations to make an .app bundle" OFF "APPLE" OFF)
+cmake_dependent_option(MACAPPSTORE "Build for Mac App Store" OFF "APPLE" OFF)
+if(MACAPPSTORE)
+  target_compile_definitions(mixxx-lib PUBLIC __MACAPPSTORE__)
 endif()
 
 # Windows-specific options
@@ -1761,7 +1763,7 @@ endif()
 
 # Ebur128
 find_package(Ebur128)
-cmake_dependent_option(EBUR128_STATIC "Link libebur128 statically" OFF "Ebur128_FOUND" ON)
+default_option(EBUR128_STATIC "Link libebur128 statically" "NOT Ebur128_FOUND")
 if(EBUR128_STATIC)
   message(STATUS "Preparing internal Ebur128")
   set(EBUR128_CMAKE_ARGS "-DBUILD_STATIC_LIBS=ON")
@@ -2168,7 +2170,7 @@ endif()
 
 # SoundTouch
 find_package(SoundTouch)
-cmake_dependent_option(SoundTouch_STATIC "Link libSoundTouch statically" OFF "SoundTouch_FOUND" ON)
+default_option(SoundTouch_STATIC "Link libSoundTouch statically" "NOT SoundTouch_FOUND")
 if(SoundTouch_STATIC)
   message(STATUS "Preparing internal libSoundTouch")
   add_library(SoundTouch STATIC EXCLUDE_FROM_ALL
@@ -2240,6 +2242,9 @@ endif()
 #
 
 # Battery meter
+#
+# The battery meter is only available on Linux, macOS and Windows, therefore
+# this option is forcibly set to OFF on all other platforms.
 cmake_dependent_option(BATTERY "Battery meter support" ON "WIN32 OR UNIX" OFF)
 if(BATTERY)
   if(WIN32)
@@ -2300,6 +2305,9 @@ if(NOT CLANG_SANITIZERS STREQUAL "")
 endif()
 
 # CoreAudio MP3/AAC Decoder
+#
+# The CoreAudio API is only available on macOS, therefore this option is
+# forcibly set to OFF on all other platforms.
 cmake_dependent_option(COREAUDIO "CoreAudio MP3/AAC Decoder" ON "APPLE" OFF)
 if(COREAUDIO)
   target_sources(mixxx-lib PRIVATE
@@ -2316,14 +2324,9 @@ endif()
 # FAAD AAC audio file decoder plugin
 find_package(MP4)
 find_package(MP4v2)
-# It is enabled by default on Linux only, because other targets have other solutions.
-# Used FAAD_DEFAULT because the complex expression is not supported by cmake_dependent_option()
-if(UNIX AND NOT APPLE AND (MP4_FOUND OR MP4v2_FOUND))
-  set(FAAD_DEFAULT TRUE)
-else()
-  set(FAAD_DEFAULT FALSE)
-endif()
-cmake_dependent_option(FAAD "FAAD AAC audio file decoder support" ON "FAAD_DEFAULT" OFF)
+# It is enabled by default on Linux only, because other targets have other
+# solutions. It requires MP4 or MP4v2.
+default_option(FAAD "FAAD AAC audio file decoder support" "UNIX;NOT APPLE;(MP4_FOUND OR MP4v2_FOUND)")
 if(FAAD)
   if(NOT MP4_FOUND AND NOT MP4v2_FOUND)
     message(FATAL_ERROR "FAAD AAC audio support requires libmp4 or libmp4v2 with development headers.")
@@ -2365,27 +2368,26 @@ endif()
 # FFmpeg 4.x support
 # FFmpeg is multimedia library that can be found http://ffmpeg.org/
 find_package(FFMPEG COMPONENTS libavcodec libavformat libavutil libswresample)
-cmake_dependent_option(FFMPEG "FFmpeg 4.x support" ON "FFMPEG_FOUND;FFMPEG_libavcodec_VERSION VERSION_GREATER_EQUAL 58" OFF)
+default_option(FFMPEG "FFmpeg 4.x support" "FFMPEG_FOUND")
 if(FFMPEG)
-  if(NOT FFMPEG_libavcodec_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libavcodec and its development headers.")
-  elseif(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58)
-    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavcodec (found: ${AVCODEC_VERSION}).")
+  if(NOT FFMPEG_FOUND)
+    message(FATAL_ERROR "FFMPEG was not found")
   endif()
-  if(NOT FFMPEG_libavformat_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libavformat and its development headers.")
-  elseif(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58)
-    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavformat (found: ${AVFORMAT_VERSION}).")
+
+  # Check minimum required versions
+  # Windows: Version numbers are not available!?
+  # macOS: Untested
+  if(FFMPEG_libavcodec_VERSION AND FFMPEG_libavcodec_VERSION VERSION_LESS 58)
+    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavcodec (found: ${FFMPEG_libavcodec_VERSION}).")
   endif()
-  if(NOT FFMPEG_libavutil_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libavutil and its development headers.")
-  elseif(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56)
-    message(FATAL_ERROR "FFmpeg support requires at least version 56 of libavutil (found: ${AVUTIL_VERSION}).")
+  if(FFMPEG_libavformat_VERSION AND FFMPEG_libavformat_VERSION VERSION_LESS 58)
+    message(FATAL_ERROR "FFmpeg support requires at least version 58 of libavformat (found: ${FFMPEG_libavformat_VERSION}).")
   endif()
-  if(NOT FFMPEG_libswresample_FOUND)
-    message(FATAL_ERROR "FFmpeg support requires libswresample and its development headers.")
-  elseif(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
-    message(FATAL_ERROR "FFmpeg support requires at least version 3.1 of libswresample (found: ${SWRESAMPLE_VERSION}).")
+  if(FFMPEG_libavutil_VERSION AND FFMPEG_libavutil_VERSION VERSION_LESS 56)
+    message(FATAL_ERROR "FFmpeg support requires at least version 56 of libavutil (found: ${FFMPEG_libavutil_VERSION}).")
+  endif()
+  if(FFMPEG_libswresample_VERSION AND FFMPEG_libswresample_VERSION VERSION_LESS 3.1)
+    message(FATAL_ERROR "FFmpeg support requires at least version 3.1 of libswresample (found: ${FFMPEG_libswresample_VERSION}).")
   endif()
 
   target_sources(mixxx-lib PRIVATE src/sources/soundsourceffmpeg.cpp)
@@ -2396,7 +2398,6 @@ if(FFMPEG)
     __STDC_LIMIT_MACROS
     __STDC_FORMAT_MACROS
   )
-
   target_link_libraries(mixxx-lib PUBLIC "${FFMPEG_LIBRARIES}")
   target_include_directories(mixxx-lib PUBLIC "${FFMPEG_INCLUDE_DIRS}")
 endif()
@@ -2415,27 +2416,30 @@ if(GPERFTOOLS OR GPERFTOOLSPROFILER)
 endif()
 
 # HSS1394 MIDI device
+#
+# The HSS1394 library is only available on macOS, therefore this option is
+# forcibly set to OFF on all other platforms.
 if(WIN32 OR APPLE)
   find_package(HSS1394)
-  cmake_dependent_option(HSS1394 "HSS1394 MIDI device support" ON "HSS1394_FOUND;WIN32 OR APPLE" OFF)
-  if(HSS1394)
-    target_sources(mixxx-lib PRIVATE
-      src/controllers/midi/hss1394controller.cpp
-      src/controllers/midi/hss1394enumerator.cpp
-    )
-    target_compile_definitions(mixxx-lib PUBLIC __HSS1394__)
-    if(WIN32 OR APPLE)
-      if(NOT HSS1394_FOUND)
-        message(FATAL_ERROR "HSS1394 MIDI device support requires the libhss1394 and its development headers.")
-      endif()
-      target_link_libraries(mixxx-lib PUBLIC HSS1394::HSS1394)
-    endif()
+else()
+  set(HSS1394 OFF)
+endif()
+cmake_dependent_option(HSS1394 "HSS1394 MIDI device support" "${HSS1394_FOUND}" "WIN32 OR APPLE" OFF)
+if(HSS1394)
+  target_sources(mixxx-lib PRIVATE
+    src/controllers/midi/hss1394controller.cpp
+    src/controllers/midi/hss1394enumerator.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __HSS1394__)
+  if(NOT HSS1394_FOUND)
+    message(FATAL_ERROR "HSS1394 MIDI device support requires the libhss1394 and its development headers.")
   endif()
+  target_link_libraries(mixxx-lib PUBLIC HSS1394::HSS1394)
 endif()
 
 # Lilv (LV2)
 find_package(lilv)
-cmake_dependent_option(LILV "Lilv (LV2) support" ON "lilv_FOUND" OFF)
+default_option(LILV "Lilv (LV2) support" "lilv_FOUND")
 if(LILV)
   if(NOT TARGET lilv::lilv)
     message(FATAL_ERROR "Lilv (LV2) support requires the liblilv-0 and its development headers.")
@@ -2462,7 +2466,7 @@ if(BROADCAST)
   elseif(Shoutidjc_FOUND AND Shoutidjc_VERSION VERSION_LESS 2.4.6)
       message(STATUS "Installed libshout version: ${Shout_VERSION} is suffering from bug lp1913579")
   endif()
-  if(NOT Shsoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.6)
+  if(NOT Shoutidjc_FOUND OR Shoutidjc_VERSION VERSION_LESS 2.4.6)
     # Fall back to internal libraray in the lib tree
     message(STATUS "Using internal libshout-idjc")
     add_subdirectory("${CMAKE_CURRENT_SOURCE_DIR}/lib/libshout-idjc")
@@ -2487,14 +2491,11 @@ endif()
 
 # Locale Aware Compare for SQLite
 find_package(SQLite3)
-# FIXME
-# It is difficult to get qmake to link Qt to a custom built SQLite on macOS instead of the system SQLite,
-# which results in a crash on startup when LOCALECOMPARE is enabled.
-if(APPLE)
-  cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" OFF "SQLite3_FOUND" OFF)
-else()
-  cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" ON "SQLite3_FOUND" OFF)
-endif()
+# FIXME: It is difficult to get qmake to link Qt to a custom built SQLite on
+# macOS instead of the system SQLite, which results in a crash on startup when
+# LOCALECOMPARE is enabled, therefore this option is forcibly set to OFF on
+# macOS.
+cmake_dependent_option(LOCALECOMPARE "Locale Aware Compare support for SQLite" "${SQLite3_FOUND}" "NOT APPLE" OFF)
 if(LOCALECOMPARE)
   if(NOT SQLite3_FOUND)
     message(FATAL_ERROR "Locale Aware Compare for SQLite requires libsqlite and its development headers.")
@@ -2506,7 +2507,7 @@ endif()
 
 # Opus (RFC 6716)
 find_package(Opus)
-cmake_dependent_option(OPUS "Opus (RFC 6716) support" ON "Opus_FOUND" OFF)
+default_option(OPUS "Opus (RFC 6716) support" "Opus_FOUND")
 if(OPUS)
   if(NOT Opus_FOUND)
     message(FATAL_ERROR "Opus support requires libopus and libopusfile with development headers.")
@@ -2537,7 +2538,7 @@ endif()
 # MAD MP3 Decoder
 find_package(MAD)
 find_package(ID3Tag)
-cmake_dependent_option(MAD "MAD MP3 Decoder" ON "MAD_FOUND;ID3Tag_FOUND" OFF)
+default_option(MAD "MAD MP3 Decoder" "MAD_FOUND;ID3Tag_FOUND")
 if(MAD)
   if(NOT MAD_FOUND)
     message(FATAL_ERROR "MAD support requires libmad and its development headers.")
@@ -2551,12 +2552,12 @@ if(MAD)
 endif()
 
 # Media Foundation AAC Decoder Plugin
-find_package(MediaFoundation)
-cmake_dependent_option(MEDIAFOUNDATION "Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)" ON "MediaFoundation_FOUND" OFF)
+#
+# The Media Foundtation API is only available on Windows, therefore this option
+# is forcibly set to OFF on all other platforms.
+cmake_dependent_option(MEDIAFOUNDATION "Media Foundation AAC decoder plugin" ON "WIN32" OFF)
 if(MEDIAFOUNDATION)
-  if(NOT MediaFoundation_FOUND)
-      message(FATAL_ERROR "MediaFoundation support requires the MediaFoundation libraries and its development headers.")
-  endif()
+  find_package(MediaFoundation REQUIRED)
   target_sources(mixxx-lib PRIVATE
     src/sources/soundsourcemediafoundation.cpp
   )
@@ -2571,7 +2572,7 @@ endif()
 
 # Modplug support
 find_package(Modplug)
-cmake_dependent_option(MODPLUG "Modplug module decoder support" ON "Modplug_FOUND" OFF)
+default_option(MODPLUG "Modplug module decoder support" "Modplug_FOUND")
 if(MODPLUG)
   if(NOT Modplug_FOUND)
     message(FATAL_ERROR "Modplug module decoder support requires libmodplug and its development headers.")
@@ -2603,12 +2604,8 @@ find_package(LibUSB)
 # USB HID controller support
 find_package(hidapi)
 option(HID "USB HID controller support" ON)
-
-if(hidapi_VERSION VERSION_LESS "0.10.0")
-  set(HIDAPI_STATIC ON)
-else()
-  cmake_dependent_option(HIDAPI_STATIC "Link HIDAPI library statically" OFF "HIDAPI_FOUND" ON)
-endif()
+# hidapi_VERSION is only available starting with 0.10.0
+default_option(HIDAPI_STATIC "Link HIDAPI library statically" "NOT hidapi_FOUND OR NOT hidapi_VERSION OR hidapi_VERSION VERSION_LESS 0.10.0")
 if(HID)
   target_sources(mixxx-lib PRIVATE
     src/controllers/hid/hidcontroller.cpp
@@ -2650,7 +2647,7 @@ if(HID)
 endif()
 
 # USB Bulk controller support
-cmake_dependent_option(BULK "USB Bulk controller support" ON "LibUSB_FOUND" OFF)
+default_option(BULK "USB Bulk controller support" "LibUSB_FOUND")
 if(BULK)
   if(NOT LibUSB_FOUND)
     message(FATAL_ERROR "USB Bulk controller support requires libusb 1.0 and its development headers.")
@@ -2670,7 +2667,7 @@ if(BULK)
 endif()
 
 # Vinyl Control
-cmake_dependent_option(VINYLCONTROL "Vinyl Control support" ON "NOT MACAPPSTORE" OFF)
+default_option(VINYLCONTROL "Vinyl Control support" "NOT MACAPPSTORE")
 if(VINYLCONTROL)
   if(MACAPPSTORE)
     message(FATAL_ERROR "Mac App Store and Vinyl Control support are mutually exclusive due to licensing issues.")
@@ -2701,9 +2698,9 @@ endif()
 
 # WavPack audio file support
 find_package(wavpack)
-option(WAVPACK "WavPack audio file support" OFF)
+default_option(WAVPACK "WavPack audio file support" "wavpack_FOUND")
 if(WAVPACK)
-  if(NOT TARGET WavPack::wavpack)
+  if(NOT wavpack_FOUND)
     message(FATAL_ERROR "WavPack audio file support requires libwv and its development headers.")
   endif()
   target_sources(mixxx-lib PRIVATE src/sources/soundsourcewv.cpp)

@@ -74,6 +74,7 @@ case "$COMMAND" in
             libsndfile1-dev \
             libsoundtouch-dev \
             libsqlite3-dev \
+            libssl-dev \
             libtag1-dev \
             libupower-glib-dev \
             libusb-1.0-0-dev \

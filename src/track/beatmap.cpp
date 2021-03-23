@@ -141,7 +141,7 @@ double calculateNominalBpm(const BeatList& beats, mixxx::audio::SampleRate sampl
         return -1;
     }
 
-    return BeatUtils::calculateBpm(beatvect, sampleRate, 0, 9999);
+    return BeatUtils::calculateBpm(beatvect, mixxx::audio::SampleRate(sampleRate));
 }
 
 } // namespace
@@ -287,7 +287,7 @@ double BeatMap::findClosestBeat(double dSamples) const {
     }
     double prevBeat;
     double nextBeat;
-    findPrevNextBeats(dSamples, &prevBeat, &nextBeat);
+    findPrevNextBeats(dSamples, &prevBeat, &nextBeat, true);
     if (prevBeat == -1) {
         // If both values are -1, we correctly return -1.
         return nextBeat;
@@ -382,10 +382,10 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
     return -1;
 }
 
-bool BeatMap::findPrevNextBeats(
-        double dSamples,
+bool BeatMap::findPrevNextBeats(double dSamples,
         double* dpPrevBeatSamples,
-        double* dpNextBeatSamples) const {
+        double* dpNextBeatSamples,
+        bool snapToNearBeats) const {
     if (!isValid()) {
         *dpPrevBeatSamples = -1;
         *dpNextBeatSamples = -1;
@@ -416,8 +416,9 @@ bool BeatMap::findPrevNextBeats(
     for (; it != m_beats.end(); ++it) {
         qint32 delta = it->frame_position() - beat.frame_position();
 
-        // We are "on" this beat.
-        if (abs(delta) < kFrameEpsilon) {
+        if ((!snapToNearBeats && (delta == 0)) ||
+                (snapToNearBeats && (abs(delta) < kFrameEpsilon))) {
+            // We are "on" this beat.
             on_beat = it;
             break;
         }

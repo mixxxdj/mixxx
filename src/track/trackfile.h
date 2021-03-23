@@ -69,11 +69,7 @@ class TrackFile {
     }
 
     QDateTime fileCreated() const {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
         return m_fileInfo.birthTime();
-#else
-        return m_fileInfo.created();
-#endif
     }
     QDateTime fileLastModified() const {
         return m_fileInfo.lastModified();
@@ -117,11 +113,7 @@ inline bool operator!=(const TrackFile& lhs, const TrackFile& rhs) {
 }
 
 inline QDebug operator<<(QDebug debug, const TrackFile& trackFile) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     return debug << trackFile.asFileInfo();
-#else
-    return debug << trackFile.location();
-#endif
 }
 
 inline uint qHash(

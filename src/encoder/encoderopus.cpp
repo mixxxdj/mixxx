@@ -5,9 +5,7 @@
 #include <QByteArray>
 #include <QMapIterator>
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
-#endif
 #include <QtGlobal>
 
 #include "encoder/encoderopussettings.h"
@@ -65,11 +63,7 @@ int getSerial() {
 
     int serial;
     do {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
         serial = static_cast<int>(QRandomGenerator::global()->generate());
-#else
-        serial = qrand();
-#endif
     } while (prevSerial == serial);
 
     prevSerial = serial;
@@ -116,11 +110,7 @@ EncoderOpus::EncoderOpus(EncoderCallback* pCallback)
     // the Live Broadcasting implementation
 
     m_opusComments.insert("ENCODER", "mixxx/libopus");
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
     int serial = static_cast<int>(QRandomGenerator::global()->generate());
-#else
-    int serial = qrand();
-#endif
     ogg_stream_init(&m_oggStream, serial);
 }
 

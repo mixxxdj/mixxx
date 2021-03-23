@@ -17,6 +17,7 @@ namespace {
 const mixxx::Logger kLogger("Track");
 
 constexpr bool kLogStats = false;
+const ConfigKey kConfigKeySeratoMetadataExport("[Library]", "SeratoMetadataExport");
 
 // Count the number of currently existing instances for detecting
 // memory leaks.
@@ -132,19 +133,25 @@ void Track::relocate(
 void Track::importMetadata(
         mixxx::TrackMetadata importedMetadata,
         const QDateTime& metadataSynchronized) {
-    // Safe some values that are needed after move assignment and unlocking(see below)
-    const auto newBpm = importedMetadata.getTrackInfo().getBpm();
-    const auto newKey = importedMetadata.getTrackInfo().getKey();
-    const auto newReplayGain = importedMetadata.getTrackInfo().getReplayGain();
-    const auto newSeratoTags = importedMetadata.getTrackInfo().getSeratoTags();
+    // Information stored in Serato tags is imported separately after
+    // importing the metadata (see below). The Serato tags BLOB itself
+    // is updated together with the metadata.
+    auto pSeratoBeatsImporter = importedMetadata.getTrackInfo().getSeratoTags().importBeats();
+    const bool seratoBpmLocked = importedMetadata.getTrackInfo().getSeratoTags().isBpmLocked();
+    auto pSeratoCuesImporter = importedMetadata.getTrackInfo().getSeratoTags().importCueInfos();
+
     {
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
 
-        // Preserve the current bpm temporarily (see below) to avoid overwriting
-        // it with an inconsistent value compared to the beat grid, e.g. after
-        // reloading the bpm from file tags.
-        importedMetadata.refTrackInfo().setBpm(mixxx::Bpm(getBpmWhileLocked()));
+        // Preserve the both current bpm and key temporarily to avoid
+        // overwriting with an inconsistent value. The bpm must always be
+        // set together with the beat grid and the key text must be parsed
+        // and validated.
+        const auto importedBpm = importedMetadata.getTrackInfo().getBpm();
+        importedMetadata.refTrackInfo().setBpm(getBpmWhileLocked());
+        const auto importedKeyText = importedMetadata.getTrackInfo().getKey();
+        importedMetadata.refTrackInfo().setKey(m_record.getMetadata().getTrackInfo().getKey());
 
         bool modified = false;
         // Only set the metadata synchronized flag (column `header_parsed`
@@ -160,50 +167,77 @@ void Track::importMetadata(
                     m_record.ptrMetadataSynchronized(),
                     true);
         }
-        bool modifiedReplayGain = false;
+
+        const auto oldReplayGain =
+                m_record.getMetadata().getTrackInfo().getReplayGain();
         if (m_record.getMetadata() != importedMetadata) {
-            modifiedReplayGain =
-                    (m_record.getMetadata().getTrackInfo().getReplayGain() != newReplayGain);
             m_record.setMetadata(std::move(importedMetadata));
             // Don't use importedMetadata after move assignment!!
             modified = true;
         }
-        if (modified) {
-            // explicitly unlock before emitting signals
-            markDirtyAndUnlock(&lock);
-            if (modifiedReplayGain) {
-                emit replayGainUpdated(newReplayGain);
-            }
-        }
+        const auto newReplayGain =
+                m_record.getMetadata().getTrackInfo().getReplayGain();
 
-        // FIXME: Move the Track::setCuePoints call to another location,
-        // because we need the sample rate to calculate sample
-        // positions for cues (and *correct* sample rate isn't known here).
-        //
-        // If the Serato tags are empty they are not present. In this case
-        // all existing metadata must be preserved!
-        if (!newSeratoTags.isEmpty()) {
-            tryImportBeats(newSeratoTags.importBeats(), newSeratoTags.isBpmLocked());
-            importCueInfos(newSeratoTags.importCueInfos());
-            setColor(newSeratoTags.getTrackColor());
+        // Need to set BPM after sample rate since beat grid creation depends on
+        // knowing the sample rate. Bug #1020438.
+        auto beatsAndBpmModified = false;
+        if (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm())) {
+            // Only use the imported BPM if the current beat grid is either
+            // missing or not valid! The BPM value in the metadata might be
+            // imprecise (normalized or rounded), e.g. ID3v2 only supports
+            // integer values.
+            beatsAndBpmModified = trySetBpmWhileLocked(importedBpm.getValue());
         }
+        modified |= beatsAndBpmModified;
+        const auto newBpm = getBpmWhileLocked();
 
-        // implicitly unlocked when leaving scope
+        auto keysModified = false;
+        if (KeyUtils::guessKeyFromText(importedKeyText) != mixxx::track::io::key::INVALID) {
+            // Only update the current key with a valid value. Otherwise preserve
+            // the existing value.
+            keysModified = m_record.updateGlobalKeyText(
+                    importedKeyText,
+                    mixxx::track::io::key::FILE_METADATA);
+        }
+        modified |= keysModified;
+        const auto newKey = m_record.getGlobalKey();
+
+        // Import track color from Serato tags if available
+        const auto newColor = m_record.getMetadata().getTrackInfo().getSeratoTags().getTrackColor();
+        const bool colorModified = compareAndSet(m_record.ptrColor(), newColor);
+        modified |= colorModified;
+        DEBUG_ASSERT(!colorModified || m_record.getColor() == newColor);
+
+        if (!modified) {
+            // Unmodified, nothing todo
+            return;
+        }
+        // Explicitly unlock before emitting signals
+        markDirtyAndUnlock(&lock);
+
+        if (beatsAndBpmModified) {
+            emitBeatsAndBpmUpdated(newBpm);
+        }
+        if (keysModified) {
+            emitKeysUpdated(newKey);
+        }
+        if (oldReplayGain != newReplayGain) {
+            emit replayGainUpdated(newReplayGain);
+        }
+        if (colorModified) {
+            emit colorUpdated(newColor);
+        }
     }
 
-    // Need to set BPM after sample rate since beat grid creation depends on
-    // knowing the sample rate. Bug #1020438.
-
-    // Only use the imported BPM if the beat grid is not valid!
-    // Reason: The BPM value in the metadata might be normalized
-    // or rounded, e.g. ID3v2 only supports integer values.
-    if (!m_pBeats || !mixxx::Bpm::isValidValue(m_pBeats->getBpm())) {
-        trySetBpm(newBpm.getValue());
+    // TODO: Import Serato metadata within the locking scope and not
+    // as a post-processing step.
+    if (pSeratoBeatsImporter) {
+        kLogger.debug() << "Importing Serato beats";
+        tryImportBeats(std::move(pSeratoBeatsImporter), seratoBpmLocked);
     }
-
-    if (!newKey.isEmpty()
-            && KeyUtils::guessKeyFromText(newKey) != mixxx::track::io::key::INVALID) {
-        setKeyText(newKey, mixxx::track::io::key::FILE_METADATA);
+    if (pSeratoCuesImporter) {
+        kLogger.debug() << "Importing Serato cues";
+        importCueInfos(std::move(pSeratoCuesImporter));
     }
 }
 
@@ -255,10 +289,10 @@ void Track::setReplayGain(const mixxx::ReplayGain& replayGain) {
     }
 }
 
-double Track::getBpmWhileLocked() const {
+mixxx::Bpm Track::getBpmWhileLocked() const {
     // BPM values must be synchronized at all times!
     DEBUG_ASSERT(m_record.getMetadata().getTrackInfo().getBpm() == getBeatsPointerBpm(m_pBeats));
-    return m_record.getMetadata().getTrackInfo().getBpm().getValue();
+    return m_record.getMetadata().getTrackInfo().getBpm();
 }
 
 bool Track::trySetBpmWhileLocked(double bpmValue) {
@@ -291,7 +325,7 @@ bool Track::trySetBpm(double bpmValue) {
     if (!trySetBpmWhileLocked(bpmValue)) {
         return false;
     }
-    afterBeatsOrBpmUpdated(&lock);
+    afterBeatsAndBpmUpdated(&lock);
     return true;
 }
 
@@ -343,7 +377,7 @@ bool Track::trySetBeatsMarkDirtyAndUnlock(
         return false;
     }
 
-    afterBeatsOrBpmUpdated(pLock);
+    afterBeatsAndBpmUpdated(pLock);
     return true;
 }
 
@@ -352,13 +386,18 @@ mixxx::BeatsPointer Track::getBeats() const {
     return m_pBeats;
 }
 
-void Track::afterBeatsOrBpmUpdated(
+void Track::afterBeatsAndBpmUpdated(
         QMutexLocker* pLock) {
     DEBUG_ASSERT(pLock);
 
-    const auto bpmValue = getBpmWhileLocked();
+    const auto bpm = getBpmWhileLocked();
     markDirtyAndUnlock(pLock);
-    emit bpmUpdated(bpmValue);
+    emitBeatsAndBpmUpdated(bpm);
+}
+
+void Track::emitBeatsAndBpmUpdated(
+        mixxx::Bpm newBpm) {
+    emit bpmUpdated(newBpm.getValue());
     emit beatsUpdated();
 }
 
@@ -971,29 +1010,27 @@ bool Track::importPendingBeatsWhileLocked() {
 bool Track::tryImportPendingBeatsMarkDirtyAndUnlock(
         QMutexLocker* pLock,
         bool lockBpmAfterSet) {
-    DEBUG_ASSERT(lockBpmAfterSet);
+    DEBUG_ASSERT(pLock);
 
     if (m_record.getBpmLocked()) {
         return false;
     }
 
-    bool dirty = false;
-
+    bool modified = false;
+    // Both functions must be invoked even if one of them
+    // returns false!
     if (importPendingBeatsWhileLocked()) {
-        dirty = true;
+        modified = true;
     }
-
     if (compareAndSet(m_record.ptrBpmLocked(), lockBpmAfterSet)) {
-        dirty = true;
+        modified = true;
     }
-
-    if (!dirty) {
-        // Already set, nothing todo
-        pLock->unlock();
+    if (!modified) {
+        // Unmodified, nothing todo
         return true;
     }
 
-    afterBeatsOrBpmUpdated(pLock);
+    afterBeatsAndBpmUpdated(pLock);
     return true;
 }
 
@@ -1103,7 +1140,16 @@ bool Track::importPendingCueInfosWhileLocked() {
     DEBUG_ASSERT(sampleRate ==
             m_record.getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
     QList<CuePointer> cuePoints;
-    cuePoints.reserve(m_pCueInfoImporterPending->size());
+    cuePoints.reserve(m_pCueInfoImporterPending->size() + m_cuePoints.size());
+
+    // Preserve all existing cues with types that are not available for
+    // importing.
+    for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+        if (!m_pCueInfoImporterPending->hasCueOfType(pCue->getType())) {
+            cuePoints.append(pCue);
+        }
+    }
+
     const auto cueInfos =
             m_pCueInfoImporterPending->importCueInfosAndApplyTimingOffset(
                     getLocation(), m_record.getStreamInfoFromSource()->getSignalInfo());
@@ -1141,11 +1187,6 @@ void Track::markDirty() {
 void Track::markClean() {
     QMutexLocker lock(&m_qMutex);
     setDirtyAndUnlock(&lock, false);
-}
-
-void Track::markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
-    bool result = m_bDirty || bDirty;
-    setDirtyAndUnlock(pLock, result);
 }
 
 void Track::setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty) {
@@ -1204,9 +1245,13 @@ void Track::setRating (int rating) {
 }
 
 void Track::afterKeysUpdated(QMutexLocker* pLock) {
-    // New key might be INVALID. We don't care.
-    mixxx::track::io::key::ChromaticKey newKey = m_record.getGlobalKey();
+    const auto newKey = m_record.getGlobalKey();
     markDirtyAndUnlock(pLock);
+    emitKeysUpdated(newKey);
+}
+
+void Track::emitKeysUpdated(mixxx::track::io::key::ChromaticKey newKey) {
+    // New key might be INVALID. We don't care.
     emit keyUpdated(KeyUtils::keyToNumericValue(newKey));
     emit keysUpdated();
 }
@@ -1311,7 +1356,8 @@ CoverInfo Track::getCoverInfoWithLocation() const {
 }
 
 ExportTrackMetadataResult Track::exportMetadata(
-        mixxx::MetadataSourcePointer pMetadataSource) {
+        mixxx::MetadataSourcePointer pMetadataSource,
+        UserSettingsPointer pConfig) {
     VERIFY_OR_DEBUG_ASSERT(pMetadataSource) {
         kLogger.warning()
                 << "Cannot export track metadata:"
@@ -1339,30 +1385,73 @@ ExportTrackMetadataResult Track::exportMetadata(
         return ExportTrackMetadataResult::Skipped;
     }
 
-#if defined(__EXPORT_SERATO_MARKERS__)
-    {
-        mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
-        seratoTags->setTrackColor(getColor());
-        seratoTags->setBpmLocked(isBpmLocked());
-    }
-#endif
+    if (pConfig->getValue<bool>(kConfigKeySeratoMetadataExport)) {
+        const auto streamInfo = m_record.getStreamInfoFromSource();
+        VERIFY_OR_DEBUG_ASSERT(streamInfo &&
+                streamInfo->getSignalInfo().isValid() &&
+                streamInfo->getDuration() > mixxx::Duration::empty()) {
+            kLogger.warning() << "Cannot write Serato metadata because signal "
+                                 "info and/or duration is not available:"
+                              << getLocation();
+            return ExportTrackMetadataResult::Skipped;
+        }
 
-    // Normalize metadata before exporting to adjust the precision of
-    // floating values, ... Otherwise the following comparisons may
-    // repeatedly indicate that values have changed only due to
-    // rounding errors.
-    m_record.refMetadata().normalizeBeforeExport();
+        const mixxx::audio::SampleRate sampleRate =
+                streamInfo->getSignalInfo().getSampleRate();
+
+        mixxx::SeratoTags* seratoTags = m_record.refMetadata().refTrackInfo().ptrSeratoTags();
+        DEBUG_ASSERT(seratoTags);
+
+        if (seratoTags->status() == mixxx::SeratoTags::ParserStatus::Failed) {
+            kLogger.warning()
+                    << "Refusing to overwrite Serato metadata that failed to parse:"
+                    << getLocation();
+        } else {
+            seratoTags->setTrackColor(getColor());
+            seratoTags->setBpmLocked(isBpmLocked());
+
+            QList<mixxx::CueInfo> cueInfos;
+            for (const CuePointer& pCue : qAsConst(m_cuePoints)) {
+                cueInfos.append(pCue->getCueInfo(sampleRate));
+            }
+
+            const double timingOffset = mixxx::SeratoTags::guessTimingOffsetMillis(
+                    getLocation(), streamInfo->getSignalInfo());
+            seratoTags->setCueInfos(cueInfos, timingOffset);
+
+            seratoTags->setBeats(m_pBeats,
+                    streamInfo->getSignalInfo(),
+                    streamInfo->getDuration(),
+                    timingOffset);
+        }
+    }
+
     // Check if the metadata has actually been modified. Otherwise
     // we don't need to write it back. Exporting unmodified metadata
     // would needlessly update the file's time stamp and should be
     // avoided. Since we don't know in which state the file's metadata
     // is we import it again into a temporary variable.
     mixxx::TrackMetadata importedFromFile;
+    // Normalize metadata before exporting to adjust the precision of
+    // floating values, ... Otherwise the following comparisons may
+    // repeatedly indicate that values have changed only due to
+    // rounding errors.
+    // The normalization has to be performed on a copy of the metadata.
+    // Otherwise floating-point values like the bpm value might become
+    // inconsistent with the actual value stored by the beat grid!
+    mixxx::TrackMetadata normalizedFromRecord;
     if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
             mixxx::MetadataSource::ImportResult::Succeeded)) {
         // Prevent overwriting any file tags that are not yet stored in the
-        // library database!
+        // library database! This will in turn update the current metadata
+        // that is stored in the database. New columns that need to be populated
+        // from file tags cannot be filled during a database migration.
         m_record.mergeImportedMetadata(importedFromFile);
+
+        // Prepare export by cloning and normalizing the metadata
+        normalizedFromRecord = m_record.getMetadata();
+        normalizedFromRecord.normalizeBeforeExport();
+
         // Finally the track's current metadata and the imported/adjusted metadata
         // can be compared for differences to decide whether the tags in the file
         // would change if we perform the write operation. This function will also
@@ -1377,9 +1466,9 @@ ExportTrackMetadataResult Track::exportMetadata(
         // trigger the re-export of file tags or they could modify other metadata
         // properties.
         if (!m_bMarkedForMetadataExport &&
-                !m_record.getMetadata().anyFileTagsModified(
+                !normalizedFromRecord.anyFileTagsModified(
                         importedFromFile,
-                        mixxx::Bpm::Comparison::Integer))  {
+                        mixxx::Bpm::Comparison::Integer)) {
             // The file tags are in-sync with the track's metadata and don't need
             // to be updated.
             if (kLogger.debugEnabled()) {
@@ -1397,7 +1486,9 @@ ExportTrackMetadataResult Track::exportMetadata(
             kLogger.info()
                     << "Adding or overwriting tags after failure to import tags from file:"
                     << getLocation();
-            // ...and continue
+            // Prepare export by cloning and normalizing the metadata
+            normalizedFromRecord = m_record.getMetadata();
+            normalizedFromRecord.normalizeBeforeExport();
         } else {
             kLogger.warning()
                     << "Skip exporting of track metadata after failure to import tags from file:"
@@ -1414,9 +1505,9 @@ ExportTrackMetadataResult Track::exportMetadata(
             << importedFromFile;
     kLogger.debug()
             << "New metadata (modified)"
-            << m_record.getMetadata();
+            << normalizedFromRecord;
     const auto trackMetadataExported =
-            pMetadataSource->exportTrackMetadata(m_record.getMetadata());
+            pMetadataSource->exportTrackMetadata(normalizedFromRecord);
     switch (trackMetadataExported.first) {
     case mixxx::MetadataSource::ExportResult::Succeeded:
         // After successfully exporting the metadata we record the fact
@@ -1514,7 +1605,7 @@ void Track::updateStreamInfoFromSource(
     }
 
     if (beatsImported) {
-        afterBeatsOrBpmUpdated(&lock);
+        afterBeatsAndBpmUpdated(&lock);
     } else {
         markDirtyAndUnlock(&lock);
     }

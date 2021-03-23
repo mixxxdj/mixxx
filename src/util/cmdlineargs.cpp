@@ -138,7 +138,7 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
             QCoreApplication::translate("main",
                     "Sets the verbosity of command line logging.\n"
                     "critical - Critical/Fatal only\n"
-                    "warning  - Above + Warnings"
+                    "warning  - Above + Warnings\n"
                     "info     - Above + Informational messages\n"
                     "debug    - Above + Debug/Developer messages\n"
                     "trace    - Above + Profiling messages"),
