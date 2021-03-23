@@ -8,6 +8,7 @@ class PredefinedColorPalettes {
     static const ColorPalette kMixxxHotcueColorPalette;
     static const ColorPalette kSeratoTrackMetadataHotcueColorPalette;
     static const ColorPalette kSeratoDJProHotcueColorPalette;
+    static const ColorPalette kRekordboxCDJHotcueColorPalette;
 
     static const ColorPalette kMixxxTrackColorPalette;
     static const ColorPalette kRekordboxTrackColorPalette;
