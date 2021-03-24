@@ -39,6 +39,11 @@ constexpr int kBpmTapFilterLength = 5;
 // the actual number of beats is this x2.
 constexpr int kLocalBpmSpan = 4;
 constexpr SINT kSamplesPerFrame = 2;
+
+// If we are 1 / 8.0 beat fraction near the previous beat we match that instead
+// of the next beat.
+constexpr double kPastBeatMatchThreshold = 1 / 8.0;
+
 } // namespace
 
 BpmControl::BpmControl(const QString& group,
@@ -898,7 +903,7 @@ double BpmControl::getBeatMatchPosition(
     // We prefer the next because this is what will be played,
     // unless we are close to the previous.
     // This happens if the user presses play too late.
-    if (dOtherBeatFraction > 7 / 8.0) {
+    if (dOtherBeatFraction > 1.0 - kPastBeatMatchThreshold) {
         // match the past beat
         dOtherBeatFraction -= 1.0;
     }
