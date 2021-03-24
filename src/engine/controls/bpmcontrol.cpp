@@ -874,9 +874,6 @@ double BpmControl::getBeatMatchPosition(
             thisSecs2ToNextBeat * otherBeats->getSampleRate() * pOtherEngineBuffer->getRateRatio() +
             dOtherPosition;
 
-    qDebug() << "dOtherPositionOfThisNextBeat" << dOtherPositionOfThisNextBeat
-             << thisSecs2ToNextBeat;
-
     double dOtherPrevBeat = -1;
     double dOtherNextBeat = -1;
     double dOtherBeatLength = -1;
@@ -896,8 +893,6 @@ double BpmControl::getBeatMatchPosition(
         return dThisPosition;
     }
 
-    qDebug() << "other" << dOtherBeatFraction << dOtherPosition;
-
     // We can either match the past beat with dOtherBeatFraction 1.0
     // or the next beat with dOtherBeatFraction 0.0
     // We prefer the next because this is what will be played,
@@ -912,8 +907,6 @@ double BpmControl::getBeatMatchPosition(
             dOtherBeatLength / otherBeats->getSampleRate() / pOtherEngineBuffer->getRateRatio();
     // Transform for this track
     double seekMatch = otherDivSec2 * dThisSampleRate * dThisRateRatio;
-
-    qDebug() << seekMatch << m_dUserOffset.getValue() << dOtherBeatFraction;
 
     if (dThisBeatLength > 0) {
         // restore phase adjustment
@@ -969,9 +962,6 @@ double BpmControl::getBeatMatchPosition(
             // loops are catching
         }
     }
-
-    qDebug() << "dNewPlaypos" << dNewPlaypos << dThisPosition;
-
     return dNewPlaypos;
 }
 
