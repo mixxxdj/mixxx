@@ -74,6 +74,7 @@ jobs:
             buildenv_script: tools/macos_buildenv.sh
             artifacts_name: macOS DMG
             artifacts_path: build/*.dmg
+            artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
           - name: Windows 2019 (MSVC)
             os: windows-2019
@@ -99,6 +100,7 @@ jobs:
             buildenv_script: tools/windows_buildenv.bat
             artifacts_name: Windows Installer
             artifacts_path: build/*.msi
+            artifacts_slug: windows-windows64
             qt_qpa_platform: windows
 
     env:
@@ -110,6 +112,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
+    outputs:
+      artifact-macos-macosintel: ${{ steps.generate_artifact_metadata.outputs.artifact-macos-macosintel }}
+      artifact-windows-windows64: ${{ steps.generate_artifact_metadata.outputs.artifact-windows-windows64 }}
     steps:
 
     # sccache's handling of the /fp:fast MSVC compiler option is broken, so use our fork with the fix.
@@ -327,18 +332,29 @@ jobs:
         pacman -S --noconfirm coreutils bash rsync openssh
         Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
+    - name: "Generate Artifact Metadata"
+      id: generate_artifact_metadata
+      # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
+      if: github.event_name == 'push'
+      run: python3 tools/generate_artifact_metadata.py ${{ matrix.artifacts_path }}
+      env:
+        OS: ${{ runner.os }}
+        OS_IMAGE: ${{ matrix.os }}
+        DEPLOY_BASEURL: "https://downloads.mixxx.org"
+        DEPLOY_DESTPATH: "builds/{git_branch}/{os_name}"
+        ARTIFACT_SLUG: ${{ matrix.artifacts_slug }}
+
     - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
       # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
       if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_PASSWORD != null
       run: bash tools/deploy.sh ${{ matrix.artifacts_path }}
       env:
-        DESTDIR: public_html/downloads/builds
+        DESTDIR: public_html/downloads/
         OS: ${{ runner.os }}
         SSH_HOST: downloads-hostgator.mixxx.org
         SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
         SSH_USER: mixxx
-        UPLOAD_ID: ${{ github.run_id }}
 
     # Workaround for https://github.com/actions/cache/issues/531
     - name: Use system tar & zstd from Chocolatey for caching
