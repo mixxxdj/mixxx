@@ -245,11 +245,8 @@ const QList<mixxx::RgbColor> kRekordboxColorsSelection = {
         kRekordboxHotcueColor16,
 };
 
-const ColorPalette PredefinedColorPalettes::kRekordboxCDJHotcueColorPalette =
-        ColorPalette(
-                QStringLiteral("Rekordbox CDJ Hotcue Colors"),
-                kRekordboxColorsSelection,
-                {9});
+// the Rekordbox CDJ palette can be emulated by picking kRekordboxHotcueColor9
+// (0x10B176) as the default cue color.
 
 const ColorPalette PredefinedColorPalettes::kRekordboxCOLD1HotcueColorPalette =
         ColorPalette(
@@ -370,7 +367,6 @@ const QList<ColorPalette> PredefinedColorPalettes::kPalettes{
         // Hotcue Color Palettes
         mixxx::PredefinedColorPalettes::kMixxxHotcueColorPalette,
         mixxx::PredefinedColorPalettes::kSeratoDJProHotcueColorPalette,
-        mixxx::PredefinedColorPalettes::kRekordboxCDJHotcueColorPalette,
         mixxx::PredefinedColorPalettes::kRekordboxCOLD1HotcueColorPalette,
         mixxx::PredefinedColorPalettes::kRekordboxCOLD2HotcueColorPalette,
         mixxx::PredefinedColorPalettes::kRekordboxCOLORFULHotcueColorPalette,
