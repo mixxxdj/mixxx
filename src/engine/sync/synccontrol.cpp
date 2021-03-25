@@ -127,21 +127,7 @@ void SyncControl::setSyncMode(SyncMode mode) {
     // requires. Bypass confirmation by using setAndConfirm.
     m_pSyncMode->setAndConfirm(mode);
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
-    switch (mode) {
-    case SYNC_INVALID:
-    case SYNC_NONE:
-    case SYNC_FOLLOWER:
-        m_pSyncMasterEnabled->setAndConfirm(0);
-        break;
-    case SYNC_MASTER_SOFT:
-        m_pSyncMasterEnabled->setAndConfirm(1);
-        break;
-    case SYNC_MASTER_EXPLICIT:
-        m_pSyncMasterEnabled->setAndConfirm(2);
-        break;
-    case SYNC_NUM_MODES:
-        break;
-    }
+    m_pSyncMasterEnabled->setAndConfirm(SyncModeToMasterLight(mode));
     if (mode == SYNC_FOLLOWER) {
         if (m_pVCEnabled && m_pVCEnabled->toBool()) {
             // If follower mode is enabled, disable vinyl control.

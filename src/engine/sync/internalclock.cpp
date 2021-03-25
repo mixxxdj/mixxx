@@ -56,7 +56,7 @@ void InternalClock::setSyncMode(SyncMode mode) {
     // Syncable has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_mode = mode;
-    m_pSyncMasterEnabled->setAndConfirm(isMaster(mode));
+    m_pSyncMasterEnabled->setAndConfirm(SyncModeToMasterLight(mode));
 }
 
 void InternalClock::notifyOnlyPlayingSyncable() {

@@ -96,11 +96,14 @@ class EngineSyncTest : public MockedEngineBackendTest {
   private:
     bool isMaster(const QString& group, SyncMode masterType) {
         if (group == m_sInternalClockGroup) {
-            if (double master = ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
-                                                                  "sync_master"))
-                                        ->get();
-                    master != 1.0) {
+            double master = ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                                                              "sync_master"))
+                                    ->get();
+            if (masterType == SYNC_MASTER_SOFT && master != 1.0) {
                 qWarning() << "internal clock sync_master should be 1.0, is" << master;
+                return false;
+            } else if (masterType == SYNC_MASTER_EXPLICIT && master != 2.0) {
+                qWarning() << "internal clock sync_master should be 2.0, is" << master;
                 return false;
             }
             if (m_pEngineSync->getMaster()) {
