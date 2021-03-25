@@ -52,6 +52,7 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
     m_pSyncMasterEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSyncMasterEnabled->setStates(3);
     m_pSyncMasterEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncMasterEnabledChangeRequest, Qt::DirectConnection);
 

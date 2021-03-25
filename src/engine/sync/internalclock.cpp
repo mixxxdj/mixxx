@@ -45,6 +45,7 @@ InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync
     m_pSyncMasterEnabled.reset(
             new ControlPushButton(ConfigKey(m_group, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSyncMasterEnabled->setStates(3);
     m_pSyncMasterEnabled->connectValueChangeRequest(
             this, &InternalClock::slotSyncMasterEnabledChangeRequest, Qt::DirectConnection);
 }
