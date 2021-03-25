@@ -34,7 +34,7 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
 
     bool track_already_in_library = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(location),
+            TrackRef::fromFilePath(location),
             &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be

@@ -205,8 +205,9 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
                   ":rating,:key)");
 
     //Parse Trakor XML file using SAX (for performance)
+    mixxx::FileInfo fileInfo(file);
     QFile traktor_file(file);
-    if (!Sandbox::askForAccess(file) || !traktor_file.open(QIODevice::ReadOnly)) {
+    if (!Sandbox::askForAccess(&fileInfo) || !traktor_file.open(QIODevice::ReadOnly)) {
         qDebug() << "Cannot open Traktor music collection";
         return nullptr;
     }
@@ -569,7 +570,8 @@ QString TraktorFeature::getTraktorMusicDatabase() {
     // We may not have access to this directory since it is in the user's
     // Documents folder. Ask for access if we don't have it.
     if (ni_directory.exists()) {
-        Sandbox::askForAccess(ni_directory.canonicalPath());
+        auto fileInfo = mixxx::FileInfo(ni_directory);
+        Sandbox::askForAccess(&fileInfo);
     }
 
     //Iterate over the subfolders

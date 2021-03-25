@@ -12,7 +12,6 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/db/fwdsqlquery.h"
-#include "util/fileaccess.h"
 #include "util/logger.h"
 #include "util/performancetimer.h"
 #include "util/timer.h"
@@ -539,7 +538,9 @@ void LibraryScanner::slotAddNewTrack(const QString& trackPath) {
     //kLogger.debug() << "slotAddNewTrack" << trackPath;
     ScopedTimer timer("LibraryScanner::addNewTrack");
     // For statistics tracking and to detect moved tracks
-    TrackPointer pTrack(m_trackDao.addTracksAddFile(trackPath, false));
+    TrackPointer pTrack = m_trackDao.addTracksAddFile(
+            trackPath,
+            false);
     if (pTrack) {
         DEBUG_ASSERT(!pTrack->isDirty());
         // The track's actual location might differ from the

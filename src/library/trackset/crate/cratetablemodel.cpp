@@ -64,7 +64,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, const QString& location
     Q_UNUSED(index);
 
     // This will only succeed if the file actually exist.
-    TrackFile fileInfo(location);
+    mixxx::FileInfo fileInfo(location);
     if (!fileInfo.checkFileExists()) {
         qDebug() << "CrateTableModel::addTrack:"
                  << "File" << location << "not found";

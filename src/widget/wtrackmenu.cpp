@@ -802,7 +802,7 @@ QList<TrackRef> WTrackMenu::getTrackRefs() const {
     if (m_pTrackModel) {
         trackRefs.reserve(m_trackIndexList.size());
         for (const auto& index : m_trackIndexList) {
-            auto trackRef = TrackRef::fromFileInfo(
+            auto trackRef = TrackRef::fromFilePath(
                     m_pTrackModel->getTrackLocation(index),
                     m_pTrackModel->getTrackId(index));
             if (!trackRef.isValid()) {
@@ -816,7 +816,7 @@ QList<TrackRef> WTrackMenu::getTrackRefs() const {
         for (const auto& pTrack : m_trackPointerList) {
             DEBUG_ASSERT(pTrack);
             auto trackRef = TrackRef::fromFileInfo(
-                    pTrack->getLocation(),
+                    pTrack->getFileInfo(),
                     pTrack->getId());
             trackRefs.push_back(std::move(trackRef));
         }

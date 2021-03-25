@@ -151,12 +151,12 @@ void BrowseThread::populateModel() {
         item->setData("0", Qt::UserRole);
         row_data.insert(COLUMN_PREVIEW, item);
 
-        const QString filepath = fileIt.next();
+        const auto fileAccess = mixxx::FileAccess(
+                mixxx::FileInfo(fileIt.next()),
+                thisPath.token());
         {
             const TrackPointer pTrack =
-                    SoundSourceProxy::importTemporaryTrack(
-                            filepath,
-                            thisPath.token());
+                    SoundSourceProxy::importTemporaryTrack(fileAccess);
 
             item = new QStandardItem(pTrack->getFileInfo().fileName());
             item->setToolTip(item->text());
@@ -249,7 +249,7 @@ void BrowseThread::populateModel() {
             row_data.insert(COLUMN_GROUPING, item);
 
             const auto fileLastModified =
-                    pTrack->getFileInfo().fileLastModified();
+                    fileAccess.info().lastModified();
             item = new QStandardItem(
                     mixxx::displayLocalDateTime(fileLastModified));
             item->setToolTip(item->text());
@@ -257,7 +257,7 @@ void BrowseThread::populateModel() {
             row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
             const auto fileCreated =
-                    pTrack->getFileInfo().fileCreated();
+                    fileAccess.info().birthTime();
             item = new QStandardItem(
                     mixxx::displayLocalDateTime(fileCreated));
             item->setToolTip(item->text());
@@ -279,7 +279,7 @@ void BrowseThread::populateModel() {
         if (row % 10 == 0) {
             // this is a blocking operation
             emit rowsAppended(rows, thisModelObserver);
-            qDebug() << "Append " << rows.count() << " from " << filepath;
+            qDebug() << "Append " << rows.count() << " from " << fileAccess.info();
             rows.clear();
         }
         // Sleep additionally for 10ms which prevents us from GUI freezes

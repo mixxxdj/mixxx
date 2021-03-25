@@ -6,11 +6,11 @@ namespace {
 
 inline SecurityTokenPointer acquireSecurityToken(
         SecurityTokenPointer pSecurityToken,
-        const FileInfo& fileInfo) {
+        FileInfo* pFileInfo) {
     if (pSecurityToken) {
         return pSecurityToken;
     } else {
-        return Sandbox::openSecurityToken(fileInfo.asQFileInfo(), true);
+        return Sandbox::openSecurityToken(pFileInfo, true);
     }
 }
 
@@ -23,7 +23,7 @@ FileAccess::FileAccess(
           m_pSecurityToken(
                   acquireSecurityToken(
                           std::move(pSecurityToken),
-                          m_fileInfo)) {
+                          &m_fileInfo)) {
 }
 
 } // namespace mixxx

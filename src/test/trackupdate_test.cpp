@@ -24,8 +24,7 @@ class TrackUpdateTest: public MixxxTest {
     }
 
     static TrackPointer newTestTrack() {
-        return Track::newTemporary(TrackFile(
-                kTestDir, "TOAL_TPE2.mp3"));
+        return Track::newTemporary(kTestDir, "TOAL_TPE2.mp3");
     }
 
     static TrackPointer newTestTrackParsed() {

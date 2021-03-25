@@ -842,8 +842,8 @@ QList<TrackRef> BaseSqlTableModel::getTrackRefs(
     QList<TrackRef> trackRefs;
     trackRefs.reserve(indices.size());
     foreach (QModelIndex index, indices) {
-        trackRefs.append(TrackRef::fromFileInfo(
-                TrackFile(getTrackLocation(index)),
+        trackRefs.append(TrackRef::fromFilePath(
+                getTrackLocation(index),
                 getTrackId(index)));
     }
     return trackRefs;

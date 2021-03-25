@@ -799,8 +799,8 @@ void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
         // folder. Create a security bookmark while we have permission so that
         // we can access the folder on future runs. We need to canonicalize the
         // path so we first wrap the directory string with a QDir.
-        QFileInfo trackInfo(trackPath);
-        Sandbox::createSecurityToken(trackInfo);
+        mixxx::FileInfo fileInfo(trackPath);
+        Sandbox::createSecurityToken(&fileInfo);
 
         m_pCoreServices->getPlayerManager()->slotLoadToDeck(trackPath, deck);
     }

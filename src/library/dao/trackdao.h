@@ -51,7 +51,7 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
     void finish();
 
     QList<TrackId> resolveTrackIds(
-            const QList<TrackFile> &trackFiles,
+            const QList<mixxx::FileInfo>& fileInfos,
             ResolveTrackIdFlags flags = ResolveTrackIdFlag::ResolveOnly);
 
     TrackId getTrackIdByRef(
@@ -125,8 +125,15 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
             const TrackPointer& pTrack,
             bool unremove);
     TrackPointer addTracksAddFile(
-            const TrackFile& trackFile,
+            const mixxx::FileAccess& fileAccess,
             bool unremove);
+    TrackPointer addTracksAddFile(
+            const QString& filePath,
+            bool unremove) {
+        return addTracksAddFile(
+                mixxx::FileAccess(mixxx::FileInfo(filePath)),
+                unremove);
+    }
     void addTracksFinish(bool rollback = false);
 
     bool updateTrack(Track* pTrack) const;
@@ -162,9 +169,9 @@ class TrackDAO : public QObject, public virtual DAO, public virtual GlobalTrackC
                                         QSet<TrackId>* pTracksChanged);
 
     // Callback for GlobalTrackCache
-    TrackFile relocateCachedTrack(
+    mixxx::FileAccess relocateCachedTrack(
             TrackId trackId,
-            TrackFile fileInfo) override;
+            mixxx::FileAccess fileAccess) override;
 
     CueDAO& m_cueDao;
     PlaylistDAO& m_playlistDao;

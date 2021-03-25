@@ -17,10 +17,10 @@ constexpr bool sDebug = false;
 }  // namespace
 
 BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
-                               const QString& tableName,
-                               const QString& idColumn,
-                               const QStringList& columns,
-                               bool isCaching)
+        const QString& tableName,
+        const QString& idColumn,
+        const QStringList& columns,
+        bool isCaching)
         : m_tableName(tableName),
           m_idColumn(idColumn),
           m_columnCount(columns.size()),

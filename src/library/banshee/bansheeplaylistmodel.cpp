@@ -225,7 +225,7 @@ TrackId BansheePlaylistModel::doGetTrackId(const TrackPointer& pTrack) const {
     if (pTrack) {
         for (int row = 0; row < rowCount(); ++row) {
             const QUrl rowUrl(getFieldString(index(row, 0), CLM_URI));
-            if (TrackFile::fromUrl(rowUrl) == pTrack->getFileInfo()) {
+            if (mixxx::FileInfo::fromQUrl(rowUrl) == pTrack->getFileInfo()) {
                 return TrackId(getFieldVariant(index(row, 0), CLM_VIEW_ORDER));
             }
         }
@@ -253,7 +253,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
 
     bool track_already_in_library = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(location),
+            TrackRef::fromFilePath(location),
             &track_already_in_library);
 
     // If this track was not in the Mixxx library it is now added and will be
@@ -295,7 +295,7 @@ QString BansheePlaylistModel::getTrackLocation(const QModelIndex& index) const {
     }
     QUrl url(getFieldString(index, CLM_URI));
 
-    QString location = TrackFile::fromUrl(url).location();
+    QString location = mixxx::FileInfo::fromQUrl(url).location();
     qDebug() << location << " = " << url;
     if (!location.isEmpty()) {
         return location;

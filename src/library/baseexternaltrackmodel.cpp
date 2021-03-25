@@ -59,7 +59,7 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
 
     bool track_already_in_library = false;
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(
-            TrackRef::fromFileInfo(location),
+            TrackRef::fromFilePath(location),
             &track_already_in_library);
 
     if (pTrack) {

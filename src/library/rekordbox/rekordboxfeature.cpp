@@ -483,7 +483,8 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     queryInsertIntoDevicePlaylistTracks.bindValue(":playlist_id", playlistID);
 
-    if (!Sandbox::askForAccess(dbPath)) {
+    mixxx::FileInfo fileInfo(dbPath);
+    if (!Sandbox::askForAccess(&fileInfo)) {
         return QString();
     }
     std::ifstream ifs(dbPath.toStdString(), std::ifstream::binary);

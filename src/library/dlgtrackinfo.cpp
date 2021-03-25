@@ -607,8 +607,7 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
         // modified and we want to read fresh metadata directly from the
         // file. Otherwise the changes in m_pLoadedTrack would be lost.
         TrackPointer pTrack = SoundSourceProxy::importTemporaryTrack(
-                m_pLoadedTrack->getFileInfo(),
-                m_pLoadedTrack->getSecurityToken());
+                m_pLoadedTrack->getFileAccess());
         DEBUG_ASSERT(pTrack);
         populateFields(*pTrack);
     }

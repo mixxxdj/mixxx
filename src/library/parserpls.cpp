@@ -114,7 +114,7 @@ QString ParserPls::getFilePath(QTextStream *stream, const QString& basePath) {
             ++iPos;
 
             QString filename = textline.right(textline.length() - iPos);
-            auto trackFile = playlistEntryToTrackFile(filename, basePath);
+            auto trackFile = playlistEntryToFileInfo(filename, basePath);
             if (trackFile.checkFileExists()) {
                 return trackFile.location();
             }

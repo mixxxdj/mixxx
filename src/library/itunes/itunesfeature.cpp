@@ -184,19 +184,19 @@ void ITunesFeature::activate(bool forceReload) {
             m_dbfile = getiTunesMusicPath();
         }
 
-        QFileInfo dbFile(m_dbfile);
-        if (!m_dbfile.isEmpty() && dbFile.exists()) {
+        mixxx::FileInfo fileInfo(m_dbfile);
+        if (fileInfo.checkFileExists()) {
             // Users of Mixxx <1.12.0 didn't support sandboxing. If we are sandboxed
             // and using a custom iTunes path then we have to ask for access to this
             // file.
-            Sandbox::askForAccess(m_dbfile);
+            Sandbox::askForAccess(&fileInfo);
         } else {
             // if the path we got between the default and the database doesn't
             // exist, ask for a new one and use/save it if it exists
             m_dbfile = QFileDialog::getOpenFileName(
                     nullptr, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
-            QFileInfo dbFile(m_dbfile);
-            if (m_dbfile.isEmpty() || !dbFile.exists()) {
+            mixxx::FileInfo fileInfo(m_dbfile);
+            if (!fileInfo.checkFileExists()) {
                 return;
             }
 
@@ -205,7 +205,7 @@ void ITunesFeature::activate(bool forceReload) {
             // this folder. Create a security bookmark while we have permission so
             // that we can access the folder on future runs. We need to canonicalize
             // the path so we first wrap the directory string with a QDir.
-            Sandbox::createSecurityToken(dbFile);
+            Sandbox::createSecurityToken(&fileInfo);
             settings.setValue(ITDB_PATH_KEY, m_dbfile);
         }
         m_isActivated =  true;
@@ -251,8 +251,8 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
         QString dbfile = QFileDialog::getOpenFileName(
                 nullptr, tr("Select your iTunes library"), QDir::homePath(), "*.xml");
 
-        QFileInfo dbFileInfo(dbfile);
-        if (dbfile.isEmpty() || !dbFileInfo.exists()) {
+        mixxx::FileInfo dbFileInfo(dbfile);
+        if (!dbFileInfo.checkFileExists()) {
             return;
         }
         // The user has picked a new directory via a file dialog. This means the
@@ -260,7 +260,7 @@ void ITunesFeature::onRightClick(const QPoint& globalPos) {
         // this folder. Create a security bookmark while we have permission so
         // that we can access the folder on future runs. We need to canonicalize
         // the path so we first wrap the directory string with a QDir.
-        Sandbox::createSecurityToken(dbFileInfo);
+        Sandbox::createSecurityToken(&dbFileInfo);
 
         settings.setValue(ITDB_PATH_KEY, dbfile);
         activate(true); // clears tables before parsing
@@ -582,7 +582,7 @@ void ITunesFeature::parseTrack(QXmlStreamReader& xml, QSqlQuery& query) {
                     continue;
                 }
                 if (key == kLocation) {
-                    location = TrackFile::fromUrl(QUrl(content)).location();
+                    location = mixxx::FileInfo::fromQUrl(QUrl(content)).location();
                     // Replace first part of location with the mixxx iTunes Root
                     // on systems where iTunes installed it only strips //localhost
                     // on iTunes from foreign systems the mount point is replaced

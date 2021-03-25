@@ -464,7 +464,7 @@ void TrackCollectionManager::afterTracksUpdated(const QSet<TrackId>& updatedTrac
     for (const auto& trackId : updatedTrackIds) {
         auto trackLocation = m_pInternalCollection->getTrackDAO().getTrackLocation(trackId);
         if (!trackLocation.isEmpty()) {
-            trackRefs.append(TrackRef::fromFileInfo(trackLocation, trackId));
+            trackRefs.append(TrackRef::fromFilePath(trackLocation, trackId));
         }
     }
     DEBUG_ASSERT(trackRefs.size() <= updatedTrackIds.size());

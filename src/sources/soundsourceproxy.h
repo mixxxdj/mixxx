@@ -3,8 +3,13 @@
 #include "preferences/usersettings.h"
 #include "sources/soundsourceproviderregistry.h"
 #include "track/track_decl.h"
-#include "track/trackfile.h"
 #include "util/sandbox.h"
+
+namespace mixxx {
+
+class FileAccess;
+
+} // namespace mixxx
 
 /// Creates sound sources for tracks. Only intended to be used
 /// in a narrow scope and not shareable between multiple threads!
@@ -29,8 +34,7 @@ class SoundSourceProxy {
     }
 
     static bool isUrlSupported(const QUrl& url);
-    static bool isFileSupported(const TrackFile& trackFile);
-    static bool isFileSupported(const QFileInfo& fileInfo);
+    static bool isFileSupported(const mixxx::FileInfo& fileInfo);
     static bool isFileNameSupported(const QString& fileName);
     static bool isFileExtensionSupported(const QString& fileExtension);
 
@@ -46,11 +50,9 @@ class SoundSourceProxy {
     // The following import functions ensure that the file will not be
     // written while reading it!
     static TrackPointer importTemporaryTrack(
-            TrackFile trackFile,
-            SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
+            mixxx::FileAccess trackFileAccess);
     static QImage importTemporaryCoverImage(
-            TrackFile trackFile,
-            SecurityTokenPointer pSecurityToken = SecurityTokenPointer());
+            mixxx::FileAccess trackFileAccess);
 
     explicit SoundSourceProxy(
             TrackPointer pTrack,
