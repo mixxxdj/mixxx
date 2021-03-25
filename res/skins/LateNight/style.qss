@@ -53,7 +53,6 @@ WOverview #PassthroughLabel,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
 #SamplerTitleMini,
-/* ToolBar */
 #GuiToggleButton,
 #RecFeedback, #RecDuration,
 #BroadcastButton,
@@ -74,7 +73,6 @@ WOverview #PassthroughLabel {
 #MicAuxLabel, #MicAuxLabelUnconfigured,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
-/* ToolBar */
 #GuiToggleButton,
 #RecFeedback, #RecDuration,
 #BroadcastButton,
@@ -99,6 +97,74 @@ QLabel#labelRecPrefix,
 QLabel#labelRecStatistics {
   font-weight: normal;
 }
+
+/* WMainMenuBar #MainMenu is difficult to style, at least when
+  it should look identical on Windows AND Linux.
+  Paddings and margins affect the item labels and checkboxes entirely
+  different so we need style_linux.qss and style_windows.qss to take
+  care of it individually.
+  Luckily we don't need to care about macOS here -Woohoo!- because
+  there the memnu bar is always styled natively. */
+#MainMenu {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+#MainMenu::item {
+  /* No big deal, just try to make it look like native menus */
+  padding: 0.1em 0.5em 0.1em 0.5em;
+  margin: 0em;
+}
+#MainMenu QMenu::item {
+  /*  Xfce/Gnome:
+        padding(-left) is applied to entire item (text + opt. icon)
+        = icon may overlap text
+        = item labels are always aligned, with or without checkbox/icon
+      Fedora/Arch/Windows:
+        padding(-left) is applied to text only
+        = does NOT align items with and without checkboxes */
+  /* The style below SHOULD yield identical results on all target OS,
+    yet it looks slightly different, items are shifted by a few pixels.. go figure */
+  /*padding: 0.1em 0.3em 0.2em 0.3em;*/
+  /*margin: 0em 0em 0em 1.5em;*/
+  }
+  /* Checkbox preceeding menu items (Options, ) */
+  #MainMenu QMenu::indicator {
+    width: 1em;
+    height: 1em;
+    /* The indicator is by default aligned with the text
+      = overlaps first few characters.
+      > margin-left needs to be negative to push it left.
+      margin-right = space QMenu::item text <> shortcut wtf... */
+    /* padding = icon border <> fixed-size image
+      = expands the 'background' area
+      = padding-top/bottom:
+       * adjust to cover the row height so the indicator looks like
+         part of the text item
+       * clipped by item height
+      = padding- left: adjust to equalize the painted bg surrounding the image. */
+  }
+  #MainMenu QMenu::indicator,
+  #MainMenu QMenu::indicator:selected,
+  #MainMenu QMenu::indicator:checked,
+  #MainMenu QMenu::indicator:checked:selected {
+    /* checkbox is a SVG with optional checkmark.
+      In all other menus border(css) and checkmark(SVG) are separate
+      which allows to combine them in a flexible way for many states
+      (like indeterminate, checked:selected, checked:!enabled)
+
+      Here we need to work around certain 'rendering issues' on
+      multiple target OS, and we only need
+      * checked
+      * unchecked
+      * checked:selected
+      * unchecked:selected
+      so we can use graphics only, which in return gives somewhat
+      identical appearance on both Wind'ohs and Linux  */
+  }
+  #MainMenu QMenu::separator {
+    height: 0px;
+    margin: 0.25em;
+  }
 
 
 

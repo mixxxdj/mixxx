@@ -15,7 +15,11 @@
 
 /**********************************************************************
 ************** Colors & borders of GUI containers ********************/
-
+#MainMenu,
+#MainMenu::item,
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
 #ToolBar,
 #WaveformsContainer,
 #Deck1, #DeckCompact1, #DeckMini1,
@@ -196,7 +200,7 @@ WSearchLineEdit,
   qproperty-layoutSpacing: 2;
 }
 #ToolBar {
-  padding: 1px 2px 0px 2px;
+  padding: 0px 2px 0px 2px;
   }
   #ToolBarSeparator {}
   #BatteryBox {
@@ -1112,6 +1116,9 @@ WBeatSpinBox, #spinBoxTransition,
   color: #666;
 }
 
+#MainMenu::item,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
 #VinylButton[displayValue="0"],
 #VinylModeButton,
 #PassthroughButton[displayValue="0"],
@@ -2346,6 +2353,11 @@ WTrackMenu QMenu {
   border: 1px solid #888;
   border-radius: 2px;
 }
+#MainMenu QMenu {
+  padding: 0.08em;
+  border: 1px solid #888;
+  border-radius: 2px;
+}
 
 #SkinContainer {
   background-color: #0f0f0f;
@@ -2385,6 +2397,12 @@ WEffectSelector, #fadeModeCombobox {
   background-color: #161616;
 }
   /* hovered items */
+  #MainMenu::item:selected,
+  #MainMenu QMenu::item:selected,
+  #MainMenu QMenu::item:focus,
+  #MainMenu QMenu::item:hover,
+  #MainMenu QMenu::indicator:checked:selected,
+  #MainMenu QMenu::indicator:unchecked:selected,
   WEffectSelector::item:selected,
   #fadeModeCombobox::item:selected,
   WBeatSpinBox QMenu::item:selected,
@@ -2484,6 +2502,7 @@ WEffectSelector,
       outline: none;
       border: 0px solid transparent;
     }
+  #MainMenu QMenu:separator,
   WBeatSpinBox QMenu::separator,
   #LibraryContainer QMenu::separator,
   WCueMenuPopup QMenu::separator,
@@ -2556,7 +2575,17 @@ WEffectSelector,
   WCueMenuPopup QMenu::indicator:checked {
     image: url(skin:/classic/buttons/btn__lib_checkmark_orange.svg);
     }
+  #MainMenu QMenu::indicator:checked,
+  #MainMenu QMenu::indicator:checked:selected {
+    image: url(skin:/classic/buttons/btn__menu_checkbox_checked.svg);
+    }
+    #MainMenu QMenu::indicator:unchecked,
+    #MainMenu QMenu::indicator:unchecked:selected {
+      image: url(skin:/classic/buttons/btn__menu_checkbox.svg);
+    }
   /* disabled menu item and checkbox */
+  #MainMenu::item:!enabled,
+  #MainMenu QMenu::item:!enabled,
   #LibraryContainer QMenu QCheckBox:!enabled,
   #LibraryContainer QMenu::item:!enabled,
   WTrackMenu QCheckBox:!enabled,
@@ -2594,6 +2623,7 @@ WEffectSelector,
     image: url(skin:/classic/buttons/btn__lib_checkmark_grey.svg);
   }
 
+  #MainMenu QMenu::right-arrow,
   #LibraryContainer QMenu::right-arrow,
   WTrackMenu::right-arrow,
   WTrackMenu QMenu::right-arrow {
