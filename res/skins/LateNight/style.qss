@@ -36,6 +36,11 @@ WEffectSelector QAbstractScrollArea,
 #LibraryContainer QHeaderView,
 #LibraryContainer QHeaderView::item,
 #LibraryContainer QMenu {
+  /* On Linux all weight variants of Open Sans are identified
+  as "Open Sans".
+  On Windows however, the semi-bold variant is identified as
+  "Open Sans Semibold", thus we need to set some font weights
+  in style_windows.qss */
   font-family: "Open Sans";
   font-weight: 500; /* semi-bold */
   font-style: normal;
