@@ -499,7 +499,7 @@ void Library::slotRequestAddDir(const QString& dir) {
     // to canonicalize the path so we first wrap the directory string with a
     // QDir.
     QDir directory(dir);
-    Sandbox::createSecurityToken(directory);
+    Sandbox::createSecurityTokenForDir(directory);
 
     if (!m_pTrackCollectionManager->addDirectory(mixxx::FileInfo(dir))) {
         QMessageBox::information(nullptr,

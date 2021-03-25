@@ -488,7 +488,7 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     for (const mixxx::FileInfo& fileInfo : rootDirs) {
         const auto dir = fileInfo.toQDir();
         // Skip directories we don't have permission to.
-        if (!Sandbox::canAccessFile(dir)) {
+        if (!Sandbox::canAccessDir(dir)) {
             continue;
         }
         if (dir == osMusicDir) {
@@ -506,22 +506,22 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
         result << dir.canonicalPath() + "/";
     }
 
-    if (!osMusicDirIncluded && Sandbox::canAccessFile(osMusicDir)) {
+    if (!osMusicDirIncluded && Sandbox::canAccessDir(osMusicDir)) {
         result << osMusicDir.canonicalPath() + "/";
     }
 
     if (downloadsExists && !osDownloadsDirIncluded &&
-            Sandbox::canAccessFile(osDownloadsDir)) {
+            Sandbox::canAccessDir(osDownloadsDir)) {
         result << osDownloadsDir.canonicalPath() + "/";
     }
 
     if (!osDesktopDirIncluded &&
-            Sandbox::canAccessFile(osDesktopDir)) {
+            Sandbox::canAccessDir(osDesktopDir)) {
         result << osDesktopDir.canonicalPath() + "/";
     }
 
     if (!osDocumentsDirIncluded &&
-            Sandbox::canAccessFile(osDocumentsDir)) {
+            Sandbox::canAccessDir(osDocumentsDir)) {
         result << osDocumentsDir.canonicalPath() + "/";
     }
 

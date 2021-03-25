@@ -192,7 +192,7 @@ void TrackCollection::relocateDirectory(const QString& oldDir, const QString& ne
     // have permission so that we can access the folder on future runs. We need
     // to canonicalize the path so we first wrap the directory string with a
     // QDir.
-    Sandbox::createSecurityToken(QDir(newDir));
+    Sandbox::createSecurityTokenForDir(QDir(newDir));
 
     SqlTransaction transaction(m_database);
     QList<RelocatedTrack> relocatedTracks =
