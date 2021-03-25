@@ -18,6 +18,21 @@
   #MainMenu QMenu::indicator:checked:selected {
   }
 
+/* Icons  (copy, paste, ...) in context menus of
+    - property cells in the tracks table
+    - WCueMenuPopup cue label editor
+    - WBeatSpinBox
+    - AutoDJ transition QSpinBox */
+#LibraryContainer QMenu::icon,
+QLineEdit QMenu::icon,
+/* - checkbox in Crate name context menu
+      "[ ] Auto DJ Track Source"
+   - QHeaderView QMenu::indicator */
+#LibraryContainer QMenu::indicator {
+  /* Linux: margin-right pushes the entire icon to the right !?? */
+  margin: 0px -20px 0px 5px;
+    }
+
 /* On Windows the semi-bold variant of Open Sans is
 identified separately as "Open Sans Semibold", so we
 need to define the fonts individually. */
