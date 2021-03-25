@@ -48,12 +48,20 @@ TEST_F(DirectoryDAOTest, add) {
     ASSERT_TRUE(tempDir.isValid());
 
     //create temp dirs
-    const QString testdir = QString(tempDir.path() + "/TestDir/a");
+    const QString testdir = QString(tempDir.path() + "/TestDir/test");
     ASSERT_TRUE(QDir(tempDir.path()).mkpath(testdir));
-    const QString testChild = QString(tempDir.path() + "/TestDir/a/child");
+    const QString testChild = QString(tempDir.path() + "/TestDir/test/child");
     ASSERT_TRUE(QDir(tempDir.path()).mkpath(testChild));
     const QString testParent = QString(tempDir.path() + "/TestDir");
     ASSERT_TRUE(QDir(tempDir.path()).mkpath(testParent));
+#if !defined(__WINDOWS__)
+    const QString linkdir = QString(tempDir.path() + "/testLink");
+    ASSERT_TRUE(QFile::link(testdir, linkdir));
+    const QString linkChild = QString(tempDir.path() + "/childLink");
+    ASSERT_TRUE(QFile::link(testChild, linkChild));
+    const QString linkParent = QString(tempDir.path() + "/parentLink");
+    ASSERT_TRUE(QFile::link(testParent, linkParent));
+#endif
 
     const DirectoryDAO& dao = internalCollection()->getDirectoryDAO();
 
@@ -66,27 +74,58 @@ TEST_F(DirectoryDAOTest, add) {
     EXPECT_EQ(
             DirectoryDAO::AddResult::AlreadyWatching,
             dao.addDirectory(mixxx::FileInfo(testdir)));
+#if !defined(__WINDOWS__)
+    EXPECT_EQ(
+            DirectoryDAO::AddResult::AlreadyWatching,
+            dao.addDirectory(mixxx::FileInfo(linkdir)));
+#endif
 
     // check that we don't add the directory again also if the string ends with
     // "/".
     EXPECT_EQ(
             DirectoryDAO::AddResult::AlreadyWatching,
-            dao.addDirectory(mixxx::FileInfo(testdir + "/")));
+            dao.addDirectory(mixxx::FileInfo(testdir)));
+#if !defined(__WINDOWS__)
+    EXPECT_EQ(
+            DirectoryDAO::AddResult::AlreadyWatching,
+            dao.addDirectory(mixxx::FileInfo(linkdir)));
+#endif
 
     // check that we don't add a child directory
     EXPECT_EQ(
             DirectoryDAO::AddResult::AlreadyWatching,
             dao.addDirectory(mixxx::FileInfo(testChild)));
+#if !defined(__WINDOWS__)
+    EXPECT_EQ(
+            DirectoryDAO::AddResult::AlreadyWatching,
+            dao.addDirectory(mixxx::FileInfo(linkChild)));
+#endif
+
+#if !defined(__WINDOWS__)
+    // Use the link to the parent directory
+    const auto parentInfo = mixxx::FileInfo(linkParent);
+#else
+    // Use the the parent directory
+    const auto parentInfo = mixxx::FileInfo(testParent);
+#endif
 
     // check that we add the parent dir
     EXPECT_EQ(
             DirectoryDAO::AddResult::Ok,
-            dao.addDirectory(mixxx::FileInfo(testParent)));
+            dao.addDirectory(parentInfo));
 
-    // the db should now only contain the parent directory
+    // the db should now only contain the link to the parent directory
     const QList<mixxx::FileInfo> allDirs = dao.loadAllDirectories();
     ASSERT_EQ(1, allDirs.length());
-    EXPECT_QSTRING_EQ(testParent, allDirs.first().location());
+    EXPECT_QSTRING_EQ(parentInfo.location(), allDirs.first().location());
+
+#if !defined(__WINDOWS__)
+    // Verify that adding the actual dir path instead of the
+    // link is rejected.
+    EXPECT_EQ(
+            DirectoryDAO::AddResult::AlreadyWatching,
+            dao.addDirectory(mixxx::FileInfo(testParent)));
+#endif
 }
 
 TEST_F(DirectoryDAOTest, remove) {
