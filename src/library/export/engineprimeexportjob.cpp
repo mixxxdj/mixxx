@@ -333,7 +333,7 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
         const auto dirInfos = m_pTrackCollectionManager->internalCollection()
                                       ->getDirectoryDAO()
                                       .loadAllDirectories();
-        for (const auto& dirInfo : dirInfos) {
+        for (const mixxx::FileInfo& dirInfo : dirInfos) {
             const auto trackRefsFromDir = m_pTrackCollectionManager
                                                   ->internalCollection()
                                                   ->getTrackDAO()
