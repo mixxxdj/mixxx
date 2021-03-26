@@ -1,8 +1,9 @@
-import os
 import json
+import os
 import subprocess
-import urllib.request
+import sys
 import urllib.error
+import urllib.request
 
 
 def url_exists(url):
@@ -12,6 +13,16 @@ def url_exists(url):
     except urllib.error.URLError:
         return False
     return resp.status == 200
+
+
+def download(url):
+    try:
+        resp = urllib.request.urlopen(url, timeout=10)
+        manifest_data = resp.read().decode()
+    except IOError:
+        return None
+
+    return json.loads(manifest_data)
 
 
 job_data = json.loads(os.environ["JOB_DATA"])
@@ -50,6 +61,11 @@ if os.getenv("CI") == "true":
         .decode()
         .strip()
     )
+    manifest_url = os.environ["MANIFEST_URL"].format(git_branch=git_branch)
+    if manifest_data == download(manifest_url):
+        sys.exit(0)
+
     deploy_dir = os.environ["DEPLOY_DESTPATH"].format(git_branch=git_branch)
     with open(os.environ["GITHUB_ENV"], mode="a") as fp:
         fp.write(f"DEPLOY_DIR={deploy_dir}\n")
+        fp.write("MANIFEST_DIRTY=1\n")

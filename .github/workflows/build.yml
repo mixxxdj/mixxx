@@ -385,11 +385,12 @@ jobs:
       run: python3 tools/collect_artifacts_metadata.py
       env:
         JOB_DATA: ${{ toJSON(needs.build) }}
+        MANIFEST_URL: "https://downloads.mixxx.org/builds/{git_branch}/manifest.json"
         DEPLOY_DESTPATH: "builds/{git_branch}"
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
 
     - name: "Deploy Manifest"
-      if: github.event_name == 'push' && env.SSH_PASSWORD != null
+      if: github.event_name == 'push' && env.SSH_PASSWORD != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
       run: bash tools/deploy.sh manifest.json
       env:
         DESTDIR: public_html/downloads/
@@ -398,3 +399,9 @@ jobs:
         SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
         SSH_USER: mixxx
+
+    - name: "Trigger Netlify build"
+      if: env.NETLIFY_BUILD_HOOK != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
+      run: curl -X POST -d {} ${{ env.NETLIFY_BUILD_HOOK }}
+      env:
+        NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
