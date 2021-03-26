@@ -51,8 +51,7 @@ BpmControl::BpmControl(const QString& group,
         : EngineControl(group, pConfig),
           m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
           m_dSyncInstantaneousBpm(0.0),
-          m_dLastSyncAdjustment(1.0),
-          m_dUserTweakingSync(false) {
+          m_dLastSyncAdjustment(1.0) {
     m_dSyncTargetBeatDistance.setValue(0.0);
     m_dUserOffset.setValue(0.0);
 
@@ -412,7 +411,6 @@ double BpmControl::calcSyncedRate(double userTweak) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::calcSyncedRate, tweak " << userTweak;
     }
-    m_dUserTweakingSync = userTweak != 0.0;
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
     if (m_pLocalBpm->toBool()) {
@@ -449,7 +447,7 @@ double BpmControl::calcSyncedRate(double userTweak) {
     }
 
     // Now we have all we need to calculate the sync adjustment if any.
-    double adjustment = calcSyncAdjustment(m_dUserTweakingSync);
+    double adjustment = calcSyncAdjustment(userTweak != 0.0);
     return (rate + userTweak) * adjustment;
 }
 
