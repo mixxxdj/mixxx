@@ -42,6 +42,13 @@ do
     # This prevents users from downloading an incomplete file from the server which has not yet finished deploying.
     echo "Deploying artifact: ${FILEPATH}"
     FILENAME="$(basename "${FILEPATH}")"
+
+    if [ "${DEPLOY_ONLY}" -eq 1 ]
+    then
+        rsync -e "${SSH}" -r --delete-after "${FILEPATH}" "${SSH_USER}@${SSH_HOST}:${DEST_PATH}"
+        continue
+    fi
+
     FILENAME_HASH="${FILENAME}.sha256sum"
     FILEPATH_HASH="${FILEPATH}.sha256sum"
 

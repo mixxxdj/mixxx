@@ -350,6 +350,7 @@ jobs:
       run: bash tools/deploy.sh ${{ matrix.artifacts_path }}
       env:
         DESTDIR: public_html/downloads/
+        DEPLOY_ONLY: 0
         SSH_HOST: downloads-hostgator.mixxx.org
         SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
@@ -373,7 +374,6 @@ jobs:
     name: "Update manifest file on download server"
     runs-on: ubuntu-latest
     needs: build
-    if: github.event_name == 'push'
     steps:
     - name: "Check out repository"
       uses: actions/checkout@v2
@@ -381,17 +381,19 @@ jobs:
         fetch-depth: 0
 
     - name: "Collect Artifacts Metadata & Write Manifest"
-      if: github.event_name == 'push'
+      if: github.event_name == 'push' && env.SSH_PASSWORD != null
       run: python3 tools/collect_artifacts_metadata.py
       env:
         JOB_DATA: ${{ toJSON(needs.build) }}
         DEPLOY_DESTPATH: "builds/{git_branch}"
+        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
 
     - name: "Deploy Manifest"
       if: github.event_name == 'push' && env.SSH_PASSWORD != null
-      run: echo ${{ toJSON(needs) }}
+      run: bash tools/deploy.sh manifest.json
       env:
         DESTDIR: public_html/downloads/
+        DEPLOY_ONLY: 1
         SSH_HOST: downloads-hostgator.mixxx.org
         SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
