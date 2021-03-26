@@ -31,6 +31,7 @@ print(f"Build job result: {job_result}")
 assert job_result == "success"
 
 manifest_data = {}
+missing_artifacts = False
 for output_name, output_data in job_data["outputs"].items():
     prefix, _, slug = output_name.partition("-")
     if prefix != "artifact" or not slug:
@@ -43,6 +44,7 @@ for output_name, output_data in job_data["outputs"].items():
     package_exists = url_exists(url)
     if not package_exists:
         print(f"fail ({url})")
+        missing_artifacts = True
         continue
     print("ok")
 
@@ -51,6 +53,8 @@ for output_name, output_data in job_data["outputs"].items():
 print(json.dumps(manifest_data, indent=2, sort_keys=True))
 
 assert manifest_data
+if missing_artifacts:
+    sys.exit(1)
 
 with open("manifest.json", mode="w") as fp:
     json.dump(manifest_data, fp, indent=2, sort_keys=True)
