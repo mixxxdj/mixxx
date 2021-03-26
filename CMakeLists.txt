@@ -1612,15 +1612,14 @@ add_dependencies(mixxx-test mixxx-testdata)
 #
 # Resources
 #
-add_library(mixxx-qrc OBJECT EXCLUDE_FROM_ALL res/mixxx.qrc)
-set_target_properties(mixxx-qrc PROPERTIES AUTORCC ON)
-
 # Add resources to mixxx and mixxx-test binaries, not the mixxx-lib static
 # library. Doing this would require initialization using Q_INIT_RESOURCE()
 # calls that are not present at the moment. Further information can be found
 # at: https://doc.qt.io/qt5/resources.html#using-resources-in-a-library
-target_sources(mixxx PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
-target_sources(mixxx-test PRIVATE $<TARGET_OBJECTS:mixxx-qrc>)
+target_sources(mixxx PRIVATE res/mixxx.qrc)
+set_target_properties(mixxx PROPERTIES AUTORCC ON)
+target_sources(mixxx-test PRIVATE res/mixxx.qrc)
+set_target_properties(mixxx-test PROPERTIES AUTORCC ON)
 
 file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
 string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
