@@ -8,10 +8,7 @@ import urllib.request
 
 def url_exists(url):
     req = urllib.request.Request(url, method="HEAD")
-    try:
-        resp = urllib.request.urlopen(req, timeout=10)
-    except urllib.error.URLError:
-        return False
+    resp = urllib.request.urlopen(req, timeout=10)
     return resp.status == 200
 
 
