@@ -997,7 +997,7 @@ QWidget* LegacySkinParser::parseText(const QDomElement& node) {
 
     WTrackText* pTrackText = new WTrackText(m_pParent,
             m_pConfig,
-            m_pLibrary->trackCollections(),
+            m_pLibrary,
             group);
     setupLabelWidget(node, pTrackText);
 
@@ -1028,7 +1028,7 @@ QWidget* LegacySkinParser::parseTrackProperty(const QDomElement& node) {
     WTrackProperty* pTrackProperty = new WTrackProperty(
             m_pParent,
             m_pConfig,
-            m_pLibrary->trackCollections(),
+            m_pLibrary,
             group);
     setupLabelWidget(node, pTrackProperty);
 
@@ -1068,7 +1068,7 @@ QWidget* LegacySkinParser::parseTrackWidgetGroup(const QDomElement& node) {
     WTrackWidgetGroup* pGroup = new WTrackWidgetGroup(
             m_pParent,
             m_pConfig,
-            m_pLibrary->trackCollections(),
+            m_pLibrary,
             group);
     commonWidgetSetup(node, pGroup);
     pGroup->setup(node, *m_pContext);

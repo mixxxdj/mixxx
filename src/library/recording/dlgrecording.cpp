@@ -23,7 +23,7 @@ DlgRecording::DlgRecording(
                   new WTrackTableView(
                           this,
                           pConfig,
-                          pLibrary->trackCollections(),
+                          pLibrary,
                           parent->getTrackTableBackgroundColorOpacity(),
                           true)),
           m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),

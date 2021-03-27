@@ -8,6 +8,8 @@
 #include <QStringList>
 
 #include "track/track_decl.h"
+#include "util/cache.h"
+#include "util/imageutils.h"
 #include "util/sandbox.h"
 
 class CoverInfo;

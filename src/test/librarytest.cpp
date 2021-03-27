@@ -29,9 +29,8 @@ std::unique_ptr<TrackCollectionManager> newTrackCollectionManager(
 } // namespace
 
 LibraryTest::LibraryTest()
-        : m_mixxxDb(config(), kInMemoryDbConnection),
-          m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-          m_pTrackCollectionManager(newTrackCollectionManager(config(), m_dbConnectionPooler)),
+        : MixxxDbTest(kInMemoryDbConnection),
+          m_pTrackCollectionManager(newTrackCollectionManager(config(), dbConnectionPooler())),
           m_keyNotationCO(ConfigKey("[Library]", "key_notation")) {
 }
 

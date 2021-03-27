@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QWidget>
+#include <memory>
 
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefwaveformdlg.h"
@@ -12,8 +13,11 @@ class Library;
 class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg {
     Q_OBJECT
   public:
-    DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                    UserSettingsPointer pConfig, Library* pLibrary);
+    DlgPrefWaveform(
+            QWidget* pParent,
+            MixxxMainWindow* pMixxx,
+            UserSettingsPointer pConfig,
+            std::shared_ptr<Library> pLibrary);
     virtual ~DlgPrefWaveform();
 
   public slots:
@@ -44,6 +48,6 @@ class DlgPrefWaveform : public DlgPreferencePage, public Ui::DlgPrefWaveformDlg 
     void notifyRebootNecessary();
 
     UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
+    std::shared_ptr<Library> m_pLibrary;
     MixxxMainWindow* m_pMixxx;
 };

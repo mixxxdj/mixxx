@@ -570,7 +570,7 @@ bool BpmControl::getBeatContext(const mixxx::BeatsPointer& pBeats,
 
     double dPrevBeat;
     double dNextBeat;
-    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat)) {
+    if (!pBeats->findPrevNextBeats(dPosition, &dPrevBeat, &dNextBeat, false)) {
         return false;
     }
 
@@ -605,14 +605,6 @@ bool BpmControl::getBeatContextNoLookup(
     if (dpBeatPercentage != nullptr) {
         *dpBeatPercentage = dBeatLength == 0.0 ? 0.0 :
                 (dPosition - dPrevBeat) / dBeatLength;
-        // Because findNext and findPrev have an epsilon built in, sometimes
-        // the beat percentage is out of range.  Fix it.
-        if (*dpBeatPercentage < 0) {
-            ++*dpBeatPercentage;
-        }
-        if (*dpBeatPercentage > 1) {
-            --*dpBeatPercentage;
-        }
     }
 
     return true;
@@ -663,7 +655,7 @@ double BpmControl::getNearestPositionInPhase(
     }
 
     double dOtherBeatFraction;
-    if (syncMode == SYNC_FOLLOWER) {
+    if (isFollower(syncMode)) {
         // If we're a follower, it's easy to get the other beat fraction
         dOtherBeatFraction = m_dSyncTargetBeatDistance.getValue();
     } else {
@@ -797,6 +789,14 @@ double BpmControl::getBeatMatchPosition(
     // explicit master always syncs to itself, so keep it null
     if (getSyncMode() != SYNC_MASTER_EXPLICIT) {
         pOtherEngineBuffer = pickSyncTarget();
+        if (kLogger.traceEnabled()) {
+            if (pOtherEngineBuffer) {
+                kLogger.trace() << "BpmControl::getBeatMatchPosition sync target"
+                                << pOtherEngineBuffer->getGroup();
+            } else {
+                kLogger.trace() << "BpmControl::getBeatMatchPosition no sync target found";
+            }
+        }
     }
     if (playing) {
         if (!pOtherEngineBuffer || pOtherEngineBuffer->getSpeed() == 0.0) {
@@ -1012,6 +1012,9 @@ void BpmControl::slotBeatsTranslate(double v) {
         return;
     }
     TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
+    if (!pTrack) {
+        return;
+    }
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_TRANSLATE)) {
         double currentSample = getSampleOfTrack().current;
@@ -1065,15 +1068,15 @@ double BpmControl::updateLocalBpm() {
 }
 
 double BpmControl::updateBeatDistance() {
-    double beat_distance = getBeatDistance(getSampleOfTrack().current);
-    m_pThisBeatDistance->set(beat_distance);
+    double beatDistance = getBeatDistance(getSampleOfTrack().current);
+    m_pThisBeatDistance->set(beatDistance);
     if (!isSynchronized()) {
         m_dUserOffset.setValue(0.0);
     }
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::updateBeatDistance" << beat_distance;
+        kLogger.trace() << getGroup() << "BpmControl::updateBeatDistance" << beatDistance;
     }
-    return beat_distance;
+    return beatDistance;
 }
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {

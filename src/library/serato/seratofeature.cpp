@@ -143,12 +143,7 @@ inline quint32 bytesToUInt32(const QByteArray& data) {
     VERIFY_OR_DEBUG_ASSERT(data.size() >= static_cast<int>(sizeof(quint32))) {
         return 0;
     }
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
     return qFromBigEndian<quint32>(data.constData());
-#else
-    return qFromBigEndian<quint32>(
-            reinterpret_cast<const uchar*>(data.constData()));
-#endif
 }
 
 inline bool parseTrack(serato_track_t* track, QIODevice* buffer) {

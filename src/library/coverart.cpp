@@ -35,63 +35,73 @@ QString typeToString(CoverInfo::Type type) {
     return "INVALID TYPE VALUE";
 }
 
-QString coverInfoRelativeToString(const CoverInfoRelative& infoRelative) {
-    return typeToString(infoRelative.type) % "," %
-           sourceToString(infoRelative.source) % "," %
-           infoRelative.coverLocation % "," %
-           "0x" % QString::number(infoRelative.hash, 16);
-}
-
-QString coverInfoToString(const CoverInfo& info) {
-    return coverInfoRelativeToString(info) % "," %
-           info.trackLocation % ",";
-}
-} // anonymous namespace
-
-//static
-quint16 CoverImageUtils::calculateHash(
+quint16 calculateLegacyHash(
         const QImage& image) {
-    auto hash = qChecksum(
+    auto legacyHash = qChecksum(
             reinterpret_cast<const char*>(image.constBits()),
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
-            image.sizeInBytes()
-#else
-            image.byteCount()
-#endif
-    );
+            image.sizeInBytes());
     // In rare cases the calculated checksum could be equal to the
-    // reserved value defaultHash() which might cause unexpected
-    // behavior. In this case we simply invert all bits to get a hash
-    // value that is considered valid.
+    // reserved value CoverInfo::defaultLegacyHash() which might cause
+    // unexpected behavior. In this case we simply invert all bits to
+    // get a hash value that is considered valid.
+    // See also (same special case handling): mixxx::cacheKeyFromMessageDigest()
     // https://mixxx.discourse.group/t/mixxx-2-2-4-reads-id3v1-tags-mixxx-2-3-or-2-4-does-not/21041/11
-    if (hash == defaultHash() && !image.isNull()) {
-        hash = ~hash;
+    if (legacyHash == CoverInfo::defaultLegacyHash() && !image.isNull()) {
+        legacyHash = ~legacyHash;
     }
-    DEBUG_ASSERT(image.isNull() || isValidHash(hash));
-    DEBUG_ASSERT(!image.isNull() || hash == defaultHash());
-    return hash;
+    DEBUG_ASSERT(image.isNull() || legacyHash != CoverInfo::defaultLegacyHash());
+    DEBUG_ASSERT(!image.isNull() || legacyHash == CoverInfo::defaultLegacyHash());
+    return legacyHash;
 }
+
+} // anonymous namespace
 
 CoverInfoRelative::CoverInfoRelative()
         : source(UNKNOWN),
           type(NONE),
-          hash(CoverImageUtils::defaultHash()) {
+          m_legacyHash(defaultLegacyHash()) {
 }
 
-bool operator==(const CoverInfoRelative& a, const CoverInfoRelative& b) {
-    return a.source == b.source &&
-            a.type == b.type &&
-            a.hash == b.hash &&
-            a.coverLocation == b.coverLocation;
+void CoverInfoRelative::setImage(
+        const QImage& image) {
+    color = CoverImageUtils::extractBackgroundColor(image);
+    m_imageDigest = CoverImageUtils::calculateDigest(image);
+    DEBUG_ASSERT(image.isNull() == m_imageDigest.isEmpty());
+    m_legacyHash = calculateLegacyHash(image);
+    DEBUG_ASSERT(image.isNull() == (m_legacyHash == defaultLegacyHash()));
+    DEBUG_ASSERT(image.isNull() != hasImage());
 }
 
-bool operator!=(const CoverInfoRelative& a, const CoverInfoRelative& b) {
-    return !(a == b);
+bool operator==(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs) {
+    return lhs.source == rhs.source &&
+            lhs.type == rhs.type &&
+            lhs.color == rhs.color &&
+            lhs.legacyHash() == rhs.legacyHash() &&
+            lhs.imageDigest() == rhs.imageDigest() &&
+            lhs.coverLocation == rhs.coverLocation;
 }
 
-QDebug operator<<(QDebug dbg, const CoverInfoRelative& infoRelative) {
-    return dbg.maybeSpace() << QString("CoverInfoRelative(%1)")
-            .arg(coverInfoRelativeToString(infoRelative));
+bool operator!=(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs) {
+    return !(lhs == rhs);
+}
+
+QDebug operator<<(QDebug dbg, const CoverInfoRelative& info) {
+    const QDebugStateSaver saver(dbg);
+    dbg = dbg.maybeSpace() << "CoverInfoRelative";
+    return dbg.nospace()
+            << '{'
+            << typeToString(info.type)
+            << ','
+            << sourceToString(info.source)
+            << ','
+            << info.color
+            << ','
+            << info.coverLocation
+            << ','
+            << info.imageDigest()
+            << ','
+            << info.legacyHash()
+            << '}';
 }
 
 CoverInfo::LoadedImage CoverInfo::loadImage(
@@ -159,13 +169,15 @@ CoverInfo::LoadedImage CoverInfo::loadImage(
     return loadedImage;
 }
 
-bool CoverInfo::refreshImageHash(
+bool CoverInfo::refreshImageDigest(
         const QImage& loadedImage,
         const SecurityTokenPointer& pTrackLocationToken) {
-    if (CoverImageUtils::isValidHash(hash)) {
-        // Trust that a valid hash has been calculated from the
-        // corresponding image. Otherwise we would refresh all
-        // hashes over and over again.
+    if (!imageDigest().isEmpty()) {
+        // Assume that a non-empty digest has been calculated from
+        // the corresponding image. Otherwise we would refresh all
+        // digests over and over again.
+        // Invalid legacy hash values are ignored. These will only
+        // be refreshed when opened with a previous version.
         return false;
     }
     QImage image = loadedImage;
@@ -179,25 +191,29 @@ bool CoverInfo::refreshImageHash(
         reset();
         return true;
     }
-    hash = CoverImageUtils::calculateHash(image);
-    DEBUG_ASSERT(image.isNull() || CoverImageUtils::isValidHash(hash));
-    DEBUG_ASSERT(!image.isNull() || hash == CoverImageUtils::defaultHash());
+    setImage(image);
     return true;
 }
 
-bool operator==(const CoverInfo& a, const CoverInfo& b) {
-    return static_cast<const CoverInfoRelative&>(a) ==
-                    static_cast<const CoverInfoRelative&>(b) &&
-            a.trackLocation == b.trackLocation;
+bool operator==(const CoverInfo& lhs, const CoverInfo& rhs) {
+    return static_cast<const CoverInfoRelative&>(lhs) ==
+            static_cast<const CoverInfoRelative&>(rhs) &&
+            lhs.trackLocation == rhs.trackLocation;
 }
 
-bool operator!=(const CoverInfo& a, const CoverInfo& b) {
-    return !(a == b);
+bool operator!=(const CoverInfo& lhs, const CoverInfo& rhs) {
+    return !(lhs == rhs);
 }
 
 QDebug operator<<(QDebug dbg, const CoverInfo& info) {
-    return dbg.maybeSpace() << QString("CoverInfo(%1)")
-            .arg(coverInfoToString(info));
+    const QDebugStateSaver saver(dbg);
+    dbg = dbg.maybeSpace() << "CoverInfo";
+    return dbg.nospace()
+            << '{'
+            << static_cast<const CoverInfoRelative&>(info)
+            << ','
+            << info.trackLocation
+            << '}';
 }
 
 QDebug operator<<(QDebug dbg, const CoverInfo::LoadedImage::Result& result) {

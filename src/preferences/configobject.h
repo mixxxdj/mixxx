@@ -59,8 +59,11 @@ inline QDebug operator<<(QDebug stream, const ConfigKey& configKey) {
 }
 
 // QHash hash function for ConfigKey objects.
-inline uint qHash(const ConfigKey& key) {
-    return qHash(key.group) ^ qHash(key.item);
+inline uint qHash(
+        const ConfigKey& key,
+        uint seed = 0) {
+    return qHash(key.group, seed) ^
+            qHash(key.item, seed);
 }
 
 // The value corresponding to a key. The basic value is a string, but can be
@@ -92,8 +95,10 @@ inline bool operator!=(const ConfigValue& lhs, const ConfigValue& rhs) {
     return !(lhs == rhs);
 }
 
-inline uint qHash(const ConfigValue& key) {
-    return qHash(key.value.toUpper());
+inline uint qHash(
+        const ConfigValue& key,
+        uint seed = 0) {
+    return qHash(key.value.toUpper(), seed);
 }
 
 class ConfigValueKbd : public ConfigValue {

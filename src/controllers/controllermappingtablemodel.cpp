@@ -4,37 +4,29 @@
 
 ControllerMappingTableModel::ControllerMappingTableModel(QObject* pParent)
         : QAbstractTableModel(pParent),
-          m_pMidiPreset(nullptr),
-          m_pHidPreset(nullptr) {
+          m_pMidiMapping(nullptr) {
 }
 
 ControllerMappingTableModel::~ControllerMappingTableModel() {
 
 }
 
-void ControllerMappingTableModel::setPreset(ControllerPresetPointer pPreset) {
-    m_pPreset = pPreset;
-    if (m_pPreset) {
-        // This immediately calls one of the two visit() methods below.
-        m_pPreset->accept(this);
+void ControllerMappingTableModel::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMidiMapping = std::dynamic_pointer_cast<LegacyMidiControllerMapping>(pMapping);
+    // Only legacy MIDI mappings are supported
+    // TODO: prevent calling this code for unsupported mapping types?
+    if (!m_pMidiMapping) {
+        return;
     }
 
-    // Notify the child class a preset was loaded.
-    onPresetLoaded();
+    // Notify the child class a mapping was loaded.
+    onMappingLoaded();
 }
 
 void ControllerMappingTableModel::cancel() {
-    // Apply mutates the preset so to revert to the time just before the last
-    // apply, simply call setPreset again.
-    setPreset(m_pPreset);
-}
-
-void ControllerMappingTableModel::visit(MidiControllerPreset* pMidiPreset) {
-    m_pMidiPreset = pMidiPreset;
-}
-
-void ControllerMappingTableModel::visit(HidControllerPreset* pHidPreset) {
-    m_pHidPreset = pHidPreset;
+    // Apply mutates the mapping so to revert to the time just before the last
+    // apply, simply reload the mapping.
+    onMappingLoaded();
 }
 
 bool ControllerMappingTableModel::setHeaderData(int section,

@@ -7,11 +7,11 @@
 #include "controllers/keyboard/keyboardeventfilter.h"
 #include "library/autodj/autodjprocessor.h"
 #include "library/autodj/dlgautodj.h"
-#include "library/crate/cratestorage.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
+#include "library/trackset/crate/cratestorage.h"
 #include "library/treeitem.h"
 #include "mixer/playermanager.h"
 #include "moc_autodjfeature.cpp"
@@ -142,7 +142,7 @@ void AutoDJFeature::bindLibraryWidget(
             this,
             &AutoDJFeature::slotRandomQueue);
     connect(m_pAutoDJView,
-            &DlgAutoDJ::addRandomButton,
+            &DlgAutoDJ::addRandomTrackButton,
             this,
             &AutoDJFeature::slotAddRandomTrack);
 }

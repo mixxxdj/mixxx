@@ -72,9 +72,9 @@ void EffectRack::removeFromEngine() {
     m_pEngineEffectRack = nullptr;
 }
 
-void EffectRack::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectRack::registerInputChannel(const ChannelHandleAndGroup& handleGroup) {
     foreach (EffectChainSlotPointer pChainSlot, m_effectChainSlots) {
-        pChainSlot->registerInputChannel(handle_group);
+        pChainSlot->registerInputChannel(handleGroup);
     }
 }
 
@@ -255,8 +255,8 @@ EffectChainSlotPointer StandardEffectRack::addEffectChainSlot() {
     // Register all the existing channels with the new EffectChain.
     const QSet<ChannelHandleAndGroup>& registeredChannels =
             m_pEffectChainManager->registeredInputChannels();
-    for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
-        pChainSlot->registerInputChannel(handle_group);
+    for (const ChannelHandleAndGroup& handleGroup : registeredChannels) {
+        pChainSlot->registerInputChannel(handleGroup);
     }
 
     EffectChainSlotPointer pChainSlotPointer = EffectChainSlotPointer(pChainSlot);
@@ -291,9 +291,9 @@ OutputEffectRack::OutputEffectRack(EffectsManager* pEffectsManager,
     // TODO(Be): Remove this hideous hack to get the ChannelHandleAndGroup
     const QSet<ChannelHandleAndGroup>& registeredChannels =
             m_pEffectChainManager->registeredInputChannels();
-    for (const ChannelHandleAndGroup& handle_group : registeredChannels) {
-        if (handle_group.name() == "[MasterOutput]") {
-            masterHandleAndGroup = &handle_group;
+    for (const ChannelHandleAndGroup& handleGroup : registeredChannels) {
+        if (handleGroup.name() == "[MasterOutput]") {
+            masterHandleAndGroup = &handleGroup;
             break;
         }
     }
@@ -340,10 +340,10 @@ void PerGroupRack::setupForGroup(const QString& groupName) {
 
     // TODO(rryan): remove.
     const ChannelHandleAndGroup* handleAndGroup = nullptr;
-    for (const ChannelHandleAndGroup& handle_group :
-             m_pEffectChainManager->registeredInputChannels()) {
-        if (handle_group.name() == groupName) {
-            handleAndGroup = &handle_group;
+    for (const ChannelHandleAndGroup& handleGroup :
+            m_pEffectChainManager->registeredInputChannels()) {
+        if (handleGroup.name() == groupName) {
+            handleAndGroup = &handleGroup;
             break;
         }
     }

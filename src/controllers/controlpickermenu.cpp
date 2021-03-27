@@ -13,7 +13,7 @@
 
 ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
         : QMenu(pParent) {
-    m_effectMasterOutputStr = tr("Master Output");
+    m_effectMasterOutputStr = tr("Main Output");
     m_effectHeadphoneOutputStr = tr("Headphone Output");
     m_deckStr = tr("Deck %1");
     m_samplerStr = tr("Sampler %1");
@@ -34,7 +34,7 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[Master]",
             "crossfader",
             tr("Crossfader"),
-            tr("Master crossfader"),
+            tr("Crossfader"),
             crossfaderMenu,
             true);
     addDeckAndSamplerControl("orientation",
@@ -700,6 +700,30 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
                tr("Replace Auto DJ Queue with selected tracks"),
                libraryMenu, false, m_libraryStr);
     libraryMenu->addSeparator();
+    addControl("[Library]",
+            "search_history_next",
+            tr("Select next search history"),
+            tr("Selects the next search history entry"),
+            libraryMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "search_history_prev",
+            tr("Select previous search history"),
+            tr("Selects the previous search history entry"),
+            libraryMenu,
+            false,
+            m_libraryStr);
+    addControl("[Library]",
+            "search_history_selector",
+            tr("Move selected search entry"),
+            tr("Moves the selected search history item into given direction "
+               "and steps"),
+            libraryMenu,
+            false,
+            m_libraryStr);
+
+    libraryMenu->addSeparator();
     addControl("[Recording]", "toggle_recording",
                tr("Record Mix"),
                tr("Toggle mix recording"),
@@ -1055,6 +1079,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
     addControl("[AutoDJ]", "skip_next",
                tr("Auto DJ Skip Next"),
                tr("Skip the next track in the Auto DJ queue"), autodjMenu);
+    addControl("[AutoDJ]",
+            "add_random_track",
+            tr("Auto DJ Add Random Track"),
+            tr("Add a random track to the Auto DJ queue"),
+            autodjMenu);
     addControl("[AutoDJ]", "fade_now",
                tr("Auto DJ Fade To Next"),
                tr("Trigger the transition to the next track"), autodjMenu);

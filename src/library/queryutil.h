@@ -41,9 +41,14 @@ class ScopedTransaction {
             return false;
         }
         bool result = m_database.commit();
-        qDebug() << "Committing transaction on"
-                 << m_database.connectionName()
-                 << "result:" << result;
+        if (result) {
+            qDebug() << "Committing transaction successfully on"
+                     << m_database.connectionName();
+        } else {
+            qInfo() << "Committing transaction failed on"
+                    << m_database.connectionName()
+                    << ":" << m_database.lastError();
+        }
         m_active = false;
         return result;
     }

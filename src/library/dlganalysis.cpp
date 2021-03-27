@@ -26,7 +26,7 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
     m_pAnalysisLibraryTableView = new WAnalysisLibraryTableView(
             this,
             pConfig,
-            pLibrary->trackCollections(),
+            pLibrary,
             parent->getTrackTableBackgroundColorOpacity());
     connect(m_pAnalysisLibraryTableView,
             &WAnalysisLibraryTableView::loadTrack,

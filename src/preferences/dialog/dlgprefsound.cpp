@@ -18,12 +18,12 @@
  * all the controls to the values obtained from SoundManager.
  */
 DlgPrefSound::DlgPrefSound(QWidget* pParent,
-        SoundManager* pSoundManager,
+        std::shared_ptr<SoundManager> pSoundManager,
         UserSettingsPointer pSettings)
         : DlgPreferencePage(pParent),
           m_pSoundManager(pSoundManager),
           m_pSettings(pSettings),
-          m_config(pSoundManager),
+          m_config(pSoundManager.get()),
           m_settingsModified(false),
           m_bLatencyChanged(false),
           m_bSkipConfigClear(true),
@@ -32,7 +32,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
     // Create text color for the wiki links
     createLinkColor();
 
-    connect(m_pSoundManager,
+    connect(m_pSoundManager.get(),
             &SoundManager::devicesUpdated,
             this,
             &DlgPrefSound::refreshDevices);
@@ -122,9 +122,9 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
             &DlgPrefSound::boothDelaySpinboxChanged);
 
     m_pMicMonitorMode = new ControlProxy("[Master]", "talkover_mix", this);
-    micMonitorModeComboBox->addItem(tr("Master output only"),
+    micMonitorModeComboBox->addItem(tr("Main output only"),
         QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER)));
-    micMonitorModeComboBox->addItem(tr("Master and booth outputs"),
+    micMonitorModeComboBox->addItem(tr("Main and booth outputs"),
         QVariant(static_cast<int>(EngineMaster::MicMonitorMode::MASTER_AND_BOOTH)));
     micMonitorModeComboBox->addItem(tr("Direct monitor (recording and broadcasting only)"),
         QVariant(static_cast<int>(EngineMaster::MicMonitorMode::DIRECT_MONITOR)));
@@ -167,7 +167,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
 
     connect(queryButton, &QAbstractButton::clicked, this, &DlgPrefSound::queryClicked);
 
-    connect(m_pSoundManager,
+    connect(m_pSoundManager.get(),
             &SoundManager::outputRegistered,
             this,
             [this](const AudioOutput& output, AudioSource* source) {
@@ -176,7 +176,7 @@ DlgPrefSound::DlgPrefSound(QWidget* pParent,
                 loadSettings();
             });
 
-    connect(m_pSoundManager,
+    connect(m_pSoundManager.get(),
             &SoundManager::inputRegistered,
             this,
             [this](const AudioInput& input, AudioDestination* dest) {
@@ -678,8 +678,8 @@ void DlgPrefSound::queryClicked() {
  * Slot called when the "Reset to Defaults" button is clicked.
  */
 void DlgPrefSound::slotResetToDefaults() {
-    SoundManagerConfig newConfig(m_pSoundManager);
-    newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
+    SoundManagerConfig newConfig(m_pSoundManager.get());
+    newConfig.loadDefaults(m_pSoundManager.get(), SoundManagerConfig::ALL);
     loadSettings(newConfig);
     keylockComboBox->setCurrentIndex(EngineBuffer::RUBBERBAND);
     m_pKeylockEngine->set(EngineBuffer::RUBBERBAND);

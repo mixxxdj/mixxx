@@ -151,7 +151,7 @@ double BeatGrid::findClosestBeat(double dSamples) const {
     }
     double prevBeat;
     double nextBeat;
-    findPrevNextBeats(dSamples, &prevBeat, &nextBeat);
+    findPrevNextBeats(dSamples, &prevBeat, &nextBeat, true);
     if (prevBeat == -1) {
         // If both values are -1, we correctly return -1.
         return nextBeat;
@@ -206,8 +206,9 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
 }
 
 bool BeatGrid::findPrevNextBeats(double dSamples,
-                                 double* dpPrevBeatSamples,
-                                 double* dpNextBeatSamples) const {
+        double* dpPrevBeatSamples,
+        double* dpNextBeatSamples,
+        bool snapToNearBeats) const {
     double dFirstBeatSample;
     double dBeatLength;
     if (!isValid()) {
@@ -222,11 +223,13 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
     double prevBeat = floor(beatFraction);
     double nextBeat = ceil(beatFraction);
 
-    // If the position is within 1/100th of the next or previous beat, treat it
-    // as if it is that beat.
     const double kEpsilon = .01;
 
-    if (fabs(nextBeat - beatFraction) < kEpsilon) {
+    if ((!snapToNearBeats && ((nextBeat - beatFraction) == 0.0)) ||
+            (snapToNearBeats && (fabs(nextBeat - beatFraction) < kEpsilon))) {
+        // In snapToNearBeats mode: If the position is within 1/100th of the next or previous beat,
+        // treat it as if it is that beat.
+
         beatFraction = nextBeat;
         // If we are going to pretend we were actually on nextBeat then prevBeatFraction
         // needs to be re-calculated. Since it is floor(beatFraction), that's
@@ -239,7 +242,6 @@ bool BeatGrid::findPrevNextBeats(double dSamples,
     *dpNextBeatSamples = nextBeat * dBeatLength + dFirstBeatSample;
     return true;
 }
-
 
 std::unique_ptr<BeatIterator> BeatGrid::findBeats(double startSample, double stopSample) const {
     if (!isValid() || startSample > stopSample) {

@@ -2,10 +2,11 @@
 
 #include <QtDebug>
 
+#include "controllers/controllerdebug.h"
 #include "moc_controlobjectscript.cpp"
 
 ControlObjectScript::ControlObjectScript(const ConfigKey& key, QObject* pParent)
-        : ControlProxy(key, pParent, ControlFlag::NoAssertIfMissing) {
+        : ControlProxy(key, pParent, ControllerDebug::controlFlags()) {
 }
 
 bool ControlObjectScript::addScriptConnection(const ScriptConnection& conn) {
@@ -66,7 +67,7 @@ bool ControlObjectScript::removeScriptConnection(const ScriptConnection& conn) {
     return success;
 }
 
-void ControlObjectScript::disconnectAllConnectionsToFunction(const QScriptValue& function) {
+void ControlObjectScript::disconnectAllConnectionsToFunction(const QJSValue& function) {
     // Make a local copy of m_scriptConnections because items are removed within the loop.
     const QVector<ScriptConnection> connections = m_scriptConnections;
     for (const auto& conn: connections) {

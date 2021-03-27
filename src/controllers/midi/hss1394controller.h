@@ -24,9 +24,11 @@ class DeviceChannelListener : public QObject, public hss1394::ChannelListener {
     void Disconnected();
     void Reconnected();
   signals:
-    void incomingData(unsigned char status, unsigned char control, unsigned char value,
-                      mixxx::Duration timestamp);
-    void incomingData(const QByteArray& data, mixxx::Duration timestamp);
+    void receivedShortMessage(unsigned char status,
+            unsigned char control,
+            unsigned char value,
+            mixxx::Duration timestamp);
+    void receivedSysex(const QByteArray& data, mixxx::Duration timestamp);
 
   private:
     QString m_sName;
@@ -52,7 +54,7 @@ class Hss1394Controller : public MidiController {
   private:
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf7.
-    void send(const QByteArray& data) override;
+    void sendBytes(const QByteArray& data) override;
 
     hss1394::TNodeInfo m_deviceInfo;
     int m_iDeviceIndex;

@@ -21,7 +21,7 @@ void WColorPickerAction::resetSelectedColor() {
     m_pColorPicker->resetSelectedColor();
 }
 
-void WColorPickerAction::setSelectedColor(mixxx::RgbColor::optional_t color) {
+void WColorPickerAction::setSelectedColor(const mixxx::RgbColor::optional_t& color) {
     m_pColorPicker->setSelectedColor(color);
 }
 

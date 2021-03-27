@@ -7,7 +7,6 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "library/coverartutils.h"
-#include "library/crate/cratefeaturehelper.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/trackschema.h"
 #include "library/dlgtagfetcher.h"
@@ -21,6 +20,7 @@
 #include "library/trackmodel.h"
 #include "library/trackmodeliterator.h"
 #include "library/trackprocessing.h"
+#include "library/trackset/crate/cratefeaturehelper.h"
 #include "mixer/playermanager.h"
 #include "moc_wtrackmenu.cpp"
 #include "preferences/colorpalettesettings.h"
@@ -32,19 +32,21 @@
 #include "widget/wcolorpickeraction.h"
 #include "widget/wcoverartlabel.h"
 #include "widget/wcoverartmenu.h"
+#include "widget/wsearchrelatedtracksmenu.h"
 #include "widget/wskincolor.h"
 #include "widget/wstarrating.h"
 #include "widget/wwidget.h"
 
-WTrackMenu::WTrackMenu(QWidget* parent,
+WTrackMenu::WTrackMenu(
+        QWidget* parent,
         UserSettingsPointer pConfig,
-        TrackCollectionManager* pTrackCollectionManager,
+        Library* pLibrary,
         Features flags,
         TrackModel* trackModel)
         : QMenu(parent),
           m_pTrackModel(trackModel),
           m_pConfig(pConfig),
-          m_pTrackCollectionManager(pTrackCollectionManager),
+          m_pLibrary(pLibrary),
           m_bPlaylistMenuLoaded(false),
           m_bCrateMenuLoaded(false),
           m_eActiveFeatures(flags),
@@ -139,6 +141,30 @@ void WTrackMenu::createMenus() {
         //: Reset metadata in right click track context menu in library
         m_pClearMetadataMenu->setTitle(tr("Reset"));
     }
+
+    if (featureIsEnabled(Feature::SearchRelated)) {
+        DEBUG_ASSERT(!m_pSearchRelatedMenu);
+        m_pSearchRelatedMenu =
+                make_parented<WSearchRelatedTracksMenu>(this);
+        connect(m_pSearchRelatedMenu,
+                &QMenu::aboutToShow,
+                this,
+                [this] {
+                    m_pSearchRelatedMenu->clear();
+                    const auto pTrack = getFirstTrackPointer();
+                    if (pTrack) {
+                        m_pSearchRelatedMenu->addActionsForTrack(*pTrack);
+                    }
+                    m_pSearchRelatedMenu->setEnabled(
+                            !m_pSearchRelatedMenu->isEmpty());
+                });
+        connect(m_pSearchRelatedMenu,
+                &WSearchRelatedTracksMenu::triggerSearch,
+                this,
+                [this](const QString& searchQuery) {
+                    m_pLibrary->searchTracksInCollection(searchQuery);
+                });
+    }
 }
 
 void WTrackMenu::createActions() {
@@ -214,16 +240,23 @@ void WTrackMenu::createActions() {
                 this,
                 &WTrackMenu::slotExportMetadataIntoFileTags);
 
-        for (const auto& externalTrackCollection : m_pTrackCollectionManager->externalCollections()) {
+        m_updateInExternalTrackCollections.reserve(
+                m_pLibrary->trackCollections()->externalCollections().size());
+        for (auto* const pExternalTrackCollection :
+                m_pLibrary->trackCollections()->externalCollections()) {
             UpdateExternalTrackCollection updateInExternalTrackCollection;
-            updateInExternalTrackCollection.externalTrackCollection = externalTrackCollection;
-            updateInExternalTrackCollection.action = new QAction(externalTrackCollection->name(), m_pMetadataMenu);
-            updateInExternalTrackCollection.action->setToolTip(externalTrackCollection->description());
+            updateInExternalTrackCollection.externalTrackCollection = pExternalTrackCollection;
+            updateInExternalTrackCollection.action = new QAction(
+                    pExternalTrackCollection->name(), m_pMetadataMenu);
+            updateInExternalTrackCollection.action->setToolTip(
+                    pExternalTrackCollection->description());
             m_updateInExternalTrackCollections += updateInExternalTrackCollection;
-            auto externalTrackCollectionPtr = updateInExternalTrackCollection.externalTrackCollection;
-            connect(updateInExternalTrackCollection.action, &QAction::triggered, this, [this, externalTrackCollectionPtr] {
-                slotUpdateExternalTrackCollection(externalTrackCollectionPtr);
-            });
+            connect(updateInExternalTrackCollection.action,
+                    &QAction::triggered,
+                    this,
+                    [this, pExternalTrackCollection] {
+                        slotUpdateExternalTrackCollection(pExternalTrackCollection);
+                    });
         }
     }
 
@@ -320,6 +353,11 @@ void WTrackMenu::createActions() {
 }
 
 void WTrackMenu::setupActions() {
+    if (featureIsEnabled(Feature::SearchRelated)) {
+        addMenu(m_pSearchRelatedMenu);
+        addSeparator();
+    }
+
     if (featureIsEnabled(Feature::AutoDJ)) {
         addAction(m_pAutoDJBottomAct);
         addAction(m_pAutoDJTopAct);
@@ -349,13 +387,13 @@ void WTrackMenu::setupActions() {
     }
 
     if (featureIsEnabled(Feature::Remove)) {
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
             addAction(m_pRemoveAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
             addAction(m_pRemovePlaylistAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
             addAction(m_pRemoveCrateAct);
         }
     }
@@ -391,17 +429,25 @@ void WTrackMenu::setupActions() {
 
         for (const auto& updateInExternalTrackCollection :
                 qAsConst(m_updateInExternalTrackCollections)) {
-            ExternalTrackCollection* externalTrackCollection =
-                    updateInExternalTrackCollection.externalTrackCollection;
-            if (externalTrackCollection) {
-                updateInExternalTrackCollection.action->setEnabled(
-                        externalTrackCollection->isConnected());
-                m_pMetadataUpdateExternalCollectionsMenu->addAction(
-                        updateInExternalTrackCollection.action);
-            }
+            m_pMetadataUpdateExternalCollectionsMenu->addAction(
+                    updateInExternalTrackCollection.action);
         }
         if (!m_pMetadataUpdateExternalCollectionsMenu->isEmpty()) {
             m_pMetadataMenu->addMenu(m_pMetadataUpdateExternalCollectionsMenu);
+            // Enable/disable entries depending on the connection status
+            // that may change at runtime.
+            connect(m_pMetadataUpdateExternalCollectionsMenu,
+                    &QMenu::aboutToShow,
+                    this,
+                    [this] {
+                        for (const auto& updateInExternalTrackCollection :
+                                qAsConst(m_updateInExternalTrackCollections)) {
+                            updateInExternalTrackCollection.action->setEnabled(
+                                    updateInExternalTrackCollection
+                                            .externalTrackCollection
+                                            ->isConnected());
+                        }
+                    });
         }
 
         m_pMetadataMenu->addMenu(m_pCoverMenu);
@@ -428,13 +474,13 @@ void WTrackMenu::setupActions() {
 
     addSeparator();
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
             addAction(m_pHideAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide)) {
             addAction(m_pUnhideAct);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge)) {
             addAction(m_pPurgeAct);
         }
     }
@@ -521,13 +567,27 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
                                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_TYPE))
                         .data()
                         .toInt());
-        coverInfo.hash =
+        coverInfo.color = mixxx::RgbColor::fromQVariant(
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_COLOR))
+                        .data());
+        const auto imageDigest =
+                lastIndex
+                        .sibling(
+                                lastIndex.row(),
+                                m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_DIGEST))
+                        .data()
+                        .toByteArray();
+        const auto legacyHash =
                 lastIndex
                         .sibling(
                                 lastIndex.row(),
                                 m_pTrackModel->fieldIndex(LIBRARYTABLE_COVERART_HASH))
                         .data()
                         .toUInt();
+        coverInfo.setImageDigest(imageDigest, legacyHash);
         coverInfo.coverLocation =
                 lastIndex
                         .sibling(
@@ -605,14 +665,14 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::Remove)) {
-        bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Remove)) {
             m_pRemoveAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemovePlaylist)) {
             m_pRemovePlaylistAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE_CRATE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::RemoveCrate)) {
             m_pRemoveCrateAct->setEnabled(!locked);
         }
     }
@@ -662,14 +722,14 @@ void WTrackMenu::updateMenus() {
     }
 
     if (featureIsEnabled(Feature::HideUnhidePurge)) {
-        bool locked = m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE)) {
+        bool locked = m_pTrackModel->hasCapabilities(TrackModel::Capability::Locked);
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide)) {
             m_pHideAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide)) {
             m_pUnhideAct->setEnabled(!locked);
         }
-        if (m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE)) {
+        if (m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge)) {
             m_pPurgeAct->setEnabled(!locked);
         }
     }
@@ -816,7 +876,7 @@ int WTrackMenu::applyTrackPointerOperation(
             operationMode);
     return modalOperation.processTracks(
             progressLabelText,
-            m_pTrackCollectionManager,
+            m_pLibrary->trackCollections(),
             pTrackPointerIter.get());
 }
 
@@ -914,7 +974,9 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
         return;
     }
     m_pPlaylistMenu->clear();
-    PlaylistDAO& playlistDao = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
+    const PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+                                             ->internalCollection()
+                                             ->getPlaylistDAO();
     QMap<QString, int> playlists;
     int numPlaylists = playlistDao.playlistCount();
     for (int i = 0; i < numPlaylists; ++i) {
@@ -951,7 +1013,9 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+                                       ->internalCollection()
+                                       ->getPlaylistDAO();
 
     if (iPlaylistId == -1) { // i.e. a new playlist is suppose to be created
         QString name;
@@ -991,7 +1055,7 @@ void WTrackMenu::addSelectionToPlaylist(int iPlaylistId) {
     }
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pTrackCollectionManager->unhideTracks(trackIds);
+    m_pLibrary->trackCollections()->unhideTracks(trackIds);
     playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
 }
 
@@ -1005,7 +1069,11 @@ void WTrackMenu::slotPopulateCrateMenu() {
     m_pCrateMenu->clear();
     const TrackIdList trackIds = getTrackIds();
 
-    CrateSummarySelectResult allCrates(m_pTrackCollectionManager->internalCollection()->crates().selectCratesWithTrackCount(trackIds));
+    CrateSummarySelectResult allCrates(
+            m_pLibrary->trackCollections()
+                    ->internalCollection()
+                    ->crates()
+                    .selectCratesWithTrackCount(trackIds));
 
     CrateSummary crate;
     while (allCrates.populateNext(&crate)) {
@@ -1072,17 +1140,19 @@ void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
     pCheckBox->setTristate(false);
     if (!pCheckBox->isChecked()) {
         if (crateId.isValid()) {
-            m_pTrackCollectionManager->internalCollection()->removeCrateTracks(crateId, trackIds);
+            m_pLibrary->trackCollections()
+                    ->internalCollection()
+                    ->removeCrateTracks(crateId, trackIds);
         }
     } else {
         if (!crateId.isValid()) { // i.e. a new crate is suppose to be created
             crateId = CrateFeatureHelper(
-                    m_pTrackCollectionManager->internalCollection(), m_pConfig)
+                    m_pLibrary->trackCollections()->internalCollection(), m_pConfig)
                               .createEmptyCrate();
         }
         if (crateId.isValid()) {
-            m_pTrackCollectionManager->unhideTracks(trackIds);
-            m_pTrackCollectionManager->internalCollection()->addCrateTracks(crateId, trackIds);
+            m_pLibrary->trackCollections()->unhideTracks(trackIds);
+            m_pLibrary->trackCollections()->internalCollection()->addCrateTracks(crateId, trackIds);
         }
     }
 }
@@ -1096,12 +1166,12 @@ void WTrackMenu::addSelectionToNewCrate() {
     }
 
     CrateId crateId = CrateFeatureHelper(
-            m_pTrackCollectionManager->internalCollection(), m_pConfig)
+            m_pLibrary->trackCollections()->internalCollection(), m_pConfig)
                               .createEmptyCrate();
 
     if (crateId.isValid()) {
-        m_pTrackCollectionManager->unhideTracks(trackIds);
-        m_pTrackCollectionManager->internalCollection()->addCrateTracks(crateId, trackIds);
+        m_pLibrary->trackCollections()->unhideTracks(trackIds);
+        m_pLibrary->trackCollections()->internalCollection()->addCrateTracks(crateId, trackIds);
     }
 }
 
@@ -1184,7 +1254,7 @@ namespace {
 
 class SetColorTrackPointerOperation : public mixxx::TrackPointerOperation {
   public:
-    explicit SetColorTrackPointerOperation(mixxx::RgbColor::optional_t color)
+    explicit SetColorTrackPointerOperation(const mixxx::RgbColor::optional_t& color)
             : m_color(color) {
     }
 
@@ -1199,7 +1269,7 @@ class SetColorTrackPointerOperation : public mixxx::TrackPointerOperation {
 
 } // anonymous namespace
 
-void WTrackMenu::slotColorPicked(mixxx::RgbColor::optional_t color) {
+void WTrackMenu::slotColorPicked(const mixxx::RgbColor::optional_t& color) {
     const auto progressLabelText =
             tr("Setting color of %n track(s)", "", getTrackCount());
     const auto trackOperator =
@@ -1440,7 +1510,7 @@ void WTrackMenu::slotClearWaveform() {
     const auto progressLabelText =
             tr("Resetting waveform of %n track(s)", "", getTrackCount());
     AnalysisDao& analysisDao =
-            m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
+            m_pLibrary->trackCollections()->internalCollection()->getAnalysisDAO();
     const auto trackOperator =
             ResetWaveformTrackPointerOperation(analysisDao);
     applyTrackPointerOperation(
@@ -1496,7 +1566,7 @@ void WTrackMenu::slotClearAllMetadata() {
     const auto progressLabelText =
             tr("Resetting all performance metadata of %n track(s)", "", getTrackCount());
     AnalysisDao& analysisDao =
-            m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
+            m_pLibrary->trackCollections()->internalCollection()->getAnalysisDAO();
     const auto trackOperator =
             ClearAllPerformanceMetadataTrackPointerOperation(analysisDao);
     applyTrackPointerOperation(
@@ -1572,10 +1642,12 @@ void WTrackMenu::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pTrackCollectionManager->internalCollection()->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+                                       ->internalCollection()
+                                       ->getPlaylistDAO();
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pTrackCollectionManager->unhideTracks(trackIds);
+    m_pLibrary->trackCollections()->unhideTracks(trackIds);
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 
@@ -1677,46 +1749,47 @@ bool WTrackMenu::featureIsEnabled(Feature flag) const {
 
     switch (flag) {
     case Feature::AutoDJ:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::AddToAutoDJ);
     case Feature::LoadTo:
         return m_pTrackModel->hasCapabilities(
-                       TrackModel::TRACKMODELCAPS_LOADTODECK) ||
+                       TrackModel::Capability::LoadToDeck) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_LOADTOSAMPLER) ||
+                        TrackModel::Capability::LoadToSampler) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_LOADTOPREVIEWDECK);
+                        TrackModel::Capability::LoadToPreviewDeck);
     case Feature::Playlist:
-        return m_pTrackModel->hasCapabilities(
-                TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST);
     case Feature::Crate:
         return m_pTrackModel->hasCapabilities(
-                TrackModel::TRACKMODELCAPS_ADDTOCRATE);
+                TrackModel::Capability::AddToTrackSet);
     case Feature::Remove:
         return m_pTrackModel->hasCapabilities(
-                       TrackModel::TRACKMODELCAPS_REMOVE) ||
+                       TrackModel::Capability::Remove) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_REMOVE_PLAYLIST) ||
+                        TrackModel::Capability::RemovePlaylist) ||
                 m_pTrackModel->hasCapabilities(
-                        TrackModel::TRACKMODELCAPS_REMOVE_CRATE);
+                        TrackModel::Capability::RemoveCrate);
     case Feature::Metadata:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::Reset:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA) &&
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED);
+        return m_pTrackModel->hasCapabilities(
+                TrackModel::Capability::EditMetadata |
+                TrackModel::Capability::ResetPlayed);
     case Feature::BPM:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::Color:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
     case Feature::HideUnhidePurge:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_HIDE) ||
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_UNHIDE) ||
-                m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_PURGE);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::Hide) ||
+                m_pTrackModel->hasCapabilities(TrackModel::Capability::Unhide) ||
+                m_pTrackModel->hasCapabilities(TrackModel::Capability::Purge);
     case Feature::FileBrowser:
         return true;
     case Feature::Properties:
-        return m_pTrackModel->hasCapabilities(TrackModel::TRACKMODELCAPS_EDITMETADATA);
+        return m_pTrackModel->hasCapabilities(TrackModel::Capability::EditMetadata);
+    case Feature::SearchRelated:
+        return m_pLibrary != nullptr;
     default:
         DEBUG_ASSERT(!"unreachable");
-        return true;
+        return false;
     }
 }

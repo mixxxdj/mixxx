@@ -281,9 +281,9 @@ void WSpinny::slotCoverFound(
         const QObject* pRequestor,
         const CoverInfo& coverInfo,
         const QPixmap& pixmap,
-        quint16 requestedHash,
+        mixxx::cache_key_t requestedCacheKey,
         bool coverInfoUpdated) {
-    Q_UNUSED(requestedHash);
+    Q_UNUSED(requestedCacheKey);
     Q_UNUSED(coverInfoUpdated);
     if (pRequestor == this &&
             m_loadedTrack &&

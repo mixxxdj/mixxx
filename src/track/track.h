@@ -182,7 +182,7 @@ class Track : public QObject {
     // Returns the track color
     mixxx::RgbColor::optional_t getColor() const;
     // Sets the track color
-    void setColor(mixxx::RgbColor::optional_t);
+    void setColor(const mixxx::RgbColor::optional_t&);
     // Returns the user comment
     QString getComment() const;
     // Sets the user commnet
@@ -213,6 +213,10 @@ class Track : public QObject {
     // Only required for the times_played property
     int getTimesPlayed() const {
         return getPlayCounter().getTimesPlayed();
+    }
+
+    QDateTime getLastPlayedAt() const {
+        return getPlayCounter().getLastPlayedAt();
     }
 
     // Returns rating
@@ -257,7 +261,11 @@ class Track : public QObject {
     void analysisFinished();
 
     // Calls for managing the track's cue points
-    CuePointer createAndAddCue();
+    CuePointer createAndAddCue(
+            mixxx::CueType type,
+            int hotCueIndex,
+            double sampleStartPosition,
+            double sampleEndPosition);
     CuePointer findCueByType(mixxx::CueType type) const; // NOTE: Cannot be used for hotcues.
     CuePointer findCueById(DbId id) const;
     void removeCue(const CuePointer& pCue);
@@ -318,10 +326,8 @@ class Track : public QObject {
     // If the corresponding image has already been loaded it
     // could be provided as a parameter to avoid reloading
     // if actually needed.
-    bool refreshCoverImageHash(
+    bool refreshCoverImageDigest(
             const QImage& loadedImage = QImage());
-
-    quint16 getCoverHash() const;
 
     // Set/get track metadata and cover art (optional) all at once.
     void importMetadata(
@@ -367,7 +373,7 @@ class Track : public QObject {
     void keyUpdated(double key);
     void keysUpdated();
     void replayGainUpdated(mixxx::ReplayGain replayGain);
-    void colorUpdated(mixxx::RgbColor::optional_t color);
+    void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
     void analyzed();
 
@@ -379,12 +385,11 @@ class Track : public QObject {
     void slotCueUpdated();
 
   private:
-    // Set a unique identifier for the track. Only used by
-    // GlobalTrackCacheResolver!
+    /// Set a unique identifier for the track.
+    /// Only used by GlobalTrackCacheResolver when the track is saved to db for the first time
     void initId(TrackId id);
-    // Reset the unique identifier after purged from library
-    // which undos a previous add. Only used by
-    // GlobalTrackCacheResolver!
+    /// Remove the TrackId.
+    /// Only used by GlobalTrackCacheResolver when the track is purged from the library
     void resetId();
 
     void relocate(

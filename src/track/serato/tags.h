@@ -100,7 +100,7 @@ class SeratoTags final {
     }
 
     RgbColor::optional_t getTrackColor() const;
-    void setTrackColor(RgbColor::optional_t color);
+    void setTrackColor(const RgbColor::optional_t& color);
 
     bool isBpmLocked() const;
     void setBpmLocked(bool bpmLocked);

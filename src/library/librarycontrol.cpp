@@ -4,6 +4,7 @@
 #include <QItemSelectionModel>
 #include <QModelIndex>
 #include <QModelIndexList>
+#include <QWindow>
 #include <QtDebug>
 
 #include "control/controlobject.h"
@@ -211,6 +212,47 @@ LibraryControl::LibraryControl(Library* pLibrary)
             &ControlPushButton::valueChanged,
             this,
             &LibraryControl::slotTrackColorNext);
+
+    // Control to navigate between widgets (tab/shit+tab button)
+    m_pSelectHistoryNext = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "search_history_next"));
+    m_pSelectHistoryPrev = std::make_unique<ControlPushButton>(
+            ConfigKey("[Library]", "search_history_prev"));
+    m_pSelectHistorySelect = std::make_unique<ControlEncoder>(
+            ConfigKey("[Library]", "search_history_selector"), false);
+    connect(m_pSelectHistoryNext.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value >= 1.0) {
+                    m_pSearchbox->slotMoveSelectedHistory(1);
+                }
+            });
+    connect(m_pSelectHistoryPrev.get(),
+            &ControlPushButton::valueChanged,
+            this,
+            [this](double value) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (value >= 1.0) {
+                    m_pSearchbox->slotMoveSelectedHistory(-1);
+                }
+            });
+    connect(m_pSelectHistorySelect.get(),
+            &ControlEncoder::valueChanged,
+            this,
+            [this](double steps) {
+                VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+                    return;
+                }
+                if (steps >= 1.0 || steps <= -1.0) {
+                    m_pSearchbox->slotMoveSelectedHistory(static_cast<int>(steps));
+                }
+            });
 
     /// Deprecated controls
     m_pSelectNextTrack = std::make_unique<ControlPushButton>(ConfigKey("[Playlist]", "SelectNextTrack"));
@@ -538,19 +580,26 @@ void LibraryControl::emitKeyEvent(QKeyEvent&& event) {
     VERIFY_OR_DEBUG_ASSERT(m_pLibraryWidget) {
         return;
     }
+    VERIFY_OR_DEBUG_ASSERT(m_pSearchbox) {
+        return;
+    }
     if (!QApplication::focusWindow()) {
         qDebug() << "Mixxx window is not focused, don't send key events";
         return;
     }
 
-    bool keyIsTab = event.key() == static_cast<int>(Qt::Key_Tab);
+    bool keyIsTab = event.key() == Qt::Key_Tab;
+    bool keyIsUpDown = event.key() == Qt::Key_Up || event.key() == Qt::Key_Down;
 
     // If the main window has focus, any widget can receive Tab.
     // Other keys should be sent to library widgets only to not
     // accidentally alter spinboxes etc.
+    // If the searchbox has focus allow only Up/Down to select previous queries.
     if (!keyIsTab && !m_pSidebarWidget->hasFocus()
             && !m_pLibraryWidget->getActiveView()->hasFocus()) {
-        setLibraryFocus();
+        if (keyIsUpDown && !m_pSearchbox->hasFocus()) {
+            setLibraryFocus();
+        }
     }
     if (keyIsTab && !QApplication::focusWidget()){
         setLibraryFocus();
@@ -657,6 +706,11 @@ void LibraryControl::slotGoToItem(double v) {
     if (pActiveView && pActiveView->hasFocus()) {
         pActiveView->loadSelectedTrack();
         return;
+    }
+
+    // If searchbox has focus jump to the tracks table
+    if (m_pSearchbox->hasFocus()) {
+        return setLibraryFocus();
     }
 
     // Clear the search if the searchbox has focus

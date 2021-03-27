@@ -1,21 +1,19 @@
 #include "controllers/controller.h"
 
 #include <QApplication>
-#include <QScriptValue>
+#include <QJSValue>
 
 #include "controllers/controllerdebug.h"
 #include "controllers/defs_controllers.h"
 #include "moc_controller.cpp"
 #include "util/screensaver.h"
 
-Controller::Controller(UserSettingsPointer pConfig)
-        : QObject(),
-          m_pEngine(nullptr),
+Controller::Controller()
+        : m_pScriptEngineLegacy(nullptr),
           m_bIsOutputDevice(false),
           m_bIsInputDevice(false),
           m_bIsOpen(false),
-          m_bLearning(false),
-          m_pConfig(pConfig) {
+          m_bLearning(false) {
     m_userActivityInhibitTimer.start();
 }
 
@@ -24,49 +22,49 @@ Controller::~Controller() {
     // destructors.
 }
 
+ControllerJSProxy* Controller::jsProxy() {
+    return new ControllerJSProxy(this);
+}
+
 void Controller::startEngine()
 {
     controllerDebug("  Starting engine");
-    if (m_pEngine != nullptr) {
+    if (m_pScriptEngineLegacy) {
         qWarning() << "Controller: Engine already exists! Restarting:";
         stopEngine();
     }
-    m_pEngine = new ControllerEngine(this, m_pConfig);
+    m_pScriptEngineLegacy = new ControllerScriptEngineLegacy(this);
 }
 
 void Controller::stopEngine() {
     controllerDebug("  Shutting down engine");
-    if (m_pEngine == nullptr) {
+    if (!m_pScriptEngineLegacy) {
         qWarning() << "Controller::stopEngine(): No engine exists!";
         return;
     }
-    m_pEngine->gracefulShutdown();
-    delete m_pEngine;
-    m_pEngine = nullptr;
+    delete m_pScriptEngineLegacy;
+    m_pScriptEngineLegacy = nullptr;
 }
 
-bool Controller::applyPreset(bool initializeScripts) {
-    qDebug() << "Applying controller preset...";
+bool Controller::applyMapping() {
+    qDebug() << "Applying controller mapping...";
 
-    const ControllerPreset* pPreset = preset();
+    const std::shared_ptr<LegacyControllerMapping> pMapping = cloneMapping();
 
     // Load the script code into the engine
-    if (m_pEngine == nullptr) {
-        qWarning() << "Controller::applyPreset(): No engine exists!";
+    if (!m_pScriptEngineLegacy) {
+        qWarning() << "Controller::applyMapping(): No engine exists!";
         return false;
     }
 
-    QList<ControllerPreset::ScriptFileInfo> scriptFiles = pPreset->getScriptFiles();
+    QList<LegacyControllerMapping::ScriptFileInfo> scriptFiles = pMapping->getScriptFiles();
     if (scriptFiles.isEmpty()) {
         qWarning() << "No script functions available! Did the XML file(s) load successfully? See above for any errors.";
         return true;
     }
 
-    bool success = m_pEngine->loadScriptFiles(scriptFiles);
-    if (success && initializeScripts) {
-        m_pEngine->initializeScripts(scriptFiles);
-    }
-    return success;
+    m_pScriptEngineLegacy->setScriptFiles(scriptFiles);
+    return m_pScriptEngineLegacy->initialize();
 }
 
 void Controller::startLearning() {
@@ -91,7 +89,7 @@ void Controller::send(const QList<int>& data, unsigned int length) {
     for (unsigned int i = 0; i < length; ++i) {
         msg[i] = data.at(i);
     }
-    send(msg);
+    sendBytes(msg);
 }
 
 void Controller::triggerActivity()
@@ -103,7 +101,7 @@ void Controller::triggerActivity()
     }
 }
 void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
-    if (m_pEngine == nullptr) {
+    if (!m_pScriptEngineLegacy) {
         //qWarning() << "Controller::receive called with no active engine!";
         // Don't complain, since this will always show after closing a device as
         //  queued signals flush out
@@ -112,7 +110,7 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
     triggerActivity();
 
     int length = data.size();
-    if (ControllerDebug::enabled()) {
+    if (ControllerDebug::isEnabled()) {
         // Formatted packet display
         QString message = QString("%1: t:%2, %3 bytes:\n")
                                   .arg(m_sDeviceName,
@@ -127,7 +125,8 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
             } else {
                 spacer = QStringLiteral(" ");
             }
-            message += QString::number(data.at(i), 16)
+            // cast to quint8 to avoid that negative chars are for instance displayed as ffffffff instead of the desired ff
+            message += QString::number(static_cast<quint8>(data.at(i)), 16)
                                .toUpper()
                                .rightJustified(2, QChar('0')) +
                     spacer;
@@ -135,14 +134,5 @@ void Controller::receive(const QByteArray& data, mixxx::Duration timestamp) {
         controllerDebug(message);
     }
 
-    foreach (QString function, m_pEngine->getScriptFunctionPrefixes()) {
-        if (function == "") {
-            continue;
-        }
-        function.append(".incomingData");
-        QScriptValue incomingData = m_pEngine->wrapFunctionCode(function, 2);
-        if (!m_pEngine->execute(incomingData, data, timestamp)) {
-            qWarning() << "Controller: Invalid script function" << function;
-        }
-    }
+    m_pScriptEngineLegacy->handleIncomingData(data);
 }

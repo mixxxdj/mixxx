@@ -11,8 +11,10 @@
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 
-DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
-                           UserSettingsPointer  _config)
+DlgPrefVinyl::DlgPrefVinyl(
+        QWidget* parent,
+        std::shared_ptr<VinylControlManager> pVCMan,
+        UserSettingsPointer _config)
         : DlgPreferencePage(parent),
           m_pVCManager(pVCMan),
           config(_config) {

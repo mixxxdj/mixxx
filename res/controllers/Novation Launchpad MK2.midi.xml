@@ -4,8 +4,7 @@
         <name>Novation Launchpad MK2</name>
         <author>Midiparse</author>
         <description>Novation Launchpad mapping for Mixxx</description>
-        <forums>https://github.com/szdavid92/mixxx-launchpad</forums>
-        <manual>novation_launchpad_mk2</manual>
+        <forums>https://github.com/dszakallas/mixxx-launchpad</forums>
     </info>
     <controller id="Novation Launchpad MK2">
         <scriptfiles>

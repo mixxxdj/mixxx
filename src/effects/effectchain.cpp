@@ -156,12 +156,12 @@ void EffectChain::setEnabled(bool enabled) {
     emit enabledChanged(enabled);
 }
 
-void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_group) {
+void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
     // TODO(Be): remove m_enabledChannels from this class and move this logic
     // to EffectChainSlot
-    bool bWasAlreadyEnabled = m_enabledInputChannels.contains(handle_group);
+    bool bWasAlreadyEnabled = m_enabledInputChannels.contains(handleGroup);
     if (!bWasAlreadyEnabled) {
-        m_enabledInputChannels.insert(handle_group);
+        m_enabledInputChannels.insert(handleGroup);
     }
 
     // The allocation of EffectStates below may be expensive, so avoid it if
@@ -173,7 +173,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
     request->pTargetChain = m_pEngineEffectChain;
-    request->EnableInputChannelForChain.pChannelHandle = &handle_group.handle();
+    request->EnableInputChannelForChain.pChannelHandle = &handleGroup.handle();
 
     // Allocate EffectStates here in the main thread to avoid allocating
     // memory in the realtime audio callback thread. Pointers to the
@@ -192,7 +192,7 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
         if (m_effects[i] != nullptr) {
             for (const auto& outputChannel : m_pEffectsManager->registeredOutputChannels()) {
                 if (kEffectDebugOutput) {
-                    qDebug() << debugString() << "EffectChain::enableForInputChannel creating EffectState for input" << handle_group << "output" << outputChannel;
+                    qDebug() << debugString() << "EffectChain::enableForInputChannel creating EffectState for input" << handleGroup << "output" << outputChannel;
                 }
                 statesMap.insert(outputChannel.handle(),
                         m_effects[i]->createState(bufferParameters));
@@ -209,25 +209,25 @@ void EffectChain::enableForInputChannel(const ChannelHandleAndGroup& handle_grou
     request->EnableInputChannelForChain.pEffectStatesMapArray = pEffectStatesMapArray;
 
     m_pEffectsManager->writeRequest(request);
-    emit channelStatusChanged(handle_group.name(), true);
+    emit channelStatusChanged(handleGroup.name(), true);
 }
 
-bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handle_group) const {
-    return m_enabledInputChannels.contains(handle_group);
+bool EffectChain::enabledForChannel(const ChannelHandleAndGroup& handleGroup) const {
+    return m_enabledInputChannels.contains(handleGroup);
 }
 
-void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handle_group) {
-    if (m_enabledInputChannels.remove(handle_group)) {
+void EffectChain::disableForInputChannel(const ChannelHandleAndGroup& handleGroup) {
+    if (m_enabledInputChannels.remove(handleGroup)) {
         if (!m_bAddedToEngine) {
             return;
         }
         EffectsRequest* request = new EffectsRequest();
         request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_INPUT_CHANNEL;
         request->pTargetChain = m_pEngineEffectChain;
-        request->DisableInputChannelForChain.pChannelHandle = &handle_group.handle();
+        request->DisableInputChannelForChain.pChannelHandle = &handleGroup.handle();
         m_pEffectsManager->writeRequest(request);
 
-        emit channelStatusChanged(handle_group.name(), false);
+        emit channelStatusChanged(handleGroup.name(), false);
     }
 }
 

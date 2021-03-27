@@ -328,8 +328,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         bool successful = true;
 
         qDebug() << "Copying midi/ to controllers/";
-        QString midiPath = legacyUserPresetsPath(config);
-        QString controllerPath = userPresetsPath(config);
+        QString midiPath = legacyUserMappingsPath(config);
+        QString controllerPath = userMappingsPath(config);
         QDir oldDir(midiPath);
         QDir newDir(controllerPath);
         newDir.mkpath(controllerPath);  // create the new directory

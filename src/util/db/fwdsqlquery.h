@@ -60,6 +60,10 @@ class FwdSqlQuery: protected QSqlQuery {
         bindValue(placeholder, value.toVariant());
     }
 
+    QString executedQuery() const {
+        return QSqlQuery::executedQuery();
+    }
+
     // Execute the prepared query and log errors on failure.
     //
     // Please note, that the member function exec() inherited

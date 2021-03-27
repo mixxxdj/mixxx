@@ -2,9 +2,8 @@
 
 #include <QVector>
 
-#include "controllers/controllerengine.h"
-#include "controllers/controllerdebug.h"
 #include "control/controlproxy.h"
+#include "controllers/scripting/legacy/scriptconnection.h"
 
 // this is used for communicate with controller scripts
 class ControlObjectScript : public ControlProxy {
@@ -21,7 +20,7 @@ class ControlObjectScript : public ControlProxy {
             return m_scriptConnections.size(); };
     inline ScriptConnection firstConnection() {
             return m_scriptConnections.first(); };
-    void disconnectAllConnectionsToFunction(const QScriptValue& function);
+    void disconnectAllConnectionsToFunction(const QJSValue& function);
 
     // Called from update();
     void emitValueChanged() override {

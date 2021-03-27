@@ -8,6 +8,7 @@ const QString BaseSignalPathTest::m_sGroup2 = QStringLiteral("[Channel2]");
 const QString BaseSignalPathTest::m_sGroup3 = QStringLiteral("[Channel3]");
 const QString BaseSignalPathTest::m_sPreviewGroup = QStringLiteral("[PreviewDeck1]");
 const QString BaseSignalPathTest::m_sSamplerGroup = QStringLiteral("[Sampler1]");
+
 const double BaseSignalPathTest::kDefaultRateRange = 0.08;
 const double BaseSignalPathTest::kDefaultRateDir = 1.0;
 const double BaseSignalPathTest::kRateRangeDivisor = kDefaultRateDir * kDefaultRateRange;
