@@ -127,10 +127,11 @@ class Track : public QObject {
 
     // Sets the BPM if not locked.
     bool trySetBpm(double bpm);
+
     // Returns BPM
     double getBpm() const {
         const QMutexLocker lock(&m_qMutex);
-        return getBpmWhileLocked();
+        return getBpmWhileLocked().getValue();
     }
     // Returns BPM as a string
     QString getBpmText() const;
@@ -398,10 +399,16 @@ class Track : public QObject {
     // Set whether the TIO is dirty or not and unlock before emitting
     // any signals. This must only be called from member functions
     // while the TIO is locked.
-    void markDirtyAndUnlock(QMutexLocker* pLock, bool bDirty = true);
+    void markDirtyAndUnlock(QMutexLocker* pLock) {
+        setDirtyAndUnlock(pLock, true);
+    }
     void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
     void afterKeysUpdated(QMutexLocker* pLock);
+    void emitKeysUpdated(mixxx::track::io::key::ChromaticKey newKey);
+
+    void afterBeatsAndBpmUpdated(QMutexLocker* pLock);
+    void emitBeatsAndBpmUpdated(mixxx::Bpm newBpm);
 
     /// Sets beats and returns a boolean to indicate if BPM/Beats were updated.
     /// Only supposed to be called while the caller guards this a lock.
@@ -421,7 +428,7 @@ class Track : public QObject {
     /// caller guards this a lock.
     bool importPendingCueInfosWhileLocked();
 
-    double getBpmWhileLocked() const;
+    mixxx::Bpm getBpmWhileLocked() const;
     bool trySetBpmWhileLocked(double bpmValue);
     bool trySetBeatsWhileLocked(
             mixxx::BeatsPointer pBeats,
@@ -434,9 +441,6 @@ class Track : public QObject {
     bool tryImportPendingBeatsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
             bool lockBpmAfterSet);
-
-    void afterBeatsOrBpmUpdated(
-            QMutexLocker* pLock);
 
     void setCuePointsMarkDirtyAndUnlock(
             QMutexLocker* pLock,
@@ -451,7 +455,8 @@ class Track : public QObject {
     double getDuration(DurationRounding rounding) const;
 
     ExportTrackMetadataResult exportMetadata(
-            mixxx::MetadataSourcePointer pMetadataSource);
+            mixxx::MetadataSourcePointer pMetadataSource,
+            UserSettingsPointer pConfig);
 
     // Information about the actual properties of the
     // audio stream is only available after opening the

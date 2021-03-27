@@ -70,9 +70,7 @@ QString TrackMetadata::getBitrateText() const {
     if (!getStreamInfo().getBitrate().isValid()) {
         return QString();
     }
-    return QString::number(getStreamInfo().getBitrate()) +
-            QChar(' ') +
-            audio::Bitrate::unit();
+    return QString::number(getStreamInfo().getBitrate());
 }
 
 QString TrackMetadata::getDurationText(

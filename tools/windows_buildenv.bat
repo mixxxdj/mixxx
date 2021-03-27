@@ -181,6 +181,7 @@ REM Generate CMakeSettings.json which is read by MS Visual Studio to determine t
     REM Replace all \ by \\ in CMAKE_PREFIX_PATH
     CALL :AddCMakeVar2CMakeSettings_JSON "CMAKE_PREFIX_PATH"                  "STRING"   "!CMAKE_PREFIX_PATH:\=\\!"
     CALL :AddCMakeVar2CMakeSettings_JSON "DEBUG_ASSERTIONS_FATAL"             "BOOL"   "True"
+    CALL :AddCMakeVar2CMakeSettings_JSON "FFMPEG"                             "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "HID"                                "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "HSS1394"                            "BOOL"   "True"
     CALL :AddCMakeVar2CMakeSettings_JSON "KEYFINDER"                          "BOOL"   "False"

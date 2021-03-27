@@ -1,5 +1,6 @@
 #pragma once
 
+#include "preferences/usersettings.h"
 #include "sources/soundsourceproviderregistry.h"
 #include "track/track_decl.h"
 #include "track/trackfile.h"
@@ -145,7 +146,8 @@ class SoundSourceProxy {
     static QRegExp s_supportedFileNamesRegex;
 
     friend class TrackCollectionManager;
-    static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(Track* pTrack);
+    static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
+            Track* pTrack, UserSettingsPointer pConfig);
 
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.

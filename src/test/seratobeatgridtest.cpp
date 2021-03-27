@@ -109,14 +109,12 @@ TEST_F(SeratoBeatGridTest, SerializeBeatgrid) {
     const auto sampleRate = mixxx::audio::SampleRate(44100);
     EXPECT_EQ(sampleRate.isValid(), true);
     const auto pBeats = mixxx::BeatGrid::makeBeatGrid(sampleRate, QString("Test"), bpm, 0);
-    const auto streamInfo = mixxx::audio::StreamInfo(
-            mixxx::audio::SignalInfo(mixxx::audio::ChannelCount(2), sampleRate),
-            mixxx::audio::Bitrate(320),
-            mixxx::Duration::fromSeconds<int>(300));
+    const auto signalInfo = mixxx::audio::SignalInfo(mixxx::audio::ChannelCount(2), sampleRate);
+    const auto duration = mixxx::Duration::fromSeconds<int>(300);
 
     // Serialize that beatgrid into Serato BeatGrid data and check if it's correct
     mixxx::SeratoBeatGrid seratoBeatGrid;
-    seratoBeatGrid.setBeats(pBeats, streamInfo, 0);
+    seratoBeatGrid.setBeats(pBeats, signalInfo, duration, 0);
     EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 0);
     EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
     EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm));
@@ -127,12 +125,9 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
     constexpr double bpm = 100.0;
     const auto sampleRate = mixxx::audio::SampleRate(44100);
     const auto signalInfo = mixxx::audio::SignalInfo(mixxx::audio::ChannelCount(2), sampleRate);
+    const auto duration = mixxx::Duration::fromSeconds<int>(300);
     const double framesPerMinute = signalInfo.getSampleRate() * 60;
     const double framesPerBeat = framesPerMinute / bpm;
-
-    const auto streamInfo = mixxx::audio::StreamInfo(signalInfo,
-            mixxx::audio::Bitrate(320),
-            mixxx::Duration::fromSeconds<int>(300));
 
     QVector<double> beatPositionsFrames;
     double beatPositionFrames = 0;
@@ -150,7 +145,7 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
         EXPECT_EQ(pBeats->getBpmAroundPosition(framesPerMinute, 1), bpm);
 
         mixxx::SeratoBeatGrid seratoBeatGrid;
-        seratoBeatGrid.setBeats(pBeats, streamInfo, 0);
+        seratoBeatGrid.setBeats(pBeats, signalInfo, duration, 0);
         EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 0);
         EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
         EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm));
@@ -172,7 +167,7 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
         EXPECT_EQ(pBeats->getBpmAroundPosition(framesPerMinute * 4, 1), bpm / 2);
 
         mixxx::SeratoBeatGrid seratoBeatGrid;
-        seratoBeatGrid.setBeats(pBeats, streamInfo, 0);
+        seratoBeatGrid.setBeats(pBeats, signalInfo, duration, 0);
         EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 2);
         EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
         EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm / 2));
