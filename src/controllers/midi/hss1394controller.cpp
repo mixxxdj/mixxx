@@ -22,8 +22,6 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
     // If multiple three-byte messages arrive right next to each other, handle them all
     while (i < uBufferSize) {
         unsigned char status = pBuffer[i];
-        unsigned char opcode = status & 0xF0;
-        unsigned char channel = status & 0x0F;
         unsigned char note;
         unsigned char velocity;
         switch (status & 0xF0) {
