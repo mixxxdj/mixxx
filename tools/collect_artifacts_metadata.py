@@ -36,14 +36,16 @@ for output_name, output_data in job_data["outputs"].items():
         continue
     artifact_data = json.loads(output_data)
 
-    print("Checking if package actually exists...", end="")
-    url = artifact_data["file_url"]
-    package_exists = url_exists(url)
-    if not package_exists:
-        print(f"fail ({url})")
-        missing_artifacts = True
-        continue
-    print("ok")
+    # FIXME: Unfortunately this doesn't work because the server responds with
+    # "403 Forbidden". We should reenable it when we figure out the issue
+    # print("Checking if package actually exists...", end="")
+    # url = artifact_data["file_url"]
+    # package_exists = url_exists(url)
+    # if not package_exists:
+    #    print(f"fail ({url})")
+    #    missing_artifacts = True
+    #    continue
+    # print("ok")
 
     manifest_data[slug] = artifact_data
 
