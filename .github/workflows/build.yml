@@ -399,6 +399,7 @@ jobs:
         SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
         SSH_USER: mixxx
+        UPLOAD_ID: ${{ github.run_id }}
 
     - name: "Trigger Netlify build"
       if: env.NETLIFY_BUILD_HOOK != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
