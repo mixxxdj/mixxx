@@ -1343,6 +1343,7 @@ install(
   FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/README"
     "${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Manual.pdf"
+    "${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Keyboard-Shortcuts.pdf"
   DESTINATION
     "${MIXXX_INSTALL_DOCDIR}"
 )
