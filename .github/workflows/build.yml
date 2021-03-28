@@ -333,8 +333,10 @@ jobs:
         Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
     - name: "Generate Artifact Metadata"
-      id: generate_artifact_metadata
-      # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
+      # Generate metadata for file artifact and write it to the job output
+      # using the artifacts_slug value.  This also sets the DEPLOY_DIR
+      # environment variable that is used in the deploy.sh script in the next
+      # step.
       if: github.event_name == 'push'
       run: python3 tools/generate_download_metadata.py artifact ${{ matrix.artifacts_path }} "${{ matrix.artifacts_slug }}"
       env:
@@ -378,6 +380,8 @@ jobs:
         fetch-depth: 0
 
     - name: "Collect Artifacts Metadata & Write Manifest"
+      # Retrieve the metadata from the matrix job's outputs, merge them into a
+      # single JSON document and then deploy to the server.
       if: github.event_name == 'push' && env.SSH_PASSWORD != null
       run: python3 tools/generate_download_metadata.py manifest
       env:
