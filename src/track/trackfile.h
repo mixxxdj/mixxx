@@ -20,6 +20,8 @@
 //
 // Copying an instance of this class is thread-safe, because the
 // underlying QFileInfo is implicitly shared.
+//
+// TODO: Replace with mixxx::FileInfo
 class TrackFile {
   public:
     static TrackFile fromUrl(const QUrl& url) {
