@@ -96,9 +96,8 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         }
     }
 
-    auto* uniqueSyncable = getUniquePlayingSyncable();
-    if (uniqueSyncable != nullptr) {
-        uniqueSyncable->notifyOnlyPlayingSyncable();
+    if (noPlayingFollowers() && m_pMasterSyncable) {
+        m_pMasterSyncable->notifyOnlyPlayingSyncable();
     }
 }
 
@@ -193,8 +192,8 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
 Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     // If there is an explicit master, and it is playing, keep it.
     if (m_pMasterSyncable &&
-            isSyncMaster(m_pMasterSyncable) &&
-            (m_pMasterSyncable->isPlaying() || m_pMasterSyncable == m_pInternalClock)) {
+            m_pMasterSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT &&
+            m_pMasterSyncable->getBaseBpm() != 0.0) {
         return m_pMasterSyncable;
     }
 
@@ -327,17 +326,15 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     }
 
     // similar to enablesync -- we pick a new master and maybe reinit.
-    Syncable* newMaster = pickMaster(playing ? pSyncable : nullptr);
+    Syncable* newMaster = pickMaster(pSyncable);
 
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
         activateMaster(newMaster, SYNC_MASTER_SOFT);
     }
 
-    if (auto pUniqueSyncable = getUniquePlayingSyncable(); pUniqueSyncable) {
-        // If there is only one remaining syncable, it should reinit the
-        // master parameters.
-        pUniqueSyncable->notifyOnlyPlayingSyncable();
-        setMasterParams(pUniqueSyncable);
+    if (noPlayingFollowers() && m_pMasterSyncable) {
+        m_pMasterSyncable->notifyOnlyPlayingSyncable();
+        setMasterParams(m_pMasterSyncable);
     }
 
     pSyncable->requestSync();
@@ -577,8 +574,7 @@ void EngineSync::setMasterBeatDistance(Syncable* pSource, double beatDistance) {
     }
 }
 
-void EngineSync::setMasterParams(
-        Syncable* pSource) {
+void EngineSync::setMasterParams(Syncable* pSource) {
     const double beatDistance = pSource->getBeatDistance();
     const double baseBpm = pSource->getBaseBpm();
     double bpm = pSource->getBpm();
@@ -598,24 +594,15 @@ void EngineSync::setMasterParams(
     }
 }
 
-Syncable* EngineSync::getUniquePlayingSyncable() {
-    int playing_sync_decks = 0;
-    Syncable* PUniqueSyncable = nullptr;
-    foreach (Syncable* pSyncable, m_syncables) {
+bool EngineSync::noPlayingFollowers() const {
+    for (Syncable* pSyncable : m_syncables) {
         if (!pSyncable->isSynchronized()) {
             continue;
         }
 
-        if (pSyncable->isPlaying()) {
-            if (playing_sync_decks > 0) {
-                return nullptr;
-            }
-            PUniqueSyncable = pSyncable;
-            ++playing_sync_decks;
+        if (pSyncable->isPlaying() && isFollower(pSyncable->getSyncMode())) {
+            return false;
         }
     }
-    if (playing_sync_decks == 1) {
-        return PUniqueSyncable;
-    }
-    return nullptr;
+    return true;
 }

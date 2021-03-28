@@ -1266,7 +1266,7 @@ void EngineBuffer::processSeek(bool paused) {
 
     if (!paused && (seekType & SEEK_PHASE)) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineBuffer::processSeek Seeking phase";
+            kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seeking phase";
         }
         double requestedPosition = position;
         double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
@@ -1279,7 +1279,7 @@ void EngineBuffer::processSeek(bool paused) {
     }
     if (position != m_filepos_play) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
+            kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seek to" << position;
         }
         setNewPlaypos(position);
     }
@@ -1443,6 +1443,10 @@ double EngineBuffer::getVisualPlayPos() const {
 
 double EngineBuffer::getTrackSamples() const {
     return m_pTrackSamples->get();
+}
+
+double EngineBuffer::getUserOffset() const {
+    return m_pBpmControl->getUserOffset();
 }
 
 double EngineBuffer::getRateRatio() const {

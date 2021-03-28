@@ -2078,7 +2078,7 @@ TEST_F(EngineSyncTest, UserTweakBeatDistance) {
 
     EXPECT_DOUBLE_EQ(0.0,
             m_pChannel1->getEngineBuffer()
-                    ->m_pBpmControl->m_dUserOffset.getValue());
+                    ->m_pBpmControl->getUserOffset());
 }
 
 TEST_F(EngineSyncTest, UserTweakPreservedInSeek) {
@@ -2146,18 +2146,123 @@ TEST_F(EngineSyncTest, UserTweakPreservedInSeek) {
 
     // Now, the locations are much more different - but the beat distance appears
     // to be the same because beat distance CO hides the user offset.
-    EXPECT_NEAR(0.2269025,
+    EXPECT_NEAR(0.1990531,
             ControlObject::get(ConfigKey(m_sGroup1, "playposition")),
             kMaxFloatingPointErrorLowPrecision);
-    EXPECT_NEAR(0.1960644,
+    EXPECT_NEAR(0.1686011,
             ControlObject::get(ConfigKey(m_sGroup2, "playposition")),
             kMaxFloatingPointErrorLowPrecision);
-    EXPECT_NEAR(0.12403101,
+    EXPECT_NEAR(0.82651163,
             ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
             kMaxFloatingPointErrorLowPrecision);
-    EXPECT_NEAR(0.12403101,
+    EXPECT_NEAR(0.82651163,
             ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
             kMaxFloatingPointErrorLowPrecision);
+}
+
+TEST_F(EngineSyncTest, FollowerUserTweakPreservedInMasterChange) {
+    // Ensure that when the master deck changes, the user offset is accounted for when
+    // reinitializing the master parameters..
+
+    // This is about 128 bpm, but results in nice round numbers of samples.
+    const double kDivisibleBpm = 44100.0 / 344.0;
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(
+            m_pTrack1->getSampleRate(), kDivisibleBpm, 0.0);
+    m_pTrack1->trySetBeats(pBeats1);
+    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2->getSampleRate(), 130, 0.0);
+    m_pTrack2->trySetBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->set(1);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
+    ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 1.0);
+    // Apply user tweak offset to follower
+    m_pChannel2->getEngineBuffer()
+            ->m_pBpmControl->m_dUserOffset.setValue(0.3);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+
+    EXPECT_TRUE(isExplicitMaster(m_sGroup1));
+    EXPECT_TRUE(isFollower(m_sGroup2));
+
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(kDivisibleBpm,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_DOUBLE_EQ(kDivisibleBpm,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    for (int i = 0; i < 5; ++i) {
+        ProcessBuffer();
+        EXPECT_NEAR(ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
+                ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
+                kMaxFloatingPointErrorLowPrecision);
+    }
+
+    // Switch master
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->set(1);
+    ProcessBuffer();
+    EXPECT_TRUE(isFollower(m_sGroup1));
+    EXPECT_TRUE(isExplicitMaster(m_sGroup2));
+
+    for (int i = 0; i < 10; ++i) {
+        ProcessBuffer();
+        EXPECT_NEAR(ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
+                ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
+                kMaxFloatingPointErrorLowPrecision);
+    }
+}
+
+TEST_F(EngineSyncTest, MasterUserTweakPreservedInMasterChange) {
+    // Ensure that when the master deck changes, the user offset is accounted for when
+    // reinitializing the master parameters..
+
+    // This is about 128 bpm, but results in nice round numbers of samples.
+    const double kDivisibleBpm = 44100.0 / 344.0;
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(
+            m_pTrack1->getSampleRate(), kDivisibleBpm, 0.0);
+    m_pTrack1->trySetBeats(pBeats1);
+    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2->getSampleRate(), 130, 0.0);
+    m_pTrack2->trySetBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->set(1);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1);
+    ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "quantize"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+
+    EXPECT_TRUE(isExplicitMaster(m_sGroup1));
+    EXPECT_TRUE(isFollower(m_sGroup2));
+
+    ProcessBuffer();
+    EXPECT_DOUBLE_EQ(kDivisibleBpm,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+    EXPECT_DOUBLE_EQ(kDivisibleBpm,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    // Apply user tweak offset to master -- to test the bug we found, we need
+    // to apply it indirectly.
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_up"), 1);
+    for (int i = 0; i < 5; ++i) {
+        ProcessBuffer();
+        EXPECT_NEAR(ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
+                ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
+                kMaxFloatingPointErrorLowPrecision);
+    }
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_up"), 0);
+
+    // Switch master
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->set(1);
+    ProcessBuffer();
+    EXPECT_TRUE(isFollower(m_sGroup1));
+    EXPECT_TRUE(isExplicitMaster(m_sGroup2));
+
+    for (int i = 0; i < 10; ++i) {
+        ProcessBuffer();
+        EXPECT_NEAR(ControlObject::get(ConfigKey(m_sGroup1, "beat_distance")),
+                ControlObject::get(ConfigKey(m_sGroup2, "beat_distance")),
+                kMaxFloatingPointErrorLowPrecision);
+    }
 }
 
 TEST_F(EngineSyncTest, MasterBpmNeverZero) {
@@ -2410,7 +2515,7 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     auto pButtonSyncEnabled1 = std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     auto pButtonSyncEnabled2 = std::make_unique<ControlProxy>(m_sGroup2, "sync_enabled");
 
-    // set beatgrid
+    // set beatgrid for deck 1
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 130, 0.0);
     m_pTrack1->trySetBeats(pBeats1);
     pButtonSyncEnabled1->set(1.0);
@@ -2422,7 +2527,7 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
     EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
-    // sync 0 bpm track to the first one
+    // deck 2 has not beats, so it will sync 0 bpm track to the first one
     pButtonSyncEnabled2->set(1.0);
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
 
@@ -2435,20 +2540,21 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     EXPECT_DOUBLE_EQ(0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     EXPECT_DOUBLE_EQ(130.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
+    // deck 1 is stopped.
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 0.0);
 
     ProcessBuffer();
-    // Group1 remains master because it is the only one with a tempo,
+    // Group1 remains master because it is the only one with a tempo.
     EXPECT_TRUE(isSoftMaster(m_sGroup1));
     EXPECT_TRUE(isFollower(m_sGroup2));
 
-    // Load a new beatgrid during playing, this happens when the analyser is finished
+    // Load a new beatgrid during playing, this happens when the analyser is finished.
     mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2->getSampleRate(), 140, 0.0);
     m_pTrack2->trySetBeats(pBeats2);
 
     ProcessBuffer();
 
-    // Since the other deck is not playing, we don't change our speed to match theirs. We
+    // Since deck 1 is not playing, deck 2 doesn't change its speed to match theirs. Deck 2
     // should be master now, and playing at our own rate.  The other deck should have
     // changed rate to match us.
     EXPECT_TRUE(isSoftMaster(m_sGroup2));

@@ -114,8 +114,8 @@ class EngineSync : public SyncableListener {
 
     void setMasterParams(Syncable* pSource);
 
-    /// Check if there is only one playing syncable deck, and return it if so.
-    Syncable* getUniquePlayingSyncable();
+    /// Check if there are no playing followers left.
+    bool noPlayingFollowers() const;
 
     /// Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);

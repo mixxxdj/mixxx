@@ -416,8 +416,7 @@ double BpmControl::calcSyncedRate(double userTweak) {
 
     // If we are not quantized, or there are no beats, or we're master,
     // or we're in reverse, just return the rate as-is.
-    if (!m_pQuantize->toBool() || isMaster(getSyncMode()) ||
-            !m_pBeats || m_pReverseButton->toBool()) {
+    if (!m_pQuantize->toBool() || !m_pBeats || m_pReverseButton->toBool()) {
         m_resetSyncAdjustment = true;
         return rate + userTweak;
     }
@@ -467,30 +466,29 @@ double BpmControl::calcSyncAdjustment(bool userTweakingSync) {
     // than modular 1.0 beat fractions. This will allow sync to work across loop
     // boundaries too.
 
-    double syncTargetBeatDistance = m_dSyncTargetBeatDistance.getValue();
-    // We want the untweaked beat distance, so we have to add the offset here.
-    double thisBeatDistance = m_pThisBeatDistance->get() + m_dUserOffset.getValue();
-    double shortest_distance = shortestPercentageChange(
-            syncTargetBeatDistance, thisBeatDistance);
+    const double syncTargetBeatDistance = m_dSyncTargetBeatDistance.getValue();
+    const double thisBeatDistance = m_pThisBeatDistance->get();
+    const double error = shortestPercentageChange(syncTargetBeatDistance, thisBeatDistance);
+    const double curUserOffset = m_dUserOffset.getValue();
 
     if (kLogger.traceEnabled()) {
         kLogger.trace() << m_group << "****************";
         kLogger.trace() << "master beat distance:" << syncTargetBeatDistance;
         kLogger.trace() << "my     beat distance:" << thisBeatDistance;
-        kLogger.trace() << "user offset distance:" << m_dUserOffset.getValue();
-        kLogger.trace() << "error               :"
-                        << (shortest_distance - m_dUserOffset.getValue());
-        kLogger.trace() << "user offset         :" << m_dUserOffset.getValue();
+        kLogger.trace() << "user offset distance:" << curUserOffset;
+        kLogger.trace() << "error               :" << error;
     }
 
     double adjustment = 1.0;
 
     if (userTweakingSync) {
-        // Don't do anything else, leave it
+        // The user is actively adjusting the sync, so take the current error as their preferred
+        // user offset.
         adjustment = 1.0;
-        m_dUserOffset.setValue(shortest_distance);
+        // When updating the user offset, make sure to remove the existing offset or else it
+        // will get double-applied.
+        m_dUserOffset.setValue(error + curUserOffset);
     } else {
-        double error = shortest_distance - m_dUserOffset.getValue();
         // Threshold above which we do sync adjustment.
         const double kErrorThreshold = 0.01;
         // Threshold above which sync is really, really bad, so much so that we
@@ -545,8 +543,10 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     double dBeatLength = dNextBeat - dPrevBeat;
     double dBeatPercentage = dBeatLength == 0.0 ? 0.0 :
             (dThisPosition - dPrevBeat) / dBeatLength;
-    // Because findNext and findPrev have an epsilon built in, sometimes
-    // the beat percentage is out of range.  Fix it.
+    dBeatPercentage -= m_dUserOffset.getValue();
+    // Because findNext and findPrev have an epsilon built in, and because the user
+    // might have tweaked the offset, sometimes the beat percentage is out of range.
+    // Fix it.
     if (dBeatPercentage < 0) {
         ++dBeatPercentage;
     }
@@ -554,7 +554,14 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
         --dBeatPercentage;
     }
 
-    return dBeatPercentage - m_dUserOffset.getValue();
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << getGroup() << "BpmControl::getBeatDistance"
+                        << dBeatPercentage << "-  offset "
+                        << m_dUserOffset.getValue() << " =  "
+                        << (dBeatPercentage - m_dUserOffset.getValue());
+    }
+
+    return dBeatPercentage;
 }
 
 // static
@@ -619,11 +626,6 @@ double BpmControl::getNearestPositionInPhase(
     }
 
     SyncMode syncMode = getSyncMode();
-
-    // Explicit master buffer is always in sync!
-    if (syncMode == SYNC_MASTER_EXPLICIT) {
-        return dThisPosition;
-    }
 
     // Get the current position of this deck.
     double dThisPrevBeat = m_pPrevBeat->get();
@@ -780,22 +782,15 @@ double BpmControl::getBeatMatchPosition(
     if (!m_pBeats) {
         return dThisPosition;
     }
-    // Explicit master buffer is always in sync!
-    if (getSyncMode() == SYNC_MASTER_EXPLICIT) {
-        return dThisPosition;
-    }
 
     EngineBuffer* pOtherEngineBuffer = nullptr;
-    // explicit master always syncs to itself, so keep it null
-    if (getSyncMode() != SYNC_MASTER_EXPLICIT) {
-        pOtherEngineBuffer = pickSyncTarget();
-        if (kLogger.traceEnabled()) {
-            if (pOtherEngineBuffer) {
-                kLogger.trace() << "BpmControl::getBeatMatchPosition sync target"
-                                << pOtherEngineBuffer->getGroup();
-            } else {
-                kLogger.trace() << "BpmControl::getBeatMatchPosition no sync target found";
-            }
+    pOtherEngineBuffer = pickSyncTarget();
+    if (kLogger.traceEnabled()) {
+        if (pOtherEngineBuffer) {
+            kLogger.trace() << "BpmControl::getBeatMatchPosition sync target"
+                            << pOtherEngineBuffer->getGroup();
+        } else {
+            kLogger.trace() << "BpmControl::getBeatMatchPosition no sync target found";
         }
     }
     if (playing) {
@@ -879,6 +874,9 @@ double BpmControl::getBeatMatchPosition(
         // the other Track has no usable beat info, do not seek.
         return dThisPosition;
     }
+
+    // Offset the other deck's user offset, if any.
+    dOtherBeatFraction -= pOtherEngineBuffer->getUserOffset();
 
     double dThisSampleRate = m_pBeats->getSampleRate();
     double dThisRateRatio = m_pRateRatio->get();
@@ -1070,7 +1068,7 @@ double BpmControl::updateLocalBpm() {
 double BpmControl::updateBeatDistance() {
     double beatDistance = getBeatDistance(getSampleOfTrack().current);
     m_pThisBeatDistance->set(beatDistance);
-    if (!isSynchronized()) {
+    if (!isSynchronized() && m_dUserOffset.getValue() != 0.0) {
         m_dUserOffset.setValue(0.0);
     }
     if (kLogger.traceEnabled()) {

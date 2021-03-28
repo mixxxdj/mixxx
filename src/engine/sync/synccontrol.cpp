@@ -143,9 +143,7 @@ void SyncControl::setSyncMode(SyncMode mode) {
                       "must disable passthrough";
         m_pPassthroughEnabled->set(0.0);
     }
-    if (isMaster(mode)) {
-        m_pBpmControl->resetSyncAdjustment();
-    } else if (mode == SYNC_NONE) {
+    if (mode == SYNC_NONE) {
         m_masterBpmAdjustFactor = kBpmUnity;
     }
 }
