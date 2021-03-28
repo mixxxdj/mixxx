@@ -59,7 +59,7 @@ double VisualPlayPosition::getAtNextVSync(VSyncThread* vSyncThread) {
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
         int refToVSync = vSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
-        int offset = refToVSync - data.m_callbackEntrytoDac;
+        int offset = data.m_callbackEntrytoDac;
         offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         // add the offset for the position of the sample that will be transferred to the DAC
@@ -78,11 +78,9 @@ void VisualPlayPosition::getPlaySlipAtNextVSync(VSyncThread* vSyncThread, double
 
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-        int refToVSync = vSyncThread->fromTimerToNextSyncMicros(data.m_referenceTime);
-        int offset = refToVSync - data.m_callbackEntrytoDac;
-        offset = math_min(offset, m_audioBufferMicros * kMaxOffsetBufferCnt);
         double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
-        playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferMicros;
+        playPos += data.m_positionStep * data.m_callbackEntrytoDac *
+                data.m_rate / m_audioBufferMicros;
         *pPlayPosition = playPos;
         *pSlipPosition = data.m_slipPosition;
     }

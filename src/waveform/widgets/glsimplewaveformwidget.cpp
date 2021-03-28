@@ -34,8 +34,6 @@ GLSimpleWaveformWidget::GLSimpleWaveformWidget(const QString& group, QWidget* pa
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    setAutoBufferSwap(false);
-
     m_initSuccess = init();
 }
 
