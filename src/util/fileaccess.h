@@ -6,7 +6,7 @@
 namespace mixxx {
 
 /// Bundles `FileInfo` with the corresponding security token (if available).
-/// On system with sandboxing the latter is required to actually access the
+/// On systems with sandboxing the latter is required to actually access the
 /// corresponding file system object.
 class FileAccess final {
   public:
