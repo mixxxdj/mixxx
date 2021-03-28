@@ -190,7 +190,6 @@ void EngineSync::deactivateSync(Syncable* pSyncable) {
 }
 
 Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
-    // If there is an explicit master, and it is playing, keep it.
     if (m_pMasterSyncable &&
             m_pMasterSyncable->getSyncMode() == SYNC_MASTER_EXPLICIT &&
             m_pMasterSyncable->getBaseBpm() != 0.0) {
