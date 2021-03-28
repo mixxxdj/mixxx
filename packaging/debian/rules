@@ -9,5 +9,8 @@ override_dh_auto_configure:
 override_dh_installudev:
 	dh_installudev --name=mixxx-usb-uaccess --priority 69
 
+override_dh_compress:
+	dh_compress -X.pdf
+
 %:
 	dh $@ --buildsystem=cmake
