@@ -403,6 +403,6 @@ jobs:
 
     - name: "Trigger Netlify build"
       if: env.NETLIFY_BUILD_HOOK != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
-      run: curl -X POST -d {} ${{ env.NETLIFY_BUILD_HOOK }}
+      run: curl -X POST -d '{}' ${{ env.NETLIFY_BUILD_HOOK }}
       env:
         NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
