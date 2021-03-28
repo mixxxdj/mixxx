@@ -85,7 +85,8 @@ def generate_file_metadata(file_path, destdir):
         "file_date": datetime.datetime.fromtimestamp(
             file_stat.st_ctime
         ).isoformat(),
-        "file_sha256": file_sha256,
+        "sha256": file_sha256,
+        "sha256_url": f"{baseurl}/{destdir}/{file_name}.sha256sum",
     }
 
 
