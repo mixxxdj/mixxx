@@ -337,6 +337,7 @@ jobs:
       # using the artifacts_slug value.  This also sets the DEPLOY_DIR
       # environment variable that is used in the deploy.sh script in the next
       # step.
+      id: generate_artifact_metadata
       if: github.event_name == 'push'
       run: python3 tools/generate_download_metadata.py artifact ${{ matrix.artifacts_path }} "${{ matrix.artifacts_slug }}"
       env:
