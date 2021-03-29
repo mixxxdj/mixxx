@@ -39,7 +39,6 @@ jobs:
               -DWARNINGS_FATAL=ON
               -DBULK=ON
               -DFFMPEG=ON
-              -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
@@ -83,7 +82,6 @@ jobs:
               -DBULK=OFF
               -DFFMPEG=OFF
               -DHSS1394=ON
-              -DKEYFINDER=OFF
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
@@ -234,6 +232,7 @@ jobs:
         -DBATTERY=ON
         -DBROADCAST=ON
         -DHID=ON
+        -DKEYFINDER=ON
         -DLILV=ON
         -DOPUS=ON
         -DQTKEYCHAIN=ON
