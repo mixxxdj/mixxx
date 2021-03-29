@@ -62,6 +62,7 @@ jobs:
               -DCOREAUDIO=ON
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
+              -DMODPLUG=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             # TODO: Fix this broken test on macOS
@@ -85,6 +86,7 @@ jobs:
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
+              -DMODPLUG=ON
             cc: cl
             cxx: cl
             cmake_generator: Ninja
