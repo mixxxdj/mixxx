@@ -63,6 +63,7 @@ jobs:
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
               -DMODPLUG=OFF
+              -DWAVPACK=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             # TODO: Fix this broken test on macOS
@@ -87,6 +88,7 @@ jobs:
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
               -DMODPLUG=ON
+              -DWAVPACK=ON
             cc: cl
             cxx: cl
             cmake_generator: Ninja
