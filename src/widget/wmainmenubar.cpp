@@ -3,6 +3,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 
+#include "config.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
@@ -584,18 +585,18 @@ void WMainMenuBar::initialize() {
 #if defined(__APPLE__)
     // FIXME: We don't include the PDF manual in the bundle on OSX.
     // Default to the web-hosted version.
-#elif defined(__WINDOWS__)
-    // On Windows, the shortcut PDF sits in the same folder as the 'skins' folder.
-    if (kbdShortcutsDir.exists(MIXXX_KBD_SHORTCUTS_FILENAME)) {
-        qKeyboardShortcutsUrl = QUrl::fromLocalFile(
-                kbdShortcutsDir.absoluteFilePath(MIXXX_KBD_SHORTCUTS_FILENAME));
-    } else {
-        kbdShortcutsSuffix = externalLinkSuffix;
-    }
-#elif defined(__LINUX__)
-    // On GNU/Linux, the shortcut is installed to e.g. /usr/share/doc/mixxx/
-    if (kbdShortcutsDir.cd("../doc/mixxx") &&
-            kbdShortcutsDir.exists(MIXXX_KBD_SHORTCUTS_FILENAME)) {
+    kbdShortcutsSuffix = externalLinkSuffix;
+#elif defined(__WINDOWS__) or defined(__LINUX__)
+    // First check if the shortcut PDF exists in the resource directory (this
+    // is the case if the executable was started from the build directory and
+    // on Windows.
+    // If it's not found, check if it's in the MIXXX_INSTALL_DOCDIR (e.g.
+    // /usr/share/doc/ on GNU/Linux). We're using a path relative to
+    // MIXXX_INSTALL_DATADIR to allow custom install DESTDIR values.
+
+    if (kbdShortcutsDir.exists(MIXXX_KBD_SHORTCUTS_FILENAME) ||
+            (kbdShortcutsDir.cd(MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR) &&
+                    kbdShortcutsDir.exists(MIXXX_KBD_SHORTCUTS_FILENAME))) {
         qKeyboardShortcutsUrl = QUrl::fromLocalFile(
                 kbdShortcutsDir.absoluteFilePath(MIXXX_KBD_SHORTCUTS_FILENAME));
     } else {
