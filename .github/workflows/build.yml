@@ -21,7 +21,7 @@ jobs:
               -DMAD=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
-              -INSTALL_USER_UDEV_RULES=OFF
+              -DINSTALL_USER_UDEV_RULES=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             ctest_args:
@@ -39,12 +39,11 @@ jobs:
               -DWARNINGS_FATAL=ON
               -DBULK=ON
               -DFFMPEG=ON
-              -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
-              -INSTALL_USER_UDEV_RULES=OFF
+              -DINSTALL_USER_UDEV_RULES=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             ctest_args:
@@ -63,6 +62,8 @@ jobs:
               -DCOREAUDIO=ON
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
+              -DMODPLUG=OFF
+              -DWAVPACK=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             # TODO: Fix this broken test on macOS
@@ -83,10 +84,11 @@ jobs:
               -DBULK=OFF
               -DFFMPEG=OFF
               -DHSS1394=ON
-              -DKEYFINDER=OFF
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
             cc: cl
             cxx: cl
             cmake_generator: Ninja
@@ -234,6 +236,7 @@ jobs:
         -DBATTERY=ON
         -DBROADCAST=ON
         -DHID=ON
+        -DKEYFINDER=ON
         -DLILV=ON
         -DOPUS=ON
         -DQTKEYCHAIN=ON
