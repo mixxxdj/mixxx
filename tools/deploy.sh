@@ -9,12 +9,12 @@ set -eu -o pipefail
 [ -z "${SSH_PASSWORD}" ] && echo "Please set the SSH_PASSWORD env var." >&2 && exit 1
 [ -z "${SSH_USER}" ] && echo "Please set the SSH_USER env var." >&2 && exit 1
 [ -z "${UPLOAD_ID}" ] && echo "Please set the UPLOAD_ID env var." >&2 && exit 1
-[ -z "${OS}" ] && echo "Please set the OS env var." >&2 && exit 1
 [ -z "${DESTDIR}" ] && echo "Please set the DESTDIR env var." >&2 && exit 1
+[ -z "${DEPLOY_DIR}" ] && echo "Please set DEPLOY_DIR env var." >&2 && exit 1
 
 SSH="ssh -i ${SSH_KEY} -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
 GIT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-DEST_PATH="${DESTDIR}/${GIT_BRANCH}/${OS}"
+DEST_PATH="${DESTDIR}/${DEPLOY_DIR}"
 TMP_PATH="${DESTDIR}/.tmp/${UPLOAD_ID}"
 
 echo "Deploying to $TMP_PATH, then to $DEST_PATH."
@@ -42,6 +42,13 @@ do
     # This prevents users from downloading an incomplete file from the server which has not yet finished deploying.
     echo "Deploying artifact: ${FILEPATH}"
     FILENAME="$(basename "${FILEPATH}")"
+
+    if [ "${DEPLOY_ONLY}" -eq 1 ]
+    then
+        rsync -e "${SSH}" -r --delete-after "${FILEPATH}" "${SSH_USER}@${SSH_HOST}:${DEST_PATH}"
+        continue
+    fi
+
     FILENAME_HASH="${FILENAME}.sha256sum"
     FILEPATH_HASH="${FILEPATH}.sha256sum"
 
