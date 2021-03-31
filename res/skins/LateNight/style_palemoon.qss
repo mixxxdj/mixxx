@@ -2956,7 +2956,14 @@ WEffectSelector,
   WTrackMenu QMenu::indicator:checked,
   WCueMenuPopup QMenu::indicator:checked {
     image: url(skin:/palemoon/buttons/btn__lib_checkmark_blue.svg);
-    }
+  }
+  WEffectSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    image: url(skin:/palemoon/buttons/btn__effect_selected.svg);
+    width: 13px;
+    height: 13px;
+    margin-left: 4px;
+  }
   /* disabled menu item and checkbox */
   #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked,
   #LibraryContainer QMenu QCheckBox::indicator:indeterminate,
