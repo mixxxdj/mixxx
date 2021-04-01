@@ -275,6 +275,14 @@
         </Children>
       </WidgetGroup><!-- /Recording button & recording duration label -->
 
+      <Template src="skin:/controls/button_2state.xml">
+        <SetVariable name="TooltipId">timer</SetVariable>
+        <SetVariable name="ObjectName">WTimerPopup</SetVariable>
+        <SetVariable name="Size">80f,20f</SetVariable>
+        <SetVariable name="state_0_text">Timer</SetVariable>
+        <SetVariable name="state_1_text">Timer</SetVariable>
+      </Template>
+
       <PushButton>
         <Size>72f,20f</Size>
         <TooltipId>broadcast_enabled</TooltipId>
