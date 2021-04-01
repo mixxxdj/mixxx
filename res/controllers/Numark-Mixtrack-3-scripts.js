@@ -1674,15 +1674,15 @@ NumarkMixtrack3.FXButton = function(channel, control, value, status, group) {
         // load next effect and make sure the unit is enabled
         engine.setValue(effectGroup, "next_effect", true);
     } else if (deck.TapDown) {
-        // toggle effect if InstantFX is not active
-        if (deck.InstantFX.indexOf(effectNum) === -1) {
-            script.toggleControl(effectGroup, "enabled");
-        }
-    } else {
         if (deck.getFocusedEffect() === effectNum) {
             deck.focusEffect(0);
         } else {
             deck.focusEffect(effectNum);
+        }
+    } else {
+        // toggle effect if InstantFX is not active
+        if (deck.InstantFX.indexOf(effectNum) === -1) {
+            script.toggleControl(effectGroup, "enabled");
         }
     }
 };
