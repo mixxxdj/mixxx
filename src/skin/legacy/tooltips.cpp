@@ -814,6 +814,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Clock")
             << tr("Displays the current time.");
 
+    add("timer")
+            << tr("Timer")
+            << tr("Displays the session time.");
+
     add("audio_latency_usage")
             << tr("Audio Latency Usage Meter")
             << tr("Displays the fraction of latency used for audio processing.")
