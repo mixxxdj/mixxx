@@ -1,0 +1,27 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    An individual loop move button.
+    Loop moves forward or backward by X beats.
+  Variables:
+    group: The group for the controls.
+    control_length: The length as used in control names.
+    state_X_pressed: The (optional) image file used for this state.
+    state_X_unpressed: The (optional) image file used for this state.
+    text_length: The length in text form.
+    direction: ``forward`` or ``backward`` move
+    SmallSquareButtonSize: The button size
+-->
+<Template>
+  <Template src="skin:left_1state_button.xml">
+    <SetVariable name="TooltipId">loop_move</SetVariable>
+    <SetVariable name="ObjectName">LoopMoveButton</SetVariable>
+    <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
+    <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
+    <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
+    <SetVariable name="state_0_pressed"><Variable name="state_0_pressed"/></SetVariable>
+    <SetVariable name="state_0_unpressed"><Variable name="state_0_unpressed"/></SetVariable>
+    <SetVariable name="state_0_text"><Variable name="text_length"/></SetVariable>
+    <SetVariable name="left_connection_control"><Variable name="group"/>,loop_move_<Variable name="control_length"/>_<Variable name="direction"/></SetVariable>
+  </Template>
+</Template>
