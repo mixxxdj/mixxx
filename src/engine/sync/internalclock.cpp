@@ -78,6 +78,9 @@ void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
             m_mode = SYNC_MASTER_EXPLICIT;
             return;
         }
+        if (mode == SYNC_NONE) {
+            m_dBaseBpm = m_dOldBpm;
+        }
         m_pEngineSync->requestSyncMode(this, SYNC_MASTER_EXPLICIT);
     } else {
         // Turning off master goes back to follower mode.
