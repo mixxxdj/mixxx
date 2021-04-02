@@ -392,7 +392,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                     // Sandbox isn't setup yet at this point in startup because it relies on
                     // the config settings path and this function is what loads the config
                     // so it's not ready yet.
-                    successful = tc.addDirectory(currentFolder);
+                    successful = tc.addDirectory(mixxx::FileInfo(currentFolder));
 
                     tc.disconnectDatabase();
                 }

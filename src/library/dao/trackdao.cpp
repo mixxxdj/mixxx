@@ -36,7 +36,7 @@
 #include "util/db/sqllikewildcards.h"
 #include "util/db/sqlstringformatter.h"
 #include "util/db/sqltransaction.h"
-#include "util/file.h"
+#include "util/fileinfo.h"
 #include "util/logger.h"
 #include "util/math.h"
 #include "util/qt.h"
@@ -1944,7 +1944,7 @@ void TrackDAO::hideAllTracks(const QDir& rootDir) const {
 }
 
 bool TrackDAO::verifyRemainingTracks(
-        const QStringList& libraryRootDirs,
+        const QList<mixxx::FileInfo>& libraryRootDirs,
         volatile const bool* pCancel) {
     // This function is called from the LibraryScanner Thread, which also has a
     // transaction running, so we do NOT NEED to use one here
@@ -1973,8 +1973,8 @@ bool TrackDAO::verifyRemainingTracks(
     while (query.next()) {
         trackLocation = query.value(locationColumn).toString();
         int fs_deleted = 0;
-        for (const auto& dir: libraryRootDirs) {
-            if (trackLocation.startsWith(dir)) {
+        for (const auto& rootDir : libraryRootDirs) {
+            if (trackLocation.startsWith(rootDir.location())) {
                 // Track is under the library root,
                 // but was not verified.
                 // This happens if the track was deleted

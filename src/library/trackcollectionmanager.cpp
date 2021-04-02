@@ -285,16 +285,16 @@ void TrackCollectionManager::exportTrackMetadata(
     }
 }
 
-bool TrackCollectionManager::addDirectory(const QString& dir) const {
+bool TrackCollectionManager::addDirectory(const mixxx::FileInfo& newDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_pInternalCollection->addDirectory(dir);
+    return m_pInternalCollection->addDirectory(newDir);
 }
 
-bool TrackCollectionManager::removeDirectory(const QString& dir) const {
+bool TrackCollectionManager::removeDirectory(const mixxx::FileInfo& oldDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_pInternalCollection->removeDirectory(dir);
+    return m_pInternalCollection->removeDirectory(oldDir);
 }
 
 void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QString& newDir) const {

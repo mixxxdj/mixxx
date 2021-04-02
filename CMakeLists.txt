@@ -865,7 +865,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/dnd.cpp
   src/util/duration.cpp
   src/util/experiment.cpp
-  src/util/file.cpp
+  src/util/fileaccess.cpp
   src/util/fileinfo.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp
@@ -1146,7 +1146,7 @@ elseif (UNIX)
 endif()
 
 if(WIN32)
-  target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
+  target_compile_definitions(mixxx-lib PUBLIC __WINDOWS__)
 
   # Helps prevent duplicate symbols
   target_compile_definitions(mixxx-lib PUBLIC _ATL_MIN_CRT)
@@ -1177,7 +1177,7 @@ elseif(UNIX)
   if(APPLE)
     target_compile_definitions(mixxx-lib PUBLIC __APPLE__)
   else()
-    target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
+    target_compile_definitions(mixxx-lib PUBLIC __UNIX__)
     if(CMAKE_SYSTEM_NAME STREQUAL Linux)
       target_compile_definitions(mixxx-lib PUBLIC __LINUX__)
     elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")

@@ -6,6 +6,8 @@
 #include <QUrl>
 #include <QtDebug>
 
+#include "util/fileinfo.h"
+
 // Wrapper class for dealing with track files and their
 // path/location, URL, and URI representations.
 //
@@ -28,6 +30,7 @@ class TrackFile {
         return TrackFile(url.toLocalFile());
     }
 
+    TrackFile() = default;
     // For backward-compatibility the QString single argument
     // constructor has not been declared as "explicit". It is
     // also not strictly necessary and might be removed at some
@@ -37,13 +40,17 @@ class TrackFile {
             : m_fileInfo(filePath) {
     }
     explicit TrackFile(
-            QFileInfo fileInfo = QFileInfo())
+            QFileInfo fileInfo)
             : m_fileInfo(std::move(fileInfo)) {
     }
     explicit TrackFile(
             const QDir& dir,
             const QString& file = QString())
             : m_fileInfo(QFileInfo(dir, file)) {
+    }
+    explicit TrackFile(
+            const mixxx::FileInfo& fileInfo)
+            : m_fileInfo(fileInfo.asQFileInfo()) {
     }
 
     const QFileInfo& asFileInfo() const {

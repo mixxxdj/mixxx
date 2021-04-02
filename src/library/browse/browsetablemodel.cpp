@@ -19,6 +19,7 @@
 #include "moc_browsetablemodel.cpp"
 #include "track/track.h"
 #include "util/compatibility.h"
+#include "util/fileaccess.h"
 #include "widget/wlibrarytableview.h"
 
 BrowseTableModel::BrowseTableModel(QObject* parent,
@@ -185,9 +186,8 @@ void BrowseTableModel::addSearchColumn(int index) {
     m_searchColumns.push_back(index);
 }
 
-void BrowseTableModel::setPath(const MDir& path) {
-    m_current_directory = path;
-    m_pBrowseThread->executePopulation(m_current_directory, this);
+void BrowseTableModel::setPath(mixxx::FileAccess path) {
+    m_pBrowseThread->executePopulation(std::move(path), this);
 }
 
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
