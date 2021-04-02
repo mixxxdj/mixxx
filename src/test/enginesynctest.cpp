@@ -1821,6 +1821,56 @@ TEST_F(EngineSyncTest, HalfDoubleConsistency) {
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 }
 
+TEST_F(EngineSyncTest, HalfDoubleEachOther) {
+    // Confirm that repeated sync with both decks leads to the same
+    // Half/Double decision.
+    // This test demonstrates https://bugs.launchpad.net/mixxx/+bug/1921962
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 144, 0.0);
+    m_pTrack1->trySetBeats(pBeats1);
+    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2->getSampleRate(), 105, 0.0);
+    m_pTrack2->trySetBeats(pBeats2);
+
+    // Threshold 1.414 sqrt(2);
+    // 144 / 105 = 1.37
+    // 105 / 72 = 1.46
+    // expect 144 BPM
+
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(0.0);
+
+    EXPECT_DOUBLE_EQ(144.0,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(0.0);
+
+    EXPECT_DOUBLE_EQ(144.0,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    // Threshold 1.414 sqrt(2);
+    // 150 / 105 = 1.43
+    // 105 / 75 = 1.40
+    // expect 75 BPM
+
+    mixxx::BeatsPointer pBeats1b = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 150, 0.0);
+    m_pTrack1->trySetBeats(pBeats1b);
+
+    EXPECT_DOUBLE_EQ(150.0,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(0.0);
+
+    EXPECT_DOUBLE_EQ(75.0,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(0.0);
+
+    EXPECT_DOUBLE_EQ(150.0,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+}
+
 TEST_F(EngineSyncTest, SetFileBpmUpdatesLocalBpm) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->set(0.2);
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 130, 0.0);
