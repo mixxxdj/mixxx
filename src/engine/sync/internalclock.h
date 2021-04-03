@@ -73,6 +73,10 @@ class InternalClock : public QObject, public Clock, public Syncable {
 
     int m_iOldSampleRate;
     double m_dOldBpm;
+
+    // This is the BPM value at unity adopted when sync is enabled.
+    // It is used to relate the followers and must not change when
+    // the bpm is adjusted to avoid sudden double/half rate changes.
     double m_dBaseBpm;
 
     // The internal clock rate is stored in terms of samples per beat.
