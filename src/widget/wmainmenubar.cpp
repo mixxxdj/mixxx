@@ -52,9 +52,11 @@ QString showPreferencesKeyBinding() {
 #endif
 }
 
-QUrl documentationFileUrl(const QString& resourcePath, const QString& fileName) {
+QUrl documentationUrl(
+        const QString& resourcePath, const QString& fileName, const QString& docUrl) {
     QDir resourceDir(resourcePath);
-#if !defined(__APPLE__)
+    // Documentation PDFs are included on Windows and Linux only,
+    // so on macOS this always returns the web URL.
 #if defined(MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR)
     if (!resourceDir.exists(fileName)) {
         resourceDir.cd(MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR);
@@ -62,10 +64,9 @@ QUrl documentationFileUrl(const QString& resourcePath, const QString& fileName) 
 #endif
     if (resourceDir.exists(fileName)) {
         return QUrl::fromLocalFile(resourceDir.absoluteFilePath(fileName));
+    } else {
+        return QUrl(docUrl);
     }
-#endif
-
-    return QUrl();
 }
 }  // namespace
 
@@ -555,10 +556,9 @@ void WMainMenuBar::initialize() {
     pHelpMenu->addAction(pHelpSupport);
 
     // User Manual
-    QUrl manualUrl = documentationFileUrl(m_pConfig->getResourcePath(), MIXXX_MANUAL_FILENAME);
-    if (!manualUrl.isValid()) {
-        manualUrl = QUrl(MIXXX_MANUAL_URL);
-    }
+    QUrl manualUrl = documentationUrl(m_pConfig->getResourcePath(),
+            MIXXX_MANUAL_FILENAME,
+            MIXXX_MANUAL_URL);
     QString manualSuffix = manualUrl.isLocalFile() ? QString() : externalLinkSuffix;
 
     QString manualTitle = tr("&User Manual") + manualSuffix;
@@ -572,11 +572,9 @@ void WMainMenuBar::initialize() {
     pHelpMenu->addAction(pHelpManual);
 
     // Keyboard Shortcuts
-    QUrl keyboardShortcutsUrl = documentationFileUrl(
-            m_pConfig->getResourcePath(), MIXXX_KBD_SHORTCUTS_FILENAME);
-    if (!keyboardShortcutsUrl.isValid()) {
-        keyboardShortcutsUrl = QUrl(MIXXX_MANUAL_SHORTCUTS_URL);
-    }
+    QUrl keyboardShortcutsUrl = documentationUrl(m_pConfig->getResourcePath(),
+            MIXXX_KBD_SHORTCUTS_FILENAME,
+            MIXXX_MANUAL_SHORTCUTS_URL);
     QString keyboardShortcutsSuffix =
             keyboardShortcutsUrl.isLocalFile() ? QString() : externalLinkSuffix;
 
