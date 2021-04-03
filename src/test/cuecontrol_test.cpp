@@ -54,6 +54,10 @@ class CueControlTest : public BaseSignalPathTest {
         return m_pChannel1->getEngineBuffer()->m_pCueControl->getSampleOfTrack().current;
     }
 
+    CueControl* getCueControl() {
+        return m_pChannel1->getEngineBuffer()->m_pCueControl;
+    }
+
     void setCurrentSample(double sample) {
         m_pChannel1->getEngineBuffer()->queueNewPlaypos(sample, EngineBuffer::SEEK_STANDARD);
         ProcessBuffer();
@@ -261,6 +265,66 @@ TEST_F(CueControlTest, LoadAutodetectedCues_QuantizeDisabled) {
     EXPECT_DOUBLE_EQ(330.0, m_pIntroEndPosition->get());
     EXPECT_DOUBLE_EQ(770.0, m_pOutroStartPosition->get());
     EXPECT_DOUBLE_EQ(990.0, m_pOutroEndPosition->get());
+}
+
+TEST_F(CueControlTest, InIntroTest) {
+    TrackPointer pTrack = createTestTrack();
+    auto pIntro = pTrack->createAndAddCue(
+            mixxx::CueType::Intro,
+            Cue::kNoHotCue,
+            250.0,
+            400.0);
+
+    auto* pCueControl = getCueControl();
+
+    loadTrack(pTrack);
+
+    setCurrentSample(249.0);
+    EXPECT_FALSE(pCueControl->inIntro());
+
+    setCurrentSample(250.0);
+    EXPECT_TRUE(pCueControl->inIntro());
+
+    setCurrentSample(300.0);
+    EXPECT_TRUE(pCueControl->inIntro());
+
+    setCurrentSample(400.0);
+    EXPECT_TRUE(pCueControl->inIntro());
+
+    setCurrentSample(401.0);
+    EXPECT_FALSE(pCueControl->inIntro());
+
+    EXPECT_FALSE(pCueControl->inOutro());
+}
+
+TEST_F(CueControlTest, InOutroTest) {
+    TrackPointer pTrack = createTestTrack();
+    auto pIntro = pTrack->createAndAddCue(
+            mixxx::CueType::Outro,
+            Cue::kNoHotCue,
+            250.0,
+            400.0);
+
+    auto* pCueControl = getCueControl();
+
+    loadTrack(pTrack);
+
+    setCurrentSample(249.0);
+    EXPECT_FALSE(pCueControl->inOutro());
+
+    setCurrentSample(250.0);
+    EXPECT_TRUE(pCueControl->inOutro());
+
+    setCurrentSample(300.0);
+    EXPECT_TRUE(pCueControl->inOutro());
+
+    setCurrentSample(400.0);
+    EXPECT_TRUE(pCueControl->inOutro());
+
+    setCurrentSample(401.0);
+    EXPECT_FALSE(pCueControl->inOutro());
+
+    EXPECT_FALSE(pCueControl->inIntro());
 }
 
 TEST_F(CueControlTest, SeekOnLoadDefault) {

@@ -384,6 +384,14 @@ void EngineBuffer::setEngineMaster(EngineMaster* pEngineMaster) {
     }
 }
 
+bool EngineBuffer::inIntro() const {
+    return m_pCueControl->inIntro();
+}
+
+bool EngineBuffer::inOutro() const {
+    return m_pCueControl->inOutro();
+}
+
 void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
     // All seeks need to be done in the Engine thread so queue it up.
     // Write the position before the seek type, to reduce a possible race

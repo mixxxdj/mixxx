@@ -1990,6 +1990,24 @@ bool CueControl::isTrackAtIntroCue() {
             1.0f);
 }
 
+bool CueControl::inIntro() const {
+    if (!m_pIntroStartEnabled->toBool() || !m_pIntroEndEnabled->toBool()) {
+        return false;
+    }
+
+    const double pos = getSampleOfTrack().current;
+    return (pos >= m_pIntroStartPosition->get() && pos <= m_pIntroEndPosition->get());
+}
+
+bool CueControl::inOutro() const {
+    if (!m_pOutroStartEnabled->toBool() || !m_pOutroEndEnabled->toBool()) {
+        return false;
+    }
+
+    const double pos = getSampleOfTrack().current;
+    return (pos >= m_pOutroStartPosition->get() && pos <= m_pOutroEndPosition->get());
+}
+
 SeekOnLoadMode CueControl::getSeekOnLoadPreference() {
     int configValue =
             getConfig()->getValue(ConfigKey("[Controls]", "CueRecall"),
