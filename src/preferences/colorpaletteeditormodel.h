@@ -52,9 +52,9 @@ class HotcueIndexListItem : public QStandardItem {
     HotcueIndexListItem(const QList<int>& hotcueList = {});
 
     void setData(const QVariant& value, int role = Qt::UserRole + 1) override;
-    QVariant data(int role = Qt::UserRole + 1) const;
+    QVariant data(int role = Qt::UserRole + 1) const override;
 
-    int type() const {
+    int type() const override {
         return QStandardItem::UserType;
     };
 
