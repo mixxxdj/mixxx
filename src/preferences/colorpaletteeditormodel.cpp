@@ -95,7 +95,8 @@ bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVari
         const auto end = std::unique(allHotcueIndicies.begin(), allHotcueIndicies.end());
         allHotcueIndicies.erase(end, allHotcueIndicies.end());
 
-        const bool isOutsidePalette = allHotcueIndicies.last() > rowCount();
+        const bool isOutsidePalette = !allHotcueIndicies.empty() &&
+                allHotcueIndicies.last() > rowCount();
 
         if (preDedupLen != allHotcueIndicies.length() || isOutsidePalette) {
             // checks failed!
