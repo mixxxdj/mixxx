@@ -337,10 +337,11 @@ TEST_F(EngineSyncTest, InternalMasterSetFollowerSliderMoves) {
     // If internal is master, and we turn on a follower, the slider should move.
     auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(
             m_sInternalClockGroup, "sync_master");
-    pButtonMasterSyncInternal->slotSet(1);
     auto pMasterSyncSlider =
             std::make_unique<ControlProxy>(m_sInternalClockGroup, "bpm");
+
     pMasterSyncSlider->set(100.0);
+    pButtonMasterSyncInternal->slotSet(1);
 
     // Set the file bpm of channel 1 to 80 bpm.
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 80, 0.0);
@@ -1819,6 +1820,56 @@ TEST_F(EngineSyncTest, HalfDoubleConsistency) {
             ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     EXPECT_DOUBLE_EQ(180.0,
             ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+}
+
+TEST_F(EngineSyncTest, HalfDoubleEachOther) {
+    // Confirm that repeated sync with both decks leads to the same
+    // Half/Double decision.
+    // This test demonstrates https://bugs.launchpad.net/mixxx/+bug/1921962
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 144, 0.0);
+    m_pTrack1->trySetBeats(pBeats1);
+    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2->getSampleRate(), 105, 0.0);
+    m_pTrack2->trySetBeats(pBeats2);
+
+    // Threshold 1.414 sqrt(2);
+    // 144 / 105 = 1.37
+    // 105 / 72 = 1.46
+    // expect 144 BPM
+
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(0.0);
+
+    EXPECT_DOUBLE_EQ(144.0,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(0.0);
+
+    EXPECT_DOUBLE_EQ(144.0,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    // Threshold 1.414 sqrt(2);
+    // 150 / 105 = 1.43
+    // 105 / 75 = 1.40
+    // expect 75 BPM
+
+    mixxx::BeatsPointer pBeats1b = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 150, 0.0);
+    m_pTrack1->trySetBeats(pBeats1b);
+
+    EXPECT_DOUBLE_EQ(150.0,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
+
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->set(0.0);
+
+    EXPECT_DOUBLE_EQ(75.0,
+            ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->set(0.0);
+
+    EXPECT_DOUBLE_EQ(150.0,
+            ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 }
 
 TEST_F(EngineSyncTest, SetFileBpmUpdatesLocalBpm) {

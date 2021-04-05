@@ -159,7 +159,7 @@ Description:
                             <SetVariable name="Text">Hotcues</SetVariable>
                             <SetVariable name="Setting">[Skin],show_hotcues</SetVariable>
                             <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
-                            <SetVariable name="Width">72f</SetVariable>
+                            <SetVariable name="Width">77f</SetVariable>
                           </Template>
 
                           <!-- From here on, we need the regular toggles to be 180px wide (expanding) -->
@@ -630,7 +630,7 @@ Description:
                         <SetVariable name="Text">Effect Units</SetVariable>
                         <SetVariable name="Setting">[EffectRack1],show</SetVariable>
                         <SetVariable name="TooltipId">show_effects</SetVariable>
-                        <SetVariable name="Width">120me</SetVariable>
+                        <SetVariable name="Width">130me</SetVariable>
                       </Template>
 
                       <WidgetGroup>
@@ -730,7 +730,7 @@ Description:
                         <SetVariable name="TooltipId">show_samplers</SetVariable>
                         <SetVariable name="Text">Samplers </SetVariable>
                         <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
-                        <SetVariable name="Width">105f</SetVariable>
+                        <SetVariable name="Width">115f</SetVariable>
                       </Template>
 
                       <WidgetGroup>

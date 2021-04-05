@@ -363,6 +363,16 @@ manpage.1: manpage.sgml
           </para>
         </listitem>
       </varlistentry>
+      <varlistentry>
+        <term>
+          <filename class='directory'>/usr/share/doc/mixxx/Mixxx-Keyboard-Shortcuts.pdf</filename>
+        </term>
+        <listitem>
+          <para>
+            An overview of the default keyboard shortcuts in pdf format.
+          </para>
+        </listitem>
+      </varlistentry>
     </variablelist>
   </refsect1>
 
