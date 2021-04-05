@@ -80,6 +80,9 @@ void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
             m_mode = SYNC_MASTER_EXPLICIT;
             return;
         }
+        if (mode == SYNC_NONE) {
+            m_dBaseBpm = m_dOldBpm;
+        }
         m_pEngineSync->requestSyncMode(this, SYNC_MASTER_EXPLICIT);
     } else {
         // Turning off master goes back to follower mode.
@@ -140,7 +143,7 @@ void InternalClock::setMasterParams(double beatDistance, double baseBpm, double 
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "InternalClock::setMasterParams" << beatDistance << baseBpm << bpm;
     }
-    if (bpm == 0) {
+    if (bpm <= 0.0 || baseBpm <= 0.0) {
         return;
     }
     m_dBaseBpm = baseBpm;

@@ -49,3 +49,4 @@
 #define MIXXX_MANUAL_VINYL_TROUBLESHOOTING_URL \
     MIXXX_MANUAL_URL "/chapters/vinyl_control.html#troubleshooting"
 #define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
+#define MIXXX_KBD_SHORTCUTS_FILENAME "Mixxx-Keyboard-Shortcuts.pdf"

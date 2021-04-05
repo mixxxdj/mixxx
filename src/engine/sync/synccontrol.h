@@ -75,9 +75,6 @@ class SyncControl : public EngineControl, public Syncable {
     // Fired when passthrough mode is enabled or disabled.
     void slotPassthroughChanged(double v);
 
-    // Fired when a track is ejected.
-    void slotEjectPushed(double v);
-
     // Fired by changes in rate, rate_dir, rateRange.
     void slotRateChanged();
 
@@ -130,7 +127,6 @@ class SyncControl : public EngineControl, public Syncable {
     ControlProxy* m_pRateRatio;
     ControlProxy* m_pVCEnabled;
     ControlProxy* m_pPassthroughEnabled;
-    ControlProxy* m_pEjectButton;
     ControlProxy* m_pSyncPhaseButton;
     ControlProxy* m_pQuantize;
 

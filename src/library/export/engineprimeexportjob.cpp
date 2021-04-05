@@ -330,14 +330,14 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
         // of unique track refs from all directories in the library.
         qDebug() << "Loading all track refs and crate ids...";
         QSet<TrackRef> trackRefs;
-        const auto dirs = m_pTrackCollectionManager->internalCollection()
-                                  ->getDirectoryDAO()
-                                  .getDirs();
-        for (const auto& dir : dirs) {
+        const auto dirInfos = m_pTrackCollectionManager->internalCollection()
+                                      ->getDirectoryDAO()
+                                      .loadAllDirectories();
+        for (const mixxx::FileInfo& dirInfo : dirInfos) {
             const auto trackRefsFromDir = m_pTrackCollectionManager
                                                   ->internalCollection()
                                                   ->getTrackDAO()
-                                                  .getAllTrackRefs(dir);
+                                                  .getAllTrackRefs(dirInfo.toQDir());
             for (const auto& trackRef : trackRefsFromDir) {
                 trackRefs.insert(trackRef);
             }

@@ -71,10 +71,6 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
     m_pPassthroughEnabled->connectValueChanged(this,
             &SyncControl::slotPassthroughChanged, Qt::DirectConnection);
 
-    m_pEjectButton = new ControlProxy(group, "eject", this);
-    m_pEjectButton->connectValueChanged(this,
-            &SyncControl::slotEjectPushed, Qt::DirectConnection);
-
     m_pQuantize = new ControlProxy(group, "quantize", this);
 
     // Adopt an invalid to not ignore the first call setLocalBpm()
@@ -242,6 +238,8 @@ void SyncControl::setMasterBpm(double bpm) {
 
 void SyncControl::setMasterParams(
         double beatDistance, double baseBpm, double bpm) {
+    // Calculate the factor for the file bpm. That gives the best
+    // result at any rate slider position.
     double masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
     if (isMaster(getSyncMode())) {
         // In Master mode we adjust the incoming Bpm for the initial sync.
@@ -256,24 +254,19 @@ void SyncControl::setMasterParams(
 }
 
 double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
-    double multiplier = kBpmUnity;
     if (myBpm == 0.0 || targetBpm == 0.0) {
-        return multiplier;
+        return kBpmUnity;
     }
-    double best_margin = fabs((targetBpm / myBpm) - 1.0);
-
-    double try_margin = fabs((targetBpm * kBpmHalve / myBpm) - 1.0);
-    // We really want to prefer unity, so use a float compare with high tolerance.
-    if (best_margin - try_margin > .0001) {
-        multiplier = kBpmHalve;
-        best_margin = try_margin;
+    double unityRatio = myBpm / targetBpm;
+    // the square root of 2 (1.414) is the
+    // rate threshold that works vice versa for this and the target.
+    double unityRatioSquare = unityRatio * unityRatio;
+    if (unityRatioSquare > kBpmDouble) {
+        return kBpmDouble;
+    } else if (unityRatioSquare < kBpmHalve) {
+        return kBpmHalve;
     }
-
-    try_margin = fabs((targetBpm * kBpmDouble / myBpm) - 1.0);
-    if (best_margin - try_margin > .0001) {
-        multiplier = kBpmDouble;
-    }
-    return multiplier;
+    return kBpmUnity;
 }
 
 void SyncControl::updateTargetBeatDistance() {
@@ -378,14 +371,6 @@ void SyncControl::slotPassthroughChanged(double enabled) {
         // If passthrough was enabled and sync was on, disable it.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
-}
-
-void SyncControl::slotEjectPushed(double enabled) {
-    Q_UNUSED(enabled);
-    // We can't eject tracks if the decks is playing back, so if we are master
-    // and eject was pushed the deck must be stopped.  Handing off in this case
-    // actually causes the other decks to start playing, so not doing anything
-    // is preferred.
 }
 
 void SyncControl::slotSyncModeChangeRequest(double state) {

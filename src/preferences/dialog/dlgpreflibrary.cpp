@@ -12,13 +12,16 @@
 #include <QUrl>
 
 #include "library/dlgtrackmetadataexport.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_dlgpreflibrary.cpp"
 #include "sources/soundsourceproxy.h"
 #include "widget/wsearchlineedit.h"
 
 namespace {
-    const ConfigKey kSearchDebouncingTimeoutMillisKey = ConfigKey("[Library]","SearchDebouncingTimeoutMillis");
-    } // namespace
+const ConfigKey kSearchDebouncingTimeoutMillisKey =
+        ConfigKey("[Library]", "SearchDebouncingTimeoutMillis");
+} // namespace
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
@@ -153,9 +156,9 @@ void DlgPrefLibrary::initializeDirList() {
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
     m_dirListModel.clear();
-    QStringList dirs = m_pLibrary->getDirs();
-    foreach (QString dir, dirs) {
-        m_dirListModel.appendRow(new QStandardItem(dir));
+    const auto rootDirs = m_pLibrary->trackCollections()->internalCollection()->loadRootDirs();
+    for (const mixxx::FileInfo& rootDir : rootDirs) {
+        m_dirListModel.appendRow(new QStandardItem(rootDir.location()));
     }
     dirList->setModel(&m_dirListModel);
     dirList->setCurrentIndex(m_dirListModel.index(0, 0));

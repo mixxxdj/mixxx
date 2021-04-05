@@ -6,6 +6,7 @@
 
 #include "track/track_decl.h"
 #include "track/trackref.h"
+#include "util/fileaccess.h"
 #include "util/sandbox.h"
 
 // forward declaration(s)

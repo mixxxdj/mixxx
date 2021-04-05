@@ -9,11 +9,12 @@
 #include "util/timer.h"
 
 RecursiveScanDirectoryTask::RecursiveScanDirectoryTask(
-        LibraryScanner* pScanner, const ScannerGlobalPointer scannerGlobal,
-        const QDir& dir, SecurityTokenPointer pToken, bool scanUnhashed)
+        LibraryScanner* pScanner,
+        const ScannerGlobalPointer& scannerGlobal,
+        const mixxx::FileAccess&& dirAccess,
+        bool scanUnhashed)
         : ScannerTask(pScanner, scannerGlobal),
-          m_dir(dir),
-          m_pToken(pToken),
+          m_dirAccess(std::move(dirAccess)),
           m_scanUnhashed(scanUnhashed) {
 }
 
@@ -32,14 +33,13 @@ void RecursiveScanDirectoryTask::run() {
     // a QDirIterator with a QDir instead of a QString -- but it inherits its
     // Filter from the QDir so we have to set it first. If the QDir has not done
     // any FS operations yet then this should be lightweight.
-    m_dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
-    QDirIterator it(m_dir);
+    auto dir = m_dirAccess.info().toQDir();
+    dir.setFilter(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+    QDirIterator it(dir);
 
-    QString currentFile;
-    QFileInfo currentFileInfo;
     std::list<QFileInfo> filesToImport;
     std::list<QFileInfo> possibleCovers;
-    std::list<QDir> dirsToScan;
+    std::list<mixxx::FileInfo> dirsToScan;
 
     QCryptographicHash hasher(QCryptographicHash::Sha256);
 
@@ -51,8 +51,8 @@ void RecursiveScanDirectoryTask::run() {
             m_scannerGlobal->supportedCoverExtensionsRegex();
 
     while (it.hasNext()) {
-        currentFile = it.next();
-        currentFileInfo = it.fileInfo();
+        QString currentFile = it.next();
+        QFileInfo currentFileInfo = it.fileInfo();
 
         if (currentFileInfo.isFile()) {
             const QString& fileName = currentFileInfo.fileName();
@@ -69,18 +69,17 @@ void RecursiveScanDirectoryTask::run() {
                 // Art Folder since it is probably a waste of time.
                 continue;
             }
-            const QDir currentDir(currentFile);
-            dirsToScan.push_back(currentDir);
+            dirsToScan.push_back(mixxx::FileInfo(std::move(currentFileInfo)));
         }
     }
 
     // Calculate a hash of the directory's file list.
     const mixxx::cache_key_t newHash = mixxx::cacheKeyFromMessageDigest(hasher.result());
 
-    QString dirPath = m_dir.path();
+    QString dirLocation = m_dirAccess.info().location();
 
     // Try to retrieve a hash from the last time that directory was scanned.
-    const mixxx::cache_key_t prevHash = m_scannerGlobal->directoryHashInDatabase(dirPath);
+    const mixxx::cache_key_t prevHash = m_scannerGlobal->directoryHashInDatabase(dirLocation);
     const bool prevHashExists = mixxx::isValidCacheKey(prevHash);
 
     if (prevHashExists || m_scanUnhashed) {
@@ -90,29 +89,36 @@ void RecursiveScanDirectoryTask::run() {
             // Rescan that mofo! If importing fails then the scan was cancelled so
             // we return immediately.
             if (!filesToImport.empty()) {
-                m_pScanner->queueTask(
-                        new ImportFilesTask(m_pScanner, m_scannerGlobal, dirPath,
-                                            prevHashExists, newHash, filesToImport,
-                                            possibleCovers, m_pToken));
+                m_pScanner->queueTask(new ImportFilesTask(m_pScanner,
+                        m_scannerGlobal,
+                        dirLocation,
+                        prevHashExists,
+                        newHash,
+                        filesToImport,
+                        possibleCovers,
+                        m_dirAccess.token()));
             } else {
-                emit directoryHashedAndScanned(dirPath, !prevHashExists, newHash);
+                emit directoryHashedAndScanned(dirLocation, !prevHashExists, newHash);
             }
         } else {
-            emit directoryUnchanged(dirPath);
+            emit directoryUnchanged(dirLocation);
         }
     } else {
-        m_scannerGlobal->addUnhashedDir(m_dir, m_pToken);
+        m_scannerGlobal->addUnhashedDir(m_dirAccess);
     }
 
     // Process all of the sub-directories.
-    foreach (const QDir& nextDir, dirsToScan) {
+    for (const mixxx::FileInfo& dirInfo : dirsToScan) {
         // Atomically test and mark the directory as scanned to avoid
         // that the same directory is scanned multiple times by different
         // tasks.
-        if (!m_scannerGlobal->testAndMarkDirectoryScanned(nextDir)) {
+        if (!m_scannerGlobal->testAndMarkDirectoryScanned(dirInfo.toQDir())) {
             m_pScanner->queueTask(
-                    new RecursiveScanDirectoryTask(m_pScanner, m_scannerGlobal,
-                                                   nextDir, m_pToken, m_scanUnhashed));
+                    new RecursiveScanDirectoryTask(
+                            m_pScanner,
+                            m_scannerGlobal,
+                            mixxx::FileAccess(dirInfo, m_dirAccess.token()),
+                            m_scanUnhashed));
         }
     }
     setSuccess(true);

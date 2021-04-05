@@ -16,12 +16,11 @@ jobs:
               -DWARNINGS_FATAL=ON
               -DBULK=ON
               -DFFMPEG=ON
-              -DKEYFINDER=ON
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMODPLUG=ON
               -DWAVPACK=ON
-              -INSTALL_USER_UDEV_RULES=OFF
+              -DINSTALL_USER_UDEV_RULES=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             ctest_args:
@@ -40,6 +39,8 @@ jobs:
               -DCOREAUDIO=ON
               -DHSS1394=ON
               -DMACOS_BUNDLE=ON
+              -DMODPLUG=OFF
+              -DWAVPACK=OFF
             cmake_generator: Unix Makefiles
             cmake_build_type: RelWithDebInfo
             # TODO: Fix this broken test on macOS
@@ -51,6 +52,7 @@ jobs:
             buildenv_script: tools/macos_buildenv.sh
             artifacts_name: macOS DMG
             artifacts_path: build/*.dmg
+            artifacts_slug: macos-macosintel
             qt_qpa_platform: offscreen
           - name: Windows 2019 (MSVC)
             os: windows-2019
@@ -59,10 +61,11 @@ jobs:
               -DBULK=OFF
               -DFFMPEG=OFF
               -DHSS1394=ON
-              -DKEYFINDER=OFF
               -DLOCALECOMPARE=ON
               -DMAD=ON
               -DMEDIAFOUNDATION=ON
+              -DMODPLUG=ON
+              -DWAVPACK=ON
             cc: cl
             cxx: cl
             cmake_generator: Ninja
@@ -76,6 +79,7 @@ jobs:
             buildenv_script: tools/windows_buildenv.bat
             artifacts_name: Windows Installer
             artifacts_path: build/*.msi
+            artifacts_slug: windows-windows64
             qt_qpa_platform: windows
 
     env:
@@ -87,6 +91,9 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
+    outputs:
+      artifact-macos-macosintel: ${{ steps.generate_artifact_metadata.outputs.artifact-macos-macosintel }}
+      artifact-windows-windows64: ${{ steps.generate_artifact_metadata.outputs.artifact-windows-windows64 }}
     steps:
 
     # sccache's handling of the /fp:fast MSVC compiler option is broken, so use our fork with the fix.
@@ -118,7 +125,7 @@ jobs:
       with:
         # This should always match the mininum required version in
         # our CMakeLists.txt
-        cmake-version: '3.13.x'
+        cmake-version: '3.16.x'
 
     - name: "[Windows] Set up MSVC Developer Command Prompt"
       if: runner.os == 'Windows'
@@ -206,6 +213,7 @@ jobs:
         -DBATTERY=ON
         -DBROADCAST=ON
         -DHID=ON
+        -DKEYFINDER=ON
         -DLILV=ON
         -DOPUS=ON
         -DQTKEYCHAIN=ON
@@ -304,13 +312,25 @@ jobs:
         pacman -S --noconfirm coreutils bash rsync openssh
         Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
+    - name: "Generate Artifact Metadata"
+      # Generate metadata for file artifact and write it to the job output
+      # using the artifacts_slug value.  This also sets the DEPLOY_DIR
+      # environment variable that is used in the deploy.sh script in the next
+      # step.
+      id: generate_artifact_metadata
+      if: github.event_name == 'push'
+      run: python3 tools/generate_download_metadata.py artifact ${{ matrix.artifacts_path }} "${{ matrix.artifacts_slug }}"
+      env:
+        DEPLOY_BASEURL: "https://downloads.mixxx.org"
+        DESTDIR: builds/{git_branch}/${{ runner.os }}
+
     - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
       # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
       if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_PASSWORD != null
       run: bash tools/deploy.sh ${{ matrix.artifacts_path }}
       env:
-        DESTDIR: public_html/downloads/builds
-        OS: ${{ runner.os }}
+        DESTDIR: public_html/downloads/
+        DEPLOY_ONLY: 0
         SSH_HOST: downloads-hostgator.mixxx.org
         SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
@@ -329,3 +349,42 @@ jobs:
       with:
         name: ${{ matrix.artifacts_name }}
         path: ${{ matrix.artifacts_path }}
+
+  update_manifest:
+    name: "Update manifest file on download server"
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+    - name: "Check out repository"
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+
+    - name: "Collect Artifacts Metadata & Write Manifest"
+      # Retrieve the metadata from the matrix job's outputs, merge them into a
+      # single JSON document and then deploy to the server.
+      if: github.event_name == 'push' && env.SSH_PASSWORD != null
+      run: python3 tools/generate_download_metadata.py manifest
+      env:
+        JOB_DATA: ${{ toJSON(needs.build) }}
+        MANIFEST_URL: "https://downloads.mixxx.org/builds/{git_branch}/manifest.json"
+        DESTDIR: "builds/{git_branch}"
+        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+
+    - name: "Deploy Manifest"
+      if: github.event_name == 'push' && env.SSH_PASSWORD != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
+      run: bash tools/deploy.sh manifest.json
+      env:
+        DESTDIR: public_html/downloads/
+        DEPLOY_ONLY: 1
+        SSH_HOST: downloads-hostgator.mixxx.org
+        SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
+        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+        SSH_USER: mixxx
+        UPLOAD_ID: ${{ github.run_id }}
+
+    - name: "Trigger Netlify build"
+      if: env.NETLIFY_BUILD_HOOK != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
+      run: curl -X POST -d '{}' ${{ env.NETLIFY_BUILD_HOOK }}
+      env:
+        NETLIFY_BUILD_HOOK: ${{ secrets.NETLIFY_BUILD_HOOK }}
