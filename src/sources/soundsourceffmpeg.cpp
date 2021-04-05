@@ -353,8 +353,8 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     while ((pavInputFormat = av_iformat_next(pavInputFormat))) {
 #else
     const AVInputFormat* pavInputFormat = nullptr;
-    void* iInputFormat = nullptr;
-    while ((pavInputFormat = av_demuxer_iterate(&iInputFormat))) {
+    void* pOpaqueInputFormatIterator = nullptr;
+    while ((pavInputFormat = av_demuxer_iterate(&pOpaqueInputFormatIterator))) {
 #endif
         if (pavInputFormat->flags | AVFMT_SEEK_TO_PTS) {
             ///////////////////////////////////////////////////////////
