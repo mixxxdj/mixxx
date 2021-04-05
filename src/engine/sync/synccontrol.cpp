@@ -173,7 +173,6 @@ bool SyncControl::isPlaying() const {
 }
 
 bool SyncControl::isAudible() const {
-    qDebug() << "isAudible" << m_audible << getGroup();
     return m_audible;
 }
 

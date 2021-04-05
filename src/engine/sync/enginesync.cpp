@@ -238,8 +238,6 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 }
 
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playingAudible) {
-    qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playingAudible;
-
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playingAudible;
     }
