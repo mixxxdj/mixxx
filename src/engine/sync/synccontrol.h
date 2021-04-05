@@ -33,12 +33,14 @@ class SyncControl : public EngineControl, public Syncable {
     void notifyOnlyPlayingSyncable() override;
     void requestSync() override;
     bool isPlaying() const override;
+    bool isAudible() const override;
 
     double adjustSyncBeatDistance(double beatDistance) const;
     double getBeatDistance() const override;
     void updateTargetBeatDistance();
     double getBaseBpm() const override;
     void setLocalBpm(double local_bpm);
+    void updateAudible();
 
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
@@ -109,6 +111,7 @@ class SyncControl : public EngineControl, public Syncable {
     // multiplier changes and we need to recalculate the target distance.
     double m_unmultipliedTargetBeatDistance;
     ControlValueAtomic<double> m_prevLocalBpm;
+    QAtomicInt m_audible;
 
     QScopedPointer<ControlPushButton> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
