@@ -128,7 +128,7 @@ class SyncableListener {
     virtual void notifyBeatDistanceChanged(
             Syncable* pSyncable, double beatDistance) = 0;
 
-    virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
+    virtual void notifyPlayingAudible(Syncable* pSyncable, bool playing) = 0;
 
     virtual Syncable* getMasterSyncable() = 0;
 };

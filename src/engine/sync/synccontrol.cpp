@@ -358,7 +358,7 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 }
 
 void SyncControl::slotControlPlay(double play) {
-    m_pEngineSync->notifyPlaying(this, play > 0.0 && m_audible);
+    m_pEngineSync->notifyPlayingAudible(this, play > 0.0 && m_audible);
 }
 
 void SyncControl::slotVinylControlChanged(double enabled) {
@@ -450,7 +450,7 @@ void SyncControl::updateAudible() {
         bool newAudible = gain > CSAMPLE_GAIN_ZERO ? true : false;
         if (m_audible != newAudible) {
             m_audible = newAudible;
-            m_pEngineSync->notifyPlaying(this, m_pPlayButton->toBool() && m_audible);
+            m_pEngineSync->notifyPlayingAudible(this, m_pPlayButton->toBool() && m_audible);
         }
     }
 }

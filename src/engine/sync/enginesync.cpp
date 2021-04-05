@@ -237,9 +237,10 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
     }
 }
 
-void EngineSync::notifyPlaying(Syncable* pSyncable, bool playingAudible) {
+void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playingAudible;
+        kLogger.trace() << "EngineSync::notifyPlayingAudible"
+                        << pSyncable->getGroup() << playingAudible;
     }
     // For now we don't care if the deck is now playing or stopping.
     if (!pSyncable->isSynchronized()) {
