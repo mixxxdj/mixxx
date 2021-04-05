@@ -129,6 +129,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     class GainCalculator {
       public:
+        virtual ~GainCalculator() = default;
         virtual CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const = 0;
     };
     class PflGainCalculator : public GainCalculator {

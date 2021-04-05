@@ -71,10 +71,6 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
     m_pPassthroughEnabled->connectValueChanged(this,
             &SyncControl::slotPassthroughChanged, Qt::DirectConnection);
 
-    m_pEjectButton = new ControlProxy(group, "eject", this);
-    m_pEjectButton->connectValueChanged(this,
-            &SyncControl::slotEjectPushed, Qt::DirectConnection);
-
     m_pQuantize = new ControlProxy(group, "quantize", this);
 
     // Adopt an invalid to not ignore the first call setLocalBpm()
@@ -375,14 +371,6 @@ void SyncControl::slotPassthroughChanged(double enabled) {
         // If passthrough was enabled and sync was on, disable it.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
-}
-
-void SyncControl::slotEjectPushed(double enabled) {
-    Q_UNUSED(enabled);
-    // We can't eject tracks if the decks is playing back, so if we are master
-    // and eject was pushed the deck must be stopped.  Handing off in this case
-    // actually causes the other decks to start playing, so not doing anything
-    // is preferred.
 }
 
 void SyncControl::slotSyncModeChangeRequest(double state) {

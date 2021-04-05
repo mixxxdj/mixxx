@@ -334,10 +334,11 @@ TEST_F(EngineSyncTest, InternalMasterSetFollowerSliderMoves) {
     // If internal is master, and we turn on a follower, the slider should move.
     auto pButtonMasterSyncInternal = std::make_unique<ControlProxy>(
             m_sInternalClockGroup, "sync_master");
-    pButtonMasterSyncInternal->slotSet(1);
     auto pMasterSyncSlider =
             std::make_unique<ControlProxy>(m_sInternalClockGroup, "bpm");
+
     pMasterSyncSlider->set(100.0);
+    pButtonMasterSyncInternal->slotSet(1);
 
     // Set the file bpm of channel 1 to 80 bpm.
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 80, 0.0);
