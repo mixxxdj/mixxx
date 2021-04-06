@@ -37,7 +37,7 @@ var MC7000 = {};
 // 1) Beat LED in Slicer mode (counts every 8 beats AFTER the CUE point)
 //    only works for CONSTANT TEMPO tracks
 //    needs beat grid and CUE point set
-MC7000.experimental = false;
+MC7000.experimental = true;
 
 // Wanna have Needle Search active while playing a track ?
 // In any case Needle Search is available holding "SHIFT" down.
@@ -79,7 +79,7 @@ MC7000.scratchParams = {
 // set to 1 with audio buffer set to 25ms
 // set to 3 with audio buffer set to 5ms
 
-MC7000.jogSensitivity = 1; // default: 1.0 with audio buffer set to 23ms
+MC7000.jogSensitivity = 1.3; // default: 1.0 with audio buffer set to 23ms
 
 /*/////////////////////////////////
 //      USER VARIABLES END       //
@@ -523,15 +523,19 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
         if (value > 0) {
             i = control - 0x14; // unshifted button
             j = control - 0x1C; // shifted button
+            // forward buttons
             if (control < 0x18) {
                 engine.setValue(group, "beatjump_" + MC7000.fixedLoop[i] + "_forward", true);
                 midi.sendShortMsg(0x94 + deckNumber - 1, control, MC7000.padColor.slicerJumpFwd);
+            // backward buttons
             } else if (control > 0x17 && control < 0x1C) {
                 engine.setValue(group, "beatjump_" + MC7000.fixedLoop[i - 4] + "_backward", true);
                 midi.sendShortMsg(0x94 + deckNumber - 1, control, MC7000.padColor.slicerJumpBack);
+            // forward buttons (shifted controls)
             } else if (control > 0x1B && control < 0x20) {
                 engine.setValue(group, "beatjump_" + MC7000.fixedLoop[j + 4] + "_forward", true);
                 midi.sendShortMsg(0x94 + deckNumber - 1, control, MC7000.padColor.slicerJumpFwd);
+            // backward buttons (shifted controls)
             } else if (control > 0x1F) {
                 engine.setValue(group, "beatjump_" + MC7000.fixedLoop[j] + "_backward", true);
                 midi.sendShortMsg(0x94 + deckNumber - 1, control, MC7000.padColor.slicerJumpBack);
@@ -859,17 +863,12 @@ MC7000.sortLibrary = function(channel, control, value) {
 // VuMeters only for Channel 1-4 / Master is on Hardware
 MC7000.VuMeter = function(value, group) {
     var deckNumber = script.deckFromGroup(group);
-    var currentLED = Math.pow(value, 3) * (MC7000.VuMeterLEDPeakValue - 1);
-    var vuLevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : currentLED;
-    var vuThreshold = Math.floor(currentLED / 4) * 4;
-    // only send Midi signal when threshold is reached
-    if (currentLED < 4) {
-        midi.sendShortMsg(0xB0 + deckNumber - 1, 0x1F, 0x00);
-    } else { // switch off LEDs when currentLED < threashold
-        if (MC7000.prevVuLevel[deckNumber - 1] !== vuThreshold) {
-            midi.sendShortMsg(0xB0 + deckNumber - 1, 0x1F, vuLevelOutValue);
-            MC7000.prevVuLevel[deckNumber - 1] = vuThreshold;
-        }
+    // sends either PeakIndicator or scales value (0..1) to (0..117) while truncating to each LED
+    var vuLevelOutValue = engine.getValue(group, "PeakIndicator") ? MC7000.VuMeterLEDPeakValue : Math.floor(Math.pow(value, 2.5) * 9) * 13;
+    // only send Midi signal when LED value has changed
+    if (MC7000.prevVuLevel[deckNumber - 1] !== vuLevelOutValue) {
+        midi.sendShortMsg(0xB0 + deckNumber - 1, 0x1F, vuLevelOutValue);
+        MC7000.prevVuLevel[deckNumber - 1] = vuLevelOutValue;
     }
 };
 
