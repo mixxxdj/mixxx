@@ -1,22 +1,23 @@
 #include "preferences/upgrade.h"
 
-#include <QPixmap>
 #include <QMessageBox>
+#include <QPixmap>
 #include <QPushButton>
-#include <QTranslator>
 #include <QScopedPointer>
+#include <QTranslator>
 
-#include "preferences/usersettings.h"
-#include "preferences/beatdetectionsettings.h"
-#include "database/mixxxdb.h"
+#include "config.h"
 #include "controllers/defs_controllers.h"
+#include "database/mixxxdb.h"
 #include "defs_version.h"
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
+#include "preferences/beatdetectionsettings.h"
+#include "preferences/usersettings.h"
 #include "util/cmdlineargs.h"
-#include "util/math.h"
-#include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
+#include "util/math.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
