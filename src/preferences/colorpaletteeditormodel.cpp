@@ -144,7 +144,7 @@ void ColorPaletteEditorModel::setColorPalette(const ColorPalette& palette) {
     QList<int> colorIndicesByHotcue = palette.getIndicesByHotcue();
     for (int i = 0; i < colorIndicesByHotcue.size(); i++) {
         int colorIndex = colorIndicesByHotcue.at(i);
-        hotcueColorIndicesMap.insert(colorIndex, i);
+        hotcueColorIndicesMap.insert(colorIndex, i + 1);
     }
 
     for (int i = 0; i < palette.size(); i++) {
