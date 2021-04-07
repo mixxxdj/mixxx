@@ -523,21 +523,21 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
         if (value > 0) {
             i = control - 0x14; // unshifted button
             j = control - 0x1C; // shifted button
-            // forward buttons
-            if (control < 0x18) {
-                engine.setValue(group, "beatjump_" + MC7000.fixedLoop[i] + "_forward", true);
+            // forward buttons (PAD buttons upper row)
+            if (control >= 0x14 && control <= 0x17) {
+                engine.setValue(group, "beatjump_" + MC7000.beatJump[i] + "_forward", true);
                 midi.sendShortMsg(0x94 + deckNumber - 1, control, MC7000.padColor.slicerJumpFwd);
-            // backward buttons
-            } else if (control > 0x17 && control < 0x1C) {
-                engine.setValue(group, "beatjump_" + MC7000.fixedLoop[i - 4] + "_backward", true);
+            // backward buttons (PAD buttons lower row)
+            } else if (control >= 0x18 && control <= 0x1B) {
+                engine.setValue(group, "beatjump_" + MC7000.beatJump[i - 4] + "_backward", true);
                 midi.sendShortMsg(0x94 + deckNumber - 1, control, MC7000.padColor.slicerJumpBack);
-            // forward buttons (shifted controls)
-            } else if (control > 0x1B && control < 0x20) {
-                engine.setValue(group, "beatjump_" + MC7000.fixedLoop[j + 4] + "_forward", true);
+            // forward buttons (PAD buttons upper row - shifted controls)
+            } else if (control >= 0x1C && control <= 0x1F) {
+                engine.setValue(group, "beatjump_" + MC7000.beatJump[j + 4] + "_forward", true);
                 midi.sendShortMsg(0x94 + deckNumber - 1, control, MC7000.padColor.slicerJumpFwd);
-            // backward buttons (shifted controls)
-            } else if (control > 0x1F) {
-                engine.setValue(group, "beatjump_" + MC7000.fixedLoop[j] + "_backward", true);
+            // backward buttons (PAD buttons lower row - shifted controls)
+            } else if (control >= 0x20 && control <= 0x23) {
+                engine.setValue(group, "beatjump_" + MC7000.beatJump[j] + "_backward", true);
                 midi.sendShortMsg(0x94 + deckNumber - 1, control, MC7000.padColor.slicerJumpBack);
             }
         } else {
