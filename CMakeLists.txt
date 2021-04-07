@@ -2063,7 +2063,15 @@ add_library(QueenMaryDsp STATIC EXCLUDE_FROM_ALL
   # lib/qm-dsp/thread/Thread.cpp
 )
 
-target_compile_definitions(QueenMaryDsp PRIVATE kiss_fft_scalar=double)
+# kiss_fft_scalar=double would conflict with RubberBand v1.9.1 on Linux systems
+# that have been built with the default flags, i.e. using KissFFT (default)
+# instead of FFTW (custom).
+# https://github.com/breakfastquay/rubberband/issues/37#issuecomment-814930385
+if(UNIX AND NOT APPLE)
+  target_compile_definitions(QueenMaryDsp PRIVATE kiss_fft_scalar=float)
+else()
+  target_compile_definitions(QueenMaryDsp PRIVATE kiss_fft_scalar=double)
+endif()
 if(UNIX)
   target_compile_definitions(QueenMaryDsp PRIVATE USE_PTHREADS)
 elseif(MSVC)
