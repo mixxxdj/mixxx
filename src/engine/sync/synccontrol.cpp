@@ -447,7 +447,7 @@ void SyncControl::updateAudible() {
     int channelIndex = m_pChannel->getChannelIndex();
     if (channelIndex >= 0) {
         CSAMPLE_GAIN gain = getEngineMaster()->getMasterGain(channelIndex);
-        bool newAudible = gain > CSAMPLE_GAIN_ZERO ? true : false;
+        bool newAudible = gain > CSAMPLE_GAIN_ZERO;
         if (m_audible != newAudible) {
             m_audible = newAudible;
             m_pEngineSync->notifyPlayingAudible(this, m_pPlayButton->toBool() && m_audible);
