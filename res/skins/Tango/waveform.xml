@@ -148,49 +148,6 @@ Variables:
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
                   </Template>
                 </Children>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],timing_shift_buttons</ConfigKey>
-                  <Transform><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <WidgetGroup>
-                <Layout>vertical</Layout>
-                <SizePolicy>f,f</SizePolicy>
-                <Children>
-                  <Template src="skin:button_1state_right.xml">
-                    <SetVariable name="TooltipId">beats_translate_curpos</SetVariable>
-                    <SetVariable name="ObjectName">BeatgridCurpos</SetVariable>
-                    <SetVariable name="Size">49f,24f</SetVariable>
-                    <SetVariable name="ConfigKey"><Variable name="group"/>,beats_translate_curpos</SetVariable>
-                    <SetVariable name="ConfigKeyRight"><Variable name="group"/>,beats_translate_match_alignment</SetVariable>
-                  </Template>
-
-                  <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-
-                  <WidgetGroup>
-                    <Layout>horizontal</Layout>
-                    <SizePolicy>f,f</SizePolicy>
-                    <Children>
-                      <Template src="skin:button_1state_right.xml">
-                        <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
-                        <SetVariable name="ObjectName">HotcuesEarlier</SetVariable>
-                        <SetVariable name="Size">24f,24f</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="group"/>,shift_cues_earlier</SetVariable>
-                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_cues_earlier_small</SetVariable>
-                      </Template>
-                      <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
-                      <Template src="skin:button_1state_right.xml">
-                        <SetVariable name="TooltipId">shift_cues_later</SetVariable>
-                        <SetVariable name="ObjectName">HotcuesLater</SetVariable>
-                        <SetVariable name="Size">24f,24f</SetVariable>
-                        <SetVariable name="ConfigKey"><Variable name="group"/>,shift_cues_later</SetVariable>
-                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_cues_later_small</SetVariable>
-                      </Template>
-                    </Children>
-                  </WidgetGroup>
-                </Children>
               </WidgetGroup>
 
               <WidgetGroup><Size>1f,1min</Size></WidgetGroup>
@@ -241,6 +198,39 @@ Variables:
 
                 </Children>
               </WidgetGroup><!-- /beats later & slower -->
+
+              <WidgetGroup><!-- hotcue sgift buttons, optional -->
+                <Layout>horizontal</Layout>
+                <SizePolicy>f,f</SizePolicy>
+                <Children>
+                  <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>f,f</SizePolicy>
+                    <Children>
+                      <Template src="skin:button_1state_right.xml">
+                        <SetVariable name="TooltipId">shift_cues_earlier</SetVariable>
+                        <SetVariable name="ObjectName">HotcuesEarlier</SetVariable>
+                        <SetVariable name="Size">24f,24f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,shift_cues_earlier</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_cues_earlier_small</SetVariable>
+                      </Template>
+                      <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
+                      <Template src="skin:button_1state_right.xml">
+                        <SetVariable name="TooltipId">shift_cues_later</SetVariable>
+                        <SetVariable name="ObjectName">HotcuesLater</SetVariable>
+                        <SetVariable name="Size">24f,24f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="group"/>,shift_cues_later</SetVariable>
+                        <SetVariable name="ConfigKeyRight"><Variable name="group"/>,shift_cues_later_small</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],timing_shift_buttons</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup><!-- hotcue sgift buttons, optional -->
             </Children>
           </WidgetGroup><!-- /beat grid buttons row -->
 
