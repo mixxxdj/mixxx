@@ -20,13 +20,12 @@
 #Deck2, #DeckCompact2, #DeckMini2,
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
-  #MixerDecks,
+#MixerDecks,
 #FxUnitControlsExpanded,
 #FxUnitControlsCollapsed,
 #FxSlotsExpanded,
 #FxSlotsCollapsed,
-#FxSlotContainer,
-  #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
+#MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini {
   background-color: #1e1e20;
 }
@@ -36,12 +35,12 @@
 #Deck2, #DeckCompact2, #DeckMini2,
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
-  #MixerDecks,
+#MixerDecks,
 #FxUnitControlsCollapsed,
 #FxUnitControlsExpanded,
 #FxSlotsCollapsed,
 #FxSlotsExpanded,
-  #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
+#MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini {
   border-top: 1px solid #333;
   border-left: 1px solid #282828;
@@ -264,7 +263,6 @@ WSearchLineEdit {
 }
 
 #LibExpandBox {
-  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
   border-right: 0px;
   border-left: 0px;
   border-radius: 0px;
@@ -829,9 +827,6 @@ WBeatSpinBox::down-button,
   #FxUnitHeader {
     padding: 0px 0px 1px 0px;
   }
-  #FxUnitLabel {
-    alignment: left;
-  }
 
 #FxUnitControlsCollapsed {
   padding: 1px 2px 3px 2px;
@@ -882,8 +877,6 @@ WBeatSpinBox::down-button,
 
 WEffectSelector:!editable,
 WEffectSelector:!editable:on {
-  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-  min-height: 13px;
   margin: 1px 0px 0px 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
       names start getting cut off. Adding explicit padding improves this. */
@@ -1228,6 +1221,7 @@ WEffectSelector:!editable:on,
 #fadeModeCombobox:!editable,
 #fadeModeCombobox:!editable:on {
   color: #918273;
+  /* use slightly larger labels than in Classic */
   font-size: 14px;
 }
   /* dim² ivory */
@@ -1297,9 +1291,6 @@ WEffectSelector:!editable:on,
     /*text-decoration: underline;*/
     /*font-weight: bold;*/
   }
-  #FxUnitControllerInputIndicator {
-    font-size: 18px;
-  }
   #FxUnit1 #FxUnitLabel[highlight="1"],
   #FxUnit2 #FxUnitLabel[highlight="1"] {
     color: #518f00;
@@ -1311,12 +1302,10 @@ WEffectSelector:!editable:on,
   #FxUnit1 #FxUnitControllerInputIndicator[highlight="1"],
   #FxUnit2 #FxUnitControllerInputIndicator[highlight="1"] {
     background-color: #518f00;
-    color: #518f00;
   }
   #FxUnit3 #FxUnitControllerInputIndicator[highlight="1"],
   #FxUnit4 #FxUnitControllerInputIndicator[highlight="1"] {
     background-color: #028392;
-    color: #028392;
   }
 
 /* Grey. default for all deck labels */
