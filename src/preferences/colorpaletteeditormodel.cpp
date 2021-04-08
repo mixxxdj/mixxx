@@ -54,7 +54,7 @@ QList<int> parseRangeList(const QString& input) {
 /// user friendly representation (eg {1, 2, 3} => "1 - 3").
 /// inverse counterpart of `parseRangeList`.
 /// rangeList must be sorted!
-QString stringifyRangeList(QList<int> rangeList) {
+QString stringifyRangeList(const QList<int>& rangeList) {
     DEBUG_ASSERT(std::is_sorted(rangeList.cbegin(), rangeList.cend()));
 
     QString stringifiedRangeList;
@@ -147,46 +147,39 @@ bool ColorPaletteEditorModel::dropMimeData(const QMimeData* data, Qt::DropAction
 }
 
 bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVariant& value, int role) {
+    setDirty(true);
     if (modelIndex.isValid() && modelIndex.column() == 1) {
-        const auto rollbackData = itemFromIndex(modelIndex)->data(role);
-
-        // parse and validate in color-context
         const bool initialAttemptSuccessful = QStandardItemModel::setData(modelIndex, value, role);
 
-        QList<int> allHotcueIndicies;
-        allHotcueIndicies.reserve(rowCount());
+        const auto* hotcueIndexListItem = toHotcueIndexListItem(itemFromIndex(modelIndex));
+        VERIFY_OR_DEBUG_ASSERT(hotcueIndexListItem) {
+            return false;
+        }
+
+        auto hotcueIndexList = hotcueIndexListItem->getHotcueIndexList();
+
+        // make sure no index is outside of range
+        DEBUG_ASSERT(std::is_sorted(hotcueIndexList.cbegin(), hotcueIndexList.cend()));
+        auto endUpper = std::upper_bound(
+                hotcueIndexList.begin(), hotcueIndexList.end(), rowCount());
+        hotcueIndexList.erase(endUpper, hotcueIndexList.end());
+        auto endLower = std::upper_bound(hotcueIndexList.begin(), hotcueIndexList.end(), 0);
+        hotcueIndexList.erase(hotcueIndexList.begin(), endLower);
 
         for (int i = 0; i < rowCount(); ++i) {
             auto* hotcueIndexListItem = toHotcueIndexListItem(item(i, 1));
 
             if (hotcueIndexListItem) {
-                allHotcueIndicies.append(hotcueIndexListItem->getHotcueIndexList());
+                if (i == modelIndex.row()) {
+                    hotcueIndexListItem->setHotcueIndexList(hotcueIndexList);
+                } else {
+                    hotcueIndexListItem->removeIndicies(hotcueIndexList);
+                }
             }
         }
 
-        // validate hotcueindicies in palette context
-        // checks for duplicates and validates largest index
-
-        const int preDedupLen = allHotcueIndicies.length();
-
-        std::sort(allHotcueIndicies.begin(), allHotcueIndicies.end());
-        const auto end = std::unique(allHotcueIndicies.begin(), allHotcueIndicies.end());
-        allHotcueIndicies.erase(end, allHotcueIndicies.end());
-
-        const bool isOutsidePalette = !allHotcueIndicies.empty() &&
-                allHotcueIndicies.last() > rowCount();
-
-        if (preDedupLen != allHotcueIndicies.length() || isOutsidePalette) {
-            // checks failed!
-            // rollback cell content to previous hotcue index list
-            return QStandardItemModel::setData(modelIndex, rollbackData, role);
-        } else {
-            setDirty(true);
-            return initialAttemptSuccessful;
-        }
+        return initialAttemptSuccessful;
     }
-
-    setDirty(true);
     return QStandardItemModel::setData(modelIndex, value, role);
 }
 
@@ -293,5 +286,24 @@ void HotcueIndexListItem::setData(const QVariant& value, int role) {
     default:
         QStandardItem::setData(value, role);
         break;
+    }
+}
+
+void HotcueIndexListItem::removeIndicies(const QList<int>& otherIndicies) {
+    DEBUG_ASSERT(std::is_sorted(otherIndicies.cbegin(), otherIndicies.cend()));
+    DEBUG_ASSERT(std::is_sorted(m_hotcueIndexList.cbegin(), m_hotcueIndexList.cend()));
+
+    QList<int> hotcueIndiciesWithOthersRemoved;
+    hotcueIndiciesWithOthersRemoved.reserve(m_hotcueIndexList.size());
+
+    std::set_difference(m_hotcueIndexList.cbegin(),
+            m_hotcueIndexList.cend(),
+            otherIndicies.cbegin(),
+            otherIndicies.cend(),
+            std::back_inserter(hotcueIndiciesWithOthersRemoved));
+
+    if (m_hotcueIndexList != hotcueIndiciesWithOthersRemoved) {
+        m_hotcueIndexList = hotcueIndiciesWithOthersRemoved;
+        emitDataChanged();
     }
 }

@@ -62,8 +62,10 @@ class HotcueIndexListItem : public QStandardItem {
         return m_hotcueIndexList;
     }
     void setHotcueIndexList(const QList<int>& list) {
-        m_hotcueIndexList = std::move(list);
+        m_hotcueIndexList = QList(list);
     }
+
+    void removeIndicies(const QList<int>& otherIndicies);
 
   private:
     QList<int> m_hotcueIndexList;
