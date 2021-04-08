@@ -12,11 +12,11 @@
 
 namespace {
 
-const auto groupSeparator = QStringLiteral(", ");
-const auto rangeSeparator = QStringLiteral(" - ");
+const QString kGroupSeparator = QStringLiteral(", ");
+const QString kRangeSeparator = QStringLiteral(" - ");
 // when changing groupSeparator or rangeSeparator, rangeListMatchingRegex must
 // be adjusted as well.
-const QRegularExpression rangeListMatchingRegex(
+const QRegularExpression kRangeListMatchingRegex(
         QStringLiteral("(?:(\\d+)(?:\\s*-\\s*(\\d+))?)[\\s,]*"));
 
 /// parses a comma-separated list of positive ints and range if ints (eg `n - m`)
@@ -24,7 +24,7 @@ const QRegularExpression rangeListMatchingRegex(
 /// inverse counterpart of `stringifyRangeList`
 QList<int> parseRangeList(const QString& input) {
     QList<int> intList;
-    auto matchGroups = rangeListMatchingRegex.globalMatch(input);
+    auto matchGroups = kRangeListMatchingRegex.globalMatch(input);
     while (matchGroups.hasNext()) {
         const auto group = matchGroups.next();
         const QString rangeStart = group.captured(1);
@@ -77,16 +77,16 @@ QString stringifyRangeList(const QList<int>& rangeList) {
             break;
         case 1:
             // treat ranges of (i..i+1) as separate groups: "i, i+1"
-            stringifiedRangeList += groupSeparator + QString::number(rangeList.at(rangeEndIndex));
+            stringifiedRangeList += kGroupSeparator + QString::number(rangeList.at(rangeEndIndex));
             break;
         default:
             // range where the end is >=2 than the start
-            stringifiedRangeList += rangeSeparator + QString::number(rangeList.at(rangeEndIndex));
+            stringifiedRangeList += kRangeSeparator + QString::number(rangeList.at(rangeEndIndex));
             break;
         }
 
         if (i < rangeList.size()) {
-            stringifiedRangeList += groupSeparator;
+            stringifiedRangeList += kGroupSeparator;
         }
     }
     return stringifiedRangeList;
