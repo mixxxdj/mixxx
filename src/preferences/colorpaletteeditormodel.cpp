@@ -12,13 +12,91 @@
 
 namespace {
 
+const auto groupSeparator = QStringLiteral(", ");
+const auto rangeSeparator = QStringLiteral(" - ");
+// when changing groupSeparator or rangeSeparator, rangeListMatchingRegex must
+// be adjusted as well.
+const QRegularExpression rangeListMatchingRegex(
+        QStringLiteral("(?:(\\d+)(?:\\s*-\\s*(\\d+))?)[\\s,]*"));
+
+/// parses a comma-separated list of positive ints and range if ints (eg `n - m`)
+/// and returns a sorted list of all the ints described.
+/// inverse counterpart of `stringifyRangeList`
+QList<int> parseRangeList(const QString& input) {
+    QList<int> intList;
+    auto matchGroups = rangeListMatchingRegex.globalMatch(input);
+    while (matchGroups.hasNext()) {
+        const auto group = matchGroups.next();
+        const QString rangeStart = group.captured(1);
+        const QString rangeEnd = group.captured(2);
+        bool startOk, endOk;
+        int startIndex = rangeStart.toInt(&startOk);
+        if (!startOk) {
+            continue;
+        }
+        int endIndex = rangeEnd.toInt(&endOk);
+        if (!endOk) {
+            endIndex = startIndex;
+        }
+        for (int currentIndex = startIndex; currentIndex <= endIndex; currentIndex++) {
+            intList.append(currentIndex);
+        }
+    }
+
+    std::sort(intList.begin(), intList.end());
+    const auto end = std::unique(intList.begin(), intList.end());
+    intList.erase(end, intList.end());
+
+    return intList;
+}
+
+/// take a list of positive integers and stringify them into a neat
+/// user friendly representation (eg {1, 2, 3} => "1 - 3").
+/// inverse counterpart of `parseRangeList`.
+/// rangeList must be sorted!
+QString stringifyRangeList(QList<int> rangeList) {
+    DEBUG_ASSERT(std::is_sorted(rangeList.cbegin(), rangeList.cend()));
+
+    QString stringifiedRangeList;
+
+    for (int i = 0; i < rangeList.size();) {
+        int rangeStartIndex = i;
+        int rangeStartValue = rangeList.at(i);
+
+        while (i < rangeList.size() && rangeList.at(i) == rangeStartValue + (i - rangeStartIndex)) {
+            i++;
+        }
+
+        int rangeEndIndex = i - 1;
+
+        stringifiedRangeList += QString::number(rangeStartValue);
+
+        switch (rangeEndIndex - rangeStartIndex) {
+        case 0:
+            // not a range
+            break;
+        case 1:
+            // treat ranges of (i..i+1) as separate groups: "i, i+1"
+            stringifiedRangeList += groupSeparator + QString::number(rangeList.at(rangeEndIndex));
+            break;
+        default:
+            // range where the end is >=2 than the start
+            stringifiedRangeList += rangeSeparator + QString::number(rangeList.at(rangeEndIndex));
+            break;
+        }
+
+        if (i < rangeList.size()) {
+            stringifiedRangeList += groupSeparator;
+        }
+    }
+    return stringifiedRangeList;
+}
+
 QIcon toQIcon(const QColor& color) {
     QPixmap pixmap(50, 50);
     pixmap.fill(color);
     return QIcon(pixmap);
 }
-
-const QRegularExpression hotcueListMatchingRegex(QStringLiteral("(\\d+)[ ,]*"));
 
 HotcueIndexListItem* toHotcueIndexListItem(QStandardItem* from) {
     VERIFY_OR_DEBUG_ASSERT(from->type() == QStandardItem::UserType) {
@@ -192,14 +270,7 @@ QVariant HotcueIndexListItem::data(int role) const {
     switch (role) {
     case Qt::DisplayRole:
     case Qt::EditRole: {
-        QString serializedIndexStrings;
-        for (int i = 0; i < m_hotcueIndexList.size(); ++i) {
-            serializedIndexStrings += QString::number(m_hotcueIndexList.at(i));
-            if (i < m_hotcueIndexList.size() - 1) {
-                serializedIndexStrings += QStringLiteral(", ");
-            }
-        }
-        return QVariant(serializedIndexStrings);
+        return QVariant(stringifyRangeList(m_hotcueIndexList));
         break;
     }
     default:
@@ -211,20 +282,12 @@ QVariant HotcueIndexListItem::data(int role) const {
 void HotcueIndexListItem::setData(const QVariant& value, int role) {
     switch (role) {
     case Qt::EditRole: {
-        m_hotcueIndexList.clear();
-        QRegularExpressionMatchIterator regexResults =
-                hotcueListMatchingRegex.globalMatch(value.toString());
-        while (regexResults.hasNext()) {
-            QRegularExpressionMatch match = regexResults.next();
-            bool ok;
-            const int hotcueIndex = match.captured(1).toInt(&ok);
-            if (ok && !m_hotcueIndexList.contains(hotcueIndex)) {
-                m_hotcueIndexList.append(hotcueIndex);
-            }
-        }
-        std::sort(m_hotcueIndexList.begin(), m_hotcueIndexList.end());
+        QList<int> newHotcueIndicies = parseRangeList(value.toString());
 
-        emitDataChanged();
+        if (m_hotcueIndexList != newHotcueIndicies) {
+            m_hotcueIndexList = newHotcueIndicies;
+            emitDataChanged();
+        }
         break;
     }
     default:
