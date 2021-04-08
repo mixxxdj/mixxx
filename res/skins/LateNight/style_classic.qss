@@ -223,11 +223,12 @@ WSearchLineEdit,
   max-width: 0px;
   }
 
-  #FxSlotSeparatorV {
+  #FxFlowIndicatorCollapsed,
+  #FxMixerSeparatorCollapsed {
     min-width: 1px;
     max-width: 1px;
-    image: url(skin:/classic/style/fx_separator.svg) repeat center center;
     margin: 2px 1px;
+    background: url(skin:/classic/style/fx_separator.svg) no-repeat center center;
   }
   #FxSlotSeparatorH {
     min-height: 2px;
@@ -780,17 +781,12 @@ WLibrary {
   margin: 0px 1px;
 }
 
-#FxUnitControlsCollapsed #FxUnitLabel {
-  alignment: right;
-}
-#FxUnitControlsExpanded #FxUnitLabel {
-  alignment: left;
+#FxSlotsCollapsed #FxSlotContainer {
+  margin: 2px 7px 1px 5px;
 }
 
-#FxSlotsCollapsed #FxSlotContainer {
-  margin: 2px 0px 1px 0px;
-  padding-right: 0px;
-  padding-left: 0px;
+#FxSlotsExpanded #FxSlotControls {
+  margin: 1px 5px 1px 4px;
 }
 
 #FxMetaKnob {
@@ -817,6 +813,10 @@ WLibrary {
 #FxParametersContainer {
   padding: 2px 1px 1px 1px;
   margin: 2px 1px;
+}
+
+#FxFocusButtonBox {
+  margin-right: 3px;
 }
 
 WPushButton#FxSuperLinkButton,

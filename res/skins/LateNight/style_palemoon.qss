@@ -247,7 +247,7 @@ WSearchLineEdit {
 }
 
 #FxParametersFocusBg {
-  border: 1px solid #1c1c1e;
+  border: 1px solid #257B82;
   background-color: rgba(0,0,1,50);
 }
 
@@ -281,7 +281,7 @@ WSearchLineEdit {
 #DeckRateSeparatorCompact,
 #MasterMixerSeparator,
 #MasterHeadphoneSeparator,
-#FxSlotSeparatorV,
+#FxMixerSeparatorCollapsed,
 #FxSlotSeparatorH,
 #SeparatorToolbar,
 #SkinSettingsSeparator {
@@ -290,14 +290,21 @@ WSearchLineEdit {
   }
   #DeckRateSeparator,
   #DeckRateSeparatorCompact,
-  #FxSlotSeparatorV,
+  #FxMixerSeparatorCollapsed,
   #SkinSettingsSeparator {
     min-width: 0px;
     max-width: 0px;
   }
+  #FxMixerSeparatorCollapsed {
+    margin-left: 3px;
+  }
+  #FxFlowIndicatorCollapsed {
+    min-width: 12px;
+    max-width: 12px;
+  }
   #DeckRateSeparator,
   #DeckRateSeparatorCompact,
-  #FxSlotSeparatorV,
+  #FxMixerSeparatorCollapsed,
   #FxSlotSeparatorH {
     border-left: 1px solid #0c0c0c;
     border-right: 1px solid #333;
@@ -311,8 +318,9 @@ WSearchLineEdit {
     border-bottom: 1px solid #333;
   }
 
-  #FxSlotSeparatorV {
-    margin: 0px 0px 0px 2px;
+  #FxFlowIndicatorCollapsed {
+    margin: 0px 0px 0px 0px;
+    background-image: url(skin:/palemoon/style/fx_flow_horizontal.svg) no-repeat center center;
   }
   #ToolbarSeparator {
     margin: 0px 5px;
@@ -855,6 +863,7 @@ WBeatSpinBox::down-button,
   border-right: 0px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
+  background: #1e1e20 url(skin:/palemoon/style/fx_flow_vertical.svg) no-repeat center right;
   }
   #FxSlot1,
   #FxSlot2,
@@ -871,8 +880,14 @@ WBeatSpinBox::down-button,
   padding: 5px 0px 2px 0px;
 }
 
-#FxSlotsCollapsed #FxSlotContainer {
-  margin: 2px 0px 1px 1px;
+#FxSlotsCollapsed #FxSlotControls {
+  padding: 2px 3px 1px 3px;
+}
+
+#FxSlotsExpanded #FxSlotControls {
+/* keep height of fx slot with/without effect */
+  min-height: 47px;
+  padding: 2px 7px 1px 3px;
 }
 
 WEffectSelector:!editable,
@@ -918,6 +933,10 @@ WEffectSelector:!editable:on {
     text sits at left border now
     border: 0; */
   }
+
+#FxFocusButtonBox {
+  margin-right: 3px;
+}
 
 WPushButton#FxSuperLinkButton,
 WPushButton#FxSuperLinkInvertButton {
@@ -2118,15 +2137,21 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skin:/palemoon/buttons/btn__split_active.svg) no-repeat center center;
   }
 
+#FxExpand,
+#SamplerExpand,
+#LibExpand {
+  background-repeat: no-repeat;
+  background-position: center center;
+}
 #FxExpand[value="0"],
 #SamplerExpand[value="0"],
 #LibExpand[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__expand_dim.svg) no-repeat center center;
+  background: url(skin:/palemoon/buttons/btn__expand_dim.svg) no-repeat center center;
   }
   #FxExpand[value="1"],
   #SamplerExpand[value="1"],
   #LibExpand[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__collapse_dim.svg) no-repeat center center;
+    background: url(skin:/palemoon/buttons/btn__collapse_dim.svg) no-repeat center center;
   }
 
 #MixModeButton[value="0"] {
