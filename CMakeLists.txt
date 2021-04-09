@@ -1,22 +1,4 @@
-cmake_minimum_required(VERSION 3.16.0)
-project(mixxx VERSION 2.3.0)
-set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
-set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
-
-# Used for force control of color output
-set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
-# Option to disable symlinks
-set(USE_SYMLINKS ON CACHE BOOL "Use symlinks in build directory when possible")
-
-# Support new IN_LIST if() operator
-if(POLICY CMP0057)
-  cmake_policy(SET CMP0057 NEW)
-endif()
-
-# Let AUTOMOC and AUTOUIC process GENERATED files
-if(POLICY CMP0071)
-  cmake_policy(SET CMP0071 NEW)
-endif()
+cmake_minimum_required(VERSION 3.16)
 
 # CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
 if(POLICY CMP0025)
@@ -28,9 +10,30 @@ if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
+# Support new IN_LIST if() operator
+if(POLICY CMP0057)
+  cmake_policy(SET CMP0057 NEW)
+endif()
+
+# Enforce interprocedural optimization
 if(POLICY CMP0069)
   cmake_policy(SET CMP0069 NEW)
 endif()
+
+# Let AUTOMOC and AUTOUIC process GENERATED files
+if(POLICY CMP0071)
+  cmake_policy(SET CMP0071 NEW)
+endif()
+
+project(mixxx VERSION 2.3.0)
+
+set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
+set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
+
+# Used for force control of color output
+set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
+# Option to disable symlinks
+set(USE_SYMLINKS ON CACHE BOOL "Use symlinks in build directory when possible")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 include(CMakeDependentOption)
