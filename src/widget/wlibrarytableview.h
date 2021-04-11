@@ -4,6 +4,7 @@
 #include <QDateTime>
 #include <QFont>
 #include <QItemSelectionModel>
+#include <QList>
 #include <QString>
 #include <QTableView>
 
@@ -15,11 +16,13 @@ class TrackModel;
 
 class WLibraryTableView : public QTableView, public virtual LibraryView {
     Q_OBJECT
-
+  protected:
     struct ModelState {
         int horizontalScrollPosition;
         int verticalScrollPosition;
         QModelIndexList selectionIndex;
+        QList<TrackId> selectionTracks;
+        TrackId currentTrack;
         QModelIndex currentIndex;
     };
 
@@ -38,12 +41,14 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
     /// @brief restoreTrackModelState function finds scrollbar value associated with model
     /// by given key and restores it
     /// @param key unique for trackmodel
-    bool restoreTrackModelState(const QAbstractItemModel* model, const QString& key);
+    bool restoreTrackModelState(const QAbstractItemModel* model,
+            const QString& key,
+            bool fromSearch);
     /// @brief clears the state cache until it's size is = kClearModelStatesLowWatermark
     void saveCurrentViewState() override;
     /// @brief restores current view state.
     /// @return true if restore succeeded
-    bool restoreCurrentViewState() override;
+    bool restoreCurrentViewState(bool fromSearch = false) override;
 
   signals:
     void loadTrack(TrackPointer pTrack);
@@ -60,6 +65,8 @@ class WLibraryTableView : public QTableView, public virtual LibraryView {
   protected:
     void focusInEvent(QFocusEvent* event) override;
     virtual QString getStateKey() const = 0;
+    virtual void fillModelState(ModelState& state);
+    virtual bool applyModelState(ModelState& state);
 
   private:
     const UserSettingsPointer m_pConfig;

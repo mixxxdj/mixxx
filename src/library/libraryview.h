@@ -27,7 +27,8 @@ class LibraryView {
     virtual void slotAddToAutoDJTop() {};
     virtual void slotAddToAutoDJReplace() {};
     virtual void saveCurrentViewState(){};
-    virtual bool restoreCurrentViewState() {
+    virtual bool restoreCurrentViewState(bool fromSearch = false) {
+        Q_UNUSED(fromSearch);
         return false;
     };
 

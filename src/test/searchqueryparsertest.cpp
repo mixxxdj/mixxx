@@ -990,3 +990,90 @@ TEST_F(SearchQueryParserTest, CrateFilterWithCrateFilterAndNegation){
                             ") AND (NOT (" + m_crateFilterQuery.arg(searchTermB) + "))"),
                  qPrintable(pQueryB->toSql()));
 }
+
+TEST_F(SearchQueryParserTest, SplitTest) {
+    QStringList rv = SearchQueryParser::splitQuery(QString("a test b"));
+    QStringList ex = QStringList() << "a"
+                                   << "test"
+                                   << "b";
+    qDebug() << rv << ex;
+    EXPECT_EQ(rv, ex);
+
+    QStringList rv2 = SearchQueryParser::splitQuery(QString("a \"test ' b\" x"));
+    QStringList ex2 = QStringList() << "a"
+                                    << "\"test ' b\""
+                                    << "x";
+    qDebug() << rv2 << ex2;
+    EXPECT_EQ(rv2, ex2);
+
+    QStringList rv3 = SearchQueryParser::splitQuery(QString("a x"));
+    QStringList ex3 = QStringList() << "a"
+                                    << "x";
+    qDebug() << rv3 << ex3;
+    EXPECT_EQ(rv3, ex3);
+
+    QStringList rv4 = SearchQueryParser::splitQuery(
+            QString("a crate:x title:\"S p A C e\" ~key:2m"));
+    QStringList ex4 = QStringList() << "a"
+                                    << "crate:x"
+                                    << "title:\"S p A C e\""
+                                    << "~key:2m";
+    qDebug() << rv4 << ex4;
+    EXPECT_EQ(rv4, ex4);
+}
+
+TEST_F(SearchQueryParserTest, testIsReduced) {
+    // Generate a file name for the temporary file
+    EXPECT_TRUE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("searchme"),
+            QStringLiteral("searchm")));
+
+    EXPECT_TRUE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("A B C"),
+            QStringLiteral("A C")));
+
+    EXPECT_FALSE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("A B C"),
+            QStringLiteral("A D C")));
+
+    EXPECT_TRUE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("Abba1 Abba2 Abb"),
+            QStringLiteral("Abba1 Abba Abb")));
+
+    EXPECT_FALSE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("Abba1 Abba2 Abb"),
+            QStringLiteral("Abba1 Aba Abb")));
+
+    EXPECT_TRUE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("Abba1"),
+            QStringLiteral("")));
+
+    EXPECT_TRUE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("Abba1"),
+            QStringLiteral("bba")));
+
+    EXPECT_TRUE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("crate:abc"),
+            QStringLiteral("crate:ab")));
+
+    // FIXME(poelzi): the architecture of the query parser makes it
+    // very hard to correctly understand the search query since the
+    // interpretation and lexing is done in the same step.
+    // The query parser should be correctly split into lexing and query
+    // construction
+    // EXPECT_TRUE(StringUtils::isReducedTerm(
+    //     QStringLiteral("crate:\"a b c\""),
+    //     QStringLiteral("crate:\"a b\"")));
+
+    EXPECT_FALSE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("crate:\"a b c\""),
+            QStringLiteral("crate:\"a c\"")));
+
+    EXPECT_FALSE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("-crate:\"a b c\""),
+            QStringLiteral("crate:\"a b c\"")));
+
+    EXPECT_FALSE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("-crate:\"a b c\""),
+            QStringLiteral("crate:\"a b c\"")));
+}

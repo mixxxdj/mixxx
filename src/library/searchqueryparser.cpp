@@ -1,11 +1,14 @@
 #include "library/searchqueryparser.h"
 
-#include "util/compatibility.h"
+#include <QRegExp>
 
 #include "track/keyutils.h"
+#include "util/compatibility.h"
 
 constexpr char kNegatePrefix[] = "-";
 constexpr char kFuzzyPrefix[] = "~";
+// see https://stackoverflow.com/questions/1310473/regex-matching-spaces-but-not-in-strings
+const QRegExp kSplitRegexp = QRegExp(" (?=[^\"]*(\"[^\"]*\"[^\"]*)*$)");
 
 SearchQueryParser::SearchQueryParser(TrackCollection* pTrackCollection)
     : m_pTrackCollection(pTrackCollection) {
@@ -258,9 +261,50 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
     }
 
     if (!query.isEmpty()) {
+        // FIXME(poelzi): refactor into a tokanizer that properly understands
+        // how search queries are build up and parses " correctly.
         QStringList tokens = query.split(" ");
         parseTokens(tokens, searchColumns, pQuery.get());
     }
 
     return pQuery;
+}
+
+QStringList SearchQueryParser::splitQuery(const QString& query) {
+    QStringList splitted = query.split(kSplitRegexp);
+    return splitted;
+}
+
+bool SearchQueryParser::isReducedTerm(const QString& original, const QString& changed) {
+    // seperate search query into tokens
+    QStringList oList = SearchQueryParser::splitQuery(original);
+    QStringList nList = SearchQueryParser::splitQuery(changed);
+
+    // we sort the lists for length so the comperator will pop the longest match first
+    std::sort(oList.begin(), oList.end(), [=](const QString& v1, const QString& v2) {
+        return v1.length() > v2.length();
+    });
+    std::sort(nList.begin(), nList.end(), [=](const QString& v1, const QString& v2) {
+        return v1.length() > v2.length();
+    });
+
+    for (int i = 0; i < oList.length(); i++) {
+        const QString& oword = oList.at(i);
+        for (int j = 0; j < nList.length(); j++) {
+            const QString& nword = nList.at(j);
+            if ((oword.startsWith("-") && oword.startsWith(nword)) ||
+                    (!nword.contains(":") && oword.contains(nword)) ||
+                    (nword.contains(":") && oword.startsWith(nword))) {
+                // we found a match and can remove the search term list
+                nList.removeAt(j);
+                break;
+            }
+        }
+    }
+    // if the new search query list contains no more terms, we have a reduced
+    // search term
+    if (nList.empty()) {
+        return true;
+    }
+    return false;
 }

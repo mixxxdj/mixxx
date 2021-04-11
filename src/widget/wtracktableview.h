@@ -42,6 +42,8 @@ class WTrackTableView : public WLibraryTableView {
     TrackModel::SortColumnId getColumnIdFromCurrentIndex() override;
     QList<TrackId> getSelectedTrackIds() const;
     void setSelectedTracks(const QList<TrackId>& tracks);
+    TrackId getCurrentTrackId() const;
+    bool setCurrentTrackId(const TrackId& trackId);
 
     double getBackgroundColorOpacity() const {
         return m_backgroundColorOpacity;
@@ -79,9 +81,15 @@ class WTrackTableView : public WLibraryTableView {
 
     void slotSortingChanged(int headerSection, Qt::SortOrder order);
     void keyNotationChanged();
+    void slotScrollToCurrent();
+
+  signals:
+    void scrollToCurrent();
 
   protected:
     QString getStateKey() const override;
+    void fillModelState(ModelState& state) override;
+    bool applyModelState(ModelState& state) override;
 
   private:
     void addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc);

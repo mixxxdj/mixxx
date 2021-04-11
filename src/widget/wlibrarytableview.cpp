@@ -103,7 +103,7 @@ void WLibraryTableView::moveSelection(int delta) {
                 delta++;
             }
         }
-        // this wired combination works when switching between models
+        // this weired combination works when switching between models
         setCurrentIndex(newIndex);
         currentSelection->select(newIndex, QItemSelectionModel::ClearAndSelect);
         // why does scrollTo not work ?
@@ -126,16 +126,7 @@ void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, con
     // qDebug() << "save: saveTrackModelState:" << key << model << verticalScrollBar()->value() << " | ";
     state->verticalScrollPosition = verticalScrollBar()->value();
     state->horizontalScrollPosition = horizontalScrollBar()->value();
-    if (!selectionModel()->selectedIndexes().isEmpty()) {
-        state->selectionIndex = selectionModel()->selectedIndexes();
-    } else {
-        state->selectionIndex = QModelIndexList();
-    }
-    if (selectionModel()->currentIndex().isValid()) {
-        state->currentIndex = selectionModel()->currentIndex();
-    } else {
-        state->currentIndex = QModelIndex();
-    }
+    fillModelState(*state);
     m_modelStateCache.insert(key, state, 1);
 
     WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
@@ -145,16 +136,18 @@ void WLibraryTableView::saveTrackModelState(const QAbstractItemModel* model, con
 }
 
 bool WLibraryTableView::restoreTrackModelState(
-        const QAbstractItemModel* model, const QString& key) {
+        const QAbstractItemModel* model, const QString& key, bool fromSearch) {
     updateGeometries();
     //qDebug() << "restoreTrackModelState:" << key << model << m_vModelState.keys();
     if (model == nullptr) {
         return false;
     }
 
-    WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
-    if (pHeader) {
-        pHeader->restoreHeaderState();
+    if (!fromSearch) {
+        WTrackTableViewHeader* pHeader = qobject_cast<WTrackTableViewHeader*>(horizontalHeader());
+        if (pHeader) {
+            pHeader->restoreHeaderState();
+        }
     }
 
     ModelState* state = m_modelStateCache.take(key);
@@ -165,19 +158,40 @@ bool WLibraryTableView::restoreTrackModelState(
     verticalScrollBar()->setValue(state->verticalScrollPosition);
     horizontalScrollBar()->setValue(state->horizontalScrollPosition);
 
-    auto selection = selectionModel();
-    selection->clearSelection();
-    if (!state->selectionIndex.isEmpty()) {
-        for (auto index : qAsConst(state->selectionIndex)) {
-            selection->select(index, QItemSelectionModel::Select);
-        }
-    }
-    if (state->currentIndex.isValid()) {
-        selection->setCurrentIndex(state->currentIndex, QItemSelectionModel::NoUpdate);
-    }
+    applyModelState(*state);
     // reinsert the state into the cache
     m_modelStateCache.insert(key, state, 1);
     return true;
+}
+
+void WLibraryTableView::fillModelState(ModelState& state) {
+    if (!selectionModel()->selectedIndexes().isEmpty()) {
+        state.selectionIndex = selectionModel()->selectedIndexes();
+    } else {
+        state.selectionIndex = QModelIndexList();
+    }
+    if (selectionModel()->currentIndex().isValid()) {
+        state.currentIndex = selectionModel()->currentIndex();
+    } else {
+        state.currentIndex = QModelIndex();
+    }
+}
+
+bool WLibraryTableView::applyModelState(ModelState& state) {
+    auto selection = selectionModel();
+    selection->clearSelection();
+    if (!state.selectionIndex.isEmpty()) {
+        for (auto index : qAsConst(state.selectionIndex)) {
+            selection->select(index, QItemSelectionModel::Select);
+        }
+    }
+    if (state.currentIndex.isValid()) {
+        selection->setCurrentIndex(state.currentIndex,
+                QItemSelectionModel::Select |
+                        QItemSelectionModel::SelectCurrent);
+        return true;
+    }
+    return false;
 }
 
 void WLibraryTableView::setTrackTableFont(const QFont& font) {
@@ -208,13 +222,13 @@ void WLibraryTableView::saveCurrentViewState() {
     saveTrackModelState(currentModel, key);
 }
 
-bool WLibraryTableView::restoreCurrentViewState() {
+bool WLibraryTableView::restoreCurrentViewState(bool fromSearch) {
     const QAbstractItemModel* currentModel = model();
     QString key = getStateKey();
     if (!currentModel || key.isEmpty()) {
         return false;
     }
-    return restoreTrackModelState(currentModel, key);
+    return restoreTrackModelState(currentModel, key, fromSearch);
 }
 
 void WLibraryTableView::focusInEvent(QFocusEvent* event) {

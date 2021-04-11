@@ -28,8 +28,8 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     void saveCurrentViewState() override {
         m_pTrackTableView->saveCurrentViewState();
     };
-    bool restoreCurrentViewState() override {
-        return m_pTrackTableView->restoreCurrentViewState();
+    bool restoreCurrentViewState(bool fromSearch = false) override {
+        return m_pTrackTableView->restoreCurrentViewState(fromSearch);
     };
 
   public slots:

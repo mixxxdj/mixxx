@@ -72,7 +72,7 @@ DlgRecording::DlgRecording(
     connect(&m_browseModel,
             &BrowseTableModel::restoreModelState,
             m_pTrackTableView,
-            &WTrackTableView::restoreCurrentViewState);
+            &WTrackTableView::slotRestoreCurrentViewState);
 
     QBoxLayout* box = qobject_cast<QBoxLayout*>(layout());
     VERIFY_OR_DEBUG_ASSERT(box) { //Assumes the form layout is a QVBox/QHBoxLayout!
