@@ -1011,9 +1011,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
 )
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
-target_compile_definitions(mixxx-lib PRIVATE SETTINGS_FILE="mixxx.cfg")
 if(UNIX AND NOT APPLE)
-  target_compile_definitions(mixxx-lib PRIVATE SETTINGS_PATH=".mixxx/")
+  set(MIXXX_SETTINGS_PATH ".mixxx/")
 endif()
 
 # Disable warnings in generated source files
