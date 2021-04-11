@@ -105,9 +105,9 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
         QWidget* parent)
         : QHeaderView(orientation, parent),
           m_menu(tr("Show or hide columns."), this),
-          m_actionUseIndependentState(tr("Use independent state"), this),
+          m_actionUseSharedConfiguration(tr("Use shared configuration"), this),
           m_headerChanged(false) {
-    m_actionUseIndependentState.setCheckable(true);
+    m_actionUseSharedConfiguration.setCheckable(true);
     connect(this,
             &WTrackTableViewHeader::sortIndicatorChanged,
             [this](int logicalIndex, Qt::SortOrder order) {
@@ -120,10 +120,10 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
             [this]() {
                 m_headerChanged = true;
             });
-    connect(&m_actionUseIndependentState,
+    connect(&m_actionUseSharedConfiguration,
             &QAction::toggled,
             this,
-            &WTrackTableViewHeader::slotIndependentStateChanged);
+            &WTrackTableViewHeader::slotSharedConfigurationStateChanged);
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
@@ -187,7 +187,7 @@ void WTrackTableViewHeader::buildMenu() {
         return;
     }
 
-    m_menu.addAction(&m_actionUseIndependentState);
+    m_menu.addAction(&m_actionUseSharedConfiguration);
     m_menu.addSeparator();
     // Map this action's signals
 
@@ -240,13 +240,13 @@ void WTrackTableViewHeader::saveHeaderState() {
 
     // Convert the QByteArray to a Base64 string and save it.
     HeaderViewState view_state(*this);
-    if (m_actionUseIndependentState.isChecked()) {
+    if (m_actionUseSharedConfiguration.isChecked()) {
         track_model->setModelSetting(
-                getHeaderKey(*track_model),
+                kHeaderStateKey,
                 view_state.saveState());
     } else {
         track_model->setModelSetting(
-                kHeaderStateKey,
+                getHeaderKey(*track_model),
                 view_state.saveState());
     }
     //qDebug() << "Saving old header state:" << result << headerState;
@@ -263,14 +263,14 @@ void WTrackTableViewHeader::restoreHeaderState() {
     QString headerStateString = track_model->getModelSetting(getHeaderKey(*track_model));
 
     // if there is no indepentent state, try the common one
-    m_actionUseIndependentState.blockSignals(true);
+    m_actionUseSharedConfiguration.blockSignals(true);
     if (headerStateString.isNull() || headerStateString.isEmpty()) {
         headerStateString = track_model->getModelSetting(kHeaderStateKey);
-        m_actionUseIndependentState.setChecked(false);
+        m_actionUseSharedConfiguration.setChecked(true);
     } else {
-        m_actionUseIndependentState.setChecked(true);
+        m_actionUseSharedConfiguration.setChecked(false);
     }
-    m_actionUseIndependentState.blockSignals(false);
+    m_actionUseSharedConfiguration.blockSignals(false);
 
     if (headerStateString.isNull() || headerStateString.isEmpty()) {
         loadDefaultHeaderState();
@@ -295,8 +295,8 @@ void WTrackTableViewHeader::restoreHeaderState() {
     emit sortIndicatorChanged(sortIndicatorSection(), sortIndicatorOrder());
 }
 
-void WTrackTableViewHeader::slotIndependentStateChanged(bool checked) {
-    if (checked) {
+void WTrackTableViewHeader::slotSharedConfigurationStateChanged(bool checked) {
+    if (!checked) {
         saveIndependentState();
     } else {
         deleteIndependentState();

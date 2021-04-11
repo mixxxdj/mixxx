@@ -67,7 +67,7 @@ class WTrackTableViewHeader : public QHeaderView {
 
   private slots:
     void showOrHideColumn(int);
-    void slotIndependentStateChanged(bool checked);
+    void slotSharedConfigurationStateChanged(bool checked);
 
   private:
     int hiddenCount();
@@ -81,6 +81,6 @@ class WTrackTableViewHeader : public QHeaderView {
 
     QMenu m_menu;
     QMap<int, QAction*> m_columnActions;
-    QAction m_actionUseIndependentState;
+    QAction m_actionUseSharedConfiguration;
     bool m_headerChanged;
 };
