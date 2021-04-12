@@ -56,7 +56,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # using regular Clang or AppleClang
   set(LLVM_CLANG true)
   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0" AND
-     CMAKE_SYSTEM_NAME STREQUAL Linux)
+     CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(WARNING "Found LLVM < 10 which has known optimization bugs with \
     certain glibc versions. In case your build fails with linking errors. \
     Use -DFAST_MATH=off - See https://bugs.llvm.org/show_bug.cgi?id=45034")
