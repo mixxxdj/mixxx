@@ -1058,7 +1058,7 @@ TEST_F(SearchQueryParserTest, testIsReduced) {
 
     EXPECT_TRUE(SearchQueryParser::isReducedTerm(
             QStringLiteral("Abba1"),
-            QStringLiteral("")));
+            QLatin1String("")));
 
     EXPECT_TRUE(SearchQueryParser::isReducedTerm(
             QStringLiteral("Abba1"),
