@@ -463,19 +463,30 @@ void WTrackTableView::onSearch(const QString& text) {
         QList<TrackId> selectedTracks = getSelectedTrackIds();
         TrackId currentTrack = getCurrentTrackId();
         trackModel->search(text);
-        if (isLessSpecific) {
+
+        if (isLessSpecific && currentTrack.isValid()) {
             // if the user removed query terms, we try to select the same
             // tracks as before
-            setCurrentTrackId(currentTrack);
-            setSelectedTracks(selectedTracks);
+            if (!setCurrentTrackId(currentTrack)) {
+                // we could not find the requested track in the current view
+                // try to restore a saved state
+                restoreCurrentViewState(true);
+            }
+            if (!selectedTracks.isEmpty()) {
+                setSelectedTracks(selectedTracks);
+            }
         } else {
             // the user created a more specific search query, try to restore a
             // previous state
             if (!restoreCurrentViewState(true)) {
                 // we found no saved state for this query, try to select the
-                // tracks last active, if they are part of the result set
-                setCurrentTrackId(currentTrack);
-                setSelectedTracks(selectedTracks);
+                // last active track, if they are part of the result set
+                if (currentTrack.isValid()) {
+                    setCurrentTrackId(currentTrack);
+                }
+                if (!selectedTracks.isEmpty()) {
+                    setSelectedTracks(selectedTracks);
+                }
             }
         }
     }
