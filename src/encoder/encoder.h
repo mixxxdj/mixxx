@@ -11,18 +11,25 @@ class Encoder {
   public:
         class Format {
             public:
-              Format(const QString& labelIn, const QString& nameIn, bool losslessIn)
-                      : label(labelIn), internalName(nameIn), lossless(losslessIn) {
+              Format(const QString& labelIn,
+                      const QString& nameIn,
+                      bool losslessIn,
+                      const QString& fileExtIn)
+                      : label(labelIn),
+                        internalName(nameIn),
+                        lossless(losslessIn),
+                        fileExtension(fileExtIn) {
               }
             QString label;
             QString internalName;
             bool lossless;
+            QString fileExtension;
         };
 
     Encoder() {}
     virtual ~Encoder() = default;
 
-    virtual int initEncoder(int samplerate, QString& errorMessage) = 0;
+    virtual int initEncoder(int samplerate, QString* pUserErrorMessage) = 0;
     // encodes the provided buffer of audio.
     virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
     // Adds metadata to the encoded audio, i.e., the ID3 tag. Currently only used

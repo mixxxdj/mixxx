@@ -224,27 +224,15 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
   #LibraryContainer QHeaderView::down-arrow {
     image: url(skin:/btn/btn_lib_sort_down_green.png)
   }
-#DlgMissing > QPushButton:enabled,
-#DlgHidden > QPushButton:enabled,
-#DlgAutoDJ > QPushButton:enabled,
-#DlgRecording > QPushButton:enabled,
-#DlgAnalysis > QPushButton:enabled {
+#LibraryFeatureControls QPushButton:enabled {
   background-color: #5C5B5D;
   border: 1px solid #5C5B5D;
   }
-  #DlgMissing > QPushButton:!enabled,
-  #DlgHidden > QPushButton:!enabled,
-  #DlgAutoDJ > QPushButton:!enabled,
-  #DlgRecording > QPushButton:!enabled,
-  #DlgAnalysis > QPushButton:!enabled {
+  #LibraryFeatureControls QPushButton:!enabled {
     background-color: #3D3E3F;
     border: 1px solid #3D3E3F;
   }
-  #DlgMissing > QPushButton:checked,
-  #DlgHidden > QPushButton:checked,
-  #DlgAutoDJ > QPushButton:checked,
-  #DlgRecording > QPushButton:checked,
-  #DlgAnalysis > QPushButton:checked {
+  #LibraryFeatureControls QPushButton:checked {
     color: #000;
     background-color: #B79E00;
     border: 1px solid #B79E00;
@@ -252,4 +240,8 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 
 WLibrary QRadioButton::indicator:checked {
  image: url(skin:/btn/btn_lib_radio_button_on_mustard.svg) center center;
+}
+
+WRateRange {
+  color: #181319;
 }

@@ -11,7 +11,7 @@
 #define WIN32
 #endif
 // this is needed to define SHOUT_META_* macros used in version guard
-#include <shout/shout.h>
+#include <shoutidjc/shout.h>
 #ifdef WIN64
 #undef WIN32
 #endif
@@ -134,6 +134,9 @@ DlgPrefBroadcast::DlgPrefBroadcast(QWidget *parent,
 #ifdef __OPUS__
      comboBoxEncodingFormat->addItem(tr("Opus"), ENCODING_OPUS);
 #endif
+     comboBoxEncodingFormat->addItem(tr("AAC"), ENCODING_AAC);
+     comboBoxEncodingFormat->addItem(tr("HE-AAC"), ENCODING_HEAAC);
+     comboBoxEncodingFormat->addItem(tr("HE-AACv2"), ENCODING_HEAACV2);
 
      // Encoding channels combobox
      comboBoxEncodingChannels->addItem(tr("Automatic"),

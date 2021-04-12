@@ -1127,11 +1127,11 @@ class ScaleBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (pTrack->isBpmLocked()) {
             return;
         }
-        mixxx::BeatsPointer pBeats = pTrack->getBeats();
+        const mixxx::BeatsPointer pBeats = pTrack->getBeats();
         if (!pBeats) {
             return;
         }
-        pBeats->scale(m_bpmScale);
+        pTrack->trySetBeats(pBeats->scale(m_bpmScale));
     }
 
     const mixxx::Beats::BPMScale m_bpmScale;
@@ -1263,10 +1263,7 @@ class ResetBeatsTrackPointerOperation : public mixxx::TrackPointerOperation {
   private:
     void doApply(
             const TrackPointer& pTrack) const override {
-        if (pTrack->isBpmLocked()) {
-            return;
-        }
-        pTrack->setBeats(mixxx::BeatsPointer());
+        pTrack->trySetBeats(mixxx::BeatsPointer());
     }
 };
 
@@ -1442,8 +1439,10 @@ class ResetWaveformTrackPointerOperation : public mixxx::TrackPointerOperation {
 void WTrackMenu::slotClearWaveform() {
     const auto progressLabelText =
             tr("Resetting waveform of %n track(s)", "", getTrackCount());
+    AnalysisDao& analysisDao =
+            m_pTrackCollectionManager->internalCollection()->getAnalysisDAO();
     const auto trackOperator =
-            ResetReplayGainTrackPointerOperation();
+            ResetWaveformTrackPointerOperation(analysisDao);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);

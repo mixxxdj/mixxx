@@ -276,7 +276,7 @@ TEST_F(LoopingControlTest, LoopOutButton_AdjustLoopOutPointInsideLoop) {
 }
 
 TEST_F(LoopingControlTest, LoopInOutButtons_QuantizeEnabled) {
-    m_pTrack1->setBpm(60.0);
+    m_pTrack1->trySetBpm(60.0);
     m_pQuantizeEnabled->set(1);
     seekToSampleAndProcess(500);
     m_pButtonLoopIn->set(1);
@@ -425,7 +425,7 @@ TEST_F(LoopingControlTest, LoopDoubleButton_IgnoresPastTrackEnd) {
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_DoublesBeatloopSize) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(16.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
@@ -450,7 +450,7 @@ TEST_F(LoopingControlTest, LoopDoubleButton_DoesNotResizeManualLoop) {
 }
 
 TEST_F(LoopingControlTest, LoopDoubleButton_UpdatesNumberedBeatloopActivationControls) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(2.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
@@ -476,7 +476,7 @@ TEST_F(LoopingControlTest, LoopHalveButton_IgnoresTooSmall) {
 }
 
 TEST_F(LoopingControlTest, LoopHalveButton_HalvesBeatloopSize) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(64.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
@@ -501,7 +501,7 @@ TEST_F(LoopingControlTest, LoopHalveButton_DoesNotResizeManualLoop) {
 }
 
 TEST_F(LoopingControlTest, LoopHalveButton_UpdatesNumberedBeatloopActivationControls) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(4.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
@@ -515,7 +515,7 @@ TEST_F(LoopingControlTest, LoopHalveButton_UpdatesNumberedBeatloopActivationCont
 }
 
 TEST_F(LoopingControlTest, LoopMoveTest) {
-    m_pTrack1->setBpm(120);
+    m_pTrack1->trySetBpm(120);
     m_pLoopStartPoint->slotSet(0);
     m_pLoopEndPoint->slotSet(300);
     seekToSampleAndProcess(10);
@@ -585,7 +585,7 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
     // Disable quantize for this test
     m_pQuantizeEnabled->set(0.0);
 
-    m_pTrack1->setBpm(23520);
+    m_pTrack1->trySetBpm(23520);
     m_pLoopStartPoint->slotSet(0);
     m_pLoopEndPoint->slotSet(600);
     seekToSampleAndProcess(500);
@@ -626,7 +626,7 @@ TEST_F(LoopingControlTest, LoopResizeSeek) {
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_SetAndToggle) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
     // Setting beatloop_size should not activate a loop
     m_pBeatLoopSize->set(2.0);
     EXPECT_FALSE(m_pLoopEnabled->toBool());
@@ -652,7 +652,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_SetWithoutTrackLoaded) {
 TEST_F(LoopingControlTest, BeatLoopSize_IgnoresPastTrackEnd) {
     // TODO: actually calculate that the beatloop would go beyond
     // the end of the track
-    m_pTrack1->setBpm(60.0);
+    m_pTrack1->trySetBpm(60.0);
     seekToSampleAndProcess(m_pTrackSamples->get() - 400);
     m_pBeatLoopSize->set(64.0);
     EXPECT_NE(64.0, m_pBeatLoopSize->get());
@@ -660,7 +660,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_IgnoresPastTrackEnd) {
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_SetsNumberedControls) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(2.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
@@ -674,7 +674,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_SetsNumberedControls) {
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_IsSetByNumberedControl) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(4.0);
     m_pButtonBeatLoop2Activate->set(1.0);
     m_pButtonBeatLoop2Activate->set(0.0);
@@ -690,14 +690,14 @@ TEST_F(LoopingControlTest, BeatLoopSize_IsSetByNumberedControl) {
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_SetDoesNotStartLoop) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
     m_pBeatLoopSize->set(16.0);
     EXPECT_FALSE(m_pLoopEnabled->toBool());
 }
 
 TEST_F(LoopingControlTest, BeatLoopSize_ResizeKeepsStartPosition) {
     seekToSampleAndProcess(50);
-    m_pTrack1->setBpm(160.0);
+    m_pTrack1->trySetBpm(160.0);
     m_pBeatLoopSize->set(2.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
@@ -713,7 +713,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_ResizeKeepsStartPosition) {
 
 TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeDoesNotActivateLoop) {
     seekToSampleAndProcess(50);
-    m_pTrack1->setBpm(160.0);
+    m_pTrack1->trySetBpm(160.0);
     m_pBeatLoopSize->set(2.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
@@ -729,7 +729,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeDoesNotActivateLoop) {
 
 TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeResizesBeatLoop) {
     seekToSampleAndProcess(50);
-    m_pTrack1->setBpm(160.0);
+    m_pTrack1->trySetBpm(160.0);
     m_pBeatLoopSize->set(2.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
@@ -753,7 +753,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeResizesBeatLoop) {
 
 TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeDoesNotResizeManualLoop) {
     seekToSampleAndProcess(50);
-    m_pTrack1->setBpm(160.0);
+    m_pTrack1->trySetBpm(160.0);
     m_pQuantizeEnabled->set(0);
     m_pBeatLoopSize->set(4.0);
     m_pButtonLoopIn->slotSet(1);
@@ -772,7 +772,7 @@ TEST_F(LoopingControlTest, BeatLoopSize_ValueChangeDoesNotResizeManualLoop) {
 }
 
 TEST_F(LoopingControlTest, LegacyBeatLoopControl) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
     m_pBeatLoop->set(2.0);
     EXPECT_TRUE(m_pBeatLoop2Enabled->toBool());
     EXPECT_TRUE(m_pLoopEnabled->toBool());
@@ -792,7 +792,9 @@ TEST_F(LoopingControlTest, LegacyBeatLoopControl) {
 }
 
 TEST_F(LoopingControlTest, Beatjump_JumpsByBeats) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
+    ProcessBuffer();
+
     double beatLength = m_pNextBeat->get();
     EXPECT_NE(0, beatLength);
 
@@ -808,7 +810,9 @@ TEST_F(LoopingControlTest, Beatjump_JumpsByBeats) {
 }
 
 TEST_F(LoopingControlTest, Beatjump_MovesActiveLoop) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
+    ProcessBuffer();
+
     m_pBeatLoopSize->set(4.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
@@ -838,7 +842,9 @@ TEST_F(LoopingControlTest, Beatjump_MovesActiveLoop) {
 TEST_F(LoopingControlTest, Beatjump_MovesLoopBoundaries) {
     // Holding down the loop in/out buttons and using beatjump should
     // move only the loop in/out point, but not shift the entire loop forward/backward
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
+    ProcessBuffer();
+
     m_pBeatLoopSize->set(4.0);
     m_pButtonBeatLoopActivate->set(1.0);
     m_pButtonBeatLoopActivate->set(0.0);
@@ -887,7 +893,7 @@ TEST_F(LoopingControlTest, LoopEscape) {
 }
 
 TEST_F(LoopingControlTest, BeatLoopRoll_Activation) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
 
     m_pButtonBeatLoopRoll2Activate->set(1.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
@@ -899,7 +905,7 @@ TEST_F(LoopingControlTest, BeatLoopRoll_Activation) {
 }
 
 TEST_F(LoopingControlTest, BeatLoopRoll_Overlap) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
 
     m_pButtonBeatLoopRoll2Activate->set(1.0);
     EXPECT_TRUE(m_pLoopEnabled->toBool());
@@ -921,7 +927,7 @@ TEST_F(LoopingControlTest, BeatLoopRoll_Overlap) {
 }
 
 TEST_F(LoopingControlTest, BeatLoopRoll_OverlapStackUnwind) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
 
     // start a 2 beat loop roll
     m_pButtonBeatLoopRoll2Activate->set(1.0);
@@ -958,7 +964,7 @@ TEST_F(LoopingControlTest, BeatLoopRoll_OverlapStackUnwind) {
 }
 
 TEST_F(LoopingControlTest, BeatLoopRoll_StartPoint) {
-    m_pTrack1->setBpm(120.0);
+    m_pTrack1->trySetBpm(120.0);
 
     // start a 4 beat loop roll, start point should be overridden to play position
     m_pLoopStartPoint->slotSet(8);

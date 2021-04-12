@@ -269,7 +269,7 @@ void TrackCollectionManager::exportTrackMetadata(
         switch (mode) {
         case TrackMetadataExportMode::Immediate:
             // Export track metadata now by saving as file tags.
-            SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack, m_pConfig);
             break;
         case TrackMetadataExportMode::Deferred:
             // Export track metadata later when the track object goes out

@@ -27,28 +27,27 @@ TEST(BeatGridTest, Scale) {
     TrackPointer pTrack = newTrack(sampleRate);
 
     double bpm = 60.0;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm);
 
-    auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
-    pGrid->setBpm(bpm);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
-    pGrid->scale(Beats::DOUBLE);
+    pGrid = pGrid->scale(Beats::DOUBLE);
     EXPECT_DOUBLE_EQ(2 * bpm, pGrid->getBpm());
 
-    pGrid->scale(Beats::HALVE);
+    pGrid = pGrid->scale(Beats::HALVE);
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 
-    pGrid->scale(Beats::TWOTHIRDS);
+    pGrid = pGrid->scale(Beats::TWOTHIRDS);
     EXPECT_DOUBLE_EQ(bpm * 2 / 3, pGrid->getBpm());
 
-    pGrid->scale(Beats::THREEHALVES);
+    pGrid = pGrid->scale(Beats::THREEHALVES);
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 
-    pGrid->scale(Beats::THREEFOURTHS);
+    pGrid = pGrid->scale(Beats::THREEFOURTHS);
     EXPECT_DOUBLE_EQ(bpm * 3 / 4, pGrid->getBpm());
 
-    pGrid->scale(Beats::FOURTHIRDS);
+    pGrid = pGrid->scale(Beats::FOURTHIRDS);
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 }
 
@@ -58,11 +57,10 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
-    pGrid->setBpm(bpm);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
     // Pretend we're on the 20th beat;
     double position = beatLength * 20;
 
@@ -93,11 +91,10 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
-    pGrid->setBpm(bpm);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     // Pretend we're just before the 20th beat.
     const double kClosestBeat = 20 * beatLength;
@@ -130,11 +127,10 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
-    pGrid->setBpm(bpm);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     // Pretend we're just before the 20th beat.
     const double kClosestBeat = 20 * beatLength;
@@ -167,11 +163,10 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
 
     double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
-    pGrid->setBpm(bpm);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     // Pretend we're half way between the 20th and 21st beat
     double previousBeat = beatLength * 20.0;
@@ -193,6 +188,25 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     pGrid->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat);
     EXPECT_NEAR(previousBeat, foundPrevBeat, kMaxBeatError);
     EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);
+}
+
+TEST(BeatGridTest, FromMetadata) {
+    int sampleRate = 44100;
+    TrackPointer pTrack = newTrack(sampleRate);
+
+    double bpm = 60.1;
+    ASSERT_TRUE(pTrack->trySetBpm(bpm));
+    EXPECT_DOUBLE_EQ(pTrack->getBpm(), bpm);
+
+    auto pBeats = pTrack->getBeats();
+    EXPECT_DOUBLE_EQ(pBeats->getBpm(), bpm);
+
+    // Invalid bpm resets the bpm
+    ASSERT_TRUE(pTrack->trySetBpm(-60.1));
+    EXPECT_DOUBLE_EQ(pTrack->getBpm(), mixxx::Bpm::kValueUndefined);
+
+    pBeats = pTrack->getBeats();
+    EXPECT_EQ(pBeats.isNull(), true);
 }
 
 }  // namespace

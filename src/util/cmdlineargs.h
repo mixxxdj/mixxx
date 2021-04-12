@@ -39,7 +39,6 @@ class CmdlineArgs final {
         m_settingsPath = newSettingsPath;
     }
     const QString& getResourcePath() const { return m_resourcePath; }
-    const QString& getPluginPath() const { return m_pluginPath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
 
   private:
@@ -55,6 +54,5 @@ class CmdlineArgs final {
     QString m_locale;
     QString m_settingsPath;
     QString m_resourcePath;
-    QString m_pluginPath;
     QString m_timelinePath;
 };

@@ -43,6 +43,8 @@ ChromaticKey chromaticKeyFromKeyFinderKeyT(KeyFinder::key_t key) {
         return ChromaticKey::E_FLAT_MAJOR;
     case (KeyFinder::E_FLAT_MINOR):
         return ChromaticKey::E_FLAT_MINOR;
+    case (KeyFinder::E_MAJOR):
+        return ChromaticKey::E_MAJOR;
     case (KeyFinder::E_MINOR):
         return ChromaticKey::E_MINOR;
     case (KeyFinder::F_MAJOR):
