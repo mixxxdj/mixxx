@@ -10,6 +10,7 @@ jobs:
           - name: nixos-20.09-gcc
             os: nixos-20.09
             use_clang: false
+            use_clazy: false
             ccache: ccache-gcc
     name: "nix-shell ${{ matrix.name }}"
     runs-on: ubuntu-latest
@@ -36,7 +37,7 @@ jobs:
         nix_path: nixpkgs=channel:${{ matrix.os }}
     - run: |
         nix-shell --arg enableKeyfinder true --arg useClang ${{ matrix.use_clang }} \
-          --arg useClazy ${{ matrix.use_clazy || "false" }} --arg defaultLv2Plugins true \
+          --arg useClazy ${{ matrix.use_clazy }} --arg defaultLv2Plugins true \
           --command "configure && build && run-tests"
   pkg:
     strategy:
