@@ -55,12 +55,11 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   # using regular Clang or AppleClang
   set(LLVM_CLANG true)
-  message("LLVM ${CMAKE_CXX_COMPILER_VERSION}")
   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "10.0.0" AND
      CMAKE_SYSTEM_NAME STREQUAL Linux)
     message(WARNING "Found LLVM < 10 which has known optimization bugs with \
     certain glibc versions. In case your build fails with linking errors. \
-    Use -DOPTIMIZE=off - See https://bugs.llvm.org/show_bug.cgi?id=45034")
+    Use -DFAST_MATH=off - See https://bugs.llvm.org/show_bug.cgi?id=45034")
   endif()
 else()
   set(LLVM_CLANG false)
@@ -103,7 +102,10 @@ endif()
 set(OPTIMIZE "portable" CACHE STRING "Optimization and Tuning (set to off, portable, native, legacy)")
 string(TOLOWER "${OPTIMIZE}" OPTIMIZE)
 
-set(FAST_MATH true CACHE BOOL "Use -fast-math optimization")
+# certain combinations of llvm and glibc cause problems with fastmath at link time. Add option to disable
+# fast-math but still allow other optimizations
+option(FAST_MATH "Use -fast-math optimization. Only disable this when linking fails with LLVM/GCC." ON)
+
 message(STATUS "Optimization level: ${OPTIMIZE}")
 
 # CMAKE_INTERPROCEDURAL_OPTIMIZATION can be defined to override the default behaviour.
