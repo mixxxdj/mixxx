@@ -1,29 +1,31 @@
+#include "util/cmdlineargs.h"
+
 #include <stdio.h>
 
 #include <QStandardPaths>
 
-#include "util/cmdlineargs.h"
+#include "config.h"
+#include "sources/soundsourceproxy.h"
 #include "util/version.h"
 
-#include "sources/soundsourceproxy.h"
-
-
 CmdlineArgs::CmdlineArgs()
-    : m_startInFullscreen(false), // Initialize vars
-      m_midiDebug(false),
-      m_developer(false),
-      m_safeMode(false),
-      m_debugAssertBreak(false),
-      m_settingsPathSet(false),
-      m_logLevel(mixxx::kLogLevelDefault),
-      m_logFlushLevel(mixxx::kLogFlushLevelDefault),
+        : m_startInFullscreen(false), // Initialize vars
+          m_midiDebug(false),
+          m_developer(false),
+          m_safeMode(false),
+          m_debugAssertBreak(false),
+          m_settingsPathSet(false),
+          m_logLevel(mixxx::kLogLevelDefault),
+          m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
-#ifdef __LINUX__
-    m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
+#ifdef MIXXX_SETTINGS_PATH
+          m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH)) {
 #else
-    // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
-    // to QDir::filePath elsewhere in the code. This is candidate for removal.
-    m_settingsPath(QStandardPaths::writableLocation(QStandardPaths::DataLocation).append("/")) {
+          // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
+          // to QDir::filePath elsewhere in the code. This is candidate for removal.
+          m_settingsPath(
+                  QStandardPaths::writableLocation(QStandardPaths::DataLocation)
+                          .append("/")) {
 #endif
 }
 
@@ -51,9 +53,6 @@ bool CmdlineArgs::Parse(int &argc, char **argv) {
             m_settingsPathSet=true;
         } else if (argv[i] == QString("--resourcePath") && i+1 < argc) {
             m_resourcePath = QString::fromLocal8Bit(argv[i+1]);
-            i++;
-        } else if (argv[i] == QString("--pluginPath") && i+1 < argc) {
-            m_pluginPath = QString::fromLocal8Bit(argv[i+1]);
             i++;
         } else if (argv[i] == QString("--timelinePath") && i+1 < argc) {
             m_timelinePath = QString::fromLocal8Bit(argv[i+1]);
@@ -132,10 +131,6 @@ void CmdlineArgs::printUsage() {
                         for its resource files such as MIDI mappings,\n\
                         overriding the default installation location.\n\
 \n\
---pluginPath PATH       Top-level directory where Mixxx should look\n\
-                        for sound source plugins in addition to default\n\
-                        locations.\n\
-\n\
 --settingsPath PATH     Top-level directory where Mixxx should look\n\
                         for settings. Default is:\n", stdout);
     fprintf(stdout, "\
@@ -178,5 +173,8 @@ void CmdlineArgs::printUsage() {
 "\
 -h, --help              Display this help message and exit", stdout);
 
-    fputs("\n\n(For more information, see http://mixxx.org/wiki/doku.php/command_line_options)\n",stdout);
+    fputs("\n\n(For more information, see "
+          "https://manual.mixxx.org/2.3/chapters/"
+          "appendix.html#command-line-options)\n",
+            stdout);
 }

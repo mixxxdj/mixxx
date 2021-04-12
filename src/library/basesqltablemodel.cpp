@@ -100,7 +100,7 @@ void BaseSqlTableModel::initSortColumnMapping() {
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE);
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::NativeLocation)] =
-            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION);
+            fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION);
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::Comment)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT);
@@ -374,7 +374,7 @@ void BaseSqlTableModel::setTable(const QString& tableName,
     m_bInitialized = true;
 }
 
-int BaseSqlTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
+int BaseSqlTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) const {
     if (column == TrackModel::SortColumnId::Invalid) {
         return -1;
     }
@@ -382,7 +382,7 @@ int BaseSqlTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId colu
     return m_columnIndexBySortColumnId[static_cast<int>(column)];
 }
 
-TrackModel::SortColumnId BaseSqlTableModel::sortColumnIdFromColumnIndex(int index) {
+TrackModel::SortColumnId BaseSqlTableModel::sortColumnIdFromColumnIndex(int index) const {
     return m_sortColumnIdByColumnIndex.value(index, TrackModel::SortColumnId::Invalid);
 }
 
@@ -703,7 +703,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
         pTrack->setComment(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) == column) {
-        pTrack->setBpm(static_cast<double>(value.toDouble()));
+        pTrack->trySetBpm(static_cast<double>(value.toDouble()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
         // Update both the played flag and the number of times played
         pTrack->updatePlayCounter(value.toBool());
@@ -756,7 +756,7 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     }
     QString nativeLocation =
             index.sibling(index.row(),
-                         fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION))
+                         fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION))
                     .data()
                     .toString();
     return QDir::fromNativeSeparators(nativeLocation);

@@ -2,11 +2,16 @@
 
 #include <QFile>
 
+#include "defs_urls.h"
 #include "moc_dlgabout.cpp"
+#include "util/color/color.h"
 #include "util/version.h"
 
 DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);
+
+    mixxx_icon->load(QString(":/images/mixxx_icon.svg"));
+    mixxx_logo->load(QString(":/images/mixxx_logo.svg"));
 
     QString mixxxVersion = Version::version();
     QString buildBranch = Version::developmentBranch();
@@ -52,7 +57,8 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Be"
             << "S&eacute;bastien Blaisot"
             << "ronso0"
-            << "Jan Holthuis";
+            << "Jan Holthuis"
+            << "Nikolaus Einhauser";
 
     // This list should contains all contributors committed
     // code to the Mixxx core within the past two years.
@@ -77,7 +83,6 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "beenisss"
             << "Bernd Binder"
             << "Pradyuman"
-            << "Nikolaus Einhauser"
             << "Nik Martin"
             << "Kerrick Staley"
             << "Raphael Graf"
@@ -336,6 +341,14 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
              << sectionTemplate.arg(s_specialThanks,
                                     specialThanks.join("<br>"));
     textBrowser->setHtml(sections.join(""));
+
+    textWebsiteLink->setText(
+            QString("<a style=\"color:%1;\" href=\"%2\">%3</a>")
+                    .arg(Color::blendColors(palette().link().color(),
+                                 palette().text().color())
+                                    .name(),
+                            MIXXX_WEBSITE_URL,
+                            tr("Official Website")));
 
     connect(buttonBox, &QDialogButtonBox::accepted, this, &DlgAbout::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &DlgAbout::reject);

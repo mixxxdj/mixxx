@@ -69,9 +69,9 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole) override;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
-    bool isColumnSortable(int column) override;
-    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) override;
-    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
+    bool isColumnSortable(int column) const override;
+    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) const override;
+    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
     QString modelKey(bool noSearch = false) const override {
         if (noSearch) {
             return QStringLiteral("browse/") +

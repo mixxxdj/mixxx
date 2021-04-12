@@ -163,7 +163,7 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
 BrowseTableModel::~BrowseTableModel() {
 }
 
-int BrowseTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) {
+int BrowseTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId column) const {
     if (column < TrackModel::SortColumnId::IdMin ||
             column >= TrackModel::SortColumnId::IdMax) {
         return -1;
@@ -172,7 +172,7 @@ int BrowseTableModel::columnIndexFromSortColumnId(TrackModel::SortColumnId colum
     return m_columnIndexBySortColumnId[static_cast<int>(column)];
 }
 
-TrackModel::SortColumnId BrowseTableModel::sortColumnIdFromColumnIndex(int index) {
+TrackModel::SortColumnId BrowseTableModel::sortColumnIdFromColumnIndex(int index) const {
     return m_sortColumnIdByColumnIndex.value(index, TrackModel::SortColumnId::Invalid);
 }
 
@@ -398,7 +398,7 @@ bool BrowseTableModel::setData(
         pTrack->setAlbum(value.toString());
         break;
     case COLUMN_BPM:
-        pTrack->setBpm(value.toDouble());
+        pTrack->trySetBpm(value.toDouble());
         break;
     case COLUMN_KEY:
         pTrack->setKeyText(value.toString());
@@ -462,7 +462,7 @@ void BrowseTableModel::trackLoaded(const QString& group, TrackPointer pTrack) {
     }
 }
 
-bool BrowseTableModel::isColumnSortable(int column) {
+bool BrowseTableModel::isColumnSortable(int column) const {
     return COLUMN_PREVIEW != column;
 }
 

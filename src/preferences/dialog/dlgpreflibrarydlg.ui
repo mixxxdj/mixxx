@@ -6,14 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>593</width>
-    <height>1049</height>
+    <width>661</width>
+    <height>1203</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string notr="true">Library Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
+
    <item>
     <widget class="QGroupBox" name="groupBoxLibrary">
      <property name="title">
@@ -100,6 +101,7 @@
      </layout>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="groupBox_AudioFileFormats">
      <property name="title">
@@ -122,6 +124,7 @@
      </layout>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="groupBox_AudioFileTags">
      <property name="title">
@@ -132,6 +135,13 @@
        <widget class="QCheckBox" name="checkBox_SyncTrackMetadataExport">
         <property name="text">
          <string>Automatically write modified track metadata from the library into file tags</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBox_SeratoMetadataExport">
+        <property name="text">
+         <string>Write Serato Metadata to files (experimental)</string>
         </property>
        </widget>
       </item>
@@ -238,6 +248,7 @@
      </layout>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="groupBox_4">
      <property name="toolTip">
@@ -281,6 +292,7 @@
      </layout>
     </widget>
    </item>
+
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
@@ -348,23 +360,62 @@
        </widget>
       </item>
       <item row="6" column="0">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="7" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
          <string>All external libraries shown are write protected.</string>
         </property>
+        <property name="topMargin">
+         <number>10</number>
+        </property>
        </widget>
       </item>
-      <item row="8" column="0">
+      <item row="7" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
          <string>You will need to restart Mixxx for these settings to take effect.</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+
+   <item>
+    <widget class="QGroupBox" name="groupBox_settingsDir">
+     <property name="title">
+      <string>Settings Folder</string>
+     </property>
+     <layout class="QVBoxLayout" name="vlayout_settingsDir">
+      <item>
+       <widget class="QLabel" name="label_settingsDir">
+        <property name="text">
+         <string>The Mixxx settings folder contains the library database, various configuration files, log files, track analysis data, as well as custom controller mappings.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label_settingsWarning">
+        <property name="text">
+         <string>Edit those files only if you know what you are doing and only while Mixxx is not running.</string>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="PushButtonOpenSettingsDir">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Open Mixxx Settings Folder</string>
         </property>
        </widget>
       </item>
@@ -410,6 +461,7 @@
   <tabstop>checkBox_show_traktor</tabstop>
   <tabstop>checkBox_show_rekordbox</tabstop>
   <tabstop>checkBox_show_serato</tabstop>
+  <tabstop>PushButtonOpenSettingsDir</tabstop>
  </tabstops>
  <resources/>
  <connections/>

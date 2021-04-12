@@ -14,23 +14,11 @@
    <string>Recording Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_2">
-   <item row="7" column="1">
-    <spacer>
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>51</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
+
    <item row="0" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBoxRecordingsPath">
      <property name="title">
-      <string>Recordings Directory</string>
+      <string>Recording Files</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_Recordings">
       <item row="0" column="0">
@@ -48,7 +36,7 @@
          <font/>
         </property>
         <property name="text">
-         <string>Recordings Directory:</string>
+         <string>Directory:</string>
         </property>
         <property name="wordWrap">
          <bool>false</bool>
@@ -81,51 +69,71 @@
         </property>
        </widget>
       </item>
+
+      <item row="1" column="0" colspan="3">
+       <layout class="QHBoxLayout" name="splittingLayout">
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <item>
+         <widget class="QLabel" name="LabelSplitting">
+          <property name="text">
+           <string>Split recordings at</string>
+          </property>
+          <property name="buddy">
+           <cstring>comboBoxSplitting</cstring>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QComboBox" name="comboBoxSplitting"/>
+        </item>
+        <!--item row="1" column="4" rowspan="4"-->
+        <item>
+         <spacer name="horizontalSpacer_split">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::MinimumExpanding</enum>
+          </property>
+         </spacer>
+        </item>
+       </layout>
+      </item>
+
+      <item row="2" column="0" colspan="3">
+       <widget class="QCheckBox" name="CheckBoxRecordCueFile">
+        <property name="text">
+         <string>Create a CUE file</string>
+        </property>
+       </widget>
+      </item>
+
      </layout>
     </widget>
    </item>
+
    <item row="1" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBoxFileformat">
      <property name="title">
       <string>Output File Format</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
-      <item row="3" column="0" colspan="3">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="LabelQuality">
+
+      <item row="1" column="0">
+       <widget class="QLabel" name="LabelLossless">
         <property name="text">
-         <string>Quality</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1" colspan="2">
-       <layout class="QHBoxLayout" name="LossyEncLayout"/>
-      </item>
-      <item row="5" column="2">
-       <widget class="QLabel" name="TextQuality">
-        <property name="minimumSize">
-         <size>
-          <width>60</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Quality</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="wordWrap">
-         <bool>false</bool>
-        </property>
-        <property name="buddy">
-         <cstring>SliderQuality</cstring>
+         <string>Lossless</string>
         </property>
        </widget>
       </item>
@@ -136,25 +144,7 @@
         </property>
        </layout>
       </item>
-      <item row="6" column="2">
-       <widget class="QLabel" name="TextCompression">
-        <property name="minimumSize">
-         <size>
-          <width>60</width>
-          <height>0</height>
-         </size>
-        </property>
-        <property name="text">
-         <string>Compression</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-        </property>
-        <property name="buddy">
-         <cstring>SliderCompression</cstring>
-        </property>
-       </widget>
-      </item>
+
       <item row="2" column="0">
        <widget class="QLabel" name="LabelLossy">
         <property name="text">
@@ -162,20 +152,39 @@
         </property>
        </widget>
       </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="LabelCompression">
+      <item row="2" column="1" colspan="2">
+       <layout class="QHBoxLayout" name="LossyEncLayout"/>
+      </item>
+
+      <item row="3" column="0" colspan="3">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+       </widget>
+      </item>
+
+      <item row="4" column="0">
+       <widget class="QLabel" name="labelOptionGroup">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
         <property name="text">
-         <string>Compression Level</string>
+         <string/>
         </property>
        </widget>
       </item>
       <item row="4" column="1" colspan="2">
        <layout class="QHBoxLayout" name="OptionGroupsLayout"/>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="LabelLossless">
+
+      <item row="5" column="0">
+       <widget class="QLabel" name="LabelQuality">
         <property name="text">
-         <string>Lossless</string>
+         <string>Quality</string>
         </property>
        </widget>
       </item>
@@ -204,16 +213,33 @@
         </property>
        </widget>
       </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="labelOptionGroup">
+      <item row="5" column="2">
+       <widget class="QLabel" name="TextQuality">
         <property name="minimumSize">
          <size>
-          <width>0</width>
+          <width>60</width>
           <height>0</height>
          </size>
         </property>
         <property name="text">
-         <string/>
+         <string>Quality</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+        <property name="wordWrap">
+         <bool>false</bool>
+        </property>
+        <property name="buddy">
+         <cstring>SliderQuality</cstring>
+        </property>
+       </widget>
+      </item>
+
+      <item row="6" column="0">
+       <widget class="QLabel" name="LabelCompression">
+        <property name="text">
+         <string>Compression Level</string>
         </property>
        </widget>
       </item>
@@ -224,53 +250,29 @@
         </property>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="4" column="0" colspan="2">
-    <widget class="QGroupBox" name="groupBoxMisc">
-     <property name="title">
-      <string>Miscellaneous</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QCheckBox" name="CheckBoxRecordCueFile">
-        <property name="text">
-         <string>Create a CUE file</string>
+      <item row="6" column="2">
+       <widget class="QLabel" name="TextCompression">
+        <property name="minimumSize">
+         <size>
+          <width>60</width>
+          <height>0</height>
+         </size>
         </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="4" column="2">
-    <widget class="QGroupBox" name="groupBoxSplitting">
-     <property name="minimumSize">
-      <size>
-       <width>300</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="title">
-      <string>File Splitting</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_2">
-      <item>
-       <widget class="QLabel" name="label">
         <property name="text">
-         <string>Split recordings at</string>
+         <string>Compression</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
         </property>
         <property name="buddy">
-         <cstring>comboBoxSplitting</cstring>
+         <cstring>SliderCompression</cstring>
         </property>
        </widget>
-      </item>
-      <item>
-       <widget class="QComboBox" name="comboBoxSplitting"/>
       </item>
      </layout>
     </widget>
    </item>
+
    <item row="2" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBoxTags">
      <property name="title">
@@ -278,7 +280,7 @@
      </property>
      <layout class="QFormLayout" name="formLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="TextLabel3_2_3">
+       <widget class="QLabel" name="LabelTitle">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -299,8 +301,9 @@
       <item row="0" column="1">
        <widget class="QLineEdit" name="LineEditTitle"/>
       </item>
+
       <item row="1" column="0">
-       <widget class="QLabel" name="TextLabel3_2_3_2">
+       <widget class="QLabel" name="LabelAuthor">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -321,8 +324,9 @@
       <item row="1" column="1">
        <widget class="QLineEdit" name="LineEditAuthor"/>
       </item>
+
       <item row="2" column="0">
-       <widget class="QLabel" name="TextLabel3_2_3_3">
+       <widget class="QLabel" name="LabelAlbum">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -346,17 +350,34 @@
      </layout>
     </widget>
    </item>
+
+   <item row="7" column="1">
+    <spacer>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>51</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
   <tabstop>LineEditRecordings</tabstop>
   <tabstop>PushButtonBrowseRecordings</tabstop>
+  <tabstop>comboBoxSplitting</tabstop>
+  <tabstop>CheckBoxRecordCueFile</tabstop>
+  <tabstop>SliderCompression</tabstop>
+  <tabstop>SliderQuality</tabstop>
   <tabstop>LineEditTitle</tabstop>
   <tabstop>LineEditAuthor</tabstop>
   <tabstop>LineEditAlbum</tabstop>
-  <tabstop>CheckBoxRecordCueFile</tabstop>
-  <tabstop>comboBoxSplitting</tabstop>
  </tabstops>
  <resources/>
  <connections/>

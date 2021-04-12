@@ -1,3 +1,7 @@
+if(POLICY CMP0069)
+  cmake_policy(SET CMP0069 NEW)
+endif()
+
 # Allow the source files to find headers in src/
 include(GNUInstallDirs)
 include_directories(${PROJECT_SOURCE_DIR}/src)

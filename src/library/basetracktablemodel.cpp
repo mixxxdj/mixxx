@@ -47,7 +47,7 @@ const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_GENRE,
         LIBRARYTABLE_GROUPING,
         LIBRARYTABLE_KEY,
-        LIBRARYTABLE_LOCATION,
+        TRACKLOCATIONSTABLE_LOCATION,
         LIBRARYTABLE_PLAYED,
         LIBRARYTABLE_PREVIEW,
         LIBRARYTABLE_RATING,
@@ -189,7 +189,7 @@ void BaseTrackTableModel::initHeaderProperties() {
             tr("Key"),
             defaultColumnWidth());
     setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION,
+            ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION,
             tr("Location"),
             defaultColumnWidth() * 6);
     setHeaderProperties(
@@ -350,7 +350,7 @@ bool BaseTrackTableModel::isColumnHiddenByDefault(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) ||
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE) ||
@@ -373,7 +373,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (PlayerManager::numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
-    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION)) {
+    } else if (index == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
         return new LocationDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
         return new ColorDelegate(pTableView);
@@ -422,7 +422,8 @@ QVariant BaseTrackTableModel::data(
     if (role != Qt::DisplayRole &&
             role != Qt::EditRole &&
             role != Qt::CheckStateRole &&
-            role != Qt::ToolTipRole) {
+            role != Qt::ToolTipRole &&
+            role != kDataExportRole) {
         return QVariant();
     }
 
@@ -547,6 +548,7 @@ QVariant BaseTrackTableModel::roleValue(
     }
     switch (role) {
     case Qt::ToolTipRole:
+    case kDataExportRole:
         switch (field) {
         case ColumnCache::COLUMN_LIBRARYTABLE_COLOR:
             return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
@@ -638,7 +640,11 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             }
             if (bpm.hasValue()) {
-                return QString("%1").arg(bpm.getValue(), 0, 'f', 1);
+                if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                    return QString::number(bpm.getValue(), 'f', 4);
+                } else {
+                    return QString::number(bpm.getValue(), 'f', 1);
+                }
             } else {
                 return QChar('-');
             }
@@ -845,7 +851,7 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) ||
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE)) {
         return readOnlyFlags(index);

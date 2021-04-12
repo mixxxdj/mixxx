@@ -25,6 +25,7 @@ public:
     };
     static const unsigned int kMaxAudioBufferSizeIndex;
     static const QString kDefaultAPI;
+    static const QString kEmptyComboBox;
     static const unsigned int kFallbackSampleRate;
     static const unsigned int kDefaultDeckCount;
     static const int kDefaultAudioBufferSizeIndex;

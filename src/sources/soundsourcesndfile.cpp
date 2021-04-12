@@ -3,6 +3,7 @@
 #include <QDir>
 
 #include "util/logger.h"
+#include "util/semanticversion.h"
 
 namespace mixxx {
 
@@ -22,23 +23,21 @@ const QStringList kSupportedFileExtensions = {
         QStringLiteral("wav"),
 };
 
-// SoundSourceProxyTest fails for version 1.0.30 and OGG files
-#if defined(__APPLE__)
-const QLatin1String kVersionStringWithBrokenOggDecoding = QLatin1String("libsndfile-1.0.30");
-#endif
+// SoundSourceProxyTest fails for version >= 1.0.30 and OGG files
+// https://github.com/libsndfile/libsndfile/issues/643
+const mixxx::SemanticVersion kVersionStringWithBrokenOggDecoding(1, 0, 30);
 
 QStringList getSupportedFileExtensionsFiltered() {
     auto supportedFileExtensions = kSupportedFileExtensions;
-    // Until now this issue was only confirmed for macOS and libsndfile
-    // installed from Homebrew during the SCons build on Travis CI.
-#if defined(__APPLE__)
-    if (sf_version_string() == kVersionStringWithBrokenOggDecoding) {
+    QString libsndfileVersion = sf_version_string();
+    int separatorIndex = libsndfileVersion.lastIndexOf("-");
+    auto semver = mixxx::SemanticVersion(libsndfileVersion.right(separatorIndex));
+    if (semver >= kVersionStringWithBrokenOggDecoding) {
         kLogger.info()
                 << "Disabling OGG decoding for"
-                << kVersionStringWithBrokenOggDecoding;
+                << libsndfileVersion;
         supportedFileExtensions.removeAll(QStringLiteral("ogg"));
     }
-#endif
     return supportedFileExtensions;
 };
 

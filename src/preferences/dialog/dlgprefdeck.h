@@ -6,8 +6,8 @@
 #include "engine/controls/cuecontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "preferences/constants.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefdeckdlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 

@@ -1,10 +1,11 @@
 #pragma once
 
-#include "effects/effectprocessor.h"
-#include "effects/effectmanifest.h"
-#include "engine/effects/engineeffectparameter.h"
-#include <lilv-0/lilv/lilv.h>
+#include <lilv/lilv.h>
+
 #include "effects/defs.h"
+#include "effects/effectmanifest.h"
+#include "effects/effectprocessor.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "engine/engine.h"
 
 class LV2EffectGroupState : public EffectState {

@@ -5,6 +5,8 @@
 #include <QDir>
 #include <QtDebug>
 
+#include "track/beatgrid.h"
+#include "track/beatmap.h"
 #include "track/serato/beatgrid.h"
 #include "util/memory.h"
 
@@ -99,6 +101,77 @@ TEST_F(SeratoBeatGridTest, ParseBeatGridDataFLAC) {
 
 TEST_F(SeratoBeatGridTest, ParseEmptyDataFLAC) {
     parseEmptyBeatGridData(mixxx::taglib::FileType::FLAC);
+}
+
+TEST_F(SeratoBeatGridTest, SerializeBeatgrid) {
+    // Create a const beatgrid at 120 BPM
+    constexpr double bpm = 120.0;
+    const auto sampleRate = mixxx::audio::SampleRate(44100);
+    EXPECT_EQ(sampleRate.isValid(), true);
+    const auto pBeats = mixxx::BeatGrid::makeBeatGrid(sampleRate, QString("Test"), bpm, 0);
+    const auto signalInfo = mixxx::audio::SignalInfo(mixxx::audio::ChannelCount(2), sampleRate);
+    const auto duration = mixxx::Duration::fromSeconds<int>(300);
+
+    // Serialize that beatgrid into Serato BeatGrid data and check if it's correct
+    mixxx::SeratoBeatGrid seratoBeatGrid;
+    seratoBeatGrid.setBeats(pBeats, signalInfo, duration, 0);
+    EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 0);
+    EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
+    EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm));
+}
+
+TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
+    // Create a non-const beatmap
+    constexpr double bpm = 100.0;
+    const auto sampleRate = mixxx::audio::SampleRate(44100);
+    const auto signalInfo = mixxx::audio::SignalInfo(mixxx::audio::ChannelCount(2), sampleRate);
+    const auto duration = mixxx::Duration::fromSeconds<int>(300);
+    const double framesPerMinute = signalInfo.getSampleRate() * 60;
+    const double framesPerBeat = framesPerMinute / bpm;
+
+    QVector<double> beatPositionsFrames;
+    double beatPositionFrames = 0;
+    // Add 2 minutes of beats at 100 bpm to the beatgrid
+    for (int i = 0; i < 2 * bpm; i++) {
+        beatPositionsFrames.append(beatPositionFrames);
+        beatPositionFrames += framesPerBeat;
+    }
+
+    // Check the const beatmap
+    {
+        const auto pBeats = mixxx::BeatMap::makeBeatMap(
+                sampleRate, QString("Test"), beatPositionsFrames);
+        // At the 1 minute mark the BPM should be 100
+        EXPECT_EQ(pBeats->getBpmAroundPosition(framesPerMinute, 1), bpm);
+
+        mixxx::SeratoBeatGrid seratoBeatGrid;
+        seratoBeatGrid.setBeats(pBeats, signalInfo, duration, 0);
+        EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 0);
+        EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
+        EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm));
+    }
+
+    // Now add 3 minutes of beats at 50 bpm to the beatgrid
+    for (int i = 0; i < 3 * bpm / 2; i++) {
+        beatPositionsFrames.append(beatPositionFrames);
+        beatPositionFrames += framesPerBeat * 2;
+    }
+
+    // Check the non-const beatmap
+    {
+        const auto pBeats = mixxx::BeatMap::makeBeatMap(
+                sampleRate, QString("Test"), beatPositionsFrames);
+        // At the 1 minute mark the BPM should be 100
+        EXPECT_EQ(pBeats->getBpmAroundPosition(framesPerMinute, 1), bpm);
+        // At the 4 minute mark the BPM should be 50
+        EXPECT_EQ(pBeats->getBpmAroundPosition(framesPerMinute * 4, 1), bpm / 2);
+
+        mixxx::SeratoBeatGrid seratoBeatGrid;
+        seratoBeatGrid.setBeats(pBeats, signalInfo, duration, 0);
+        EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 2);
+        EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
+        EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm / 2));
+    }
 }
 
 } // namespace

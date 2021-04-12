@@ -18,6 +18,8 @@ class TrackModel {
   public:
     static const int kHeaderWidthRole = Qt::UserRole + 0;
     static const int kHeaderNameRole = Qt::UserRole + 1;
+    // This role is used for data export like in CSV files
+    static constexpr int kDataExportRole = Qt::UserRole + 2;
 
     TrackModel(const QSqlDatabase& db,
             const char* settingsNamespace)
@@ -192,20 +194,14 @@ class TrackModel {
         m_eDefaultSortOrder = sortOrder;
     }
 
-    virtual bool isColumnSortable(int column) {
+    virtual bool isColumnSortable(int column) const {
         Q_UNUSED(column);
         return true;
     }
 
-    virtual SortColumnId sortColumnIdFromColumnIndex(int index) {
-        Q_UNUSED(index);
-        return TrackModel::SortColumnId::Invalid;
-    }
+    virtual SortColumnId sortColumnIdFromColumnIndex(int index) const = 0;
 
-    virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) {
-        Q_UNUSED(sortColumn);
-        return -1;
-    }
+    virtual int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const = 0;
 
     virtual int fieldIndex(const QString& fieldName) const {
         Q_UNUSED(fieldName);

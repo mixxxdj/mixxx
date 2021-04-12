@@ -273,13 +273,12 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
         record.resize(numColumns);
 
         for (int i = 0; i < numColumns; ++i) {
-            if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) == i) {
+            if (fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) == i) {
                 // Database stores all locations with Qt separators: "/"
                 // Here we want to cache the display string with native separators.
                 QString location = query.value(i).toString();
                 record[i] = QDir::toNativeSeparators(location);
-            }
-            else {
+            } else {
                 record[i] = query.value(i);
             }
         }
@@ -378,7 +377,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getType());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_TRACKNUMBER) == column) {
         trackValue.setValue(pTrack->getTrackNumber());
-    } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) == column) {
+    } else if (fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) == column) {
         trackValue.setValue(QDir::toNativeSeparators(pTrack->getLocation()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
         trackValue.setValue(pTrack->getComment());
@@ -407,7 +406,7 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_LOCATION) == column) {
         trackValue.setValue(pTrack->getCoverInfo().coverLocation);
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART_HASH) == column ||
-               fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) == column) {
         // For sorting, we give COLUMN_LIBRARYTABLE_COVERART the same value as
         // the cover hash.
         trackValue.setValue(pTrack->getCoverHash());

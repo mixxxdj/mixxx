@@ -20,6 +20,10 @@ class SettingsDAO final {
     bool deleteValue(
             const QString& name) const;
 
+    const QSqlDatabase& database() const {
+        return m_database;
+    }
+
   private:
     const QSqlDatabase m_database;
 };

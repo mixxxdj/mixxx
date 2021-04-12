@@ -878,16 +878,14 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double value) {
             seekAbs(position);
             m_pPlay->set(1.0);
         }
-    } else if (m_iCurrentlyPreviewingHotcues) {
-        // This is a activate release and we are previewing at least one
-        // hotcue. If this hotcue is previewing:
-        if (pControl->isPreviewing()) {
-            // Mark this hotcue as not previewing.
-            double position = pControl->getPreviewingPosition();
-            pControl->setPreviewing(false);
-            pControl->setPreviewingPosition(Cue::kNoPosition);
-
-            // If this is the last hotcue to leave preview.
+    } else if (pControl->isPreviewing()) {
+        // Mark this hotcue as not previewing.
+        double position = pControl->getPreviewingPosition();
+        pControl->setPreviewing(false);
+        pControl->setPreviewingPosition(Cue::kNoPosition);
+        if (m_iCurrentlyPreviewingHotcues > 0) {
+            // This is a release of an active previewing hotcue.
+            // If this is the last hotcue, leave preview.
             if (--m_iCurrentlyPreviewingHotcues == 0 && !m_bPreviewing) {
                 m_pPlay->set(0.0);
                 // Need to unlock before emitting any signals to prevent deadlock.
@@ -1090,21 +1088,16 @@ void CueControl::cueCDJ(double value) {
             seekAbs(m_pCuePoint->get());
         } else if (freely_playing || trackAt == TrackAt::End) {
             // Jump to cue when playing or when at end position
-
-            // Just in case.
-            m_bPreviewing = false;
             m_pPlay->set(0.0);
-
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
-
             seekAbs(m_pCuePoint->get());
         } else if (trackAt == TrackAt::Cue) {
-            // pause at cue point
+            // paused at cue point
             m_bPreviewing = true;
             m_pPlay->set(1.0);
         } else {
-            // Pause not at cue point and not at end position
+            // Paused not at cue point and not at end position
             cueSet(value);
 
             // If quantize is enabled, jump to the cue point since it's not
@@ -1156,10 +1149,11 @@ void CueControl::cueDenon(double value) {
             lock.unlock();
             seekAbs(m_pCuePoint->get());
         } else if (!playing && trackAt == TrackAt::Cue) {
-            // pause at cue point
+            // paused at cue point
             m_bPreviewing = true;
             m_pPlay->set(1.0);
         } else {
+            m_pPlay->set(0.0);
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
             seekAbs(m_pCuePoint->get());
@@ -1774,7 +1768,7 @@ double CueControl::quantizeCuePoint(double cuePos) {
         return cuePos;
     }
 
-    mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+    const mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
     if (!pBeats) {
         return cuePos;
     }

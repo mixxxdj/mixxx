@@ -1,8 +1,15 @@
 #include "track/trackrecord.h"
 
 #include "track/keyfactory.h"
+#include "util/logger.h"
 
 namespace mixxx {
+
+namespace {
+
+const Logger kLogger("TrackRecord");
+
+} // anonymous namespace
 
 /*static*/ const QString TrackRecord::kTrackTotalPlaceholder = QStringLiteral("//");
 
@@ -197,6 +204,63 @@ bool TrackRecord::mergeImportedMetadata(
             importedAlbumInfo.getRecordLabel());
 #endif // __EXTRA_METADATA__
     return modified;
+}
+
+bool TrackRecord::updateStreamInfoFromSource(
+        mixxx::audio::StreamInfo streamInfoFromSource) {
+    // Complete missing properties from metadata. Some properties
+    // are mandatory while others like the bitrate might not be
+    // reported by all decoders.
+    VERIFY_OR_DEBUG_ASSERT(streamInfoFromSource.getSignalInfo().getChannelCount().isValid()) {
+        streamInfoFromSource.refSignalInfo().setChannelCount(
+                getMetadata().getStreamInfo().getSignalInfo().getChannelCount());
+    }
+    VERIFY_OR_DEBUG_ASSERT(streamInfoFromSource.getSignalInfo().getSampleRate().isValid()) {
+        streamInfoFromSource.refSignalInfo().setSampleRate(
+                getMetadata().getStreamInfo().getSignalInfo().getSampleRate());
+    }
+    VERIFY_OR_DEBUG_ASSERT(streamInfoFromSource.getDuration() > Duration::empty()) {
+        streamInfoFromSource.setDuration(
+                getMetadata().getStreamInfo().getDuration());
+    }
+    if (!streamInfoFromSource.getBitrate().isValid()) {
+        // The bitrate might not be reported by the SoundSource
+        streamInfoFromSource.setBitrate(
+                getMetadata().getStreamInfo().getBitrate());
+    }
+    // Stream properties are not expected to vary during a session
+    VERIFY_OR_DEBUG_ASSERT(!m_streamInfoFromSource ||
+            *m_streamInfoFromSource == streamInfoFromSource) {
+        kLogger.warning()
+                << "Varying stream properties:"
+                << *m_streamInfoFromSource
+                << "->"
+                << streamInfoFromSource;
+    }
+    m_streamInfoFromSource = streamInfoFromSource;
+    // Stream info from source is always propagated to metadata and
+    // unconditionally overwrites any properties that have once been
+    // parsed from file tags! This is required to store the most
+    // accurate information about the audio stream in the database.
+    const bool metadataUpdated = refMetadata().updateStreamInfoFromSource(streamInfoFromSource);
+    DEBUG_ASSERT(getMetadata().getStreamInfo() == streamInfoFromSource);
+    return metadataUpdated;
+}
+
+bool operator==(const TrackRecord& lhs, const TrackRecord& rhs) {
+    return lhs.getMetadata() == rhs.getMetadata() &&
+            lhs.getCoverInfo() == rhs.getCoverInfo() &&
+            lhs.getId() == rhs.getId() &&
+            lhs.getMetadataSynchronized() == rhs.getMetadataSynchronized() &&
+            lhs.getDateAdded() == rhs.getDateAdded() &&
+            lhs.getFileType() == rhs.getFileType() &&
+            lhs.getUrl() == rhs.getUrl() &&
+            lhs.getPlayCounter() == rhs.getPlayCounter() &&
+            lhs.getColor() == rhs.getColor() &&
+            lhs.getCuePoint() == rhs.getCuePoint() &&
+            lhs.getBpmLocked() == rhs.getBpmLocked() &&
+            lhs.getKeys() == rhs.getKeys() &&
+            lhs.getRating() == rhs.getRating();
 }
 
 } // namespace mixxx

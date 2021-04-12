@@ -9,8 +9,8 @@
 #include "controllers/controllerpresetinfo.h"
 #include "controllers/dlgcontrollerlearning.h"
 #include "controllers/ui_dlgprefcontrollerdlg.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
 
 // Forward declarations
 class Controller;
@@ -47,6 +47,8 @@ class DlgPrefController : public DlgPreferencePage {
     /// Used to selected the current preset in the combobox and display the
     /// preset information.
     void slotShowPreset(ControllerPresetPointer preset);
+    /// Called when the Controller Learning Wizard is closed.
+    void slotStopLearning();
 
     // Input mappings
     void addInputMapping();
@@ -66,10 +68,10 @@ class DlgPrefController : public DlgPreferencePage {
     QString presetName(const ControllerPresetPointer pPreset) const;
     QString presetAuthor(const ControllerPresetPointer pPreset) const;
     QString presetDescription(const ControllerPresetPointer pPreset) const;
-    QString presetForumLink(const ControllerPresetPointer pPreset) const;
-    QString presetManualLink(const ControllerPresetPointer pPreset) const;
-    QString presetWikiLink(const ControllerPresetPointer pPreset) const;
+    QString presetSupportLinks(const ControllerPresetPointer pPreset) const;
     QString presetFileLinks(const ControllerPresetPointer pPreset) const;
+    QString presetPathFromIndex(int index) const;
+    QString askForPresetName(const QString& prefilledName = QString()) const;
     void applyPresetChanges();
     void savePreset();
     void initTableView(QTableView* pTable);

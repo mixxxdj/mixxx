@@ -29,6 +29,7 @@
       <attribute persist="true" config_key="[Skin],show_eq_knobs">1</attribute>
       <attribute persist="true" config_key="[Skin],show_eq_kill_buttons">1</attribute>
       <attribute persist="true" config_key="[Skin],show_xfader">1</attribute>
+      <attribute persist="true" config_key="[Skin],large_vu">0</attribute>
       <!-- Effects -->
       <attribute persist="true" config_key="[EffectRack1],show">1</attribute>
       <attribute persist="true" config_key="[Skin],show_4effectunits">0</attribute>
