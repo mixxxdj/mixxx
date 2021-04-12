@@ -14,12 +14,17 @@
 
 #include "util/cpupinning.h"
 
+#if __GLIBC__ == 2 && __GLIBC_MINOR__ < 30
+#include <sys/syscall.h>
+#define gettid() syscall(SYS_gettid)
+#endif
+
 namespace mixxx {
 
 #ifdef __LINUX__
 bool CpuPinning::moveThreadToCpuset(const QString& cgroup) {
     qDebug() << "Move task" << gettid() << "to cpuset" << cgroup;
-    QString filename = QLatin1String("/sys/fs/cgroup/cpuset/") + cgroup + QLatin1String("/tasks");
+    QString filename = QStringLiteral("/sys/fs/cgroup/cpuset/") + cgroup + QStringLiteral("/tasks");
     auto tasksFile = QFile(filename);
     if (!tasksFile.exists()) {
         qWarning() << "cgroup cpuset:" << cgroup << "does not exist" << tasksFile.errorString();
@@ -43,7 +48,7 @@ bool CpuPinning::pinThreadToCpu(qint32 cpuid) {
     pthread_t thread = pthread_self();
     cpu_set_t cpuset;
     int status;
-    /* Set affinity mask to include CPUs 0 to 7 */
+    // Set affinity mask to include CPUs 0 to 7
     qDebug() << "Set CPU affinity for Thread ID" << gettid();
 
     CPU_ZERO(&cpuset);
@@ -55,7 +60,7 @@ bool CpuPinning::pinThreadToCpu(qint32 cpuid) {
         return false;
     }
 
-    /* Check the actual affinity mask assigned to the thread */
+    // Check the actual affinity mask assigned to the thread
 
     status = pthread_getaffinity_np(thread, sizeof(cpu_set_t), &cpuset);
     if (status != 0) {

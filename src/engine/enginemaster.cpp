@@ -49,7 +49,9 @@ EngineMaster::EngineMaster(
           m_busTalkoverHandle(registerChannelGroup("[BusTalkover]")),
           m_busCrossfaderLeftHandle(registerChannelGroup("[BusLeft]")),
           m_busCrossfaderCenterHandle(registerChannelGroup("[BusCenter]")),
-          m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")) {
+          m_busCrossfaderRightHandle(registerChannelGroup("[BusRight]")),
+          m_cpuId(CmdlineArgs::Instance().getEngineCpuId()),
+          m_cpuSet(CmdlineArgs::Instance().getEngineCpuSet()) {
     pEffectsManager->registerInputChannel(m_masterHandle);
     pEffectsManager->registerInputChannel(m_headphoneHandle);
     pEffectsManager->registerOutputChannel(m_masterHandle);
@@ -385,14 +387,12 @@ void EngineMaster::processChannels(int iBufferSize) {
 void EngineMaster::finishStartup() {
     QThread::currentThread()->setObjectName("Engine");
 #ifdef __LINUX__
-    const auto cpuSet = CmdlineArgs::Instance().getEngineCpuSet();
-    if (!cpuSet.isNull() && !cpuSet.isEmpty()) {
-        mixxx::CpuPinning::moveThreadToCpuset(cpuSet);
+    if (!m_cpuSet.isNull() && !m_cpuSet.isEmpty()) {
+        mixxx::CpuPinning::moveThreadToCpuset(m_cpuSet);
     }
 #endif
-    auto cpuId = CmdlineArgs::Instance().getEngineCpuId();
-    if (cpuId != -1) {
-        mixxx::CpuPinning::pinThreadToCpu(cpuId);
+    if (m_cpuId != -1) {
+        mixxx::CpuPinning::pinThreadToCpu(m_cpuId);
     }
 }
 

@@ -156,7 +156,7 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
             QStringLiteral("logFlushLevel"));
     parser.addOption(logFlushLevel);
 
-    const QCommandLineOption engineCpuId(QStringList() << "engine-cpu-id"
+    const QCommandLineOption engineCpuId(QStringList() << "engine-cpu-id",
             QCoreApplication::translate("main",
                     "Bind mixxx to a specific CPU Core. Use mixxx-isolate if possible"),
             QStringLiteral("engineCpuId"));
@@ -217,7 +217,7 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
 
     if (parser.isSet(engineCpuId)) {
         bool ok = false;
-        quint32 engineCpu = QString(argv[i + 1]).toUInt(&ok);
+        quint32 engineCpu = parser.value(engineCpuId).toUInt(&ok);
         if (!ok) {
             qWarning() << "engine-cpu-id is not a valid number";
         } else {
@@ -226,7 +226,7 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
     }
 
     if (parser.isSet(engineCpuSet)) {
-        m_engineCpuSet = QString::fromLocal8Bit(parser.value(engineCpuSet));
+        m_engineCpuSet = parser.value(engineCpuSet);
     }
 
     if (parser.isSet(resourcePath)) {

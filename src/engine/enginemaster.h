@@ -348,4 +348,7 @@ class EngineMaster : public QObject, public AudioSource {
 
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
+
+    const qint64 m_cpuId;
+    const QString m_cpuSet;
 };
