@@ -7,17 +7,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - name: nixos-20.09
-            os: nixos-20.09
-            use_clang: true
-            use_clazy: true
-            ccache: ccache-clang
           - name: nixos-20.09-gcc
             os: nixos-20.09
-            use_clang: false
-            ccache: ccache-gcc
-          - name: nixos-19.09
-            os: nixos-19.09
             use_clang: false
             ccache: ccache-gcc
     name: "nix-shell ${{ matrix.name }}"
