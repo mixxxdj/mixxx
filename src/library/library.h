@@ -7,6 +7,9 @@
 #include <QPointer>
 
 #include "analyzer/analyzerprogress.h"
+#ifdef __ENGINEPRIME__
+#include "library/trackset/crate/crateid.h"
+#endif
 #include "preferences/usersettings.h"
 #include "track/track_decl.h"
 #include "track/trackid.h"
@@ -32,6 +35,12 @@ class TrackModel;
 class WSearchLineEdit;
 class WLibrarySidebar;
 class WLibrary;
+
+#ifdef __ENGINEPRIME__
+namespace mixxx {
+class LibraryExporter;
+} // namespace mixxx
+#endif
 
 // A Library class is a container for all the model-side aspects of the library.
 // A library widget can be attached to the Library object by calling bindLibraryWidget.
@@ -66,7 +75,6 @@ class Library: public QObject {
                     KeyboardEventFilter* pKeyboard);
 
     void addFeature(LibraryFeature* feature);
-    QStringList getDirs();
 
     int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
@@ -94,6 +102,10 @@ class Library: public QObject {
     /// and shows the results by switching the view.
     void searchTracksInCollection(const QString& query);
 
+#ifdef __ENGINEPRIME__
+    std::unique_ptr<mixxx::LibraryExporter> makeLibraryExporter(QWidget* parent);
+#endif
+
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
@@ -119,6 +131,10 @@ class Library: public QObject {
     // emit this signal to enable/disable the cover art widget
     void enableCoverArtDisplay(bool);
     void trackSelected(TrackPointer pTrack);
+#ifdef __ENGINEPRIME__
+    void exportLibrary();
+    void exportCrate(CrateId crateId);
+#endif
 
     void setTrackTableFont(const QFont& font);
     void setTrackTableRowHeight(int rowHeight);

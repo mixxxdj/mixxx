@@ -103,7 +103,6 @@ class WTrackMenu : public QMenu {
     void slotLockBpm();
     void slotUnlockBpm();
     void slotScaleBpm(int);
-    void slotRoundBpm();
 
     // Info and metadata
     void slotShowDlgTagFetcher();
@@ -245,7 +244,6 @@ class WTrackMenu : public QMenu {
     QAction* m_pBpmThreeFourthsAction{};
     QAction* m_pBpmFourThirdsAction{};
     QAction* m_pBpmThreeHalvesAction{};
-    QAction* m_pBpmRoundAction{};
     QAction* m_pBpmResetAction{};
 
     // Track color

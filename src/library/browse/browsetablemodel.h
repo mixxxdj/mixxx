@@ -5,7 +5,6 @@
 
 #include "library/trackmodel.h"
 #include "recording/recordingmanager.h"
-#include "util/file.h"
 #include "library/browse/browsethread.h"
 
 //constants
@@ -33,6 +32,12 @@ const int COLUMN_REPLAYGAIN = 20;
 
 class TrackCollectionManager;
 
+namespace mixxx {
+
+class FileAccess;
+
+} // namespace mixxx
+
 // The BrowseTable models displays tracks
 // of given directory on the HDD.
 // Usage: Recording and Browse feature.
@@ -47,7 +52,7 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     BrowseTableModel(QObject* parent, TrackCollectionManager* pTrackCollectionManager, RecordingManager* pRec);
     virtual ~BrowseTableModel();
 
-    void setPath(const MDir& path);
+    void setPath(mixxx::FileAccess path);
 
     TrackPointer getTrack(const QModelIndex& index) const override;
     TrackPointer getTrackByRef(const TrackRef& trackRef) const override;
@@ -69,9 +74,9 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     Qt::ItemFlags flags(const QModelIndex &index) const override;
     bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole) override;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) override;
-    bool isColumnSortable(int column) override;
-    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) override;
-    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) override;
+    bool isColumnSortable(int column) const override;
+    TrackModel::SortColumnId sortColumnIdFromColumnIndex(int index) const override;
+    int columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const override;
 
   public slots:
     void slotClear(BrowseTableModel*);
@@ -84,7 +89,6 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     TrackCollectionManager* const m_pTrackCollectionManager;
 
     QList<int> m_searchColumns;
-    MDir m_current_directory;
     RecordingManager* m_pRecordingManager;
     BrowseThreadPointer m_pBrowseThread;
     QString m_previewDeckGroup;

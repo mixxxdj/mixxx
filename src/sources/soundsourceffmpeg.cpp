@@ -140,7 +140,7 @@ inline SINT convertStreamTimeToFrameIndex(const AVStream& avStream, int64_t pts)
             av_rescale_q(
                     pts - getStreamStartTime(avStream),
                     avStream.time_base,
-                    (AVRational){1, avStream.codecpar->sample_rate});
+                    av_make_q(1, avStream.codecpar->sample_rate));
 }
 
 inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT frameIndex) {
@@ -148,7 +148,7 @@ inline int64_t convertFrameIndexToStreamTime(const AVStream& avStream, SINT fram
     return getStreamStartTime(avStream) +
             av_rescale_q(
                     frameIndex - kMinFrameIndex,
-                    (AVRational){1, avStream.codecpar->sample_rate},
+                    av_make_q(1, avStream.codecpar->sample_rate),
                     avStream.time_base);
 }
 
@@ -353,8 +353,8 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     while ((pavInputFormat = av_iformat_next(pavInputFormat))) {
 #else
     const AVInputFormat* pavInputFormat = nullptr;
-    void* iInputFormat = 0;
-    while ((pavInputFormat = av_demuxer_iterate(&iInputFormat))) {
+    void* pOpaqueInputFormatIterator = nullptr;
+    while ((pavInputFormat = av_demuxer_iterate(&pOpaqueInputFormatIterator))) {
 #endif
         if (pavInputFormat->flags | AVFMT_SEEK_TO_PTS) {
             ///////////////////////////////////////////////////////////
@@ -897,7 +897,7 @@ bool SoundSourceFFmpeg::consumeNextAVPacket(
         }
         *ppavNextPacket = pavPacket;
     }
-    auto pavNextPacket = *ppavNextPacket;
+    auto* pavNextPacket = *ppavNextPacket;
 
     // Consume raw packet data
 #if VERBOSE_DEBUG_LOG

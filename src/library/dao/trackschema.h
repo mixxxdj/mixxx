@@ -3,6 +3,7 @@
 #include <QString>
 
 #define LIBRARY_TABLE "library"
+#define TRACKLOCATIONS_TABLE "track_locations"
 
 const QString LIBRARYTABLE_ID = QStringLiteral("id");
 const QString LIBRARYTABLE_ARTIST = QStringLiteral("artist");
@@ -55,3 +56,10 @@ const QString TRACKLOCATIONSTABLE_FSDELETED = QStringLiteral("fs_deleted");
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = QStringLiteral("needs_verification");
 
 const QString REKORDBOX_ANALYZE_PATH = "analyze_path";
+
+namespace mixxx {
+namespace trackschema {
+// TableForColumn returns the name of the table that contains the named column.
+QString tableForColumn(const QString& columnName);
+} // namespace trackschema
+} // namespace mixxx

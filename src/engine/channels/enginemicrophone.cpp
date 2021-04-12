@@ -47,7 +47,7 @@ void EngineMicrophone::onInputConfigured(const AudioInput& input) {
         qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;
     }
-    m_sampleBuffer = NULL;
+    m_sampleBuffer = nullptr;
     m_pInputConfigured->forceSet(1.0);
 }
 
@@ -57,7 +57,7 @@ void EngineMicrophone::onInputUnconfigured(const AudioInput& input) {
         qWarning() << "EngineMicrophone connected to AudioInput for a non-Microphone type!";
         return;
     }
-    m_sampleBuffer = NULL;
+    m_sampleBuffer = nullptr;
     m_pInputConfigured->forceSet(0.0);
 }
 
@@ -85,7 +85,7 @@ void EngineMicrophone::process(CSAMPLE* pOut, const int iBufferSize) {
     } else {
         SampleUtil::clear(pOut, iBufferSize);
     }
-    m_sampleBuffer = NULL;
+    m_sampleBuffer = nullptr;
 
     // Update VU meter
     m_vuMeter.process(pOut, iBufferSize);

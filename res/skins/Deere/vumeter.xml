@@ -15,6 +15,7 @@
     <SizePolicy>f,me</SizePolicy>
     <!-- overwrites above properties. just used in auxiliary.xml for now -->
     <Size><Variable name="Size"/></Size>
+    <PathBack scalemode="STRETCH">vumeter_v_bg.png</PathBack>
     <PathVu>vumeter_v.png</PathVu>
     <Horizontal>false</Horizontal>
     <PeakHoldSize>5</PeakHoldSize>

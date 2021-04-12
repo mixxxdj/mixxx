@@ -7,7 +7,7 @@
 
 namespace {
 constexpr int kDefaultDimBrightThreshold = 127;
-}
+} // namespace
 
 WaveformSignalColors::WaveformSignalColors()
         : m_dimBrightThreshold(kDefaultDimBrightThreshold) {
@@ -48,6 +48,27 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     }
     m_rgbHighColor = WSkinColor::getCorrectColor(m_rgbHighColor).toRgb();
 
+    // filtered colors
+    m_rgbLowFilteredColor.setNamedColor(context.selectString(node, "SignalRGBLowFilteredColor"));
+    if (!m_rgbLowFilteredColor.isValid()) {
+        m_rgbLowFilteredColor = m_rgbLowColor.darker(300);
+    }
+    m_rgbLowFilteredColor = WSkinColor::getCorrectColor(m_rgbLowFilteredColor).toRgb();
+
+    m_rgbMidFilteredColor.setNamedColor(context.selectString(node, "SignalRGBMidFilteredColor"));
+    if (!m_rgbMidFilteredColor.isValid()) {
+        m_rgbMidFilteredColor = m_rgbMidColor.darker(300);
+        ;
+    }
+    m_rgbMidFilteredColor = WSkinColor::getCorrectColor(m_rgbMidFilteredColor).toRgb();
+
+    m_rgbHighFilteredColor.setNamedColor(context.selectString(node, "SignalRGBHighFilteredColor"));
+    if (!m_rgbHighFilteredColor.isValid()) {
+        m_rgbHighFilteredColor = m_rgbHighColor.darker(300);
+        ;
+    }
+    m_rgbHighFilteredColor = WSkinColor::getCorrectColor(m_rgbHighFilteredColor).toRgb();
+
     m_axesColor = context.selectColor(node, "AxesColor");
     if (!m_axesColor.isValid()) {
         m_axesColor = QColor(245,245,245);
@@ -72,7 +93,7 @@ bool WaveformSignalColors::setup(const QDomNode &node, const SkinContext& contex
     m_passthroughOverlayColor = context.selectColor(node, "PassthroughOverlayColor");
     m_passthroughOverlayColor = WSkinColor::getCorrectColor(m_passthroughOverlayColor).toRgb();
     if (!m_passthroughOverlayColor.isValid()) {
-        m_passthroughOverlayColor = WSkinColor::getCorrectColor(QColor(187, 0, 0, 0)).toRgb();
+        m_passthroughOverlayColor = WSkinColor::getCorrectColor(QColor(0, 0, 0, 187)).toRgb();
     }
 
     m_bgColor = context.selectColor(node, "BgColor");

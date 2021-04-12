@@ -16,11 +16,7 @@ bool recognizeDevice(const PmDeviceInfo& deviceInfo) {
     // In developer mode we show the MIDI Through Port, otherwise ignore it
     // since it routinely causes trouble.
     return CmdlineArgs::Instance().getDeveloper() ||
-#if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
             !QLatin1String(deviceInfo.name)
-#else
-            !QString::fromLatin1(deviceInfo.name)
-#endif
                      .startsWith(kMidiThroughPortPrefix, Qt::CaseInsensitive);
 }
 
@@ -202,8 +198,8 @@ QList<Controller*> PortMidiEnumerator::queryDevices() {
 
     m_devices.clear();
 
-    const PmDeviceInfo* inputDeviceInfo = NULL;
-    const PmDeviceInfo* outputDeviceInfo = NULL;
+    const PmDeviceInfo* inputDeviceInfo = nullptr;
+    const PmDeviceInfo* outputDeviceInfo = nullptr;
     int inputDevIndex = -1;
     int outputDevIndex = -1;
     QMap<int, QString> unassignedOutputDevices;

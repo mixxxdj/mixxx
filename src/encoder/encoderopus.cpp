@@ -5,9 +5,7 @@
 #include <QByteArray>
 #include <QMapIterator>
 
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 #include <QRandomGenerator>
-#endif
 #include <QtGlobal>
 
 #include "encoder/encoderopussettings.h"
@@ -65,18 +63,14 @@ int getSerial() {
 
     int serial;
     do {
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
         serial = static_cast<int>(QRandomGenerator::global()->generate());
-#else
-        serial = qrand();
-#endif
     } while (prevSerial == serial);
 
     prevSerial = serial;
     kLogger.debug() << "RETURNING SERIAL " << serial;
     return serial;
 }
-}
+} // namespace
 
 //static
 int EncoderOpus::getMasterSamplerate() {
@@ -116,11 +110,7 @@ EncoderOpus::EncoderOpus(EncoderCallback* pCallback)
     // the Live Broadcasting implementation
 
     m_opusComments.insert("ENCODER", "mixxx/libopus");
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
     int serial = static_cast<int>(QRandomGenerator::global()->generate());
-#else
-    int serial = qrand();
-#endif
     ogg_stream_init(&m_oggStream, serial);
 }
 
@@ -148,8 +138,8 @@ void EncoderOpus::setEncoderSettings(const EncoderSettings& settings) {
     }
 }
 
-int EncoderOpus::initEncoder(int samplerate, QString& errorMessage) {
-    Q_UNUSED(errorMessage);
+int EncoderOpus::initEncoder(int samplerate, QString* pUserErrorMessage) {
+    Q_UNUSED(pUserErrorMessage);
 
     if (samplerate != kMasterSamplerate) {
         kLogger.warning() << "initEncoder failed: samplerate not supported by Opus";
@@ -443,8 +433,9 @@ void EncoderOpus::writePage(ogg_packet* pPacket) {
     if (m_header_write) {
         while (true) {
             int result = ogg_stream_flush(&m_oggStream, &m_oggPage);
-            if (result == 0)
+            if (result == 0) {
                 break;
+            }
 
             kLogger.debug() << "pushing headers to output";
             m_pCallback->write(m_oggPage.header, m_oggPage.body,

@@ -31,11 +31,12 @@
 #include "util/compatibility.h"
 #include "util/datetime.h"
 #include "util/db/fwdsqlquery.h"
+#include "util/db/sqlite.h"
 #include "util/db/sqllikewildcardescaper.h"
 #include "util/db/sqllikewildcards.h"
 #include "util/db/sqlstringformatter.h"
 #include "util/db/sqltransaction.h"
-#include "util/file.h"
+#include "util/fileinfo.h"
 #include "util/logger.h"
 #include "util/math.h"
 #include "util/qt.h"
@@ -554,7 +555,8 @@ void bindTrackLibraryValues(
 
     const PlayCounter& playCounter = track.getPlayCounter();
     pTrackLibraryQuery->bindValue(":timesplayed", playCounter.getTimesPlayed());
-    pTrackLibraryQuery->bindValue(":last_played_at", playCounter.getLastPlayedAt());
+    pTrackLibraryQuery->bindValue(":last_played_at",
+            mixxx::sqlite::writeGeneratedTimestamp(playCounter.getLastPlayedAt()));
     pTrackLibraryQuery->bindValue(":played", playCounter.isPlayed() ? 1 : 0);
 
     const CoverInfoRelative& coverInfo = track.getCoverInfo();
@@ -1170,8 +1172,9 @@ bool setTrackPlayed(const QSqlRecord& record, const int column,
 }
 
 bool setTrackLastPlayedAt(const QSqlRecord& record, const int column, TrackPointer pTrack) {
-    PlayCounter playCounter(pTrack->getPlayCounter());
-    playCounter.setLastPlayedAt(record.value(column).toDateTime());
+    auto playCounter = pTrack->getPlayCounter();
+    playCounter.setLastPlayedAt(
+            mixxx::sqlite::readGeneratedTimestamp(record.value(column)));
     pTrack->setPlayCounter(playCounter);
     return false;
 }
@@ -1218,14 +1221,19 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();
     bool bpmLocked = record.value(column + 4).toBool();
-    mixxx::BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
-            *pTrack, beatsVersion, beatsSubVersion, beatsBlob);
+    const mixxx::BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
+            pTrack->getSampleRate(), beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
-        pTrack->setBeats(pBeats);
+        if (bpmLocked) {
+            pTrack->trySetAndLockBeats(pBeats);
+        } else {
+            pTrack->trySetBeats(pBeats);
+        }
     } else {
-        pTrack->setBpm(bpm);
+        // Load a temorary beat grid without offset that will be replaced by the analyzer.
+        const auto pBeats = BeatFactory::makeBeatGrid(pTrack->getSampleRate(), bpm, 0.0);
+        pTrack->trySetBeats(pBeats);
     }
-    pTrack->setBpmLocked(bpmLocked);
     return false;
 }
 
@@ -1258,10 +1266,14 @@ bool setTrackCoverInfo(const QSqlRecord& record, const int column,
     bool ok = false;
     coverInfo.source = static_cast<CoverInfo::Source>(
             record.value(column).toInt(&ok));
-    if (!ok) coverInfo.source = CoverInfo::UNKNOWN;
+    if (!ok) {
+        coverInfo.source = CoverInfo::UNKNOWN;
+    }
     coverInfo.type = static_cast<CoverInfo::Type>(
             record.value(column + 1).toInt(&ok));
-    if (!ok) coverInfo.type = CoverInfo::NONE;
+    if (!ok) {
+        coverInfo.type = CoverInfo::NONE;
+    }
     coverInfo.coverLocation = record.value(column + 2).toString();
     coverInfo.color = mixxx::RgbColor::fromQVariant(record.value(column + 3));
     coverInfo.setImageDigest(
@@ -1719,7 +1731,7 @@ namespace {
         }
         return matchLength;
     }
-}
+    } // namespace
 
 // Look for moved files. Look for files that have been marked as
 // "deleted on disk" and see if another "file" with the same name and
@@ -1932,7 +1944,7 @@ void TrackDAO::hideAllTracks(const QDir& rootDir) const {
 }
 
 bool TrackDAO::verifyRemainingTracks(
-        const QStringList& libraryRootDirs,
+        const QList<mixxx::FileInfo>& libraryRootDirs,
         volatile const bool* pCancel) {
     // This function is called from the LibraryScanner Thread, which also has a
     // transaction running, so we do NOT NEED to use one here
@@ -1961,8 +1973,8 @@ bool TrackDAO::verifyRemainingTracks(
     while (query.next()) {
         trackLocation = query.value(locationColumn).toString();
         int fs_deleted = 0;
-        for (const auto& dir: libraryRootDirs) {
-            if (trackLocation.startsWith(dir)) {
+        for (const auto& rootDir : libraryRootDirs) {
+            if (trackLocation.startsWith(rootDir.location())) {
                 // Track is under the library root,
                 // but was not verified.
                 // This happens if the track was deleted

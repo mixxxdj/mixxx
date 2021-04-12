@@ -10,7 +10,7 @@
 #ifdef WIN64
 #define WIN32
 #endif
-#include <shout/shout.h>
+#include <shoutidjc/shout.h>
 #ifdef WIN64
 #undef WIN32
 #endif
@@ -40,7 +40,7 @@ const int kMaxShoutFailures = 3;
 
 const mixxx::Logger kLogger("ShoutConnection");
 
-}
+} // namespace
 
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
         UserSettingsPointer pConfig)
@@ -61,6 +61,7 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_format_is_mp3(false),
           m_format_is_ov(false),
           m_format_is_opus(false),
+          m_format_is_aac(false),
           m_protocol_is_icecast1(false),
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
@@ -106,8 +107,9 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
 ShoutConnection::~ShoutConnection() {
     delete m_pMasterSamplerate;
 
-    if (m_pShoutMetaData)
+    if (m_pShoutMetaData) {
         shout_metadata_free(m_pShoutMetaData);
+    }
 
     if (m_pShout) {
         shout_close(m_pShout);
@@ -128,8 +130,9 @@ ShoutConnection::~ShoutConnection() {
 bool ShoutConnection::isConnected() {
     if (m_pShout) {
         m_iShoutStatus = shout_get_connected(m_pShout);
-        if (m_iShoutStatus == SHOUTERR_CONNECTED)
+        if (m_iShoutStatus == SHOUTERR_CONNECTED) {
             return true;
+        }
     }
     return false;
 }
@@ -137,9 +140,9 @@ bool ShoutConnection::isConnected() {
 // Only called when applying settings while broadcasting is active
 void ShoutConnection::applySettings() {
     // Do nothing if profile or Live Broadcasting is disabled
-    if(!m_pBroadcastEnabled->toBool()
-            || !m_pProfile->getEnabled())
+    if (!m_pBroadcastEnabled->toBool() || !m_pProfile->getEnabled()) {
         return;
+    }
 
     // Setting the profile's enabled value to false tells the
     // connection's thread to exit, so no need to call
@@ -189,6 +192,7 @@ void ShoutConnection::updateFromPreferences() {
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
+    m_format_is_aac = false;
     m_protocol_is_icecast1 = false;
     m_protocol_is_icecast2 = false;
     m_protocol_is_shoutcast = false;
@@ -362,17 +366,27 @@ void ShoutConnection::updateFromPreferences() {
     m_format_is_mp3 = !qstrcmp(baFormat.constData(), ENCODING_MP3);
     m_format_is_ov = !qstrcmp(baFormat.constData(), ENCODING_OGG);
     m_format_is_opus = !qstrcmp(baFormat.constData(), ENCODING_OPUS);
+    m_format_is_aac =
+            (!qstrcmp(baFormat.constData(), ENCODING_AAC) ||
+                    !qstrcmp(baFormat.constData(), ENCODING_HEAAC) ||
+                    !qstrcmp(baFormat.constData(), ENCODING_HEAACV2));
     if (m_format_is_mp3) {
         format = SHOUT_FORMAT_MP3;
     } else if (m_format_is_ov || m_format_is_opus) {
         format = SHOUT_FORMAT_OGG;
+#ifdef SHOUT_FORMAT_AAC
+    } else if (m_format_is_aac) {
+        format = SHOUT_FORMAT_AAC;
+#endif
     } else {
-        qWarning() << "Error: unknown format:" << baFormat.constData();
+        errorDialog(tr("Unknown stream encoding format!"),
+                tr("Use a libshout version with %1 enabled")
+                        .arg(baFormat.constData()));
         return;
     }
 
     if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting streaming format!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting stream encoding format!"), shout_get_error(m_pShout));
         return;
     }
 
@@ -427,9 +441,9 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-    if (m_protocol_is_shoutcast && !m_format_is_mp3) {
-        errorDialog(tr("Error: libshout only supports Shoutcast with MP3 format!"),
-                    shout_get_error(m_pShout));
+    if (m_protocol_is_shoutcast && !(m_format_is_mp3 || m_format_is_aac)) {
+        errorDialog(tr("Error: Shoutcast only supports MP3 and AAC encoders"),
+                shout_get_error(m_pShout));
         return;
     }
 
@@ -444,29 +458,37 @@ void ShoutConnection::updateFromPreferences() {
     m_encoder = EncoderFactory::getFactory().createEncoder(
                     pBroadcastSettings, this);
 
-    QString errorMsg;
-    // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
-    if (m_encoder->initEncoder(static_cast<int>(masterSamplerate), errorMsg) < 0) {
-        // e.g., if lame is not found
-        // init m_encoder itself will display a message box
-        kLogger.warning() << "**** Encoder init failed";
-        kLogger.warning() << errorMsg;
+    QString userErrorMsg;
+    int ret = -1;
+    if (m_encoder) {
+        ret = m_encoder->initEncoder(static_cast<int>(masterSamplerate), &userErrorMsg);
+    }
 
+    // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
+    if (ret < 0) {
         // delete m_encoder calls write() make sure it will be exit early
         DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
         m_encoder.reset();
 
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
-        m_lastErrorStr = "Encoder error";
 
+        m_lastErrorStr = pBroadcastSettings->getFormat() + QChar(' ') +
+                QObject::tr(" encoder failure") + QChar('\n');
+        if (userErrorMsg.isEmpty()) {
+            m_lastErrorStr.append(QObject::tr(
+                    "Failed to apply the selected settings."));
+        } else {
+            m_lastErrorStr.append(userErrorMsg);
+        }
         return;
     }
     setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
 bool ShoutConnection::serverConnect() {
-    if(!m_pProfile->getEnabled())
+    if (!m_pProfile->getEnabled()) {
         return false;
+    }
 
     start(QThread::HighPriority);
     setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
@@ -701,19 +723,26 @@ bool ShoutConnection::writeSingle(const unsigned char* data, size_t len) {
 
 void ShoutConnection::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setFunctionCode(4);
-    if(!m_pProfile->getEnabled())
+    if (!m_pProfile->getEnabled()) {
         return;
+    }
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
     // If we aren't connected, bail.
-    if (m_iShoutStatus != SHOUTERR_CONNECTED)
+    if (m_iShoutStatus != SHOUTERR_CONNECTED) {
         return;
+    }
+
+    // Save a copy of the smart pointer in a local variable
+    // to prevent race conditions when resetting the member
+    // pointer while disconnecting in the worker thread!
+    const EncoderPointer pEncoder = m_encoder;
 
     // If we are connected, encode the samples.
-    if (iBufferSize > 0 && m_encoder) {
+    if (iBufferSize > 0 && pEncoder) {
         setFunctionCode(6);
-        m_encoder->encodeBuffer(pBuffer, iBufferSize);
+        pEncoder->encodeBuffer(pBuffer, iBufferSize);
         // the encoded frames are received by the write() callback.
     }
 
@@ -737,8 +766,9 @@ bool ShoutConnection::metaDataHasChanged() {
     m_iMetaDataLife = 0;
 
     pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
-    if (!pTrack)
+    if (!pTrack) {
         return false;
+    }
 
     if (m_pMetaData) {
         if (!pTrack->getId().isValid() || !m_pMetaData->getId().isValid()) {
@@ -976,8 +1006,10 @@ void ShoutConnection::run() {
 
     if (!processConnect()) {
         errorDialog(tr("Can't connect to streaming server"),
-                m_lastErrorStr + "\n" +
-                tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                m_lastErrorStr + "\n\n" +
+                        tr("Please check your connection to the Internet and "
+                           "verify that your username and password are "
+                           "correct."));
         return;
     }
 

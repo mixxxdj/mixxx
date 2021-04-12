@@ -44,12 +44,12 @@ const unsigned int kSleepSecondsAfterClosingDevice = 5;
 } // anonymous namespace
 
 SoundManager::SoundManager(UserSettingsPointer pConfig,
-                           EngineMaster *pMaster)
+        EngineMaster* pMaster)
         : m_pMaster(pMaster),
           m_pConfig(pConfig),
           m_paInitialized(false),
           m_config(this),
-          m_pErrorDevice(NULL),
+          m_pErrorDevice(nullptr),
           m_underflowHappened(0),
           m_underflowUpdateCount(0) {
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
@@ -106,7 +106,7 @@ QList<SoundDevicePointer> SoundManager::getDeviceList(
         const QString& filterAPI, bool bOutputDevices, bool bInputDevices) const {
     //qDebug() << "SoundManager::getDeviceList";
 
-    if (filterAPI == "None") {
+    if (filterAPI == SoundManagerConfig::kDefaultAPI) {
         return QList<SoundDevicePointer>();
     }
 
@@ -191,7 +191,7 @@ void SoundManager::closeDevices(bool sleepAfterClosing) {
 
     while (!m_inputBuffers.isEmpty()) {
         CSAMPLE* pBuffer = m_inputBuffers.takeLast();
-        if (pBuffer != NULL) {
+        if (pBuffer != nullptr) {
             SampleUtil::free(pBuffer);
         }
     }
@@ -410,14 +410,16 @@ SoundDeviceError SoundManager::setupDevices() {
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
             const CSAMPLE* pBuffer = m_registeredSources.value(out)->buffer(out);
-            if (pBuffer == NULL) {
+            if (pBuffer == nullptr) {
                 qDebug() << "AudioSource returned null for" << out.getString();
                 continue;
             }
 
             AudioOutputBuffer aob(out, pBuffer);
             err = pDevice->addOutput(aob);
-            if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
+            if (err != SOUNDDEVICE_ERROR_OK) {
+                goto closeAndError;
+            }
 
             if (!m_config.getForceNetworkClock()) {
                 if (out.getType() == AudioOutput::MASTER) {
@@ -465,7 +467,9 @@ SoundDeviceError SoundManager::setupDevices() {
             syncBuffers = 2;
         }
         err = pDevice->open(pNewMasterClockRef == pDevice, syncBuffers);
-        if (err != SOUNDDEVICE_ERROR_OK) goto closeAndError;
+        if (err != SOUNDDEVICE_ERROR_OK) {
+            goto closeAndError;
+        }
         devicesNotFound.remove(pDevice->getDeviceId());
         if (mode.isOutput) {
             ++outputDevicesOpened;
@@ -619,20 +623,17 @@ void SoundManager::readProcess() const {
 }
 
 void SoundManager::registerOutput(const AudioOutput& output, AudioSource* src) {
-    if (m_registeredSources.contains(output)) {
-        qDebug() << "WARNING: AudioOutput already registered!";
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredSources.contains(output)) {
+        return;
     }
     m_registeredSources.insert(output, src);
     emit outputRegistered(output, src);
 }
 
 void SoundManager::registerInput(const AudioInput& input, AudioDestination* dest) {
-    if (m_registeredDestinations.contains(input)) {
-        // note that this can be totally ok if we just want a certain
-        // AudioInput to be going to a different AudioDest -bkgood
-        qDebug() << "WARNING: AudioInput already registered!";
-    }
-
+    // Vinyl control inputs are registered twice, once for timecode and once for
+    // passthrough, each with different outputs. So unlike outputs, do not assert
+    // that the input has not been registered yet.
     m_registeredDestinations.insert(input, dest);
 
     emit inputRegistered(input, dest);
@@ -659,7 +660,9 @@ void SoundManager::setJACKName() const {
             // need to make sure it will last forever so we intentionally leak
             // this string.
             char* jackNameCopy = strdup(Version::applicationName().toLocal8Bit().constData());
-            if (!func(jackNameCopy)) qDebug() << "JACK client name set";
+            if (!func(jackNameCopy)) {
+                qDebug() << "JACK client name set";
+            }
         } else {
             qWarning() << "failed to resolve JACK name method";
         }

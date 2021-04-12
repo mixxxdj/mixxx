@@ -72,19 +72,19 @@ void BansheeFeature::activate() {
 
         if (!QFile::exists(m_databaseFile)) {
             QMessageBox::warning(
-                    NULL,
+                    nullptr,
                     tr("Error loading Banshee database"),
                     tr("Banshee database file not found at\n") +
-                    m_databaseFile);
+                            m_databaseFile);
             qDebug() << m_databaseFile << "does not exist";
         }
 
-        if (!m_connection.open(m_databaseFile)) {
+        if (!Sandbox::askForAccess(m_databaseFile) || !m_connection.open(m_databaseFile)) {
             QMessageBox::warning(
-                    NULL,
+                    nullptr,
                     tr("Error loading Banshee database"),
                     tr("There was an error loading your Banshee database at\n") +
-                    m_databaseFile);
+                            m_databaseFile);
             return;
         }
 

@@ -19,6 +19,7 @@
 #include "util/assert.h"
 #include "util/compatibility.h"
 #include "util/datetime.h"
+#include "util/db/sqlite.h"
 #include "util/logger.h"
 #include "widget/wlibrary.h"
 #include "widget/wtracktableview.h"
@@ -48,13 +49,14 @@ const QStringList kDefaultTableColumns = {
         LIBRARYTABLE_GENRE,
         LIBRARYTABLE_GROUPING,
         LIBRARYTABLE_KEY,
-        LIBRARYTABLE_LOCATION,
+        TRACKLOCATIONSTABLE_LOCATION,
         LIBRARYTABLE_PLAYED,
         LIBRARYTABLE_PREVIEW,
         LIBRARYTABLE_RATING,
         LIBRARYTABLE_REPLAYGAIN,
         LIBRARYTABLE_SAMPLERATE,
         LIBRARYTABLE_TIMESPLAYED,
+        LIBRARYTABLE_LAST_PLAYED_AT,
         LIBRARYTABLE_TITLE,
         LIBRARYTABLE_TRACKNUMBER,
         LIBRARYTABLE_YEAR,
@@ -168,6 +170,10 @@ void BaseTrackTableModel::initHeaderProperties() {
             tr("Date Added"),
             defaultColumnWidth() * 3);
     setHeaderProperties(
+            ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT,
+            tr("Last Played"),
+            defaultColumnWidth() * 3);
+    setHeaderProperties(
             ColumnCache::COLUMN_LIBRARYTABLE_DURATION,
             tr("Duration"),
             defaultColumnWidth());
@@ -188,7 +194,7 @@ void BaseTrackTableModel::initHeaderProperties() {
             tr("Key"),
             defaultColumnWidth());
     setHeaderProperties(
-            ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION,
+            ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION,
             tr("Location"),
             defaultColumnWidth() * 6);
     setHeaderProperties(
@@ -349,7 +355,7 @@ bool BaseTrackTableModel::isColumnHiddenByDefault(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMPOSER) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_GROUPING) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) ||
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE) ||
@@ -372,7 +378,7 @@ QAbstractItemDelegate* BaseTrackTableModel::delegateForColumn(
     } else if (PlayerManager::numPreviewDecks() > 0 &&
             index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PREVIEW)) {
         return new PreviewButtonDelegate(pTableView, index);
-    } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION)) {
+    } else if (index == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION)) {
         return new LocationDelegate(pTableView);
     } else if (index == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR)) {
         return new ColorDelegate(pTableView);
@@ -421,7 +427,8 @@ QVariant BaseTrackTableModel::data(
     if (role != Qt::DisplayRole &&
             role != Qt::EditRole &&
             role != Qt::CheckStateRole &&
-            role != Qt::ToolTipRole) {
+            role != Qt::ToolTipRole &&
+            role != kDataExportRole) {
         return QVariant();
     }
 
@@ -450,7 +457,11 @@ QVariant BaseTrackTableModel::rawSiblingValue(
         return QVariant();
     }
     const auto siblingColumn = fieldIndex(siblingField);
-    DEBUG_ASSERT(siblingColumn >= 0);
+    if (siblingColumn < 0) {
+        // Unsupported or unknown column/field
+        // FIXME: This should never happen but it does. But why??
+        return QVariant();
+    }
     VERIFY_OR_DEBUG_ASSERT(siblingColumn != index.column()) {
         // Prevent infinite recursion
         return QVariant();
@@ -542,6 +553,7 @@ QVariant BaseTrackTableModel::roleValue(
     }
     switch (role) {
     case Qt::ToolTipRole:
+    case kDataExportRole:
         switch (field) {
         case ColumnCache::COLUMN_LIBRARYTABLE_COLOR:
             return mixxx::RgbColor::toQString(mixxx::RgbColor::fromQVariant(rawValue));
@@ -615,6 +627,21 @@ QVariant BaseTrackTableModel::roleValue(
                 return QVariant();
             }
             return mixxx::localDateTimeFromUtc(rawValue.toDateTime());
+        case ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT: {
+            QDateTime lastPlayedAt;
+            if (rawValue.type() == QVariant::String) {
+                // column value
+                lastPlayedAt = mixxx::sqlite::readGeneratedTimestamp(rawValue);
+            } else {
+                // cached in memory (local time)
+                lastPlayedAt = rawValue.toDateTime().toUTC();
+            }
+            if (!lastPlayedAt.isValid()) {
+                return QVariant();
+            }
+            DEBUG_ASSERT(lastPlayedAt.timeSpec() == Qt::UTC);
+            return mixxx::localDateTimeFromUtc(lastPlayedAt);
+        }
         case ColumnCache::COLUMN_LIBRARYTABLE_BPM: {
             mixxx::Bpm bpm;
             if (!rawValue.isNull()) {
@@ -633,7 +660,11 @@ QVariant BaseTrackTableModel::roleValue(
                 }
             }
             if (bpm.hasValue()) {
-                return bpm.displayString();
+                if (role == Qt::ToolTipRole || role == kDataExportRole) {
+                    return QString::number(bpm.getValue(), 'f', 4);
+                } else {
+                    return bpm.displayString();
+                }
             } else {
                 return QChar('-');
             }
@@ -838,9 +869,10 @@ Qt::ItemFlags BaseTrackTableModel::readWriteFlags(
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COLOR) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COVERART) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DATETIMEADDED) ||
+            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_DURATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_FILETYPE) ||
-            column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_NATIVELOCATION) ||
+            column == fieldIndex(ColumnCache::COLUMN_TRACKLOCATIONSTABLE_LOCATION) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_REPLAYGAIN) ||
             column == fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE)) {
         return readOnlyFlags(index);

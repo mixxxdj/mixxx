@@ -6,9 +6,12 @@
 #include <QList>
 #include <memory>
 
+#include "audio/signalinfo.h"
+#include "track/beats.h"
 #include "track/cueinfo.h"
 #include "track/taglib/trackmetadata_file.h"
 #include "util/assert.h"
+#include "util/duration.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -35,6 +38,10 @@ class SeratoBeatGridNonTerminalMarker final {
 
     quint32 beatsTillNextMarker() const {
         return m_beatsTillNextMarker;
+    }
+
+    void setBeatsTillNextMarker(quint32 beatsTillNextMarker) {
+        m_beatsTillNextMarker = beatsTillNextMarker;
     }
 
   private:
@@ -121,6 +128,11 @@ class SeratoBeatGrid final {
     void setTerminalMarker(SeratoBeatGridTerminalMarkerPointer pTerminalMarker) {
         m_pTerminalMarker = pTerminalMarker;
     }
+
+    void setBeats(BeatsPointer pBeats,
+            const audio::SignalInfo& signalInfo,
+            const Duration& duration,
+            double timingOffsetMillis);
 
     quint8 footer() const {
         return m_footer;

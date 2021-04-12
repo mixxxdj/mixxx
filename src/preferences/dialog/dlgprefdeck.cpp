@@ -33,7 +33,7 @@ constexpr double kDefaultPermanentRateChangeFine = 0.05;
 constexpr int kDefaultRateRampSensitivity = 250;
 // bool kDefaultCloneDeckOnLoad is defined in header file to make it available
 // to playermanager.cpp
-}
+} // namespace
 
 DlgPrefDeck::DlgPrefDeck(QWidget* parent,
         UserSettingsPointer pConfig)
@@ -50,6 +50,8 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
           m_iNumConfiguredDecks(0),
           m_iNumConfiguredSamplers(0) {
     setupUi(this);
+    // Create text color for the cue mode link "?" to the manual
+    createLinkColor();
 
     m_pNumDecks->connectValueChanged(this, [=](double value){slotNumDecksChanged(value);});
     slotNumDecksChanged(m_pNumDecks->get(), true);
@@ -76,7 +78,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
         pControl->set(static_cast<int>(m_cueMode));
     }
     connect(ComboBoxCueMode,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefDeck::slotCueModeCombobox);
 
@@ -227,7 +229,7 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     ComboBoxRateRange->addItem(tr("50%"), 50);
     ComboBoxRateRange->addItem(tr("90%"), 90);
     connect(ComboBoxRateRange,
-            QOverload<int>::of(&QComboBox::activated),
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &DlgPrefDeck::slotRateRangeComboBox);
 
@@ -333,11 +335,11 @@ DlgPrefDeck::DlgPrefDeck(QWidget* parent,
     //
 
     // Add "(?)" with a manual link to the label
-    labelCueMode->setText(
-            labelCueMode->text() +
-            " <a href=\"" +
-            MIXXX_MANUAL_URL +
-            "/chapters/user_interface.html#using-cue-modes\">(?)</a>");
+    labelCueMode->setText(labelCueMode->text() + QStringLiteral(" ") +
+            coloredLinkString(
+                    m_pLinkColor,
+                    QStringLiteral("(?)"),
+                    MIXXX_MANUAL_CUE_MODES_URL));
 
     //
     // Ramping Temporary Rate Change configuration

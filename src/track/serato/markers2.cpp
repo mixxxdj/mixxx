@@ -2,6 +2,7 @@
 
 #include <QtEndian>
 
+#include "track/serato/tags.h"
 #include "util/logger.h"
 
 namespace {
@@ -419,12 +420,7 @@ bool SeratoMarkers2::parseCommon(
         }
 
         // Entry Size
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         auto entrySize = qFromBigEndian<quint32>(data.mid(offset, 4));
-#else
-        auto entrySize = qFromBigEndian<quint32>(
-                reinterpret_cast<const uchar*>(data.mid(offset, 4).constData()));
-#endif
         offset += 4;
 
         QByteArray entryData = data.mid(offset, entrySize);
@@ -617,7 +613,8 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
                 std::nullopt,
                 pCueEntry->getIndex(),
                 pCueEntry->getLabel(),
-                pCueEntry->getColor());
+                pCueEntry->getColor(),
+                CueFlag::None);
         cueInfos.append(cueInfo);
     }
 
@@ -639,7 +636,8 @@ QList<CueInfo> SeratoMarkers2::getCues() const {
                 pLoopEntry->getEndPosition(),
                 pLoopEntry->getIndex(),
                 pLoopEntry->getLabel(),
-                std::nullopt); // Serato's Loops don't have a color
+                std::nullopt, // Serato's Loops don't have a color
+                pLoopEntry->isLocked() ? CueFlag::Locked : CueFlag::None);
         // TODO: Add support for "locked" loops
         cueInfos.append(loopInfo);
     }
@@ -656,12 +654,12 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
     for (const CueInfo& cueInfo : qAsConst(cueInfos)) {
         // All of these check can be debug assertions, as the list should be
         // pre-filtered by the seratoTags class.
-        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+        VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueIndex()) {
             continue;
         }
-        int hotcueNumber = *cueInfo.getHotCueNumber();
+        int hotcueIndex = *cueInfo.getHotCueIndex();
 
-        VERIFY_OR_DEBUG_ASSERT(hotcueNumber >= 0) {
+        VERIFY_OR_DEBUG_ASSERT(hotcueIndex >= kFirstHotCueIndex) {
             continue;
         }
         VERIFY_OR_DEBUG_ASSERT(cueInfo.getColor()) {
@@ -673,13 +671,13 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
 
         switch (cueInfo.getType()) {
         case CueType::HotCue:
-            cueMap.insert(hotcueNumber, cueInfo);
+            cueMap.insert(hotcueIndex, cueInfo);
             break;
         case CueType::Loop:
             VERIFY_OR_DEBUG_ASSERT(cueInfo.getEndPositionMillis()) {
                 continue;
             }
-            loopMap.insert(hotcueNumber, cueInfo);
+            loopMap.insert(hotcueIndex, cueInfo);
             break;
         default:
             DEBUG_ASSERT(!"Invalid cue type");
@@ -700,7 +698,7 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
     for (auto it = cueMap.constBegin(); it != cueMap.constEnd(); ++it) {
         const CueInfo& cueInfo = it.value();
         auto pEntry = std::make_shared<SeratoMarkers2CueEntry>(
-                *cueInfo.getHotCueNumber(),
+                *cueInfo.getHotCueIndex(),
                 *cueInfo.getStartPositionMillis(),
                 *cueInfo.getColor(),
                 cueInfo.getLabel());
@@ -711,11 +709,11 @@ void SeratoMarkers2::setCues(const QList<CueInfo>& cueInfos) {
     for (auto it = loopMap.constBegin(); it != loopMap.constEnd(); ++it) {
         const CueInfo& cueInfo = it.value();
         auto pEntry = std::make_shared<SeratoMarkers2LoopEntry>(
-                *cueInfo.getHotCueNumber(),
+                *cueInfo.getHotCueIndex(),
                 *cueInfo.getStartPositionMillis(),
                 *cueInfo.getEndPositionMillis(),
-                *cueInfo.getColor(),
-                false,
+                SeratoTags::kFixedLoopColor,
+                cueInfo.isLocked(),
                 cueInfo.getLabel());
         newEntries.append(pEntry);
     }

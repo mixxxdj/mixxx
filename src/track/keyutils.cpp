@@ -249,6 +249,9 @@ QString KeyUtils::getGlobalKeyText(const Keys& keys, KeyNotation notation) {
 // static
 ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
     QString trimmed = text.trimmed();
+    if (trimmed.isEmpty()) {
+        return mixxx::track::io::key::INVALID;
+    }
 
     // Try using the user's custom notation.
     {
@@ -306,8 +309,9 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         // Now apply sharps and flats to the letter key.
         QString adjustments = keyMatcher.cap(2);
         int steps = 0;
-        for (auto it = adjustments.constBegin();
-             it != adjustments.constEnd(); ++it) {
+        for (const auto* it = adjustments.constBegin();
+                it != adjustments.constEnd();
+                ++it) {
             steps += (*it == '#' || *it == s_sharpSymbol[0]) ? 1 : -1;
         }
 

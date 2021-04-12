@@ -1,15 +1,16 @@
-#include <QThread>
-#include <QDir>
-#include <QtDebug>
 #include <QApplication>
-#include <QStringList>
+#include <QDir>
 #include <QString>
+#include <QStringList>
 #include <QTextCodec>
+#include <QThread>
+#include <QtDebug>
 
+#include "coreservices.h"
+#include "errordialoghandler.h"
 #include "mixxx.h"
 #include "mixxxapplication.h"
 #include "sources/soundsourceproxy.h"
-#include "errordialoghandler.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
 #include "util/logging.h"
@@ -26,11 +27,11 @@ constexpr int kFatalErrorOnStartupExitCode = 1;
 constexpr int kParseCmdlineArgsErrorExitCode = 2;
 
 int runMixxx(MixxxApplication* app, const CmdlineArgs& args) {
-    MixxxMainWindow mainWindow(app, args);
+    auto coreServices = std::make_shared<mixxx::CoreServices>(args);
+    MixxxMainWindow mainWindow(app, coreServices);
     // If startup produced a fatal error, then don't even start the
     // Qt event loop.
     if (ErrorDialogHandler::instance()->checkError()) {
-        mainWindow.finalize();
         return kFatalErrorOnStartupExitCode;
     } else {
         qDebug() << "Displaying main window";
@@ -71,12 +72,6 @@ int main(int argc, char * argv[]) {
     QCoreApplication::setApplicationName(Version::applicationName());
     QCoreApplication::setApplicationVersion(Version::version());
 
-    // Construct a list of strings based on the command line arguments
-    CmdlineArgs& args = CmdlineArgs::Instance();
-    if (!args.Parse(argc, argv)) {
-        args.printUsage();
-        return kParseCmdlineArgsErrorExitCode;
-    }
 
     // If you change this here, you also need to change it in
     // ErrorDialogHandler::errorDialog(). TODO(XXX): Remove this hack.
@@ -89,6 +84,11 @@ int main(int argc, char * argv[]) {
 
     MixxxApplication app(argc, argv);
 
+    // Construct a list of strings based on the command line arguments
+    CmdlineArgs& args = CmdlineArgs::Instance();
+    if (!args.parse(app.arguments())) {
+        return kParseCmdlineArgsErrorExitCode;
+    }
 
 #ifdef __APPLE__
     QDir dir(QApplication::applicationDirPath());

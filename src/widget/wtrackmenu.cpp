@@ -240,17 +240,23 @@ void WTrackMenu::createActions() {
                 this,
                 &WTrackMenu::slotExportMetadataIntoFileTags);
 
-        for (const auto& externalTrackCollection :
+        m_updateInExternalTrackCollections.reserve(
+                m_pLibrary->trackCollections()->externalCollections().size());
+        for (auto* const pExternalTrackCollection :
                 m_pLibrary->trackCollections()->externalCollections()) {
             UpdateExternalTrackCollection updateInExternalTrackCollection;
-            updateInExternalTrackCollection.externalTrackCollection = externalTrackCollection;
-            updateInExternalTrackCollection.action = new QAction(externalTrackCollection->name(), m_pMetadataMenu);
-            updateInExternalTrackCollection.action->setToolTip(externalTrackCollection->description());
+            updateInExternalTrackCollection.externalTrackCollection = pExternalTrackCollection;
+            updateInExternalTrackCollection.action = new QAction(
+                    pExternalTrackCollection->name(), m_pMetadataMenu);
+            updateInExternalTrackCollection.action->setToolTip(
+                    pExternalTrackCollection->description());
             m_updateInExternalTrackCollections += updateInExternalTrackCollection;
-            auto externalTrackCollectionPtr = updateInExternalTrackCollection.externalTrackCollection;
-            connect(updateInExternalTrackCollection.action, &QAction::triggered, this, [this, externalTrackCollectionPtr] {
-                slotUpdateExternalTrackCollection(externalTrackCollectionPtr);
-            });
+            connect(updateInExternalTrackCollection.action,
+                    &QAction::triggered,
+                    this,
+                    [this, pExternalTrackCollection] {
+                        slotUpdateExternalTrackCollection(pExternalTrackCollection);
+                    });
         }
     }
 
@@ -306,7 +312,6 @@ void WTrackMenu::createActions() {
         m_pBpmThreeFourthsAction = new QAction(tr("3/4 BPM"), m_pBPMMenu);
         m_pBpmFourThirdsAction = new QAction(tr("4/3 BPM"), m_pBPMMenu);
         m_pBpmThreeHalvesAction = new QAction(tr("3/2 BPM"), m_pBPMMenu);
-        m_pBpmRoundAction = new QAction(tr("Round BPM"), m_pBPMMenu);
 
         connect(m_pBpmDoubleAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::DOUBLE);
@@ -326,7 +331,6 @@ void WTrackMenu::createActions() {
         connect(m_pBpmThreeHalvesAction, &QAction::triggered, this, [this] {
             slotScaleBpm(mixxx::Beats::THREEHALVES);
         });
-        connect(m_pBpmRoundAction, &QAction::triggered, this, &WTrackMenu::slotRoundBpm);
 
         m_pBpmResetAction = new QAction(tr("Reset BPM"), m_pBPMMenu);
         connect(m_pBpmResetAction,
@@ -403,7 +407,6 @@ void WTrackMenu::setupActions() {
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
         m_pBPMMenu->addAction(m_pBpmFourThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeHalvesAction);
-        m_pBPMMenu->addAction(m_pBpmRoundAction);
         m_pBPMMenu->addSeparator();
         m_pBPMMenu->addAction(m_pBpmLockAction);
         m_pBPMMenu->addAction(m_pBpmUnlockAction);
@@ -426,17 +429,25 @@ void WTrackMenu::setupActions() {
 
         for (const auto& updateInExternalTrackCollection :
                 qAsConst(m_updateInExternalTrackCollections)) {
-            ExternalTrackCollection* externalTrackCollection =
-                    updateInExternalTrackCollection.externalTrackCollection;
-            if (externalTrackCollection) {
-                updateInExternalTrackCollection.action->setEnabled(
-                        externalTrackCollection->isConnected());
-                m_pMetadataUpdateExternalCollectionsMenu->addAction(
-                        updateInExternalTrackCollection.action);
-            }
+            m_pMetadataUpdateExternalCollectionsMenu->addAction(
+                    updateInExternalTrackCollection.action);
         }
         if (!m_pMetadataUpdateExternalCollectionsMenu->isEmpty()) {
             m_pMetadataMenu->addMenu(m_pMetadataUpdateExternalCollectionsMenu);
+            // Enable/disable entries depending on the connection status
+            // that may change at runtime.
+            connect(m_pMetadataUpdateExternalCollectionsMenu,
+                    &QMenu::aboutToShow,
+                    this,
+                    [this] {
+                        for (const auto& updateInExternalTrackCollection :
+                                qAsConst(m_updateInExternalTrackCollections)) {
+                            updateInExternalTrackCollection.action->setEnabled(
+                                    updateInExternalTrackCollection
+                                            .externalTrackCollection
+                                            ->isConnected());
+                        }
+                    });
         }
 
         m_pMetadataMenu->addMenu(m_pCoverMenu);
@@ -588,7 +599,7 @@ CoverInfo WTrackMenu::getCoverInfoOfLastTrack() const {
                 lastIndex
                         .sibling(
                                 lastIndex.row(),
-                                m_pTrackModel->fieldIndex(LIBRARYTABLE_LOCATION))
+                                m_pTrackModel->fieldIndex(TRACKLOCATIONSTABLE_LOCATION))
                         .data()
                         .toString();
         return coverInfo;
@@ -691,7 +702,6 @@ void WTrackMenu::updateMenus() {
             m_pBpmFourThirdsAction->setEnabled(!anyBpmLocked);
             m_pBpmThreeHalvesAction->setEnabled(!anyBpmLocked);
             m_pBpmResetAction->setEnabled(!anyBpmLocked);
-            m_pBpmRoundAction->setEnabled(!anyBpmLocked);
         }
     }
 
@@ -979,7 +989,7 @@ void WTrackMenu::slotPopulatePlaylistMenu() {
         if (!playlistDao.isHidden(it.value())) {
             // No leak because making the menu the parent means they will be
             // auto-deleted
-            auto pAction = new QAction(
+            auto* pAction = new QAction(
                     mixxx::escapeTextPropertyWithoutShortcuts(it.key()),
                     m_pPlaylistMenu);
             bool locked = playlistDao.isPlaylistLocked(it.value());
@@ -1112,7 +1122,7 @@ void WTrackMenu::slotPopulateCrateMenu() {
 }
 
 void WTrackMenu::updateSelectionCrates(QWidget* pWidget) {
-    auto pCheckBox = qobject_cast<QCheckBox*>(pWidget);
+    auto* pCheckBox = qobject_cast<QCheckBox*>(pWidget);
     VERIFY_OR_DEBUG_ASSERT(pCheckBox) {
         qWarning() << "crateId is not of CrateId type";
         return;
@@ -1187,11 +1197,11 @@ class ScaleBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
         if (pTrack->isBpmLocked()) {
             return;
         }
-        mixxx::BeatsPointer pBeats = pTrack->getBeats();
+        const mixxx::BeatsPointer pBeats = pTrack->getBeats();
         if (!pBeats) {
             return;
         }
-        pBeats->scale(m_bpmScale);
+        pTrack->trySetBeats(pBeats->scale(m_bpmScale));
     }
 
     const mixxx::Beats::BPMScale m_bpmScale;
@@ -1235,40 +1245,6 @@ void WTrackMenu::lockBpm(bool lock) {
             : tr("Unlocking BPM of %n track(s)", "", getTrackCount());
     const auto trackOperator =
             LockBpmTrackPointerOperation(lock);
-    applyTrackPointerOperation(
-            progressLabelText,
-            &trackOperator);
-}
-
-namespace {
-
-class RoundBpmTrackPointerOperation : public mixxx::TrackPointerOperation {
-  public:
-    explicit RoundBpmTrackPointerOperation() {
-    }
-
-  private:
-    void doApply(
-            const TrackPointer& pTrack) const override {
-        if (pTrack->isBpmLocked()) {
-            return;
-        }
-        mixxx::BeatsPointer pBeats = pTrack->getBeats();
-        if (!pBeats) {
-            return;
-        }
-        if (!(pBeats->getCapabilities() & ::mixxx::Beats::Capabilities::BEATSCAP_ROUND)) {
-            return;
-        }
-        pBeats->round();
-    }
-};
-
-} // anonymous namespace
-
-void WTrackMenu::slotRoundBpm() {
-    const auto progressLabelText = tr("Rounding BPM of %n track(s)", "", getTrackCount());
-    const auto trackOperator = RoundBpmTrackPointerOperation();
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);
@@ -1357,10 +1333,7 @@ class ResetBeatsTrackPointerOperation : public mixxx::TrackPointerOperation {
   private:
     void doApply(
             const TrackPointer& pTrack) const override {
-        if (pTrack->isBpmLocked()) {
-            return;
-        }
-        pTrack->setBeats(mixxx::BeatsPointer());
+        pTrack->trySetBeats(mixxx::BeatsPointer());
     }
 };
 
@@ -1536,8 +1509,10 @@ class ResetWaveformTrackPointerOperation : public mixxx::TrackPointerOperation {
 void WTrackMenu::slotClearWaveform() {
     const auto progressLabelText =
             tr("Resetting waveform of %n track(s)", "", getTrackCount());
+    AnalysisDao& analysisDao =
+            m_pLibrary->trackCollections()->internalCollection()->getAnalysisDAO();
     const auto trackOperator =
-            ResetReplayGainTrackPointerOperation();
+            ResetWaveformTrackPointerOperation(analysisDao);
     applyTrackPointerOperation(
             progressLabelText,
             &trackOperator);

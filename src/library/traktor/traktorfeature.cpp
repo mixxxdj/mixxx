@@ -2,6 +2,8 @@
 
 #include <QMap>
 #include <QMessageBox>
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
 #include <QSettings>
 #include <QStandardPaths>
 #include <QXmlStreamReader>
@@ -16,6 +18,7 @@
 #include "library/treeitem.h"
 #include "moc_traktorfeature.cpp"
 #include "util/sandbox.h"
+#include "util/semanticversion.h"
 
 namespace {
 
@@ -23,7 +26,6 @@ QString fromTraktorSeparators(QString path) {
     // Traktor uses /: instead of just / as delimiting character for some reasons
     return path.replace("/:", "/");
 }
-
 
 } // anonymous namespace
 
@@ -166,8 +168,9 @@ void TraktorFeature::activate() {
 }
 
 void TraktorFeature::activateChild(const QModelIndex& index) {
-
-    if (!index.isValid()) return;
+    if (!index.isValid()) {
+        return;
+    }
 
     //access underlying TreeItem object
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
@@ -185,7 +188,7 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     QThread* thisThread = QThread::currentThread();
     thisThread->setPriority(QThread::LowPriority);
     //Invisible root item of Traktor's child model
-    TreeItem* root = NULL;
+    TreeItem* root = nullptr;
     //Delete all table entries of Traktor feature
     ScopedTransaction transaction(m_database);
     clearTable("traktor_playlist_tracks");
@@ -203,9 +206,9 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
 
     //Parse Trakor XML file using SAX (for performance)
     QFile traktor_file(file);
-    if (!traktor_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (!Sandbox::askForAccess(file) || !traktor_file.open(QIODevice::ReadOnly)) {
         qDebug() << "Cannot open Traktor music collection";
-        return NULL;
+        return nullptr;
     }
     QXmlStreamReader xml(&traktor_file);
     bool inCollectionTag = false;
@@ -251,9 +254,10 @@ TreeItem* TraktorFeature::importLibrary(const QString& file) {
     if (xml.hasError()) {
          // do error handling
          qDebug() << "Cannot process Traktor music collection";
-         if (root)
+         if (root) {
              delete root;
-         return NULL;
+         }
+         return nullptr;
     }
 
     qDebug() << "Found: " << nAudioFiles << " audio files in Traktor";
@@ -541,11 +545,12 @@ void TraktorFeature::clearTable(const QString& table_name) {
     QSqlQuery query(m_database);
     query.prepare("delete from "+table_name);
 
-    if (!query.exec())
+    if (!query.exec()) {
         qDebug() << "Could not delete remove old entries from table "
                  << table_name << " : " << query.lastError();
-    else
+    } else {
         qDebug() << "Traktor table entries of '" << table_name << "' have been cleared.";
+    }
 }
 
 QString TraktorFeature::getTraktorMusicDatabase() {
@@ -553,7 +558,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 
     // As of version 2, Traktor has changed the path of the collection.nml
     // In general, the path is <Home>/Documents/Native Instruments/Traktor 2.x.y/collection.nml
-    //  where x and y denote the bug fix release numbers. For example, Traktor 2.0.3 has the
+    // where x and y denote the bug fix release numbers. For example, Traktor 2.0.3 has the
     // following path: <Home>/Documents/Native Instruments/Traktor 2.0.3/collection.nml
 
     //Let's try to detect the latest Traktor version and its collection.nml
@@ -569,7 +574,7 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 
     //Iterate over the subfolders
     QFileInfoList list = ni_directory.entryInfoList();
-    QMap<int, QString> installed_ts_map;
+    QMap<mixxx::SemanticVersion, QString> installed_ts_map;
 
     for (int i = 0; i < list.size(); ++i) {
         QFileInfo fileInfo = list.at(i);
@@ -577,22 +582,22 @@ QString TraktorFeature::getTraktorMusicDatabase() {
 
         if (folder_name == "Traktor") {
             //We found a Traktor 1 installation
-            installed_ts_map.insert(1, fileInfo.absoluteFilePath());
+            installed_ts_map.insert(mixxx::SemanticVersion(1, 0, 0), fileInfo.absoluteFilePath());
             continue;
         }
         if (folder_name.contains("Traktor")) {
             qDebug() << "Found " << folder_name;
-            QVariant sVersion = folder_name.right(5).remove(".");
-            if (sVersion.canConvert(QMetaType::Int)) {
-                installed_ts_map.insert(sVersion.toInt(), fileInfo.absoluteFilePath());
+            auto semver = mixxx::SemanticVersion(folder_name);
+            if (semver.isValid()) {
+                installed_ts_map.insert(semver, fileInfo.absoluteFilePath());
             }
         }
     }
     //If no Traktor installation has been found, return some default string
     if (installed_ts_map.isEmpty()) {
-        musicFolder =  QDir::homePath() + "/collection.nml";
+        musicFolder = QDir::homePath() + "/collection.nml";
     } else { //Select the folder with the highest version as default Traktor folder
-        QList<int> versions = installed_ts_map.keys();
+        QList<mixxx::SemanticVersion> versions = installed_ts_map.keys();
         std::sort(versions.begin(), versions.end());
         musicFolder = installed_ts_map.value(versions.last()) + "/collection.nml";
     }
@@ -612,10 +617,10 @@ void TraktorFeature::onTrackCollectionLoaded() {
         qDebug() << "Traktor library loaded successfully";
     } else {
         QMessageBox::warning(
-            NULL,
-            tr("Error Loading Traktor Library"),
-            tr("There was an error loading your Traktor library. Some of "
-               "your Traktor tracks or playlists may not have loaded."));
+                nullptr,
+                tr("Error Loading Traktor Library"),
+                tr("There was an error loading your Traktor library. Some of "
+                   "your Traktor tracks or playlists may not have loaded."));
     }
 
     // calls a slot in the sidebarmodel such that 'isLoading' is removed from the feature title.

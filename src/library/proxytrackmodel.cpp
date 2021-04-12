@@ -1,7 +1,5 @@
 #include "library/proxytrackmodel.h"
 
-#include "library/proxytrackmodel.h"
-
 #include <QVariant>
 
 #include "util/assert.h"
@@ -23,14 +21,14 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
 ProxyTrackModel::~ProxyTrackModel() {
 }
 
-TrackModel::SortColumnId ProxyTrackModel::sortColumnIdFromColumnIndex(int index) {
-    return (m_pTrackModel ? m_pTrackModel->sortColumnIdFromColumnIndex(index)
-                          : TrackModel::sortColumnIdFromColumnIndex(index));
+TrackModel::SortColumnId ProxyTrackModel::sortColumnIdFromColumnIndex(int index) const {
+    return m_pTrackModel ? m_pTrackModel->sortColumnIdFromColumnIndex(index)
+                         : TrackModel::SortColumnId::Invalid;
 }
 
-int ProxyTrackModel::columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) {
-    return (m_pTrackModel ? m_pTrackModel->columnIndexFromSortColumnId(sortColumn)
-                          : TrackModel::columnIndexFromSortColumnId(sortColumn));
+int ProxyTrackModel::columnIndexFromSortColumnId(TrackModel::SortColumnId sortColumn) const {
+    return m_pTrackModel ? m_pTrackModel->columnIndexFromSortColumnId(sortColumn)
+                         : -1;
 }
 
 TrackId ProxyTrackModel::getTrackId(const QModelIndex& index) const {
@@ -107,7 +105,7 @@ void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
 }
 
 QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i, QObject* pParent) {
-    return m_pTrackModel ? m_pTrackModel->delegateForColumn(i, pParent) : NULL;
+    return m_pTrackModel ? m_pTrackModel->delegateForColumn(i, pParent) : nullptr;
 }
 
 TrackModel::Capabilities ProxyTrackModel::getCapabilities() const {
@@ -116,10 +114,11 @@ TrackModel::Capabilities ProxyTrackModel::getCapabilities() const {
 
 bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         const QModelIndex& sourceParent) const {
-    if (!m_bHandleSearches)
+    if (!m_bHandleSearches) {
         return QSortFilterProxyModel::filterAcceptsRow(sourceRow, sourceParent);
+    }
 
-    if (m_pTrackModel == NULL) {
+    if (m_pTrackModel == nullptr) {
         return false;
     }
 
@@ -137,22 +136,23 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
         QVariant data = itemModel->data(index);
         if (data.canConvert(QMetaType::QString)) {
             QString strData = data.toString();
-            if (strData.contains(filter))
+            if (strData.contains(filter)) {
                 rowMatches = true;
+            }
         }
     }
     return rowMatches;
 }
 
 QString ProxyTrackModel::getModelSetting(const QString& name) {
-    if (m_pTrackModel == NULL) {
+    if (m_pTrackModel == nullptr) {
         return QString();
     }
     return m_pTrackModel->getModelSetting(name);
 }
 
 bool ProxyTrackModel::setModelSetting(const QString& name, const QVariant& value) {
-    if (m_pTrackModel == NULL) {
+    if (m_pTrackModel == nullptr) {
         return false;
     }
     return m_pTrackModel->setModelSetting(name, value);

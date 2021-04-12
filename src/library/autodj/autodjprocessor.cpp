@@ -105,7 +105,7 @@ void DeckAttributes::slotRateChanged(double v) {
 }
 
 TrackPointer DeckAttributes::getLoadedTrack() const {
-    return m_pPlayer != NULL ? m_pPlayer->getLoadedTrack() : TrackPointer();
+    return m_pPlayer != nullptr ? m_pPlayer->getLoadedTrack() : TrackPointer();
 }
 
 AutoDJProcessor::AutoDJProcessor(
@@ -117,7 +117,7 @@ AutoDJProcessor::AutoDJProcessor(
         : QObject(pParent),
           m_pConfig(pConfig),
           m_pPlayerManager(pPlayerManager),
-          m_pAutoDJTableModel(NULL),
+          m_pAutoDJTableModel(nullptr),
           m_eState(ADJ_DISABLED),
           m_transitionProgress(0.0),
           m_transitionTime(kTransitionPreferenceDefault) {
@@ -160,7 +160,7 @@ AutoDJProcessor::AutoDJProcessor(
         QString group = PlayerManager::groupForDeck(i);
         BaseTrackPlayer* pPlayer = pPlayerManager->getPlayer(group);
         // Shouldn't be possible.
-        if (pPlayer == NULL) {
+        if (pPlayer == nullptr) {
             qWarning() << "PROGRAMMING ERROR deck does not exist" << i;
             continue;
         }
@@ -1119,10 +1119,10 @@ double AutoDJProcessor::getLastSoundSecond(DeckAttributes* pDeck) {
     }
 
     CuePointer pFromTrackAudibleSound = pTrack->findCueByType(mixxx::CueType::AudibleSound);
-    if (pFromTrackAudibleSound && pFromTrackAudibleSound->getLength() > 0) {
-        double lastSound = pFromTrackAudibleSound->getEndPosition();
-        if (lastSound > 0) {
-            return samplePositionToSeconds(lastSound, pDeck);
+    if (pFromTrackAudibleSound) {
+        Cue::StartAndEndPositions pos = pFromTrackAudibleSound->getStartAndEndPosition();
+        if (pos.endPosition > 0 && (pos.endPosition - pos.startPosition) > 0) {
+            return samplePositionToSeconds(pos.endPosition, pDeck);
         }
     }
     return getEndSecond(pDeck);

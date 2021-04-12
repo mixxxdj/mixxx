@@ -269,7 +269,7 @@ void TrackCollectionManager::exportTrackMetadata(
         switch (mode) {
         case TrackMetadataExportMode::Immediate:
             // Export track metadata now by saving as file tags.
-            SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack);
+            SoundSourceProxy::exportTrackMetadataBeforeSaving(pTrack, m_pConfig);
             break;
         case TrackMetadataExportMode::Deferred:
             // Export track metadata later when the track object goes out
@@ -285,16 +285,16 @@ void TrackCollectionManager::exportTrackMetadata(
     }
 }
 
-bool TrackCollectionManager::addDirectory(const QString& dir) const {
+bool TrackCollectionManager::addDirectory(const mixxx::FileInfo& newDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_pInternalCollection->addDirectory(dir);
+    return m_pInternalCollection->addDirectory(newDir);
 }
 
-bool TrackCollectionManager::removeDirectory(const QString& dir) const {
+bool TrackCollectionManager::removeDirectory(const mixxx::FileInfo& oldDir) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
-    return m_pInternalCollection->removeDirectory(dir);
+    return m_pInternalCollection->removeDirectory(oldDir);
 }
 
 void TrackCollectionManager::relocateDirectory(const QString& oldDir, const QString& newDir) const {

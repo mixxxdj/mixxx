@@ -1,9 +1,10 @@
 #pragma once
 
 #include <QCoreApplication>
+#include <QLibraryInfo>
 #include <QLocale>
-#include <QTranslator>
 #include <QString>
+#include <QTranslator>
 #include <QtDebug>
 
 #include "preferences/usersettings.h"

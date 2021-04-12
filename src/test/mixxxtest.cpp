@@ -25,7 +25,12 @@ QScopedPointer<MixxxApplication> MixxxTest::s_pApplication;
 MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     // Construct a list of strings based on the command line arguments
     CmdlineArgs args;
-    const bool argsParsed = args.Parse(argc, argv);
+    QStringList argList;
+    for (int i = 0; i < argc; i++) {
+        argList << QString::fromLocal8Bit(argv[i]);
+    }
+
+    const bool argsParsed = args.parse(argList);
     Q_UNUSED(argsParsed);
     DEBUG_ASSERT(argsParsed);
 
@@ -34,10 +39,10 @@ MixxxTest::ApplicationScope::ApplicationScope(int& argc, char** argv) {
     // Log level Debug would produce too many log messages that
     // might abort and fail the CI builds.
     mixxx::Logging::initialize(
-            QDir(), // No log file should be written during tests, only output to stderr
+            QString(), // No log file should be written during tests, only output to stderr
             logLevel,
             logLevel,
-            true);
+            mixxx::LogFlag::DebugAssertBreak);
 
     // All guessing of cover art should be done synchronously
     // in the same thread during tests to prevent test failures

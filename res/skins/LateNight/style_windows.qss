@@ -1,0 +1,124 @@
+
+#MainMenu::item {
+}
+#MainMenu QMenu::item {
+  padding: 0.1em 0.3em 0.2em 0.3em;
+  margin: 0em 0em 0em 1.2em;
+  }
+  /* Checkbox preceeding menu items */
+  #MainMenu QMenu::indicator {
+    /*width: 1em;*/
+    /*height: 1em;*/
+    margin: 0em 0em 0em -1.3em;
+    padding: 0.3em 0em 0.3em 0.3em;
+  }
+  #MainMenu QMenu::indicator,
+  #MainMenu QMenu::indicator:selected,
+  #MainMenu QMenu::indicator:checked,
+  #MainMenu QMenu::indicator:checked:selected {
+  }
+
+/* Icons  (copy, paste, ...) in context menus of
+    - property cells in the tracks table
+    - WCueMenuPopup cue label editor
+    - WBeatSpinBox
+    - AutoDJ transition QSpinBox */
+#LibraryContainer QMenu::icon,
+QLineEdit QMenu::icon,
+/* - checkbox in Crate name context menu
+      "[ ] Auto DJ Track Source"
+   - QHeaderView QMenu::indicator */
+#LibraryContainer QMenu::indicator {
+  /* Linux: margin-right pushes the entire icon to the right !?? */
+  margin: 0px -20px 0px 5px;
+    }
+
+/* On Windows the semi-bold variant of Open Sans is
+identified separately as "Open Sans Semibold", so we
+need to define the fonts individually. */
+#MainMenu,
+#MainMenu QMenu {
+  font-family: "Open Sans";
+}
+#Mixxx,
+WWidget,
+QToolTip,
+WLabel, QLabel,
+WNumber, WNumberPos,
+WPushButton,
+WKey,
+WTime,
+WTrackText,
+WTrackProperty,
+WRecordingDuration,
+QSpinBox,
+WBeatSpinBox,
+WOverview #PassthroughLabel,
+WBeatSpinBox QMenu,
+WCueMenuPopup,
+WCueMenuPopup QMenu,
+WCueMenuPopup QLabel,
+WCoverArtMenu,
+WTrackMenu,
+WTrackMenu QMenu,
+WOverview /* Hotcue labels in the overview */,
+QComboBox,
+WEffect,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+#fadeModeCombobox,
+#fadeModeCombobox QAbstractScrollArea,
+#LibraryContainer QPushButton,
+#LibraryContainer QLabel,
+#LibraryContainer QRadioButton,
+#LibraryContainer QHeaderView,
+#LibraryContainer QHeaderView::item,
+#LibraryContainer QMenu {
+  font-family: "Open Sans Semibold";
+  font-weight: 500; /* semi-bold, just to be sure */
+}
+
+/* Bold */
+#KnobLabel,
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel,
+#EQKillButton,
+#FxUnitLabel,
+#MicAuxLabel, #MicAuxLabelUnconfigured,
+#LatencyLabel,
+#VinylControls WPushButton,
+#FxAssignButtons WPushButton,
+#SamplerTitleMini,
+/* ToolBar */
+#GuiToggleButton,
+#RecFeedback, #RecDuration,
+#BroadcastButton,
+/* SKin settings & Library */
+#SkinSettingsToggle,
+#SkinSettingsNumToggle[value="1"],
+#LibraryFeatureControls QPushButton,
+QLabel#labelRecFilename, /* needs QLabel to override previous QLabel font definition*/
+WEffectSelector,
+#fadeModeCombobox,
+WOverview #PassthroughLabel {
+  font-family: "Open Sans";
+  font-weight: bold;
+}
+/* regular font weight */
+#SkinSettingsButton,
+#SkinSettingsNumToggle,
+#SkinSettingsMixerToggle,
+#SkinSettingsText,
+QToolTip,
+#LibraryContainer QMenu,
+WCueMenuPopup,
+WCueMenuPopup QMenu,
+WCoverArtMenu,
+WTrackMenu,
+WTrackMenu QMenu,
+WBeatSpinBox QMenu,
+QLabel#labelRecPrefix,
+QLabel#labelRecStatistics {
+  font-family: "Open Sans";
+  font-weight: normal;
+}

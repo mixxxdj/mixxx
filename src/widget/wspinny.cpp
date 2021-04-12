@@ -68,7 +68,9 @@ WSpinny::WSpinny(
           m_pCoverMenu(new WCoverArtMenu(this)) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
-#endif
+#else
+    Q_UNUSED(pVCMan);
+#endif // __VINYLCONTROL__
     //Drag and drop
     setAcceptDrops(true);
     qDebug() << "WSpinny(): Created QGLWidget, Context"
@@ -140,6 +142,8 @@ void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report)
             line++;
         }
     }
+#else
+    Q_UNUSED(report);
 #endif
 }
 
@@ -313,7 +317,7 @@ void WSpinny::render(VSyncThread* vSyncThread) {
         return;
     }
 
-    auto window = windowHandle();
+    auto* window = windowHandle();
     if (window == nullptr || !window->isExposed()) {
         return;
     }
@@ -399,7 +403,7 @@ void WSpinny::swap() {
     if (!isValid() || !isVisible()) {
         return;
     }
-    auto window = windowHandle();
+    auto* window = windowHandle();
     if (window == nullptr || !window->isExposed()) {
         return;
     }
@@ -540,6 +544,8 @@ void WSpinny::updateVinylControlSignalEnabled(double enabled) {
         // fill with transparent black
         m_qImage.fill(qRgba(0,0,0,0));
     }
+#else
+    Q_UNUSED(enabled);
 #endif
 }
 

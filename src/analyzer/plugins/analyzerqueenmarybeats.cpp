@@ -30,7 +30,7 @@ DFConfig makeDetectionFunctionConfig(int stepSize, int windowSize) {
     config.stepSize = stepSize;
     config.frameLength = windowSize;
     config.dbRise = 3;
-    config.adaptiveWhitening = 0;
+    config.adaptiveWhitening = false;
     config.whiteningRelaxCoeff = -1;
     config.whiteningFloor = -1;
     return config;
@@ -105,7 +105,9 @@ bool AnalyzerQueenMaryBeats::finalize() {
 
     m_resultBeats.reserve(static_cast<int>(beats.size()));
     for (size_t i = 0; i < beats.size(); ++i) {
-        double result = (beats.at(i) * m_stepSize) - m_stepSize / 2;
+        // we add the halve m_stepSize here, because the beat
+        // is detected between the two samples.
+        double result = (beats.at(i) * m_stepSize) + m_stepSize / 2;
         m_resultBeats.push_back(result);
     }
 

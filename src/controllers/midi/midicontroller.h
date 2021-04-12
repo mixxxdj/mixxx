@@ -1,8 +1,8 @@
 #pragma once
 
 #include "controllers/controller.h"
-#include "controllers/midi/midicontrollerpreset.h"
-#include "controllers/midi/midicontrollerpresetfilehandler.h"
+#include "controllers/midi/legacymidicontrollermapping.h"
+#include "controllers/midi/legacymidicontrollermappingfilehandler.h"
 #include "controllers/midi/midimessage.h"
 #include "controllers/midi/midioutputhandler.h"
 #include "controllers/softtakeover.h"
@@ -23,28 +23,19 @@ class MidiController : public Controller {
 
     ControllerJSProxy* jsProxy() override;
 
-    QString presetExtension() override;
+    QString mappingExtension() override;
 
-    ControllerPresetPointer getPreset() const override {
-        MidiControllerPreset* pClone = new MidiControllerPreset();
-        *pClone = m_preset;
-        return ControllerPresetPointer(pClone);
-    }
-
-    void visit(const MidiControllerPreset* preset) override;
-    void visit(const HidControllerPreset* preset) override;
-
-    void accept(ControllerVisitor* visitor) override {
-        if (visitor) {
-            visitor->visit(this);
-        }
-    }
+    void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) override;
+    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() override;
 
     bool isMappable() const override {
-        return m_preset.isMappable();
+        if (!m_pMapping) {
+            return false;
+        }
+        return m_pMapping->isMappable();
     }
 
-    bool matchPreset(const PresetInfo& preset) override;
+    bool matchMapping(const MappingInfo& mapping) override;
 
   signals:
     void messageReceived(unsigned char status, unsigned char control, unsigned char value);
@@ -63,7 +54,8 @@ class MidiController : public Controller {
     }
 
   protected slots:
-    virtual void receive(unsigned char status,
+    virtual void receivedShortMessage(
+            unsigned char status,
             unsigned char control,
             unsigned char value,
             mixxx::Duration timestamp);
@@ -72,42 +64,32 @@ class MidiController : public Controller {
     int close() override;
 
   private slots:
-    /// Apply the preset to the controller.
-    /// Initializes both controller engine and static output mappings.
-    ///
-    /// @param initializeScripts Can be set to false to skip script
-    /// initialization for unit tests.
-    /// @return Returns whether it was successful.
-    bool applyPreset(bool initializeScripts = false) override;
+    bool applyMapping() override;
 
     void learnTemporaryInputMappings(const MidiInputMappings& mappings);
     void clearTemporaryInputMappings();
     void commitTemporaryInputMappings();
 
   private:
-    void processInputMapping(const MidiInputMapping& mapping,
-                             unsigned char status,
-                             unsigned char control,
-                             unsigned char value,
-                             mixxx::Duration timestamp);
-    void processInputMapping(const MidiInputMapping& mapping,
-                             const QByteArray& data,
-                             mixxx::Duration timestamp);
+    void processInputMapping(
+            const MidiInputMapping& mapping,
+            unsigned char status,
+            unsigned char control,
+            unsigned char value,
+            mixxx::Duration timestamp);
+    void processInputMapping(
+            const MidiInputMapping& mapping,
+            const QByteArray& data,
+            mixxx::Duration timestamp);
 
     double computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue);
     void createOutputHandlers();
     void updateAllOutputs();
     void destroyOutputHandlers();
 
-    /// Returns a pointer to the currently loaded controller preset. For internal
-    /// use only.
-    ControllerPreset* preset() override {
-        return &m_preset;
-    }
-
     QHash<uint16_t, MidiInputMapping> m_temporaryInputMappings;
     QList<MidiOutputHandler*> m_outputs;
-    MidiControllerPreset m_preset;
+    std::shared_ptr<LegacyMidiControllerMapping> m_pMapping;
     SoftTakeoverCtrl m_st;
     QList<QPair<MidiInputMapping, unsigned char> > m_fourteen_bit_queued_mappings;
 

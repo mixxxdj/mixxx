@@ -36,12 +36,15 @@ EncoderMp3::~EncoderMp3() {
         lame_close(m_lameFlags);
     }
     // free requested buffers
-    if (m_bufferIn[0] != nullptr)
+    if (m_bufferIn[0] != nullptr) {
         free(m_bufferIn[0]);
-    if (m_bufferIn[1] != nullptr)
+    }
+    if (m_bufferIn[1] != nullptr) {
         free(m_bufferIn[1]);
-    if (m_bufferOut != nullptr)
+    }
+    if (m_bufferOut != nullptr) {
         free(m_bufferOut);
+    }
 }
 
 void EncoderMp3::setEncoderSettings(const EncoderSettings& settings) {
@@ -169,7 +172,7 @@ void EncoderMp3::initStream() {
     m_bufferIn[1] = (float *)malloc(m_bufferOutSize * sizeof(float));
 }
 
-int EncoderMp3::initEncoder(int samplerate, QString& errorMessage) {
+int EncoderMp3::initEncoder(int samplerate, QString* pUserErrorMessage) {
     unsigned long samplerate_in = samplerate;
     // samplerate_out 0 means "let LAME pick the appropriate one"
     unsigned long samplerate_out = (samplerate_in > 48000 ? 48000 : 0);
@@ -178,7 +181,11 @@ int EncoderMp3::initEncoder(int samplerate, QString& errorMessage) {
 
     if (m_lameFlags == nullptr) {
         qDebug() << "Unable to initialize lame";
-        errorMessage = "MP3 recording is not supported. Lame could not be initialized";
+        if (pUserErrorMessage) {
+            *pUserErrorMessage = QObject::tr(
+                    "MP3 encoding is not supported. Lame could not be "
+                    "initialized");
+        }
         return -1;
     }
 
@@ -222,7 +229,6 @@ int EncoderMp3::initEncoder(int samplerate, QString& errorMessage) {
     int ret = lame_init_params(m_lameFlags);
     if (ret < 0) {
         qDebug() << "Unable to initialize MP3 parameters. return code:" << ret;
-        errorMessage = "MP3 recording is not supported. Lame could not be initialized.";
         return -1;
     }
 

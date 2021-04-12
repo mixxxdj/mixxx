@@ -35,7 +35,7 @@ QString getPrimaryDecoderNameForFilePath(const QString& filePath) {
 /// have a loop and a hotcue with the same number. In Mixxx, loops
 /// and hotcues share indices. Hence, we import them with an offset
 /// of 8 (the maximum number of hotcues in Serato).
-constexpr int kLoopIndexOffset = 8;
+constexpr int kFirstLoopIndex = mixxx::kFirstHotCueIndex + 8;
 constexpr int kNumCuesInMarkersTag = 5;
 
 mixxx::RgbColor getColorFromOtherPalette(
@@ -51,28 +51,28 @@ mixxx::RgbColor getColorFromOtherPalette(
 }
 
 std::optional<int> findIndexForCueInfo(const mixxx::CueInfo& cueInfo) {
-    VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueNumber()) {
+    VERIFY_OR_DEBUG_ASSERT(cueInfo.getHotCueIndex()) {
         qWarning() << "SeratoTags::getCues: Cue without number found!";
         return std::nullopt;
     }
 
-    int index = *cueInfo.getHotCueNumber();
-    VERIFY_OR_DEBUG_ASSERT(index >= 0) {
+    int index = *cueInfo.getHotCueIndex();
+    VERIFY_OR_DEBUG_ASSERT(index >= mixxx::kFirstHotCueIndex) {
         qWarning() << "SeratoTags::getCues: Cue with number < 0 found!";
         return std::nullopt;
     }
 
     switch (cueInfo.getType()) {
     case mixxx::CueType::HotCue:
-        if (index >= kLoopIndexOffset) {
+        if (index >= kFirstLoopIndex) {
             qWarning()
                     << "SeratoTags::getCues: Non-loop Cue with number >="
-                    << kLoopIndexOffset << "found!";
+                    << kFirstLoopIndex << "found!";
             return std::nullopt;
         }
         break;
     case mixxx::CueType::Loop:
-        index += kLoopIndexOffset;
+        index += kFirstLoopIndex;
         break;
     default:
         return std::nullopt;
@@ -259,7 +259,7 @@ double SeratoTags::guessTimingOffsetMillis(
 
 BeatsImporterPointer SeratoTags::importBeats() const {
     if (m_seratoBeatGrid.isEmpty() || !m_seratoBeatGrid.terminalMarker()) {
-        return std::make_shared<SeratoBeatsImporter>();
+        return nullptr;
     }
     return std::make_shared<SeratoBeatsImporter>(
             m_seratoBeatGrid.nonTerminalMarkers(),
@@ -267,7 +267,11 @@ BeatsImporterPointer SeratoTags::importBeats() const {
 }
 
 CueInfoImporterPointer SeratoTags::importCueInfos() const {
-    return std::make_shared<SeratoCueInfoImporter>(getCueInfos());
+    auto cueInfos = getCueInfos();
+    if (cueInfos.isEmpty()) {
+        return nullptr;
+    }
+    return std::make_shared<SeratoCueInfoImporter>(std::move(cueInfos));
 }
 
 QList<CueInfo> SeratoTags::getCueInfos() const {
@@ -285,7 +289,7 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
         }
 
         CueInfo newCueInfo(cueInfo);
-        newCueInfo.setHotCueNumber(index);
+        newCueInfo.setHotCueIndex(index);
 
         RgbColor::optional_t color = cueInfo.getColor();
         if (color) {
@@ -329,7 +333,8 @@ QList<CueInfo> SeratoTags::getCueInfos() const {
         newCueInfo.setType(cueInfo.getType());
         newCueInfo.setStartPositionMillis(cueInfo.getStartPositionMillis());
         newCueInfo.setEndPositionMillis(cueInfo.getEndPositionMillis());
-        newCueInfo.setHotCueNumber(index);
+        newCueInfo.setHotCueIndex(index);
+        newCueInfo.setFlags(cueInfo.flags());
 
         RgbColor::optional_t color = cueInfo.getColor();
         if (color) {
@@ -359,12 +364,12 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
     QMap<int, CueInfo> cueMap;
     QMap<int, CueInfo> loopMap;
     for (const CueInfo& cueInfo : qAsConst(cueInfos)) {
-        if (!cueInfo.getHotCueNumber()) {
+        if (!cueInfo.getHotCueIndex()) {
             continue;
         }
 
-        int hotcueNumber = *cueInfo.getHotCueNumber();
-        if (hotcueNumber < 0) {
+        int hotcueIndex = *cueInfo.getHotCueIndex();
+        if (hotcueIndex < kFirstHotCueIndex) {
             continue;
         }
 
@@ -385,13 +390,14 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
         if (cueInfo.getEndPositionMillis()) {
             newCueInfo.setEndPositionMillis(*cueInfo.getEndPositionMillis() - timingOffsetMillis);
         }
+        newCueInfo.setFlags(cueInfo.flags());
 
         switch (cueInfo.getType()) {
         case CueType::HotCue:
-            cueMap.insert(hotcueNumber, newCueInfo);
+            cueMap.insert(hotcueIndex, newCueInfo);
             break;
         case CueType::Loop:
-            loopMap.insert(hotcueNumber, newCueInfo);
+            loopMap.insert(hotcueIndex, newCueInfo);
             break;
         default:
             qWarning() << "Skipping incompatible cue type";
@@ -402,8 +408,8 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
     // Check if loops were imported or set using a constant offset
     int loopIndexOffset = 0;
     if (!loopMap.isEmpty()) {
-        if (loopMap.firstKey() >= kLoopIndexOffset) {
-            loopIndexOffset = kLoopIndexOffset;
+        if (loopMap.firstKey() >= kFirstLoopIndex) {
+            loopIndexOffset = kFirstLoopIndex;
         }
     }
 
@@ -412,7 +418,7 @@ void SeratoTags::setCueInfos(const QList<CueInfo>& cueInfos, double timingOffset
     auto it = loopMap.constBegin();
     while (it != loopMap.constEnd()) {
         CueInfo cueInfo(it.value());
-        cueInfo.setHotCueNumber(*cueInfo.getHotCueNumber() - loopIndexOffset);
+        cueInfo.setHotCueIndex(*cueInfo.getHotCueIndex() - loopIndexOffset);
         cueInfoList.append(cueInfo);
         it++;
     }

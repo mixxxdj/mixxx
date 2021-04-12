@@ -23,8 +23,9 @@ QDomNode XmlParse::selectNode(const QDomNode& nodeHeader,
                               const QString& sNode) {
     QDomNode node = nodeHeader.firstChild();
     while (!node.isNull()) {
-        if (node.nodeName() == sNode)
+        if (node.nodeName() == sNode) {
             return node;
+        }
         node = node.nextSibling();
     }
     return node;
@@ -49,8 +50,9 @@ QDomElement XmlParse::selectElement(const QDomNode& nodeHeader,
 QString XmlParse::selectNodeQString(const QDomNode& nodeHeader,
                                     const QString& sNode) {
     QDomNode node = selectNode(nodeHeader, sNode);
-    if (!node.isNull())
+    if (!node.isNull()) {
         return node.toElement().text();
+    }
     return QString("");
 }
 

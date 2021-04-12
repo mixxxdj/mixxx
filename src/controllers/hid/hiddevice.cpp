@@ -2,7 +2,7 @@
 
 #include <QDebugStateSaver>
 
-#include "controllers/controllerpresetinfo.h"
+#include "controllers/controllermappinginfo.h"
 #include "moc_hiddevice.cpp"
 #include "util/path.h" // for PATH_MAX on Windows
 #include "util/string.h"
@@ -73,7 +73,6 @@ QString DeviceInfo::formatReleaseNumber() const {
 
 QString DeviceInfo::formatUsage() const {
     if (usage_page == 0 && usage == 0) {
-        DEBUG_ASSERT(!formatInterface().isEmpty());
         return QString();
     }
     return QStringLiteral("%1").arg(usage_page, 4, 16, QLatin1Char('0')) +

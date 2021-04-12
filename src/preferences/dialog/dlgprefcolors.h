@@ -5,8 +5,8 @@
 #include "control/controlproxy.h"
 #include "preferences/colorpaletteeditor.h"
 #include "preferences/colorpalettesettings.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefcolorsdlg.h"
-#include "preferences/dlgpreferencepage.h"
 #include "preferences/usersettings.h"
 #include "util/parented_ptr.h"
 
@@ -16,7 +16,10 @@ class Library;
 class DlgPrefColors : public DlgPreferencePage, public Ui::DlgPrefColorsDlg {
     Q_OBJECT
   public:
-    DlgPrefColors(QWidget* parent, UserSettingsPointer pConfig, Library* pLibrary);
+    DlgPrefColors(
+            QWidget* parent,
+            UserSettingsPointer pConfig,
+            std::shared_ptr<Library> pLibrary);
     virtual ~DlgPrefColors();
 
   public slots:

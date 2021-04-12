@@ -25,16 +25,7 @@ inline QScreen* getPrimaryScreen() {
 
 inline
 QString uuidToStringWithoutBraces(const QUuid& uuid) {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 11, 0)
     return uuid.toString(QUuid::WithoutBraces);
-#else
-    QString withBraces = uuid.toString();
-    DEBUG_ASSERT(withBraces.size() == 38);
-    DEBUG_ASSERT(withBraces.startsWith('{'));
-    DEBUG_ASSERT(withBraces.endsWith('}'));
-    // We need to strip off the heading/trailing curly braces after formatting
-    return withBraces.mid(1, 36);
-#endif
 }
 
 inline

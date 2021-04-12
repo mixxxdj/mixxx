@@ -69,8 +69,9 @@ int EncoderVorbis::getSerial()
 {
     static int prevSerial = 0;
     int serial = rand();
-    while (prevSerial == serial)
+    while (prevSerial == serial) {
         serial = rand();
+    }
     prevSerial = serial;
     qDebug() << "RETURNING SERIAL " << serial;
     return serial;
@@ -93,8 +94,9 @@ void EncoderVorbis::writePage() {
     if (m_header_write) {
         while (true) {
             result = ogg_stream_flush(&m_oggs, &m_oggpage);
-            if (result == 0)
+            if (result == 0) {
                 break;
+            }
             m_pCallback->write(
                     m_oggpage.header,
                     m_oggpage.body,
@@ -105,7 +107,7 @@ void EncoderVorbis::writePage() {
     }
 
     while (vorbis_analysis_blockout(&m_vdsp, &m_vblock) == 1) {
-        vorbis_analysis(&m_vblock, 0);
+        vorbis_analysis(&m_vblock, nullptr);
         vorbis_bitrate_addblock(&m_vblock);
         while (vorbis_bitrate_flushpacket(&m_vdsp, &m_oggpacket)) {
             // weld packet into bitstream
@@ -114,12 +116,14 @@ void EncoderVorbis::writePage() {
             bool eos = false;
             while (!eos) {
                 int result = ogg_stream_pageout(&m_oggs, &m_oggpage);
-                if (result == 0)
+                if (result == 0) {
                     break;
+                }
                 m_pCallback->write(m_oggpage.header, m_oggpage.body,
                                    m_oggpage.header_len, m_oggpage.body_len);
-                if (ogg_page_eos(&m_oggpage))
+                if (ogg_page_eos(&m_oggpage)) {
                     eos = true;
+                }
             }
         }
     }
@@ -165,7 +169,7 @@ void EncoderVorbis::initStream() {
     vorbis_block_init(&m_vdsp, &m_vblock);
 
     // set up packet-to-stream encoder; attach a random serial number
-    srand(time(0));
+    srand(time(nullptr));
     ogg_stream_init(&m_oggs, getSerial());
 
     // add comment
@@ -196,18 +200,22 @@ void EncoderVorbis::initStream() {
     m_bStreamInitialized = true;
 }
 
-int EncoderVorbis::initEncoder(int samplerate, QString& errorMessage) {
+int EncoderVorbis::initEncoder(int samplerate, QString* pUserErrorMessage) {
     vorbis_info_init(&m_vinfo);
 
     // initialize VBR quality based mode
     int ret = vorbis_encode_init(&m_vinfo, m_channels, samplerate, -1, m_bitrate*1000, -1);
 
-    if (ret == 0) {
-        initStream();
-    } else {
+    if (ret != 0) {
         qDebug() << "Error initializing OGG recording. IS OGG/Vorbis library installed? Error code: " << ret;
-        errorMessage  = "OGG recording is not supported. OGG/Vorbis library could not be initialized.";
-        ret = -1;
-    };
-    return ret;
+        if (pUserErrorMessage) {
+            *pUserErrorMessage = QObject::tr(
+                    "OGG recording is not supported. OGG/Vorbis library could "
+                    "not be initialized.");
+        }
+        return -1;
+    }
+
+    initStream();
+    return 0;
 }

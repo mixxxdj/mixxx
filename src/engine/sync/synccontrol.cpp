@@ -71,10 +71,6 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
     m_pPassthroughEnabled->connectValueChanged(this,
             &SyncControl::slotPassthroughChanged, Qt::DirectConnection);
 
-    m_pEjectButton = new ControlProxy(group, "eject", this);
-    m_pEjectButton->connectValueChanged(this,
-            &SyncControl::slotEjectPushed, Qt::DirectConnection);
-
     m_pQuantize = new ControlProxy(group, "quantize", this);
 
     // Adopt an invalid to not ignore the first call setLocalBpm()
@@ -242,6 +238,8 @@ void SyncControl::setMasterBpm(double bpm) {
 
 void SyncControl::setMasterParams(
         double beatDistance, double baseBpm, double bpm) {
+    // Calculate the factor for the file bpm. That gives the best
+    // result at any rate slider position.
     double masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
     if (isMaster(getSyncMode())) {
         // In Master mode we adjust the incoming Bpm for the initial sync.
@@ -256,24 +254,19 @@ void SyncControl::setMasterParams(
 }
 
 double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
-    double multiplier = kBpmUnity;
     if (myBpm == 0.0 || targetBpm == 0.0) {
-        return multiplier;
+        return kBpmUnity;
     }
-    double best_margin = fabs((targetBpm / myBpm) - 1.0);
-
-    double try_margin = fabs((targetBpm * kBpmHalve / myBpm) - 1.0);
-    // We really want to prefer unity, so use a float compare with high tolerance.
-    if (best_margin - try_margin > .0001) {
-        multiplier = kBpmHalve;
-        best_margin = try_margin;
+    double unityRatio = myBpm / targetBpm;
+    // the square root of 2 (1.414) is the
+    // rate threshold that works vice versa for this and the target.
+    double unityRatioSquare = unityRatio * unityRatio;
+    if (unityRatioSquare > kBpmDouble) {
+        return kBpmDouble;
+    } else if (unityRatioSquare < kBpmHalve) {
+        return kBpmHalve;
     }
-
-    try_margin = fabs((targetBpm * kBpmDouble / myBpm) - 1.0);
-    if (best_margin - try_margin > .0001) {
-        multiplier = kBpmDouble;
-    }
-    return multiplier;
+    return kBpmUnity;
 }
 
 void SyncControl::updateTargetBeatDistance() {
@@ -306,7 +299,7 @@ void SyncControl::updateTargetBeatDistance() {
 
 double SyncControl::getBpm() const {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "SyncControl::getBpm()" << m_pBpm->get();
+        kLogger.trace() << getGroup() << "SyncControl::getBpm()";
     }
     return m_pBpm->get() / m_masterBpmAdjustFactor;
 }
@@ -360,6 +353,9 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 }
 
 void SyncControl::slotControlPlay(double play) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::slotControlPlay" << getSyncMode() << play;
+    }
     m_pEngineSync->notifyPlaying(this, play > 0.0);
 }
 
@@ -377,14 +373,6 @@ void SyncControl::slotPassthroughChanged(double enabled) {
     }
 }
 
-void SyncControl::slotEjectPushed(double enabled) {
-    Q_UNUSED(enabled);
-    // We can't eject tracks if the decks is playing back, so if we are master
-    // and eject was pushed the deck must be stopped.  Handing off in this case
-    // actually causes the other decks to start playing, so not doing anything
-    // is preferred.
-}
-
 void SyncControl::slotSyncModeChangeRequest(double state) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "SyncControl::slotSyncModeChangeRequest";
@@ -398,6 +386,9 @@ void SyncControl::slotSyncModeChangeRequest(double state) {
 }
 
 void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::slotSyncMasterEnabledChangeRequest" << getGroup();
+    }
     SyncMode mode = getSyncMode();
     if (state > 0.0) {
         if (mode == SYNC_MASTER_EXPLICIT) {
@@ -425,6 +416,9 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
 }
 
 void SyncControl::slotSyncEnabledChangeRequest(double enabled) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::slotSyncEnabledChangeRequest" << getGroup();
+    }
     bool bEnabled = enabled > 0.0;
 
     // Allow a request for state change even if it's the same as the current
@@ -449,7 +443,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
 
     double bpm = local_bpm * m_pRateRatio->get();
 
-    if (syncMode == SYNC_FOLLOWER) {
+    if (isFollower(syncMode)) {
         // In this case we need an update from the current master to adjust
         // the rate that we continue with the master BPM. If there is no
         // master bpm, our bpm value is adopted and the m_masterBpmAdjustFactor
@@ -459,7 +453,7 @@ void SyncControl::setLocalBpm(double local_bpm) {
         DEBUG_ASSERT(isMaster(syncMode));
         // We might have adopted an adjust factor when becoming master.
         // Keep it when reporting our bpm.
-        m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
+        m_pEngineSync->notifyBaseBpmChanged(this, bpm / m_masterBpmAdjustFactor);
     }
 }
 
@@ -471,7 +465,7 @@ void SyncControl::slotRateChanged() {
     if (bpm > 0 && isSynchronized()) {
         // When reporting our bpm, remove the multiplier so the masters all
         // think the followers have the same bpm.
-        m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
+        m_pEngineSync->notifyBaseBpmChanged(this, bpm / m_masterBpmAdjustFactor);
     }
 }
 
