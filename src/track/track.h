@@ -491,6 +491,9 @@ class Track : public QObject {
     // The list of cue points for the track
     QList<CuePointer> m_cuePoints;
 
+    // A resolved list of the crates the track is in
+    QStringList m_cratesList;
+
     // Storage for the track's beats
     mixxx::BeatsPointer m_pBeats;
 

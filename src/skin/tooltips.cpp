@@ -254,6 +254,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Cover Art")
             << tr("Show/hide Cover Art of the selected track in the library.");
 
+    add("show_infobar")
+            << tr("Infobar")
+            << tr("Show/hide Infobar.");
+
     add("toggle_4decks")
             << tr("Toggle 4 Decks")
             << tr("Switches between showing 2 decks and 4 decks.");

@@ -114,6 +114,7 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
         // slows down scrolling performance so we wait until the user has
         // stopped interacting first.
         if (m_selectionChangedSinceLastGuiTick) {
+            qDebug() << "m_selectionChangedSinceLastGuiTick";
             const QModelIndexList indices = selectionModel()->selectedRows();
             if (indices.size() == 1 && indices.first().isValid()) {
                 // A single track has been selected
@@ -123,6 +124,17 @@ void WTrackTableView::slotGuiTick50ms(double /*unused*/) {
                     if (pTrack) {
                         emit trackSelected(pTrack);
                     }
+                    // emit list of all selected track
+                    auto signal_data = QList<TrackPointer>();
+                    signal_data.reserve(indices.size());
+                    foreach (auto track, indices) {
+                        pTrack = trackModel->getTrack(track);
+                        if (pTrack) {
+                            signal_data.append(pTrack);
+                        }
+                    }
+                    qDebug() << "emit";
+                    emit(trackSelection(signal_data));
                 }
             } else {
                 // None or multiple tracks have been selected

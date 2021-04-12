@@ -42,6 +42,7 @@ class CrateFeature : public BaseTrackSetFeature {
     void bindSidebarWidget(WLibrarySidebar* pSidebarWidget) override;
 
     TreeItemModel* getChildModel() override;
+    bool activateCrate(CrateId crateId);
 
   public slots:
     void activateChild(const QModelIndex& index) override;
@@ -79,8 +80,6 @@ class CrateFeature : public BaseTrackSetFeature {
     void initActions();
     void connectLibrary(Library* pLibrary);
     void connectTrackCollection();
-
-    bool activateCrate(CrateId crateId);
 
     std::unique_ptr<TreeItem> newTreeItemForCrateSummary(
             const CrateSummary& crateSummary);

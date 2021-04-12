@@ -138,7 +138,8 @@ Library::Library(
     addFeature(browseFeature);
 
     addFeature(new RecordingFeature(this, m_pConfig, pRecordingManager));
-    addFeature(new SetlogFeature(this, UserSettingsPointer(m_pConfig)));
+    m_pSetlogFeature = new SetlogFeature(this, UserSettingsPointer(m_pConfig));
+    addFeature(m_pSetlogFeature);
 
     m_pAnalysisFeature = new AnalysisFeature(this, m_pConfig);
     connect(m_pPlaylistFeature,
@@ -360,6 +361,10 @@ void Library::bindLibraryWidget(
             &WTrackTableView::trackSelected,
             this,
             &Library::trackSelected);
+    connect(pTrackTableView,
+            &WTrackTableView::trackSelection,
+            this,
+            &Library::trackSelection);
 
     connect(this,
             &Library::setTrackTableFont,
@@ -425,6 +430,10 @@ void Library::addFeature(LibraryFeature* feature) {
             &LibraryFeature::trackSelected,
             this,
             &Library::trackSelected);
+    connect(feature,
+            &LibraryFeature::trackSelection,
+            this,
+            &Library::trackSelection);
 }
 
 void Library::onPlayerManagerTrackAnalyzerProgress(

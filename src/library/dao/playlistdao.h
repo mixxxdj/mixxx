@@ -2,10 +2,11 @@
 
 #include <QHash>
 #include <QObject>
-#include <QSqlDatabase>
 #include <QSet>
+#include <QSqlDatabase>
 
 #include "library/dao/dao.h"
+#include "library/trackset/playlistsummary.h"
 #include "track/trackid.h"
 #include "util/class.h"
 
@@ -117,6 +118,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool isTrackInPlaylist(TrackId trackId, const int playlistId) const;
 
     void getPlaylistsTrackIsIn(TrackId trackId, QSet<int>* playlistSet) const;
+    QList<PlaylistSummary> createPlaylistSummary(QSet<int>* playlistIds = nullptr,
+            HiddenType type = PLHT_NOT_HIDDEN);
+    QList<PlaylistSummary> createPlaylistSummaryForTracks(QList<TrackId> tracks,
+            HiddenType type = PLHT_NOT_HIDDEN);
 
     void setAutoDJProcessor(AutoDJProcessor* pAutoDJProcessor);
 

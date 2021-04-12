@@ -270,6 +270,20 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewShowCoverArt, ConfigKey("[Library]", "show_coverart"));
     pViewMenu->addAction(pViewShowCoverArt);
 
+    QString showInfobarTitle = tr("Show Infobar");
+    QString showInfobarText = tr("Show a infobar with crates/playlist "
+                                 "information about the selected track") +
+            " " + mayNotBeSupported;
+    auto pViewShowInfobar = new QAction(showInfobarTitle, this);
+    pViewShowInfobar->setCheckable(true);
+    pViewShowInfobar->setShortcut(
+            QKeySequence(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowInfobar"),
+                    tr("Ctrl+7", "Menubar|View|Show Infobar"))));
+    pViewShowInfobar->setStatusTip(showInfobarText);
+    pViewShowInfobar->setWhatsThis(buildWhatsThis(showInfobarTitle, showInfobarText));
+    createVisibilityControl(pViewShowInfobar, ConfigKey("[Library]", "show_infobar"));
+    pViewMenu->addAction(pViewShowInfobar);
 
     QString maximizeLibraryTitle = tr("Maximize Library");
     QString maximizeLibraryText = tr("Maximize the track library to take up all the available screen space.") +

@@ -976,6 +976,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/weffectselector.cpp
   src/widget/whotcuebutton.cpp
   src/widget/wimagestore.cpp
+  src/widget/winfobar.cpp
   src/widget/wkey.cpp
   src/widget/wknob.cpp
   src/widget/wknobcomposed.cpp

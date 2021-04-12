@@ -30,3 +30,5 @@ class Crate : public DbNamedEntity<CrateId> {
     bool m_locked;
     bool m_autoDjSource;
 };
+
+Q_DECLARE_METATYPE(Crate);

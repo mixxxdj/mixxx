@@ -1147,6 +1147,11 @@ ControlPickerMenu::ControlPickerMenu(QWidget* pParent)
             tr("Cover Art Show/Hide (Decks)"),
             tr("Show/hide cover art in the main decks"),
             guiMenu);
+    addControl("[Library]",
+            "show_infobar",
+            tr("Infobar Show/Hide (Decks)"),
+            tr("Show/hide the infobar in the library"),
+            guiMenu);
     addControl(VINYL_PREF_KEY,
             "show_vinylcontrol",
             tr("Vinyl Control Show/Hide"),

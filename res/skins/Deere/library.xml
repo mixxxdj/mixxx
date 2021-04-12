@@ -69,10 +69,34 @@
                 </Children>
               </WidgetGroup>
 
-              <Library>
-                <ShowButtonText>false</ShowButtonText>
-                <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
-              </Library>
+              <!-- with infobar -->
+              <WidgetGroup>
+                <Layout>vertical</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Orientation>vertical</Orientation>
+                <Children>
+                  <Library>
+                    <ShowButtonText>false</ShowButtonText>
+                    <TrackTableBackgroundColorOpacity>0.175</TrackTableBackgroundColorOpacity>
+                  </Library>
+
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>m,m</SizePolicy>
+                    <Connection>
+                      <ConfigKey>[Library],show_infobar</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                    <Children>
+                      <Infobar>
+                        <ObjectName>Infobar</ObjectName>
+                        <Group>[Library]</Group>
+                      </Infobar>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
 
             </Children>
             <!--Connection>
