@@ -1,6 +1,7 @@
 { nixroot ? (import <nixpkgs> { }), defaultLv2Plugins ? false, lv2Plugins ? [ ]
-, releaseMode ? false, enableKeyfinder ? true, buildType ? "auto", cFlags ? [ ]
-, useClang ? true, useClazy ? false, buildFolder ? "build", qtDebug ? false }:
+, releaseMode ? false, enableKeyfinder ? true, enableDjinterop ? false
+, buildType ? "auto", cFlags ? [ ], useClang ? true, useClazy ? false
+, buildFolder ? "build", qtDebug ? false }:
 let
   inherit (nixroot)
     pkgs lib makeWrapper clang-tools cmake fetchurl fetchgit glibcLocales
@@ -16,8 +17,6 @@ let
   glibcVersion = builtins.map builtins.fromJSON
     (lib.versions.splitVersion pkgs.glibc.version);
 
-  qtBaseWithDebug = pkgs.qt5.qtbase.override { developerBuild = true; };
-
   # llvm < 10.0.2 and glibc >= 2.31 do not work with -fast-math
   fastMathBug = (builtins.elemAt clangVersion 0) <= 10
     && (builtins.elemAt clangVersion 1) <= 0 && (builtins.elemAt clangVersion 2)
@@ -26,12 +25,27 @@ let
 
   stdenv = if useClang then llvm_packages.stdenv else pkgs.stdenv;
 
+  qtDeps = if qtDebug then [
+    (pkgs.enableDebugging ((pkgs.qt5.override {
+      debug = true;
+      developerBuild = true;
+    }).qtbase))
+    pkgs.qt5.qtscript
+    pkgs.qt5.qtsvg
+    pkgs.qt5.qtx11extras
+    pkgs.qt5.qtdoc
+  ] else [
+    pkgs.qt5.qtbase
+    pkgs.qt5.qtdoc
+    pkgs.qt5.qtscript
+    pkgs.qt5.qtsvg
+    pkgs.qt5.qtx11extras
+  ];
+
   cmakeBuildType = if buildType == "auto" then
     (if releaseMode then "RelWithDebInfo" else "Debug")
   else
     buildType;
-
-  myQt5Base = if qtDebug then qtBaseWithDebug else pkgs.qt5.qtbase;
 
   allCFlags = cFlags ++ [
     ("-DKEYFINDER=" + (if enableKeyfinder then "ON" else "OFF"))
@@ -61,11 +75,11 @@ let
 
   clazy = stdenv.mkDerivation rec {
     shortname = "clazy";
-    version = "1.8";
+    version = "1.9";
     name = "${shortname}-${version}";
     src = fetchurl {
       url = "https://github.com/KDE/clazy/archive/v${version}.tar.gz";
-      sha256 = "0k4qpk5w8gk9y44jb4m9fcl7xga29wmcv34d43mmz0fx6nff92v9";
+      sha256 = "155pyx8mcijchmchiny1lnilb3b0nhbrxcnxksvhcyy1vjnpghsn";
     };
     cmakeFlags = [ "-DCMAKE_MODULE_PATH=${llvm_packages.clang}" ];
     nativeBuildInputs = [
@@ -76,6 +90,18 @@ let
       llvm_packages.clang-unwrapped
     ];
     buildInputs = [ clang-tools cmake ];
+  };
+
+  libdjinterop = stdenv.mkDerivation rec {
+    shortname = "libdjinterop";
+    version = "0.14.6";
+    name = "${shortname}-${version}";
+    src = fetchurl {
+      url = "https://github.com/xsco/libdjinterop/archive/${version}.tar.gz";
+      sha256 = "11wm4vip58k3q85s7wkjvnz80wid0c7xw3i8hlbiv03cq3v5fbyv";
+    };
+    nativeBuildInputs = [ cmake makeWrapper pkgs.zlib pkgs.sqlite ];
+    # buildInputs = [ clang-tools cmake ];
   };
 
   libkeyfinder = if builtins.hasAttr "libkeyfinder" pkgs then
@@ -137,8 +163,8 @@ let
       >&2 echo "First you have to run configure."
       exit 1
     fi
-    if [ -z "$CLAZY_CHECKS" -a -e .github/workflows/clazy.yml ]; then
-      export CLAZY_CHECKS=$(grep CLAZY_CHECKS ./.github/workflows/clazy.yml | sed "s/\s*CLAZY_CHECKS:\s*//")
+    if [ -z "$CLAZY_CHECKS" -a -e .github/workflows/build-checks.yml ]; then
+      export CLAZY_CHECKS=$(grep CLAZY_CHECKS ./.github/workflows/build-checks.yml  | sed "s/\s*CLAZY_CHECKS:\s*//")
       echo "Using clazy checks: $CLAZY_CHECKS"
     fi
     cd ${buildFolder}
@@ -162,7 +188,7 @@ let
       exit 1
     fi
     cd ${buildFolder}
-    exec ./mixxx --resourcePath res/ "$@"
+    exec ./mixxx --resourcePath ../res/ "$@"
   '';
 
   shell-debug = nixroot.writeShellScriptBin "debug" ''
@@ -173,7 +199,7 @@ let
     cd ${buildFolder}
     head -n1 mixxx | grep bash >/dev/null || (echo "mixxx is not wrapped" && exit 1)
     eval "$(head -n -1 mixxx)"
-    exec gdb --args ./.mixxx-wrapped --resourcePath res/ "$@"
+    exec gdb --args ./.mixxx-wrapped --resourcePath ../res/ "$@"
   '';
 
   shell-run-tests = nixroot.writeShellScriptBin "run-tests" ''
@@ -304,6 +330,7 @@ in stdenv.mkDerivation rec {
         shell-run-tests
         shell-link-environment
         nix
+        setupDebugInfoDirs
       ] ++ lib.optional useClang [ clazy ]
       ++ lib.optional (builtins.hasAttr "pre-commit" pkgs) [ pkgs.pre-commit ]
       ++ lib.optional (builtins.hasAttr "nixfmt" pkgs) [ pkgs.nixfmt ])
@@ -312,7 +339,7 @@ in stdenv.mkDerivation rec {
 
   cmakeFlags = allCFlags;
 
-  buildInputs = (with pkgs; [
+  buildInputs = qtDeps ++ (with pkgs; [
     chromaprint
     faad2
     ffmpeg
@@ -346,11 +373,6 @@ in stdenv.mkDerivation rec {
     portaudio
     portmidi
     protobuf
-    myQt5Base
-    pkgs.qt5.qtdoc
-    pkgs.qt5.qtscript
-    pkgs.qt5.qtsvg
-    pkgs.qt5.qtx11extras
     rubberband
     serd
     sord
@@ -363,6 +385,7 @@ in stdenv.mkDerivation rec {
     wavpack
     x11
   ]) ++ allLv2Plugins ++ (if enableKeyfinder then [ libkeyfinder ] else [ ])
+    ++ lib.optionals enableDjinterop [ libdjinterop ]
     ++ (if builtins.hasAttr "wrapQtAppsHook" pkgs.qt5 then
       [ pkgs.qt5.wrapQtAppsHook ]
     else
