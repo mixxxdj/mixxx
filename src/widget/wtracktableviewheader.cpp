@@ -106,6 +106,7 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
         : QHeaderView(orientation, parent),
           m_menu(tr("Show or hide columns."), this),
           m_actionUseSharedConfiguration(tr("Use shared configuration"), this),
+          m_actionRestoreDefault(tr("Restore default"), this),
           m_headerChanged(false) {
     m_actionUseSharedConfiguration.setCheckable(true);
     connect(this,
@@ -124,6 +125,10 @@ WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
             &QAction::toggled,
             this,
             &WTrackTableViewHeader::slotSharedConfigurationStateChanged);
+    connect(&m_actionRestoreDefault,
+            &QAction::triggered,
+            this,
+            &WTrackTableViewHeader::slotLoadDefaultHeaderState);
 }
 
 void WTrackTableViewHeader::contextMenuEvent(QContextMenuEvent* event) {
@@ -188,6 +193,7 @@ void WTrackTableViewHeader::buildMenu() {
     }
 
     m_menu.addAction(&m_actionUseSharedConfiguration);
+    m_menu.addAction(&m_actionRestoreDefault);
     m_menu.addSeparator();
     // Map this action's signals
 
@@ -273,7 +279,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     m_actionUseSharedConfiguration.blockSignals(false);
 
     if (headerStateString.isNull() || headerStateString.isEmpty()) {
-        loadDefaultHeaderState();
+        slotLoadDefaultHeaderState();
         if (sql_model) {
             sql_model->setSort(sql_model->defaultSortColumn(), sql_model->defaultSortOrder());
         }
@@ -282,7 +288,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
         // Decode it and restore it.
         HeaderViewState view_state(headerStateString);
         if (!view_state.healthy()) {
-            loadDefaultHeaderState();
+            slotLoadDefaultHeaderState();
             if (sql_model) {
                 sql_model->setSort(sql_model->defaultSortColumn(), sql_model->defaultSortOrder());
             }
@@ -329,7 +335,7 @@ void WTrackTableViewHeader::saveIndependentState() {
     m_headerChanged = false;
 }
 
-void WTrackTableViewHeader::loadDefaultHeaderState() {
+void WTrackTableViewHeader::slotLoadDefaultHeaderState() {
     // TODO: isColumnHiddenByDefault logic probably belongs here now.
     QAbstractItemModel* m = model();
     for (int i = 0; i < count(); ++i) {
