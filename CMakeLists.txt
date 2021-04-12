@@ -1726,6 +1726,7 @@ if(ENGINEPRIME)
     ExternalProject_Add(libdjinterop
       GIT_REPOSITORY "https://github.com/xsco/libdjinterop"
       GIT_TAG "0.15.1"
+      GIT_SHALLOW TRUE
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libdjinterop"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       CMAKE_ARGS
@@ -1833,6 +1834,7 @@ if(KEYFINDER)
     ExternalProject_Add(libkeyfinder
       GIT_REPOSITORY "https://github.com/mixxxdj/libkeyfinder"
       GIT_TAG "v2.2.4"
+      GIT_SHALLOW TRUE
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libkeyfinder"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
