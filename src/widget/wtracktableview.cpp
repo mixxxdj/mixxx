@@ -891,7 +891,7 @@ bool WTrackTableView::setCurrentTrackId(const TrackId& trackId) {
     selectRow(idx.row());
     // we need to emit the scrollTo event after the current loop finishes
     // otherwise some early check in scrollTo will fail and no scroll happens
-    emit(scrollToCurrent());
+    emit scrollToCurrent();
 
     return true;
 }
