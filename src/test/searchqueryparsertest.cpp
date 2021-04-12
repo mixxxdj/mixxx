@@ -1037,6 +1037,18 @@ TEST_F(SearchQueryParserTest, testIsReduced) {
             QStringLiteral("A D C")));
 
     EXPECT_TRUE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("A D C"),
+            QStringLiteral("A D C ")));
+
+    EXPECT_TRUE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("A D  C "),
+            QStringLiteral("A D C")));
+
+    EXPECT_FALSE(SearchQueryParser::isReducedTerm(
+            QStringLiteral("A B  C"),
+            QStringLiteral("A D C")));
+
+    EXPECT_TRUE(SearchQueryParser::isReducedTerm(
             QStringLiteral("Abba1 Abba2 Abb"),
             QStringLiteral("Abba1 Abba Abb")));
 

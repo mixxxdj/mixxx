@@ -271,7 +271,7 @@ std::unique_ptr<QueryNode> SearchQueryParser::parseQuery(const QString& query,
 }
 
 QStringList SearchQueryParser::splitQuery(const QString& query) {
-    QStringList splitted = query.split(kSplitRegexp);
+    QStringList splitted = query.split(kSplitRegexp, Qt::SkipEmptyParts);
     return splitted;
 }
 
