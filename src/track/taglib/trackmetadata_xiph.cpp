@@ -601,14 +601,13 @@ bool exportTrackMetadataIntoTag(
             pTag, "DISCNUMBER", toTString(trackMetadata.getTrackInfo().getDiscNumber()));
 #endif // __EXTRA_METADATA__
 
-    // Export of Serato markers is disabled, because Mixxx
-    // does not modify them.
-#if defined(__EXPORT_SERATO_MARKERS__)
     // Serato tags
     //
     // FIXME: We're only dumping FLAC tags for now, since the Ogg format is
     // different we don't support it yet.
-    if (fileType == FileType::FLAC) {
+    if (fileType == FileType::FLAC &&
+            trackMetadata.getTrackInfo().getSeratoTags().status() !=
+                    SeratoTags::ParserStatus::Failed) {
         writeCommentField(
                 pTag,
                 kCommentFieldKeySeratoBeatGrid,
@@ -619,9 +618,6 @@ bool exportTrackMetadataIntoTag(
                 kCommentFieldKeySeratoMarkers2FLAC,
                 dumpSeratoMarkers2(trackMetadata, fileType));
     }
-#else
-    Q_UNUSED(fileType);
-#endif // __EXPORT_SERATO_MARKERS__
 
     return true;
 }

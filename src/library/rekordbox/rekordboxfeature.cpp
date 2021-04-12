@@ -26,7 +26,6 @@
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
-#include "util/file.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 #include "widget/wlibrary.h"
@@ -484,6 +483,9 @@ QString parseDeviceDB(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dev
 
     queryInsertIntoDevicePlaylistTracks.bindValue(":playlist_id", playlistID);
 
+    if (!Sandbox::askForAccess(dbPath)) {
+        return QString();
+    }
     std::ifstream ifs(dbPath.toStdString(), std::ifstream::binary);
     kaitai::kstream ks(&ifs);
 
@@ -887,7 +889,7 @@ void setHotCue(TrackPointer track,
 }
 
 void readAnalyze(TrackPointer track,
-        double sampleRate,
+        mixxx::audio::SampleRate sampleRate,
         int timingOffset,
         bool ignoreCues,
         const QString& anlzPath) {
@@ -936,9 +938,11 @@ void readAnalyze(TrackPointer track,
                 beats << (sampleRateKhz * static_cast<double>(time));
             }
 
-            auto* pBeats = new mixxx::BeatMap(*track, static_cast<SINT>(sampleRate), beats);
-            pBeats->setSubVersion(mixxx::rekordboxconstants::beatsSubversion);
-            track->setBeats(mixxx::BeatsPointer(pBeats));
+            const auto pBeats = mixxx::BeatMap::makeBeatMap(
+                    sampleRate,
+                    mixxx::rekordboxconstants::beatsSubversion,
+                    beats);
+            track->trySetBeats(pBeats);
         } break;
         case rekordbox_anlz_t::SECTION_TAGS_CUES: {
             if (ignoreCues) {
@@ -1280,7 +1284,7 @@ TrackPointer RekordboxPlaylistModel::getTrack(const QModelIndex& index) const {
     }
 #endif
 
-    double sampleRate = static_cast<double>(track->getSampleRate());
+    mixxx::audio::SampleRate sampleRate = track->getSampleRate();
 
     QString anlzPath = index.sibling(index.row(), fieldIndex("analyze_path")).data().toString();
     QString anlzPathExt = anlzPath.left(anlzPath.length() - 3) + "EXT";

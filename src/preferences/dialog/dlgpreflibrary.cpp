@@ -12,13 +12,16 @@
 #include <QUrl>
 
 #include "library/dlgtrackmetadataexport.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_dlgpreflibrary.cpp"
 #include "sources/soundsourceproxy.h"
 #include "widget/wsearchlineedit.h"
 
 namespace {
-    const ConfigKey kSearchDebouncingTimeoutMillisKey = ConfigKey("[Library]","SearchDebouncingTimeoutMillis");
-    } // namespace
+const ConfigKey kSearchDebouncingTimeoutMillisKey =
+        ConfigKey("[Library]", "SearchDebouncingTimeoutMillis");
+} // namespace
 
 DlgPrefLibrary::DlgPrefLibrary(
         QWidget* pParent,
@@ -56,6 +59,16 @@ DlgPrefLibrary::DlgPrefLibrary(
             &QPushButton::clicked,
             this,
             &DlgPrefLibrary::slotRelocateDir);
+    connect(checkBox_SeratoMetadataExport,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefLibrary::slotSeratoMetadataExportClicked);
+    const QString& settingsDir = m_pConfig->getSettingsPath();
+    connect(PushButtonOpenSettingsDir,
+            &QPushButton::clicked,
+            [settingsDir] {
+                QDesktopServices::openUrl(QUrl::fromLocalFile(settingsDir));
+            });
 
     // Set default direction as stored in config file
     int rowHeight = m_pLibrary->getTrackTableRowHeight();
@@ -143,9 +156,9 @@ void DlgPrefLibrary::initializeDirList() {
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
     m_dirListModel.clear();
-    QStringList dirs = m_pLibrary->getDirs();
-    foreach (QString dir, dirs) {
-        m_dirListModel.appendRow(new QStandardItem(dir));
+    const auto rootDirs = m_pLibrary->trackCollections()->internalCollection()->loadRootDirs();
+    for (const mixxx::FileInfo& rootDir : rootDirs) {
+        m_dirListModel.appendRow(new QStandardItem(rootDir.location()));
     }
     dirList->setModel(&m_dirListModel);
     dirList->setCurrentIndex(m_dirListModel.index(0, 0));
@@ -162,6 +175,7 @@ void DlgPrefLibrary::initializeDirList() {
 void DlgPrefLibrary::slotResetToDefaults() {
     checkBox_library_scan->setChecked(false);
     checkBox_SyncTrackMetadataExport->setChecked(false);
+    checkBox_SeratoMetadataExport->setChecked(false);
     checkBox_use_relative_path->setChecked(false);
     checkBox_show_rhythmbox->setChecked(true);
     checkBox_show_banshee->setChecked(true);
@@ -182,6 +196,8 @@ void DlgPrefLibrary::slotUpdate() {
             ConfigKey("[Library]","RescanOnStartup"), false));
     checkBox_SyncTrackMetadataExport->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","SyncTrackMetadataExport"), false));
+    checkBox_SeratoMetadataExport->setChecked(m_pConfig->getValue(
+            ConfigKey("[Library]", "SeratoMetadataExport"), false));
     checkBox_use_relative_path->setChecked(m_pConfig->getValue(
             ConfigKey("[Library]","UseRelativePathOnExport"), false));
     checkBox_show_rhythmbox->setChecked(m_pConfig->getValue(
@@ -323,11 +339,32 @@ void DlgPrefLibrary::slotRelocateDir() {
     }
 }
 
+void DlgPrefLibrary::slotSeratoMetadataExportClicked(bool checked) {
+    if (checked) {
+        if (QMessageBox::warning(this,
+                    QStringLiteral("Serato Metadata Export"),
+                    QStringLiteral(
+                            "Exporting Serato Metadata from Mixxx is "
+                            "experimental. There is no official documentation "
+                            "of the format. Existing Serato Metadata might be "
+                            "lost and files with Serato metadata written by "
+                            "Mixxx could potentially crash Serato DJ, "
+                            "therefore caution is advised and backups are "
+                            "recommended. Are you sure you want to enable this "
+                            "option?"),
+                    QMessageBox::Yes | QMessageBox::No) == QMessageBox::No) {
+            checkBox_SeratoMetadataExport->setChecked(false);
+        }
+    }
+}
+
 void DlgPrefLibrary::slotApply() {
     m_pConfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","SyncTrackMetadataExport"),
                 ConfigValue((int)checkBox_SyncTrackMetadataExport->isChecked()));
+    m_pConfig->set(ConfigKey("[Library]", "SeratoMetadataExport"),
+            ConfigValue(static_cast<int>(checkBox_SeratoMetadataExport->isChecked())));
     m_pConfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
     m_pConfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),

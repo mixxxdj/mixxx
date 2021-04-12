@@ -85,25 +85,6 @@ class ChannelCount {
     value_t m_value;
 };
 
-// Defines the ordering of how samples from multiple channels are
-// stored in contiguous buffers:
-//    - Planar: Channel by channel
-//    - Interleaved: Frame by frame
-// The samples from all channels that are coincident in time are
-// called a "frame" (or more specific "sample frame").
-//
-// Example: 10 stereo samples from left (L) and right (R) channel
-// Planar layout:      LLLLLLLLLLRRRRRRRRRR
-// Interleaved layout: LRLRLRLRLRLRLRLRLRLR
-enum class SampleLayout {
-    Planar,
-    Interleaved
-};
-
-typedef std::optional<SampleLayout> OptionalSampleLayout;
-
-QDebug operator<<(QDebug dbg, SampleLayout arg);
-
 class SampleRate {
   public:
     typedef SINT value_t;
@@ -202,11 +183,11 @@ QDebug operator<<(QDebug dbg, Bitrate arg);
 Q_DECLARE_TYPEINFO(mixxx::audio::ChannelCount, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(mixxx::audio::ChannelCount)
 
-Q_DECLARE_TYPEINFO(mixxx::audio::OptionalChannelLayout, Q_PRIMITIVE_TYPE);
-Q_DECLARE_METATYPE(mixxx::audio::OptionalChannelLayout)
+Q_DECLARE_TYPEINFO(mixxx::audio::ChannelLayout, Q_PRIMITIVE_TYPE);
+Q_DECLARE_METATYPE(mixxx::audio::ChannelLayout)
 
-Q_DECLARE_TYPEINFO(mixxx::audio::OptionalSampleLayout, Q_PRIMITIVE_TYPE);
-Q_DECLARE_METATYPE(mixxx::audio::OptionalSampleLayout)
+Q_DECLARE_TYPEINFO(mixxx::audio::OptionalChannelLayout, Q_MOVABLE_TYPE);
+Q_DECLARE_METATYPE(mixxx::audio::OptionalChannelLayout)
 
 Q_DECLARE_TYPEINFO(mixxx::audio::SampleRate, Q_PRIMITIVE_TYPE);
 Q_DECLARE_METATYPE(mixxx::audio::SampleRate)

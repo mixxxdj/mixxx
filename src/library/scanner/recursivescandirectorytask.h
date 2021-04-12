@@ -3,7 +3,7 @@
 #include <QDir>
 
 #include "library/scanner/scannertask.h"
-#include "util/sandbox.h"
+#include "util/fileaccess.h"
 
 /// Recursively scan a music library. Doesn't import tracks for any directories
 /// that have already been scanned and have not changed. Changes are tracked by
@@ -13,18 +13,15 @@
 class RecursiveScanDirectoryTask : public ScannerTask {
     Q_OBJECT
   public:
-
     RecursiveScanDirectoryTask(LibraryScanner* pScanner,
-                               const ScannerGlobalPointer scannerGlobal,
-                               const QDir& dir,
-                               SecurityTokenPointer pToken,
-                               bool scanUnhashed);
-    virtual ~RecursiveScanDirectoryTask() {}
+            const ScannerGlobalPointer& scannerGlobal,
+            const mixxx::FileAccess&& dirAccess,
+            bool scanUnhashed);
+    ~RecursiveScanDirectoryTask() override = default;
 
-    virtual void run();
+    void run() override;
 
   private:
-    QDir m_dir;
-    SecurityTokenPointer m_pToken;
-    bool m_scanUnhashed;
+    const mixxx::FileAccess m_dirAccess;
+    const bool m_scanUnhashed;
 };

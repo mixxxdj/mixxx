@@ -6,11 +6,12 @@
 #include <QList>
 #include <memory>
 
-#include "audio/streaminfo.h"
+#include "audio/signalinfo.h"
 #include "track/beats.h"
 #include "track/cueinfo.h"
 #include "track/taglib/trackmetadata_file.h"
 #include "util/assert.h"
+#include "util/duration.h"
 #include "util/types.h"
 
 namespace mixxx {
@@ -129,7 +130,8 @@ class SeratoBeatGrid final {
     }
 
     void setBeats(BeatsPointer pBeats,
-            const audio::StreamInfo& streamInfo,
+            const audio::SignalInfo& signalInfo,
+            const Duration& duration,
             double timingOffsetMillis);
 
     quint8 footer() const {

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QCoreApplication>
 #include <QDesktopServices>
 #include <QDir>
 #include <QList>
@@ -20,8 +21,7 @@ class CmdlineArgs final {
         return cla;
     }
 
-    bool Parse(int &argc, char **argv);
-    void printUsage();
+    bool parse(const QStringList& arguments);
 
     const QList<QString>& getMusicFiles() const { return m_musicFiles; }
     bool getStartInFullscreen() const { return m_startInFullscreen; }
@@ -42,7 +42,6 @@ class CmdlineArgs final {
         m_settingsPath = newSettingsPath;
     }
     const QString& getResourcePath() const { return m_resourcePath; }
-    const QString& getPluginPath() const { return m_pluginPath; }
     const QString& getTimelinePath() const { return m_timelinePath; }
 
   private:
@@ -59,6 +58,5 @@ class CmdlineArgs final {
     QString m_locale;
     QString m_settingsPath;
     QString m_resourcePath;
-    QString m_pluginPath;
     QString m_timelinePath;
 };

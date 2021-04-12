@@ -9,10 +9,10 @@
 /* jshint -W016                                                                  */
 ///////////////////////////////////////////////////////////////////////////////////
 /*                                                                               */
-/* Traktor Kontrol S2 MK3 HID controller script v1.00                            */
-/* Last modification: December 2019                                              */
+/* Traktor Kontrol S2 MK3 HID controller script v1.01                            */
+/* Last modification: February 2021                                              */
 /* Author: Michael Schmidt                                                       */
-/* https://www.mixxx.org/wiki/doku.php/native_instruments_traktor_kontrol_s2_mk3 */
+/* https://github.com/mixxxdj/mixxx/wiki/Native%20Instruments%20Traktor%20Kontrol%20S2%20MK3 */
 /*                                                                               */
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -185,7 +185,13 @@ TraktorS2MK3.registerInputPackets = function () {
     this.registerInputScaler(messageLong, "[QuickEffectRack1_[Channel2]]", "super1", 0x25, 0xFFFF, this.parameterHandler);
 
     this.registerInputScaler(messageLong, "[Master]", "crossfader", 0x05, 0xFFFF, this.parameterHandler);
-    this.registerInputScaler(messageLong, "[Master]", "gain", 0x15, 0xFFFF, this.parameterHandler);
+    /*
+    do NOT map the "master" button because it also drives the analog output gain.
+    Disabling this mapping is the only way to have independant controls for the
+    digital master gain and the output level - the latter usually needs to be set
+    at 100%.
+    */
+    // this.registerInputScaler(messageLong, "[Master]", "gain", 0x15, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Sampler]", "pregain", 0x17, 0xFFFF, this.samplerPregainHandler);
     this.registerInputScaler(messageLong, "[Master]", "headMix", 0x19, 0xFFFF, this.parameterHandler);
     this.registerInputScaler(messageLong, "[Master]", "headGain", 0x1B, 0xFFFF, this.parameterHandler);
@@ -214,7 +220,8 @@ TraktorS2MK3.registerInputPackets = function () {
     engine.softTakeover("[QuickEffectRack1_[Channel2]]", "super1", true);
 
     engine.softTakeover("[Master]", "crossfader", true);
-    engine.softTakeover("[Master]", "gain", true);
+    // see the above comment on master gain
+    //engine.softTakeover("[Master]", "gain", true);
     engine.softTakeover("[Master]", "headMix", true);
     engine.softTakeover("[Master]", "headGain", true);
 

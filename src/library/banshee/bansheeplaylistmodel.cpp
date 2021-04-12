@@ -271,15 +271,10 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         pTrack->setRating(getFieldString(index, CLM_RATING).toInt());
         pTrack->setTrackNumber(getFieldString(index, CLM_TRACKNUMBER));
         double bpm = getFieldString(index, CLM_BPM).toDouble();
-        bpm = pTrack->setBpm(bpm);
+        pTrack->trySetBpm(bpm);
         pTrack->setBitrate(getFieldString(index, CLM_BITRATE).toInt());
         pTrack->setComment(getFieldString(index, CLM_COMMENT));
         pTrack->setComposer(getFieldString(index, CLM_COMPOSER));
-        // If the track has a BPM, then give it a static beatgrid.
-        if (bpm > 0) {
-            mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0.0);
-            pTrack->setBeats(pBeats);
-        }
     }
     return pTrack;
 }

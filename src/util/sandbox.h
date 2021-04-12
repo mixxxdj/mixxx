@@ -42,13 +42,13 @@ class Sandbox {
     // Prompt the user to give us access to the path with an open-file dialog.
     static bool askForAccess(const QString& canonicalPath);
 
-    static bool canAccessFile(const QFileInfo& file) {
-        SecurityTokenPointer pToken = openSecurityToken(file, true);
-        return file.isReadable();
+    static bool canAccess(const QFileInfo& info) {
+        SecurityTokenPointer pToken = openSecurityToken(info, true);
+        return info.isReadable();
     }
 
-    static bool canAccessFile(const QDir& dir) {
-        SecurityTokenPointer pToken = openSecurityToken(dir, true);
+    static bool canAccessDir(const QDir& dir) {
+        SecurityTokenPointer pToken = openSecurityTokenForDir(dir, true);
         QFileInfo info(dir.canonicalPath());
         return info.isReadable();
     }
@@ -57,15 +57,15 @@ class Sandbox {
         return createSecurityToken(info.canonicalFilePath(), info.isDir());
     }
 
-    static bool createSecurityToken(const QDir& dir) {
+    static bool createSecurityTokenForDir(const QDir& dir) {
         return createSecurityToken(dir.canonicalPath(), true);
     }
 
     static SecurityTokenPointer openSecurityToken(const QFileInfo& info, bool create);
-    static SecurityTokenPointer openSecurityToken(const QDir& dir, bool create);
+    static SecurityTokenPointer openSecurityTokenForDir(const QDir& dir, bool create);
 
   private:
-    Sandbox() {}
+    Sandbox() = delete;
 
     static ConfigKey keyForCanonicalPath(const QString& canonicalPath);
 

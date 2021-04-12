@@ -18,8 +18,7 @@ constexpr bool kDefaultCueEnabled = true;
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, UserSettingsPointer pConfig)
         : DlgPreferencePage(parent),
           m_pConfig(pConfig),
-          m_selFormat("","",false)
-{
+          m_selFormat(QString(), QString(), false, QString()) {
     setupUi(this);
 
     // Setting recordings path.
@@ -223,7 +222,7 @@ void DlgPrefRecord::slotBrowseRecordingsDir()
         // that we can access the folder on future runs. We need to canonicalize
         // the path so we first wrap the directory string with a QDir.
         QDir directory(fd);
-        Sandbox::createSecurityToken(directory);
+        Sandbox::createSecurityTokenForDir(directory);
         LineEditRecordings->setText(fd);
     }
 }

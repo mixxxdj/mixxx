@@ -3,6 +3,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 
+#include "config.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
@@ -20,6 +21,7 @@ QString buildWhatsThis(const QString& title, const QString& text) {
     return QString("%1\n\n%2").arg(preparedTitle.remove("&"), text);
 }
 
+#ifdef __VINYLCONTROL__
 QString vinylControlDefaultKeyBinding(int deck) {
     // More bindings need to be defined if you increment
     // kMaximumVinylControlInputs.
@@ -32,6 +34,7 @@ QString vinylControlDefaultKeyBinding(int deck) {
         default: return QString();
     }
 }
+#endif // __VINYLCONTROL__
 
 QString loadToDeckDefaultKeyBinding(int deck) {
     switch (deck) {
@@ -49,7 +52,22 @@ QString showPreferencesKeyBinding() {
 #endif
 }
 
-
+QUrl documentationUrl(
+        const QString& resourcePath, const QString& fileName, const QString& docUrl) {
+    QDir resourceDir(resourcePath);
+    // Documentation PDFs are included on Windows and Linux only,
+    // so on macOS this always returns the web URL.
+#if defined(MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR)
+    if (!resourceDir.exists(fileName)) {
+        resourceDir.cd(MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR);
+    }
+#endif
+    if (resourceDir.exists(fileName)) {
+        return QUrl::fromLocalFile(resourceDir.absoluteFilePath(fileName));
+    } else {
+        return QUrl(docUrl);
+    }
+}
 }  // namespace
 
 WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
@@ -267,9 +285,7 @@ void WMainMenuBar::initialize() {
     createVisibilityControl(pViewMaximizeLibrary, ConfigKey("[Master]", "maximize_library"));
     pViewMenu->addAction(pViewMaximizeLibrary);
 
-
     pViewMenu->addSeparator();
-
 
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
@@ -530,8 +546,31 @@ void WMainMenuBar::initialize() {
     // HELP MENU
     QMenu* pHelpMenu = new QMenu(tr("&Help"), this);
 
-    QString externalLinkSuffix = " =>";
+    QString externalLinkSuffix;
+#ifndef __APPLE__
+    // According to Apple's Human Interface Guidelines devs are encouraged
+    // to not use custom icons in menus.
+    // https://developer.apple.com/design/human-interface-guidelines/macos/menus/menu-anatomy/
+    externalLinkSuffix = QChar(' ') + QChar(0x2197); // north-east arrow
+#endif
 
+    //: menu title
+    QString keywheelTitle = tr("Show Keywheel");
+    //: tooltip text
+    QString keywheelText = tr("Show keywheel");
+    m_pViewKeywheel = new QAction(keywheelTitle, this);
+    m_pViewKeywheel->setCheckable(true);
+    m_pViewKeywheel->setShortcut(
+            QKeySequence(m_pKbdConfig->getValue(
+                    ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowKeywheel"),
+                    tr("F12", "Menubar|View|Show Keywheel"))));
+    m_pViewKeywheel->setShortcutContext(Qt::ApplicationShortcut);
+    m_pViewKeywheel->setStatusTip(keywheelText);
+    m_pViewKeywheel->setWhatsThis(buildWhatsThis(keywheelTitle, keywheelText));
+    connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
+    pHelpMenu->addAction(m_pViewKeywheel);
+
+    // Community Support
     QString supportTitle = tr("&Community Support") + externalLinkSuffix;
     QString supportText = tr("Get help with Mixxx");
     auto* pHelpSupport = new QAction(supportTitle, this);
@@ -541,56 +580,43 @@ void WMainMenuBar::initialize() {
             this, [this] { slotVisitUrl(MIXXX_SUPPORT_URL); });
     pHelpMenu->addAction(pHelpSupport);
 
-    QDir resourceDir(m_pConfig->getResourcePath());
-    // Default to the mixxx.org hosted version of the manual.
-    QUrl qManualUrl(MIXXX_MANUAL_URL);
-#if defined(__APPLE__)
-    // FIXME: We don't include the PDF manual in the bundle on OSX.
-    // Default to the web-hosted version.
-#elif defined(__WINDOWS__)
-    // On Windows, the manual PDF sits in the same folder as the 'skins' folder.
-    if (resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
-        qManualUrl = QUrl::fromLocalFile(
-                resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
-    }
-#elif defined(__LINUX__)
-    // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
-    if (resourceDir.cd("../doc/mixxx") && resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
-        qManualUrl = QUrl::fromLocalFile(
-                resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
-    }
-#else
-    // No idea, default to the mixxx.org hosted version.
-#endif
+    // User Manual
+    QUrl manualUrl = documentationUrl(m_pConfig->getResourcePath(),
+            MIXXX_MANUAL_FILENAME,
+            MIXXX_MANUAL_URL);
+    QString manualSuffix = manualUrl.isLocalFile() ? QString() : externalLinkSuffix;
 
-    QString manualTitle = tr("&User Manual") + externalLinkSuffix;
+    QString manualTitle = tr("&User Manual") + manualSuffix;
     QString manualText = tr("Read the Mixxx user manual.");
     auto* pHelpManual = new QAction(manualTitle, this);
     pHelpManual->setStatusTip(manualText);
     pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
-    connect(pHelpManual, &QAction::triggered,
-            this, [this, qManualUrl] { slotVisitUrl(qManualUrl.toString()); });
+    connect(pHelpManual, &QAction::triggered, this, [this, manualUrl] {
+        slotVisitUrl(manualUrl.toString());
+    });
     pHelpMenu->addAction(pHelpManual);
 
-    QString shortcutsTitle = tr("&Keyboard Shortcuts") + externalLinkSuffix;
+    // Keyboard Shortcuts
+    QUrl keyboardShortcutsUrl = documentationUrl(m_pConfig->getResourcePath(),
+            MIXXX_KBD_SHORTCUTS_FILENAME,
+            MIXXX_MANUAL_SHORTCUTS_URL);
+    QString keyboardShortcutsSuffix =
+            keyboardShortcutsUrl.isLocalFile() ? QString() : externalLinkSuffix;
+
+    QString shortcutsTitle = tr("&Keyboard Shortcuts") + keyboardShortcutsSuffix;
     QString shortcutsText = tr("Speed up your workflow with keyboard shortcuts.");
-    auto* pHelpShortcuts = new QAction(shortcutsTitle, this);
-    pHelpShortcuts->setStatusTip(shortcutsText);
-    pHelpShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
-    connect(pHelpShortcuts, &QAction::triggered, this, [this] {
-        slotVisitUrl(MIXXX_MANUAL_SHORTCUTS_URL);
-    });
-    pHelpMenu->addAction(pHelpShortcuts);
+    auto* pHelpKbdShortcuts = new QAction(shortcutsTitle, this);
+    pHelpKbdShortcuts->setStatusTip(shortcutsText);
+    pHelpKbdShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
+    connect(pHelpKbdShortcuts,
+            &QAction::triggered,
+            this,
+            [this, keyboardShortcutsUrl] {
+                slotVisitUrl(keyboardShortcutsUrl.toString());
+            });
+    pHelpMenu->addAction(pHelpKbdShortcuts);
 
-    QString feedbackTitle = tr("Send Us &Feedback") + externalLinkSuffix;
-    QString feedbackText = tr("Send feedback to the Mixxx team.");
-    auto* pHelpFeedback = new QAction(feedbackTitle, this);
-    pHelpFeedback->setStatusTip(feedbackText);
-    pHelpFeedback->setWhatsThis(buildWhatsThis(feedbackTitle, feedbackText));
-    connect(pHelpFeedback, &QAction::triggered,
-            this, [this] { slotVisitUrl(MIXXX_FEEDBACK_URL); });
-    pHelpMenu->addAction(pHelpFeedback);
-
+    // Translate This Application
     QString translateTitle = tr("&Translate This Application") + externalLinkSuffix;
     QString translateText = tr("Help translate this application into your language.");
     auto* pHelpTranslation = new QAction(translateTitle, this);
@@ -612,6 +638,11 @@ void WMainMenuBar::initialize() {
 
     pHelpMenu->addAction(pHelpAboutApp);
     addMenu(pHelpMenu);
+}
+
+void WMainMenuBar::onKeywheelChange(int state) {
+    Q_UNUSED(state);
+    m_pViewKeywheel->setChecked(false);
 }
 
 void WMainMenuBar::onLibraryScanStarted() {
