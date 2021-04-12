@@ -837,8 +837,8 @@ EngineChannel* EngineMaster::getChannel(const QString& group) {
     return nullptr;
 }
 
-CSAMPLE_GAIN EngineMaster::getMasterGain(int channelIndex) {
-    if (channelIndex < m_channelMasterGainCache.size() && channelIndex >= 0) {
+CSAMPLE_GAIN EngineMaster::getMasterGain(int channelIndex) const {
+    if (channelIndex >= 0 && channelIndex < m_channelMasterGainCache.size()) {
         return m_channelMasterGainCache[channelIndex].m_gain;
     }
     return CSAMPLE_GAIN_ZERO;

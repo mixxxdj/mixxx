@@ -105,7 +105,7 @@ class EngineMaster : public QObject, public AudioSource {
         return m_pEngineSideChain;
     }
 
-    CSAMPLE_GAIN getMasterGain(int channelIndex);
+    CSAMPLE_GAIN getMasterGain(int channelIndex) const;
 
     struct ChannelInfo {
         ChannelInfo(int index)
