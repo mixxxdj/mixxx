@@ -234,11 +234,6 @@ DJ202.Deck = function (deckNumbers, offset) {
   engine.setValue(this.currentDeck, "rate_dir", -1);
   this.tempoFader = new components.Pot({
     midi: [0xB0 + offset, 0x09],
-    connect: function () {
-      engine.softTakeover(this.group, 'pitch', true);
-      engine.softTakeover(this.group, 'rate', true);
-      components.Pot.prototype.connect.apply(this, arguments);
-    },
     unshift: function () {
       this.inKey = 'rate';
       this.inSetParameter = components.Pot.prototype.inSetParameter;
