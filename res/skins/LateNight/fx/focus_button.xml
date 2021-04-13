@@ -21,7 +21,7 @@ Variables:
           <PushButton>
             <TooltipId>EffectSlot_focus</TooltipId>
             <ObjectName>FxFocusButton</ObjectName>
-            <Size>18f,18f</Size>
+            <Size>16f,16f</Size>
             <NumberStates>2</NumberStates>
             <RightClickIsPushButton>true</RightClickIsPushButton>
             <State>
@@ -30,13 +30,14 @@ Variables:
             <State>
               <Number>1</Number>
             </State>
+            <!-- left click = focus -->
             <Connection>
               <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
               <ButtonState>LeftButton</ButtonState>
               <Transform><IsEqual><Variable name="FxNum"/></IsEqual></Transform>
             </Connection>
+            <!-- right click = unfocus -->
             <Connection>
-              <!-- right click > unfocus -->
               <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
               <ButtonState>RightButton</ButtonState>
               <EmitOnDownPress>true</EmitOnDownPress>

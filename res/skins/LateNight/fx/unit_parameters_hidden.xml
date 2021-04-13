@@ -3,8 +3,6 @@
   Description:
     An effect unit widget.
   Variables:
-    group: The group for the controls.
-    FxRack
     FxUnit
 -->
 <Template>
@@ -20,8 +18,36 @@
         <Layout>horizontal</Layout>
         <Children>
 
-          <WidgetGroup><SizePolicy>min,min</SizePolicy></WidgetGroup>
+          <!-- TODO ronso0 mkae this work without compressing fx slots -->
+          <!-- Separator shown when it makes sense (gap is > 60px) -->
+          <!-- <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>max,min</SizePolicy>
+            <Children>
+              <SizeAwareStack>
+                <SizePolicy>i,min</SizePolicy>
+                <Children>
+                  <WidgetGroup>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>i,min</SizePolicy>
+                    <MinimumSize>60,0</MinimumSize>
+                    <Children>
+                      <WidgetGroup><SizePolicy>me,me</SizePolicy></WidgetGroup>
+                      <WidgetGroup>
+                        <ObjectName>FxMixerSeparatorCollapsed</ObjectName>
+                        <Layout>horizontal</Layout>
+                        <Children/>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </SizeAwareStack>
+            </Children>
+          </WidgetGroup> -->
 
+          <WidgetGroup><SizePolicy>min,me</SizePolicy></WidgetGroup>
+
+          <!-- Fx Slot 1 -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -34,12 +60,13 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>FxSlotSeparatorV</ObjectName>
+            <ObjectName>FxFlowIndicatorCollapsed</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children/>
           </WidgetGroup>
 
+          <!-- Fx Slot 2 -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -52,11 +79,12 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>FxSlotSeparatorV</ObjectName>
+            <ObjectName>FxFlowIndicatorCollapsed</ObjectName>
             <Layout>horizontal</Layout>
             <Children/>
           </WidgetGroup>
 
+          <!-- Fx Slot 3 -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <SizePolicy>me,min</SizePolicy>
@@ -69,7 +97,7 @@
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>FxSlotSeparatorV</ObjectName>
+            <ObjectName>FxMixerSeparatorCollapsed</ObjectName>
             <Layout>horizontal</Layout>
             <Children/>
           </WidgetGroup>
