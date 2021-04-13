@@ -13,13 +13,12 @@
 #include <QObject>
 #include <QString>
 #include <QTimer>
+#include <iostream>
 
-#include "engine/sync/syncable.h"
-#include "engine/channels/enginechannel.h"
 #include "ableton/Link.hpp"
 #include "ableton/link/HostTimeFilter.hpp"
-
-#include <iostream>
+#include "engine/channels/enginechannel.h"
+#include "engine/sync/syncable.h"
 
 /* This class manages a link session. 
  * Read & update (get & set) this session for Mixxx to be a synced Link participant (bpm & phase)
@@ -34,11 +33,11 @@
 
 class AbletonLink : public QObject, public Syncable {
     Q_OBJECT
-public:
+  public:
     AbletonLink(const QString& group, SyncableListener* pEngineSync);
 
     const QString& getGroup() const override {
-      return m_group;
+        return m_group;
     }
     EngineChannel* getChannel() const override {
         return nullptr;
@@ -94,14 +93,14 @@ public:
     void onCallbackStart(int sampleRate, int bufferSize);
     void onCallbackEnd(int sampleRate, int bufferSize);
 
-private slots:
+  private slots:
     void testPrint() {
         log("", "");
         nonAudioPrint();
         audioSafePrint();
     }
 
-private:
+  private:
     ableton::Link m_link;
     ableton::link::HostTimeFilter<ableton::link::platform::Clock> m_hostTimeFilter;
     const QString m_group;

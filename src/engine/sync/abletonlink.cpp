@@ -1,7 +1,6 @@
 #include "engine/sync/abletonlink.h"
 
 #include <QtDebug>
-
 #include <cmath>
 
 #include "engine/sync/enginesync.h"
@@ -14,11 +13,7 @@ const mixxx::Logger kLogger("AbletonLink");
 } // namespace
 
 AbletonLink::AbletonLink(const QString& group, SyncableListener* pEngineSync)
-        : m_link(120.)
-        , m_group(group)
-        , m_pEngineSync(pEngineSync)
-        , m_mode(SYNC_NONE){
-    
+        : m_link(120.), m_group(group), m_pEngineSync(pEngineSync), m_mode(SYNC_NONE) {
     nonAudioSet();
     audioSafeSet();
     nonAudioPrint();
@@ -31,9 +26,11 @@ void AbletonLink::setSyncMode(SyncMode mode) {
     m_mode = mode;
 }
 
-void AbletonLink::notifyOnlyPlayingSyncable() {}
+void AbletonLink::notifyOnlyPlayingSyncable() {
+}
 
-void AbletonLink::requestSync() {}
+void AbletonLink::requestSync() {
+}
 
 SyncMode AbletonLink::getSyncMode() const {
     return m_mode;
@@ -89,7 +86,7 @@ void AbletonLink::onCallbackStart(int sampleRate, int bufferSize) {
     double samplesPerMicrosecond = static_cast<double>(sampleRate) / 1000000.;
     double currentLatency = static_cast<double>(samplesPerChannel) / samplesPerMicrosecond;
     m_currentLatency = std::chrono::microseconds{static_cast<long>(currentLatency)};
-    
+
     updateHostTime(m_sampleTime);
     m_sampleTime += samplesPerChannel;
 }

@@ -5,8 +5,8 @@
 
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
-#include "engine/sync/internalclock.h"
 #include "engine/sync/abletonlink.h"
+#include "engine/sync/internalclock.h"
 #include "util/assert.h"
 #include "util/logger.h"
 
