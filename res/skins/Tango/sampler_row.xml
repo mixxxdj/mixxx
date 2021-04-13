@@ -46,11 +46,10 @@ Variables:
             <Children>
               <WidgetGroup><Size>1min,3f</Size></WidgetGroup>
               <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
-                <SetVariable name="Size">20f,15f</SetVariable>
+                <SetVariable name="ObjectName">SamplersMiniMaxi</SetVariable>
+                <SetVariable name="Size">20f,30me</SetVariable>
                 <SetVariable name="ConfigKey">[Skin],sampler_row_<Variable name="row"/>_expanded</SetVariable>
               </Template>
-              <WidgetGroup><Size>1min,1me</Size></WidgetGroup>
             </Children>
           </WidgetGroup>
           <WidgetGroup><Size>1min,5f</Size></WidgetGroup>

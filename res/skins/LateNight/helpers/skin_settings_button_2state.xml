@@ -1,11 +1,6 @@
 <!--
 Description:
   2-state button for skin settings menu.
-  Can be squeezed so that all skin settings categories fit on small screens.
-Variables:
-  width         :
-  state_X_text  : label text for state X
-  Setting       : persistent left-click control
 -->
 <Template>
   <PushButton>

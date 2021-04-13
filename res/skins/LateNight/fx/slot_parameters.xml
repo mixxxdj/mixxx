@@ -1,13 +1,13 @@
 <!DOCTYPE template>
 <!--
   Description:
-    An effect unit widget hosting all effect controls for both collapsed
-    and expanded state ([FxUnitN],show_parameters)
+    An effect unit widget hosting all parameter controls for an effect
   Variables:
-    group: The group for the controls.
-    FxRack
+    FxRack_FxUnit
     FxUnit
     FxNum
+    ArcRadiusSmall
+    TopRegion_BtnType
 -->
 <Template>
   <SetVariable name="FxRack_FxUnit_FxNum">EffectRack1_EffectUnit<Variable name="FxUnit"/>_Effect<Variable name="FxNum"/></SetVariable>
@@ -94,7 +94,7 @@
         </Children>
       </WidgetGroup><!-- FxParametersContainer -->
 
-      <!-- Layer to style the Fx slot border, depending on focus state -->
+      <!-- Layer to style the Fx slot when it's focused (see fx mapping of midi-components.js) -->
       <WidgetGroup>
         <SizePolicy>me,min</SizePolicy>
         <Layout>stacked</Layout>
@@ -114,7 +114,6 @@
           <BindProperty>visible</BindProperty>
         </Connection>
       </WidgetGroup>
-      <!-- Layer to style the Fx slot border, depending on focus state -->
 
       <!-- Regular background, draws the background tile in Classic them -->
       <WidgetGroup>
