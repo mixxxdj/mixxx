@@ -385,9 +385,16 @@ DJ202.Deck = function (deckNumbers, offset) {
 
   // =============================== MIXER ====================================
 
+  this.potInput = function (channel, control, value, status, group) {
+    value = (this.MSB << 7) + value;
+    var newValue = this.inValueScale(value);
+    engine.setParameter(group, this.inKey, newValue);
+  };
+
   this.pregain = new components.Pot({
     midi: [0xB0 + offset, 0x16],
     inKey: 'pregain',
+    input: this.potInput
   });
 
   this.eqKnob = [];
@@ -396,6 +403,7 @@ DJ202.Deck = function (deckNumbers, offset) {
       midi: [0xB0 + offset, 0x20 - k],
       group: '[EqualizerRack1_' + this.currentDeck + '_Effect1]',
       inKey: 'parameter' + k,
+      input: this.potInput
     });
   }
 
@@ -403,6 +411,7 @@ DJ202.Deck = function (deckNumbers, offset) {
     midi: [0xB0 + offset, 0x1A],
     group: '[QuickEffectRack1_' + this.currentDeck + ']',
     inKey: 'super1',
+    input: this.potInput
   });
 
   this.pfl = new components.Button({
@@ -433,6 +442,7 @@ DJ202.Deck = function (deckNumbers, offset) {
   this.volume = new components.Pot({
     midi: [0xB0 + offset, 0x1C],
     inKey: 'volume',
+    input: this.potInput
   });
 
   this.setDeck = new components.Button({
