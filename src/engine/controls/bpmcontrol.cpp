@@ -174,7 +174,7 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
-        double centerBpm = bpm + deltaBpm;
+        double centerBpm = math_max(kBpmAdjustMin, bpm + deltaBpm);
         double adjustedBpm = BeatUtils::roundBpmWithinRange(
                 centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);
         pTrack->trySetBeats(pBeats->setBpm(adjustedBpm));
