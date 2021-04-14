@@ -977,7 +977,6 @@ WBeatSpinBox,
 #ToolBar {
   padding: 0px 4px 0px 4px;
   qproperty-layoutSpacing: 5;
-  background-color: #111111;
   border-width: 0px 0px 3px 0px;
   border-style: solid;
   border-color: #222;
@@ -1924,6 +1923,12 @@ WEffectSelector QAbstractScrollArea,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox QAbstractScrollArea,
 QToolTip,
+#MainMenu,
+#MainMenu::item,
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
+#ToolBar,
 #LibraryContainer QMenu,
 #LibraryContainer QMenu::item,
 #LibraryContainer QMenu QCheckBox,
@@ -1960,6 +1965,12 @@ WTrackMenu QMenu {
   border-radius: 1px;
 }
   /* hovered items */
+  #MainMenu::item:selected,
+  #MainMenu QMenu::item:selected,
+  #MainMenu QMenu::item:focus,
+  #MainMenu QMenu::item:hover,
+  #MainMenu QMenu::indicator:checked:selected,
+  #MainMenu QMenu::indicator:unchecked:selected,
   WEffectSelector::item:selected,
   #fadeModeCombobox::item:selected,
   WBeatSpinBox QMenu::item:selected,
@@ -1983,6 +1994,42 @@ WTrackMenu QMenu {
       outline: none;
     }
 
+#MainMenu {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  }
+  #MainMenu::item {
+    /* No big deal, just try to make it look like native menus */
+    padding: 0.1em 0.5em 0.1em 0.5em;
+    margin: 0em;
+  }
+  #MainMenu QMenu {
+    padding: 0.08em;
+    border: 1px solid #888;
+    border-radius: 2px;
+  }
+  #MainMenu QMenu::separator {
+    height: 0px;
+    margin: 0.25em;
+    border-top: 1px solid #0a0a0a;
+  }
+  #MainMenu QMenu::right-arrow {
+    width: 0.7em;
+    height: 0.7em;
+  }
+
+  #MainMenu QMenu::indicator {
+    width: 1em;
+    height: 1em;
+  }
+  #MainMenu QMenu::indicator:checked,
+  #MainMenu QMenu::indicator:checked:selected {
+    image: url(skin:/icon/ic_mainmenu_checkbox_checked.svg);
+  }
+  #MainMenu QMenu::indicator:unchecked,
+  #MainMenu QMenu::indicator:unchecked:selected {
+    image: url(skin:/icon/ic_mainmenu_checkbox.svg);
+  }
 
 
 WEffectSelector:!editable,
@@ -2138,6 +2185,8 @@ WEffectSelector:!editable:on {
     image: url(skin:/icon/ic_library_checkmark.svg);
     }
   /* disabled menu item and checkbox */
+  #MainMenu::item:!enabled,
+  #MainMenu QMenu::item:!enabled,
   #LibraryContainer QMenu::item:!enabled,
   WBeatSpinBox QMenu::item:!enabled,
   WCueMenuPopup QMenu::item:!enabled,
@@ -2172,6 +2221,11 @@ WEffectSelector:!editable:on {
   WTrackMenu QMenu::right-arrow {
     width: 16px;
     height: 16px;
+  }
+  #MainMenu QMenu::right-arrow,
+  #LibraryContainer QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow {
     image: url(skin:/icon/ic_chevron_right_48px.svg);
   }
 

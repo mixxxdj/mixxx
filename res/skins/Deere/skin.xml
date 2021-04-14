@@ -78,7 +78,10 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:../Deere/style.qss" src-mac="skin:../Deere/style-mac.qss"/>
+  <Style src="skin:../Deere/style.qss"
+         src-linux="skin:../Deere/style-linux.qss"
+         src-windows="skin:../Deere/style-windows.qss"
+         src-mac="skin:../Deere/style-mac.qss"/>
 
   <Size>1008me,550me</Size>
   <Layout>horizontal</Layout>
