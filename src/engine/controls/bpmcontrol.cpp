@@ -29,12 +29,13 @@ constexpr double kBpmRangeSmallStep = 0.1;
 
 constexpr double kBpmAdjustMin = kBpmRangeMin;
 constexpr double kBpmAdjustStep = 1 / 48.0;
+constexpr double kBpmTabRounding = 1 / 12.0;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
 constexpr double kBpmTapMin = 30.0;
 const mixxx::Duration kBpmTapMaxInterval = mixxx::Duration::fromMillis(
         static_cast<qint64>(1000.0 * (60.0 / kBpmTapMin)));
-constexpr int kBpmTapFilterLength = 5;
+constexpr int kBpmTapFilterLength = 80;
 
 // The local_bpm is calculated forward and backward this number of beats, so
 // the actual number of beats is this x2.
@@ -257,6 +258,9 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength / rateRatio;
+    averageBpm = BeatUtils::roundBpmWithinRange(averageBpm - kBpmTabRounding,
+            averageBpm,
+            averageBpm + kBpmTabRounding);
     pTrack->trySetBeats(pBeats->setBpm(averageBpm));
 }
 
