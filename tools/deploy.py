@@ -86,6 +86,13 @@ def tree(path):
             yield os.path.join(relpath, filename)
 
 
+def slug(text):
+    download_slug, _, package_slug = text.partition("-")
+    if not download_slug or not package_slug:
+        raise ValueError("Failed to parse slug")
+    return download_slug, package_slug
+
+
 def prepare_deployment(args):
     # Get artifact and build metadata
     file_stat = os.stat(args.file)
@@ -122,6 +129,7 @@ def prepare_deployment(args):
             }
         )
 
+    download_slug, package_slug = args.slug
     # Build destination path scheme
     print(f"Destination path pattern: {args.dest_path}")
     destpath = args.dest_path.format(
@@ -130,7 +138,8 @@ def prepare_deployment(args):
         branch=git_info("branch"),
         commit_id=commit_id,
         describe=git_info("describe"),
-        slug=args.slug,
+        package_slug=package_slug,
+        download_slug=download_slug,
     )
     print(f"Destination path: {destpath}")
 
@@ -161,8 +170,10 @@ def prepare_deployment(args):
     if os.getenv("CI") == "true":
         # Set GitHub Actions job output
         print(
-            "::set-output name=artifact-{}::{}".format(
-                args.slug, json.dumps(metadata)
+            "::set-output name=artifact-{}-{}::{}".format(
+                download_slug,
+                package_slug,
+                json.dumps(metadata),
             )
         )
 
@@ -178,8 +189,8 @@ def collect_manifest_data(job_data):
     manifest_data = {}
     for output_name, output_data in job_data["outputs"].items():
         # Filter out unrelated job outputs that don't start with "artifact-".
-        prefix, _, slug = output_name.partition("-")
-        if prefix != "artifact" or not slug:
+        prefix, _, artifact_slug = output_name.partition("-")
+        if prefix != "artifact" or not artifact_slug:
             print(f"Ignoring output '{output_name}'...")
             continue
         artifact_data = json.loads(output_data)
@@ -191,7 +202,7 @@ def collect_manifest_data(job_data):
         if not resp.status == 200:
             raise LookupError(f"Unable to find URL '{url}' on remote server")
 
-        manifest_data[slug] = artifact_data
+        manifest_data[artifact_slug] = artifact_data
 
     return manifest_data
 
@@ -267,6 +278,7 @@ def main(argv=None):
         "--slug",
         action="store",
         required=True,
+        type=slug,
         help="Artifact identifier for the website's download page",
     )
     artifact_parser.add_argument(

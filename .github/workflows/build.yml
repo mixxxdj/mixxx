@@ -32,6 +32,7 @@ jobs:
             buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 18.04 DEB
             artifacts_path: build/*.deb
+            artifacts_slug: ubuntu-bionic
             qt_qpa_platform: offscreen
           - name: Ubuntu 20.04 (gcc)
             os: ubuntu-20.04
@@ -54,6 +55,7 @@ jobs:
             buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 20.04 DEB
             artifacts_path: build/*.deb
+            artifacts_slug: ubuntu-focal
             qt_qpa_platform: offscreen
           - name: macOS 10.15
             os: macos-10.15
@@ -340,7 +342,7 @@ jobs:
         python3 tools/deploy.py prepare-deployment
         --slug '${{ matrix.artifacts_slug }}'
         --output-dir 'deploy/'
-        --dest-path 'builds/{branch}/${{ runner.os }}/{filename}'
+        --dest-path 'builds/{branch}/mixxx-{describe}-{package_slug}.{ext}'
         --dest-url 'https://downloads.mixxx.org'
         ${{ matrix.artifacts_path }}
 
