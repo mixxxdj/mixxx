@@ -10,6 +10,7 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginemaster.h"
 #include "moc_bpmcontrol.cpp"
+#include "track/beatutils.h"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/duration.h"
@@ -172,7 +173,9 @@ void BpmControl::adjustBeatsBpm(double deltaBpm) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
-        double adjustedBpm = bpm + deltaBpm;
+        double centerBpm = bpm + deltaBpm;
+        double adjustedBpm = BeatUtils::roundBpmWithinRange(
+                centerBpm - kBpmAdjustStep / 2, centerBpm, centerBpm + kBpmAdjustStep / 2);
         pTrack->trySetBeats(pBeats->setBpm(adjustedBpm));
     }
 }

@@ -37,6 +37,5 @@ class BeatUtils {
 
     static QVector<double> getBeats(const QVector<ConstRegion>& constantRegions);
 
-  private:
     static double roundBpmWithinRange(double minBpm, double centerBpm, double maxBpm);
 };
