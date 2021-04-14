@@ -164,10 +164,7 @@ double BpmControl::getBpm() const {
     return m_pEngineBpm->get();
 }
 
-void BpmControl::slotAdjustBeatsFaster(double v) {
-    if (v <= 0) {
-        return;
-    }
+void BpmControl::adjustBeatsBpm(double deltaBpm) {
     const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
     if (!pTrack) {
         return;
@@ -175,25 +172,23 @@ void BpmControl::slotAdjustBeatsFaster(double v) {
     const mixxx::BeatsPointer pBeats = pTrack->getBeats();
     if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
         double bpm = pBeats->getBpm();
-        double adjustedBpm = bpm + kBpmAdjustStep;
+        double adjustedBpm = bpm + deltaBpm;
         pTrack->trySetBeats(pBeats->setBpm(adjustedBpm));
     }
+}
+
+void BpmControl::slotAdjustBeatsFaster(double v) {
+    if (v <= 0) {
+        return;
+    }
+    adjustBeatsBpm(kBpmAdjustStep);
 }
 
 void BpmControl::slotAdjustBeatsSlower(double v) {
     if (v <= 0) {
         return;
     }
-    const TrackPointer pTrack = getEngineBuffer()->getLoadedTrack();
-    if (!pTrack) {
-        return;
-    }
-    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    if (pBeats && (pBeats->getCapabilities() & mixxx::Beats::BEATSCAP_SETBPM)) {
-        double bpm = pBeats->getBpm();
-        double adjustedBpm = math_max(kBpmAdjustMin, bpm - kBpmAdjustStep);
-        pTrack->trySetBeats(pBeats->setBpm(adjustedBpm));
-    }
+    adjustBeatsBpm(-kBpmAdjustStep);
 }
 
 void BpmControl::slotTranslateBeatsEarlier(double v) {
