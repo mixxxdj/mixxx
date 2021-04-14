@@ -513,7 +513,6 @@ WTrackTableView {
     WLibrary QCheckBox {
       text-align: right;
       alignment: right;
-      qproperty-alignment: 'AlignRight';
     }
 
   #LibraryBPMSpinBox {
