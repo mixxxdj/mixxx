@@ -137,6 +137,7 @@ let
       fi
     '' else
       "") + ''
+        MIXXX_SRC=$(pwd)
         mkdir -p ${buildFolder}
         cd ${buildFolder}
         cmake $MIXXX_SRC ${
@@ -278,7 +279,6 @@ in stdenv.mkDerivation rec {
       export LOCALE_ARCHIVE="${glibcLocales}/lib/locale/locale-archive";
     fi
     export PYTHONPATH=venv/lib/python3.7/site-packages/:$PYTHONPATH
-    export MIXXX_SRC=`pwd`
     export SOURCE_DATE_EPOCH=315532800
     if [ -z $QT_MESSAGE_PATTERN ]; then
       QT_MESSAGE_PATTERN="`echo -e \"\033[32m%{time h:mm:ss.zzz}\033[0m \"`"
