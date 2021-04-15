@@ -49,6 +49,7 @@ let
 
   allCFlags = cFlags ++ [
     ("-DKEYFINDER=" + (if enableKeyfinder then "ON" else "OFF"))
+    ("-DENGINEPRIME=" + (if enableDjinterop then "ON" else "OFF"))
     ("-DCMAKE_BUILD_TYPE=" + cmakeBuildType)
   ] ++ (if useClang && fastMathBug then [ "-DFAST_MATH=off" ] else [ ]);
 
@@ -94,11 +95,11 @@ let
 
   libdjinterop = stdenv.mkDerivation rec {
     shortname = "libdjinterop";
-    version = "0.14.6";
+    version = "0.15.1";
     name = "${shortname}-${version}";
     src = fetchurl {
       url = "https://github.com/xsco/libdjinterop/archive/${version}.tar.gz";
-      sha256 = "11wm4vip58k3q85s7wkjvnz80wid0c7xw3i8hlbiv03cq3v5fbyv";
+      sha256 = "02607xxy3zzyh75a0g6vksnwjc3j1apy7rxpalyk62624v3ydcw7";
     };
     nativeBuildInputs = [ cmake makeWrapper pkgs.zlib pkgs.sqlite ];
     # buildInputs = [ clang-tools cmake ];
