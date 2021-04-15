@@ -104,12 +104,14 @@ def prepare_deployment(args):
         commit_id = git_info("commit")
 
     metadata = {
-        "commit_id": commit_id,
+        "git_commit": commit_id,
+        "git_branch": git_info("branch"),
+        "git_describe": git_info("describe"),
         "file_size": file_stat.st_size,
         "file_date": datetime.datetime.fromtimestamp(
             file_stat.st_ctime
         ).isoformat(),
-        "sha256": file_sha256,
+        "file_sha256": file_sha256,
     }
 
     if os.getenv("CI") == "true":
@@ -118,7 +120,7 @@ def prepare_deployment(args):
         github_repository = os.getenv("GITHUB_REPOSITORY")
         metadata.update(
             {
-                "commit_url": (
+                "git_commit_url": (
                     f"{github_server_url}/{github_repository}/"
                     f"commit/{commit_id}"
                 ),
@@ -135,9 +137,9 @@ def prepare_deployment(args):
     destpath = args.dest_path.format(
         filename=os.path.basename(args.file),
         ext=os.path.splitext(args.file)[1],
-        branch=git_info("branch"),
-        commit_id=commit_id,
-        describe=git_info("describe"),
+        branch=metadata["git_branch"],
+        commit_id=metadata["git_commit"],
+        describe=metadata["git_describe"],
         package_slug=package_slug,
         download_slug=download_slug,
     )
@@ -155,7 +157,7 @@ def prepare_deployment(args):
     metadata.update(
         {
             "file_url": f"{args.dest_url}/{destpath}",
-            "sha256_url": f"{args.dest_url}/{destpath}.sha256sum",
+            "file_sha256_url": f"{args.dest_url}/{destpath}.sha256sum",
         }
     )
 
