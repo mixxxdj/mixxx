@@ -107,7 +107,7 @@ jobs:
             buildenv_script: tools/windows_buildenv.bat
             artifacts_name: Windows Installer
             artifacts_path: build/*.msi
-            artifacts_slug: windows-windows64
+            artifacts_slug: windows-win64
             qt_qpa_platform: windows
 
     env:
@@ -121,7 +121,7 @@ jobs:
     name: ${{ matrix.name }}
     outputs:
       artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
-      artifact-windows-windows64: ${{ steps.prepare_deploy.outputs.artifact-windows-windows64 }}
+      artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
 
     # sccache's handling of the /fp:fast MSVC compiler option is broken, so use our fork with the fix.
