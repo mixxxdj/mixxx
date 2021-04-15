@@ -339,10 +339,16 @@ jobs:
       if: github.event_name == 'push'
       shell: bash
       run: >
+        if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
+        then
+          export DEPLOY_PATH='mixxx-{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
+        else
+          export DEPLOY_PATH='builds/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
+        fi;
         python3 tools/deploy.py prepare-deployment
         --slug '${{ matrix.artifacts_slug }}'
         --output-dir 'deploy/'
-        --dest-path 'builds/{branch}/mixxx-{describe}-{package_slug}.{ext}'
+        --dest-path "${DEPLOY_PATH}"
         --dest-url 'https://downloads.mixxx.org'
         ${{ matrix.artifacts_path }}
 
@@ -394,9 +400,15 @@ jobs:
       # single JSON document and then deploy to the server.
       if: github.event_name == 'push' && env.SSH_PASSWORD != null
       run: >
+        if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
+        then
+          export DEPLOY_PATH='mixxx-{git_describe}/manifest.json';
+        else
+          export DEPLOY_PATH='builds/{git_branch}/manifest.json';
+        fi;
         python3 tools/deploy.py generate-manifest
         --output-dir 'deploy/'
-        --dest-path 'builds/{branch}/manifest.json'
+        --dest-path "${DEPLOY_PATH}"
         --dest-url 'https://downloads.mixxx.org'
       env:
         JOB_DATA: ${{ toJSON(needs.build) }}

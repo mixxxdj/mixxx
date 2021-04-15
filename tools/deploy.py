@@ -77,6 +77,20 @@ def git_info(info, path="."):
     ).strip()
 
 
+def splitext(filename):
+    """
+    Split filename into name without extenstion and file extension.
+
+    This includes a workaround for ".tar.gz" files.
+    """
+    filename_without_ext, file_ext = os.path.splitext(filename)
+    filename_without_ext2, file_ext2 = os.path.splitext(filename_without_ext)
+    if file_ext2 == ".tar":
+        filename_without_ext = filename_without_ext2
+        file_ext = f"{file_ext2}{file_ext}"
+    return filename_without_ext, file_ext
+
+
 def tree(path):
     for dirpath, dirnames, filenames in os.walk(top=path):
         relpath = os.path.relpath(dirpath, start=path)
@@ -131,15 +145,18 @@ def prepare_deployment(args):
             }
         )
 
+    filename_without_ext, file_ext = splitext(args.file)
     download_slug, package_slug = args.slug
+
     # Build destination path scheme
     print(f"Destination path pattern: {args.dest_path}")
     destpath = args.dest_path.format(
         filename=os.path.basename(args.file),
-        ext=os.path.splitext(args.file)[1],
-        branch=metadata["git_branch"],
-        commit_id=metadata["git_commit"],
-        describe=metadata["git_describe"],
+        filename_without_ext=filename_without_ext,
+        ext=file_ext,
+        git_branch=metadata["git_branch"],
+        git_commit_id=metadata["git_commit"],
+        git_describe=metadata["git_describe"],
         package_slug=package_slug,
         download_slug=download_slug,
     )
@@ -216,9 +233,9 @@ def generate_manifest(args):
         commit_id = git_info("commit")
 
     format_data = {
-        "branch": git_info("branch"),
-        "commit_id": commit_id,
-        "describe": git_info("describe"),
+        "git_branch": git_info("branch"),
+        "git_commit_id": commit_id,
+        "git_describe": git_info("describe"),
     }
 
     # Build destination path scheme
