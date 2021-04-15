@@ -21,7 +21,6 @@ QIcon toQIcon(const QColor& color) {
 
 HotcueIndexListItem* toHotcueIndexListItem(QStandardItem* from) {
     VERIFY_OR_DEBUG_ASSERT(from->type() == QStandardItem::UserType) {
-        // does std::optional make sense for pointers?
         return nullptr;
     }
     return static_cast<HotcueIndexListItem*>(from);
