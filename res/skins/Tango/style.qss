@@ -2113,7 +2113,52 @@ WOverview #PassthroughLabel {
   color: #ff8f00;
 }
 
+/* TODO move those styles into a separate file and lonk that in all skins */
+#MainMenu {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  }
+  #MainMenu::item {
+    /* No big deal, just try to make it look like native menus */
+    padding: 0.1em 0.5em 0.1em 0.5em;
+    margin: 0em;
+  }
+  #MainMenu QMenu {
+    padding: 0.08em;
+    border: 1px solid #888;
+    border-radius: 2px;
+  }
+  #MainMenu QMenu::separator {
+    height: 0px;
+    margin: 0.25em;
+    border-top: 1px solid #0a0a0a;
+  }
+  #MainMenu QMenu::right-arrow {
+    width: 0.35em;
+    height: 0.7em;
+    margin-right: 0.2em;
+  }
+
+  #MainMenu QMenu::indicator {
+    width: 1em;
+    height: 1em;
+  }
+  #MainMenu QMenu::indicator:checked,
+  #MainMenu QMenu::indicator:checked:selected {
+    image: url(skin:/buttons/btn_mainmenu_checkbox_checked.svg);
+  }
+  #MainMenu QMenu::indicator:unchecked,
+  #MainMenu QMenu::indicator:unchecked:selected {
+    image: url(skin:/buttons/btn_mainmenu_checkbox.svg);
+  }
+
+
 QToolTip,
+#MainMenu,
+#MainMenu::item,
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
 #LibraryContainer QMenu,
 WBeatSpinBox QMenu,
 WCueMenuPopup,
@@ -2216,6 +2261,13 @@ WEffectSelector QAbstractScrollArea,
   WTrackMenu QMenu::indicator {
     margin: 0px 4px 0px 2px;
     }
+  /* selected / hovered menu items */
+  #MainMenu::item:selected,
+  #MainMenu QMenu::item:selected,
+  #MainMenu QMenu::item:focus,
+  #MainMenu QMenu::item:hover,
+  #MainMenu QMenu::indicator:checked:selected,
+  #MainMenu QMenu::indicator:unchecked:selected,
   #LibraryContainer QMenu::item:selected,
   WBeatSpinBox QMenu::item:selected,
   WCueMenuPopup QMenu::item:selected,
@@ -2273,7 +2325,9 @@ WTrackMenu QMenu::indicator{
   WTrackMenu QMenu QCheckBox::indicator:!enabled:checked {
     image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
   }
-
+/* disabled menu items */
+#MainMenu::item:disabled,
+#MainMenu QMenu::item:disabled,
 #LibraryContainer QMenu::item:!enabled,
 WBeatSpinBox QMenu::item:!enabled,
 WCueMenuPopup QMenu::item:!enabled,
@@ -2293,18 +2347,25 @@ WTrackMenu QMenu QCheckBox:!enabled,
 #LibraryContainer QCheckBox::indicator:indeterminate:!enabled {
   image: url(skin:/buttons/btn_lib_checkmark_grey.svg);
   }
+
 #LibraryContainer QMenu::right-arrow,
 WTrackMenu::right-arrow,
 WTrackMenu QMenu::right-arrow {
   width: 8px;
   height: 16px;
   margin-right: 4px;
-  image: url(skin:/buttons/btn_arrow_right.svg);
   }
-#LibraryContainer QMenu::right-arrow,
-WTrackMenu::right-arrow,
-WTrackMenu QMenu::right-arrow {
-  image: url(skin:/buttons/btn_arrow_right_hover.svg);
+  #MainMenu QMenu::right-arrow,
+  #LibraryContainer QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow {
+    image: url(skin:/buttons/btn_arrow_right.svg);
+  }
+  #MainMenu QMenu::right-arrow:selected,
+  #LibraryContainer QMenu::right-arrow:selected,
+  WTrackMenu::right-arrow:selected,
+  WTrackMenu QMenu::right-arrow:selected {
+    image: url(skin:/buttons/btn_arrow_right_hover.svg);
   }
 
   #LibraryContainer QHeaderView QMenu::indicator {
