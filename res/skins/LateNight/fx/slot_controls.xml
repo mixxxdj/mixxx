@@ -1,13 +1,13 @@
 <!DOCTYPE template>
 <!--
   Description:
-    An effect unit widget hosting all effect controls for both collapsed
-    and expanded state ([FxUnitN],show_parameters)
+    An effect widget hosting all main controls for an effect slot
   Variables:
-    group: The group for the controls.
-    FxRack
+    FxRack_FxUnit
     FxUnit
     FxNum
+    ArcRadiusSmall
+    TopRegion_BtnType
 -->
 <Template>
   <SetVariable name="FxRack_FxUnit_FxNum"><Variable name="FxRack_FxUnit"/>_Effect<Variable name="FxNum"/></SetVariable>
@@ -26,8 +26,10 @@
         <ObjectName>FxSlotControls</ObjectName>
         <Layout>horizontal</Layout>
         <SizePolicy>p,min</SizePolicy>
-        <MaximumSize>173,</MaximumSize>
+        <MaximumSize>190,</MaximumSize>
         <Children>
+
+          <Template src="skin:/fx/focus_button.xml"/>
 
           <Template src="skin:/controls/button_2state.xml">
             <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
@@ -45,21 +47,18 @@
 
           <EffectSelector>
             <MinimumSize>65,24</MinimumSize>
-            <MaximumSize>120,24</MaximumSize>
+            <MaximumSize>,24</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <EffectRack>1</EffectRack>
             <EffectUnit><Variable name="FxUnit"/></EffectUnit>
             <Effect><Variable name="FxNum"/></Effect>
-            <!-- Style the effect selector when the effect is enabled -->
+            <!-- TODO Style the effect selector when the effect is enabled? -->
+            <!-- add 'highlight' property to WEffectSelector to avoid skin warnings-->
             <!-- <Connection>
               <ConfigKey>[<Variable name="FxRack_FxUnit_FxNum"/>],enabled</ConfigKey>
               <BindProperty>highlight</BindProperty>
             </Connection> -->
           </EffectSelector>
-
-          <WidgetGroup><Size>2min,0min</Size></WidgetGroup>
-
-          <Template src="skin:/fx/focus_button.xml"/>
 
         </Children>
       </WidgetGroup><!-- FxSlotControls -->
