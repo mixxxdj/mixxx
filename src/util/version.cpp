@@ -3,13 +3,10 @@
 #include <soundtouch/SoundTouch.h>
 
 #include <QCoreApplication>
-#include <QRegExp>
 #include <QStandardPaths>
 #include <QStringList>
 #include <QtDebug>
 #include <QtGlobal>
-
-#include "util/assert.h"
 
 // shout.h checks for WIN32 to see if we are on Windows.
 #ifdef WIN64
@@ -40,13 +37,7 @@ QString Version::version() {
 }
 
 QString Version::versionMajorMinor() {
-    QRegExp rx("(\\d+\\.\\d+)\\..*");
-    int pos = rx.indexIn(MIXXX_VERSION);
-    QStringList list = rx.capturedTexts();
-    VERIFY_OR_DEBUG_ASSERT(list.length() == 2) {
-        return QString("unknown");
-    }
-    return list.at(1);
+    return MIXXX_VERSION_MAJOR_MINOR;
 }
 
 // static

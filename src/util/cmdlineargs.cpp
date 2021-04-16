@@ -12,7 +12,7 @@
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 
-#include "config.h"
+#include "defs_urls.h"
 #include "sources/soundsourceproxy.h"
 #include "util/version.h"
 
@@ -63,13 +63,10 @@ bool CmdlineArgs::parse(const QStringList& arguments) {
     QCommandLineParser parser;
 
     QString info = QStringLiteral(
-                           "Mixxx is an open source DJ software. For more "
-                           "information, see https://manual.mixxx.org/") +
-            Version::versionMajorMinor() +
-            QStringLiteral(
-                    "/chapters/appendix.html#command-line-options).\n"
-                    "CamelCase arguments are deprecated and will be removed in "
-                    "2.5");
+            "Mixxx is an open source DJ software. For more "
+            "information, see " MIXXX_MANUAL_COMMANDS_URL
+            "\nCamelCase arguments are deprecated and will be removed in "
+            "2.5");
     QByteArray infoArray = info.toLocal8Bit();
     parser.setApplicationDescription(QCoreApplication::translate("main",
             infoArray.data()));

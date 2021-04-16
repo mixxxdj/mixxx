@@ -1,4 +1,5 @@
 #pragma once
+#include "build.h"
 
 #define MIXXX_WEBSITE_URL       "https://www.mixxx.org"
 #define MIXXX_WEBSITE_SHORT_URL "www.mixxx.org"
@@ -20,9 +21,11 @@
 #define MIXXX_WIKI_MIDI_SCRIPTING_URL \
     MIXXX_WIKI_URL "/Midi-Scripting"
 
-#define MIXXX_MANUAL_URL "https://manual.mixxx.org/2.3"
+#define MIXXX_MANUAL_URL "https://manual.mixxx.org/" MIXXX_VERSION_MAJOR_MINOR
 #define MIXXX_MANUAL_SHORTCUTS_URL \
     MIXXX_MANUAL_URL "/chapters/controlling_mixxx.html#using-a-keyboard"
+#define MIXXX_MANUAL_COMMANDS_URL \
+    MIXXX_MANUAL_URL "/chapters/appendix.html#command-line-options"
 #define MIXXX_MANUAL_CONTROLLERS_URL \
     MIXXX_MANUAL_URL "/chapters/controlling_mixxx.html#using-midi-hid-controllers"
 #define MIXXX_MANUAL_CONTROLLERMANUAL_PREFIX \

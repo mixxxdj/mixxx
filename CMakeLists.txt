@@ -407,12 +407,6 @@ set_property(DIRECTORY APPEND
     PROPERTY CMAKE_CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/.git/index")
 
-# uses GIT_BRANCH and GIT_COMMIT_COUNT
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
-  "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
-)
-
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
@@ -1633,8 +1627,15 @@ set_target_properties(mixxx-test PROPERTIES AUTORCC ON)
 
 file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
 string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
+string(REGEX REPLACE "([0-9]+\.[0-9]+)\..*$" "\\1" MIXXX_VERSION_MAJOR_MINOR "${MIXXX_VERSION}")
 # a dummy configure to force a reconfigure when the version changes
 configure_file(src/_version.h src/_version.h)
+
+# uses GIT_BRANCH and GIT_COMMIT_COUNT and MIXXX_VERSION_MAJOR_MINOR
+configure_file(
+  "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
+  "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
+)
 
 # Windows-only resource file
 if(WIN32)
