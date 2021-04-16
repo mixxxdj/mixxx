@@ -1723,10 +1723,11 @@ if(ENGINEPRIME)
     set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
     set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
+    # External project sources must be downloaded as an archive into DOWNLOAD_DIR
+    # from an URL to keep offline builds like for Fedora/RPM Fusion working!
     ExternalProject_Add(libdjinterop
-      GIT_REPOSITORY "https://github.com/xsco/libdjinterop"
-      GIT_TAG "0.15.1"
-      GIT_SHALLOW TRUE
+      URL "https://github.com/xsco/libdjinterop/archive/0.15.1.tar.gz"
+      URL_HASH SHA256=87b3e6c726c208333d55b7e7e3af0a7230c9ad9edb3ca0ca81feffe17b3fc008
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libdjinterop"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       CMAKE_ARGS
@@ -1831,10 +1832,11 @@ if(KEYFINDER)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
+    # External project sources must be downloaded as an archive into DOWNLOAD_DIR
+    # from an URL to keep offline builds like for Fedora/RPM Fusion working!
     ExternalProject_Add(libkeyfinder
-      GIT_REPOSITORY "https://github.com/mixxxdj/libkeyfinder"
-      GIT_TAG "v2.2.4"
-      GIT_SHALLOW TRUE
+      URL "https://github.com/mixxxdj/libkeyfinder/archive/v2.2.4.zip"
+      URL_HASH SHA256=cb3fea8c7213257281b6c7006b2430809f466ad8a1d485663324378d6fc0782c
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libkeyfinder"
       INSTALL_DIR "${KeyFinder_INSTALL_DIR}"
       CMAKE_ARGS
