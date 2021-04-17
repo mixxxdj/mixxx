@@ -231,8 +231,8 @@ double BeatUtils::makeConstBpm(
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
         const double maxRoundSamples = constantRegions[i].beatLength +
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
-        if (longestRegionLength > minRoundSamples &&
-                longestRegionLength < maxRoundSamples) {
+        if (longestRegionBeatLenth > minRoundSamples &&
+                longestRegionBeatLenth < maxRoundSamples) {
             // Now check if both regions are at the same phase.
             const double newLength = constantRegions[i + 1].firstBeat -
                     constantRegions[startRegion].firstBeat;
