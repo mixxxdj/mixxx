@@ -23,6 +23,7 @@ Description:
         <Size>240f,1me</Size>
         <Children>
 
+          <!-- Decks -->
           <WidgetGroup>
             <Layout>horizontal</Layout>
             <Size>0me,1min</Size>
@@ -50,7 +51,7 @@ Description:
             </Children>
           </WidgetGroup>
 
-<!-- Deck size selectors -->
+<!-- Deck size selector -->
           <WidgetGroup>
             <ObjectName>DeckSizeSettings</ObjectName>
             <Size>225me,20f</Size>
@@ -70,6 +71,10 @@ Description:
                 <Size>225f,18f</Size>
                 <Layout>stacked</Layout>
                 <Children>
+                  <!-- hide deck sizes with the expanded library -->
+                  <Template src="skin:/helpers/skin_settings_cover.xml">
+                    <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+                  </Template>
 
                   <!-- un-hide mixer, hint + toggle -->
                   <PushButton>
@@ -136,10 +141,13 @@ Description:
           <WidgetGroup>
             <ObjectName></ObjectName>
             <SizePolicy>me,min</SizePolicy>
-            <!-- Horizontal layout to reduce graphic glitches when switching deck size -->
+            <!-- Horizontal layout to reduce graphic glitches in the sections below
+              when switching deck size -->
             <Layout>horizontal</Layout>
             <Children>
-              <WidgetGroup><!-- Full Deck Options -->
+
+              <!-- Full Deck Options -->
+              <WidgetGroup>
                 <ObjectName></ObjectName>
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
@@ -159,7 +167,7 @@ Description:
                             <SetVariable name="Text">Hotcues</SetVariable>
                             <SetVariable name="Setting">[Skin],show_hotcues</SetVariable>
                             <SetVariable name="TooltipId">hotcue_toggle</SetVariable>
-                            <SetVariable name="Width">72f</SetVariable>
+                            <SetVariable name="Width">77f</SetVariable>
                           </Template>
 
                           <!-- From here on, we need the regular toggles to be 180px wide (expanding) -->
@@ -169,17 +177,10 @@ Description:
                             <Size>0me,18f</Size>
                             <Layout>stacked</Layout>
                             <Children>
-                              <WidgetGroup><!-- translucent cover when hotcues are hidden -->
-                                <ObjectName>SubmenuCover</ObjectName>
-                                <Layout>vertical</Layout>
-                                <SizePolicy>me,min</SizePolicy>
-                                <Connection>
-                                  <ConfigKey persist="true">[Skin],show_hotcues</ConfigKey>
-                                  <Transform><Not/></Transform>
-                                  <BindProperty>visible</BindProperty>
-                                </Connection>
-                              </WidgetGroup>
-
+                              <!-- translucent cover when hotcues are hidden -->
+                              <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                                <SetVariable name="Setting">[Skin],show_hotcues</SetVariable>
+                              </Template>
                               <WidgetGroup>
                                 <Layout>horizontal</Layout>
                                 <Size>0me,1min</Size>
@@ -212,13 +213,6 @@ Description:
                         <SetVariable name="Setting">[Skin],show_intro_outro_cues</SetVariable>
                       </Template>
 
-                      <!-- Cue shift buttons in beatgrid editing section -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                        <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
-                        <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
-                        <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
-                      </Template>
-
                       <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
 
                       <!-- Rate Controls -->
@@ -234,16 +228,10 @@ Description:
                         <Layout>stacked</Layout>
                         <Size>180min,18f</Size>
                         <Children>
-                          <WidgetGroup><!-- translucent cover when rate controls are hidden -->
-                            <ObjectName>SubmenuCover</ObjectName>
-                            <Layout>stacked</Layout>
-                            <Size>180min,18f</Size>
-                            <Connection>
-                              <ConfigKey persist="true">[Skin],show_rate_controls</ConfigKey>
-                              <Transform><Not/></Transform>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup>
+                          <!-- translucent cover when rate controls are hidden -->
+                          <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                            <SetVariable name="Setting">[Skin],show_rate_controls</SetVariable>
+                          </Template>
                           <Template src="skin:/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="TooltipId">rate_toggle</SetVariable>
                             <SetVariable name="Text">Rate Adjust Buttons</SetVariable>
@@ -288,16 +276,10 @@ Description:
                         <Layout>stacked</Layout>
                         <Size>180min,18f</Size>
                         <Children>
-                          <WidgetGroup><!-- translucent cover when neither Spinny nor Cover is shown -->
-                            <ObjectName>SubmenuCover</ObjectName>
-                            <Layout>stacked</Layout>
-                            <Size>180min,18f</Size>
-                            <Connection>
-                              <ConfigKey>[LateNight],show_spinny_cover</ConfigKey>
-                              <Transform><Not/></Transform>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup>
+                          <!-- translucent cover when neither Spinny nor Cover is shown -->
+                          <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                            <SetVariable name="Setting">[LateNight],show_spinny_cover</SetVariable>
+                          </Template>
                           <Template src="skin:/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="TooltipId">show_coverart</SetVariable>
                             <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
@@ -315,8 +297,8 @@ Description:
                 </Connection>
               </WidgetGroup><!-- Full Deck Options -->
 
-              <WidgetGroup><!-- Compact Deck Options -->
-                <ObjectName></ObjectName>
+              <!-- Compact Deck Options -->
+              <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
@@ -325,13 +307,6 @@ Description:
                     <SizePolicy>me,min</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
-
-                      <!-- Cue shift buttons in beatgrid editing section -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                        <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
-                        <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
-                        <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
-                      </Template>
 
                       <WidgetGroup><Size>0me,6f</Size></WidgetGroup>
 
@@ -355,16 +330,10 @@ Description:
                         <Layout>stacked</Layout>
                         <Size>180min,18f</Size>
                         <Children>
-                          <WidgetGroup><!-- translucent cover when rate controls are hidden -->
-                            <ObjectName>SubmenuCover</ObjectName>
-                            <Layout>stacked</Layout>
-                            <Size>180min,18f</Size>
-                            <Connection>
-                              <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
-                              <Transform><Not/></Transform>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup>
+                          <!-- translucent cover when rate controls are hidden -->
+                          <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                            <SetVariable name="Setting">[Skin],show_rate_controls_compact</SetVariable>
+                          </Template>
                           <Template src="skin:/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="TooltipId">rate_toggle</SetVariable>
                             <SetVariable name="Text">Sync Button</SetVariable>
@@ -416,16 +385,10 @@ Description:
                         <Layout>stacked</Layout>
                         <Size>180min,18f</Size>
                         <Children>
-                          <WidgetGroup><!-- translucent cover when neither Spinny nor Cover are shown -->
-                            <ObjectName>SubmenuCover</ObjectName>
-                            <Layout>stacked</Layout>
-                            <Size>180min,18f</Size>
-                            <Connection>
-                              <ConfigKey>[LateNight],show_spinny_cover</ConfigKey>
-                              <Transform><Not/></Transform>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup>
+                          <!-- translucent cover when neither Spinny nor Cover are shown -->
+                          <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                            <SetVariable name="Setting">[Skin],show_spinny_cover</SetVariable>
+                          </Template>
                           <Template src="skin:/helpers/skin_settings_button_2state.xml">
                             <SetVariable name="TooltipId">show_coverart</SetVariable>
                             <SetVariable name="Text">Big Spinny/Cover Art</SetVariable>
@@ -443,32 +406,21 @@ Description:
                 </Connection>
               </WidgetGroup><!-- Compact Deck Options -->
 
-              <WidgetGroup><!-- Mini Deck Options -->
-                <ObjectName></ObjectName>
+              <!-- Mini Deck Options -->
+              <WidgetGroup>
                 <SizePolicy>me,f</SizePolicy>
                 <Layout>stacked</Layout>
                 <Children>
-                  <WidgetGroup><!-- translucent cover when there are no decks above BIG Library-->
-                    <ObjectName>SubmenuCover</ObjectName>
-                    <SizePolicy>me,min</SizePolicy>
-                    <Connection>
-                      <ConfigKey>[LateNight],no_decks_visible</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup>
+                  <!-- translucent cover when there are no decks above BIG Library-->
+                  <Template src="skin:/helpers/skin_settings_cover.xml">
+                    <SetVariable name="Setting">[LateNight],no_decks_visible</SetVariable>
+                  </Template>
 
                   <WidgetGroup>
                     <ObjectName>SkinSettingsCategory</ObjectName>
                     <SizePolicy>me,min</SizePolicy>
                     <Layout>vertical</Layout>
                     <Children>
-
-                      <!-- Cue shift buttons in beatgrid editing section -->
-                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
-                        <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
-                        <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
-                        <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
-                      </Template>
 
                       <WidgetGroup><Size>0me,120f</Size></WidgetGroup>
 
@@ -508,19 +460,71 @@ Description:
             <Size>1min,12f</Size>
           </WidgetGroup>
 
-          <WidgetGroup><!--  Mixer -->
+          <!--  Waveforms -->
+          <WidgetGroup>
+            <SizePolicy>me,f</SizePolicy>
+            <Layout>stacked</Layout>
+            <Children>
+              <!-- translucent cover when Library is not maximized -->
+              <Template src="skin:/helpers/skin_settings_cover.xml">
+                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <Template src="skin:/helpers/skin_settings_labelbutton_2state.xml">
+                    <SetVariable name="Text">Waveforms</SetVariable>
+                    <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
+                    <SetVariable name="TooltipId">show_waveforms</SetVariable>
+                    <SetVariable name="Width">190me</SetVariable>
+                  </Template>
+
+                  <!-- Cue shift buttons in beatgrid editing section -->
+                  <WidgetGroup>
+                    <ObjectName>SkinSettingsCategory</ObjectName>
+                    <SizePolicy>me,f</SizePolicy>
+                    <Layout>stacked</Layout>
+                    <Children>
+                      <!-- translucent cover when waveforms are hidden -->
+                      <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                        <SetVariable name="Setting">[Skin],show_waveforms</SetVariable>
+                      </Template>
+
+                      <!-- translucent cover when beatgrid controls are hidden -->
+                      <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                        <SetVariable name="Setting">[Skin],show_beatgrid_controls</SetVariable>
+                      </Template>
+
+                      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+                        <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+                        <SetVariable name="Text">Hotcue Shift Buttons</SetVariable>
+                        <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
+                      </Template>
+
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+            </Children>
+          </WidgetGroup><!-- Waveforms -->
+
+          <WidgetGroup>
+            <ObjectName>SkinSettingsSeparator</ObjectName>
+            <Size>1min,12f</Size>
+          </WidgetGroup>
+
+          <!--  Mixer -->
+          <WidgetGroup>
             <ObjectName></ObjectName>
             <SizePolicy>me,f</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
-              <WidgetGroup><!-- translucent cover when Library is not maximized -->
-                <ObjectName>SubmenuCover</ObjectName>
-                <SizePolicy>me,min</SizePolicy>
-                <Connection>
-                  <ConfigKey>[Master],maximize_library</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
+              <!-- translucent cover when Library is maximized -->
+              <Template src="skin:/helpers/skin_settings_cover.xml">
+                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+              </Template>
 
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
@@ -538,16 +542,10 @@ Description:
                     <SizePolicy>me,f</SizePolicy>
                     <Layout>stacked</Layout>
                     <Children>
-                      <WidgetGroup><!-- translucent cover when Channel Mixer is hidden -->
-                        <ObjectName>SubmenuCover</ObjectName>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,min</SizePolicy>
-                        <Connection>
-                          <ConfigKey persist="true">[Master],show_mixer</ConfigKey>
-                          <Transform><Not/></Transform>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
+                      <!-- translucent cover when Channel Mixer is hidden -->
+                      <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                        <SetVariable name="Setting">[Master],show_mixer</SetVariable>
+                      </Template>
 
                       <WidgetGroup>
                         <SizePolicy>me,min</SizePolicy>
@@ -569,16 +567,10 @@ Description:
                             <Layout>stacked</Layout>
                             <Size>180min,18f</Size>
                             <Children>
-                              <WidgetGroup><!-- translucent cover when EQ knobs are hidden -->
-                                <ObjectName>SubmenuCover</ObjectName>
-                                <Layout>vertical</Layout>
-                                <Size>180min,18f</Size>
-                                <Connection>
-                                  <ConfigKey persist="true">[Skin],show_eq_knobs</ConfigKey>
-                                  <Transform><Not/></Transform>
-                                  <BindProperty>visible</BindProperty>
-                                </Connection>
-                              </WidgetGroup>
+                              <!-- translucent cover when EQ knobs are hidden -->
+                              <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                                <SetVariable name="Setting">[Skin],show_eq_knobs</SetVariable>
+                              </Template>
                               <Template src="skin:/helpers/skin_settings_button_2state.xml">
                                 <SetVariable name="Text">EQ Kill Buttons</SetVariable>
                                 <SetVariable name="Setting">[Skin],show_eq_kill_buttons</SetVariable>
@@ -605,19 +597,17 @@ Description:
             <Size>1min,12f</Size>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Effects -->
+          <!-- Effects -->
+          <WidgetGroup>
             <ObjectName></ObjectName>
             <SizePolicy>me,f</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
-              <WidgetGroup><!-- translucent cover when Library is not maximized -->
-                <ObjectName>SubmenuCover</ObjectName>
-                <SizePolicy>me,min</SizePolicy>
-                <Connection>
-                  <ConfigKey>[Master],maximize_library</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
+              <!-- translucent cover when Library is maximized -->
+              <Template src="skin:/helpers/skin_settings_cover.xml">
+                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+              </Template>
+
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
@@ -630,23 +620,17 @@ Description:
                         <SetVariable name="Text">Effect Units</SetVariable>
                         <SetVariable name="Setting">[EffectRack1],show</SetVariable>
                         <SetVariable name="TooltipId">show_effects</SetVariable>
-                        <SetVariable name="Width">120me</SetVariable>
+                        <SetVariable name="Width">130me</SetVariable>
                       </Template>
 
                       <WidgetGroup>
                         <SizePolicy>me,f</SizePolicy>
                         <Layout>stacked</Layout>
                         <Children>
-                          <WidgetGroup><!-- translucent cover when effect rack is hidden -->
-                            <ObjectName>SubmenuCover</ObjectName>
-                            <Layout>vertical</Layout>
-                            <SizePolicy>me,min</SizePolicy>
-                            <Connection>
-                              <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-                              <Transform><Not/></Transform>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup>
+                          <!-- translucent cover when effect rack is hidden -->
+                          <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                            <SetVariable name="Setting">[EffectRack1],show</SetVariable>
+                          </Template>
 
                           <WidgetGroup>
                             <Layout>horizontal</Layout>
@@ -678,16 +662,10 @@ Description:
                     <SizePolicy>me,f</SizePolicy>
                     <Layout>stacked</Layout>
                     <Children>
-                      <WidgetGroup><!-- translucent cover when effect rack is hidden -->
-                        <ObjectName>SubmenuCover</ObjectName>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,min</SizePolicy>
-                        <Connection>
-                          <ConfigKey persist="true">[EffectRack1],show</ConfigKey>
-                          <Transform><Not/></Transform>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
+                      <!-- translucent cover when effect rack is hidden -->
+                      <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                        <SetVariable name="Setting">[EffectRack1],show</SetVariable>
+                      </Template>
 
                       <Template src="skin:/helpers/skin_settings_button_2state.xml">
                         <SetVariable name="Text">Super Knobs</SetVariable>
@@ -705,19 +683,17 @@ Description:
             <Size>1min,12f</Size>
           </WidgetGroup>
 
-          <WidgetGroup><!-- Samplers -->
+          <!-- Samplers -->
+          <WidgetGroup>
             <ObjectName></ObjectName>
             <SizePolicy>me,f</SizePolicy>
             <Layout>stacked</Layout>
             <Children>
-              <WidgetGroup><!-- translucent cover when Library is not maximized -->
-                <ObjectName>SubmenuCover</ObjectName>
-                <SizePolicy>me,min</SizePolicy>
-                <Connection>
-                  <ConfigKey>[Master],maximize_library</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
+              <!-- translucent cover when Library is maximized -->
+              <Template src="skin:/helpers/skin_settings_cover.xml">
+                <SetVariable name="Setting">[Master],maximize_library</SetVariable>
+              </Template>
+
               <WidgetGroup>
                 <SizePolicy>me,min</SizePolicy>
                 <Layout>vertical</Layout>
@@ -730,23 +706,17 @@ Description:
                         <SetVariable name="TooltipId">show_samplers</SetVariable>
                         <SetVariable name="Text">Samplers </SetVariable>
                         <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
-                        <SetVariable name="Width">105f</SetVariable>
+                        <SetVariable name="Width">115f</SetVariable>
                       </Template>
 
                       <WidgetGroup>
                         <SizePolicy>me,f</SizePolicy>
                         <Layout>stacked</Layout>
                         <Children>
-                          <WidgetGroup><!-- translucent cover when samplers are hidden -->
-                            <ObjectName>SubmenuCover</ObjectName>
-                            <Layout>vertical</Layout>
-                            <SizePolicy>me,min</SizePolicy>
-                            <Connection>
-                              <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
-                              <Transform><Not/></Transform>
-                              <BindProperty>visible</BindProperty>
-                            </Connection>
-                          </WidgetGroup>
+                          <!-- translucent cover when samplers are hidden -->
+                          <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                            <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
+                          </Template>
 
                           <WidgetGroup>
                             <Layout>horizontal</Layout>
@@ -784,16 +754,10 @@ Description:
                     <SizePolicy>me,f</SizePolicy>
                     <Layout>stacked</Layout>
                     <Children>
-                      <WidgetGroup><!-- translucent cover when samplers are hidden -->
-                        <ObjectName>SubmenuCover</ObjectName>
-                        <Layout>vertical</Layout>
-                        <SizePolicy>me,min</SizePolicy>
-                        <Connection>
-                          <ConfigKey persist="true">[Samplers],show_samplers</ConfigKey>
-                          <Transform><Not/></Transform>
-                          <BindProperty>visible</BindProperty>
-                        </Connection>
-                      </WidgetGroup>
+                      <!-- translucent cover when samplers are hidden -->
+                      <Template src="skin:/helpers/skin_settings_cover_inverted.xml">
+                        <SetVariable name="Setting">[Samplers],show_samplers</SetVariable>
+                      </Template>
 
                       <WidgetGroup>
                         <Layout>vertical</Layout>
@@ -870,6 +834,7 @@ Description:
             <Size>1min,12f</Size>
           </WidgetGroup>
 
+          <!-- Library -->
           <Label>
             <ObjectName>CategoryLabel</ObjectName>
             <Text>Library</Text>
@@ -898,6 +863,7 @@ Description:
 
             </Children>
           </WidgetGroup><!-- /Library -->
+
         </Children>
       </WidgetGroup><!-- /SkinSettings -->
     </Children>

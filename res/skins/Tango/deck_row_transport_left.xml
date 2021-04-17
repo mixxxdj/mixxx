@@ -34,12 +34,14 @@ Variables:
             <SizePolicy>min,me</SizePolicy>
             <Children>
 
-              <WidgetGroup><!-- Toggle Deck controls -->
+              <!-- Toggle Deck controls -->
+              <!-- Visible only if at least one control is NOT shown permanently -->
+              <WidgetGroup>
                 <Layout>vertical</Layout>
                 <SizePolicy>min,min</SizePolicy>
                 <Children>
                   <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">DeckControlsToggler_Left</SetVariable>
+                    <SetVariable name="ObjectName">DeckControlsToggle_Left</SetVariable>
                     <!-- Size needs to be changed in size_detector_stars.xml, too -->
                     <SetVariable name="Size">15f,22f</SetVariable>
                     <SetVariable name="ConfigKey">[Tango],deck_controls_expanded</SetVariable>

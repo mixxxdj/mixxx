@@ -12,6 +12,7 @@
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 
+#include "config.h"
 #include "sources/soundsourceproxy.h"
 #include "util/version.h"
 
@@ -26,8 +27,8 @@ CmdlineArgs::CmdlineArgs()
           m_logLevel(mixxx::kLogLevelDefault),
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
-#ifdef __LINUX__
-          m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
+#ifdef MIXXX_SETTINGS_PATH
+          m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH)) {
 #else
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
           // to QDir::filePath elsewhere in the code. This is candidate for removal.

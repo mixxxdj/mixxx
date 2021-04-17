@@ -3,6 +3,7 @@
 #include <QDesktopServices>
 #include <QUrl>
 
+#include "config.h"
 #include "control/controlproxy.h"
 #include "defs_urls.h"
 #include "mixer/playermanager.h"
@@ -51,7 +52,22 @@ QString showPreferencesKeyBinding() {
 #endif
 }
 
-
+QUrl documentationUrl(
+        const QString& resourcePath, const QString& fileName, const QString& docUrl) {
+    QDir resourceDir(resourcePath);
+    // Documentation PDFs are included on Windows and Linux only,
+    // so on macOS this always returns the web URL.
+#if defined(MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR)
+    if (!resourceDir.exists(fileName)) {
+        resourceDir.cd(MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR);
+    }
+#endif
+    if (resourceDir.exists(fileName)) {
+        return QUrl::fromLocalFile(resourceDir.absoluteFilePath(fileName));
+    } else {
+        return QUrl(docUrl);
+    }
+}
 }  // namespace
 
 WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
@@ -554,6 +570,7 @@ void WMainMenuBar::initialize() {
     connect(m_pViewKeywheel, &QAction::triggered, this, &WMainMenuBar::showKeywheel);
     pHelpMenu->addAction(m_pViewKeywheel);
 
+    // Community Support
     QString supportTitle = tr("&Community Support") + externalLinkSuffix;
     QString supportText = tr("Get help with Mixxx");
     auto* pHelpSupport = new QAction(supportTitle, this);
@@ -563,53 +580,43 @@ void WMainMenuBar::initialize() {
             this, [this] { slotVisitUrl(MIXXX_SUPPORT_URL); });
     pHelpMenu->addAction(pHelpSupport);
 
-    QDir resourceDir(m_pConfig->getResourcePath());
-    // Default to the mixxx.org hosted version of the manual.
-    QUrl qManualUrl(MIXXX_MANUAL_URL);
-    QString manualSuffix;
-#if defined(__APPLE__)
-    // FIXME: We don't include the PDF manual in the bundle on OSX.
-    // Default to the web-hosted version.
-#elif defined(__WINDOWS__)
-    // On Windows, the manual PDF sits in the same folder as the 'skins' folder.
-    if (resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
-        qManualUrl = QUrl::fromLocalFile(
-                resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
-    } else {
-        manualSuffix = externalLinkSuffix;
-    }
-#elif defined(__LINUX__)
-    // On GNU/Linux, the manual is installed to e.g. /usr/share/doc/mixxx/
-    if (resourceDir.cd("../doc/mixxx") && resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
-        qManualUrl = QUrl::fromLocalFile(
-                resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
-    } else {
-        manualSuffix = externalLinkSuffix;
-    }
-#else
-    // No idea, default to the mixxx.org hosted version.
-    manualSuffix = externalLinkSuffix;
-#endif
+    // User Manual
+    QUrl manualUrl = documentationUrl(m_pConfig->getResourcePath(),
+            MIXXX_MANUAL_FILENAME,
+            MIXXX_MANUAL_URL);
+    QString manualSuffix = manualUrl.isLocalFile() ? QString() : externalLinkSuffix;
 
     QString manualTitle = tr("&User Manual") + manualSuffix;
     QString manualText = tr("Read the Mixxx user manual.");
     auto* pHelpManual = new QAction(manualTitle, this);
     pHelpManual->setStatusTip(manualText);
     pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
-    connect(pHelpManual, &QAction::triggered,
-            this, [this, qManualUrl] { slotVisitUrl(qManualUrl.toString()); });
+    connect(pHelpManual, &QAction::triggered, this, [this, manualUrl] {
+        slotVisitUrl(manualUrl.toString());
+    });
     pHelpMenu->addAction(pHelpManual);
 
-    QString shortcutsTitle = tr("&Keyboard Shortcuts") + externalLinkSuffix;
-    QString shortcutsText = tr("Speed up your workflow with keyboard shortcuts.");
-    auto* pHelpShortcuts = new QAction(shortcutsTitle, this);
-    pHelpShortcuts->setStatusTip(shortcutsText);
-    pHelpShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
-    connect(pHelpShortcuts, &QAction::triggered, this, [this] {
-        slotVisitUrl(MIXXX_MANUAL_SHORTCUTS_URL);
-    });
-    pHelpMenu->addAction(pHelpShortcuts);
+    // Keyboard Shortcuts
+    QUrl keyboardShortcutsUrl = documentationUrl(m_pConfig->getResourcePath(),
+            MIXXX_KBD_SHORTCUTS_FILENAME,
+            MIXXX_MANUAL_SHORTCUTS_URL);
+    QString keyboardShortcutsSuffix =
+            keyboardShortcutsUrl.isLocalFile() ? QString() : externalLinkSuffix;
 
+    QString shortcutsTitle = tr("&Keyboard Shortcuts") + keyboardShortcutsSuffix;
+    QString shortcutsText = tr("Speed up your workflow with keyboard shortcuts.");
+    auto* pHelpKbdShortcuts = new QAction(shortcutsTitle, this);
+    pHelpKbdShortcuts->setStatusTip(shortcutsText);
+    pHelpKbdShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
+    connect(pHelpKbdShortcuts,
+            &QAction::triggered,
+            this,
+            [this, keyboardShortcutsUrl] {
+                slotVisitUrl(keyboardShortcutsUrl.toString());
+            });
+    pHelpMenu->addAction(pHelpKbdShortcuts);
+
+    // Translate This Application
     QString translateTitle = tr("&Translate This Application") + externalLinkSuffix;
     QString translateText = tr("Help translate this application into your language.");
     auto* pHelpTranslation = new QAction(translateTitle, this);

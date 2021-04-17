@@ -16,7 +16,6 @@
 #include "library/browse/foldertreemodel.h"
 #include "library/treeitem.h"
 #include "moc_foldertreemodel.cpp"
-#include "util/file.h"
 
 FolderTreeModel::FolderTreeModel(QObject *parent)
         : TreeItemModel(parent) {
@@ -59,7 +58,7 @@ bool FolderTreeModel::directoryHasChildren(const QString& path) const {
     }
 
     // Acquire a security token for the path.
-    MDir dir(path);
+    const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
 
     /*
      *  The following code is too expensive, general and SLOW since

@@ -39,6 +39,11 @@ constexpr int kBpmTapFilterLength = 5;
 // the actual number of beats is this x2.
 constexpr int kLocalBpmSpan = 4;
 constexpr SINT kSamplesPerFrame = 2;
+
+// If we are 1 / 8.0 beat fraction near the previous beat we match that instead
+// of the next beat.
+constexpr double kPastBeatMatchThreshold = 1 / 8.0;
+
 } // namespace
 
 BpmControl::BpmControl(const QString& group,
@@ -46,8 +51,7 @@ BpmControl::BpmControl(const QString& group,
         : EngineControl(group, pConfig),
           m_tapFilter(this, kBpmTapFilterLength, kBpmTapMaxInterval),
           m_dSyncInstantaneousBpm(0.0),
-          m_dLastSyncAdjustment(1.0),
-          m_dUserTweakingSync(false) {
+          m_dLastSyncAdjustment(1.0) {
     m_dSyncTargetBeatDistance.setValue(0.0);
     m_dUserOffset.setValue(0.0);
 
@@ -407,7 +411,6 @@ double BpmControl::calcSyncedRate(double userTweak) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << getGroup() << "BpmControl::calcSyncedRate, tweak " << userTweak;
     }
-    m_dUserTweakingSync = userTweak != 0.0;
     double rate = 1.0;
     // Don't know what to do if there's no bpm.
     if (m_pLocalBpm->toBool()) {
@@ -443,7 +446,7 @@ double BpmControl::calcSyncedRate(double userTweak) {
     }
 
     // Now we have all we need to calculate the sync adjustment if any.
-    double adjustment = calcSyncAdjustment(m_dUserTweakingSync);
+    double adjustment = calcSyncAdjustment(userTweak != 0.0);
     return (rate + userTweak) * adjustment;
 }
 
@@ -854,7 +857,20 @@ double BpmControl::getBeatMatchPosition(
         return dThisPosition;
     }
 
-    double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
+    const double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
+    const double dThisSampleRate = m_pBeats->getSampleRate();
+    const double dThisRateRatio = m_pRateRatio->get();
+
+    // Seek our next beat to the other next beat near our beat.
+    // This is the only thing we can do if the track has different BPM,
+    // playing the next beat together.
+
+    // First calculate the position in the other track where this next beat will be.
+    const double thisSecs2ToNextBeat = (dThisNextBeat - dThisPosition) /
+            dThisSampleRate / dThisRateRatio;
+    const double dOtherPositionOfThisNextBeat =
+            thisSecs2ToNextBeat * otherBeats->getSampleRate() * pOtherEngineBuffer->getRateRatio() +
+            dOtherPosition;
 
     double dOtherPrevBeat = -1;
     double dOtherNextBeat = -1;
@@ -862,7 +878,7 @@ double BpmControl::getBeatMatchPosition(
     double dOtherBeatFraction = -1;
     if (!BpmControl::getBeatContext(
                 otherBeats,
-                dOtherPosition,
+                dOtherPositionOfThisNextBeat,
                 &dOtherPrevBeat,
                 &dOtherNextBeat,
                 &dOtherBeatLength,
@@ -878,29 +894,24 @@ double BpmControl::getBeatMatchPosition(
     // Offset the other deck's user offset, if any.
     dOtherBeatFraction -= pOtherEngineBuffer->getUserOffset();
 
-    double dThisSampleRate = m_pBeats->getSampleRate();
-    double dThisRateRatio = m_pRateRatio->get();
-
-    // Seek our next beat to the other next beat
-    // This is the only thing we can do if the track has different BPM,
-    // playing the next beat together.
-    double thisDivSec = (dThisNextBeat - dThisPosition) /
-            dThisSampleRate / dThisRateRatio;
-
-    if (dOtherBeatFraction < 1.0 / 8) {
-        // the user has probably pressed play too late, sync the previous beat
-        dOtherBeatFraction += 1.0;
+    // We can either match the past beat with dOtherBeatFraction 1.0
+    // or the next beat with dOtherBeatFraction 0.0
+    // We prefer the next because this is what will be played,
+    // unless we are close to the previous.
+    // This happens if the user presses play too late.
+    if (dOtherBeatFraction > 1.0 - kPastBeatMatchThreshold) {
+        // match the past beat
+        dOtherBeatFraction -= 1.0;
     }
 
-    dOtherBeatFraction += m_dUserOffset.getValue();
-    double otherDivSec = (1 - dOtherBeatFraction) *
+    double otherDivSec2 = dOtherBeatFraction *
             dOtherBeatLength / otherBeats->getSampleRate() / pOtherEngineBuffer->getRateRatio();
-
-    // This matches the next beat in of both tracks.
-    double seekMatch = (thisDivSec - otherDivSec) *
-            dThisSampleRate * dThisRateRatio;
+    // Transform for this track
+    double seekMatch = otherDivSec2 * dThisSampleRate * dThisRateRatio;
 
     if (dThisBeatLength > 0) {
+        // restore phase adjustment
+        seekMatch += (dThisBeatLength * m_dUserOffset.getValue());
         if (dThisBeatLength / 2 < seekMatch) {
             // seek to previous beat, because of shorter distance
             seekMatch -= dThisBeatLength;

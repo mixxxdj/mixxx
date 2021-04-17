@@ -36,6 +36,11 @@ WEffectSelector QAbstractScrollArea,
 #LibraryContainer QHeaderView,
 #LibraryContainer QHeaderView::item,
 #LibraryContainer QMenu {
+  /* On Linux all weight variants of Open Sans are identified
+  as "Open Sans".
+  On Windows however, the semi-bold variant is identified as
+  "Open Sans Semibold", thus we need to set some font weights
+  in style_windows.qss */
   font-family: "Open Sans";
   font-weight: 500; /* semi-bold */
   font-style: normal;
@@ -53,7 +58,6 @@ WOverview #PassthroughLabel,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
 #SamplerTitleMini,
-/* ToolBar */
 #GuiToggleButton,
 #RecFeedback, #RecDuration,
 #BroadcastButton,
@@ -74,7 +78,6 @@ WOverview #PassthroughLabel {
 #MicAuxLabel, #MicAuxLabelUnconfigured,
 #VinylControls WPushButton,
 #FxAssignButtons WPushButton,
-/* ToolBar */
 #GuiToggleButton,
 #RecFeedback, #RecDuration,
 #BroadcastButton,
@@ -100,7 +103,201 @@ QLabel#labelRecStatistics {
   font-weight: normal;
 }
 
+#LibraryContainer QMenu::indicator {
+  margin-right: 10px;
+}
 
+/* WMainMenuBar #MainMenu is difficult to style, at least when
+  it should look identical on Windows AND Linux.
+  Paddings and margins affect the item labels and checkboxes entirely
+  different so we need style_linux.qss and style_windows.qss to take
+  care of it individually.
+  Luckily we don't need to care about macOS here -Woohoo!- because
+  there the memnu bar is always styled natively. */
+#MainMenu {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+}
+#MainMenu::item {
+  /* No big deal, just try to make it look like native menus */
+  padding: 0.1em 0.5em 0.1em 0.5em;
+  margin: 0em;
+}
+#MainMenu QMenu::item {
+  /*  Xfce/Gnome:
+        padding(-left) is applied to entire item (text + opt. icon)
+        = icon may overlap text
+        = item labels are always aligned, with or without checkbox/icon
+      Fedora/Arch/Windows:
+        padding(-left) is applied to text only
+        = does NOT align items with and without checkboxes */
+  /* The style below SHOULD yield identical results on all target OS,
+    yet it looks slightly different, items are shifted by a few pixels.. go figure */
+  /*padding: 0.1em 0.3em 0.2em 0.3em;*/
+  /*margin: 0em 0em 0em 1.5em;*/
+  }
+  /* Checkbox preceeding menu items (Options, ) */
+  #MainMenu QMenu::indicator {
+    width: 1em;
+    height: 1em;
+    /* The indicator is by default aligned with the text
+      = overlaps first few characters.
+      > margin-left needs to be negative to push it left.
+      margin-right = space QMenu::item text <> shortcut wtf... */
+    /* padding = icon border <> fixed-size image
+      = expands the 'background' area
+      = padding-top/bottom:
+       * adjust to cover the row height so the indicator looks like
+         part of the text item
+       * clipped by item height
+      = padding- left: adjust to equalize the painted bg surrounding the image. */
+  }
+  #MainMenu QMenu::indicator,
+  #MainMenu QMenu::indicator:selected,
+  #MainMenu QMenu::indicator:checked,
+  #MainMenu QMenu::indicator:checked:selected {
+    /* checkbox is a SVG with optional checkmark.
+      In all other menus border(css) and checkmark(SVG) are separate
+      which allows to combine them in a flexible way for many states
+      (like indeterminate, checked:selected, checked:!enabled)
+
+      Here we need to work around certain 'rendering issues' on
+      multiple target OS, and we only need
+      * checked
+      * unchecked
+      * checked:selected
+      * unchecked:selected
+      so we can use graphics only, which in return gives somewhat
+      identical appearance on both Wind'ohs and Linux  */
+  }
+  #MainMenu QMenu::separator {
+    height: 0px;
+    margin: 0.25em;
+  }
+  #MainMenu QMenu::right-arrow {
+    width: 0.7em;
+    height: 0.7em;
+  }
+
+
+
+
+
+  WEffectSelector QAbstractScrollArea {
+    /* This would set the maximum width only. The minimum seems to be
+      defined by the widget itself. */
+    /* TODO(ronso0)
+      Unfortunately, text elide (center) is calculated from the widget's
+      width, not from the width set here... */
+    min-width: 160px;
+  }
+  #fadeModeCombobox QAbstractScrollArea {
+    min-width: 185px;
+  }
+  WEffectSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    margin: 2px;
+  }
+  WEffectSelector::down-arrow,
+  #fadeModeCombobox::down-arrow {
+    border: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  WEffectSelector::checked, /* selected item */
+  WEffectSelector::indicator, /* checkbox, tick mark */
+  WEffectSelector::drop-down,
+  WEffectSelector::indicator:unchecked,
+  #fadeModeCombobox::checked, /* selected mode */
+  #fadeModeCombobox::indicator, /* checkbox, tick mark */
+  #fadeModeCombobox::drop-down,
+  #fadeModeCombobox::indicator:unchecked,
+  /* Don't use #LibraryContainer QMenu::item, that would catch
+    ALL menus incl.WTrackMenu in the table, search menu,
+    sidebar menu, table header menu, cover art menu.
+    And for some reason the item properties set here can not be
+    overwritten with WSearchLineEdit QMenu::item below. */
+  WLibrarySidebar QMenu::item,
+  WTrackMenu::item,
+  WTrackMenu QMenu::item,
+  WTrackMenu QMenu QCheckBox,
+  WBeatSpinBox QMenu::item,
+  WCueMenuPopup QMenu::item,
+  WCoverArtMenu::item {
+    padding: 0px;
+    margin: 0px;
+    image: none;
+    outline: none;
+    border: 0px solid transparent;
+    }
+
+  WLibrarySidebar QMenu::separator,
+  WTrackMenu::separator,
+  WTrackMenu QMenu::separator,
+  QLineEdit QMenu::separator,
+  QTextBrowser QMenu::separator {
+    height: 0px;
+    margin: 4px;
+  }
+
+  WLibrarySidebar QMenu::item,
+  WLibrary QHeaderView QMenu::item,
+  WTrackMenu::item,
+  WTrackMenu QMenu::item {
+  /* padding-right reserves space for the submenu expand arrow
+    padding-left should be bigger than the menu icon width +
+    icon margin-left/-right */
+    padding: 5px 12px 5px 26px;
+  }
+  /* This catches context menus of
+    - property cells in the tracks table
+    - WCueMenuPopup cue label editor
+    - WBeatSpinBox
+    - AutoDJ transition QSpinBox*/
+  QLineEdit QMenu::item,
+  WCoverArtMenu::item,
+  /* for the sake of completeness: html root view of Crates, Rec etc. */
+  QTextBrowser QMenu::item {
+    padding: 5px 12px 5px 12px;
+  }
+  /* Icons in those menus (copy, paste, cut, delete) */
+  #LibraryContainer QMenu::icon,
+  QLineEdit QMenu::icon,
+  /* - checkbox in Crate name context menu
+        "[ ] Auto DJ Track Source"
+     - QHeaderView QMenu::indicator */
+  #LibraryContainer QMenu::indicator {
+    /* Linux: margin-right pushes the entire icon to the right !?? */
+    margin: 0px 4px 0px 5px;
+    }
+  /* items in Crate sub menu */
+  #LibraryContainer QMenu QCheckBox,
+  WTrackMenu QMenu QCheckBox {
+    padding: 3px 10px 3px 5px;
+    }
+
+  #MainMenu QMenu::right-arrow,
+  #LibraryContainer QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow,
+  #LibraryContainer QTableView::indicator {
+    width: 10px;
+    height: 10px;
+    }
+  #LibraryContainer QMenu QCheckBox::indicator,
+  #LibraryContainer QMenu::indicator,
+  WTrackMenu QMenu QCheckBox::indicator,
+  WTrackMenu QMenu::indicator,
+  WCueMenuPopup QMenu::indicator {
+    width: 13px;
+    height: 13px;
+    border: 1px solid #333;
+    border-radius: 1px;
+    background-color: #000;
+    /* remove OS focus indicator */
+    outline: none;
+    }
 
 /************** font sizes / alignment ****************************************/
 
@@ -229,6 +426,26 @@ WRecordingDuration {
     padding: 0px 3px;
     }
 
+
+#HotcueButton {
+  /* ronso0
+  TEST pixel fonts instead of icons
+  FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
+
+  font-size: tried a lot of integers as well as .5 values
+  didn't find the magic number.. it's some unintuitive floating point value
+  that aligns font pixels to screen pixels so the fonts look sharp.
+
+  font-family: "Acknowledge TT (BRK)";
+  font-family: "Bulky Pixels";
+  font-family: "Irresistor";
+  font-family: "Visitor TT1 BRK";
+  font-family: "Boxy Bold";
+  font-family: "Pixel Intv";
+  font-size: 13px;
+  color: #eee;
+  */
+}
 
 /* This does NOT style the cue labels in the overview
 WOverview {
@@ -458,7 +675,14 @@ WSpinny { /*
 #FxUnitHeader {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
-#FxUnitControlsExpanded, #FxUnitControlsCollapsed {
+#FxUnitControlsExpanded,
+#FxUnitControlsCollapsed,
+#FxSlotContainer,
+#FxSlotControls,
+#FxFocusButtonBox,
+#FxMetaKnob,
+#FxParameterKnob,
+#LibExpandBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
@@ -466,14 +690,6 @@ WSpinny { /*
 #FxSlot2,
 #FxSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  }
-
-#FxFocusButtonBox {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-}
-
-#FxMetaKnob {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #FxParameterKnobBox {
@@ -481,7 +697,6 @@ WSpinny { /*
 }
 
 #FxParameterKnob {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   margin-left: 1px;
 }
 
@@ -507,19 +722,14 @@ WEffectSelector {
 
   WEffectSelector QAbstractScrollArea,
   #fadeModeCombobox QAbstractScrollArea {
-    width: 142px;
-    /* padding-left: 6px; */
-    /* On Linux, this is not applied but font color from
-      WEffectSelector is inherited.
-      On Windows, it must be defined here */
     border: 1px solid #444;
     border-radius: 2px;
     padding: 0px;
     margin: 0px;
   }
   /* selected item */
-  WEffectSelector::checked,
-  #fadeModeCombobox::checked {
+  WEffectSelector:checked,
+  #fadeModeCombobox:checked {
     /* not applied
     padding-left: 5px;	*/
     padding: 0px;

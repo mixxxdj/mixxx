@@ -2,10 +2,10 @@
 
 #include <gtest/gtest_prod.h>
 
+#include <QList>
 #include <QScopedPointer>
 #include <QSemaphore>
 #include <QString>
-#include <QStringList>
 #include <QThread>
 #include <QThreadPool>
 
@@ -119,6 +119,6 @@ class LibraryScanner : public QThread {
     // this is accessed main and LibraryScanner thread
     volatile ScannerState m_state;
 
-    QStringList m_libraryRootDirs;
+    QList<mixxx::FileInfo> m_libraryRootDirs;
     QScopedPointer<LibraryScannerDlg> m_pProgressDlg;
 };

@@ -1,22 +1,4 @@
-cmake_minimum_required(VERSION 3.13.0)
-project(mixxx VERSION 2.3.0)
-set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
-set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
-
-# Used for force control of color output
-set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
-# Option to disable symlinks
-set(USE_SYMLINKS ON CACHE BOOL "Use symlinks in build directory when possible")
-
-# Support new IN_LIST if() operator
-if(POLICY CMP0057)
-  cmake_policy(SET CMP0057 NEW)
-endif()
-
-# Let AUTOMOC and AUTOUIC process GENERATED files
-if(POLICY CMP0071)
-  cmake_policy(SET CMP0071 NEW)
-endif()
+cmake_minimum_required(VERSION 3.16)
 
 # CMAKE_CXX_COMPILER_ID: Distinguish between "AppleClang" and "Clang"
 if(POLICY CMP0025)
@@ -28,9 +10,30 @@ if(POLICY CMP0042)
   cmake_policy(SET CMP0042 NEW)
 endif()
 
+# Support new IN_LIST if() operator
+if(POLICY CMP0057)
+  cmake_policy(SET CMP0057 NEW)
+endif()
+
+# Enforce interprocedural optimization
 if(POLICY CMP0069)
   cmake_policy(SET CMP0069 NEW)
 endif()
+
+# Let AUTOMOC and AUTOUIC process GENERATED files
+if(POLICY CMP0071)
+  cmake_policy(SET CMP0071 NEW)
+endif()
+
+project(mixxx VERSION 2.4.0)
+
+set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
+set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
+
+# Used for force control of color output
+set(BUILD_COLORS "auto" CACHE STRING "Try to use colors auto/always/no")
+# Option to disable symlinks
+set(USE_SYMLINKS ON CACHE BOOL "Use symlinks in build directory when possible")
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 include(CMakeDependentOption)
@@ -865,7 +868,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/dnd.cpp
   src/util/duration.cpp
   src/util/experiment.cpp
-  src/util/file.cpp
+  src/util/fileaccess.cpp
   src/util/fileinfo.cpp
   src/util/imageutils.cpp
   src/util/indexrange.cpp
@@ -1019,9 +1022,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
 )
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
-target_compile_definitions(mixxx-lib PRIVATE SETTINGS_FILE="mixxx.cfg")
 if(UNIX AND NOT APPLE)
-  target_compile_definitions(mixxx-lib PRIVATE SETTINGS_PATH=".mixxx/")
+  set(MIXXX_SETTINGS_PATH ".mixxx/")
 endif()
 
 # Disable warnings in generated source files
@@ -1145,8 +1147,9 @@ elseif (UNIX)
   set(MIXXX_INSTALL_LICENSEDIR "${CMAKE_INSTALL_DOCDIR}")
 endif()
 
+
 if(WIN32)
-  target_compile_definitions(mixxx-lib PRIVATE __WINDOWS__)
+  target_compile_definitions(mixxx-lib PUBLIC __WINDOWS__)
 
   # Helps prevent duplicate symbols
   target_compile_definitions(mixxx-lib PUBLIC _ATL_MIN_CRT)
@@ -1177,7 +1180,7 @@ elseif(UNIX)
   if(APPLE)
     target_compile_definitions(mixxx-lib PUBLIC __APPLE__)
   else()
-    target_compile_definitions(mixxx-lib PRIVATE __UNIX__)
+    target_compile_definitions(mixxx-lib PUBLIC __UNIX__)
     if(CMAKE_SYSTEM_NAME STREQUAL Linux)
       target_compile_definitions(mixxx-lib PUBLIC __LINUX__)
     elseif(CMAKE_SYSTEM_NAME MATCHES "^.*BSD$")
@@ -1345,7 +1348,8 @@ install(
 install(
   FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/README"
-    "${CMAKE_CURRENT_SOURCE_DIR}/Mixxx-Manual.pdf"
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf"
+    "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Keyboard-Shortcuts.pdf"
   DESTINATION
     "${MIXXX_INSTALL_DOCDIR}"
 )
@@ -1718,9 +1722,11 @@ if(ENGINEPRIME)
     set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
     set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
+    # External project sources must be downloaded as an archive into DOWNLOAD_DIR
+    # from an URL to keep offline builds like for Fedora/RPM Fusion working!
     ExternalProject_Add(libdjinterop
-      URL "https://github.com/xsco/libdjinterop/archive/0.14.6.tar.gz"
-      URL_HASH SHA256=db2f57f6c06c801d1785280ede0f032d7280bedd72f2a30bc263a272e3269587
+      URL "https://github.com/xsco/libdjinterop/archive/0.15.1.tar.gz"
+      URL_HASH SHA256=87b3e6c726c208333d55b7e7e3af0a7230c9ad9edb3ca0ca81feffe17b3fc008
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libdjinterop"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
       CMAKE_ARGS
@@ -1825,6 +1831,8 @@ if(KEYFINDER)
     set(KeyFinder_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/keyfinder-install")
     set(KeyFinder_LIBRARY "${CMAKE_INSTALL_LIBDIR}/${CMAKE_STATIC_LIBRARY_PREFIX}keyfinder${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
+    # External project sources must be downloaded as an archive into DOWNLOAD_DIR
+    # from an URL to keep offline builds like for Fedora/RPM Fusion working!
     ExternalProject_Add(libkeyfinder
       URL "https://github.com/mixxxdj/libkeyfinder/archive/v2.2.4.zip"
       URL_HASH SHA256=cb3fea8c7213257281b6c7006b2430809f466ad8a1d485663324378d6fc0782c
@@ -2709,6 +2717,10 @@ if(WAVPACK)
   target_link_libraries(mixxx-lib PUBLIC WavPack::wavpack)
 endif()
 
+# Configure file with build options
+file(RELATIVE_PATH MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DATADIR}" "${CMAKE_INSTALL_PREFIX}/${MIXXX_INSTALL_DOCDIR}")
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/config.h.in" "${CMAKE_CURRENT_BINARY_DIR}/src/config.h" @ONLY)
+
 # Packaging
 set(CPACK_PACKAGE_VENDOR "Mixxx Project")
 set(CPACK_PACKAGE_CONTACT "RJ Skerry-Ryan <rryan@mixxx.org>")
@@ -2748,19 +2760,13 @@ set(CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_DEBIAN_PACKAGE_DESCRIPTION}
 string(PREPEND CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_PACKAGE_DESCRIPTION_SUMMARY}" "\n")
 string(REPLACE "\n\n" "\n.\n" CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}")
 string(REPLACE "\n" "\n " CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}")
-if("3.16.0" VERSION_GREATER CMAKE_VERSION)
-  # This hack is no longer required with cpack version 3.16.3
-  set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}")
-  set(CPACK_PACKAGE_DESCRIPTION "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}")
-endif()
 
 # The upstream version must not contain hyphen
 string(REPLACE "-" "~" CPACK_DEBIAN_UPSTREAM_VERSION "${MIXXX_VERSION}")
 set(CPACK_DEBIAN_DEBIAN_VERSION 0ubuntu1)
 set(CPACK_DEBIAN_DEBIAN_VERSION_EXTRA "${GIT_BRANCH}~git${GIT_COMMIT_COUNT}")
 string(REPLACE "_" "" CPACK_DEBIAN_DEBIAN_VERSION_EXTRA "${CPACK_DEBIAN_DEBIAN_VERSION_EXTRA}")
-set(CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_DEBIAN_UPSTREAM_VERSION}-ppa1~${GIT_BRANCH}~git${GIT_COMMIT_COUNT}~bionic")
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES bionic focal groovy hirsute)
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal groovy hirsute)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")

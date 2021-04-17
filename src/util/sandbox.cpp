@@ -71,7 +71,7 @@ bool Sandbox::askForAccess(const QString& canonicalPath) {
     QFileInfo info(canonicalPath);
     // We always want read/write access because we wouldn't want to have to
     // re-ask for access in the future if we need to write.
-    if (canAccessFile(info)) {
+    if (canAccess(info)) {
         return true;
     }
 
@@ -193,18 +193,26 @@ bool Sandbox::createSecurityToken(const QString& canonicalPath,
 
 // static
 SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool create) {
-    const QString& canonicalFilePath = file.canonicalFilePath();
+    const QString canonicalFilePath = file.canonicalFilePath();
+    if (canonicalFilePath.isEmpty()) {
+        return nullptr;
+    }
+
+    if (file.isDir()) {
+        return openSecurityTokenForDir(QDir(canonicalFilePath), create);
+    }
+
     if (sDebug) {
-        qDebug() << "openSecurityToken QFileInfo" << canonicalFilePath << create;
+        qDebug() << "openSecurityToken for file" << canonicalFilePath << create;
     }
 
     if (!enabled()) {
-        return SecurityTokenPointer();
+        return nullptr;
     }
 
     QMutexLocker locker(&s_mutex);
-    if (s_pSandboxPermissions == nullptr) {
-        return SecurityTokenPointer();
+    if (!s_pSandboxPermissions) {
+        return nullptr;
     }
 
     QHash<QString, SecurityTokenWeakPointer>::iterator it = s_activeTokens
@@ -220,10 +228,6 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool crea
         }
     }
 
-    if (file.isDir()) {
-        return openSecurityToken(QDir(canonicalFilePath), create);
-    }
-
     // First, check for a bookmark of the key itself.
     ConfigKey key = keyForCanonicalPath(canonicalFilePath);
     if (s_pSandboxPermissions->exists(key)) {
@@ -234,13 +238,13 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool crea
 
     // Next, try to open a bookmark for an existing directory but don't create a
     // bookmark.
-    SecurityTokenPointer pDirToken = openSecurityToken(file.dir(), false);
+    SecurityTokenPointer pDirToken = openSecurityTokenForDir(file.dir(), false);
     if (!pDirToken.isNull()) {
         return pDirToken;
     }
 
     if (!create) {
-        return SecurityTokenPointer();
+        return nullptr;
     }
 
     // Otherwise, try to create a token.
@@ -251,27 +255,27 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QFileInfo& file, bool crea
                 canonicalFilePath,
                 s_pSandboxPermissions->getValueString(key));
     }
-    return SecurityTokenPointer();
+    return nullptr;
 }
 
 // static
-SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
+SecurityTokenPointer Sandbox::openSecurityTokenForDir(const QDir& dir, bool create) {
     QDir walkDir = dir;
     QString walkDirCanonicalPath = walkDir.canonicalPath();
     if (sDebug) {
-        qDebug() << "openSecurityToken QDir" << walkDirCanonicalPath << create;
+        qDebug() << "openSecurityToken for dir" << walkDirCanonicalPath << create;
     }
 
     if (!enabled()) {
-        return SecurityTokenPointer();
+        return nullptr;
     }
 
     QMutexLocker locker(&s_mutex);
-    if (s_pSandboxPermissions.isNull()) {
-        return SecurityTokenPointer();
+    if (!s_pSandboxPermissions) {
+        return nullptr;
     }
 
-    while (true) {
+    while (!walkDirCanonicalPath.isEmpty()) {
         // Look for a valid token in the cache.
         QHash<QString, SecurityTokenWeakPointer>::iterator it = s_activeTokens
                 .find(walkDirCanonicalPath);
@@ -312,7 +316,7 @@ SecurityTokenPointer Sandbox::openSecurityToken(const QDir& dir, bool create) {
                 dir.canonicalPath(),
                 s_pSandboxPermissions->getValueString(key));
     }
-    return SecurityTokenPointer();
+    return nullptr;
 }
 
 SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath,
@@ -359,7 +363,7 @@ SecurityTokenPointer Sandbox::openTokenFromBookmark(const QString& canonicalPath
     Q_UNUSED(bookmarkBase64);
 #endif
 
-    return SecurityTokenPointer();
+    return nullptr;
 }
 
 QString Sandbox::migrateOldSettings() {

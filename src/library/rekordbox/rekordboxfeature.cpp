@@ -26,7 +26,6 @@
 #include "util/color/color.h"
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
-#include "util/file.h"
 #include "util/sandbox.h"
 #include "waveform/waveform.h"
 #include "widget/wlibrary.h"

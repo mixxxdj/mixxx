@@ -167,7 +167,6 @@ class BpmControl : public EngineControl {
     // used in the engine thread only
     double m_dSyncInstantaneousBpm;
     double m_dLastSyncAdjustment;
-    bool m_dUserTweakingSync;
 
     // m_pBeats is written from an engine worker thread
     mixxx::BeatsPointer m_pBeats;

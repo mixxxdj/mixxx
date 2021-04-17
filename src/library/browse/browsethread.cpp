@@ -1,7 +1,3 @@
-/*
- * browsethread.cpp         (C) 2011 Tobias Rafreider
- */
-
 #include "library/browse/browsethread.h"
 
 #include <QDateTime>
@@ -65,9 +61,9 @@ BrowseThreadPointer BrowseThread::getInstanceRef() {
     return strong;
 }
 
-void BrowseThread::executePopulation(const MDir& path, BrowseTableModel* client) {
+void BrowseThread::executePopulation(mixxx::FileAccess path, BrowseTableModel* client) {
     m_path_mutex.lock();
-    m_path = path;
+    m_path = std::move(path);
     m_model_observer = client;
     m_path_mutex.unlock();
     m_locationUpdated.wakeAll();
@@ -116,15 +112,16 @@ public:
 
 void BrowseThread::populateModel() {
     m_path_mutex.lock();
-    MDir thisPath = m_path;
+    auto thisPath = m_path;
     BrowseTableModel* thisModelObserver = m_model_observer;
     m_path_mutex.unlock();
 
     // Refresh the name filters in case we loaded new SoundSource plugins.
     QStringList nameFilters(SoundSourceProxy::getSupportedFileNamePatterns());
 
-    QDirIterator fileIt(thisPath.dir().absolutePath(), nameFilters,
-                        QDir::Files | QDir::NoDotAndDotDot);
+    QDirIterator fileIt(thisPath.info().location(),
+            nameFilters,
+            QDir::Files | QDir::NoDotAndDotDot);
 
     // remove all rows
     // This is a blocking operation
@@ -139,10 +136,10 @@ void BrowseThread::populateModel() {
         // If a user quickly jumps through the folders
         // the current task becomes "dirty"
         m_path_mutex.lock();
-        MDir newPath = m_path;
+        auto newPath = m_path;
         m_path_mutex.unlock();
 
-        if (thisPath.dir() != newPath.dir()) {
+        if (thisPath.info() != newPath.info()) {
             qDebug() << "Abort populateModel()";
             populateModel();
             return;

@@ -9,6 +9,7 @@
 #include "preferences/usersettings.h"
 #include "track/globaltrackcache.h"
 #include "util/db/dbconnectionpool.h"
+#include "util/fileinfo.h"
 #include "util/parented_ptr.h"
 #include "util/thread_affinity.h"
 
@@ -53,8 +54,8 @@ class TrackCollectionManager: public QObject,
     void purgeTracks(const QList<TrackRef>& trackRefs) const;
     void purgeAllTracks(const QDir& rootDir) const;
 
-    bool addDirectory(const QString& dir) const;
-    bool removeDirectory(const QString& dir) const;
+    bool addDirectory(const mixxx::FileInfo& newDir) const;
+    bool removeDirectory(const mixxx::FileInfo& oldDir) const;
     void relocateDirectory(const QString& oldDir, const QString& newDir) const;
 
     TrackPointer getOrAddTrack(
