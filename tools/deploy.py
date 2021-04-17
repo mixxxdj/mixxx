@@ -66,7 +66,9 @@ def git_info(info, path="."):
     elif info == "commit":
         cmd = ("git", "rev-parse", "HEAD")
     elif info == "describe":
-        cmd = ("git", "describe")
+        # A dirty git state should only be possible on local builds, but since
+        # this script may be used locally we'll add it here.
+        cmd = ("git", "describe", "--dirty")
     else:
         raise ValueError("Invalid git info type!")
 
@@ -77,6 +79,20 @@ def git_info(info, path="."):
     ).strip()
 
 
+def splitext(filename):
+    """
+    Split filename into name without extenstion and file extension.
+
+    This includes a workaround for ".tar.gz" files.
+    """
+    filename_without_ext, file_ext = os.path.splitext(filename)
+    filename_without_ext2, file_ext2 = os.path.splitext(filename_without_ext)
+    if file_ext2 == ".tar":
+        filename_without_ext = filename_without_ext2
+        file_ext = f"{file_ext2}{file_ext}"
+    return filename_without_ext, file_ext
+
+
 def tree(path):
     for dirpath, dirnames, filenames in os.walk(top=path):
         relpath = os.path.relpath(dirpath, start=path)
@@ -84,6 +100,13 @@ def tree(path):
             yield relpath
         for filename in filenames:
             yield os.path.join(relpath, filename)
+
+
+def slug(text):
+    download_slug, _, package_slug = text.partition("-")
+    if not download_slug or not package_slug:
+        raise ValueError("Failed to parse slug")
+    return download_slug, package_slug
 
 
 def prepare_deployment(args):
@@ -97,12 +120,14 @@ def prepare_deployment(args):
         commit_id = git_info("commit")
 
     metadata = {
-        "commit_id": commit_id,
+        "git_commit": commit_id,
+        "git_branch": git_info("branch"),
+        "git_describe": git_info("describe"),
         "file_size": file_stat.st_size,
         "file_date": datetime.datetime.fromtimestamp(
             file_stat.st_ctime
         ).isoformat(),
-        "sha256": file_sha256,
+        "file_sha256": file_sha256,
     }
 
     if os.getenv("CI") == "true":
@@ -111,7 +136,7 @@ def prepare_deployment(args):
         github_repository = os.getenv("GITHUB_REPOSITORY")
         metadata.update(
             {
-                "commit_url": (
+                "git_commit_url": (
                     f"{github_server_url}/{github_repository}/"
                     f"commit/{commit_id}"
                 ),
@@ -122,15 +147,20 @@ def prepare_deployment(args):
             }
         )
 
+    filename_without_ext, file_ext = splitext(args.file)
+    download_slug, package_slug = args.slug
+
     # Build destination path scheme
     print(f"Destination path pattern: {args.dest_path}")
     destpath = args.dest_path.format(
         filename=os.path.basename(args.file),
-        ext=os.path.splitext(args.file)[1],
-        branch=git_info("branch"),
-        commit_id=commit_id,
-        describe=git_info("describe"),
-        slug=args.slug,
+        filename_without_ext=filename_without_ext,
+        ext=file_ext,
+        git_branch=metadata["git_branch"],
+        git_commit_id=metadata["git_commit"],
+        git_describe=metadata["git_describe"],
+        package_slug=package_slug,
+        download_slug=download_slug,
     )
     print(f"Destination path: {destpath}")
 
@@ -146,7 +176,7 @@ def prepare_deployment(args):
     metadata.update(
         {
             "file_url": f"{args.dest_url}/{destpath}",
-            "sha256_url": f"{args.dest_url}/{destpath}.sha256sum",
+            "file_sha256_url": f"{args.dest_url}/{destpath}.sha256sum",
         }
     )
 
@@ -161,8 +191,10 @@ def prepare_deployment(args):
     if os.getenv("CI") == "true":
         # Set GitHub Actions job output
         print(
-            "::set-output name=artifact-{}::{}".format(
-                args.slug, json.dumps(metadata)
+            "::set-output name=artifact-{}-{}::{}".format(
+                download_slug,
+                package_slug,
+                json.dumps(metadata),
             )
         )
 
@@ -178,8 +210,8 @@ def collect_manifest_data(job_data):
     manifest_data = {}
     for output_name, output_data in job_data["outputs"].items():
         # Filter out unrelated job outputs that don't start with "artifact-".
-        prefix, _, slug = output_name.partition("-")
-        if prefix != "artifact" or not slug:
+        prefix, _, artifact_slug = output_name.partition("-")
+        if prefix != "artifact" or not artifact_slug:
             print(f"Ignoring output '{output_name}'...")
             continue
         artifact_data = json.loads(output_data)
@@ -191,7 +223,7 @@ def collect_manifest_data(job_data):
         if not resp.status == 200:
             raise LookupError(f"Unable to find URL '{url}' on remote server")
 
-        manifest_data[slug] = artifact_data
+        manifest_data[artifact_slug] = artifact_data
 
     return manifest_data
 
@@ -203,9 +235,9 @@ def generate_manifest(args):
         commit_id = git_info("commit")
 
     format_data = {
-        "branch": git_info("branch"),
-        "commit_id": commit_id,
-        "describe": git_info("describe"),
+        "git_branch": git_info("branch"),
+        "git_commit_id": commit_id,
+        "git_describe": git_info("describe"),
     }
 
     # Build destination path scheme
@@ -267,6 +299,7 @@ def main(argv=None):
         "--slug",
         action="store",
         required=True,
+        type=slug,
         help="Artifact identifier for the website's download page",
     )
     artifact_parser.add_argument(
