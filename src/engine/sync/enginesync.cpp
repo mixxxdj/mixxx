@@ -238,8 +238,8 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
         }
     }
 
-    const SyncLockPickAlgorithm picker = static_cast<SyncLockPickAlgorithm>(
-            m_pConfig->getValue<int>(ConfigKey("[BPM]", "SyncLockPickAlgorithm"),
+    const SyncLockAlgorithm picker = static_cast<SyncLockAlgorithm>(
+            m_pConfig->getValue<int>(ConfigKey("[BPM]", "sync_lock_algorithm"),
                     PREFER_IMPLICIT_MASTER));
     switch (picker) {
     case PREFER_IMPLICIT_MASTER:
