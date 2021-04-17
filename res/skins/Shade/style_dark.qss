@@ -1,70 +1,76 @@
 /* Dark */
-#MainMenu,
-#MainMenu::item,
 #MainMenu QMenu,
 #MainMenu QMenu::item,
 #MainMenu QMenu QCheckBox,
-WEffectSelector,
-WEffectSelector QAbstractScrollArea,
-WEffectSelector::down-arrow,
-WEffectSelector::indicator:!checked,
-#fadeModeCombobox QAbstractScrollArea,
-#fadeModeCombobox::item,
-#fadeModeCombobox::indicator:!checked,
 QToolTip,
-WBeatSpinBox,
-WBeatSpinBox QMenu,
-#LibraryContainer QMenu,
-#LibraryContainer QMenu::item,
-#LibraryContainer QMenu QCheckBox,
+WLibrarySidebar QMenu,
+WLibrarySidebar QMenu::item,
+WLibrary QHeaderView QMenu,
+WLibrary QHeaderView QMenu::item,
+QTextBrowser QMenu,
+QTextBrowser QMenu::item,
 WTrackMenu,
 WTrackMenu::item,
-WTrackMenu QCheckBox,
 WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
+QLineEdit QMenu,
+QLineEdit QMenu::item,
+WBeatSpinBox::up-button,
+WBeatSpinBox::down-button,
 WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCueMenuPopup QMenu::item,
 WCoverArtMenu,
-WCoverArtMenu::item {
-	color: #000000;
+WCoverArtMenu::item,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+WEffectSelector::down-arrow,
+WEffectSelector::indicator:unchecked,
+#fadeModeCombobox QAbstractScrollArea,
+#fadeModeCombobox::item,
+#fadeModeCombobox::indicator:unchecked {
+  color: #000;
   background-color: #717171;
   }
-  #spinBoxTransition,
+  #MainMenu,
+  #MainMenu::item,
+  WBeatSpinBox,
+  #spinBoxTransition::up-button,
+  #spinBoxTransition::down-button,
   #fadeModeCombobox,
   #fadeModeCombobox::down-arrow {
-    color: #060613;
+    color: #000;
     background-color: #5C5B5D;
-    border: 0px;
   }
-  /* hovered items */
-  WEffectSelector::item:selected,
-  #MainMenu::item:selected,
-  #MainMenu QMenu::item:selected,
-  #MainMenu QMenu::item:focus,
-  #MainMenu QMenu::item:hover,
-  #MainMenu QMenu::indicator:checked:selected,
-  #MainMenu QMenu::indicator:unchecked:selected,
-  #fadeModeCombobox::item:selected,
-  WEffectSelector::indicator:selected,
-  #fadeModeCombobox::indicator:selected,
-  WBeatSpinBox QMenu::item:selected,
-  #LibraryContainer QMenu::item:selected,
-  WTrackMenu::item:selected,
-  WTrackMenu QMenu::item:selected,
-  WCueMenuPopup QMenu::item:selected,
-  WCoverArtMenu::item:selected,
-  #LibraryContainer QMenu QCheckBox:selected,
-  #LibraryContainer QMenu QCheckBox:focus,  /* selected by keyboard */
-  #LibraryContainer QMenu QCheckBox:hover, /* mouse hover */
-  WTrackMenu QCheckBox:selected,
-  WTrackMenu QCheckBox:focus,
-  WTrackMenu QCheckBox:hover,
-  WTrackMenu QMenu QCheckBox:selected,
-  WTrackMenu QMenu QCheckBox:focus,
-  WTrackMenu QMenu QCheckBox:hover {
-    background-color: #999;
+  #spinBoxTransition {
+    background-color: #444546;
+  }
+#MainMenu::item:selected,
+#MainMenu QMenu::item:selected,
+#MainMenu QMenu::item:focus,
+#MainMenu QMenu::item:hover,
+#MainMenu QMenu::indicator:checked:selected,
+#MainMenu QMenu::indicator:unchecked:selected,
+WLibrarySidebar QMenu::item:selected,
+WLibrarySidebar QMenu::indicator:unchecked:selected,
+WLibrary QHeaderView QMenu::item:selected,
+WLibrary QHeaderView QMenu::indicator:unchecked:selected,
+QTextBrowser QMenu::item:selected,
+WTrackMenu::item:selected,
+WTrackMenu QMenu::item:selected,
+WTrackMenu QMenu QCheckBox:selected,
+WTrackMenu QMenu QCheckBox:focus,
+WTrackMenu QMenu QCheckBox:hover,
+QLineEdit QMenu::item:selected,
+WCoverArtMenu::item:selected,
+WEffectSelector::item:selected,
+WEffectSelector::indicator:unchecked:selected,
+#fadeModeCombobox::item:selected,
+#fadeModeCombobox::indicator:unchecked:selected {
+  background-color: #999;
+  }
+  WEffectSelector::indicator:unchecked:selected,
+  #fadeModeCombobox::indicator:unchecked:selected {
+    border-color: #999;
   }
   /* hover over checked effect */
   WEffectSelector::item:checked:selected,
@@ -73,45 +79,39 @@ WCoverArtMenu::item {
   }
 
   #MainMenu QMenu::separator,
-  #LibraryContainer QMenu::separator,
+  WLibrarySidebar QMenu::separator,
+  WLibrary QHeaderView QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
-  WCueMenuPopup QMenu::separator,
-  WCoverArtMenu::separator {
+  QLineEdit QMenu::separator {
     border-top: 1px solid #3F3041;
   }
-  /* checked effect and menu checkbox */
-  #LibraryContainer QMenu QCheckBox::indicator:checked,
-  WTrackMenu QCheckBox::indicator:checked,
-  WTrackMenu QMenu QCheckBox::indicator:checked,
+  /* checked checkbox */
   /* checkbox in Crate name context menu: "[ ] Auto DJ Track Source"  */
-  #LibraryContainer QMenu::indicator:checked,
-  WTrackMenu::indicator:checked,
-  WTrackMenu QMenu::indicator:checked,
+  WLibrarySidebar QMenu::indicator:checked,
+  WLibrary QHeaderView QMenu::indicator:checked,
+  WTrackMenu QMenu QCheckBox::indicator:checked,
   WEffectSelector::indicator:checked,
   #fadeModeCombobox::indicator:checked {
     border-color: #111;
+    background-color: #B79E00;
+  }
+  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+    border-color: #111;
     background-color: #897300;
   }
-  /* unchecked menu checkbox */
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled,
-  WTrackMenu QCheckBox::indicator:!enabled,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled {
-    border-color: #444;
-    background-color: #666;
-  }
   /* disabled menu item & checkbox */
-  WBeatSpinBox QMenu::item:!enabled,
-  #LibraryContainer QMenu::item:!enabled,
-  WTrackMenu::item:!enabled,
-  WTrackMenu QMenu::item:!enabled,
-  WCueMenuPopup QMenu::item:!enabled,
-  WCoverArtMenu::item:!enabled,
-  #LibraryContainer QMenu QCheckBox:!enabled,
-  WTrackMenu QCheckBox:!enabled,
-  WTrackMenu QMenu QCheckBox:!enabled {
+  WLibrarySidebar QMenu::item:disabled,
+  WTrackMenu::item:disabled,
+  WTrackMenu QMenu::item:disabled,
+  WTrackMenu QMenu QCheckBox:disabled,
+  QLineEdit QMenu::item:disabled {
     border-color: #444;
     color: #444;
+  }
+  WTrackMenu QMenu QCheckBox::indicator:disabled {
+    border-color: #444;
+    background-color: #666;
   }
 
 #MainMenu QMenu::indicator:checked,
@@ -153,7 +153,7 @@ WOverview #PassthroughLabel {
 #LibraryContainer QTableView:focus,
 #LibraryContainer QTreeView:focus,
 #LibraryContainer QTextBrowser:focus {
-  border: 1px solid #78C70B;
+  border-color: #78C70B;
 }
 
 WSearchLineEdit:focus {

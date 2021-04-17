@@ -95,13 +95,13 @@
             <Children>
 
               <WidgetGroup><!-- Rate slider + range displays -->
+                <ObjectName>RateSliderBox</ObjectName>
                 <Layout>stacked</Layout>
                 <SizePolicy>max,me</SizePolicy>
                 <Children>
 
                   <!-- Rate slider + center indicator -->
                   <WidgetGroup>
-                    <ObjectName>RateSliderBox</ObjectName>
                     <Size>54f,121f</Size>
                     <Children>
                       <Label>
