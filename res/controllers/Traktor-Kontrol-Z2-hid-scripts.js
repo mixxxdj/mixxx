@@ -27,6 +27,8 @@ var TraktorZ2 = new function() {
 
     this.syncPressedTimer = [];
     this.syncPressed = [];
+    this.snapQuantizePressedTimer = [];
+    this.snapQuantizePressed = [];
 
     this.traktorButtonStatus = [];
 
@@ -119,6 +121,8 @@ TraktorZ2.Deck = function(deckNumber, group) {
     // Various states
     TraktorZ2.syncPressedTimer[this.activeChannel] = 0;
     TraktorZ2.syncPressed[this.activeChannel] = false;
+    TraktorZ2.snapQuantizePressedTimer[this.activeChannel] = 0;
+    TraktorZ2.snapQuantizePressed[this.activeChannel] = false;
 
     // Knob encoder states (hold values between 0x0 and 0xF)
     // Rotate to the right is +1 and to the left is means -1
@@ -139,7 +143,7 @@ TraktorZ2.Deck.prototype.registerInputs = function(messageShort) {
     this.defineButton(messageShort, "!stateOfTraktorbutton", 0x09, 0x08, 0x09, 0x10, deckFn.traktorButtonStatusHandler);
 
     // Quantize buttons
-    this.defineButton(messageShort, "quantize", 0x03, 0x04, 0x03, 0x10, deckFn.quantizeHandler);
+    this.defineButton(messageShort, "quantize", 0x03, 0x04, 0x03, 0x10, deckFn.snapQuantizeButtonHandler);
 
     // PFL Headphone CUE buttons
     this.defineButton(messageShort, "pfl", 0x04, 0x04, 0x04, 0x08, deckFn.pflButtonHandler);
@@ -408,6 +412,34 @@ TraktorZ2.selectTrackHandler = function(field) {
     }
     TraktorZ2.browseKnobEncoderState = field.value;
 
+    if (TraktorZ2.snapQuantizePressed["[Channel1]"] !== TraktorZ2.snapQuantizePressed["[Channel2]"]
+    ) {
+        let ch;
+        // Snap / Quantize button is hold for one channel
+        if (TraktorZ2.snapQuantizePressed["[Channel1]"]) {
+            ch = "[Channel1]";
+        } else  {
+            ch = "[Channel2]";
+        }
+
+        if (TraktorZ2.shiftState === 0x02) {
+            // If shift mode is locked scale beatgrid
+            if (delta < 0) {
+                script.triggerControl(ch, "beats_adjust_faster");
+            } else {
+                script.triggerControl(ch, "beats_adjust_slower");
+            }
+        } else {
+            // Shift is not locked zoom waveform
+            if (delta < 0) {
+                script.triggerControl(ch, "waveform_zoom_up");
+            } else {
+                script.triggerControl(ch, "waveform_zoom_down");
+            }
+        }
+        return;
+    }
+
     // If shift mode is locked
     if (TraktorZ2.shiftState === 0x02) {
         engine.setValue("[Library]", "MoveHorizontal", delta);
@@ -550,17 +582,37 @@ TraktorZ2.buttonHandler = function(field) {
     script.toggleControl(field.group, field.name);
 };
 
-TraktorZ2.Deck.prototype.quantizeHandler = function(field) {
-    HIDDebug("TraktorZ2: quantizeHandler");
-    if (field.value === 0) {
-        return; // Button released
-    }
-    if (TraktorZ2.shiftState !== 0) {
-        // Adjust Beatgrid
-        engine.setValue(this.activeChannel, "beats_translate_curpos", field.value);
+TraktorZ2.Deck.prototype.snapQuantizeButtonHandler = function(field) {
+    HIDDebug("TraktorZ2: snapQuantizeButtonHandler");
+
+    // Depending on long or short press, sync beat or go to key sync mode
+    if (field.value === 1) {   // Start timer to measure how long button is pressed
+        var ch = this.activeChannel; // Use variable in timer function, because this.activeChannel can change until the timer is active
+        TraktorZ2.snapQuantizePressedTimer[ch] = engine.beginTimer(300, function() {
+            TraktorZ2.snapQuantizePressed[ch] = true;
+
+            // Reset sync button timer state if active
+            if (TraktorZ2.snapQuantizePressedTimer[ch] !== 0) {
+                TraktorZ2.snapQuantizePressedTimer[ch] = 0;
+            }
+        }, true);
     } else {
-        script.toggleControl(this.activeChannel, "quantize");
+        TraktorZ2.snapQuantizePressed[this.activeChannel] = false;
+        // Change display values to loop/beatjump
+
+        if (TraktorZ2.snapQuantizePressedTimer[this.activeChannel] !== 0) {
+            // Timer still running -> stop it
+            engine.stopTimer(TraktorZ2.snapQuantizePressedTimer[this.activeChannel]);
+
+            if (TraktorZ2.shiftState !== 0) {
+                // Adjust Beatgrid to current trackposition
+                script.triggerControl(this.activeChannel, "beats_translate_curpos");
+            } else {
+                script.toggleControl(this.activeChannel, "quantize");
+            }
+        }
     }
+
 };
 
 TraktorZ2.Deck.prototype.pflButtonHandler = function(field) {
