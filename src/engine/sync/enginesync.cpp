@@ -197,12 +197,13 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
     }
 
     // First preference: some other sync deck that is not playing.
+    // Note, if we are using PREFER_LOCK_BPM we don't use this option.
     Syncable* first_other_playing_deck = nullptr;
     // Second preference: whatever the first playing sync deck is, even if it's us.
     Syncable* first_playing_deck = nullptr;
     // Third preference: the first stopped sync deck.
     Syncable* first_stopped_deck = nullptr;
-    // Last resort: nullptr.
+    // Last resorts: Internal Clock or nullptr.
 
     int stopped_deck_count = 0;
     int playing_deck_count = 0;
@@ -237,22 +238,42 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
         }
     }
 
-    if (playing_deck_count == 1) {
-        return first_playing_deck;
-    } else if (playing_deck_count > 1) {
-        return first_other_playing_deck;
+    const SyncLockPickAlgorithm picker = static_cast<SyncLockPickAlgorithm>(
+            m_pConfig->getValue<int>(ConfigKey("[BPM]", "SyncLockPickAlgorithm"),
+                    PREFER_IMPLICIT_MASTER));
+    switch (picker) {
+    case PREFER_IMPLICIT_MASTER:
+        // Always pick a deck for a new master.
+        if (playing_deck_count == 1) {
+            return first_playing_deck;
+        } else if (playing_deck_count > 1) {
+            return first_other_playing_deck;
+        }
+
+        if (stopped_deck_count >= 1) {
+            return first_stopped_deck;
+        }
+        break;
+    case PREFER_LOCK_BPM:
+        // Old 2.3 behavior:
+        // Lock the bpm if there is more than one playing sync deck
+        if (playing_deck_count == 1) {
+            return first_playing_deck;
+        } else if (playing_deck_count > 1) {
+            return m_pInternalClock;
+        }
+
+        if (stopped_deck_count > 1) {
+            return first_stopped_deck;
+        }
+        break;
     }
 
-    // No valid playing sync decks
-    if (stopped_deck_count >= 1) {
-        return first_stopped_deck;
-    }
-
-    // No valid stopped sync decks
     return nullptr;
 }
 
 Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
+    // Iterates through all decks *except* the requester, and picks:
     // First preference: playing synced deck
     // Second preferene: stopped synced deck
     // Third preference: playing nonsync deck

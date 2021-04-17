@@ -133,6 +133,17 @@ class EngineSync : public SyncableListener {
         return false;
     }
 
+    // TODO: Remove pick algorithms during 2.4 development phase when new beatgrid detection
+    // and editing code is committed and we no longer need the lock bpm fallback option.
+    // If this code makes it to release we will all be very sad.
+    enum SyncLockPickAlgorithm {
+        // New behavior, which should work if beatgrids are reliable.
+        PREFER_IMPLICIT_MASTER,
+        // Old 2.3 behavior, which works around some issues with bad beatgrid detection, mostly
+        // for auto DJ mode.
+        PREFER_LOCK_BPM
+    };
+
     FRIEND_TEST(EngineSyncTest, EnableOneDeckInitsMaster);
     FRIEND_TEST(EngineSyncTest, EnableOneDeckInitializesMaster);
     FRIEND_TEST(EngineSyncTest, SyncToNonSyncDeck);
