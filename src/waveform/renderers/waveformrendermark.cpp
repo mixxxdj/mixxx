@@ -80,7 +80,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 }
 
                 // Check if the range needs to be displayed.
-                if (sampleEndPosition != Cue::kNoPosition) {
+                if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
                     DEBUG_ASSERT(samplePosition < sampleEndPosition);
                     const double currentMarkEndPoint =
                             m_waveformRenderer->transformSamplePositionInRendererWorld(
@@ -122,7 +122,7 @@ void WaveformRenderMark::draw(QPainter* painter, QPaintEvent* /*event*/) {
                 }
 
                 // Check if the range needs to be displayed.
-                if (sampleEndPosition != Cue::kNoPosition) {
+                if (samplePosition != sampleEndPosition && sampleEndPosition != Cue::kNoPosition) {
                     DEBUG_ASSERT(samplePosition < sampleEndPosition);
                     double currentMarkEndPoint =
                             m_waveformRenderer

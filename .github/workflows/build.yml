@@ -31,6 +31,7 @@ jobs:
             buildenv_script: tools/debian_buildenv.sh
             artifacts_name: Ubuntu 20.04 DEB
             artifacts_path: build/*.deb
+            artifacts_slug: ubuntu-focal
             qt_qpa_platform: offscreen
           - name: macOS 10.15
             os: macos-10.15
@@ -82,7 +83,7 @@ jobs:
             buildenv_script: tools/windows_buildenv.bat
             artifacts_name: Windows Installer
             artifacts_path: build/*.msi
-            artifacts_slug: windows-windows64
+            artifacts_slug: windows-win64
             qt_qpa_platform: windows
 
     env:
@@ -95,8 +96,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     name: ${{ matrix.name }}
     outputs:
-      artifact-macos-macosintel: ${{ steps.generate_artifact_metadata.outputs.artifact-macos-macosintel }}
-      artifact-windows-windows64: ${{ steps.generate_artifact_metadata.outputs.artifact-windows-windows64 }}
+      artifact-macos-macosintel: ${{ steps.prepare_deploy.outputs.artifact-macos-macosintel }}
+      artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
 
     # sccache's handling of the /fp:fast MSVC compiler option is broken, so use our fork with the fix.
@@ -122,6 +123,12 @@ jobs:
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
+
+    - name: "Ensure that all tags are fetched"
+      # Works around an issue where not the latest tag is not fetched when the
+      # workflow is triggered by a tag push event.
+      # Possibly related: actions/checkout#290
+      run: git fetch origin --force --tags
 
     - name: "Set up cmake"
       uses: jwlawson/actions-setup-cmake@v1.4
@@ -306,6 +313,27 @@ jobs:
       run: signtool sign /f $Env:WINDOWS_CODESIGN_CERTIFICATE_PATH /p $Env:WINDOWS_CODESIGN_CERTIFICATE_PASSWORD *.msi
       working-directory: build
 
+    - name: "Prepare for deployment"
+      # Copy the desired directory structure to the deploy/ directory. This
+      # also generates metadata for file artifact and write it to the job
+      # output using the artifacts_slug value.
+      id: prepare_deploy
+      if: github.event_name == 'push'
+      shell: bash
+      run: >
+        if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
+        then
+          export DEPLOY_PATH='mixxx-{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
+        else
+          export DEPLOY_PATH='builds/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
+        fi;
+        python3 tools/deploy.py prepare-deployment
+        --slug '${{ matrix.artifacts_slug }}'
+        --output-dir 'deploy/'
+        --dest-path "${DEPLOY_PATH}"
+        --dest-url 'https://downloads.mixxx.org'
+        ${{ matrix.artifacts_path }}
+
     - name: "[Windows] Install rsync and openssh"
       env:
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
@@ -315,30 +343,16 @@ jobs:
         pacman -S --noconfirm coreutils bash rsync openssh
         Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
-    - name: "Generate Artifact Metadata"
-      # Generate metadata for file artifact and write it to the job output
-      # using the artifacts_slug value.  This also sets the DEPLOY_DIR
-      # environment variable that is used in the deploy.sh script in the next
-      # step.
-      id: generate_artifact_metadata
-      if: github.event_name == 'push'
-      run: python3 tools/generate_download_metadata.py artifact ${{ matrix.artifacts_path }} "${{ matrix.artifacts_slug }}"
-      env:
-        DEPLOY_BASEURL: "https://downloads.mixxx.org"
-        DESTDIR: builds/{git_branch}/${{ runner.os }}
-
     - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
       # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
       if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_PASSWORD != null
-      run: bash tools/deploy.sh ${{ matrix.artifacts_path }}
+      run: bash tools/deploy.sh deploy/
       env:
         DESTDIR: public_html/downloads/
-        DEPLOY_ONLY: 0
         SSH_HOST: downloads-hostgator.mixxx.org
         SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
         SSH_USER: mixxx
-        UPLOAD_ID: ${{ github.run_id }}
 
     # Workaround for https://github.com/actions/cache/issues/531
     - name: Use system tar & zstd from Chocolatey for caching
@@ -363,28 +377,40 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: "Ensure that all tags are fetched"
+      # Works around an issue where not the latest tag is not fetched when the
+      # workflow is triggered by a tag push event.
+      # Possibly related: actions/checkout#290
+      run: git fetch origin --force --tags
+
     - name: "Collect Artifacts Metadata & Write Manifest"
       # Retrieve the metadata from the matrix job's outputs, merge them into a
       # single JSON document and then deploy to the server.
       if: github.event_name == 'push' && env.SSH_PASSWORD != null
-      run: python3 tools/generate_download_metadata.py manifest
+      run: >
+        if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
+        then
+          export DEPLOY_PATH='mixxx-{git_describe}/manifest.json';
+        else
+          export DEPLOY_PATH='builds/{git_branch}/manifest.json';
+        fi;
+        python3 tools/deploy.py generate-manifest
+        --output-dir 'deploy/'
+        --dest-path "${DEPLOY_PATH}"
+        --dest-url 'https://downloads.mixxx.org'
       env:
         JOB_DATA: ${{ toJSON(needs.build) }}
-        MANIFEST_URL: "https://downloads.mixxx.org/builds/{git_branch}/manifest.json"
-        DESTDIR: "builds/{git_branch}"
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
 
     - name: "Deploy Manifest"
       if: github.event_name == 'push' && env.SSH_PASSWORD != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
-      run: bash tools/deploy.sh manifest.json
+      run: bash tools/deploy.sh deploy/
       env:
         DESTDIR: public_html/downloads/
-        DEPLOY_ONLY: 1
         SSH_HOST: downloads-hostgator.mixxx.org
         SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
         SSH_USER: mixxx
-        UPLOAD_ID: ${{ github.run_id }}
 
     - name: "Trigger Netlify build"
       if: env.NETLIFY_BUILD_HOOK != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
