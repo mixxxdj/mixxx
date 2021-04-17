@@ -19,10 +19,22 @@ DDJ200.init = function() {
 
         var vgroup = "[Channel" + i + "]";
 
-        // run onTrackLoad after every track load to set LEDs accordingly
+        // run updateDeckLeds after every track load to set LEDs accordingly
         engine.makeConnection(vgroup, "track_loaded", function(ch, vgroup) {
-            DDJ200.onTrackLoad(ch, vgroup);
+            DDJ200.updateDeckLeds(vgroup);
         });
+
+        // run updateDeckLeds after play/pause track to set LEDs accordingly
+        engine.makeConnection(vgroup, "play", function(ch, vgroup) {
+            DDJ200.updateDeckLeds(vgroup);
+        });
+
+        // run updateDeckLeds after sync toogle to set LEDs accordingly
+        engine.makeConnection(vgroup, "sync_enabled", function(ch, vgroup) {
+            DDJ200.updateDeckLeds(vgroup);
+        });
+
+        DDJ200.listemHotcues(vgroup);
 
         // set Pioneer CDJ cue mode for all decks
         engine.setValue(vgroup, "cue_cdj", true);
@@ -34,6 +46,15 @@ DDJ200.init = function() {
     engine.beginTimer(500, function() {
         engine.setValue("[Library]", "MoveFocus", 1);
     }, true);
+};
+
+DDJ200.listemHotcues = function(vgroup) {
+    for (var i = 1; i <= 8; i++) {
+        // run updateDeckLeds after every hotcue update
+        engine.makeConnection(vgroup, "hotcue_" + i + "_enabled", function(ch, vgroup) {
+            DDJ200.updateDeckLeds(vgroup);
+        });
+    }
 };
 
 DDJ200.shutdown = function() {
@@ -54,7 +75,7 @@ DDJ200.LEDsOff = function() {                         // turn off LED buttons:
     }
 };
 
-DDJ200.onTrackLoad = function(channel, vgroup) {
+DDJ200.updateDeckLeds = function(vgroup) {
     // set LEDs (hotcues, etc.) for the loaded deck
     // if controller is switched to this deck
     var vDeckNo = script.deckFromGroup(vgroup);
@@ -330,6 +351,12 @@ DDJ200.switchLEDs = function(vDeckNo) {
             0x7F * engine.getValue(vgroup, "pfl"));
     }
 
+    DDJ200.switchHotcueLEDs(vDeckNo);
+};
+
+DDJ200.switchHotcueLEDs = function(vDeckNo) {
+    var d = (vDeckNo % 2) ? 0 : 1;           // d = deckNo - 1
+    var vgroup = "[Channel" + vDeckNo + "]";
     for (var i = 1; i <= 8; i++) {
         midi.sendShortMsg(0x97 + 2 * d, i - 1, 0x7F * engine.getValue(
             vgroup, "hotcue_" + i + "_enabled"));
