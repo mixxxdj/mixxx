@@ -1779,6 +1779,7 @@ TraktorZ2.enableLEDsPerChannel  = function() {
     HIDDebug("TraktorZ2: enableLEDsPerChannel");
     // Traktor Z2 can be switched per channel from internal mixing to external mixing
     // This is done by USB HID: Set Reports (Feature) 0xF1
+    // 2x8Bit Logical 0...255
     // 0xF1 nn 40  -> Bit 0x01 of n means  Ch1 (internal) mixing
     // 0xF1 nn 40  -> Bit 0x02 of n means  Ch2 (internal) mixing
     // 0xF1 nn 40  -> Bit 0x04 of n means  MasterCh (internal) mixing
@@ -1800,8 +1801,8 @@ TraktorZ2.init = function(_id) {
     };
 
 
-    HIDDebug(controller.getFeatureReport(0xF1));
-    HIDDebug(controller.getFeatureReport(0xF3));
+    HIDDebug(controller.getFeatureReport(0xF1));  // 2x8Bit Logical 0...255
+    HIDDebug(controller.getFeatureReport(0xF3));  // 2x8Bit Logical 0...127
 
     /*
     var data = [0xFF, 0x40];
