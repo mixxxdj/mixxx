@@ -198,15 +198,18 @@ void TrackCollectionManager::saveTrack(
     DEBUG_ASSERT(pTrack);
     DEBUG_ASSERT(pTrack->getDateAdded().isValid());
 
+    // The dirty flag is reset while saving the track in the internal
+    // collection!
+    const bool trackDirty = pTrack->isDirty();
+    if (!trackDirty) {
+        return;
+    }
+
     // The metadata must be exported while the cache is locked to
     // ensure that we have exclusive (write) access on the file
     // and not reader or writer is accessing the same file
     // concurrently.
     exportTrackMetadata(pTrack, mode);
-
-    // The dirty flag is reset while saving the track in the internal
-    // collection!
-    const bool trackDirty = pTrack->isDirty();
 
     // This operation must be executed synchronously while the cache is
     // locked to prevent that a new track is created from outdated
