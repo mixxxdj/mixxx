@@ -1,4 +1,9 @@
 /* Dark */
+#MainMenu,
+#MainMenu::item,
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 WEffectSelector::down-arrow,
@@ -35,6 +40,12 @@ WCoverArtMenu::item {
   }
   /* hovered items */
   WEffectSelector::item:selected,
+  #MainMenu::item:selected,
+  #MainMenu QMenu::item:selected,
+  #MainMenu QMenu::item:focus,
+  #MainMenu QMenu::item:hover,
+  #MainMenu QMenu::indicator:checked:selected,
+  #MainMenu QMenu::indicator:unchecked:selected,
   #fadeModeCombobox::item:selected,
   WEffectSelector::indicator:selected,
   #fadeModeCombobox::indicator:selected,
@@ -61,7 +72,7 @@ WCoverArtMenu::item {
     background-color: #555;
   }
 
-  WBeatSpinBox QMenu::separator,
+  #MainMenu QMenu::separator,
   #LibraryContainer QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
@@ -102,6 +113,15 @@ WCoverArtMenu::item {
     border-color: #444;
     color: #444;
   }
+
+#MainMenu QMenu::indicator:checked,
+#MainMenu QMenu::indicator:checked:selected {
+  image: url(skin:/btn/btn_mainmenu_dark_checkbox_checked.svg);
+}
+#MainMenu QMenu::indicator:unchecked,
+#MainMenu QMenu::indicator:unchecked:selected {
+  image: url(skin:/btn/btn_mainmenu_dark_checkbox.svg);
+}
 
 #EffectSelectorGroup[highlight="1"]{
 	border: 1px solid #3c8bb2;

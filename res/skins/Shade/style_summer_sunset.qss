@@ -1,4 +1,9 @@
 /* Summer Sunset */
+#MainMenu,
+#MainMenu::item,
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 WEffectSelector::down-arrow,
@@ -33,6 +38,7 @@ WCoverArtMenu::item {
     background-color: #998A3C;
     border: 0px;
   }
+  #MainMenu QMenu::separator,
   WBeatSpinBox QMenu::separator,
   #LibraryContainer QMenu::separator,
   WTrackMenu::separator,
@@ -42,6 +48,12 @@ WCoverArtMenu::item {
     border-top: 1px solid #222;
   }
   /* hovered items */
+  #MainMenu::item:selected,
+  #MainMenu QMenu::item:selected,
+  #MainMenu QMenu::item:focus,
+  #MainMenu QMenu::item:hover,
+  #MainMenu QMenu::indicator:checked:selected,
+  #MainMenu QMenu::indicator:unchecked:selected,
   WEffectSelector::item:selected,
   #fadeModeCombobox::item:selected,
   WEffectSelector::indicator:selected,
@@ -99,6 +111,15 @@ WCoverArtMenu::item {
     border-color: #666;
     background-color: #888;
   }
+
+#MainMenu QMenu::indicator:checked,
+#MainMenu QMenu::indicator:checked:selected {
+  image: url(skin:/btn/btn_mainmenu_summer_checkbox_checked.svg);
+}
+#MainMenu QMenu::indicator:unchecked,
+#MainMenu QMenu::indicator:unchecked:selected {
+  image: url(skin:/btn/btn_mainmenu_summer_checkbox.svg);
+}
 
 #EffectSelectorGroup[highlight="1"]{
 	border: 1px solid #f8ba54;

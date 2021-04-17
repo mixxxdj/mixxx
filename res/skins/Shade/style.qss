@@ -98,13 +98,11 @@ WBeatSpinBox::down-button {
 
 
 /* common colors for WEffectSelector, QMenu, QToolTip */
-WEffectSelector,
-WEffectSelector QAbstractScrollArea,
-WEffectSelector::down-arrow,
-WEffectSelector::indicator:!checked,
-#fadeModeCombobox QAbstractScrollArea,
-#fadeModeCombobox::item,
-#fadeModeCombobox::indicator:!checked,
+#MainMenu,
+#MainMenu::item,
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
 QToolTip,
 WBeatSpinBox,
 WBeatSpinBox QMenu,
@@ -121,7 +119,14 @@ WCueMenuPopup,
 WCueMenuPopup QMenu,
 WCueMenuPopup QMenu::item,
 WCoverArtMenu,
-WCoverArtMenu::item {
+WCoverArtMenu::item,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+WEffectSelector::down-arrow,
+WEffectSelector::indicator:unchecked,
+#fadeModeCombobox QAbstractScrollArea,
+#fadeModeCombobox::item,
+#fadeModeCombobox::indicator:unchecked {
   color: #060613;
   background-color: #aab2b7;
   }
@@ -135,6 +140,45 @@ WCoverArtMenu::item {
     height: 20px;
     margin-left: 3px;
   }
+
+/* TODO move those styles into a separate file and lonk that in all skins */
+#MainMenu {
+  margin-bottom: 0px;
+  padding-bottom: 0px;
+  }
+  #MainMenu::item {
+    /* No big deal, just try to make it look like native menus */
+    padding: 0.1em 0.5em 0.1em 0.5em;
+    margin: 0em;
+  }
+  #MainMenu QMenu {
+    padding: 0.08em;
+    border: 1px solid #060613;
+    border-radius: 2px;
+  }
+  #MainMenu QMenu::separator {
+    height: 0px;
+    margin: 0.25em;
+  }
+  #MainMenu QMenu::right-arrow {
+    width: 0.5em;
+    height: 0.5em;
+    margin-right: 0.2em;
+  }
+
+  #MainMenu QMenu::indicator {
+    width: 1em;
+    height: 1em;
+  }
+  #MainMenu QMenu::indicator:checked,
+  #MainMenu QMenu::indicator:checked:selected {
+    image: url(skin:/btn/btn_mainmenu_checkbox_checked.svg);
+  }
+  #MainMenu QMenu::indicator:unchecked,
+  #MainMenu QMenu::indicator:unchecked:selected {
+    image: url(skin:/btn/btn_mainmenu_checkbox.svg);
+  }
+
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
@@ -227,6 +271,12 @@ WCoverArtMenu {
     margin: 2px 5px 2px 5px;
   }
   /* hovered items */
+  #MainMenu::item:selected,
+  #MainMenu QMenu::item:selected,
+  #MainMenu QMenu::item:focus,
+  #MainMenu QMenu::item:hover,
+  #MainMenu QMenu::indicator:checked:selected,
+  #MainMenu QMenu::indicator:unchecked:selected,
   WEffectSelector::item:selected,
   #fadeModeCombobox::item:selected,
   WBeatSpinBox QMenu::item:selected,
@@ -352,14 +402,14 @@ WCoverArtMenu::item {
   WCueMenuPopup QMenu::separator,
   WCoverArtMenu::separator {
     height: 0px;
-    border-top: 1px solid #71777a;
-    margin: 4px 0px;
+    margin: 4px;
   }
-  #LibraryContainer QMenu QCheckBox,
-  WTrackMenu QCheckBox,
-  WTrackMenu QMenu QCheckBox,
-  WCoverArtMenu QCheckBox {
-    padding: 2px 10px 2px 3px;
+  #MainMenu QMenu::separator,
+  #LibraryContainer QMenu::separator,
+  WTrackMenu::separator,
+  WTrackMenu QMenu::separator,
+  QLineEdit QMenu::separator {
+    border-top: 1px solid #71777a;
   }
   #LibraryContainer QMenu QCheckBox::indicator,
   #LibraryContainer QMenu::indicator,
@@ -372,11 +422,15 @@ WCoverArtMenu::item {
     border-width: 1px;
     border-style: solid;
   }
-  #LibraryContainer QMenu::right-arrow,
   WTrackMenu::right-arrow,
   WTrackMenu QMenu::right-arrow {
     width: 10px;
     height: 10px;
+    margin-right: 4px;
+  }
+  #MainMenu QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow {
     image: url(skin:/style/menu_arrow.svg);
   }
 
