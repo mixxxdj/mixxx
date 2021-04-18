@@ -55,6 +55,9 @@ QString stringifyRangeList(const QList<int>& rangeList) {
         auto first_duplicate = std::adjacent_find(rangeList.cbegin(), rangeList.cend());
         return first_duplicate == rangeList.cend();
     }());
+    DEBUG_ASSERT(std::all_of(rangeList.cbegin(), rangeList.cend(), [](int val) {
+        return val >= 0;
+    }));
 
     QString stringifiedRangeList;
 

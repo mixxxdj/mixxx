@@ -51,11 +51,6 @@ TEST(DisplayIntListTest, duplicateValuesAreIgnored) {
     EXPECT_EQ(QList<int>({1, 2, 3}), mixxx::parseRangeList("1, 1, 1, 1, 2, 2, 3"));
 }
 
-// TEST(DisplayIntListTest, negativeValuesAreIgnored) {
-//     EXPECT_EQ(QList<int>({}), mixxx::parseRangeList("-1,-2,-3"));
-//     EXPECT_QSTRING_EQ("", mixxx::stringifyRangeList(QList<int>({-1, -2, -3})));
-// }
-
 TEST(DisplayIntListTest, resultingListIsSortedAscending) {
     const auto list = mixxx::parseRangeList("4, 2, 3, 1, 6, 5");
     EXPECT_TRUE(std::is_sorted(list.cbegin(), list.cend()));
