@@ -19,11 +19,11 @@ QIcon toQIcon(const QColor& color) {
     return QIcon(pixmap);
 }
 
-HotcueIndexListItem* toHotcueIndexListItem(QStandardItem* from) {
-    VERIFY_OR_DEBUG_ASSERT(from->type() == QStandardItem::UserType) {
+HotcueIndexListItem* toHotcueIndexListItem(QStandardItem* pFrom) {
+    VERIFY_OR_DEBUG_ASSERT(pFrom->type() == QStandardItem::UserType) {
         return nullptr;
     }
-    return static_cast<HotcueIndexListItem*>(from);
+    return static_cast<HotcueIndexListItem*>(pFrom);
 }
 
 } // namespace
@@ -71,12 +71,12 @@ bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVari
     if (modelIndex.isValid() && modelIndex.column() == 1) {
         const bool initialAttemptSuccessful = QStandardItemModel::setData(modelIndex, value, role);
 
-        const auto* hotcueIndexListItem = toHotcueIndexListItem(itemFromIndex(modelIndex));
-        VERIFY_OR_DEBUG_ASSERT(hotcueIndexListItem) {
+        const auto* pHotcueIndexListItem = toHotcueIndexListItem(itemFromIndex(modelIndex));
+        VERIFY_OR_DEBUG_ASSERT(pHotcueIndexListItem) {
             return false;
         }
 
-        auto hotcueIndexList = hotcueIndexListItem->getHotcueIndexList();
+        auto hotcueIndexList = pHotcueIndexListItem->getHotcueIndexList();
 
         // make sure no index is outside of range
         DEBUG_ASSERT(std::is_sorted(hotcueIndexList.cbegin(), hotcueIndexList.cend()));
@@ -87,13 +87,13 @@ bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVari
         hotcueIndexList.erase(hotcueIndexList.begin(), endLower);
 
         for (int i = 0; i < rowCount(); ++i) {
-            auto* hotcueIndexListItem = toHotcueIndexListItem(item(i, 1));
+            auto* pHotcueIndexListItem = toHotcueIndexListItem(item(i, 1));
 
-            if (hotcueIndexListItem) {
+            if (pHotcueIndexListItem) {
                 if (i == modelIndex.row()) {
-                    hotcueIndexListItem->setHotcueIndexList(hotcueIndexList);
+                    pHotcueIndexListItem->setHotcueIndexList(hotcueIndexList);
                 } else {
-                    hotcueIndexListItem->removeIndicies(hotcueIndexList);
+                    pHotcueIndexListItem->removeIndicies(hotcueIndexList);
                 }
             }
         }
