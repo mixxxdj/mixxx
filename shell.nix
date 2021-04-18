@@ -70,7 +70,7 @@ let inherit (nixroot) stdenv pkgs lib
       exit 1
     fi
     cd cbuild
-    ./mixxx --resourcePath res/ "$@"
+    ./mixxx --resourcePath ../res/ "$@"
   '';
 
   shell-debug = nixroot.writeShellScriptBin "debug" ''
