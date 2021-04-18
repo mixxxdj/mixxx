@@ -187,7 +187,6 @@ double BeatUtils::makeConstBpm(
     for (int i = 0; i < midRegion; ++i) {
         const double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
         const int numberOfBeats = static_cast<int>((length / constantRegions[i].beatLength) + 0.5);
-        qDebug() << i << numberOfBeats << constantRegions[i].firstBeat;
         if (numberOfBeats < kMinRegionBeatCount) {
             // Request short regions, too unstable.
             continue;
