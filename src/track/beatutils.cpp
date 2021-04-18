@@ -207,9 +207,9 @@ double BeatUtils::makeConstBpm(
             double maxBeatLength = math_min(longestRegionMaxRoundSamples, maxRoundSamples);
 
             const int maxNumberOfBeats =
-                    static_cast<int>((newLength / minBeatLength) + 0.5);
+                    static_cast<int>(round(newLength / minBeatLength));
             const int minNumberOfBeats =
-                    static_cast<int>((newLength / maxBeatLength) + 0.5);
+                    static_cast<int>(round(newLength / maxBeatLength));
 
             if (minNumberOfBeats != maxNumberOfBeats) {
                 // Ambiguous number of beats, find a closer region.
@@ -253,9 +253,9 @@ double BeatUtils::makeConstBpm(
             double maxBeatLength = math_min(longestRegionMaxRoundSamples, maxRoundSamples);
 
             const int maxNumberOfBeats =
-                    static_cast<int>((newLength / minBeatLength) + 0.5);
+                    static_cast<int>(round(newLength / minBeatLength));
             const int minNumberOfBeats =
-                    static_cast<int>((newLength / maxBeatLength) + 0.5);
+                    static_cast<int>(round(newLength / maxBeatLength));
 
             if (minNumberOfBeats != maxNumberOfBeats) {
                 // Ambiguous number of beats, find a closer region.
