@@ -8,6 +8,8 @@ class EqualizerUtil {
   public:
     // Creates common EQ parameters like low/mid/high gain and kill buttons.
     static void createCommonParameters(EffectManifest* pManifest, bool linear) {
+        pManifest->setIsWaveformChangingEQ(true);
+
         EffectManifestParameter::ControlHint controlHint =
                 EffectManifestParameter::ControlHint::KNOB_LOGARITHMIC;
         double maximum = 4.0;

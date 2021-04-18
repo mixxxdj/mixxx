@@ -13,6 +13,8 @@
 #include "effects/builtin/linkwitzriley8eqeffect.h"
 #include "effects/builtin/moogladder4filtereffect.h"
 #include "effects/builtin/parametriceqeffect.h"
+#include "effects/builtin/semiparametriceq3knobeffect.h"
+#include "effects/builtin/semiparametriceq4knobeffect.h"
 #include "effects/builtin/threebandbiquadeqeffect.h"
 #include "moc_builtinbackend.cpp"
 #ifndef __MACAPPSTORE__
@@ -35,6 +37,8 @@ BuiltInBackend::BuiltInBackend(QObject* pParent)
     registerEffect<LinkwitzRiley8EQEffect>();
     registerEffect<ThreeBandBiquadEQEffect>();
     registerEffect<BiquadFullKillEQEffect>();
+    registerEffect<SemiparametricEQEffect3Knob>();
+    registerEffect<SemiparametricEQEffect4Knob>();
     // Compensations EQs
     registerEffect<GraphicEQEffect>();
     registerEffect<ParametricEQEffect>();

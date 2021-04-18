@@ -33,7 +33,8 @@ class EffectManifestParameter {
         TIME,
         HERTZ,
         SAMPLERATE, // fraction of the samplerate
-        BEATS, // multiples of a beat
+        BEATS,      // multiples of a beat
+        DECIBELS,
     };
 
     enum class LinkType : int {

@@ -523,6 +523,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/effects/builtin/parametriceqeffect.cpp
   src/effects/builtin/phasereffect.cpp
   src/effects/builtin/reverbeffect.cpp
+  src/effects/builtin/semiparametriceq3knobeffect.cpp
+  src/effects/builtin/semiparametriceq4knobeffect.cpp
   src/effects/builtin/threebandbiquadeqeffect.cpp
   src/effects/builtin/tremoloeffect.cpp
   src/effects/effect.cpp
