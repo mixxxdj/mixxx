@@ -343,7 +343,7 @@ in stdenv.mkDerivation rec {
   buildInputs = qtDeps ++ (with pkgs; [
     chromaprint
     faad2
-    ffmpeg
+    ffmpeg_4
     fftw
     flac
     git
