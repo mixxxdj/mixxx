@@ -21,6 +21,7 @@ DJ202.slicerBeatsWindow = 8;
 DJ202.autoFocusEffects = false;
 DJ202.autoShowFourDecks = false;
 DJ202.bindSamplerControls = false;
+DJ202.vinylModeEnabledOnStart = true;
 
 
 ///////////
@@ -93,6 +94,10 @@ DJ202.init = function () {
 
   DJ202.leftDeck.setCurrentDeck('[Channel1]');
   DJ202.rightDeck.setCurrentDeck('[Channel2]');
+
+  // Initialize vinyl led state
+  DJ202.leftDeck.setVinylLED();
+  DJ202.rightDeck.setVinylLED();
 };
 
 DJ202.autoShowDecks = function (value, group, control) {
@@ -221,6 +226,8 @@ DJ202.Deck = function (deckNumbers, offset) {
   components.Deck.call(this, deckNumbers);
   channel = offset + 1;
 
+  this.isVinylMode = DJ202.vinylModeEnabledOnStart;
+
   this.loadTrack = new components.Button({
     midi: [0x9F, 0x02 + offset],
     unshift: function () {
@@ -231,7 +238,16 @@ DJ202.Deck = function (deckNumbers, offset) {
     },
   });
 
+  this.setVinylLED = function(){
+    midi.sendShortMsg(0x90 + offset, 0x0F, this.isVinylMode ? 0x7F: 0x00);
+  };
+
   this.slipModeButton = new DJ202.SlipModeButton();
+  this.vinylModeButton = function (_channel, _control, value, _status, _group) {
+    if (value) { this.isVinylMode = !this.isVinylMode; }
+    this.setVinylLED();
+  }
+
 
   engine.setValue(this.currentDeck, "rate_dir", -1);
   this.tempoFader = new components.Pot({
@@ -257,7 +273,7 @@ DJ202.Deck = function (deckNumbers, offset) {
   // ============================= JOG WHEELS =================================
 
   this.wheelTouch = function (channel, control, value, status, group) {
-    if (value === 0x7F && !this.isShifted) {
+    if (value === 0x7F && !this.isShifted && this.isVinylMode) {
       var alpha = 1.0 / 8;
       var beta = alpha / 32;
       engine.scratchEnable(script.deckFromGroup(this.currentDeck), 512, 45,
