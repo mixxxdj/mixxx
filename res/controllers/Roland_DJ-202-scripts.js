@@ -96,8 +96,8 @@ DJ202.init = function () {
   DJ202.rightDeck.setCurrentDeck('[Channel2]');
 
   // Initialize vinyl led state
-  DJ202.leftDeck.setVinylLED();
-  DJ202.rightDeck.setVinylLED();
+  DJ202.leftDeck.setVinylModeLED();
+  DJ202.rightDeck.setVinylModeLED();
 };
 
 DJ202.autoShowDecks = function (value, group, control) {
@@ -238,14 +238,14 @@ DJ202.Deck = function (deckNumbers, offset) {
     },
   });
 
-  this.setVinylLED = function(){
+  this.setVinylModeLED = function() {
     midi.sendShortMsg(0x90 + offset, 0x0F, this.isVinylMode ? 0x7F: 0x00);
   };
 
   this.slipModeButton = new DJ202.SlipModeButton();
   this.vinylModeButton = function (_channel, _control, value, _status, _group) {
     if (value) { this.isVinylMode = !this.isVinylMode; }
-    this.setVinylLED();
+    this.setVinylModeLED();
   }
 
 
