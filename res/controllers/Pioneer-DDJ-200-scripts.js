@@ -27,14 +27,14 @@ DDJ200.init = function() {
         // run switchPlayLED after play/pause track to set LEDs accordingly
         engine.makeConnection(vgroup, "play", function(ch, vgroup) {
             var vDeckNo = script.deckFromGroup(vgroup);
-            var d = (vDeckNo % 2) ? 0 : 1;  
+            var d = (vDeckNo % 2) ? 0 : 1;
             DDJ200.switchPlayLED(d, ch);
         });
 
         // run switchSyncLED after sync toogle to set LEDs accordingly
         engine.makeConnection(vgroup, "sync_enabled", function(ch, vgroup) {
             var vDeckNo = script.deckFromGroup(vgroup);
-            var d = (vDeckNo % 2) ? 0 : 1;  
+            var d = (vDeckNo % 2) ? 0 : 1;
             DDJ200.switchSyncLED(d, ch);
         });
 
@@ -362,15 +362,15 @@ DDJ200.switchLEDs = function(vDeckNo) {
 
 DDJ200.switchPlayLED = function(deck, enabled) {
     midi.sendShortMsg(0x90 + deck, 0x0B, 0x7F * enabled);
-}
+};
 
 DDJ200.switchSyncLED = function(deck, enabled) {
     midi.sendShortMsg(0x90 + deck, 0x58, 0x7F * enabled);
-}
+};
 
 DDJ200.switchPadLED = function(deck, pad, enabled) {
     midi.sendShortMsg(0x97 + 2 * deck, pad - 1, 0x7F * enabled);
-}
+};
 
 DDJ200.toggleDeck = function(channel, control, value, status, group) {
     if (value) { // only if button pressed, not releases, i.e. value === 0
