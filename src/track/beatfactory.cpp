@@ -84,16 +84,21 @@ mixxx::BeatsPointer BeatFactory::makePreferredBeats(
     const QString version = getPreferredVersion(fixedTempo);
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);
 
-    //for (double beat : beats) {
-    //	qDebug().noquote() << QString::number(beat,'g',8);
-    //}
+#ifdef DEBUG_PRINT_BEATS
+    for (double beat : beats) {
+        qDebug().noquote() << QString::number(beat, 'g', 8);
+    }
+#endif
 
     QVector<BeatUtils::ConstRegion> constantRegions =
             BeatUtils::retrieveConstRegions(beats, sampleRate);
 
-    //for (auto& region : constantRegions) {
-    //	qDebug().noquote() << QString::number(region.firstBeat,'g',8) << QString::number(region.beatLength,'g',8);
-    //}
+#ifdef DEBUG_PRINT_BEATS
+    for (auto& region : constantRegions) {
+        qDebug().noquote() << QString::number(region.firstBeat, 'g', 8)
+                           << QString::number(region.beatLength, 'g', 8);
+    }
+#endif
 
     if (version == BEAT_GRID_2_VERSION) {
         double firstBeat = 0;

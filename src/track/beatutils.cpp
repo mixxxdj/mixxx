@@ -183,8 +183,6 @@ double BeatUtils::makeConstBpm(
 
     int startRegion = midRegion;
 
-    qDebug() << "longestRegionBeatLenth" << longestRegionBeatLenth;
-
     // Find a region at the beginning of the track with a similar tempo and phase
     for (int i = 0; i < midRegion; ++i) {
         const double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
@@ -229,7 +227,6 @@ double BeatUtils::makeConstBpm(
                 longestRegionMaxRoundSamples = longestRegionBeatLenth +
                         ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
                 startRegion = i;
-                // qDebug() << "start region" << i;
                 break;
             }
         }
@@ -271,7 +268,6 @@ double BeatUtils::makeConstBpm(
                 longestRegionLength = newLength;
                 longestRegionBeatLenth = newBeatLength;
                 longestRegionNumberOfBeats = numberOfBeats;
-                //qDebug() << "end region" << i;
                 break;
             }
         }
