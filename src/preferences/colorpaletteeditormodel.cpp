@@ -157,8 +157,9 @@ ColorPalette ColorPaletteEditorModel::getColorPalette(
         QStandardItem* pColorItem = item(i, 0);
 
         auto* pHotcueIndexItem = toHotcueIndexListItem(item(i, 1));
-        if (!pHotcueIndexItem)
+        if (!pHotcueIndexItem) {
             continue;
+        }
 
         mixxx::RgbColor::optional_t color =
                 mixxx::RgbColor::fromQString(pColorItem->text());
