@@ -48,6 +48,13 @@ QList<int> parseRangeList(const QString& input) {
 
 QString stringifyRangeList(const QList<int>& rangeList) {
     DEBUG_ASSERT(std::is_sorted(rangeList.cbegin(), rangeList.cend()));
+    DEBUG_ASSERT([&rangeList]() {
+        // Immediately-invoked function expression
+
+        // assumes list is sorted!
+        auto first_duplicate = std::adjacent_find(rangeList.cbegin(), rangeList.cend());
+        return first_duplicate == rangeList.cend();
+    }());
 
     QString stringifiedRangeList;
 

@@ -49,9 +49,6 @@ TEST(DisplayIntListTest, largeRangesAreExpanded) {
 
 TEST(DisplayIntListTest, duplicateValuesAreIgnored) {
     EXPECT_EQ(QList<int>({1, 2, 3}), mixxx::parseRangeList("1, 1, 1, 1, 2, 2, 3"));
-
-    // currently only works from string to list, not the other way around
-    // EXPECT_QSTRING_EQ("1, 2, 3", mixxx::stringifyRangeList(QList<int>({1, 1, 1, 1, 2, 2, 3})));
 }
 
 // TEST(DisplayIntListTest, negativeValuesAreIgnored) {

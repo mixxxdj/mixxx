@@ -11,7 +11,7 @@ QList<int> parseRangeList(const QString& input);
 /// take a list of positive integers and stringify them into a neat
 /// user friendly representation (eg {1, 2, 3} => "1 - 3").
 /// inverse counterpart of `parseRangeList`.
-/// rangeList must be sorted!
+/// assumes rangeList is well-formed (sorted and not containing duplicates)
 QString stringifyRangeList(const QList<int>& rangeList);
 
 } // namespace mixxx
