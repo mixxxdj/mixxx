@@ -24,17 +24,30 @@ DDJ200.init = function() {
             DDJ200.updateDeckLeds(vgroup);
         });
 
-        // run updateDeckLeds after play/pause track to set LEDs accordingly
+        // run switchPlayLED after play/pause track to set LEDs accordingly
         engine.makeConnection(vgroup, "play", function(ch, vgroup) {
-            DDJ200.updateDeckLeds(vgroup);
+            var vDeckNo = script.deckFromGroup(vgroup);
+            var d = (vDeckNo % 2) ? 0 : 1;  
+            DDJ200.switchPlayLED(d, ch);
         });
 
-        // run updateDeckLeds after sync toogle to set LEDs accordingly
+        // run switchSyncLED after sync toogle to set LEDs accordingly
         engine.makeConnection(vgroup, "sync_enabled", function(ch, vgroup) {
-            DDJ200.updateDeckLeds(vgroup);
+            var vDeckNo = script.deckFromGroup(vgroup);
+            var d = (vDeckNo % 2) ? 0 : 1;  
+            DDJ200.switchSyncLED(d, ch);
         });
 
-        DDJ200.listemHotcues(vgroup);
+        // listen to changes on hotcues
+        for (var j = 1; j <= 8; j++) {
+            // run switchPadLED after every hotcue update
+            engine.makeConnection(vgroup, "hotcue_" + j + "_enabled", function(ch, vgroup, control) {
+                var pad = Number(control.split("_")[1]);
+                var vDeckNo = script.deckFromGroup(vgroup);
+                var d = (vDeckNo % 2) ? 0 : 1;           // d = deckNo - 1
+                DDJ200.switchPadLED(d, pad, ch);
+            });
+        }
 
         // set Pioneer CDJ cue mode for all decks
         engine.setValue(vgroup, "cue_cdj", true);
@@ -46,15 +59,6 @@ DDJ200.init = function() {
     engine.beginTimer(500, function() {
         engine.setValue("[Library]", "MoveFocus", 1);
     }, true);
-};
-
-DDJ200.listemHotcues = function(vgroup) {
-    for (var i = 1; i <= 8; i++) {
-        // run updateDeckLeds after every hotcue update
-        engine.makeConnection(vgroup, "hotcue_" + i + "_enabled", function(ch, vgroup) {
-            DDJ200.updateDeckLeds(vgroup);
-        });
-    }
 };
 
 DDJ200.shutdown = function() {
@@ -341,27 +345,32 @@ DDJ200.switchLEDs = function(vDeckNo) {
     // set LEDs of controller deck 1 or 2 according to virtual deck
     var d = (vDeckNo % 2) ? 0 : 1;           // d = deckNo - 1
     var vgroup = "[Channel" + vDeckNo + "]";
-    midi.sendShortMsg(0x90 + d, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
+    DDJ200.switchPlayLED(d, engine.getValue(vgroup, "play"));
     midi.sendShortMsg(0x90 + d, 0x0C, 0x7F *
                       (engine.getValue(vgroup, "cue_point") !== -1));
-    midi.sendShortMsg(0x90 + d, 0x58, 0x7F * engine.getValue(vgroup,
-        "sync_enabled"));
+    DDJ200.switchSyncLED(d, engine.getValue(vgroup, "sync_enabled"));
     if (!DDJ200.fourDeckMode) {
         midi.sendShortMsg(0x90 + d, 0x54,
             0x7F * engine.getValue(vgroup, "pfl"));
     }
 
-    DDJ200.switchHotcueLEDs(vDeckNo);
-};
-
-DDJ200.switchHotcueLEDs = function(vDeckNo) {
-    var d = (vDeckNo % 2) ? 0 : 1;           // d = deckNo - 1
-    var vgroup = "[Channel" + vDeckNo + "]";
     for (var i = 1; i <= 8; i++) {
-        midi.sendShortMsg(0x97 + 2 * d, i - 1, 0x7F * engine.getValue(
-            vgroup, "hotcue_" + i + "_enabled"));
+        var isButtonEnabled = engine.getValue(vgroup, "hotcue_" + i + "_enabled");
+        DDJ200.switchPadLED(d, i, isButtonEnabled);
     }
 };
+
+DDJ200.switchPlayLED = function(deck, enabled) {
+    midi.sendShortMsg(0x90 + deck, 0x0B, 0x7F * enabled);
+}
+
+DDJ200.switchSyncLED = function(deck, enabled) {
+    midi.sendShortMsg(0x90 + deck, 0x58, 0x7F * enabled);
+}
+
+DDJ200.switchPadLED = function(deck, pad, enabled) {
+    midi.sendShortMsg(0x97 + 2 * deck, pad - 1, 0x7F * enabled);
+}
 
 DDJ200.toggleDeck = function(channel, control, value, status, group) {
     if (value) { // only if button pressed, not releases, i.e. value === 0
