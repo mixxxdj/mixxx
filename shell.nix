@@ -1,6 +1,6 @@
 { nixroot ? (import <nixpkgs> { }), defaultLv2Plugins ? false, lv2Plugins ? [ ]
 , releaseMode ? false, enableKeyfinder ? true, enableDjinterop ? false
-, buildType ? "auto", cFlags ? [ ], useClang ? true, useClazy ? false
+, buildType ? "auto", cFlags ? [ ], useClang ? false, useClazy ? false
 , buildFolder ? "build", qtDebug ? false }:
 let
   inherit (nixroot)
