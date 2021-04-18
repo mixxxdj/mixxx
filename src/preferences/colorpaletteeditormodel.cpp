@@ -156,7 +156,7 @@ ColorPalette ColorPaletteEditorModel::getColorPalette(
     for (int i = 0; i < rowCount(); i++) {
         QStandardItem* pColorItem = item(i, 0);
 
-        auto* pHotcueIndexItem = toHotcueIndexListItem(item(i, 1));
+        const auto* pHotcueIndexItem = toHotcueIndexListItem(item(i, 1));
         if (!pHotcueIndexItem) {
             continue;
         }
@@ -165,10 +165,10 @@ ColorPalette ColorPaletteEditorModel::getColorPalette(
                 mixxx::RgbColor::fromQString(pColorItem->text());
 
         if (color) {
-            QList<int> hotcueIndexes = pHotcueIndexItem->getHotcueIndexList();
+            const QList<int> hotcueIndexes = pHotcueIndexItem->getHotcueIndexList();
             colors << *color;
 
-            for (int index : qAsConst(hotcueIndexes)) {
+            for (int index : hotcueIndexes) {
                 hotcueColorIndices.insert(index - 1, colors.size() - 1);
             }
         }
@@ -198,7 +198,7 @@ QVariant HotcueIndexListItem::data(int role) const {
 void HotcueIndexListItem::setData(const QVariant& value, int role) {
     switch (role) {
     case Qt::EditRole: {
-        QList<int> newHotcueIndicies = mixxx::parseRangeList(value.toString());
+        const QList<int> newHotcueIndicies = mixxx::parseRangeList(value.toString());
 
         if (m_hotcueIndexList != newHotcueIndicies) {
             m_hotcueIndexList = newHotcueIndicies;
