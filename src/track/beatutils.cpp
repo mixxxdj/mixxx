@@ -143,7 +143,7 @@ double BeatUtils::makeConstBpm(
         const QVector<BeatUtils::ConstRegion>& constantRegions,
         mixxx::audio::SampleRate sampleRate,
         double* pFirstBeat) {
-    // We assume her the track was recorded with an unhear-able static metronome.
+    // We assume here the track was recorded with an unhear-able static metronome.
     // This metronome is likely at a full BPM.
     // The track may has intros, outros and bridges without detectable beats.
     // In these regions the detected beat might is floating around and is just wrong.
@@ -183,10 +183,13 @@ double BeatUtils::makeConstBpm(
 
     int startRegion = midRegion;
 
+    qDebug() << "longestRegionBeatLenth" << longestRegionBeatLenth;
+
     // Find a region at the beginning of the track with a similar tempo and phase
     for (int i = 0; i < midRegion; ++i) {
         const double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
         const int numberOfBeats = static_cast<int>((length / constantRegions[i].beatLength) + 0.5);
+        qDebug() << i << numberOfBeats << constantRegions[i].firstBeat;
         if (numberOfBeats < kMinRegionBeatCount) {
             // Request short regions, too unstable.
             continue;
@@ -201,24 +204,36 @@ double BeatUtils::makeConstBpm(
             // Now check if both regions are at the same phase.
             const double newLength = constantRegions[midRegion + 1].firstBeat -
                     constantRegions[i].firstBeat;
-            const int numberOfOldBeats =
-                    static_cast<int>((newLength / longestRegionBeatLenth) + 0.5);
-            const double newBeatLength = newLength / numberOfOldBeats;
+
+            double minBeatLength = math_max(longestRegionMinRoundSamples, minRoundSamples);
+            double maxBeatLength = math_min(longestRegionMaxRoundSamples, maxRoundSamples);
+
+            const int maxNumberOfBeats =
+                    static_cast<int>((newLength / minBeatLength) + 0.5);
+            const int minNumberOfBeats =
+                    static_cast<int>((newLength / maxBeatLength) + 0.5);
+
+            if (minNumberOfBeats != maxNumberOfBeats) {
+                // Ambiguous number of beats, find a closer region.
+                continue;
+            }
+            const int numberOfBeats = minNumberOfBeats;
+            const double newBeatLength = newLength / numberOfBeats;
             if (newBeatLength > longestRegionMinRoundSamples &&
                     newBeatLength < longestRegionMaxRoundSamples) {
                 longestRegionLength = newLength;
                 longestRegionBeatLenth = newBeatLength;
-                longestRegionNumberOfBeats = numberOfOldBeats;
+                longestRegionNumberOfBeats = numberOfBeats;
+                longestRegionMinRoundSamples = longestRegionBeatLenth -
+                        ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
+                longestRegionMaxRoundSamples = longestRegionBeatLenth +
+                        ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
                 startRegion = i;
+                // qDebug() << "start region" << i;
                 break;
             }
         }
     }
-
-    longestRegionMinRoundSamples = longestRegionBeatLenth -
-            ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
-    longestRegionMaxRoundSamples = longestRegionBeatLenth +
-            ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
 
     // Find a region at the end of the track with similar tempo and phase
     for (int i = constantRegions.size() - 2; i > midRegion; --i) {
@@ -236,14 +251,27 @@ double BeatUtils::makeConstBpm(
             // Now check if both regions are at the same phase.
             const double newLength = constantRegions[i + 1].firstBeat -
                     constantRegions[startRegion].firstBeat;
-            const int numberOfOldBeats =
-                    static_cast<int>((newLength / longestRegionBeatLenth) + 0.5);
-            const double newBeatLength = newLength / numberOfOldBeats;
+
+            double minBeatLength = math_max(longestRegionMinRoundSamples, minRoundSamples);
+            double maxBeatLength = math_min(longestRegionMaxRoundSamples, maxRoundSamples);
+
+            const int maxNumberOfBeats =
+                    static_cast<int>((newLength / minBeatLength) + 0.5);
+            const int minNumberOfBeats =
+                    static_cast<int>((newLength / maxBeatLength) + 0.5);
+
+            if (minNumberOfBeats != maxNumberOfBeats) {
+                // Ambiguous number of beats, find a closer region.
+                continue;
+            }
+            const int numberOfBeats = minNumberOfBeats;
+            const double newBeatLength = newLength / numberOfBeats;
             if (newBeatLength > longestRegionMinRoundSamples &&
                     newBeatLength < longestRegionMaxRoundSamples) {
                 longestRegionLength = newLength;
                 longestRegionBeatLenth = newBeatLength;
-                longestRegionNumberOfBeats = numberOfOldBeats;
+                longestRegionNumberOfBeats = numberOfBeats;
+                //qDebug() << "end region" << i;
                 break;
             }
         }
