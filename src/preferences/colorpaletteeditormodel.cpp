@@ -89,12 +89,14 @@ bool ColorPaletteEditorModel::setData(const QModelIndex& modelIndex, const QVari
         for (int i = 0; i < rowCount(); ++i) {
             auto* pHotcueIndexListItem = toHotcueIndexListItem(item(i, 1));
 
-            if (pHotcueIndexListItem) {
-                if (i == modelIndex.row()) {
-                    pHotcueIndexListItem->setHotcueIndexList(hotcueIndexList);
-                } else {
-                    pHotcueIndexListItem->removeIndicies(hotcueIndexList);
-                }
+            if (pHotcueIndexListItem == nullptr) {
+                continue;
+            }
+
+            if (i == modelIndex.row()) {
+                pHotcueIndexListItem->setHotcueIndexList(hotcueIndexList);
+            } else {
+                pHotcueIndexListItem->removeIndicies(hotcueIndexList);
             }
         }
 
