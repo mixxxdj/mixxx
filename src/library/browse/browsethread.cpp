@@ -116,8 +116,14 @@ void BrowseThread::populateModel() {
     BrowseTableModel* thisModelObserver = m_model_observer;
     m_path_mutex.unlock();
 
+    if (!thisPath.info().hasLocation()) {
+        // Abort if the location is inaccessible or does not exist
+        qWarning() << "Skipping" << thisPath.info();
+        return;
+    }
+
     // Refresh the name filters in case we loaded new SoundSource plugins.
-    QStringList nameFilters(SoundSourceProxy::getSupportedFileNamePatterns());
+    const QStringList nameFilters = SoundSourceProxy::getSupportedFileNamePatterns();
 
     QDirIterator fileIt(thisPath.info().location(),
             nameFilters,
