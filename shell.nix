@@ -12,9 +12,10 @@ let inherit (nixroot) stdenv pkgs lib
     clang-tools
     cmake
     fetchurl
-    ffmpeg
+    ffmpeg_4
     gdb
     libmodplug
+    libsecret
     mp4v2
     nix-gitignore
     python3 python37Packages
@@ -131,8 +132,9 @@ in stdenv.mkDerivation rec {
     rubberband sqlite taglib soundtouch vamp.vampSDK opusfile upower hidapi
     git glib x11 libGLU lilv lame lv2 makeWrapper qt5.qtbase pcre utillinux libselinux
     libsepol libsForQt5.qtkeychain
-    ffmpeg
+    ffmpeg_4
     libmodplug
+    libsecret
     mp4v2
     wavpack
   ] ++ allLv2Plugins;
