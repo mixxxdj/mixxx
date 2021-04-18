@@ -59,7 +59,8 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
      CMAKE_SYSTEM_NAME STREQUAL "Linux")
     message(WARNING "Found LLVM < 10 which has known optimization bugs with \
     certain glibc versions. In case your build fails with linking errors. \
-    Use -DFAST_MATH=off - See https://bugs.llvm.org/show_bug.cgi?id=45034")
+    Use try using gcc if possible. Pass -DFAST_MATH=off to allow compilation
+    to a slow binary. See https://bugs.llvm.org/show_bug.cgi?id=45034")
   endif()
 else()
   set(LLVM_CLANG false)
