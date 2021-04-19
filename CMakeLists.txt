@@ -867,6 +867,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/mac.cpp
   src/util/movinginterquartilemean.cpp
   src/util/performancetimer.cpp
+  src/util/rangelist.cpp
   src/util/readaheadsamplebuffer.cpp
   src/util/rlimit.cpp
   src/util/rotary.cpp
@@ -1517,6 +1518,7 @@ add_executable(mixxx-test
   src/test/portmidicontroller_test.cpp
   src/test/portmidienumeratortest.cpp
   src/test/queryutiltest.cpp
+  src/test/rangelist_test.cpp
   src/test/readaheadmanager_test.cpp
   src/test/replaygaintest.cpp
   src/test/rescalertest.cpp
