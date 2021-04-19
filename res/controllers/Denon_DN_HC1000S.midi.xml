@@ -1,65 +1,65 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3">
     <info>
-        <name>Denon HC1000S mapping</name>
+        <name>Denon HC1000S mapping (edited)</name>
         <author>le3d, based on many existing Denon other mappings, re-using bits and pieces</author>
         <forums>https://mixxx.discourse.group/t/denon-dn-hc1000s-for-dvs/20217</forums>
     </info>
     <controller id="HC1000S">
         <scriptfiles>
-            <file functionprefix="" filename="lodash.mixxx.js"/>
-            <file functionprefix="" filename="midi-components-0.0.js"/>
-            <file functionprefix="DenonHC1000S" filename="Denon-HC1000S-scripts.js"/>
+            <file filename="lodash.mixxx.js" functionprefix=""/>
+            <file filename="midi-components-0.0.js" functionprefix=""/>
+            <file filename="Denon-HC1000S-scripts.js" functionprefix="DenonHC1000S"/>
         </scriptfiles>
         <controls>
             <control>
                 <group>[Channel1]</group>
-                <key>reverseroll</key>
+                <key>DenonHC1000S.reverseRoll</key>
                 <description>Censor (Rev) A Off</description>
                 <status>0x80</status>
                 <midino>0x06</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>reverseroll</key>
+                <key>DenonHC1000S.reverseRoll</key>
                 <description>Censor (Rev) A On</description>
                 <status>0x90</status>
                 <midino>0x06</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>bpm_tap</key>
+                <key>DenonHC1000S.bpm_tapButton</key>
                 <description>BPM tap A</description>
                 <status>0x90</status>
                 <midino>0x07</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>end</key>
-                <description>JumptToEnd A</description>
+                <key>DenonHC1000S.jumpFwd</key>
+                <description>jumpFwd A</description>
                 <status>0x90</status>
                 <midino>0x0C</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>start</key>
-                <description>JumptToStart A</description>
+                <key>DenonHC1000S.jumpBack</key>
+                <description>jumpBack A</description>
                 <status>0x90</status>
                 <midino>0x0D</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -243,6 +243,26 @@
                 </options>
             </control>
             <control>
+                <group>[Library]</group>
+                <key>MoveRight</key>
+                <description>Library_MoveRight</description>
+                <status>0x90</status>
+                <midino>0x29</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Library]</group>
+                <key>MoveLeft</key>
+                <description>Library_MoveLeft</description>
+                <status>0x90</status>
+                <midino>0x30</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <group>[Channel1]</group>
                 <key>DenonHC1000S.loopOrHotcues</key>
                 <description>LoopIN A Off</description>
@@ -354,32 +374,32 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reverseroll</key>
+                <key>DenonHC1000S.reverseRoll</key>
                 <description>Censor (Rev) B Off</description>
                 <status>0x80</status>
                 <midino>0x5E</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>reverseroll</key>
+                <key>DenonHC1000S.reverseRoll</key>
                 <description>Censor (Rev) B On</description>
                 <status>0x90</status>
                 <midino>0x5E</midino>
                 <options>
-                    <button/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>bpm_tap</key>
+                <key>DenonHC1000S.bpm_tapButton</key>
                 <description>BPM tap B</description>
                 <status>0x90</status>
                 <midino>0x5F</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -424,22 +444,22 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
+                <key>DenonHC1000S.LoadTrack</key>
                 <description>File-LOAD A On</description>
                 <status>0x90</status>
                 <midino>0x62</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
+                <key>DenonHC1000S.LoadTrack</key>
                 <description>File-LOAD B On</description>
                 <status>0x90</status>
                 <midino>0x63</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -474,22 +494,22 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>end</key>
-                <description>JumptToEnd B</description>
+                <key>DenonHC1000S.jumpFwd</key>
+                <description>jumpFwd B</description>
                 <status>0x90</status>
                 <midino>0x70</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>start</key>
-                <description>JumptToStart B</description>
+                <key>DenonHC1000S.jumpBack</key>
+                <description>jumpBack B</description>
                 <status>0x90</status>
                 <midino>0x71</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
