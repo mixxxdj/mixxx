@@ -250,7 +250,14 @@ MixtrackProFX.Deck = function(number) {
             midi: [0x94 + channel, 0x14 + i],
             inKey: "hotcue_" + (i + 1) + "_activate",
             outKey: "hotcue_" + (i + 1) + "_enabled",
-            off: 0x01
+            off: 0x01,
+            number: i,
+            shift: function() {
+                this.midi = [0x94 + channel, 0x1C + this.number];
+            },
+            unshift: function() {
+                this.midi = [0x94 + channel, 0x14 + this.number];
+            }
         });
 
         this.padsShift[i] = new components.Button({
@@ -461,6 +468,7 @@ MixtrackProFX.Deck = function(number) {
                 MixtrackProFX.browse.unshift();
                 MixtrackProFX.effect.unshift();
             }
+            MixtrackProFX.deck[channel].pads.reconnectComponents(); // for displaying pads lights when shifted
         }
     });
 
