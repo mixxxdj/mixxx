@@ -142,7 +142,6 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                                 const GroupFeatureState& groupFeatures) {
     Q_UNUSED(handle);
 
-    EchoGroupState& gs = *pGroupState;
     // The minimum of the parameter is zero so the exact center of the knob is 1 beat.
     double period = m_pDelayParameter->value();
     const auto send_current = static_cast<CSAMPLE_GAIN>(m_pSendParameter->value());
@@ -172,21 +171,25 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     }
 
     int delay_samples = delay_frames * bufferParameters.channelCount();
-    VERIFY_OR_DEBUG_ASSERT(delay_samples <= gs.delay_buf.size()) {
-        delay_samples = gs.delay_buf.size();
+    VERIFY_OR_DEBUG_ASSERT(delay_samples <= pGroupState->delay_buf.size()) {
+        delay_samples = pGroupState->delay_buf.size();
     }
 
-    int prev_read_position = gs.write_position;
-    decrementRing(&prev_read_position, gs.prev_delay_samples, gs.delay_buf.size());
-    int read_position = gs.write_position;
-    decrementRing(&read_position, delay_samples, gs.delay_buf.size());
+    int prev_read_position = pGroupState->write_position;
+    decrementRing(&prev_read_position,
+            pGroupState->prev_delay_samples,
+            pGroupState->delay_buf.size());
+    int read_position = pGroupState->write_position;
+    decrementRing(&read_position, delay_samples, pGroupState->delay_buf.size());
 
-    RampingValue<CSAMPLE_GAIN> send(send_current, gs.prev_send,
-                                    bufferParameters.framesPerBuffer());
+    RampingValue<CSAMPLE_GAIN> send(send_current,
+            pGroupState->prev_send,
+            bufferParameters.framesPerBuffer());
     // Feedback the delay buffer and then add the new input.
 
-    RampingValue<CSAMPLE_GAIN> feedback(feedback_current, gs.prev_feedback,
-                                        bufferParameters.framesPerBuffer());
+    RampingValue<CSAMPLE_GAIN> feedback(feedback_current,
+            pGroupState->prev_feedback,
+            bufferParameters.framesPerBuffer());
 
     //TODO: rewrite to remove assumption of stereo buffer
     for (SINT i = 0;
@@ -195,32 +198,34 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
         CSAMPLE_GAIN send_ramped = send.getNext();
         CSAMPLE_GAIN feedback_ramped = feedback.getNext();
 
-        CSAMPLE bufferedSampleLeft = gs.delay_buf[read_position];
-        CSAMPLE bufferedSampleRight = gs.delay_buf[read_position + 1];
+        CSAMPLE bufferedSampleLeft = pGroupState->delay_buf[read_position];
+        CSAMPLE bufferedSampleRight = pGroupState->delay_buf[read_position + 1];
         if (read_position != prev_read_position) {
             const CSAMPLE_GAIN frac = static_cast<CSAMPLE_GAIN>(i) /
                     bufferParameters.samplesPerBuffer();
             bufferedSampleLeft *= frac;
             bufferedSampleRight *= frac;
-            bufferedSampleLeft += gs.delay_buf[prev_read_position] * (1 - frac);
-            bufferedSampleRight += gs.delay_buf[prev_read_position + 1] * (1 - frac);
-            incrementRing(&prev_read_position, bufferParameters.channelCount(),
-                    gs.delay_buf.size());
+            bufferedSampleLeft += pGroupState->delay_buf[prev_read_position] * (1 - frac);
+            bufferedSampleRight += pGroupState->delay_buf[prev_read_position + 1] * (1 - frac);
+            incrementRing(&prev_read_position,
+                    bufferParameters.channelCount(),
+                    pGroupState->delay_buf.size());
         }
-        incrementRing(&read_position, bufferParameters.channelCount(),
-                gs.delay_buf.size());
+        incrementRing(&read_position,
+                bufferParameters.channelCount(),
+                pGroupState->delay_buf.size());
 
         // Actual delays distort and saturate, so clamp the buffer here.
-        gs.delay_buf[gs.write_position] = SampleUtil::clampSample(
+        pGroupState->delay_buf[pGroupState->write_position] = SampleUtil::clampSample(
                 pInput[i] * send_ramped +
                 bufferedSampleLeft * feedback_ramped);
-        gs.delay_buf[gs.write_position + 1] = SampleUtil::clampSample(
+        pGroupState->delay_buf[pGroupState->write_position + 1] = SampleUtil::clampSample(
                 pInput[i + 1] * send_ramped +
                 bufferedSampleLeft * feedback_ramped);
 
         // Pingpong the output.  If the pingpong value is zero, all of the
         // math below should result in a simple copy of delay buf to pOutput.
-        if (gs.ping_pong < delay_samples / 2) {
+        if (pGroupState->ping_pong < delay_samples / 2) {
             // Left sample plus a fraction of the right sample, normalized
             // by 1 + fraction.
             pOutput[i] =
@@ -238,12 +243,13 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
                     (1 + pingpong_frac);
         }
 
-        incrementRing(&gs.write_position, bufferParameters.channelCount(),
-                gs.delay_buf.size());
+        incrementRing(&pGroupState->write_position,
+                bufferParameters.channelCount(),
+                pGroupState->delay_buf.size());
 
-        ++gs.ping_pong;
-        if (gs.ping_pong >= delay_samples) {
-            gs.ping_pong = 0;
+        ++(pGroupState->ping_pong);
+        if (pGroupState->ping_pong >= delay_samples) {
+            pGroupState->ping_pong = 0;
         }
     }
 
@@ -252,12 +258,12 @@ void EchoEffect::processChannel(const ChannelHandle& handle, EchoGroupState* pGr
     // of being handled by EngineEffect::process).
     if (enableState == EffectEnableState::Disabling) {
         SampleUtil::applyRampingGain(pOutput, 1.0, 0.0, bufferParameters.samplesPerBuffer());
-        gs.delay_buf.clear();
-        gs.prev_send = 0;
+        pGroupState->delay_buf.clear();
+        pGroupState->prev_send = 0;
     } else {
-        gs.prev_send = send_current;
+        pGroupState->prev_send = send_current;
     }
 
-    gs.prev_feedback = feedback_current;
-    gs.prev_delay_samples = delay_samples;
+    pGroupState->prev_feedback = feedback_current;
+    pGroupState->prev_delay_samples = delay_samples;
 }
