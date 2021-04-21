@@ -98,7 +98,6 @@ void AutoPanEffect::processChannel(
         return;
     }
 
-    AutoPanGroupState& gs = *pGroupState;
     double width = m_pWidthParameter->value();
     double period = m_pPeriodParameter->value();
     const auto smoothing = static_cast<float>(0.5 - m_pSmoothingParameter->value());
@@ -118,15 +117,15 @@ void AutoPanEffect::processChannel(
 
     // When the period is changed, the position of the sound shouldn't
     // so time need to be recalculated
-    if (gs.m_dPreviousPeriod != -1.0) {
-        gs.time = static_cast<unsigned int>(gs.time * period / gs.m_dPreviousPeriod);
+    if (pGroupState->m_dPreviousPeriod != -1.0) {
+        pGroupState->time = static_cast<unsigned int>(
+                pGroupState->time * period / pGroupState->m_dPreviousPeriod);
     }
 
+    pGroupState->m_dPreviousPeriod = period;
 
-    gs.m_dPreviousPeriod = period;
-
-    if (gs.time >= period || enableState == EffectEnableState::Enabling) {
-        gs.time = 0;
+    if (pGroupState->time >= period || enableState == EffectEnableState::Enabling) {
+        pGroupState->time = 0;
     }
 
     // Normally, the position goes from 0 to 1 linearly. Here we make steps at
@@ -142,13 +141,14 @@ void AutoPanEffect::processChannel(
     // size of a segment of slope (controlled by the "smoothing" parameter)
     float u = (0.5f - smoothing) / 2.0f;
 
-    gs.frac.setRampingThreshold(kPositionRampingThreshold);
+    pGroupState->frac.setRampingThreshold(kPositionRampingThreshold);
 
     double sinusoid = 0;
 
     // NOTE: Assuming engine is working in stereo.
     for (SINT i = 0; i + 1 < bufferParameters.samplesPerBuffer(); i += 2) {
-        const auto periodFraction = static_cast<CSAMPLE>(gs.time) / static_cast<CSAMPLE>(period);
+        const auto periodFraction = static_cast<CSAMPLE>(pGroupState->time) /
+                static_cast<CSAMPLE>(period);
 
         // current quarter in the trigonometric circle
         float quarter = floorf(periodFraction * 4.0f);
@@ -174,24 +174,28 @@ void AutoPanEffect::processChannel(
         // so the sound will be stuck at the center. If it values 1, the limits
         // will be 0 and 1 (full left and full right).
         sinusoid = sin(M_PI * 2.0f * angleFraction) * width;
-        gs.frac.setWithRampingApplied(static_cast<float>((sinusoid + 1.0f) / 2.0f));
+        pGroupState->frac.setWithRampingApplied(static_cast<float>((sinusoid + 1.0f) / 2.0f));
 
         // apply the delay
-        gs.delay->process(&pInput[i], &pOutput[i],
-                -0.005 * math_clamp(((gs.frac * 2.0) - 1.0f), -1.0, 1.0) * bufferParameters.sampleRate());
+        pGroupState->delay->process(&pInput[i],
+                &pOutput[i],
+                -0.005 *
+                        math_clamp(
+                                ((pGroupState->frac * 2.0) - 1.0f), -1.0, 1.0) *
+                        bufferParameters.sampleRate());
 
         double lawCoef = computeLawCoefficient(sinusoid);
-        pOutput[i] *= static_cast<CSAMPLE>(gs.frac * lawCoef);
-        pOutput[i + 1] *= static_cast<CSAMPLE>((1.0f - gs.frac) * lawCoef);
+        pOutput[i] *= static_cast<CSAMPLE>(pGroupState->frac * lawCoef);
+        pOutput[i + 1] *= static_cast<CSAMPLE>((1.0f - pGroupState->frac) * lawCoef);
 
-        gs.time++;
-        while (gs.time >= period) {
+        pGroupState->time++;
+        while (pGroupState->time >= period) {
             // Click for debug
             //pOutput[i] = 1.0f;
             //pOutput[i+1] = 1.0f;
 
             // The while loop is required in case period changes the value
-            gs.time -= static_cast<unsigned int>(period);
+            pGroupState->time -= static_cast<unsigned int>(period);
         }
     }
 }
