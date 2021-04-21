@@ -841,6 +841,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/mac.cpp
   src/util/movinginterquartilemean.cpp
   src/util/performancetimer.cpp
+  src/util/rangelist.cpp
   src/util/readaheadsamplebuffer.cpp
   src/util/rlimit.cpp
   src/util/rotary.cpp
@@ -984,9 +985,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
 )
 set_target_properties(mixxx-lib PROPERTIES AUTOMOC ON AUTOUIC ON CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_include_directories(mixxx-lib PUBLIC src "${CMAKE_CURRENT_BINARY_DIR}/src")
-target_compile_definitions(mixxx-lib PRIVATE SETTINGS_FILE="mixxx.cfg")
 if(UNIX AND NOT APPLE)
-  target_compile_definitions(mixxx-lib PRIVATE SETTINGS_PATH=".mixxx/")
+  set(MIXXX_SETTINGS_PATH ".mixxx/")
 endif()
 target_link_libraries(mixxx-lib PRIVATE mixxx-version)
 
@@ -1492,6 +1492,7 @@ add_executable(mixxx-test
   src/test/portmidicontroller_test.cpp
   src/test/portmidienumeratortest.cpp
   src/test/queryutiltest.cpp
+  src/test/rangelist_test.cpp
   src/test/readaheadmanager_test.cpp
   src/test/replaygaintest.cpp
   src/test/rescalertest.cpp

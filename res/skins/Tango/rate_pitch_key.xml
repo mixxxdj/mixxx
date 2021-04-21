@@ -27,7 +27,7 @@ Variables:
               <WidgetGroup><!-- Key adjust buttons -->
                 <ObjectName>KeyControls</ObjectName>
                 <Layout>horizontal</Layout>
-                <Size>1me,14f</Size>
+                <Size>1me,13f</Size>
                 <Children>
                   <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">pitch_down</SetVariable>
@@ -36,8 +36,6 @@ Variables:
                     <SetVariable name="ConfigKey"><Variable name="group"/>,pitch_down</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,pitch_down_small</SetVariable>
                   </Template>
-
-                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
                   <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">pitch_up</SetVariable>
@@ -56,7 +54,7 @@ Variables:
               <WidgetGroup><!-- Key Display/Match -->
                 <ObjectName>KeyDisplayMatch</ObjectName>
                 <Layout>stacked</Layout>
-                <Size>1me,14f</Size>
+                <Size>1me,13f</Size>
                 <Children>
                   <!-- KeyMatch, transparent -->
                   <Template src="skin:button_1state_right.xml">
@@ -105,7 +103,7 @@ Variables:
             <ObjectName>BPM</ObjectName>
             <Layout>stacked</Layout>
             <MinimumSize>50,18</MinimumSize>
-            <MaximumSize>50,25</MaximumSize>
+            <MaximumSize>50,18</MaximumSize>
             <SizePolicy>f,min</SizePolicy>
             <Children>
               <Template src="skin:button_2state_right.xml">
@@ -144,8 +142,6 @@ Variables:
                     <SetVariable name="ConfigKey"><Variable name="group"/>,rate_temp_down</SetVariable>
                     <SetVariable name="ConfigKeyRight"><Variable name="group"/>,rate_temp_down_small</SetVariable>
                   </Template>
-
-                  <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
                   <Template src="skin:button_1state_right.xml">
                     <SetVariable name="TooltipId">rate_temp_up_rate_temp_up_small</SetVariable>

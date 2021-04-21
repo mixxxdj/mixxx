@@ -27,53 +27,20 @@ Variables:
       </Template>
 
       <!-- Name of effect parameter when inactive-->
-      <WidgetGroup>
+      <EffectButtonParameterName>
         <Size>51f,18f</Size>
-        <Layout>horizontal</Layout>
-        <Children>
-          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-          <EffectButtonParameterName>
-            <SizePolicy>min,me</SizePolicy>
-            <ObjectName>FxParameterButtonName_inactive</ObjectName>
-            <EffectRack><Variable name="FxRack"/></EffectRack>
-            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-            <Effect><Variable name="FxNum"/></Effect>
-            <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
-            <Alignment>center</Alignment>
-            <Elide>right</Elide>
-          </EffectButtonParameterName>
-          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-        </Children>
+        <ObjectName>FxParameterButtonName</ObjectName>
+        <EffectRack><Variable name="FxRack"/></EffectRack>
+        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+        <Effect><Variable name="FxNum"/></Effect>
+        <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
+        <Alignment>center</Alignment>
+        <Elide>right</Elide>
         <Connection>
           <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
-          <Transform><IsEqual>0</IsEqual></Transform>
-          <BindProperty>visible</BindProperty>
+          <BindProperty>highlight</BindProperty>
         </Connection>
-      </WidgetGroup>
-
-      <!-- Name of effect parameter when active-->
-      <WidgetGroup>
-        <Size>51f,18f</Size>
-        <Layout>horizontal</Layout>
-        <Children>
-          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-          <EffectButtonParameterName>
-            <SizePolicy>min,me</SizePolicy>
-            <ObjectName>FxParameterButtonName_active</ObjectName>
-            <EffectRack><Variable name="FxRack"/></EffectRack>
-            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-            <Effect><Variable name="FxNum"/></Effect>
-            <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
-            <Alignment>center</Alignment>
-          </EffectButtonParameterName>
-          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
-          <Transform><IsEqual>1</IsEqual></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
+      </EffectButtonParameterName>
 
       <!-- Button to indicate parameter state -->
       <Template src="skin:fx_button.xml">
