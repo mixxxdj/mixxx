@@ -14,8 +14,15 @@
   padding: 5px 0px;
 }
 #Mixxx, WWidget,
+<<<<<<< HEAD
 WEffectName,
 WEffectSelector,
+||||||| 48927dbd95
+WEffect,
+WEffectSelector,
+=======
+WEffect,
+>>>>>>> mixxx/main
 WKey,
 WLabel, WLibrary QLabel,
 WNumber, WNumberPos,
@@ -138,12 +145,8 @@ WCoverArtMenu::item {
   }
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
-WEffectSelector::down-arrow,
-WEffectSelector::indicator:!checked,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-#fadeModeCombobox::down-arrow,
-#fadeModeCombobox::indicator:!checked,
 WLibrary QPushButton:enabled,
 WBeatSpinBox,
 #spinBoxTransition {
@@ -154,7 +157,8 @@ WEffectSelector QAbstractScrollArea,
   padding: 2px;
   min-width: 160px;
   }
-WEffectSelector,
+WEffectSelector:!editable,
+WEffectSelector:!editable:on,
 WEffectSelector QAbstractScrollArea,
 WEffectSelector::down-arrow,
 #fadeModeCombobox QAbstractScrollArea,
@@ -173,7 +177,8 @@ WCoverArtMenu {
   border-style: solid;
   border-color: #060613;
   }
-  WEffectSelector,
+  WEffectSelector:!editable,
+  WEffectSelector:!editable:on,
   #fadeModeCombobox {
     padding-left: 3px;
     }
@@ -516,7 +521,6 @@ WTrackTableView {
     WLibrary QCheckBox {
       text-align: right;
       alignment: right;
-      qproperty-alignment: 'AlignRight';
     }
 
   #LibraryBPMSpinBox {

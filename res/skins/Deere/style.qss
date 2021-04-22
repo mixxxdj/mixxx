@@ -1275,6 +1275,7 @@ WBeatSpinBox,
 
 #EffectButton {
   font: 10px;
+  margin-right: 1px;
 }
 
 #EffectButtonLabel {
@@ -1984,7 +1985,7 @@ WTrackMenu QMenu {
 
 
 
-WEffectSelector,
+WEffectSelector:!editable,
 #fadeModeCombobox {
   color: #c1cabe;
   /* The 3D frame on the combo box becomes flat when you give it a border */
@@ -1992,7 +1993,8 @@ WEffectSelector,
   border-radius: 3px;
   font: 15px;
 }
-WEffectSelector {
+WEffectSelector:!editable,
+WEffectSelector:!editable:on {
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   margin: 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
@@ -2007,7 +2009,7 @@ WEffectSelector {
   margin: 9px 3px 6px 3px;
 }
 
-  WEffectSelector:hover,
+  WEffectSelector:!editable:hover,
   #fadeModeCombobox:hover {
     border: 1px ridge #015d8d;
   }

@@ -223,11 +223,12 @@ WSearchLineEdit,
   max-width: 0px;
   }
 
-  #FxSlotSeparatorV {
+  #FxFlowIndicatorCollapsed,
+  #FxMixerSeparatorCollapsed {
     min-width: 1px;
     max-width: 1px;
-    image: url(skin:/classic/style/fx_separator.svg) repeat center center;
     margin: 2px 1px;
+    background: url(skin:/classic/style/fx_separator.svg) no-repeat center center;
   }
   #FxSlotSeparatorH {
     min-height: 2px;
@@ -263,7 +264,6 @@ WLibrary {
   }
 
 #LibExpandBox {
-  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
   border-width: 1px 0px 1px 0px;
   border-radius: 0px;
   padding: 0px 0px 2px 2px;
@@ -759,9 +759,6 @@ WLibrary {
   #FxUnitHeader {
     padding: 0px 2px 0px 2px;
   }
-  #FxUnitLabel {
-    alignment: left;
-  }
 #FxUnitHeaderCollapsed[highlight="1"],
 #FxUnitHeaderExpanded[highlight="1"] {
   border-top: 1px solid #d09300;
@@ -784,17 +781,12 @@ WLibrary {
   margin: 0px 1px;
 }
 
-#FxUnitControlsCollapsed #FxUnitLabel {
-  alignment: right;
-}
-#FxUnitControlsExpanded #FxUnitLabel {
-  alignment: left;
+#FxSlotsCollapsed #FxSlotContainer {
+  margin: 2px 7px 1px 5px;
 }
 
-#FxSlotsCollapsed #FxSlotContainer {
-  margin: 2px 0px 1px 0px;
-  padding-right: 0px;
-  padding-left: 0px;
+#FxSlotsExpanded #FxSlotControls {
+  margin: 1px 5px 1px 4px;
 }
 
 #FxMetaKnob {
@@ -821,6 +813,10 @@ WLibrary {
 #FxParametersContainer {
   padding: 2px 1px 1px 1px;
   margin: 2px 1px;
+}
+
+#FxFocusButtonBox {
+  margin-right: 3px;
 }
 
 WPushButton#FxSuperLinkButton,
@@ -1150,26 +1146,6 @@ QPushButton#pushButtonRecording:checked {
 
 #LibraryFeatureControls QPushButton:pressed {
   color: #999;
-}
-
-#HotcueButton {
-  /* ronso0
-  TEST pixel fonts instead of icons
-  FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
-
-  font-size: tried a lot of integers as well as .5 values
-  didn't find the magic number.. it's some unintuitive floating point value
-  that aligns font pixels to screen pixels so the fonts look sharp.
-
-  font-family: "Acknowledge TT (BRK)";
-  font-family: "Bulky Pixels";
-  font-family: "Irresistor";
-  font-family: "Visitor TT1 BRK";
-  font-family: "Boxy Bold";
-  font-family: "Pixel Intv";
-  font-size: 13px;
-  color: #eee;
-  */
 }
 
 #MixerMasterHeadphone WLabel,

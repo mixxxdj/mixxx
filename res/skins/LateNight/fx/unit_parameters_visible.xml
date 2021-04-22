@@ -3,8 +3,6 @@
   Description:
     An effect unit widget.
   Variables:
-    group: The group for the controls.
-    FxRack
     FxUnit
 -->
 <Template>
@@ -19,6 +17,8 @@
         <SizePolicy>me,me</SizePolicy>
         <Layout>vertical</Layout>
         <Children>
+
+          <!-- Fx Slot 1 -->
           <WidgetGroup>
             <SizePolicy>me,me</SizePolicy>
             <Layout>horizontal</Layout>
@@ -39,6 +39,7 @@
             </Children>
           </WidgetGroup>
 
+          <!-- Horizontal split line - adjust max-width to fx slot width -->
           <WidgetGroup>
             <ObjectName></ObjectName>
             <Layout>horizontal</Layout>
@@ -55,6 +56,7 @@
             </Children>
           </WidgetGroup>
 
+          <!-- Fx Slot 2 -->
           <WidgetGroup>
             <SizePolicy>me,me</SizePolicy>
             <Layout>horizontal</Layout>
@@ -91,6 +93,7 @@
             </Children>
           </WidgetGroup>
 
+          <!-- Fx Slot 3 -->
           <WidgetGroup>
             <SizePolicy>me,me</SizePolicy>
             <Layout>horizontal</Layout>

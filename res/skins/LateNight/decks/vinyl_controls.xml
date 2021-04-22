@@ -16,9 +16,14 @@
             <ObjectName>VinylStatus</ObjectName>
             <Size>18f,18f</Size>
             <TooltipId>vinylcontrol_status</TooltipId>
+            <!-- TODO use colors mentioned in tooltip: green, blinking yellow, blue -->
+            <!-- Off -->
             <PathStatusLight0 scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/vinyl_control_0.svg</PathStatusLight0>
+            <!-- enabled -->
             <PathStatusLight1 scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/vinyl_control_1.svg</PathStatusLight1>
+            <!-- end-of-record warning -->
             <PathStatusLight2 scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/vinyl_control_2.svg</PathStatusLight2>
+            <!-- passthrough -->
             <PathStatusLight3 scalemode="STRETCH_ASPECT">skin:/<Variable name="StyleScheme"/>/style/vinyl_control_3.svg</PathStatusLight3>
             <Connection>
               <ConfigKey><Variable name="Group"/>,vinylcontrol_status</ConfigKey>

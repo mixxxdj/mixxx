@@ -427,6 +427,26 @@ WRecordingDuration {
     }
 
 
+#HotcueButton {
+  /* ronso0
+  TEST pixel fonts instead of icons
+  FAIL basically all characters look blurry with a 100% GUI scale factor of 1oo%
+
+  font-size: tried a lot of integers as well as .5 values
+  didn't find the magic number.. it's some unintuitive floating point value
+  that aligns font pixels to screen pixels so the fonts look sharp.
+
+  font-family: "Acknowledge TT (BRK)";
+  font-family: "Bulky Pixels";
+  font-family: "Irresistor";
+  font-family: "Visitor TT1 BRK";
+  font-family: "Boxy Bold";
+  font-family: "Pixel Intv";
+  font-size: 13px;
+  color: #eee;
+  */
+}
+
 /* This does NOT style the cue labels in the overview
 WOverview {
   font-size: 20px;
@@ -655,7 +675,14 @@ WSpinny { /*
 #FxUnitHeader {
   qproperty-layoutAlignment: 'AlignRight | AlignTop';
 }
-#FxUnitControlsExpanded, #FxUnitControlsCollapsed {
+#FxUnitControlsExpanded,
+#FxUnitControlsCollapsed,
+#FxSlotContainer,
+#FxSlotControls,
+#FxFocusButtonBox,
+#FxMetaKnob,
+#FxParameterKnob,
+#LibExpandBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
@@ -663,14 +690,6 @@ WSpinny { /*
 #FxSlot2,
 #FxSlot3 {
   qproperty-layoutAlignment: 'AlignRight | AlignVCenter';
-  }
-
-#FxFocusButtonBox {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
-}
-
-#FxMetaKnob {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
 }
 
 #FxParameterKnobBox {
@@ -678,7 +697,6 @@ WSpinny { /*
 }
 
 #FxParameterKnob {
-  qproperty-layoutAlignment: 'AlignHCenter | AlignVCenter';
   margin-left: 1px;
 }
 

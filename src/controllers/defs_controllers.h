@@ -9,7 +9,7 @@ inline QString resourceMappingsPath(UserSettingsPointer pConfig) {
     return dir.absolutePath().append("/");
 }
 
-// Prior to Mixxx 1.11.0 mappings were stored in ${SETTINGS_PATH}/midi.
+// Prior to Mixxx 1.11.0 presets were stored in ${MIXXX_SETTINGS_PATH}/midi.
 inline QString legacyUserMappingsPath(UserSettingsPointer pConfig) {
     QString mappingsPath = pConfig->getSettingsPath();
     QDir dir(mappingsPath.append("/midi/"));

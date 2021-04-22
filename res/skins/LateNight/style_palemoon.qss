@@ -20,13 +20,12 @@
 #Deck2, #DeckCompact2, #DeckMini2,
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
-  #MixerDecks,
+#MixerDecks,
 #FxUnitControlsExpanded,
 #FxUnitControlsCollapsed,
 #FxSlotsExpanded,
 #FxSlotsCollapsed,
-#FxSlotContainer,
-  #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
+#MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini {
   background-color: #1e1e20;
 }
@@ -36,12 +35,12 @@
 #Deck2, #DeckCompact2, #DeckMini2,
 #Deck3, #DeckCompact3, #DeckMini3,
 #Deck4, #DeckCompact4, #DeckMini4,
-  #MixerDecks,
+#MixerDecks,
 #FxUnitControlsCollapsed,
 #FxUnitControlsExpanded,
 #FxSlotsCollapsed,
 #FxSlotsExpanded,
-  #MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
+#MicDuckingContainer, #MicAuxUnit, #MicAuxAddFrame,
 #Sampler, #SamplerMini {
   border-top: 1px solid #333;
   border-left: 1px solid #282828;
@@ -248,7 +247,7 @@ WSearchLineEdit {
 }
 
 #FxParametersFocusBg {
-  border: 1px solid #1c1c1e;
+  border: 1px solid #257B82;
   background-color: rgba(0,0,1,50);
 }
 
@@ -264,7 +263,6 @@ WSearchLineEdit {
 }
 
 #LibExpandBox {
-  qproperty-layoutAlignment: 'AlignVCenter | AlignHCenter';
   border-right: 0px;
   border-left: 0px;
   border-radius: 0px;
@@ -283,7 +281,7 @@ WSearchLineEdit {
 #DeckRateSeparatorCompact,
 #MasterMixerSeparator,
 #MasterHeadphoneSeparator,
-#FxSlotSeparatorV,
+#FxMixerSeparatorCollapsed,
 #FxSlotSeparatorH,
 #SeparatorToolbar,
 #SkinSettingsSeparator {
@@ -292,14 +290,21 @@ WSearchLineEdit {
   }
   #DeckRateSeparator,
   #DeckRateSeparatorCompact,
-  #FxSlotSeparatorV,
+  #FxMixerSeparatorCollapsed,
   #SkinSettingsSeparator {
     min-width: 0px;
     max-width: 0px;
   }
+  #FxMixerSeparatorCollapsed {
+    margin-left: 3px;
+  }
+  #FxFlowIndicatorCollapsed {
+    min-width: 12px;
+    max-width: 12px;
+  }
   #DeckRateSeparator,
   #DeckRateSeparatorCompact,
-  #FxSlotSeparatorV,
+  #FxMixerSeparatorCollapsed,
   #FxSlotSeparatorH {
     border-left: 1px solid #0c0c0c;
     border-right: 1px solid #333;
@@ -313,8 +318,9 @@ WSearchLineEdit {
     border-bottom: 1px solid #333;
   }
 
-  #FxSlotSeparatorV {
-    margin: 0px 0px 0px 2px;
+  #FxFlowIndicatorCollapsed {
+    margin: 0px 0px 0px 0px;
+    background-image: url(skin:/palemoon/style/fx_flow_horizontal.svg) no-repeat center center;
   }
   #ToolbarSeparator {
     margin: 0px 5px;
@@ -829,9 +835,6 @@ WBeatSpinBox::down-button,
   #FxUnitHeader {
     padding: 0px 0px 1px 0px;
   }
-  #FxUnitLabel {
-    alignment: left;
-  }
 
 #FxUnitControlsCollapsed {
   padding: 1px 2px 3px 2px;
@@ -860,6 +863,7 @@ WBeatSpinBox::down-button,
   border-right: 0px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
+  background: #1e1e20 url(skin:/palemoon/style/fx_flow_vertical.svg) no-repeat center right;
   }
   #FxSlot1,
   #FxSlot2,
@@ -876,14 +880,18 @@ WBeatSpinBox::down-button,
   padding: 5px 0px 2px 0px;
 }
 
-#FxSlotsCollapsed #FxSlotContainer {
-  margin: 2px 0px 1px 1px;
+#FxSlotsCollapsed #FxSlotControls {
+  padding: 2px 3px 1px 3px;
+}
+
+#FxSlotsExpanded #FxSlotControls {
+/* keep height of fx slot with/without effect */
+  min-height: 47px;
+  padding: 2px 7px 1px 3px;
 }
 
 WEffectSelector:!editable,
 WEffectSelector:!editable:on {
-  /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
-  min-height: 13px;
   margin: 1px 0px 0px 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
       names start getting cut off. Adding explicit padding improves this. */
@@ -925,6 +933,10 @@ WEffectSelector:!editable:on {
     text sits at left border now
     border: 0; */
   }
+
+#FxFocusButtonBox {
+  margin-right: 3px;
+}
 
 WPushButton#FxSuperLinkButton,
 WPushButton#FxSuperLinkInvertButton {
@@ -1228,6 +1240,7 @@ WEffectSelector:!editable:on,
 #fadeModeCombobox:!editable,
 #fadeModeCombobox:!editable:on {
   color: #918273;
+  /* use slightly larger labels than in Classic */
   font-size: 14px;
 }
   /* dim² ivory */
@@ -1297,9 +1310,6 @@ WEffectSelector:!editable:on,
     /*text-decoration: underline;*/
     /*font-weight: bold;*/
   }
-  #FxUnitControllerInputIndicator {
-    font-size: 18px;
-  }
   #FxUnit1 #FxUnitLabel[highlight="1"],
   #FxUnit2 #FxUnitLabel[highlight="1"] {
     color: #518f00;
@@ -1311,12 +1321,10 @@ WEffectSelector:!editable:on,
   #FxUnit1 #FxUnitControllerInputIndicator[highlight="1"],
   #FxUnit2 #FxUnitControllerInputIndicator[highlight="1"] {
     background-color: #518f00;
-    color: #518f00;
   }
   #FxUnit3 #FxUnitControllerInputIndicator[highlight="1"],
   #FxUnit4 #FxUnitControllerInputIndicator[highlight="1"] {
     background-color: #028392;
-    color: #028392;
   }
 
 /* Grey. default for all deck labels */
@@ -2193,15 +2201,21 @@ WPushButton#PlayDeck[value="0"] {
     image: url(skin:/palemoon/buttons/btn__split_active.svg) no-repeat center center;
   }
 
+#FxExpand,
+#SamplerExpand,
+#LibExpand {
+  background-repeat: no-repeat;
+  background-position: center center;
+}
 #FxExpand[value="0"],
 #SamplerExpand[value="0"],
 #LibExpand[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__expand_dim.svg) no-repeat center center;
+  background: url(skin:/palemoon/buttons/btn__expand_dim.svg) no-repeat center center;
   }
   #FxExpand[value="1"],
   #SamplerExpand[value="1"],
   #LibExpand[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__collapse_dim.svg) no-repeat center center;
+    background: url(skin:/palemoon/buttons/btn__collapse_dim.svg) no-repeat center center;
   }
 
 #MixModeButton[value="0"] {
