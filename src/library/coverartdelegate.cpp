@@ -63,11 +63,11 @@ void CoverArtDelegate::slotInhibitLazyLoading(
     }
     // If we can request non-cache covers now, request updates
     // for all rows that were cache misses since the last time.
-    auto staleRows = m_cacheMissRows;
     // Reset the member variable before mutating the aggregated
     // rows list (-> implicit sharing) and emitting a signal that
     // in turn may trigger new signals for CoverArtDelegate!
-    m_cacheMissRows = QList<int>();
+    QList<int> staleRows = std::move(m_cacheMissRows);
+    DEBUG_ASSERT(m_cacheMissRows.isEmpty());
     emitRowsChanged(std::move(staleRows));
 }
 
