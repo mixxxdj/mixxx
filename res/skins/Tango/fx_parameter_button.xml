@@ -26,77 +26,8 @@ Variables:
         <SetVariable name="Size">51f,18f</SetVariable>
       </Template>
 
-<<<<<<< HEAD
       <EffectButtonParameterName>
         <SizePolicy>min,me</SizePolicy>
-        <ObjectName>FxParameterButtonName_inactive</ObjectName>
-        <EffectRack><Variable name="FxRack"/></EffectRack>
-        <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-        <Effect><Variable name="FxNum"/></Effect>
-        <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
-        <Alignment>center</Alignment>
-        <Elide>right</Elide>
-      </EffectButtonParameterName>
-||||||| 48927dbd95
-      <!-- Name of effect parameter when inactive-->
-      <WidgetGroup>
-        <Size>51f,18f</Size>
-        <Layout>horizontal</Layout>
-        <Children>
-          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-          <EffectButtonParameterName>
-            <SizePolicy>min,me</SizePolicy>
-            <ObjectName>FxParameterButtonName_inactive</ObjectName>
-            <EffectRack><Variable name="FxRack"/></EffectRack>
-            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-            <Effect><Variable name="FxNum"/></Effect>
-            <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
-            <Alignment>center</Alignment>
-            <Elide>right</Elide>
-          </EffectButtonParameterName>
-          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
-          <Transform><IsEqual>0</IsEqual></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
-      <!-- Name of effect parameter when active-->
-      <WidgetGroup>
-        <Size>51f,18f</Size>
-        <Layout>horizontal</Layout>
-        <Children>
-          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-          <EffectButtonParameterName>
-            <SizePolicy>min,me</SizePolicy>
-            <ObjectName>FxParameterButtonName_active</ObjectName>
-            <EffectRack><Variable name="FxRack"/></EffectRack>
-            <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-            <Effect><Variable name="FxNum"/></Effect>
-            <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
-            <Alignment>center</Alignment>
-          </EffectButtonParameterName>
-          <WidgetGroup><SizePolicy>me,min</SizePolicy></WidgetGroup>
-        </Children>
-        <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
-          <Transform><IsEqual>1</IsEqual></Transform>
-          <BindProperty>visible</BindProperty>
-        </Connection>
-      </WidgetGroup>
-
-      <!-- Button to indicate parameter state -->
-      <Template src="skin:fx_button.xml">
-        <SetVariable name="ObjectName">FxParameterButtonUnderlay</SetVariable>
-        <SetVariable name="Size">51f,18f</SetVariable>
-        <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
-      </Template>
-=======
-      <!-- Name of effect parameter when inactive-->
-      <EffectButtonParameterName>
-        <Size>51f,18f</Size>
         <ObjectName>FxParameterButtonName</ObjectName>
         <EffectRack><Variable name="FxRack"/></EffectRack>
         <EffectUnit><Variable name="FxUnit"/></EffectUnit>
@@ -104,19 +35,7 @@ Variables:
         <EffectButtonParameter><Variable name="FxParameter"/></EffectButtonParameter>
         <Alignment>center</Alignment>
         <Elide>right</Elide>
-        <Connection>
-          <ConfigKey><Variable name="FxRack_FxUnit_FxNum"/>,button_parameter<Variable name="FxParameter"/></ConfigKey>
-          <BindProperty>highlight</BindProperty>
-        </Connection>
       </EffectButtonParameterName>
-
-      <!-- Button to indicate parameter state -->
-      <Template src="skin:fx_button.xml">
-        <SetVariable name="ObjectName">FxParameterButtonUnderlay</SetVariable>
-        <SetVariable name="Size">51f,18f</SetVariable>
-        <SetVariable name="FxParameter">button_parameter<Variable name="FxParameter"/></SetVariable>
-      </Template>
->>>>>>> mixxx/main
     </Children>
     <!-- show only if button parameter is loaded -->
     <Connection>

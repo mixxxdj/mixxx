@@ -14,15 +14,7 @@
   padding: 5px 0px;
 }
 #Mixxx, WWidget,
-<<<<<<< HEAD
 WEffectName,
-WEffectSelector,
-||||||| 48927dbd95
-WEffect,
-WEffectSelector,
-=======
-WEffect,
->>>>>>> mixxx/main
 WKey,
 WLabel, WLibrary QLabel,
 WNumber, WNumberPos,

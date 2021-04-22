@@ -232,10 +232,16 @@ Variables:
                 <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
               </Template>
 
-              <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+              <EffectChainPresetButton>
+                <EffectUnit><Variable name="FxUnit"/></EffectUnit>
+                <Size>30f,18f</Size>
+                <ObjectName>EffectChainSelector</ObjectName>
+              </EffectChainPresetButton>
+
+              <WidgetGroup><Size>1min,2me</Size></WidgetGroup>
 
               <WidgetGroup><!-- Super Knob, if enabled -->
-                <SizePolicy>min,min</SizePolicy>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>vertical</Layout>
                 <Children>
                   <Template src="skin:knob_textless.xml">
@@ -246,6 +252,7 @@ Variables:
                     <SetVariable name="ConfigKey">super1</SetVariable>
                     <SetVariable name="Color">blue</SetVariable>
                   </Template>
+                  <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
                 </Children>
                 <Connection>
                   <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
@@ -253,35 +260,6 @@ Variables:
                 </Connection>
               </WidgetGroup>
 
-<<<<<<< HEAD
-                  <EffectChainPresetButton>
-                    <EffectUnit><Variable name="FxUnit"/></EffectUnit>
-                    <Size>30f,18f</Size>
-                    <ObjectName>EffectChainSelector</ObjectName>
-                  </EffectChainPresetButton>
-
-                  <WidgetGroup><Size>1min,2me</Size></WidgetGroup>
-||||||| 48927dbd95
-                  <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
-=======
-              <WidgetGroup><!-- additional spacer for Super Knob, if enabled -->
-                <SizePolicy>min,me</SizePolicy>
-                <Connection>
-                  <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
->>>>>>> mixxx/main
-
-<<<<<<< HEAD
-                  <WidgetGroup><!-- Super Knob, if enabled -->
-                    <SizePolicy>min,me</SizePolicy>
-                    <Layout>vertical</Layout>
-||||||| 48927dbd95
-                  <WidgetGroup><!-- Super Knob, if enabled -->
-                    <SizePolicy>min,min</SizePolicy>
-                    <Layout>vertical</Layout>
-=======
               <WidgetGroup><!-- Pfl button -->
                 <ObjectName>AlignCenter</ObjectName>
                 <SizePolicy>min,max</SizePolicy>
@@ -290,7 +268,6 @@ Variables:
                   <WidgetGroup>
                     <SizePolicy>max,max</SizePolicy>
                     <Layout>stacked</Layout>
->>>>>>> mixxx/main
                     <Children>
                       <!-- Greyed out if no headphone device is configured -->
                       <Template src="skin:pfl_cover.xml"/>
@@ -303,89 +280,8 @@ Variables:
                         <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
                         <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],group_[Headphone]_enable</SetVariable>
                       </Template>
-                      <WidgetGroup><Size>0min,2me</Size></WidgetGroup>
                     </Children>
-<<<<<<< HEAD
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /Super Knob, if enabled -->
-
-                  <WidgetGroup><!-- Headphone FX button -->
-                    <ObjectName>AlignCenter</ObjectName>
-                    <SizePolicy>min,max</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <WidgetGroup><!-- Headphone FX button -->
-                        <SizePolicy>max,max</SizePolicy>
-                        <Layout>stacked</Layout>
-                        <Children>
-                          <!-- index 0 due to bug -->
-                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                          <!-- Greyed out if no headphone device is configured -->
-                          <Template src="skin:pfl_cover.xml"/>
-
-                          <Template src="skin:button_2state.xml">
-                            <SetVariable name="ObjectName">PflButton</SetVariable>
-                            <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
-                            <SetVariable name="Size">24f,24f</SetVariable>
-                            <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
-                            <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
-                            <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],group_[Headphone]_enable</SetVariable>
-                          </Template>
-                        </Children>
-                      </WidgetGroup>
-                    </Children>
-                  </WidgetGroup><!-- /Headphone FX button -->
-
-||||||| 48927dbd95
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /Super Knob, if enabled -->
-
-                  <WidgetGroup><!-- additional spacer for Super Knob, if enabled -->
-                    <SizePolicy>min,me</SizePolicy>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /additional spacer for Super Knob, if enabled -->
-
-                  <WidgetGroup><!-- Headphone FX button -->
-                    <ObjectName>AlignCenter</ObjectName>
-                    <SizePolicy>min,max</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <WidgetGroup><!-- Headphone FX button -->
-                        <SizePolicy>max,max</SizePolicy>
-                        <Layout>stacked</Layout>
-                        <Children>
-                          <!-- index 0 due to bug -->
-                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                          <!-- Greyed out if no headphone device is configured -->
-                          <Template src="skin:pfl_cover.xml"/>
-
-                          <Template src="skin:button_2state.xml">
-                            <SetVariable name="ObjectName">PflButton</SetVariable>
-                            <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
-                            <SetVariable name="Size">24f,24f</SetVariable>
-                            <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
-                            <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
-                            <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],group_[Headphone]_enable</SetVariable>
-                          </Template>
-                        </Children>
-                      </WidgetGroup>
-                    </Children>
-                  </WidgetGroup><!-- /Headphone FX button -->
-
-=======
                   </WidgetGroup>
->>>>>>> mixxx/main
                 </Children>
               </WidgetGroup><!-- /Pfl button -->
 

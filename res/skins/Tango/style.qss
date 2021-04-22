@@ -1740,26 +1740,8 @@ decks, samplers, mic, aux, fx */
       margin: 0px;
       padding: 0px;
       }
-<<<<<<< HEAD
-      WEffectSelector::drop-down,
-      WEffectChainPresetSelector::drop-down {
-        margin: 0px -2px 0px 0px;
-      }
-      WEffectSelector::drop-down,
-      WEffectChainPresetSelector::drop-down,
-      #fadeModeCombobox::drop-down {
-        margin: 0px 0px 0px 0px;
-||||||| 48927dbd95
-      WEffectSelector::drop-down {
-        margin: 0px -2px 0px 0px;
-      }
-      WEffectSelector::drop-down,
-      #fadeModeCombobox::drop-down {
-        margin: 0px 0px 0px 0px;
-=======
       WEffectSelector::drop-down {
         margin-right: -2px;
->>>>>>> mixxx/main
       }
       /* QuickEffect selector in left-hand decks has it's down arrow
         on the left side, below the QuickEffect toggle */
@@ -1900,16 +1882,7 @@ decks, samplers, mic, aux, fx */
   #FxParameterPushButton[displayValue="1"] {
     background-color: #006596;
   }
-<<<<<<< HEAD
-
-  #FxParameterButtonName_inactive,
-  #FxParameterButtonName_active {
-||||||| 48927dbd95
-  #FxParameterButtonName_inactive,
-  #FxParameterButtonName_active {
-=======
   #FxParameterButtonName {
->>>>>>> mixxx/main
     font-size: 10px/10px;
     font-weight: bold;
     qproperty-alignment: 'AlignLeft | AlignVCenter';

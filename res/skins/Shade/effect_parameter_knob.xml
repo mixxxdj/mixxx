@@ -18,7 +18,7 @@
     <Children>
       <EffectParameterName>
         <Style>
-          WEffectParameter {
+          #EffectParameterKnob WLabel {
             font-size: 10px;
             line-height: 8px;
             background-color: transparent;
