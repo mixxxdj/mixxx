@@ -156,7 +156,11 @@ double BeatUtils::makeConstBpm(
 
     // Find the longest region somewhere in the middle of the track to start with.
     // At least this region will be have finally correct annotated beats.
-    int midRegion = 0;
+
+    // Note: This function is channel count independent. All sample based values in
+    // this functions are based on frames.
+
+    int midRegionIndex = 0;
     double longestRegionLength = 0;
     double longestRegionBeatLength = 0;
     for (int i = 0; i < constantRegions.size() - 1; ++i) {
@@ -164,7 +168,7 @@ double BeatUtils::makeConstBpm(
         if (length > longestRegionLength) {
             longestRegionLength = length;
             longestRegionBeatLength = constantRegions[i].beatLength;
-            midRegion = i;
+            midRegionIndex = i;
         }
         //qDebug() << i << length << constantRegions[i].beatLength;
     }
@@ -176,95 +180,95 @@ double BeatUtils::makeConstBpm(
 
     int longestRegionNumberOfBeats = static_cast<int>(
             (longestRegionLength / longestRegionBeatLength) + 0.5);
-    double longestRegionMinRoundSamples = longestRegionBeatLength -
+    double longestRegionBeatLengthMin = longestRegionBeatLength -
             ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
-    double longestRegionMaxRoundSamples = longestRegionBeatLength +
+    double longestRegionBeatLengthMax = longestRegionBeatLength +
             ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
 
-    int startRegion = midRegion;
+    int startRegionIndex = midRegionIndex;
 
     // Find a region at the beginning of the track with a similar tempo and phase
-    for (int i = 0; i < midRegion; ++i) {
+    for (int i = 0; i < midRegionIndex; ++i) {
         const double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
         const int numberOfBeats = static_cast<int>((length / constantRegions[i].beatLength) + 0.5);
         if (numberOfBeats < kMinRegionBeatCount) {
             // Request short regions, too unstable.
             continue;
         }
-        const double minRoundSamples = constantRegions[i].beatLength -
+        const double thisRegionBeatLengthMin = constantRegions[i].beatLength -
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
-        const double maxRoundSamples = constantRegions[i].beatLength +
+        const double thisRegionBeatLengthMax = constantRegions[i].beatLength +
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
         // check if the tempo of the longest region is part of the rounding range of this region
-        if (longestRegionBeatLength > minRoundSamples &&
-                longestRegionBeatLength < maxRoundSamples) {
+        if (longestRegionBeatLength > thisRegionBeatLengthMin &&
+                longestRegionBeatLength < thisRegionBeatLengthMax) {
             // Now check if both regions are at the same phase.
-            const double newLength = constantRegions[midRegion + 1].firstBeat -
+            const double newLongestRegionLength = constantRegions[midRegionIndex + 1].firstBeat -
                     constantRegions[i].firstBeat;
 
-            double minBeatLength = math_max(longestRegionMinRoundSamples, minRoundSamples);
-            double maxBeatLength = math_min(longestRegionMaxRoundSamples, maxRoundSamples);
+            double beatLengthMin = math_max(longestRegionBeatLengthMin, thisRegionBeatLengthMin);
+            double beatLengthMax = math_min(longestRegionBeatLengthMax, thisRegionBeatLengthMax);
 
             const int maxNumberOfBeats =
-                    static_cast<int>(round(newLength / minBeatLength));
+                    static_cast<int>(round(newLongestRegionLength / beatLengthMin));
             const int minNumberOfBeats =
-                    static_cast<int>(round(newLength / maxBeatLength));
+                    static_cast<int>(round(newLongestRegionLength / beatLengthMax));
 
             if (minNumberOfBeats != maxNumberOfBeats) {
                 // Ambiguous number of beats, find a closer region.
                 continue;
             }
             const int numberOfBeats = minNumberOfBeats;
-            const double newBeatLength = newLength / numberOfBeats;
-            if (newBeatLength > longestRegionMinRoundSamples &&
-                    newBeatLength < longestRegionMaxRoundSamples) {
-                longestRegionLength = newLength;
+            const double newBeatLength = newLongestRegionLength / numberOfBeats;
+            if (newBeatLength > longestRegionBeatLengthMin &&
+                    newBeatLength < longestRegionBeatLengthMax) {
+                longestRegionLength = newLongestRegionLength;
                 longestRegionBeatLength = newBeatLength;
                 longestRegionNumberOfBeats = numberOfBeats;
-                longestRegionMinRoundSamples = longestRegionBeatLength -
+                longestRegionBeatLengthMin = longestRegionBeatLength -
                         ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
-                longestRegionMaxRoundSamples = longestRegionBeatLength +
+                longestRegionBeatLengthMax = longestRegionBeatLength +
                         ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
-                startRegion = i;
+                startRegionIndex = i;
                 break;
             }
         }
     }
 
     // Find a region at the end of the track with similar tempo and phase
-    for (int i = constantRegions.size() - 2; i > midRegion; --i) {
+    for (int i = constantRegions.size() - 2; i > midRegionIndex; --i) {
         const double length = constantRegions[i + 1].firstBeat - constantRegions[i].firstBeat;
         const int numberOfBeats = static_cast<int>((length / constantRegions[i].beatLength) + 0.5);
         if (numberOfBeats < kMinRegionBeatCount) {
             continue;
         }
-        const double minRoundSamples = constantRegions[i].beatLength -
+        const double thisRegionBeatLengthMin = constantRegions[i].beatLength -
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
-        const double maxRoundSamples = constantRegions[i].beatLength +
+        const double thisRegionBeatLengthMax = constantRegions[i].beatLength +
                 ((kMaxSecsPhaseError * sampleRate) / numberOfBeats);
-        if (longestRegionBeatLength > minRoundSamples &&
-                longestRegionBeatLength < maxRoundSamples) {
+        if (longestRegionBeatLength > thisRegionBeatLengthMin &&
+                longestRegionBeatLength < thisRegionBeatLengthMax) {
             // Now check if both regions are at the same phase.
-            const double newLength = constantRegions[i + 1].firstBeat -
-                    constantRegions[startRegion].firstBeat;
+            const double newLongestRegionLength = constantRegions[i + 1].firstBeat -
+                    constantRegions[startRegionIndex].firstBeat;
 
-            double minBeatLength = math_max(longestRegionMinRoundSamples, minRoundSamples);
-            double maxBeatLength = math_min(longestRegionMaxRoundSamples, maxRoundSamples);
+            double minBeatLength = math_max(longestRegionBeatLengthMin, thisRegionBeatLengthMin);
+            double maxBeatLength = math_min(longestRegionBeatLengthMax, thisRegionBeatLengthMax);
 
             const int maxNumberOfBeats =
-                    static_cast<int>(round(newLength / minBeatLength));
+                    static_cast<int>(round(newLongestRegionLength / minBeatLength));
             const int minNumberOfBeats =
-                    static_cast<int>(round(newLength / maxBeatLength));
+                    static_cast<int>(round(newLongestRegionLength / maxBeatLength));
 
             if (minNumberOfBeats != maxNumberOfBeats) {
                 // Ambiguous number of beats, find a closer region.
                 continue;
             }
             const int numberOfBeats = minNumberOfBeats;
-            const double newBeatLength = newLength / numberOfBeats;
-            if (newBeatLength > longestRegionMinRoundSamples &&
-                    newBeatLength < longestRegionMaxRoundSamples) {
-                longestRegionLength = newLength;
+            const double newBeatLength = newLongestRegionLength / numberOfBeats;
+            if (newBeatLength > longestRegionBeatLengthMin &&
+                    newBeatLength < longestRegionBeatLengthMax) {
+                longestRegionLength = newLongestRegionLength;
                 longestRegionBeatLength = newBeatLength;
                 longestRegionNumberOfBeats = numberOfBeats;
                 break;
@@ -272,9 +276,9 @@ double BeatUtils::makeConstBpm(
         }
     }
 
-    longestRegionMinRoundSamples = longestRegionBeatLength -
+    longestRegionBeatLengthMin = longestRegionBeatLength -
             ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
-    longestRegionMaxRoundSamples = longestRegionBeatLength +
+    longestRegionBeatLengthMax = longestRegionBeatLength +
             ((kMaxSecsPhaseError * sampleRate) / longestRegionNumberOfBeats);
 
     // qDebug() << startRegion << midRegion << constantRegions.size()
@@ -285,8 +289,8 @@ double BeatUtils::makeConstBpm(
 
     // Create a const region region form the first beat of the first region to the last beat of the last region.
 
-    const double minRoundBpm = 60 * sampleRate / longestRegionMaxRoundSamples;
-    const double maxRoundBpm = 60 * sampleRate / longestRegionMinRoundSamples;
+    const double minRoundBpm = 60 * sampleRate / longestRegionBeatLengthMax;
+    const double maxRoundBpm = 60 * sampleRate / longestRegionBeatLengthMin;
     const double centerBpm = 60 * sampleRate / longestRegionBeatLength;
 
     //qDebug() << "minRoundBpm" << minRoundBpm;
@@ -294,7 +298,7 @@ double BeatUtils::makeConstBpm(
     const double roundBpm = roundBpmWithinRange(minRoundBpm, centerBpm, maxRoundBpm);
 
     if (pFirstBeat) {
-        *pFirstBeat = constantRegions[startRegion].firstBeat;
+        *pFirstBeat = constantRegions[startRegionIndex].firstBeat;
     }
     return roundBpm;
 }
