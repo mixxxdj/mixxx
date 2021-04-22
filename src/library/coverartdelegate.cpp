@@ -93,7 +93,13 @@ void CoverArtDelegate::slotCoverFound(
     }
     QList<int> refreshRows = m_pendingCacheRows.values(requestedImageHash);
     m_pendingCacheRows.remove(requestedImageHash);
-    emitRowsChanged(std::move(refreshRows));
+    if (pixmap.isNull()) {
+        kLogger.warning() << "Failed to load cover" << coverInfo;
+    } else {
+        // Only refresh the rows if loading succeeded, otherwise
+        // we would enter an infinite repaint loop and churn CPU.
+        emitRowsChanged(std::move(refreshRows));
+    }
 }
 
 TrackPointer CoverArtDelegate::loadTrackByLocation(
