@@ -234,17 +234,32 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
         return;
     }
 
-    bool okay = false;
-    QString newName = QInputDialog::getText(nullptr,
-            tr("Rename effect chain preset"),
-            tr("New name for effect chain preset") + QStringLiteral(" \"") +
-                    oldName + QStringLiteral("\""),
-            QLineEdit::Normal,
-            oldName,
-            &okay)
-                              .trimmed();
-    if (!okay) {
-        return;
+    QString newName;
+    QString errorText;
+    while (newName.isEmpty() || m_effectChainPresets.contains(newName)) {
+        bool okay = false;
+        newName = QInputDialog::getText(nullptr,
+                tr("Rename effect chain preset"),
+                errorText + "\n" + tr("New name for effect chain preset") +
+                        QStringLiteral(" \"") + oldName + QStringLiteral("\""),
+                QLineEdit::Normal,
+                oldName,
+                &okay)
+                          .trimmed();
+        if (!okay) {
+            return;
+        }
+
+        if (newName.isEmpty()) {
+            errorText = tr("Effect chain preset name must not be empty.") + QStringLiteral("\n");
+        } else if (m_effectChainPresets.contains(newName)) {
+            errorText =
+                    tr("An effect chain preset named \"%1\" already exists.")
+                            .arg(newName) +
+                    QStringLiteral("\n");
+        } else {
+            errorText = QString();
+        }
     }
 
     EffectChainPresetPointer pPreset = m_effectChainPresets.take(oldName);
