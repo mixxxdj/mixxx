@@ -145,17 +145,17 @@ void EffectChainPresetManager::importPreset() {
                     continue;
                 }
 
-                bool effectSupported = false;
+                bool effectAvailable = false;
                 for (const EffectManifestPointer& pManifest : m_pBackendManager->getManifests()) {
                     if (pManifest->id() == pEffectPreset->id() &&
                             pManifest->backendType() ==
                                     pEffectPreset->backendType()) {
-                        effectSupported = true;
+                        effectAvailable = true;
                         break;
                     }
                 }
-                if (!effectSupported) {
-                    QMessageBox::critical(nullptr,
+                if (!effectAvailable) {
+                    QMessageBox::warning(nullptr,
                             importFailed,
                             tr("The effect chain imported from \"%1\" contains "
                                "an effect that is not available:")
