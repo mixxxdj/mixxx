@@ -292,6 +292,8 @@ jobs:
       run: |
         if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
           CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
+        elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
         else
           # only build the source DEB, do not upload
           CPACK_ARGS="-D DEB_SOURCEPKG=ON"
