@@ -221,7 +221,7 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
     QDomDocument doc(EffectXml::Chain);
     doc.setContent(EffectXml::FileHeader);
     doc.appendChild(pPreset->toXml(&doc));
-    file.write(doc.toByteArray());                                
+    file.write(doc.toByteArray());
     file.close();
 }
 
