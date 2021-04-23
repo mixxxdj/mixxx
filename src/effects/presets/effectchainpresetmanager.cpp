@@ -97,7 +97,7 @@ void EffectChainPresetManager::importPreset() {
             tr("Mixxx Effect Chain Presets") + QStringLiteral(" (*") +
                     kXmlFileExtension + QStringLiteral(")"));
 
-    QString importFailed = tr("Error importing effect chain preset");
+    QString importFailed = tr("Error importing effect chain preset:");
     for (int i = 0; i < fileNames.size(); ++i) {
         QString filePath = fileNames.at(i);
         QDomDocument doc;
@@ -158,7 +158,7 @@ void EffectChainPresetManager::importPreset() {
                     QMessageBox::critical(nullptr,
                             importFailed,
                             tr("The effect chain imported from \"%1\" contains "
-                               "contains an effect that is not available:")
+                               "an effect that is not available:")
                                             .arg(filePath) +
                                     QStringLiteral("\n\n") +
                                     pEffectPreset->id() +
@@ -299,8 +299,9 @@ void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
     }
     auto pressedButton = QMessageBox::question(nullptr,
             tr("Remove effect chain preset"),
-            tr("Are you sure you want to delete the effect chain preset") +
-                    QStringLiteral(" \"") + chainPresetName + QStringLiteral("\"?"));
+            tr("Are you sure you want to delete the effect chain preset "
+               "\"%1\"?")
+                    .arg(chainPresetName));
     if (pressedButton != QMessageBox::Yes) {
         return;
     }
