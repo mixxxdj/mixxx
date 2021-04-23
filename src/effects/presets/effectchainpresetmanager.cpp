@@ -123,10 +123,10 @@ void EffectChainPresetManager::importPreset() {
                     bool okay = false;
                     newName = QInputDialog::getText(nullptr,
                             tr("Rename effect chain preset"),
-                            tr("An effect chain preset with the name") + QStringLiteral(" \"") +
-                                    pPreset->name() + QStringLiteral("\" ") +
-                                    tr("already exists. Choose a new name for the "
-                                       "imported effect chain preset:"),
+                            tr("An effect chain preset with the name \"%1\" "
+                               "already exists. Enter a new name for the "
+                               "imported effect chain preset:")
+                                    .arg(pPreset->name()),
                             QLineEdit::Normal,
                             QString(),
                             &okay)
@@ -157,12 +157,10 @@ void EffectChainPresetManager::importPreset() {
                 if (!effectSupported) {
                     QMessageBox::critical(nullptr,
                             importFailed,
-                            tr("The effect chain imported from") +
-                                    QStringLiteral(" ") + filePath +
-                                    QStringLiteral(" ") +
-                                    tr("contains an effect that Mixxx does not "
-                                       "support") +
-                                    QStringLiteral(":\n\n") +
+                            tr("The effect chain imported from \"%1\" contains "
+                               "contains an effect that is not available:")
+                                            .arg(filePath) +
+                                    QStringLiteral("\n\n") +
                                     pEffectPreset->id() +
                                     QStringLiteral("\n\n") +
                                     tr("If you load this chain preset, the "
@@ -215,10 +213,8 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
         file.close();
         QMessageBox::critical(nullptr,
                 tr("Error exporting effect chain preset"),
-                tr("Could not save effect chain preset") +
-                        QStringLiteral(" \"") + chainPresetName +
-                        QStringLiteral("\" ") + tr("to file") +
-                        QStringLiteral(" ") + fileName);
+                tr("Could not save effect chain preset \"%1\" to file \"%2\"")
+                        .arg(chainPresetName, fileName));
         return;
     }
 
