@@ -325,9 +325,9 @@ jobs:
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
         then
-          export DEPLOY_PATH='mixxx-{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
+          export DEPLOY_PATH='releases/mixxx-{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
         else
-          export DEPLOY_PATH='builds/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
+          export DEPLOY_PATH='snapshots/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
         fi;
         python3 tools/deploy.py prepare-deployment
         --slug '${{ matrix.artifacts_slug }}'
@@ -392,9 +392,9 @@ jobs:
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
         then
-          export DEPLOY_PATH='mixxx-{git_describe}/manifest.json';
+          export DEPLOY_PATH='releases/mixxx-{git_describe}/manifest.json';
         else
-          export DEPLOY_PATH='builds/{git_branch}/manifest.json';
+          export DEPLOY_PATH='snapshots/{git_branch}/manifest.json';
         fi;
         python3 tools/deploy.py generate-manifest
         --output-dir 'deploy/'
