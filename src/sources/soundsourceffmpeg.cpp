@@ -789,6 +789,9 @@ SINT readNextPacket(
         AVPacket* pavPacket,
         SINT flushFrameIndex) {
     while (true) {
+        // The underlying buffer will be provided by av_read_frame()
+        // and is only borrowed until the next packet is read.
+        DEBUG_ASSERT(!pavPacket->buf);
         const auto av_read_frame_result =
                 av_read_frame(
                         pavFormatContext,
