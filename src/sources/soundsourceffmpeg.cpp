@@ -1020,9 +1020,15 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
     CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
 
     AVPacket avPacket;
+#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(58, 133, 100)
+    get_packet_defaults(&avPacket);
+#else
+    // Deprecated in FFmpeg 4.4
+    // See also: https://github.com/FFmpeg/FFmpeg/blob/master/doc/APIchanges
     av_init_packet(&avPacket);
     avPacket.data = nullptr;
     avPacket.size = 0;
+#endif
     AVPacket* pavNextPacket = nullptr;
     while (m_frameBuffer.isValid() &&                         // no decoding error occurred
             (pavNextPacket || !writableFrameRange.empty()) && // not yet finished
