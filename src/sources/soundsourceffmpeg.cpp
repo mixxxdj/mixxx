@@ -464,13 +464,17 @@ SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
 SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
         : SoundSource(url),
           m_pavStream(nullptr),
+          m_pavPacket(av_packet_alloc()),
           m_pavDecodedFrame(nullptr),
           m_pavResampledFrame(nullptr),
           m_seekPrerollFrameCount(0) {
+    DEBUG_ASSERT(m_pavPacket);
 }
 
 SoundSourceFFmpeg::~SoundSourceFFmpeg() {
     close();
+    av_packet_free(&m_pavPacket);
+    DEBUG_ASSERT(!m_pavPacket);
 }
 
 SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
@@ -880,22 +884,22 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
 }
 
 bool SoundSourceFFmpeg::consumeNextAVPacket(
-        AVPacket* pavPacket, AVPacket** ppavNextPacket) {
-    DEBUG_ASSERT(pavPacket);
+        AVPacket** ppavNextPacket) {
+    DEBUG_ASSERT(m_pavPacket);
     DEBUG_ASSERT(ppavNextPacket);
     if (!*ppavNextPacket) {
         // Read next packet from stream
         const SINT packetFrameIndex = readNextPacket(
                 m_pavInputFormatContext,
                 m_pavStream,
-                pavPacket,
+                m_pavPacket,
                 m_frameBuffer.writeIndex());
         if (packetFrameIndex == ReadAheadFrameBuffer::kInvalidFrameIndex) {
             // Invalidate current position and abort reading
             m_frameBuffer.invalidate();
             return false;
         }
-        *ppavNextPacket = pavPacket;
+        *ppavNextPacket = m_pavPacket;
     }
     auto* pavNextPacket = *ppavNextPacket;
 
@@ -1019,20 +1023,10 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
     // Start decoding into the output buffer from the current position
     CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
 
-    AVPacket avPacket;
-#if LIBAVCODEC_VERSION_INT >= AV_VERSION_INT(58, 133, 100)
-    get_packet_defaults(&avPacket);
-#else
-    // Deprecated in FFmpeg 4.4
-    // See also: https://github.com/FFmpeg/FFmpeg/blob/master/doc/APIchanges
-    av_init_packet(&avPacket);
-    avPacket.data = nullptr;
-    avPacket.size = 0;
-#endif
     AVPacket* pavNextPacket = nullptr;
     while (m_frameBuffer.isValid() &&                         // no decoding error occurred
             (pavNextPacket || !writableFrameRange.empty()) && // not yet finished
-            consumeNextAVPacket(&avPacket, &pavNextPacket)) { // next packet consumed
+            consumeNextAVPacket(&pavNextPacket)) {            // next packet consumed
         int avcodec_receive_frame_result;
         // One or more AV packets are required for decoding the next AV frame
         do {
