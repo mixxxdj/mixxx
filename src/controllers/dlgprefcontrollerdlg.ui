@@ -159,7 +159,7 @@
              </size>
             </property>
             <property name="text">
-             <string>(icon)</string>
+             <string notr="true">(icon)</string>
             </property>
            </widget>
           </item>
@@ -169,7 +169,7 @@
              <string/>
             </property>
             <property name="text">
-             <string>(Warning message goes here)</string>
+             <string notr="true">(Warning message goes here)</string>
             </property>
             <property name="wordWrap">
              <bool>true</bool>

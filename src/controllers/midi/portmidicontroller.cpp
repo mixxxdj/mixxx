@@ -118,16 +118,6 @@ bool PortMidiController::poll() {
         return false;
     }
 
-    // Returns true if events are available or an error code.
-    PmError gotEvents = m_pInputDevice->poll();
-    if (gotEvents == FALSE) {
-        return false;
-    }
-    if (gotEvents < 0) {
-        qWarning() << "PortMidi error:" << Pm_GetErrorText(gotEvents);
-        return false;
-    }
-
     int numEvents = m_pInputDevice->read(m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
 
     //qDebug() << "PortMidiController::poll()" << numEvents;

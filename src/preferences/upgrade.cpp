@@ -1,22 +1,23 @@
 #include "preferences/upgrade.h"
 
-#include <QPixmap>
 #include <QMessageBox>
+#include <QPixmap>
 #include <QPushButton>
-#include <QTranslator>
 #include <QScopedPointer>
+#include <QTranslator>
 
-#include "preferences/usersettings.h"
-#include "preferences/beatdetectionsettings.h"
-#include "database/mixxxdb.h"
+#include "config.h"
 #include "controllers/defs_controllers.h"
+#include "database/mixxxdb.h"
 #include "defs_version.h"
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
+#include "preferences/beatdetectionsettings.h"
+#include "preferences/usersettings.h"
 #include "util/cmdlineargs.h"
-#include "util/math.h"
-#include "util/db/dbconnectionpooler.h"
 #include "util/db/dbconnectionpooled.h"
+#include "util/db/dbconnectionpooler.h"
+#include "util/math.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
@@ -143,7 +144,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 #else
         oldFilePath = oldLocation.filePath(".mixxx.cfg");
 #endif
-        newFilePath = newLocation.filePath(SETTINGS_FILE);
+        newFilePath = newLocation.filePath(MIXXX_SETTINGS_FILE);
         oldFile = new QFile(oldFilePath);
         if (oldFile->copy(newFilePath)) {
             oldFile->remove();
@@ -176,7 +177,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
 
     // Read the config file from home directory
     UserSettingsPointer config(new ConfigObject<ConfigValue>(
-        QDir(settingsPath).filePath(SETTINGS_FILE)));
+            QDir(settingsPath).filePath(MIXXX_SETTINGS_FILE)));
 
     QString configVersion = config->getValueString(ConfigKey("[Config]","Version"));
 
@@ -188,7 +189,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/").append(".mixxx/mixxx.cfg")));
         if (oldConfigFile->exists() && ! CmdlineArgs::Instance().getSettingsPathSet()) {
             qDebug() << "Found pre-1.9.0 config for OS X";
-            // Note: We changed SETTINGS_PATH in 1.9.0 final on OS X so it must be hardcoded to ".mixxx" here for legacy.
+            // Note: We changed MIXXX_SETTINGS_PATH in 1.9.0 final on OS X so
+            // it must be hardcoded to ".mixxx" here for legacy.
             config = UserSettingsPointer(new ConfigObject<ConfigValue>(
                 QDir::homePath().append("/.mixxx/mixxx.cfg")));
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
@@ -204,7 +206,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/Local Settings/Application Data/Mixxx/mixxx.cfg")));
         if (oldConfigFile->exists() && ! CmdlineArgs::Instance().getSettingsPathSet()) {
             qDebug() << "Found pre-1.12.0 config for Windows";
-            // Note: We changed SETTINGS_PATH in 1.12.0 final on Windows so it must be hardcoded to "Local Settings/Application Data/Mixxx/" here for legacy.
+            // Note: We changed MIXXX_SETTINGS_PATH in 1.12.0 final on Windows
+            // so it must be hardcoded to "Local Settings/Application
+            // Data/Mixxx/" here for legacy.
             config = UserSettingsPointer(new ConfigObject<ConfigValue>(
                 QDir::homePath().append("/Local Settings/Application Data/Mixxx/mixxx.cfg")));
             // Just to be sure all files like logs and soundconfig go with mixxx.cfg
@@ -317,7 +321,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // Reload the configuration file from the new location.
         // (We want to make sure we save to the new location...)
         config = UserSettingsPointer(new ConfigObject<ConfigValue>(
-            QDir(settingsPath).filePath(SETTINGS_FILE)));
+                QDir(settingsPath).filePath(MIXXX_SETTINGS_FILE)));
 #endif
         configVersion = "1.9.0";
         config->set(ConfigKey("[Config]","Version"), ConfigValue("1.9.0"));
@@ -392,7 +396,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
                     // Sandbox isn't setup yet at this point in startup because it relies on
                     // the config settings path and this function is what loads the config
                     // so it's not ready yet.
-                    successful = tc.addDirectory(currentFolder);
+                    successful = tc.addDirectory(mixxx::FileInfo(currentFolder));
 
                     tc.disconnectDatabase();
                 }

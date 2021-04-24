@@ -1979,7 +1979,7 @@ double CueControl::quantizeCuePoint(double cuePos) {
         return cuePos;
     }
 
-    mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
+    const mixxx::BeatsPointer pBeats = m_pLoadedTrack->getBeats();
     if (!pBeats) {
         return cuePos;
     }

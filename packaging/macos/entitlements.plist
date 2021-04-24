@@ -2,26 +2,53 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
   <dict>
+    <!-- APP SANDBOX ENTITLEMENTS
+
+         See https://developer.apple.com/documentation/security/app_sandbox for details.
+      -->
+    <!-- Enable the App Sandbox -->
     <key>com.apple.security.app-sandbox</key>
     <true/>
+    <!-- Allow access to the music directory -->
     <key>com.apple.security.assets.music.read-write</key>
     <true/>
+    <!-- Allow access to the download directory -->
     <key>com.apple.security.files.downloads.read-write</key>
     <true/>
+    <!-- Allow access to firewire devices -->
     <key>com.apple.security.device.firewire</key>
     <true/>
+    <!-- Allow interacting with the microphone -->
     <key>com.apple.security.device.microphone</key>
     <true/>
+    <!-- Allow interacting with USB devices -->
     <key>com.apple.security.device.usb</key>
     <true/>
+    <!-- Allow opening outgoing network connections -->
     <key>com.apple.security.network.client</key>
     <true/>
+    <!-- Allow access to files selected with an Open/Save dialog -->
     <key>com.apple.security.files.user-selected.read-write</key>
     <true/>
+    <!-- Persists access permission for files selected with an Open/Save dialog accross restarts -->
     <key>com.apple.security.files.bookmarks.app-scope</key>
     <true/>
+
+    <!-- HARDENED RUNTIME ENTITLEMENTS
+
+         See https://developer.apple.com/documentation/security/hardened_runtime for details.
+      -->
+    <!-- Allow interacting with the microphone -->
+    <key>com.apple.security.device.audio-input</key>
+    <true/>
+    <!-- Allow execution of JIT-compiled code
+         This is necessary for controller mappings that use Qt's JavaScript JIT compiler.
+      -->
     <key>com.apple.security.cs.allow-jit</key>
     <true/>
+    <!-- Allow unsigend executable memory
+         This is necessary for controller mappings that use Qt's JavaScript JIT compiler.
+      -->
     <key>com.apple.security.cs.allow-unsigned-executable-memory</key>
     <true/>
   </dict>

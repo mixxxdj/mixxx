@@ -90,43 +90,66 @@
 
           <WidgetGroup>
             <ObjectName>RateControls</ObjectName>
-            <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
-              <WidgetGroup>
-                <ObjectName></ObjectName>
-                <Size>45f,119f</Size>
+
+              <WidgetGroup><!-- Rate slider + range displays -->
+                <Layout>stacked</Layout>
+                <SizePolicy>max,me</SizePolicy>
                 <Children>
-                  <Label>
-                    <ObjectName>RateCenter</ObjectName>
-                    <Size>5f,5f</Size>
-                    <Pos>2,58</Pos>
-                    <Connection>
-                      <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
-                      <Transform><IsEqual>0.5</IsEqual></Transform>
-                      <BindProperty>highlight</BindProperty>
-                    </Connection>
-                  </Label>
-                  <SliderComposed>
-                    <ObjectName>RateSlider</ObjectName>
-                    <Size>40f,119f</Size>
-                    <Pos>5,0</Pos>
-                    <TooltipId>rate</TooltipId>
-                    <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
-                    <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck.svg</Slider>
-                    <Horizontal>false</Horizontal>
-                    <BarWidth><Variable name="BarWidth"/></BarWidth>
-                    <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
-                    <BarColor><Variable name="BarColorPitch"/>
-                    </BarColor><BarRoundCaps>true</BarRoundCaps>
-                    <BarAxisPos>20.0</BarAxisPos>
-                    <BarUnipolar>false</BarUnipolar>
-                    <Connection>
-                      <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
-                    </Connection>
-                  </SliderComposed>
+
+                  <!-- Rate slider + center indicator -->
+                  <WidgetGroup>
+                    <ObjectName>RateSliderBox</ObjectName>
+                    <Size>54f,121f</Size>
+                    <Children>
+                      <Label>
+                        <ObjectName>RateCenter</ObjectName>
+                        <Size>5f,5f</Size>
+                        <Pos>2,59</Pos>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
+                          <Transform><IsEqual>0.5</IsEqual></Transform>
+                          <BindProperty>highlight</BindProperty>
+                        </Connection>
+                      </Label>
+                      <SliderComposed>
+                        <ObjectName>RateSlider</ObjectName>
+                        <Size>40f,119f</Size>
+                        <Pos>5,2</Pos>
+                        <TooltipId>rate</TooltipId>
+                        <Handle scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/knob_pitch_deck.svg</Handle>
+                        <Slider scalemode="STRETCH_ASPECT">skin:/<Variable name="SliderScheme"/>/sliders/slider_pitch_deck.svg</Slider>
+                        <Horizontal>false</Horizontal>
+                        <BarWidth><Variable name="BarWidth"/></BarWidth>
+                        <BarMargins><Variable name="BarMarginPitch"/></BarMargins>
+                        <BarColor><Variable name="BarColorPitch"/></BarColor>
+                        <BarRoundCaps>true</BarRoundCaps>
+                        <BarAxisPos>20.0</BarAxisPos>
+                        <BarUnipolar>false</BarUnipolar>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
+                        </Connection>
+                      </SliderComposed>
+                    </Children>
+                  </WidgetGroup><!-- Rate slider + center indicator -->
+
+                  <WidgetGroup><!-- Rate range indicators -->
+                    <SizePolicy>min,me</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>RateRangeDisplayTop<Variable name="ChanNum"/></ObjectName>
+                      </SingletonContainer>
+                      <WidgetGroup><Size>0min,0me</Size></WidgetGroup>
+                      <SingletonContainer>
+                        <ObjectName>RateRangeDisplayBottom<Variable name="ChanNum"/></ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                  </WidgetGroup><!-- Rate range indicators -->
                 </Children>
-              </WidgetGroup>
+              </WidgetGroup><!-- Rate slider + range displays -->
 
               <WidgetGroup><!-- RateButtons for different rate directions -->
                 <ObjectName>RateButtons</ObjectName>

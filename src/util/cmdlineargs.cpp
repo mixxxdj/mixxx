@@ -7,9 +7,12 @@
 #include <io.h>
 #endif
 
+#include <QCommandLineParser>
+#include <QCoreApplication>
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 
+#include "config.h"
 #include "sources/soundsourceproxy.h"
 #include "util/version.h"
 
@@ -24,8 +27,8 @@ CmdlineArgs::CmdlineArgs()
           m_logLevel(mixxx::kLogLevelDefault),
           m_logFlushLevel(mixxx::kLogFlushLevelDefault),
 // We are not ready to switch to XDG folders under Linux, so keeping $HOME/.mixxx as preferences folder. see lp:1463273
-#ifdef __LINUX__
-          m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
+#ifdef MIXXX_SETTINGS_PATH
+          m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH)) {
 #else
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
           // to QDir::filePath elsewhere in the code. This is candidate for removal.
@@ -36,92 +39,197 @@ CmdlineArgs::CmdlineArgs()
 }
 
 namespace {
-    bool parseLogLevel(
-        QLatin1String logLevel,
-        mixxx::LogLevel *pLogLevel) {
-        if (logLevel == QLatin1String("trace")) {
-            *pLogLevel = mixxx::LogLevel::Trace;
-        } else if (logLevel == QLatin1String("debug")) {
-            *pLogLevel = mixxx::LogLevel::Debug;
-        } else if (logLevel == QLatin1String("info")) {
-            *pLogLevel = mixxx::LogLevel::Info;
-        } else if (logLevel == QLatin1String("warning")) {
-            *pLogLevel = mixxx::LogLevel::Warning;
-        } else if (logLevel == QLatin1String("critical")) {
-            *pLogLevel = mixxx::LogLevel::Critical;
-        } else {
-            return false;
-        }
-        return true;
+bool parseLogLevel(
+        const QString& logLevel,
+        mixxx::LogLevel* pLogLevel) {
+    if (logLevel.compare(QLatin1String("trace"), Qt::CaseInsensitive) == 0) {
+        *pLogLevel = mixxx::LogLevel::Trace;
+    } else if (logLevel.compare(QLatin1String("debug"), Qt::CaseInsensitive) == 0) {
+        *pLogLevel = mixxx::LogLevel::Debug;
+    } else if (logLevel.compare(QLatin1String("info"), Qt::CaseInsensitive) == 0) {
+        *pLogLevel = mixxx::LogLevel::Info;
+    } else if (logLevel.compare(QLatin1String("warning"), Qt::CaseInsensitive) == 0) {
+        *pLogLevel = mixxx::LogLevel::Warning;
+    } else if (logLevel.compare(QLatin1String("critical"), Qt::CaseInsensitive) == 0) {
+        *pLogLevel = mixxx::LogLevel::Critical;
+    } else {
+        return false;
     }
+    return true;
 }
+} // namespace
 
-bool CmdlineArgs::Parse(int &argc, char **argv) {
-    bool logLevelSet = false;
-    auto colorSettings = QString("auto");
-    for (int i = 0; i < argc; ++i) {
-        if (   argv[i] == QString("-h")
-            || argv[i] == QString("--h")
-            || argv[i] == QString("--help")) {
-            return false; // Display Help Message
+bool CmdlineArgs::parse(const QStringList& arguments) {
+    QCommandLineParser parser;
+    parser.setApplicationDescription(QCoreApplication::translate("main",
+            "Mixxx is an open source DJ software. For more information, see "
+            "https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options).\n"
+            "CamelCase arguments are deprecated and will be removed in 2.5"));
+    parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
+
+    // add options
+    const QCommandLineOption fullscreen(QStringList() << "f"
+                                                      << "full-screen"
+                                                      << "fullScreen",
+            QCoreApplication::translate("main", "Starts Mixxx in full-screen mode"));
+    parser.addOption(fullscreen);
+
+    const QCommandLineOption locale(QStringLiteral("locale"),
+            QCoreApplication::translate("main",
+                    "Use a custom locale for loading translations. (e.g "
+                    "'fr')"));
+    parser.addOption(locale);
+
+    // An option with a value
+    const QCommandLineOption settingsPath(QStringList() << "settings-path"
+                                                        << "settingsPath",
+            QCoreApplication::translate("main",
+                    "Top-level directory where Mixxx should look for settings. "
+                    "Default is:") +
+                    getSettingsPath().toLocal8Bit().constData(),
+            QStringLiteral("settingsPath"));
+    parser.addOption(settingsPath);
+
+    QCommandLineOption resourcePath(QStringList() << "resource-path"
+                                                  << "resourcePath",
+            QCoreApplication::translate("main",
+                    "Top-level directory where Mixxx should look for its "
+                    "resource files such as MIDI mappings, overriding the "
+                    "default installation location."),
+            QStringLiteral("resourcePath"));
+    parser.addOption(resourcePath);
+
+    const QCommandLineOption timelinePath(QStringList() << "timeline-path"
+                                                        << "timelinePath",
+            QCoreApplication::translate("main", "Path the timeline is written to"));
+    parser.addOption(timelinePath);
+
+    const QCommandLineOption controllerDebug(QStringList() << "controller-debug"
+                                                           << "controllerDebug"
+                                                           << "midi-debug"
+                                                           << "midiDebug",
+            QCoreApplication::translate("main",
+                    "Causes Mixxx to display/log all of the controller data it "
+                    "receives and script functions it loads"));
+    parser.addOption(controllerDebug);
+
+    const QCommandLineOption developer(QStringLiteral("developer"),
+            QCoreApplication::translate("main",
+                    "Enables developer-mode. Includes extra log info, stats on "
+                    "performance, and a Developer tools menu."));
+    parser.addOption(developer);
+
+    const QCommandLineOption safeMode(QStringList() << "safe-mode"
+                                                    << "safeMode",
+            QCoreApplication::translate("main",
+                    "Enables safe-mode. Disables OpenGL waveforms, and "
+                    "spinning vinyl widgets. Try this option if Mixxx is "
+                    "crashing on startup."));
+    parser.addOption(safeMode);
+
+    const QCommandLineOption color(QStringLiteral("color"),
+            QCoreApplication::translate("main",
+                    "[auto|always|never] Use colors on the console output."),
+            QStringLiteral("color"),
+            QStringLiteral("auto"));
+    parser.addOption(color);
+
+    const QCommandLineOption logLevel(QStringList() << "log-level"
+                                                    << "logLevel",
+            QCoreApplication::translate("main",
+                    "Sets the verbosity of command line logging.\n"
+                    "critical - Critical/Fatal only\n"
+                    "warning  - Above + Warnings\n"
+                    "info     - Above + Informational messages\n"
+                    "debug    - Above + Debug/Developer messages\n"
+                    "trace    - Above + Profiling messages"),
+            QStringLiteral("logLevel"));
+    parser.addOption(logLevel);
+
+    const QCommandLineOption logFlushLevel(QStringList() << "log-flush-level"
+                                                         << "logFlushLevel",
+            QCoreApplication::translate("main",
+                    "Sets the the logging level at which the log buffer is "
+                    "flushed to mixxx.log. LEVEL is one of the values defined "
+                    "at --logLevel above."),
+            QStringLiteral("logFlushLevel"));
+    parser.addOption(logFlushLevel);
+
+#ifdef MIXXX_BUILD_DEBUG
+    QCommandLineOption debugAssertBreak(QStringList() << "debug-assert-break"
+                                                      << "debugAssertBreak",
+            QCoreApplication::translate("main",
+                    "Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to "
+                    "false. Under a debugger you can continue afterwards."));
+    parser.addOption(debugAssertBreak);
+#endif
+
+    const QCommandLineOption helpOption = parser.addHelpOption();
+    const QCommandLineOption versionOption = parser.addVersionOption();
+
+    parser.addPositionalArgument(QStringLiteral("file"),
+            QCoreApplication::translate("main",
+                    "Load the specified music file(s) at start-up. Each file "
+                    "you specify will be loaded into the next virtual deck."));
+
+    // process all arguments
+    if (!parser.parse(arguments)) {
+        qWarning() << parser.errorText();
+    }
+
+    if (parser.isSet(helpOption) || parser.isSet(QStringLiteral("help-all"))) {
+        // we need to call process here otherwise there is no way to print the
+        // help-all information
+        parser.process(arguments);
+        return false;
+    }
+    if (parser.isSet(versionOption)) {
+        parser.showVersion();
+        return false;
+    }
+
+    m_startInFullscreen = parser.isSet(fullscreen);
+
+    if (parser.isSet(locale)) {
+        m_locale = parser.value(locale);
+    }
+
+    if (parser.isSet(settingsPath)) {
+        m_settingsPath = parser.value(settingsPath);
+        if (!m_settingsPath.endsWith("/")) {
+            m_settingsPath.append("/");
         }
+        m_settingsPathSet = true;
+    }
 
-        if (argv[i]==QString("-f").toLower() || argv[i]==QString("--f") || argv[i]==QString("--fullScreen"))
-        {
-            m_startInFullscreen = true;
-        } else if (argv[i] == QString("--locale") && i+1 < argc) {
-            m_locale = argv[i+1];
-        } else if (argv[i] == QString("--settingsPath") && i+1 < argc) {
-            m_settingsPath = QString::fromLocal8Bit(argv[i+1]);
-            // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
-            // to QDir::filePath elsewhere in the code. This is candidate for removal.
-            if (!m_settingsPath.endsWith("/")) {
-                m_settingsPath.append("/");
-            }
-            m_settingsPathSet=true;
-        } else if (argv[i] == QString("--resourcePath") && i+1 < argc) {
-            m_resourcePath = QString::fromLocal8Bit(argv[i+1]);
-            i++;
-        } else if (argv[i] == QString("--pluginPath") && i+1 < argc) {
-            m_pluginPath = QString::fromLocal8Bit(argv[i+1]);
-            i++;
-        } else if (argv[i] == QString("--timelinePath") && i+1 < argc) {
-            m_timelinePath = QString::fromLocal8Bit(argv[i+1]);
-            i++;
-        } else if (argv[i] == QString("--logLevel") && i+1 < argc) {
-            logLevelSet = true;
-            auto level = QLatin1String(argv[i+1]);
-            if (!parseLogLevel(level, &m_logLevel)) {
-                fputs("\nlogLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only output\n\
-warnings and errors to the console unless this is set properly.\n", stdout);
-            }
-            i++;
-        } else if (argv[i] == QString("--logFlushLevel") && i+1 < argc) {
-            auto level = QLatin1String(argv[i+1]);
-            if (!parseLogLevel(level, &m_logFlushLevel)) {
-                fputs("\nlogFushLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only flush messages to mixxx.log\n\
-when a critical error occurs unless this is set properly.\n", stdout);
-            }
-            i++;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--midiDebug", Qt::CaseInsensitive) ||
-                   QString::fromLocal8Bit(argv[i]).contains("--controllerDebug", Qt::CaseInsensitive)) {
-            m_midiDebug = true;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--developer", Qt::CaseInsensitive)) {
-            m_developer = true;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--safeMode", Qt::CaseInsensitive)) {
-            m_safeMode = true;
-        } else if (QString::fromLocal8Bit(argv[i]).contains("--debugAssertBreak", Qt::CaseInsensitive)) {
-            m_debugAssertBreak = true;
-        } else if (QString::fromLocal8Bit(argv[i]).contains(
-                           "--color", Qt::CaseInsensitive) &&
-                i + 1 < argc) {
-            colorSettings = QString::fromLocal8Bit(argv[i + 1]);
-        } else if (i > 0) {
-            // Don't try to load the program name to a deck
-            m_musicFiles += QString::fromLocal8Bit(argv[i]);
+    if (parser.isSet(resourcePath)) {
+        m_resourcePath = parser.value(resourcePath);
+    }
+
+    m_midiDebug = parser.isSet(controllerDebug);
+    m_developer = parser.isSet(developer);
+    m_safeMode = parser.isSet(safeMode);
+
+#ifdef MIXXX_BUILD_DEBUG
+    m_debugAssertBreak = parser.isSet(debugAssertBreak);
+#endif
+
+    m_musicFiles = parser.positionalArguments();
+
+    if (parser.isSet(logLevel)) {
+        if (!parseLogLevel(parser.value(logLevel), &m_logLevel)) {
+            fputs("\nlogLevel argument wasn't 'trace', 'debug', 'info', 'warning', or 'critical'! Mixxx will only output\n\
+warnings and errors to the console unless this is set properly.\n",
+                    stdout);
+        }
+    } else {
+        if (m_developer) {
+            m_logLevel = mixxx::LogLevel::Debug;
         }
     }
-    if (colorSettings.compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
+
+    // set colors
+    if (parser.value(color).compare(QLatin1String("auto"), Qt::CaseInsensitive) == 0) {
         // see https://no-color.org/
         if (QProcessEnvironment::systemEnvironment().contains(QLatin1String("NO_COLOR"))) {
             m_useColors = false;
@@ -136,89 +244,13 @@ when a critical error occurs unless this is set properly.\n", stdout);
             }
 #endif
         }
-    } else if (colorSettings.compare(QLatin1String("always"), Qt::CaseInsensitive) == 0) {
+    } else if (parser.value(color).compare(QLatin1String("always"), Qt::CaseInsensitive) == 0) {
         m_useColors = true;
-    } else if (colorSettings.compare(QLatin1String("never"), Qt::CaseInsensitive) == 0) {
+    } else if (parser.value(color).compare(QLatin1String("never"), Qt::CaseInsensitive) == 0) {
         m_useColors = false;
     } else {
         qWarning() << "Unknown setting for color, ignoring";
     }
 
-    // If --logLevel was unspecified and --developer is enabled then set
-    // logLevel to debug.
-    if (m_developer && !logLevelSet) {
-        m_logLevel = mixxx::LogLevel::Debug;
-    }
-
     return true;
-}
-
-void CmdlineArgs::printUsage() {
-    fputs(Version::applicationName().toLocal8Bit().constData(), stdout);
-    fputs(" v", stdout);
-    fputs(Version::version().toLocal8Bit().constData(), stdout);
-    fputs(" - Command line options", stdout);
-    fputs("\n(These are case-sensitive.)\n\n\
-[FILE]                  Load the specified music file(s) at start-up.\n\
-                        Each file you specify will be loaded into the\n\
-                        next virtual deck.\n", stdout);
-    fputs("\
-\n\
---resourcePath PATH     Top-level directory where Mixxx should look\n\
-                        for its resource files such as MIDI mappings,\n\
-                        overriding the default installation location.\n\
-\n\
---pluginPath PATH       Top-level directory where Mixxx should look\n\
-                        for sound source plugins in addition to default\n\
-                        locations.\n\
-\n\
---settingsPath PATH     Top-level directory where Mixxx should look\n\
-                        for settings. Default is:\n", stdout);
-    fprintf(stdout, "\
-                        %s\n", getSettingsPath().toLocal8Bit().constData());
-    fputs("\
-\n\
---controllerDebug       Causes Mixxx to display/log all of the controller\n\
-                        data it receives and script functions it loads\n\
-\n\
---developer             Enables developer-mode. Includes extra log info,\n\
-                        stats on performance, and a Developer tools menu.\n\
-\n\
---safeMode              Enables safe-mode. Disables OpenGL waveforms,\n\
-                        and spinning vinyl widgets. Try this option if\n\
-                        Mixxx is crashing on startup.\n\
-\n\
---color auto            [auto|always|never] Use colors on the console output.\n\
-\n\
---locale LOCALE         Use a custom locale for loading translations\n\
-                        (e.g 'fr')\n\
-\n\
--f, --fullScreen        Starts Mixxx in full-screen mode\n\
-\n\
---logLevel LEVEL        Sets the verbosity of command line logging\n\
-                        critical - Critical/Fatal only\n\
-                        warning  - Above + Warnings\n\
-                        info     - Above + Informational messages\n\
-                        debug    - Above + Debug/Developer messages\n\
-                        trace    - Above + Profiling messages\n\
-\n\
---logFlushLevel LEVEL   Sets the the logging level at which the log buffer\n\
-                        is flushed to mixxx.log. LEVEL is one of the values\n\
-                        defined at --logLevel above.\n\
-\n"
-#ifdef MIXXX_BUILD_DEBUG
-          "\
---debugAssertBreak      Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT\n\
-                        evaluates to false. Under a debugger you can\n\
-                        continue afterwards.\
-\n"
-#endif
-          "\
--h, --help              Display this help message and exit",
-            stdout);
-
-    fputs("\n\n(For more information, see "
-          "https://manual.mixxx.org/2.3/chapters/"
-          "appendix.html#command-line-options)\n",
-            stdout);
 }

@@ -238,7 +238,5 @@ inline QDebug operator<<(QDebug dbg, const RgbColor::optional_t& optionalColor) 
 
 } // namespace mixxx
 
-// Assumption: A primitive type wrapped into std::optional is
-// still a primitive type.
-Q_DECLARE_TYPEINFO(std::optional<mixxx::RgbColor>, Q_PRIMITIVE_TYPE);
+Q_DECLARE_TYPEINFO(std::optional<mixxx::RgbColor>, Q_MOVABLE_TYPE);
 Q_DECLARE_METATYPE(std::optional<mixxx::RgbColor>)

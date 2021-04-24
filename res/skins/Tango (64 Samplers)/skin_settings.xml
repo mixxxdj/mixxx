@@ -81,29 +81,31 @@ Description:
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:../Tango/skin_settings_button_2state.xml">
-                <SetVariable name="text">Hot Cues</SetVariable>
-                <SetVariable name="width">70</SetVariable>
+                <SetVariable name="text">Hotcue buttons</SetVariable>
+                <SetVariable name="width">135</SetVariable>
                 <SetVariable name="Setting">[Tango],hotcues</SetVariable>
               </Template>
               <WidgetGroup><Size>3f,1min</Size></WidgetGroup>
               <WidgetGroup><!-- 4 or 8 -->
-                <MinimumSize>182,13</MinimumSize>
-                <MaximumSize>182,20</MaximumSize>
+                <MinimumSize>40,13</MinimumSize>
+                <MaximumSize>40,20</MaximumSize>
                 <SizePolicy>me,me</SizePolicy>
                 <Layout>stacked</Layout>
                 <Children>
-                  <WidgetGroup><!-- translucent cover when Hot Cues are invisible -->
+                  <!-- translucent cover when Hot Cues are invisible -->
+                  <WidgetGroup>
                     <ObjectName>SubmenuCover</ObjectName>
-                    <Size>182f,13me</Size>
+                    <Size>40f,13me</Size>
                     <Connection>
                       <ConfigKey persist="true">[Tango],hotcues</ConfigKey>
                       <Transform><Not/></Transform>
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
+
                   <WidgetGroup>
-                    <MinimumSize>182,13</MinimumSize>
-                    <MaximumSize>182,20</MaximumSize>
+                    <MinimumSize>40,13</MinimumSize>
+                    <MaximumSize>40,20</MaximumSize>
                     <SizePolicy>me,me</SizePolicy>
                     <Layout>horizontal</Layout>
                     <Children>
@@ -126,6 +128,11 @@ Description:
               </WidgetGroup><!-- /4 or 8 -->
             </Children>
           </WidgetGroup><!-- /HotCue settings -->
+
+          <Template src="skin:../Tango/skin_settings_button_2state.xml">
+            <SetVariable name="text">Hotcue shift buttons</SetVariable>
+            <SetVariable name="Setting">[Skin],timing_shift_buttons</SetVariable>
+          </Template>
 
           <Template src="skin:../Tango/skin_settings_button_2state.xml">
             <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>

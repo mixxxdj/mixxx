@@ -7,24 +7,25 @@
 #define DEFAULT_OUTPUT_ON 0x7F
 #define DEFAULT_OUTPUT_OFF 0x00
 
-LegacyControllerMappingPointer LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
+std::shared_ptr<LegacyControllerMapping>
+LegacyMidiControllerMappingFileHandler::load(const QDomElement& root,
         const QString& filePath,
         const QDir& systemMappingsPath) {
     if (root.isNull()) {
-        return LegacyControllerMappingPointer();
+        return nullptr;
     }
 
     QDomElement controller = getControllerNode(root);
     if (controller.isNull()) {
-        return LegacyControllerMappingPointer();
+        return nullptr;
     }
 
-    LegacyMidiControllerMapping* mapping = new LegacyMidiControllerMapping();
-    mapping->setFilePath(filePath);
+    auto pMapping = std::make_shared<LegacyMidiControllerMapping>();
+    pMapping->setFilePath(filePath);
 
     // Superclass handles parsing <info> tag and script files
-    parseMappingInfo(root, mapping);
-    addScriptFilesToMapping(controller, mapping, systemMappingsPath);
+    parseMappingInfo(root, pMapping);
+    addScriptFilesToMapping(controller, pMapping, systemMappingsPath);
 
     QDomElement control = controller.firstChildElement("controls").firstChildElement("control");
 
@@ -114,7 +115,7 @@ LegacyControllerMappingPointer LegacyMidiControllerMappingFileHandler::load(cons
 
         // Use insertMulti because we support multiple inputs mappings for the
         // same input MidiKey.
-        mapping->addInputMapping(inputMapping.key.key, inputMapping);
+        pMapping->addInputMapping(inputMapping.key.key, inputMapping);
         control = control.nextSiblingElement("control");
     }
 
@@ -205,14 +206,14 @@ LegacyControllerMappingPointer LegacyMidiControllerMappingFileHandler::load(cons
 
         // Use insertMulti because we support multiple outputs from the same
         // control.
-        mapping->addOutputMapping(outputMapping.controlKey, outputMapping);
+        pMapping->addOutputMapping(outputMapping.controlKey, outputMapping);
 
         output = output.nextSiblingElement("output");
     }
 
     qDebug() << "MidiMappingFileHandler: Output mapping parsing complete.";
 
-    return LegacyControllerMappingPointer(mapping);
+    return pMapping;
 }
 
 bool LegacyMidiControllerMappingFileHandler::save(const LegacyMidiControllerMapping& mapping,

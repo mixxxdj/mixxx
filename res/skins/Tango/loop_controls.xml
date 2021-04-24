@@ -92,8 +92,8 @@ Variables:
           <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
           <Template src="skin:button_2state_persist.xml">
-            <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
-            <SetVariable name="Size">14f,16f</SetVariable>
+            <SetVariable name="ObjectName">FixedLoopSizesMiniMaxi</SetVariable>
+            <SetVariable name="Size">14f,22me</SetVariable>
             <SetVariable name="ConfigKey">[Tango],loop_sizes</SetVariable>
           </Template>
 

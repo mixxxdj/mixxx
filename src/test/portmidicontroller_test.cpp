@@ -198,23 +198,6 @@ TEST_F(PortMidiControllerTest, WriteSysex_Malformed) {
     m_pController->sendSysexMsg(sysex, sysex.length());
 };
 
-TEST_F(PortMidiControllerTest, Poll_Read_NoInput) {
-    Sequence poll;
-    EXPECT_CALL(*m_mockInput, isOpen())
-            .WillRepeatedly(Return(true));
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(poll)
-            .WillOnce(Return((PmError)FALSE));
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(poll)
-            .WillOnce(Return((PmError)TRUE));
-    EXPECT_CALL(*m_mockInput, read(_, _))
-            .InSequence(poll)
-            .WillOnce(Return(0));
-
-    pollDevice();
-    pollDevice();
-};
 
 TEST_F(PortMidiControllerTest, Poll_Read_Basic) {
     std::vector<PmEvent> messages;
@@ -224,9 +207,6 @@ TEST_F(PortMidiControllerTest, Poll_Read_Basic) {
     Sequence read;
     EXPECT_CALL(*m_mockInput, isOpen())
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(read)
-            .WillOnce(Return((PmError)TRUE));
     EXPECT_CALL(*m_mockInput, read(NotNull(), _))
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
@@ -262,9 +242,6 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExWithRealtime) {
     Sequence read;
     EXPECT_CALL(*m_mockInput, isOpen())
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(read)
-            .WillOnce(Return((PmError)TRUE));
     EXPECT_CALL(*m_mockInput, read(NotNull(), _))
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
@@ -297,9 +274,6 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysEx) {
     Sequence read;
     EXPECT_CALL(*m_mockInput, isOpen())
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(read)
-            .WillOnce(Return((PmError)TRUE));
     EXPECT_CALL(*m_mockInput, read(NotNull(), _))
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
@@ -334,9 +308,6 @@ TEST_F(PortMidiControllerTest,
     Sequence read;
     EXPECT_CALL(*m_mockInput, isOpen())
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(read)
-            .WillOnce(Return((PmError)TRUE));
     EXPECT_CALL(*m_mockInput, read(NotNull(), _))
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
@@ -360,9 +331,6 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExInterrupted_FollowedByNormalMessag
     Sequence read;
     EXPECT_CALL(*m_mockInput, isOpen())
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(read)
-            .WillOnce(Return((PmError)TRUE));
     EXPECT_CALL(*m_mockInput, read(NotNull(), _))
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
@@ -398,9 +366,6 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysExInterrupted_FollowedBySysExMessage
     Sequence read;
     EXPECT_CALL(*m_mockInput, isOpen())
             .WillRepeatedly(Return(true));
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(read)
-            .WillOnce(Return((PmError)TRUE));
     EXPECT_CALL(*m_mockInput, read(NotNull(), _))
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages.begin(), messages.end()),
@@ -443,35 +408,23 @@ TEST_F(PortMidiControllerTest, Poll_Read_SysEx_BufferOverflow) {
             .WillRepeatedly(Return(true));
 
     // Poll 1 -- returns messages1.
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(read)
-            .WillOnce(Return((PmError)TRUE));
     EXPECT_CALL(*m_mockInput, read(NotNull(), _))
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages1.begin(), messages1.end()),
                             Return(messages1.size())));
 
     // Poll 2 -- buffer overflow.
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(read)
-            .WillOnce(Return((PmError)TRUE));
     EXPECT_CALL(*m_mockInput, read(NotNull(), _))
             .InSequence(read)
             .WillOnce(Return(pmBufferOverflow));
 
     // Poll 3 -- returns messages2.
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(read)
-            .WillOnce(Return((PmError)TRUE));
     EXPECT_CALL(*m_mockInput, read(NotNull(), _))
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages2.begin(), messages2.end()),
                             Return(messages2.size())));
 
     // Poll 4 -- returns messages3.
-    EXPECT_CALL(*m_mockInput, poll())
-            .InSequence(read)
-            .WillOnce(Return((PmError)TRUE));
     EXPECT_CALL(*m_mockInput, read(NotNull(), _))
             .InSequence(read)
             .WillOnce(DoAll(SetArrayArgument<0>(messages3.begin(), messages3.end()),

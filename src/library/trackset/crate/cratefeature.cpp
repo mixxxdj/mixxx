@@ -185,7 +185,7 @@ QString CrateFeature::formatRootViewHtml() const {
                "DJ with.");
     QString cratesSummary2 =
             tr("Make a crate for your next gig, for your favorite electrohouse "
-               "tracks, or for your most requested songs.");
+               "tracks, or for your most requested tracks.");
     QString cratesSummary3 =
             tr("Crates let you organize your music however you'd like!");
 

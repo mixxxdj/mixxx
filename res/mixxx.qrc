@@ -36,6 +36,8 @@
         <file>images/skin_preview_placeholder.png</file>
         <file>images/ic_checkmark.svg</file>
         <file>images/ic_delete.svg</file>
+      <!-- keywheel dialog image -->
+        <file>images/keywheel/keywheel.svg</file>
       <!-- dark icon set for preferences -->
         <file>images/preferences/dark/ic_preferences_autodj.svg</file>
         <file>images/preferences/dark/ic_preferences_bpmdetect.svg</file>

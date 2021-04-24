@@ -288,22 +288,13 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
     if (s_pInstance) {
         QMetaObject::invokeMethod(
                 s_pInstance,
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-                "slotEvictAndSave",
-#else
                 [cacheEntryPtr = std::move(cacheEntryPtr)] {
                     s_pInstance->slotEvictAndSave(cacheEntryPtr);
                 },
-#endif
                 // Qt will choose either a direct or a queued connection
                 // depending on the thread from which this method has
                 // been invoked!
-                Qt::AutoConnection
-#if QT_VERSION < QT_VERSION_CHECK(5, 10, 0)
-                ,
-                Q_ARG(GlobalTrackCacheEntryPointer, std::move(cacheEntryPtr))
-#endif
-        );
+                Qt::AutoConnection);
     } else {
         // After the singular instance has been destroyed we are
         // not able to save pending changes. The track is deleted

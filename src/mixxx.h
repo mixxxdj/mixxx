@@ -22,6 +22,7 @@ class ControllerManager;
 class ControlPushButton;
 class DlgDeveloperTools;
 class DlgPreferences;
+class DlgKeywheel;
 class EffectsManager;
 class EngineMaster;
 class GuiTick;
@@ -74,6 +75,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotOptionsPreferences();
     /// show the about dialog
     void slotHelpAbout();
+    // show keywheel
+    void slotShowKeywheel(bool toggle);
     /// toggle full screen mode
     void slotViewFullScreen(bool toggle);
     /// open the developer tools dialog.
@@ -133,6 +136,7 @@ class MixxxMainWindow : public QMainWindow {
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 
     DlgPreferences* m_pPrefDlg;
+    parented_ptr<DlgKeywheel> m_pKeywheel;
 
 #ifdef __ENGINEPRIME__
     // Library exporter

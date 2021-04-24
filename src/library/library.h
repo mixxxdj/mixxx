@@ -75,7 +75,6 @@ class Library: public QObject {
                     KeyboardEventFilter* pKeyboard);
 
     void addFeature(LibraryFeature* feature);
-    QStringList getDirs();
 
     int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;

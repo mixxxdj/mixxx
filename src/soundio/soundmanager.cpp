@@ -623,20 +623,17 @@ void SoundManager::readProcess() const {
 }
 
 void SoundManager::registerOutput(const AudioOutput& output, AudioSource* src) {
-    if (m_registeredSources.contains(output)) {
-        qDebug() << "WARNING: AudioOutput already registered!";
+    VERIFY_OR_DEBUG_ASSERT(!m_registeredSources.contains(output)) {
+        return;
     }
     m_registeredSources.insert(output, src);
     emit outputRegistered(output, src);
 }
 
 void SoundManager::registerInput(const AudioInput& input, AudioDestination* dest) {
-    if (m_registeredDestinations.contains(input)) {
-        // note that this can be totally ok if we just want a certain
-        // AudioInput to be going to a different AudioDest -bkgood
-        qDebug() << "WARNING: AudioInput already registered!";
-    }
-
+    // Vinyl control inputs are registered twice, once for timecode and once for
+    // passthrough, each with different outputs. So unlike outputs, do not assert
+    // that the input has not been registered yet.
     m_registeredDestinations.insert(input, dest);
 
     emit inputRegistered(input, dest);

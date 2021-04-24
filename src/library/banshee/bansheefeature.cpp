@@ -79,7 +79,7 @@ void BansheeFeature::activate() {
             qDebug() << m_databaseFile << "does not exist";
         }
 
-        if (!m_connection.open(m_databaseFile)) {
+        if (!Sandbox::askForAccess(m_databaseFile) || !m_connection.open(m_databaseFile)) {
             QMessageBox::warning(
                     nullptr,
                     tr("Error loading Banshee database"),

@@ -140,6 +140,9 @@ void BaseSqlTableModel::initSortColumnMapping() {
     m_columnIndexBySortColumnId[static_cast<int>(
             TrackModel::SortColumnId::SampleRate)] =
             fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_SAMPLERATE);
+    m_columnIndexBySortColumnId[static_cast<int>(
+            TrackModel::SortColumnId::LastPlayedAt)] =
+            fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_LAST_PLAYED_AT);
 
     m_sortColumnIdByColumnIndex.clear();
     for (int i = static_cast<int>(TrackModel::SortColumnId::IdMin);
@@ -702,7 +705,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_COMMENT) == column) {
         pTrack->setComment(value.toString());
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_BPM) == column) {
-        pTrack->setBpm(static_cast<double>(value.toDouble()));
+        pTrack->trySetBpm(static_cast<double>(value.toDouble()));
     } else if (fieldIndex(ColumnCache::COLUMN_LIBRARYTABLE_PLAYED) == column) {
         // Update both the played flag and the number of times played
         pTrack->updatePlayCounter(value.toBool());

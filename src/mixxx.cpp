@@ -14,6 +14,7 @@
 #include "defs_urls.h"
 #include "dialog/dlgabout.h"
 #include "dialog/dlgdevelopertools.h"
+#include "dialog/dlgkeywheel.h"
 #include "effects/builtin/builtinbackend.h"
 #include "effects/effectsmanager.h"
 #include "engine/enginemaster.h"
@@ -96,6 +97,8 @@ MixxxMainWindow::MixxxMainWindow(
           m_pLaunchImage(nullptr),
           m_pGuiTick(nullptr),
           m_pDeveloperToolsDlg(nullptr),
+          m_pPrefDlg(nullptr),
+          m_pKeywheel(nullptr),
 #ifdef __ENGINEPRIME__
           m_pLibraryExporter(nullptr),
 #endif
@@ -397,6 +400,11 @@ MixxxMainWindow::~MixxxMainWindow() {
         qWarning() << "WMainMenuBar was not deleted by our sendPostedEvents trick.";
     }
 
+    qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DeveloperToolsDlg";
+    if (m_pDeveloperToolsDlg) {
+        delete m_pDeveloperToolsDlg;
+    }
+
 #ifdef __ENGINEPRIME__
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting LibraryExporter";
     m_pLibraryExporter.reset();
@@ -640,6 +648,11 @@ void MixxxMainWindow::connectMenuBar() {
             &WMainMenuBar::loadTrackToDeck,
             this,
             &MixxxMainWindow::slotFileLoadSongPlayer);
+
+    connect(m_pMenuBar,
+            &WMainMenuBar::showKeywheel,
+            this,
+            &MixxxMainWindow::slotShowKeywheel);
 
     // Fullscreen
     connect(m_pMenuBar,
@@ -927,6 +940,23 @@ void MixxxMainWindow::slotChangedPlayingDeck(int deck) {
 void MixxxMainWindow::slotHelpAbout() {
     DlgAbout* about = new DlgAbout(this);
     about->show();
+}
+
+void MixxxMainWindow::slotShowKeywheel(bool toggle) {
+    if (!m_pKeywheel) {
+        m_pKeywheel = make_parented<DlgKeywheel>(this, m_pCoreServices->getSettings());
+        // uncheck the menu item on window close
+        connect(m_pKeywheel.get(),
+                &DlgKeywheel::finished,
+                m_pMenuBar,
+                &WMainMenuBar::onKeywheelChange);
+    }
+    if (toggle) {
+        m_pKeywheel->show();
+        m_pKeywheel->raise();
+    } else {
+        m_pKeywheel->hide();
+    }
 }
 
 void MixxxMainWindow::setToolTipsCfg(mixxx::TooltipsPreference tt) {

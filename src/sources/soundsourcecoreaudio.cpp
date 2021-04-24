@@ -31,6 +31,7 @@ const QString SoundSourceProviderCoreAudio::kDisplayName = QStringLiteral("Apple
 
 //static
 const QStringList SoundSourceProviderCoreAudio::kSupportedFileExtensions = {
+        QStringLiteral("aac"),
         QStringLiteral("m4a"),
         QStringLiteral("mp4"),
         QStringLiteral("mp3"),

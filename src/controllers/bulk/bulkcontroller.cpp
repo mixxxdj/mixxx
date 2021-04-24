@@ -98,16 +98,15 @@ QString BulkController::mappingExtension() {
     return BULK_MAPPING_EXTENSION;
 }
 
-void BulkController::visit(const LegacyMidiControllerMapping* mapping) {
-    Q_UNUSED(mapping);
-    // TODO(XXX): throw a hissy fit.
-    qWarning() << "ERROR: Attempting to load a LegacyMidiControllerMapping to an HidController!";
+void BulkController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMapping = downcastAndTakeOwnership<LegacyHidControllerMapping>(std::move(pMapping));
 }
 
-void BulkController::visit(const LegacyHidControllerMapping* mapping) {
-    m_mapping = *mapping;
-    // Emit mappingLoaded with a clone of the mapping.
-    emit mappingLoaded(getMapping());
+std::shared_ptr<LegacyControllerMapping> BulkController::cloneMapping() {
+    if (!m_pMapping) {
+        return nullptr;
+    }
+    return m_pMapping->clone();
 }
 
 bool BulkController::matchMapping(const MappingInfo& mapping) {

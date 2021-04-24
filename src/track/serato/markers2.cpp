@@ -420,12 +420,7 @@ bool SeratoMarkers2::parseCommon(
         }
 
         // Entry Size
-#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
         auto entrySize = qFromBigEndian<quint32>(data.mid(offset, 4));
-#else
-        auto entrySize = qFromBigEndian<quint32>(
-                reinterpret_cast<const uchar*>(data.mid(offset, 4).constData()));
-#endif
         offset += 4;
 
         QByteArray entryData = data.mid(offset, entrySize);

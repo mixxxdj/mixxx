@@ -36,7 +36,7 @@
 #include "util/db/sqllikewildcards.h"
 #include "util/db/sqlstringformatter.h"
 #include "util/db/sqltransaction.h"
-#include "util/file.h"
+#include "util/fileinfo.h"
 #include "util/logger.h"
 #include "util/math.h"
 #include "util/qt.h"
@@ -1221,14 +1221,19 @@ bool setTrackBeats(const QSqlRecord& record, const int column,
     QString beatsSubVersion = record.value(column + 2).toString();
     QByteArray beatsBlob = record.value(column + 3).toByteArray();
     bool bpmLocked = record.value(column + 4).toBool();
-    mixxx::BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
-            *pTrack, beatsVersion, beatsSubVersion, beatsBlob);
+    const mixxx::BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(
+            pTrack->getSampleRate(), beatsVersion, beatsSubVersion, beatsBlob);
     if (pBeats) {
-        pTrack->setBeats(pBeats);
+        if (bpmLocked) {
+            pTrack->trySetAndLockBeats(pBeats);
+        } else {
+            pTrack->trySetBeats(pBeats);
+        }
     } else {
-        pTrack->setBpm(bpm);
+        // Load a temorary beat grid without offset that will be replaced by the analyzer.
+        const auto pBeats = BeatFactory::makeBeatGrid(pTrack->getSampleRate(), bpm, 0.0);
+        pTrack->trySetBeats(pBeats);
     }
-    pTrack->setBpmLocked(bpmLocked);
     return false;
 }
 
@@ -1939,7 +1944,7 @@ void TrackDAO::hideAllTracks(const QDir& rootDir) const {
 }
 
 bool TrackDAO::verifyRemainingTracks(
-        const QStringList& libraryRootDirs,
+        const QList<mixxx::FileInfo>& libraryRootDirs,
         volatile const bool* pCancel) {
     // This function is called from the LibraryScanner Thread, which also has a
     // transaction running, so we do NOT NEED to use one here
@@ -1968,8 +1973,8 @@ bool TrackDAO::verifyRemainingTracks(
     while (query.next()) {
         trackLocation = query.value(locationColumn).toString();
         int fs_deleted = 0;
-        for (const auto& dir: libraryRootDirs) {
-            if (trackLocation.startsWith(dir)) {
+        for (const auto& rootDir : libraryRootDirs) {
+            if (trackLocation.startsWith(rootDir.location())) {
                 // Track is under the library root,
                 // but was not verified.
                 // This happens if the track was deleted

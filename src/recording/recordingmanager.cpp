@@ -109,6 +109,9 @@ qint64 RecordingManager::getFreeSpace() {
 void RecordingManager::startRecording() {
     QString encodingType = m_pConfig->getValueString(
             ConfigKey(RECORDING_PREF_KEY, "Encoding"));
+    QString fileExtension = EncoderFactory::getFactory()
+                                    .getFormatFor(encodingType)
+                                    .fileExtension;
 
     m_iNumberOfBytesRecordedSplit = 0;
     m_secondsRecordedSplit=0;
@@ -129,13 +132,13 @@ void RecordingManager::startRecording() {
     // Append file extension.
     QString date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
     m_recordingFile = QString("%1.%2")
-            .arg(date_time_str, encodingType.toLower());
+                              .arg(date_time_str, fileExtension);
 
     // Storing the absolutePath of the recording file without file extension.
     m_recording_base_file = getRecordingDir();
     m_recording_base_file.append("/").append(date_time_str);
     // Appending file extension to get the filelocation.
-    m_recordingLocation = m_recording_base_file + QStringLiteral(".") + encodingType.toLower();
+    m_recordingLocation = m_recording_base_file + QChar('.') + fileExtension;
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), ConfigValue(m_recording_base_file + QStringLiteral(".cue")));
 
@@ -151,9 +154,12 @@ void RecordingManager::splitContinueRecording()
     m_secondsRecordedSplit=0;
 
     QString encodingType = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
+    QString fileExtension = EncoderFactory::getFactory()
+                                    .getFormatFor(encodingType)
+                                    .fileExtension;
 
     QString new_base_filename = m_recording_base_file + QStringLiteral("part") + QString::number(m_iNumberSplits);
-    m_recordingLocation = new_base_filename + QStringLiteral(".") + encodingType.toLower();
+    m_recordingLocation = new_base_filename + QChar('.') + fileExtension;
 
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), ConfigValue(new_base_filename + QStringLiteral(".cue")));

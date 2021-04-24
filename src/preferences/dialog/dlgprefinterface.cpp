@@ -363,7 +363,14 @@ void DlgPrefInterface::notifyRebootNecessary() {
 }
 
 void DlgPrefInterface::slotSetScheme(int) {
-    QString newScheme = ComboBoxSchemeconf->currentText();
+    // This slot can be triggered by opening the preferences. If the current
+    // skin does not support color schemes, this would treat the string in the
+    // combobox as color scheme name. Therefore we need to check if the
+    // checkbox is actually enabled.
+    QString newScheme = ComboBoxSchemeconf->isEnabled()
+            ? ComboBoxSchemeconf->currentText()
+            : QString();
+
     if (m_colorScheme != newScheme) {
         m_colorScheme = newScheme;
         m_bRebootMixxxView = true;

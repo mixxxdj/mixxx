@@ -731,7 +731,7 @@ void EngineMaster::process(const int iBufferSize) {
     }
 
     if (m_pMasterMonoMixdown->toBool()) {
-        SampleUtil::mixStereoToMono(m_pMaster, m_pMaster, m_iBufferSize);
+        SampleUtil::mixStereoToMono(m_pMaster, m_iBufferSize);
     }
 
     if (masterEnabled) {

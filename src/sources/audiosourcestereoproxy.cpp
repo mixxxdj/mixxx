@@ -16,8 +16,7 @@ audio::SignalInfo proxySignalInfo(
     DEBUG_ASSERT(signalInfo.isValid());
     return audio::SignalInfo(
             kChannelCount,
-            signalInfo.getSampleRate(),
-            signalInfo.getSampleLayout());
+            signalInfo.getSampleRate());
 }
 
 } // anonymous namespace

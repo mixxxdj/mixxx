@@ -5,6 +5,7 @@
 #include <QStringList>
 #include <QtGlobal>
 #include <array>
+#include <chrono>
 #include <cstdint>
 #include <djinterop/djinterop.hpp>
 #include <memory>
@@ -105,14 +106,14 @@ QString exportFile(const QSharedPointer<EnginePrimeExportRequest> pRequest,
     return pRequest->engineLibraryDbDir.relativeFilePath(dstPath);
 }
 
-djinterop::track getTrackByRelativePath(
+std::optional<djinterop::track> getTrackByRelativePath(
         djinterop::database* pDatabase, const QString& relativePath) {
     const auto trackCandidates = pDatabase->tracks_by_relative_path(relativePath.toStdString());
     switch (trackCandidates.size()) {
     case 0:
-        return pDatabase->create_track(relativePath.toStdString());
+        return std::nullopt;
     case 1:
-        return trackCandidates.front();
+        return std::make_optional(trackCandidates.front());
     default:
         qWarning() << "More than one external track with the same relative path.";
         return trackCandidates.front();
@@ -124,37 +125,44 @@ void exportMetadata(djinterop::database* pDatabase,
         TrackPointer pTrack,
         const Waveform* pWaveform,
         const QString& relativePath) {
-    // Create or load the track in the database, using the relative path to
-    // the music file.  We will record the mapping from Mixxx track id to
-    // exported track id as well.
+    // Attempt to load the track in the database, using the relative path to
+    // the music file.  If it exists already, take a snapshot of the track and
+    // update it.  If it does not exist, we'll create a new snapshot.
     auto externalTrack = getTrackByRelativePath(pDatabase, relativePath);
-    pMixxxToEnginePrimeTrackIdMap->insert(pTrack->getId(), externalTrack.id());
+    auto snapshot = externalTrack
+            ? externalTrack->snapshot()
+            : djinterop::track_snapshot{};
+    snapshot.relative_path = relativePath.toStdString();
 
     // Note that the Engine Prime format has the scope for recording meta-data
     // about whether track was imported from an external database.  However,
     // that meta-data only extends as far as other Engine Prime databases,
     // which Mixxx is not.  So we do not set any import information on the
     // exported track.
-    externalTrack.set_track_number(pTrack->getTrackNumber().toInt());
-    externalTrack.set_bpm(pTrack->getBpm());
-    externalTrack.set_year(pTrack->getYear().toInt());
-    externalTrack.set_title(pTrack->getTitle().toStdString());
-    externalTrack.set_artist(pTrack->getArtist().toStdString());
-    externalTrack.set_album(pTrack->getAlbum().toStdString());
-    externalTrack.set_genre(pTrack->getGenre().toStdString());
-    externalTrack.set_comment(pTrack->getComment().toStdString());
-    externalTrack.set_composer(pTrack->getComposer().toStdString());
-    externalTrack.set_key(toDjinteropKey(pTrack->getKey()));
+    snapshot.track_number = pTrack->getTrackNumber().toInt();
+    snapshot.duration = std::chrono::milliseconds{
+            static_cast<int64_t>(1000 * pTrack->getDuration())};
+    snapshot.bpm = pTrack->getBpm();
+    snapshot.year = pTrack->getYear().toInt();
+    snapshot.title = pTrack->getTitle().toStdString();
+    snapshot.artist = pTrack->getArtist().toStdString();
+    snapshot.album = pTrack->getAlbum().toStdString();
+    snapshot.genre = pTrack->getGenre().toStdString();
+    snapshot.comment = pTrack->getComment().toStdString();
+    snapshot.composer = pTrack->getComposer().toStdString();
+    snapshot.key = toDjinteropKey(pTrack->getKey());
     int64_t lastModifiedMillisSinceEpoch =
             pTrack->getFileInfo().fileLastModified().toMSecsSinceEpoch();
     std::chrono::system_clock::time_point lastModifiedAt{
             std::chrono::milliseconds{lastModifiedMillisSinceEpoch}};
-    externalTrack.set_last_modified_at(lastModifiedAt);
-    externalTrack.set_bitrate(pTrack->getBitrate());
+    snapshot.last_modified_at = lastModifiedAt;
+    snapshot.bitrate = pTrack->getBitrate();
+    snapshot.rating = pTrack->getRating() * 20; // note rating is in range 0-100
 
     // Frames used interchangeably with "samples" here.
     const auto sampleCount = static_cast<int64_t>(pTrack->getDuration() * pTrack->getSampleRate());
-    externalTrack.set_sampling({static_cast<double>(pTrack->getSampleRate()), sampleCount});
+    snapshot.sampling = djinterop::sampling_info{
+            static_cast<double>(pTrack->getSampleRate()), sampleCount};
 
     // Set track loudness.
     // Note that the djinterop API method for setting loudness may be revised
@@ -162,13 +170,13 @@ void exportMetadata(djinterop::database* pDatabase,
     // field in the Engine Library format.  Make the assumption for now that
     // ReplayGain ratio is an appropriate value to set, which has been validated
     // by basic experimental testing.
-    externalTrack.set_average_loudness(pTrack->getReplayGain().getRatio());
+    snapshot.average_loudness = pTrack->getReplayGain().getRatio();
 
     // Set main cue-point.
     double cuePlayPos = pTrack->getCuePoint().getPosition();
     double cueSampleOffset = playPosToSampleOffset(cuePlayPos);
-    externalTrack.set_default_main_cue(cueSampleOffset);
-    externalTrack.set_adjusted_main_cue(cueSampleOffset);
+    snapshot.default_main_cue = cueSampleOffset;
+    snapshot.adjusted_main_cue = cueSampleOffset;
 
     // Fill in beat grid.  For now, assume a constant average BPM across
     // the whole track.  Note that points in the track are specified as
@@ -197,8 +205,8 @@ void exportMetadata(djinterop::database* pDatabase,
                     {0, playPosToSampleOffset(firstBarAlignedBeatPlayPos)},
                     {numBeats, playPosToSampleOffset(lastBeatPlayPos)}};
             beatgrid = el::normalize_beatgrid(std::move(beatgrid), sampleCount);
-            externalTrack.set_default_beatgrid(beatgrid);
-            externalTrack.set_adjusted_beatgrid(beatgrid);
+            snapshot.default_beatgrid = beatgrid;
+            snapshot.adjusted_beatgrid = beatgrid;
         } else {
             qWarning() << "Non-positive number of beats in beat data of track" << pTrack->getId()
                        << "(" << pTrack->getFileInfo().fileName() << ")";
@@ -208,7 +216,10 @@ void exportMetadata(djinterop::database* pDatabase,
                 << "(" << pTrack->getFileInfo().fileName() << ")";
     }
 
+    // Note that any existing hot cues on the track are kept in place, if Mixxx
+    // does not have a hot cue at that location.
     const auto cues = pTrack->getCuePoints();
+    snapshot.hot_cues.fill(djinterop::stdx::nullopt);
     for (const CuePointer& pCue : cues) {
         // We are only interested in hot cues.
         if (pCue->getType() != CueType::HotCue) {
@@ -232,7 +243,7 @@ void exportMetadata(djinterop::database* pDatabase,
         hotCue.label = label.toStdString();
         hotCue.sample_offset = playPosToSampleOffset(pCue->getPosition());
         hotCue.color = el::standard_pad_colors::pads[hotCueIndex];
-        externalTrack.set_hot_cue_at(hotCueIndex, hotCue);
+        snapshot.hot_cues[hotCueIndex] = hotCue;
     }
 
     // Note that Mixxx does not support pre-calculated stored loops, but it will
@@ -240,13 +251,15 @@ void exportMetadata(djinterop::database* pDatabase,
     // However, since this single ad-hoc loop is likely to be different in use
     // from a set of stored loops (and is easily overwritten), we do not export
     // it to the external database here.
-    externalTrack.set_loops({});
+    //
+    // Note also that the loops on any existing track are not modified here.
 
     // Write waveform.
     // Note that writing a single waveform will automatically calculate an
     // overview waveform too.
     if (pWaveform) {
-        int64_t samplesPerEntry = externalTrack.required_waveform_samples_per_entry();
+        int64_t samplesPerEntry =
+                el::required_waveform_samples_per_entry(pTrack->getSampleRate());
         int64_t externalWaveformSize = (sampleCount + samplesPerEntry - 1) / samplesPerEntry;
         std::vector<djinterop::waveform_entry> externalWaveform;
         externalWaveform.reserve(externalWaveformSize);
@@ -256,11 +269,23 @@ void exportMetadata(djinterop::database* pDatabase,
                     {pWaveform->getMid(j), kDefaultWaveformOpacity},
                     {pWaveform->getHigh(j), kDefaultWaveformOpacity}});
         }
-        externalTrack.set_waveform(std::move(externalWaveform));
+        snapshot.waveform = std::move(externalWaveform);
     } else {
         qInfo() << "No waveform data found for track" << pTrack->getId()
                 << "(" << pTrack->getFileInfo().fileName() << ")";
     }
+
+    int externalTrackId;
+    if (externalTrack) {
+        externalTrack->update(snapshot);
+        externalTrackId = externalTrack->id();
+    } else {
+        auto newTrack = pDatabase->create_track(snapshot);
+        externalTrackId = newTrack.id();
+    }
+
+    // Record the mapping from Mixxx track id to exported track id.
+    pMixxxToEnginePrimeTrackIdMap->insert(pTrack->getId(), externalTrackId);
 }
 
 void exportTrack(
@@ -330,14 +355,14 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
         // of unique track refs from all directories in the library.
         qDebug() << "Loading all track refs and crate ids...";
         QSet<TrackRef> trackRefs;
-        const auto dirs = m_pTrackCollectionManager->internalCollection()
-                                  ->getDirectoryDAO()
-                                  .getDirs();
-        for (const auto& dir : dirs) {
+        const auto dirInfos = m_pTrackCollectionManager->internalCollection()
+                                      ->getDirectoryDAO()
+                                      .loadAllDirectories();
+        for (const mixxx::FileInfo& dirInfo : dirInfos) {
             const auto trackRefsFromDir = m_pTrackCollectionManager
                                                   ->internalCollection()
                                                   ->getTrackDAO()
-                                                  .getAllTrackRefs(dir);
+                                                  .getAllTrackRefs(dirInfo.toQDir());
             for (const auto& trackRef : trackRefsFromDir) {
                 trackRefs.insert(trackRef);
             }

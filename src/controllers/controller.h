@@ -4,8 +4,6 @@
 #include <QTimerEvent>
 
 #include "controllers/controllermappinginfo.h"
-#include "controllers/controllermappingvisitor.h"
-#include "controllers/controllervisitor.h"
 #include "controllers/legacycontrollermapping.h"
 #include "controllers/legacycontrollermappingfilehandler.h"
 #include "controllers/scripting/legacy/controllerscriptenginelegacy.h"
@@ -16,7 +14,7 @@ class ControllerJSProxy;
 /// This is a base class representing a physical (or software) controller.  It
 /// must be inherited by a class that implements it on some API. Note that the
 /// subclass' destructor should call close() at a minimum.
-class Controller : public QObject, ConstLegacyControllerMappingVisitor {
+class Controller : public QObject {
     Q_OBJECT
   public:
     explicit Controller();
@@ -32,16 +30,10 @@ class Controller : public QObject, ConstLegacyControllerMappingVisitor {
     /// the controller (type.)
     virtual QString mappingExtension() = 0;
 
-    void setMapping(const LegacyControllerMapping& mapping) {
-        // We don't know the specific type of the mapping so we need to ask
-        // the mapping to call our visitor methods with its type.
-        mapping.accept(this);
-    }
-
-    virtual void accept(ControllerVisitor* visitor) = 0;
-
-    // Returns a clone of the Controller's loaded mapping.
-    virtual LegacyControllerMappingPointer getMapping() const = 0;
+    virtual std::shared_ptr<LegacyControllerMapping> cloneMapping() = 0;
+    /// WARNING: LegacyControllerMapping is not thread safe!
+    /// Clone the mapping before passing to setMapping for use in the controller polling thread.
+    virtual void setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) = 0;
 
     inline bool isOpen() const {
         return m_bIsOpen;
@@ -66,10 +58,6 @@ class Controller : public QObject, ConstLegacyControllerMappingVisitor {
     virtual bool matchMapping(const MappingInfo& mapping) = 0;
 
   signals:
-    // Emitted when a new mapping is loaded. pMapping is a /clone/ of the loaded
-    // mapping, not a pointer to the mapping itself.
-    void mappingLoaded(LegacyControllerMappingPointer pMapping);
-
     /// Emitted when the controller is opened or closed.
     void openChanged(bool bOpen);
 
@@ -91,6 +79,23 @@ class Controller : public QObject, ConstLegacyControllerMappingVisitor {
     void stopLearning();
 
   protected:
+    template<typename SpecificMappingType>
+    std::shared_ptr<SpecificMappingType> downcastAndTakeOwnership(
+            std::shared_ptr<LegacyControllerMapping>&& pMapping) {
+        // Controller cannot take ownership if pMapping is referenced elsewhere because
+        // the controller polling thread needs exclusive accesses to the non-thread safe
+        // LegacyControllerMapping.
+        // Trying to cast a std::shared_ptr to a std::unique_ptr is not worth the trouble.
+        VERIFY_OR_DEBUG_ASSERT(pMapping.use_count() == 1) {
+            return nullptr;
+        }
+        auto pDowncastedMapping = std::dynamic_pointer_cast<SpecificMappingType>(pMapping);
+        VERIFY_OR_DEBUG_ASSERT(pDowncastedMapping) {
+            return nullptr;
+        }
+        return pDowncastedMapping;
+    }
+
     // The length parameter is here for backwards compatibility for when scripts
     // were required to specify it.
     virtual void send(const QList<int>& data, unsigned int length = 0);
@@ -145,9 +150,6 @@ class Controller : public QObject, ConstLegacyControllerMappingVisitor {
     }
 
   private:
-    // Returns a pointer to the currently loaded controller mapping. For internal
-    // use only.
-    virtual LegacyControllerMapping* mapping() = 0;
     ControllerScriptEngineLegacy* m_pScriptEngineLegacy;
 
     // Verbose and unique device name suitable for display.

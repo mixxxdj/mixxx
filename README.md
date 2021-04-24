@@ -58,11 +58,11 @@ Please see our helpful guide on the [wiki] for more information: [Compiling on M
    - Generates the `CMakeSettings.json` with the matching build configurations for Visual Studio
 3. Start Visual Studio, choose "Open a local folder" select the `mixxx` directory containing `CMakeSettings.json`
 4. Menu "Project" -> "Generate Cache for mixxx"
-5. Select the build configuration in the toolbar (`x64__fastbuild` is recommended)
+5. Select the build configuration in the toolbar (`x64__portable` is recommended)
 6. Menu "Build" -> "Build All"
 ### Creating an .msi installer (optional)
 7. Than open the Visual Studio 'Developer Command Prompt' by Menu -> "Tools" -> "Command line" -> "Developer Command Prompt"
-8. Go to your build directory, e.g. by "cd .\build\x64-fastbuild"
+8. Go to your build directory, e.g. by "cd .\build\x64-portable"
 9. Run "cpack -G WIX"
 
 

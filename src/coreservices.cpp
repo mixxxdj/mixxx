@@ -18,6 +18,7 @@
 #include "engine/enginemaster.h"
 #include "library/coverartcache.h"
 #include "library/library.h"
+#include "library/trackcollection.h"
 #include "library/trackcollectionmanager.h"
 #include "mixer/playerinfo.h"
 #include "mixer/playermanager.h"
@@ -284,8 +285,7 @@ void CoreServices::initialize(QApplication* pApp) {
 
     bool hasChanged_MusicDir = false;
 
-    QStringList dirs = m_pLibrary->getDirs();
-    if (dirs.size() < 1) {
+    if (m_pTrackCollectionManager->internalCollection()->loadRootDirs().isEmpty()) {
         // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
         // path return value (not sure if this is normally possible, but it is
         // possible with the Windows 7 "Music" library, which is what

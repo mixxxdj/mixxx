@@ -14,7 +14,7 @@ class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
     void loadCoverFromMetadata(const QString& trackLocation) {
         const QImage img = SoundSourceProxy::importTemporaryCoverImage(
                 trackLocation,
-                Sandbox::openSecurityToken(QDir(trackLocation), true));
+                Sandbox::openSecurityToken(trackLocation, true));
         ASSERT_FALSE(img.isNull());
 
         CoverInfo info;

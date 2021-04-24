@@ -31,6 +31,10 @@ inline bool toSynchronized(SyncMode mode) {
     return mode > SYNC_NONE;
 }
 
+inline bool isFollower(SyncMode mode) {
+    return (mode == SYNC_FOLLOWER);
+}
+
 inline bool isMaster(SyncMode mode) {
     return (mode == SYNC_MASTER_SOFT || mode == SYNC_MASTER_EXPLICIT);
 }
@@ -111,7 +115,7 @@ class SyncableListener {
 
     // A Syncable must never call notifyBpmChanged in response to a setMasterBpm()
     // call.
-    virtual void notifyBpmChanged(Syncable* pSyncable, double bpm) = 0;
+    virtual void notifyBaseBpmChanged(Syncable* pSyncable, double bpm) = 0;
     virtual void requestBpmUpdate(Syncable* pSyncable, double bpm) = 0;
 
     // Syncables notify EngineSync directly about various events. EngineSync

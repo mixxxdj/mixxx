@@ -207,13 +207,5 @@ void ControllerScriptEngineBase::errorDialogButton(
 }
 
 void ControllerScriptEngineBase::throwJSError(const QString& message) {
-#if QT_VERSION < QT_VERSION_CHECK(5, 12, 0)
-    QString errorText = tr("Uncaught exception: %1").arg(message);
-    qWarning() << "ControllerEngine:" << errorText;
-    if (!m_bDisplayingExceptionDialog) {
-        scriptErrorDialog(errorText, errorText);
-    }
-#else
     m_pJSEngine->throwError(message);
-#endif
 }

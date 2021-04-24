@@ -51,7 +51,7 @@ class ControllerManager : public QObject {
     void updateControllerList();
 
     void slotApplyMapping(Controller* pController,
-            LegacyControllerMappingPointer pMapping,
+            std::shared_ptr<LegacyControllerMapping> pMapping,
             bool bEnabled);
     void openController(Controller* pController);
     void closeController(Controller* pController);

@@ -27,6 +27,17 @@ case "$COMMAND" in
         esac
 
         sudo apt-get update
+
+        # If jackd2 is installed as per dpkg database, install libjack-jackd2-dev.
+        # This avoids a package deadlock, resulting in jackd2 being removed, and jackd1 being installed,
+        # to satisfy portaudio19-dev's need for a jackd dev package. In short, portaudio19-dev needs a
+        # jackd dev library, so let's give it one..
+        if [ "$(dpkg-query -W -f='${Status}' jackd2 2>/dev/null | grep -c "ok installed")" -eq 1 ];
+        then
+            sudo apt-get install libjack-jackd2-dev;
+        fi
+
+
         sudo apt-get install -y --no-install-recommends -- \
             ccache \
             cmake \
@@ -59,10 +70,11 @@ case "$COMMAND" in
             libqt5svg5-dev \
             libqt5x11extras5-dev \
             librubberband-dev \
-            libshout3-dev \
+            libshout-idjc-dev \
             libsndfile1-dev \
             libsoundtouch-dev \
             libsqlite3-dev \
+            libssl-dev \
             libtag1-dev \
             libupower-glib-dev \
             libusb-1.0-0-dev \

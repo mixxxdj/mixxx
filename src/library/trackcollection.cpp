@@ -75,6 +75,7 @@ void TrackCollection::connectDatabase(const QSqlDatabase& database) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     kLogger.info() << "Connecting database";
+    DEBUG_ASSERT(database.isOpen());
     m_database = database;
     m_trackDao.initialize(database);
     m_playlistDao.initialize(database);
@@ -141,34 +142,41 @@ QWeakPointer<BaseTrackCache> TrackCollection::disconnectTrackSource() {
     return pWeakPtr;
 }
 
-bool TrackCollection::addDirectory(const QString& dir) {
+QList<mixxx::FileInfo> TrackCollection::loadRootDirs(bool skipInvalidOrMissing) const {
+    return m_directoryDao.loadAllDirectories(skipInvalidOrMissing);
+}
+
+bool TrackCollection::addDirectory(const mixxx::FileInfo& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     SqlTransaction transaction(m_database);
-    switch (m_directoryDao.addDirectory(dir)) {
-    case SQL_ERROR:
-        return false;
-    case ALREADY_WATCHING:
-        return true;
-    case ALL_FINE:
+    switch (m_directoryDao.addDirectory(rootDir)) {
+    case DirectoryDAO::AddResult::Ok:
         transaction.commit();
         return true;
+    case DirectoryDAO::AddResult::AlreadyWatching:
+        return true;
+    case DirectoryDAO::AddResult::InvalidOrMissingDirectory:
+    case DirectoryDAO::AddResult::SqlError:
+        return false;
     default:
         DEBUG_ASSERT("unreachable");
     }
     return false;
 }
 
-bool TrackCollection::removeDirectory(const QString& dir) {
+bool TrackCollection::removeDirectory(const mixxx::FileInfo& rootDir) {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
 
     SqlTransaction transaction(m_database);
-    switch (m_directoryDao.removeDirectory(dir)) {
-    case SQL_ERROR:
-        return false;
-    case ALL_FINE:
+    switch (m_directoryDao.removeDirectory(rootDir)) {
+    case DirectoryDAO::RemoveResult::Ok:
         transaction.commit();
         return true;
+    case DirectoryDAO::RemoveResult::NotFound:
+        return true;
+    case DirectoryDAO::RemoveResult::SqlError:
+        return false;
     default:
         DEBUG_ASSERT("unreachable");
     }
@@ -184,7 +192,7 @@ void TrackCollection::relocateDirectory(const QString& oldDir, const QString& ne
     // have permission so that we can access the folder on future runs. We need
     // to canonicalize the path so we first wrap the directory string with a
     // QDir.
-    Sandbox::createSecurityToken(QDir(newDir));
+    Sandbox::createSecurityTokenForDir(QDir(newDir));
 
     SqlTransaction transaction(m_database);
     QList<RelocatedTrack> relocatedTracks =

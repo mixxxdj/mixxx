@@ -179,9 +179,10 @@ class BaseSignalPathTest : public MixxxTest {
                     break;
                 }
                 bool ok = false;
-                double gold_value0 = line[0].toDouble(&ok);
-                double gold_value1 = line[1].toDouble(&ok);
-                EXPECT_TRUE(ok);
+                const double gold_value0 = line[0].toDouble(&ok);
+                ASSERT_TRUE(ok);
+                const double gold_value1 = line[1].toDouble(&ok);
+                ASSERT_TRUE(ok);
                 if (fabs(gold_value0 - pBuffer[i]) > delta) {
                     qWarning() << "Golden check failed at index" << i << ", "
                                << gold_value0 << "vs" << pBuffer[i];
@@ -217,6 +218,7 @@ class BaseSignalPathTest : public MixxxTest {
     }
 
     void ProcessBuffer() {
+        qDebug() << "------- Process Buffer -------";
         m_pEngineMaster->process(kProcessBufferSize);
     }
 
