@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3">
     <info>
-        <name>Denon HC1000S mapping (edited)</name>
+        <name>Denon HC1000S mapping</name>
         <author>le3d, based on many existing Denon other mappings, re-using bits and pieces</author>
         <forums>https://mixxx.discourse.group/t/denon-dn-hc1000s-for-dvs/20217</forums>
     </info>
@@ -34,7 +34,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>DenonHC1000S.bpm_tapButton</key>
+                <key>DenonHC1000S.bpmTabButton</key>
                 <description>BPM tap A</description>
                 <status>0x90</status>
                 <midino>0x07</midino>
@@ -394,7 +394,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>DenonHC1000S.bpm_tapButton</key>
+                <key>DenonHC1000S.bpmTabButton</key>
                 <description>BPM tap B</description>
                 <status>0x90</status>
                 <midino>0x5F</midino>
