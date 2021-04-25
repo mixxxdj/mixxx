@@ -43,6 +43,11 @@ class Parser : public QObject {
      or 0 in order for the trackimporter to function**/
     virtual QList<QString> parse(const QString&) = 0;
 
+    static bool exportPlaylistItemsIntoFile(
+            QString playlistFilePath,
+            const QList<QString>& playlistItemLocations,
+            bool useRelativePath);
+
   protected:
     // Pointer to the parsed Filelocations
     QList<QString> m_sLocations;

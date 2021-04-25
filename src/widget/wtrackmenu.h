@@ -46,10 +46,11 @@ class WTrackMenu : public QMenu {
         FileBrowser = 1 << 10,
         Properties = 1 << 11,
         SearchRelated = 1 << 12,
+        Export = 1 << 13,
         TrackModelFeatures = Remove | HideUnhidePurge,
         All = AutoDJ | LoadTo | Playlist | Crate | Remove | Metadata | Reset |
                 BPM | Color | HideUnhidePurge | FileBrowser | Properties |
-                SearchRelated
+                SearchRelated | Export
     };
     Q_DECLARE_FLAGS(Features, Feature)
 
@@ -81,6 +82,7 @@ class WTrackMenu : public QMenu {
   private slots:
     // File
     void slotOpenInFileBrowser();
+    void slotExportFiles();
 
     // Row color
     void slotColorPicked(const mixxx::RgbColor::optional_t& color);
@@ -203,6 +205,7 @@ class WTrackMenu : public QMenu {
     QMenu* m_pClearMetadataMenu{};
     QMenu* m_pBPMMenu{};
     QMenu* m_pColorMenu{};
+    QMenu* m_pFileMenu{};
     WCoverArtMenu* m_pCoverMenu{};
     parented_ptr<WSearchRelatedTracksMenu> m_pSearchRelatedMenu;
 
@@ -234,6 +237,8 @@ class WTrackMenu : public QMenu {
 
     // Open file in default file browser
     QAction* m_pFileBrowserAct{};
+    // Export files
+    QAction* m_pFileExportAct{};
 
     // BPM feature
     QAction* m_pBpmLockAction{};

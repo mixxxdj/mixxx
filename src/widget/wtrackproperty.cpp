@@ -19,6 +19,7 @@ constexpr WTrackMenu::Features kTrackMenuFeatures =
         WTrackMenu::Feature::BPM |
         WTrackMenu::Feature::Color |
         WTrackMenu::Feature::FileBrowser |
+        WTrackMenu::Feature::Export |
         WTrackMenu::Feature::Properties;
 } // namespace
 

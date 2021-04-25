@@ -8,7 +8,7 @@
 #include <algorithm>
 #include <vector>
 
-#include "library/export/trackexportwizard.h"
+#include "library/export/trackexportdlg.h"
 #include "library/library.h"
 #include "library/parser.h"
 #include "library/parsercsv.h"
@@ -745,7 +745,7 @@ void CrateFeature::slotExportPlaylist() {
             QModelIndex index = m_crateTableModel.index(i, 0);
             playlist_items << m_crateTableModel.getTrackLocation(index);
         }
-        exportPlaylistItemsIntoFile(
+        Parser::exportPlaylistItemsIntoFile(
                 file_location,
                 playlist_items,
                 useRelativePath);
@@ -754,9 +754,10 @@ void CrateFeature::slotExportPlaylist() {
 
 void CrateFeature::slotExportTrackFiles() {
     // Create a new table model since the main one might have an active search.
+    CrateId id = crateIdFromIndex(m_lastRightClickedIndex);
     QScopedPointer<CrateTableModel> pCrateTableModel(
             new CrateTableModel(this, m_pLibrary->trackCollections()));
-    pCrateTableModel->selectCrate(m_crateTableModel.selectedCrate());
+    pCrateTableModel->selectCrate(id);
     pCrateTableModel->select();
 
     int rows = pCrateTableModel->rowCount();
@@ -766,8 +767,25 @@ void CrateFeature::slotExportTrackFiles() {
         trackpointers.push_back(m_crateTableModel.getTrack(index));
     }
 
-    TrackExportWizard track_export(nullptr, m_pConfig, trackpointers);
-    track_export.exportTracks();
+    // ownership is transferred to TrackExportDlg
+    Grantlee::Context* context = new Grantlee::Context();
+
+    auto summary = new CrateSummary();
+    m_pTrackCollection->crates().readCrateSummaryById(id, summary);
+    CrateSummaryWrapper* summaryWrapper = nullptr;
+    if (summary->isValid()) {
+        summaryWrapper = new CrateSummaryWrapper(*summary);
+        context->insert(QStringLiteral("crate"), summaryWrapper);
+    } else {
+        qWarning() << "CrateSummary is empty";
+    }
+
+    auto exportDialog = new TrackExportDlg(
+            nullptr, m_pConfig, trackpointers, context, &summary->getName());
+    if (summaryWrapper) {
+        summaryWrapper->setParent(exportDialog);
+    }
+    exportDialog->open();
 }
 
 void CrateFeature::slotCrateTableChanged(CrateId crateId) {

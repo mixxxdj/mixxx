@@ -1,6 +1,9 @@
 #pragma once
 
+#include <grantlee/metatype.h>
+
 #include <QByteArray>
+#include <QObject>
 #include <QPair>
 #include <QVector>
 
@@ -13,8 +16,18 @@ typedef QVector<QPair<mixxx::track::io::key::ChromaticKey, double> > KeyChangeLi
 class KeyFactory;
 
 class Keys final {
+    Q_GADGET
   public:
+    Q_PROPERTY(QString traditional READ getTraditional)
+    Q_PROPERTY(QString openkey READ getOpenkey)
+    Q_PROPERTY(QString lancelot READ getLancelot)
+    Q_PROPERTY(bool isValid READ isValid)
+
     explicit Keys(const QByteArray* pByteArray = nullptr);
+
+    QString getTraditional() const;
+    QString getOpenkey() const;
+    QString getLancelot() const;
 
     // Serialization
     QByteArray toByteArray() const;
@@ -58,3 +71,18 @@ bool operator==(const Keys& lhs, const Keys& rhs);
 inline bool operator!=(const Keys& lhs, const Keys& rhs) {
     return !(lhs == rhs);
 }
+
+Q_DECLARE_METATYPE(Keys)
+
+// FIXME(XXX) This should work according to grentlee docs, but it does not
+GRANTLEE_BEGIN_LOOKUP(Keys)
+if (property.isEmpty()) {
+    return object.getOpenkey();
+}
+GRANTLEE_END_LOOKUP
+
+GRANTLEE_BEGIN_LOOKUP_PTR(Keys)
+if (property.isEmpty()) {
+    return object->getOpenkey();
+}
+GRANTLEE_END_LOOKUP

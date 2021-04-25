@@ -656,7 +656,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/dlgtrackmetadataexport.cpp
   src/library/export/dlgtrackexport.ui
   src/library/export/trackexportdlg.cpp
-  src/library/export/trackexportwizard.cpp
   src/library/export/trackexportworker.cpp
   src/library/externaltrackcollection.cpp
   src/library/hiddentablemodel.cpp
@@ -708,7 +707,9 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/library/trackset/crate/cratefeaturehelper.cpp
   src/library/trackset/crate/cratestorage.cpp
   src/library/trackset/crate/cratetablemodel.cpp
+  src/library/trackset/crate/cratesummary.cpp
   src/library/trackset/playlistfeature.cpp
+  src/library/trackset/playlistsummary.cpp
   src/library/trackset/setlogfeature.cpp
   src/library/trackset/tracksettablemodel.cpp
   src/library/traktor/traktorfeature.cpp
@@ -868,6 +869,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/dnd.cpp
   src/util/duration.cpp
   src/util/experiment.cpp
+  src/util/fileutils.cpp
+  src/util/formatter.cpp
   src/util/fileaccess.cpp
   src/util/fileinfo.cpp
   src/util/imageutils.cpp
@@ -1499,6 +1502,8 @@ add_executable(mixxx-test
   src/test/enginemastertest.cpp
   src/test/enginemicrophonetest.cpp
   src/test/enginesynctest.cpp
+  src/test/formatter_test.cpp
+  src/test/fileutils_test.cpp
   src/test/fileinfo_test.cpp
   src/test/globaltrackcache_test.cpp
   src/test/hotcuecontrol_test.cpp
@@ -1900,6 +1905,29 @@ target_link_libraries(mixxx-lib PUBLIC FpClassify)
 # Required to use the macro FRIEND_TEST from <gtest/gtest_prod.h>
 # in production code
 target_include_directories(mixxx-lib SYSTEM PUBLIC "${gtest_SOURCE_DIR}/include")
+
+# Grantlee5
+find_package(Grantlee5 REQUIRED)
+
+target_link_libraries(mixxx-lib PUBLIC
+  Grantlee5::Templates
+  Grantlee5::TextDocument
+)
+
+# grantlee plugin
+add_library(mixxxformatter MODULE
+  src/util/formatterplugin/mixxxformatter.cpp
+  src/util/fileutils.cpp
+)
+
+set_target_properties(mixxxformatter PROPERTIES AUTOMOC ON)
+target_include_directories(mixxxformatter PRIVATE src)
+
+grantlee_adjust_plugin_name(mixxxformatter)
+
+target_link_libraries(mixxxformatter
+  Grantlee5::Templates
+)
 
 # LAME
 find_package(mp3lame REQUIRED)
