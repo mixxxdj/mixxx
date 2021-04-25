@@ -35,11 +35,7 @@ namespace {
 
 const QString kMixxxVersion = QStringLiteral(MIXXX_VERSION);
 const QString kMixxx = QStringLiteral("Mixxx");
-#ifdef BUILD_BRANCH
-const QString kBuildBranch = QStringLiteral(BUILD_BRANCH);
-#else
-const QString kBuildBranch;
-#endif
+const QString kGitBranch = QStringLiteral(GIT_BRANCH);
 #ifdef BUILD_REV
 const QString kBuildRev = QStringLiteral(BUILD_REV);
 #else
@@ -87,8 +83,8 @@ QString VersionStore::applicationTitle() {
 }
 
 // static
-QString VersionStore::developmentBranch() {
-    return kBuildBranch;
+QString VersionStore::gitBranch() {
+    return kGitBranch;
 }
 
 // static
@@ -147,14 +143,13 @@ QStringList VersionStore::dependencyVersions() {
 
 void VersionStore::logBuildDetails() {
     QString version = VersionStore::version();
-    QString buildBranch = developmentBranch();
     QString buildRevision = developmentRevision();
     QString buildFlags = VersionStore::buildFlags();
 
     QStringList buildInfo;
-    if (!buildBranch.isEmpty() && !buildRevision.isEmpty()) {
+    if (!kGitBranch.isEmpty() && !buildRevision.isEmpty()) {
         buildInfo.append(
-                QString("git %1 r%2").arg(buildBranch, buildRevision));
+                QString("git %1 r%2").arg(kGitBranch, buildRevision));
     } else if (!buildRevision.isEmpty()) {
         buildInfo.append(
                 QString("git r%2").arg(buildRevision));

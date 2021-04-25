@@ -14,17 +14,17 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     mixxx_logo->load(QString(":/images/mixxx_logo.svg"));
 
     QString mixxxVersion = VersionStore::version();
-    QString buildBranch = VersionStore::developmentBranch();
+    QString gitBranch = VersionStore::gitBranch();
     QString buildRevision = VersionStore::developmentRevision();
 
     QStringList version;
     version.append(mixxxVersion);
 
-    if (!buildBranch.isEmpty() || !buildRevision.isEmpty()) {
+    if (!gitBranch.isEmpty() || !buildRevision.isEmpty()) {
         QStringList buildInfo;
         buildInfo.append("build");
-        if (!buildBranch.isEmpty()) {
-            buildInfo.append(buildBranch);
+        if (!gitBranch.isEmpty()) {
+            buildInfo.append(gitBranch);
         }
         if (!buildRevision.isEmpty()) {
             buildInfo.append(QString("r%1").arg(buildRevision));
