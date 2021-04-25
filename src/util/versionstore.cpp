@@ -79,8 +79,7 @@ QString VersionStore::applicationTitle() {
     QString branch_revision = developmentRevision();
     if (!branch.isEmpty() && !branch_revision.isEmpty()) {
         base.append(QString(" (build %1-r%2)")
-                            .arg(branch)
-                            .arg(branch_revision));
+                            .arg(branch, branch_revision));
     }
 #endif
     return base;
