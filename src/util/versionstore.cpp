@@ -1,5 +1,6 @@
+#include "util/versionstore.h"
+
 #include <soundtouch/SoundTouch.h>
-#include <util/versionstore.h>
 
 #include <QCoreApplication>
 #include <QStandardPaths>

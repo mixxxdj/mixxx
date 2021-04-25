@@ -42,7 +42,6 @@
 #ifdef __LILV__
 #include "effects/lv2/lv2backend.h"
 #endif
-#include <util/versionstore.h>
 
 #include "broadcast/broadcastmanager.h"
 #include "control/controlpushbutton.h"
@@ -76,6 +75,7 @@
 #include "util/time.h"
 #include "util/timer.h"
 #include "util/translations.h"
+#include "util/versionstore.h"
 #include "util/widgethelper.h"
 #include "waveform/guitick.h"
 #include "waveform/sharedglcontext.h"

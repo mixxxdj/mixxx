@@ -1,7 +1,5 @@
 #include "controllers/dlgprefcontroller.h"
 
-#include <util/versionstore.h>
-
 #include <QDesktopServices>
 #include <QDir>
 #include <QFileDialog>
@@ -20,6 +18,7 @@
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
+#include "util/versionstore.h"
 
 namespace {
 const QString kPresetExt(".midi.xml");

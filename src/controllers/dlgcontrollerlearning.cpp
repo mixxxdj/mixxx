@@ -1,13 +1,12 @@
 #include "controllers/dlgcontrollerlearning.h"
 
-#include <util/versionstore.h>
-
 #include <QCompleter>
 
 #include "control/controlobject.h"
 #include "controllers/learningutils.h"
 #include "controllers/midi/midiutils.h"
 #include "moc_dlgcontrollerlearning.cpp"
+#include "util/versionstore.h"
 
 namespace {
 typedef QPair<QString, ConfigKey> NamedControl;

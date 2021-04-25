@@ -1,12 +1,11 @@
 #include "dialog/dlgabout.h"
 
-#include <util/versionstore.h>
-
 #include <QFile>
 
 #include "defs_urls.h"
 #include "moc_dlgabout.cpp"
 #include "util/color/color.h"
+#include "util/versionstore.h"
 
 DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);

@@ -1,7 +1,5 @@
 #include "errordialoghandler.h"
 
-#include <util/versionstore.h>
-
 #include <QCoreApplication>
 #include <QMutexLocker>
 #include <QScopedPointer>
@@ -10,6 +8,7 @@
 
 #include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
+#include "util/versionstore.h"
 
 ErrorDialogProperties::ErrorDialogProperties()
         : m_title(VersionStore::applicationName()),

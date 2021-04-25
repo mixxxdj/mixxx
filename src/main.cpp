@@ -1,5 +1,3 @@
-#include <util/versionstore.h>
-
 #include <QApplication>
 #include <QDir>
 #include <QString>

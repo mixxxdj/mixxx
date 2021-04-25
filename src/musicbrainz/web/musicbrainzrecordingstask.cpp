@@ -1,7 +1,5 @@
 #include "musicbrainz/web/musicbrainzrecordingstask.h"
 
-#include <util/versionstore.h>
-
 #include <QMetaMethod>
 #include <QXmlStreamReader>
 
@@ -14,6 +12,7 @@
 #include "util/compatibility.h"
 #include "util/logger.h"
 #include "util/thread_affinity.h"
+#include "util/versionstore.h"
 
 namespace mixxx {
 

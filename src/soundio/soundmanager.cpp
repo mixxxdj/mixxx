@@ -1,7 +1,6 @@
 #include "soundio/soundmanager.h"
 
 #include <portaudio.h>
-#include <util/versionstore.h>
 
 #include <QLibrary>
 #include <QtDebug>
@@ -24,6 +23,7 @@
 #include "util/defs.h"
 #include "util/sample.h"
 #include "util/sleep.h"
+#include "util/versionstore.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
 typedef PaError (*SetJackClientName)(const char *name);
