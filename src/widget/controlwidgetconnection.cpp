@@ -142,7 +142,9 @@ void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
     } else {
         vParameter = parameter;
     }
-    vParameter.convert(m_property.type());
+    bool success = vParameter.convert(m_property.type());
+    DEBUG_ASSERT(success);
+    Q_UNUSED(success);
     if (m_propertyValue == vParameter) {
         // don't repeat writing the same value that may stall the GUI
         // Comparing the property value directly does not work, because
