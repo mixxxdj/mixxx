@@ -9,6 +9,28 @@
 #include "util/valuetransformer.h"
 #include "widget/wbasewidget.h"
 
+namespace {
+
+QMetaProperty propertyFromWidget(const QWidget* pWidget, const QString& name) {
+    VERIFY_OR_DEBUG_ASSERT(!name.isEmpty()) {
+        return QMetaProperty();
+    }
+    VERIFY_OR_DEBUG_ASSERT(pWidget) {
+        return QMetaProperty();
+    }
+    const QMetaObject* meta = pWidget->metaObject();
+    VERIFY_OR_DEBUG_ASSERT(meta) {
+        return QMetaProperty();
+    }
+    int id = meta->indexOfProperty(name.toLatin1().constData());
+    VERIFY_OR_DEBUG_ASSERT(id >= 0) {
+        return QMetaProperty();
+    }
+    return meta->property(id);
+}
+
+} // namespace
+
 ControlWidgetConnection::ControlWidgetConnection(
         WBaseWidget* pBaseWidget,
         const ConfigKey& key,
@@ -102,25 +124,9 @@ ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(
         ValueTransformer* pTransformer,
         const QString& propertyName)
         : ControlWidgetConnection(pBaseWidget, key, pTransformer),
-          m_propertyName(propertyName) {
-    VERIFY_OR_DEBUG_ASSERT(!propertyName.isEmpty()) {
-        return;
-    }
-
-    QWidget* pWidget = pBaseWidget->toQWidget();
-    VERIFY_OR_DEBUG_ASSERT(pWidget) {
-        return;
-    }
-    const QMetaObject* meta = pWidget->metaObject();
-    VERIFY_OR_DEBUG_ASSERT(meta) {
-        return;
-    }
-    int id = meta->indexOfProperty(propertyName.toLatin1().constData());
-    VERIFY_OR_DEBUG_ASSERT(id >= 0) {
-        return;
-    }
-    m_property = meta->property(id);
-    // skipNoOp = false, during the initial update to synchronize the property in all the sub widgets
+          m_propertyName(propertyName),
+          m_property(propertyFromWidget(pBaseWidget->toQWidget(), propertyName)) {
+    // Initial update to synchronize the property in all the sub widgets
     slotControlValueChanged(m_pControl->get());
 }
 

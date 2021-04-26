@@ -138,7 +138,7 @@ class ControlWidgetPropertyConnection final : public ControlWidgetConnection {
     void slotControlValueChanged(double v) override;
 
   private:
-    QString m_propertyName;
-    QMetaProperty m_property;
+    const QString m_propertyName;
+    const QMetaProperty m_property;
     QVariant m_propertyValue;
 };
