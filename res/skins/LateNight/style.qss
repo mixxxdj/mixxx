@@ -181,9 +181,10 @@ QLineEdit QMenu::separator {
   margin: 4px;
 }
 
+/* All menus that have at least one item with a checkbox*/
 WLibrarySidebar QMenu::item,
 WLibrary QHeaderView QMenu::item,
-WTrackMenu QMenu::item {
+#CratesMenu::item {
 /* padding-right reserves space for the submenu expand arrow
   padding-left should be bigger than the menu icon width +
   icon margin-left/-right */
@@ -191,6 +192,7 @@ WTrackMenu QMenu::item {
 }
 
 WTrackMenu::item,
+WTrackMenu QMenu::item,
 /* This catches context menus of
   - property cells in the tracks table
   - WCueMenuPopup cue label editor

@@ -217,9 +217,8 @@
   -->
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss"
-         src-mac="skin:style_mac.qss"
-         src-linux="skin:style_linux.qss"
-         src-windows="skin:style_windows.qss"/>
+         src-linux="skin:../default-menu-styles-linux.qss"
+         src-windows="skin:../default-menu-styles-windows.qss"/>
   <Size>1008e,500e</Size>
   <Layout>vertical</Layout>
     <LaunchImageStyle>

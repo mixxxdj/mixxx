@@ -2184,16 +2184,18 @@ WEffectSelector::indicator:unchecked,
     margin-right: 0.2em;
   }
 
+/* All menus that have at least one item with a checkbox*/
 WLibrarySidebar QMenu::item,
 WLibrary QHeaderView QMenu::item,
-WTrackMenu::item,
-WTrackMenu QMenu::item {
+#CratesMenu::item {
 /* padding-right reserves space for the submenu expand arrow
   padding-left should be bigger than the menu icon width +
   icon margin-left/-right */
   padding: 5px 12px 5px 26px;
 }
 
+WTrackMenu::item,
+WTrackMenu QMenu::item,
 /* This catches context menus of
   - property cells in the tracks table
   - WCueMenuPopup cue label editor
