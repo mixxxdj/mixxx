@@ -103,12 +103,16 @@ ControlWidgetPropertyConnection::ControlWidgetPropertyConnection(
         const QString& propertyName)
         : ControlWidgetConnection(pBaseWidget, key, pTransformer),
           m_propertyName(propertyName) {
+    VERIFY_OR_DEBUG_ASSERT(!propertyName.isEmpty()) {
+        return;
+    }
+
     QWidget* pWidget = pBaseWidget->toQWidget();
     VERIFY_OR_DEBUG_ASSERT(pWidget) {
         return;
     }
     const QMetaObject* meta = pWidget->metaObject();
-    VERIFY_OR_DEBUG_ASSERT(!propertyName.isEmpty() && meta) {
+    VERIFY_OR_DEBUG_ASSERT(meta) {
         return;
     }
     int id = meta->indexOfProperty(propertyName.toLatin1().constData());
