@@ -246,6 +246,7 @@ jobs:
         -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DBATTERY=ON
         -DBROADCAST=ON
+        -DDOWNLOAD_MANUAL=ON
         -DHID=ON
         -DKEYFINDER=ON
         -DLILV=ON
