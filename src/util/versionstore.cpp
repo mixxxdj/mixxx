@@ -36,11 +36,7 @@ namespace {
 const QString kMixxxVersion = QStringLiteral(MIXXX_VERSION);
 const QString kMixxx = QStringLiteral("Mixxx");
 const QString kGitBranch = QStringLiteral(GIT_BRANCH);
-#ifdef BUILD_REV
 const QString kBuildRev = QStringLiteral(BUILD_REV);
-#else
-const QString kBuildRev;
-#endif
 #ifdef BUILD_FLAGS
 const QString kBuildFlags = QStringLiteral(BUILD_FLAGS);
 #else
