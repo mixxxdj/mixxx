@@ -1788,7 +1788,7 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 /* Grey for GUI toggles */
 #GuiToggleButton[displayValue="1"],
 #SkinSettingsToggle[displayValue="1"] {
-  background-color: #555;
+  background-color: #777;
 }
 
 /* Grey */
