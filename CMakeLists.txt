@@ -1629,7 +1629,9 @@ else()
    set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}-${MIXXX_VERSION_PRERELEASE}")
 endif()
 
-# uses MIXXX_VERSION GIT_BRANCH GIT_COMMIT_COUNT
+get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
+
+# uses MIXXX_VERSION GIT_BRANCH GIT_COMMIT_COUNT BUILD_FLAGS
 configure_file(src/version.h.in src/version.h @ONLY)
 
 # Windows-only resource file
