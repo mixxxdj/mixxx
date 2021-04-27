@@ -107,7 +107,7 @@ TrackPointer CoverArtDelegate::loadTrackByLocation(
         return TrackPointer();
     }
     return m_pTrackModel->getTrackByRef(
-            TrackRef::fromFileInfo(trackLocation));
+            TrackRef::fromFilePath(trackLocation));
 }
 
 void CoverArtDelegate::paintItem(

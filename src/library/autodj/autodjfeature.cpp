@@ -256,7 +256,7 @@ void AutoDJFeature::slotAddRandomTrack() {
                             << randomTrackId;
                     continue;
                 }
-                if (!pRandomTrack->checkFileExists()) {
+                if (!pRandomTrack->getFileInfo().checkFileExists()) {
                     qWarning() << "Track does not exist:"
                                << pRandomTrack->getInfo()
                                << pRandomTrack->getFileInfo();

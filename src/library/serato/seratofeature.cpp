@@ -347,8 +347,9 @@ QString parseCrate(
         return QString();
     }
 
+    mixxx::FileInfo fileInfo(crateFilePath);
     QFile crateFile(crateFilePath);
-    if (!Sandbox::askForAccess(crateFilePath) || !crateFile.open(QIODevice::ReadOnly)) {
+    if (!Sandbox::askForAccess(&fileInfo) || !crateFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << crateFilePath
                    << " for reading.";
@@ -528,8 +529,9 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             ":serato_db"
             ")");
 
+    mixxx::FileInfo fileInfo(databaseFilePath);
     QFile databaseFile(databaseFilePath);
-    if (!Sandbox::askForAccess(databaseFilePath) || !databaseFile.open(QIODevice::ReadOnly)) {
+    if (!Sandbox::askForAccess(&fileInfo) || !databaseFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << databaseFilePath
                    << " for reading.";

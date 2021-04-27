@@ -682,19 +682,6 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         // clears them)
         this->selectionModel()->clear();
 
-        // Add all the dropped URLs/tracks to the track model (playlist/crate)
-        QList<TrackFile> trackFiles = DragAndDropHelper::supportedTracksFromUrls(
-            event->mimeData()->urls(), false, true);
-
-        QList<QString> fileLocationList;
-        for (const TrackFile& trackFile : trackFiles) {
-            fileLocationList.append(trackFile.location());
-        }
-
-        // Drag-and-drop from an external application
-        // eg. dragging a track from Windows Explorer onto the track table.
-        int numNewRows = fileLocationList.count();
-
         // Have to do this here because the index is invalid after
         // addTrack
         int selectionStartRow = destIndex.row();
@@ -714,11 +701,21 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
             selectionStartRow = model()->rowCount();
         }
 
-        // calling the addTracks returns number of failed additions
-        int tracksAdded = trackModel->addTracks(destIndex, fileLocationList);
-
-        // Decrement # of rows to select if some were skipped
-        numNewRows -= (fileLocationList.size() - tracksAdded);
+        // Add all the dropped URLs/tracks to the track model (playlist/crate)
+        int numNewRows;
+        {
+            const QList<mixxx::FileInfo> trackFileInfos =
+                    DragAndDropHelper::supportedTracksFromUrls(
+                            event->mimeData()->urls(), false, true);
+            QList<QString> trackLocations;
+            trackLocations.reserve(trackFileInfos.size());
+            for (const auto& fileInfo : trackFileInfos) {
+                trackLocations.append(fileInfo.location());
+            }
+            numNewRows = trackModel->addTracks(destIndex, trackLocations);
+            DEBUG_ASSERT(numNewRows >= 0);
+            DEBUG_ASSERT(numNewRows <= trackFileInfos.size());
+        }
 
         // Create the selection, but only if the track model supports
         // reordering. (eg. crates don't support reordering/indexes)

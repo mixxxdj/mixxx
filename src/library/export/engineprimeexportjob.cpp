@@ -93,12 +93,12 @@ QString exportFile(const QSharedPointer<EnginePrimeExportRequest> pRequest,
     // been modified (or the destination doesn't exist).  To ensure no
     // chance of filename clashes, and to keep things simple, we will prefix
     // the destination files with the DB track identifier.
-    TrackFile srcFileInfo = pTrack->getFileInfo();
+    mixxx::FileInfo srcFileInfo = pTrack->getFileInfo();
     const auto trackId = pTrack->getId().value();
     QString dstFilename = QString::number(trackId) + " - " + srcFileInfo.fileName();
     QString dstPath = pRequest->musicFilesDir.filePath(dstFilename);
     if (!QFile::exists(dstPath) ||
-            srcFileInfo.fileLastModified() > QFileInfo{dstPath}.lastModified()) {
+            srcFileInfo.lastModified() > QFileInfo{dstPath}.lastModified()) {
         const auto srcPath = srcFileInfo.location();
         QFile::copy(srcPath, dstPath);
     }
@@ -152,7 +152,7 @@ void exportMetadata(djinterop::database* pDatabase,
     snapshot.composer = pTrack->getComposer().toStdString();
     snapshot.key = toDjinteropKey(pTrack->getKey());
     int64_t lastModifiedMillisSinceEpoch =
-            pTrack->getFileInfo().fileLastModified().toMSecsSinceEpoch();
+            pTrack->getFileInfo().lastModified().toMSecsSinceEpoch();
     std::chrono::system_clock::time_point lastModifiedAt{
             std::chrono::milliseconds{lastModifiedMillisSinceEpoch}};
     snapshot.last_modified_at = lastModifiedAt;
@@ -408,8 +408,7 @@ void EnginePrimeExportJob::loadIds(const QSet<CrateId>& crateIds) {
                 const auto location = m_pTrackCollectionManager->internalCollection()
                                               ->getTrackDAO()
                                               .getTrackLocation(trackId);
-                const auto trackFile = TrackFile(location);
-                m_trackRefs.append(TrackRef::fromFileInfo(trackFile, trackId));
+                m_trackRefs.append(TrackRef::fromFilePath(location, trackId));
             }
         }
     }

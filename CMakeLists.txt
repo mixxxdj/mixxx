@@ -832,7 +832,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/serato/markers2.cpp
   src/track/serato/tags.cpp
   src/track/track.cpp
-  src/track/trackfile.cpp
   src/track/trackinfo.cpp
   src/track/trackmetadata.cpp
   src/track/tracknumbers.cpp
