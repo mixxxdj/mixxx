@@ -357,7 +357,7 @@ jobs:
       working-directory: build
 
     - name: "[macOS] Sign, Notarize, and Staple Package"
-      if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
+      if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
       run: packaging/macos/sign_notarize_staple.sh build/*.dmg
       env:
         APPLE_ID_USERNAME: rryan@mixxx.org
