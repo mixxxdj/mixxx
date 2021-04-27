@@ -289,14 +289,10 @@ QString TrackDAO::getTrackLocation(TrackId trackId) const {
 
 void TrackDAO::saveTrack(Track* pTrack) const {
     DEBUG_ASSERT(pTrack);
-    if (!pTrack->isDirty()) {
-        return;
-    }
+    DEBUG_ASSERT(pTrack->isDirty());
+
     const TrackId trackId = pTrack->getId();
-    // Only update the database if the track has already been added!
-    if (!trackId.isValid()) {
-        return;
-    }
+    DEBUG_ASSERT(trackId.isValid());
     qDebug() << "TrackDAO: Saving track"
             << trackId
             << pTrack->getFileInfo();
