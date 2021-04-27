@@ -321,6 +321,20 @@ endif()
 
 # Get the current working branch
 execute_process(
+  COMMAND git describe --dirty
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_DESCRIBE
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
+)
+if(NOT GIT_DESCRIBE)
+  message(STATUS "Git describe: unknown")
+else()
+  message(STATUS "Git describe: ${GIT_DESCRIBE}")
+endif()
+
+# Get the current working branch
+execute_process(
   COMMAND git rev-parse --abbrev-ref HEAD
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_BRANCH
@@ -328,9 +342,10 @@ execute_process(
   ERROR_QUIET
 )
 if(NOT GIT_BRANCH)
-  set(GIT_BRANCH "unknown")
+  message(STATUS "Git branch: unknown")
+else()
+  message(STATUS "Git branch: ${GIT_BRANCH}")
 endif()
-message(STATUS "Git branch: ${GIT_BRANCH}")
 
 # Get the latest abbreviated commit hash of the working branch
 execute_process(
@@ -1658,7 +1673,7 @@ endif()
 
 get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 
-# uses MIXXX_VERSION GIT_BRANCH GIT_COMMIT_COUNT BUILD_FLAGS
+# uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE GIT_BRANCH GIT_DESCRIBE BUILD_FLAGS
 configure_file(src/version.h.in src/version.h @ONLY)
 
 # Windows-only resource file
