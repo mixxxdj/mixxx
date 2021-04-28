@@ -31,6 +31,7 @@ DVS control w/TraktorSoundCard Ctrl (THRU)
 [done] Fwd/Back button
 [done] Instant Double (shift load track support)
  */
+
 /////INIT///////
 
 DenonHC1000S.init = function(id, debug) {
@@ -43,11 +44,7 @@ DenonHC1000S.init = function(id, debug) {
     engine.setValue("[Master]", "num_decks", 4);
     var leds = [0x11, 0x13, 0x15, 0x17, 0x19, /* cues deckA*/
         0x24, 0x40, 0x2B, /* loops deckA*/
-        //0x27,0x26,/* play,cue */
-        //0x08,0x09,/* key lock, sync*/
         0x09, /* sync deckA*/
-        //0x5A,0x5B,/* flanger,scratch mode */
-        //0x5D,0x5E,0x5F/* depth, delay, lfo */
         0x61, 0x63, 0x65, 0x67, 0x69, /* cues deckB*/
         0x6B, 0x6D, 0x6F, /* loops deckB*/
         0x60 /* sync deckB*/
@@ -83,12 +80,6 @@ DenonHC1000S.init = function(id, debug) {
     }
     midi.sendSysexMsg(ControllerStatusSysex, ControllerStatusSysex.length);
 };
-// ---serato init after controller initializaion
-// After midi controller receive this Outbound Message request SysEx Message,
-// midi controller will send the status of every item on the
-// control surface. (Mixxx will be initialized with current values)
-////////////////////////////////////////////////////
-
 
 ////////////////////////////////////////////////////////////////////////
 // Buttons                                                            //
@@ -108,6 +99,7 @@ DenonHC1000S.isButtonPressed = function(midiValue) {
         return undefined;
     }
 };
+
 ////////////////////////////////////////////////////////////////////////
 // Knobs                                                              //
 ////////////////////////////////////////////////////////////////////////
@@ -127,7 +119,7 @@ DenonHC1000S.getKnobDelta = function(midiValue) {
     }
 };
 
-//DenonHC1000S.shift = false;
+
 DenonHC1000S.shiftButton = function(channel, control, value, _status, _group) {
     // Note that there is no 'if (value === 127)' here so this executes both when the shift button is pressed and when it is released.
     // Therefore, DenonHC1000S.shift will only be true while the shift button is held down
@@ -158,7 +150,6 @@ DenonHC1000S.shiftSampleRightButton = function(channel, control, value, status, 
     DenonHC1000S.shiftSampleRight = !DenonHC1000S.shiftSampleRight; // '!' inverts a boolean (true/false) value
     print("shiftSampleRight is pressed " + DenonHC1000S.shiftSampleRight);
     DenonHC1000S.ledHotCueAndSampler(channel, control, value, status, group);
-    //DenonHC1000S.LED_Play_and_Cue(channel, control, value, status, group);
     if ((DenonHC1000S.shiftSampleLeft && DenonHC1000S.shiftSampleRight && DenonHC1000S.shift) && (value === 64)) {
         var samplersShow = engine.getValue("[Samplers]", "show_samplers");
         print("want to show Samplers in UI; samplersShow is " + samplersShow);
@@ -216,8 +207,9 @@ DenonHC1000S.resizeLoopButton = function(channel, control, value, status, group)
 
 DenonHC1000S.getDeckByGroup = function(group) {
     for (var index = 0, count = decks.length; index < count; index++) {
-        if (decks[index].group === group)
+        if (decks[index].group === group) {
             return decks[index];
+        }
     }
     return null;
 };
@@ -233,19 +225,18 @@ DenonHC1000S.groupToDeck = function(group) {
 
 DenonHC1000S.getDeckByInputValue = function(group) {
     for (var index = 0, count = decks.length; index < count; index++) {
-        if (decks[index].group === group)
+        if (decks[index].group === group) {
             return decks[index];
+        }
     }
     return null;
 };
 
-// ==
 DenonHC1000S.Deck = function(deckNumber, group) {
     this.deckNumber = deckNumber;
     this.group = group;
     this.scratchMode = false;
     this.controlPressed = -1;
-    //   print("group is " + group);
 };
 
 DenonHC1000S.loopOrHotcues = function(midino, control, value, status, group) {
@@ -384,21 +375,22 @@ DenonHC1000S.hotcue = function(cueIndex, group, value, shift) {
         if (engine.getValue(group, "hotcue_" + cueIndex + "_enabled") === 0) {
             var samplesPerBeat = DenonHC1000S.samplesPerBeat(group);
             var positionInBeats = (engine.getValue(group, "playposition") * engine.getValue(group, "track_samples")) / samplesPerBeat;
-            if ((positionInBeats - Math.floor(positionInBeats)) > 0.5)
+            if ((positionInBeats - Math.floor(positionInBeats)) > 0.5) {
                 positionInBeats = Math.floor(0.5 + positionInBeats) * samplesPerBeat;
-            else
+            } else {
                 positionInBeats = Math.floor(positionInBeats) * samplesPerBeat;
-            positionInBeats = Math.floor(0.5 + positionInBeats);
-            positionInBeats = Math.max(0, positionInBeats - positionInBeats % 2);
-            engine.setValue(group, "hotcue_" + cueIndex + "_activate", 1);
-            engine.setValue(group, "hotcue_" + cueIndex + "_position", positionInBeats);
-        } else
+                positionInBeats = Math.floor(0.5 + positionInBeats);
+                positionInBeats = Math.max(0, positionInBeats - positionInBeats % 2);
+                engine.setValue(group, "hotcue_" + cueIndex + "_activate", 1);
+                engine.setValue(group, "hotcue_" + cueIndex + "_position", positionInBeats);
+            }
+        } else {
             engine.setValue(group, "hotcue_" + cueIndex + "_clear", 1);
+        }
     }
 };
 
 DenonHC1000S.sampler = function(cueIndex, group, value, shift) {
-    //if ((cueIndex === 3 || cueIndex == 4 || cueIndex === 5) && (DenonHC1000S.shiftSampleLeft || DenonHC1000S.shiftSampleRight)) { //check if shiftSampleButtons are pressed
     if (!shift) {
         if (DenonHC1000S.shiftSampleLeft && DenonHC1000S.shiftSampleRight) { //shiftSampleRight AND shiftSampleLeft buttons are pressed -> load currently selected track from library
             engine.setValue("[Sampler" + cueIndex + "]", "LoadSelectedTrack", 1);
@@ -450,12 +442,14 @@ DenonHC1000S.reloop = function(group, value, shift) {
         loopInPosition = engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
         if (shift) {
             var loopInPositionInBeats = loopInPosition / samplesPerBeat;
-            if ((loopInPositionInBeats - Math.floor(loopInPositionInBeats)) > 0.5)
+            if ((loopInPositionInBeats - Math.floor(loopInPositionInBeats)) > 0.5) {
                 loopInPosition = Math.floor(0.5 + loopInPositionInBeats) * samplesPerBeat;
-            else
+            } else {
                 loopInPosition = Math.floor(loopInPositionInBeats) * samplesPerBeat;
-        } else
+            }
+        } else {
             loopInPosition = engine.getValue(group, "playposition") * engine.getValue(group, "track_samples");
+        }
         loopInPosition = Math.floor(0.5 + loopInPosition);
         loopInPosition = Math.max(0, loopInPosition - loopInPosition % 2);
         loopOutPosition = loopInPosition + Math.floor(0.5 + samplesPerBeat);
@@ -729,7 +723,6 @@ DenonHC1000S.ledHotCueAndSampler = function(channel, control, value, status, gro
     var ledChannel = DenonHC1000S.getLedChannelByGroup(group); // 0xB0 or
     if (DenonHC1000S.shiftSampleLeft || DenonHC1000S.shiftSampleRight) { //show Sampler/Play/Cue info instead of HotCue
         var samplerLeds = [0x15, 0x17, 0x19, 0x65, 0x67, 0x69]; //,0x1B,0x40,0x20
-        //var ledChannel = 0xB0;
         print("ledChannel = " + ledChannel);
         for (var index = 0, count = samplerLeds.length; index < count; index++) {
             DenonHC1000S.handleLed(ledChannel, (engine.getValue("[Sampler" + (index + 1) + "]", "track_loaded") === 1), samplerLeds[index], 0x4C, 0x4B);
@@ -861,11 +854,7 @@ DenonHC1000S.shutdown = function() {
     // send whatever MIDI messages you need to turn off the lights of your controller
     var leds = [0x11, 0x13, 0x15, 0x17, 0x19, /* cues deckA*/
         0x24, 0x40, 0x2B, /* loops deckA*/
-        //0x27,0x26,/* play,cue */
-        //0x08,0x09,/* key lock, sync*/
         0x09, /* sync deckA*/
-        //0x5A,0x5B,/* flanger,scratch mode */
-        //0x5D,0x5E,0x5F/* depth, delay, lfo */
         0x61, 0x63, 0x65, 0x67, 0x69, /* cues deckB*/
         0x6B, 0x6D, 0x6F, /* loops deckB*/
         0x60 /* sync deckB*/
