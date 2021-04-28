@@ -1143,7 +1143,7 @@ QDialog::DialogCode MixxxMainWindow::noOutputDlg(bool* continueClicked) {
 }
 
 void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
-    QString appTitle = VersionStore::applicationTitle();
+    QString appTitle = VersionStore::applicationName();
 
     // If we have a track, use getInfo() to format a summary string and prepend
     // it to the title.
