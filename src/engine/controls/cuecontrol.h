@@ -266,5 +266,9 @@ class CueControl : public EngineControl {
     // Tells us which controls map to which hotcue
     QMap<QObject*, int> m_controlMap;
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QRecursiveMutex m_mutex;
+#else
     QMutex m_mutex;
+#endif
 };

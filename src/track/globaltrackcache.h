@@ -278,7 +278,11 @@ class GlobalTrackCache : public QObject {
     void saveEvictedTrack(Track* pEvictedTrack) const;
 
     // Managed by GlobalTrackCacheLocker
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    mutable QRecursiveMutex m_mutex;
+#else
     mutable QMutex m_mutex;
+#endif
 
     GlobalTrackCacheSaver* m_pSaver;
 

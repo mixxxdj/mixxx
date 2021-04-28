@@ -72,7 +72,11 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     CSAMPLE* m_pWorkBuffer;
     QWaitCondition m_samplesAvailableSignal;
     QMutex m_waitForSampleMutex;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QRecursiveMutex m_processorsLock;
+#else
     QMutex m_processorsLock;
+#endif
     QVector<VinylControl*> m_processors;
     FIFO<VinylSignalQualityReport> m_signalQualityFifo;
     volatile bool m_bReportSignalQuality;
