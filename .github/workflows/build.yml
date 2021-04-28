@@ -124,6 +124,35 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
 
+    - name: "[Windows] Install rsync and openssh"
+      if: runner.os == 'Windows'
+      run: |
+        $Env:PATH="c:\msys64\usr\bin;$Env:PATH"
+        pacman -S --noconfirm coreutils bash rsync openssh
+        # Unfortunately, mixing executables from msys64 and mingw (i.e. Git
+        # Bash) does not work properly and leads to errors like these:
+        #
+        #     0 [main] python3 (5248) C:\msys64\usr\bin\python3.exe: *** fatal error - cygheap base mismatch detected - 0x180347408/0x180352408.
+        #
+        # Even when prepending the MSYS2 binary directory to %PATH%, GitHub
+        # Actions will still pick the Git Bash executable over the MSYS2 one
+        # when using `shell: bash`. Since it's not feasible to set `shell` to
+        # an absolute path in a cross-platform build workflow, we overwrite the
+        # git bash executable with the MSYS2 one.
+        #
+        # Also see related issue:
+        # https://github.com/actions/virtual-environments/issues/594
+        Copy-Item -Path "C:\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
+        # By default, MSYS2 uses an
+        # /etc/profile file that changes
+        # the current working directory
+        # when bash is started. We don't
+        # want this behavior,so we just
+        # delete it.
+        Remove-Item -Path "C:\msys64\etc\profile"
+        # Add MSYS2's tools to %PATH%.
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
+
     # sccache's handling of the /fp:fast MSVC compiler option is broken, so use our fork with the fix.
     # https://github.com/mozilla/sccache/issues/950
     - name: "[Windows] Set up cargo cache"
@@ -361,15 +390,6 @@ jobs:
         --dest-path "${DEPLOY_PATH}"
         --dest-url 'https://downloads.mixxx.org'
         ${{ matrix.artifacts_path }}
-
-    - name: "[Windows] Install rsync and openssh"
-      env:
-        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
-      if: runner.os == 'Windows' && env.SSH_PASSWORD != null
-      run: |
-        $Env:PATH="C:\msys64\usr\bin;$Env:PATH"
-        pacman -S --noconfirm coreutils bash rsync openssh
-        Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
 
     - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
       # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
