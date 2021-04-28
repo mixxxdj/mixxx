@@ -68,21 +68,41 @@ QString VersionStore::applicationName() {
 }
 
 // static
-QString VersionStore::applicationTitle() {
+QString VersionStore::platform() {
 #ifdef __APPLE__
-    QString base = kMixxx;
+    QString base = QStringLiteral("macOS");
+#elif defined(__LINUX__)
+    QString base = QStringLiteral("Linux");
+#elif defined(__WINDOWS__)
+    QString base = QStringLiteral("Windows");
 #else
-    QString base = kMixxx + QStringLiteral(" ") + VersionStore::version();
-#if defined(AMD64) || defined(EM64T) || defined(x86_64)
-    base.append(" x64");
-#elif defined(IA64)
-    base.append(" Itanium");
-#endif
+    QString base = QStringLiteral("Unknown OS");
 #endif
 
-#ifdef MIXXX_BUILD_NUMBER_IN_TITLE_BAR
-    base.append(QStringLiteral(" - ") + VersionStore::gitVersion());
+#if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || \
+        defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64) || \
+        defined(AMD64) || defined(EM64T) || defined(x86_64)
+    base.append(" x86_64");
+#elif defined(i386) || defined(__i386) || defined(__i386__) ||     \
+        defined(__IA32__) || defined(_M_IX86) || defined(_X86_) || \
+        defined(__X86__) || defined(__I86__)
+    base.append(" x86");
+#elif defined(IA64)
+    base.append(" IA64");
+#elif defined(__aarch64__)
+    base.append(" ARM64");
+#elif defined(__arm__) || defined(__thumb__) || defined(_ARM) || \
+        defined(_M_ARM) || defined(_M_ARMT) || defined(__arm)
+    base.append(" ARM");
+#elif defined(mips) || defined(__mips)
+    base.append(" MIPS");
+#elif defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) || \
+        defined(__ppc__) || defined(__ppc) || defined(__PPC__) ||             \
+        defined(__PPC64__) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) ||   \
+        defined(_M_PPC)
+    base.append(" PowerPC");
 #endif
+
     return base;
 }
 

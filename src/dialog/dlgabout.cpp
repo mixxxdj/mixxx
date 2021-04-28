@@ -16,6 +16,7 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     version_label->setText(VersionStore::applicationName() +
             QStringLiteral(" ") + VersionStore::version());
     git_version_label->setText(VersionStore::gitVersion());
+    platform_label->setText(VersionStore::platform());
 
     QFile licenseFile(":/LICENSE");
     if (!licenseFile.open(QIODevice::ReadOnly)) {

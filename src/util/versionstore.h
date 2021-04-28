@@ -17,8 +17,8 @@ class VersionStore {
     // Returns the application name. (e.g. "Mixxx")
     static QString applicationName();
 
-    // Returns the application title (e.g. "Mixxx x64" on Windows)
-    static QString applicationTitle();
+    // Returns the platform (e.g. "Windows x86_64")
+    static QString platform();
 
     // Returns the git branch (e.g. features_key) or the null
     // string if the branch is unknown.
