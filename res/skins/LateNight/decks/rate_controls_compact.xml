@@ -113,8 +113,7 @@
                             <Size>5f,5f</Size>
                             <Pos>2,39</Pos>
                             <Connection>
-                              <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
-                              <Transform><IsEqual>0.5</IsEqual></Transform>
+                              <ConfigKey><Variable name="Group"/>,rate_set_default</ConfigKey>
                               <BindProperty>highlight</BindProperty>
                             </Connection>
                           </Label>
@@ -174,8 +173,7 @@
                         <Size>5f,5f</Size>
                         <Pos>2,47</Pos>
                         <Connection>
-                          <ConfigKey><Variable name="Group"/>,rate</ConfigKey>
-                          <Transform><IsEqual>0.5</IsEqual></Transform>
+                          <ConfigKey><Variable name="Group"/>,rate_set_default</ConfigKey>
                           <BindProperty>highlight</BindProperty>
                         </Connection>
                       </Label>
