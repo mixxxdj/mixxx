@@ -39,6 +39,7 @@ const QString kMixxxVersionSuffix = QString(MIXXX_VERSION_SUFFIX);
 const QString kMixxx = QStringLiteral("Mixxx");
 const QString kGitBranch = QString(GIT_BRANCH);
 const QString kGitDescribe = QString(GIT_DESCRIBE);
+const QDateTime kGitCommitDate = QDateTime::fromString(GIT_COMMIT_DATE, Qt::ISODate);
 const QString kBuildFlags = QString(BUILD_FLAGS);
 
 } // namespace
@@ -60,6 +61,10 @@ QVersionNumber VersionStore::versionNumber() {
 // static
 QString VersionStore::versionSuffix() {
     return kMixxxVersionSuffix;
+}
+
+QDateTime VersionStore::date() {
+    return kGitCommitDate;
 }
 
 // static

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDateTime>
 #include <QString>
 #include <QVersionNumber>
 
@@ -16,6 +17,9 @@ class VersionStore {
 
     // Returns the application name. (e.g. "Mixxx")
     static QString applicationName();
+
+    // Returns the last change date
+    static QDateTime date();
 
     // Returns the platform (e.g. "Windows x86_64")
     static QString platform();
