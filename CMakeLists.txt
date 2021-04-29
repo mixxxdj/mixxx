@@ -319,9 +319,9 @@ if(WIN32)
   set(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
 endif()
 
-# Get the current working branch
+# Get the current commit ref
 execute_process(
-  COMMAND git describe --dirty
+  COMMAND git describe --tags --always --dirty=-modified
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_DESCRIBE
   OUTPUT_STRIP_TRAILING_WHITESPACE
