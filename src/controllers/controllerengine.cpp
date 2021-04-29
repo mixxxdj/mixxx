@@ -31,14 +31,6 @@ constexpr int kDecks = 16;
 // timer.
 constexpr int kScratchTimerMs = 1;
 constexpr double kAlphaBetaDt = kScratchTimerMs / 1000.0;
-
-inline ControlFlags onlyAssertOnControllerDebug() {
-    if (ControllerDebug::enabled()) {
-        return ControlFlag::None;
-    }
-
-    return ControlFlag::AllowMissingOrInvalid;
-}
 } // namespace
 
 ControllerEngine::ControllerEngine(
@@ -99,16 +91,12 @@ void ControllerEngine::callFunctionOnObjects(const QList<QString>& scriptFunctio
         QScriptValue prefix = global.property(prefixName);
         if (!prefix.isValid() || !prefix.isObject()) {
             qWarning() << "ControllerEngine: No" << prefixName << "object in script";
-            // Throw a debug assertion if controllerDebug is enabled
-            DEBUG_ASSERT(!ControllerDebug::enabled());
             continue;
         }
 
         QScriptValue init = prefix.property(function);
         if (!init.isValid() || !init.isFunction()) {
             qWarning() << "ControllerEngine:" << prefixName << "has no" << function << " method";
-            // Throw a debug assertion if controllerDebug is enabled
-            DEBUG_ASSERT(!ControllerDebug::enabled());
             continue;
         }
         controllerDebug("ControllerEngine: Executing" << prefixName << "." << function);
@@ -466,8 +454,6 @@ bool ControllerEngine::internalExecute(const QScriptValue& thisObject,
     if (functionObject.isError()) {
         qWarning() << "ControllerEngine::internalExecute:"
                    << functionObject.toString();
-        // Throw a debug assertion if controllerDebug is enabled
-        DEBUG_ASSERT(!ControllerDebug::enabled());
         return false;
     }
 
@@ -475,8 +461,6 @@ bool ControllerEngine::internalExecute(const QScriptValue& thisObject,
     if (!functionObject.isFunction()) {
         qWarning() << "ControllerEngine::internalExecute:"
                    << functionObject.toVariant() << "Not a function";
-        // Throw a debug assertion if controllerDebug is enabled
-        DEBUG_ASSERT(!ControllerDebug::enabled());
         return false;
     }
 
@@ -484,8 +468,6 @@ bool ControllerEngine::internalExecute(const QScriptValue& thisObject,
     QScriptValue rc = functionObject.call(thisObject, args);
     if (!rc.isValid()) {
         qWarning() << "QScriptValue is not a function or ...";
-        // Throw a debug assertion if controllerDebug is enabled
-        DEBUG_ASSERT(!ControllerDebug::enabled());
         return false;
     }
 
@@ -665,8 +647,6 @@ ControlObjectScript* ControllerEngine::getControlObjectScript(const QString& gro
 
     if (!key.isValid()) {
         qWarning() << "ControllerEngine: Requested control with invalid key" << key;
-        // Throw a debug assertion if controllerDebug is enabled
-        DEBUG_ASSERT(!ControllerDebug::enabled());
         return nullptr;
     }
 
@@ -714,7 +694,7 @@ void ControllerEngine::setValue(const QString& group, const QString& name, doubl
 
     if (coScript) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), onlyAssertOnControllerDebug());
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl && !m_st.ignore(pControl, coScript->getParameterForValue(newValue))) {
             coScript->slotSet(newValue);
         }
@@ -752,7 +732,7 @@ void ControllerEngine::setParameter(
 
     if (coScript) {
         ControlObject* pControl = ControlObject::getControl(
-                coScript->getKey(), onlyAssertOnControllerDebug());
+                coScript->getKey(), ControlFlag::AllowMissingOrInvalid);
         if (pControl && !m_st.ignore(pControl, newParameter)) {
           coScript->setParameter(newParameter);
         }
@@ -1483,7 +1463,7 @@ bool ControllerEngine::isScratching(int deck) {
     -------- ------------------------------------------------------ */
 void ControllerEngine::softTakeover(const QString& group, const QString& name, bool set) {
     ConfigKey key = ConfigKey(group, name);
-    ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
+    ControlObject* pControl = ControlObject::getControl(key, ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         qWarning() << "Failed to" << (set ? "enable" : "disable")
                    << "softTakeover for invalid control" << key;
@@ -1508,7 +1488,7 @@ void ControllerEngine::softTakeover(const QString& group, const QString& name, b
 void ControllerEngine::softTakeoverIgnoreNextValue(
         const QString& group, const QString& name) {
     ConfigKey key = ConfigKey(group, name);
-    ControlObject* pControl = ControlObject::getControl(key, onlyAssertOnControllerDebug());
+    ControlObject* pControl = ControlObject::getControl(key, ControlFlag::AllowMissingOrInvalid);
     if (!pControl) {
         qWarning() << "Failed to call softTakeoverIgnoreNextValue for invalid control" << key;
         return;

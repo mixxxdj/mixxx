@@ -70,10 +70,11 @@ case "$COMMAND" in
             libqt5svg5-dev \
             libqt5x11extras5-dev \
             librubberband-dev \
-            libshout3-dev \
+            libshout-idjc-dev \
             libsndfile1-dev \
             libsoundtouch-dev \
             libsqlite3-dev \
+            libssl-dev \
             libtag1-dev \
             libupower-glib-dev \
             libusb-1.0-0-dev \

@@ -15,77 +15,22 @@ Variables:
     <SizePolicy>me,max</SizePolicy>
     <Children>
 
-      <WidgetGroup><!-- FX expand button + FX label -->
+      <WidgetGroup><!-- FX label + FX expand button -->
         <ObjectName>FxUnitControls</ObjectName>
-        <Layout>vertical</Layout>
+        <Layout>stacked</Layout>
         <Size>30f,30f</Size>
         <Children>
+          <Template src="skin:button_2state_persist.xml">
+            <SetVariable name="ObjectName">FxMiniMaxi</SetVariable>
+            <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
+            <SetVariable name="Size">30f,30f</SetVariable>
+            <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
+          </Template>
           <Label>
             <ObjectName>FxUnitLabel</ObjectName>
-            <Size>28f,15f</Size>
-            <Text>FX&#8202;<Variable name="FxUnit"/></Text>
-            <Alignment>left</Alignment>
+            <Size>30f,15f</Size>
+            <Text>&#8202;FX&#8202;<Variable name="FxUnit"/>&#8202;</Text>
           </Label>
-
-          <WidgetGroup><!-- normal FX expand button -->
-            <Layout>vertical</Layout>
-            <Children>
-              <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
-                <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                <SetVariable name="Size">26min,15f</SetVariable>
-                <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
-              </Template>
-            </Children>
-            <Connection>
-              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
-              <Transform><Not/></Transform>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /normal FX expand button -->
-
-          <WidgetGroup><!-- FX expand button when focus is shown -->
-            <Layout>vertical</Layout>
-            <Children>
-              <WidgetGroup><!-- when no effect is focused -->
-                <Layout>vertical</Layout>
-                <Children>
-                  <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
-                    <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                    <SetVariable name="Size">26min,15f</SetVariable>
-                    <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
-                  <Transform><IsEqual>0</IsEqual></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-
-              <WidgetGroup><!-- when any effect is focused -->
-                <Layout>vertical</Layout>
-                <Children>
-                  <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">FxSamplersMiniMaxi_Focus</SetVariable>
-                    <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                    <SetVariable name="Size">26min,15f</SetVariable>
-                    <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
-                  </Template>
-                </Children>
-                <Connection>
-                  <ConfigKey>[<Variable name="FxRack_FxUnit"/>],focused_effect</ConfigKey>
-                  <Transform><IsEqual>0</IsEqual><Not/></Transform>
-                  <BindProperty>visible</BindProperty>
-                </Connection>
-              </WidgetGroup>
-            </Children>
-            <Connection>
-              <ConfigKey>[<Variable name="FxRack_FxUnit"/>],show_focus</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-          </WidgetGroup><!-- /FX expand button when focus is shown -->
         </Children>
       </WidgetGroup><!-- /FX label + FX expand button -->
 

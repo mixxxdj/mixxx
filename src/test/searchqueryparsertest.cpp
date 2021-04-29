@@ -372,9 +372,9 @@ TEST_F(SearchQueryParserTest, NumericFilter) {
         m_parser.parseQuery("bpm:127.12", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(127);
+    pTrack->trySetBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
@@ -391,7 +391,7 @@ TEST_F(SearchQueryParserTest, NumericFilterEmpty) {
         m_parser.parseQuery("bpm:", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(127);
+    pTrack->trySetBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
@@ -408,9 +408,9 @@ TEST_F(SearchQueryParserTest, NumericFilterNegation) {
         m_parser.parseQuery("-bpm:127.12", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(127);
+    pTrack->trySetBpm(127);
     EXPECT_TRUE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_FALSE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
@@ -427,9 +427,9 @@ TEST_F(SearchQueryParserTest, NumericFilterAllowsSpace) {
         m_parser.parseQuery("bpm: 127.12", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(127);
+    pTrack->trySetBpm(127);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
@@ -446,9 +446,9 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
         m_parser.parseQuery("bpm:>127.12", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.13);
+    pTrack->trySetBpm(127.13);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("bpm > 127.12")),
@@ -456,27 +456,27 @@ TEST_F(SearchQueryParserTest, NumericFilterOperators) {
 
 
     pQuery = m_parser.parseQuery("bpm:>=127.12", searchColumns, "");
-    pTrack->setBpm(127.11);
+    pTrack->trySetBpm(127.11);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("bpm >= 127.12")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("bpm:<127.12", searchColumns, "");
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.11);
+    pTrack->trySetBpm(127.11);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("bpm < 127.12")),
         qPrintable(pQuery->toSql()));
 
     pQuery = m_parser.parseQuery("bpm:<=127.12", searchColumns, "");
-    pTrack->setBpm(127.13);
+    pTrack->trySetBpm(127.13);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
     EXPECT_STREQ(
         qPrintable(QString("bpm <= 127.12")),
@@ -492,11 +492,11 @@ TEST_F(SearchQueryParserTest, NumericRangeFilter) {
         m_parser.parseQuery("bpm:127.12-129", searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(125);
+    pTrack->trySetBpm(125);
     EXPECT_FALSE(pQuery->match(pTrack));
-    pTrack->setBpm(127.12);
+    pTrack->trySetBpm(127.12);
     EXPECT_TRUE(pQuery->match(pTrack));
-    pTrack->setBpm(129);
+    pTrack->trySetBpm(129);
     EXPECT_TRUE(pQuery->match(pTrack));
 
     EXPECT_STREQ(
@@ -514,7 +514,7 @@ TEST_F(SearchQueryParserTest, MultipleFilters) {
                             searchColumns, ""));
 
     TrackPointer pTrack = newTestTrack(44100);
-    pTrack->setBpm(128);
+    pTrack->trySetBpm(128);
     EXPECT_FALSE(pQuery->match(pTrack));
     pTrack->setArtist("Com Truise");
     EXPECT_FALSE(pQuery->match(pTrack));

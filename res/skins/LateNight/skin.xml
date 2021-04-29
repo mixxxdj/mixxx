@@ -2,7 +2,7 @@
   LateNight, Resizable skin for Mixxx 2.3.x
   www.mixxx.org
   Copyright (C) 2010-2013 jus <s.brandt@mixxx.org>, 2014 Owen Williams <owilliams@mixxx.org>,
-  2019-2020 ronso0 <ronso0@mixxx.org>
+  2019-2021 ronso0 <ronso0@mixxx.org>
   "LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
   http://creativecommons.org/licenses/by-sa/3.0/
 
@@ -30,9 +30,9 @@
 <skin>
   <manifest>
     <title>LateNight</title>
-    <author>owilliams</author>
+    <author>owilliams, ronso0</author>
     <version>2.3.0.01</version>
-    <description>A wide nighttime skin with stacked waveforms, 4 decks and 8 samplers.</description>
+    <description>A wide nighttime skin with stacked waveforms, 4 decks in 3 configurations and up to 16 samplers.</description>
     <language>en</language>
     <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
     <attributes>
@@ -41,7 +41,6 @@
       <attribute config_key="[Master],num_samplers">16</attribute>
       <attribute persist="true" config_key="[Skin],show_waveforms">1</attribute>
       <attribute persist="true" config_key="[Skin],timing_shift_buttons">0</attribute>
-      <attribute config_key="[Master],skin_settings">0</attribute>
 
     <!-- Decks -->
       <!-- general -->
@@ -54,9 +53,9 @@
       <attribute persist="true" config_key="[Skin],show_big_spinny_coverart">0</attribute>
       <!-- ToDo: deck-independent vinyl controls? -->
       <attribute persist="true" config_key="[VinylControl],show_vinylcontrol">0</attribute>
-      <!-- Deck variant that is shown as soon as the mixer is hidden, see deck.xm
-          and /helpers/skin_helper_deck_size.xml
-          0=mini 1=compact (default) 2=full deck -->
+      <!-- Deck variant that is shown as soon as the mixer is hidden.
+          See deck.xml and /helpers/skin_helper_deck_size.xml for documentation.
+          0=mini 1=compact(default) 2=full deck -->
       <attribute persist="true" config_key="[LateNight],deck_size_without_mixer">1</attribute>
       <!-- Full deck -->
       <attribute persist="true" config_key="[Skin],show_rate_controls">1</attribute>
@@ -282,7 +281,9 @@
   </Schemes>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:style.qss"/>
+  <Style src="skin:style.qss"
+         src-linux="skin:style_linux.qss"
+         src-windows="skin:style_windows.qss"/>
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen.
   https://www.mixxx.org/wiki/doku.php/skin_guidelines#the_optimal_size_for_skins -->

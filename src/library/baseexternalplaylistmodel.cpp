@@ -65,7 +65,7 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
 
         float bpm = index.sibling(
                 index.row(), fieldIndex("bpm")).data().toString().toFloat();
-        pTrack->setBpm(bpm);
+        pTrack->trySetBpm(bpm);
     }
     return pTrack;
 }

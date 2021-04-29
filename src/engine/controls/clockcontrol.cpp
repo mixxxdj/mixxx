@@ -47,7 +47,7 @@ void ClockControl::process(const double dRate,
     // by the rate.
     const double blinkIntervalSamples = 2.0 * samplerate * (1.0 * dRate) * blinkSeconds;
 
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const mixxx::BeatsPointer pBeats = m_pBeats;
     if (pBeats) {
         double closestBeat = pBeats->findClosestBeat(currentSample);
         double distanceToClosestBeat = fabs(currentSample - closestBeat);

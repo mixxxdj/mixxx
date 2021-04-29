@@ -23,13 +23,13 @@ Variables:
       <Template src="skin:button_2state.xml">
         <SetVariable name="TooltipId">EffectSlot_enabled</SetVariable>
         <SetVariable name="ObjectName">FxToggleButton</SetVariable>
-        <SetVariable name="Size">71f,20f</SetVariable>
+        <SetVariable name="Size">69f,20f</SetVariable>
         <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
       </Template>
 
       <WidgetGroup>
         <ObjectName>FxNameContainer</ObjectName>
-        <Size>71f,20f</Size>
+        <Size>69f,20f</Size>
         <Layout>horizontal</Layout>
         <Children>
           <WidgetGroup><Size>0me,1min</Size></WidgetGroup>
@@ -46,7 +46,7 @@ Variables:
        <!-- Colored background to communicate the Effect's ON/OFF status -->
       <Template src="skin:button_2state.xml">
         <SetVariable name="ObjectName">FxToggleButtonUnderlay</SetVariable>
-        <SetVariable name="Size">71f,20f</SetVariable>
+        <SetVariable name="Size">69f,20f</SetVariable>
         <SetVariable name="ConfigKey"><Variable name="FxRack_FxUnit_FxNum"/>,enabled</SetVariable>
       </Template>
 

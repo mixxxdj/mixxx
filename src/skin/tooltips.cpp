@@ -596,6 +596,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Pitch Rate")
             << tr("Displays the current playback rate of the track.");
 
+    add("rate_range_display")
+            << tr("Tempo Range Display")
+            << tr("Displays the current range of the tempo slider.");
+
     add("repeat")
             << tr("Repeat")
             << tr("When active the track will repeat if you go past the end or reverse before the start.");

@@ -241,3 +241,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 WLibrary QRadioButton::indicator:checked {
  image: url(skin:/btn/btn_lib_radio_button_on_mustard.svg) center center;
 }
+
+WRateRange {
+  color: #181319;
+}

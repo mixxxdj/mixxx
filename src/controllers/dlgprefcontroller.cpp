@@ -14,13 +14,21 @@
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 #include "controllers/defs_controllers.h"
+#include "controllers/midi/midicontrollerpreset.h"
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
-#include "util/version.h"
+#include "util/versionstore.h"
 
 namespace {
 const QString kPresetExt(".midi.xml");
+
+QString presetNameToPath(const QString& directory, const QString& presetName) {
+    // While / is allowed for the display name we can't use it for the file name.
+    QString fileName = QString(presetName).replace(QChar('/'), QChar('-'));
+    return directory + fileName + kPresetExt;
+}
+
 } // namespace
 
 DlgPrefController::DlgPrefController(QWidget* parent,
@@ -121,11 +129,7 @@ DlgPrefController::~DlgPrefController() {
 }
 
 void DlgPrefController::showLearningWizard() {
-    // If the user has checked the "Enabled" checkbox but they haven't hit OK to
-    // apply it yet, prompt them to apply the settings before we open the
-    // learning dialog. If we don't apply the settings first and open the
-    // device, the dialog won't react to controller messages.
-    if (m_ui.chkEnabledDevice->isChecked() && !m_pController->isOpen()) {
+    if (isDirty()) {
         QMessageBox::StandardButton result = QMessageBox::question(this,
                 tr("Apply device settings?"),
                 tr("Your settings must be applied before starting the learning "
@@ -141,6 +145,11 @@ void DlgPrefController::showLearningWizard() {
         }
     }
     slotApply();
+
+    if (!m_pPreset) {
+        m_pPreset = ControllerPresetPointer(new MidiControllerPreset());
+        emit applyPreset(m_pController, m_pPreset, true);
+    }
 
     // Note that DlgControllerLearning is set to delete itself on close using
     // the Qt::WA_DeleteOnClose attribute (so this "new" doesn't leak memory)
@@ -174,7 +183,43 @@ void DlgPrefController::showLearningWizard() {
     connect(m_pDlgControllerLearning,
             &DlgControllerLearning::stopLearning,
             this,
-            &DlgPrefController::mappingEnded);
+            &DlgPrefController::slotStopLearning);
+}
+
+void DlgPrefController::slotStopLearning() {
+    VERIFY_OR_DEBUG_ASSERT(m_pPreset) {
+        emit mappingEnded();
+        return;
+    }
+
+    applyPresetChanges();
+    if (m_pPreset->filePath().isEmpty()) {
+        // This mapping was created when the learning wizard was started
+        if (m_pPreset->isDirty()) {
+            QString presetName = askForPresetName();
+            QString presetPath = presetNameToPath(m_pUserDir, presetName);
+            m_pPreset->setName(presetName);
+            if (m_pPreset->savePreset(presetPath)) {
+                qDebug() << "Mapping saved as" << presetPath;
+                m_pPreset->setFilePath(presetPath);
+                m_pPreset->setDirty(false);
+                emit applyPreset(m_pController, m_pPreset, true);
+                enumeratePresets(presetPath);
+            } else {
+                qDebug() << "Failed to save mapping as" << presetPath;
+                // Discard the new mapping and disable the controller
+                m_pPreset.reset();
+                emit applyPreset(m_pController, m_pPreset, false);
+            }
+        } else {
+            // No changes made to the new mapping, discard it and disable the
+            // controller
+            m_pPreset.reset();
+            emit applyPreset(m_pController, m_pPreset, false);
+        }
+    }
+
+    emit mappingEnded();
 }
 
 void DlgPrefController::midiInputMappingsLearned(
@@ -316,6 +361,7 @@ QString DlgPrefController::presetFileLinks(
 }
 
 void DlgPrefController::enumeratePresets(const QString& selectedPresetPath) {
+    m_ui.comboBoxPreset->blockSignals(true);
     m_ui.comboBoxPreset->clear();
 
     // qDebug() << "Enumerating presets for controller" << m_pController->getName();
@@ -373,6 +419,8 @@ void DlgPrefController::enumeratePresets(const QString& selectedPresetPath) {
         m_ui.comboBoxPreset->setCurrentIndex(index);
         m_ui.chkEnabledDevice->setEnabled(true);
     }
+    m_ui.comboBoxPreset->blockSignals(false);
+    slotPresetSelected(m_ui.comboBoxPreset->currentIndex());
 }
 
 PresetInfo DlgPrefController::enumeratePresetsFromEnumerator(
@@ -400,13 +448,13 @@ PresetInfo DlgPrefController::enumeratePresetsFromEnumerator(
 }
 
 void DlgPrefController::slotUpdate() {
-    enumeratePresets(m_pControllerManager->getConfiguredPresetFileForDevice(
-            m_pController->getName()));
-
     // Check if the controller is open.
     bool deviceOpen = m_pController->isOpen();
     // Check/uncheck the "Enabled" box
     m_ui.chkEnabledDevice->setChecked(deviceOpen);
+
+    enumeratePresets(m_pControllerManager->getConfiguredPresetFileForDevice(
+            m_pController->getName()));
 
     // If the controller is not mappable, disable the input and output mapping
     // sections and the learning wizard button.
@@ -456,6 +504,10 @@ void DlgPrefController::slotApply() {
         return;
     }
 
+    QString presetPath = presetPathFromIndex(m_ui.comboBoxPreset->currentIndex());
+    m_pPreset = ControllerPresetFileHandler::loadPreset(
+            presetPath, QDir(resourcePresetsPath(m_pConfig)));
+
     // Load the resulting preset (which has been mutated by the input/output
     // table models). The controller clones the preset so we aren't touching
     // the same preset.
@@ -469,9 +521,18 @@ QUrl DlgPrefController::helpUrl() const {
     return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
 }
 
+QString DlgPrefController::presetPathFromIndex(int index) const {
+    if (index == 0) {
+        // "No Preset" item
+        return QString();
+    }
+
+    return m_ui.comboBoxPreset->itemData(index).toString();
+}
+
 void DlgPrefController::slotPresetSelected(int chosenIndex) {
-    QString presetPath;
-    if (chosenIndex == 0) {
+    QString presetPath = presetPathFromIndex(chosenIndex);
+    if (presetPath.isEmpty()) {
         // User picked "No Preset" item
         m_ui.chkEnabledDevice->setEnabled(false);
 
@@ -487,8 +548,6 @@ void DlgPrefController::slotPresetSelected(int chosenIndex) {
             m_ui.chkEnabledDevice->setChecked(true);
             setDirty(true);
         }
-
-        presetPath = m_ui.comboBoxPreset->itemData(chosenIndex).toString();
     }
 
     // Check if the preset is different from the configured preset
@@ -581,49 +640,8 @@ void DlgPrefController::savePreset() {
     if (!saveAsNew) {
         newFilePath = oldFilePath;
     } else {
-        QString savePresetTitle = tr("Save user mapping");
-        QString savePresetLabel = tr("Enter the name for saving the mapping to the user folder.");
-        QString savingFailedTitle = tr("Saving mapping failed");
-        QString invalidNameLabel =
-                tr("A mapping cannot have a blank name and may not contain "
-                   "special characters.");
-        QString fileExistsLabel = tr("A mapping file with that name already exists.");
-        // Only allow the name to contain letters, numbers, whitespaces and _-+()/
-        const QRegExp rxRemove = QRegExp("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]");
-
-        // Choose a new file (base) name
-        bool validPresetName = false;
-        while (!validPresetName) {
-            QString userDir = m_pUserDir;
-            bool ok = false;
-            presetName = QInputDialog::getText(nullptr,
-                    savePresetTitle,
-                    savePresetLabel,
-                    QLineEdit::Normal,
-                    presetName,
-                    &ok)
-                                 .remove(rxRemove)
-                                 .trimmed();
-            if (!ok) {
-                return;
-            }
-            if (presetName.isEmpty()) {
-                QMessageBox::warning(nullptr,
-                        savingFailedTitle,
-                        invalidNameLabel);
-                continue;
-            }
-            // While / is allowed for the display name we can't use it for the file name.
-            QString fileName = presetName.replace(QString("/"), QString("-"));
-            newFilePath = userDir + fileName + kPresetExt;
-            if (QFile::exists(newFilePath)) {
-                QMessageBox::warning(nullptr,
-                        savingFailedTitle,
-                        fileExistsLabel);
-                continue;
-            }
-            validPresetName = true;
-        }
+        presetName = askForPresetName(presetName);
+        newFilePath = presetNameToPath(m_pUserDir, presetName);
         m_pPreset->setName(presetName);
         qDebug() << "Mapping renamed to" << m_pPreset->name();
     }
@@ -638,6 +656,51 @@ void DlgPrefController::savePreset() {
     m_pPreset->setDirty(false);
 
     enumeratePresets(m_pPreset->filePath());
+}
+
+QString DlgPrefController::askForPresetName(const QString& prefilledName) const {
+    QString savePresetTitle = tr("Save user mapping");
+    QString savePresetLabel = tr("Enter the name for saving the mapping to the user folder.");
+    QString savingFailedTitle = tr("Saving mapping failed");
+    QString invalidNameLabel =
+            tr("A mapping cannot have a blank name and may not contain "
+               "special characters.");
+    QString fileExistsLabel = tr("A mapping file with that name already exists.");
+    // Only allow the name to contain letters, numbers, whitespaces and _-+()/
+    const QRegExp rxRemove = QRegExp("[^[(a-zA-Z0-9\\_\\-\\+\\(\\)\\/|\\s]");
+
+    // Choose a new file (base) name
+    bool validPresetName = false;
+    QString presetName = prefilledName;
+    while (!validPresetName) {
+        bool ok = false;
+        presetName = QInputDialog::getText(nullptr,
+                savePresetTitle,
+                savePresetLabel,
+                QLineEdit::Normal,
+                presetName,
+                &ok)
+                             .remove(rxRemove)
+                             .trimmed();
+        if (!ok) {
+            continue;
+        }
+        if (presetName.isEmpty()) {
+            QMessageBox::warning(nullptr,
+                    savingFailedTitle,
+                    invalidNameLabel);
+            continue;
+        }
+        QString presetPath = presetNameToPath(m_pUserDir, presetName);
+        if (QFile::exists(presetPath)) {
+            QMessageBox::warning(nullptr,
+                    savingFailedTitle,
+                    fileExistsLabel);
+            continue;
+        }
+        validPresetName = true;
+    }
+    return presetName;
 }
 
 void DlgPrefController::initTableView(QTableView* pTable) {

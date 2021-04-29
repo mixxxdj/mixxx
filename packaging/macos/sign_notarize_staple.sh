@@ -20,6 +20,9 @@ UUID="$(/usr/libexec/PlistBuddy -c 'Print notarization-upload:RequestUUID' notar
 echo "Notorization UUID: $UUID"
 rm notarize_result.plist
 
+# Wait a few seconds to avoid "Could not find the RequestUUID." error
+sleep 5
+
 # wait for confirmation that notarization finished
 while true; do
     xcrun altool --notarization-info "$UUID" \

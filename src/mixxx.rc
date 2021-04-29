@@ -1,7 +1,6 @@
 IDI_ICON1               ICON    DISCARDABLE     "res/images/ic_mixxx.ico"
 
 #include <windows.h>
-#include <defs_version.h>
 
 #include "mixxx.rc.include"
 
