@@ -123,7 +123,7 @@ DenonHC1000S.getKnobDelta = function(midiValue) {
 DenonHC1000S.shiftButton = function(channel, control, value, _status, _group) {
     // Note that there is no 'if (value === 127)' here so this executes both when the shift button is pressed and when it is released.
     // Therefore, DenonHC1000S.shift will only be true while the shift button is held down
-    DenonHC1000S.shift = !DenonHC1000S.shift; // '!' inverts a boolean (true/false) value
+    DenonHC1000S.shift = true; // changed this to fix a bug ->'!' inverts a boolean (true/false) value
     print("Shift is pressed " + DenonHC1000S.shift);
     if ((DenonHC1000S.shiftSampleLeft && DenonHC1000S.shiftSampleRight && DenonHC1000S.shift) && (value === 64)) {
         var samplersShow = engine.getValue("[Samplers]", "show_samplers");
