@@ -10,3 +10,7 @@
 #if @MIXXX_PRERELEASE@
     #define PRERELEASE
 #endif
+
+#if @MIXXX_PATCHED@
+    #define PATCHED
+#endif

@@ -1664,13 +1664,29 @@ get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 configure_file(src/version.h.in src/version.h @ONLY)
 
 # Windows-only resource file
+# refer to https://docs.microsoft.com/en-us/windows/win32/menurc/versioninfo-resource for documentation
 if(WIN32)
-  string(TIMESTAMP MIXXX_YEAR "%Y")
+
+  set(MIXXX_PATCHED 1) # tar-ball builds are considered as patched
+  if(GIT_DESCRIBE)
+    if (MIXXX_VERSION_PRERELEASE STREQUAL "")
+    	string(REGEX MATCH "^${CMAKE_PROJECT_VERSION_MAJOR}\.${CMAKE_PROJECT_VERSION_MINOR}\.${CMAKE_PROJECT_VERSION_PATCH}-([0-9]*)-" GIT_COMMITS_SINCE_LAST_TAG "${GIT_DESCRIBE}")
+    else()
+        string(REGEX MATCH "^${CMAKE_PROJECT_VERSION_MAJOR}\.${CMAKE_PROJECT_VERSION_MINOR}.*-([0-9]*)-" GIT_COMMITS_SINCE_LAST_TAG "${GIT_DESCRIBE}")
+    endif()
+    # When the current commit is tagged, `git describe` outputs only the tag name
+    if(CMAKE_MATCH_1)
+      set(GIT_COMMITS_SINCE_LAST_TAG "${CMAKE_MATCH_1}")
+    endif()
+    string(FIND "${GIT_DESCRIBE}" "-dirty" MODIFIED_POSITION)
+    if(MODIFIED_POSITION EQUAL -1)
+      set(MIXXX_PATCHED 0)
+    endif()
+  endif()
 
   set(MIXXX_FILEVERSION "${CMAKE_PROJECT_VERSION_MAJOR},${CMAKE_PROJECT_VERSION_MINOR},${CMAKE_PROJECT_VERSION_PATCH}")
-  if(NOT GIT_COMMIT_COUNT STREQUAL "unknown")
-    set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMIT_COUNT}")
-    string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  if(NOT GIT_COMMITS_SINCE_LAST_TAG STREQUAL "")
+    set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMITS_SINCE_LAST_TAG}")
   endif()
   set(MIXXX_PRODUCTVERSION "${MIXXX_FILEVERSION}")
 
@@ -1686,7 +1702,9 @@ if(WIN32)
     set(MIXXX_PRERELEASE 1)
   endif()
 
-  # uses MIXXX_YEAR MIXXX_FILEVERSION MIXXX_PRODUCTVERSION MIXXX_VERSION MIXXX_DEBUG MIXXX_PRERELEASE
+  # Get the current year, based on the configure time.
+  string(TIMESTAMP MIXXX_YEAR "%Y")
+  # uses MIXXX_YEAR MIXXX_FILEVERSION MIXXX_PRODUCTVERSION MIXXX_VERSION MIXXX_DEBUG MIXXX_PRERELEASE MIXXX_PATCHED
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/mixxx.rc.include.template"
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
