@@ -66,7 +66,11 @@ class Sandbox {
     // Creates a security token. s_mutex is not needed for this method.
     static bool createSecurityToken(const QString& canonicalPath, bool isDirectory);
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    static QRecursiveMutex s_mutex;
+#else
     static QMutex s_mutex;
+#endif
     static bool s_bInSandbox;
     static QSharedPointer<ConfigObject<ConfigValue>> s_pSandboxPermissions;
     static QHash<QString, SecurityTokenWeakPointer> s_activeTokens;

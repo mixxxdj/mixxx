@@ -26,6 +26,8 @@ if(POLICY CMP0071)
 endif()
 
 project(mixxx VERSION 2.4.0)
+# Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
+set(MIXXX_VERSION_PRERELEASE "alpha-pre") # set to "alpha-pre" "beta" or ""
 
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
@@ -323,6 +325,20 @@ endif()
 
 # Get the current working branch
 execute_process(
+  COMMAND git describe --dirty
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_DESCRIBE
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
+)
+if(NOT GIT_DESCRIBE)
+  message(STATUS "Git describe: unknown")
+else()
+  message(STATUS "Git describe: ${GIT_DESCRIBE}")
+endif()
+
+# Get the current working branch
+execute_process(
   COMMAND git rev-parse --abbrev-ref HEAD
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_BRANCH
@@ -330,22 +346,10 @@ execute_process(
   ERROR_QUIET
 )
 if(NOT GIT_BRANCH)
-  set(GIT_BRANCH "unknown")
+  message(STATUS "Git branch: unknown")
+else()
+  message(STATUS "Git branch: ${GIT_BRANCH}")
 endif()
-message(STATUS "Git branch: ${GIT_BRANCH}")
-
-# Get the latest abbreviated commit hash of the working branch
-execute_process(
-  COMMAND git log -1 --format=%h
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_HASH
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
-if(NOT GIT_COMMIT_HASH)
-    set(GIT_COMMIT_HASH "unknown")
-endif()
-message(STATUS "Git commit: ${GIT_COMMIT_HASH}")
 
 # Get the number of commits on the working branch
 execute_process(
@@ -406,12 +410,6 @@ endif()
 set_property(DIRECTORY APPEND
     PROPERTY CMAKE_CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/.git/index")
-
-# uses GIT_BRANCH and GIT_COMMIT_COUNT
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
-  "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
-)
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -896,7 +894,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/time.cpp
   src/util/timer.cpp
   src/util/valuetransformer.cpp
-  src/util/version.cpp
+  src/util/versionstore.cpp
   src/util/widgethelper.cpp
   src/util/widgetrendertimer.cpp
   src/util/workerthread.cpp
@@ -1348,11 +1346,18 @@ install(
 install(
   FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/README"
-    "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf"
     "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Keyboard-Shortcuts.pdf"
   DESTINATION
     "${MIXXX_INSTALL_DOCDIR}"
 )
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
+  install(
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf"
+    DESTINATION
+      "${MIXXX_INSTALL_DOCDIR}"
+  )
+endif()
 
 # Additional Linux-only files
 if(UNIX AND NOT APPLE)
@@ -1627,23 +1632,47 @@ add_dependencies(mixxx-test mixxx-testdata)
 # library. Doing this would require initialization using Q_INIT_RESOURCE()
 # calls that are not present at the moment. Further information can be found
 # at: https://doc.qt.io/qt5/resources.html#using-resources-in-a-library
+option(DOWNLOAD_MANUAL "Download Manual PDF from Mixxx website" OFF)
+if(DOWNLOAD_MANUAL AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
+  set(MANUAL_URL "https://downloads.mixxx.org/manual/${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}/mixxx-manual-${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}-en.pdf")
+  message(STATUS "Downloading manual from ${MANUAL_URL}...")
+  file(DOWNLOAD
+    "${MANUAL_URL}"
+    "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
+    SHOW_PROGRESS
+    STATUS MANUAL_PDF_DOWNLOAD
+    TLS_VERIFY ON
+  )
+  if(NOT MANUAL_PDF_DOWNLOAD EQUAL 0)
+    message(FATAL_ERROR "Manual PDF download failed. Either download it yourself "
+      "and move it to '${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
+      "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
+      "manual.")
+  endif()
+  file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf" "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
+endif()
+
 target_sources(mixxx PRIVATE res/mixxx.qrc)
 set_target_properties(mixxx PROPERTIES AUTORCC ON)
 target_sources(mixxx-test PRIVATE res/mixxx.qrc)
 set_target_properties(mixxx-test PROPERTIES AUTORCC ON)
 
-file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
-string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
-# a dummy configure to force a reconfigure when the version changes
-configure_file(src/_version.h src/_version.h)
+if (MIXXX_VERSION_PRERELEASE STREQUAL "")
+   set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}")
+else()
+   set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}-${MIXXX_VERSION_PRERELEASE}")
+endif()
+
+get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
+
+# uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE GIT_BRANCH GIT_DESCRIBE BUILD_FLAGS
+configure_file(src/version.h.in src/version.h @ONLY)
 
 # Windows-only resource file
 if(WIN32)
   string(TIMESTAMP MIXXX_YEAR "%Y")
 
-  # Remove anything after ~ or - in the version number and replace the dots with commas
-  string(REGEX REPLACE "^([^~-]+).*$" "\\1" MIXXX_FILEVERSION "${MIXXX_VERSION}")
-  string(REPLACE "." "," MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  set(MIXXX_FILEVERSION "${CMAKE_PROJECT_VERSION_MAJOR},${CMAKE_PROJECT_VERSION_MINOR},${CMAKE_PROJECT_VERSION_PATCH}")
   if(NOT GIT_COMMIT_COUNT STREQUAL "unknown")
     set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMIT_COUNT}")
     string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
@@ -1656,16 +1685,17 @@ if(WIN32)
     set(MIXXX_DEBUG 0)
   endif()
 
-  string(FIND "${MIXXX_VERSION}" "pre" MIXXX_PRERELEASE_POSITION)
-  if(MIXXX_PRERELEASE_POSITION EQUAL -1)
+  if (MIXXX_VERSION_PRERELEASE STREQUAL "")
     set(MIXXX_PRERELEASE 0)
   else()
     set(MIXXX_PRERELEASE 1)
   endif()
 
+  # uses MIXXX_YEAR MIXXX_FILEVERSION MIXXX_PRODUCTVERSION MIXXX_VERSION MIXXX_DEBUG MIXXX_PRERELEASE
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/mixxx.rc.include.template"
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
+    @ONLY
   )
   target_sources(mixxx PRIVATE
     src/mixxx.rc
@@ -2737,7 +2767,11 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
 set(CPACK_PACKAGE_EXECUTABLES "mixxx;Mixxx")
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
-set(CPACK_PACKAGE_FILE_NAME "Mixxx-${GIT_BRANCH}-r${GIT_COMMIT_COUNT}-${GIT_COMMIT_HASH}")
+if(NOT GIT_DESCRIBE)
+  set(CPACK_PACKAGE_FILE_NAME "mixxx-${MIXXX_VERSION}-unknown")
+else()
+  set(CPACK_PACKAGE_FILE_NAME "mixxx-${GIT_DESCRIBE}")
+endif()
 
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
@@ -2752,7 +2786,7 @@ list(APPEND CPACK_SOURCE_IGNORE_FILES "/build/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/.*_build/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.sconf_temp/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "${CMAKE_CURRENT_BINARY_DIR}/")
-set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-Source")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-source")
 
 set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")

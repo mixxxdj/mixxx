@@ -40,7 +40,7 @@ class EngineSync : public SyncableListener {
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance) override;
 
     /// Notify the engine that a syncable has started or stopped playing
-    void notifyPlaying(Syncable* pSyncable, bool playing) override;
+    void notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) override;
     void notifyScratching(Syncable* pSyncable, bool scratching) override;
 
     /// Used to pick a sync target for cases where master sync mode is not sufficient.

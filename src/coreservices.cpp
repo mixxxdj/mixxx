@@ -33,7 +33,7 @@
 #include "util/statsmanager.h"
 #include "util/time.h"
 #include "util/translations.h"
-#include "util/version.h"
+#include "util/versionstore.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 
 #ifdef __APPLE__
@@ -137,7 +137,7 @@ void CoreServices::initialize(QApplication* pApp) {
         return;
     }
 
-    Version::logBuildDetails();
+    VersionStore::logBuildDetails();
 
     // Only record stats in developer mode.
     if (m_cmdlineArgs.getDeveloper()) {

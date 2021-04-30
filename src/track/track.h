@@ -473,7 +473,11 @@ class Track : public QObject {
             mixxx::audio::StreamInfo&& streamInfo);
 
     // Mutex protecting access to object
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    mutable QRecursiveMutex m_qMutex;
+#else
     mutable QMutex m_qMutex;
+#endif
 
     // The file
     mixxx::FileAccess m_fileAccess;

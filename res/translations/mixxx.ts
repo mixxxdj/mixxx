@@ -45,13 +45,13 @@
     <name>BansheeFeature</name>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="26"/>
-        <location filename="../../src/library/banshee/bansheefeature.cpp" line="110"/>
+        <location filename="../../src/library/banshee/bansheefeature.cpp" line="112"/>
         <source>Banshee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="../../src/library/banshee/bansheefeature.cpp" line="76"/>
-        <location filename="../../src/library/banshee/bansheefeature.cpp" line="85"/>
+        <location filename="../../src/library/banshee/bansheefeature.cpp" line="87"/>
         <source>Error loading Banshee database</source>
         <translation type="unfinished"></translation>
     </message>
@@ -62,7 +62,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/banshee/bansheefeature.cpp" line="86"/>
+        <location filename="../../src/library/banshee/bansheefeature.cpp" line="88"/>
         <source>There was an error loading your Banshee database at
 </source>
         <translation type="unfinished"></translation>
@@ -262,7 +262,7 @@
 <context>
     <name>BaseTrackPlayerImpl</name>
     <message>
-        <location filename="../../src/mixer/basetrackplayer.cpp" line="415"/>
+        <location filename="../../src/mixer/basetrackplayer.cpp" line="418"/>
         <source>Couldn&apos;t load track.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -514,7 +514,7 @@
     </message>
     <message>
         <location filename="../../src/library/browse/browsefeature.cpp" line="141"/>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="435"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="436"/>
         <source>Computer</source>
         <translation type="unfinished"></translation>
     </message>
@@ -534,7 +534,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsefeature.cpp" line="436"/>
+        <location filename="../../src/library/browse/browsefeature.cpp" line="437"/>
         <source>&quot;Computer&quot; lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -647,12 +647,12 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="200"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="199"/>
         <source>Mixxx Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/browse/browsetablemodel.cpp" line="201"/>
+        <location filename="../../src/library/browse/browsetablemodel.cpp" line="200"/>
         <source>Could not load the following file because it is in use by Mixxx or another application.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -668,17 +668,17 @@
 <context>
     <name>CachingReaderWorker</name>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="147"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="146"/>
         <source>The file &apos;%1&apos; could not be found.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="163"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="162"/>
         <source>The file &apos;%1&apos; could not be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="180"/>
+        <location filename="../../src/engine/cachingreader/cachingreaderworker.cpp" line="179"/>
         <source>The file &apos;%1&apos; is empty and could not be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3417,32 +3417,32 @@
 <context>
     <name>DlgAbout</name>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="43"/>
-        <source>Mixxx %1 Development Team</source>
+        <location filename="../../src/dialog/dlgabout.cpp" line="29"/>
+        <source>Mixxx %1.%2 Development Team</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="44"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="34"/>
         <source>With contributions from:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="45"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="35"/>
         <source>And special thanks to:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="46"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="36"/>
         <source>Past Developers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="47"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="37"/>
         <source>Past Contributors</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgabout.cpp" line="351"/>
+        <location filename="../../src/dialog/dlgabout.cpp" line="341"/>
         <source>Official Website</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3455,12 +3455,28 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgaboutdlg.ui" line="89"/>
+        <location filename="../../src/dialog/dlgaboutdlg.ui" line="90"/>
+        <location filename="../../src/dialog/dlgaboutdlg.ui" line="113"/>
+        <source>Unknown</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgaboutdlg.ui" line="106"/>
+        <source>Git Version:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgaboutdlg.ui" line="123"/>
+        <source>Platform:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dialog/dlgaboutdlg.ui" line="145"/>
         <source>Credits</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dialog/dlgaboutdlg.ui" line="124"/>
+        <location filename="../../src/dialog/dlgaboutdlg.ui" line="180"/>
         <source>License</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5824,62 +5840,62 @@ and allows you to pitch adjust them for harmonic mixing.</source>
 <context>
     <name>DlgPrefLibrary</name>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="131"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="134"/>
         <source>Music Directory Added</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="132"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="135"/>
         <source>You added one or more music directories. The tracks in these directories won&apos;t be available until you rescan your library. Would you like to rescan now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="136"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="139"/>
         <source>Scan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="250"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="253"/>
         <source>Choose a music directory</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="265"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="268"/>
         <source>Confirm Directory Removal</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="267"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="270"/>
         <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="278"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="281"/>
         <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="286"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="289"/>
         <source>Hide Tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="288"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="291"/>
         <source>Delete Track Metadata</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="290"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="293"/>
         <source>Leave Tracks Unchanged</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="331"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="334"/>
         <source>Relink music directory to new location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="435"/>
+        <location filename="../../src/preferences/dialog/dlgpreflibrary.cpp" line="438"/>
         <source>Select Library Font</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8073,12 +8089,12 @@ support.</source>
 <context>
     <name>Library</name>
     <message>
-        <location filename="../../src/library/library.cpp" line="493"/>
+        <location filename="../../src/library/library.cpp" line="506"/>
         <source>Add Directory to Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/library.cpp" line="494"/>
+        <location filename="../../src/library/library.cpp" line="507"/>
         <source>Could not add the directory to your library. Either this directory is already in your library or you are currently rescanning your library.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8225,22 +8241,22 @@ Do you really want to overwrite it?</source>
 <context>
     <name>MixxxLibraryFeature</name>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="72"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="73"/>
         <source>Missing Tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="73"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="74"/>
         <source>Hidden Tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="113"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="114"/>
         <source>Export to Engine Prime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="141"/>
+        <location filename="../../src/library/mixxxlibraryfeature.cpp" line="142"/>
         <source>Tracks</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8356,73 +8372,73 @@ Do you really want to overwrite it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="876"/>
+        <location filename="../../src/mixxx.cpp" line="877"/>
         <source>There is no input device selected for this vinyl control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="889"/>
+        <location filename="../../src/mixxx.cpp" line="891"/>
         <source>There is no input device selected for this passthrough control.
 Please select an input device in the sound hardware preferences first.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="902"/>
+        <location filename="../../src/mixxx.cpp" line="905"/>
         <source>There is no input device selected for this microphone.
 Do you want to select an input device?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="915"/>
+        <location filename="../../src/mixxx.cpp" line="919"/>
         <source>There is no input device selected for this auxiliary.
 Do you want to select an input device?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="992"/>
+        <location filename="../../src/mixxx.cpp" line="997"/>
         <source>Error in skin file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="993"/>
+        <location filename="../../src/mixxx.cpp" line="998"/>
         <source>The selected skin cannot be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1097"/>
+        <location filename="../../src/mixxx.cpp" line="1102"/>
         <source>OpenGL Direct Rendering</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1098"/>
+        <location filename="../../src/mixxx.cpp" line="1103"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1132"/>
-        <location filename="../../src/mixxx.cpp" line="1140"/>
-        <location filename="../../src/mixxx.cpp" line="1149"/>
+        <location filename="../../src/mixxx.cpp" line="1137"/>
+        <location filename="../../src/mixxx.cpp" line="1145"/>
+        <location filename="../../src/mixxx.cpp" line="1154"/>
         <source>Confirm Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1133"/>
+        <location filename="../../src/mixxx.cpp" line="1138"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1141"/>
+        <location filename="../../src/mixxx.cpp" line="1146"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1150"/>
+        <location filename="../../src/mixxx.cpp" line="1155"/>
         <source>The preferences window is still open.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1151"/>
+        <location filename="../../src/mixxx.cpp" line="1156"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8537,58 +8553,58 @@ Do you want to select an input device?</source>
 <context>
     <name>QMessageBox</name>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="449"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="454"/>
         <source>Upgrading Mixxx</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="450"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="455"/>
         <source>Mixxx now supports displaying cover art.
 Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="453"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="458"/>
         <source>Scan</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="454"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="459"/>
         <source>Later</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="463"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="468"/>
         <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="465"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="470"/>
         <source>Mixxx has a new and improved beat detector.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="466"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="471"/>
         <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="470"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="475"/>
         <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="472"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="477"/>
         <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="476"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="481"/>
         <source>Keep Current Beatgrids</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/preferences/upgrade.cpp" line="477"/>
+        <location filename="../../src/preferences/upgrade.cpp" line="482"/>
         <source>Generate New Beatgrids</source>
         <translation type="unfinished"></translation>
     </message>
@@ -8778,12 +8794,12 @@ Do you want to scan your library for cover files now?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="81"/>
+        <location filename="../../src/util/sandbox.cpp" line="107"/>
         <source>Mixxx Needs Access to: %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="86"/>
+        <location filename="../../src/util/sandbox.cpp" line="110"/>
         <source>Due to Mac Sandboxing, we need your permission to access this file:
 
 %1
@@ -8794,17 +8810,17 @@ To abort this action, press Cancel on the file dialog.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="127"/>
+        <location filename="../../src/util/sandbox.cpp" line="151"/>
         <source>You selected the wrong file. To grant Mixxx access, please select the file &apos;%1&apos;. If you do not want to continue, press Cancel.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="409"/>
+        <location filename="../../src/util/sandbox.cpp" line="444"/>
         <source>Upgrading old Mixxx settings</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/sandbox.cpp" line="412"/>
+        <location filename="../../src/util/sandbox.cpp" line="447"/>
         <source>Due to macOS sandboxing, Mixxx needs your permission to access your music library and settings from Mixxx versions before 2.3.0. After clicking OK, you will see a file selection dialog. 
 
 To allow Mixxx to use your old library and settings, click the Open button in the file selection dialog. Mixxx will then move your old settings into the sandbox. This only needs to be done once.
@@ -9429,42 +9445,42 @@ Higher values result in less attenuation of high frequencies.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="29"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="30"/>
         <source>Ctrl+t</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="30"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="31"/>
         <source>Ctrl+y</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="31"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="32"/>
         <source>Ctrl+u</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="32"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="33"/>
         <source>Ctrl+i</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="40"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="41"/>
         <source>Ctrl+o</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="41"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="42"/>
         <source>Ctrl+Shift+O</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="48"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="49"/>
         <source>Ctrl+,</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="50"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="51"/>
         <source>Ctrl+P</source>
         <translation type="unfinished"></translation>
     </message>
@@ -10100,7 +10116,7 @@ Fully right: end of the effect period</source>
     <name>RhythmboxFeature</name>
     <message>
         <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="62"/>
-        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="443"/>
+        <location filename="../../src/library/rhythmbox/rhythmboxfeature.cpp" line="444"/>
         <source>Rhythmbox</source>
         <translation type="unfinished"></translation>
     </message>
@@ -10151,34 +10167,34 @@ Fully right: end of the effect period</source>
 <context>
     <name>SeratoFeature</name>
     <message>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="887"/>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="971"/>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="1116"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="889"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="973"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="1118"/>
         <source>Serato</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="972"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="974"/>
         <source>Reads the following from the Serato Music directory and removable devices:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="975"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="977"/>
         <source>Tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="976"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="978"/>
         <source>Crates</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="979"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="981"/>
         <source>Check for Serato databases (refresh)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/serato/seratofeature.cpp" line="1005"/>
+        <location filename="../../src/library/serato/seratofeature.cpp" line="1007"/>
         <source>(loading) Serato</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12839,12 +12855,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>TrackCollection</name>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="271"/>
+        <location filename="../../src/library/trackcollection.cpp" line="282"/>
         <source>Hiding tracks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/trackcollection.cpp" line="272"/>
+        <location filename="../../src/library/trackcollection.cpp" line="283"/>
         <source>The selected tracks are in the following playlists:%1Hiding them will remove them from these playlists. Continue?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12908,23 +12924,23 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>TrackExportWorker</name>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="112"/>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="186"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="110"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="184"/>
         <source>Export process was canceled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="127"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="125"/>
         <source>Error removing file %1: %2. Stopping.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="140"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="138"/>
         <source>Error exporting track %1 to %2: %3. Stopping.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/export/trackexportworker.cpp" line="171"/>
+        <location filename="../../src/library/export/trackexportworker.cpp" line="169"/>
         <source>Error exporting tracks</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12933,7 +12949,7 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
     <name>TraktorFeature</name>
     <message>
         <location filename="../../src/library/traktor/traktorfeature.cpp" line="103"/>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="627"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="629"/>
         <source>Traktor</source>
         <translation type="unfinished"></translation>
     </message>
@@ -12943,12 +12959,12 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="621"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="623"/>
         <source>Error Loading Traktor Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/traktor/traktorfeature.cpp" line="622"/>
+        <location filename="../../src/library/traktor/traktorfeature.cpp" line="624"/>
         <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -13117,437 +13133,437 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>WMainMenuBar</name>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="68"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="84"/>
         <source>&amp;File</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="70"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="86"/>
         <source>Load Track to Deck &amp;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="71"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="87"/>
         <source>Loads a track in deck %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="72"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="88"/>
         <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="100"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="116"/>
         <source>&amp;Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="101"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="117"/>
         <source>Quits Mixxx</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="105"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="121"/>
         <source>Ctrl+q</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="116"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="132"/>
         <source>&amp;Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="118"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="134"/>
         <source>&amp;Rescan Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="119"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="135"/>
         <source>Rescans library folders for changes to tracks.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="130"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="146"/>
         <source>E&amp;xport Library to Engine Prime</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="131"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="147"/>
         <source>Export the library to the Engine Prime format</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="142"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="158"/>
         <source>Create &amp;New Playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="143"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="159"/>
         <source>Create a new playlist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="148"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="164"/>
         <source>Ctrl+n</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="155"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="171"/>
         <source>Create New &amp;Crate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="156"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="172"/>
         <source>Create a new crate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="161"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="177"/>
         <source>Ctrl+Shift+N</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="176"/>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="178"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="192"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="194"/>
         <source>&amp;View</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="182"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="198"/>
         <source>May not be supported on all skins.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="183"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="199"/>
         <source>Show Skin Settings Menu</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="184"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="200"/>
         <source>Show the Skin Settings Menu of the currently selected Skin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="191"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="207"/>
         <source>Ctrl+1</source>
         <comment>Menubar|View|Show Skin Settings</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="198"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="214"/>
         <source>Show Microphone Section</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="199"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="215"/>
         <source>Show the microphone section of the Mixxx interface.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="206"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="222"/>
         <source>Ctrl+2</source>
         <comment>Menubar|View|Show Microphone Section</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="213"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="229"/>
         <source>Show Vinyl Control Section</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="214"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="230"/>
         <source>Show the vinyl control section of the Mixxx interface.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="221"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="237"/>
         <source>Ctrl+3</source>
         <comment>Menubar|View|Show Vinyl Control Section</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="228"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="244"/>
         <source>Show Preview Deck</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="229"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="245"/>
         <source>Show the preview deck in the Mixxx interface.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="236"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="252"/>
         <source>Ctrl+4</source>
         <comment>Menubar|View|Show Preview Deck</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="243"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="259"/>
         <source>Show Cover Art</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="244"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="260"/>
         <source>Show cover art in the Mixxx interface.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="251"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="267"/>
         <source>Ctrl+6</source>
         <comment>Menubar|View|Show Cover Art</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="258"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="274"/>
         <source>Maximize Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="259"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="275"/>
         <source>Maximize the track library to take up all the available screen space.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="266"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="282"/>
         <source>Space</source>
         <comment>Menubar|View|Maximize Library</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="274"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="290"/>
         <source>&amp;Full Screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="275"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="291"/>
         <source>Display Mixxx using the full screen</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="311"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="327"/>
         <source>&amp;Options</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="314"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="330"/>
         <source>&amp;Vinyl Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="315"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="331"/>
         <source>Use timecoded vinyls on external turntables to control Mixxx</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="319"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="335"/>
         <source>Enable Vinyl Control &amp;%1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="350"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="366"/>
         <source>&amp;Record Mix</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="351"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="367"/>
         <source>Record your mix to a file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="356"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="372"/>
         <source>Ctrl+R</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="369"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="385"/>
         <source>Enable Live &amp;Broadcasting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="370"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="386"/>
         <source>Stream your mixes to a shoutcast or icecast server</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="376"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="392"/>
         <source>Ctrl+L</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="392"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="408"/>
         <source>Enable &amp;Keyboard Shortcuts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="393"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="409"/>
         <source>Toggles keyboard shortcuts on or off</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="400"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="416"/>
         <source>Ctrl+`</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="412"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="428"/>
         <source>&amp;Preferences</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="413"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="429"/>
         <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="430"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="446"/>
         <source>&amp;Developer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="432"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="448"/>
         <source>&amp;Reload Skin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="433"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="449"/>
         <source>Reload the skin</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="438"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="454"/>
         <source>Ctrl+Shift+R</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="445"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="461"/>
         <source>Developer &amp;Tools</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="446"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="462"/>
         <source>Opens the developer tools dialog</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="451"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="467"/>
         <source>Ctrl+Shift+T</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="464"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="480"/>
         <source>Stats: &amp;Experiment Bucket</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="465"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="481"/>
         <source>Enables experiment mode. Collects stats in the EXPERIMENT tracking bucket.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="471"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="487"/>
         <source>Ctrl+Shift+E</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="484"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="500"/>
         <source>Stats: &amp;Base Bucket</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="485"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="501"/>
         <source>Enables base mode. Collects stats in the BASE tracking bucket.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="491"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="507"/>
         <source>Ctrl+Shift+B</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="505"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="521"/>
         <source>Deb&amp;ugger Enabled</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="506"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="522"/>
         <source>Enables the debugger during skin parsing</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="513"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="529"/>
         <source>Ctrl+Shift+D</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="531"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="547"/>
         <source>&amp;Help</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="542"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="558"/>
         <source>Show Keywheel</source>
         <extracomment>menu title</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="544"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="560"/>
         <source>Show keywheel</source>
         <extracomment>tooltip text</extracomment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="550"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="566"/>
         <source>F12</source>
         <comment>Menubar|View|Show Keywheel</comment>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="557"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="574"/>
         <source>&amp;Community Support</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="558"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="575"/>
         <source>Get help with Mixxx</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="594"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="589"/>
         <source>&amp;User Manual</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="595"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="590"/>
         <source>Read the Mixxx user manual.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="603"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="606"/>
         <source>&amp;Keyboard Shortcuts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="604"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="607"/>
         <source>Speed up your workflow with keyboard shortcuts.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="613"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="620"/>
         <source>&amp;Translate This Application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="614"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="621"/>
         <source>Help translate this application into your language.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="624"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="631"/>
         <source>&amp;About</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wmainmenubar.cpp" line="625"/>
+        <location filename="../../src/widget/wmainmenubar.cpp" line="632"/>
         <source>About the application</source>
         <translation type="unfinished"></translation>
     </message>
@@ -14244,58 +14260,58 @@ Use this to change only the effected (wet) signal with EQ and filter effects.</s
 <context>
     <name>main</name>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="63"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="62"/>
         <source>Mixxx is an open source DJ software. For more information, see https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options).
 CamelCase arguments are deprecated and will be removed in 2.5</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="73"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="72"/>
         <source>Starts Mixxx in full-screen mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="77"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="76"/>
         <source>Use a custom locale for loading translations. (e.g &apos;fr&apos;)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="85"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="84"/>
         <source>Top-level directory where Mixxx should look for settings. Default is:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="94"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="93"/>
         <source>Top-level directory where Mixxx should look for its resource files such as MIDI mappings, overriding the default installation location.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="103"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="102"/>
         <source>Path the timeline is written to</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="110"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="109"/>
         <source>Causes Mixxx to display/log all of the controller data it receives and script functions it loads</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="116"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="115"/>
         <source>Enables developer-mode. Includes extra log info, stats on performance, and a Developer tools menu.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="123"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="122"/>
         <source>Enables safe-mode. Disables OpenGL waveforms, and spinning vinyl widgets. Try this option if Mixxx is crashing on startup.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="130"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="129"/>
         <source>[auto|always|never] Use colors on the console output.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="138"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="137"/>
         <source>Sets the verbosity of command line logging.
 critical - Critical/Fatal only
 warning  - Above + Warnings
@@ -14305,17 +14321,17 @@ trace    - Above + Profiling messages</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="150"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="149"/>
         <source>Sets the the logging level at which the log buffer is flushed to mixxx.log. LEVEL is one of the values defined at --logLevel above.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="160"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="159"/>
         <source>Breaks (SIGINT) Mixxx, if a DEBUG_ASSERT evaluates to false. Under a debugger you can continue afterwards.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/util/cmdlineargs.cpp" line="170"/>
+        <location filename="../../src/util/cmdlineargs.cpp" line="169"/>
         <source>Load the specified music file(s) at start-up. Each file you specify will be loaded into the next virtual deck.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -14323,32 +14339,32 @@ trace    - Above + Profiling messages</source>
 <context>
     <name>mixxx::CoreServices</name>
     <message>
-        <location filename="../../src/coreservices.cpp" line="166"/>
+        <location filename="../../src/coreservices.cpp" line="167"/>
         <source>fonts</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="175"/>
+        <location filename="../../src/coreservices.cpp" line="176"/>
         <source>database</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="188"/>
+        <location filename="../../src/coreservices.cpp" line="189"/>
         <source>effects</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="212"/>
+        <location filename="../../src/coreservices.cpp" line="213"/>
         <source>audio interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="232"/>
+        <location filename="../../src/coreservices.cpp" line="233"/>
         <source>decks</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/coreservices.cpp" line="263"/>
+        <location filename="../../src/coreservices.cpp" line="264"/>
         <source>library</source>
         <translation type="unfinished"></translation>
     </message>

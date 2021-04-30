@@ -100,6 +100,35 @@ jobs:
       artifact-windows-win64: ${{ steps.prepare_deploy.outputs.artifact-windows-win64 }}
     steps:
 
+    - name: "[Windows] Install rsync and openssh"
+      if: runner.os == 'Windows'
+      run: |
+        $Env:PATH="c:\msys64\usr\bin;$Env:PATH"
+        pacman -S --noconfirm coreutils bash rsync openssh
+        # Unfortunately, mixing executables from msys64 and mingw (i.e. Git
+        # Bash) does not work properly and leads to errors like these:
+        #
+        #     0 [main] python3 (5248) C:\msys64\usr\bin\python3.exe: *** fatal error - cygheap base mismatch detected - 0x180347408/0x180352408.
+        #
+        # Even when prepending the MSYS2 binary directory to %PATH%, GitHub
+        # Actions will still pick the Git Bash executable over the MSYS2 one
+        # when using `shell: bash`. Since it's not feasible to set `shell` to
+        # an absolute path in a cross-platform build workflow, we overwrite the
+        # git bash executable with the MSYS2 one.
+        #
+        # Also see related issue:
+        # https://github.com/actions/virtual-environments/issues/594
+        Copy-Item -Path "C:\msys64\usr\bin\bash.exe" -Destination "C:\Program Files\Git\bin\bash.exe" -Force
+        # By default, MSYS2 uses an
+        # /etc/profile file that changes
+        # the current working directory
+        # when bash is started. We don't
+        # want this behavior,so we just
+        # delete it.
+        Remove-Item -Path "C:\msys64\etc\profile"
+        # Add MSYS2's tools to %PATH%.
+        Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
+
     # sccache's handling of the /fp:fast MSVC compiler option is broken, so use our fork with the fix.
     # https://github.com/mozilla/sccache/issues/950
     - name: "[Windows] Set up cargo cache"
@@ -122,6 +151,7 @@ jobs:
     - name: "Check out repository"
       uses: actions/checkout@v2
       with:
+        # This is necessary for making `git describe` work.
         fetch-depth: 0
 
     - name: "Ensure that all tags are fetched"
@@ -222,6 +252,7 @@ jobs:
         -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DBATTERY=ON
         -DBROADCAST=ON
+        -DDOWNLOAD_MANUAL=ON
         -DHID=ON
         -DKEYFINDER=ON
         -DLILV=ON
@@ -302,7 +333,7 @@ jobs:
       working-directory: build
 
     - name: "[macOS] Sign, Notarize, and Staple Package"
-      if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null
+      if: runner.os == 'macOS' && env.MACOS_CODESIGN_OPENSSL_PASSWORD != null && env.MACOS_CODESIGN_CERTIFICATE_PASSWORD != null && env.APPLE_APP_SPECIFIC_PASSWORD != null
       run: packaging/macos/sign_notarize_staple.sh build/*.dmg
       env:
         APPLE_ID_USERNAME: rryan@mixxx.org
@@ -336,24 +367,28 @@ jobs:
         --dest-url 'https://downloads.mixxx.org'
         ${{ matrix.artifacts_path }}
 
-    - name: "[Windows] Install rsync and openssh"
+    - name: "Set up SSH Agent"
+      if: github.event_name == 'push' && env.SSH_PRIVATE_KEY != null
+      shell: bash
       env:
-        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
-      if: runner.os == 'Windows' && env.SSH_PASSWORD != null
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
+        SSH_HOST: downloads-hostgator.mixxx.org
       run: |
-        $Env:PATH="C:\msys64\usr\bin;$Env:PATH"
-        pacman -S --noconfirm coreutils bash rsync openssh
-        Add-Content -Path "$Env:GITHUB_ENV" -Value "PATH=$Env:PATH"
+        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+        ssh-add - <<< "${SSH_PRIVATE_KEY}"
+        mkdir -p "${HOME}/.ssh"
+        ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
+        echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
 
     - name: "[macOS/Windows] Upload build to downloads.mixxx.org"
       # skip deploying Ubuntu builds to downloads.mixxx.org because these are deployed to the PPA
-      if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_PASSWORD != null
-      run: bash tools/deploy.sh deploy/
+      if: runner.os != 'Linux' && github.event_name == 'push' && env.SSH_AUTH_SOCK != null
+      shell: bash --login -eo pipefail "{0}"
+      run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
       env:
-        DESTDIR: public_html/downloads/
+        DESTDIR: public_html/downloads
         SSH_HOST: downloads-hostgator.mixxx.org
-        SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
-        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
         SSH_USER: mixxx
 
     # Workaround for https://github.com/actions/cache/issues/531
@@ -404,14 +439,27 @@ jobs:
         JOB_DATA: ${{ toJSON(needs.build) }}
         SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
 
-    - name: "Deploy Manifest"
-      if: github.event_name == 'push' && env.SSH_PASSWORD != null && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
-      run: bash tools/deploy.sh deploy/
+    - name: "Set up SSH Agent"
+      if: github.event_name == 'push' && env.SSH_PRIVATE_KEY != null  && env.MANIFEST_DIRTY != null && env.MANIFEST_DIRTY != '0'
+      shell: bash
       env:
-        DESTDIR: public_html/downloads/
+        SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        SSH_PRIVATE_KEY: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY }}
         SSH_HOST: downloads-hostgator.mixxx.org
-        SSH_KEY: packaging/certificates/downloads-hostgator.mixxx.org.key
-        SSH_PASSWORD: ${{ secrets.DOWNLOADS_HOSTGATOR_DOT_MIXXX_DOT_ORG_KEY_PASSWORD }}
+      run: |
+        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+        ssh-add - <<< "${SSH_PRIVATE_KEY}"
+        mkdir -p "${HOME}/.ssh"
+        ssh-keyscan "${SSH_HOST}" >> "${HOME}/.ssh/known_hosts"
+        echo "SSH_AUTH_SOCK=${SSH_AUTH_SOCK}" >> "${GITHUB_ENV}"
+
+    - name: "Deploy Manifest"
+      if: github.event_name == 'push' && env.SSH_AUTH_SOCK != null
+      shell: bash
+      run: rsync --verbose --recursive --checksum --times --delay-updates "deploy/" "${SSH_USER}@${SSH_HOST}:${DESTDIR}/"
+      env:
+        DESTDIR: public_html/downloads
+        SSH_HOST: downloads-hostgator.mixxx.org
         SSH_USER: mixxx
 
     - name: "Trigger Netlify build"
