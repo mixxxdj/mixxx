@@ -22,7 +22,7 @@ QMetaProperty propertyFromWidget(const QWidget* pWidget, const QString& name) {
     VERIFY_OR_DEBUG_ASSERT(meta) {
         return QMetaProperty();
     }
-    int id = meta->indexOfProperty(name.toLatin1().constData());
+    const int id = meta->indexOfProperty(name.toLatin1().constData());
     VERIFY_OR_DEBUG_ASSERT(id >= 0) {
         return QMetaProperty();
     }
@@ -89,7 +89,7 @@ QString ControlParameterWidgetConnection::toDebugString() const {
 
 void ControlParameterWidgetConnection::slotControlValueChanged(double value) {
     if (m_directionOption & DIR_TO_WIDGET) {
-        double parameter = getControlParameterForValue(value);
+        const double parameter = getControlParameterForValue(value);
         m_pWidget->onConnectedControlChanged(parameter, value);
     }
 }
@@ -141,7 +141,7 @@ QString ControlWidgetPropertyConnection::toDebugString() const {
 }
 
 void ControlWidgetPropertyConnection::slotControlValueChanged(double v) {
-    double parameter = getControlParameterForValue(v);
+    const double parameter = getControlParameterForValue(v);
     QVariant vParameter;
     if (m_property.type() == QVariant::Bool) {
         vParameter = (parameter > 0);
