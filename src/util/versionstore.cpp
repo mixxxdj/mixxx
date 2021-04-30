@@ -33,17 +33,33 @@
 
 namespace {
 
-const QString kMixxxVersion = QStringLiteral(MIXXX_VERSION);
+const QVersionNumber kMixxxVersionNumber = QVersionNumber(
+        MIXXX_VERSION_MAJOR, MIXXX_VERSION_MINOR, MIXXX_VERSION_PATCH);
+const QString kMixxxVersionSuffix = QString(MIXXX_VERSION_SUFFIX);
 const QString kMixxx = QStringLiteral("Mixxx");
-const QString kGitBranch = QStringLiteral(GIT_BRANCH);
-const QString kBuildRev = QStringLiteral(BUILD_REV);
-const QString kBuildFlags = QStringLiteral(BUILD_FLAGS);
+const QString kGitBranch = QString(GIT_BRANCH);
+const QString kGitDescribe = QString(GIT_DESCRIBE);
+const QString kBuildFlags = QString(BUILD_FLAGS);
 
 } // namespace
 
 // static
 QString VersionStore::version() {
-    return MIXXX_VERSION;
+    if (kMixxxVersionSuffix.isEmpty()) {
+        return kMixxxVersionNumber.toString();
+    } else {
+        return kMixxxVersionNumber.toString() + QStringLiteral("-") + kMixxxVersionSuffix;
+    }
+}
+
+// static
+QVersionNumber VersionStore::versionNumber() {
+    return kMixxxVersionNumber;
+}
+
+// static
+QString VersionStore::versionSuffix() {
+    return kMixxxVersionSuffix;
 }
 
 // static
@@ -52,25 +68,41 @@ QString VersionStore::applicationName() {
 }
 
 // static
-QString VersionStore::applicationTitle() {
+QString VersionStore::platform() {
 #ifdef __APPLE__
-    QString base = kMixxx;
-#elif defined(AMD64) || defined(EM64T) || defined(x86_64)
-    QString base("Mixxx " MIXXX_VERSION " x64");
-#elif defined(IA64)
-    QString base("Mixxx " MIXXX_VERSION " Itanium");
+    QString base = QStringLiteral("macOS");
+#elif defined(__LINUX__)
+    QString base = QStringLiteral("Linux");
+#elif defined(__WINDOWS__)
+    QString base = QStringLiteral("Windows");
 #else
-    QString base("Mixxx " MIXXX_VERSION);
+    QString base = QStringLiteral("Unknown OS");
 #endif
 
-#ifdef MIXXX_BUILD_NUMBER_IN_TITLE_BAR
-    QString branch = developmentBranch();
-    QString branch_revision = developmentRevision();
-    if (!branch.isEmpty() && !branch_revision.isEmpty()) {
-        base.append(QString(" (build %1-r%2)")
-                            .arg(branch, branch_revision));
-    }
+#if defined(__amd64__) || defined(__amd64) || defined(__x86_64__) || \
+        defined(__x86_64) || defined(_M_X64) || defined(_M_AMD64) || \
+        defined(AMD64) || defined(EM64T) || defined(x86_64)
+    base.append(" x86_64");
+#elif defined(i386) || defined(__i386) || defined(__i386__) ||     \
+        defined(__IA32__) || defined(_M_IX86) || defined(_X86_) || \
+        defined(__X86__) || defined(__I86__)
+    base.append(" x86");
+#elif defined(IA64)
+    base.append(" IA64");
+#elif defined(__aarch64__)
+    base.append(" ARM64");
+#elif defined(__arm__) || defined(__thumb__) || defined(_ARM) || \
+        defined(_M_ARM) || defined(_M_ARMT) || defined(__arm)
+    base.append(" ARM");
+#elif defined(mips) || defined(__mips)
+    base.append(" MIPS");
+#elif defined(__powerpc) || defined(__powerpc__) || defined(__powerpc64__) || \
+        defined(__ppc__) || defined(__ppc) || defined(__PPC__) ||             \
+        defined(__PPC64__) || defined(_ARCH_PPC) || defined(_ARCH_PPC64) ||   \
+        defined(_M_PPC)
+    base.append(" PowerPC");
 #endif
+
     return base;
 }
 
@@ -80,8 +112,23 @@ QString VersionStore::gitBranch() {
 }
 
 // static
-QString VersionStore::developmentRevision() {
-    return kBuildRev;
+QString VersionStore::gitDescribe() {
+    return kGitDescribe;
+}
+
+// static
+QString VersionStore::gitVersion() {
+    QString gitVersion = VersionStore::gitDescribe();
+    if (gitVersion.isEmpty()) {
+        gitVersion = QStringLiteral("unknown");
+    }
+
+    QString gitBranch = VersionStore::gitBranch();
+    if (!gitBranch.isEmpty()) {
+        gitVersion.append(QStringLiteral(" (") + gitBranch + QStringLiteral(" branch)"));
+    }
+
+    return gitVersion;
 }
 
 // static
@@ -135,17 +182,10 @@ QStringList VersionStore::dependencyVersions() {
 
 void VersionStore::logBuildDetails() {
     QString version = VersionStore::version();
-    QString buildRevision = developmentRevision();
     QString buildFlags = VersionStore::buildFlags();
 
     QStringList buildInfo;
-    if (!kGitBranch.isEmpty() && !buildRevision.isEmpty()) {
-        buildInfo.append(
-                QString("git %1 r%2").arg(kGitBranch, buildRevision));
-    } else if (!buildRevision.isEmpty()) {
-        buildInfo.append(
-                QString("git r%2").arg(buildRevision));
-    }
+    buildInfo.append(QString("git %1").arg(VersionStore::gitVersion()));
 #ifndef DISABLE_BUILDTIME // buildtime=1, on by default
     buildInfo.append("built on: " __DATE__ " @ " __TIME__);
 #endif
@@ -155,7 +195,7 @@ void VersionStore::logBuildDetails() {
     QString buildInfoFormatted = QString("(%1)").arg(buildInfo.join("; "));
 
     // This is the first line in mixxx.log
-    qDebug() << applicationName() << version << buildInfoFormatted << "is starting...";
+    qDebug().noquote() << applicationName() << version << buildInfoFormatted << "is starting...";
 
     QStringList depVersions = dependencyVersions();
     qDebug() << "Compile time library versions:";

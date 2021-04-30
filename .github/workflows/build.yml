@@ -122,6 +122,7 @@ jobs:
     - name: "Check out repository"
       uses: actions/checkout@v2
       with:
+        # This is necessary for making `git describe` work.
         fetch-depth: 0
 
     - name: "Ensure that all tags are fetched"

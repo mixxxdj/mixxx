@@ -50,7 +50,10 @@ const QString Track::kArtistTitleSeparator = QStringLiteral(" - ");
 Track::Track(
         mixxx::FileAccess fileAccess,
         TrackId trackId)
-        : m_qMutex(QMutex::Recursive),
+        :
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+          m_qMutex(QMutex::Recursive),
+#endif
           m_fileAccess(std::move(fileAccess)),
           m_record(trackId),
           m_bDirty(false),

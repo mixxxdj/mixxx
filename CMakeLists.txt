@@ -325,6 +325,20 @@ endif()
 
 # Get the current working branch
 execute_process(
+  COMMAND git describe --dirty
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_DESCRIBE
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
+)
+if(NOT GIT_DESCRIBE)
+  message(STATUS "Git describe: unknown")
+else()
+  message(STATUS "Git describe: ${GIT_DESCRIBE}")
+endif()
+
+# Get the current working branch
+execute_process(
   COMMAND git rev-parse --abbrev-ref HEAD
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_BRANCH
@@ -332,22 +346,10 @@ execute_process(
   ERROR_QUIET
 )
 if(NOT GIT_BRANCH)
-  set(GIT_BRANCH "unknown")
+  message(STATUS "Git branch: unknown")
+else()
+  message(STATUS "Git branch: ${GIT_BRANCH}")
 endif()
-message(STATUS "Git branch: ${GIT_BRANCH}")
-
-# Get the latest abbreviated commit hash of the working branch
-execute_process(
-  COMMAND git log -1 --format=%h
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_HASH
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
-if(NOT GIT_COMMIT_HASH)
-    set(GIT_COMMIT_HASH "unknown")
-endif()
-message(STATUS "Git commit: ${GIT_COMMIT_HASH}")
 
 # Get the number of commits on the working branch
 execute_process(
@@ -1663,7 +1665,7 @@ endif()
 
 get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 
-# uses MIXXX_VERSION GIT_BRANCH GIT_COMMIT_COUNT BUILD_FLAGS
+# uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE GIT_BRANCH GIT_DESCRIBE BUILD_FLAGS
 configure_file(src/version.h.in src/version.h @ONLY)
 
 # Windows-only resource file
@@ -2765,7 +2767,11 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
 set(CPACK_PACKAGE_EXECUTABLES "mixxx;Mixxx")
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
-set(CPACK_PACKAGE_FILE_NAME "Mixxx-${GIT_BRANCH}-r${GIT_COMMIT_COUNT}-${GIT_COMMIT_HASH}")
+if(NOT GIT_DESCRIBE)
+  set(CPACK_PACKAGE_FILE_NAME "mixxx-${MIXXX_VERSION}-unknown")
+else()
+  set(CPACK_PACKAGE_FILE_NAME "mixxx-${GIT_DESCRIBE}")
+endif()
 
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
@@ -2780,7 +2786,7 @@ list(APPEND CPACK_SOURCE_IGNORE_FILES "/build/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/.*_build/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.sconf_temp/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "${CMAKE_CURRENT_BINARY_DIR}/")
-set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-Source")
+set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-source")
 
 set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")

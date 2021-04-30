@@ -13,25 +13,10 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     mixxx_icon->load(QString(":/images/mixxx_icon.svg"));
     mixxx_logo->load(QString(":/images/mixxx_logo.svg"));
 
-    QString mixxxVersion = VersionStore::version();
-    QString gitBranch = VersionStore::gitBranch();
-    QString buildRevision = VersionStore::developmentRevision();
-
-    QStringList version;
-    version.append(mixxxVersion);
-
-    if (!gitBranch.isEmpty() || !buildRevision.isEmpty()) {
-        QStringList buildInfo;
-        buildInfo.append("build");
-        if (!gitBranch.isEmpty()) {
-            buildInfo.append(gitBranch);
-        }
-        if (!buildRevision.isEmpty()) {
-            buildInfo.append(QString("r%1").arg(buildRevision));
-        }
-        version.append(QString("(%1)").arg(buildInfo.join(" ")));
-    }
-    version_label->setText(version.join(" "));
+    version_label->setText(VersionStore::applicationName() +
+            QStringLiteral(" ") + VersionStore::version());
+    git_version_label->setText(VersionStore::gitVersion());
+    platform_label->setText(VersionStore::platform());
 
     QFile licenseFile(":/LICENSE");
     if (!licenseFile.open(QIODevice::ReadOnly)) {
@@ -40,7 +25,12 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
         licenseText->setPlainText(licenseFile.readAll());
     }
 
-    QString s_devTeam = tr("Mixxx %1 Development Team").arg(mixxxVersion);
+    QString s_devTeam =
+            tr("Mixxx %1.%2 Development Team")
+                    .arg(QString::number(
+                                 VersionStore::versionNumber().majorVersion()),
+                            QString::number(VersionStore::versionNumber()
+                                                    .minorVersion()));
     QString s_contributions = tr("With contributions from:");
     QString s_specialThanks = tr("And special thanks to:");
     QString s_pastDevs = tr("Past Developers");

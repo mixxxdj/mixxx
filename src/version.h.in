@@ -4,7 +4,10 @@
     #error "Include only from versionstore.cpp do avoid unnecessary recompile on every commit."
 #endif
 
-#define MIXXX_VERSION "@MIXXX_VERSION@"
+#define MIXXX_VERSION_MAJOR @CMAKE_PROJECT_VERSION_MAJOR@
+#define MIXXX_VERSION_MINOR @CMAKE_PROJECT_VERSION_MINOR@
+#define MIXXX_VERSION_PATCH @CMAKE_PROJECT_VERSION_PATCH@
+#define MIXXX_VERSION_SUFFIX "@MIXXX_VERSION_PRERELEASE@"
 #define GIT_BRANCH "@GIT_BRANCH@"
-#define BUILD_REV "@GIT_COMMIT_COUNT@"
+#define GIT_DESCRIBE "@GIT_DESCRIBE@"
 #define BUILD_FLAGS "@BUILD_FLAGS@"
