@@ -83,9 +83,12 @@ CueControl::CueControl(const QString& group,
           m_pStopButton(ControlObject::getControl(ConfigKey(group, "stop"))),
           m_iCurrentlyPreviewingHotcues(0),
           m_bypassCueSetByPlay(false),
-          m_iNumHotCues(NUM_HOT_CUES),
-          m_pLoadedTrack(),
-          m_mutex(QMutex::Recursive) {
+          m_iNumHotCues(NUM_HOT_CUES)
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+          ,
+          m_mutex(QMutex::Recursive)
+#endif
+{
     // To silence a compiler warning about CUE_MODE_PIONEER.
     Q_UNUSED(CUE_MODE_PIONEER);
     createControls();
