@@ -222,6 +222,7 @@ jobs:
         -DQt5_DIR=${{ env.QT_PATH }} ${{ matrix.cmake_args }} ${{ env.CMAKE_ARGS_EXTRA }}
         -DBATTERY=ON
         -DBROADCAST=ON
+        -DDOWNLOAD_MANUAL=ON
         -DHID=ON
         -DKEYFINDER=ON
         -DLILV=ON
@@ -292,6 +293,8 @@ jobs:
       run: |
         if [[ "${{ github.ref }}" == "refs/heads/main" ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
           CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/nightlies -D CPACK_DEBIAN_DEBIAN_VERSION=0ubuntu2"
+        elif [[ "${{ github.ref }}" =~ ^refs/tags/[0-9]+\.[0-9]+\.[0-9]+$ ]] && [[ "${{ github.repository }}" == "mixxxdj/mixxx" ]]; then
+          CPACK_ARGS="-D DEB_UPLOAD_PPA=ppa:mixxx/mixxx"
         else
           # only build the source DEB, do not upload
           CPACK_ARGS="-D DEB_SOURCEPKG=ON"
@@ -323,9 +326,9 @@ jobs:
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
         then
-          export DEPLOY_PATH='mixxx-{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
+          export DEPLOY_PATH='releases/mixxx-{git_describe}/mixxx-{git_describe}-{package_slug}{ext}';
         else
-          export DEPLOY_PATH='builds/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
+          export DEPLOY_PATH='snapshots/{git_branch}/mixxx-{git_describe}-{package_slug}{ext}';
         fi;
         python3 tools/deploy.py prepare-deployment
         --slug '${{ matrix.artifacts_slug }}'
@@ -390,9 +393,9 @@ jobs:
       run: >
         if [[ "${GITHUB_REF}" =~ ^refs/tags/.* ]];
         then
-          export DEPLOY_PATH='mixxx-{git_describe}/manifest.json';
+          export DEPLOY_PATH='releases/mixxx-{git_describe}/manifest.json';
         else
-          export DEPLOY_PATH='builds/{git_branch}/manifest.json';
+          export DEPLOY_PATH='snapshots/{git_branch}/manifest.json';
         fi;
         python3 tools/deploy.py generate-manifest
         --output-dir 'deploy/'

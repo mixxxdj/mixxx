@@ -26,6 +26,8 @@ if(POLICY CMP0071)
 endif()
 
 project(mixxx VERSION 2.4.0)
+# Work around missing version suffixes support https://gitlab.kitware.com/cmake/cmake/-/issues/16716
+set(MIXXX_VERSION_PRERELEASE "alpha-pre") # set to "alpha-pre" "beta" or ""
 
 set(CMAKE_PROJECT_HOMEPAGE_URL "https://www.mixxx.org")
 set(CMAKE_PROJECT_DESCRIPTION "Mixxx is Free DJ software that gives you everything you need to perform live mixes.")
@@ -406,12 +408,6 @@ endif()
 set_property(DIRECTORY APPEND
     PROPERTY CMAKE_CONFIGURE_DEPENDS
     "${CMAKE_SOURCE_DIR}/.git/index")
-
-# uses GIT_BRANCH and GIT_COMMIT_COUNT
-configure_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/src/build.h.template"
-  "${CMAKE_CURRENT_BINARY_DIR}/src/build.h"
-)
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -832,7 +828,6 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/track/serato/markers2.cpp
   src/track/serato/tags.cpp
   src/track/track.cpp
-  src/track/trackfile.cpp
   src/track/trackinfo.cpp
   src/track/trackmetadata.cpp
   src/track/tracknumbers.cpp
@@ -877,6 +872,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/mac.cpp
   src/util/movinginterquartilemean.cpp
   src/util/performancetimer.cpp
+  src/util/rangelist.cpp
   src/util/readaheadsamplebuffer.cpp
   src/util/rlimit.cpp
   src/util/rotary.cpp
@@ -896,7 +892,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/util/time.cpp
   src/util/timer.cpp
   src/util/valuetransformer.cpp
-  src/util/version.cpp
+  src/util/versionstore.cpp
   src/util/widgethelper.cpp
   src/util/widgetrendertimer.cpp
   src/util/workerthread.cpp
@@ -1348,11 +1344,18 @@ install(
 install(
   FILES
     "${CMAKE_CURRENT_SOURCE_DIR}/README"
-    "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf"
     "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Keyboard-Shortcuts.pdf"
   DESTINATION
     "${MIXXX_INSTALL_DOCDIR}"
 )
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
+  install(
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf"
+    DESTINATION
+      "${MIXXX_INSTALL_DOCDIR}"
+  )
+endif()
 
 # Additional Linux-only files
 if(UNIX AND NOT APPLE)
@@ -1523,6 +1526,7 @@ add_executable(mixxx-test
   src/test/portmidicontroller_test.cpp
   src/test/portmidienumeratortest.cpp
   src/test/queryutiltest.cpp
+  src/test/rangelist_test.cpp
   src/test/readaheadmanager_test.cpp
   src/test/replaygaintest.cpp
   src/test/rescalertest.cpp
@@ -1626,23 +1630,47 @@ add_dependencies(mixxx-test mixxx-testdata)
 # library. Doing this would require initialization using Q_INIT_RESOURCE()
 # calls that are not present at the moment. Further information can be found
 # at: https://doc.qt.io/qt5/resources.html#using-resources-in-a-library
+option(DOWNLOAD_MANUAL "Download Manual PDF from Mixxx website" OFF)
+if(DOWNLOAD_MANUAL AND NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
+  set(MANUAL_URL "https://downloads.mixxx.org/manual/${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}/mixxx-manual-${CMAKE_PROJECT_VERSION_MAJOR}.${CMAKE_PROJECT_VERSION_MINOR}-en.pdf")
+  message(STATUS "Downloading manual from ${MANUAL_URL}...")
+  file(DOWNLOAD
+    "${MANUAL_URL}"
+    "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf"
+    SHOW_PROGRESS
+    STATUS MANUAL_PDF_DOWNLOAD
+    TLS_VERIFY ON
+  )
+  if(NOT MANUAL_PDF_DOWNLOAD EQUAL 0)
+    message(FATAL_ERROR "Manual PDF download failed. Either download it yourself "
+      "and move it to '${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf' or "
+      "reconfigure with -DDOWNLOAD_MANUAL=OFF to build without included "
+      "manual.")
+  endif()
+  file(RENAME "${CMAKE_CURRENT_BINARY_DIR}/res/Mixxx-Manual.pdf" "${CMAKE_CURRENT_SOURCE_DIR}/res/Mixxx-Manual.pdf")
+endif()
+
 target_sources(mixxx PRIVATE res/mixxx.qrc)
 set_target_properties(mixxx PROPERTIES AUTORCC ON)
 target_sources(mixxx-test PRIVATE res/mixxx.qrc)
 set_target_properties(mixxx-test PROPERTIES AUTORCC ON)
 
-file(READ src/_version.h MIXXX_VERSION_FILECONTENT)
-string(REGEX REPLACE "^.*#define MIXXX_VERSION \"(.*)\".*$" "\\1" MIXXX_VERSION "${MIXXX_VERSION_FILECONTENT}")
-# a dummy configure to force a reconfigure when the version changes
-configure_file(src/_version.h src/_version.h)
+if (MIXXX_VERSION_PRERELEASE STREQUAL "")
+   set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}")
+else()
+   set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}-${MIXXX_VERSION_PRERELEASE}")
+endif()
+
+get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
+
+# uses MIXXX_VERSION GIT_BRANCH GIT_COMMIT_COUNT BUILD_FLAGS
+configure_file(src/version.h.in src/version.h @ONLY)
 
 # Windows-only resource file
 if(WIN32)
   string(TIMESTAMP MIXXX_YEAR "%Y")
 
-  # Remove anything after ~ or - in the version number and replace the dots with commas
-  string(REGEX REPLACE "^([^~-]+).*$" "\\1" MIXXX_FILEVERSION "${MIXXX_VERSION}")
-  string(REPLACE "." "," MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
+  set(MIXXX_FILEVERSION "${CMAKE_PROJECT_VERSION_MAJOR},${CMAKE_PROJECT_VERSION_MINOR},${CMAKE_PROJECT_VERSION_PATCH}")
   if(NOT GIT_COMMIT_COUNT STREQUAL "unknown")
     set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMIT_COUNT}")
     string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
@@ -1655,16 +1683,17 @@ if(WIN32)
     set(MIXXX_DEBUG 0)
   endif()
 
-  string(FIND "${MIXXX_VERSION}" "pre" MIXXX_PRERELEASE_POSITION)
-  if(MIXXX_PRERELEASE_POSITION EQUAL -1)
+  if (MIXXX_VERSION_PRERELEASE STREQUAL "")
     set(MIXXX_PRERELEASE 0)
   else()
     set(MIXXX_PRERELEASE 1)
   endif()
 
+  # uses MIXXX_YEAR MIXXX_FILEVERSION MIXXX_PRODUCTVERSION MIXXX_VERSION MIXXX_DEBUG MIXXX_PRERELEASE
   configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/src/mixxx.rc.include.template"
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
+    @ONLY
   )
   target_sources(mixxx PRIVATE
     src/mixxx.rc
@@ -1722,19 +1751,25 @@ if(ENGINEPRIME)
     set(DJINTEROP_INSTALL_DIR "${CMAKE_CURRENT_BINARY_DIR}/lib/libdjinterop-install")
     set(DJINTEROP_LIBRARY "lib/${CMAKE_STATIC_LIBRARY_PREFIX}djinterop${CMAKE_STATIC_LIBRARY_SUFFIX}")
     file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/download")
+
+    # CMake does not pass lists of paths properly to external projects.
+    # This is worked around by changing the list separator.
+    string(REPLACE ";" "|" PIPE_DELIMITED_CMAKE_PREFIX_PATH "${CMAKE_PREFIX_PATH}")
+
     # External project sources must be downloaded as an archive into DOWNLOAD_DIR
     # from an URL to keep offline builds like for Fedora/RPM Fusion working!
     ExternalProject_Add(libdjinterop
-      URL "https://github.com/xsco/libdjinterop/archive/0.15.1.tar.gz"
-      URL_HASH SHA256=87b3e6c726c208333d55b7e7e3af0a7230c9ad9edb3ca0ca81feffe17b3fc008
+      URL "https://github.com/xsco/libdjinterop/archive/0.15.2.tar.gz"
+      URL_HASH SHA256=66f64c0b38a53936ba1b471524905e35afd605bc05d29e7aa6fa7ea0005c7d54
       DOWNLOAD_DIR "${CMAKE_CURRENT_BINARY_DIR}/download/libdjinterop"
       INSTALL_DIR ${DJINTEROP_INSTALL_DIR}
+      LIST_SEPARATOR "|"
       CMAKE_ARGS
         -DBUILD_SHARED_LIBS=OFF
         -DCMAKE_SKIP_INSTALL_ALL_DEPENDENCY=ON
         -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
         -DCMAKE_INSTALL_PREFIX:PATH=<INSTALL_DIR>
-        -DCMAKE_PREFIX_PATH:PATH=${CMAKE_PREFIX_PATH}
+        -DCMAKE_PREFIX_PATH=${PIPE_DELIMITED_CMAKE_PREFIX_PATH}
         -DCMAKE_INSTALL_LIBDIR:PATH=lib
         -DCMAKE_MODULE_PATH:PATH=${CMAKE_MODULE_PATH}
         -DSYSTEM_SQLITE=${DJINTEROP_SYSTEM_SQLITE}

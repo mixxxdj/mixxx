@@ -196,26 +196,22 @@ TEST_F(DirectoryDAOTest, relocateDirectory) {
     // ok now lets create some tracks here
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
-                                Track::newTemporary(
-                                        TrackFile(testdir, "a." + getSupportedFileExt())),
+                                Track::newTemporary(testdir, "a." + getSupportedFileExt()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
-                                Track::newTemporary(
-                                        TrackFile(testdir, "b." + getSupportedFileExt())),
+                                Track::newTemporary(testdir, "b." + getSupportedFileExt()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
-                                Track::newTemporary(
-                                        TrackFile(test2, "c." + getSupportedFileExt())),
+                                Track::newTemporary(test2, "c." + getSupportedFileExt()),
                                 false)
                         .isValid());
     ASSERT_TRUE(internalCollection()
                         ->addTrack(
-                                Track::newTemporary(
-                                        TrackFile(test2, "d." + getSupportedFileExt())),
+                                Track::newTemporary(test2, "d." + getSupportedFileExt()),
                                 false)
                         .isValid());
 

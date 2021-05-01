@@ -160,6 +160,10 @@ class EngineBuffer : public EngineObject {
     // has completed.
     void loadTrack(TrackPointer pTrack, bool play);
 
+    void setChannelIndex(int channelIndex) {
+        m_channelIndex = channelIndex;
+    }
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -228,6 +232,8 @@ class EngineBuffer : public EngineObject {
 
     // Holds the name of the control group
     const QString m_group;
+    int m_channelIndex;
+
     UserSettingsPointer m_pConfig;
 
     friend class CueControlTest;

@@ -1,0 +1,10 @@
+#pragma once
+
+#ifndef VERSION_STORE
+    #error "Include only from versionstore.cpp do avoid unnecessary recompile on every commit."
+#endif
+
+#define MIXXX_VERSION "@MIXXX_VERSION@"
+#define GIT_BRANCH "@GIT_BRANCH@"
+#define BUILD_REV "@GIT_COMMIT_COUNT@"
+#define BUILD_FLAGS "@BUILD_FLAGS@"

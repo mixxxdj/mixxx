@@ -222,7 +222,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
             }
         }
 
-        if (pSyncable->isPlaying()) {
+        if (pSyncable->isPlaying() && pSyncable->isAudible()) {
             if (playing_deck_count == 0) {
                 first_playing_deck = pSyncable;
             }
@@ -301,7 +301,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
 
         // If the other deck is playing we stop looking immediately. Otherwise continue looking
         // for a playing deck with bpm > 0.0.
-        if (pOtherSyncable->isPlaying()) {
+        if (pOtherSyncable->isPlaying() && pOtherSyncable->isAudible()) {
             if (pOtherSyncable->isSynchronized()) {
                 return pOtherSyncable;
             }
@@ -335,10 +335,10 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
     return pStoppedNonSyncTarget;
 }
 
-void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
-    Q_UNUSED(playing);
+void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
+        kLogger.trace() << "EngineSync::notifyPlayingAudible"
+                        << pSyncable->getGroup() << playingAudible;
     }
     // For now we don't care if the deck is now playing or stopping.
     if (!pSyncable->isSynchronized()) {

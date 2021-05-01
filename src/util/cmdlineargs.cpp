@@ -12,9 +12,7 @@
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 
-#include "config.h"
 #include "sources/soundsourceproxy.h"
-#include "util/version.h"
 
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars

@@ -251,17 +251,12 @@ bool SoundSourceProxy::registerProviders() {
 
 // static
 bool SoundSourceProxy::isUrlSupported(const QUrl& url) {
-    return isFileSupported(TrackFile::fromUrl(url));
+    return isFileSupported(mixxx::FileInfo::fromQUrl(url));
 }
 
 // static
-bool SoundSourceProxy::isFileSupported(const QFileInfo& fileInfo) {
+bool SoundSourceProxy::isFileSupported(const mixxx::FileInfo& fileInfo) {
     return isFileNameSupported(fileInfo.fileName());
-}
-
-// static
-bool SoundSourceProxy::isFileSupported(const TrackFile& trackFile) {
-    return isFileNameSupported(trackFile.fileName());
 }
 
 // static
@@ -309,11 +304,8 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
 
 //static
 TrackPointer SoundSourceProxy::importTemporaryTrack(
-        TrackFile trackFile,
-        SecurityTokenPointer pSecurityToken) {
-    TrackPointer pTrack = Track::newTemporary(
-            std::move(trackFile),
-            std::move(pSecurityToken));
+        mixxx::FileAccess trackFileAccess) {
+    TrackPointer pTrack = Track::newTemporary(std::move(trackFileAccess));
     // Lock the track cache while populating the temporary track
     // object to ensure that no metadata is exported into any file
     // while reading from this file. Since locking individual files
@@ -325,16 +317,13 @@ TrackPointer SoundSourceProxy::importTemporaryTrack(
 
 //static
 QImage SoundSourceProxy::importTemporaryCoverImage(
-        TrackFile trackFile,
-        SecurityTokenPointer pSecurityToken) {
-    if (!trackFile.checkFileExists()) {
+        mixxx::FileAccess trackFileAccess) {
+    if (!trackFileAccess.info().checkFileExists()) {
         // Silently ignore missing files to avoid spaming the log:
         // https://bugs.launchpad.net/mixxx/+bug/1875237
         return QImage();
     }
-    TrackPointer pTrack = Track::newTemporary(
-            std::move(trackFile),
-            std::move(pSecurityToken));
+    TrackPointer pTrack = Track::newTemporary(std::move(trackFileAccess));
     // Lock the track cache while populating the temporary track
     // object to ensure that no metadata is exported into any file
     // while reading from this file. Since locking individual files
@@ -350,7 +339,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack, UserSettingsPoi
     const auto fileInfo = pTrack->getFileInfo();
     mixxx::MetadataSourcePointer pMetadataSource;
     {
-        auto proxy = SoundSourceProxy(fileInfo.toUrl());
+        auto proxy = SoundSourceProxy(fileInfo.toQUrl());
         // Ensure that the actual audio properties of the
         // stream are available before exporting metadata.
         // This might be needed for converting sample positions
@@ -383,7 +372,7 @@ SoundSourceProxy::SoundSourceProxy(
         TrackPointer pTrack,
         const mixxx::SoundSourceProviderPointer& pProvider)
         : m_pTrack(std::move(pTrack)),
-          m_url(m_pTrack ? m_pTrack->getFileInfo().toUrl() : QUrl()),
+          m_url(m_pTrack ? m_pTrack->getFileInfo().toQUrl() : QUrl()),
           m_providerRegistrations(allProviderRegistrationsForUrl(m_url)),
           m_providerRegistrationIndex(-1) {
     initSoundSource(pProvider);
@@ -643,20 +632,20 @@ void SoundSourceProxy::updateTrackFromSource(
         // SoundSourceProxy for just a few people.
         const bool splitArtistTitle =
                 trackMetadata.getTrackInfo().getArtist().trimmed().isEmpty();
-        const auto trackFile = m_pTrack->getFileInfo();
+        const auto fileInfo = m_pTrack->getFileInfo();
         kLogger.info()
                 << "Parsing missing"
                 << (splitArtistTitle ? "artist/title" : "title")
                 << "from file name:"
-                << trackFile;
+                << fileInfo;
         if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(
-                    trackFile.fileName(), splitArtistTitle)) {
+                    fileInfo.fileName(), splitArtistTitle)) {
             // Pretend that metadata import succeeded
             metadataImported.first = mixxx::MetadataSource::ImportResult::Succeeded;
             if (metadataImported.second.isNull()) {
                 // Since this is also some kind of metadata import, we mark the
                 // track's metadata as synchronized with the time stamp of the file.
-                metadataImported.second = trackFile.fileLastModified();
+                metadataImported.second = fileInfo.lastModified();
             }
         }
     }

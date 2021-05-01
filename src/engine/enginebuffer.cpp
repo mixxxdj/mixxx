@@ -1296,6 +1296,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     double localBpm = m_pBpmControl->updateLocalBpm();
     double beatDistance = m_pBpmControl->updateBeatDistance();
     m_pSyncControl->setLocalBpm(localBpm);
+    m_pSyncControl->updateAudible();
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (isMaster(mode)) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beatDistance);

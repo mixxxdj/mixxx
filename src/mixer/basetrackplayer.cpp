@@ -376,12 +376,15 @@ void BaseTrackPlayerImpl::disconnectLoadedTrack() {
 }
 
 void BaseTrackPlayerImpl::slotLoadTrack(TrackPointer pNewTrack, bool bPlay) {
-    qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup();
+    //qDebug() << "BaseTrackPlayerImpl::slotLoadTrack" << getGroup();
     // Before loading the track, ensure we have access. This uses lazy
     // evaluation to make sure track isn't NULL before we dereference it.
-    if (pNewTrack && !Sandbox::askForAccess(pNewTrack->getCanonicalLocation())) {
-        // We don't have access.
-        return;
+    if (pNewTrack) {
+        auto fileInfo = pNewTrack->getFileInfo();
+        if (!Sandbox::askForAccess(&fileInfo)) {
+            // We don't have access.
+            return;
+        }
     }
 
     auto pOldTrack = unloadTrack();

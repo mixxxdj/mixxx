@@ -218,14 +218,14 @@ Library::Library(
     // accessible to us. If the user is using a database from <1.12.0 with
     // sandboxing then we will need them to give us permission.
     const auto rootDirs = m_pTrackCollectionManager->internalCollection()->loadRootDirs();
-    for (const mixxx::FileInfo& dirInfo : rootDirs) {
+    for (mixxx::FileInfo dirInfo : rootDirs) {
         if (!dirInfo.exists() || !dirInfo.isDir()) {
             kLogger.warning()
                     << "Skipping access check for missing or invalid directory"
                     << dirInfo;
             continue;
         }
-        if (Sandbox::askForAccess(dirInfo.canonicalLocation())) {
+        if (Sandbox::askForAccess(&dirInfo)) {
             kLogger.info()
                     << "Access to directory"
                     << dirInfo
@@ -461,7 +461,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void Library::slotLoadLocationToPlayer(const QString& location, const QString& group) {
-    auto trackRef = TrackRef::fromFileInfo(location);
+    auto trackRef = TrackRef::fromFilePath(location);
     TrackPointer pTrack = m_pTrackCollectionManager->getOrAddTrack(trackRef);
     if (pTrack) {
         emit loadTrackToPlayer(pTrack, group);

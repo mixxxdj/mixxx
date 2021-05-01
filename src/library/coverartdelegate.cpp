@@ -62,11 +62,11 @@ void CoverArtDelegate::slotInhibitLazyLoading(
     }
     // If we can request non-cache covers now, request updates
     // for all rows that were cache misses since the last time.
-    auto staleRows = m_cacheMissRows;
     // Reset the member variable before mutating the aggregated
     // rows list (-> implicit sharing) and emitting a signal that
     // in turn may trigger new signals for CoverArtDelegate!
-    m_cacheMissRows = QList<int>();
+    QList<int> staleRows = std::move(m_cacheMissRows);
+    DEBUG_ASSERT(m_cacheMissRows.isEmpty());
     emitRowsChanged(std::move(staleRows));
 }
 
@@ -92,7 +92,13 @@ void CoverArtDelegate::slotCoverFound(
     }
     QList<int> refreshRows = m_pendingCacheRows.values(requestedImageHash);
     m_pendingCacheRows.remove(requestedImageHash);
-    emitRowsChanged(std::move(refreshRows));
+    if (pixmap.isNull()) {
+        kLogger.warning() << "Failed to load cover" << coverInfo;
+    } else {
+        // Only refresh the rows if loading succeeded, otherwise
+        // we would enter an infinite repaint loop and churn CPU.
+        emitRowsChanged(std::move(refreshRows));
+    }
 }
 
 TrackPointer CoverArtDelegate::loadTrackByLocation(
@@ -101,7 +107,7 @@ TrackPointer CoverArtDelegate::loadTrackByLocation(
         return TrackPointer();
     }
     return m_pTrackModel->getTrackByRef(
-            TrackRef::fromFileInfo(trackLocation));
+            TrackRef::fromFilePath(trackLocation));
 }
 
 void CoverArtDelegate::paintItem(

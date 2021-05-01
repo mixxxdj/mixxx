@@ -120,7 +120,11 @@ class CoverInfoRelative {
 };
 
 bool operator==(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs);
-bool operator!=(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs);
+
+inline bool operator!=(const CoverInfoRelative& lhs, const CoverInfoRelative& rhs) {
+    return !(lhs == rhs);
+}
+
 QDebug operator<<(QDebug dbg, const CoverInfoRelative& info);
 
 class CoverInfo : public CoverInfoRelative {
@@ -158,8 +162,8 @@ class CoverInfo : public CoverInfoRelative {
         QImage image;
 
         /// Either the track location if the image was embedded in
-        /// the metadata or the (absolute) path of the image file.
-        QString filePath;
+        /// the metadata or the location of the image file.
+        QString location;
 
         /// The result of the operation.
         Result result;

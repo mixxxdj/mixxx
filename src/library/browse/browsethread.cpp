@@ -116,8 +116,14 @@ void BrowseThread::populateModel() {
     BrowseTableModel* thisModelObserver = m_model_observer;
     m_path_mutex.unlock();
 
+    if (!thisPath.info().hasLocation()) {
+        // Abort if the location is inaccessible or does not exist
+        qWarning() << "Skipping" << thisPath.info();
+        return;
+    }
+
     // Refresh the name filters in case we loaded new SoundSource plugins.
-    QStringList nameFilters(SoundSourceProxy::getSupportedFileNamePatterns());
+    const QStringList nameFilters = SoundSourceProxy::getSupportedFileNamePatterns();
 
     QDirIterator fileIt(thisPath.info().location(),
             nameFilters,
@@ -151,12 +157,12 @@ void BrowseThread::populateModel() {
         item->setData("0", Qt::UserRole);
         row_data.insert(COLUMN_PREVIEW, item);
 
-        const QString filepath = fileIt.next();
+        const auto fileAccess = mixxx::FileAccess(
+                mixxx::FileInfo(fileIt.next()),
+                thisPath.token());
         {
             const TrackPointer pTrack =
-                    SoundSourceProxy::importTemporaryTrack(
-                            filepath,
-                            thisPath.token());
+                    SoundSourceProxy::importTemporaryTrack(fileAccess);
 
             item = new QStandardItem(pTrack->getFileInfo().fileName());
             item->setToolTip(item->text());
@@ -249,7 +255,7 @@ void BrowseThread::populateModel() {
             row_data.insert(COLUMN_GROUPING, item);
 
             const auto fileLastModified =
-                    pTrack->getFileInfo().fileLastModified();
+                    fileAccess.info().lastModified();
             item = new QStandardItem(
                     mixxx::displayLocalDateTime(fileLastModified));
             item->setToolTip(item->text());
@@ -257,7 +263,7 @@ void BrowseThread::populateModel() {
             row_data.insert(COLUMN_FILE_MODIFIED_TIME, item);
 
             const auto fileCreated =
-                    pTrack->getFileInfo().fileCreated();
+                    fileAccess.info().birthTime();
             item = new QStandardItem(
                     mixxx::displayLocalDateTime(fileCreated));
             item->setToolTip(item->text());
@@ -279,7 +285,7 @@ void BrowseThread::populateModel() {
         if (row % 10 == 0) {
             // this is a blocking operation
             emit rowsAppended(rows, thisModelObserver);
-            qDebug() << "Append " << rows.count() << " from " << filepath;
+            qDebug() << "Append " << rows.count() << " from " << fileAccess.info();
             rows.clear();
         }
         // Sleep additionally for 10ms which prevents us from GUI freezes
