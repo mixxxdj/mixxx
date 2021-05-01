@@ -156,7 +156,7 @@ class TrackCollection : public QObject,
 
     void relocateDirectory(const QString& oldDir, const QString& newDir);
 
-    void saveTrack(Track* pTrack);
+    void saveTrack(Track* pTrack) const;
 
     QSqlDatabase m_database;
 

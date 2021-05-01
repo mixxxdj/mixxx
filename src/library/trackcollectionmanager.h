@@ -65,9 +65,12 @@ class TrackCollectionManager: public QObject,
     // Save the track in both the internal database and external collections.
     // Export of metadata is deferred until the track is evicted from the
     // cache to prevent file corruption due to concurrent access.
-    // Returns true if the track was dirty and has been saved, otherwise
-    // false.
-    bool saveTrack(const TrackPointer& pTrack);
+    enum class SaveTrackResult {
+        Saved,
+        Skipped, // e.g. unmodified or missing/deleted tracks
+        Failed,
+    };
+    SaveTrackResult saveTrack(const TrackPointer& pTrack) const;
 
   signals:
     void libraryScanStarted();
@@ -90,9 +93,9 @@ class TrackCollectionManager: public QObject,
         Immediate,
         Deferred,
     };
-    void saveTrack(
+    SaveTrackResult saveTrack(
             Track* pTrack,
-            TrackMetadataExportMode mode);
+            TrackMetadataExportMode mode) const;
     void exportTrackMetadata(
             Track* pTrack,
             TrackMetadataExportMode mode) const;
