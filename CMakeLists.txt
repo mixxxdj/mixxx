@@ -323,9 +323,9 @@ if(WIN32)
   set(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
 endif()
 
-# Get the current working branch
+# Get the current commit ref
 execute_process(
-  COMMAND git describe --dirty
+  COMMAND git describe --tags --always --dirty=-modified
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_DESCRIBE
   OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -335,6 +335,20 @@ if(NOT GIT_DESCRIBE)
   message(STATUS "Git describe: unknown")
 else()
   message(STATUS "Git describe: ${GIT_DESCRIBE}")
+endif()
+
+# Get the current commit date
+execute_process(
+  COMMAND git show --quiet --format=%cI --date=short
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_COMMIT_DATE
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
+)
+if(NOT GIT_COMMIT_DATE)
+  message(STATUS "Git commit date: unknown")
+else()
+  message(STATUS "Git commit date: ${GIT_COMMIT_DATE}")
 endif()
 
 # Get the current working branch
@@ -1665,7 +1679,7 @@ endif()
 
 get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 
-# uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE GIT_BRANCH GIT_DESCRIBE BUILD_FLAGS
+# uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE GIT_BRANCH GIT_DESCRIBE GIT_COMMIT_DATE BUILD_FLAGS
 configure_file(src/version.h.in src/version.h @ONLY)
 
 # Windows-only resource file
