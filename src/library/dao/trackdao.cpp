@@ -288,7 +288,9 @@ QString TrackDAO::getTrackLocation(TrackId trackId) const {
 }
 
 void TrackDAO::saveTrack(Track* pTrack) const {
-    DEBUG_ASSERT(pTrack);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
     DEBUG_ASSERT(pTrack->isDirty());
 
     const TrackId trackId = pTrack->getId();

@@ -192,7 +192,9 @@ TrackCollectionManager::SaveTrackResult TrackCollectionManager::saveTrack(
         Track* pTrack,
         TrackMetadataExportMode mode) const {
     DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
-    DEBUG_ASSERT(pTrack);
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return SaveTrackResult::Skipped;
+    }
     DEBUG_ASSERT(pTrack->getDateAdded().isValid());
 
     // The dirty flag is reset while saving the track in the internal
