@@ -1,13 +1,13 @@
 <Template>
   <SetVariable name="Type">deck</SetVariable>
   <WidgetGroup>
-    <ObjectName>DecksRight</ObjectName>
+    <ObjectName>DecksLeft</ObjectName>
     <Layout>vertical</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
 
       <SingletonContainer>
-        <ObjectName>Deck2_Src</ObjectName>
+        <ObjectName>Deck1_Mini</ObjectName>
       </SingletonContainer>
 
       <WidgetGroup>
@@ -15,7 +15,7 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
           <SingletonContainer>
-            <ObjectName>Deck4_Src</ObjectName>
+            <ObjectName>Deck3_Mini</ObjectName>
           </SingletonContainer>
         </Children>
         <Connection>
