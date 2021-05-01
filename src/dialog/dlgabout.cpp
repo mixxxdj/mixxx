@@ -1,6 +1,7 @@
 #include "dialog/dlgabout.h"
 
 #include <QFile>
+#include <QLocale>
 
 #include "defs_urls.h"
 #include "moc_dlgabout.cpp"
@@ -17,6 +18,8 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             QStringLiteral(" ") + VersionStore::version());
     git_version_label->setText(VersionStore::gitVersion());
     platform_label->setText(VersionStore::platform());
+    QLocale locale;
+    date_label->setText(locale.toString(VersionStore::date().toLocalTime(), QLocale::LongFormat));
 
     QFile licenseFile(":/LICENSE");
     if (!licenseFile.open(QIODevice::ReadOnly)) {
