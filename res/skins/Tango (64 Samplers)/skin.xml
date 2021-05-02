@@ -182,9 +182,9 @@
     <SetVariable name="SignalColor_12">#DF4DF0</SetVariable>
     <SetVariable name="SignalBgColor_12">#3A0440</SetVariable>
     <SetVariable name="SignalColor_34">#5EBAFF</SetVariable>
-    <SetVariable name="SignalBgColor_34">#001D33</SetVariable>
+    <SetVariable name="SignalBgColor_34">#19260B</SetVariable>
     <SetVariable name="SpinnyCoverColor_12">purple</SetVariable>
-    <SetVariable name="SpinnyCoverColor_34">blue</SetVariable>
+    <SetVariable name="SpinnyCoverColor_34">green</SetVariable>
 
 <!--################################################################
      Singleton definitions  #######################################

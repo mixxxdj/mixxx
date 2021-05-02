@@ -1,0 +1,19 @@
+
+#MainMenu::item {
+}
+#MainMenu QMenu::item {
+  padding: 0.1em 0.3em 0.2em 0.3em;
+  margin: 0em 0em 0em 1.4em;
+  }
+  /* Checkbox preceeding menu items */
+  #MainMenu QMenu::indicator {
+    /*width: 1em;*/
+    /*height: 1em;*/
+    margin: 0em -0.1em 0em -1.5em;
+    padding: 0.2em 0em 0.2em 0em;
+  }
+  #MainMenu QMenu::indicator,
+  #MainMenu QMenu::indicator:selected,
+  #MainMenu QMenu::indicator:checked,
+  #MainMenu QMenu::indicator:checked:selected {
+  }

@@ -74,7 +74,6 @@ void RecursiveScanDirectoryTask::run() {
         }
     }
 
-    // Note: A hash of "0" is a real hash if the directory contains no files!
     // Calculate a hash of the directory's file list.
     const mixxx::cache_key_t newHash = mixxx::cacheKeyFromMessageDigest(hasher.result());
 

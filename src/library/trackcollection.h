@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QDir>
 #include <QList>
 #include <QSharedPointer>
@@ -98,14 +100,6 @@ class TrackCollection : public QObject,
     TrackId getTrackIdByRef(
             const TrackRef& trackRef) const;
 
-    // Only public for tests
-    TrackPointer getOrAddTrack(
-            const TrackRef& trackRef,
-            bool* pAlreadyInLibrary = nullptr);
-    TrackId addTrack(
-            const TrackPointer& pTrack,
-            bool unremove);
-
   signals:
     // Forwarded signals from LibraryScanner
     void scanTrackAdded(TrackPointer pTrack);
@@ -134,9 +128,18 @@ class TrackCollection : public QObject,
     friend class Upgrade;
 
     // No parent during database schema upgrade
-    TrackCollection(const UserSettingsPointer& pConfig)
+    explicit TrackCollection(const UserSettingsPointer& pConfig)
             : TrackCollection(nullptr, pConfig) {
     }
+
+    TrackPointer getOrAddTrack(
+            const TrackRef& trackRef,
+            bool* pAlreadyInLibrary = nullptr);
+    FRIEND_TEST(DirectoryDAOTest, relocateDirectory);
+    FRIEND_TEST(TrackDAOTest, detectMovedTracks);
+    TrackId addTrack(
+            const TrackPointer& pTrack,
+            bool unremove);
 
     bool hideTracks(const QList<TrackId>& trackIds);
     bool unhideTracks(const QList<TrackId>& trackIds);

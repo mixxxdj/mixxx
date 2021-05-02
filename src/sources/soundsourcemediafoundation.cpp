@@ -50,6 +50,7 @@ const QString SoundSourceProviderMediaFoundation::kDisplayName =
 
 //static
 const QStringList SoundSourceProviderMediaFoundation::kSupportedFileExtensions = {
+        QStringLiteral("aac"),
         QStringLiteral("m4a"),
         QStringLiteral("mp4"),
 };
@@ -369,30 +370,31 @@ ReadableSampleFrames SoundSourceMediaFoundation::readSampleFramesClamped(
         }
         DEBUG_ASSERT(pSample != nullptr);
         SINT readerFrameIndex = m_streamUnitConverter.toFrameIndex(streamPos);
+        // TODO: Fix debug assertion in else arm. It has been commented
+        // out deliberately to prevent crashes in debug builds.
+        // https://bugs.launchpad.net/mixxx/+bug/1899242
         if (m_currentFrameIndex == kUnknownFrameIndex) {
             // Unknown position after seeking
             m_currentFrameIndex = readerFrameIndex;
-            /*
-            kLogger.debug()
-                    << "Stream position (in sample frames) after seeking:"
-                    << "target =" << writableSampleFrames.frameIndexRange().end()
-                    << "current =" << readerFrameIndex;
-            */
-        } else {
-            // Both positions should match, otherwise readerFrameIndex
-            // is inaccurate due to rounding errors after conversion from
-            // stream units to frames! But if this ever happens we better
-            // trust m_currentFrameIndex that is continuously updated while
-            // reading in forward direction.
-            VERIFY_OR_DEBUG_ASSERT(m_currentFrameIndex == readerFrameIndex) {
-                kLogger.debug()
-                        << "streamPos [100 ns] =" << streamPos
-                        << ", sampleRate =" << getSignalInfo().getSampleRate();
-                kLogger.warning()
-                        << "Stream position (in sample frames) while reading is inaccurate:"
-                        << "expected =" << m_currentFrameIndex
-                        << "actual =" << readerFrameIndex;
-            }
+            //     kLogger.debug()
+            //             << "Stream position (in sample frames) after seeking:"
+            //             << "target =" << writableSampleFrames.frameIndexRange().end()
+            //             << "current =" << readerFrameIndex;
+            // } else {
+            //     // Both positions should match, otherwise readerFrameIndex
+            //     // is inaccurate due to rounding errors after conversion from
+            //     // stream units to frames! But if this ever happens we better
+            //     // trust m_currentFrameIndex that is continuously updated while
+            //     // reading in forward direction.
+            //     VERIFY_OR_DEBUG_ASSERT(m_currentFrameIndex == readerFrameIndex) {
+            //         kLogger.debug()
+            //                 << "streamPos [100 ns] =" << streamPos
+            //                 << ", sampleRate =" << getSignalInfo().getSampleRate();
+            //         kLogger.warning()
+            //                 << "Stream position (in sample frames) while reading is inaccurate:"
+            //                 << "expected =" << m_currentFrameIndex
+            //                 << "actual =" << readerFrameIndex;
+            //     }
         }
 
         DWORD dwSampleBufferCount = 0;

@@ -27,18 +27,11 @@ namespace mixxx {
 
 namespace taglib {
 
-inline QString toQString(
-        const TagLib::String& tString) {
-    if (tString.isNull()) {
-        // null -> null
-        return QString();
-    } else {
-        return TStringToQString(tString);
-    }
-}
+QString toQString(
+        const TagLib::String& tString);
 
 TagLib::String toTString(
-        const QString& str);
+        const QString& qString);
 
 /// Returns the first element of TagLib string list that is not empty.
 TagLib::String firstNonEmptyStringListItem(
@@ -47,33 +40,23 @@ TagLib::String firstNonEmptyStringListItem(
 /// Returns a QByteArray that owns the data.
 inline QByteArray toQByteArray(
         const TagLib::ByteVector& tByteVector) {
-    if (tByteVector.isNull()) {
-        // null -> null
-        return QByteArray();
-    } else {
         return QByteArray(
                 tByteVector.data(),
                 tByteVector.size());
-    }
 }
 
 /// Returns a QByteArray that directly accesses the underlying byte vector!
 inline QByteArray toQByteArrayRaw(
         const TagLib::ByteVector& tByteVector) {
-    if (tByteVector.isNull()) {
-        // null -> null
-        return QByteArray();
-    } else {
         return QByteArray::fromRawData(
                 tByteVector.data(),
                 tByteVector.size());
-    }
 }
 
 inline TagLib::ByteVector toTByteVector(
         const QByteArray& byteArray) {
     if (byteArray.isNull()) {
-        return TagLib::ByteVector::null;
+        return TagLib::ByteVector();
     } else {
         return TagLib::ByteVector(byteArray.constData(), byteArray.size());
     }

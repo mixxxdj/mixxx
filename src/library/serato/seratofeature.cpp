@@ -353,7 +353,7 @@ QString parseCrate(
     }
 
     QFile crateFile(crateFilePath);
-    if (!crateFile.open(QIODevice::ReadOnly)) {
+    if (!Sandbox::askForAccess(crateFilePath) || !crateFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << crateFilePath
                    << " for reading.";
@@ -534,7 +534,7 @@ QString parseDatabase(mixxx::DbConnectionPoolPtr dbConnectionPool, TreeItem* dat
             ")");
 
     QFile databaseFile(databaseFilePath);
-    if (!databaseFile.open(QIODevice::ReadOnly)) {
+    if (!Sandbox::askForAccess(databaseFilePath) || !databaseFile.open(QIODevice::ReadOnly)) {
         qWarning() << "Failed to open file "
                    << databaseFilePath
                    << " for reading.";

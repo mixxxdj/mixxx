@@ -11,6 +11,7 @@ Variables:
   <SetVariable name="FxRack_FxUnit">EffectRack<Variable name="FxRack"/>_EffectUnit<Variable name="FxUnit"/></SetVariable>
 
   <WidgetGroup><!-- EffectUnit -->
+    <ObjectName>FxUnitLeft</ObjectName>
     <Layout>horizontal</Layout>
     <SizePolicy>me,min</SizePolicy>
     <Children>
@@ -23,11 +24,10 @@ Variables:
           <WidgetGroup><!-- EffectSlots -->
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
-            <!--Size>200f,-1min</Size-->
             <Children>
               <WidgetGroup><!-- EffectSlot 1 -->
-                <ObjectName>AlignRight</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <ObjectName>AlignRightCenter</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
@@ -42,13 +42,13 @@ Variables:
                   <Template src="skin:fx_focus_button.xml"><SetVariable name="FxNum">1</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
-              </WidgetGroup><!-- /EffectSlot 1 -->
+              </WidgetGroup>
 
-                <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
+              <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 2 -->
-                <ObjectName>AlignRight</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <ObjectName>AlignRightCenter</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
@@ -63,13 +63,13 @@ Variables:
                   <Template src="skin:fx_focus_button.xml"><SetVariable name="FxNum">2</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
-              </WidgetGroup><!-- /EffectSlot 2 -->
+              </WidgetGroup>
 
-                <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
+              <WidgetGroup><Size>1me,1f</Size></WidgetGroup>
 
               <WidgetGroup><!-- EffectSlot 3 -->
-                <ObjectName>AlignRight</ObjectName>
-                <SizePolicy>min,min</SizePolicy>
+                <ObjectName>AlignRightCenter</ObjectName>
+                <SizePolicy>min,me</SizePolicy>
                 <Layout>horizontal</Layout>
                 <Children>
                   <WidgetGroup><Size>0min,1min</Size></WidgetGroup>
@@ -84,12 +84,11 @@ Variables:
                   <Template src="skin:fx_focus_button.xml"><SetVariable name="FxNum">3</SetVariable></Template>
                   <WidgetGroup><Size>4f,1min</Size></WidgetGroup>
                 </Children>
-              </WidgetGroup><!-- /EffectSlot 3 -->
+              </WidgetGroup>
             </Children>
           </WidgetGroup><!-- /EffectSlots -->
 
           <WidgetGroup><!-- Underlays, no focus -->
-            <ObjectName>Spacer0f</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>me,min</SizePolicy>
             <Children>
@@ -134,16 +133,15 @@ Variables:
           </WidgetGroup><!-- /Underlays, no focus -->
 
           <WidgetGroup><!-- Underlays with focus -->
-            <ObjectName>Spacer0f</ObjectName>
             <Layout>vertical</Layout>
-            <SizePolicy>me,min</SizePolicy>
+            <SizePolicy>me,me</SizePolicy>
             <Children>
               <Template src="skin:fx_flow_focus_background.xml">
                 <SetVariable name="Size">-1me,8f</SetVariable>
                 <SetVariable name="FxNum">1</SetVariable>
               </Template>
               <Template src="skin:fx_flow_focus_background.xml">
-                <SetVariable name="Size">-1me-1me</SetVariable>
+                <SetVariable name="Size">-1me,-1me</SetVariable>
                 <SetVariable name="FxNum">1</SetVariable>
               </Template>
 
@@ -155,7 +153,7 @@ Variables:
               </Template>
 
               <Template src="skin:fx_flow_focus_background.xml">
-                <SetVariable name="Size">-1me-1me</SetVariable>
+                <SetVariable name="Size">-1me,-1me</SetVariable>
                 <SetVariable name="FxNum">2</SetVariable>
               </Template>
 
@@ -167,7 +165,7 @@ Variables:
               </Template>
 
               <Template src="skin:fx_flow_focus_background.xml">
-                <SetVariable name="Size">-1me-1me</SetVariable>
+                <SetVariable name="Size">-1me,-1me</SetVariable>
                 <SetVariable name="FxNum">3</SetVariable>
               </Template>
               <Template src="skin:fx_flow_focus_background.xml">
@@ -187,129 +185,113 @@ Variables:
       <WidgetGroup><!-- FxUnitControls -->
         <ObjectName>FxUnitControls</ObjectName>
         <Layout>vertical</Layout>
-        <SizePolicy>min,min</SizePolicy>
+        <Size>-1min,131f</Size>
         <Children>
+
           <WidgetGroup><!-- FX label + FX expand button -->
-            <ObjectName>AlignCenter</ObjectName>
-            <Layout>vertical</Layout>
-            <SizePolicy>min,min</SizePolicy>
+            <ObjectName>AlignTopCenter</ObjectName>
+            <Layout>stacked</Layout>
+            <Size>34f,30f</Size>
             <Children>
-              <Label>
-                <ObjectName>FxUnitLabel</ObjectName>
-                <Size>30f,15f</Size>
-                <Text>FX&#8202;<Variable name="FxUnit"/></Text>
-                <Alignment>right</Alignment>
-              </Label>
-
-              <WidgetGroup><Size>1min,1f</Size></WidgetGroup>
-
               <Template src="skin:button_2state_persist.xml">
-                <SetVariable name="ObjectName">FxSamplersMiniMaxi</SetVariable>
+                <SetVariable name="ObjectName">FxMiniMaxi</SetVariable>
                 <SetVariable name="TooltipId">EffectUnit_show_parameters</SetVariable>
-                <SetVariable name="Size">30f,15f</SetVariable>
+                <SetVariable name="Size">34f,30f</SetVariable>
                 <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],show_parameters</SetVariable>
               </Template>
-
-              <WidgetGroup><Size>1min,2f</Size></WidgetGroup>
+              <Label>
+                <ObjectName>FxUnitLabel</ObjectName>
+                <Size>34f,15f</Size>
+                <Text>&#8201;&#8201;FX&#8202;<Variable name="FxUnit"/>&#8202;</Text>
+              </Label>
             </Children>
-          </WidgetGroup><!-- /FX label + FX expand button -->
+          </WidgetGroup>
 
-          <WidgetGroup><!-- FxUnitMixer + Pfl button -->
-            <ObjectName>Spacer0f</ObjectName>
-            <Layout>horizontal</Layout>
+          <!-- FxUnitMixer -->
+          <WidgetGroup>
+            <ObjectName>FxUnitMixerLeft</ObjectName>
+            <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <Children>
 
-              <WidgetGroup><ObjectName>Spacer0f</ObjectName><Size>1f,1me</Size></WidgetGroup>
+              <Template src="skin:knob_textless.xml">
+                <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+                <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
+                <SetVariable name="Size">30min,26f</SetVariable>
+                <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
+                <SetVariable name="ConfigKey">mix</SetVariable>
+                <SetVariable name="Color">red</SetVariable>
+              </Template>
 
-              <WidgetGroup><!-- FxUnitMixer -->
-                <ObjectName>FxUnitMixer</ObjectName>
+              <Template src="skin:button_2state_persist.xml">
+                <SetVariable name="ObjectName">MixModeButton</SetVariable>
+                <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
+                <SetVariable name="Size">30f,18f</SetVariable>
+                <SetVariable name="state_0_icon">fx_mixmode_d-w.svg</SetVariable>
+                <SetVariable name="state_1_icon">fx_mixmode_d+w.svg</SetVariable>
+                <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
+
+              <WidgetGroup><!-- Super Knob, if enabled -->
+                <SizePolicy>min,min</SizePolicy>
                 <Layout>vertical</Layout>
-                <SizePolicy>min,me</SizePolicy>
                 <Children>
-
                   <Template src="skin:knob_textless.xml">
-                    <SetVariable name="TooltipId">EffectUnit_mix</SetVariable>
+                    <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
                     <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
-                    <SetVariable name="Size">30min,26f</SetVariable>
+                    <SetVariable name="Size">30f,26f</SetVariable>
                     <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
-                    <SetVariable name="ConfigKey">mix</SetVariable>
-                    <SetVariable name="Color">red</SetVariable>
+                    <SetVariable name="ConfigKey">super1</SetVariable>
+                    <SetVariable name="Color">blue</SetVariable>
                   </Template>
+                </Children>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
-                  <Template src="skin:button_2state_persist.xml">
-                    <SetVariable name="ObjectName">MixModeButton</SetVariable>
-                    <SetVariable name="TooltipId">EffectUnit_mix_mode</SetVariable>
-                    <SetVariable name="Size">30f,18f</SetVariable>
-                    <SetVariable name="state_0_icon">fx_mixmode_d-w.svg</SetVariable>
-                    <SetVariable name="state_1_icon">fx_mixmode_d+w.svg</SetVariable>
-                    <SetVariable name="ConfigKey">[EffectRack1_EffectUnit<Variable name="FxUnit"/>],mix_mode</SetVariable>
-                  </Template>
+              <WidgetGroup><!-- additional spacer for Super Knob, if enabled -->
+                <SizePolicy>min,me</SizePolicy>
+                <Connection>
+                  <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
 
-                  <WidgetGroup><Size>1min,0me</Size></WidgetGroup>
-
-                  <WidgetGroup><!-- Super Knob, if enabled -->
-                    <SizePolicy>min,min</SizePolicy>
-                    <Layout>vertical</Layout>
+              <WidgetGroup><!-- Pfl button -->
+                <ObjectName>AlignCenter</ObjectName>
+                <SizePolicy>min,max</SizePolicy>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup>
+                    <SizePolicy>max,max</SizePolicy>
+                    <Layout>stacked</Layout>
                     <Children>
-                      <Template src="skin:knob_textless.xml">
-                        <SetVariable name="TooltipId">EffectUnit_super1</SetVariable>
-                        <SetVariable name="ObjectName">SuperWetDryKnob</SetVariable>
-                        <SetVariable name="Size">30f,26f</SetVariable>
-                        <SetVariable name="group">[<Variable name="FxRack_FxUnit"/>]</SetVariable>
-                        <SetVariable name="ConfigKey">super1</SetVariable>
-                        <SetVariable name="Color">blue</SetVariable>
+                      <!-- Greyed out if no headphone device is configured -->
+                      <Template src="skin:pfl_cover.xml"/>
+
+                      <Template src="skin:button_2state.xml">
+                        <SetVariable name="ObjectName">PflButton</SetVariable>
+                        <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
+                        <SetVariable name="Size">24f,24f</SetVariable>
+                        <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
+                        <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
+                        <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],group_[Headphone]_enable</SetVariable>
                       </Template>
                     </Children>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /Super Knob, if enabled -->
-
-                  <WidgetGroup><!-- additional spacer for Super Knob, if enabled -->
-                    <SizePolicy>min,me</SizePolicy>
-                    <Connection>
-                      <ConfigKey persist="true">[Skin],show_superknobs</ConfigKey>
-                      <BindProperty>visible</BindProperty>
-                    </Connection>
-                  </WidgetGroup><!-- /additional spacer for Super Knob, if enabled -->
-
-                  <WidgetGroup><!-- Headphone FX button -->
-                    <ObjectName>AlignCenter</ObjectName>
-                    <SizePolicy>min,max</SizePolicy>
-                    <Layout>vertical</Layout>
-                    <Children>
-                      <WidgetGroup><!-- Headphone FX button -->
-                        <SizePolicy>max,max</SizePolicy>
-                        <Layout>stacked</Layout>
-                        <Children>
-                          <!-- index 0 due to bug -->
-                          <WidgetGroup><Size>0f,0f</Size></WidgetGroup>
-
-                          <!-- Greyed out if no headphone device is configured -->
-                          <Template src="skin:pfl_cover.xml"/>
-
-                          <Template src="skin:button_2state.xml">
-                            <SetVariable name="ObjectName">PflButton</SetVariable>
-                            <SetVariable name="TooltipId">EffectUnit_headphones_enabled</SetVariable>
-                            <SetVariable name="Size">24f,24f</SetVariable>
-                            <SetVariable name="state_0_icon">pfl_off.svg</SetVariable>
-                            <SetVariable name="state_1_icon">pfl_on.svg</SetVariable>
-                            <SetVariable name="ConfigKey">[<Variable name="FxRack_FxUnit"/>],group_[Headphone]_enable</SetVariable>
-                          </Template>
-                        </Children>
-                      </WidgetGroup>
-                    </Children>
-                  </WidgetGroup><!-- /Headphone FX button -->
-
+                  </WidgetGroup>
                 </Children>
-              </WidgetGroup><!-- /FxUnitMixer -->
+              </WidgetGroup><!-- /Pfl button -->
 
             </Children>
-          </WidgetGroup><!-- /FxUnitMixer + Pfl button -->
+          </WidgetGroup><!-- /FxUnitMixer -->
+
         </Children>
       </WidgetGroup><!-- /FxUnitControls -->
+
     </Children>
   </WidgetGroup><!-- /EffectUnit -->
 </Template>

@@ -7,6 +7,7 @@
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "moc_synccontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -70,10 +71,6 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
     m_pPassthroughEnabled = new ControlProxy(group, "passthrough", this);
     m_pPassthroughEnabled->connectValueChanged(this,
             &SyncControl::slotPassthroughChanged, Qt::DirectConnection);
-
-    m_pEjectButton = new ControlProxy(group, "eject", this);
-    m_pEjectButton->connectValueChanged(this,
-            &SyncControl::slotEjectPushed, Qt::DirectConnection);
 
     m_pQuantize = new ControlProxy(group, "quantize", this);
 
@@ -175,6 +172,10 @@ bool SyncControl::isPlaying() const {
     return m_pPlayButton->toBool();
 }
 
+bool SyncControl::isAudible() const {
+    return m_audible;
+}
+
 double SyncControl::adjustSyncBeatDistance(double beatDistance) const {
     // Similar to adjusting the target beat distance, when we report our beat
     // distance we need to adjust it by the master bpm adjustment factor.  If
@@ -242,6 +243,8 @@ void SyncControl::setMasterBpm(double bpm) {
 
 void SyncControl::setMasterParams(
         double beatDistance, double baseBpm, double bpm) {
+    // Calculate the factor for the file bpm. That gives the best
+    // result at any rate slider position.
     double masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
     if (isMaster(getSyncMode())) {
         // In Master mode we adjust the incoming Bpm for the initial sync.
@@ -256,24 +259,19 @@ void SyncControl::setMasterParams(
 }
 
 double SyncControl::determineBpmMultiplier(double myBpm, double targetBpm) const {
-    double multiplier = kBpmUnity;
     if (myBpm == 0.0 || targetBpm == 0.0) {
-        return multiplier;
+        return kBpmUnity;
     }
-    double best_margin = fabs((targetBpm / myBpm) - 1.0);
-
-    double try_margin = fabs((targetBpm * kBpmHalve / myBpm) - 1.0);
-    // We really want to prefer unity, so use a float compare with high tolerance.
-    if (best_margin - try_margin > .0001) {
-        multiplier = kBpmHalve;
-        best_margin = try_margin;
+    double unityRatio = myBpm / targetBpm;
+    // the square root of 2 (1.414) is the
+    // rate threshold that works vice versa for this and the target.
+    double unityRatioSquare = unityRatio * unityRatio;
+    if (unityRatioSquare > kBpmDouble) {
+        return kBpmDouble;
+    } else if (unityRatioSquare < kBpmHalve) {
+        return kBpmHalve;
     }
-
-    try_margin = fabs((targetBpm * kBpmDouble / myBpm) - 1.0);
-    if (best_margin - try_margin > .0001) {
-        multiplier = kBpmDouble;
-    }
-    return multiplier;
+    return kBpmUnity;
 }
 
 void SyncControl::updateTargetBeatDistance() {
@@ -360,7 +358,7 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 }
 
 void SyncControl::slotControlPlay(double play) {
-    m_pEngineSync->notifyPlaying(this, play > 0.0);
+    m_pEngineSync->notifyPlayingAudible(this, play > 0.0 && m_audible);
 }
 
 void SyncControl::slotVinylControlChanged(double enabled) {
@@ -375,14 +373,6 @@ void SyncControl::slotPassthroughChanged(double enabled) {
         // If passthrough was enabled and sync was on, disable it.
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_NONE);
     }
-}
-
-void SyncControl::slotEjectPushed(double enabled) {
-    Q_UNUSED(enabled);
-    // We can't eject tracks if the decks is playing back, so if we are master
-    // and eject was pushed the deck must be stopped.  Handing off in this case
-    // actually causes the other decks to start playing, so not doing anything
-    // is preferred.
 }
 
 void SyncControl::slotSyncModeChangeRequest(double state) {
@@ -450,6 +440,18 @@ void SyncControl::setLocalBpm(double local_bpm) {
         // We might have adopted an adjust factor when becoming master.
         // Keep it when reporting our bpm.
         m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
+    }
+}
+
+void SyncControl::updateAudible() {
+    int channelIndex = m_pChannel->getChannelIndex();
+    if (channelIndex >= 0) {
+        CSAMPLE_GAIN gain = getEngineMaster()->getMasterGain(channelIndex);
+        bool newAudible = gain > CSAMPLE_GAIN_ZERO;
+        if (m_audible != newAudible) {
+            m_audible = newAudible;
+            m_pEngineSync->notifyPlayingAudible(this, m_pPlayButton->toBool() && m_audible);
+        }
     }
 }
 

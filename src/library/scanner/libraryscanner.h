@@ -1,6 +1,6 @@
 #pragma once
 
-#include <gtest/gtest.h>
+#include <gtest/gtest_prod.h>
 
 #include <QScopedPointer>
 #include <QSemaphore>

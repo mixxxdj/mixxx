@@ -28,10 +28,7 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     void pluginSelected(int i);
     void analyzerEnabled(int i);
     void fixedtempoEnabled(int i);
-    void offsetEnabled(int i);
     void fastAnalysisEnabled(int i);
-    void minBpmRangeChanged(int value);
-    void maxBpmRangeChanged(int value);
     void slotReanalyzeChanged(int value);
     void slotReanalyzeImportedChanged(int value);
 
@@ -41,11 +38,8 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     BeatDetectionSettings m_bpmSettings;
     QList<mixxx::AnalyzerPluginInfo> m_availablePlugins;
     QString m_selectedAnalyzerId;
-    int m_minBpm;
-    int m_maxBpm;
     bool m_bAnalyzerEnabled;
     bool m_bFixedTempoEnabled;
-    bool m_bOffsetEnabled;
     bool m_bFastAnalysisEnabled;
     bool m_bReanalyze;
     bool m_bReanalyzeImported;

@@ -1,8 +1,9 @@
 #pragma once
 
-#include "effects/effectmanifest.h"
+#include <lilv/lilv.h>
+
 #include "effects/defs.h"
-#include <lilv-0/lilv/lilv.h>
+#include "effects/effectmanifest.h"
 
 class LV2Manifest {
   public:

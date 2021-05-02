@@ -319,10 +319,13 @@ void GlobalTrackCache::evictAndSaveCachedTrack(GlobalTrackCacheEntryPointer cach
 GlobalTrackCache::GlobalTrackCache(
         GlobalTrackCacheSaver* pSaver,
         deleteTrackFn_t deleteTrackFn)
-    : m_mutex(QMutex::Recursive),
-      m_pSaver(pSaver),
-      m_deleteTrackFn(deleteTrackFn),
-      m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
+        :
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+          m_mutex(QMutex::Recursive),
+#endif
+          m_pSaver(pSaver),
+          m_deleteTrackFn(deleteTrackFn),
+          m_tracksById(kUnorderedCollectionMinCapacity, DbId::hash_fun) {
     DEBUG_ASSERT(m_pSaver);
     qRegisterMetaType<GlobalTrackCacheEntryPointer>("GlobalTrackCacheEntryPointer");
 }

@@ -51,14 +51,22 @@ QString coverInfoToString(const CoverInfo& info) {
 //static
 quint16 CoverImageUtils::calculateHash(
         const QImage& image) {
-    const auto hash = qChecksum(
+    auto hash = qChecksum(
             reinterpret_cast<const char*>(image.constBits()),
 #if QT_VERSION >= QT_VERSION_CHECK(5, 10, 0)
             image.sizeInBytes()
 #else
             image.byteCount()
 #endif
-            );
+    );
+    // In rare cases the calculated checksum could be equal to the
+    // reserved value defaultHash() which might cause unexpected
+    // behavior. In this case we simply invert all bits to get a hash
+    // value that is considered valid.
+    // https://mixxx.discourse.group/t/mixxx-2-2-4-reads-id3v1-tags-mixxx-2-3-or-2-4-does-not/21041/11
+    if (hash == defaultHash() && !image.isNull()) {
+        hash = ~hash;
+    }
     DEBUG_ASSERT(image.isNull() || isValidHash(hash));
     DEBUG_ASSERT(!image.isNull() || hash == defaultHash());
     return hash;

@@ -76,6 +76,9 @@
             <property name="text">
              <string>Equalizer Plugin</string>
             </property>
+            <property name="leftMargin">
+             <number>3</number>
+            </property>
            </widget>
           </item>
           <item row="0" column="2">
@@ -85,6 +88,9 @@
               <weight>75</weight>
               <bold>true</bold>
              </font>
+            </property>
+            <property name="leftMargin">
+             <number>3</number>
             </property>
             <property name="text">
              <string>Quick Effect</string>

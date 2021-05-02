@@ -17,8 +17,7 @@ const SINT kVerifyReadableMaxFrameCount = 1;
 } // anonymous namespace
 
 AudioSource::AudioSource(const QUrl& url)
-        : UrlResource(url),
-          m_signalInfo(kSampleLayout) {
+        : UrlResource(url) {
 }
 
 AudioSource::AudioSource(
@@ -141,7 +140,6 @@ bool AudioSource::verifyReadable() {
     // No early return desired! All tests should be performed, even
     // if some fail.
     bool result = true;
-    DEBUG_ASSERT(m_signalInfo.getSampleLayout());
     if (!m_signalInfo.getChannelCount().isValid()) {
         kLogger.warning()
                 << "Invalid number of channels:"

@@ -1,107 +1,98 @@
 <!--
-Description:
 
-    A four-state GUI switch, outsourcing the complex deck size selection
-    from the deck.xml template.
+  Purpose:
 
-    It picks the appropriate deck variant
-      FULL
-      Compact
-      minimal
-      none
-    depending on how the following skin controls are combined
-      [Master],maximize_library
-      [LateNight],max_lib_show_decks
-      [Master],show_mixer
-      [LateNight],deck_size_without_mixer
+      Inside deck.xml there are differently sized deck variants
+        FULL
+        Compact
+        minimal
+        (none)
+      to be shown, depending on how the user has currently configured the skin.
+      Controls taken into account are
+        [Master],maximize_library
+        [LateNight],max_lib_show_decks
+        [Master],show_mixer
+        [LateNight],deck_size_without_mixer
+      deck.xml would be very complex if we'd want to cover all combinations there.
+      To have a slim deck template this switch here does the selection and thus allows
+      to remote-control what to show in deck.xml
 
-    This is a SizeAwareStack and WidgetStack hack that basically executes
-    an analogue version of a simple script similiar to this:
-
-    if (![Master],maxmimize_library
-          && [Skin],select_minimal_deck) {
-        hide(fullDeck);
-        hide(compactDeck);
-        show(minimaldeck);
-    } else {
-      if ([Master],show_mixer) {
-        hide(minimaldeck);
-        hide(compactDeck);
-        show(fullDeck);
+      This is a widget hack to compensate the lack of proper GUI scripting (as of Mixxx 2.3)
+      It is basically an analogue version of a simple script similiar to this:
+      if (Library is maximized && minimal deck selected) {
+          show minimal deck;
       } else {
-        case ..
-        ...
+          if (Mixer is shown) {
+              enforce full deck;
+          } else {
+              show pre-selected deck;
+          }
       }
-    }
 
-    This is a fixed-width container. The occupied space is defined
-    by widget connected to the above skin controls. The SizeAwareStack
-    then picks one child widget fitting into the remaining space.
-      Note: To make the whole thing work we need to be sure there's
-      only ONE fitting widget for every possible size the
-      SizeAwareStack could be shrunk to.
 
-    Each widget inside the SizeAwareStack is a WidgetStack.
-    By default, WidgetStacks pick their first child for display*,
-    then toggle the child's 'trigger' control to 1 (if present).
-    Example:
-    <WidgetStack>
-      <Children>
-        <WidgetGroup trigger="[Any],config_key">  => set to '1'
-        <WidgetGroup trigger="[Another],config_key">  => set to '0'
-      </Children>
-    </WidgetStack>
+  The Structure:
 
-    So, let's put several copies of a WidgetStack into the
-    SizeAwareStack, each with the identical set of children and
-    controls. If we then change the order of the WidgetStacks'
-    children, each WidgetStack can toggle a specific control to '1'
-    while setting the others to '0'.
-    If we've set the parent SizeAwareStack up carefully, and if we
-    omitted storing the index with
-    <WidgetStack currentPage="[Save],config_key"> anywhere inside
-    the SizeAwareStack, we can now toggle several N-state switches
-    at once.
-    This gives us a pretty reliable tool to pick the appropriate
-    deck variant, for example, depending on a may-be complex
-    skin configuration.
+      The outer container is a WidgetGroup with a fixed width and a horizontal layout.
+
+      On the left there are fixed-width blocks, where each is shown or hidden according
+      to the state of one of the skin controls listed above.
+      So, depending on how the user has configured the skin via the skin settings menu,
+      those blocks define the remaining space on the right.
+
+      At the right, there's a SizeAwareStack. It can react to the available space and show
+      a fitting child widget at a time (if there is one that matches the current 'gap').
+
+      The SizeAwareStack is packed with WidgetStacks.
+      A WidgetStack can host several top-level child widgets but only one is shown at a time.
+      Each child widget can have 'trigger' control that (when set to 1 elsewhere) would enforce
+      the widget to be shown.
+      When a hidden WidgetStack is shown and no child's trigger is addressed the first child is picked.
+      As soon as that first child is shown its trigger control is set to 1 while the triggers of all
+      siblings are set to 0. Consider this example:
+        <WidgetStack>
+          <Children>
+            <WidgetGroup trigger="[LateNight],show_mini_deck">  // set to 1
+            <WidgetGroup trigger="[LateNight],show_no_deck">    // set to 0
+            <WidgetGroup trigger="[LateNight],show_full_deck">  // set to 0
+          </Children>
+        </WidgetStack>
+
+      The hack here is to use [LateNight],show_mini_deck to show/hide a widget in an entirely
+      different skin template and abuse the 1st-child trigger to remote-control it from here.
+
+
 -->
 
 <Template>
-  <!-- Extra wrapper so we can put multiple, independent size
-        detectors in here. -->
-  <!-- Set height to 0f to hide this.
-       Set height to any other size for visual debugging -->
+  <!-- Extra wrapper so we can put multiple, independent size detectors in here. -->
+  <!-- Set height to 0f to hide it. -->
+  <!-- Increase children's height >0 when needed for visual debugging -->
   <WidgetGroup>
     <Size>0me,0f</Size>
     <Layout>vertical</Layout>
     <ObjectName>AlignRight</ObjectName>
     <Children>
 
-      <!-- Deck selector.
-          Picks the approriate deck size to display -->
       <WidgetGroup>
         <Layout>horizontal</Layout>
-        <Size>300f,10f</Size>
-        <ObjectName>Spacer1e</ObjectName>
+        <Size>300f,0f</Size>
         <Children>
 
-          <!-- Widgets that define the remaining space,
-              visibility connected to skin controls -->
+  <!-- Widgets that define the remaining space according to enabled skin controls -->
+          <!-- maximize_library -->
           <WidgetGroup>
             <Connection>
               <ConfigKey>[Master],maximize_library</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
-            <ObjectName>TEST1</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>min,f</SizePolicy>
-            <MinimumSize>200,10</MinimumSize>
-            <MaximumSize>300,10</MaximumSize>
+            <MinimumSize>200,0</MinimumSize>
+            <MaximumSize>300,0</MaximumSize>
             <Children>
-              <WidgetGroup><!-- minimal deck selected -->
-                <Size>300f,10f</Size>
-                <ObjectName>TEST2</ObjectName>
+              <!-- minimal deck selected -->
+              <WidgetGroup>
+                <Size>300f,0f</Size>
                 <Connection>
                   <ConfigKey persist="true">[LateNight],max_lib_show_decks</ConfigKey>
                   <Transform><Not/></Transform>
@@ -109,8 +100,10 @@ Description:
                 </Connection>
               </WidgetGroup>
             </Children>
-          </WidgetGroup><!-- maximize_library -->
+          </WidgetGroup>
+          <!-- maximize_library -->
 
+          <!-- regular library -->
           <WidgetGroup>
             <Connection>
               <ConfigKey>[Master],maximize_library</ConfigKey>
@@ -119,11 +112,11 @@ Description:
             </Connection>
             <Layout>horizontal</Layout>
             <SizePolicy>min,f</SizePolicy>
-            <MinimumSize>0,10</MinimumSize>
-            <MaximumSize>200,10</MaximumSize>
+            <MinimumSize>0,0</MinimumSize>
+            <MaximumSize>200,0</MaximumSize>
             <Children>
 
-              <!-- !show_mixer -->
+              <!-- no mixer -->
               <WidgetGroup>
                 <Connection>
                   <ConfigKey>[Master],show_mixer</ConfigKey>
@@ -131,14 +124,14 @@ Description:
                   <BindProperty>visible</BindProperty>
                 </Connection>
                 <Layout>horizontal</Layout>
-                <ObjectName>TEST33</ObjectName>
                 <SizePolicy>min,f</SizePolicy>
-                <MinimumSize>0,10</MinimumSize>
-                <MaximumSize>200,10</MaximumSize>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize>200,0</MaximumSize>
                 <Children>
 
-                  <WidgetGroup><!-- Compact deck selected -->
-                    <Size>100f,10f</Size>
+                  <!-- Compact deck selected -->
+                  <WidgetGroup>
+                    <Size>100f,0f</Size>
                     <ObjectName>SET_COMPACT</ObjectName>
                     <Connection>
                       <ConfigKey persist="true">[LateNight],deck_size_without_mixer</ConfigKey>
@@ -147,8 +140,9 @@ Description:
                     </Connection>
                   </WidgetGroup>
 
-                  <WidgetGroup><!-- minimal deck selected -->
-                    <Size>200f,10f</Size>
+                  <!-- minimal deck selected -->
+                  <WidgetGroup>
+                    <Size>200f,0f</Size>
                     <ObjectName>SET_MINI</ObjectName>
                     <Connection>
                       <ConfigKey persist="true">[LateNight],deck_size_without_mixer</ConfigKey>
@@ -156,47 +150,43 @@ Description:
                       <BindProperty>visible</BindProperty>
                     </Connection>
                   </WidgetGroup>
+
                 </Children>
-              </WidgetGroup><!-- !show_mixer -->
+              </WidgetGroup>
+              <!-- no mixer -->
 
             </Children>
-          </WidgetGroup><!-- !maximize_library -->
-          <!-- /Widgets that define the remaining space,
-              visibility connected to skin controls -->
+          </WidgetGroup>
+          <!-- regular library -->
 
 
-
-          <!-- Deck size detector -->
+  <!-- Deck size detector -->
           <SizeAwareStack>
             <Children>
+      <!-- control triggers -->
+
               <!-- no decks -->
-              <!-- maximize_library && minimal deck selected -->
+              <!-- maximized library && decks disabled -->
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MinimumSize>0,10</MinimumSize>
-                <MaximumSize>0,10</MaximumSize>
+                <MinimumSize>0,0</MinimumSize>
+                <MaximumSize>0,0</MaximumSize>
                 <Children>
-                  <WidgetGroup trigger="[LateNight],show_no_deck">
-                    <ObjectName>TEST4</ObjectName>
-                    <Size>0f,10f</Size>
-                  </WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_no_deck"><Size>0f,0f</Size></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_mini_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_compact_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_full_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
                 </Children>
               </WidgetStack>
 
-              <!-- Minimal deck -->
-              <!-- maximize_library || (!show_mixer && minimal deck selected) -->
+              <!-- minimal deck -->
+              <!-- maximized library || (mixer hidden && minimal deck selected) -->
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MinimumSize>100,10</MinimumSize>
-                <MaximumSize>100,10</MaximumSize>
+                <MinimumSize>100,0</MinimumSize>
+                <MaximumSize>100,0</MaximumSize>
                 <Children>
-                  <WidgetGroup trigger="[LateNight],show_mini_deck">
-                    <ObjectName>IS_MINI</ObjectName>
-                    <Size>100f,10f</Size>
-                  </WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_mini_deck"><Size>100f,0f</Size></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_compact_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_full_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_no_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
@@ -204,45 +194,37 @@ Description:
               </WidgetStack>
 
               <!-- Compact deck -->
-              <!-- compact_deck_selected -->
+              <!-- mixer hidden && compact deck selected -->
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MinimumSize>200,10</MinimumSize>
-                <MaximumSize>200,10</MaximumSize>
+                <MinimumSize>200,0</MinimumSize>
+                <MaximumSize>200,0</MaximumSize>
                 <Children>
-                  <WidgetGroup trigger="[LateNight],show_compact_deck">
-                    <ObjectName>IS_COMPACT</ObjectName>
-                    <Size>200f,10f</Size>
-                  </WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_compact_deck"><Size>200f,0f</Size></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_full_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_mini_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_no_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
                 </Children>
               </WidgetStack>
 
-              <!-- Full deck -->
-              <!-- show_mixer || full deck selected -->
+              <!-- FULL deck -->
+              <!-- mixer shown || (mixer hidden && full deck selected) -->
               <WidgetStack>
                 <SizePolicy>me,f</SizePolicy>
-                <MinimumSize>300,10</MinimumSize>
-                <MaximumSize>300,10</MaximumSize>
+                <MinimumSize>300,0</MinimumSize>
+                <MaximumSize>300,0</MaximumSize>
                 <Children>
-                  <WidgetGroup trigger="[LateNight],show_full_deck">
-                    <ObjectName>IS_FULL</ObjectName>
-                    <Size>300f,10f</Size>
-                  </WidgetGroup>
+                  <WidgetGroup trigger="[LateNight],show_full_deck"><Size>300f,0f</Size></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_compact_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_mini_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
                   <WidgetGroup trigger="[LateNight],show_no_deck"><SizePolicy>me,me</SizePolicy></WidgetGroup>
                 </Children>
               </WidgetStack>
             </Children>
-          </SizeAwareStack><!-- /Size detector -->
-          <!-- /Size detector -->
+          </SizeAwareStack>
 
         </Children>
       </WidgetGroup>
-      <!-- checks which deck size should be displayed -->
     </Children>
   </WidgetGroup>
 </Template>

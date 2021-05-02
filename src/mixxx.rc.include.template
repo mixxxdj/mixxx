@@ -1,6 +1,7 @@
 #define CUR_YEAR                    "@MIXXX_YEAR@"
 #define VER_FILEVERSION             @MIXXX_FILEVERSION@
 #define VER_PRODUCTVERSION          @MIXXX_PRODUCTVERSION@
+#define MIXXX_VERSION               "@MIXXX_VERSION@"
 
 #if @MIXXX_DEBUG@
     #define DEBUG

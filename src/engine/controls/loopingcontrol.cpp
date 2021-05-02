@@ -510,7 +510,7 @@ double LoopingControl::getSyncPositionInsideLoop(double dRequestedPlaypos, doubl
 
 void LoopingControl::setLoopInToCurrentPosition() {
     // set loop-in position
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const mixxx::BeatsPointer pBeats = m_pBeats;
     LoopSamples loopSamples = m_loopSamples.getValue();
     double quantizedBeat = -1;
     double pos = m_currentSample.getValue();
@@ -954,7 +954,7 @@ void LoopingControl::clearActiveBeatLoop() {
 }
 
 bool LoopingControl::currentLoopMatchesBeatloopSize() {
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return false;
     }
@@ -970,7 +970,7 @@ bool LoopingControl::currentLoopMatchesBeatloopSize() {
 }
 
 double LoopingControl::findBeatloopSizeForLoop(double start, double end) const {
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return -1;
     }
@@ -1028,7 +1028,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint, bool enable
     }
 
     int samples = static_cast<int>(m_pTrackSamples->get());
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const mixxx::BeatsPointer pBeats = m_pBeats;
     if (samples == 0 || !pBeats) {
         clearActiveBeatLoop();
         m_pCOBeatLoopSize->setAndConfirm(beats);
@@ -1194,7 +1194,7 @@ void LoopingControl::slotBeatLoopRollActivate(double pressed) {
 }
 
 void LoopingControl::slotBeatJump(double beats) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats) {
         return;
     }
@@ -1226,7 +1226,7 @@ void LoopingControl::slotBeatJumpBackward(double pressed) {
 }
 
 void LoopingControl::slotLoopMove(double beats) {
-    mixxx::BeatsPointer pBeats = m_pBeats;
+    const mixxx::BeatsPointer pBeats = m_pBeats;
     if (!pBeats || beats == 0) {
         return;
     }

@@ -79,6 +79,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseText(const QDomElement& node);
     QWidget* parseTrackProperty(const QDomElement& node);
     QWidget* parseStarRating(const QDomElement& node);
+    QWidget* parseRateRange(const QDomElement& node);
     QWidget* parseNumberRate(const QDomElement& node);
     QWidget* parseNumberPos(const QDomElement& node);
     QWidget* parseEngineKey(const QDomElement& node);
@@ -103,7 +104,6 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseSizeAwareStack(const QDomElement& node);
     QWidget* parseSplitter(const QDomElement& node);
     void parseSingletonDefinition(const QDomElement& node);
-    QWidget* parseSingletonContainer(const QDomElement& node);
 
     // Visual widgets.
     QWidget* parseVisual(const QDomElement& node);

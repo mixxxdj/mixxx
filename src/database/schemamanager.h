@@ -8,9 +8,6 @@
 
 class SchemaManager {
   public:
-    static const QString SETTINGS_VERSION_STRING;
-    static const QString SETTINGS_MINCOMPATIBLE_STRING;
-
     enum class Result {
         CurrentVersion,
         NewerVersionBackwardsCompatible,
@@ -22,21 +19,19 @@ class SchemaManager {
 
     explicit SchemaManager(const QSqlDatabase& database);
 
-    int getCurrentVersion() const {
-        return m_currentVersion;
-    }
+    int readCurrentVersion() const;
+    int readLastUsedVersion() const;
+    int readMinBackwardsCompatibleVersion() const;
 
-    bool isBackwardsCompatibleWithVersion(int targetVersion) const;
-
+    /// Tries to update the database schema to targetVersion.
+    /// Pending changes are rolled back upon failure.
+    /// No-op if the versions are incompatible or the targetVersion is older.
     Result upgradeToSchemaVersion(
-            const QString& schemaFilename,
-            int targetVersion);
+            int targetVersion,
+            const QString& schemaFilename);
 
   private:
-    const QSqlDatabase m_database;
     const SettingsDAO m_settingsDao;
-
-    int m_currentVersion;
 };
 
 #endif /* SCHEMAMANAGER_H */

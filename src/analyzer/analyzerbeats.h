@@ -26,13 +26,13 @@ class AnalyzerBeats : public Analyzer {
     static QList<mixxx::AnalyzerPluginInfo> availablePlugins();
     static mixxx::AnalyzerPluginInfo defaultPlugin();
 
-    bool initialize(TrackPointer tio, int sampleRate, int totalSamples) override;
+    bool initialize(TrackPointer pTrack, int sampleRate, int totalSamples) override;
     bool processSamples(const CSAMPLE *pIn, const int iLen) override;
     void storeResults(TrackPointer tio) override;
     void cleanup() override;
 
   private:
-    bool shouldAnalyze(TrackPointer tio) const;
+    bool shouldAnalyze(TrackPointer pTrack) const;
     static QHash<QString, QString> getExtraVersionInfo(
             const QString& pluginId, bool bPreferencesFastAnalysis);
 
@@ -43,12 +43,10 @@ class AnalyzerBeats : public Analyzer {
     bool m_bPreferencesReanalyzeOldBpm;
     bool m_bPreferencesReanalyzeImported;
     bool m_bPreferencesFixedTempo;
-    bool m_bPreferencesOffsetCorrection;
     bool m_bPreferencesFastAnalysis;
 
-    int m_iSampleRate;
-    int m_iTotalSamples;
+    mixxx::audio::SampleRate m_sampleRate;
+    SINT m_totalSamples;
     int m_iMaxSamplesToProcess;
     int m_iCurrentSample;
-    int m_iMinBpm, m_iMaxBpm;
 };

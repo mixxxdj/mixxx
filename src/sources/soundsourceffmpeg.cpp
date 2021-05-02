@@ -353,8 +353,8 @@ QStringList SoundSourceProviderFFmpeg::getSupportedFileExtensions() const {
     while ((pavInputFormat = av_iformat_next(pavInputFormat))) {
 #else
     const AVInputFormat* pavInputFormat = nullptr;
-    void* iInputFormat = 0;
-    while ((pavInputFormat = av_demuxer_iterate(&iInputFormat))) {
+    void* pOpaqueInputFormatIterator = nullptr;
+    while ((pavInputFormat = av_demuxer_iterate(&pOpaqueInputFormatIterator))) {
 #endif
         if (pavInputFormat->flags | AVFMT_SEEK_TO_PTS) {
             ///////////////////////////////////////////////////////////
@@ -464,13 +464,17 @@ SoundSourceProviderPriority SoundSourceProviderFFmpeg::getPriorityHint(
 SoundSourceFFmpeg::SoundSourceFFmpeg(const QUrl& url)
         : SoundSource(url),
           m_pavStream(nullptr),
+          m_pavPacket(av_packet_alloc()),
           m_pavDecodedFrame(nullptr),
           m_pavResampledFrame(nullptr),
           m_seekPrerollFrameCount(0) {
+    DEBUG_ASSERT(m_pavPacket);
 }
 
 SoundSourceFFmpeg::~SoundSourceFFmpeg() {
     close();
+    av_packet_free(&m_pavPacket);
+    DEBUG_ASSERT(!m_pavPacket);
 }
 
 SoundSource::OpenResult SoundSourceFFmpeg::tryOpen(
@@ -785,6 +789,9 @@ SINT readNextPacket(
         AVPacket* pavPacket,
         SINT flushFrameIndex) {
     while (true) {
+        // The underlying buffer will be provided by av_read_frame()
+        // and is only borrowed until the next packet is read.
+        DEBUG_ASSERT(!pavPacket->buf);
         const auto av_read_frame_result =
                 av_read_frame(
                         pavFormatContext,
@@ -880,24 +887,24 @@ bool SoundSourceFFmpeg::adjustCurrentPosition(SINT startIndex) {
 }
 
 bool SoundSourceFFmpeg::consumeNextAVPacket(
-        AVPacket* pavPacket, AVPacket** ppavNextPacket) {
-    DEBUG_ASSERT(pavPacket);
+        AVPacket** ppavNextPacket) {
+    DEBUG_ASSERT(m_pavPacket);
     DEBUG_ASSERT(ppavNextPacket);
     if (!*ppavNextPacket) {
         // Read next packet from stream
         const SINT packetFrameIndex = readNextPacket(
                 m_pavInputFormatContext,
                 m_pavStream,
-                pavPacket,
+                m_pavPacket,
                 m_frameBuffer.writeIndex());
         if (packetFrameIndex == ReadAheadFrameBuffer::kInvalidFrameIndex) {
             // Invalidate current position and abort reading
             m_frameBuffer.invalidate();
             return false;
         }
-        *ppavNextPacket = pavPacket;
+        *ppavNextPacket = m_pavPacket;
     }
-    auto pavNextPacket = *ppavNextPacket;
+    auto* pavNextPacket = *ppavNextPacket;
 
     // Consume raw packet data
 #if VERBOSE_DEBUG_LOG
@@ -1019,14 +1026,10 @@ ReadableSampleFrames SoundSourceFFmpeg::readSampleFramesClamped(
     // Start decoding into the output buffer from the current position
     CSAMPLE* pOutputSampleBuffer = writableSampleFrames.writableData();
 
-    AVPacket avPacket;
-    av_init_packet(&avPacket);
-    avPacket.data = nullptr;
-    avPacket.size = 0;
     AVPacket* pavNextPacket = nullptr;
     while (m_frameBuffer.isValid() &&                         // no decoding error occurred
             (pavNextPacket || !writableFrameRange.empty()) && // not yet finished
-            consumeNextAVPacket(&avPacket, &pavNextPacket)) { // next packet consumed
+            consumeNextAVPacket(&pavNextPacket)) {            // next packet consumed
         int avcodec_receive_frame_result;
         // One or more AV packets are required for decoding the next AV frame
         do {

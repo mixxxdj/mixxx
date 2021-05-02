@@ -17,7 +17,11 @@
 
 const bool sDebug = false;
 
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+QRecursiveMutex Sandbox::s_mutex;
+#else
 QMutex Sandbox::s_mutex(QMutex::Recursive);
+#endif
 bool Sandbox::s_bInSandbox = false;
 QSharedPointer<ConfigObject<ConfigValue>> Sandbox::s_pSandboxPermissions;
 QHash<QString, SecurityTokenWeakPointer> Sandbox::s_activeTokens;
@@ -421,7 +425,7 @@ QString Sandbox::migrateOldSettings() {
                     "This only needs to be done once."
                     "\n\n"
                     "If you do not want to grant Mixxx access, click Cancel "
-                    "on the file picker. Mixxx will create a new music library"
+                    "on the file picker. Mixxx will create a new music library "
                     "and use default settings."));
 
     QString result = QFileDialog::getExistingDirectory(

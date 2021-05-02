@@ -388,7 +388,7 @@ TreeItem* ITunesFeature::importLibrary() {
 
     //Parse iTunes XML file using SAX (for performance)
     QFile itunes_file(m_dbfile);
-    if (!itunes_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    if (!itunes_file.open(QIODevice::ReadOnly)) {
         qDebug() << "Cannot open iTunes music collection";
         return nullptr;
     }

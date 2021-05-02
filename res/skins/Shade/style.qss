@@ -15,7 +15,6 @@
 }
 #Mixxx, WWidget,
 WEffect,
-WEffectSelector,
 WKey,
 WLabel, WLibrary QLabel,
 WNumber, WNumberPos,
@@ -138,12 +137,8 @@ WCoverArtMenu::item {
   }
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
-WEffectSelector::down-arrow,
-WEffectSelector::indicator:!checked,
 #fadeModeCombobox,
 #fadeModeCombobox QAbstractScrollArea,
-#fadeModeCombobox::down-arrow,
-#fadeModeCombobox::indicator:!checked,
 WLibrary QPushButton:enabled,
 WBeatSpinBox,
 #spinBoxTransition {
@@ -154,7 +149,8 @@ WEffectSelector QAbstractScrollArea,
   padding: 2px;
   min-width: 160px;
   }
-WEffectSelector,
+WEffectSelector:!editable,
+WEffectSelector:!editable:on,
 WEffectSelector QAbstractScrollArea,
 WEffectSelector::down-arrow,
 #fadeModeCombobox QAbstractScrollArea,
@@ -173,7 +169,8 @@ WCoverArtMenu {
   border-style: solid;
   border-color: #060613;
   }
-  WEffectSelector,
+  WEffectSelector:!editable,
+  WEffectSelector:!editable:on,
   #fadeModeCombobox {
     padding-left: 3px;
     }
@@ -516,7 +513,6 @@ WTrackTableView {
     WLibrary QCheckBox {
       text-align: right;
       alignment: right;
-      qproperty-alignment: 'AlignRight';
     }
 
   #LibraryBPMSpinBox {
@@ -826,11 +822,7 @@ WLibrary QRadioButton::indicator:unchecked {
   image: url(skin:/btn/btn_lib_radio_button_off.svg) center center;
 }
 
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
+#LibraryFeatureControls QPushButton {
   text-align: center;
   font-size: 9pt;
   font-weight: normal;
@@ -848,7 +840,7 @@ WLibrary QRadioButton::indicator:unchecked {
   background-color: #99a0a4;
   border: 1px solid #99a0a4;
   }
-  #DlgAutoDJ > QPushButton {
+  #DlgAutoDJ > #LibraryFeatureControls QPushButton {
     padding: 0px;
     width: 32px;
     height: 18px;
@@ -857,37 +849,20 @@ WLibrary QRadioButton::indicator:unchecked {
       width: 40px;
     }
 
-  #DlgMissing > QPushButton:!enabled,
-  #DlgHidden > QPushButton:!enabled,
-  #DlgAutoDJ > QPushButton:!enabled,
-  #DlgRecording > QPushButton:!enabled,
-  #DlgAnalysis > QPushButton:!enabled {
+  #LibraryFeatureControls QPushButton:!enabled {
     background-color: #72777A;
     border: 1px solid #72777A;
     }
-  #DlgMissing > QPushButton:unchecked,
-  #DlgHidden > QPushButton:unchecked,
-  #DlgAutoDJ > QPushButton:unchecked,
-  #DlgRecording > QPushButton:unchecked,
-  #DlgAnalysis > QPushButton:unchecked {
+  #LibraryFeatureControls QPushButton:unchecked {
     color: #888;
     background-color: #444;
     }
-  #DlgMissing > QPushButton:checked,
-  #DlgHidden > QPushButton:checked,
-  #DlgAutoDJ > QPushButton:checked,
-  #DlgRecording > QPushButton:checked,
-  #DlgAnalysis > QPushButton:checked {
+  #LibraryFeatureControls QPushButton:checked {
     color: #000;
     background-color: #F90562;
     border: 1px solid #F90562;
     }
-  #DlgAnalysis > QPushButton:focus,
-  #DlgMissing > QPushButton:focus,
-  #DlgHidden > QPushButton:focus,
-  #DlgAutoDJ > QPushButton:focus,
-  #DlgRecording > QPushButton:focus,
-  #DlgAnalysis > QPushButton:focus {
+  #LibraryFeatureControls QPushButton:focus {
     outline: none;
   }
   /* Space in between 'Recording'	button and recording label */
@@ -935,4 +910,10 @@ QPushButton#pushButtonRepeatPlaylist {
 
 #HotcueButton {
     background-color: #aab2b7;
+}
+
+WRateRange {
+  color: #4B515F;
+  font-size: 10px;
+  qproperty-alignment: 'AlignCenter';
 }

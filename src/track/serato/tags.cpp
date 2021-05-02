@@ -259,7 +259,7 @@ double SeratoTags::guessTimingOffsetMillis(
 
 BeatsImporterPointer SeratoTags::importBeats() const {
     if (m_seratoBeatGrid.isEmpty() || !m_seratoBeatGrid.terminalMarker()) {
-        return std::make_shared<SeratoBeatsImporter>();
+        return nullptr;
     }
     return std::make_shared<SeratoBeatsImporter>(
             m_seratoBeatGrid.nonTerminalMarkers(),
@@ -267,7 +267,11 @@ BeatsImporterPointer SeratoTags::importBeats() const {
 }
 
 CueInfoImporterPointer SeratoTags::importCueInfos() const {
-    return std::make_shared<SeratoCueInfoImporter>(getCueInfos());
+    auto cueInfos = getCueInfos();
+    if (cueInfos.isEmpty()) {
+        return nullptr;
+    }
+    return std::make_shared<SeratoCueInfoImporter>(std::move(cueInfos));
 }
 
 QList<CueInfo> SeratoTags::getCueInfos() const {

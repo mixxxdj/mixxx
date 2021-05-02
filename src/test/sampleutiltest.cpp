@@ -255,15 +255,15 @@ TEST_F(SampleUtilTest, copy3WithGain) {
 
 TEST_F(SampleUtilTest, convertS16ToFloat32) {
     // Shorts are asymmetric, so SAMPLE_MAX is less than -SAMPLE_MIN.
-    const float expectedMax = static_cast<float>(SAMPLE_MAX) /
-                              static_cast<float>(-SAMPLE_MIN);
+    const float expectedMax = static_cast<float>(SAMPLE_MAXIMUM) /
+            static_cast<float>(-SAMPLE_MINIMUM);
     for (int i = 0; i < buffers.size(); ++i) {
         CSAMPLE* buffer = buffers[i];
         int size = sizes[i];
         SAMPLE* s16 = new SAMPLE[size];
         FillBuffer(buffer, 1.0f, size);
         for (int j = 0; j < size; ++j) {
-            s16[j] = SAMPLE_MAX;
+            s16[j] = SAMPLE_MAXIMUM;
         }
         SampleUtil::convertS16ToFloat32(buffer, s16, size);
         for (int j = 0; j < size; ++j) {
@@ -279,7 +279,7 @@ TEST_F(SampleUtilTest, convertS16ToFloat32) {
         }
         FillBuffer(buffer, -1.0f, size);
         for (int j = 0; j < size; ++j) {
-            s16[j] = SAMPLE_MIN;
+            s16[j] = SAMPLE_MINIMUM;
         }
         SampleUtil::convertS16ToFloat32(buffer, s16, size);
         for (int j = 0; j < size; ++j) {

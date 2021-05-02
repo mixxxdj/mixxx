@@ -12,6 +12,8 @@
     <true/>
     <key>com.apple.security.device.microphone</key>
     <true/>
+    <key>com.apple.security.device.audio-input</key>
+    <true/>
     <key>com.apple.security.device.usb</key>
     <true/>
     <key>com.apple.security.network.client</key>

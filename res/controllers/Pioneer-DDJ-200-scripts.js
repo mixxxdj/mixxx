@@ -281,22 +281,26 @@ DDJ200.cueGotoandstop = function(channel, control, value, status, group) {
 };
 
 DDJ200.hotcueNActivate = function(channel, control, value, status, group) {
-    var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-    var vgroup = "[Channel" + vDeckNo + "]";
-    var hotcue = "hotcue_" + (control + 1);
-    engine.setValue(vgroup, hotcue + "_activate", true);
-    midi.sendShortMsg(status, control,
-        0x7F * engine.getValue(vgroup, hotcue + "_enabled"));
-    var deckNo = script.deckFromGroup(group);
-    midi.sendShortMsg(0x90 + deckNo - 1, 0x0B, 0x7F *
-                      engine.getValue(vgroup, "play")); // set play LED
+    if (value) { // only if button pressed, not releases, i.e. value === 0
+        var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
+        var vgroup = "[Channel" + vDeckNo + "]";
+        var hotcue = "hotcue_" + (control + 1);
+        engine.setValue(vgroup, hotcue + "_activate", true);
+        midi.sendShortMsg(status, control,
+            0x7F * engine.getValue(vgroup, hotcue + "_enabled"));
+        var deckNo = script.deckFromGroup(group);
+        midi.sendShortMsg(0x90 + deckNo - 1, 0x0B, 0x7F *
+            engine.getValue(vgroup, "play")); // set play LED
+    }
 };
 
 DDJ200.hotcueNClear = function(channel, control, value, status, group) {
-    var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
-    var vgroup = "[Channel" + vDeckNo + "]";
-    engine.setValue(vgroup, "hotcue_" + (control + 1) + "_clear", true);
-    midi.sendShortMsg(status-1, control, 0x00);        // set hotcue LEDs
+    if (value) { // only if button pressed, not releases, i.e. value === 0
+        var vDeckNo = DDJ200.vDeckNo[script.deckFromGroup(group)];
+        var vgroup = "[Channel" + vDeckNo + "]";
+        engine.setValue(vgroup, "hotcue_" + (control + 1) + "_clear", true);
+        midi.sendShortMsg(status-1, control, 0x00);        // set hotcue LEDs
+    }
 };
 
 DDJ200.pfl = function(channel, control, value, status, group) {

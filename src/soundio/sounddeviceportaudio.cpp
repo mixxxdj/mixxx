@@ -113,7 +113,7 @@ SoundDevicePortAudio::SoundDevicePortAudio(UserSettingsPointer config,
         m_deviceId.name = deviceInfo->name;
     }
     m_deviceId.portAudioIndex = devIndex;
-    m_strDisplayName = QString::fromLocal8Bit(deviceInfo->name);
+    m_strDisplayName = QString::fromUtf8(deviceInfo->name);
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
 

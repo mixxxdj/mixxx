@@ -502,8 +502,6 @@ WSearchLineEdit {
   background-color: #1F1F1F;
   border: 1px solid #1A1A1A;
 }
-/* transition time in Auto DJ tab is styled pretty much the same as WBeatSpinBox above */
-#DlgAutoDJ QSpinBox {}
 
 /* Extra declaration for QRadionButton otherwise it shows up with wrong colors in Linux with Gnome */
 WLibrary QLabel, WLibrary QRadioButton {
@@ -528,40 +526,26 @@ WLibrary QRadioButton::indicator:unchecked {
 }
 /* buttons in library (in hierarchical order of appearance)
    Style them just as the other regular buttons */
-#DlgMissing > QPushButton,
-#DlgHidden > QPushButton,
-#DlgAutoDJ > QPushButton,
-#DlgRecording > QPushButton,
-#DlgAnalysis > QPushButton {
+#LibraryFeatureControls QPushButton {
   margin: 9px 3px 6px 3px;
+  padding: 3px 4px;
   color: #D2D2D2;
   background-color: #4B4B4B;
   border: 1px solid #4B4B4B;
   border-radius: 2px;
   outline: none;
   }
-  #DlgMissing > QPushButton,
-  #DlgHidden > QPushButton,
-  #DlgRecording > QPushButton,
-  #DlgAnalysis > QPushButton {
-    padding: 3px 4px;
-  }
-  #DlgAutoDJ > QPushButton {
+  #DlgAutoDJ > #LibraryFeatureControls QPushButton {
     padding: 0px 1px;
-  }
-  #DlgAutoDJ > QPushButton {
     width: 34px;
     height: 20px;
-  }
-  QPushButton#pushButtonAutoDJ {
-    width: 42px;
-  }
+    }
+    QPushButton#pushButtonAutoDJ {
+      width: 42px;
+    }
 
 
-#DlgMissing > QPushButton:!enabled,
-#DlgHidden > QPushButton:!enabled,
-#DlgAutoDJ > QPushButton:!enabled,
-#DlgAnalysis > QPushButton:!enabled {
+#LibraryFeatureControls QPushButton:!enabled {
   /* buttons in "disabled" (not click-able) state. They are nearly invisible
      by default QT palette, so style accordingly */
   color: #808080; /* Default #A3A3A3 -90L HSL*/
@@ -572,30 +556,24 @@ WLibrary QRadioButton::indicator:unchecked {
   outline: none;
 }
 
-#DlgMissing > QPushButton:hover,
-#DlgHidden > QPushButton:hover,
-#DlgAutoDJ > QPushButton:hover,
-#DlgRecording > QPushButton:hover,
-#DlgAnalysis > QPushButton:hover {
+#LibraryFeatureControls QPushButton:hover {
   color: #D2D2D2;
   background-color: #5F5F5F;
   border: 1px solid #5F5F5F;
   outline: none;
 }
 
-#DlgMissing > QPushButton:focus,
-#DlgHidden > QPushButton:focus,
-#DlgAutoDJ > QPushButton:focus,
-#DlgRecording > QPushButton:focus,
-#DlgAnalysis > QPushButton:focus,
+#LibraryFeatureControls QPushButton:focus,
 #fadeModeCombobox:focus,
-#DlgAutoDJ QSpinBox:focus {
+#spinBoxTransition:focus {
   outline: none;
 }
 
-#DlgAutoDJ > QPushButton:checked,
-#DlgRecording > QPushButton:checked,
-#DlgAnalysis > QPushButton:checked {
+
+QPushButton#pushButtonAutoDJ:checked,
+QPushButton#pushButtonRepeatPlaylist:checked,
+QPushButton#pushButtonAnalyze:checked,
+QPushButton#pushButtonRecording:checked {
   /* checkbuttons in active state */
   color: #FDFDFD;
   background-color: #006596;
@@ -603,9 +581,10 @@ WLibrary QRadioButton::indicator:unchecked {
   outline: none;
 }
 
-#DlgAutoDJ > QPushButton:checked:hover,
-#DlgRecording > QPushButton:checked:hover,
-#DlgAnalysis > QPushButton:checked:hover {
+QPushButton#pushButtonAutoDJ:checked:hover,
+QPushButton#pushButtonRepeatPlaylist:checked:hover,
+QPushButton#pushButtonAnalyze:checked:hover,
+QPushButton#pushButtonRecording:checked:hover {
   /* checkbuttons hovered over in "active" state */
   margin: 9px 3px 6px 3px;
   color: #FDFDFD;
@@ -614,10 +593,7 @@ WLibrary QRadioButton::indicator:unchecked {
   outline: none;
 }
 
-#DlgMissing > QPushButton:pressed,
-#DlgHidden > QPushButton:pressed,
-#DlgAutoDJ > QPushButton:pressed,
-#DlgAnalysis > QPushButton:pressed {
+#LibraryFeatureControls QPushButton:pressed {
   /* pushbuttons in "down" state */
   margin: 9px 3px 6px 3px;
   color: #FDFDFD;
@@ -938,7 +914,7 @@ WOverview #PassthroughLabel {
 }
 
 WBeatSpinBox,
-#DlgAutoDJ QSpinBox {
+#spinBoxTransition {
   color: #c1cabe;
   background-color: #1f1e1e;
   border: 1px solid #444342;
@@ -948,18 +924,18 @@ WBeatSpinBox,
   WBeatSpinBox {
     padding: 2px;
   }
-  #DlgAutoDJ QSpinBox {
+  #spinBoxTransition {
     padding: 1px 2px 2px 2px;
     margin: 3px 0px 0px 2px;
   }
   WBeatSpinBox:hover,
-  #DlgAutoDJ QSpinBox:hover,
+  #spinBoxTransition:hover,
   WBeatSpinBox:focus,
-  #DlgAutoDJ QSpinBox:focus {
+  #spinBoxTransition:focus {
     border: 1px ridge #015d8d;
   }
   WBeatSpinBox::down-button,
-  #DlgAutoDJ QSpinBox::down-button {
+  #spinBoxTransition::down-button {
     subcontrol-origin: border;
     subcontrol-position: bottom right; /* position at the top right corner */
     padding-right: 4px;
@@ -967,17 +943,17 @@ WBeatSpinBox,
     border: 0;
   }
   WBeatSpinBox::down-arrow,
-  #DlgAutoDJ QSpinBox::down-arrow {
+  #spinBoxTransition::down-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_down_selector.svg);
   }
   WBeatSpinBox::down-arrow:hover,
-  #DlgAutoDJ QSpinBox::down-arrow:hover {
+  #spinBoxTransition::down-arrow:hover {
     image: url(skin:/icon/ic_chevron_down_selector_hover.svg);
   }
   WBeatSpinBox::up-button,
-  #DlgAutoDJ QSpinBox::up-button {
+  #spinBoxTransition::up-button {
     subcontrol-origin: border;
     subcontrol-position: top right; /* position at the top right corner */
     padding-right: 4px;
@@ -985,13 +961,13 @@ WBeatSpinBox,
     border: 0;
   }
   WBeatSpinBox::up-arrow,
-  #DlgAutoDJ QSpinBox::up-arrow {
+  #spinBoxTransition::up-arrow {
     width: 9px;
     height: 7px;
     image: url(skin:/icon/ic_chevron_up_selector.svg);
   }
   WBeatSpinBox::up-arrow:hover,
-  #DlgAutoDJ QSpinBox::up-arrow:hover {
+  #spinBoxTransition::up-arrow:hover {
     image: url(skin:/icon/ic_chevron_up_selector_hover.svg);
   }
 
@@ -1299,6 +1275,7 @@ WBeatSpinBox,
 
 #EffectButton {
   font: 10px;
+  margin-right: 1px;
 }
 
 #EffectButtonLabel {
@@ -2008,7 +1985,7 @@ WTrackMenu QMenu {
 
 
 
-WEffectSelector,
+WEffectSelector:!editable,
 #fadeModeCombobox {
   color: #c1cabe;
   /* The 3D frame on the combo box becomes flat when you give it a border */
@@ -2016,7 +1993,8 @@ WEffectSelector,
   border-radius: 3px;
   font: 15px;
 }
-WEffectSelector {
+WEffectSelector:!editable,
+WEffectSelector:!editable:on {
   /* Fixes the white bars on the top/bottom of the popup on Mac OS X */
   margin: 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
@@ -2031,7 +2009,7 @@ WEffectSelector {
   margin: 9px 3px 6px 3px;
 }
 
-  WEffectSelector:hover,
+  WEffectSelector:!editable:hover,
   #fadeModeCombobox:hover {
     border: 1px ridge #015d8d;
   }
@@ -2244,4 +2222,22 @@ WEffectSelector {
 
 #CueDeleteButton:hover {
   background-color: #4B4B4B;
+}
+
+WRateRange {
+    font-size: 10px;
+}
+
+#RateDisplayTopPrefix {
+    qproperty-alignment: 'AlignLeft | AlignTop';
+}
+#RateDisplayTopRate {
+    qproperty-alignment: 'AlignRight | AlignTop';
+}
+
+#RateDisplayBottomPrefix {
+    qproperty-alignment: 'AlignLeft | AlignBottom';
+}
+#RateDisplayBottomRate {
+    qproperty-alignment: 'AlignRight | AlignBottom';
 }

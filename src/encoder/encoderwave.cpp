@@ -194,7 +194,8 @@ void EncoderWave::initStream() {
     }
 }
 
-int EncoderWave::initEncoder(int samplerate, QString& errorMessage) {
+int EncoderWave::initEncoder(int samplerate, QString* pUserErrorMessage) {
+    Q_UNUSED(pUserErrorMessage);
     // set sfInfo.
     // m_sfInfo.format is setup on setEncoderSettings previous to calling initEncoder.
     m_sfInfo.samplerate = samplerate;
@@ -210,9 +211,9 @@ int EncoderWave::initEncoder(int samplerate, QString& errorMessage) {
 
     int ret=0;
     if (m_pSndfile == nullptr) {
-        errorMessage = QString("Error initializing Wave recording. sf_open_virtual returned: ")
-            +  sf_strerror(nullptr);
-        qDebug() << errorMessage;
+        qDebug()
+                << "Error initializing Wave encoding. sf_open_virtual returned:"
+                << sf_strerror(nullptr);
         ret = -1;
     } else {
         initStream();
