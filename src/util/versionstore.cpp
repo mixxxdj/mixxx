@@ -29,6 +29,7 @@
 #include <vorbis/codec.h>
 
 #define VERSION_STORE
+#include "builddate.h"
 #include "version.h"
 
 namespace {
@@ -39,7 +40,6 @@ const QString kMixxxVersionSuffix = QString(MIXXX_VERSION_SUFFIX);
 const QString kMixxx = QStringLiteral("Mixxx");
 const QString kGitBranch = QString(GIT_BRANCH);
 const QString kGitDescribe = QString(GIT_DESCRIBE);
-const QDateTime kGitCommitDate = QDateTime::fromString(GIT_COMMIT_DATE, Qt::ISODate);
 const QString kBuildFlags = QString(BUILD_FLAGS);
 
 } // namespace
@@ -64,7 +64,7 @@ QString VersionStore::versionSuffix() {
 }
 
 QDateTime VersionStore::date() {
-    return kGitCommitDate;
+    return QDateTime::fromString(BuildDate::date(), Qt::ISODate);
 }
 
 // static
@@ -126,6 +126,8 @@ QString VersionStore::gitVersion() {
     QString gitVersion = VersionStore::gitDescribe();
     if (gitVersion.isEmpty()) {
         gitVersion = QStringLiteral("unknown");
+    } else if (BuildDate::dirty()) {
+        gitVersion.append(QStringLiteral("-modified"));
     }
 
     QString gitBranch = VersionStore::gitBranch();

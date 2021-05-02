@@ -1,0 +1,19 @@
+#include "builddate.h"
+
+#define VERSION_STORE
+#include "version.h"
+
+//static
+const char* BuildDate::date() {
+    // This condition is const and discarded during compileing
+    if (@DIRTY@ == 1 || sizeof(GIT_COMMIT_DATE) == 1) {
+       return "@BUILD_DATE@";
+    } else {
+       return GIT_COMMIT_DATE;
+    }
+};
+
+//static
+bool BuildDate::dirty() {
+    return static_cast<bool>(@DIRTY@ == 1);
+};

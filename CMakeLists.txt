@@ -1180,7 +1180,22 @@ endif()
 # The mixxx executable
 add_executable(mixxx WIN32 src/main.cpp)
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
-target_link_libraries(mixxx PUBLIC mixxx-lib)
+target_link_libraries(mixxx PUBLIC mixxx-lib mixxx-build-date)
+
+add_library(mixxx-build-date STATIC EXCLUDE_FROM_ALL
+    ${CMAKE_BINARY_DIR}/src/builddate.cpp
+)
+target_include_directories(mixxx-build-date PUBLIC src)
+
+add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/src/builddate.cpp
+    DEPENDS mixxx-lib src/builddate.cpp.in
+    COMMAND ${CMAKE_COMMAND}
+        -D CMAKE_BINARY_DIR_=${CMAKE_BINARY_DIR}
+        -D CMAKE_SOURCE_DIR_=${CMAKE_SOURCE_DIR}
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/builddate.cmake
+    VERBATIM
+)
 
 #
 # Installation and Packaging
@@ -1556,7 +1571,7 @@ add_executable(mixxx-test
   src/test/wwidgetstack_test.cpp
 )
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
-target_link_libraries(mixxx-test PUBLIC mixxx-lib gtest gmock)
+target_link_libraries(mixxx-test PUBLIC mixxx-lib mixxx-build-date gtest gmock)
 
 #
 # Benchmark tests
