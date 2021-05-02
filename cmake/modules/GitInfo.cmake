@@ -50,6 +50,8 @@ else()
   message(NOTICE "Git commit year: ${GIT_COMMIT_YEAR}")
 endif()
 
+string(TIMESTAMP BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
+
 # Get the number of commits on the working branch
 execute_process(
   COMMAND git rev-list --count --first-parent HEAD

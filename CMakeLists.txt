@@ -1124,7 +1124,7 @@ endif()
 # The mixxx executable
 add_executable(mixxx WIN32 src/main.cpp)
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
-target_link_libraries(mixxx PUBLIC mixxx-lib)
+target_link_libraries(mixxx PUBLIC mixxx-lib mixxx-gitinfostore)
 
 #
 # Installation and Packaging
@@ -1500,7 +1500,7 @@ add_executable(mixxx-test
   src/test/wwidgetstack_test.cpp
 )
 set_target_properties(mixxx-test PROPERTIES AUTOMOC ON)
-target_link_libraries(mixxx-test PUBLIC mixxx-lib gtest gmock)
+target_link_libraries(mixxx-test PUBLIC mixxx-lib mixxx-gitinfostore gtest gmock)
 
 #
 # Benchmark tests
@@ -1616,7 +1616,12 @@ add_custom_target(mixxx-gitinfo
   BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
   WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
 )
-add_dependencies(mixxx-lib mixxx-gitinfo)
+
+add_library(mixxx-gitinfostore STATIC EXCLUDE_FROM_ALL
+    src/util/gitinfostore.cpp
+)
+target_include_directories(mixxx-gitinfostore PUBLIC src ${CMAKE_BINARY_DIR}/src)
+add_dependencies(mixxx-gitinfostore mixxx-gitinfo)
 
 # Windows-only resource file
 if(WIN32)
@@ -1639,8 +1644,8 @@ if(WIN32)
 
   # uses MIXXX_YEAR MIXXX_FILEVERSION MIXXX_PRODUCTVERSION MIXXX_VERSION MIXXX_DEBUG MIXXX_PRERELEASE
   configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/src/mixxx.rc.include.template"
-    "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
+    "src/mixxx.rc.include.in"
+    "src/mixxx.rc.include"
     @ONLY
   )
   add_dependencies(mixxx mixxx-gitinfo)
