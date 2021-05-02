@@ -1672,12 +1672,20 @@ get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 
 # uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE GIT_BRANCH GIT_DESCRIBE GIT_COMMIT_DATE BUILD_FLAGS
 configure_file(src/version.h.in src/version.h @ONLY)
-set_property(
-    DIRECTORY ${CMAKE_SOURCE_DIR}
-    APPEND
-    PROPERTY CMAKE_CONFIGURE_DEPENDS
-    "${CMAKE_SOURCE_DIR}/.git/index"
+execute_process(
+  COMMAND git rev-parse --git-dir
+  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+  OUTPUT_VARIABLE GIT_DIR
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  ERROR_QUIET
 )
+if(GIT_DIR)
+  set_property(
+    DIRECTORY ${CMAKE_SOURCE_DIR}
+    PROPERTY CMAKE_CONFIGURE_DEPENDS
+    "${GIT_DIR}/index"
+  )
+endif()
 
 # Windows-only resource file
 if(WIN32)
