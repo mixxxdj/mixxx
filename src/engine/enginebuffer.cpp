@@ -183,6 +183,9 @@ EngineBuffer::EngineBuffer(const QString& group,
 
     m_pTrackLoaded = new ControlObject(ConfigKey(m_group, "track_loaded"), false);
     m_pTrackLoaded->setReadOnly();
+	
+	m_pTrackID = new ControlObject(ConfigKey(m_group, "current_trackid"), false, false, false, -1.0);
+    m_pTrackID->setReadOnly();
 
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
@@ -318,6 +321,8 @@ EngineBuffer::~EngineBuffer() {
     delete m_pKeylock;
     delete m_pEject;
 
+	delete m_pTrackID;
+	
     SampleUtil::free(m_pCrossfadeBuffer);
 
     qDeleteAll(m_engineControls);
@@ -542,7 +547,8 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
     m_pTrackLoaded->forceSet(1);
-
+    m_pTrackID->forceSet(m_pCurrentTrack->getId().value());
+	
     // Reset slip mode
     m_pSlipButton->set(0);
     m_bSlipEnabledProcessing = false;
@@ -585,6 +591,7 @@ void EngineBuffer::ejectTrack() {
     m_pTrackSamples->set(0);
     m_pTrackSampleRate->set(0);
     m_pTrackLoaded->forceSet(0);
+	m_pTrackID->forceSet(-1.0);
 
     m_playButton->set(0.0);
     m_playposSlider->set(0);
