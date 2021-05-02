@@ -44,13 +44,13 @@ execute_process(
 )
 if(NOT GIT_COMMIT_DATE)
   message(NOTICE "Git commit date: unknown")
+  # use current date in case of tar ball builds
+  string(TIMESTAMP GIT_COMMIT_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
 else()
   message(NOTICE "Git commit date: ${GIT_COMMIT_DATE}")
   string(REGEX MATCH "^[0-9][0-9][0-9][0-9]" GIT_COMMIT_YEAR "${GIT_COMMIT_DATE}")
   message(NOTICE "Git commit year: ${GIT_COMMIT_YEAR}")
 endif()
-
-string(TIMESTAMP BUILD_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
 
 # Get the number of commits on the working branch
 execute_process(
