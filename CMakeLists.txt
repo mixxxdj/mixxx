@@ -321,7 +321,7 @@ endif()
 
 # Get the current commit ref
 execute_process(
-  COMMAND git describe --tags --always --dirty=-modified
+  COMMAND git describe --tags --always
   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
   OUTPUT_VARIABLE GIT_DESCRIBE
   OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -372,18 +372,8 @@ execute_process(
 if(NOT GIT_COMMIT_COUNT)
     set(GIT_COMMIT_COUNT "unknown")
 endif()
-
-# Check if the worktree is dirty
-execute_process(
-  COMMAND git diff --quiet
-  RESULT_VARIABLE GIT_WORKTREE_DIRTY
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  ERROR_QUIET
-)
-if(GIT_WORKTREE_DIRTY EQUAL "1")
-  set(GIT_COMMIT_COUNT "${GIT_COMMIT_COUNT}+")
-endif()
 message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
+
 if(MSVC)
   # sccache support
   find_program(SCCACHE_EXECUTABLE "sccache")
