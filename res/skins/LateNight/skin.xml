@@ -282,8 +282,8 @@
 
   <ObjectName>Mixxx</ObjectName>
   <Style src="skin:style.qss"
-         src-linux="skin:style_linux.qss"
-         src-windows="skin:style_windows.qss"/>
+         src-linux="skin:../default-menu-styles-linux.qss"
+         src-windows="skin:../default-menu-styles-windows.qss"/>
   <!-- MinimumSize should not be an exact monitor resolution. There needs
   to be space for the title bar or other chrome at full screen.
   https://www.mixxx.org/wiki/doku.php/skin_guidelines#the_optimal_size_for_skins -->

@@ -101,6 +101,7 @@
                   </WidgetGroup>
 
                   <WidgetGroup><!-- Rate slider + range displays -->
+                    <ObjectName>RateSliderBoxCompactSync</ObjectName>
                     <Layout>stacked</Layout>
                     <SizePolicy>max,me</SizePolicy>
                     <Children>
@@ -161,6 +162,7 @@
               </WidgetGroup><!-- Rate controls with Sync button -->
 
               <WidgetGroup><!-- Rate controls (no Sync button) -->
+                <ObjectName>RateSliderBoxCompact</ObjectName>
                 <SizePolicy>max,min</SizePolicy>
                 <Layout>stacked</Layout>
                 <Children>

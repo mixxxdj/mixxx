@@ -126,7 +126,10 @@
   </manifest>
 
   <ObjectName>Mixxx</ObjectName>
-  <Style src="skin:../Tango/style.qss" src-mac="skin:../Tango/style-mac.qss"/>
+  <Style src="skin:../Tango/style.qss"
+         src-mac="skin:../Tango/style-mac.qss"
+         src-linux="skin:../default-menu-styles-linux.qss"
+         src-windows="skin:../default-menu-styles-windows.qss"/>
   <MinimumSize>1008,500</MinimumSize>
   <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>

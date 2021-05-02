@@ -46,7 +46,7 @@
           </Template>
 
           <EffectSelector>
-            <MinimumSize>65,24</MinimumSize>
+            <MinimumSize>60,24</MinimumSize>
             <MaximumSize>,24</MaximumSize>
             <SizePolicy>me,f</SizePolicy>
             <EffectRack>1</EffectRack>
