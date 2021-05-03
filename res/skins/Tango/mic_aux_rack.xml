@@ -26,36 +26,36 @@ Description:
 
               <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
 
-              <Template src="skin:mic_unit.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/mic_unit.xml">
                 <SetVariable name="micLabel">1</SetVariable>
               </Template>
-              <Template src="skin:mic_unit_unconfigured.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/mic_unit_unconfigured.xml">
                 <SetVariable name="micLabel">1</SetVariable>
               </Template>
 
-              <Template src="skin:mic_unit.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/mic_unit.xml">
                 <SetVariable name="micLabel">2</SetVariable>
                 <SetVariable name="micNum">2</SetVariable>
               </Template>
-              <Template src="skin:mic_unit_unconfigured.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/mic_unit_unconfigured.xml">
                 <SetVariable name="micLabel">2</SetVariable>
                 <SetVariable name="micNum">2</SetVariable>
               </Template>
 
-              <Template src="skin:mic_unit.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/mic_unit.xml">
                 <SetVariable name="micLabel">3</SetVariable>
                 <SetVariable name="micNum">3</SetVariable>
               </Template>
-              <Template src="skin:mic_unit_unconfigured.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/mic_unit_unconfigured.xml">
                 <SetVariable name="micLabel">3</SetVariable>
                 <SetVariable name="micNum">3</SetVariable>
               </Template>
 
-              <Template src="skin:mic_unit.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/mic_unit.xml">
                 <SetVariable name="micLabel">4</SetVariable>
                 <SetVariable name="micNum">4</SetVariable>
               </Template>
-              <Template src="skin:mic_unit_unconfigured.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/mic_unit_unconfigured.xml">
                 <SetVariable name="micLabel">4</SetVariable>
                 <SetVariable name="micNum">4</SetVariable>
               </Template>
@@ -71,7 +71,7 @@ Description:
                     <Size>22f,33f</Size>
                   </Label>
 
-                  <Template src="skin:button_3state_persist.xml">
+                  <Template src="skin:../Tango/controls/button_3state_persist.xml">
                     <SetVariable name="ObjectName">MicDuckingButton</SetVariable>
                     <SetVariable name="Size">42f,24f</SetVariable>
                     <SetVariable name="TooltipId">talkover_duck_mode</SetVariable>
@@ -83,7 +83,7 @@ Description:
 
                   <WidgetGroup><Size>2f,1min</Size></WidgetGroup>
 
-                  <Template src="skin:knob_textless.xml">
+                  <Template src="skin:../Tango/controls/knob_textless.xml">
                     <SetVariable name="TooltipId">talkover_duck_strength</SetVariable>
                     <SetVariable name="ObjectName">MicAuxKnob</SetVariable>
                     <SetVariable name="Size">30f,30f</SetVariable>
@@ -120,31 +120,31 @@ Description:
                 <Size>5f,0me</Size>
               </WidgetGroup>
 
-              <Template src="skin:aux_unit.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/aux_unit.xml">
                 <SetVariable name="auxNum">1</SetVariable>
               </Template>
-              <Template src="skin:aux_unit_unconfigured.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/aux_unit_unconfigured.xml">
                 <SetVariable name="auxNum">1</SetVariable>
               </Template>
 
-              <Template src="skin:aux_unit.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/aux_unit.xml">
                 <SetVariable name="auxNum">2</SetVariable>
               </Template>
-              <Template src="skin:aux_unit_unconfigured.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/aux_unit_unconfigured.xml">
                 <SetVariable name="auxNum">2</SetVariable>
               </Template>
 
-              <Template src="skin:aux_unit.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/aux_unit.xml">
                 <SetVariable name="auxNum">3</SetVariable>
               </Template>
-              <Template src="skin:aux_unit_unconfigured.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/aux_unit_unconfigured.xml">
                 <SetVariable name="auxNum">3</SetVariable>
               </Template>
 
-              <Template src="skin:aux_unit.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/aux_unit.xml">
                 <SetVariable name="auxNum">4</SetVariable>
               </Template>
-              <Template src="skin:aux_unit_unconfigured.xml">
+              <Template src="skin:../Tango/mic_aux_sampler/aux_unit_unconfigured.xml">
                 <SetVariable name="auxNum">4</SetVariable>
               </Template>
 
