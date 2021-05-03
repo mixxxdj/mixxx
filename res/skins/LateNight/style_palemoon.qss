@@ -1361,7 +1361,10 @@ WEffectSelector QAbstractScrollArea,
 
 /* Even darker grey for knob labels in master/headphone mixer */
 #MixerMasterHeadphone #KnobLabel,
-#MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"],
+#MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"] {
+  color: #555;
+}
+
 #LatencyLabel {
   color: #444;
 }
