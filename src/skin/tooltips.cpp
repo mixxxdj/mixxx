@@ -820,9 +820,12 @@ void Tooltips::addStandardTooltips() {
     add("coverart")
             << tr("Cover Art")
             << tr("Displays cover artwork of the loaded track.")
-            << QString("%1: %2").arg(rightClick, tr("Displays options for editing cover artwork."))
-            << dropTracksHere
-            << dragItem;
+            << QString("%1: %2").arg(
+                       leftClick, tr("Opens separate artwork viewer."))
+            << QString("%1: %2").arg(rightClick,
+                       tr("Displays options for editing cover artwork.")) +
+                    "\n"
+            << dropTracksHere << dragItem;
 
     add("starrating")
             << tr("Star Rating")
