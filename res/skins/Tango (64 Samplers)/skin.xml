@@ -203,7 +203,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverviewSingleton1</ObjectName>
       <Children>
-        <Template src="skin:../Tango/deck_overview.xml">
+        <Template src="skin:../Tango/decks/overview.xml">
           <SetVariable name="chanNum">1</SetVariable>
           <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
@@ -214,7 +214,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverviewSingleton2</ObjectName>
       <Children>
-        <Template src="skin:../Tango/deck_overview.xml">
+        <Template src="skin:../Tango/decks/overview.xml">
           <SetVariable name="chanNum">2</SetVariable>
           <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_12"/></SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_12"/></SetVariable>
@@ -225,7 +225,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverviewSingleton3</ObjectName>
       <Children>
-        <Template src="skin:../Tango/deck_overview.xml">
+        <Template src="skin:../Tango/decks/overview.xml">
           <SetVariable name="chanNum">3</SetVariable>
           <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
@@ -236,7 +236,7 @@
     <SingletonDefinition>
       <ObjectName>DeckOverviewSingleton4</ObjectName>
       <Children>
-        <Template src="skin:../Tango/deck_overview.xml">
+        <Template src="skin:../Tango/decks/overview.xml">
           <SetVariable name="chanNum">4</SetVariable>
           <SetVariable name="SignalBgColor"><Variable name="SignalBgColor_34"/></SetVariable>
           <SetVariable name="SignalColor"><Variable name="SignalColor_34"/></SetVariable>
@@ -520,10 +520,10 @@
                           <Layout>horizontal</Layout>
                           <SizePolicy>me,max</SizePolicy>
                           <Children>
-                            <Template src="skin:../Tango/deck_left_mini.xml">
+                            <Template src="skin:../Tango/decks/deck_left_mini.xml">
                               <SetVariable name="chanNum">1</SetVariable>
                             </Template>
-                            <Template src="skin:../Tango/deck_right_mini.xml">
+                            <Template src="skin:../Tango/decks/deck_right_mini.xml">
                               <SetVariable name="chanNum">2</SetVariable>
                             </Template>
                           </Children>
@@ -533,10 +533,10 @@
                           <Layout>horizontal</Layout>
                           <SizePolicy>me,max</SizePolicy>
                           <Children>
-                            <Template src="skin:../Tango/deck_left_mini.xml">
+                            <Template src="skin:../Tango/decks/deck_left_mini.xml">
                               <SetVariable name="chanNum">3</SetVariable>
                             </Template>
-                            <Template src="skin:../Tango/deck_right_mini.xml">
+                            <Template src="skin:../Tango/decks/deck_right_mini.xml">
                               <SetVariable name="chanNum">4</SetVariable>
                             </Template>
                           </Children>
