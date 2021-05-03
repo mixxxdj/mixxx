@@ -344,7 +344,7 @@ class EngineBuffer : public EngineObject {
 
     ControlPushButton* m_pEject;
     ControlObject* m_pTrackLoaded;
-	ControlObject* m_pTrackID;
+    ControlObject* m_pTrackID;
 
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;
