@@ -320,59 +320,67 @@ if(WIN32)
 endif()
 
 # Get the current commit ref
-execute_process(
-  COMMAND git describe --tags --always
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_DESCRIBE
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
 if(NOT GIT_DESCRIBE)
-  message(STATUS "Git describe: unknown")
+  execute_process(
+    COMMAND git describe --tags --always
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_DESCRIBE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+  if(NOT GIT_DESCRIBE)
+     message(STATUS "Git describe: unknown")
+  else()
+     message(STATUS "Git describe: ${GIT_DESCRIBE}")
+  endif()
+
+  # Get the current working branch
+  execute_process(
+    COMMAND git rev-parse --abbrev-ref HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_BRANCH
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+  if(NOT GIT_BRANCH)
+    message(STATUS "Git branch: unknown")
+  else()
+    message(STATUS "Git branch: ${GIT_BRANCH}")
+  endif()
+
+  # Get the number of commits on the working branch
+  execute_process(
+    COMMAND git rev-list --count --first-parent HEAD
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_COMMIT_COUNT
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+  if(NOT GIT_COMMIT_COUNT)
+    set(GIT_COMMIT_COUNT "unknown")
+  endif()
+  message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
 else()
-  message(STATUS "Git describe: ${GIT_DESCRIBE}")
+  set(GIT_COMMIT_COUNT "unknown")
+  message(STATUS "Use custom git describe: ${GIT_DESCRIBE}")
 endif()
 
 # Get the current commit date
-execute_process(
-  COMMAND git show --quiet --format=%cI --date=short
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_DATE
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
+if(NOT GIT_COMMIT_DATE)
+  execute_process(
+    COMMAND git show --quiet --format=%cI --date=short
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    OUTPUT_VARIABLE GIT_COMMIT_DATE
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+    ERROR_QUIET
+  )
+endif()
 if(NOT GIT_COMMIT_DATE)
   message(STATUS "Git commit date: unknown")
 else()
   message(STATUS "Git commit date: ${GIT_COMMIT_DATE}")
 endif()
 
-# Get the current working branch
-execute_process(
-  COMMAND git rev-parse --abbrev-ref HEAD
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_BRANCH
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
-if(NOT GIT_BRANCH)
-  message(STATUS "Git branch: unknown")
-else()
-  message(STATUS "Git branch: ${GIT_BRANCH}")
-endif()
-
-# Get the number of commits on the working branch
-execute_process(
-  COMMAND git rev-list --count --first-parent HEAD
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_COUNT
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
-if(NOT GIT_COMMIT_COUNT)
-    set(GIT_COMMIT_COUNT "unknown")
-endif()
-message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
 
 if(MSVC)
   # sccache support
@@ -1699,7 +1707,6 @@ if(WIN32)
   set(MIXXX_FILEVERSION "${CMAKE_PROJECT_VERSION_MAJOR},${CMAKE_PROJECT_VERSION_MINOR},${CMAKE_PROJECT_VERSION_PATCH}")
   if(NOT GIT_COMMIT_COUNT STREQUAL "unknown")
     set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMIT_COUNT}")
-    string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
   endif()
   set(MIXXX_PRODUCTVERSION "${MIXXX_FILEVERSION}")
 
