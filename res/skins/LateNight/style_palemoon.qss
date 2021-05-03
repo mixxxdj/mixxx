@@ -1154,8 +1154,16 @@ WEffectSelector:!editable:on {
     padding-left: 18px;
   }
 
-#SubmenuCover {
+#SubmenuCover,
+#DeckSizeCover[highlight="0"] {
   background-color: rgba(15, 15, 15, 180);
+}
+#DeckSizeCover[highlight="1"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 rgba(15, 15, 15, 220),
+    stop: 0.70 rgba(15, 15, 15, 220),
+    stop: 0.71 transparent,
+    stop: 1 transparent);
 }
 #SkinSettingsMixerToggle {
   background-color: rgba(15, 15, 15, 255);

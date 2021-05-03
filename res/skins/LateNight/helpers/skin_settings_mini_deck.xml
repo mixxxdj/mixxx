@@ -1,0 +1,32 @@
+<!--
+Description:
+  Optons for the minimal deck
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>SkinSettingsCategory</ObjectName>
+    <SizePolicy>me,min</SizePolicy>
+    <Layout>vertical</Layout>
+    <Children>
+
+      <WidgetGroup><Size>0me,120f</Size></WidgetGroup>
+
+      <!-- Spinny -->
+      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+        <SetVariable name="TooltipId">show_spinny</SetVariable>
+        <SetVariable name="Text">Spinny</SetVariable>
+        <SetVariable name="Setting">[Skin],show_spinnies</SetVariable>
+      </Template>
+
+      <!-- Cover Art -->
+      <Template src="skin:/helpers/skin_settings_button_2state.xml">
+        <SetVariable name="TooltipId">show_coverart</SetVariable>
+        <SetVariable name="Text">Cover Art</SetVariable>
+        <SetVariable name="Setting">[Skin],show_coverart</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>0me,18f</Size></WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>
