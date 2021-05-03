@@ -29,6 +29,7 @@ QList<QString>& Tooltips::add(const QString& id) {
 void Tooltips::addStandardTooltips() {
     QString dropTracksHere = tr("Drop tracks from library, external file manager, or other decks/samplers here.");
     QString dragItem = tr("Drag this item to other decks/samplers, to crates and playlist or to external file manager.");
+    QString trackProperties = tr("Double-click to open the track properties editor");
     QString trackMenu = tr("Right-click to open the track context menu.");
     QString resetToDefault = tr("Reset to default value.");
     QString leftClick = tr("Left-click");
@@ -769,25 +770,28 @@ void Tooltips::addStandardTooltips() {
     add("track_artist")
             << tr("Track Artist")
             << tr("Displays the artist of the loaded track.")
-            << trackTags
+            << trackTags + "\n"
             << dropTracksHere
             << dragItem
+            << trackProperties
             << trackMenu;
 
     add("track_title")
             << tr("Track Title")
             << tr("Displays the title of the loaded track.")
-            << trackTags
+            << trackTags + "\n"
             << dropTracksHere
             << dragItem
+            << trackProperties
             << trackMenu;
 
     add("track_album")
             << tr("Track Album")
             << tr("Displays the album name of the loaded track.")
-            << trackTags
+            << trackTags + "\n"
             << dropTracksHere
             << dragItem
+            << trackProperties
             << trackMenu;
 
     add("track_key")
@@ -799,9 +803,11 @@ void Tooltips::addStandardTooltips() {
     add("text")
             << tr("Track Artist/Title")
             << tr("Displays the artist and title of the loaded track.")
-            << trackTags
+            << trackTags + "\n"
             << dropTracksHere
-            << dragItem;
+            << dragItem
+            << trackProperties
+            << trackMenu;
 
     add("time")
             << tr("Clock")
