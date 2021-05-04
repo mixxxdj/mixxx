@@ -66,13 +66,15 @@ class Translations {
         QTranslator* mixxxTranslator = new QTranslator(pApp);
         bool mixxxLoaded = loadTranslations(systemLocale, userLocale, "mixxx", "_",
                                             translationsFolder, mixxxTranslator);
-        qDebug() << "Loading translations for locale"
-                 << (userLocale.size() > 0 ? userLocale : systemLocale.name())
-                 << "from translations folder" << translationsFolder << ":"
-                 << (mixxxLoaded ? "success" : "fail");
         if (mixxxLoaded) {
+            qDebug() << "Loaded translations for locale"
+                     << (userLocale.size() > 0 ? userLocale : systemLocale.name())
+                     << "from" << translationsFolder;
             pApp->installTranslator(mixxxTranslator);
         } else {
+            qWarning() << "Failed to load translations for locale"
+                       << (userLocale.size() > 0 ? userLocale : systemLocale.name())
+                       << "from" << translationsFolder;
             delete mixxxTranslator;
         }
     }
