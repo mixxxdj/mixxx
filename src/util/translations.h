@@ -16,7 +16,8 @@ class Translations {
     static void initializeTranslations(UserSettingsPointer pConfig,
             QCoreApplication* pApp,
             const QString& cmdlineLocaleString) {
-        QString translationsPath = pConfig->getResourcePath() + "translations/";
+        const QString translationsPath =
+                pConfig->getResourcePath() + QStringLiteral("translations/");
 
         // Set the default locale, if specified via command line or config
         // file. If neither is the case, the default locale will be the
@@ -71,42 +72,43 @@ class Translations {
 
         // Load Qt translations for this locale from the system translation
         // path. This is the lowest precedence QTranslator.
-        QTranslator* pQtTranslator = new QTranslator(pApp);
-        if (pQtTranslator->load(locale,
-                    "qt",
-                    "_",
-                    QLibraryInfo::location(QLibraryInfo::TranslationsPath))) {
-            pApp->installTranslator(pQtTranslator);
-        } else {
-            delete pQtTranslator;
-        }
+        installTranslations(pApp,
+                locale,
+                QStringLiteral("qt"),
+                QLibraryInfo::location(QLibraryInfo::TranslationsPath));
 
         // Load Qt translations for this locale from the Mixxx translations
         // folder.
-        QTranslator* pMixxxQtTranslator = new QTranslator(pApp);
-        if (pMixxxQtTranslator->load(locale, "qt", "_", translationsPath)) {
-            pApp->installTranslator(pMixxxQtTranslator);
-        } else {
-            delete pMixxxQtTranslator;
-        }
+        installTranslations(pApp, locale, QStringLiteral("qt"), translationsPath);
 
         // Load Mixxx specific translations for this locale from the Mixxx
         // translations folder.
-        QTranslator* pMixxxTranslator = new QTranslator(pApp);
-        bool mixxxLoaded = pMixxxTranslator->load(locale, "mixxx", "_", translationsPath);
-        if (mixxxLoaded) {
-            qDebug() << "Loaded translations for locale"
-                     << locale.name()
-                     << "from" << translationsPath;
-            pApp->installTranslator(pMixxxTranslator);
-        } else {
-            qWarning() << "Failed to load translations for locale"
-                       << locale.name()
-                       << "from" << translationsPath;
-            delete pMixxxTranslator;
-        }
+        installTranslations(pApp, locale, QStringLiteral("mixxx"), translationsPath);
     }
     Translations() = delete;
+
+  private:
+    static bool installTranslations(QCoreApplication* pApp,
+            const QLocale& locale,
+            const QString& translation,
+            const QString& translationsPath) {
+        QTranslator* pTranslator = new QTranslator(pApp);
+        const bool success = pTranslator->load(
+                locale, translation, QStringLiteral("_"), translationsPath);
+        if (!success) {
+            qWarning() << "Failed to load" << translation << "translations for locale"
+                       << locale.name()
+                       << "from" << translationsPath;
+            delete pTranslator;
+            return false;
+        }
+
+        qDebug() << "Loaded" << translation << "translations for locale"
+                 << locale.name()
+                 << "from" << translationsPath;
+        pApp->installTranslator(pTranslator);
+        return true;
+    }
 };
 
 }  // namespace mixxx
