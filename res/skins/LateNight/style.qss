@@ -26,7 +26,8 @@ WEffectSelector QAbstractScrollArea,
 #LibraryContainer QPushButton,
 #LibraryContainer QLabel,
 #LibraryContainer QRadioButton,
-#LibraryContainer QHeaderView {
+#LibraryContainer QHeaderView,
+#LibraryContainer QHeaderView::section {
   /* On Linux all weight variants of Open Sans are identified
   as "Open Sans".
   On Windows however, the semi-bold variant is identified as
