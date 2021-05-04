@@ -1,0 +1,38 @@
+<!--
+Description:
+  VUMeter embedded in Mic unit, Aux unit & Preview deck.
+Variables:
+  group   : [MicrophoneN], [AuxiliaryN], [PerviewDeck]
+  chanNum : channel number
+
+Rendering the meters from SVGs makes the entire GUI very laggy on older Macs.
+Refer to https://bugs.launchpad.net/mixxx/+bug/1759433
+-->
+<Template>
+  <WidgetGroup>
+    <Size><Variable name="Size"/></Size>
+    <Layout>stacked</Layout>
+    <Children>
+      <StatusLight>
+        <TooltipId><Variable name="sourceType"/>_VuMeter</TooltipId>
+        <PathStatusLight scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_clipping_over.png</PathStatusLight>
+        <PathBack scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_clipping.png</PathBack>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,PeakIndicator</ConfigKey>
+        </Connection>
+      </StatusLight>
+      <VuMeter>
+        <PathVu scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_level_over.png</PathVu>
+        <PathBack scalemode="STRETCH">skin:../Tango/graphics/vumeter_mini_level.png</PathBack>
+        <Horizontal>false</Horizontal>
+        <PeakHoldSize>5</PeakHoldSize>
+        <PeakHoldTime>500</PeakHoldTime>
+        <PeakFallTime>50</PeakFallTime>
+        <PeakFallStep>2</PeakFallStep>
+        <Connection>
+          <ConfigKey><Variable name="group"/>,VuMeter</ConfigKey>
+        </Connection>
+      </VuMeter>
+    </Children>
+  </WidgetGroup>
+</Template>
