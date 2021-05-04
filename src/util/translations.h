@@ -26,11 +26,8 @@ class Translations {
         if (!cmdlineLocaleString.isEmpty()) {
             customLocaleString = cmdlineLocaleString;
         } else {
-            const QString configLocale = pConfig->getValueString(
-                    ConfigKey("[Config]", "Locale"));
-            if (!configLocale.isEmpty()) {
-                customLocaleString = configLocale;
-            }
+            customLocaleString = pConfig->getValue(
+                    ConfigKey("[Config]", "Locale"), QString());
         }
 
         if (!customLocaleString.isEmpty()) {
