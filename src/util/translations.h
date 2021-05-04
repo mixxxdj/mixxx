@@ -22,35 +22,36 @@ class Translations {
         // Set the default locale, if specified via command line or config
         // file. If neither is the case, the default locale will be the
         // system's locale.
-        {
-            QString customLocaleString = QString();
-            if (!cmdlineLocaleString.isEmpty()) {
-                customLocaleString = cmdlineLocaleString;
-            } else {
-                const QString configLocale = pConfig->getValueString(
-                        ConfigKey("[Config]", "Locale"));
-                if (!configLocale.isEmpty()) {
-                    customLocaleString = configLocale;
-                }
-            }
-
-            if (!customLocaleString.isEmpty()) {
-                const QLocale customLocale = QLocale(customLocaleString);
-                // If the customLocaleString is not a valid locale, Qt will
-                // automatically use the "C" locale instead. In that case,
-                // let's print a warning.
-                if (customLocaleString.compare(
-                            QStringLiteral("C"), Qt::CaseInsensitive) != 0 &&
-                        customLocale.language() == QLocale::C) {
-                    qWarning() << "Custom locale not found, using 'C' locale "
-                                  "(check your configuration to avoid this "
-                                  "warning).";
-                }
-                QLocale::setDefault(customLocale);
+        QString customLocaleString;
+        if (!cmdlineLocaleString.isEmpty()) {
+            customLocaleString = cmdlineLocaleString;
+        } else {
+            const QString configLocale = pConfig->getValueString(
+                    ConfigKey("[Config]", "Locale"));
+            if (!configLocale.isEmpty()) {
+                customLocaleString = configLocale;
             }
         }
 
-        QLocale locale = QLocale();
+        if (!customLocaleString.isEmpty()) {
+            const QLocale customLocale = QLocale(customLocaleString);
+            // If the customLocaleString is not a valid locale, Qt will
+            // automatically use the "C" locale instead. In that case,
+            // let's print a warning.
+            if (customLocaleString.compare(
+                        QStringLiteral("C"), Qt::CaseInsensitive) != 0 &&
+                    customLocale.language() == QLocale::C) {
+                qWarning() << "Custom locale not found, using 'C' locale "
+                              "(check your configuration to avoid this "
+                              "warning).";
+            }
+            QLocale::setDefault(customLocale);
+        }
+
+        // Constructs a QLocale object initialized with the default locale. If
+        // no default locale was set using setDefault(), this locale will be
+        // the same as the one returned by system().
+        QLocale locale;
 
         // Do not try to load translations if we're using 'C' locale.
         if (locale.language() == QLocale::C) {
