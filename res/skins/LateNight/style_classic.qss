@@ -609,6 +609,7 @@ WLibrary {
     height: 19px;
     padding: 0px -15px 0px 0px;
     margin: 0px 2px 3px 5px;
+    background-color: #0f0f0f;
     }
     #spinBoxTransition:focus {
       border-image: url(skin:/classic/buttons/spinbox_embedded_border_focus_orange.svg) 3 19 2 3;
@@ -1382,6 +1383,7 @@ WPushButton#PlayIndicator[displayValue="1"],
 #LibraryPreviewButton:checked,
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
+#KeyControls WPushButton[pressed="true"],
 #LoopControls WPushButton[value="1"],
 #LoopActivate[displayValue="1"],
 #BeatjumpControls WPushButton[value="1"],

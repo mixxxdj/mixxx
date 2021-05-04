@@ -1369,7 +1369,10 @@ WEffectSelector QAbstractScrollArea,
 
 /* Even darker grey for knob labels in master/headphone mixer */
 #MixerMasterHeadphone #KnobLabel,
-#MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"],
+#MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"] {
+  color: #555;
+}
+
 #LatencyLabel {
   color: #444;
 }
@@ -1525,6 +1528,7 @@ WEffectSelector:!editable,
 
 #BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
+#RateControls WPushButton,
 WPushButton#PlayDeck,
 WPushButton#PreviewIndicator,
 WPushButton#PlayIndicator,
@@ -1660,6 +1664,7 @@ QPushButton#pushButtonAnalyze:checked {
     border-radius: 0px;
   }
 /* dim orange for momentary controls */
+#KeyControls WPushButton[pressed="true"],
 #SyncDeck[value="1"],
 WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
@@ -1694,7 +1699,11 @@ QPushButton#pushButtonRecording:checked,
   }
 /* Blue for Fx buttons 3/4 */
 #FxUnit3 #FxToggleButton[displayValue="1"],
-#FxUnit4 #FxToggleButton[displayValue="1"] {
+#FxUnit4 #FxToggleButton[displayValue="1"],
+WBeatSpinBox::up-button:pressed,
+WBeatSpinBox::down-button:pressed,
+#spinBoxTransition::up-button:pressed,
+#spinBoxTransition::down-button:pressed {
   background-color: #257b82;
   }
   /* Dim blue for assign buttons Fx34 */
@@ -1796,7 +1805,7 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 /* Grey for GUI toggles */
 #GuiToggleButton[displayValue="1"],
 #SkinSettingsToggle[displayValue="1"] {
-  background-color: #555;
+  background-color: #777;
 }
 
 /* Grey */

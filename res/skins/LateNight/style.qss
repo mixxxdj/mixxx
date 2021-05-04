@@ -266,7 +266,6 @@ WPushButton,
 #RecDuration[highlight="2"],
 #SamplerTitleMini,
 #EQKillButton,
-#RateText,
 #SamplerBpmMini,
 #PreviewBPM,
 #LibraryFeatureControls QRadioButton {
@@ -274,7 +273,6 @@ WPushButton,
 }
 
 WKey,
-#DurationText,
 WEffectSelector,
 WEffectSelector QAbstractScrollArea,
 #fadeModeCombobox,
@@ -288,6 +286,8 @@ WEffectSelector QAbstractScrollArea,
 }
 
 #PlayPositionTextSmall,
+#DurationText,
+#RateText,
 #SamplerTitleMini, #SamplerBpm,
 #MicAuxLabel, #MicAuxLabelUnconfigured,
 #PreviewTitle,
