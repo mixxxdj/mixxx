@@ -1,6 +1,8 @@
 # This file is executed during cpack time.
-# The command is
-# cpack -G External -D DEB_UPLOAD_PPA=true
+# Possible commands are
+# cpack -G External -D DEB_UPLOAD_PPA=ppa:xxxxx/xxxxxx
+# cpack -G External -D DEB_SOURCEPKG=true
+# cpack -G External -D DEB_BUILD=true
 
 find_program(CPACK_DEBIAN_DEBUILD debuild)
 if(NOT CPACK_DEBIAN_DEBUILD)
@@ -38,6 +40,13 @@ endif()
 if(NOT CPACK_DEBIAN_GPG_RET EQUAL "0")
     message(WARNING "No secret key found for \"${CPACK_PACKAGE_CONTACT}\", skip signing" )
     SET(CPACK_DEBIAN_DEBUILD_NOSIGN "--no-sign")
+endif()
+
+# hack to advance the version from the legacy version like this:
+# dpkg --compare-versions 2.3.0~beta~git8163 lt 2.3.0~beta1~2345~gffffff && echo true
+# dpkg --compare-versions 2.3.0~beta1~2345~gffffff lt 2.3.0 && echo true
+if(DEB_UPLOAD_PPA MATCHES "mixxxbetas")
+  string(REPLACE "2.3~beta~" "2.3.0~beta1~" CPACK_DEBIAN_PACKAGE_VERSION "${CPACK_DEBIAN_PACKAGE_VERSION}")
 endif()
 
 message(NOTICE "Creating mixxx_${CPACK_DEBIAN_PACKAGE_VERSION}.orig.tar.gz")

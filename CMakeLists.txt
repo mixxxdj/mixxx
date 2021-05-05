@@ -2736,7 +2736,15 @@ string(REPLACE "\n\n" "\n.\n" CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_D
 string(REPLACE "\n" "\n " CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}")
 
 # The upstream version must not contain hyphen
-string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+# . for nomal versioning + for advance and ~ for decline the version
+# dpkg --compare-versions 2.3~alpha~1234~g8163 lt 2.3~beta~1234~g8163 && echo true
+# dpkg --compare-versions 2.3~beta~1234~g8163 lt 2.3.0 && echo true
+# dpkg --compare-versions 2.3.0 lt 2.3.0+2345+g163  && echo true
+if (PACKAGE_VERSION MATCHES "(alpha|beta)")
+   string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+else()
+   string(REPLACE "-" "+" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+endif()
 # This is the version of the package itselve and can be advanced or set to
 # something like 0ubuntu1 when building a new package from the same version
 if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
