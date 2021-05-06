@@ -64,7 +64,7 @@
   </screenshots>
   <url type="homepage">https://mixxx.org</url>
   <url type="bugtracker">https://bugs.launchpad.net/mixxx</url>
-  <url type="donation">https://www.mixxx.org/support</url>
+  <url type="donation">https://mixxx.org/donate</url>
   <url type="help">https://www.mixxx.org/support</url>
   <url type="translate">https://www.transifex.com/mixxx-dj-software/public</url>
   <update_contact>mixxx-devel@lists.sourceforge.net</update_contact>
