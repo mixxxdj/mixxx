@@ -37,7 +37,7 @@ class TrackCollectionManager: public QObject,
             deleteTrackFn_t deleteTrackForTestingFn = nullptr);
     ~TrackCollectionManager() override;
 
-    TrackCollection* internalCollection() {
+    TrackCollection* internalCollection() const {
         DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
         return m_pInternalCollection;
     }
