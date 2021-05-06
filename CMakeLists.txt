@@ -417,10 +417,6 @@ else()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
 
-set_property(DIRECTORY APPEND
-    PROPERTY CMAKE_CONFIGURE_DEPENDS
-    "${CMAKE_SOURCE_DIR}/.git/index")
-
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
@@ -1194,6 +1190,14 @@ endif()
 add_executable(mixxx WIN32 src/main.cpp)
 set_target_properties(mixxx-lib PROPERTIES CXX_CLANG_TIDY "${CLANG_TIDY}")
 target_link_libraries(mixxx PUBLIC mixxx-lib)
+
+# Make sure that the git version data is updated by CMake reconfiguration when
+# any source file or git file changes.
+get_target_property(MIXXX_LIB_SOURCES mixxx-lib SOURCES)
+get_target_property(MIXXX_SOURCES mixxx SOURCES)
+set_property(DIRECTORY APPEND
+  PROPERTY CMAKE_CONFIGURE_DEPENDS
+  "${CMAKE_SOURCE_DIR}/.git/index;${MIXXX_SOURCES};${MIXXX_LIB_SOURCES};res")
 
 #
 # Installation and Packaging
