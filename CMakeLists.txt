@@ -1195,7 +1195,8 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 # any source file or git file changes.
 set_property(DIRECTORY APPEND
   PROPERTY CMAKE_CONFIGURE_DEPENDS
-  "${CMAKE_SOURCE_DIR}/.git/index;src;res")
+  "${CMAKE_SOURCE_DIR}/.git/index;${CMAKE_SOURCE_DIR}/src/version.h.in"
+)
 
 #
 # Installation and Packaging
@@ -1683,7 +1684,12 @@ execute_process(
   COMMAND ${CMAKE_COMMAND} -E copy_if_different "src/version.tmp.h" "src/version.h"
   WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
 )
-
+add_custom_target(
+  mixxx-version ALL
+  COMMAND ${CMAKE_COMMAND} -E touch "${CMAKE_CURRENT_SOURCE_DIR}/src/version.h.in"
+  COMMENT "Invalidate version and force reconfiguration."
+)
+add_dependencies(mixxx-lib mixxx-version)
 
 # Windows-only resource file
 if(WIN32)
