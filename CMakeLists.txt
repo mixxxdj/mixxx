@@ -2661,20 +2661,11 @@ endif()
 find_package(LibUSB)
 
 # USB HID controller support
-find_package(hidapi)
 option(HID "USB HID controller support" ON)
-# hidapi_VERSION is only available starting with 0.10.0
-default_option(HIDAPI_STATIC "Link HIDAPI library statically" "NOT hidapi_FOUND OR NOT hidapi_VERSION OR hidapi_VERSION VERSION_LESS 0.10.0")
 if(HID)
-  target_sources(mixxx-lib PRIVATE
-    src/controllers/hid/hidcontroller.cpp
-    src/controllers/hid/hiddevice.cpp
-    src/controllers/hid/hidenumerator.cpp
-    src/controllers/hid/legacyhidcontrollermapping.cpp
-    src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
-  )
-  target_compile_definitions(mixxx-lib PUBLIC __HID__)
-  if(HIDAPI_STATIC)
+  find_package(hidapi)
+  # hidapi_VERSION is only available starting with 0.10.0
+  if(NOT hidapi_FOUND OR NOT hidapi_VERSION OR hidapi_VERSION VERSION_LESS 0.10.0)
     message(STATUS "Linking internal libhidapi statically")
     add_library(mixxx-hidapi STATIC EXCLUDE_FROM_ALL)
     target_include_directories(mixxx-hidapi SYSTEM PUBLIC lib/hidapi/hidapi)
@@ -2703,6 +2694,14 @@ if(HID)
     endif()
     target_link_libraries(mixxx-lib PUBLIC hidapi::hidapi)
   endif()
+  target_sources(mixxx-lib PRIVATE
+    src/controllers/hid/hidcontroller.cpp
+    src/controllers/hid/hiddevice.cpp
+    src/controllers/hid/hidenumerator.cpp
+    src/controllers/hid/legacyhidcontrollermapping.cpp
+    src/controllers/hid/legacyhidcontrollermappingfilehandler.cpp
+  )
+  target_compile_definitions(mixxx-lib PUBLIC __HID__)
 endif()
 
 # USB Bulk controller support
