@@ -133,12 +133,11 @@ class Track : public QObject {
     bool trySetBpm(double bpm);
 
     // Returns BPM
-    double getBpm() const {
-        const QMutexLocker lock(&m_qMutex);
-        return getBpmWhileLocked().getValue();
-    }
+    double getBpm() const;
     // Returns BPM as a string
-    QString getBpmText() const;
+    QString getBpmText() const {
+        return mixxx::Bpm::displayValueText(getBpm());
+    }
 
     // A track with a locked BPM will not be re-analyzed by the beats or bpm
     // analyzer.

@@ -297,8 +297,9 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
     return false;
 }
 
-QString Track::getBpmText() const {
-    return QString("%1").arg(getBpm(), 3,'f',1);
+double Track::getBpm() const {
+    const QMutexLocker lock(&m_qMutex);
+    return getBpmWhileLocked().getValue();
 }
 
 bool Track::trySetBpm(double bpmValue) {
