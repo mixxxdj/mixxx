@@ -73,15 +73,18 @@ class Translations {
         installTranslations(pApp,
                 locale,
                 QStringLiteral("qt"),
-                QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+                QLibraryInfo::location(QLibraryInfo::TranslationsPath),
+                true);
 
         // Load Qt translations for this locale from the Mixxx translations
         // folder.
-        installTranslations(pApp, locale, QStringLiteral("qt"), translationsPath);
+        // Depending on the OS, this might not be necessary, so we don't warn
+        // on failure here.
+        installTranslations(pApp, locale, QStringLiteral("qt"), translationsPath, false);
 
         // Load Mixxx specific translations for this locale from the Mixxx
         // translations folder.
-        installTranslations(pApp, locale, QStringLiteral("mixxx"), translationsPath);
+        installTranslations(pApp, locale, QStringLiteral("mixxx"), translationsPath, true);
     }
     Translations() = delete;
 
@@ -89,14 +92,16 @@ class Translations {
     static bool installTranslations(QCoreApplication* pApp,
             const QLocale& locale,
             const QString& translation,
-            const QString& translationsPath) {
+            const QString& translationsPath,
+            bool warnOnFailure) {
         QTranslator* pTranslator = new QTranslator(pApp);
         const bool success = pTranslator->load(
                 locale, translation, QStringLiteral("_"), translationsPath);
         if (!success) {
-            qWarning() << "Failed to load" << translation << "translations for locale"
-                       << locale.name()
-                       << "from" << translationsPath;
+            ((warnOnFailure) ? qWarning() : qDebug())
+                    << "Failed to load" << translation << "translations for locale"
+                    << locale.name()
+                    << "from" << translationsPath;
             delete pTranslator;
             return false;
         }
