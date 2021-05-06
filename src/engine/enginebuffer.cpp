@@ -525,6 +525,8 @@ void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
     slotTrackLoaded(
             pTrack,
             pTrack->getSampleRate(),
+            // TODO: Round to integer after multiplication with sample rate
+            // and not before?
             pTrack->getSampleRate() * pTrack->getDurationSecondsInt());
 }
 
