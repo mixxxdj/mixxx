@@ -9,14 +9,14 @@
 #include "track/trackid.h"
 #include "util/class.h"
 
-class TrackCollection;
+class TrackCollectionManager;
 
 class AutoDJCratesDAO : public QObject {
     Q_OBJECT
   public:
     AutoDJCratesDAO(
             int iAutoDjPlaylistId,
-            TrackCollection* pTrackCollection,
+            TrackCollectionManager* pTrackCollectionManager,
             UserSettingsPointer a_pConfig);
     ~AutoDJCratesDAO() override;
 
@@ -99,7 +99,7 @@ class AutoDJCratesDAO : public QObject {
     // The auto-DJ playlist's ID.
     const int m_iAutoDjPlaylistId;
 
-    TrackCollection* m_pTrackCollection;
+    TrackCollectionManager* m_pTrackCollectionManager;
 
     // The SQL database we interact with.
     QSqlDatabase m_database;

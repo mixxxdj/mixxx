@@ -238,7 +238,7 @@ bool CrateFeature::dropAcceptChild(
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
     QList<TrackId> trackIds =
-            m_pTrackCollection->resolveTrackIdsFromUrls(urls, !pSource);
+            m_pLibrary->trackCollections()->resolveTrackIdsFromUrls(urls, !pSource);
     if (!trackIds.size()) {
         return false;
     }

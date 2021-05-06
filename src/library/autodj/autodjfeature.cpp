@@ -46,17 +46,16 @@ namespace {
 } // anonymous namespace
 
 AutoDJFeature::AutoDJFeature(Library* pLibrary,
-                             UserSettingsPointer pConfig,
-                             PlayerManagerInterface* pPlayerManager)
+        UserSettingsPointer pConfig,
+        PlayerManagerInterface* pPlayerManager)
         : LibraryFeature(pLibrary, pConfig),
           m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
           m_pAutoDJProcessor(nullptr),
           m_pAutoDJView(nullptr),
-          m_autoDjCratesDao(m_iAutoDJPlaylistId, m_pTrackCollection, m_pConfig),
+          m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollections(), m_pConfig),
           m_icon(":/images/library/ic_library_autodj.svg") {
-
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
     m_pAutoDJProcessor = new AutoDJProcessor(
             this, m_pConfig, pPlayerManager, pLibrary->trackCollections(), m_iAutoDJPlaylistId);
@@ -169,7 +168,7 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     // Auto DJ playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(urls,
+    QList<TrackId> trackIds = m_pLibrary->trackCollections()->resolveTrackIdsFromUrls(urls,
             !pSource);
     if (trackIds.isEmpty()) {
         return false;
@@ -250,7 +249,7 @@ void AutoDJFeature::slotAddRandomTrack() {
             }
 
             if (randomTrackId.isValid()) {
-                pRandomTrack = m_pTrackCollection->getTrackById(randomTrackId);
+                pRandomTrack = m_pLibrary->trackCollections()->getTrackById(randomTrackId);
                 VERIFY_OR_DEBUG_ASSERT(pRandomTrack) {
                     qWarning() << "Track does not exist:"
                             << randomTrackId;

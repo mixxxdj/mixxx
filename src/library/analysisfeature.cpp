@@ -6,7 +6,7 @@
 #include "library/dlganalysis.h"
 #include "library/library.h"
 #include "library/librarytablemodel.h"
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_analysisfeature.cpp"
 #include "sources/soundsourceproxy.h"
 #include "util/debug.h"
@@ -226,8 +226,10 @@ void AnalysisFeature::onTrackAnalysisSchedulerFinished() {
 }
 
 bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
-    QList<TrackId> trackIds = m_pLibrary->trackCollection().resolveTrackIdsFromUrls(urls,
-            !pSource);
+    const QList<TrackId> trackIds =
+            m_pLibrary->trackCollections()->resolveTrackIdsFromUrls(
+                    urls,
+                    !pSource);
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }

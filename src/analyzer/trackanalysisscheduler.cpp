@@ -1,7 +1,7 @@
 #include "analyzer/trackanalysisscheduler.h"
 
 #include "library/library.h"
-#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
 #include "moc_trackanalysisscheduler.cpp"
 #include "util/logger.h"
 
@@ -275,7 +275,7 @@ bool TrackAnalysisScheduler::submitNextTrack(Worker* worker) {
         DEBUG_ASSERT(nextTrackId.isValid());
         if (nextTrackId.isValid()) {
             TrackPointer nextTrack =
-                    m_library->trackCollection().getTrackById(nextTrackId);
+                    m_library->trackCollections()->getTrackById(nextTrackId);
             if (nextTrack) {
                 if (m_pendingTrackIds.insert(nextTrackId).second) {
                     if (worker->submitNextTrack(std::move(nextTrack))) {

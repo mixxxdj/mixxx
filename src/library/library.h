@@ -66,9 +66,6 @@ class Library: public QObject {
 
     TrackCollectionManager* trackCollections() const;
 
-    // Deprecated: Obtain directly from TrackCollectionManager
-    TrackCollection& trackCollection();
-
     void bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
     void bindLibraryWidget(WLibrary* libraryWidget,

@@ -197,7 +197,7 @@ bool MixxxLibraryFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) 
     if (pSource) {
         return false;
     } else {
-        QList<TrackId> trackIds = m_pTrackCollection->resolveTrackIdsFromUrls(
+        QList<TrackId> trackIds = m_pLibrary->trackCollections()->resolveTrackIdsFromUrls(
                 urls, true);
         return trackIds.size() > 0;
     }
