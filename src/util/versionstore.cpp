@@ -28,8 +28,9 @@
 #include <taglib/taglib.h>
 #include <vorbis/codec.h>
 
-#define VERSION_STORE
 #include "version.h"
+#define VERSION_STORE
+#include "versiondetails.h"
 
 namespace {
 

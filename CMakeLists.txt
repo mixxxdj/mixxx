@@ -1673,8 +1673,10 @@ endif()
 
 get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 
-# uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE GIT_BRANCH GIT_DESCRIBE GIT_COMMIT_DATE BUILD_FLAGS
+# uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE
 configure_file(src/version.h.in src/version.h @ONLY)
+# uses GIT_BRANCH GIT_DESCRIBE GIT_COMMIT_DATE BUILD_FLAGS
+configure_file(src/versiondetails.h.in src/versiondetails.h @ONLY)
 
 # Windows-only resource file
 if(WIN32)

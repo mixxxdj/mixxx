@@ -1,0 +1,14 @@
+#pragma once
+// This file contains the exact Mixxx git version and commit date. Since this
+// changes on every single commit (or even if just the dirty flag changes), all
+// files that include this will be recompile very often. Therefore, this should
+// only be included from versionstore.cpp.
+
+#ifndef VERSION_STORE
+    #error "Include only from versionstore.cpp do avoid unnecessary recompile on every commit."
+#endif
+
+#define GIT_BRANCH "@GIT_BRANCH@"
+#define GIT_DESCRIBE "@GIT_DESCRIBE@"
+#define GIT_COMMIT_DATE "@GIT_COMMIT_DATE@"
+#define BUILD_FLAGS "@BUILD_FLAGS@"
