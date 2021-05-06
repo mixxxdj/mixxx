@@ -522,8 +522,10 @@ void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
     if (bPlay) {
         m_playButton->set((double)bPlay);
     }
-    slotTrackLoaded(pTrack, pTrack->getSampleRate(),
-                    pTrack->getSampleRate() * pTrack->getDurationInt());
+    slotTrackLoaded(
+            pTrack,
+            pTrack->getSampleRate(),
+            pTrack->getSampleRate() * pTrack->getDurationSecondsInt());
 }
 
 // WARNING: Always called from the EngineWorker thread pool

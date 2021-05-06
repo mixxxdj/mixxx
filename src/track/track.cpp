@@ -454,19 +454,18 @@ void Track::setDuration(double duration) {
     setDuration(mixxx::Duration::fromSeconds(duration));
 }
 
-double Track::getDuration(DurationRounding rounding) const {
+double Track::getDuration() const {
     QMutexLocker lock(&m_qMutex);
-    const auto durationSeconds =
-            m_record.getMetadata().getStreamInfo().getDuration().toDoubleSeconds();
-    switch (rounding) {
-    case DurationRounding::SECONDS:
-        return std::round(durationSeconds);
-    default:
-        return durationSeconds;
-    }
+    return m_record.getMetadata().getStreamInfo().getDuration().toDoubleSeconds();
 }
 
-QString Track::getDurationText(mixxx::Duration::Precision precision) const {
+int Track::getDurationSecondsInt() const {
+    QMutexLocker lock(&m_qMutex);
+    return static_cast<int>(m_record.getMetadata().getDurationSecondsRounded());
+}
+
+QString Track::getDurationText(
+        mixxx::Duration::Precision precision) const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getDurationText(precision);
 }

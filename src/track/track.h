@@ -108,13 +108,9 @@ class Track : public QObject {
 
     void setDuration(mixxx::Duration duration);
     void setDuration(double duration);
-    double getDuration() const {
-        return getDuration(DurationRounding::NONE);
-    }
+    double getDuration() const;
     // Returns the duration rounded to seconds
-    int getDurationInt() const {
-        return static_cast<int>(getDuration(DurationRounding::SECONDS));
-    }
+    int getDurationSecondsInt() const;
     // Returns the duration formatted as a string (H:MM:SS or H:MM:SS.cc or H:MM:SS.mmm)
     QString getDurationText(mixxx::Duration::Precision precision) const;
 
@@ -449,11 +445,6 @@ class Track : public QObject {
     void importPendingCueInfosMarkDirtyAndUnlock(
             QMutexLocker* pLock);
 
-    enum class DurationRounding {
-        SECONDS, // rounded to full seconds
-        NONE     // unmodified
-    };
-    double getDuration(DurationRounding rounding) const;
 
     ExportTrackMetadataResult exportMetadata(
             mixxx::MetadataSourcePointer pMetadataSource,
