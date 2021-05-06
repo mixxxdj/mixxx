@@ -58,8 +58,32 @@
   </provides>
   <screenshots>
     <screenshot type="default">
-      <image>https://www.mixxx.org/static/images/press_art/mixxx_200_deere_skin.png</image>
-      <caption>Mixxx with the default Deere skin</caption>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/latenight-palemoon-3840x2160.png</image>
+      <caption>Mixxx with the default LateNight PaleMoon skin</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/latenight-classic-3840x2160.png</image>
+      <caption>Mixxx with the LateNight Classic skin</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/deere-3840x2160.png</image>
+      <caption>Mixxx with the Deere skin</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/shade-classic-3840x2160.png</image>
+      <caption>Mixxx with the Shade Classic skin</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/shade-dark-3840x2160.png</image>
+      <caption>Mixxx with the Shade Dark skin</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/shade-summersunset-3840x2160.png</image>
+      <caption>Mixxx with the Shade Summer Sunset skin</caption>
+    </screenshot>
+    <screenshot>
+      <image>https://mixxx.org/theme/images/2.3/screenshots/tango-3840x2160.png</image>
+      <caption>Mixxx with the Tango skin</caption>
     </screenshot>
   </screenshots>
   <url type="homepage">https://mixxx.org</url>
