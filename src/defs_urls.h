@@ -1,4 +1,12 @@
 #pragma once
+#include "version.h"
+
+// Two-level macro to stringize the numeric version definitions to a version
+// string. See https://gcc.gnu.org/onlinedocs/cpp/Stringizing.html for details.
+#define TO_STR(x) #x
+#define TO_VERSION_STR(major, minor) \
+    TO_STR(major)                    \
+    "." TO_STR(minor)
 
 #define MIXXX_WEBSITE_URL       "https://www.mixxx.org"
 #define MIXXX_WEBSITE_SHORT_URL "www.mixxx.org"
@@ -20,7 +28,9 @@
 #define MIXXX_WIKI_MIDI_SCRIPTING_URL \
     MIXXX_WIKI_URL "/Midi-Scripting"
 
-#define MIXXX_MANUAL_URL "https://manual.mixxx.org/2.3"
+#define MIXXX_MANUAL_URL                        \
+    "https://manual.mixxx.org/" TO_VERSION_STR( \
+            MIXXX_VERSION_MAJOR, MIXXX_VERSION_MINOR)
 #define MIXXX_MANUAL_SHORTCUTS_URL \
     MIXXX_MANUAL_URL "/chapters/controlling_mixxx.html#using-a-keyboard"
 #define MIXXX_MANUAL_CONTROLLERS_URL \
