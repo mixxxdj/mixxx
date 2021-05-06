@@ -1193,11 +1193,9 @@ target_link_libraries(mixxx PUBLIC mixxx-lib)
 
 # Make sure that the git version data is updated by CMake reconfiguration when
 # any source file or git file changes.
-get_target_property(MIXXX_LIB_SOURCES mixxx-lib SOURCES)
-get_target_property(MIXXX_SOURCES mixxx SOURCES)
 set_property(DIRECTORY APPEND
   PROPERTY CMAKE_CONFIGURE_DEPENDS
-  "${CMAKE_SOURCE_DIR}/.git/index;${MIXXX_SOURCES};${MIXXX_LIB_SOURCES};res")
+  "${CMAKE_SOURCE_DIR}/.git/index;src;res")
 
 #
 # Installation and Packaging
@@ -1678,7 +1676,14 @@ endif()
 get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 
 # uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE GIT_BRANCH GIT_DESCRIBE GIT_COMMIT_DATE BUILD_FLAGS
-configure_file(src/version.h.in src/version.h @ONLY)
+configure_file(src/version.h.in src/version.tmp.h @ONLY)
+# By first writing into a temporaty file and only updating version.h if it's
+# actually different, we can avoid unnecessary recompilations.
+execute_process(
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different "src/version.tmp.h" "src/version.h"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+)
+
 
 # Windows-only resource file
 if(WIN32)
