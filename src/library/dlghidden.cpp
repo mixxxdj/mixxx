@@ -20,7 +20,7 @@ DlgHidden::DlgHidden(
                           pConfig,
                           pLibrary->trackCollections(),
                           parent->getTrackTableBackgroundColorOpacity(),
-                          false)) {
+                          true)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
 
