@@ -4,6 +4,7 @@
 
 #include <QStandardPaths>
 
+#include "defs_urls.h"
 #include "sources/soundsourceproxy.h"
 #include "util/versionstore.h"
 
@@ -172,8 +173,5 @@ void CmdlineArgs::printUsage() {
 "\
 -h, --help              Display this help message and exit", stdout);
 
-    fputs("\n\n(For more information, see "
-          "https://manual.mixxx.org/2.3/chapters/"
-          "appendix.html#command-line-options)\n",
-            stdout);
+    fputs("\n\n(For more information, see " MIXXX_MANUAL_COMMANDLINEOPTIONS_URL ")\n", stdout);
 }
