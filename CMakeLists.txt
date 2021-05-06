@@ -1152,7 +1152,6 @@ if (APPLE AND MACOS_BUNDLE)
   set(MIXXX_INSTALL_DOCDIR "${MIXXX_INSTALL_DATADIR}")
   set(MIXXX_INSTALL_LICENSEDIR "${MIXXX_INSTALL_DATADIR}/licenses")
 elseif (UNIX)
-  include(GNUInstallDirs)
   set(MIXXX_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
   set(MIXXX_INSTALL_DATADIR "${CMAKE_INSTALL_DATADIR}/${CMAKE_PROJECT_NAME}")
   set(MIXXX_INSTALL_DOCDIR "${CMAKE_INSTALL_DOCDIR}")
@@ -2782,11 +2781,11 @@ set(CPACK_PACKAGE_EXECUTABLES "mixxx;Mixxx")
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
 if(NOT GIT_DESCRIBE)
-  set(CPACK_PACKAGE_FILE_NAME "mixxx-${MIXXX_VERSION}-unknown")
+  set(PACKAGE_VERSION "${MIXXX_VERSION}-unknown")
 else()
-  set(CPACK_PACKAGE_FILE_NAME "mixxx-${GIT_DESCRIBE}")
+  set(PACKAGE_VERSION "${GIT_DESCRIBE}")
 endif()
-
+set(CPACK_PACKAGE_FILE_NAME "mixxx-${PACKAGE_VERSION}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
 set(CPACK_STRIP_FILES ON)
@@ -2817,12 +2816,25 @@ string(REPLACE "\n\n" "\n.\n" CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_D
 string(REPLACE "\n" "\n " CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}")
 
 # The upstream version must not contain hyphen
-string(REPLACE "-" "~" CPACK_DEBIAN_UPSTREAM_VERSION "${MIXXX_VERSION}")
-set(CPACK_DEBIAN_DEBIAN_VERSION 0ubuntu1)
-set(CPACK_DEBIAN_DEBIAN_VERSION_EXTRA "${GIT_BRANCH}~git${GIT_COMMIT_COUNT}")
-string(REPLACE "_" "" CPACK_DEBIAN_DEBIAN_VERSION_EXTRA "${CPACK_DEBIAN_DEBIAN_VERSION_EXTRA}")
-set(CPACK_DEBIAN_DISTRIBUTION_RELEASES focal groovy hirsute)
+# . for nomal versioning + for advance and ~ for decline the version
+# dpkg --compare-versions 2.3~alpha~1234~g8163 lt 2.3~beta~1234~g8163 && echo true
+# dpkg --compare-versions 2.3~beta~1234~g8163 lt 2.3.0 && echo true
+# dpkg --compare-versions 2.3.0 lt 2.3.0+2345+g163  && echo true
+if (PACKAGE_VERSION MATCHES "(alpha|beta)")
+   string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+else()
+   string(REPLACE "-" "+" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+endif()
+# This is the version of the package itselve and can be advanced or set to
+# something like 0ubuntu1 when building a new package from the same version
+if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
+   set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
+endif()
+set(CPACK_DEBIAN_DISTRIBUTION_RELEASES bionic focal groovy hirsute)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+set(CPACK_DEBIAN_GIT_DESCRIBE "${GIT_DESCRIBE}")
+set(CPACK_DEBIAN_GIT_COMMIT_DATE ${GIT_COMMIT_DATE})
+set(CPACK_DEBIAN_GIT_BRANCH ${GIT_BRANCH})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")
 
