@@ -488,6 +488,39 @@
     });
 
     /**
+     * A pot for the crossfader curve.
+     *
+     * @constructor
+     * @extends {components.Pot}
+     * @param {number} options.mode Crossfader mode; optional, default: `0`.
+     *                              (`0`: additive, `1`: constant)
+     * @public
+     */
+    var CrossfaderCurvePot = function(options) {
+        options = options || {};
+        options.group = options.group || "[Mixer Profile]";
+        if (options.mode) {
+            options.inKey = options.inKey || options.key || "xFaderCalibration";
+            options.low = options.low || 0.5;
+            options.high = options.high || 0.962;
+            engine.setValue("[Mixer Profile]", "xFaderMode", options.mode);
+        } else {
+            options.inKey = options.inKey || options.key || "xFaderCurve";
+            options.low = options.low || 1;
+            options.high = options.high || 2;
+        }
+        components.Pot.call(this, options);
+    };
+    CrossfaderCurvePot.prototype = deriveFrom(components.Pot, {
+        modes: {ADDITIVE: 0, CONSTANT: 1},
+        min: 0,
+        input: function(_channel, _control, value, _status, _group) {
+            engine.setValue(this.group, this.inKey,
+                script.absoluteLin(value, this.low, this.high, this.min, this.max));
+        }
+    });
+
+    /**
      * A component that sends the values of a source component to a MIDI controller even if the
      * source component uses its `outKey` property for other purposes.
      *
@@ -1344,6 +1377,7 @@
     });
 
     var exports = {};
+    exports.deriveFrom = deriveFrom;
     exports.ShiftButton = ShiftButton;
     exports.Trigger = Trigger;
     exports.CustomButton = CustomButton;
@@ -1357,6 +1391,7 @@
     exports.LoopEncoder = LoopEncoder;
     exports.LoopMoveEncoder = LoopMoveEncoder;
     exports.BackLoopButton = BackLoopButton;
+    exports.CrossfaderCurvePot = CrossfaderCurvePot;
     exports.Publisher = Publisher;
     exports.LayerManager = LayerManager;
     exports.GenericMidiController = GenericMidiController;
