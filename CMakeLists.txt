@@ -2740,10 +2740,14 @@ string(REPLACE "\n" "\n " CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_DEBIA
 # dpkg --compare-versions 2.3~alpha~1234~g8163 lt 2.3~beta~1234~g8163 && echo true
 # dpkg --compare-versions 2.3~beta~1234~g8163 lt 2.3.0 && echo true
 # dpkg --compare-versions 2.3.0 lt 2.3.0+2345+g163  && echo true
-if (PACKAGE_VERSION MATCHES "(alpha|beta)")
-   string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+if (PACKAGE_VERSION MATCHES "^[0-9][A-Za-z0-9.+~-]*$")
+  if (PACKAGE_VERSION MATCHES "(alpha|beta)")
+    string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+  else()
+    string(REPLACE "-" "+" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+  endif()
 else()
-   string(REPLACE "-" "+" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
+  string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${MIXXX_VERSION}")
 endif()
 # This is the version of the package itselve and can be advanced or set to
 # something like 0ubuntu1 when building a new package from the same version
