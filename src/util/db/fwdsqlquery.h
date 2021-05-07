@@ -1,19 +1,16 @@
 #pragma once
 
-
+#include <QSqlError>
 #include <QSqlQuery>
 #include <QSqlRecord>
-#include <QSqlError>
-
-#include "util/db/dbid.h"
-#include "util/db/dbfieldindex.h"
 
 #include "util/assert.h"
+#include "util/db/dbfieldindex.h"
+#include "util/db/dbid.h"
 
 // forward declarations
 class SqlQueryFinisher;
 class FwdSqlQuerySelectResult;
-
 
 // A forward-only QSqlQuery that is prepared immediately
 // during initialization. It offers a limited set of functions
@@ -30,11 +27,14 @@ class FwdSqlQuerySelectResult;
 //
 // Please note that forward-only queries don't provide information
 // about the size of the result set!
-class FwdSqlQuery: protected QSqlQuery {
+class FwdSqlQuery : protected QSqlQuery {
     friend class SqlQueryFinisher;
     friend class FwdSqlQuerySelectResult;
 
   public:
+    FwdSqlQuery()
+            : m_prepared(false) {
+    }
     FwdSqlQuery(
             const QSqlDatabase& database,
             const QString& statement);
@@ -106,7 +106,5 @@ class FwdSqlQuery: protected QSqlQuery {
     bool fieldValueBoolean(DbFieldIndex fieldIndex) const;
 
   private:
-    FwdSqlQuery() = default; // hidden
-
     bool m_prepared;
 };

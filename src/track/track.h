@@ -108,13 +108,9 @@ class Track : public QObject {
 
     void setDuration(mixxx::Duration duration);
     void setDuration(double duration);
-    double getDuration() const {
-        return getDuration(DurationRounding::NONE);
-    }
+    double getDuration() const;
     // Returns the duration rounded to seconds
-    int getDurationInt() const {
-        return static_cast<int>(getDuration(DurationRounding::SECONDS));
-    }
+    int getDurationSecondsInt() const;
     // Returns the duration formatted as a string (H:MM:SS or H:MM:SS.cc or H:MM:SS.mmm)
     QString getDurationText(mixxx::Duration::Precision precision) const;
 
@@ -133,12 +129,11 @@ class Track : public QObject {
     bool trySetBpm(double bpm);
 
     // Returns BPM
-    double getBpm() const {
-        const QMutexLocker lock(&m_qMutex);
-        return getBpmWhileLocked().getValue();
-    }
+    double getBpm() const;
     // Returns BPM as a string
-    QString getBpmText() const;
+    QString getBpmText() const {
+        return mixxx::Bpm::displayValueText(getBpm());
+    }
 
     // A track with a locked BPM will not be re-analyzed by the beats or bpm
     // analyzer.
@@ -450,11 +445,6 @@ class Track : public QObject {
     void importPendingCueInfosMarkDirtyAndUnlock(
             QMutexLocker* pLock);
 
-    enum class DurationRounding {
-        SECONDS, // rounded to full seconds
-        NONE     // unmodified
-    };
-    double getDuration(DurationRounding rounding) const;
 
     ExportTrackMetadataResult exportMetadata(
             mixxx::MetadataSourcePointer pMetadataSource,
