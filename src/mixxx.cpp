@@ -211,6 +211,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         m_pSettingsManager->settings(), pApp, args.getLocale());
 
     createMenuBar();
+    m_pMenuBar->hide();
 
     initializeWindow();
 
@@ -686,6 +687,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             &PlayerInfo::currentPlayingDeckChanged,
             this,
             &MixxxMainWindow::slotChangedPlayingDeck);
+    m_pMenuBar->show();
 
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
