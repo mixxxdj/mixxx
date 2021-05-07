@@ -1,0 +1,949 @@
+[
+    {
+        "@type": "query",
+        "label": "Recently Added",
+        "notes": "Tracks that have recently been added to the collection.",
+        "sort": "-sourceCollectedAt"
+    },
+    {
+        "@type": "query",
+        "label": "Recently Modified",
+        "notes": "Tracks that have recently been created or updated.",
+        "sort": "-updatedAt"
+    },
+    {
+        "@type": "query",
+        "label": "Recently Synchronized",
+        "notes": "Tracks that have recently been synchronized with their media source (import/export of metadata).",
+        "sort": "-sourceSynchronizedAt",
+        "filter": {
+            "dateTime": [
+                "sourceSynchronizedAt",
+                {
+                    "ne": null
+                }
+            ]
+        }
+    },
+    {
+        "@type": "query",
+        "label": "Recently Played",
+        "notes": "Tracks that have recently been played.",
+        "sort": "-lastPlayedAt",
+        "filter": {
+            "all": [
+                {
+                    "dateTime": [
+                        "lastPlayedAt",
+                        {
+                            "ne": null
+                        }
+                    ]
+                },
+                {
+                    "numeric": [
+                        "timesPlayed",
+                        {
+                            "gt": 0
+                        }
+                    ]
+                }
+            ]
+        }
+    },
+    {
+        "@type": "query",
+        "label": "Never Played",
+        "notes": "Tracks that have never been played.",
+        "sort": "-sourceCollectedAt",
+        "filter": {
+            "any": [
+                {
+                    "dateTime": [
+                        "lastPlayedAt",
+                        {
+                            "eq": null
+                        }
+                    ]
+                },
+                {
+                    "not": {
+                        "numeric": [
+                            "timesPlayed",
+                            {
+                                "gt": 0
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    },
+    {
+        "@type": "query",
+        "label": "Compilations",
+        "notes": "Tracks from albums of \"various…artists\".",
+        "sort": "+albumTitle",
+        "filter": {
+            "phrase": [
+                [
+                    "albumArtist"
+                ],
+                [
+                    "various",
+                    "artists"
+                ]
+            ]
+        }
+    },
+    {
+        "@type": "group",
+        "label": "1st Level",
+        "notes": "A group of items on the 1st level",
+        "items": [
+            {
+                "@type": "group",
+                "label": "2nd Level",
+                "notes": "A nested group of items on the 2nd level",
+                "items": [
+                    {
+                        "@type": "query",
+                        "label": "Top 40",
+                        "sort": "+musicTempoBpm,+trackArtist",
+                        "filter": {
+                            "tag": {
+                                "label": {
+                                    "matches": "top40"
+                                }
+                            }
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "@type": "group",
+        "label": "Decade",
+        "items": [
+            {
+                "@type": "query",
+                "label": "1950s",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "tag": {
+                        "facets": [
+                            "decade"
+                        ],
+                        "label": {
+                            "equals": "1960s"
+                        }
+                    }
+                }
+            },
+            {
+                "@type": "query",
+                "label": "1960s",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "tag": {
+                        "facets": [
+                            "decade"
+                        ],
+                        "label": {
+                            "equals": "1960s"
+                        }
+                    }
+                }
+            },
+            {
+                "@type": "query",
+                "label": "1970s",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "tag": {
+                        "facets": [
+                            "decade"
+                        ],
+                        "label": {
+                            "equals": "1970s"
+                        }
+                    }
+                }
+            },
+            {
+                "@type": "query",
+                "label": "1980s",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "tag": {
+                        "facets": [
+                            "decade"
+                        ],
+                        "label": {
+                            "equals": "1980s"
+                        }
+                    }
+                }
+            },
+            {
+                "@type": "query",
+                "label": "1990s",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "tag": {
+                        "facets": [
+                            "decade"
+                        ],
+                        "label": {
+                            "equals": "1990s"
+                        }
+                    }
+                }
+            },
+            {
+                "@type": "query",
+                "label": "2000s",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "tag": {
+                        "facets": [
+                            "decade"
+                        ],
+                        "label": {
+                            "equals": "2000s"
+                        }
+                    }
+                }
+            },
+            {
+                "@type": "query",
+                "label": "2010s",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "tag": {
+                        "facets": [
+                            "decade"
+                        ],
+                        "label": {
+                            "equals": "2010s"
+                        }
+                    }
+                }
+            },
+            {
+                "@type": "query",
+                "label": "2020s",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "tag": {
+                        "facets": [
+                            "decade"
+                        ],
+                        "label": {
+                            "equals": "2020s"
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "@type": "group",
+        "label": "Genre",
+        "items": [
+            {
+                "@type": "query",
+                "label": "Pop/Rock",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "any": [
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "pop"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "rock"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Rock & Co",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "any": [
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "rock"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "metal"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "punk"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "grunge"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "R&B/Soul/Funk",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "any": [
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "r&b"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "rnb"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "soul"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "funk"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Hip Hop/Rap",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "any": [
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "hip"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "hop"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "rap"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Reggae/Dancehall/Ska",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "any": [
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "reggae"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "dancehall"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "ska"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Singer/Songwriter",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "any": [
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "singer"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "songwriter"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Folk/Country",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "any": [
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "folk"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "country"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Jazz/Swing/Bigband",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "any": [
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "jazz"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "swing"
+                                }
+                            }
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "bigband"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Dance/House",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "any": [
+                        {
+                            "all": [
+                                {
+                                    "tag": {
+                                        "facets": [
+                                            "genre"
+                                        ],
+                                        "label": {
+                                            "matches": "dance"
+                                        }
+                                    }
+                                },
+                                {
+                                    "not": {
+                                        "tag": {
+                                            "facets": [
+                                                "genre"
+                                            ],
+                                            "label": {
+                                                "matches": "dancehall"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        },
+                        {
+                            "tag": {
+                                "facets": [
+                                    "genre"
+                                ],
+                                "label": {
+                                    "contains": "house"
+                                }
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Electronic",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "tag": {
+                        "facets": [
+                            "genre"
+                        ],
+                        "label": {
+                            "contains": "electronic"
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    {
+        "@type": "group",
+        "label": "Tempo",
+        "items": [
+            {
+                "@type": "query",
+                "label": "<80 bpm",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "all": [
+                        {
+                            "numeric": [
+                                "musicTempoBpm",
+                                {
+                                    "gt": 0
+                                }
+                            ]
+                        },
+                        {
+                            "numeric": [
+                                "musicTempoBpm",
+                                {
+                                    "lt": 80
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "80-100 bpm",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "all": [
+                        {
+                            "numeric": [
+                                "musicTempoBpm",
+                                {
+                                    "ge": 80
+                                }
+                            ]
+                        },
+                        {
+                            "numeric": [
+                                "musicTempoBpm",
+                                {
+                                    "le": 100
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "100-120 bpm",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "all": [
+                        {
+                            "numeric": [
+                                "musicTempoBpm",
+                                {
+                                    "ge": 100
+                                }
+                            ]
+                        },
+                        {
+                            "numeric": [
+                                "musicTempoBpm",
+                                {
+                                    "le": 120
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "120-140 bpm",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "all": [
+                        {
+                            "numeric": [
+                                "musicTempoBpm",
+                                {
+                                    "ge": 120
+                                }
+                            ]
+                        },
+                        {
+                            "numeric": [
+                                "musicTempoBpm",
+                                {
+                                    "le": 140
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "140-160 bpm",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "all": [
+                        {
+                            "numeric": [
+                                "musicTempoBpm",
+                                {
+                                    "ge": 140
+                                }
+                            ]
+                        },
+                        {
+                            "numeric": [
+                                "musicTempoBpm",
+                                {
+                                    "le": 160
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": ">160 bpm",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "numeric": [
+                        "musicTempoBpm",
+                        {
+                            "gt": 160
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "@type": "group",
+        "label": "Selection",
+        "items": [
+            {
+                "@type": "query",
+                "label": "DJ",
+                "notes": "Selected tracks for DJing with known BPM (sorted)",
+                "sort": "+musicTempoBpm,+trackArtist",
+                "filter": {
+                    "all": [
+                        {
+                            "tag": {
+                                "facets": [
+                                    "selection"
+                                ],
+                                "label": {
+                                    "matches": "dj"
+                                }
+                            }
+                        },
+                        {
+                            "numeric": [
+                                "musicTempoBpm",
+                                {
+                                    "gt": 0
+                                }
+                            ]
+                        }
+                    ]
+                }
+            }
+        ]
+    },
+    {
+        "@type": "group",
+        "label": "Library",
+        "items": [
+            {
+                "@type": "query",
+                "label": "Missing album artist or title",
+                "notes": "Tracks with an album title but no album artist or vice versa.",
+                "sort": "+albumArtist,+albumTitle,+trackNumber",
+                "filter": {
+                    "any": [
+                        {
+                            "all": [
+                                {
+                                    "not": {
+                                        "phrase": [
+                                            [
+                                                "albumTitle"
+                                            ],
+                                            []
+                                        ]
+                                    }
+                                },
+                                {
+                                    "phrase": [
+                                        [
+                                            "albumArtist"
+                                        ],
+                                        []
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "all": [
+                                {
+                                    "not": {
+                                        "phrase": [
+                                            [
+                                                "albumArtist"
+                                            ],
+                                            []
+                                        ]
+                                    }
+                                },
+                                {
+                                    "phrase": [
+                                        [
+                                            "albumTitle"
+                                        ],
+                                        []
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Missing track number",
+                "notes": "Album tracks with missing track number.",
+                "sort": "+albumArtist,+albumTitle",
+                "filter": {
+                    "all": [
+                        {
+                            "not": {
+                                "phrase": [
+                                    [
+                                        "albumTitle"
+                                    ],
+                                    []
+                                ]
+                            }
+                        },
+                        {
+                            "not": {
+                                "numeric": [
+                                    "trackNumber",
+                                    {
+                                        "gt": 0
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Legacy genre tags",
+                "notes": "Tracks with genre separator \" - \".",
+                "filter": {
+                    "tag": {
+                        "facets": [
+                            "genre"
+                        ],
+                        "label": {
+                            "contains": " - "
+                        }
+                    }
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Unplayable tracks",
+                "notes": "Tracks with invalid/unknown duration or sample rate.",
+                "filter": {
+                    "any": [
+                        {
+                            "not": {
+                                "numeric": [
+                                    "audioDurationMs",
+                                    {
+                                        "gt": 0
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "not": {
+                                "numeric": [
+                                    "audioSampleRateHz",
+                                    {
+                                        "gt": 0
+                                    }
+                                ]
+                            }
+                        }
+                    ]
+                }
+            },
+            {
+                "@type": "query",
+                "label": "Tracked sources",
+                "notes": "Tracks with sources that have been imported by the Media Tracker.",
+                "filter": {
+                    "condition": "sourceTracked"
+                },
+                "sort": "-sourceSynchronizedAt"
+            },
+            {
+                "@type": "query",
+                "label": "Untracked sources",
+                "notes": "Tracks with sources that are unknown to the Media Tracker.",
+                "filter": {
+                    "condition": "sourceUntracked"
+                },
+                "sort": "-sourceSynchronizedAt"
+            }
+        ]
+    }
+]

@@ -143,8 +143,17 @@ void CoverArtDelegate::paintItem(
                 // then our request was queued.
                 m_pendingCacheRows.insert(coverInfo.cacheKey(), index.row());
             }
-        } else {
-            // Cache hit
+            // Try to load a thumbnail image that is immediately available
+            const QImage thumbnail = m_pTrackModel->getCoverThumbnail(index);
+            if (!thumbnail.isNull()) {
+                // The scaling matches that of the actual cover image
+                pixmap = QPixmap::fromImage(thumbnail).scaledToWidth(
+                        static_cast<int>(option.rect.width() * scaleFactor),
+                        Qt::SmoothTransformation);
+            }
+        }
+        // Draw either the thumbnail or the cached image
+        if (!pixmap.isNull()) {
             pixmap.setDevicePixelRatio(scaleFactor);
             painter->drawPixmap(option.rect.topLeft(), pixmap);
             drewPixmap = true;

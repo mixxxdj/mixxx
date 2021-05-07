@@ -50,6 +50,11 @@ class BaseSqlTableModel : public BaseTrackTableModel {
     QString getTrackLocation(const QModelIndex& index) const override;
 
     CoverInfo getCoverInfo(const QModelIndex& index) const override;
+    QImage getCoverThumbnail(const QModelIndex& index) const final {
+        // Not supported
+        Q_UNUSED(index)
+        return QImage();
+    }
 
     const QVector<int> getTrackRows(TrackId trackId) const override {
         return m_trackIdToRows.value(trackId);

@@ -2961,3 +2961,56 @@ if(APPLE AND MACOS_BUNDLE)
     configure_file(cmake/modules/BundleInstall.cmake.in "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake" @ONLY)
     install(SCRIPT "${CMAKE_CURRENT_BINARY_DIR}/BundleInstall.cmake")
 endif()
+
+#
+# aoide
+#
+option(AOIDE "aoide - External music library (experimental)" OFF)
+if(AOIDE)
+  target_compile_definitions(mixxx-lib PUBLIC __AOIDE__)
+  target_compile_definitions(mixxx-lib PUBLIC __EXTRA_METADATA__)
+  target_compile_definitions(mixxx-lib PUBLIC __CUSTOM_TAGS__)
+  target_sources(mixxx-lib PRIVATE
+    src/aoide/activecollectionagent.cpp
+    src/aoide/collectionlistmodel.cpp
+    src/aoide/gateway.cpp
+    src/aoide/json/collection.cpp
+    src/aoide/json/entity.cpp
+    src/aoide/json/json.cpp
+    src/aoide/json/marker.cpp
+    src/aoide/json/playlist.cpp
+    src/aoide/json/tag.cpp
+    src/aoide/json/track.cpp
+    src/aoide/libraryfeature.cpp
+    src/aoide/settings.cpp
+    src/aoide/subsystem.cpp
+    src/aoide/trackcollection.cpp
+    src/aoide/trackexport.cpp
+    src/aoide/trackreplacementscheduler.cpp
+    src/aoide/tracksearchlistmodel.cpp
+    src/aoide/tracksearchoverlayfilterdlg.cpp
+    src/aoide/tracksearchoverlayfilterdlg.ui
+    src/aoide/tracktablemodel.cpp
+    src/aoide/util.cpp
+    src/aoide/web/createcollectedplaylisttask.cpp
+    src/aoide/web/createcollectiontask.cpp
+    src/aoide/web/deletecollectiontask.cpp
+    src/aoide/web/deleteplaylisttask.cpp
+    src/aoide/web/listcollectedplayliststask.cpp
+    src/aoide/web/listcollectionstask.cpp
+    src/aoide/web/listtagstask.cpp
+    src/aoide/web/listtagsfacetstask.cpp
+    src/aoide/web/playlistappendtrackentriesbyurltask.cpp
+    src/aoide/web/playlistappendtrackentriestask.cpp
+    src/aoide/web/purgecollectedtrackstask.cpp
+    src/aoide/web/relocatecollectedtrackstask.cpp
+    src/aoide/web/replacecollectedtrackstask.cpp
+    src/aoide/web/resolvecollectedtrackstask.cpp
+    src/aoide/web/searchcollectedtrackstask.cpp
+    src/aoide/web/shutdowntask.cpp
+    src/aoide/web/updatecollectiontask.cpp
+  )
+  target_sources(mixxx-test PRIVATE
+    src/test/aoide_trackexport_test.cpp
+  )
+endif()

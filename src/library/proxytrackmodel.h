@@ -28,6 +28,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     QString getTrackLocation(const QModelIndex& index) const final;
     TrackId getTrackId(const QModelIndex& index) const final;
     CoverInfo getCoverInfo(const QModelIndex& index) const final;
+    QImage getCoverThumbnail(const QModelIndex& index) const final;
     const QVector<int> getTrackRows(TrackId trackId) const final;
     void search(const QString& searchText,const QString& extraFilter = QString()) final;
     const QString currentSearch() const final;
