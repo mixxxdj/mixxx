@@ -1681,7 +1681,7 @@ add_custom_target(
 
 add_custom_command(
     OUTPUT git_describe_ceck # never produced, always run
-    COMMAND $(CMAKE_COMMAND)
+    COMMAND ${CMAKE_COMMAND}
         -D CMAKE_SOURCE_DIR_=${CMAKE_SOURCE_DIR}
         -D CMAKE_BINARY_DIR_=${CMAKE_BINARY_DIR}
         -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/gitdescribecache.cmake
@@ -1693,7 +1693,7 @@ add_custom_command(
     # CPACK_PACKAGE_FILE_NAME used in CPackConfig.cmake depends on git describe
     OUTPUT ${CMAKE_BINARY_DIR}/CPackConfig.cmake
     DEPENDS ${CMAKE_BINARY_DIR}/gitdescribecache
-    COMMAND $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+    COMMAND ${CMAKE_COMMAND} -S${CMAKE_SOURCE_DIR} -B${CMAKE_BINARY_DIR}
     COMMENT "Reconfigure due to git describe update"
     VERBATIM
 )
