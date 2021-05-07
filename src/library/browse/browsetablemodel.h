@@ -61,6 +61,11 @@ class BrowseTableModel final : public QStandardItemModel, public virtual TrackMo
     QString getTrackLocation(const QModelIndex& index) const override;
     TrackId getTrackId(const QModelIndex& index) const override;
     CoverInfo getCoverInfo(const QModelIndex& index) const override;
+    QImage getCoverThumbnail(const QModelIndex& index) const final {
+        // Not supported
+        Q_UNUSED(index)
+        return QImage();
+    }
     const QVector<int> getTrackRows(TrackId trackId) const override;
     void search(const QString& searchText,const QString& extraFilter = QString()) override;
     void removeTracks(const QModelIndexList& indices) override;

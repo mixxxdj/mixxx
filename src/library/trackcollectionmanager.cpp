@@ -10,6 +10,10 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/logger.h"
 
+#if defined(__AOIDE__)
+#include "aoide/trackcollection.h"
+#endif
+
 namespace {
 
 const mixxx::Logger kLogger("TrackCollectionManager");
@@ -54,7 +58,9 @@ TrackCollectionManager::TrackCollectionManager(
     if (deleteTrackForTestingFn) {
         kLogger.info() << "External collections are disabled in test mode";
     } else {
-        // TODO: Add external collections
+#if defined(__AOIDE__)
+        m_externalCollections.append(new aoide::TrackCollection(this, pConfig));
+#endif
     }
     for (const auto& externalCollection : qAsConst(m_externalCollections)) {
         kLogger.info()

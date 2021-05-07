@@ -212,7 +212,7 @@ class BaseTrackTableModel : public QAbstractTableModel, public TrackModel {
             const QModelIndex& index,
             ColumnCache::Column siblingField) const;
 
-    QVariant roleValue(
+    virtual QVariant roleValue(
             const QModelIndex& index,
             QVariant&& rawValue,
             int role) const;
