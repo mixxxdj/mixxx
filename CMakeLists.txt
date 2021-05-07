@@ -1673,27 +1673,28 @@ get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 configure_file(src/version.h.in src/version.h @ONLY)
 
 configure_file(cmake/gitdescribecache.in gitdescribecache @ONLY)
-file(TOUCH ${CMAKE_BINARY_DIR}/reconfigure.t)
 
 add_custom_target(
-    my_custom_target_that_always_runs ALL
-    DEPENDS git_describe_ceck reconfigure.t
+    update_git_describe ALL
+    DEPENDS git_describe_ceck ${CMAKE_BINARY_DIR}/CPackConfig.cmake
 )
 
 add_custom_command(
-    OUTPUT git_describe_ceck
+    OUTPUT git_describe_ceck # never produced, always run
     COMMAND $(CMAKE_COMMAND)
         -D CMAKE_SOURCE_DIR_=${CMAKE_SOURCE_DIR}
         -D CMAKE_BINARY_DIR_=${CMAKE_BINARY_DIR}
         -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/gitdescribecache.cmake
+    COMMENT "Verify git describe"
     VERBATIM
 )
 
 add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/reconfigure.t
+    # CPACK_PACKAGE_FILE_NAME used in CPackConfig.cmake depends on git describe
+    OUTPUT ${CMAKE_BINARY_DIR}/CPackConfig.cmake
     DEPENDS ${CMAKE_BINARY_DIR}/gitdescribecache
     COMMAND $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-    COMMAND $(CMAKE_COMMAND) -E touch ${CMAKE_BINARY_DIR}/reconfigure.t
+    COMMENT "Reconfigure due to git describe update"
     VERBATIM
 )
 
