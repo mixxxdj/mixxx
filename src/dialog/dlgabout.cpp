@@ -1,5 +1,6 @@
 #include "dialog/dlgabout.h"
 
+#include <QDesktopServices>
 #include <QFile>
 #include <QLocale>
 
@@ -342,6 +343,16 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
                                     .name(),
                             MIXXX_WEBSITE_URL,
                             tr("Official Website")));
+
+    if (!Color::isDimColor(palette().text().color())) {
+        btnDonate->setIcon(QIcon(":/images/heart_icon_light.svg"));
+    } else {
+        btnDonate->setIcon(QIcon(":/images/heart_icon_dark.svg"));
+    }
+    btnDonate->setText(tr("Donate"));
+    connect(btnDonate, &QPushButton::clicked, this, [] {
+        QDesktopServices::openUrl(QUrl(MIXXX_DONATE_URL));
+    });
 
     connect(buttonBox, &QDialogButtonBox::accepted, this, &DlgAbout::accept);
     connect(buttonBox, &QDialogButtonBox::rejected, this, &DlgAbout::reject);
