@@ -581,6 +581,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
     emit skinLoaded();
 
+    m_pMenuBar->show();
 
     // Wait until all other ControlObjects are set up before initializing
     // controllers
@@ -687,7 +688,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             &PlayerInfo::currentPlayingDeckChanged,
             this,
             &MixxxMainWindow::slotChangedPlayingDeck);
-    m_pMenuBar->show();
 
     // this has to be after the OpenGL widgets are created or depending on a
     // million different variables the first waveform may be horribly
