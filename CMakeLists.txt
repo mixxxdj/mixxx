@@ -319,71 +319,6 @@ if(WIN32)
   set(CMAKE_FIND_LIBRARY_PREFIXES "" "lib")
 endif()
 
-# Get the current commit ref
-execute_process(
-  COMMAND git describe --tags --always --dirty=-modified
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_DESCRIBE
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
-if(NOT GIT_DESCRIBE)
-  message(STATUS "Git describe: unknown")
-else()
-  message(STATUS "Git describe: ${GIT_DESCRIBE}")
-endif()
-
-# Get the current commit date
-execute_process(
-  COMMAND git show --quiet --format=%cI --date=short
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_DATE
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
-if(NOT GIT_COMMIT_DATE)
-  message(STATUS "Git commit date: unknown")
-else()
-  message(STATUS "Git commit date: ${GIT_COMMIT_DATE}")
-endif()
-
-# Get the current working branch
-execute_process(
-  COMMAND git rev-parse --abbrev-ref HEAD
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_BRANCH
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
-if(NOT GIT_BRANCH)
-  message(STATUS "Git branch: unknown")
-else()
-  message(STATUS "Git branch: ${GIT_BRANCH}")
-endif()
-
-# Get the number of commits on the working branch
-execute_process(
-  COMMAND git rev-list --count --first-parent HEAD
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  OUTPUT_VARIABLE GIT_COMMIT_COUNT
-  OUTPUT_STRIP_TRAILING_WHITESPACE
-  ERROR_QUIET
-)
-if(NOT GIT_COMMIT_COUNT)
-    set(GIT_COMMIT_COUNT "unknown")
-endif()
-
-# Check if the worktree is dirty
-execute_process(
-  COMMAND git diff --quiet
-  RESULT_VARIABLE GIT_WORKTREE_DIRTY
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  ERROR_QUIET
-)
-if(GIT_WORKTREE_DIRTY EQUAL "1")
-  set(GIT_COMMIT_COUNT "${GIT_COMMIT_COUNT}+")
-endif()
-message(STATUS "Git commit count: ${GIT_COMMIT_COUNT}")
 if(MSVC)
   # sccache support
   find_program(SCCACHE_EXECUTABLE "sccache")
@@ -416,10 +351,6 @@ else()
   endif()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
-
-set_property(DIRECTORY APPEND
-    PROPERTY CMAKE_CONFIGURE_DEPENDS
-    "${CMAKE_SOURCE_DIR}/.git/index")
 
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -1671,22 +1602,27 @@ else()
    set(MIXXX_VERSION "${CMAKE_PROJECT_VERSION}-${MIXXX_VERSION_PRERELEASE}")
 endif()
 
-get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
+get_target_property(MIXXX_BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 
-# uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE
+# uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE MIXXX_BUILD_FLAGS
 configure_file(src/version.h.in src/version.h @ONLY)
-# uses GIT_BRANCH GIT_DESCRIBE GIT_COMMIT_DATE BUILD_FLAGS
-configure_file(src/versiondetails.h.in src/versiondetails.h @ONLY)
+
+add_custom_target(mixxx-gitinfo
+  COMMAND ${CMAKE_COMMAND}
+    -DINPUT_FILE="${CMAKE_CURRENT_SOURCE_DIR}/src/gitinfo.h.in"
+    -DOUTPUT_FILE="${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
+    -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/gitinfo.cmake"
+  COMMENT "Update git version information in gitinfo.h"
+  BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
+  WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+)
+add_dependencies(mixxx-lib mixxx-gitinfo)
 
 # Windows-only resource file
 if(WIN32)
   string(TIMESTAMP MIXXX_YEAR "%Y")
 
   set(MIXXX_FILEVERSION "${CMAKE_PROJECT_VERSION_MAJOR},${CMAKE_PROJECT_VERSION_MINOR},${CMAKE_PROJECT_VERSION_PATCH}")
-  if(NOT GIT_COMMIT_COUNT STREQUAL "unknown")
-    set(MIXXX_FILEVERSION "${MIXXX_FILEVERSION},${GIT_COMMIT_COUNT}")
-    string(REPLACE "+" "" MIXXX_FILEVERSION "${MIXXX_FILEVERSION}")
-  endif()
   set(MIXXX_PRODUCTVERSION "${MIXXX_FILEVERSION}")
 
   if(CMAKE_BUILD_TYPE STREQUAL "Debug")
@@ -1707,9 +1643,12 @@ if(WIN32)
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
     @ONLY
   )
+  add_dependencies(mixxx mixxx-gitinfo)
+
   target_sources(mixxx PRIVATE
     src/mixxx.rc
     "${CMAKE_CURRENT_BINARY_DIR}/src/mixxx.rc.include"
+    "${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
   )
   # sccache fails with RC files
   # https://github.com/mozilla/sccache/issues/947
@@ -2701,16 +2640,14 @@ set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
 set(CPACK_PACKAGE_EXECUTABLES "mixxx;Mixxx")
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
 set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
-if(NOT GIT_DESCRIBE)
-  set(PACKAGE_VERSION "${MIXXX_VERSION}-unknown")
-else()
-  set(PACKAGE_VERSION "${GIT_DESCRIBE}")
-endif()
-set(CPACK_PACKAGE_FILE_NAME "mixxx-${PACKAGE_VERSION}")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README")
 set(CPACK_STRIP_FILES ON)
 set(CPACK_CREATE_DESKTOP_LINKS "mixxx")
+set(CPACK_MIXXX_VERSION "${MIXXX_VERSION}")
+
+# Detailed version information, git info and package file name are set from
+# CPackConfig.cmake, not here.
 
 set(CPACK_SOURCE_IGNORE_FILES  "\\\\.#;/#;.*~;\\\\.o$")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.git/")
@@ -2720,7 +2657,7 @@ list(APPEND CPACK_SOURCE_IGNORE_FILES "/build/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/.*_build/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "/\\\\.sconf_temp/")
 list(APPEND CPACK_SOURCE_IGNORE_FILES "${CMAKE_CURRENT_BINARY_DIR}/")
-set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-source")
+set(CPACK_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 
 set(CPACK_DEBIAN_PACKAGE_SECTION "sound")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
@@ -2736,30 +2673,14 @@ string(PREPEND CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_PACKAGE_DESCRIPT
 string(REPLACE "\n\n" "\n.\n" CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}")
 string(REPLACE "\n" "\n " CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED "${CPACK_DEBIAN_PACKAGE_DESCRIPTION_MERGED}")
 
-# The upstream version must not contain hyphen
-# . for nomal versioning + for advance and ~ for decline the version
-# dpkg --compare-versions 2.3~alpha~1234~g8163 lt 2.3~beta~1234~g8163 && echo true
-# dpkg --compare-versions 2.3~beta~1234~g8163 lt 2.3.0 && echo true
-# dpkg --compare-versions 2.3.0 lt 2.3.0+2345+g163  && echo true
-if (PACKAGE_VERSION MATCHES "^[0-9][A-Za-z0-9.+~-]*$")
-  if (PACKAGE_VERSION MATCHES "(alpha|beta)")
-    string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
-  else()
-    string(REPLACE "-" "+" CPACK_DEBIAN_PACKAGE_VERSION "${PACKAGE_VERSION}")
-  endif()
-else()
-  string(REPLACE "-" "~" CPACK_DEBIAN_PACKAGE_VERSION "${MIXXX_VERSION}")
-endif()
-# This is the version of the package itselve and can be advanced or set to
+# This is the version of the package itself and can be advanced or set to
 # something like 0ubuntu1 when building a new package from the same version
 if (NOT CPACK_DEBIAN_PACKAGE_RELEASE)
    set(CPACK_DEBIAN_PACKAGE_RELEASE 1)
 endif()
+
 set(CPACK_DEBIAN_DISTRIBUTION_RELEASES bionic focal groovy hirsute)
 set(CPACK_DEBIAN_SOURCE_DIR ${CMAKE_SOURCE_DIR})
-set(CPACK_DEBIAN_GIT_DESCRIBE "${GIT_DESCRIBE}")
-set(CPACK_DEBIAN_GIT_COMMIT_DATE ${GIT_COMMIT_DATE})
-set(CPACK_DEBIAN_GIT_BRANCH ${GIT_BRANCH})
 set(CPACK_DEBIAN_UPLOAD_PPA_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebUploadPPA.cmake")
 set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebInstall.cmake")
 

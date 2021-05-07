@@ -30,7 +30,7 @@
 
 #include "version.h"
 #define VERSION_STORE
-#include "versiondetails.h"
+#include "gitinfo.h"
 
 namespace {
 
@@ -41,7 +41,7 @@ const QString kMixxx = QStringLiteral("Mixxx");
 const QString kGitBranch = QString(GIT_BRANCH);
 const QString kGitDescribe = QString(GIT_DESCRIBE);
 const QDateTime kGitCommitDate = QDateTime::fromString(GIT_COMMIT_DATE, Qt::ISODate);
-const QString kBuildFlags = QString(BUILD_FLAGS);
+const QString kBuildFlags = QString(MIXXX_BUILD_FLAGS);
 
 } // namespace
 
