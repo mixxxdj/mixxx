@@ -417,10 +417,6 @@ else()
   message(STATUS "Support for ccache: ${CCACHE_SUPPORT}")
 endif()
 
-set_property(DIRECTORY APPEND
-    PROPERTY CMAKE_CONFIGURE_DEPENDS
-    "${CMAKE_SOURCE_DIR}/.git/index")
-
 if(CMAKE_VERSION VERSION_LESS "3.7.0")
   set(CMAKE_INCLUDE_CURRENT_DIR ON)
 endif()
@@ -1675,6 +1671,31 @@ get_target_property(BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 
 # uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE GIT_BRANCH GIT_DESCRIBE GIT_COMMIT_DATE BUILD_FLAGS
 configure_file(src/version.h.in src/version.h @ONLY)
+
+configure_file(cmake/gitdescribecache.in gitdescribecache @ONLY)
+file(TOUCH ${CMAKE_BINARY_DIR}/reconfigure.t)
+
+add_custom_target(
+    my_custom_target_that_always_runs ALL
+    DEPENDS git_describe_ceck reconfigure.t
+)
+
+add_custom_command(
+    OUTPUT git_describe_ceck
+    COMMAND $(CMAKE_COMMAND)
+        -D CMAKE_SOURCE_DIR_=${CMAKE_SOURCE_DIR}
+        -D CMAKE_BINARY_DIR_=${CMAKE_BINARY_DIR}
+        -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/gitdescribecache.cmake
+    VERBATIM
+)
+
+add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/reconfigure.t
+    DEPENDS ${CMAKE_BINARY_DIR}/gitdescribecache
+    COMMAND $(CMAKE_COMMAND) -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+    COMMAND $(CMAKE_COMMAND) -E touch ${CMAKE_BINARY_DIR}/reconfigure.t
+    VERBATIM
+)
 
 # Windows-only resource file
 if(WIN32)
