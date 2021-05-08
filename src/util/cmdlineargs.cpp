@@ -12,6 +12,7 @@
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 
+#include "defs_urls.h"
 #include "sources/soundsourceproxy.h"
 
 CmdlineArgs::CmdlineArgs()
@@ -60,8 +61,9 @@ bool parseLogLevel(
 bool CmdlineArgs::parse(const QStringList& arguments) {
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("main",
-            "Mixxx is an open source DJ software. For more information, see "
-            "https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options).\n"
+            "Mixxx is an open source DJ software. For more information, "
+            "see " MIXXX_MANUAL_COMMANDLINEOPTIONS_URL
+            "\n."
             "CamelCase arguments are deprecated and will be removed in 2.5"));
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 
