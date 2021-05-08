@@ -1607,8 +1607,14 @@ get_target_property(MIXXX_BUILD_FLAGS mixxx-lib COMPILE_OPTIONS)
 # uses CMAKE_PROJECT_VERSION MIXXX_VERSION_PRERELEASE MIXXX_BUILD_FLAGS
 configure_file(src/version.h.in src/version.h @ONLY)
 
+if(GIT_COMMIT_DATE AND NOT GIT_COMMIT_DATE MATCHES "^[0-9]*-[0-9]*-[0-9]*T[0-9]*\\:[0-9]*\\:[0-9]*[+-][0-9]*\\:[0-9]*$")
+  message(FATAL_ERROR "GIT_COMMIT_DATE requires strict ISO 8601 format %Y-%m-%dT%H:%M:%SZ")
+endif()
+
 add_custom_target(mixxx-gitinfo
   COMMAND ${CMAKE_COMMAND}
+    -DGIT_DESCRIBE="${GIT_DESCRIBE}"
+    -DGIT_COMMIT_DATE="${GIT_COMMIT_DATE}"
     -DINPUT_FILE="${CMAKE_CURRENT_SOURCE_DIR}/src/gitinfo.h.in"
     -DOUTPUT_FILE="${CMAKE_CURRENT_BINARY_DIR}/src/gitinfo.h"
     -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/gitinfo.cmake"
