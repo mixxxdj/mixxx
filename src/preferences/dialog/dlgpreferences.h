@@ -76,6 +76,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
   public slots:
     void changePage(QTreeWidgetItem* pCurrent, QTreeWidgetItem* pPrevious);
     void showSoundHardwarePage();
+    void showInterfacePage();
     void slotButtonPressed(QAbstractButton* pButton);
   signals:
     void closeDlg();

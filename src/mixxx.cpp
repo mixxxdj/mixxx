@@ -545,12 +545,28 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
             m_pVCManager,
             m_pEffectsManager,
             m_pRecordingManager);
+    // TODO(ronso0) After failed skin load user may just hit Okay without
+    // having chosen another skin. Show menubar so the user can quit or open
+    // the preferences again manually.
+    // #3839
     if (!m_pWidgetParent) {
-        reportCriticalErrorAndQuit(
-                "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
-
         m_pWidgetParent = oldWidget;
-        //TODO (XXX) add dialog to warn user and launch skin choice page
+        QMessageBox::StandardButton btn = QMessageBox::warning(
+                this,
+                VersionStore::applicationName(),
+                tr("The configured skin <b>%1</b> can not be loaded.<br>"
+                   "Choose another skin?")
+                        .arg(pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"))),
+                QMessageBox::Ok | QMessageBox::Cancel,
+                QMessageBox::Ok);
+        if (btn == QMessageBox::Ok) {
+            m_pPrefDlg->show();
+            m_pPrefDlg->showInterfacePage();
+        } else {
+            reportCriticalErrorAndQuit(tr(
+                    "See the Mixxx log file for more information about the skin error.\n"
+                    "Mixxx will now close"));
+        }
     } else {
         m_pMenuBar->setStyleSheet(m_pWidgetParent->styleSheet());
     }
