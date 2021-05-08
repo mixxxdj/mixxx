@@ -126,7 +126,7 @@ QString VersionStore::gitVersion() {
     }
 
     QString gitBranch = VersionStore::gitBranch();
-    if (!gitBranch.isEmpty()) {
+    if (!gitBranch.isEmpty() && !gitVersion.startsWith(gitBranch)) {
         gitVersion.append(QStringLiteral(" (") + gitBranch + QChar(')'));
     }
 
