@@ -303,36 +303,6 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
 }
 
 //static
-TrackPointer SoundSourceProxy::importTemporaryTrack(
-        mixxx::FileAccess trackFileAccess) {
-    TrackPointer pTrack = Track::newTemporary(std::move(trackFileAccess));
-    // Lock the track cache while populating the temporary track
-    // object to ensure that no metadata is exported into any file
-    // while reading from this file. Since locking individual files
-    // is not possible and the whole cache is locked.
-    GlobalTrackCacheLocker locker;
-    SoundSourceProxy(pTrack).updateTrackFromSource();
-    return pTrack;
-}
-
-//static
-QImage SoundSourceProxy::importTemporaryCoverImage(
-        mixxx::FileAccess trackFileAccess) {
-    if (!trackFileAccess.info().checkFileExists()) {
-        // Silently ignore missing files to avoid spaming the log:
-        // https://bugs.launchpad.net/mixxx/+bug/1875237
-        return QImage();
-    }
-    TrackPointer pTrack = Track::newTemporary(std::move(trackFileAccess));
-    // Lock the track cache while populating the temporary track
-    // object to ensure that no metadata is exported into any file
-    // while reading from this file. Since locking individual files
-    // is not possible and the whole cache is locked.
-    GlobalTrackCacheLocker locker;
-    return SoundSourceProxy(pTrack).importCoverImage();
-}
-
-//static
 ExportTrackMetadataResult
 SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack, UserSettingsPointer pConfig) {
     DEBUG_ASSERT(pTrack);
@@ -487,6 +457,59 @@ void SoundSourceProxy::initSoundSource(
         // Abort after failure
         return;
     }
+}
+
+namespace {
+
+inline std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
+importTrackMetadataAndCoverImageUnavailable() {
+    return std::make_pair(mixxx::MetadataSource::ImportResult::Unavailable, QDateTime());
+}
+
+} // anonymous namespace
+
+//static
+std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
+SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
+        mixxx::FileAccess trackFileAccess,
+        mixxx::TrackMetadata* pTrackMetadata,
+        QImage* pCoverImage) {
+    if (!trackFileAccess.info().checkFileExists()) {
+        // Silently ignore missing files to avoid spaming the log:
+        // https://bugs.launchpad.net/mixxx/+bug/1875237
+        return importTrackMetadataAndCoverImageUnavailable();
+    }
+    TrackPointer pTrack;
+    // Lock the global track cache while accessing the file to ensure
+    // that no metadata is written. Since locking individual files
+    // is not possible the whole cache has to be locked.
+    GlobalTrackCacheLocker locker;
+    pTrack = locker.lookupTrackByRef(TrackRef::fromFileInfo(trackFileAccess.info()));
+    if (pTrack) {
+        // We can safely unlock the cache if the track object is already cached.
+        locker.unlockCache();
+    } else {
+        // If the track object is not cached we need to keep the cache
+        // locked and create a temporary track object instead.
+        pTrack = Track::newTemporary(std::move(trackFileAccess));
+    }
+    return SoundSourceProxy(pTrack).importTrackMetadataAndCoverImage(
+            pTrackMetadata,
+            pCoverImage);
+}
+
+std::pair<mixxx::MetadataSource::ImportResult, QDateTime>
+SoundSourceProxy::importTrackMetadataAndCoverImage(
+        mixxx::TrackMetadata* pTrackMetadata,
+        QImage* pCoverImage) const {
+    if (!m_pSoundSource) {
+        // The file doesn't seem to be readable or the file format
+        // is not supported.
+        return importTrackMetadataAndCoverImageUnavailable();
+    }
+    return m_pSoundSource->importTrackMetadataAndCoverImage(
+            pTrackMetadata,
+            pCoverImage);
 }
 
 void SoundSourceProxy::updateTrackFromSource(
@@ -684,26 +707,7 @@ void SoundSourceProxy::updateTrackFromSource(
         DEBUG_ASSERT(coverInfo.source == CoverInfo::GUESSED);
         m_pTrack->setCoverInfo(coverInfo);
     }
-}
 
-mixxx::MetadataSource::ImportResult SoundSourceProxy::importTrackMetadata(mixxx::TrackMetadata* pTrackMetadata) const {
-    if (m_pSoundSource) {
-        return m_pSoundSource->importTrackMetadataAndCoverImage(pTrackMetadata, nullptr).first;
-    } else {
-        return mixxx::MetadataSource::ImportResult::Unavailable;
-    }
-}
-
-QImage SoundSourceProxy::importCoverImage() const {
-    if (m_pSoundSource) {
-        QImage coverImg;
-        if (m_pSoundSource->importTrackMetadataAndCoverImage(nullptr, &coverImg).first ==
-                mixxx::MetadataSource::ImportResult::Succeeded) {
-            return coverImg;
-        }
-    }
-    // Failed or unavailable
-    return QImage();
 }
 
 mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
