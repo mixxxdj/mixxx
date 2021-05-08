@@ -255,7 +255,8 @@ TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
     auto pTrack = Track::newTemporary(kTestDir, "TOAL_TPE2.mp3");
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, proxy.importTrackMetadata(&trackMetadata));
+    EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded,
+            proxy.importTrackMetadataAndCoverImage(&trackMetadata, nullptr).first);
     EXPECT_EQ("TITLE2", trackMetadata.getTrackInfo().getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbumInfo().getTitle());
     EXPECT_EQ("TITLE", trackMetadata.getAlbumInfo().getArtist());

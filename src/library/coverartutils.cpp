@@ -45,7 +45,12 @@ QString CoverArtUtils::supportedCoverArtExtensionsRegex() {
 //static
 QImage CoverArtUtils::extractEmbeddedCover(
         mixxx::FileAccess trackFileAccess) {
-    return SoundSourceProxy::importTemporaryCoverImage(std::move(trackFileAccess));
+    QImage image;
+    SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
+            std::move(trackFileAccess),
+            nullptr,
+            &image);
+    return image;
 }
 
 //static
