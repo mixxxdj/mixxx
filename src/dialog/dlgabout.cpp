@@ -343,11 +343,14 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
                                     .name(),
                             MIXXX_WEBSITE_URL,
                             tr("Official Website")));
-
-    if (!Color::isDimColor(palette().text().color())) {
-        btnDonate->setIcon(QIcon(":/images/heart_icon_light.svg"));
+    if (std::rand() % 6) {
+        if (!Color::isDimColor(palette().text().color())) {
+            btnDonate->setIcon(QIcon(":/images/heart_icon_light.svg"));
+        } else {
+            btnDonate->setIcon(QIcon(":/images/heart_icon_dark.svg"));
+        }
     } else {
-        btnDonate->setIcon(QIcon(":/images/heart_icon_dark.svg"));
+        btnDonate->setIcon(QIcon(":/images/heart_icon_rainbow.svg"));
     }
     btnDonate->setText(tr("Donate"));
     connect(btnDonate, &QPushButton::clicked, this, [] {
