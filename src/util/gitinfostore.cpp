@@ -5,23 +5,23 @@
 
 //static
 const char* GitInfoStore::branch() {
-	return GIT_BRANCH;
+    return GIT_BRANCH;
 };
 
 //static
 const char* GitInfoStore::describe() {
-	return GIT_DESCRIBE;
+    return GIT_DESCRIBE;
 };
 
 //static
 const char* GitInfoStore::date() {
-	return GIT_COMMIT_DATE;       
+    return GIT_COMMIT_DATE;
 };
 
 //static
 int GitInfoStore::commitCount() {
 #ifdef GIT_COMMIT_COUNT
-	return GIT_COMMIT_COUNT;
+    return GIT_COMMIT_COUNT;
 #else
     return 0;
 #endif
@@ -30,7 +30,7 @@ int GitInfoStore::commitCount() {
 //static
 bool GitInfoStore::dirty() {
 #ifdef GIT_DIRTY
-	return true;
+    return true;
 #else 
     return false;	
 #endif

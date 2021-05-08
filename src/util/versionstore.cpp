@@ -28,8 +28,8 @@
 #include <taglib/taglib.h>
 #include <vorbis/codec.h>
 
-#include "version.h"
 #include "util/gitinfostore.h"
+#include "version.h"
 
 namespace {
 
