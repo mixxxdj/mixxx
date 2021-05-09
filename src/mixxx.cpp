@@ -109,6 +109,8 @@ MixxxMainWindow::MixxxMainWindow(
     m_pCoreServices->initializeKeyboard();
     // These depend on the settings
     createMenuBar();
+    m_pMenuBar->hide();
+
     initializeWindow();
 
     // Show launch image immediately so the user knows Mixxx is starting
@@ -1042,6 +1044,7 @@ bool MixxxMainWindow::loadConfiguredSkin() {
         initializationProgressUpdate(100, "");
     }
     emit skinLoaded();
+    m_pMenuBar->show();
     return m_pCentralWidget != nullptr;
 }
 
