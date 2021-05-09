@@ -31,7 +31,7 @@ int GitInfoStore::commitCount() {
 bool GitInfoStore::dirty() {
 #ifdef GIT_DIRTY
     return true;
-#else 
-    return false;	
+#else
+    return false;
 #endif
 };
