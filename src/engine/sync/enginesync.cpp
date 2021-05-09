@@ -488,7 +488,9 @@ bool EngineSync::otherSyncedPlaying(const QString& group) {
             }
             continue;
         }
-        if (theSyncable->isPlaying() && theSyncable->isAudible() && isSynchonized) {
+        // We normally check for isAudible, but in this case we want to be less
+        // strict.
+        if (theSyncable->isPlaying() && isSynchonized) {
             othersInSync = true;
         }
     }

@@ -468,7 +468,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
 
     // The master sync should now be deck 1.
     EXPECT_TRUE(isSoftMaster(m_sGroup1));
-    EXPECT_DOUBLE_EQ(100.0,
+    EXPECT_DOUBLE_EQ(130.0,
             ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 
     // Set channel 2 to be enabled.
@@ -481,7 +481,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     EXPECT_TRUE(isFollower(m_sGroup2));
 
     // The rate should not have changed -- deck 1 still matches deck 2.
-    EXPECT_DOUBLE_EQ(getRateSliderValue(1.0),
+    EXPECT_DOUBLE_EQ(getRateSliderValue(1.3),
             ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
 
     // Reset channel 2 rate, set channel 2 to play, and process a buffer.
@@ -1020,6 +1020,7 @@ TEST_F(EngineSyncTest, LoadTrackResetTempoOption) {
     EXPECT_DOUBLE_EQ(
             140.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
     EXPECT_DOUBLE_EQ(140.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_TRUE(isSoftMaster(m_sGroup1));
 
     // If sync is on two decks and we load a track while one is playing,
     // that should not change the playing deck.
@@ -1642,10 +1643,10 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
 
-    EXPECT_EQ(0.5,
+    EXPECT_EQ(1.0,
             m_pChannel1->getEngineBuffer()
                     ->m_pSyncControl->m_masterBpmAdjustFactor);
-    EXPECT_EQ(1.0,
+    EXPECT_EQ(2.0,
             m_pChannel2->getEngineBuffer()
                     ->m_pSyncControl->m_masterBpmAdjustFactor);
     EXPECT_DOUBLE_EQ(
@@ -1999,12 +2000,12 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
 
     ProcessBuffer();
 
-    // we expect that Deck 1 distance has not changed and the internal clock has continued
-    // with the same rate (should be about double).
+    // we expect that Deck 1 distance has not changed and the internal clock follows it exactly.
+    EXPECT_TRUE(isSoftMaster(m_sGroup1));
     EXPECT_NEAR(0.019349962,
             ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
             kMaxFloatingPointErrorLowPrecision);
-    EXPECT_NEAR(0.038699924,
+    EXPECT_NEAR(0.019349962,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
             kMaxFloatingPointErrorLowPrecision);
 
@@ -2655,7 +2656,7 @@ TEST_F(EngineSyncTest, ChangeBeatGrid) {
     EXPECT_DOUBLE_EQ(75.0, ControlObject::get(ConfigKey(m_sInternalClockGroup, "bpm")));
 }
 
-TEST_F(EngineSyncTest, BeatMapQantizePlay) {
+TEST_F(EngineSyncTest, BeatMapQuantizePlay) {
     // This test demonstates https://bugs.launchpad.net/mixxx/+bug/1874918
     mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 120, 0.0);
     m_pTrack1->trySetBeats(pBeats1);
@@ -2733,12 +2734,12 @@ TEST_F(EngineSyncTest, BpmAdjustFactor) {
 }
 
 TEST_F(EngineSyncTest, ImplicitMasterToInternalClock) {
-    m_pMixerDeck1->loadFakeTrack(false, 40.0);
-    m_pMixerDeck2->loadFakeTrack(false, 150.0);
+    m_pMixerDeck1->loadFakeTrack(false, 100.0);
+    m_pMixerDeck2->loadFakeTrack(false, 125.0);
     ProcessBuffer();
 
-    EXPECT_DOUBLE_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_DOUBLE_EQ(150.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(100.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(125.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
 
     // During cue-ing volume is 0.0
     ControlObject::set(ConfigKey(m_sGroup1, "volume"), 0.0);
@@ -2751,19 +2752,25 @@ TEST_F(EngineSyncTest, ImplicitMasterToInternalClock) {
     ProcessBuffer();
 
     // group 2 should be synced to the first playing deck and becomes master
-    EXPECT_DOUBLE_EQ(75.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
-    EXPECT_DOUBLE_EQ(150.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    EXPECT_DOUBLE_EQ(125.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(125.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     ASSERT_FALSE(isSoftMaster(m_sGroup1));
     ASSERT_TRUE(isSoftMaster(m_sGroup2));
     ASSERT_FALSE(isSoftMaster(m_sInternalClockGroup));
     ProcessBuffer();
 
-    // Drop Track
+    // Drop Track, no change
     ControlObject::set(ConfigKey(m_sGroup1, "volume"), 1.0);
+    ASSERT_FALSE(isSoftMaster(m_sGroup1));
+    ASSERT_TRUE(isSoftMaster(m_sGroup2));
+    ASSERT_FALSE(isSoftMaster(m_sInternalClockGroup));
+
+    // Other track stops, master switches to deck 1
+    ControlObject::set(ConfigKey(m_sGroup2, "volume"), 0.0);
     ProcessBuffer();
     ProcessBuffer();
 
-    ASSERT_FALSE(isSoftMaster(m_sGroup1));
+    ASSERT_TRUE(isSoftMaster(m_sGroup1));
     ASSERT_FALSE(isSoftMaster(m_sGroup2));
-    ASSERT_TRUE(isSoftMaster(m_sInternalClockGroup));
+    ASSERT_FALSE(isSoftMaster(m_sInternalClockGroup));
 }

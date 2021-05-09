@@ -51,7 +51,8 @@ class EngineSync : public SyncableListener {
     Syncable* pickNonSyncSyncTarget(EngineChannel* pDontPick) const;
 
     /// Used to test whether changing the rate of a Syncable would change the rate
-    /// of other Syncables that are playing
+    /// of other Syncables that are playing. Returns true even if the other decks
+    /// are not audible.
     bool otherSyncedPlaying(const QString& group);
 
     void addSyncableDeck(Syncable* pSyncable);
