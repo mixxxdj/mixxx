@@ -211,6 +211,7 @@ MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
         m_pSettingsManager->settings(), pApp, args.getLocale());
 
     createMenuBar();
+    m_pMenuBar->hide();
 
     initializeWindow();
 
@@ -580,6 +581,7 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     }
     emit skinLoaded();
 
+    m_pMenuBar->show();
 
     // Wait until all other ControlObjects are set up before initializing
     // controllers
