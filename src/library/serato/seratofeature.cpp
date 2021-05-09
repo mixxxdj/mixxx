@@ -884,7 +884,8 @@ SeratoFeature::SeratoFeature(
     m_trackSource = QSharedPointer<BaseTrackCache>(
             new BaseTrackCache(m_pTrackCollection, kSeratoLibraryTable, LIBRARYTABLE_ID, columns, false));
     m_trackSource->setSearchColumns(searchColumns);
-    m_pSeratoPlaylistModel = new SeratoPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
+    m_pSeratoPlaylistModel = new SeratoPlaylistModel(
+            this, pLibrary->trackCollectionManager(), m_trackSource);
 
     m_title = tr("Serato");
 
@@ -948,7 +949,8 @@ void SeratoFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 BaseSqlTableModel* SeratoFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    SeratoPlaylistModel* model = new SeratoPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
+    SeratoPlaylistModel* model = new SeratoPlaylistModel(
+            this, m_pLibrary->trackCollectionManager(), m_trackSource);
     model->setPlaylist(playlist);
     return model;
 }

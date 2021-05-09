@@ -64,7 +64,7 @@ class Library: public QObject {
         return m_pDbConnectionPool;
     }
 
-    TrackCollectionManager* trackCollections() const;
+    TrackCollectionManager* trackCollectionManager() const;
 
     void bindSearchboxWidget(WSearchLineEdit* pSearchboxWidget);
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);

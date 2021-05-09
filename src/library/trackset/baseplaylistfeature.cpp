@@ -28,13 +28,14 @@ namespace {
 constexpr QChar kUnsafeFilenameReplacement = '-';
 }
 
-BasePlaylistFeature::BasePlaylistFeature(
-        Library* pLibrary,
+BasePlaylistFeature::BasePlaylistFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
         PlaylistTableModel* pModel,
         const QString& rootViewName)
         : BaseTrackSetFeature(pLibrary, pConfig, rootViewName),
-          m_playlistDao(pLibrary->trackCollections()->internalCollection()->getPlaylistDAO()),
+          m_playlistDao(pLibrary->trackCollectionManager()
+                                ->internalCollection()
+                                ->getPlaylistDAO()),
           m_pPlaylistTableModel(pModel) {
     pModel->setParent(this);
 
@@ -557,7 +558,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
     // This will only export songs that we think exist on default
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
             new PlaylistTableModel(this,
-                    m_pLibrary->trackCollections(),
+                    m_pLibrary->trackCollectionManager(),
                     "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
@@ -599,7 +600,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
 void BasePlaylistFeature::slotExportTrackFiles() {
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
             new PlaylistTableModel(this,
-                    m_pLibrary->trackCollections(),
+                    m_pLibrary->trackCollectionManager(),
                     "mixxx.db.model.playlist_export"));
 
     pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());

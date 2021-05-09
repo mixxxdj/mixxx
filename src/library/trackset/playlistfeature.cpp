@@ -40,7 +40,7 @@ PlaylistFeature::PlaylistFeature(Library* pLibrary, UserSettingsPointer pConfig)
         : BasePlaylistFeature(pLibrary,
                   pConfig,
                   new PlaylistTableModel(nullptr,
-                          pLibrary->trackCollections(),
+                          pLibrary->trackCollectionManager(),
                           "mixxx.db.model.playlist"),
                   QStringLiteral("PLAYLISTHOME")),
           m_icon(QStringLiteral(":/images/library/ic_library_playlist.svg")) {
@@ -110,7 +110,7 @@ bool PlaylistFeature::dropAcceptChild(
     // playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pLibrary->trackCollections()
+    QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()
                                       ->resolveTrackIdsFromUrls(urls, !pSource);
     if (!trackIds.size()) {
         return false;
@@ -131,7 +131,7 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, const QUrl& 
 
 QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
     QSqlDatabase database =
-            m_pLibrary->trackCollections()->internalCollection()->database();
+            m_pLibrary->trackCollectionManager()->internalCollection()->database();
 
     QList<BasePlaylistFeature::IdAndLabel> playlistLabels;
     QString queryString = QStringLiteral(
@@ -200,7 +200,7 @@ QList<BasePlaylistFeature::IdAndLabel> PlaylistFeature::createPlaylistLabels() {
 QString PlaylistFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
     QSqlDatabase database =
-            m_pLibrary->trackCollections()->internalCollection()->database();
+            m_pLibrary->trackCollectionManager()->internalCollection()->database();
     QSqlTableModel playlistTableModel(this, database);
     playlistTableModel.setTable("PlaylistsCountsDurations");
     QString filter = "id=" + QString::number(playlistId);

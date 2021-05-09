@@ -32,7 +32,7 @@ SetlogFeature::SetlogFeature(
                   pConfig,
                   new PlaylistTableModel(
                           nullptr,
-                          pLibrary->trackCollections(),
+                          pLibrary->trackCollectionManager(),
                           "mixxx.db.model.setlog",
                           /*keep deleted tracks*/ true),
                   QStringLiteral("SETLOGHOME")),
@@ -40,7 +40,9 @@ SetlogFeature::SetlogFeature(
           m_libraryWidget(nullptr),
           m_icon(QStringLiteral(":/images/library/ic_library_history.svg")) {
     // clear old empty entries
-    ScopedTransaction transaction(pLibrary->trackCollections()->internalCollection()->database());
+    ScopedTransaction transaction(pLibrary->trackCollectionManager()
+                                          ->internalCollection()
+                                          ->database());
     m_playlistDao.deleteAllPlaylistsWithFewerTracks(PlaylistDAO::HiddenType::PLHT_SET_LOG, 1);
     transaction.commit();
 
@@ -154,7 +156,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex
 QModelIndex SetlogFeature::constructChildModel(int selectedId) {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this,
-            m_pLibrary->trackCollections()->internalCollection()->database());
+            m_pLibrary->trackCollectionManager()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
     playlistTableModel.setFilter("hidden=" + QString::number(PlaylistDAO::PLHT_SET_LOG));
     playlistTableModel.setSort(
@@ -230,7 +232,7 @@ QModelIndex SetlogFeature::constructChildModel(int selectedId) {
 QString SetlogFeature::fetchPlaylistLabel(int playlistId) {
     // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this,
-            m_pLibrary->trackCollections()->internalCollection()->database());
+            m_pLibrary->trackCollectionManager()->internalCollection()->database());
     playlistTableModel.setTable("Playlists");
     QString filter = "id=" + QString::number(playlistId);
     playlistTableModel.setFilter(filter);

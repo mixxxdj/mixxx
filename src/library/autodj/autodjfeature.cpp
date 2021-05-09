@@ -49,16 +49,19 @@ AutoDJFeature::AutoDJFeature(Library* pLibrary,
         UserSettingsPointer pConfig,
         PlayerManagerInterface* pPlayerManager)
         : LibraryFeature(pLibrary, pConfig),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
           m_playlistDao(m_pTrackCollection->getPlaylistDAO()),
           m_iAutoDJPlaylistId(findOrCrateAutoDjPlaylistId(m_playlistDao)),
           m_pAutoDJProcessor(nullptr),
           m_pAutoDJView(nullptr),
-          m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollections(), m_pConfig),
+          m_autoDjCratesDao(m_iAutoDJPlaylistId, pLibrary->trackCollectionManager(), m_pConfig),
           m_icon(":/images/library/ic_library_autodj.svg") {
     qRegisterMetaType<AutoDJProcessor::AutoDJState>("AutoDJState");
-    m_pAutoDJProcessor = new AutoDJProcessor(
-            this, m_pConfig, pPlayerManager, pLibrary->trackCollections(), m_iAutoDJPlaylistId);
+    m_pAutoDJProcessor = new AutoDJProcessor(this,
+            m_pConfig,
+            pPlayerManager,
+            pLibrary->trackCollectionManager(),
+            m_iAutoDJPlaylistId);
     connect(m_pAutoDJProcessor,
             &AutoDJProcessor::loadTrackToPlayer,
             this,
@@ -168,7 +171,7 @@ bool AutoDJFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     // Auto DJ playlist.
     // pSource != nullptr it is a drop from inside Mixxx and indicates all
     // tracks already in the DB
-    QList<TrackId> trackIds = m_pLibrary->trackCollections()->resolveTrackIdsFromUrls(urls,
+    QList<TrackId> trackIds = m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(urls,
             !pSource);
     if (trackIds.isEmpty()) {
         return false;
@@ -249,7 +252,7 @@ void AutoDJFeature::slotAddRandomTrack() {
             }
 
             if (randomTrackId.isValid()) {
-                pRandomTrack = m_pLibrary->trackCollections()->getTrackById(randomTrackId);
+                pRandomTrack = m_pLibrary->trackCollectionManager()->getTrackById(randomTrackId);
                 VERIFY_OR_DEBUG_ASSERT(pRandomTrack) {
                     qWarning() << "Track does not exist:"
                             << randomTrackId;

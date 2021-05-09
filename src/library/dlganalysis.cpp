@@ -50,7 +50,8 @@ DlgAnalysis::DlgAnalysis(WLibrary* parent,
         box->insertWidget(1, m_pAnalysisLibraryTableView);
     }
 
-    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(this, pLibrary->trackCollections());
+    m_pAnalysisLibraryTableModel = new AnalysisLibraryTableModel(
+            this, pLibrary->trackCollectionManager());
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded,

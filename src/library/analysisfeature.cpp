@@ -227,7 +227,7 @@ void AnalysisFeature::onTrackAnalysisSchedulerFinished() {
 
 bool AnalysisFeature::dropAccept(const QList<QUrl>& urls, QObject* pSource) {
     const QList<TrackId> trackIds =
-            m_pLibrary->trackCollections()->resolveTrackIdsFromUrls(
+            m_pLibrary->trackCollectionManager()->resolveTrackIdsFromUrls(
                     urls,
                     !pSource);
     analyzeTracks(trackIds);

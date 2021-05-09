@@ -257,7 +257,7 @@ Library::~Library() {
     // Empty but required due to forward declarations in header file!
 }
 
-TrackCollectionManager* Library::trackCollections() const {
+TrackCollectionManager* Library::trackCollectionManager() const {
     // Cannot be implemented inline due to forward declarations
     return m_pTrackCollectionManager;
 }
