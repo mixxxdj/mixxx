@@ -12,6 +12,7 @@
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 
+#include "config.h"
 #include "defs_urls.h"
 #include "sources/soundsourceproxy.h"
 
@@ -29,6 +30,7 @@ CmdlineArgs::CmdlineArgs()
 #ifdef MIXXX_SETTINGS_PATH
           m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH)) {
 #else
+#error "We are not ready to switch to XDG folders under Linux"
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
           // to QDir::filePath elsewhere in the code. This is candidate for removal.
           m_settingsPath(
