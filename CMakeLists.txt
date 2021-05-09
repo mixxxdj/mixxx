@@ -1690,7 +1690,7 @@ if(ENGINEPRIME)
     # An existing installation of djinterop is available.
     message(STATUS "Using existing system installation of libdjinterop")
     target_include_directories(mixxx-lib PUBLIC ${DjInterop_INCLUDE_DIRS})
-    target_link_libraries(mixxx-lib PUBLIC DjInterop::DjInterop)
+    target_link_libraries(mixxx-lib PRIVATE DjInterop::DjInterop)
   else()
     # Fetch djinterop sources from GitHub and build them statically.
 
@@ -1740,7 +1740,7 @@ if(ENGINEPRIME)
     set(DJINTEROP_LIBRARY_PATH "${DJINTEROP_INSTALL_DIR}/${DJINTEROP_LIBRARY}")
     set_target_properties(mixxx-libdjinterop PROPERTIES IMPORTED_LOCATION "${DJINTEROP_LIBRARY_PATH}")
     target_include_directories(mixxx-lib PUBLIC ${DJINTEROP_INCLUDE_DIR})
-    target_link_libraries(mixxx-lib PUBLIC mixxx-libdjinterop)
+    target_link_libraries(mixxx-lib PRIVATE mixxx-libdjinterop)
 
     # Since we have built libdjinterop from sources as a static library, its
     # transitive dependencies are not automatically recognised.  libdjinterop
@@ -1748,7 +1748,7 @@ if(ENGINEPRIME)
     # to depend on system SQLite, Mixxx will already have the dependency.
     # But it does not have zlib, so we explicitly add that here.
     find_package(ZLIB 1.2.8 REQUIRED)
-    target_link_libraries(mixxx-lib PUBLIC ${ZLIB_LIBRARIES})
+    target_link_libraries(mixxx-lib PRIVATE ${ZLIB_LIBRARIES})
   endif()
 
   # Include conditional sources only required with Engine Prime export support.
