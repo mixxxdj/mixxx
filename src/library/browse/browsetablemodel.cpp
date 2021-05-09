@@ -5,7 +5,6 @@
 #include <QStringList>
 #include <QTableView>
 #include <QUrl>
-#include <QtConcurrentRun>
 #include <QtSql>
 
 #include "control/controlobject.h"
