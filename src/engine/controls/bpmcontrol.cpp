@@ -28,7 +28,7 @@ constexpr double kBpmRangeStep = 1.0;
 constexpr double kBpmRangeSmallStep = 0.1;
 
 constexpr double kBpmAdjustMin = kBpmRangeMin;
-constexpr double kBpmAdjustStep = 1 / 48.0;
+constexpr double kBpmAdjustStep = 0.01;
 constexpr double kBpmTabRounding = 1 / 12.0;
 
 // Maximum allowed interval between beats (calculated from kBpmTapMin).
