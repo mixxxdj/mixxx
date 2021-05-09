@@ -315,7 +315,7 @@ Syncable* EngineSync::findBpmMatchTarget(Syncable* requester) {
         // this one as a fallback.
         // Exception: if the requester is playing, we don't want to match it
         // against a stopped deck.
-        if (!requester->isPlaying()) {
+        if (!(requester->isPlaying() && requester->isAudible())) {
             if (!pStoppedSyncTarget && pOtherSyncable->isSynchronized()) {
                 pStoppedSyncTarget = pOtherSyncable;
             } else if (!pStoppedNonSyncTarget) {
@@ -488,7 +488,7 @@ bool EngineSync::otherSyncedPlaying(const QString& group) {
             }
             continue;
         }
-        if (theSyncable->isPlaying() && isSynchonized) {
+        if (theSyncable->isPlaying() && theSyncable->isAudible() && isSynchonized) {
             othersInSync = true;
         }
     }
@@ -620,7 +620,8 @@ bool EngineSync::noPlayingFollowers() const {
             continue;
         }
 
-        if (pSyncable->isPlaying() && isFollower(pSyncable->getSyncMode())) {
+        if (pSyncable->isPlaying() && pSyncable->isAudible() &&
+                isFollower(pSyncable->getSyncMode())) {
             return false;
         }
     }
