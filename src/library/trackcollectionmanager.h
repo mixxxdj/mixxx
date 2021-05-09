@@ -47,6 +47,16 @@ class TrackCollectionManager: public QObject,
         return m_externalCollections;
     }
 
+    TrackPointer getTrackById(
+            TrackId trackId) const;
+    TrackPointer getTrackByRef(
+            const TrackRef& trackRef) const;
+    QList<TrackId> resolveTrackIdsFromUrls(
+            const QList<QUrl>& urls,
+            bool addMissing) const;
+    QList<TrackId> resolveTrackIdsFromLocations(
+            const QList<QString>& locations) const;
+
     bool hideTracks(const QList<TrackId>& trackIds) const;
     bool unhideTracks(const QList<TrackId>& trackIds) const;
     void hideAllTracks(const QDir& rootDir) const;

@@ -21,7 +21,8 @@ BansheeFeature::BansheeFeature(Library* pLibrary, UserSettingsPointer pConfig)
           m_cancelImport(false),
           m_icon(":/images/library/ic_library_banshee.svg") {
     Q_UNUSED(pConfig);
-    m_pBansheePlaylistModel = new BansheePlaylistModel(this, m_pLibrary->trackCollections(), &m_connection);
+    m_pBansheePlaylistModel = new BansheePlaylistModel(
+            this, m_pLibrary->trackCollectionManager(), &m_connection);
     m_isActivated = false;
     m_title = tr("Banshee");
 }
@@ -140,7 +141,10 @@ void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<TrackId>* trackIds,
         int playlistID = item->getData().toInt();
         qDebug() << "BansheeFeature::appendTrackIdsFromRightClickIndex " << *pPlaylist << " " << playlistID;
         if (playlistID > 0) {
-            BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this, m_pLibrary->trackCollections(), &m_connection);
+            BansheePlaylistModel* pPlaylistModelToAdd =
+                    new BansheePlaylistModel(this,
+                            m_pLibrary->trackCollectionManager(),
+                            &m_connection);
             pPlaylistModelToAdd->setTableModel(playlistID);
             pPlaylistModelToAdd->select();
 

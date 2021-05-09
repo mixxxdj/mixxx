@@ -851,12 +851,12 @@ void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
                                        ->internalCollection()
                                        ->getPlaylistDAO();
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pLibrary->trackCollections()->unhideTracks(trackIds);
+    m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 

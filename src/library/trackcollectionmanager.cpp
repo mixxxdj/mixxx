@@ -521,3 +521,29 @@ void TrackCollectionManager::afterTracksRelocated(
         externalTrackCollection->relocateTracks(relocatedTracks);
     }
 }
+
+TrackPointer TrackCollectionManager::getTrackById(
+        TrackId trackId) const {
+    return internalCollection()->getTrackById(
+            trackId);
+}
+
+TrackPointer TrackCollectionManager::getTrackByRef(
+        const TrackRef& trackRef) const {
+    return internalCollection()->getTrackByRef(
+            trackRef);
+}
+
+QList<TrackId> TrackCollectionManager::resolveTrackIdsFromUrls(
+        const QList<QUrl>& urls,
+        bool addMissing) const {
+    return internalCollection()->resolveTrackIdsFromUrls(
+            urls,
+            addMissing);
+}
+
+QList<TrackId> TrackCollectionManager::resolveTrackIdsFromLocations(
+        const QList<QString>& locations) const {
+    return internalCollection()->resolveTrackIdsFromLocations(
+            locations);
+}
