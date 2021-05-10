@@ -61,20 +61,11 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     recentContributors
             << "Tuukka Pasanen"
             << "Nino MP"
-            << "Nico Schl&ouml;mer"
             << "Ferran Pujol Camins"
-            << "Joan Marc&egrave; i Igual"
             << "Josep Maria Antol&iacute;n Segura"
             << "Daniel Poelzleithner"
             << "St&eacute;phane Lepin"
-            << "Stefan Weber"
-            << "Kshitij Gupta"
-            << "Matthew Nicholson"
-            << "Jamie Gifford"
             << "luzpaz"
-            << "Sebastian Reu&szlig;e"
-            << "Pawe&#322; Goli&#324;ski"
-            << "beenisss"
             << "Bernd Binder"
             << "Pradyuman"
             << "Nik Martin"
@@ -319,7 +310,16 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Johan Lasperas"
             << "Olaf Hering"
             << "Eduardo Acero"
-            << "Thomas Jarosch";
+            << "Thomas Jarosch"
+            << "Nico Schl&ouml;mer"
+            << "Joan Marc&egrave; i Igual"
+            << "Stefan Weber"
+            << "Kshitij Gupta"
+            << "Matthew Nicholson"
+            << "Jamie Gifford"
+            << "Sebastian Reu&szlig;e"
+            << "Pawe&#322; Goli&#324;ski"
+            << "beenisss";
 
     QString sectionTemplate = QString(
         "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");
