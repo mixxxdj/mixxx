@@ -1172,64 +1172,82 @@ void MixxxMainWindow::createMenuBar() {
 }
 
 void MixxxMainWindow::connectMenuBar() {
+    // This function might be invoked multiple times on startup
+    // so all connections must be unique!
+
     ScopedTimer t("MixxxMainWindow::connectMenuBar");
     connect(this,
             &MixxxMainWindow::skinLoaded,
             m_pMenuBar,
-            &WMainMenuBar::onNewSkinLoaded);
+            &WMainMenuBar::onNewSkinLoaded,
+            Qt::UniqueConnection);
 
     // Misc
-    connect(m_pMenuBar, &WMainMenuBar::quit, this, &MixxxMainWindow::close);
+    connect(m_pMenuBar,
+            &WMainMenuBar::quit,
+            this,
+            &MixxxMainWindow::close,
+            Qt::UniqueConnection);
     connect(m_pMenuBar,
             &WMainMenuBar::showPreferences,
             this,
-            &MixxxMainWindow::slotOptionsPreferences);
+            &MixxxMainWindow::slotOptionsPreferences,
+            Qt::UniqueConnection);
     connect(m_pMenuBar,
             &WMainMenuBar::loadTrackToDeck,
             this,
-            &MixxxMainWindow::slotFileLoadSongPlayer);
+            &MixxxMainWindow::slotFileLoadSongPlayer,
+            Qt::UniqueConnection);
 
     // Fullscreen
     connect(m_pMenuBar,
             &WMainMenuBar::toggleFullScreen,
             this,
-            &MixxxMainWindow::slotViewFullScreen);
+            &MixxxMainWindow::slotViewFullScreen,
+            Qt::UniqueConnection);
     connect(this,
             &MixxxMainWindow::fullScreenChanged,
             m_pMenuBar,
-            &WMainMenuBar::onFullScreenStateChange);
+            &WMainMenuBar::onFullScreenStateChange,
+            Qt::UniqueConnection);
 
     // Keyboard shortcuts
     connect(m_pMenuBar,
             &WMainMenuBar::toggleKeyboardShortcuts,
             this,
-            &MixxxMainWindow::slotOptionsKeyboard);
+            &MixxxMainWindow::slotOptionsKeyboard,
+            Qt::UniqueConnection);
 
     // Help
     connect(m_pMenuBar,
             &WMainMenuBar::showAbout,
             this,
-            &MixxxMainWindow::slotHelpAbout);
+            &MixxxMainWindow::slotHelpAbout,
+            Qt::UniqueConnection);
 
     // Developer
     connect(m_pMenuBar,
             &WMainMenuBar::reloadSkin,
             this,
-            &MixxxMainWindow::rebootMixxxView);
+            &MixxxMainWindow::rebootMixxxView,
+            Qt::UniqueConnection);
     connect(m_pMenuBar,
             &WMainMenuBar::toggleDeveloperTools,
             this,
-            &MixxxMainWindow::slotDeveloperTools);
+            &MixxxMainWindow::slotDeveloperTools,
+            Qt::UniqueConnection);
 
     if (m_pRecordingManager) {
         connect(m_pRecordingManager,
                 &RecordingManager::isRecording,
                 m_pMenuBar,
-                &WMainMenuBar::onRecordingStateChange);
+                &WMainMenuBar::onRecordingStateChange,
+                Qt::UniqueConnection);
         connect(m_pMenuBar,
                 &WMainMenuBar::toggleRecording,
                 m_pRecordingManager,
-                &RecordingManager::slotSetRecording);
+                &RecordingManager::slotSetRecording,
+                Qt::UniqueConnection);
         m_pMenuBar->onRecordingStateChange(m_pRecordingManager->isRecordingActive());
     }
 
@@ -1238,11 +1256,13 @@ void MixxxMainWindow::connectMenuBar() {
         connect(m_pBroadcastManager,
                 &BroadcastManager::broadcastEnabled,
                 m_pMenuBar,
-                &WMainMenuBar::onBroadcastingStateChange);
+                &WMainMenuBar::onBroadcastingStateChange,
+                Qt::UniqueConnection);
         connect(m_pMenuBar,
                 &WMainMenuBar::toggleBroadcasting,
                 m_pBroadcastManager,
-                &BroadcastManager::setEnabled);
+                &BroadcastManager::setEnabled,
+                Qt::UniqueConnection);
         m_pMenuBar->onBroadcastingStateChange(m_pBroadcastManager->isEnabled());
     }
 #endif
@@ -1252,11 +1272,13 @@ void MixxxMainWindow::connectMenuBar() {
         connect(m_pMenuBar,
                 &WMainMenuBar::toggleVinylControl,
                 m_pVCManager,
-                &VinylControlManager::toggleVinylControl);
+                &VinylControlManager::toggleVinylControl,
+                Qt::UniqueConnection);
         connect(m_pVCManager,
                 &VinylControlManager::vinylControlDeckEnabled,
                 m_pMenuBar,
-                &WMainMenuBar::onVinylControlDeckEnabledStateChange);
+                &WMainMenuBar::onVinylControlDeckEnabledStateChange,
+                Qt::UniqueConnection);
     }
 #endif
 
@@ -1264,7 +1286,8 @@ void MixxxMainWindow::connectMenuBar() {
         connect(m_pPlayerManager,
                 &PlayerManager::numberOfDecksChanged,
                 m_pMenuBar,
-                &WMainMenuBar::onNumberOfDecksChanged);
+                &WMainMenuBar::onNumberOfDecksChanged,
+                Qt::UniqueConnection);
         m_pMenuBar->onNumberOfDecksChanged(m_pPlayerManager->numberOfDecks());
     }
 
@@ -1272,26 +1295,31 @@ void MixxxMainWindow::connectMenuBar() {
         connect(m_pMenuBar,
                 &WMainMenuBar::rescanLibrary,
                 m_pTrackCollectionManager,
-                &TrackCollectionManager::startLibraryScan);
+                &TrackCollectionManager::startLibraryScan,
+                Qt::UniqueConnection);
         connect(m_pTrackCollectionManager,
                 &TrackCollectionManager::libraryScanStarted,
                 m_pMenuBar,
-                &WMainMenuBar::onLibraryScanStarted);
+                &WMainMenuBar::onLibraryScanStarted,
+                Qt::UniqueConnection);
         connect(m_pTrackCollectionManager,
                 &TrackCollectionManager::libraryScanFinished,
                 m_pMenuBar,
-                &WMainMenuBar::onLibraryScanFinished);
+                &WMainMenuBar::onLibraryScanFinished,
+                Qt::UniqueConnection);
     }
 
     if (m_pLibrary) {
         connect(m_pMenuBar,
                 &WMainMenuBar::createCrate,
                 m_pLibrary,
-                &Library::slotCreateCrate);
+                &Library::slotCreateCrate,
+                Qt::UniqueConnection);
         connect(m_pMenuBar,
                 &WMainMenuBar::createPlaylist,
                 m_pLibrary,
-                &Library::slotCreatePlaylist);
+                &Library::slotCreatePlaylist,
+                Qt::UniqueConnection);
     }
 }
 
