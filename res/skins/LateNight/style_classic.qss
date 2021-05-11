@@ -82,6 +82,15 @@ WLibrary,
     border-radius: 0px;
   }
 
+
+#BpmTapContainer:hover {
+  background-color: #151517;
+  border-radius: 1px;
+  }
+  #BpmTap[pressed="true"] {
+   border: 1px solid #7d350d;
+  }
+
 /* borders of embedded regions like deck buttons & Master mixer */
 #WaveformBox1,
 #WaveformBox2,
@@ -566,9 +575,6 @@ WLibrary {
 
 #RateContainer {
   padding: 4px 0px 0px 0px;
-  }
-  #RateContainerCompact {
-    padding: 0px 0px 0px 0px;
   }
 
   #RateText {

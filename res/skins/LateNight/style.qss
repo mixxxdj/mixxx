@@ -499,10 +499,13 @@ WSpinny { /*
 
 #RateContainer,
 #RateContainerCompact,
-#BpmContainer,
+#BpmTapContainer,
 #RateButtons
 #SyncBox {
   qproperty-layoutAlignment: 'AlignHCenter | AlignTop';
+}
+#BpmRateTapContainer {
+  margin: 1px;
 }
 
 #RateControls {

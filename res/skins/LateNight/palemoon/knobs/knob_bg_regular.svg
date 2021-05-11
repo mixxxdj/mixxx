@@ -1,48 +1,12 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
    xmlns:xlink="http://www.w3.org/1999/xlink"
    id="svg42"
    version="1.1"
    height="34"
    width="40">
-  <metadata
-     id="metadata46">
-    <rdf:RDF>
-      <cc:Work
-         rdf:about="">
-        <dc:format>image/svg+xml</dc:format>
-        <dc:type
-           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
-      </cc:Work>
-    </rdf:RDF>
-  </metadata>
   <defs
      id="defs12">
-    <linearGradient
-       gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(-0.0309358,-0.09353841,0.09280739,-0.03117947,-12.260041,64.912913)"
-       y2="483.05225"
-       y1="472.03"
-       x2="446.62161"
-       x1="256.73999"
-       id="c">
-      <stop
-         id="stop2"
-         offset="0"
-         stop-color="#1e1e1e"
-         style="stop-color:#050505;stop-opacity:1" />
-      <stop
-         id="stop4"
-         offset="1"
-         stop-color="#3d3d3d"
-         style="stop-color:#2f2f2f;stop-opacity:1" />
-    </linearGradient>
     <linearGradient
        gradientUnits="userSpaceOnUse"
        gradientTransform="rotate(254.03464 19.999759 18.998456)"
@@ -67,7 +31,7 @@
        x2="30.822329"
        y1="18.998186"
        x1="9.1772108"
-       id="linearGradient875"
+       id="d"
        xlink:href="#b" />
     <filter
        height="1.0960201"
@@ -174,5 +138,5 @@
      transform="matrix(1,0,0,1.0035472,0.09951893,-0.38973691)"
      d="M 9.1115125,22.795856 A 11.451207,11.541409 89.071998 1 1 30.888027,15.200519 11.451207,11.541409 89.071998 1 1 9.1115125,22.795856 Z"
      id="path36-3"
-     style="opacity:0.1;fill:url(#linearGradient875);fill-opacity:1;stroke-width:1.08289;filter:url(#filter885)" />
+     style="opacity:0.1;fill:url(#d);fill-opacity:1;stroke-width:1.08289;filter:url(#filter885)" />
 </svg>
