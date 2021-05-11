@@ -228,8 +228,6 @@ MixxxMainWindow::MixxxMainWindow(
 
     // Connect signals to the menubar. Should be done before emit newSkinLoaded.
     connectMenuBar();
-    // Refresh the Fullscreen checkbox for the case we went fullscreen earlier
-    emit fullScreenChanged(isFullScreen());
 
     QWidget* oldWidget = m_pCentralWidget;
 
@@ -665,6 +663,8 @@ void MixxxMainWindow::connectMenuBar() {
             &MixxxMainWindow::fullScreenChanged,
             m_pMenuBar,
             &WMainMenuBar::onFullScreenStateChange);
+    // Refresh the Fullscreen checkbox for the case we went fullscreen earlier
+    m_pMenuBar->onFullScreenStateChange(isFullScreen());
 
     // Keyboard shortcuts
     connect(m_pMenuBar,
