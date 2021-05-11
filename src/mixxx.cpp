@@ -133,6 +133,30 @@ MixxxMainWindow::MixxxMainWindow(
 
     m_pCoreServices->initialize(pApp);
 
+#ifdef __ENGINEPRIME__
+    // Initialise library exporter
+    // This has to be done before switching to fullscreen
+    m_pLibraryExporter = m_pCoreServices->getLibrary()->makeLibraryExporter(this);
+    connect(m_pCoreServices->getLibrary().get(),
+            &Library::exportLibrary,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExport);
+    connect(m_pCoreServices->getLibrary().get(),
+            &Library::exportCrate,
+            m_pLibraryExporter.get(),
+            &mixxx::LibraryExporter::slotRequestExportWithInitialCrate);
+#endif
+
+    // Turn on fullscreen mode
+    // if we were told to start in fullscreen mode on the command-line
+    // or if the user chose to always start in fullscreen mode.
+    // Remember to refresh the Fullscreen menu item after connectMenuBar()
+    bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
+            ConfigKey("[Config]", "StartInFullscreen"));
+    if (CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) {
+        slotViewFullScreen(true);
+    }
+
     initializationProgressUpdate(65, tr("skin"));
 
     installEventFilter(m_pCoreServices->getKeyboardEventFilter().get());
@@ -202,20 +226,10 @@ MixxxMainWindow::MixxxMainWindow(
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
 
-#ifdef __ENGINEPRIME__
-    // Initialise library exporter
-    m_pLibraryExporter = m_pCoreServices->getLibrary()->makeLibraryExporter(this);
-    connect(m_pCoreServices->getLibrary().get(),
-            &Library::exportLibrary,
-            m_pLibraryExporter.get(),
-            &mixxx::LibraryExporter::slotRequestExport);
-    connect(m_pCoreServices->getLibrary().get(),
-            &Library::exportCrate,
-            m_pLibraryExporter.get(),
-            &mixxx::LibraryExporter::slotRequestExportWithInitialCrate);
-#endif
-
+    // Connect signals to the menubar. Should be done before emit newSkinLoaded.
     connectMenuBar();
+    // Refresh the Fullscreen checkbox for the case we went fullscreen earlier
+    emit fullScreenChanged(isFullScreen());
 
     QWidget* oldWidget = m_pCentralWidget;
 
@@ -248,15 +262,6 @@ MixxxMainWindow::MixxxMainWindow(
     // This allows us to turn off tooltips.
     pApp->installEventFilter(this); // The eventfilter is located in this
                                     // Mixxx class as a callback.
-
-    // If we were told to start in fullscreen mode on the command-line or if
-    // user chose always starts in fullscreen mode, then turn on fullscreen
-    // mode.
-    bool fullscreenPref = m_pCoreServices->getSettings()->getValue<bool>(
-            ConfigKey("[Config]", "StartInFullscreen"));
-    if (CmdlineArgs::Instance().getStartInFullscreen() || fullscreenPref) {
-        slotViewFullScreen(true);
-    }
 
     // Try open player device If that fails, the preference panel is opened.
     bool retryClicked;
