@@ -252,6 +252,16 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     Sandbox::setPermissionsFilePath(QDir(pConfig->getSettingsPath()).filePath("sandbox.cfg"));
 
+    // Turn on fullscreen mode
+    // if we were told to start in fullscreen mode on the command-line
+    // or if the user chose to always start in fullscreen mode.
+    // Remember to refresh the Fullscreen menu item after connectMenuBar()
+    bool fullscreenPref = pConfig->getValue<bool>(
+            ConfigKey("[Config]", "StartInFullscreen"));
+    if (args.getStartInFullscreen() || fullscreenPref) {
+        showFullScreen();
+    }
+
     QString resourcePath = pConfig->getResourcePath();
 
     FontUtils::initializeFonts(resourcePath); // takes a long time
@@ -516,9 +526,10 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
 
     launchProgress(60);
 
-    // Connect signals to the menubar. Should be done before we go fullscreen
-    // and emit newSkinLoaded.
+    // Connect signals to the menubar. Should be done before emit newSkinLoaded.
     connectMenuBar();
+    // Refresh the Fullscreen checkbox for the case we went fullscreen earlier
+    emit fullScreenChanged(isFullScreen());
 
     launchProgress(63);
 
@@ -570,15 +581,6 @@ void MixxxMainWindow::initialize(QApplication* pApp, const CmdlineArgs& args) {
     // This allows us to turn off tooltips.
     pApp->installEventFilter(this); // The eventfilter is located in this
                                     // Mixxx class as a callback.
-
-    // If we were told to start in fullscreen mode on the command-line or if
-    // user chose always starts in fullscreen mode, then turn on fullscreen
-    // mode.
-    bool fullscreenPref = pConfig->getValue<bool>(
-            ConfigKey("[Config]", "StartInFullscreen"));
-    if (args.getStartInFullscreen() || fullscreenPref) {
-        slotViewFullScreen(true);
-    }
     emit skinLoaded();
 
     m_pMenuBar->show();
