@@ -11,6 +11,8 @@ Description:
   I removed the stacked layout and placed skin settings on the right hand side of main skin.
 -->
 <Template>
+  <SetVariable name="Width">-1me</SetVariable>
+
   <WidgetGroup>
     <ObjectName>SkinSettingsContainer</ObjectName>
     <Layout>horizontal</Layout>

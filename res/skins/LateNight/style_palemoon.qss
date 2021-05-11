@@ -343,7 +343,7 @@ WSearchLineEdit {
   border-color: #0c0c0c;
 }
 
-#BpmRateTapContainer:hover,
+#BpmTapContainer:hover,
 #PlayPositionText:hover, #PlayPositionTextSmall:hover {
   background-color: #151517;
   border-radius: 1px;
@@ -629,33 +629,19 @@ WSearchLineEdit {
 #RateContainer {
   padding: 4px 0px 0px 0px;
   }
-  #RateContainerCompact {
-    padding: 0px 0px 0px 0px;
+
+  #RateText {
+    padding: 0px;
+    margin: 0px 2px 0px 0px;
   }
 
-  #BpmRateTapContainer {
-    margin: 1px;
-    padding: 0px 1px 0px 0px;
-    }
-    #BpmRateContainer {
-      margin: 0px 0px 0px 3px;
-      }
-      #RateText {
-        padding: 0px;
-        margin: 0px 2px 0px 0px;
-      }
+#SyncBox {
+  margin: 2px 1px 1px 0px;
+}
 
-  #SyncBox {
-    margin: 2px 1px 1px 0px;
-  }
-
-  #RateControls {
-    margin: 0px 1px 0px 2px;
-    /*background-color: #000;*/
-    }
-  #RateSlider {
-    /*background-color: rgba(255,0,0,80);*/
-  }
+#RateControls {
+  margin: 0px 1px 0px 2px;
+}
 
 
 /********************** Loop Controls / AutoDJ spinbox ************************/
