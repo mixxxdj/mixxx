@@ -324,7 +324,7 @@
           <Text>      SETTINGS</Text>
         </State>
         <Connection>
-          <ConfigKey persist="true">[Master],skin_settings</ConfigKey>
+          <ConfigKey>[Master],skin_settings</ConfigKey>
         </Connection>
       </PushButton>
 

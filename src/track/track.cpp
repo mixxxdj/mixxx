@@ -61,7 +61,10 @@ Track::Track(
         TrackFile fileInfo,
         SecurityTokenPointer pSecurityToken,
         TrackId trackId)
-        : m_qMutex(QMutex::Recursive),
+        :
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+          m_qMutex(QMutex::Recursive),
+#endif
           m_fileInfo(std::move(fileInfo)),
           m_pSecurityToken(openSecurityToken(m_fileInfo, std::move(pSecurityToken))),
           m_record(trackId),

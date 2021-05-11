@@ -9,7 +9,6 @@
 #include "config.h"
 #include "controllers/defs_controllers.h"
 #include "database/mixxxdb.h"
-#include "defs_version.h"
 #include "library/library_preferences.h"
 #include "library/trackcollection.h"
 #include "preferences/beatdetectionsettings.h"
@@ -18,6 +17,7 @@
 #include "util/db/dbconnectionpooled.h"
 #include "util/db/dbconnectionpooler.h"
 #include "util/math.h"
+#include "util/versionstore.h"
 
 Upgrade::Upgrade()
         : m_bFirstRun(false),
@@ -220,8 +220,9 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         else {
 #endif
             // This must have been the first run... right? :)
-            qDebug() << "No version number in configuration file. Setting to" << MIXXX_VERSION;
-            config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
+            qDebug() << "No version number in configuration file. Setting to"
+                     << VersionStore::version();
+            config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
             m_bFirstRun = true;
             return config;
 #ifdef __APPLE__
@@ -232,8 +233,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
     }
 
     // If it's already current, stop here
-    if (configVersion == MIXXX_VERSION) {
-        qDebug() << "Configuration file is at the current version" << MIXXX_VERSION;
+    if (configVersion == VersionStore::version()) {
+        qDebug() << "Configuration file is at the current version" << VersionStore::version();
         return config;
     }
 
@@ -421,8 +422,8 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         // if everything until here worked fine we can mark the configuration as
         // updated
         if (successful) {
-            configVersion = MIXXX_VERSION;
-            config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
+            configVersion = VersionStore::version();
+            config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
         }
         else {
             qDebug() << "Upgrade failed!\n";
@@ -433,15 +434,15 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
         configVersion.startsWith("2.0") ||
         configVersion.startsWith("2.1.0")) {
         // No special upgrade required, just update the value.
-        configVersion = MIXXX_VERSION;
-        config->set(ConfigKey("[Config]","Version"), ConfigValue(MIXXX_VERSION));
+        configVersion = VersionStore::version();
+        config->set(ConfigKey("[Config]", "Version"), ConfigValue(VersionStore::version()));
     }
 
-    if (configVersion == MIXXX_VERSION) {
-        qDebug() << "Configuration file is now at the current version" << MIXXX_VERSION;
+    if (configVersion == VersionStore::version()) {
+        qDebug() << "Configuration file is now at the current version" << VersionStore::version();
     } else {
         qWarning() << "Configuration file is at version" << configVersion
-                   << "instead of the current" << MIXXX_VERSION;
+                   << "instead of the current" << VersionStore::version();
     }
 
     return config;

@@ -5,8 +5,9 @@
 #include <QStandardPaths>
 
 #include "config.h"
+#include "defs_urls.h"
 #include "sources/soundsourceproxy.h"
-#include "util/version.h"
+#include "util/versionstore.h"
 
 CmdlineArgs::CmdlineArgs()
         : m_startInFullscreen(false), // Initialize vars
@@ -21,6 +22,10 @@ CmdlineArgs::CmdlineArgs()
 #ifdef MIXXX_SETTINGS_PATH
           m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH)) {
 #else
+#ifdef __LINUX__
+#error "We are not ready to switch to XDG folders under Linux"
+#endif
+
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
           // to QDir::filePath elsewhere in the code. This is candidate for removal.
           m_settingsPath(
@@ -117,9 +122,9 @@ when a critical error occurs unless this is set properly.\n", stdout);
 }
 
 void CmdlineArgs::printUsage() {
-    fputs(Version::applicationName().toLocal8Bit().constData(), stdout);
+    fputs(VersionStore::applicationName().toLocal8Bit().constData(), stdout);
     fputs(" v", stdout);
-    fputs(Version::version().toLocal8Bit().constData(), stdout);
+    fputs(VersionStore::version().toLocal8Bit().constData(), stdout);
     fputs(" - Command line options", stdout);
     fputs("\n(These are case-sensitive.)\n\n\
 [FILE]                  Load the specified music file(s) at start-up.\n\
@@ -173,8 +178,5 @@ void CmdlineArgs::printUsage() {
 "\
 -h, --help              Display this help message and exit", stdout);
 
-    fputs("\n\n(For more information, see "
-          "https://manual.mixxx.org/2.3/chapters/"
-          "appendix.html#command-line-options)\n",
-            stdout);
+    fputs("\n\n(For more information, see " MIXXX_MANUAL_COMMANDLINEOPTIONS_URL ")\n", stdout);
 }

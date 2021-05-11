@@ -1087,6 +1087,7 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
 
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+    ProcessBuffer();
 
     pButtonSyncEnabled2->set(1.0);
     pButtonSyncEnabled2->set(0.0);
@@ -1167,6 +1168,7 @@ TEST_F(EngineSyncTest, MomentarySyncDependsOnPlayingStates) {
     m_pTrack2->trySetBeats(pBeats2);
     ControlObject::set(ConfigKey(m_sGroup2, "rate"), getRateSliderValue(1.0));
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+    ProcessBuffer();
     ProcessBuffer();
 
     // Set channel 1 to be enabled momentarily.
@@ -1434,6 +1436,8 @@ TEST_F(EngineSyncTest, ZeroLatencyRateChangeQuant) {
             ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
                     ->get());
 
+    ProcessBuffer();
+
     for (int i = 0; i < 50; ++i) {
         ProcessBuffer();
         // Keep messing with the rate
@@ -1483,6 +1487,8 @@ TEST_F(EngineSyncTest, ZeroLatencyRateDiffQuant) {
                       ->get(),
             ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))
                     ->get());
+
+    ProcessBuffer();
 
     for (int i = 0; i < 50; ++i) {
         ProcessBuffer();
@@ -1657,6 +1663,8 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))
             ->set(getRateSliderValue(1.0));
 
+    ProcessBuffer();
+
     auto pButtonSyncEnabled1 =
             std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
     pButtonSyncEnabled1->slotSet(1.0);
@@ -1689,8 +1697,12 @@ TEST_F(EngineSyncTest, HalfDoubleThenPlay) {
             ControlObject::getControl(ConfigKey(m_sGroup2, "local_bpm"))
                     ->get());
 
+    ProcessBuffer();
+
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+
+    ProcessBuffer();
 
     EXPECT_DOUBLE_EQ(175.0,
             ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))
@@ -2186,6 +2198,8 @@ TEST_F(EngineSyncTest, QuantizeImpliesSyncPhase) {
     mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2->getSampleRate(), 100, 0.0);
     m_pTrack2->trySetBeats(pBeats2);
 
+    ProcessBuffer();
+
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
     ProcessBuffer();
@@ -2542,5 +2556,41 @@ TEST_F(EngineSyncTest, BpmAdjustFactor) {
     EXPECT_DOUBLE_EQ(80.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
     ASSERT_TRUE(isFollower(m_sGroup1));
     ASSERT_TRUE(isFollower(m_sGroup2));
+    ASSERT_TRUE(isSoftMaster(m_sInternalClockGroup));
+}
+
+TEST_F(EngineSyncTest, ImpliciteMasterToInternalClock) {
+    m_pMixerDeck1->loadFakeTrack(false, 40.0);
+    m_pMixerDeck2->loadFakeTrack(false, 150.0);
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(40.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(150.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+
+    // During cue-ing volume is 0.0
+    ControlObject::set(ConfigKey(m_sGroup1, "volume"), 0.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "play"), 1.0);
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "sync_enabled"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup2, "sync_enabled"), 1.0);
+    ProcessBuffer();
+
+    // group 2 should be synced to the first playing deck and becomes master
+    EXPECT_DOUBLE_EQ(75.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+    EXPECT_DOUBLE_EQ(150.0, ControlObject::get(ConfigKey(m_sGroup2, "bpm")));
+    ASSERT_FALSE(isSoftMaster(m_sGroup1));
+    ASSERT_TRUE(isSoftMaster(m_sGroup2));
+    ASSERT_FALSE(isSoftMaster(m_sInternalClockGroup));
+    ProcessBuffer();
+
+    // Drop Track
+    ControlObject::set(ConfigKey(m_sGroup1, "volume"), 1.0);
+    ProcessBuffer();
+    ProcessBuffer();
+
+    ASSERT_FALSE(isSoftMaster(m_sGroup1));
+    ASSERT_FALSE(isSoftMaster(m_sGroup2));
     ASSERT_TRUE(isSoftMaster(m_sInternalClockGroup));
 }

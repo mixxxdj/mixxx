@@ -7,6 +7,7 @@
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "moc_synccontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
@@ -169,6 +170,10 @@ void SyncControl::requestSync() {
 
 bool SyncControl::isPlaying() const {
     return m_pPlayButton->toBool();
+}
+
+bool SyncControl::isAudible() const {
+    return m_audible;
 }
 
 double SyncControl::adjustSyncBeatDistance(double beatDistance) const {
@@ -353,7 +358,7 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
 }
 
 void SyncControl::slotControlPlay(double play) {
-    m_pEngineSync->notifyPlaying(this, play > 0.0);
+    m_pEngineSync->notifyPlayingAudible(this, play > 0.0 && m_audible);
 }
 
 void SyncControl::slotVinylControlChanged(double enabled) {
@@ -435,6 +440,18 @@ void SyncControl::setLocalBpm(double local_bpm) {
         // We might have adopted an adjust factor when becoming master.
         // Keep it when reporting our bpm.
         m_pEngineSync->notifyBpmChanged(this, bpm / m_masterBpmAdjustFactor);
+    }
+}
+
+void SyncControl::updateAudible() {
+    int channelIndex = m_pChannel->getChannelIndex();
+    if (channelIndex >= 0) {
+        CSAMPLE_GAIN gain = getEngineMaster()->getMasterGain(channelIndex);
+        bool newAudible = gain > CSAMPLE_GAIN_ZERO;
+        if (m_audible != newAudible) {
+            m_audible = newAudible;
+            m_pEngineSync->notifyPlayingAudible(this, m_pPlayButton->toBool() && m_audible);
+        }
     }
 }
 

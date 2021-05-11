@@ -603,7 +603,7 @@ void EngineBuffer::slotControlSeekExact(double playPosition) {
 
 void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekType) {
     // Prevent NaN's from sneaking into the engine.
-    if (isnan(fractionalPos)) {
+    VERIFY_OR_DEBUG_ASSERT(!isnan(fractionalPos)) {
         return;
     }
     double newSamplePosition = fractionalPos * m_pTrackSamples->get();
@@ -1226,6 +1226,7 @@ void EngineBuffer::postProcess(const int iBufferSize) {
     double local_bpm = m_pBpmControl->updateLocalBpm();
     double beat_distance = m_pBpmControl->updateBeatDistance();
     m_pSyncControl->setLocalBpm(local_bpm);
+    m_pSyncControl->updateAudible();
     SyncMode mode = m_pSyncControl->getSyncMode();
     if (isMaster(mode)) {
         m_pEngineSync->notifyBeatDistanceChanged(m_pSyncControl, beat_distance);

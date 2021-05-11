@@ -105,6 +105,8 @@ class EngineMaster : public QObject, public AudioSource {
         return m_pEngineSideChain;
     }
 
+    CSAMPLE_GAIN getMasterGain(int channelIndex) const;
+
     struct ChannelInfo {
         ChannelInfo(int index)
                 : m_pChannel(NULL),
@@ -123,7 +125,7 @@ class EngineMaster : public QObject, public AudioSource {
     };
 
     struct GainCache {
-        CSAMPLE m_gain;
+        CSAMPLE_GAIN m_gain;
         bool m_fadeout;
     };
 

@@ -1,19 +1,19 @@
-#include <QThread>
-#include <QDir>
-#include <QtDebug>
 #include <QApplication>
-#include <QStringList>
+#include <QDir>
 #include <QString>
+#include <QStringList>
 #include <QTextCodec>
+#include <QThread>
+#include <QtDebug>
 
+#include "errordialoghandler.h"
 #include "mixxx.h"
 #include "mixxxapplication.h"
 #include "sources/soundsourceproxy.h"
-#include "errordialoghandler.h"
 #include "util/cmdlineargs.h"
 #include "util/console.h"
 #include "util/logging.h"
-#include "util/version.h"
+#include "util/versionstore.h"
 
 #ifdef Q_OS_LINUX
 #include <X11/Xlib.h>
@@ -65,8 +65,8 @@ int main(int argc, char * argv[]) {
     // organization name blank.
     //QCoreApplication::setOrganizationName("Mixxx");
 
-    QCoreApplication::setApplicationName(Version::applicationName());
-    QCoreApplication::setApplicationVersion(Version::version());
+    QCoreApplication::setApplicationName(VersionStore::applicationName());
+    QCoreApplication::setApplicationVersion(VersionStore::version());
 
     // Construct a list of strings based on the command line arguments
     CmdlineArgs& args = CmdlineArgs::Instance();
