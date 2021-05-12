@@ -52,8 +52,8 @@ DlgPrefBeats::DlgPrefBeats(QWidget* parent, UserSettingsPointer pConfig)
 DlgPrefBeats::~DlgPrefBeats() {
 }
 
-QUrl DlgPrefBeats::helpUrl() const {
-    return QUrl(MIXXX_MANUAL_BEATS_URL);
+QString DlgPrefBeats::helpDocument() const {
+    return QString(MIXXX_MANUAL_BEATS_PATH);
 }
 
 void DlgPrefBeats::loadSettings() {

@@ -105,6 +105,22 @@ DlgPrefController::DlgPrefController(
                 QDesktopServices::openUrl(QUrl::fromLocalFile(path));
             });
 
+    // Open mapping support links
+    connect(m_ui.labelLoadedMappingSupportLinks,
+            &QLabel::linkActivated,
+            [this](const QString& link) {
+                const QUrl url(link);
+                qWarning() << url.scheme() << url.path();
+                VERIFY_OR_DEBUG_ASSERT(url.isValid()) {
+                    return;
+                }
+                if (url.scheme() == "manual") {
+                    emit showHelp(url.path());
+                    return;
+                }
+                QDesktopServices::openUrl(url);
+            });
+
     // Input mappings
     connect(m_ui.btnAddInputMapping,
             &QAbstractButton::clicked,
@@ -319,12 +335,12 @@ QString DlgPrefController::mappingSupportLinks(
                 wikiLink);
     }
 
-    QString manualLink = pMapping->manualLink();
-    if (!manualLink.isEmpty()) {
+    QString helpDocument = pMapping->manualDocument();
+    if (!helpDocument.isEmpty()) {
         linkList << coloredLinkString(
                 m_pLinkColor,
                 "Mixxx Manual",
-                manualLink);
+                QStringLiteral("manual://") + helpDocument);
     }
 
     // There is always at least one support link.
@@ -530,8 +546,8 @@ void DlgPrefController::slotApply() {
     setDirty(false);
 }
 
-QUrl DlgPrefController::helpUrl() const {
-    return QUrl(MIXXX_MANUAL_CONTROLLERS_URL);
+QString DlgPrefController::helpDocument() const {
+    return QString(MIXXX_MANUAL_CONTROLLERS_PATH);
 }
 
 QString DlgPrefController::mappingPathFromIndex(int index) const {

@@ -33,8 +33,10 @@ class VisibilityControlConnection : public QObject {
 class WMainMenuBar : public QMenuBar {
     Q_OBJECT
   public:
-    WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
-                 ConfigObject<ConfigValueKbd>* pKbdConfig);
+    WMainMenuBar(QWidget* pParent,
+            UserSettingsPointer pConfig,
+            ConfigObject<ConfigValueKbd>* pKbdConfig,
+            bool hasLocalHelp);
 
   public slots:
     void onLibraryScanStarted();
@@ -61,6 +63,7 @@ class WMainMenuBar : public QMenuBar {
 #endif
     void showAbout();
     void showKeywheel(bool visible);
+    void showManual(const QString& documentPath);
     void showPreferences();
     void toggleDeveloperTools(bool toggle);
     void toggleFullScreen(bool toggle);
@@ -87,7 +90,7 @@ class WMainMenuBar : public QMenuBar {
     void slotVisitUrl(const QString& url);
 
   private:
-    void initialize();
+    void initialize(bool hasLocalHelp);
     void createVisibilityControl(QAction* pAction, const ConfigKey& key);
 
     UserSettingsPointer m_pConfig;

@@ -361,7 +361,7 @@
              <string notr="true">(forum link for mapping goes here)</string>
             </property>
             <property name="openExternalLinks">
-             <bool>true</bool>
+             <bool>false</bool>
             </property>
             <property name="textInteractionFlags">
              <set>Qt::LinksAccessibleByKeyboard|Qt::LinksAccessibleByMouse</set>

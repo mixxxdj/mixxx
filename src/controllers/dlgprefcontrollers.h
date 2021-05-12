@@ -25,7 +25,7 @@ class DlgPrefControllers : public DlgPreferencePage, public Ui::DlgPrefControlle
     virtual ~DlgPrefControllers();
 
     bool handleTreeItemClick(QTreeWidgetItem* clickedItem);
-    QUrl helpUrl() const override;
+    QString helpDocument() const override;
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.

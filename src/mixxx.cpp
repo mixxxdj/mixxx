@@ -68,6 +68,7 @@
 #include "waveform/sharedglcontext.h"
 #include "waveform/visualsmanager.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/helpviewer.h"
 #include "widget/wmainmenubar.h"
 
 #ifdef __VINYLCONTROL__
@@ -107,6 +108,8 @@ MixxxMainWindow::MixxxMainWindow(
     DEBUG_ASSERT(pCoreServices);
     m_pCoreServices->initializeSettings();
     m_pCoreServices->initializeKeyboard();
+
+    m_pHelpViewer = new mixxx::HelpViewer(pCoreServices->getSettings());
     // These depend on the settings
     createMenuBar();
     m_pMenuBar->hide();
@@ -225,6 +228,10 @@ MixxxMainWindow::MixxxMainWindow(
             m_pCoreServices->getLibrary());
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
+    connect(m_pPrefDlg,
+            &DlgPreferences::showHelp,
+            this,
+            &MixxxMainWindow::slotHelpShowManual);
 
     // Connect signals to the menubar. Should be done before emit newSkinLoaded.
     connectMenuBar();
@@ -623,8 +630,10 @@ void MixxxMainWindow::slotUpdateWindowTitle(TrackPointer pTrack) {
 void MixxxMainWindow::createMenuBar() {
     ScopedTimer t("MixxxMainWindow::createMenuBar");
     DEBUG_ASSERT(m_pCoreServices->getKeyboardConfig());
-    m_pMenuBar = make_parented<WMainMenuBar>(
-            this, m_pCoreServices->getSettings(), m_pCoreServices->getKeyboardConfig().get());
+    m_pMenuBar = make_parented<WMainMenuBar>(this,
+            m_pCoreServices->getSettings(),
+            m_pCoreServices->getKeyboardConfig().get(),
+            m_pHelpViewer->hasLocalHelp());
     if (m_pCentralWidget) {
         m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
     }
@@ -686,6 +695,12 @@ void MixxxMainWindow::connectMenuBar() {
             Qt::UniqueConnection);
 
     // Help
+    connect(m_pMenuBar,
+            &WMainMenuBar::showManual,
+            this,
+            &MixxxMainWindow::slotHelpShowManual,
+            Qt::UniqueConnection);
+
     connect(m_pMenuBar,
             &WMainMenuBar::showAbout,
             this,
@@ -971,6 +986,10 @@ void MixxxMainWindow::slotChangedPlayingDeck(int deck) {
             mixxx::ScreenSaverHelper::inhibit();
         }
     }
+}
+
+void MixxxMainWindow::slotHelpShowManual(const QString& documentPath) {
+    m_pHelpViewer->open(documentPath);
 }
 
 void MixxxMainWindow::slotHelpAbout() {

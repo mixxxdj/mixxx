@@ -894,6 +894,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/waveform/widgets/softwarewaveformwidget.cpp
   src/waveform/widgets/waveformwidgetabstract.cpp
   src/widget/controlwidgetconnection.cpp
+  src/widget/helpbrowser.cpp
+  src/widget/helpviewer.cpp
   src/widget/hexspinbox.cpp
   src/widget/paintable.cpp
   src/widget/wanalysislibrarytableview.cpp
@@ -1957,6 +1959,7 @@ find_package(Qt5
     Concurrent
     Core
     Gui
+    Help
     Network
     OpenGL
     Qml
@@ -1971,6 +1974,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Concurrent
   Qt5::Core
   Qt5::Gui
+  Qt5::Help
   Qt5::Network
   Qt5::OpenGL
   Qt5::Qml

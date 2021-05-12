@@ -91,6 +91,7 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
   signals:
     void closeDlg();
     void showDlg();
+    void showHelp(const QString& documentPath);
 
     // Emitted just after the user clicks Apply or OK.
     void applyPreferences();

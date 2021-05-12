@@ -401,9 +401,7 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
             break;
         case QDialogButtonBox::HelpRole:
             if (pCurrentPage) {
-                QUrl helpUrl = pCurrentPage->helpUrl();
-                DEBUG_ASSERT(helpUrl.isValid());
-                QDesktopServices::openUrl(helpUrl);
+                emit showHelp(pCurrentPage->helpDocument());
             }
             break;
         default:
@@ -430,6 +428,8 @@ void DlgPreferences::addPageWidget(PreferencesPage page,
             &DlgPreferences::resetToDefaults,
             page.pDlg,
             &DlgPreferencePage::slotResetToDefaults);
+
+    connect(page.pDlg, &DlgPreferencePage::showHelp, this, &DlgPreferences::showHelp);
 
     // Add a new scroll area to the stacked pages widget containing the page
     QScrollArea* sa = new QScrollArea(pagesWidget);
@@ -475,7 +475,7 @@ void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
         return;
     }
 
-    if (pWidget->helpUrl().isValid()) {
+    if (!pWidget->helpDocument().isEmpty()) {
         pButton->show();
     } else {
         pButton->hide();
