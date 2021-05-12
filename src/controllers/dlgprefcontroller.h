@@ -28,7 +28,7 @@ class DlgPrefController : public DlgPreferencePage {
             UserSettingsPointer pConfig);
     virtual ~DlgPrefController();
 
-    QUrl helpUrl() const override;
+    QString helpDocument() const override;
 
   public slots:
     /// Called when the preference dialog (not this page) is shown to the user.

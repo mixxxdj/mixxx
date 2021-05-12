@@ -187,8 +187,8 @@ void DlgPrefBroadcast::slotUpdate() {
     btnDisconnectAll->setEnabled(enabled);
 }
 
-QUrl DlgPrefBroadcast::helpUrl() const {
-    return QUrl(MIXXX_MANUAL_BROADCAST_URL);
+QString DlgPrefBroadcast::helpDocument() const {
+    return QString(MIXXX_MANUAL_BROADCAST_PATH);
 }
 
 void DlgPrefBroadcast::applyModel() {

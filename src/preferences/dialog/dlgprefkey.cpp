@@ -79,8 +79,8 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, UserSettingsPointer pConfig)
 DlgPrefKey::~DlgPrefKey() {
 }
 
-QUrl DlgPrefKey::helpUrl() const {
-    return QUrl(MIXXX_MANUAL_KEY_URL);
+QString DlgPrefKey::helpDocument() const {
+    return QString(MIXXX_MANUAL_KEY_PATH);
 }
 
 void DlgPrefKey::loadSettings() {

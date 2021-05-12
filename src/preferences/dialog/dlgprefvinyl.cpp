@@ -399,8 +399,8 @@ void DlgPrefVinyl::slotUpdateVinylGain() {
             QString("%1 dB").arg(value));
 }
 
-QUrl DlgPrefVinyl::helpUrl() const {
-    return QUrl(MIXXX_MANUAL_VINYL_URL);
+QString DlgPrefVinyl::helpDocument() const {
+    return QString(MIXXX_MANUAL_VINYL_PATH);
 }
 
 void DlgPrefVinyl::setDeckWidgetsVisible(int deck, bool visible) {

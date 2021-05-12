@@ -401,9 +401,7 @@ void DlgPreferences::slotButtonPressed(QAbstractButton* pButton) {
             break;
         case QDialogButtonBox::HelpRole:
             if (pCurrentPage) {
-                QUrl helpUrl = pCurrentPage->helpUrl();
-                DEBUG_ASSERT(helpUrl.isValid());
-                QDesktopServices::openUrl(helpUrl);
+                emit showHelp(pCurrentPage->helpDocument());
             }
             break;
         default:
@@ -475,7 +473,7 @@ void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
         return;
     }
 
-    if (pWidget->helpUrl().isValid()) {
+    if (!pWidget->helpDocument().isEmpty()) {
         pButton->show();
     } else {
         pButton->hide();

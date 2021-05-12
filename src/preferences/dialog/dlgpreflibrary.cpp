@@ -147,8 +147,8 @@ void DlgPrefLibrary::slotHide() {
     }
 }
 
-QUrl DlgPrefLibrary::helpUrl() const {
-    return QUrl(MIXXX_MANUAL_LIBRARY_URL);
+QString DlgPrefLibrary::helpDocument() const {
+    return QString(MIXXX_MANUAL_LIBRARY_PATH);
 }
 
 void DlgPrefLibrary::initializeDirList() {

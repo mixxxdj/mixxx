@@ -19,7 +19,7 @@ class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     DlgPrefKey(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefKey();
 
-    QUrl helpUrl() const override;
+    QString helpDocument() const override;
 
   public slots:
     // Apply changes to widget

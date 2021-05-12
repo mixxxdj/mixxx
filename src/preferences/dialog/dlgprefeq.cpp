@@ -304,8 +304,8 @@ void DlgPrefEQ::slotSingleEqChecked(int checked) {
     applySelections();
 }
 
-QUrl DlgPrefEQ::helpUrl() const {
-    return QUrl(MIXXX_MANUAL_EQ_URL);
+QString DlgPrefEQ::helpDocument() const {
+    return QString(MIXXX_MANUAL_EQ_PATH);
 }
 
 void DlgPrefEQ::loadSettings() {

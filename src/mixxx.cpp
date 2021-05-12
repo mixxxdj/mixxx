@@ -228,6 +228,10 @@ MixxxMainWindow::MixxxMainWindow(
             m_pCoreServices->getLibrary());
     m_pPrefDlg->setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
     m_pPrefDlg->setHidden(true);
+    connect(m_pPrefDlg,
+            &DlgPreferences::showHelp,
+            this,
+            &MixxxMainWindow::slotHelpShowManual);
 
     // Connect signals to the menubar. Should be done before emit newSkinLoaded.
     connectMenuBar();

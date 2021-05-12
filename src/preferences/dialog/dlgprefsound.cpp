@@ -330,8 +330,8 @@ void DlgPrefSound::slotApply() {
     m_bSkipConfigClear = false;
 }
 
-QUrl DlgPrefSound::helpUrl() const {
-    return QUrl(MIXXX_MANUAL_SOUND_URL);
+QString DlgPrefSound::helpDocument() const {
+    return QString(MIXXX_MANUAL_SOUND_PATH);
 }
 
 /**

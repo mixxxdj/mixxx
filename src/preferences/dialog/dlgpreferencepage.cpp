@@ -10,6 +10,6 @@ DlgPreferencePage::DlgPreferencePage(QWidget* pParent)
 DlgPreferencePage::~DlgPreferencePage() {
 }
 
-QUrl DlgPreferencePage::helpUrl() const {
-    return QUrl();
+QString DlgPreferencePage::helpDocument() const {
+    return QString();
 }
