@@ -4,6 +4,7 @@ on:
   push:
 jobs:
   dev:
+    continue-on-error: true
     strategy:
       matrix:
         include:
@@ -40,6 +41,7 @@ jobs:
           --arg useClazy ${{ matrix.use_clazy }} --arg defaultLv2Plugins true \
           --command "configure && build && run-tests"
   pkg:
+    continue-on-error: true
     strategy:
       matrix:
         include:
