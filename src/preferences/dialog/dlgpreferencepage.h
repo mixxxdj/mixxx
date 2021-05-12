@@ -21,6 +21,9 @@ class DlgPreferencePage : public QWidget {
 
     QColor m_pLinkColor;
 
+  signals:
+    void showHelp(const QString& documentPath);
+
   public slots:
     /// Called when the preference dialog is shown to the user (not necessarily
     /// when this PreferencePage is shown to the user). At this point, the

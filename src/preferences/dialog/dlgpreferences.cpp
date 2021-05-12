@@ -429,6 +429,8 @@ void DlgPreferences::addPageWidget(PreferencesPage page,
             page.pDlg,
             &DlgPreferencePage::slotResetToDefaults);
 
+    connect(page.pDlg, &DlgPreferencePage::showHelp, this, &DlgPreferences::showHelp);
+
     // Add a new scroll area to the stacked pages widget containing the page
     QScrollArea* sa = new QScrollArea(pagesWidget);
     sa->setWidgetResizable(true);

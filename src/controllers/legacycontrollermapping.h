@@ -129,7 +129,7 @@ class LegacyControllerMapping {
         return m_manualPage;
     }
 
-    QString manualLink() const {
+    QString manualDocument() const {
         QString page = manualPage();
         if (page.isEmpty()) {
             return {};
