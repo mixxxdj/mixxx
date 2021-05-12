@@ -39,11 +39,12 @@ class VinylControlManager;
 class VisualsManager;
 class WMainMenuBar;
 
-#ifdef __ENGINEPRIME__
 namespace mixxx {
+#ifdef __ENGINEPRIME__
 class LibraryExporter;
-} // namespace mixxx
 #endif
+class HelpViewer;
+} // namespace mixxx
 
 /// This Class is the base class for Mixxx.
 /// It sets up the main window providing a menubar.
@@ -72,6 +73,8 @@ class MixxxMainWindow : public QMainWindow {
     void slotFileLoadSongPlayer(int deck);
     /// show the preferences dialog
     void slotOptionsPreferences();
+    /// show the manual
+    void slotHelpShowManual(const QString& documentPath);
     /// show the about dialog
     void slotHelpAbout();
     // show keywheel
@@ -132,6 +135,7 @@ class MixxxMainWindow : public QMainWindow {
 
     parented_ptr<WMainMenuBar> m_pMenuBar;
 
+    mixxx::HelpViewer* m_pHelpViewer;
     DlgDeveloperTools* m_pDeveloperToolsDlg;
 
     DlgPreferences* m_pPrefDlg;

@@ -52,34 +52,18 @@ QString showPreferencesKeyBinding() {
 #endif
 }
 
-QUrl documentationUrl(
-        const QString& resourcePath, const QString& fileName, const QString& docUrl) {
-    QDir resourceDir(resourcePath);
-    // Documentation PDFs are included on Windows and Linux only,
-    // so on macOS this always returns the web URL.
-#if defined(MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR)
-    if (!resourceDir.exists(fileName)) {
-        resourceDir.cd(MIXXX_INSTALL_DOCDIR_RELATIVE_TO_DATADIR);
-    }
-#endif
-    if (resourceDir.exists(fileName)) {
-        return QUrl::fromLocalFile(resourceDir.absoluteFilePath(fileName));
-    } else {
-        return QUrl(docUrl);
-    }
-}
 }  // namespace
 
-WMainMenuBar::WMainMenuBar(QWidget* pParent, UserSettingsPointer pConfig,
-                           ConfigObject<ConfigValueKbd>* pKbdConfig)
-        : QMenuBar(pParent),
-          m_pConfig(pConfig),
-          m_pKbdConfig(pKbdConfig) {
+WMainMenuBar::WMainMenuBar(QWidget* pParent,
+        UserSettingsPointer pConfig,
+        ConfigObject<ConfigValueKbd>* pKbdConfig,
+        bool hasLocalHelp)
+        : QMenuBar(pParent), m_pConfig(pConfig), m_pKbdConfig(pKbdConfig) {
     setObjectName(QStringLiteral("MainMenu"));
-    initialize();
+    initialize(hasLocalHelp);
 }
 
-void WMainMenuBar::initialize() {
+void WMainMenuBar::initialize(bool hasLocalHelp) {
     // FILE MENU
     QMenu* pFileMenu = new QMenu(tr("&File"), this);
 
@@ -581,39 +565,27 @@ void WMainMenuBar::initialize() {
     pHelpMenu->addAction(pHelpSupport);
 
     // User Manual
-    QUrl manualUrl = documentationUrl(m_pConfig->getResourcePath(),
-            MIXXX_MANUAL_FILENAME,
-            MIXXX_MANUAL_URL);
-    QString manualSuffix = manualUrl.isLocalFile() ? QString() : externalLinkSuffix;
+    QString helpSuffix = hasLocalHelp ? QString() : externalLinkSuffix;
 
-    QString manualTitle = tr("&User Manual") + manualSuffix;
+    QString manualTitle = tr("&User Manual") + helpSuffix;
     QString manualText = tr("Read the Mixxx user manual.");
     auto* pHelpManual = new QAction(manualTitle, this);
     pHelpManual->setStatusTip(manualText);
     pHelpManual->setWhatsThis(buildWhatsThis(manualTitle, manualText));
-    connect(pHelpManual, &QAction::triggered, this, [this, manualUrl] {
-        slotVisitUrl(manualUrl.toString());
+    connect(pHelpManual, &QAction::triggered, this, [this] {
+        emit showManual(QString());
     });
     pHelpMenu->addAction(pHelpManual);
 
     // Keyboard Shortcuts
-    QUrl keyboardShortcutsUrl = documentationUrl(m_pConfig->getResourcePath(),
-            MIXXX_KBD_SHORTCUTS_FILENAME,
-            MIXXX_MANUAL_SHORTCUTS_URL);
-    QString keyboardShortcutsSuffix =
-            keyboardShortcutsUrl.isLocalFile() ? QString() : externalLinkSuffix;
-
-    QString shortcutsTitle = tr("&Keyboard Shortcuts") + keyboardShortcutsSuffix;
+    QString shortcutsTitle = tr("&Keyboard Shortcuts") + helpSuffix;
     QString shortcutsText = tr("Speed up your workflow with keyboard shortcuts.");
     auto* pHelpKbdShortcuts = new QAction(shortcutsTitle, this);
     pHelpKbdShortcuts->setStatusTip(shortcutsText);
     pHelpKbdShortcuts->setWhatsThis(buildWhatsThis(shortcutsTitle, shortcutsText));
-    connect(pHelpKbdShortcuts,
-            &QAction::triggered,
-            this,
-            [this, keyboardShortcutsUrl] {
-                slotVisitUrl(keyboardShortcutsUrl.toString());
-            });
+    connect(pHelpKbdShortcuts, &QAction::triggered, this, [this] {
+        emit showManual(QString(MIXXX_MANUAL_SHORTCUTS_PATH));
+    });
     pHelpMenu->addAction(pHelpKbdShortcuts);
 
     // Translate This Application

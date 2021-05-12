@@ -33,8 +33,8 @@
     "https://manual.mixxx.org/" TO_VERSION_STR( \
             MIXXX_VERSION_MAJOR, MIXXX_VERSION_MINOR)
 #define MIXXX_MANUAL_INDEX_PATH "/index.html"
-#define MIXXX_MANUAL_SHORTCUTS_URL \
-    MIXXX_MANUAL_URL "/chapters/controlling_mixxx.html#using-a-keyboard"
+#define MIXXX_MANUAL_SHORTCUTS_PATH \
+    "/chapters/controlling_mixxx.html#using-a-keyboard"
 #define MIXXX_MANUAL_COMMANDLINEOPTIONS_URL \
     MIXXX_MANUAL_URL "/chapters/appendix.html#command-line-options"
 #define MIXXX_MANUAL_CONTROLLERS_URL \
@@ -62,5 +62,3 @@
     MIXXX_MANUAL_URL "/chapters/vinyl_control.html#configuring-vinyl-control"
 #define MIXXX_MANUAL_VINYL_TROUBLESHOOTING_URL \
     MIXXX_MANUAL_URL "/chapters/vinyl_control.html#troubleshooting"
-#define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
-#define MIXXX_KBD_SHORTCUTS_FILENAME "Mixxx-Keyboard-Shortcuts.pdf"
