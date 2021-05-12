@@ -16,15 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: ccache cache files
-      uses: actions/cache@v1.1.0
+      uses: actions/cache@v2
       with:
-        path: .ccache
+        path: ~/.ccache
         key: ${{ matrix.os }}-${{ matrix.ccache }}-${{ github.head_ref }}-${{ github.run_number }}
         restore-keys: |
           ${{ matrix.os }}-${{ matrix.ccache }}-${{ github.head_ref }}
           ${{ matrix.os }}-${{ matrix.ccache }}-
     - name: cache nix store
-      uses: actions/cache@v1.1.0
+      uses: actions/cache@v2
       with:
         path: /nix/store
         key: ${{ matrix.os }}-nix-${{ github.head_ref }}-${{ github.run_number }}
