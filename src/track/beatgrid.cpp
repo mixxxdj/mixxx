@@ -3,15 +3,21 @@
 #include <QMutexLocker>
 #include <QtDebug>
 
+#include "track/beatutils.h"
 #include "track/track.h"
 #include "util/math.h"
 
-static const int kFrameSize = 2;
+namespace {
 
 struct BeatGridData {
     double bpm;
     double firstBeat;
 };
+
+constexpr int kFrameSize = 2;
+constexpr double kBpmScaleRounding = 0.001;
+
+} // namespace
 
 namespace mixxx {
 
@@ -328,8 +334,9 @@ BeatsPointer BeatGrid::scale(enum BPMScale scale) const {
     if (bpm > getMaxBpm()) {
         return BeatsPointer(new BeatGrid(*this));
     }
-    grid.mutable_bpm()->set_bpm(bpm);
 
+    bpm = BeatUtils::roundBpmWithinRange(bpm - kBpmScaleRounding, bpm, bpm + kBpmScaleRounding);
+    grid.mutable_bpm()->set_bpm(bpm);
     double beatLength = (60.0 * m_sampleRate / bpm) * kFrameSize;
     return BeatsPointer(new BeatGrid(*this, grid, beatLength));
 }
