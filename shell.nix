@@ -268,12 +268,11 @@ in stdenv.mkDerivation rec {
   name = "mixxx-${version}";
   # Reading the version from git output is very hard to do without wasting lots of diskspace and
   # runtime. Reading version file is easy.
-  version = lib.strings.removeSuffix ''
-    "
-  '' (lib.strings.removePrefix ''#define MIXXX_VERSION "''
-    (builtins.readFile ./src/_version.h));
+  version = builtins.elemAt
+    (builtins.match ''.*project\(mixxx VERSION ([0-9\.]*).*\).*''
+      (builtins.substring 30 1500
+        (builtins.readFile ./CMakeLists.txt))) 0;
 
-  # SOURCE_DATE_EPOCH helps with python and pre-commit hook
   shellHook = ''
     if [ -z "$LOCALE_ARCHIVE" ]; then
       export LOCALE_ARCHIVE="${glibcLocales}/lib/locale/locale-archive";
