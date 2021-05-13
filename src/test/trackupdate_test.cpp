@@ -60,7 +60,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanOnce) {
     auto coverInfoBefore = pTrack->getCoverInfo();
 
     SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Once);
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once);
 
     mixxx::TrackMetadata trackMetadataAfter;
     pTrack->readTrackMetadata(&trackMetadataAfter);
@@ -82,7 +82,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainSkipCover) {
     auto coverInfoBefore = pTrack->getCoverInfo();
 
     SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Again);
+            SoundSourceProxy::UpdateTrackFromSourceMode::Again);
 
     mixxx::TrackMetadata trackMetadataAfter;
     pTrack->readTrackMetadata(&trackMetadataAfter);
@@ -108,7 +108,7 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainUpdateCover) {
     auto coverInfoBefore = pTrack->getCoverInfo();
 
     SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Again);
+            SoundSourceProxy::UpdateTrackFromSourceMode::Again);
 
     mixxx::TrackMetadata trackMetadataAfter;
     pTrack->readTrackMetadata(&trackMetadataAfter);
@@ -129,7 +129,7 @@ TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     auto coverInfoBefore = pTrack->getCoverInfo();
 
     SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Again);
+            SoundSourceProxy::UpdateTrackFromSourceMode::Again);
 
     mixxx::TrackMetadata trackMetadataAfter;
     pTrack->readTrackMetadata(&trackMetadataAfter);
