@@ -139,7 +139,9 @@ class SoundSourceProxy {
     /// too many possible reasons for failure to consider that cannot be handled
     /// properly. The application log will contain warning messages for a detailed
     /// analysis in case unexpected behavior has been reported.
-    void updateTrackFromSource(
+    ///
+    /// Returns true if the track has been modified and false otherwise.
+    bool updateTrackFromSource(
             UpdateTrackFromSourceMode mode = UpdateTrackFromSourceMode::Default);
 
     /// Opening the audio source through the proxy will update the
@@ -167,7 +169,8 @@ class SoundSourceProxy {
 
     friend class TrackCollectionManager;
     static ExportTrackMetadataResult exportTrackMetadataBeforeSaving(
-            Track* pTrack, UserSettingsPointer pConfig);
+            Track* pTrack,
+            const UserSettingsPointer& pConfig);
 
     // Special case: Construction from a url is needed
     // for writing metadata immediately before the TIO is destroyed.
