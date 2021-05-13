@@ -224,12 +224,16 @@ void Track::importMetadata(
     }
 }
 
-void Track::mergeImportedMetadata(
+bool Track::mergeImportedMetadata(
         const mixxx::TrackMetadata& importedMetadata) {
     QMutexLocker lock(&m_qMutex);
-    if (m_record.mergeImportedMetadata(importedMetadata)) {
-        markDirtyAndUnlock(&lock);
+    if (!m_record.mergeImportedMetadata(importedMetadata)) {
+        // Not modified
+        return false;
     }
+    markDirtyAndUnlock(&lock);
+    // Modified
+    return true;
 }
 
 void Track::readTrackMetadata(
