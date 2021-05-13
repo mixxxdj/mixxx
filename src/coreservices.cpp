@@ -168,11 +168,6 @@ void CoreServices::initialize(QApplication* pApp) {
 
     FontUtils::initializeFonts(resourcePath); // takes a long time
 
-    // Set the visibility of tooltips, default "1" = ON
-    m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
-            pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
-                    static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
-
     emit initializationProgressUpdate(10, tr("database"));
     m_pDbConnectionPool = MixxxDb(pConfig).connectionPool();
     if (!m_pDbConnectionPool) {
@@ -310,17 +305,6 @@ void CoreServices::initialize(QApplication* pApp) {
     // (long)
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = std::make_shared<ControllerManager>(pConfig);
-
-    // Inhibit the screensaver if the option is set. (Do it before creating the preferences dialog)
-    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), -1);
-    if (inhibit == -1) {
-        inhibit = static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON);
-        pConfig->setValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), inhibit);
-    }
-    m_inhibitScreensaver = static_cast<mixxx::ScreenSaverPreference>(inhibit);
-    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON) {
-        mixxx::ScreenSaverHelper::inhibit();
-    }
 
     // Wait until all other ControlObjects are set up before initializing
     // controllers
@@ -469,10 +453,6 @@ bool CoreServices::initializeDatabase() {
 void CoreServices::shutdown() {
     Timer t("CoreServices::shutdown");
     t.start();
-
-    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
-        mixxx::ScreenSaverHelper::uninhibit();
-    }
 
     // Stop all pending library operations
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "stopping pending Library tasks";

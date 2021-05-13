@@ -101,8 +101,7 @@ MixxxMainWindow::MixxxMainWindow(
 #ifdef __ENGINEPRIME__
           m_pLibraryExporter(nullptr),
 #endif
-          m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON),
-          m_pTouchShift(nullptr) {
+          m_toolTipsCfg(mixxx::TooltipsPreference::TOOLTIPS_ON) {
     DEBUG_ASSERT(pApp);
     DEBUG_ASSERT(pCoreServices);
     m_pCoreServices->initializeSettings();
@@ -131,7 +130,24 @@ MixxxMainWindow::MixxxMainWindow(
             this,
             &MixxxMainWindow::initializationProgressUpdate);
 
+    // Inhibit the screensaver if the option is set. (Do it before creating the preferences dialog)
+    UserSettingsPointer pConfig = m_pCoreServices->getSettings();
+    int inhibit = pConfig->getValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), -1);
+    if (inhibit == -1) {
+        inhibit = static_cast<int>(mixxx::ScreenSaverPreference::PREVENT_ON);
+        pConfig->setValue<int>(ConfigKey("[Config]", "InhibitScreensaver"), inhibit);
+    }
+    m_inhibitScreensaver = static_cast<mixxx::ScreenSaverPreference>(inhibit);
+    if (m_inhibitScreensaver == mixxx::ScreenSaverPreference::PREVENT_ON) {
+        mixxx::ScreenSaverHelper::inhibit();
+    }
+
     m_pCoreServices->initialize(pApp);
+
+    // Set the visibility of tooltips, default "1" = ON
+    m_toolTipsCfg = static_cast<mixxx::TooltipsPreference>(
+            pConfig->getValue(ConfigKey("[Controls]", "Tooltips"),
+                    static_cast<int>(mixxx::TooltipsPreference::TOOLTIPS_ON)));
 
 #ifdef __ENGINEPRIME__
     // Initialise library exporter
@@ -414,12 +430,14 @@ MixxxMainWindow::~MixxxMainWindow() {
     qDebug() << t.elapsed(false).debugMillisWithUnit() << "deleting DlgPreferences";
     delete m_pPrefDlg;
 
-    delete m_pTouchShift;
-
     WaveformWidgetFactory::destroy();
 
     delete m_pGuiTick;
     delete m_pVisualsManager;
+
+    if (m_inhibitScreensaver != mixxx::ScreenSaverPreference::PREVENT_OFF) {
+        mixxx::ScreenSaverHelper::uninhibit();
+    }
 
     m_pCoreServices->shutdown();
 }

@@ -16,26 +16,16 @@
 #include "util/parented_ptr.h"
 #include "util/timer.h"
 
-class BroadcastManager;
 class ChannelHandleFactory;
-class ControllerManager;
 class ControlPushButton;
 class DlgDeveloperTools;
 class DlgPreferences;
 class DlgKeywheel;
-class EffectsManager;
 class EngineMaster;
 class GuiTick;
-class KeyboardEventFilter;
 class LaunchImage;
 class Library;
-class PlayerManager;
-class RecordingManager;
-class SettingsManager;
 class SkinLoader;
-class SoundManager;
-class TrackCollectionManager;
-class VinylControlManager;
 class VisualsManager;
 class WMainMenuBar;
 
@@ -144,7 +134,6 @@ class MixxxMainWindow : public QMainWindow {
 
     mixxx::TooltipsPreference m_toolTipsCfg;
 
-    ControlPushButton* m_pTouchShift;
     mixxx::ScreenSaverPreference m_inhibitScreensaver;
 
     QSet<ControlObject*> m_skinCreatedControls;
