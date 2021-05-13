@@ -239,26 +239,22 @@ bool Track::mergeImportedMetadata(
     return true;
 }
 
-void Track::readTrackMetadata(
-        mixxx::TrackMetadata* pTrackMetadata,
+mixxx::TrackMetadata Track::getMetadata(
         bool* pMetadataSynchronized) const {
-    DEBUG_ASSERT(pTrackMetadata);
-    QMutexLocker lock(&m_qMutex);
-    *pTrackMetadata = m_record.getMetadata();
+    const QMutexLocker locked(&m_qMutex);
     if (pMetadataSynchronized) {
         *pMetadataSynchronized = m_record.getMetadataSynchronized();
     }
+    return m_record.getMetadata();
 }
 
-void Track::readTrackRecord(
-        mixxx::TrackRecord* pTrackRecord,
+mixxx::TrackRecord Track::getRecord(
         bool* pDirty) const {
-    DEBUG_ASSERT(pTrackRecord);
-    QMutexLocker lock(&m_qMutex);
-    *pTrackRecord = m_record;
+    const QMutexLocker locked(&m_qMutex);
     if (pDirty) {
         *pDirty = m_bDirty;
     }
+    return m_record;
 }
 
 mixxx::ReplayGain Track::getReplayGain() const {
