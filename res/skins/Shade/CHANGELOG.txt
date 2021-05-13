@@ -15,15 +15,23 @@ to Remix - to adapt the work
 Under the following conditions:
 Attribution - You must attribute the work in the manner specified by the author or licensor
 (but not in any way that suggests that they endorse you or your use of the work).
-A attribution should include the following: The name of the author and/or licensor, 
+A attribution should include the following: The name of the author and/or licensor,
 the title of the work, the URL that is associated with the work.
 
 Share Alike - If you alter, transform, or build upon this work, you may distribute
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+
+v2.3.0.01  (11/05/2021)
+* Feature: Added UI elements for [Recording] (toggle button, status display button and duration) lp:1924279
+* Feature: Added custom images for the [Recording] status button
+* Update: Graphics to gain a symmetric look in the mixer panel
+* Update: Repositioned UI elements to fit symmetric look
+* Fix: Skin previews updated
+
 v1.12.0.01  (15/12/2013)
-* Feature: Added <reverseroll> as right-click option to the Reverse button 
+* Feature: Added <reverseroll> as right-click option to the Reverse button
   Puts a track into reverse while being held, resumes the track and disables slip when released (Censor).
 
 v1.11.0.15  (13/04/2013)
@@ -51,7 +59,7 @@ v1.11.0.10	(15/12/2012)
 * Feature: Toggles visibility of WidgetGroups at skin load in the <manifest>
 * Feature: Added [PreviewDeck1] which plays a track through headphones, lp:366091
 * Feature: Construct the library from individual widgets <SearchBox>, <LibrarySidebar>, <Library>
-* Remove: <TableView> replaced by the above library wdgets. Makes future layouts more flexible  
+* Remove: <TableView> replaced by the above library wdgets. Makes future layouts more flexible
 * Update: Clarify the text of the license terms
 * Update: Links to MixxxControls and QT documentation updated
 
@@ -59,10 +67,10 @@ v1.11.0.09	(18/11/2012)
 * Feature: Added SYNC buttons to the sampler decks , lp:1072229
 
 v1.11.0.08	(25/10/2012)
-* Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc. 
+* Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc.
   and set Mixxx controls on skin load , lp:1017399
 * Feature: Added <SignalHighColor>,<SignalMidColor>,<SignalLowColor> to color waveforms based on features of the audio.
-* Feature: Added <Align> to the main waveforms that allows to display only those portions of the waveform which would 
+* Feature: Added <Align> to the main waveforms that allows to display only those portions of the waveform which would
   have been above or below the center
 * Feature: Added <AxesColor> to define the color for horizontal/vertical line in in the waveform
   Note: Only empty <Signal$Color>,<Align>,<AxesColor> keys were added for now
@@ -89,7 +97,7 @@ v1.11.0.04	(24/05/2012)
 
 v1.11.0.03	(08/05/2012)
 * Feature: Removed individual Tooltip text, tooltip now use a <TooltipId>, available IDs are in src/skin/tooltips.cpp
-  This allows tooltips translation and makes skin more coherent and maintenance easier 
+  This allows tooltips translation and makes skin more coherent and maintenance easier
 
 v1.11.0.02	(04/05/2012)
 * Update: Apply styles to spinbox in AutoDJ tab
