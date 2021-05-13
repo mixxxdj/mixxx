@@ -606,16 +606,32 @@ void DlgTrackInfo::slotKeyTextChanged() {
 }
 
 void DlgTrackInfo::slotImportMetadataFromFile() {
-    if (m_pLoadedTrack) {
-        // Allocate a temporary track object for reading the metadata.
-        // We cannot reuse m_pLoadedTrack, because it might already been
-        // modified and we want to read fresh metadata directly from the
-        // file. Otherwise the changes in m_pLoadedTrack would be lost.
-        TrackPointer pTrack = SoundSourceProxy::importTemporaryTrack(
-                m_pLoadedTrack->getFileAccess());
-        DEBUG_ASSERT(pTrack);
-        populateFields(*pTrack);
+    if (!m_pLoadedTrack) {
+        return;
     }
+    mixxx::TrackMetadata trackMetadata;
+    QImage coverImage;
+    const auto [importResult, metadataSynchronized] =
+            SoundSourceProxy(m_pLoadedTrack)
+                    .importTrackMetadataAndCoverImage(
+                            &trackMetadata, &coverImage);
+    if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
+        return;
+    }
+    auto fileAccess = m_pLoadedTrack->getFileAccess();
+    auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
+            fileAccess.info(),
+            trackMetadata.getAlbumInfo().getTitle(),
+            coverImage);
+    // Allocate a temporary track object for repopulating the fields.
+    // We cannot reuse m_pLoadedTrack, because it might already been
+    // modified and we don't want to lose those changes.
+    // TODO: Populate fields from TrackRecord instead of Track
+    TrackPointer pTrack = Track::newTemporary(std::move(fileAccess));
+    DEBUG_ASSERT(pTrack);
+    pTrack->importMetadata(std::move(trackMetadata));
+    pTrack->setCoverInfo(std::move(guessedCoverInfo));
+    populateFields(*pTrack);
 }
 
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {

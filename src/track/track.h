@@ -30,8 +30,6 @@ class Track : public QObject {
     // testing purposes. The resulting track will neither be stored
     // in the database nor will the metadata of the corresponding file
     // be updated.
-    // Use SoundSourceProxy::importTemporaryTrack() for importing files
-    // to ensure that the file will not be written while reading it!
     static TrackPointer newTemporary(
             mixxx::FileAccess fileAccess = mixxx::FileAccess());
     static TrackPointer newTemporary(
@@ -328,7 +326,7 @@ class Track : public QObject {
     bool refreshCoverImageDigest(
             const QImage& loadedImage = QImage());
 
-    // Set/get track metadata and cover art (optional) all at once.
+    // Set/get track metadata all at once.
     void importMetadata(
             mixxx::TrackMetadata importedMetadata,
             const QDateTime& metadataSynchronized = QDateTime());

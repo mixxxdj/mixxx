@@ -12,8 +12,11 @@
 class CoverArtCacheTest : public LibraryTest, public CoverArtCache {
   protected:
     void loadCoverFromMetadata(const QString& trackLocation) {
-        const QImage img = SoundSourceProxy::importTemporaryCoverImage(
-                mixxx::FileAccess(mixxx::FileInfo(trackLocation)));
+        QImage img;
+        SoundSourceProxy::importTrackMetadataAndCoverImageFromFile(
+                mixxx::FileAccess(mixxx::FileInfo(trackLocation)),
+                nullptr,
+                &img);
         ASSERT_FALSE(img.isNull());
 
         CoverInfo info;
