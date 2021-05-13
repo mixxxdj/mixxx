@@ -105,7 +105,7 @@ class SoundSourceProxy {
 
     /// Controls which (metadata/coverart) and how tags are (re-)imported from
     /// audio files when creating a SoundSourceProxy.
-    enum class ImportTrackMetadataMode {
+    enum class UpdateTrackFromSourceMode {
         // Import both track metadata and cover image once for new track objects.
         // Otherwise the request is ignored and the track object is not modified.
         Once,
@@ -140,7 +140,7 @@ class SoundSourceProxy {
     /// properly. The application log will contain warning messages for a detailed
     /// analysis in case unexpected behavior has been reported.
     void updateTrackFromSource(
-            ImportTrackMetadataMode importTrackMetadataMode = ImportTrackMetadataMode::Default);
+            UpdateTrackFromSourceMode mode = UpdateTrackFromSourceMode::Default);
 
     /// Opening the audio source through the proxy will update the
     /// audio properties of the corresponding track object. Returns

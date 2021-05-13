@@ -513,7 +513,7 @@ SoundSourceProxy::importTrackMetadataAndCoverImage(
 }
 
 void SoundSourceProxy::updateTrackFromSource(
-        ImportTrackMetadataMode importTrackMetadataMode) {
+        UpdateTrackFromSourceMode mode) {
     DEBUG_ASSERT(m_pTrack);
 
     if (getUrl().isEmpty()) {
@@ -543,8 +543,7 @@ void SoundSourceProxy::updateTrackFromSource(
     // if the user did not explicitly choose to (re-)import metadata
     // explicitly from this file.
     bool mergeImportedMetadata = false;
-    if (metadataSynchronized &&
-            (importTrackMetadataMode == ImportTrackMetadataMode::Once)) {
+    if (metadataSynchronized && mode == UpdateTrackFromSourceMode::Once) {
         // No (re-)import needed or desired, only merge missing properties
         mergeImportedMetadata = true;
     }
@@ -707,7 +706,6 @@ void SoundSourceProxy::updateTrackFromSource(
         DEBUG_ASSERT(coverInfo.source == CoverInfo::GUESSED);
         m_pTrack->setCoverInfo(coverInfo);
     }
-
 }
 
 mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(
