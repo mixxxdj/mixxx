@@ -1,4 +1,3 @@
-
 #include "util/threadcputimer.h"
 
 #if defined(Q_OS_MAC)
@@ -41,8 +40,9 @@ static int threadCpuTimeAvailable = false;
 static void unixCheckClockType()
 {
 #if (_POSIX_THREAD_CPUTIME-0 == 0)
-    if (is_likely(load_acquire(threadCpuTimeChecked)))
+    if (is_likely(load_acquire(threadCpuTimeChecked))) {
         return;
+    }
 
 # if defined(_SC_THREAD_CPUTIME)
     // detect if the system support monotonic timers

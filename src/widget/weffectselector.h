@@ -1,5 +1,4 @@
-#ifndef WEFFECTSELECTOR_H
-#define WEFFECTSELECTOR_H
+#pragma once
 
 #include <QDomNode>
 #include <QComboBox>
@@ -31,6 +30,3 @@ class WEffectSelector : public QComboBox, public WBaseWidget {
     EffectRackPointer m_pRack;
     double m_scaleFactor;
 };
-
-
-#endif /* WEFFECTSELECTOR_H */

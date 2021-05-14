@@ -1,21 +1,25 @@
-#include <QtDebug>
-
 #include "widget/wwidgetstack.h"
 
-WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
-                                                       ControlObject* pControl,
-                                                       int index)
+#include <QApplication>
+#include <QtDebug>
+
+#include "moc_wwidgetstack.cpp"
+
+WidgetStackControlListener::WidgetStackControlListener(
+        QObject* pParent, ControlObject* pControl, int index)
         : QObject(pParent),
-          m_control(pControl ? pControl->getKey() : ConfigKey(), this),
+          m_control(pControl ? pControl->getKey() : ConfigKey(),
+                  this,
+                  ControlFlag::AllowInvalidKey),
           m_index(index) {
-    m_control.connectValueChanged(SLOT(slotValueChanged(double)));
+    m_control.connectValueChanged(this, &WidgetStackControlListener::slotValueChanged);
 }
 
 void WidgetStackControlListener::slotValueChanged(double v) {
     if (v > 0.0) {
-        emit(switchToWidget());
+        emit switchToWidget();
     } else {
-        emit(hideWidget());
+        emit hideWidget();
     }
 }
 
@@ -28,35 +32,24 @@ void WidgetStackControlListener::onCurrentWidgetChanged(int index) {
 }
 
 WWidgetStack::WWidgetStack(QWidget* pParent,
-                           ControlObject* pNextControl,
-                           ControlObject* pPrevControl,
-                           ControlObject* pCurrentPageControl)
+        const ConfigKey& nextConfigKey,
+        const ConfigKey& prevConfigKey,
+        const ConfigKey& currentPageConfigKey)
         : QStackedWidget(pParent),
           WBaseWidget(this),
-          m_nextControl(
-                  pNextControl ?
-                  pNextControl->getKey() : ConfigKey(), this),
-          m_prevControl(
-                  pPrevControl ?
-                  pPrevControl->getKey() : ConfigKey(), this),
+          m_nextControl(nextConfigKey, this, ControlFlag::AllowInvalidKey),
+          m_prevControl(prevConfigKey, this, ControlFlag::AllowInvalidKey),
           m_currentPageControl(
-                  pCurrentPageControl ?
-                  pCurrentPageControl->getKey() : ConfigKey(), this) {
-    m_nextControl.connectValueChanged(SLOT(onNextControlChanged(double)));
-    m_prevControl.connectValueChanged(SLOT(onPrevControlChanged(double)));
-    m_currentPageControl.connectValueChanged(
-            SLOT(onCurrentPageControlChanged(double)));
-    connect(&m_showMapper, SIGNAL(mapped(int)),
-            this, SLOT(showIndex(int)));
-    connect(&m_hideMapper, SIGNAL(mapped(int)),
-            this, SLOT(hideIndex(int)));
+                  currentPageConfigKey, this, ControlFlag::AllowInvalidKey) {
+    m_nextControl.connectValueChanged(this, &WWidgetStack::onNextControlChanged);
+    m_prevControl.connectValueChanged(this, &WWidgetStack::onPrevControlChanged);
+    m_currentPageControl.connectValueChanged(this, &WWidgetStack::onCurrentPageControlChanged);
 }
 
 // override
 void WWidgetStack::Init() {
     WBaseWidget::Init();
-    connect(this, SIGNAL(currentChanged(int)),
-            this, SLOT(onCurrentPageChanged(int)));
+    connect(this, &WWidgetStack::currentChanged, this, &WWidgetStack::onCurrentPageChanged);
 }
 
 QSize WWidgetStack::sizeHint() const {
@@ -73,7 +66,7 @@ void WWidgetStack::showIndex(int index) {
     // Only respond to changes if the stack is visible.  This allows multiple
     // stacks to use the same trigger COs without causing conflicts.
     if (isVisible()) {
-        setCurrentIndex(index);
+        slotSetIndex(index);
     }
 }
 
@@ -82,14 +75,14 @@ void WWidgetStack::hideIndex(int index) {
         return;
     }
     if (currentIndex() == index) {
-        QMap<int, int>::const_iterator it = m_hideMap.find(index);
-        if (it != m_hideMap.end()) {
-            setCurrentIndex(*it);
+        auto it = m_hideMap.constFind(index);
+        if (it != m_hideMap.constEnd()) {
+            slotSetIndex(*it);
         } else {
             // TODO: This default behavior is a little odd, is it really what
             // we want?  Or should we save the previously-selected page and then
             // switch to that.
-            setCurrentIndex((index + 1) % count());
+            slotSetIndex((index + 1) % count());
         }
     }
 }
@@ -103,7 +96,7 @@ void WWidgetStack::showEvent(QShowEvent* /*unused*/) {
         it.value()->setControl(it.key() == index ? 1.0 : 0.0);
     }
 
-    setCurrentIndex(index);
+    slotSetIndex(index);
 }
 
 void WWidgetStack::onNextControlChanged(double v) {
@@ -111,7 +104,7 @@ void WWidgetStack::onNextControlChanged(double v) {
         return;
     }
     if (v > 0.0) {
-        setCurrentIndex((currentIndex() + 1) % count());
+        slotSetIndex((currentIndex() + 1) % count());
     }
 }
 
@@ -124,7 +117,7 @@ void WWidgetStack::onPrevControlChanged(double v) {
         while (newIndex < 0) {
             newIndex += count();
         }
-        setCurrentIndex(newIndex);
+        slotSetIndex(newIndex);
     }
 }
 
@@ -140,27 +133,25 @@ void WWidgetStack::onCurrentPageControlChanged(double v) {
         return;
     }
     int newIndex = static_cast<int>(v);
-    setCurrentIndex(newIndex);
+    slotSetIndex(newIndex);
 }
 
 void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pControl,
                                         int on_hide_select) {
     int index = addWidget(pWidget);
     if (pControl) {
-        auto pListener = new WidgetStackControlListener(this, pControl, index);
-        m_showMapper.setMapping(pListener, index);
-        m_hideMapper.setMapping(pListener, index);
+        auto* pListener = new WidgetStackControlListener(this, pControl, index);
         m_listeners[index] = pListener;
         if (pControl->get() > 0) {
             setCurrentIndex(count()-1);
         }
         pListener->onCurrentWidgetChanged(currentIndex());
-        connect(pListener, SIGNAL(switchToWidget()),
-                &m_showMapper, SLOT(map()));
-        connect(pListener, SIGNAL(hideWidget()),
-                &m_hideMapper, SLOT(map()));
-        connect(this, SIGNAL(currentChanged(int)),
-                pListener, SLOT(onCurrentWidgetChanged(int)));
+        connect(pListener, &WidgetStackControlListener::switchToWidget,
+                this, [this, index] { showIndex(index); });
+        connect(pListener, &WidgetStackControlListener::hideWidget,
+                this, [this, index] { hideIndex(index); });
+        connect(this, &WWidgetStack::currentChanged,
+                pListener, &WidgetStackControlListener::onCurrentWidgetChanged);
     }
 
     if (m_currentPageControl.get() == index) {
@@ -173,9 +164,22 @@ void WWidgetStack::addWidgetWithControl(QWidget* pWidget, ControlObject* pContro
     }
 }
 
+void WWidgetStack::slotSetIndex(int index) {
+    // If the previously focused widget is a child of the new
+    // index widget re-focus that widget.
+    // For now, its only purpose is to keep the keyboard focus on
+    // library widgets in the Library singleton when toggling
+    // [Master],maximize_library
+    QWidget* prevFocusWidget = QApplication::focusWidget();
+    setCurrentIndex(index);
+    if (currentWidget()->isAncestorOf(prevFocusWidget)) {
+        prevFocusWidget->setFocus();
+    }
+}
+
 bool WWidgetStack::event(QEvent* pEvent) {
     if (pEvent->type() == QEvent::ToolTip) {
         updateTooltip();
     }
-    return QFrame::event(pEvent);
+    return QStackedWidget::event(pEvent);
 }

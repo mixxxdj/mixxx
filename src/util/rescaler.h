@@ -1,7 +1,4 @@
-#ifndef RESCALER_H
-#define RESCALER_H
-
-
+#pragma once
 
 class RescalerUtils {
   public:
@@ -23,7 +20,3 @@ class RescalerUtils {
   private:
     RescalerUtils() {}
 };
-
-
-
-#endif // RESCALER_H

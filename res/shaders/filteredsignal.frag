@@ -124,16 +124,16 @@ void main(void) {
     }
 
     /*
-    vec4 distanceToRigthSignal = 0.5 - uv.y - 0.5 *texture2D(signalTexture,vec2(uv.x,0.25));
+    vec4 distanceToRightSignal = 0.5 - uv.y - 0.5 *texture2D(signalTexture,vec2(uv.x,0.25));
     vec4 distanceToLeftSignal = uv.y - 0.5 * texture2D(signalTexture,vec2(uv.x,0.75)) - 0.5;
 
-    if (distanceToRigthSignal.x < 0.0 && distanceToLeftSignal.x < 0.0)
+    if (distanceToRightSignal.x < 0.0 && distanceToLeftSignal.x < 0.0)
         outputColor += lowColor;
 
-    if( distanceToRigthSignal.y < 0.0 && distanceToLeftSignal.y < 0.0)
+    if( distanceToRightSignal.y < 0.0 && distanceToLeftSignal.y < 0.0)
         outputColor += midColor;
 
-    if( distanceToRigthSignal.z < 0.0 && distanceToLeftSignal.z < 0.0)
+    if( distanceToRightSignal.z < 0.0 && distanceToLeftSignal.z < 0.0)
         outputColor += highColor;
     */
     gl_FragColor = outputColor;
@@ -141,7 +141,7 @@ void main(void) {
 
     /*
     uv.y = 0.25;
-    vec4 signalRigth = texture2D(signalTexture,uv);
+    vec4 signalRight = texture2D(signalTexture,uv);
 
 
     vec4 outputColor = vec4(0.0,0.0,0.0,0.0);

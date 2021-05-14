@@ -2,11 +2,12 @@
 #include "control/controlproxy.h"
 #include "control/controlobject.h"
 
-VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
+VinylControl::VinylControl(UserSettingsPointer pConfig, const QString& group)
         : m_pConfig(pConfig),
           m_group(group),
           m_iLeadInTime(m_pConfig->getValueString(
-                  ConfigKey(group, "vinylcontrol_lead_in_time")).toInt()),
+                                         ConfigKey(group, "vinylcontrol_lead_in_time"))
+                                .toInt()),
           m_dVinylPosition(0.0),
           m_fTimecodeQuality(0.0f) {
     // Get Control objects
@@ -23,7 +24,7 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
     trackSampleRate = new ControlProxy(group, "track_samplerate", this);
     vinylSeek = new ControlProxy(group, "vinylcontrol_seek", this);
     m_pVCRate = new ControlProxy(group, "vinylcontrol_rate", this);
-    m_pRateSlider = new ControlProxy(group, "rate", this);
+    m_pRateRatio = new ControlProxy(group, "rate_ratio", this);
     playButton = new ControlProxy(group, "play", this);
     duration = new ControlProxy(group, "duration", this);
     mode = new ControlProxy(group, "vinylcontrol_mode", this);
@@ -32,9 +33,7 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
             group, "vinylcontrol_wantenabled", this);
     cueing = new ControlProxy(group, "vinylcontrol_cueing", this);
     scratching = new ControlProxy(group, "vinylcontrol_scratching", this);
-    m_pRateRange = new ControlProxy(group, "rateRange", this);
     vinylStatus = new ControlProxy(group, "vinylcontrol_status", this);
-    m_pRateDir = new ControlProxy(group, "rate_dir", this);
     loopEnabled = new ControlProxy(group, "loop_enabled", this);
     signalenabled = new ControlProxy(
             group, "vinylcontrol_signal_enabled", this);
@@ -42,12 +41,6 @@ VinylControl::VinylControl(UserSettingsPointer pConfig, QString group)
 
     //Enabled or not -- load from saved value in case vinyl control is restarting
     m_bIsEnabled = wantenabled->get() > 0.0;
-
-    // Load VC pre-amp gain from the config.
-    // TODO(rryan): Should probably live in VinylControlManager since it's not
-    // specific to a VC deck.
-    ControlObject::set(ConfigKey(VINYL_PREF_KEY, "gain"),
-        m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
 }
 
 bool VinylControl::isEnabled() {

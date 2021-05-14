@@ -1,0 +1,121 @@
+<Template>
+  <SetVariable name="Group">[Auxiliary<Variable name="AuxNum"/>]</SetVariable>
+  <SetVariable name="Type">auxiliary</SetVariable>
+
+  <!-- input device is configured -->
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>min,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>MicAuxUnit</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>MicAuxMainControls</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+
+              <Label>
+                <ObjectName>MicAuxLabel</ObjectName>
+                <Size>,20f</Size>
+                <Text>Aux <Variable name="AuxNum"/></Text>
+                <Alignment>center</Alignment>
+              </Label>
+
+              <Template src="skin:/controls/button_xfader_aux.xml"/>
+
+              <WidgetGroup>
+                <ObjectName>AuxPlayBox</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <Children>
+                  <Template src="skin:/controls/button_2state.xml">
+                    <SetVariable name="TooltipId">master_enable</SetVariable>
+                    <SetVariable name="ObjectName">AuxPlay</SetVariable>
+                    <SetVariable name="Size">42f,26f</SetVariable>
+                    <SetVariable name="BtnSize">medium</SetVariable>
+                    <SetVariable name="ConfigKey"><Variable name="Group"/>,master</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- MicAuxMainControls -->
+
+          <WidgetGroup>
+            <ObjectName>MicAuxVUMeter</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <Template src="skin:/mixer/vumeter_single.xml">
+                <SetVariable name="ChannelType">auxiliary</SetVariable>
+                <SetVariable name="VuSize">micaux</SetVariable>
+              </Template>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup><!-- Gain, Pfl, FX buttons-->
+            <ObjectName>MicAuxSubControls</ObjectName>
+            <Layout>vertical</Layout>
+            <SizePolicy>min,me</SizePolicy>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>MicAuxGainPFlContainer</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>min,me</SizePolicy>
+                <Children>
+                  <Template src="skin:/controls/knob.xml">
+                    <SetVariable name="TooltipId">auxiliary_pregain</SetVariable>
+                    <SetVariable name="Size">35f,30f</SetVariable>
+                    <SetVariable name="KnobColor">orange</SetVariable>
+                    <SetVariable name="ArcColor"><Variable name="ArcColorGain"/></SetVariable>
+                    <SetVariable name="Control">pregain</SetVariable>
+                  </Template>
+                  <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
+                  <WidgetGroup>
+                    <ObjectName>AlignHCenter</ObjectName>
+                    <Layout>vertical</Layout>
+                    <SizePolicy>min,min</SizePolicy>
+                    <Children>
+                      <Template src="skin:/controls/button_2state.xml">
+                        <SetVariable name="TooltipId">pfl</SetVariable>
+                        <SetVariable name="ObjectName">PflButton</SetVariable>
+                        <SetVariable name="BtnSize">square</SetVariable>
+                        <SetVariable name="Size">26f,26f</SetVariable>
+                        <SetVariable name="ConfigKey"><Variable name="Group"/>,pfl</SetVariable>
+                      </Template>
+                    </Children>
+                  </WidgetGroup>
+                  <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+                </Children>
+              </WidgetGroup><!-- MicAuxGainPFlContainer -->
+
+              <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+
+              <WidgetGroup>
+                <ObjectName>AlignHCenter</ObjectName>
+                <Layout>vertical</Layout>
+                <SizePolicy>min,min</SizePolicy>
+                <Children>
+                  <Template src="skin:/fx/assign_buttons.xml"/>
+                </Children>
+              </WidgetGroup>
+
+            </Children>
+          </WidgetGroup><!-- MicAuxSubControls / Gain, Pfl, FX buttons-->
+
+        </Children>
+      </WidgetGroup><!-- MicAuxUnit -->
+
+    </Children>
+    <Connection>
+      <ConfigKey><Variable name="Group"/>,enabled</ConfigKey>
+      <BindProperty>visible</BindProperty>
+    </Connection>
+  </WidgetGroup>
+</Template>

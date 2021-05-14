@@ -1,6 +1,3 @@
-// shoutconnection.cpp
-// Created July 4th 2017 by Stéphane Lepin <stephane.lepin@gmail.com>
-
 #include <QUrl>
 
 // These includes are only required by ignoreSigpipe, which is unix-only
@@ -13,7 +10,7 @@
 #ifdef WIN64
 #define WIN32
 #endif
-#include <shout/shout.h>
+#include <shoutidjc/shout.h>
 #ifdef WIN64
 #undef WIN32
 #endif
@@ -22,23 +19,28 @@
 #include "control/controlpushbutton.h"
 #include "encoder/encoder.h"
 #include "encoder/encoderbroadcastsettings.h"
+#ifdef __OPUS__
+#include "encoder/encoderopus.h"
+#endif
+#include "engine/sidechain/shoutconnection.h"
 #include "mixer/playerinfo.h"
+#include "moc_shoutconnection.cpp"
 #include "preferences/usersettings.h"
 #include "recording/defs_recording.h"
 #include "track/track.h"
 #include "util/logger.h"
 
-#include <engine/sidechain/shoutconnection.h>
-
 namespace {
-static const int kConnectRetries = 30;
-static const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
+
+const int kConnectRetries = 30;
+const int kMaxNetworkCache = 491520;  // 10 s mp3 @ 192 kbit/s
 // Shoutcast default receive buffer 1048576 and autodumpsourcetime 30 s
 // http://wiki.shoutcast.com/wiki/SHOUTcast_DNAS_Server_2
-static const int kMaxShoutFailures = 3;
+const int kMaxShoutFailures = 3;
 
 const mixxx::Logger kLogger("ShoutConnection");
-}
+
+} // namespace
 
 ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
         UserSettingsPointer pConfig)
@@ -58,6 +60,8 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
           m_firstCall(false),
           m_format_is_mp3(false),
           m_format_is_ov(false),
+          m_format_is_opus(false),
+          m_format_is_aac(false),
           m_protocol_is_icecast1(false),
           m_protocol_is_icecast2(false),
           m_protocol_is_shoutcast(false),
@@ -88,13 +92,24 @@ ShoutConnection::ShoutConnection(BroadcastProfilePtr profile,
         errorDialog(tr("Error setting non-blocking mode:"),
                 shout_get_error(m_pShout));
     }
+
+#ifdef SHOUT_TLS
+    // Libshout defaults to SHOUT_TLS_AUTO if build with SHOUT_TLS
+    // Sometimes autodetection fails, resulting into no metadata send
+    // https://bugs.launchpad.net/mixxx/+bug/1817395
+    if (shout_set_tls(m_pShout, SHOUT_TLS_DISABLED) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting tls mode:"),
+                shout_get_error(m_pShout));
+    }
+#endif
 }
 
 ShoutConnection::~ShoutConnection() {
     delete m_pMasterSamplerate;
 
-    if (m_pShoutMetaData)
+    if (m_pShoutMetaData) {
         shout_metadata_free(m_pShoutMetaData);
+    }
 
     if (m_pShout) {
         shout_close(m_pShout);
@@ -115,8 +130,9 @@ ShoutConnection::~ShoutConnection() {
 bool ShoutConnection::isConnected() {
     if (m_pShout) {
         m_iShoutStatus = shout_get_connected(m_pShout);
-        if (m_iShoutStatus == SHOUTERR_CONNECTED)
+        if (m_iShoutStatus == SHOUTERR_CONNECTED) {
             return true;
+        }
     }
     return false;
 }
@@ -124,9 +140,9 @@ bool ShoutConnection::isConnected() {
 // Only called when applying settings while broadcasting is active
 void ShoutConnection::applySettings() {
     // Do nothing if profile or Live Broadcasting is disabled
-    if(!m_pBroadcastEnabled->toBool()
-            || !m_pProfile->getEnabled())
+    if (!m_pBroadcastEnabled->toBool() || !m_pProfile->getEnabled()) {
         return;
+    }
 
     // Setting the profile's enabled value to false tells the
     // connection's thread to exit, so no need to call
@@ -144,6 +160,13 @@ QByteArray ShoutConnection::encodeString(const QString& string) {
         return m_pTextCodec->fromUnicode(string);
     }
     return string.toLatin1();
+}
+
+void ShoutConnection::insertMetaData(const char *pName, const char *pValue) {
+    int ret = shout_metadata_add(m_pShoutMetaData, pName, pValue);
+    if (ret != SHOUTERR_SUCCESS) {
+        kLogger.warning() << "shout_metadata_add" << pName << "fails with error code" << ret;
+    }
 }
 
 void ShoutConnection::updateFromPreferences() {
@@ -169,6 +192,7 @@ void ShoutConnection::updateFromPreferences() {
 
     m_format_is_mp3 = false;
     m_format_is_ov = false;
+    m_format_is_aac = false;
     m_protocol_is_icecast1 = false;
     m_protocol_is_icecast2 = false;
     m_protocol_is_shoutcast = false;
@@ -178,16 +202,18 @@ void ShoutConnection::updateFromPreferences() {
     // strings to pass to libshout.
 
     QString codec = m_pProfile->getMetadataCharset();
-    QByteArray baCodec = codec.toLatin1();
-    m_pTextCodec = QTextCodec::codecForName(baCodec);
-    if (!m_pTextCodec) {
-        kLogger.warning()
-                << "Couldn't find broadcast metadata codec for codec:" << codec
-                << " defaulting to ISO-8859-1.";
+    if (!codec.isEmpty()) {
+        QByteArray baCodec = codec.toLatin1();
+        m_pTextCodec = QTextCodec::codecForName(baCodec);
+        if (!m_pTextCodec) {
+            kLogger.warning()
+                    << "Couldn't find broadcast metadata codec for codec:" << codec
+                    << " defaulting to ISO-8859-1.";
+        } else {
+            // Indicates our metadata is in the provided charset.
+            insertMetaData("charset",  baCodec.constData());
+        }
     }
-
-    // Indicates our metadata is in the provided charset.
-    shout_metadata_add(m_pShoutMetaData, "charset",  baCodec.constData());
 
     QString serverType = m_pProfile->getServertype();
 
@@ -229,6 +255,9 @@ void ShoutConnection::updateFromPreferences() {
     QByteArray baStreamWebsite = encodeString(m_pProfile->getStreamWebsite());
     QByteArray baStreamDesc = encodeString(m_pProfile->getStreamDesc());
     QByteArray baStreamGenre = encodeString(m_pProfile->getStreamGenre());
+    QByteArray baStreamIRC = encodeString(m_pProfile->getStreamIRC());
+    QByteArray baStreamAIM = encodeString(m_pProfile->getStreamAIM());
+    QByteArray baStreamICQ = encodeString(m_pProfile->getStreamICQ());
 
     // Whether the stream is public.
     bool streamPublic = m_pProfile->getStreamPublic();
@@ -308,24 +337,56 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
+#ifdef SHOUT_META_IRC
+    if (shout_set_meta(m_pShout, SHOUT_META_IRC, baStreamIRC.constData()) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting stream IRC!"), shout_get_error(m_pShout));
+        return;
+    }
+#endif
+
+#ifdef SHOUT_META_AIM
+    if (shout_set_meta(m_pShout, SHOUT_META_AIM, baStreamAIM.constData()) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting stream AIM!"), shout_get_error(m_pShout));
+        return;
+    }
+#endif
+
+#ifdef SHOUT_META_ICQ
+    if (shout_set_meta(m_pShout, SHOUT_META_ICQ, baStreamICQ.constData()) != SHOUTERR_SUCCESS) {
+        errorDialog(tr("Error setting stream ICQ!"), shout_get_error(m_pShout));
+        return;
+    }
+#endif
+
     if (shout_set_public(m_pShout, streamPublic ? 1 : 0) != SHOUTERR_SUCCESS) {
         errorDialog(tr("Error setting stream public!"), shout_get_error(m_pShout));
         return;
     }
 
-    m_format_is_mp3 = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_MP3);
-    m_format_is_ov = !qstrcmp(baFormat.constData(), BROADCAST_FORMAT_OV);
+    m_format_is_mp3 = !qstrcmp(baFormat.constData(), ENCODING_MP3);
+    m_format_is_ov = !qstrcmp(baFormat.constData(), ENCODING_OGG);
+    m_format_is_opus = !qstrcmp(baFormat.constData(), ENCODING_OPUS);
+    m_format_is_aac =
+            (!qstrcmp(baFormat.constData(), ENCODING_AAC) ||
+                    !qstrcmp(baFormat.constData(), ENCODING_HEAAC) ||
+                    !qstrcmp(baFormat.constData(), ENCODING_HEAACV2));
     if (m_format_is_mp3) {
         format = SHOUT_FORMAT_MP3;
-    } else if (m_format_is_ov) {
+    } else if (m_format_is_ov || m_format_is_opus) {
         format = SHOUT_FORMAT_OGG;
+#ifdef SHOUT_FORMAT_AAC
+    } else if (m_format_is_aac) {
+        format = SHOUT_FORMAT_AAC;
+#endif
     } else {
-        qWarning() << "Error: unknown format:" << baFormat.constData();
+        errorDialog(tr("Unknown stream encoding format!"),
+                tr("Use a libshout version with %1 enabled")
+                        .arg(baFormat.constData()));
         return;
     }
 
     if (shout_set_format(m_pShout, format) != SHOUTERR_SUCCESS) {
-        errorDialog("Error setting streaming format!", shout_get_error(m_pShout));
+        errorDialog(tr("Error setting stream encoding format!"), shout_get_error(m_pShout));
         return;
     }
 
@@ -333,15 +394,30 @@ void ShoutConnection::updateFromPreferences() {
         qWarning() << "Error: unknown bit rate:" << iBitrate;
     }
 
-    int iMasterSamplerate = m_pMasterSamplerate->get();
-    if (m_format_is_ov && iMasterSamplerate == 96000) {
-        errorDialog(tr("Broadcasting at 96kHz with Ogg Vorbis is not currently "
-                       "supported. Please try a different sample-rate or switch "
+    auto masterSamplerate = mixxx::audio::SampleRate::fromDouble(m_pMasterSamplerate->get());
+    VERIFY_OR_DEBUG_ASSERT(masterSamplerate.isValid()) {
+        qWarning() << "Invalid sample rate!" << masterSamplerate;
+        return;
+    }
+
+    if (m_format_is_ov && masterSamplerate == 96000) {
+        errorDialog(tr("Broadcasting at 96 kHz with Ogg Vorbis is not currently "
+                       "supported. Please try a different sample rate or switch "
                        "to a different encoding."),
                     tr("See https://bugs.launchpad.net/mixxx/+bug/686212 for more "
                        "information."));
         return;
     }
+
+#ifdef __OPUS__
+    if (m_format_is_opus && masterSamplerate != EncoderOpus::getMasterSamplerate()) {
+        errorDialog(
+            EncoderOpus::getInvalidSamplerateMessage(),
+            tr("Unsupported sample rate")
+        );
+        return;
+    }
+#endif
 
     if (shout_set_audio_info(
             m_pShout, SHOUT_AI_BITRATE,
@@ -365,9 +441,9 @@ void ShoutConnection::updateFromPreferences() {
         return;
     }
 
-    if (m_protocol_is_shoutcast && !m_format_is_mp3) {
-        errorDialog(tr("Error: libshout only supports Shoutcast with MP3 format!"),
-                    shout_get_error(m_pShout));
+    if (m_protocol_is_shoutcast && !(m_format_is_mp3 || m_format_is_aac)) {
+        errorDialog(tr("Error: Shoutcast only supports MP3 and AAC encoders"),
+                shout_get_error(m_pShout));
         return;
     }
 
@@ -377,44 +453,42 @@ void ShoutConnection::updateFromPreferences() {
     }
 
     // Initialize m_encoder
-    EncoderBroadcastSettings broadcastSettings(m_pProfile);
-    if (m_format_is_mp3) {
-        m_encoder = EncoderFactory::getFactory().getNewEncoder(
-            EncoderFactory::getFactory().getFormatFor(ENCODING_MP3), m_pConfig, this);
-        m_encoder->setEncoderSettings(broadcastSettings);
-    } else if (m_format_is_ov) {
-        m_encoder = EncoderFactory::getFactory().getNewEncoder(
-            EncoderFactory::getFactory().getFormatFor(ENCODING_OGG), m_pConfig, this);
-        m_encoder->setEncoderSettings(broadcastSettings);
-    } else {
-        kLogger.warning() << "**** Unknown Encoder Format";
-        setState(NETWORKSTREAMWORKER_STATE_ERROR);
-        m_lastErrorStr = "Encoder format error";
-        return;
+    EncoderSettingsPointer pBroadcastSettings =
+            std::make_shared<EncoderBroadcastSettings>(m_pProfile);
+    m_encoder = EncoderFactory::getFactory().createEncoder(
+                    pBroadcastSettings, this);
+
+    QString userErrorMsg;
+    int ret = -1;
+    if (m_encoder) {
+        ret = m_encoder->initEncoder(static_cast<int>(masterSamplerate), &userErrorMsg);
     }
 
-    QString errorMsg;
-    if(m_encoder->initEncoder(iMasterSamplerate, errorMsg) < 0) {
-        // e.g., if lame is not found
-        // init m_encoder itself will display a message box
-        kLogger.warning() << "**** Encoder init failed";
-        kLogger.warning() << errorMsg;
-
+    // TODO(XXX): Use mixxx::audio::SampleRate instead of int in initEncoder
+    if (ret < 0) {
         // delete m_encoder calls write() make sure it will be exit early
         DEBUG_ASSERT(m_iShoutStatus != SHOUTERR_CONNECTED);
         m_encoder.reset();
 
         setState(NETWORKSTREAMWORKER_STATE_ERROR);
-        m_lastErrorStr = "Encoder error";
 
+        m_lastErrorStr = pBroadcastSettings->getFormat() + QChar(' ') +
+                QObject::tr(" encoder failure") + QChar('\n');
+        if (userErrorMsg.isEmpty()) {
+            m_lastErrorStr.append(QObject::tr(
+                    "Failed to apply the selected settings."));
+        } else {
+            m_lastErrorStr.append(userErrorMsg);
+        }
         return;
     }
     setState(NETWORKSTREAMWORKER_STATE_READY);
 }
 
 bool ShoutConnection::serverConnect() {
-    if(!m_pProfile->getEnabled())
+    if (!m_pProfile->getEnabled()) {
         return false;
+    }
 
     start(QThread::HighPriority);
     setState(NETWORKSTREAMWORKER_STATE_CONNECTING);
@@ -526,7 +600,7 @@ bool ShoutConnection::processConnect() {
             m_threadWaiting = true;
 
             setStatus(BroadcastProfile::STATUS_CONNECTED);
-            emit(broadcastConnected());
+            emit broadcastConnected();
 
             kLogger.debug() << "processConnect() returning true";
             return true;
@@ -567,7 +641,7 @@ bool ShoutConnection::processDisconnect() {
         shout_close(m_pShout);
         m_iShoutStatus = SHOUTERR_UNCONNECTED;
 
-        emit(broadcastDisconnected());
+        emit broadcastDisconnected();
         disconnected = true;
     }
     // delete m_encoder calls write() check if it will be exit early
@@ -649,19 +723,26 @@ bool ShoutConnection::writeSingle(const unsigned char* data, size_t len) {
 
 void ShoutConnection::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     setFunctionCode(4);
-    if(!m_pProfile->getEnabled())
+    if (!m_pProfile->getEnabled()) {
         return;
+    }
 
     setState(NETWORKSTREAMWORKER_STATE_BUSY);
 
     // If we aren't connected, bail.
-    if (m_iShoutStatus != SHOUTERR_CONNECTED)
+    if (m_iShoutStatus != SHOUTERR_CONNECTED) {
         return;
+    }
+
+    // Save a copy of the smart pointer in a local variable
+    // to prevent race conditions when resetting the member
+    // pointer while disconnecting in the worker thread!
+    const EncoderPointer pEncoder = m_encoder;
 
     // If we are connected, encode the samples.
-    if (iBufferSize > 0 && m_encoder) {
+    if (iBufferSize > 0 && pEncoder) {
         setFunctionCode(6);
-        m_encoder->encodeBuffer(pBuffer, iBufferSize);
+        pEncoder->encodeBuffer(pBuffer, iBufferSize);
         // the encoded frames are received by the write() callback.
     }
 
@@ -685,8 +766,9 @@ bool ShoutConnection::metaDataHasChanged() {
     m_iMetaDataLife = 0;
 
     pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
-    if (!pTrack)
+    if (!pTrack) {
         return false;
+    }
 
     if (m_pMetaData) {
         if (!pTrack->getId().isValid() || !m_pMetaData->getId().isValid()) {
@@ -704,8 +786,14 @@ bool ShoutConnection::metaDataHasChanged() {
 
 void ShoutConnection::updateMetaData() {
     setFunctionCode(5);
-    if (!m_pShout || !m_pShoutMetaData)
+    if (!m_pShout) {
+        kLogger.debug() << "updateMetaData failed, invalid m_pShout";
         return;
+    }
+    if (!m_pShoutMetaData) {
+        kLogger.debug() << "updateMetaData failed, invalid m_pShoutMetaData";
+        return;
+    }
 
     /**
      * If track has changed and static metadata is disabled
@@ -717,7 +805,7 @@ void ShoutConnection::updateMetaData() {
      * Also note: Do not try to include Vorbis comments in OGG packages and send them to stream.
      * This was done in EncoderVorbis previously and caused interruptions on track change as well
      * which sounds awful to listeners.
-     * To conlcude: Only write OGG metadata one time, i.e., if static metadata is used.
+     * To conclude: Only write OGG metadata one time, i.e., if static metadata is used.
      */
 
 
@@ -741,8 +829,8 @@ void ShoutConnection::updateMetaData() {
             // old way for those use cases.
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
             	setFunctionCode(9);
-                shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
-                shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
+            	insertMetaData("artist", encodeString(artist).constData());
+            	insertMetaData("title", encodeString(title).constData());
             } else {
                 // we are going to take the metadata format and replace all
                 // the references to $title and $artist by doing a single
@@ -774,10 +862,13 @@ void ShoutConnection::updateMetaData() {
 
                 QByteArray baSong = encodeString(metadataFinal);
                 setFunctionCode(10);
-                shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
+                insertMetaData("song",  baSong.constData());
             }
             setFunctionCode(11);
-            shout_set_metadata(m_pShout, m_pShoutMetaData);
+            int ret = shout_set_metadata(m_pShout, m_pShoutMetaData);
+            if (ret != SHOUTERR_SUCCESS) {
+                kLogger.warning() << "shout_set_metadata fails with error code" << ret;
+            }
         }
     } else {
         // Otherwise we might use static metadata
@@ -787,14 +878,11 @@ void ShoutConnection::updateMetaData() {
             // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
             	setFunctionCode(12);
-                shout_metadata_add(
-                        m_pShoutMetaData,"artist",encodeString(m_customArtist).constData());
-
-                shout_metadata_add(
-                        m_pShoutMetaData,"title",encodeString(m_customTitle).constData());
+                insertMetaData("artist", encodeString(m_customArtist).constData());
+                insertMetaData("title", encodeString(m_customTitle).constData());
             } else {
                 QByteArray baCustomSong = encodeString(m_customArtist.isEmpty() ? m_customTitle : m_customArtist + " - " + m_customTitle);
-                shout_metadata_add(m_pShoutMetaData, "song", baCustomSong.constData());
+                insertMetaData("song", baCustomSong.constData());
             }
 
             setFunctionCode(13);
@@ -804,7 +892,7 @@ void ShoutConnection::updateMetaData() {
     }
 }
 
-void ShoutConnection::errorDialog(QString text, QString detailedError) {
+void ShoutConnection::errorDialog(const QString& text, const QString& detailedError) {
     qWarning() << "Streaming error: " << detailedError;
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_WARNING);
@@ -820,7 +908,7 @@ void ShoutConnection::errorDialog(QString text, QString detailedError) {
     setState(NETWORKSTREAMWORKER_STATE_ERROR);
 }
 
-void ShoutConnection::infoDialog(QString text, QString detailedInfo) {
+void ShoutConnection::infoDialog(const QString& text, const QString& detailedInfo) {
     ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
     props->setType(DLG_INFO);
     props->setTitle(tr("Connection message"));
@@ -851,7 +939,7 @@ bool ShoutConnection::waitForRetry() {
 
     if (delay > 0) {
         m_enabledMutex.lock();
-        m_waitEnabled.wait(&m_enabledMutex, delay * 1000);
+        m_waitEnabled.wait(&m_enabledMutex, static_cast<unsigned long>(delay * 1000));
         m_enabledMutex.unlock();
         if (!m_pProfile->getEnabled()) {
             return false;
@@ -899,7 +987,7 @@ QSharedPointer<FIFO<CSAMPLE>> ShoutConnection::getOutputFifo() {
 }
 
 bool ShoutConnection::threadWaiting() {
-    return m_threadWaiting;
+    return atomicLoadRelaxed(m_threadWaiting);
 }
 
 void ShoutConnection::run() {
@@ -918,8 +1006,10 @@ void ShoutConnection::run() {
 
     if (!processConnect()) {
         errorDialog(tr("Can't connect to streaming server"),
-                m_lastErrorStr + "\n" +
-                tr("Please check your connection to the Internet and verify that your username and password are correct."));
+                m_lastErrorStr + "\n\n" +
+                        tr("Please check your connection to the Internet and "
+                           "verify that your username and password are "
+                           "correct."));
         return;
     }
 
@@ -996,4 +1086,3 @@ void ShoutConnection::ignoreSigpipe() {
 #endif
 }
 #endif
-

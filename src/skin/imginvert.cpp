@@ -6,4 +6,3 @@ QColor ImgInvert::doColorCorrection(const QColor& c) const {
                   0xff - c.blue(),
                   c.alpha());
 }
-

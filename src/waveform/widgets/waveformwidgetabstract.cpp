@@ -1,14 +1,15 @@
 #include "waveformwidgetabstract.h"
+
+#include <QWidget>
+#include <QtDebug>
+
+#include "util/compatibility.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 
-#include <QtDebug>
-#include <QWidget>
-
-
-WaveformWidgetAbstract::WaveformWidgetAbstract(const char* group)
-    : WaveformWidgetRenderer(group),
-      m_initSuccess(false) {
-    m_widget = NULL;
+WaveformWidgetAbstract::WaveformWidgetAbstract(const QString& group)
+        : WaveformWidgetRenderer(group),
+          m_initSuccess(false) {
+    m_widget = nullptr;
 }
 
 WaveformWidgetAbstract::~WaveformWidgetAbstract() {
@@ -39,8 +40,10 @@ mixxx::Duration WaveformWidgetAbstract::render() {
 }
 
 void WaveformWidgetAbstract::resize(int width, int height) {
+    qreal devicePixelRatio = 1.0;
     if (m_widget) {
         m_widget->resize(width, height);
+        devicePixelRatio = getDevicePixelRatioF(m_widget);
     }
-    WaveformWidgetRenderer::resize(width, height);
+    WaveformWidgetRenderer::resize(width, height, static_cast<float>(devicePixelRatio));
 }

@@ -1,19 +1,4 @@
-/***************************************************************************
-                          errordialoghandler.cpp  -  description
-                             -------------------
-    begin                : Sun Feb 22 2009
-    copyright            : (C) 2009 by Sean M. Pappalardo
-    email                : pegasus@c64.org
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
+#include "errordialoghandler.h"
 
 #include <QCoreApplication>
 #include <QMutexLocker>
@@ -21,12 +6,13 @@
 #include <QThread>
 #include <QtDebug>
 
-#include "errordialoghandler.h"
+#include "moc_errordialoghandler.cpp"
 #include "util/assert.h"
-#include "util/version.h"
+#include "util/versionstore.h"
 
 ErrorDialogProperties::ErrorDialogProperties()
-        : m_title(Version::applicationName()),
+        : m_title(VersionStore::applicationName()),
+          m_detailsUseMonospaceFont(false),
           m_modal(true),
           m_shouldQuit(false),
           m_type(DLG_NONE),
@@ -35,13 +21,15 @@ ErrorDialogProperties::ErrorDialogProperties()
           m_escapeButton(QMessageBox::NoButton) {
 }
 
-void ErrorDialogProperties::setTitle(QString title) {
+void ErrorDialogProperties::setTitle(const QString& title) {
     m_title.append(" - ").append(title);
 }
 
-void ErrorDialogProperties::setText(QString text) {
+void ErrorDialogProperties::setText(const QString& text) {
     // If no key is set, use this window text since it is likely to be unique
-    if (m_key.isEmpty()) m_key = text;
+    if (m_key.isEmpty()) {
+        m_key = text;
+    }
     m_text = text;
 }
 
@@ -67,7 +55,7 @@ void ErrorDialogProperties::addButton(QMessageBox::StandardButton button) {
 // ----------------------------------------------------
 // ---------- ErrorDialogHandler begins here ----------
 
-ErrorDialogHandler* ErrorDialogHandler::s_pInstance = NULL;
+ErrorDialogHandler* ErrorDialogHandler::s_pInstance = nullptr;
 bool ErrorDialogHandler::s_bEnabled = true;
 
 // static
@@ -75,26 +63,21 @@ void ErrorDialogHandler::setEnabled(bool enabled) {
     s_bEnabled = enabled;
 }
 
-ErrorDialogHandler::ErrorDialogHandler()
-        : m_signalMapper(this) {
-    connect(&m_signalMapper, SIGNAL(mapped(QString)),
-            this, SLOT(boxClosed(QString)));
-
+ErrorDialogHandler::ErrorDialogHandler() {
     m_errorCondition = false;
-    connect(this, SIGNAL(showErrorDialog(ErrorDialogProperties*)),
-            this, SLOT(errorDialog(ErrorDialogProperties*)));
+    connect(this, &ErrorDialogHandler::showErrorDialog, this, &ErrorDialogHandler::errorDialog);
 }
 
 ErrorDialogHandler::~ErrorDialogHandler() {
-    s_pInstance = NULL;
+    s_pInstance = nullptr;
 }
 
 ErrorDialogProperties* ErrorDialogHandler::newDialogProperties() {
     return new ErrorDialogProperties();
 }
 
-bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message,
-                                            bool shouldQuit) {
+bool ErrorDialogHandler::requestErrorDialog(
+        DialogType type, const QString& message, bool shouldQuit) {
     if (!s_bEnabled) {
         return false;
     }
@@ -140,7 +123,7 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
         return false;
     }
 
-    emit(showErrorDialog(props));
+    emit showErrorDialog(props);
     return true;
 }
 
@@ -156,26 +139,29 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
         return;
     }
 
-    QMessageBox* msgBox = new QMessageBox();
-    msgBox->setIcon(props->m_icon);
-    msgBox->setWindowTitle(props->m_title);
-    msgBox->setText(props->m_text);
+    QMessageBox* pMsgBox = new QMessageBox();
+    pMsgBox->setIcon(props->m_icon);
+    pMsgBox->setWindowTitle(props->m_title);
+    pMsgBox->setText(props->m_text);
     if (!props->m_infoText.isEmpty()) {
-        msgBox->setInformativeText(props->m_infoText);
+        pMsgBox->setInformativeText(props->m_infoText);
     }
     if (!props->m_details.isEmpty()) {
-        msgBox->setDetailedText(props->m_details);
+        pMsgBox->setDetailedText(props->m_details);
+        if (props->m_detailsUseMonospaceFont) {
+            pMsgBox->setStyleSheet("QTextEdit { font-family: monospace; }");
+        }
     }
 
     while (!props->m_buttons.isEmpty()) {
-        msgBox->addButton(props->m_buttons.takeFirst());
+        pMsgBox->addButton(props->m_buttons.takeFirst());
     }
-    msgBox->setDefaultButton(props->m_defaultButton);
-    msgBox->setEscapeButton(props->m_escapeButton);
-    msgBox->setModal(props->m_modal);
+    pMsgBox->setDefaultButton(props->m_defaultButton);
+    pMsgBox->setEscapeButton(props->m_escapeButton);
+    pMsgBox->setModal(props->m_modal);
 
     // This deletes the msgBox automatically, avoiding a memory leak
-    msgBox->setAttribute(Qt::WA_DeleteOnClose, true);
+    pMsgBox->setAttribute(Qt::WA_DeleteOnClose, true);
 
     QMutexLocker locker(&m_mutex);
     // To avoid duplicate dialogs on the same error
@@ -183,17 +169,19 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 
     // Signal mapper calls our slot with the key parameter so it knows which to
     // remove from the list
-    connect(msgBox, SIGNAL(finished(int)),
-            &m_signalMapper, SLOT(map()));
-    m_signalMapper.setMapping(msgBox, props->m_key);
+    QString key = props->m_key;
+    connect(pMsgBox,
+            &QMessageBox::finished,
+            this,
+            [this, key, pMsgBox] { boxClosed(key, pMsgBox); });
 
     locker.unlock();
 
     if (props->m_modal) {
         // Blocks so the user has a chance to read it before application exit
-        msgBox->exec();
+        pMsgBox->exec();
     } else {
-        msgBox->show();
+        pMsgBox->show();
     }
 
     // If critical/fatal, gracefully exit application if possible
@@ -212,13 +200,12 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     }
 }
 
-void ErrorDialogHandler::boxClosed(QString key) {
+void ErrorDialogHandler::boxClosed(const QString& key, QMessageBox* msgBox) {
     QMutexLocker locker(&m_mutex);
-    QMessageBox* msgBox = (QMessageBox*)m_signalMapper.mapping(key);
     locker.unlock();
 
     QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
-    emit(stdButtonClicked(key, whichStdButton));
+    emit stdButtonClicked(key, whichStdButton);
 
     // If the user clicks "Ignore," we leave the key in the list so the same
     // error is not displayed again for the duration of the session

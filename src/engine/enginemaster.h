@@ -1,22 +1,4 @@
-/***************************************************************************
-                          enginemaster.h  -  description
-                             -------------------
-    begin                : Sun Apr 28 2002
-    copyright            : (C) 2002 by
-    email                :
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ENGINEMASTER_H
-#define ENGINEMASTER_H
+#pragma once
 
 #include <QObject>
 #include <QVarLengthArray>
@@ -25,7 +7,7 @@
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
 #include "engine/engineobject.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/channelhandle.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
@@ -56,15 +38,15 @@ class EngineMaster : public QObject, public AudioSource {
     Q_OBJECT
   public:
     EngineMaster(UserSettingsPointer pConfig,
-                 const char* pGroup,
-                 EffectsManager* pEffectsManager,
-                 ChannelHandleFactory* pChannelHandleFactory,
-                 bool bEnableSidechain);
+            const QString& group,
+            EffectsManager* pEffectsManager,
+            ChannelHandleFactoryPointer pChannelHandleFactory,
+            bool bEnableSidechain);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
-    const CSAMPLE* buffer(AudioOutput output) const;
+    const CSAMPLE* buffer(const AudioOutput& output) const;
 
     ChannelHandleAndGroup registerChannelGroup(const QString& group) {
         return ChannelHandleAndGroup(
@@ -79,10 +61,10 @@ class EngineMaster : public QObject, public AudioSource {
     // these methods are called the callback is guaranteed to be inactive
     // (SoundManager closes all devices before calling these). This may change
     // in the future.
-    virtual void onOutputConnected(AudioOutput output);
-    virtual void onOutputDisconnected(AudioOutput output);
-    void onInputConnected(AudioInput input);
-    void onInputDisconnected(AudioInput input);
+    virtual void onOutputConnected(const AudioOutput& output);
+    virtual void onOutputDisconnected(const AudioOutput& output);
+    void onInputConnected(const AudioInput& input);
+    void onInputDisconnected(const AudioInput& input);
 
     void process(const int iBufferSize);
 
@@ -90,10 +72,10 @@ class EngineMaster : public QObject, public AudioSource {
     // only call it before the engine has started mixing.
     void addChannel(EngineChannel* pChannel);
     EngineChannel* getChannel(const QString& group);
-    static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
-                                            double leftGain,
-                                            double centerGain,
-                                            double rightGain) {
+    static inline CSAMPLE_GAIN gainForOrientation(EngineChannel::ChannelOrientation orientation,
+            CSAMPLE_GAIN leftGain,
+            CSAMPLE_GAIN centerGain,
+            CSAMPLE_GAIN rightGain) {
         switch (orientation) {
             case EngineChannel::LEFT:
                 return leftGain;
@@ -116,12 +98,14 @@ class EngineMaster : public QObject, public AudioSource {
     const CSAMPLE* getHeadphoneBuffer() const;
     const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
-    const CSAMPLE* getChannelBuffer(QString name) const;
+    const CSAMPLE* getChannelBuffer(const QString& name) const;
     const CSAMPLE* getSidechainBuffer() const;
 
     EngineSideChain* getSideChain() const {
         return m_pEngineSideChain;
     }
+
+    CSAMPLE_GAIN getMasterGain(int channelIndex) const;
 
     struct ChannelInfo {
         ChannelInfo(int index)
@@ -141,31 +125,32 @@ class EngineMaster : public QObject, public AudioSource {
     };
 
     struct GainCache {
-        CSAMPLE m_gain;
+        CSAMPLE_GAIN m_gain;
         bool m_fadeout;
     };
 
     class GainCalculator {
       public:
-        virtual double getGain(ChannelInfo* pChannelInfo) const = 0;
+        virtual ~GainCalculator() = default;
+        virtual CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const = 0;
     };
     class PflGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) const {
+        inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const override {
             Q_UNUSED(pChannelInfo);
             return m_dGain;
         }
-        inline void setGain(double dGain) {
+        inline void setGain(CSAMPLE_GAIN dGain) {
             m_dGain = dGain;
         }
+
       private:
-        double m_dGain;
+        CSAMPLE_GAIN m_dGain;
     };
     class TalkoverGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) const {
-            Q_UNUSED(pChannelInfo);
-            return 1.0;
+        inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const override {
+            return static_cast<CSAMPLE_GAIN>(pChannelInfo->m_pVolumeControl->get());
         }
     };
     class OrientationVolumeGainCalculator : public GainCalculator {
@@ -177,16 +162,21 @@ class EngineMaster : public QObject, public AudioSource {
                   m_dTalkoverDuckingGain(1.0) {
         }
 
-        inline double getGain(ChannelInfo* pChannelInfo) const {
-            const double channelVolume = pChannelInfo->m_pVolumeControl->get();
-            const double orientationGain = EngineMaster::gainForOrientation(
+        inline CSAMPLE_GAIN getGain(ChannelInfo* pChannelInfo) const {
+            const CSAMPLE_GAIN channelVolume = static_cast<CSAMPLE_GAIN>(
+                    pChannelInfo->m_pVolumeControl->get());
+            const CSAMPLE_GAIN orientationGain = EngineMaster::gainForOrientation(
                     pChannelInfo->m_pChannel->getOrientation(),
-                    m_dLeftGain, m_dCenterGain, m_dRightGain);
+                    m_dLeftGain,
+                    m_dCenterGain,
+                    m_dRightGain);
             return channelVolume * orientationGain * m_dTalkoverDuckingGain;
         }
 
-        inline void setGains(double leftGain, double centerGain, double rightGain,
-                             double talkoverDuckingGain) {
+        inline void setGains(CSAMPLE_GAIN leftGain,
+                CSAMPLE_GAIN centerGain,
+                CSAMPLE_GAIN rightGain,
+                CSAMPLE_GAIN talkoverDuckingGain) {
             m_dLeftGain = leftGain;
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
@@ -194,10 +184,10 @@ class EngineMaster : public QObject, public AudioSource {
         }
 
       private:
-        double m_dLeftGain;
-        double m_dCenterGain;
-        double m_dRightGain;
-        double m_dTalkoverDuckingGain;
+        CSAMPLE_GAIN m_dLeftGain;
+        CSAMPLE_GAIN m_dCenterGain;
+        CSAMPLE_GAIN m_dRightGain;
+        CSAMPLE_GAIN m_dTalkoverDuckingGain;
     };
 
     enum class MicMonitorMode {
@@ -271,9 +261,10 @@ class EngineMaster : public QObject, public AudioSource {
     // respective output.
     void processChannels(int iBufferSize);
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
     void applyMasterEffects();
-    void processHeadphones(const double masterMixGainInHeadphones);
+    void processHeadphones(const CSAMPLE_GAIN masterMixGainInHeadphones);
+    bool sidechainMixRequired() const;
 
     EngineEffectsManager* m_pEngineEffectsManager;
 
@@ -359,5 +350,3 @@ class EngineMaster : public QObject, public AudioSource {
     volatile bool m_bBusOutputConnected[3];
     bool m_bExternalRecordBroadcastInputConnected;
 };
-
-#endif

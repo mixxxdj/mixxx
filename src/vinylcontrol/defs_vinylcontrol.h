@@ -1,5 +1,4 @@
-#ifndef DEFS_VINYLCONTROL_H
-#define DEFS_VINYLCONTROL_H
+#pragma once
 
 #define VINYL_PREF_KEY "[VinylControl]"
 
@@ -29,7 +28,7 @@ const int VINYL_STATUS_ERROR = 3;
 #define MIXXX_VINYL_SPEED_33 "33.3 RPM"
 #define MIXXX_VINYL_SPEED_45 "45 RPM"
 
-#define MIXXX_VINYL_SPEED_33_NUM 33.3
+#define MIXXX_VINYL_SPEED_33_NUM (100.0 / 3.0)
 #define MIXXX_VINYL_SPEED_45_NUM 45.0
 
 #define MIXXX_VCMODE_ABSOLUTE 0
@@ -46,5 +45,3 @@ const int VINYL_STATUS_ERROR = 3;
 #define MIXXX_VINYL_SCOPE_SIZE 100
 
 const int kMaximumVinylControlInputs = 4;
-
-#endif /* DEFS_VINYLCONTROL_H */

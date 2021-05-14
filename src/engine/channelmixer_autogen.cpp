@@ -3,7 +3,7 @@
 #include "util/timer.h"
 ////////////////////////////////////////////////////////
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //
-// SEE scripts/generate_sample_functions.py           //
+// SEE tools/generate_sample_functions.py             //
 ////////////////////////////////////////////////////////
 
 // static
@@ -27,9 +27,9 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
     int totalActive = activeChannels->size();
     SampleUtil::clear(pOutput, iBufferSize);
     if (totalActive == 0) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_0active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_0active");
     } else if (totalActive == 1) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_1active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_1active");
         CSAMPLE_GAIN oldGain[1];
         CSAMPLE_GAIN newGain[1];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -47,7 +47,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         // Process effects for each channel and mix the processed signal into pOutput
         pEngineEffectsManager->processPostFaderAndMix(pChannel0->m_handle, outputHandle, pBuffer0, pOutput, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
     } else if (totalActive == 2) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_2active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_2active");
         CSAMPLE_GAIN oldGain[2];
         CSAMPLE_GAIN newGain[2];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -78,7 +78,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel0->m_handle, outputHandle, pBuffer0, pOutput, iBufferSize, iSampleRate, pChannel0->m_features, oldGain[0], newGain[0]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel1->m_handle, outputHandle, pBuffer1, pOutput, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
     } else if (totalActive == 3) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_3active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_3active");
         CSAMPLE_GAIN oldGain[3];
         CSAMPLE_GAIN newGain[3];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -122,7 +122,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel1->m_handle, outputHandle, pBuffer1, pOutput, iBufferSize, iSampleRate, pChannel1->m_features, oldGain[1], newGain[1]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel2->m_handle, outputHandle, pBuffer2, pOutput, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
     } else if (totalActive == 4) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_4active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_4active");
         CSAMPLE_GAIN oldGain[4];
         CSAMPLE_GAIN newGain[4];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -179,7 +179,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel2->m_handle, outputHandle, pBuffer2, pOutput, iBufferSize, iSampleRate, pChannel2->m_features, oldGain[2], newGain[2]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel3->m_handle, outputHandle, pBuffer3, pOutput, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
     } else if (totalActive == 5) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_5active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_5active");
         CSAMPLE_GAIN oldGain[5];
         CSAMPLE_GAIN newGain[5];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -249,7 +249,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel3->m_handle, outputHandle, pBuffer3, pOutput, iBufferSize, iSampleRate, pChannel3->m_features, oldGain[3], newGain[3]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel4->m_handle, outputHandle, pBuffer4, pOutput, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
     } else if (totalActive == 6) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_6active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_6active");
         CSAMPLE_GAIN oldGain[6];
         CSAMPLE_GAIN newGain[6];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -332,7 +332,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel4->m_handle, outputHandle, pBuffer4, pOutput, iBufferSize, iSampleRate, pChannel4->m_features, oldGain[4], newGain[4]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel5->m_handle, outputHandle, pBuffer5, pOutput, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
     } else if (totalActive == 7) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_7active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_7active");
         CSAMPLE_GAIN oldGain[7];
         CSAMPLE_GAIN newGain[7];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -428,7 +428,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel5->m_handle, outputHandle, pBuffer5, pOutput, iBufferSize, iSampleRate, pChannel5->m_features, oldGain[5], newGain[5]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel6->m_handle, outputHandle, pBuffer6, pOutput, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
     } else if (totalActive == 8) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_8active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_8active");
         CSAMPLE_GAIN oldGain[8];
         CSAMPLE_GAIN newGain[8];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -537,7 +537,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel6->m_handle, outputHandle, pBuffer6, pOutput, iBufferSize, iSampleRate, pChannel6->m_features, oldGain[6], newGain[6]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel7->m_handle, outputHandle, pBuffer7, pOutput, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
     } else if (totalActive == 9) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_9active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_9active");
         CSAMPLE_GAIN oldGain[9];
         CSAMPLE_GAIN newGain[9];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -659,7 +659,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel7->m_handle, outputHandle, pBuffer7, pOutput, iBufferSize, iSampleRate, pChannel7->m_features, oldGain[7], newGain[7]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel8->m_handle, outputHandle, pBuffer8, pOutput, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
     } else if (totalActive == 10) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_10active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_10active");
         CSAMPLE_GAIN oldGain[10];
         CSAMPLE_GAIN newGain[10];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -794,7 +794,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel8->m_handle, outputHandle, pBuffer8, pOutput, iBufferSize, iSampleRate, pChannel8->m_features, oldGain[8], newGain[8]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel9->m_handle, outputHandle, pBuffer9, pOutput, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
     } else if (totalActive == 11) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_11active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_11active");
         CSAMPLE_GAIN oldGain[11];
         CSAMPLE_GAIN newGain[11];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -942,7 +942,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel9->m_handle, outputHandle, pBuffer9, pOutput, iBufferSize, iSampleRate, pChannel9->m_features, oldGain[9], newGain[9]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel10->m_handle, outputHandle, pBuffer10, pOutput, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
     } else if (totalActive == 12) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_12active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_12active");
         CSAMPLE_GAIN oldGain[12];
         CSAMPLE_GAIN newGain[12];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -1103,7 +1103,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel10->m_handle, outputHandle, pBuffer10, pOutput, iBufferSize, iSampleRate, pChannel10->m_features, oldGain[10], newGain[10]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel11->m_handle, outputHandle, pBuffer11, pOutput, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
     } else if (totalActive == 13) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_13active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_13active");
         CSAMPLE_GAIN oldGain[13];
         CSAMPLE_GAIN newGain[13];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -1277,7 +1277,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel11->m_handle, outputHandle, pBuffer11, pOutput, iBufferSize, iSampleRate, pChannel11->m_features, oldGain[11], newGain[11]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel12->m_handle, outputHandle, pBuffer12, pOutput, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
     } else if (totalActive == 14) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_14active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_14active");
         CSAMPLE_GAIN oldGain[14];
         CSAMPLE_GAIN newGain[14];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -1464,7 +1464,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel12->m_handle, outputHandle, pBuffer12, pOutput, iBufferSize, iSampleRate, pChannel12->m_features, oldGain[12], newGain[12]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel13->m_handle, outputHandle, pBuffer13, pOutput, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
     } else if (totalActive == 15) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_15active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_15active");
         CSAMPLE_GAIN oldGain[15];
         CSAMPLE_GAIN newGain[15];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -1664,7 +1664,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel13->m_handle, outputHandle, pBuffer13, pOutput, iBufferSize, iSampleRate, pChannel13->m_features, oldGain[13], newGain[13]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel14->m_handle, outputHandle, pBuffer14, pOutput, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
     } else if (totalActive == 16) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_16active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_16active");
         CSAMPLE_GAIN oldGain[16];
         CSAMPLE_GAIN newGain[16];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -1877,7 +1877,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel14->m_handle, outputHandle, pBuffer14, pOutput, iBufferSize, iSampleRate, pChannel14->m_features, oldGain[14], newGain[14]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel15->m_handle, outputHandle, pBuffer15, pOutput, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
     } else if (totalActive == 17) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_17active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_17active");
         CSAMPLE_GAIN oldGain[17];
         CSAMPLE_GAIN newGain[17];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -2103,7 +2103,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel15->m_handle, outputHandle, pBuffer15, pOutput, iBufferSize, iSampleRate, pChannel15->m_features, oldGain[15], newGain[15]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel16->m_handle, outputHandle, pBuffer16, pOutput, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
     } else if (totalActive == 18) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_18active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_18active");
         CSAMPLE_GAIN oldGain[18];
         CSAMPLE_GAIN newGain[18];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -2342,7 +2342,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel16->m_handle, outputHandle, pBuffer16, pOutput, iBufferSize, iSampleRate, pChannel16->m_features, oldGain[16], newGain[16]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel17->m_handle, outputHandle, pBuffer17, pOutput, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
     } else if (totalActive == 19) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_19active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_19active");
         CSAMPLE_GAIN oldGain[19];
         CSAMPLE_GAIN newGain[19];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -2594,7 +2594,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel17->m_handle, outputHandle, pBuffer17, pOutput, iBufferSize, iSampleRate, pChannel17->m_features, oldGain[17], newGain[17]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel18->m_handle, outputHandle, pBuffer18, pOutput, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
     } else if (totalActive == 20) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_20active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_20active");
         CSAMPLE_GAIN oldGain[20];
         CSAMPLE_GAIN newGain[20];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -2859,7 +2859,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel18->m_handle, outputHandle, pBuffer18, pOutput, iBufferSize, iSampleRate, pChannel18->m_features, oldGain[18], newGain[18]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel19->m_handle, outputHandle, pBuffer19, pOutput, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
     } else if (totalActive == 21) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_21active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_21active");
         CSAMPLE_GAIN oldGain[21];
         CSAMPLE_GAIN newGain[21];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -3137,7 +3137,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel19->m_handle, outputHandle, pBuffer19, pOutput, iBufferSize, iSampleRate, pChannel19->m_features, oldGain[19], newGain[19]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel20->m_handle, outputHandle, pBuffer20, pOutput, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
     } else if (totalActive == 22) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_22active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_22active");
         CSAMPLE_GAIN oldGain[22];
         CSAMPLE_GAIN newGain[22];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -3428,7 +3428,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel20->m_handle, outputHandle, pBuffer20, pOutput, iBufferSize, iSampleRate, pChannel20->m_features, oldGain[20], newGain[20]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel21->m_handle, outputHandle, pBuffer21, pOutput, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
     } else if (totalActive == 23) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_23active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_23active");
         CSAMPLE_GAIN oldGain[23];
         CSAMPLE_GAIN newGain[23];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -3732,7 +3732,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel21->m_handle, outputHandle, pBuffer21, pOutput, iBufferSize, iSampleRate, pChannel21->m_features, oldGain[21], newGain[21]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel22->m_handle, outputHandle, pBuffer22, pOutput, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
     } else if (totalActive == 24) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_24active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_24active");
         CSAMPLE_GAIN oldGain[24];
         CSAMPLE_GAIN newGain[24];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -4049,7 +4049,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel22->m_handle, outputHandle, pBuffer22, pOutput, iBufferSize, iSampleRate, pChannel22->m_features, oldGain[22], newGain[22]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel23->m_handle, outputHandle, pBuffer23, pOutput, iBufferSize, iSampleRate, pChannel23->m_features, oldGain[23], newGain[23]);
     } else if (totalActive == 25) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_25active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_25active");
         CSAMPLE_GAIN oldGain[25];
         CSAMPLE_GAIN newGain[25];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -4379,7 +4379,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel23->m_handle, outputHandle, pBuffer23, pOutput, iBufferSize, iSampleRate, pChannel23->m_features, oldGain[23], newGain[23]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel24->m_handle, outputHandle, pBuffer24, pOutput, iBufferSize, iSampleRate, pChannel24->m_features, oldGain[24], newGain[24]);
     } else if (totalActive == 26) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_26active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_26active");
         CSAMPLE_GAIN oldGain[26];
         CSAMPLE_GAIN newGain[26];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -4722,7 +4722,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel24->m_handle, outputHandle, pBuffer24, pOutput, iBufferSize, iSampleRate, pChannel24->m_features, oldGain[24], newGain[24]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel25->m_handle, outputHandle, pBuffer25, pOutput, iBufferSize, iSampleRate, pChannel25->m_features, oldGain[25], newGain[25]);
     } else if (totalActive == 27) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_27active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_27active");
         CSAMPLE_GAIN oldGain[27];
         CSAMPLE_GAIN newGain[27];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -5078,7 +5078,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel25->m_handle, outputHandle, pBuffer25, pOutput, iBufferSize, iSampleRate, pChannel25->m_features, oldGain[25], newGain[25]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel26->m_handle, outputHandle, pBuffer26, pOutput, iBufferSize, iSampleRate, pChannel26->m_features, oldGain[26], newGain[26]);
     } else if (totalActive == 28) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_28active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_28active");
         CSAMPLE_GAIN oldGain[28];
         CSAMPLE_GAIN newGain[28];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -5447,7 +5447,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel26->m_handle, outputHandle, pBuffer26, pOutput, iBufferSize, iSampleRate, pChannel26->m_features, oldGain[26], newGain[26]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel27->m_handle, outputHandle, pBuffer27, pOutput, iBufferSize, iSampleRate, pChannel27->m_features, oldGain[27], newGain[27]);
     } else if (totalActive == 29) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_29active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_29active");
         CSAMPLE_GAIN oldGain[29];
         CSAMPLE_GAIN newGain[29];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -5829,7 +5829,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel27->m_handle, outputHandle, pBuffer27, pOutput, iBufferSize, iSampleRate, pChannel27->m_features, oldGain[27], newGain[27]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel28->m_handle, outputHandle, pBuffer28, pOutput, iBufferSize, iSampleRate, pChannel28->m_features, oldGain[28], newGain[28]);
     } else if (totalActive == 30) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_30active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_30active");
         CSAMPLE_GAIN oldGain[30];
         CSAMPLE_GAIN newGain[30];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -6224,7 +6224,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel28->m_handle, outputHandle, pBuffer28, pOutput, iBufferSize, iSampleRate, pChannel28->m_features, oldGain[28], newGain[28]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel29->m_handle, outputHandle, pBuffer29, pOutput, iBufferSize, iSampleRate, pChannel29->m_features, oldGain[29], newGain[29]);
     } else if (totalActive == 31) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_31active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_31active");
         CSAMPLE_GAIN oldGain[31];
         CSAMPLE_GAIN newGain[31];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -6632,7 +6632,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel29->m_handle, outputHandle, pBuffer29, pOutput, iBufferSize, iSampleRate, pChannel29->m_features, oldGain[29], newGain[29]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel30->m_handle, outputHandle, pBuffer30, pOutput, iBufferSize, iSampleRate, pChannel30->m_features, oldGain[30], newGain[30]);
     } else if (totalActive == 32) {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_32active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_32active");
         CSAMPLE_GAIN oldGain[32];
         CSAMPLE_GAIN newGain[32];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -7053,7 +7053,7 @@ void ChannelMixer::applyEffectsAndMixChannels(const EngineMaster::GainCalculator
         pEngineEffectsManager->processPostFaderAndMix(pChannel30->m_handle, outputHandle, pBuffer30, pOutput, iBufferSize, iSampleRate, pChannel30->m_features, oldGain[30], newGain[30]);
         pEngineEffectsManager->processPostFaderAndMix(pChannel31->m_handle, outputHandle, pBuffer31, pOutput, iBufferSize, iSampleRate, pChannel31->m_features, oldGain[31], newGain[31]);
     } else {
-        ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_Over32active");
+        //ScopedTimer t("EngineMaster::applyEffectsAndMixChannels_Over32active");
         for (int i = 0; i < activeChannels->size(); ++i) {
             EngineMaster::ChannelInfo* pChannelInfo = activeChannels->at(i);
             const int channelIndex = pChannelInfo->m_index;
@@ -7088,10 +7088,10 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
     // 4. Mix the channel buffers together to make pOutput, overwriting the pOutput buffer from the last engine callback
     int totalActive = activeChannels->size();
     if (totalActive == 0) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_0active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_0active");
         SampleUtil::clear(pOutput, iBufferSize);
     } else if (totalActive == 1) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_1active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_1active");
         CSAMPLE_GAIN oldGain[1];
         CSAMPLE_GAIN newGain[1];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -7113,7 +7113,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i];
         }
     } else if (totalActive == 2) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_2active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_2active");
         CSAMPLE_GAIN oldGain[2];
         CSAMPLE_GAIN newGain[2];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -7148,7 +7148,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i];
         }
     } else if (totalActive == 3) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_3active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_3active");
         CSAMPLE_GAIN oldGain[3];
         CSAMPLE_GAIN newGain[3];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -7196,7 +7196,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i];
         }
     } else if (totalActive == 4) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_4active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_4active");
         CSAMPLE_GAIN oldGain[4];
         CSAMPLE_GAIN newGain[4];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -7257,7 +7257,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i];
         }
     } else if (totalActive == 5) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_5active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_5active");
         CSAMPLE_GAIN oldGain[5];
         CSAMPLE_GAIN newGain[5];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -7331,7 +7331,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i];
         }
     } else if (totalActive == 6) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_6active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_6active");
         CSAMPLE_GAIN oldGain[6];
         CSAMPLE_GAIN newGain[6];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -7418,7 +7418,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i];
         }
     } else if (totalActive == 7) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_7active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_7active");
         CSAMPLE_GAIN oldGain[7];
         CSAMPLE_GAIN newGain[7];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -7518,7 +7518,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i];
         }
     } else if (totalActive == 8) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_8active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_8active");
         CSAMPLE_GAIN oldGain[8];
         CSAMPLE_GAIN newGain[8];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -7631,7 +7631,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i];
         }
     } else if (totalActive == 9) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_9active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_9active");
         CSAMPLE_GAIN oldGain[9];
         CSAMPLE_GAIN newGain[9];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -7757,7 +7757,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i];
         }
     } else if (totalActive == 10) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_10active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_10active");
         CSAMPLE_GAIN oldGain[10];
         CSAMPLE_GAIN newGain[10];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -7896,7 +7896,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i];
         }
     } else if (totalActive == 11) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_11active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_11active");
         CSAMPLE_GAIN oldGain[11];
         CSAMPLE_GAIN newGain[11];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -8048,7 +8048,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i];
         }
     } else if (totalActive == 12) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_12active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_12active");
         CSAMPLE_GAIN oldGain[12];
         CSAMPLE_GAIN newGain[12];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -8213,7 +8213,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i];
         }
     } else if (totalActive == 13) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_13active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_13active");
         CSAMPLE_GAIN oldGain[13];
         CSAMPLE_GAIN newGain[13];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -8391,7 +8391,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i];
         }
     } else if (totalActive == 14) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_14active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_14active");
         CSAMPLE_GAIN oldGain[14];
         CSAMPLE_GAIN newGain[14];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -8582,7 +8582,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i];
         }
     } else if (totalActive == 15) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_15active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_15active");
         CSAMPLE_GAIN oldGain[15];
         CSAMPLE_GAIN newGain[15];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -8786,7 +8786,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i];
         }
     } else if (totalActive == 16) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_16active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_16active");
         CSAMPLE_GAIN oldGain[16];
         CSAMPLE_GAIN newGain[16];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -9003,7 +9003,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i];
         }
     } else if (totalActive == 17) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_17active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_17active");
         CSAMPLE_GAIN oldGain[17];
         CSAMPLE_GAIN newGain[17];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -9233,7 +9233,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i];
         }
     } else if (totalActive == 18) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_18active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_18active");
         CSAMPLE_GAIN oldGain[18];
         CSAMPLE_GAIN newGain[18];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -9476,7 +9476,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i];
         }
     } else if (totalActive == 19) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_19active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_19active");
         CSAMPLE_GAIN oldGain[19];
         CSAMPLE_GAIN newGain[19];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -9732,7 +9732,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i];
         }
     } else if (totalActive == 20) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_20active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_20active");
         CSAMPLE_GAIN oldGain[20];
         CSAMPLE_GAIN newGain[20];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -10001,7 +10001,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i];
         }
     } else if (totalActive == 21) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_21active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_21active");
         CSAMPLE_GAIN oldGain[21];
         CSAMPLE_GAIN newGain[21];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -10283,7 +10283,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i];
         }
     } else if (totalActive == 22) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_22active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_22active");
         CSAMPLE_GAIN oldGain[22];
         CSAMPLE_GAIN newGain[22];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -10578,7 +10578,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i];
         }
     } else if (totalActive == 23) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_23active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_23active");
         CSAMPLE_GAIN oldGain[23];
         CSAMPLE_GAIN newGain[23];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -10886,7 +10886,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i];
         }
     } else if (totalActive == 24) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_24active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_24active");
         CSAMPLE_GAIN oldGain[24];
         CSAMPLE_GAIN newGain[24];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -11207,7 +11207,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i];
         }
     } else if (totalActive == 25) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_25active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_25active");
         CSAMPLE_GAIN oldGain[25];
         CSAMPLE_GAIN newGain[25];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -11541,7 +11541,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i];
         }
     } else if (totalActive == 26) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_26active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_26active");
         CSAMPLE_GAIN oldGain[26];
         CSAMPLE_GAIN newGain[26];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -11888,7 +11888,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i];
         }
     } else if (totalActive == 27) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_27active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_27active");
         CSAMPLE_GAIN oldGain[27];
         CSAMPLE_GAIN newGain[27];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -12248,7 +12248,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i];
         }
     } else if (totalActive == 28) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_28active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_28active");
         CSAMPLE_GAIN oldGain[28];
         CSAMPLE_GAIN newGain[28];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -12621,7 +12621,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i] + pBuffer27[i];
         }
     } else if (totalActive == 29) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_29active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_29active");
         CSAMPLE_GAIN oldGain[29];
         CSAMPLE_GAIN newGain[29];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -13007,7 +13007,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i] + pBuffer27[i] + pBuffer28[i];
         }
     } else if (totalActive == 30) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_30active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_30active");
         CSAMPLE_GAIN oldGain[30];
         CSAMPLE_GAIN newGain[30];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -13406,7 +13406,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i] + pBuffer27[i] + pBuffer28[i] + pBuffer29[i];
         }
     } else if (totalActive == 31) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_31active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_31active");
         CSAMPLE_GAIN oldGain[31];
         CSAMPLE_GAIN newGain[31];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -13818,7 +13818,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i] + pBuffer27[i] + pBuffer28[i] + pBuffer29[i] + pBuffer30[i];
         }
     } else if (totalActive == 32) {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_32active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_32active");
         CSAMPLE_GAIN oldGain[32];
         CSAMPLE_GAIN newGain[32];
         EngineMaster::ChannelInfo* pChannel0 = activeChannels->at(0);
@@ -14243,7 +14243,8 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             pOutput[i] = pBuffer0[i] + pBuffer1[i] + pBuffer2[i] + pBuffer3[i] + pBuffer4[i] + pBuffer5[i] + pBuffer6[i] + pBuffer7[i] + pBuffer8[i] + pBuffer9[i] + pBuffer10[i] + pBuffer11[i] + pBuffer12[i] + pBuffer13[i] + pBuffer14[i] + pBuffer15[i] + pBuffer16[i] + pBuffer17[i] + pBuffer18[i] + pBuffer19[i] + pBuffer20[i] + pBuffer21[i] + pBuffer22[i] + pBuffer23[i] + pBuffer24[i] + pBuffer25[i] + pBuffer26[i] + pBuffer27[i] + pBuffer28[i] + pBuffer29[i] + pBuffer30[i] + pBuffer31[i];
         }
     } else {
-        ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_Over32active");
+        //ScopedTimer t("EngineMaster::applyEffectsInPlaceAndMixChannels_Over32active");
+        SampleUtil::clear(pOutput, iBufferSize);
         for (int i = 0; i < activeChannels->size(); ++i) {
             EngineMaster::ChannelInfo* pChannelInfo = activeChannels->at(i);
             const int channelIndex = pChannelInfo->m_index;
@@ -14259,9 +14260,7 @@ void ChannelMixer::applyEffectsInPlaceAndMixChannels(const EngineMaster::GainCal
             gainCache.m_gain = newGain;
             CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;
             pEngineEffectsManager->processPostFaderInPlace(pChannelInfo->m_handle, outputHandle, pBuffer, iBufferSize, iSampleRate, pChannelInfo->m_features, oldGain, newGain);
-            for (unsigned int i = 0; i < iBufferSize; ++i) {
-                pOutput[i] += pBuffer[i];
-            }
+            SampleUtil::add(pOutput, pBuffer, iBufferSize);
         }
     }
 }

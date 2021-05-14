@@ -8,14 +8,14 @@ namespace {
 
 class ReplayGainTest : public testing::Test {
   protected:
-    double ratioFromString(QString inputValue, bool expectedResult, double expectedValue) {
+    double ratioFromString(const QString& inputValue, bool expectedResult, double expectedValue) {
         //qDebug() << "ratioFromString" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;
         const double actualValue = mixxx::ReplayGain::ratioFromString(inputValue, &actualResult);
 
         EXPECT_EQ(expectedResult, actualResult);
-        EXPECT_FLOAT_EQ(expectedValue, actualValue);
+        EXPECT_NEAR(expectedValue, actualValue, 0.005);
 
         return actualResult;
     }
@@ -29,7 +29,7 @@ class ReplayGainTest : public testing::Test {
         }
     }
 
-    CSAMPLE peakFromString(QString inputValue, bool expectedResult, CSAMPLE expectedValue) {
+    CSAMPLE peakFromString(const QString& inputValue, bool expectedResult, CSAMPLE expectedValue) {
         //qDebug() << "peakFromString" << inputValue << expectedResult << expectedValue;
 
         bool actualResult;
@@ -51,6 +51,32 @@ class ReplayGainTest : public testing::Test {
     }
 };
 
+TEST_F(ReplayGainTest, hasRatio) {
+    mixxx::ReplayGain replayGain;
+    EXPECT_FALSE(replayGain.hasRatio());
+    replayGain.setRatio(mixxx::ReplayGain::kRatioUndefined);
+    EXPECT_FALSE(replayGain.hasRatio());
+    replayGain.setRatio(mixxx::ReplayGain::kRatioMin); // exclusive
+    EXPECT_FALSE(replayGain.hasRatio());
+    replayGain.setRatio(mixxx::ReplayGain::kRatio0dB);
+    EXPECT_TRUE(replayGain.hasRatio());
+    replayGain.resetRatio();
+    EXPECT_FALSE(replayGain.hasRatio());
+}
+
+TEST_F(ReplayGainTest, hasPeak) {
+    mixxx::ReplayGain replayGain;
+    EXPECT_FALSE(replayGain.hasPeak());
+    replayGain.setPeak(mixxx::ReplayGain::kPeakUndefined);
+    EXPECT_FALSE(replayGain.hasPeak());
+    replayGain.setPeak(mixxx::ReplayGain::kPeakMin);
+    EXPECT_TRUE(replayGain.hasPeak());
+    replayGain.setPeak(mixxx::ReplayGain::kPeakClip);
+    EXPECT_TRUE(replayGain.hasPeak());
+    replayGain.resetPeak();
+    EXPECT_FALSE(replayGain.hasPeak());
+}
+
 TEST_F(ReplayGainTest, RatioFromString0dB) {
     ratioFromString("0 dB", true, mixxx::ReplayGain::kRatio0dB);
     ratioFromString("0.0dB", true, mixxx::ReplayGain::kRatio0dB);
@@ -67,8 +93,7 @@ TEST_F(ReplayGainTest, RatioFromStringValidRange) {
                 QString("  %1 DB ").arg(replayGainDb),
                 QString("  %1db ").arg(replayGainDb)
         };
-        float expectedValue;
-        expectedValue = db2ratio(double(replayGainDb));
+        const auto expectedValue = static_cast<float>(db2ratio(static_cast<double>(replayGainDb)));
         for (size_t i = 0; i < sizeof(inputValues) / sizeof(inputValues[0]); ++i) {
             ratioFromString(inputValues[i], true, expectedValue);
             if (0 <= replayGainDb) {
@@ -107,8 +132,8 @@ TEST_F(ReplayGainTest, PeakFromStringValid) {
     peakFromString("+1", true, mixxx::ReplayGain::kPeakClip);
     peakFromString("1.0", true, mixxx::ReplayGain::kPeakClip);
     peakFromString("+1.0", true, mixxx::ReplayGain::kPeakClip);
-    peakFromString("  0.12345  ", true, 0.12345);
-    peakFromString("  1.2345", true, 1.2345);
+    peakFromString("  0.12345  ", true, 0.12345f);
+    peakFromString("  1.2345", true, 1.2345f);
 }
 
 TEST_F(ReplayGainTest, PeakFromStringInvalid) {

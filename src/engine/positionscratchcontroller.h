@@ -1,5 +1,4 @@
-#ifndef POSITIONSCRATCHCONTROLLER_H
-#define POSITIONSCRATCHCONTROLLER_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -11,7 +10,7 @@ class RateIIFilter;
 
 class PositionScratchController : public QObject {
   public:
-    PositionScratchController(QString group);
+    PositionScratchController(const QString& group);
     virtual ~PositionScratchController();
 
     void process(double currentSample, double releaseRate,
@@ -37,5 +36,3 @@ class PositionScratchController : public QObject {
     double m_dMoveDelay;
     double m_dMouseSampeTime;
 };
-
-#endif /* POSITIONSCRATCHCONTROLLER_H */

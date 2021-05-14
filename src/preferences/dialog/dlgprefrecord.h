@@ -1,30 +1,28 @@
-#ifndef DLGPREFRECORD_H
-#define DLGPREFRECORD_H
+#pragma once
 
+#include <QButtonGroup>
 #include <QRadioButton>
 #include <QWidget>
 
+#include "encoder/encoder.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefrecorddlg.h"
 #include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
-#include "encoder/encoder.h"
-#include "util/widgethider.h"
 
 class ControlObject;
 class ControlProxy;
 
 class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT
-    WidgetHider m_hider;
   public:
     DlgPrefRecord(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefRecord();
 
   public slots:
     // Apply changes to widget
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
 
     // Dialog to browse for recordings directory
     void slotBrowseRecordingsDir();
@@ -38,10 +36,7 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     void apply(const QString &);
 
   private:
-    void retainSizeFor(QWidget* widget);
-    inline void showWidget(QWidget* widget);
-    inline void hideWidget(QWidget* widget);
-    void setupEncoderUI(Encoder::Format selformat);
+    void setupEncoderUI();
     void loadMetaData();
     void updateTextQuality();
     void updateTextCompression();
@@ -59,5 +54,3 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     QList<QRadioButton*> m_formatButtons;
     QList<QAbstractButton*> m_optionWidgets;
 };
-
-#endif

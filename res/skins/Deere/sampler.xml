@@ -16,7 +16,7 @@
       <Template src="skin:sampler_text_row.xml"/>
       <WidgetGroup>
         <Connection>
-          <ConfigKey>[SamplerRow<Variable name="row"/>],expanded</ConfigKey>
+          <ConfigKey>[Skin],sampler_row_<Variable name="row"/>_expanded</ConfigKey>
           <BindProperty>visible</BindProperty>
         </Connection>
         <Layout>horizontal</Layout>

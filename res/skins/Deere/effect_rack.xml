@@ -30,7 +30,7 @@ Container for all the effect units
               </Template>
 
               <Template src="skin:spacer_hx.xml">
-                <SetVariable name="width">4</SetVariable>
+                <SetVariable name="width">5</SetVariable>
                 <SetVariable name="color">22</SetVariable>
               </Template>
 
@@ -42,27 +42,33 @@ Container for all the effect units
           </WidgetGroup>
 
           <WidgetGroup>
-            <ObjectName>EffectUnitsRow</ObjectName>
             <Layout>horizontal</Layout>
             <SizePolicy>me,me</SizePolicy>
             <Children>
-              <Template src="skin:effect_unit.xml">
-                <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectUnit">3</SetVariable>
-              </Template>
+              <WidgetGroup>
+                <ObjectName>EffectUnitsRow</ObjectName>
+                <Layout>horizontal</Layout>
+                <SizePolicy>me,me</SizePolicy>
+                <Children>
+                  <Template src="skin:effect_unit.xml">
+                    <SetVariable name="EffectRack">1</SetVariable>
+                    <SetVariable name="EffectUnit">3</SetVariable>
+                  </Template>
 
-              <Template src="skin:spacer_hx.xml">
-                <SetVariable name="width">4</SetVariable>
-                <SetVariable name="color">22</SetVariable>
-              </Template>
+                  <Template src="skin:spacer_hx.xml">
+                    <SetVariable name="width">5</SetVariable>
+                    <SetVariable name="color">22</SetVariable>
+                  </Template>
 
-              <Template src="skin:effect_unit.xml">
-                <SetVariable name="EffectRack">1</SetVariable>
-                <SetVariable name="EffectUnit">4</SetVariable>
-              </Template>
+                  <Template src="skin:effect_unit.xml">
+                    <SetVariable name="EffectRack">1</SetVariable>
+                    <SetVariable name="EffectUnit">4</SetVariable>
+                  </Template>
+                </Children>
+              </WidgetGroup>
             </Children>
             <Connection>
-              <ConfigKey>[Master],show_4effectunits</ConfigKey>
+              <ConfigKey>[Skin],show_4effectunits</ConfigKey>
               <BindProperty>visible</BindProperty>
             </Connection>
           </WidgetGroup>

@@ -1,13 +1,1 @@
-<svg xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="103" width="34" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
- <metadata>
-  <rdf:RDF>
-   <cc:Work rdf:about="">
-    <dc:format>image/svg+xml</dc:format>
-    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
-    <dc:title/>
-   </cc:Work>
-  </rdf:RDF>
- </metadata>
- <defs></defs>
- <path d="m5,2v2h8.5c1.380712,0,2.5,1.11929,2.5,2.5v17c0,1.380712-1.141559,2.253011-2.5,2.5h-5.5v2h5.5c1.380712,0,2.5,1.119288,2.5,2.5v17c0,1.380712-1.152167,2.200482-2.5,2.5h-4.5v2h4.5c1.380712,0,2.5,1.119288,2.5,2.5v19c0,1.380712-1.172412,2.120689-2.5,2.5h-3.5v2h3.5c1.380712,0,2.5,1.119288,2.5,2.5v16.125c-0.06597,1.321849-1.386526,1.632684-2.5,2.375h-1.5v2h10v-2h-1.5c-1.338229,0-2.434027-1.053151-2.5-2.375v-16.125c0-1.380712,1.119288-2.5,2.5-2.5h3.5v-2h-3.5c-1.380712,0-2.5-1.119288-2.5-2.5v-19c0-1.380712,1.119288-2.5,2.5-2.5h4.5v-2h-4.5c-1.380712,0-2.5-1.119288-2.5-2.5v-17c0-1.380712,1.119288-2.5,2.5-2.5h5.5v-2h-5.5c-1.380712,0-2.5-1.119288-2.5-2.5v-17c0-1.38071,1.128745-2.3386759,2.5-2.5h8.5v-2h-13z"/>
-</svg>
+<svg width="34" height="103" version="1.1" xmlns="http://www.w3.org/2000/svg"><g><path d="m17 98.986v-92.972" fill="none" stroke="#999" stroke-linecap="round" stroke-width="2"/></g></svg>

@@ -1,19 +1,13 @@
-/**
- * @file midicontroller.cpp
- * @author Sean Pappalardo spappalardo@mixxx.org
- * @date Tue 7 Feb 2012
- * @brief MIDI Controller base class
- *
- */
-
 #include "controllers/midi/midicontroller.h"
 
-#include "controllers/midi/midiutils.h"
-#include "controllers/defs_controllers.h"
-#include "controllers/controllerdebug.h"
 #include "control/controlobject.h"
+#include "controllers/controllerdebug.h"
+#include "controllers/defs_controllers.h"
+#include "controllers/midi/midiutils.h"
+#include "defs_urls.h"
 #include "errordialoghandler.h"
 #include "mixer/playermanager.h"
+#include "moc_midicontroller.cpp"
 #include "util/math.h"
 #include "util/screensaver.h"
 
@@ -28,13 +22,23 @@ MidiController::~MidiController() {
     // destructors.
 }
 
-QString MidiController::presetExtension() {
-    return MIDI_PRESET_EXTENSION;
+ControllerJSProxy* MidiController::jsProxy() {
+    return new MidiControllerJSProxy(this);
 }
 
-void MidiController::visit(const MidiControllerPreset* preset) {
-    m_preset = *preset;
-    emit(presetLoaded(getPreset()));
+QString MidiController::mappingExtension() {
+    return MIDI_MAPPING_EXTENSION;
+}
+
+void MidiController::setMapping(std::shared_ptr<LegacyControllerMapping> pMapping) {
+    m_pMapping = downcastAndTakeOwnership<LegacyMidiControllerMapping>(std::move(pMapping));
+}
+
+std::shared_ptr<LegacyControllerMapping> MidiController::cloneMapping() {
+    if (!m_pMapping) {
+        return nullptr;
+    }
+    return m_pMapping->clone();
 }
 
 int MidiController::close() {
@@ -42,26 +46,15 @@ int MidiController::close() {
     return 0;
 }
 
-void MidiController::visit(const HidControllerPreset* preset) {
-    Q_UNUSED(preset);
-    qWarning() << "ERROR: Attempting to load an HidControllerPreset to a MidiController!";
-    // TODO(XXX): throw a hissy fit.
-}
-
-bool MidiController::matchPreset(const PresetInfo& preset) {
+bool MidiController::matchMapping(const MappingInfo& mapping) {
     // Product info mapping not implemented for MIDI devices yet
-    Q_UNUSED(preset);
+    Q_UNUSED(mapping);
     return false;
 }
 
-bool MidiController::savePreset(const QString fileName) const {
-    MidiControllerPresetFileHandler handler;
-    return handler.save(m_preset, getName(), fileName);
-}
-
-bool MidiController::applyPreset(QList<QString> scriptPaths, bool initializeScripts) {
+bool MidiController::applyMapping() {
     // Handles the engine
-    bool result = Controller::applyPreset(scriptPaths, initializeScripts);
+    bool result = Controller::applyMapping();
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {
@@ -75,11 +68,15 @@ bool MidiController::applyPreset(QList<QString> scriptPaths, bool initializeScri
 }
 
 void MidiController::createOutputHandlers() {
-    if (m_preset.outputMappings.isEmpty()) {
+    if (!m_pMapping) {
         return;
     }
 
-    QHashIterator<ConfigKey, MidiOutputMapping> outIt(m_preset.outputMappings);
+    if (m_pMapping->getOutputMappings().isEmpty()) {
+        return;
+    }
+
+    QHashIterator<ConfigKey, MidiOutputMapping> outIt(m_pMapping->getOutputMappings());
     QStringList failures;
     while (outIt.hasNext()) {
         outIt.next();
@@ -108,14 +105,16 @@ void MidiController::createOutputHandlers() {
         MidiOutputHandler* moh = new MidiOutputHandler(this, mapping);
         if (!moh->validate()) {
             QString errorLog =
-                QString("MIDI output message 0x%1 0x%2 has invalid MixxxControl %3, %4")
-                        .arg(QString::number(status, 16).toUpper(),
-                             QString::number(control, 16).toUpper().rightJustified(2,'0'))
-                        .arg(group, key).toUtf8();
+                    QString("MIDI output message 0x%1 0x%2 has invalid MixxxControl %3, %4")
+                            .arg(QString::number(status, 16).toUpper(),
+                                    QString::number(control, 16).toUpper().rightJustified(2, '0'),
+                                    group,
+                                    key)
+                            .toUtf8();
             qWarning() << errorLog;
 
             int deckNum = 0;
-            if (ControllerDebug::enabled()) {
+            if (ControllerDebug::isEnabled()) {
                 failures.append(errorLog);
             } else if (PlayerManager::isDeckGroup(group, &deckNum)) {
                 int numDecks = PlayerManager::numDecks();
@@ -134,15 +133,17 @@ void MidiController::createOutputHandlers() {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(tr("MixxxControl(s) not found"));
-        props->setText(tr("One or more MixxxControls specified in the "
-                          "outputs section of the loaded preset were invalid."));
+        props->setText(tr(
+                "One or more MixxxControls specified in the "
+                "outputs section of the loaded mapping were invalid."));
         props->setInfoText(tr("Some LEDs or other feedback may not work correctly."));
         QString detailsText = tr("* Check to see that the MixxxControl "
                                  "names are spelled correctly in the mapping "
                                  "file (.xml)\n");
-        detailsText += tr("* Make sure the MixxxControls in question actually exist."
-                          " Visit this wiki page for a complete list: ");
-        detailsText += "http://mixxx.org/wiki/doku.php/mixxxcontrols\n\n";
+        detailsText += tr(
+                "* Make sure the MixxxControls in question actually exist."
+                " Visit the manual for a complete list: ");
+        detailsText += MIXXX_MANUAL_CONTROLS_URL + QStringLiteral("\n\n");
         detailsText += failures.join("\n");
         props->setDetails(detailsText);
         ErrorDialogHandler::instance()->requestErrorDialog(props);
@@ -183,25 +184,45 @@ void MidiController::clearTemporaryInputMappings() {
 }
 
 void MidiController::commitTemporaryInputMappings() {
-    // We want to replace duplicates that exist in m_preset but allow duplicates
-    // in m_temporaryInputMappings. To do this, we first remove every key in
-    // m_temporaryInputMappings from m_preset.inputMappings.
-    for (QHash<uint16_t, MidiInputMapping>::const_iterator it =
-                 m_temporaryInputMappings.begin();
-         it != m_temporaryInputMappings.end(); ++it) {
-        m_preset.inputMappings.remove(it.key());
+    if (!m_pMapping) {
+        return;
     }
 
-    // Now, we can just use unite since we manually removed the duplicates in
-    // the original set.
-    m_preset.inputMappings.unite(m_temporaryInputMappings);
+    // We want to replace duplicates that exist in m_mapping but allow duplicates
+    // in m_temporaryInputMappings. To do this, we first remove every key in
+    // m_temporaryInputMappings from m_mapping's input mappings.
+    for (auto it = m_temporaryInputMappings.constBegin();
+         it != m_temporaryInputMappings.constEnd(); ++it) {
+        m_pMapping->removeInputMapping(it.key());
+    }
+
+    // Now, we can just use add all mappings from m_temporaryInputMappings
+    // since we removed the duplicates in the original set.
+    for (auto it = m_temporaryInputMappings.constBegin();
+            it != m_temporaryInputMappings.constEnd();
+            ++it) {
+        m_pMapping->addInputMapping(it.key(), it.value());
+    }
     m_temporaryInputMappings.clear();
 }
 
-void MidiController::receive(unsigned char status, unsigned char control,
-                             unsigned char value, mixxx::Duration timestamp) {
+void MidiController::receivedShortMessage(unsigned char status,
+        unsigned char control,
+        unsigned char value,
+        mixxx::Duration timestamp) {
+    // The rest of this function is for legacy mappings
     unsigned char channel = MidiUtils::channelFromStatus(status);
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
+
+    // Ignore MIDI beat clock messages (0xF8) until we have proper MIDI sync in
+    // Mixxx. These messages are not suitable to use in JS anyway, as they are
+    // sent at 24 ppqn (i.e. one message every 20.83 ms for a 120 BPM track)
+    // and require real-time code. Currently, they are only spam on the
+    // console, inhibit the screen saver unintentionally, could potentially
+    // slow down Mixxx or interfere with the learning wizard.
+    if (status == 0xF8) {
+        return;
+    }
 
     controllerDebug(MidiUtils::formatMidiMessage(getName(), status, control, value,
                                                  channel, opCode, timestamp));
@@ -209,21 +230,19 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
     triggerActivity();
     if (isLearning()) {
-        emit(messageReceived(status, control, value));
+        emit messageReceived(status, control, value);
 
-        QHash<uint16_t, MidiInputMapping>::const_iterator it =
-                m_temporaryInputMappings.find(mappingKey.key);
-        if (it != m_temporaryInputMappings.end()) {
-            for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
+        auto it = m_temporaryInputMappings.constFind(mappingKey.key);
+        if (it != m_temporaryInputMappings.constEnd()) {
+            for (; it != m_temporaryInputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), status, control, value, timestamp);
             }
             return;
         }
     }
 
-    QHash<uint16_t, MidiInputMapping>::const_iterator it =
-            m_preset.inputMappings.find(mappingKey.key);
-    for (; it != m_preset.inputMappings.end() && it.key() == mappingKey.key; ++it) {
+    auto it = m_pMapping->getInputMappings().constFind(mappingKey.key);
+    for (; it != m_pMapping->getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), status, control, value, timestamp);
     }
 }
@@ -238,14 +257,19 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     unsigned char opCode = MidiUtils::opCodeFromStatus(status);
 
     if (mapping.options.script) {
-        ControllerEngine* pEngine = getEngine();
-        if (pEngine == NULL) {
+        ControllerScriptEngineLegacy* pEngine = getScriptEngine();
+        if (pEngine == nullptr) {
             return;
         }
 
-        QScriptValue function = pEngine->wrapFunctionCode(mapping.control.item, 5);
-        if (!pEngine->execute(function, channel, control, value, status,
-                              mapping.control.group, timestamp)) {
+        QJSValue function = pEngine->wrapFunctionCode(mapping.control.item, 5);
+        QJSValueList args;
+        args << QJSValue(channel);
+        args << QJSValue(control);
+        args << QJSValue(value);
+        args << QJSValue(status);
+        args << QJSValue(mapping.control.group);
+        if (!pEngine->executeFunction(function, args)) {
             qDebug() << "MidiController: Invalid script function"
                      << mapping.control.item;
         }
@@ -254,7 +278,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     // Only pass values on to valid ControlObjects.
     ControlObject* pCO = ControlObject::getControl(mapping.control);
-    if (pCO == NULL) {
+    if (pCO == nullptr) {
         return;
     }
 
@@ -274,8 +298,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     if (mapping_is_14bit) {
         bool found = false;
-        for (QList<QPair<MidiInputMapping, unsigned char> >::iterator it =
-                     m_fourteen_bit_queued_mappings.begin();
+        for (auto it = m_fourteen_bit_queued_mappings.begin();
              it != m_fourteen_bit_queued_mappings.end(); ++it) {
             if (it->first.control == mapping.control) {
                 if ((it->first.options.fourteen_bit_lsb && mapping.options.fourteen_bit_lsb) ||
@@ -371,14 +394,16 @@ double MidiController::computeValue(
     if (options.rot64 || options.rot64_inv) {
         tempval = prevmidivalue;
         diff = newmidivalue - 64.;
-        if (diff == -1 || diff == 1)
+        if (diff == -1 || diff == 1) {
             diff /= 16;
-        else
+        } else {
             diff += (diff > 0 ? -1 : +1);
-        if (options.rot64)
+        }
+        if (options.rot64) {
             tempval += diff;
-        else
+        } else {
             tempval -= diff;
+        }
         return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
     }
 
@@ -392,8 +417,9 @@ double MidiController::computeValue(
 
     if (options.diff) {
         //Interpret 7-bit signed value using two's compliment.
-        if (newmidivalue >= 64.)
+        if (newmidivalue >= 64.) {
             newmidivalue = newmidivalue - 128.;
+        }
         //Apply sensitivity to signed value. FIXME
        // if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
@@ -403,8 +429,9 @@ double MidiController::computeValue(
 
     if (options.selectknob) {
         //Interpret 7-bit signed value using two's compliment.
-        if (newmidivalue >= 64.)
+        if (newmidivalue >= 64.) {
             newmidivalue = newmidivalue - 128.;
+        }
         //Apply sensitivity to signed value. FIXME
         //if(sensitivity > 0)
         //    _newmidivalue = _newmidivalue * ((double)sensitivity / 50.);
@@ -453,7 +480,7 @@ double MidiController::computeValue(
     return newmidivalue;
 }
 
-void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
+void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) {
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
 
     MidiKey mappingKey(data.at(0), 0xFF);
@@ -463,21 +490,19 @@ void MidiController::receive(QByteArray data, mixxx::Duration timestamp) {
     // don't think this actually does anything useful.
     if (isLearning()) {
         // TODO(rryan): Fake a one value?
-        emit(messageReceived(mappingKey.status, mappingKey.control, 0x7F));
+        emit messageReceived(mappingKey.status, mappingKey.control, 0x7F);
 
-        QHash<uint16_t, MidiInputMapping>::const_iterator it =
-                m_temporaryInputMappings.find(mappingKey.key);
-        if (it != m_temporaryInputMappings.end()) {
-            for (; it != m_temporaryInputMappings.end() && it.key() == mappingKey.key; ++it) {
+        auto it = m_temporaryInputMappings.constFind(mappingKey.key);
+        if (it != m_temporaryInputMappings.constEnd()) {
+            for (; it != m_temporaryInputMappings.constEnd() && it.key() == mappingKey.key; ++it) {
                 processInputMapping(it.value(), data, timestamp);
             }
             return;
         }
     }
 
-    QHash<uint16_t, MidiInputMapping>::const_iterator it =
-            m_preset.inputMappings.find(mappingKey.key);
-    for (; it != m_preset.inputMappings.end() && it.key() == mappingKey.key; ++it) {
+    auto it = m_pMapping->getInputMappings().constFind(mappingKey.key);
+    for (; it != m_pMapping->getInputMappings().constEnd() && it.key() == mappingKey.key; ++it) {
         processInputMapping(it.value(), data, timestamp);
     }
 }
@@ -487,15 +512,11 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                                          mixxx::Duration timestamp) {
     // Custom script handler
     if (mapping.options.script) {
-        ControllerEngine* pEngine = getEngine();
-        if (pEngine == NULL) {
+        ControllerScriptEngineLegacy* pEngine = getScriptEngine();
+        if (pEngine == nullptr) {
             return;
         }
-        QScriptValue function = pEngine->wrapFunctionCode(mapping.control.item, 2);
-        if (!pEngine->execute(function, data, timestamp)) {
-            qDebug() << "MidiController: Invalid script function"
-                     << mapping.control.item;
-        }
+        pEngine->handleIncomingData(data);
         return;
     }
     qWarning() << "MidiController: No script function specified for"

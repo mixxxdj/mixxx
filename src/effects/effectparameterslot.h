@@ -1,5 +1,4 @@
-#ifndef EFFECTPARAMETERSLOT_H
-#define EFFECTPARAMETERSLOT_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -14,9 +13,6 @@ class ControlObject;
 class ControlPushButton;
 class ControlEffectKnob;
 class SoftTakeover;
-
-class EffectParameterSlot;
-typedef QSharedPointer<EffectParameterSlot> EffectParameterSlotPointer;
 
 class EffectParameterSlot : public EffectParameterSlotBase {
     Q_OBJECT
@@ -67,5 +63,3 @@ class EffectParameterSlot : public EffectParameterSlotBase {
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlot);
 };
-
-#endif // EFFECTPARAMETERSLOT_H

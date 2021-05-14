@@ -1,29 +1,26 @@
 #include "dialog/dlgabout.h"
-#include "util/version.h"
+
+#include <QDesktopServices>
 #include <QFile>
+#include <QLocale>
+
+#include "defs_urls.h"
+#include "moc_dlgabout.cpp"
+#include "util/color/color.h"
+#include "util/versionstore.h"
 
 DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);
 
-    QString mixxxVersion = Version::version();
-    QString buildBranch = Version::developmentBranch();
-    QString buildRevision = Version::developmentRevision();
+    mixxx_icon->load(QString(":/images/mixxx_icon.svg"));
+    mixxx_logo->load(QString(":/images/mixxx_logo.svg"));
 
-    QStringList version;
-    version.append(mixxxVersion);
-
-    if (!buildBranch.isEmpty() || !buildRevision.isEmpty()) {
-        QStringList buildInfo;
-        buildInfo.append("build");
-        if (!buildBranch.isEmpty()) {
-            buildInfo.append(buildBranch);
-        }
-        if (!buildRevision.isEmpty()) {
-            buildInfo.append(QString("r%1").arg(buildRevision));
-        }
-        version.append(QString("(%1)").arg(buildInfo.join(" ")));
-    }
-    version_label->setText(version.join(" "));
+    version_label->setText(VersionStore::applicationName() +
+            QStringLiteral(" ") + VersionStore::version());
+    git_version_label->setText(VersionStore::gitVersion());
+    platform_label->setText(VersionStore::platform());
+    QLocale locale;
+    date_label->setText(locale.toString(VersionStore::date().toLocalTime(), QLocale::LongFormat));
 
     QFile licenseFile(":/LICENSE");
     if (!licenseFile.open(QIODevice::ReadOnly)) {
@@ -32,7 +29,12 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
         licenseText->setPlainText(licenseFile.readAll());
     }
 
-    QString s_devTeam = tr("Mixxx %1 Development Team").arg(mixxxVersion);
+    QString s_devTeam =
+            tr("Mixxx %1.%2 Development Team")
+                    .arg(QString::number(
+                                 VersionStore::versionNumber().majorVersion()),
+                            QString::number(VersionStore::versionNumber()
+                                                    .minorVersion()));
     QString s_contributions = tr("With contributions from:");
     QString s_specialThanks = tr("And special thanks to:");
     QString s_pastDevs = tr("Past Developers");
@@ -40,60 +42,71 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
 
     QStringList thisReleaseDevelopers;
     thisReleaseDevelopers
-            << "RJ Ryan"
+            << "RJ Skerry-Ryan"
             << "Owen Williams"
             << "Sean Pappalardo"
             << "Daniel Sch&uuml;rmann"
             << "S. Brandt"
-            << "Nicu Badescu"
             << "Uwe Klotz"
             << "Be"
-            << "S&eacute;bastien Blaisot";
+            << "S&eacute;bastien Blaisot"
+            << "ronso0"
+            << "Jan Holthuis"
+            << "Nikolaus Einhauser";
 
-    QStringList thisReleaseContributors;
-    thisReleaseContributors
-            << "Alex Barker"
-            << "Stefan N&uuml;rnberger"
+    // This list should contains all contributors committed
+    // code to the Mixxx core within the past two years.
+    // New Contributors are added at the end.
+    QStringList recentContributors;
+    recentContributors
             << "Tuukka Pasanen"
-            << "Jean Claveau"
             << "Nino MP"
-            << "Kevin Wern"
-            << "Nico Schl&ouml;mer"
             << "Ferran Pujol Camins"
-            << "Markus Kl&ouml;sges"
-            << "Vladim&iacute;r Dudr"
-            << "Neale Pickett"
-            << "Chlo&eacute; Avrillon"
-            << "Hendrik Reglin"
-            << "Pavel Potocek"
-            << "Joan Marc&egrave; i Igual"
-            << "Serge Ukolov"
-            << "Patric Schmitz"
-            << "Timothy Rae"
-            << "Roland Schwarz"
-            << "Jan Ypma"
-            << "Leigh Scott"
-            << "William Lemus"
-            << "Andreas M&uuml;ller"
             << "Josep Maria Antol&iacute;n Segura"
-            << "Sam Cross"
-            << "Joey Pabalinas"
-            << "Nimit Bhardwaj"
-            << "Pavel Sokolov"
-            << "Devananda van der Veen"
-            << "Tatsuyuki Ishi"
-            << "Kilian Feess"
-			<< "Conner Phillips"
-			<< "Daniel Poelzleithner"
-            << "Artyom Lyan"
-            << "Johan Lasperas"
-            << "Olaf Hering"
-            << "Stefan Weber"
-            << "Eduardo Acero"
-			<< "Kshitij Gupta"
-			<< "Thomas Jarosch"
-			<< "Matthew Nicholson"
-			<< "ronso0";
+            << "Daniel Poelzleithner"
+            << "St&eacute;phane Lepin"
+            << "luzpaz"
+            << "Bernd Binder"
+            << "Pradyuman"
+            << "Nik Martin"
+            << "Kerrick Staley"
+            << "Raphael Graf"
+            << "Nik Martin"
+            << "YunQiang Su"
+            << "Sebastian Hasler"
+            << "Philip Gottschling"
+            << "Melissa"
+            << "Ned Haughton"
+            << "Adam Szmigin"
+            << "Cristiano Lacerda"
+            << "Sergey Ukolov"
+            << "Ketan Lambat"
+            << "Evan Dekker"
+            << "Edward Kigwana"
+            << "Simon Harst"
+            << "Harshit Maurya"
+            << "Janek Fischer"
+            << "St&eacute;phane Lepin"
+            << "J&eacute;r&ocirc;me Blanchi"
+            << "Chris Hills"
+            << "David Lowenfels"
+            << "Matthieu Bouron"
+            << "Nathan Korth"
+            << "Kristiyan Katsarov"
+            << "J&ouml;rg Wartenberg"
+            << "Sanskar Bajpai"
+            << "Edward Millen"
+            << "Frank Breitling"
+            << "Christian"
+            << "Geraldo Nascimento"
+            << "Albert Aparicio"
+            << "Pierre Le Gall"
+            << "David Baker"
+            << "Justin Kourie"
+            << "Waylon Robertson"
+            << "Al Hadebe"
+            << "Javier Vilarroig"
+            << "Ball&oacute; Gy&ouml;rgy";
 
     QStringList specialThanks;
     specialThanks
@@ -141,7 +154,8 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Thomas Vincent"
             << "Ilkka Tuohela"
             << "Max Linke"
-            << "Marcos Cardinot";
+            << "Marcos Cardinot"
+            << "Nicu Badescu";
 
     QStringList pastContributors;
     pastContributors
@@ -272,7 +286,47 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
             << "Brendan Austin"
             << "Lorenz Drescher"
             << "David Guglielmi"
-            << "James Atwill";
+            << "James Atwill"
+            << "Alex Barker"
+            << "Jean Claveau"
+            << "Kevin Wern"
+            << "Vladim&iacute;r Dudr"
+            << "Neale Pickett"
+            << "Chlo&eacute; Avrillon"
+            << "Hendrik Reglin"
+            << "Serge Ukolov"
+            << "Patric Schmitz"
+            << "Roland Schwarz"
+            << "Jan Ypma"
+            << "Andreas M&uuml;ller"
+            << "Sam Cross"
+            << "Joey Pabalinas"
+            << "Stefan N&uuml;rnberger"
+            << "Markus Kl&ouml;sges"
+            << "Pavel Potocek"
+            << "Timothy Rae"
+            << "Leigh Scott"
+            << "William Lemus"
+            << "Nimit Bhardwaj"
+            << "Pavel Sokolov"
+            << "Devananda van der Veen"
+            << "Tatsuyuki Ishi"
+            << "Kilian Feess"
+            << "Conner Phillips"
+            << "Artyom Lyan"
+            << "Johan Lasperas"
+            << "Olaf Hering"
+            << "Eduardo Acero"
+            << "Thomas Jarosch"
+            << "Nico Schl&ouml;mer"
+            << "Joan Marc&egrave; i Igual"
+            << "Stefan Weber"
+            << "Kshitij Gupta"
+            << "Matthew Nicholson"
+            << "Jamie Gifford"
+            << "Sebastian Reu&szlig;e"
+            << "Pawe&#322; Goli&#324;ski"
+            << "beenisss";
 
     QString sectionTemplate = QString(
         "<p align=\"center\"><b>%1</b></p><p align=\"center\">%2</p>");
@@ -280,7 +334,7 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
     sections << sectionTemplate.arg(s_devTeam,
                                     thisReleaseDevelopers.join("<br>"))
              << sectionTemplate.arg(s_contributions,
-                                    thisReleaseContributors.join("<br>"))
+                                    recentContributors.join("<br>"))
              << sectionTemplate.arg(s_pastDevs,
                                     pastDevelopers.join("<br>"))
              << sectionTemplate.arg(s_pastContribs,
@@ -288,4 +342,28 @@ DlgAbout::DlgAbout(QWidget* parent) : QDialog(parent), Ui::DlgAboutDlg() {
              << sectionTemplate.arg(s_specialThanks,
                                     specialThanks.join("<br>"));
     textBrowser->setHtml(sections.join(""));
+
+    textWebsiteLink->setText(
+            QString("<a style=\"color:%1;\" href=\"%2\">%3</a>")
+                    .arg(Color::blendColors(palette().link().color(),
+                                 palette().text().color())
+                                    .name(),
+                            MIXXX_WEBSITE_URL,
+                            tr("Official Website")));
+    if (std::rand() % 6) {
+        if (!Color::isDimColor(palette().text().color())) {
+            btnDonate->setIcon(QIcon(":/images/heart_icon_light.svg"));
+        } else {
+            btnDonate->setIcon(QIcon(":/images/heart_icon_dark.svg"));
+        }
+    } else {
+        btnDonate->setIcon(QIcon(":/images/heart_icon_rainbow.svg"));
+    }
+    btnDonate->setText(tr("Donate"));
+    connect(btnDonate, &QPushButton::clicked, this, [] {
+        QDesktopServices::openUrl(QUrl(MIXXX_DONATE_URL));
+    });
+
+    connect(buttonBox, &QDialogButtonBox::accepted, this, &DlgAbout::accept);
+    connect(buttonBox, &QDialogButtonBox::rejected, this, &DlgAbout::reject);
 }

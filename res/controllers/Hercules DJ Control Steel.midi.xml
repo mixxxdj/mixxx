@@ -370,7 +370,7 @@
 
 <!-- end of keypad channel 2-->
 
-	<control>
+    <control>
                 <group>[Master]</group>
                 <key>HerculesSteel.crossFader</key>
                 <status>0xB0</status>
@@ -698,21 +698,21 @@
             </control>
     </controls>
     <outputs>
-		<output>
-		    <group>[Channel1]</group>
-		    <key>play</key>
-		    <status>0xB0</status>
-		    <midino>0x0B</midino>
-		    <minimum>0.5</minimum>
-		</output>
-		<output>
-		    <group>[Channel2]</group>
-		    <key>play</key>
-		    <status>0xB0</status>
-		    <midino>0x23</midino>
-		    <minimum>0.5</minimum>
-		</output>
-		    <output>
+        <output>
+            <group>[Channel1]</group>
+            <key>play</key>
+            <status>0xB0</status>
+            <midino>0x0B</midino>
+            <minimum>0.5</minimum>
+        </output>
+        <output>
+            <group>[Channel2]</group>
+            <key>play</key>
+            <status>0xB0</status>
+            <midino>0x23</midino>
+            <minimum>0.5</minimum>
+        </output>
+            <output>
           <group>[Channel1]</group>
           <key>cue_default</key>
           <status>0xB0</status>

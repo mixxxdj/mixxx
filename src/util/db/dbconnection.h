@@ -1,11 +1,9 @@
-#ifndef MIXXX_DBCONNECTION_H
-#define MIXXX_DBCONNECTION_H
-
+#pragma once
 
 #include <QSqlDatabase>
-
 #include <QtDebug>
 
+#include "util/string.h"
 
 namespace mixxx {
 
@@ -22,8 +20,11 @@ class DbConnection final {
         QString* string,
         QChar esc);
 
+    static void makeStringLatinLow(QString* string);
+
     struct Params {
         QString type;
+        QString connectOptions;
         QString hostName;
         QString filePath;
         QString userName;
@@ -61,9 +62,7 @@ class DbConnection final {
     DbConnection(const DbConnection&&) = delete;
 
     QSqlDatabase m_sqlDatabase;
+    mixxx::StringCollator m_collator;
 };
 
 } // namespace mixxx
-
-
-#endif // MIXXX_DBCONNECTION_H

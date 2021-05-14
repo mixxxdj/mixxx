@@ -4,6 +4,7 @@
         <name>Hercules DJ Console MK2 HID</name>
         <author>zestoi</author>
         <description>Native high-resolution HID script for the Hercules DJ Console MK2 controller.</description>
+        <manual>hercules_dj_console_mk2</manual>
     </info>
     <controller id="Hercules DJ Console MK2 HID">
         <scriptfiles>

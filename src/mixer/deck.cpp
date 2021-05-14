@@ -1,14 +1,20 @@
 #include "mixer/deck.h"
 
-Deck::Deck(QObject* pParent,
-           UserSettingsPointer pConfig,
-           EngineMaster* pMixingEngine,
-           EffectsManager* pEffectsManager,
-           EngineChannel::ChannelOrientation defaultOrientation,
-           const QString& group) :
-        BaseTrackPlayerImpl(pParent, pConfig, pMixingEngine, pEffectsManager,
-                            defaultOrientation, group, true, false) {
-}
+#include "moc_deck.cpp"
 
-Deck::~Deck() {
+Deck::Deck(QObject* pParent,
+        UserSettingsPointer pConfig,
+        EngineMaster* pMixingEngine,
+        EffectsManager* pEffectsManager,
+        EngineChannel::ChannelOrientation defaultOrientation,
+        const ChannelHandleAndGroup& handleGroup)
+        : BaseTrackPlayerImpl(pParent,
+                  pConfig,
+                  pMixingEngine,
+                  pEffectsManager,
+                  defaultOrientation,
+                  handleGroup,
+                  /*defaultMaster*/ true,
+                  /*defaultHeadphones*/ false,
+                  /*primaryDeck*/ true) {
 }

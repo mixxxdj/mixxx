@@ -1,8 +1,4 @@
-// browsefeature.h
-// Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
-
-#ifndef BROWSEFEATURE_H
-#define BROWSEFEATURE_H
+#pragma once
 
 #include <QStringListModel>
 #include <QSortFilterProxyModel>
@@ -22,22 +18,24 @@
 #define QUICK_LINK_NODE "::mixxx_quick_lnk_node::"
 #define DEVICE_NODE "::mixxx_device_node::"
 
+class Library;
 class TrackCollection;
+class WLibrarySidebar;
 
 class BrowseFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BrowseFeature(QObject* parent,
-                  UserSettingsPointer pConfig,
-                  TrackCollection* pTrackCollection,
-                  RecordingManager* pRec);
+    BrowseFeature(Library* pLibrary,
+            UserSettingsPointer pConfig,
+            RecordingManager* pRecordingManager);
     virtual ~BrowseFeature();
 
     QVariant title();
     QIcon getIcon();
 
-    void bindWidget(WLibrary* libraryWidget,
+    void bindLibraryWidget(WLibrary* libraryWidget,
                     KeyboardEventFilter* keyboard);
+    void bindSidebarWidget(WLibrarySidebar* pSidebarWidget);
 
     TreeItemModel* getChildModel();
 
@@ -47,27 +45,27 @@ class BrowseFeature : public LibraryFeature {
     void slotAddToLibrary();
     void activate();
     void activateChild(const QModelIndex& index);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    void onRightClickChild(const QPoint& globalPos, const QModelIndex& index);
     void onLazyChildExpandation(const QModelIndex& index);
     void slotLibraryScanStarted();
     void slotLibraryScanFinished();
 
   signals:
     void setRootIndex(const QModelIndex&);
-    void requestAddDir(QString);
+    void requestAddDir(const QString&);
     void scanLibrary();
 
   private:
     QString getRootViewHtml() const;
-    QString extractNameFromPath(QString spath);
+    QString extractNameFromPath(const QString& spath);
     QStringList getDefaultQuickLinks() const;
     void saveQuickLinks();
     void loadQuickLinks();
 
-    UserSettingsPointer m_pConfig;
+    TrackCollection* const m_pTrackCollection;
+
     BrowseTableModel m_browseModel;
     ProxyTrackModel m_proxyModel;
-    TrackCollection* m_pTrackCollection;
     FolderTreeModel m_childModel;
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
@@ -75,6 +73,6 @@ class BrowseFeature : public LibraryFeature {
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;
+    QIcon m_icon;
+    QPointer<WLibrarySidebar> m_pSidebarWidget;
 };
-
-#endif // BROWSEFEATURE_H

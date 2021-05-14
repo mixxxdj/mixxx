@@ -3,10 +3,8 @@
   <info>
     <name>Reloop Terminal Mix 2/4</name>
     <author>Sean M. Pappalardo (1.11), ronso0 (2.1 update)</author>
-    <description>
-A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
-    </description>
-    <wiki>http://mixxx.org/wiki/doku.php/reloop_terminal_mix</wiki>
+    <description>A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.</description>
+    <manual>reloop_terminal_mix_series</manual>
   </info>
   <controller id="TerminalMix">
     <scriptfiles>
@@ -636,7 +634,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler1]</group>
+        <group>[Sampler5]</group>
         <key>cue_gotoandplay</key>
         <status>0x90</status>
         <midino>0x1C</midino>
@@ -645,7 +643,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler2]</group>
+        <group>[Sampler6]</group>
         <key>cue_gotoandplay</key>
         <status>0x90</status>
         <midino>0x1D</midino>
@@ -654,7 +652,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler3]</group>
+        <group>[Sampler7]</group>
         <key>cue_gotoandplay</key>
         <status>0x90</status>
         <midino>0x1E</midino>
@@ -663,7 +661,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler4]</group>
+        <group>[Sampler8]</group>
         <key>cue_gotoandplay</key>
         <status>0x90</status>
         <midino>0x1F</midino>
@@ -708,7 +706,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler1]</group>
+        <group>[Sampler5]</group>
         <key>start_stop</key>
         <status>0x90</status>
         <midino>0x62</midino>
@@ -717,7 +715,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler2]</group>
+        <group>[Sampler6]</group>
         <key>start_stop</key>
         <status>0x90</status>
         <midino>0x63</midino>
@@ -726,7 +724,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler3]</group>
+        <group>[Sampler7]</group>
         <key>start_stop</key>
         <status>0x90</status>
         <midino>0x64</midino>
@@ -735,7 +733,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler4]</group>
+        <group>[Sampler8]</group>
         <key>start_stop</key>
         <status>0x90</status>
         <midino>0x65</midino>
@@ -1188,7 +1186,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler1]</group>
+        <group>[Sampler5]</group>
         <key>cue_gotoandplay</key>
         <status>0x91</status>
         <midino>0x1C</midino>
@@ -1197,7 +1195,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler2]</group>
+        <group>[Sampler6]</group>
         <key>cue_gotoandplay</key>
         <status>0x91</status>
         <midino>0x1D</midino>
@@ -1206,7 +1204,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler3]</group>
+        <group>[Sampler7]</group>
         <key>cue_gotoandplay</key>
         <status>0x91</status>
         <midino>0x1E</midino>
@@ -1215,7 +1213,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler4]</group>
+        <group>[Sampler8]</group>
         <key>cue_gotoandplay</key>
         <status>0x91</status>
         <midino>0x1F</midino>
@@ -1260,7 +1258,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler1]</group>
+        <group>[Sampler5]</group>
         <key>start_stop</key>
         <status>0x91</status>
         <midino>0x62</midino>
@@ -1269,7 +1267,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler2]</group>
+        <group>[Sampler6]</group>
         <key>start_stop</key>
         <status>0x91</status>
         <midino>0x63</midino>
@@ -1278,7 +1276,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler3]</group>
+        <group>[Sampler7]</group>
         <key>start_stop</key>
         <status>0x91</status>
         <midino>0x64</midino>
@@ -1287,7 +1285,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler4]</group>
+        <group>[Sampler8]</group>
         <key>start_stop</key>
         <status>0x91</status>
         <midino>0x65</midino>
@@ -1705,7 +1703,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler1]</group>
+        <group>[Sampler5]</group>
         <key>cue_gotoandplay</key>
         <status>0x92</status>
         <midino>0x1C</midino>
@@ -1714,7 +1712,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler2]</group>
+        <group>[Sampler6]</group>
         <key>cue_gotoandplay</key>
         <status>0x92</status>
         <midino>0x1D</midino>
@@ -1723,7 +1721,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler3]</group>
+        <group>[Sampler7]</group>
         <key>cue_gotoandplay</key>
         <status>0x92</status>
         <midino>0x1E</midino>
@@ -1732,7 +1730,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler4]</group>
+        <group>[Sampler8]</group>
         <key>cue_gotoandplay</key>
         <status>0x92</status>
         <midino>0x1F</midino>
@@ -1777,7 +1775,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler1]</group>
+        <group>[Sampler5]</group>
         <key>start_stop</key>
         <status>0x92</status>
         <midino>0x62</midino>
@@ -1786,7 +1784,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler2]</group>
+        <group>[Sampler6]</group>
         <key>start_stop</key>
         <status>0x92</status>
         <midino>0x63</midino>
@@ -1795,7 +1793,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler3]</group>
+        <group>[Sampler7]</group>
         <key>start_stop</key>
         <status>0x92</status>
         <midino>0x64</midino>
@@ -1804,7 +1802,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler4]</group>
+        <group>[Sampler8]</group>
         <key>start_stop</key>
         <status>0x92</status>
         <midino>0x65</midino>
@@ -2201,7 +2199,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler1]</group>
+        <group>[Sampler5]</group>
         <key>cue_gotoandplay</key>
         <status>0x93</status>
         <midino>0x1C</midino>
@@ -2210,7 +2208,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler2]</group>
+        <group>[Sampler6]</group>
         <key>cue_gotoandplay</key>
         <status>0x93</status>
         <midino>0x1D</midino>
@@ -2219,7 +2217,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler3]</group>
+        <group>[Sampler7]</group>
         <key>cue_gotoandplay</key>
         <status>0x93</status>
         <midino>0x1E</midino>
@@ -2228,7 +2226,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler4]</group>
+        <group>[Sampler8]</group>
         <key>cue_gotoandplay</key>
         <status>0x93</status>
         <midino>0x1F</midino>
@@ -2273,7 +2271,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler1]</group>
+        <group>[Sampler5]</group>
         <key>start_stop</key>
         <status>0x93</status>
         <midino>0x62</midino>
@@ -2282,7 +2280,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler2]</group>
+        <group>[Sampler6]</group>
         <key>start_stop</key>
         <status>0x93</status>
         <midino>0x63</midino>
@@ -2291,7 +2289,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler3]</group>
+        <group>[Sampler7]</group>
         <key>start_stop</key>
         <status>0x93</status>
         <midino>0x64</midino>
@@ -2300,7 +2298,7 @@ A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4.
         </options>
       </control>
       <control>
-        <group>[Sampler4]</group>
+        <group>[Sampler8]</group>
         <key>start_stop</key>
         <status>0x93</status>
         <midino>0x65</midino>

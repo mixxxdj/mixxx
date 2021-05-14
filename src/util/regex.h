@@ -1,5 +1,4 @@
-#ifndef REGEX_H
-#define REGEX_H
+#pragma once
 
 #include <QRegExp>
 #include <QStringList>
@@ -19,6 +18,3 @@ class RegexUtils {
   private:
     RegexUtils() {}
 };
-
-
-#endif /* REGEX_H */

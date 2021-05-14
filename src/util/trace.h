@@ -1,5 +1,4 @@
-#ifndef UTIL_TRACE_H
-#define UTIL_TRACE_H
+#pragma once
 
 #include <QString>
 #include <QtDebug>
@@ -100,5 +99,3 @@ class DebugTrace : public Trace {
     virtual ~DebugTrace() {
     }
 };
-
-#endif /* UTIL_TRACE_H */

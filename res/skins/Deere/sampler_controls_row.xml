@@ -44,9 +44,10 @@
             <SignalRGBLowColor></SignalRGBLowColor>
             <SignalColor>#FF8000</SignalColor>
             <PlayPosColor>#00FF00</PlayPosColor>
+            <ShowCueTimes>false</ShowCueTimes>
             <DefaultMark>
               <Align>bottom</Align>
-              <Color>#00FF00</Color>
+              <Color>#006596</Color>
               <TextColor>#FFFFFF</TextColor>
               <Text> %1 </Text>
             </DefaultMark>
@@ -77,12 +78,18 @@
         <Layout>horizontal</Layout>
         <ObjectName>ButtonGrid</ObjectName>
         <Children>
+          <Template src="skin:knob.xml">
+            <SetVariable name="TooltipId">pregain</SetVariable>
+            <SetVariable name="control">pregain</SetVariable>
+            <SetVariable name="color">green</SetVariable>
+          </Template>
+
           <Template src="skin:left_right_1state_button.xml">
             <SetVariable name="TooltipId">beatsync_beatsync_tempo</SetVariable>
             <SetVariable name="ObjectName">BeatsyncButton</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="WideButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MinimumSize">32,22</SetVariable>
             <SetVariable name="MaximumSize"><Variable name="WideButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="WideButtonSizePolicy"/></SetVariable>
+            <SetVariable name="SizePolicy">me,f</SetVariable>
             <SetVariable name="state_0_text">Sync</SetVariable>
             <SetVariable name="state_0_pressed"></SetVariable>
             <SetVariable name="state_0_unpressed"></SetVariable>

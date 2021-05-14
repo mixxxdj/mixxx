@@ -12,12 +12,12 @@ function WiimoteController() {
 
     this.registerInputPackets = function() {
 
-        // Valid control packet modes. Strings here are also prefixes 
+        // Valid control packet modes. Strings here are also prefixes
         // for functions to setup callbacks for this mode.
         this.controlModes = [
             "buttons",
             "coreaccel",
-            "coreaccel_ext8", 
+            "coreaccel_ext8",
             "coreaccel_ir12",
             "corebuttons_ext19",
             "coreaccel_ext16",
@@ -30,7 +30,7 @@ function WiimoteController() {
         this.controller.defaultPacket = "coreaccel";
 
         // Core buttons input packet
-        packet = new HIDPacket("buttons",[0x30],3);
+        packet = new HIDPacket("buttons", 0x30);
         packet.addControl("buttons","arrow_left",1,"B",0x1);
         packet.addControl("buttons","arrow_right",1,"B",0x2);
         packet.addControl("buttons","arrow_down",1,"B",0x4);
@@ -45,7 +45,7 @@ function WiimoteController() {
         this.controller.registerInputPacket(packet);
 
         // Core buttons and accelerometer data
-        packet = new HIDPacket("coreaccel",[0x31],6);
+        packet = new HIDPacket("coreaccel", 0x31);
         packet.addControl("coreaccel","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel","arrow_down",1,"B",0x4);
@@ -64,7 +64,7 @@ function WiimoteController() {
 
         // Core buttons and accelerometer data with 8 bytes
         // from extension module
-        packet = new HIDPacket("coreaccel_ext8",[0x32],14);
+        packet = new HIDPacket("coreaccel_ext8", 0x32);
         packet.addControl("coreaccel_ext8","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_ext8","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_ext8","arrow_down",1,"B",0x4);
@@ -90,8 +90,8 @@ function WiimoteController() {
         this.controller.registerInputPacket(packet);
 
         // Core buttons and accelerometer data with 12 bytes
-        // from IR camera 
-        packet = new HIDPacket("coreaccel_ir12",[0x33],18);
+        // from IR camera
+        packet = new HIDPacket("coreaccel_ir12", 0x33);
         packet.addControl("coreaccel_ir12","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_ir12","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_ir12","arrow_down",1,"B",0x4);
@@ -122,7 +122,7 @@ function WiimoteController() {
 
         // Core buttons and 19 bytes from extension module,
         // no accelerometer data
-        packet = new HIDPacket("corebuttons_ext19",[0x34],22);
+        packet = new HIDPacket("corebuttons_ext19", 0x34);
         packet.addControl("corebuttons_ext19","arrow_left",1,"B",0x1);
         packet.addControl("corebuttons_ext19","arrow_right",1,"B",0x2);
         packet.addControl("corebuttons_ext19","arrow_down",1,"B",0x4);
@@ -155,9 +155,9 @@ function WiimoteController() {
         packet.addControl("corebuttons_ext19","extension_19",21,"B");
         this.controller.registerInputPacket(packet);
 
-        // Core buttons, accelerometer and 16 bytes from 
+        // Core buttons, accelerometer and 16 bytes from
         // extension module
-        packet = new HIDPacket("coreaccel_ext16",[0x35],22);
+        packet = new HIDPacket("coreaccel_ext16", 0x35);
         packet.addControl("coreaccel_ext16","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_ext16","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_ext16","arrow_down",1,"B",0x4);
@@ -192,7 +192,7 @@ function WiimoteController() {
 
         // Core buttons, no accelerometer and 10 IR bytes and
         // 9 bytes from extension module
-        packet = new HIDPacket("corebuttons_ir10_ext9",[0x36],22);
+        packet = new HIDPacket("corebuttons_ir10_ext9", 0x36);
         packet.addControl("corebuttons_ir10_ext9","arrow_left",1,"B",0x1);
         packet.addControl("corebuttons_ir10_ext9","arrow_right",1,"B",0x2);
         packet.addControl("corebuttons_ir10_ext9","arrow_down",1,"B",0x4);
@@ -227,7 +227,7 @@ function WiimoteController() {
 
         // Core buttons, accelerometer and 10 IR bytes and
         // 6 bytes from extension module
-        packet = new HIDPacket("coreaccel_ir10_ext6",[0x37],22);
+        packet = new HIDPacket("coreaccel_ir10_ext6", 0x37);
         packet.addControl("coreaccel_ir10_ext6","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_ir10_ext6","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_ir10_ext6","arrow_down",1,"B",0x4);
@@ -262,7 +262,7 @@ function WiimoteController() {
 
         // No core buttons, no accelerometer, 21 bytes from
         // extension module
-        packet = new HIDPacket("ext_21",[0x3d],22);
+        packet = new HIDPacket("ext_21", 0x3d);
         packet.addControl("ext_21","extension_1",1,"B");
         packet.addControl("ext_21","extension_2",2,"B");
         packet.addControl("ext_21","extension_3",3,"B");
@@ -288,7 +288,7 @@ function WiimoteController() {
 
         // Interleaved packet 1: core buttons, accelerometer,
         // first 16 bytes from IR camera
-        packet = new HIDPacket("coreaccel_interleaved_1",[0x3e],22);
+        packet = new HIDPacket("coreaccel_interleaved_1", 0x3e);
         packet.addControl("coreaccel_interleaved_1","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_interleaved_1","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_interleaved_1","arrow_down",1,"B",0x4);
@@ -323,7 +323,7 @@ function WiimoteController() {
 
         // Interleaved packet 2: core buttons, accelerometer,
         // last 16 bytes from IR camera
-        packet = new HIDPacket("coreaccel_interleaved_2",[0x3f],22);
+        packet = new HIDPacket("coreaccel_interleaved_2", 0x3f);
         packet.addControl("coreaccel_interleaved_2","arrow_left",1,"B",0x1);
         packet.addControl("coreaccel_interleaved_2","arrow_right",1,"B",0x2);
         packet.addControl("coreaccel_interleaved_2","arrow_down",1,"B",0x4);
@@ -358,26 +358,26 @@ function WiimoteController() {
     }
 
     this.registerOutputPackets = function() {
-        packet = new HIDPacket("feedback",[0x11],2);
+        packet = new HIDPacket("feedback", 0x11);
         packet.addControl("state","rumble",1,"B",0x1);
         packet.addControl("state","led_1",1,"B",0x10);
         packet.addControl("state","led_2",1,"B",0x20);
         packet.addControl("state","led_3",1,"B",0x40);
         packet.addControl("state","led_4",1,"B",0x80);
-        this.controller.registerOutputPacket(packet); 
+        this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("setreportmode",[0x12],3);
+        packet = new HIDPacket("setreportmode", 0x12);
         packet.addControl("reportmode","continuous",1,"B",0x4);
         packet.addControl("reportmode","code",2,"B");
-        this.controller.registerOutputPacket(packet); 
+        this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("ircamera",[0x13],3);
+        packet = new HIDPacket("ircamera", 0x13);
         packet.addControl("ircontrol","enabled",1,"B",0x4);
-        this.controller.registerOutputPacket(packet); 
+        this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("ircamerastate",[0x1a],3);
+        packet = new HIDPacket("ircamerastate", 0x1a);
         packet.addControl("irstate","enabled",1,"B",0x4);
-        this.controller.registerOutputPacket(packet); 
+        this.controller.registerOutputPacket(packet);
     }
 
     // No default scalers: all controls done with callbacks anyway
@@ -399,7 +399,7 @@ Wiimote.init = function(id) {
     var controller = Wiimote.controller;
     controller.activeDeck = 1;
     controller.auto_repeat_interval = 50;
-   
+
     Wiimote.registerInputPackets();
     Wiimote.registerOutputPackets();
 
@@ -545,7 +545,7 @@ Wiimote.coreaccel_ext8_Callbacks = function(packetname) {
 
 // Register callbacks for buttons + accelerometer output report
 // with 8 bytes from extension module
-// NOTE - this code does not acually work, it freezes my wiimote
+// NOTE - this code does not actually work, it freezes my wiimote
 Wiimote.coreaccel_ir12_Callbacks = function(packetname) {
     HIDDebug("Activating core buttons + accelerometer / 12 bytes IR mode");
     var controller = Wiimote.controller;
@@ -690,7 +690,7 @@ Wiimote.toggleLED = function(deck) {
     packet.send();
 }
 
-Wiimote.rumble = function(rumble,milliseconds) { 
+Wiimote.rumble = function(rumble,milliseconds) {
     var controller = Wiimote.controller;
     var packet = Wiimote.controller.getOutputPacket("feedback");
     if (rumble!=undefined)
@@ -708,7 +708,7 @@ Wiimote.rumble = function(rumble,milliseconds) {
     }
 }
 
-Wiimote.seek_loop = function(field) { 
+Wiimote.seek_loop = function(field) {
     var controller = Wiimote.controller;
     var value;
     var group = controller.resolveDeckGroup(controller.activeDeck);
@@ -719,9 +719,9 @@ Wiimote.seek_loop = function(field) {
     else
         value = true;
     if (controller.modifiers.get("shift")) {
-        if (field.name=="arrow_left") 
+        if (field.name=="arrow_left")
             engine.setValue(group,"back",value);
-        if (field.name=="arrow_right") 
+        if (field.name=="arrow_right")
             engine.setValue(group,"fwd",value);
     } else {
         // Reset back/gwd states (can be left on if you release shift)
@@ -729,7 +729,7 @@ Wiimote.seek_loop = function(field) {
             engine.setValue(group,"back",false);
         if (engine.getValue(group,"fwd"))
             engine.setValue(group,"fwd",false);
-        if (field.name=="arrow_left") 
+        if (field.name=="arrow_left")
             engine.setValue(group,"loop_in",value);
         if (field.name=="arrow_right") {
             if (engine.getValue(group,"loop_enabled")) {
@@ -743,7 +743,7 @@ Wiimote.seek_loop = function(field) {
     }
 };
 
-Wiimote.select = function(field) { 
+Wiimote.select = function(field) {
     var controller = Wiimote.controller;
     if (!controller.modifiers.get("shift"))  {
         if (field.value==controller.buttonStates.released)
@@ -783,7 +783,7 @@ Wiimote.select = function(field) {
 }
 
 // Call cue_default, or select deck if shift (bottom button) is pressed
-Wiimote.home = function(field) { 
+Wiimote.home = function(field) {
     var controller = Wiimote.controller;
     var group = controller.resolveDeckGroup(controller.activeDeck);
     if (!controller.modifiers.get("shift"))  {
@@ -800,7 +800,7 @@ Wiimote.home = function(field) {
     }
 }
 
-Wiimote.playcue = function(field) { 
+Wiimote.playcue = function(field) {
     var controller = Wiimote.controller;
     var group = controller.resolveDeckGroup(controller.activeDeck);
     if (group==undefined)
@@ -829,7 +829,7 @@ Wiimote.jog = function(field) {
     if (field.name=="button_minus") {
         if (!controller.modifiers.get("shift")) {
             engine.setValue(group,"jog",-2);
-            callback = function(field) { 
+            callback = function(field) {
                 engine.setValue(
                   Wiimote.controller.resolveDeckGroup(Wiimote.controller.activeDeck),
                   "jog",-2
@@ -837,7 +837,7 @@ Wiimote.jog = function(field) {
             };
         } else {
             engine.setValue(group,"jog",-6);
-            callback = function(field) { 
+            callback = function(field) {
                 engine.setValue(
                   Wiimote.controller.resolveDeckGroup(Wiimote.controller.activeDeck),
                   "jog",-6
@@ -849,7 +849,7 @@ Wiimote.jog = function(field) {
     if (field.name=="button_plus") {
         if (!controller.modifiers.get("shift")) {
             engine.setValue(group,"jog",2);
-            callback = function(field) { 
+            callback = function(field) {
                 engine.setValue(
                   Wiimote.controller.resolveDeckGroup(Wiimote.controller.activeDeck),
                   "jog",2
@@ -857,7 +857,7 @@ Wiimote.jog = function(field) {
             };
         } else {
             engine.setValue(group,"jog",6);
-            callback = function(field) { 
+            callback = function(field) {
                 engine.setValue(
                   Wiimote.controller.resolveDeckGroup(Wiimote.controller.activeDeck),
                   "jog",6
@@ -868,7 +868,7 @@ Wiimote.jog = function(field) {
     }
 }
 
-Wiimote.hotcue = function(field) { 
+Wiimote.hotcue = function(field) {
     var controller = Wiimote.controller;
     var group = controller.resolveDeckGroup(controller.activeDeck);
     if (group==undefined)
@@ -876,25 +876,25 @@ Wiimote.hotcue = function(field) {
     if (controller.modifiers.get("shift")) {
         if (field.value==controller.buttonStates.released)
             return;
-        if (field.name=="button_1") 
+        if (field.name=="button_1")
             engine.setValue(group,"hotcue_1_clear",true);
-        if (field.name=="button_2") 
+        if (field.name=="button_2")
             engine.setValue(group,"hotcue_2_clear",true);
     } else {
         if (field.value==controller.buttonStates.released)
             return;
-        if (field.name=="button_1") 
+        if (field.name=="button_1")
             engine.setValue(group,"hotcue_1_activate",true);
-        if (field.name=="button_2") 
+        if (field.name=="button_2")
             engine.setValue(group,"hotcue_2_activate",true);
     }
 }
 
-Wiimote.irdata = function(field) { 
+Wiimote.irdata = function(field) {
     HIDDebug(field.name + " DELTA " + field.delta);
 }
 
-Wiimote.accel = function(field) { 
+Wiimote.accel = function(field) {
     // Disabled until we do something useful this data
     return;
     var controller = Wiimote.controller;

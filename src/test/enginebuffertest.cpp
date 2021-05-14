@@ -11,9 +11,10 @@
 #include "test/mockedenginebackendtest.h"
 #include "test/mixxxtest.h"
 #include "test/signalpathtest.h"
+#include "engine/controls/ratecontrol.h"
 
-// Incase any of the test in this file fail. You can use the audioplot.py tool
-// in the scripts folder to visually compare the results of the enginebuffer
+// In case any of the test in this file fail. You can use the audioplot.py tool
+// in the tools folder to visually compare the results of the enginebuffer
 // with the golden test data.
 
 class EngineBufferTest : public MockedEngineBackendTest {};
@@ -125,7 +126,7 @@ TEST_F(EngineBufferTest, SlowRubberBand) {
 }
 
 TEST_F(EngineBufferTest, ScalerNoTransport) {
-    // normaly use the Vinyl scaler
+    // normally use the Vinyl scaler
     ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
     ProcessBuffer();
     EXPECT_EQ(m_pMockScaleVinyl1, m_pChannel1->getEngineBuffer()->m_pScale);
@@ -403,6 +404,7 @@ TEST_F(EngineBufferE2ETest, CueGotoAndPlayTest) {
     // Be sure, cue seek is not overwritten by quantization seek
     // Bug #1504503
     ControlObject::set(ConfigKey(m_sGroup1, "quantize"), 1.0);
+    ControlObject::set(ConfigKey(m_sGroup1, "cue_point"), 0.0);
     m_pChannel1->getEngineBuffer()->queueNewPlaypos(
             1000, EngineBuffer::SEEK_EXACT);
     ProcessBuffer();
@@ -434,4 +436,93 @@ TEST_F(EngineBufferE2ETest, CueGotoAndPlayDenon) {
     ControlObject::set(ConfigKey(m_sGroup1, "cue_gotoandplay"), 1.0);
     ProcessBuffer();
     EXPECT_EQ(cueBefore, ControlObject::get(ConfigKey(m_sGroup1, "cue_point")));
+}
+
+TEST_F(EngineBufferTest, RateTempTest) {
+    RateControl::setTemporaryRateChangeCoarseAmount(4);
+    RateControl::setTemporaryRateChangeFineAmount(2);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_dir"), 1);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    EXPECT_EQ(1.0, m_pChannel1->getEngineBuffer()->m_speed_old);
+
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_up"), 1);
+    ProcessBuffer();
+    EXPECT_EQ(1.04, m_pChannel1->getEngineBuffer()->m_speed_old);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_up"), 0);
+
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_up_small"), 1);
+    ProcessBuffer();
+    EXPECT_EQ(1.02, m_pChannel1->getEngineBuffer()->m_speed_old);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_up_small"), 0);
+
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_down"), 1);
+    ProcessBuffer();
+    EXPECT_EQ(0.96, m_pChannel1->getEngineBuffer()->m_speed_old);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_down"), 0);
+
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_down_small"), 1);
+    ProcessBuffer();
+    EXPECT_EQ(0.98, m_pChannel1->getEngineBuffer()->m_speed_old);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_down_small"), 0);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_dir"), -1);
+
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_up"), 1);
+    ProcessBuffer();
+    EXPECT_EQ(1.04, m_pChannel1->getEngineBuffer()->m_speed_old);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_up"), 0);
+
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_up_small"), 1);
+    ProcessBuffer();
+    EXPECT_EQ(1.02, m_pChannel1->getEngineBuffer()->m_speed_old);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_up_small"), 0);
+
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_down"), 1);
+    ProcessBuffer();
+    EXPECT_EQ(0.96, m_pChannel1->getEngineBuffer()->m_speed_old);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_down"), 0);
+
+    ProcessBuffer();
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_down_small"), 1);
+    ProcessBuffer();
+    EXPECT_EQ(0.98, m_pChannel1->getEngineBuffer()->m_speed_old);
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_temp_down_small"), 0);
+}
+
+
+TEST_F(EngineBufferTest, RatePermTest) {
+    RateControl::setPermanentRateChangeCoarseAmount(4);
+    RateControl::setPermanentRateChangeFineAmount(2);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_dir"), 1);
+    ControlObject::set(ConfigKey(m_sGroup1, "play"), 1.0);
+    ProcessBuffer();
+    EXPECT_EQ(1.0, m_pChannel1->getEngineBuffer()->m_speed_old);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_perm_up"), 1);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_perm_up"), 0);
+    EXPECT_EQ(1.04, m_pChannel1->getEngineBuffer()->m_speed_old);
+
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_perm_up_small"), 1);
+    ProcessBuffer();
+    ControlObject::set(ConfigKey(m_sGroup1, "rate_perm_up_small"), 0);
+    EXPECT_EQ(1.06, m_pChannel1->getEngineBuffer()->m_speed_old);
 }

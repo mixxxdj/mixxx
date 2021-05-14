@@ -1,5 +1,4 @@
-#ifndef TOOLTIPS_H
-#define TOOLTIPS_H
+#pragma once
 
 #include <QHash>
 #include <QStringList>
@@ -27,9 +26,8 @@ class Tooltips : public QObject {
     QString m_resetToDefault;
     QString m_leftClick;
     QString m_rightClick;
+    QString m_doubleClick;
     QString m_scrollWheel;
     QString m_scratchMouse;
+    QString m_shift;
 };
-
-
-#endif /* TOOLTIPS_H */

@@ -1,34 +1,40 @@
 #include "effects/effectsmanager.h"
 
 #include <QMetaType>
-#include <QtAlgorithms>
+#include <algorithm>
 
-#include "engine/effects/engineeffectsmanager.h"
+#include "effects/effectchainmanager.h"
+#include "effects/effectsbackend.h"
+#include "effects/effectslot.h"
 #include "engine/effects/engineeffect.h"
-#include "engine/effects/engineeffectrack.h"
 #include "engine/effects/engineeffectchain.h"
+#include "engine/effects/engineeffectrack.h"
+#include "engine/effects/engineeffectsmanager.h"
+#include "moc_effectsmanager.cpp"
 #include "util/assert.h"
 
+const QString EffectsManager::kNoEffectString = QStringLiteral("---");
+
 namespace {
-const QString kEffectGroupSeparator = "_";
-const QString kGroupClose = "]";
+constexpr QChar kEffectGroupSeparator = '_';
+constexpr QChar kGroupClose = ']';
 const unsigned int kEffectMessagPipeFifoSize = 2048;
 } // anonymous namespace
 
-
-EffectsManager::EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                               ChannelHandleFactory* pChannelHandleFactory)
+EffectsManager::EffectsManager(QObject* pParent,
+        UserSettingsPointer pConfig,
+        ChannelHandleFactoryPointer pChannelHandleFactory)
         : QObject(pParent),
           m_pChannelHandleFactory(pChannelHandleFactory),
           m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0),
-          m_pLoEqFreq(NULL),
-          m_pHiEqFreq(NULL),
+          m_pLoEqFreq(nullptr),
+          m_pHiEqFreq(nullptr),
           m_underDestruction(false) {
-    qRegisterMetaType<EffectChainInsertionType>("EffectChainInsertionType");
+    qRegisterMetaType<EffectChainMixMode>("EffectChainMixMode");
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
-                kEffectMessagPipeFifoSize, kEffectMessagPipeFifoSize, false, false);
+                kEffectMessagPipeFifoSize, kEffectMessagPipeFifoSize);
 
     m_pRequestPipe.reset(requestPipes.first);
     m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
@@ -63,9 +69,12 @@ EffectsManager::~EffectsManager() {
     delete m_pEngineEffectsManager;
 }
 
-bool alphabetizeEffectManifests(const EffectManifest& manifest1,
-                                const EffectManifest& manifest2) {
-    return QString::localeAwareCompare(manifest1.displayName(), manifest2.displayName()) < 0;
+bool alphabetizeEffectManifests(EffectManifestPointer pManifest1,
+                                EffectManifestPointer pManifest2) {
+    // Sort built-in effects first before external plugins
+    int backendNameComparision = static_cast<int>(pManifest1->backendType()) - static_cast<int>(pManifest2->backendType());
+    int displayNameComparision = QString::localeAwareCompare(pManifest1->displayName(), pManifest2->displayName());
+    return (backendNameComparision ? (backendNameComparision < 0) : (displayNameComparision < 0));
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
@@ -81,122 +90,127 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
 
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 
-    qSort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
+    std::sort(m_availableEffectManifests.begin(), m_availableEffectManifests.end(),
           alphabetizeEffectManifests);
 
-    connect(pBackend, SIGNAL(effectRegistered(EffectManifest)),
-            this, SLOT(slotBackendRegisteredEffect(EffectManifest)));
+    connect(pBackend,
+            &EffectsBackend::effectRegistered,
+            this,
+            &EffectsManager::slotBackendRegisteredEffect);
 
-    connect(pBackend, SIGNAL(effectRegistered(EffectManifest)),
-            this, SIGNAL(availableEffectsUpdated(EffectManifest)));
+    connect(pBackend,
+            &EffectsBackend::effectRegistered,
+            this,
+            &EffectsManager::availableEffectsUpdated);
 }
 
-void EffectsManager::slotBackendRegisteredEffect(EffectManifest manifest) {
-    auto insertion_point = qLowerBound(m_availableEffectManifests.begin(),
-                                       m_availableEffectManifests.end(),
-                                       manifest, alphabetizeEffectManifests);
-    m_availableEffectManifests.insert(insertion_point, manifest);
+void EffectsManager::slotBackendRegisteredEffect(EffectManifestPointer pManifest) {
+    auto insertion_point = std::lower_bound(m_availableEffectManifests.begin(),
+                                            m_availableEffectManifests.end(),
+                                            pManifest, alphabetizeEffectManifests);
+    m_availableEffectManifests.insert(insertion_point, pManifest);
     m_pNumEffectsAvailable->forceSet(m_availableEffectManifests.size());
 }
 
-void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handle_group) {
-    m_pEffectChainManager->registerInputChannel(handle_group);
+void EffectsManager::registerInputChannel(const ChannelHandleAndGroup& handleGroup) {
+    m_pEffectChainManager->registerInputChannel(handleGroup);
 }
 
 const QSet<ChannelHandleAndGroup>& EffectsManager::registeredInputChannels() const {
     return m_pEffectChainManager->registeredInputChannels();
 }
 
-void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handle_group) {
-    m_pEffectChainManager->registerOutputChannel(handle_group);
+void EffectsManager::registerOutputChannel(const ChannelHandleAndGroup& handleGroup) {
+    m_pEffectChainManager->registerOutputChannel(handleGroup);
 }
 
 const QSet<ChannelHandleAndGroup>& EffectsManager::registeredOutputChannels() const {
     return m_pEffectChainManager->registeredOutputChannels();
 }
 
-const QList<EffectManifest> EffectsManager::getAvailableEffectManifestsFiltered(
+const QList<EffectManifestPointer> EffectsManager::getAvailableEffectManifestsFiltered(
         EffectManifestFilterFnc filter) const {
     if (filter == nullptr) {
         return m_availableEffectManifests;
     }
 
-    QList<EffectManifest> list;
-    for (const auto& manifest : m_availableEffectManifests) {
-        if (filter(manifest)) {
-            list.append(manifest);
+    QList<EffectManifestPointer> list;
+    for (const auto& pManifest : m_availableEffectManifests) {
+        if (filter(pManifest.data())) {
+            list.append(pManifest);
         }
     }
     return list;
 }
 
 bool EffectsManager::isEQ(const QString& effectId) const {
-    return getEffectManifest(effectId).isMixingEQ();
+    EffectManifestPointer pManifest = getEffectManifest(effectId);
+    return pManifest ? pManifest->isMixingEQ() : false;
 }
 
 QString EffectsManager::getNextEffectId(const QString& effectId) {
-    if (m_availableEffectManifests.isEmpty()) {
+    if (m_visibleEffectManifests.isEmpty()) {
         return QString();
     }
     if (effectId.isNull()) {
-        return m_availableEffectManifests.first().id();
+        return m_visibleEffectManifests.first()->id();
     }
 
     int index;
-    for (index = 0; index < m_availableEffectManifests.size(); ++index) {
-        if (effectId == m_availableEffectManifests.at(index).id()) {
+    for (index = 0; index < m_visibleEffectManifests.size(); ++index) {
+        if (effectId == m_visibleEffectManifests.at(index)->id()) {
             break;
         }
     }
-    if (++index >= m_availableEffectManifests.size()) {
+    if (++index >= m_visibleEffectManifests.size()) {
         index = 0;
     }
-    return m_availableEffectManifests.at(index).id();
+    return m_visibleEffectManifests.at(index)->id();
 }
 
 QString EffectsManager::getPrevEffectId(const QString& effectId) {
-    if (m_availableEffectManifests.isEmpty()) {
+    if (m_visibleEffectManifests.isEmpty()) {
         return QString();
     }
     if (effectId.isNull()) {
-        return m_availableEffectManifests.last().id();
+        return m_visibleEffectManifests.last()->id();
     }
 
     int index;
-    for (index = 0; index < m_availableEffectManifests.size(); ++index) {
-        if (effectId == m_availableEffectManifests.at(index).id()) {
+    for (index = 0; index < m_visibleEffectManifests.size(); ++index) {
+        if (effectId == m_visibleEffectManifests.at(index)->id()) {
             break;
         }
     }
     if (--index < 0) {
-        index = m_availableEffectManifests.size() - 1;
+        index = m_visibleEffectManifests.size() - 1;
     }
-    return m_availableEffectManifests.at(index).id();
+    return m_visibleEffectManifests.at(index)->id();
 }
 
-QPair<EffectManifest, EffectsBackend*> EffectsManager::getEffectManifestAndBackend(
-        const QString& effectId) const {
+void EffectsManager::getEffectManifestAndBackend(
+        const QString& effectId,
+        EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const {
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId)) {
-            return qMakePair(pBackend->getManifest(effectId), pBackend);
+            *ppManifest = pBackend->getManifest(effectId);
+            *ppBackend = pBackend;
         }
     }
-
-    EffectsBackend* pBackend = NULL;
-    return qMakePair(EffectManifest(), pBackend);
 }
 
-EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const {
-    QPair<EffectManifest, EffectsBackend*> manifestAndBackend =
-            getEffectManifestAndBackend(effectId);
-    return manifestAndBackend.first;
+EffectManifestPointer EffectsManager::getEffectManifest(const QString& effectId) const {
+    EffectManifestPointer pMainifest;
+    EffectsBackend* pEffectBackend;
+    getEffectManifestAndBackend(effectId, &pMainifest, &pEffectBackend);
+    return pMainifest;
 }
 
 EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
     if (effectId.isEmpty()) {
         return EffectPointer();
     }
-    foreach (EffectsBackend* pBackend, m_effectsBackends) {
+    for (const auto& pBackend : qAsConst(m_effectsBackends)) {
         if (pBackend->canInstantiateEffect(effectId)) {
             return pBackend->instantiateEffect(this, effectId);
         }
@@ -307,6 +321,22 @@ EffectButtonParameterSlotPointer EffectsManager::getEffectButtonParameterSlot(
     return pParameterSlot;
 }
 
+void EffectsManager::setEffectVisibility(EffectManifestPointer pManifest, bool visible) {
+    if (visible && !m_visibleEffectManifests.contains(pManifest)) {
+        auto insertion_point = std::lower_bound(m_visibleEffectManifests.begin(),
+                                                m_visibleEffectManifests.end(),
+                                                pManifest, alphabetizeEffectManifests);
+        m_visibleEffectManifests.insert(insertion_point, pManifest);
+        emit visibleEffectsUpdated();
+    } else if (!visible) {
+        m_visibleEffectManifests.removeOne(pManifest);
+        emit visibleEffectsUpdated();
+    }
+}
+
+bool EffectsManager::getEffectVisibility(EffectManifestPointer pManifest) {
+    return m_visibleEffectManifests.contains(pManifest);
+}
 
 void EffectsManager::setup() {
     // These controls are used inside EQ Effects
@@ -381,6 +411,10 @@ void EffectsManager::loadEffectChains() {
     m_pEffectChainManager->loadEffectChains();
 }
 
+void EffectsManager::refeshAllRacks() {
+    m_pEffectChainManager->refeshAllRacks();
+}
+
 bool EffectsManager::writeRequest(EffectsRequest* request) {
     if (m_underDestruction) {
         // Catch all delete Messages since the engine is already down
@@ -399,7 +433,7 @@ bool EffectsManager::writeRequest(EffectsRequest* request) {
 
     request->request_id = m_nextRequestId++;
     // TODO(XXX) use preallocated requests to avoid delete calls from engine
-    if (m_pRequestPipe->writeMessages(&request, 1) == 1) {
+    if (m_pRequestPipe->writeMessage(request)) {
         m_activeRequests[request->request_id] = request;
         return true;
     }
@@ -413,7 +447,7 @@ void EffectsManager::processEffectsResponses() {
     }
 
     EffectsResponse response;
-    while (m_pRequestPipe->readMessages(&response, 1) == 1) {
+    while (m_pRequestPipe->readMessage(&response)) {
         QHash<qint64, EffectsRequest*>::iterator it =
                 m_activeRequests.find(response.request_id);
 

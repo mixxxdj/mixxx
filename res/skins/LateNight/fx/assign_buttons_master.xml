@@ -1,0 +1,49 @@
+<!--
+Description:
+  A button that has click or display controls.
+Variables:
+  ObjectName        : object name
+  ToolTipID         : standard Tooltip from mixxx db
+    see: https://github.com/mixxxdj/mixxx/blob/master/src/skin/TooltipIds.cpp
+  Size              : button size
+  state_X_text      : label text for state X
+  state_X_pressed   : background graphic for pressed state X
+  state_X_unpressed : background graphic for unpressed state X
+  Align             : alignment of text
+  ConfigKey         : left-click control
+-->
+<Template>
+  <SetVariable name="BtnType"></SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>AlignLeft</ObjectName>
+    <Layout>vertical</Layout>
+    <SizePolicy>max,max</SizePolicy>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>FxAssignButtons</ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>f,min</SizePolicy>
+        <Children>
+          <Template src="skin:/fx/assign_button.xml">
+            <SetVariable name="FxUnit">1</SetVariable>
+            <SetVariable name="Width">26</SetVariable>
+            <SetVariable name="Text">&#8202;FX&#8202;</SetVariable>
+          </Template>
+          <Template src="skin:/fx/assign_button.xml">
+            <SetVariable name="FxUnit">2</SetVariable>
+            <SetVariable name="Width">20</SetVariable>
+          </Template>
+          <Template src="skin:/fx/assign_button.xml">
+            <SetVariable name="FxUnit">3</SetVariable>
+            <SetVariable name="Width">20</SetVariable>
+          </Template>
+          <Template src="skin:/fx/assign_button.xml">
+            <SetVariable name="FxUnit">4</SetVariable>
+            <SetVariable name="Width">20</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
+</Template>

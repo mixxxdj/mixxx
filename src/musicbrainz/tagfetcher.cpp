@@ -1,129 +1,283 @@
-/*****************************************************************************
- *  Copyright © 2012 John Maguire <john.maguire@gmail.com>                   *
- *                   David Sansome <me@davidsansome.com>                     *
- *  This work is free. You can redistribute it and/or modify it under the    *
- *  terms of the Do What The Fuck You Want To Public License, Version 2,     *
- *  as published by Sam Hocevar.                                             *
- *  See http://www.wtfpl.net/ for more details.                              *
- *****************************************************************************/
+#include "musicbrainz/tagfetcher.h"
 
 #include <QFuture>
-#include <QUrl>
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-#include <QtConcurrent>
-#endif
-#include <QtConcurrentMap>
+#include <QtConcurrentRun>
 
-#include "musicbrainz/tagfetcher.h"
+#include "moc_tagfetcher.cpp"
 #include "musicbrainz/chromaprinter.h"
-#include "musicbrainz/musicbrainzclient.h"
+#include "track/track.h"
+#include "util/thread_affinity.h"
+
+namespace {
+
+// Long timeout to cope with occasional server-side unresponsiveness
+constexpr int kAcoustIdTimeoutMillis = 60000; // msec
+
+// Long timeout to cope with occasional server-side unresponsiveness
+constexpr int kMusicBrainzTimeoutMillis = 60000; // msec
+
+} // anonymous namespace
 
 TagFetcher::TagFetcher(QObject* parent)
-          : QObject(parent),
-            m_pFingerprintWatcher(NULL),
-            m_AcoustidClient(this),
-            m_MusicbrainzClient(this) {
-    connect(&m_AcoustidClient, SIGNAL(finished(int,QString)),
-            this, SLOT(mbidFound(int,QString)));
-    connect(&m_MusicbrainzClient, SIGNAL(finished(int,MusicBrainzClient::ResultList)),
-            this, SLOT(tagsFetched(int,MusicBrainzClient::ResultList)));
-    connect(&m_AcoustidClient, SIGNAL(networkError(int, QString)),
-            this, SIGNAL(networkError(int, QString)));
-    connect(&m_MusicbrainzClient, SIGNAL(networkError(int, QString)),
-            this, SIGNAL(networkError(int, QString)));
+        : QObject(parent),
+          m_fingerprintWatcher(this) {
 }
 
-QString TagFetcher::getFingerprint(const TrackPointer tio) {
-    return ChromaPrinter(NULL).getFingerprint(tio);
-}
-
-void TagFetcher::startFetch(const TrackPointer track) {
+void TagFetcher::startFetch(
+        TrackPointer pTrack) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
     cancel();
-    // qDebug() << "start to fetch track metadata";
-    QList<TrackPointer> tracks;
-    tracks.append(track);
-    m_tracks = tracks;
 
-    QFuture<QString> future = QtConcurrent::mapped(m_tracks, getFingerprint);
-    m_pFingerprintWatcher = new QFutureWatcher<QString>(this);
-    m_pFingerprintWatcher->setFuture(future);
-    connect(m_pFingerprintWatcher, SIGNAL(resultReadyAt(int)),
-            SLOT(fingerprintFound(int)));
+    m_pTrack = pTrack;
 
-    foreach (const TrackPointer ptrack, m_tracks) {
-        emit(fetchProgress(tr("Fingerprinting track")));
-    }
+    emit fetchProgress(tr("Fingerprinting track"));
+    const auto fingerprintTask = QtConcurrent::run([pTrack] {
+        return ChromaPrinter().getFingerprint(pTrack);
+    });
+    m_fingerprintWatcher.setFuture(fingerprintTask);
+    DEBUG_ASSERT(!m_pAcoustIdTask);
+    connect(
+            &m_fingerprintWatcher,
+            &QFutureWatcher<QString>::finished,
+            this,
+            &TagFetcher::slotFingerprintReady);
 }
 
 void TagFetcher::cancel() {
-    // qDebug()<< "Cancel tagfetching";
-    if (m_pFingerprintWatcher) {
-        m_pFingerprintWatcher->cancel();
-
-        delete m_pFingerprintWatcher;
-        m_pFingerprintWatcher = NULL;
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    m_pTrack.reset();
+    m_fingerprintWatcher.disconnect(this);
+    m_fingerprintWatcher.cancel();
+    if (m_pAcoustIdTask) {
+        m_pAcoustIdTask->invokeAbort();
+        DEBUG_ASSERT(!m_pAcoustIdTask);
     }
-
-    m_AcoustidClient.cancelAll();
-    m_MusicbrainzClient.cancelAll();
-    m_tracks.clear();
+    if (m_pMusicBrainzTask) {
+        m_pMusicBrainzTask->invokeAbort();
+        DEBUG_ASSERT(!m_pMusicBrainzTask);
+    }
 }
 
-void TagFetcher::fingerprintFound(int index) {
-    QFutureWatcher<QString>* watcher = reinterpret_cast<QFutureWatcher<QString>*>(sender());
-    if (!watcher || index >= m_tracks.count()) {
+void TagFetcher::slotFingerprintReady() {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    if (!m_pTrack ||
+            !m_fingerprintWatcher.isFinished()) {
         return;
     }
 
-    const QString fingerprint = watcher->resultAt(index);
-    const TrackPointer ptrack = m_tracks[index];
-
+    DEBUG_ASSERT(m_fingerprintWatcher.isFinished());
+    const QString fingerprint = m_fingerprintWatcher.result();
     if (fingerprint.isEmpty()) {
-        emit(resultAvailable(ptrack, QList<TrackPointer>()));
+        emit resultAvailable(
+                m_pTrack,
+                QList<mixxx::musicbrainz::TrackRelease>());
         return;
     }
 
-    emit(fetchProgress(tr("Identifying track")));
-    // qDebug() << "start to look up the MBID";
-    m_AcoustidClient.start(index, fingerprint, ptrack->getDurationInt());
+    emit fetchProgress(tr("Identifying track through Acoustid"));
+    DEBUG_ASSERT(!m_pAcoustIdTask);
+    m_pAcoustIdTask = make_parented<mixxx::AcoustIdLookupTask>(
+            &m_network,
+            fingerprint,
+            m_pTrack->getDurationSecondsInt(),
+            this);
+    connect(m_pAcoustIdTask,
+            &mixxx::AcoustIdLookupTask::succeeded,
+            this,
+            &TagFetcher::slotAcoustIdTaskSucceeded);
+    connect(m_pAcoustIdTask,
+            &mixxx::AcoustIdLookupTask::failed,
+            this,
+            &TagFetcher::slotAcoustIdTaskFailed);
+    connect(m_pAcoustIdTask,
+            &mixxx::AcoustIdLookupTask::aborted,
+            this,
+            &TagFetcher::slotAcoustIdTaskAborted);
+    connect(m_pAcoustIdTask,
+            &mixxx::AcoustIdLookupTask::networkError,
+            this,
+            &TagFetcher::slotAcoustIdTaskNetworkError);
+    m_pAcoustIdTask->invokeStart(
+            kAcoustIdTimeoutMillis);
 }
 
-void TagFetcher::mbidFound(int index, const QString& mbid) {
-    if (index >= m_tracks.count()) {
+void TagFetcher::slotAcoustIdTaskSucceeded(
+        QList<QUuid> recordingIds) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    auto* const pAcoustIdTask = m_pAcoustIdTask.get();
+    VERIFY_OR_DEBUG_ASSERT(pAcoustIdTask ==
+            qobject_cast<mixxx::AcoustIdLookupTask*>(sender())) {
+        return;
+    }
+    m_pAcoustIdTask = nullptr;
+    const auto taskDeleter = mixxx::ScopedDeleteLater(pAcoustIdTask);
+    pAcoustIdTask->disconnect(this);
+
+    if (recordingIds.isEmpty()) {
+        auto pTrack = std::move(m_pTrack);
+        cancel();
+
+        emit resultAvailable(
+                std::move(pTrack),
+                QList<mixxx::musicbrainz::TrackRelease>());
         return;
     }
 
-    const TrackPointer pTrack = m_tracks[index];
-
-    if (mbid.isEmpty()) {
-        emit(resultAvailable(pTrack, QList<TrackPointer>()));
-        return;
-    }
-
-    emit fetchProgress(tr("Downloading Metadata"));
-    //qDebug() << "start to fetch tags from MB";
-    m_MusicbrainzClient.start(index, mbid);
+    emit fetchProgress(tr("Retrieving metadata from MusicBrainz"));
+    DEBUG_ASSERT(!m_pMusicBrainzTask);
+    m_pMusicBrainzTask = make_parented<mixxx::MusicBrainzRecordingsTask>(
+            &m_network,
+            std::move(recordingIds),
+            this);
+    connect(m_pMusicBrainzTask,
+            &mixxx::MusicBrainzRecordingsTask::succeeded,
+            this,
+            &TagFetcher::slotMusicBrainzTaskSucceeded);
+    connect(m_pMusicBrainzTask,
+            &mixxx::MusicBrainzRecordingsTask::failed,
+            this,
+            &TagFetcher::slotMusicBrainzTaskFailed);
+    connect(m_pMusicBrainzTask,
+            &mixxx::MusicBrainzRecordingsTask::aborted,
+            this,
+            &TagFetcher::slotMusicBrainzTaskAborted);
+    connect(m_pMusicBrainzTask,
+            &mixxx::MusicBrainzRecordingsTask::networkError,
+            this,
+            &TagFetcher::slotMusicBrainzTaskNetworkError);
+    m_pMusicBrainzTask->invokeStart(
+            kMusicBrainzTimeoutMillis);
 }
 
-void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& results) {
-    if (index >= m_tracks.count()) {
+bool TagFetcher::onAcoustIdTaskTerminated() {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    auto* const pAcoustIdTask = m_pAcoustIdTask.get();
+    DEBUG_ASSERT(sender());
+    VERIFY_OR_DEBUG_ASSERT(pAcoustIdTask ==
+            qobject_cast<mixxx::AcoustIdLookupTask*>(sender())) {
+        return false;
+    }
+    m_pAcoustIdTask = nullptr;
+    const auto taskDeleter = mixxx::ScopedDeleteLater(pAcoustIdTask);
+    pAcoustIdTask->disconnect(this);
+    return true;
+}
+
+void TagFetcher::slotAcoustIdTaskFailed(
+        const mixxx::network::JsonWebResponse& response) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    if (!onAcoustIdTaskTerminated()) {
         return;
     }
-    // qDebug() << "Tagfetcher got musicbrainz results and now parses them";
-    const TrackPointer originalTrack = m_tracks[index];
-    QList<TrackPointer> tracksGuessed;
-    foreach (const MusicBrainzClient::Result& result, results) {
-        TrackPointer track(
-                Track::newTemporary(
-                        originalTrack->getFileInfo(),
-                        originalTrack->getSecurityToken()));
-        track->setTitle(result.m_title);
-        track->setArtist(result.m_artist);
-        track->setAlbum(result.m_album);
-        track->setDuration(result.m_duration);
-        track->setTrackNumber(QString::number(result.m_track));
-        track->setYear(QString::number(result.m_year));
-        tracksGuessed << track;
+
+    cancel();
+
+    emit networkError(
+            response.statusCode(),
+            "AcoustID",
+            response.content().toJson(),
+            -1);
+}
+
+void TagFetcher::slotAcoustIdTaskAborted() {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    if (!onAcoustIdTaskTerminated()) {
+        return;
     }
-    emit(resultAvailable(originalTrack, tracksGuessed));
+
+    cancel();
+}
+
+void TagFetcher::slotAcoustIdTaskNetworkError(
+        QNetworkReply::NetworkError errorCode,
+        const QString& errorString,
+        const mixxx::network::WebResponseWithContent& responseWithContent) {
+    Q_UNUSED(responseWithContent);
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    if (!onAcoustIdTaskTerminated()) {
+        return;
+    }
+
+    cancel();
+
+    emit networkError(
+            mixxx::network::kHttpStatusCodeInvalid,
+            QStringLiteral("AcoustID"),
+            errorString,
+            errorCode);
+}
+
+bool TagFetcher::onMusicBrainzTaskTerminated() {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    auto* const pMusicBrainzTask = m_pMusicBrainzTask.get();
+    DEBUG_ASSERT(sender());
+    VERIFY_OR_DEBUG_ASSERT(pMusicBrainzTask ==
+            qobject_cast<mixxx::MusicBrainzRecordingsTask*>(sender())) {
+        return false;
+    }
+    m_pMusicBrainzTask = nullptr;
+    const auto taskDeleter = mixxx::ScopedDeleteLater(pMusicBrainzTask);
+    pMusicBrainzTask->disconnect(this);
+    return true;
+}
+
+void TagFetcher::slotMusicBrainzTaskAborted() {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    if (!onMusicBrainzTaskTerminated()) {
+        return;
+    }
+
+    cancel();
+}
+
+void TagFetcher::slotMusicBrainzTaskNetworkError(
+        QNetworkReply::NetworkError errorCode,
+        const QString& errorString,
+        const mixxx::network::WebResponseWithContent& responseWithContent) {
+    Q_UNUSED(responseWithContent);
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    if (!onMusicBrainzTaskTerminated()) {
+        return;
+    }
+
+    cancel();
+
+    emit networkError(
+            mixxx::network::kHttpStatusCodeInvalid,
+            QStringLiteral("MusicBrainz"),
+            errorString,
+            errorCode);
+}
+
+void TagFetcher::slotMusicBrainzTaskFailed(
+        const mixxx::network::WebResponse& response,
+        int errorCode,
+        const QString& errorMessage) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    if (!onMusicBrainzTaskTerminated()) {
+        return;
+    }
+
+    cancel();
+
+    emit networkError(
+            response.statusCode(),
+            "MusicBrainz",
+            errorMessage,
+            errorCode);
+}
+
+void TagFetcher::slotMusicBrainzTaskSucceeded(
+        const QList<mixxx::musicbrainz::TrackRelease>& guessedTrackReleases) {
+    DEBUG_ASSERT_QOBJECT_THREAD_AFFINITY(this);
+    if (!onMusicBrainzTaskTerminated()) {
+        return;
+    }
+
+    auto pTrack = std::move(m_pTrack);
+    cancel();
+
+    emit resultAvailable(
+            std::move(pTrack),
+            std::move(guessedTrackReleases));
 }

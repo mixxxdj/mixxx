@@ -8,7 +8,6 @@
 #include "track/trackmetadata.h"
 #include "util/memory.h"
 
-
 namespace mixxx {
 
 // API and abstract base class for parsing track metadata and
@@ -19,7 +18,7 @@ namespace mixxx {
 // and can be used for synchronization purposes.
 class MetadataSource {
   public:
-    virtual ~MetadataSource() {}
+    virtual ~MetadataSource() = default;
 
     enum class ImportResult {
         Succeeded,
@@ -55,4 +54,4 @@ class MetadataSource {
 
 typedef std::shared_ptr<MetadataSource> MetadataSourcePointer;
 
-} //namespace mixxx
+} // namespace mixxx

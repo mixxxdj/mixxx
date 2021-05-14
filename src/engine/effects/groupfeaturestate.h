@@ -1,5 +1,4 @@
-#ifndef GROUPFEATURESTATE_H
-#define GROUPFEATURESTATE_H
+#pragma once
 
 #include "proto/keys.pb.h"
 
@@ -25,5 +24,3 @@ struct GroupFeatureState {
     bool has_gain;
     double gain;
 };
-
-#endif /* GROUPFEATURESTATE_H */

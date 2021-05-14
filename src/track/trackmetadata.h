@@ -2,29 +2,26 @@
 
 #include <QDateTime>
 
+#include "audio/streaminfo.h"
 #include "track/albuminfo.h"
 #include "track/trackinfo.h"
-
 
 namespace mixxx {
 
 class TrackMetadata final {
     // Audio properties
-    //   - read-only
-    //   - stored file tags
-    //   - adjusted by audio decoder AFTER import from file tags
-    PROPERTY_SET_BYVAL_GET_BYREF(AudioSource::Bitrate,      bitrate,    Bitrate)
-    PROPERTY_SET_BYVAL_GET_BYREF(AudioSignal::ChannelCount, channels,   Channels)
-    PROPERTY_SET_BYVAL_GET_BYREF(Duration,                  duration,   Duration)
-    PROPERTY_SET_BYVAL_GET_BYREF(AudioSignal::SampleRate,   sampleRate, SampleRate)
+    //  - read-only
+    //  - stored in file tags
+    //  - adjusted when opening the audio stream (if available)
+    MIXXX_DECL_PROPERTY(audio::StreamInfo, streamInfo, StreamInfo)
 
     // Track properties
     //   - read-write
     //   - stored in file tags
-    PROPERTY_SET_BYVAL_GET_BYREF(AlbumInfo, albumInfo, AlbumInfo)
-    PROPERTY_SET_BYVAL_GET_BYREF(TrackInfo, trackInfo, TrackInfo)
+    MIXXX_DECL_PROPERTY(AlbumInfo, albumInfo, AlbumInfo)
+    MIXXX_DECL_PROPERTY(TrackInfo, trackInfo, TrackInfo)
 
-public:
+  public:
     TrackMetadata() = default;
     TrackMetadata(TrackMetadata&&) = default;
     TrackMetadata(const TrackMetadata&) = default;
@@ -33,55 +30,57 @@ public:
     TrackMetadata& operator=(TrackMetadata&&) = default;
     TrackMetadata& operator=(const TrackMetadata&) = default;
 
-    // TODO(XXX): Remove after all new fields have been added to the library
-    void resetUnsupportedValues() {
-        refAlbumInfo().resetUnsupportedValues();
-        refTrackInfo().resetUnsupportedValues();
-    }
+    bool updateStreamInfoFromSource(
+            const audio::StreamInfo& streamInfo);
 
     // Adjusts floating-point values to match their string representation
     // in file tags to account for rounding errors.
-    void normalizeBeforeExport() {
-        refAlbumInfo().normalizeBeforeExport();
-        refTrackInfo().normalizeBeforeExport();
-    }
+    void normalizeBeforeExport();
 
-    // Compares the contents with metadata that has been freshly imported
-    // from a file.
-    bool hasBeenModifiedAfterImport(const TrackMetadata& importedFromFile) const {
-        // NOTE(uklotzde): The read-only audio properties might differ after
-        // they have been updated while decoding audio data. They are read-only
-        // and must not be considered when exporting metadata.
-        return (getAlbumInfo() != importedFromFile.getAlbumInfo()) ||
-                (getTrackInfo() != importedFromFile.getTrackInfo());
+    // Returns true if the current metadata differs from the imported metadata
+    // and needs to be exported. A result of false indicates that no export
+    // is needed.
+    // NOTE: Some tag formats like ID3v1/v2 only support integer precision
+    // for storing bpm values. To avoid re-exporting unmodified track metadata
+    // with fractional bpm values over and over again the comparison of bpm
+    // values should be restricted to integer.
+    bool anyFileTagsModified(
+            const TrackMetadata& importedFromFile,
+            Bpm::Comparison cmpBpm = Bpm::Comparison::Default) const;
+
+    QString getBitrateText() const;
+
+    double getDurationSecondsRounded() const {
+        return std::round(getStreamInfo().getDuration().toDoubleSeconds());
     }
+    QString getDurationText(
+            Duration::Precision precision) const;
 
     // Parse an format date/time values according to ISO 8601
-    static QDate parseDate(QString str) {
+    static QDate parseDate(const QString& str) {
         return QDate::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
     }
-    static QDateTime parseDateTime(QString str) {
+    static QDateTime parseDateTime(const QString& str) {
         return QDateTime::fromString(str.trimmed().replace(" ", ""), Qt::ISODate);
     }
     static QString formatDate(QDate date) {
         return date.toString(Qt::ISODate);
     }
-    static QString formatDateTime(QDateTime dateTime) {
+    static QString formatDateTime(const QDateTime& dateTime) {
         return dateTime.toString(Qt::ISODate);
     }
 
     // Parse and format the calendar year (for simplified display)
     static constexpr int kCalendarYearInvalid = 0;
-    static int parseCalendarYear(QString year, bool* pValid = nullptr);
-    static QString formatCalendarYear(QString year, bool* pValid = nullptr);
+    static int parseCalendarYear(const QString& year, bool* pValid = nullptr);
+    static QString formatCalendarYear(const QString& year, bool* pValid = nullptr);
 
-    static QString reformatYear(QString year);
+    static QString reformatYear(const QString& year);
 };
 
 bool operator==(const TrackMetadata& lhs, const TrackMetadata& rhs);
 
-inline
-bool operator!=(const TrackMetadata& lhs, const TrackMetadata& rhs) {
+inline bool operator!=(const TrackMetadata& lhs, const TrackMetadata& rhs) {
     return !(lhs == rhs);
 }
 

@@ -2,13 +2,14 @@
 
 #include <QLayout>
 #include <QMap>
-#include <QStylePainter>
 #include <QStackedLayout>
+#include <QStylePainter>
 
+#include "moc_wwidgetgroup.cpp"
 #include "skin/skincontext.h"
-#include "widget/wwidget.h"
 #include "util/debug.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
 
 WWidgetGroup::WWidgetGroup(QWidget* pParent)
         : QFrame(pParent),
@@ -125,9 +126,15 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
         } else if (layout == "horizontal") {
             pLayout = new QHBoxLayout();
         } else if (layout == "stacked") {
-            auto pStackedLayout = new QStackedLayout();
+            auto* pStackedLayout = new QStackedLayout();
             pStackedLayout->setStackingMode(QStackedLayout::StackAll);
             pLayout = pStackedLayout;
+            // Adding a zero-size dummy widget as index 0 here before
+            // any child is added in the xml template works around
+            // https://bugs.launchpad.net/mixxx/+bug/1627859
+            QWidget* dummyWidget = new QWidget();
+            dummyWidget->setFixedSize(0, 0);
+            pLayout->addWidget(dummyWidget);
         }
 
         // Set common layout parameters.
@@ -149,7 +156,7 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
 }
 
 void WWidgetGroup::setPixmapBackground(
-        PixmapSource source,
+        const PixmapSource& source,
         Paintable::DrawMode mode,
         double scaleFactor) {
     // Load background pixmap
@@ -161,7 +168,7 @@ void WWidgetGroup::setPixmapBackground(
 }
 
 void WWidgetGroup::setPixmapBackgroundHighlighted(
-        PixmapSource source,
+        const PixmapSource& source,
         Paintable::DrawMode mode,
         double scaleFactor) {
     // Load background pixmap for the highlighted state
@@ -219,6 +226,9 @@ int WWidgetGroup::getHighlight() const {
 }
 
 void WWidgetGroup::setHighlight(int highlight) {
+    if (m_highlight == highlight) {
+        return;
+    }
     m_highlight = highlight;
     style()->unpolish(this);
     style()->polish(this);

@@ -11,17 +11,20 @@
 #include "util/sample.h"
 
 namespace {
-    constexpr double kSpeedGainMultiplyer = 4.0; // Bends the speed to gain curve for a natural vinyl sound
-    constexpr double kMaxTotalGainBySpeed = 0.9; // -1 dB to not risk any clipping even for lossy track that may
-                                                 // have samples above 1.0
-    const double kSpeedOneDiv = log10((1 * kSpeedGainMultiplyer) + 1); // value to normalize gain to 1 at speed one
+
+// Bends the speed to gain curve for a natural vinyl sound
+constexpr float kSpeedGainMultiplier = 4.0f;
+// -1 dB to not risk any clipping even for lossy track that may have samples above 1.0
+constexpr float kMaxTotalGainBySpeed = 0.9f;
+// value to normalize gain to 1 at speed one
+const float kSpeedOneDiv = log10((1 * kSpeedGainMultiplier) + 1);
 } // anonymous namespace
 
-ControlPotmeter* EnginePregain::s_pReplayGainBoost = NULL;
-ControlPotmeter* EnginePregain::s_pDefaultBoost = NULL;
-ControlObject* EnginePregain::s_pEnableReplayGain = NULL;
+ControlPotmeter* EnginePregain::s_pReplayGainBoost = nullptr;
+ControlPotmeter* EnginePregain::s_pDefaultBoost = nullptr;
+ControlObject* EnginePregain::s_pEnableReplayGain = nullptr;
 
-EnginePregain::EnginePregain(QString group)
+EnginePregain::EnginePregain(const QString& group)
         : m_dSpeed(1.0),
           m_dOldSpeed(1.0),
           m_dNonScratchSpeed(1.0),
@@ -34,7 +37,7 @@ EnginePregain::EnginePregain(QString group)
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
     m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough"));
 
-    if (s_pReplayGainBoost == NULL) {
+    if (s_pReplayGainBoost == nullptr) {
         s_pReplayGainBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]", "ReplayGainBoost"), -12, 12, 0.5);
         s_pDefaultBoost = new ControlAudioTaperPot(ConfigKey("[ReplayGain]", "DefaultBoost"), -12, 12, 0.5);
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
@@ -47,11 +50,11 @@ EnginePregain::~EnginePregain() {
     delete m_pTotalGain;
 
     delete s_pEnableReplayGain;
-    s_pEnableReplayGain = NULL;
+    s_pEnableReplayGain = nullptr;
     delete s_pReplayGainBoost;
-    s_pReplayGainBoost = NULL;
+    s_pReplayGainBoost = nullptr;
     delete s_pDefaultBoost;
-    s_pDefaultBoost = NULL;
+    s_pDefaultBoost = nullptr;
 }
 
 void EnginePregain::setSpeedAndScratching(double speed, bool scratching) {
@@ -64,8 +67,8 @@ void EnginePregain::setSpeedAndScratching(double speed, bool scratching) {
 }
 
 void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
-    const float fReplayGain = m_pCOReplayGain->get();
-    float fReplayGainCorrection;
+    const auto fReplayGain = static_cast<CSAMPLE_GAIN>(m_pCOReplayGain->get());
+    CSAMPLE_GAIN fReplayGainCorrection;
     if (!s_pEnableReplayGain->toBool() || m_pPassthroughEnabled->toBool()) {
         // Override replaygain value if passing through
         // TODO(XXX): consider a good default.
@@ -87,19 +90,19 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
         // full process for one second.
         // So we need to alter gain each time ::process is called.
 
-        const float fullReplayGainBoost = fReplayGain *
-                (float)s_pReplayGainBoost->get();
+        const float fullReplayGainBoost =
+                fReplayGain * static_cast<float>(s_pReplayGainBoost->get());
 
         // This means that a ReplayGain value has been calculated after the
         // track has been loaded
-        const double kFadeSeconds = 1.0;
+        const float kFadeSeconds = 1.0;
 
         if (m_bSmoothFade) {
-            double seconds = m_timer.elapsed().toDoubleSeconds();
+            float seconds = static_cast<float>(m_timer.elapsed().toDoubleSeconds());
             if (seconds < kFadeSeconds) {
                 // Fade smoothly
-                double fadeFrac = seconds / kFadeSeconds;
-                fReplayGainCorrection = m_fPrevGain * (1.0 - fadeFrac) +
+                const float fadeFrac = seconds / kFadeSeconds;
+                fReplayGainCorrection = m_fPrevGain * (1.0f - fadeFrac) +
                         fadeFrac * fullReplayGainBoost;
             } else {
                 m_bSmoothFade = false;
@@ -124,23 +127,26 @@ void EnginePregain::process(CSAMPLE* pInOut, const int iBufferSize) {
     // We have measured -Inf dB at x0, -6 dB at x0.3, 0 dB at x1 and 3.5 dB
     // at 2.5 using a real vinyl.
     // x5 is the maximum physically speed before the needle is starting to
-    // loose contact to teh vinyl.
+    // lose contact to the vinyl.
     // So we apply a curve here that emulates the gain change up to x 2.5 natural
     // to 3.5 dB and then limits the gain towards 5.5 dB at x5.
     // Since the additional gain will lead to undesired clipping,
     // we do not add more gain then we found in the original track.
     // This compensates a negative ReplayGain or PreGain setting.
 
-    double speedGain = log10((fabs(m_dSpeed) * kSpeedGainMultiplyer) + 1) / kSpeedOneDiv;
+    CSAMPLE_GAIN speedGain = log10((fabs(static_cast<CSAMPLE_GAIN>(m_dSpeed)) *
+                                           kSpeedGainMultiplier) +
+                                     1) /
+            kSpeedOneDiv;
     // Limit speed Gain to 0 dB if totalGain is already > 0.9 or Limit the
     // resulting totalGain to 0.9 for all other cases. This should avoid clipping even
     // if the source track has some samples above 1.0 due to lossy codecs.
     if (totalGain > kMaxTotalGainBySpeed) {
-        speedGain = math_min(1.0, speedGain);
+        speedGain = math_min(1.0f, speedGain);
     } else {
         speedGain = math_min(kMaxTotalGainBySpeed / totalGain, speedGain);
     }
-    totalGain *= speedGain;
+    totalGain *= static_cast<CSAMPLE_GAIN>(speedGain);
 
     if ((m_dSpeed * m_dOldSpeed < 0) && m_scratching) {
         // direction changed, go though zero if scratching
@@ -160,4 +166,3 @@ void EnginePregain::collectFeatures(GroupFeatureState* pGroupFeatures) const {
     pGroupFeatures->gain = m_pPotmeterPregain->get();
     pGroupFeatures->has_gain = true;
 }
-

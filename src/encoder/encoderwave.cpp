@@ -1,10 +1,3 @@
-/**
-* @file encoderwave.cpp
-* @author Josep Maria Antolín
-* @date Feb 27 2017
-* @brief wave/aiff "encoder" for mixxx
-*/
-
 #include <QtDebug>
 
 #include "encoder/encoderwave.h"
@@ -14,7 +7,7 @@
 #include "recording/defs_recording.h"
 
 
-// The virtual file contex must return the length of the virtual file in bytes.
+// The virtual file context must return the length of the virtual file in bytes.
 static sf_count_t  sf_f_get_filelen (void *user_data)
 {
     EncoderCallback* pCallback = static_cast<EncoderCallback*>(user_data);
@@ -98,18 +91,15 @@ EncoderWave::~EncoderWave() {
     }
 }
 
-void EncoderWave::setEncoderSettings(const EncoderSettings& settings)
-{
+void EncoderWave::setEncoderSettings(const EncoderSettings& settings) {
     const EncoderWaveSettings& wavesettings = reinterpret_cast<const EncoderWaveSettings&>(settings);
-    Encoder::Format format = wavesettings.getFormat();
-    if (format.internalName == ENCODING_WAVE) {
+    QString format = wavesettings.getFormat();
+    if (format == ENCODING_WAVE) {
         m_sfInfo.format = SF_FORMAT_WAV;
-    }
-    else if (format.internalName == ENCODING_AIFF) {
+    } else if (format == ENCODING_AIFF) {
         m_sfInfo.format = SF_FORMAT_AIFF;
-    }
-    else {
-        qWarning() << "Unexpected Format when setting EncoderWave: " << format.internalName << ". Reverting to wav";
+    } else {
+        qWarning() << "Unexpected Format when setting EncoderWave: " << format << ". Reverting to wav";
         // Other possibly interesting formats
         // There is a n option for RF64 to automatically downgrade to RIFF WAV if less than 4GB using an
         // sf_command, so it could be interesting to use it in place of FORMAT_WAVE.
@@ -165,12 +155,12 @@ void EncoderWave::updateMetaData(const QString& artist, const QString& title, co
 void EncoderWave::initStream() {
 
     // Tell the encoder to automatically convert float input range to the correct output range.
-    sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_TRUE);
+    sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, nullptr, SF_TRUE);
     // Tell the encoder that, when converting to integer formats, clip
     // automatically the values that go outside of the allowed range.
     // Warning! Depending on how libsndfile is compiled autoclip may not work.
     // Ensure CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE is setup properly in the build.
-    sf_command(m_pSndfile, SFC_SET_CLIPPING, NULL, SF_TRUE) ;
+    sf_command(m_pSndfile, SFC_SET_CLIPPING, nullptr, SF_TRUE);
 
     // Strings passed to and retrieved from sf_get_string/sf_set_string are assumed to be utf-8.
     // However, while formats like Ogg/Vorbis and FLAC fully support utf-8, others like WAV and
@@ -178,14 +168,14 @@ void EncoderWave::initStream() {
     // libsndfile will work when read back with libsndfile, but may not work with other programs.
     int ret;
     if (!m_metaDataTitle.isEmpty()) {
-        ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_metaDataTitle.toAscii().constData());
+        ret = sf_set_string(m_pSndfile, SF_STR_TITLE, m_metaDataTitle.toUtf8().constData());
         if (ret != 0) {
             qWarning("libsndfile error: %s", sf_error_number(ret));
         }
     }
 
     if (!m_metaDataArtist.isEmpty()) {
-        ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_metaDataArtist.toAscii().constData());
+        ret = sf_set_string(m_pSndfile, SF_STR_ARTIST, m_metaDataArtist.toUtf8().constData());
         if (ret != 0) {
             qWarning("libsndfile error: %s", sf_error_number(ret));
         }
@@ -197,15 +187,15 @@ void EncoderWave::initStream() {
             // write the SF_STR_COMMENT string into the text chunk with id "ANNO".
             strType = SF_STR_COMMENT;
         }
-        ret = sf_set_string(m_pSndfile, strType, m_metaDataAlbum.toAscii().constData());
+        ret = sf_set_string(m_pSndfile, strType, m_metaDataAlbum.toUtf8().constData());
         if (ret != 0) {
             qWarning("libsndfile error: %s", sf_error_number(ret));
         }
     }
 }
 
-int EncoderWave::initEncoder(int samplerate, QString errorMessage) {
-
+int EncoderWave::initEncoder(int samplerate, QString* pUserErrorMessage) {
+    Q_UNUSED(pUserErrorMessage);
     // set sfInfo.
     // m_sfInfo.format is setup on setEncoderSettings previous to calling initEncoder.
     m_sfInfo.samplerate = samplerate;
@@ -221,9 +211,9 @@ int EncoderWave::initEncoder(int samplerate, QString errorMessage) {
 
     int ret=0;
     if (m_pSndfile == nullptr) {
-        errorMessage = QString("Error initializing Wave recording. sf_open_virtual returned: ")
-            +  sf_strerror(nullptr);
-        qDebug() << errorMessage;
+        qDebug()
+                << "Error initializing Wave encoding. sf_open_virtual returned:"
+                << sf_strerror(nullptr);
         ret = -1;
     } else {
         initStream();

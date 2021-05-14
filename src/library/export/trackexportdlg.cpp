@@ -1,9 +1,10 @@
 #include "library/export/trackexportdlg.h"
 
-#include <QFileInfo>
 #include <QDesktopServices>
+#include <QFileInfo>
 #include <QMessageBox>
 
+#include "moc_trackexportdlg.cpp"
 #include "util/assert.h"
 
 TrackExportDlg::TrackExportDlg(QWidget *parent,
@@ -14,20 +15,28 @@ TrackExportDlg::TrackExportDlg(QWidget *parent,
           m_pConfig(pConfig),
           m_worker(worker) {
     setupUi(this);
-    connect(cancelButton, SIGNAL(clicked()), this, SLOT(cancelButtonClicked()));
+    connect(cancelButton,
+            &QPushButton::clicked,
+            this,
+            &TrackExportDlg::cancelButtonClicked);
     exportProgress->setMinimum(0);
     exportProgress->setMaximum(1);
     exportProgress->setValue(0);
     statusLabel->setText("");
     setModal(true);
 
-    connect(m_worker, SIGNAL(progress(QString, int, int)), this,
-            SLOT(slotProgress(QString, int, int)));
     connect(m_worker,
-            SIGNAL(askOverwriteMode(QString, std::promise<TrackExportWorker::OverwriteAnswer>*)),
+            &TrackExportWorker::progress,
             this,
-            SLOT(slotAskOverwriteMode(QString, std::promise<TrackExportWorker::OverwriteAnswer>*)));
-    connect(m_worker, SIGNAL(canceled()), this, SLOT(cancelButtonClicked()));
+            &TrackExportDlg::slotProgress);
+    connect(m_worker,
+            &TrackExportWorker::askOverwriteMode,
+            this,
+            &TrackExportDlg::slotAskOverwriteMode);
+    connect(m_worker,
+            &TrackExportWorker::canceled,
+            this,
+            &TrackExportDlg::cancelButtonClicked);
 }
 
 void TrackExportDlg::showEvent(QShowEvent* event) {
@@ -42,7 +51,7 @@ void TrackExportDlg::showEvent(QShowEvent* event) {
     m_worker->start();
 }
 
-void TrackExportDlg::slotProgress(QString filename, int progress, int count) {
+void TrackExportDlg::slotProgress(const QString& filename, int progress, int count) {
     if (progress == count) {
         statusLabel->setText(tr("Export finished"));
         finish();
@@ -55,7 +64,7 @@ void TrackExportDlg::slotProgress(QString filename, int progress, int count) {
 }
 
 void TrackExportDlg::slotAskOverwriteMode(
-        QString filename,
+        const QString& filename,
         std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
     QMessageBox question_box(
             QMessageBox::Warning,
@@ -97,9 +106,11 @@ void TrackExportDlg::finish() {
     m_worker->wait();
     if (m_worker->errorMessage().length()) {
         QMessageBox::warning(
-                NULL,
-                tr("Export Error"), m_worker->errorMessage(),
-                QMessageBox::Ok, QMessageBox::Ok);
+                nullptr,
+                tr("Export Error"),
+                m_worker->errorMessage(),
+                QMessageBox::Ok,
+                QMessageBox::Ok);
     }
     hide();
     accept();

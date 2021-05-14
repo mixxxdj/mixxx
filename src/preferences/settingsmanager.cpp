@@ -6,10 +6,8 @@
 #include "preferences/upgrade.h"
 #include "util/assert.h"
 
-SettingsManager::SettingsManager(QObject* pParent,
-                                 const QString& settingsPath)
-        : QObject(pParent),
-          m_bShouldRescanLibrary(false) {
+SettingsManager::SettingsManager(const QString& settingsPath)
+        : m_bShouldRescanLibrary(false) {
     // First make sure the settings path exists. If we don't then other parts of
     // Mixxx (such as the library) will produce confusing errors.
     if (!QDir(settingsPath).exists()) {
@@ -29,8 +27,10 @@ SettingsManager::SettingsManager(QObject* pParent,
 
     ControlDoublePrivate::setUserConfig(m_pSettings);
 
+#ifdef __BROADCAST__
     m_pBroadcastSettings = BroadcastSettingsPointer(
                                new BroadcastSettings(m_pSettings));
+#endif
 }
 
 SettingsManager::~SettingsManager() {
@@ -43,20 +43,4 @@ void SettingsManager::initializeDefaults() {
     // Store the last resource path in the config database.
     // TODO(rryan): this looks unused.
     m_pSettings->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
-
-    // Intialize default BPM system values.
-    // NOTE(rryan): These should be in a better place but they've always been in
-    // MixxxMainWindow.
-    if (!m_pSettings->exists(ConfigKey("[BPM]", "BPMRangeStart"))) {
-        m_pSettings->set(ConfigKey("[BPM]", "BPMRangeStart"),ConfigValue(65));
-    }
-
-    if (!m_pSettings->exists(ConfigKey("[BPM]", "BPMRangeEnd"))) {
-        m_pSettings->set(ConfigKey("[BPM]", "BPMRangeEnd"),ConfigValue(135));
-    }
-
-    if (!m_pSettings->exists(ConfigKey("[BPM]", "AnalyzeEntireSong"))) {
-        m_pSettings->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
-    }
-
 }

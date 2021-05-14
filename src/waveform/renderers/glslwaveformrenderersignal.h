@@ -1,26 +1,37 @@
-#ifndef GLWAVEFORMRENDERERSIGNALSHADER_H
-#define GLWAVEFORMRENDERERSIGNALSHADER_H
+#pragma once
 
-#include <QGLFramebufferObject>
-#include <QGLShaderProgram>
-#include <QtOpenGL>
+#include "waveform/renderers/glwaveformrenderer.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
 
-#include "track/track.h"
-#include "waveformrenderersignalbase.h"
+#include "track/track_decl.h"
+#include "util/memory.h"
+#include "waveform/renderers/waveformrenderersignalbase.h"
 
-class GLSLWaveformRendererSignal : public QObject, public WaveformRendererSignalBase {
+QT_FORWARD_DECLARE_CLASS(QGLFramebufferObject)
+QT_FORWARD_DECLARE_CLASS(QGLShaderProgram)
+
+class GLSLWaveformRendererSignal : public QObject,
+                                   public WaveformRendererSignalBase,
+                                   public GLWaveformRenderer {
     Q_OBJECT
   public:
-    explicit GLSLWaveformRendererSignal(
-            WaveformWidgetRenderer* waveformWidgetRenderer, bool rgbShader);
-    virtual ~GLSLWaveformRendererSignal();
+    enum class ColorType {
+        Filtered,
+        RGB,
+        RGBFiltered,
+    };
 
-    virtual bool onInit();
-    virtual void onSetup(const QDomNode& node);
-    virtual void draw(QPainter* painter, QPaintEvent* event);
+    GLSLWaveformRendererSignal(WaveformWidgetRenderer* waveformWidgetRenderer,
+            ColorType colorType,
+            const QString& fragShader);
+    ~GLSLWaveformRendererSignal() override;
 
-    virtual void onSetTrack();
-    virtual void onResize();
+    void onSetup(const QDomNode& node) override;
+    void onInitializeGL() override;
+    void draw(QPainter* painter, QPaintEvent* event) override;
+
+    void onSetTrack() override;
+    void onResize() override;
 
     void debugClick();
     bool loadShaders();
@@ -37,34 +48,53 @@ class GLSLWaveformRendererSignal : public QObject, public WaveformRendererSignal
     GLuint m_textureId;
 
     TrackPointer m_loadedTrack;
-    int m_loadedWaveform;
+    int m_textureRenderedWaveformCompletion;
 
-    //Frame buffer for two pass rendering
-    bool m_frameBuffersValid;
-    QGLFramebufferObject* m_framebuffer;
+    // Frame buffer for two pass rendering.
+    std::unique_ptr<QGLFramebufferObject> m_framebuffer;
 
     bool m_bDumpPng;
 
     // shaders
     bool m_shadersValid;
-    bool m_rgbShader;
-    QGLShaderProgram* m_frameShaderProgram;
+    ColorType m_colorType;
+    const QString m_pFragShader;
+    std::unique_ptr<QGLShaderProgram> m_frameShaderProgram;
 };
 
-class GLSLWaveformRendererFilteredSignal : public GLSLWaveformRendererSignal {
-  public:
-    GLSLWaveformRendererFilteredSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-        : GLSLWaveformRendererSignal(waveformWidgetRenderer, false) {}
-    virtual ~GLSLWaveformRendererFilteredSignal() {}
+class GLSLWaveformRendererFilteredSignal: public GLSLWaveformRendererSignal {
+public:
+  GLSLWaveformRendererFilteredSignal(
+          WaveformWidgetRenderer* waveformWidgetRenderer)
+          : GLSLWaveformRendererSignal(waveformWidgetRenderer,
+                    ColorType::Filtered,
+                    QLatin1String(":/shaders/filteredsignal.frag")) {
+  }
+    ~GLSLWaveformRendererFilteredSignal() override {
+    }
 };
 
 class GLSLWaveformRendererRGBSignal : public GLSLWaveformRendererSignal {
   public:
     GLSLWaveformRendererRGBSignal(
-        WaveformWidgetRenderer* waveformWidgetRenderer)
-        : GLSLWaveformRendererSignal(waveformWidgetRenderer, true) {}
-    virtual ~GLSLWaveformRendererRGBSignal() {}
+            WaveformWidgetRenderer* waveformWidgetRenderer)
+            : GLSLWaveformRendererSignal(waveformWidgetRenderer,
+                      ColorType::RGB,
+                      QLatin1String(":/shaders/rgbsignal.frag")) {
+    }
+    ~GLSLWaveformRendererRGBSignal() override {}
 };
 
-#endif // GLWAVEFORMRENDERERSIGNALSHADER_H
+class GLSLWaveformRendererStackedSignal : public GLSLWaveformRendererSignal {
+  public:
+    GLSLWaveformRendererStackedSignal(
+            WaveformWidgetRenderer* waveformWidgetRenderer)
+            : GLSLWaveformRendererSignal(waveformWidgetRenderer,
+                      ColorType::RGBFiltered,
+                      QLatin1String(":/shaders/stackedsignal.frag")) {
+    }
+    ~GLSLWaveformRendererStackedSignal() override {
+    }
+};
+
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2

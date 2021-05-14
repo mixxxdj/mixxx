@@ -1,14 +1,19 @@
 #include "preferences/dialog/dlgprefwaveform.h"
 
-#include "mixxx.h"
+#include "library/dao/analysisdao.h"
 #include "library/library.h"
+#include "mixxx.h"
+#include "moc_dlgprefwaveform.cpp"
 #include "preferences/waveformsettings.h"
-#include "waveform/waveformwidgetfactory.h"
-#include "waveform/renderers/waveformwidgetrenderer.h"
 #include "util/db/dbconnectionpooled.h"
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveformwidgetfactory.h"
 
-DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
-                                 UserSettingsPointer pConfig, Library* pLibrary)
+DlgPrefWaveform::DlgPrefWaveform(
+        QWidget* pParent,
+        MixxxMainWindow* pMixxx,
+        UserSettingsPointer pConfig,
+        std::shared_ptr<Library> pLibrary)
         : DlgPreferencePage(pParent),
           m_pConfig(pConfig),
           m_pLibrary(pLibrary),
@@ -29,52 +34,102 @@ DlgPrefWaveform::DlgPrefWaveform(QWidget* pParent, MixxxMainWindow* pMixxx,
     }
 
     // Populate zoom options.
-    for (int i = WaveformWidgetRenderer::s_waveformMinZoom;
-         i <= WaveformWidgetRenderer::s_waveformMaxZoom; i++) {
-        defaultZoomComboBox->addItem(QString::number(100/double(i), 'f', 1) + " %");
+    for (int i = static_cast<int>(WaveformWidgetRenderer::s_waveformMinZoom);
+            i <= static_cast<int>(WaveformWidgetRenderer::s_waveformMaxZoom);
+            i++) {
+        defaultZoomComboBox->addItem(QString::number(100 / static_cast<double>(i), 'f', 1) + " %");
     }
 
     // The GUI is not fully setup so connecting signals before calling
     // slotUpdate can generate rebootMixxxView calls.
     // TODO(XXX): Improve this awkwardness.
     slotUpdate();
-    connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSetFrameRate(int)));
-    connect(endOfTrackWarningTimeSpinBox, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSetWaveformEndRender(int)));
-    connect(frameRateSlider, SIGNAL(valueChanged(int)),
-            frameRateSpinBox, SLOT(setValue(int)));
-    connect(frameRateSpinBox, SIGNAL(valueChanged(int)),
-            frameRateSlider, SLOT(setValue(int)));
-    connect(endOfTrackWarningTimeSlider, SIGNAL(valueChanged(int)),
-            endOfTrackWarningTimeSpinBox, SLOT(setValue(int)));
-    connect(endOfTrackWarningTimeSpinBox, SIGNAL(valueChanged(int)),
-            endOfTrackWarningTimeSlider, SLOT(setValue(int)));
 
-    connect(waveformTypeComboBox, SIGNAL(activated(int)),
-            this, SLOT(slotSetWaveformType(int)));
-    connect(defaultZoomComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotSetDefaultZoom(int)));
-    connect(synchronizeZoomCheckBox, SIGNAL(clicked(bool)),
-            this, SLOT(slotSetZoomSynchronization(bool)));
-    connect(allVisualGain, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetVisualGainAll(double)));
-    connect(lowVisualGain, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetVisualGainLow(double)));
-    connect(midVisualGain, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetVisualGainMid(double)));
-    connect(highVisualGain, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetVisualGainHigh(double)));
-    connect(normalizeOverviewCheckBox, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetNormalizeOverview(bool)));
-    connect(beatGridLinesCheckBox, SIGNAL(toggled(bool)),
-            this, SLOT(slotSetGridLines(bool)));
-    connect(factory, SIGNAL(waveformMeasured(float,int)),
-            this, SLOT(slotWaveformMeasured(float,int)));
-    connect(waveformOverviewComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(slotSetWaveformOverviewType(int)));
-    connect(clearCachedWaveforms, SIGNAL(clicked()),
-            this, SLOT(slotClearCachedWaveforms()));
+    connect(frameRateSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetFrameRate);
+    connect(endOfTrackWarningTimeSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetWaveformEndRender);
+    connect(beatGridAlphaSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetBeatGridAlpha);
+    connect(frameRateSlider,
+            &QSlider::valueChanged,
+            frameRateSpinBox,
+            &QSpinBox::setValue);
+    connect(frameRateSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            frameRateSlider,
+            &QSlider::setValue);
+    connect(endOfTrackWarningTimeSlider,
+            &QSlider::valueChanged,
+            endOfTrackWarningTimeSpinBox,
+            &QSpinBox::setValue);
+    connect(endOfTrackWarningTimeSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            endOfTrackWarningTimeSlider,
+            &QSlider::setValue);
+    connect(beatGridAlphaSlider,
+            &QSlider::valueChanged,
+            beatGridAlphaSpinBox,
+            &QSpinBox::setValue);
+    connect(beatGridAlphaSpinBox,
+            QOverload<int>::of(&QSpinBox::valueChanged),
+            beatGridAlphaSlider,
+            &QSlider::setValue);
+
+    connect(waveformTypeComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetWaveformType);
+    connect(defaultZoomComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetDefaultZoom);
+    connect(synchronizeZoomCheckBox,
+            &QCheckBox::clicked,
+            this,
+            &DlgPrefWaveform::slotSetZoomSynchronization);
+    connect(allVisualGain,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetVisualGainAll);
+    connect(lowVisualGain,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetVisualGainLow);
+    connect(midVisualGain,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetVisualGainMid);
+    connect(highVisualGain,
+            QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            this,
+            &DlgPrefWaveform::slotSetVisualGainHigh);
+    connect(normalizeOverviewCheckBox,
+            &QCheckBox::toggled,
+            this,
+            &DlgPrefWaveform::slotSetNormalizeOverview);
+    connect(factory,
+            &WaveformWidgetFactory::waveformMeasured,
+            this,
+            &DlgPrefWaveform::slotWaveformMeasured);
+    connect(waveformOverviewComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &DlgPrefWaveform::slotSetWaveformOverviewType);
+    connect(clearCachedWaveforms,
+            &QAbstractButton::clicked,
+            this,
+            &DlgPrefWaveform::slotClearCachedWaveforms);
+    connect(playMarkerPositionSlider,
+            &QSlider::valueChanged,
+            this,
+            &DlgPrefWaveform::slotSetPlayMarkerPosition);
 }
 
 DlgPrefWaveform::~DlgPrefWaveform() {
@@ -83,10 +138,10 @@ DlgPrefWaveform::~DlgPrefWaveform() {
 void DlgPrefWaveform::slotUpdate() {
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
-    if (factory->isOpenGLAvailable()) {
+    if (factory->isOpenGlAvailable() || factory->isOpenGlesAvailable()) {
         openGlStatusIcon->setText(factory->getOpenGLVersion());
     } else {
-        openGlStatusIcon->setText(tr("OpenGL not available"));
+        openGlStatusIcon->setText(tr("OpenGL not available") + ": " + factory->getOpenGLVersion());
     }
 
     WaveformWidgetType::Type currentType = factory->getType();
@@ -105,8 +160,11 @@ void DlgPrefWaveform::slotUpdate() {
     midVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::Mid));
     highVisualGain->setValue(factory->getVisualGain(WaveformWidgetFactory::High));
     normalizeOverviewCheckBox->setChecked(factory->isOverviewNormalized());
-    defaultZoomComboBox->setCurrentIndex(factory->getDefaultZoom() - 1);
-    beatGridLinesCheckBox->setChecked(factory->isBeatGridEnabled());
+    // Round zoom to int to get a default zoom index.
+    defaultZoomComboBox->setCurrentIndex(static_cast<int>(factory->getDefaultZoom()) - 1);
+    playMarkerPositionSlider->setValue(static_cast<int>(factory->getPlayMarkerPosition() * 100));
+    beatGridAlphaSpinBox->setValue(factory->getBeatGridAlpha());
+    beatGridAlphaSlider->setValue(factory->getBeatGridAlpha());
 
     // By default we set RGB woverview = "2"
     int overviewType = m_pConfig->getValue(
@@ -123,6 +181,10 @@ void DlgPrefWaveform::slotUpdate() {
 }
 
 void DlgPrefWaveform::slotApply() {
+    ConfigValue overviewtype = ConfigValue(waveformOverviewComboBox->currentIndex());
+    if (overviewtype != m_pConfig->get(ConfigKey("[Waveform]", "WaveformOverviewType"))) {
+        m_pConfig->set(ConfigKey("[Waveform]", "WaveformOverviewType"), overviewtype);
+    }
     WaveformSettings waveformSettings(m_pConfig);
     waveformSettings.setWaveformCachingEnabled(enableWaveformCaching->isChecked());
     waveformSettings.setWaveformGenerationWithAnalysisEnabled(
@@ -148,8 +210,7 @@ void DlgPrefWaveform::slotResetToDefaults() {
     // Default zoom level is 3 in WaveformWidgetFactory.
     defaultZoomComboBox->setCurrentIndex(3 + 1);
 
-    // Don't synchronize zoom by default.
-    synchronizeZoomCheckBox->setChecked(false);
+    synchronizeZoomCheckBox->setChecked(true);
 
     // RGB overview.
     waveformOverviewComboBox->setCurrentIndex(2);
@@ -165,8 +226,12 @@ void DlgPrefWaveform::slotResetToDefaults() {
     enableWaveformCaching->setChecked(true);
     enableWaveformGenerationWithAnalysis->setChecked(false);
 
-    // Beat grid lines on waveform is default
-    beatGridLinesCheckBox->setChecked(true);
+    // Beat grid alpha default is 90
+    beatGridAlphaSlider->setValue(90);
+    beatGridAlphaSpinBox->setValue(90);
+
+    // 50 (center) is default
+    playMarkerPositionSlider->setValue(50);
 }
 
 void DlgPrefWaveform::slotSetFrameRate(int frameRate) {
@@ -232,8 +297,15 @@ void DlgPrefWaveform::slotClearCachedWaveforms() {
     calculateCachedWaveformDiskUsage();
 }
 
-void DlgPrefWaveform::slotSetGridLines(bool displayGrid) {
-    WaveformWidgetFactory::instance()->setDisplayBeatGrid(displayGrid);
+void DlgPrefWaveform::slotSetBeatGridAlpha(int alpha) {
+    m_pConfig->setValue(ConfigKey("[Waveform]", "beatGridAlpha"), alpha);
+    WaveformWidgetFactory::instance()->setDisplayBeatGridAlpha(alpha);
+}
+
+void DlgPrefWaveform::slotSetPlayMarkerPosition(int position) {
+    // QSlider works with integer values, so divide the percentage given by the
+    // slider value by 100 to get a fraction of the waveform width.
+    WaveformWidgetFactory::instance()->setPlayMarkerPosition(position / 100.0);
 }
 
 void DlgPrefWaveform::calculateCachedWaveformDiskUsage() {

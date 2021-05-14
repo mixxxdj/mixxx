@@ -1,5 +1,4 @@
-#ifndef WWAVEFORMVIEWER_H
-#define WWAVEFORMVIEWER_H
+#pragma once
 
 #include <QDateTime>
 #include <QDragEnterEvent>
@@ -8,21 +7,30 @@
 #include <QList>
 #include <QMutex>
 
-#include "track/track.h"
-#include "widget/wwidget.h"
 #include "skin/skincontext.h"
+#include "track/track_decl.h"
+#include "util/parented_ptr.h"
+#include "waveform/renderers/waveformmark.h"
+#include "widget/trackdroptarget.h"
+#include "widget/wcuemenupopup.h"
+#include "widget/wwidget.h"
 
 class ControlProxy;
 class WaveformWidgetAbstract;
 class ControlPotmeter;
 
-class WWaveformViewer : public WWidget {
+class WWaveformViewer : public WWidget, public TrackDropTarget {
     Q_OBJECT
   public:
-    WWaveformViewer(const char *group, UserSettingsPointer pConfig, QWidget *parent=nullptr);
+    WWaveformViewer(
+            const QString& group,
+            UserSettingsPointer pConfig,
+            QWidget* parent = nullptr);
     ~WWaveformViewer() override;
 
-    const char* getGroup() const { return m_pGroup;}
+    const QString& getGroup() const {
+        return m_group;
+    }
     void setup(const QDomNode& node, const SkinContext& context);
 
     void dragEnterEvent(QDragEnterEvent *event) override;
@@ -31,48 +39,59 @@ class WWaveformViewer : public WWidget {
     void mousePressEvent(QMouseEvent * /*unused*/) override;
     void mouseMoveEvent(QMouseEvent * /*unused*/) override;
     void mouseReleaseEvent(QMouseEvent * /*unused*/) override;
+    void leaveEvent(QEvent* /*unused*/) override;
 
-signals:
-    void trackDropped(QString filename, QString group);
+  signals:
+    void trackDropped(const QString& filename, const QString& group) override;
+    void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
-public slots:
+  public slots:
     void slotTrackLoaded(TrackPointer track);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
-protected:
+  protected:
     void resizeEvent(QResizeEvent *event) override;
     void wheelEvent(QWheelEvent *event) override;
 
-private slots:
+  private slots:
     void onZoomChange(double zoom);
     void slotWidgetDead() {
         m_waveformWidget = nullptr;
     }
 
-private:
+  private:
     void setWaveformWidget(WaveformWidgetAbstract* waveformWidget);
     WaveformWidgetAbstract* getWaveformWidget() {
         return m_waveformWidget;
     }
     //direct access to let factory sync/set default zoom
-    void setZoom(int zoom);
-    void setDisplayBeatGrid(bool set);
+    void setZoom(double zoom);
+    void setDisplayBeatGridAlpha(int alpha);
+    void setPlayMarkerPosition(double position);
 
-private:
-    const char* m_pGroup;
+  private:
+    const QString m_group;
     UserSettingsPointer m_pConfig;
     int m_zoomZoneWidth;
     ControlProxy* m_pZoom;
     ControlProxy* m_pScratchPositionEnable;
     ControlProxy* m_pScratchPosition;
     ControlProxy* m_pWheel;
+    ControlProxy* m_pPlayEnabled;
     bool m_bScratching;
     bool m_bBending;
     QPoint m_mouseAnchor;
+    parented_ptr<WCueMenuPopup> m_pCueMenuPopup;
+    WaveformMarkPointer m_pHoveredMark;
 
     WaveformWidgetAbstract* m_waveformWidget;
 
-    friend class WaveformWidgetFactory;
-};
+    int m_dimBrightThreshold;
 
-#endif
+    friend class WaveformWidgetFactory;
+
+    CuePointer getCuePointerFromCueMark(WaveformMarkPointer pMark) const;
+    void highlightMark(WaveformMarkPointer pMark);
+    void unhighlightMark(WaveformMarkPointer pMark);
+    bool isPlaying() const;
+};

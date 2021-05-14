@@ -1,22 +1,21 @@
 <Template>
 	<!-- VinylControl sub-widget -->
 	<WidgetGroup>
-        <BackPath>style/style_bg_vinylcontrol.png</BackPath>
+    <BackPath>style/style_bg_vinylcontrol.png</BackPath>
 		<Size>21,82</Size>
 		<Children>
 			<PushButton>
 				<TooltipId>vinylcontrol_status</TooltipId>
-				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_vinylcontrol.png</Pressed>
-					<Unpressed>btn_vinylcontrol.png</Unpressed>
+					<Pressed>skin:/btn/btn_vinylcontrol.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_vinylcontrol_over.png</Pressed>
-					<Unpressed>btn_vinylcontrol_over.png</Unpressed>
+					<Pressed>skin:/btn/btn_vinylcontrol_over.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_over.png</Unpressed>
 				</State>
 				<Pos>1,21</Pos>
 				<Connection>
@@ -26,17 +25,16 @@
 
 			<PushButton>
 				<TooltipId>vinylcontrol_status</TooltipId>
-				<Style></Style>
 				<NumberStates>2</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_vinylcontrol_passthrough.png</Pressed>
-					<Unpressed>btn_vinylcontrol_passthrough.png</Unpressed>
+					<Pressed>skin:/btn/btn_vinylcontrol_passthrough.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_passthrough.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_vinylcontrol_passthrough_over.png</Pressed>
-					<Unpressed>btn_vinylcontrol_passthrough_over.png</Unpressed>
+					<Pressed>skin:/btn/btn_vinylcontrol_passthrough_over.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_passthrough_over.png</Unpressed>
 				</State>
 				<Pos>1,1</Pos>
 				<Connection>
@@ -57,22 +55,21 @@
 
 			<PushButton>
 				<TooltipId>vinylcontrol_mode</TooltipId>
-				<Style></Style>
 				<NumberStates>3</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_vinylcontrol_abs.png</Pressed>
-					<Unpressed>btn_vinylcontrol_abs.png</Unpressed>
+					<Pressed>skin:/btn/btn_vinylcontrol_abs.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_abs.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_vinylcontrol_rel.png</Pressed>
-					<Unpressed>btn_vinylcontrol_rel.png</Unpressed>
+					<Pressed>skin:/btn/btn_vinylcontrol_rel.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_rel.png</Unpressed>
 				</State>
 				<State>
 					<Number>2</Number>
-					<Pressed>btn_vinylcontrol_const.png</Pressed>
-					<Unpressed>btn_vinylcontrol_const.png</Unpressed>
+					<Pressed>skin:/btn/btn_vinylcontrol_const.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_const.png</Unpressed>
 				</State>
 				<Pos>1,41</Pos>
 				<Connection>
@@ -88,22 +85,21 @@
 
 			<PushButton>
 				<TooltipId>vinylcontrol_cueing</TooltipId>
-				<Style></Style>
 				<NumberStates>3</NumberStates>
 				<State>
 					<Number>0</Number>
-					<Pressed>btn_vinylcontrol_cue_off.png</Pressed>
-					<Unpressed>btn_vinylcontrol_cue_off.png</Unpressed>
+					<Pressed>skin:/btn/btn_vinylcontrol_cue_off.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_cue_off.png</Unpressed>
 				</State>
 				<State>
 					<Number>1</Number>
-					<Pressed>btn_vinylcontrol_cue_on.png</Pressed>
-					<Unpressed>btn_vinylcontrol_cue_on.png</Unpressed>
+					<Pressed>skin:/btn/btn_vinylcontrol_cue_on.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_cue_on.png</Unpressed>
 				</State>
 				<State>
 					<Number>2</Number>
-					<Pressed>btn_vinylcontrol_cue_hot.png</Pressed>
-					<Unpressed>btn_vinylcontrol_cue_hot.png</Unpressed>
+					<Pressed>skin:/btn/btn_vinylcontrol_cue_hot.png</Pressed>
+					<Unpressed>skin:/btn/btn_vinylcontrol_cue_hot.png</Unpressed>
 				</State>
 				<Pos>1,62</Pos>
 				<Connection>

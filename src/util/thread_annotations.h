@@ -1,5 +1,4 @@
-#ifndef UTIL_THREAD_ANNOTATIONS_H
-#define UTIL_THREAD_ANNOTATIONS_H
+#pragma once
 
 // NOTE(rryan): Taken from http://clang.llvm.org/docs/ThreadSafetyAnalysis.html.
 // Assumed to be in the public domain.
@@ -68,5 +67,3 @@
 
 #define NO_THREAD_SAFETY_ANALYSIS \
   THREAD_ANNOTATION_ATTRIBUTE__(no_thread_safety_analysis)
-
-#endif /* UTIL_THREAD_ANNOTATIONS_H */

@@ -28,7 +28,7 @@ void ControlNumericBehavior::setValueFromMidi(
         MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
     double dNorm = midiToParameter(dParam);
-    pControl->set(parameterToValue(dNorm), NULL);
+    pControl->set(parameterToValue(dNorm), nullptr);
 }
 
 double ControlEncoderBehavior::midiToParameter(double midiValue) {
@@ -125,15 +125,15 @@ double ControlLogPotmeterBehavior::valueToParameter(double dValue) {
     } else if (dValue < m_dMinValue) {
         dValue = m_dMinValue;
     }
-    double linPrameter = (dValue - m_dMinValue) / m_dValueRange;
-    double dbParamter = ratio2db(linPrameter + m_minOffset * (1 - linPrameter));
-    return 1 - (dbParamter / m_minDB);
+    double linParameter = (dValue - m_dMinValue) / m_dValueRange;
+    double dbParameter = ratio2db(linParameter + m_minOffset * (1 - linParameter));
+    return 1 - (dbParameter / m_minDB);
 }
 
 double ControlLogPotmeterBehavior::parameterToValue(double dParam) {
-    double dbParamter = (1 - dParam) * m_minDB;
-    double linPrameter = (db2ratio(dbParamter) - m_minOffset) / (1 - m_minOffset);
-    return m_dMinValue + (linPrameter * m_dValueRange);
+    double dbParameter = (1 - dParam) * m_minDB;
+    double linParameter = (db2ratio(dbParameter) - m_minOffset) / (1 - m_minOffset);
+    return m_dMinValue + (linParameter * m_dValueRange);
 }
 
 ControlLogInvPotmeterBehavior::ControlLogInvPotmeterBehavior(
@@ -187,7 +187,7 @@ double ControlAudioTaperPotBehavior::valueToParameter(double dValue) {
         // m_minDB = 0
         // 0 dB = m_neutralParameter
         double overlay = m_offset * (1 - dValue);
-        if (m_minDB) {
+        if (m_minDB != 0) {
             dParam = (ratio2db(dValue + overlay) - m_minDB) / m_minDB * m_neutralParameter * -1;
         } else {
             dParam = dValue * m_neutralParameter;
@@ -211,7 +211,7 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
         // db + linear overlay to reach
         // m_minDB = 0
         // 0 dB = m_neutralParameter;
-        if (m_minDB) {
+        if (m_minDB != 0) {
             double db = (dParam * m_minDB / (m_neutralParameter * -1)) + m_minDB;
             dValue = (db2ratio(db) - m_offset) / (1 - m_offset) ;
         } else {
@@ -232,13 +232,13 @@ double ControlAudioTaperPotBehavior::parameterToValue(double dParam) {
 
 double ControlAudioTaperPotBehavior::midiToParameter(double midiValue) {
     double dParam;
-    if (m_neutralParameter && m_neutralParameter != 1.0) {
+    if (m_neutralParameter != 0 && m_neutralParameter != 1.0) {
         double neutralTest = (midiValue - m_midiCorrection) / 127.0;
         if (neutralTest < m_neutralParameter) {
             dParam = midiValue /
                     (127.0 + m_midiCorrection / m_neutralParameter);
         } else {
-            // m_midicorrection is allways < 1, so NaN check required
+            // m_midicorrection is always < 1, so NaN check required
             dParam = (midiValue - m_midiCorrection / m_neutralParameter) /
                     (127.0 - m_midiCorrection / m_neutralParameter);
         }
@@ -255,7 +255,7 @@ double ControlAudioTaperPotBehavior::valueToMidiParameter(double dValue) {
     // always on a full Midi integer
     double dParam = valueToParameter(dValue);
     double dMidiParam = dParam * 127.0;
-    if (m_neutralParameter && m_neutralParameter != 1.0) {
+    if (m_neutralParameter != 0 && m_neutralParameter != 1.0) {
         if (dParam < m_neutralParameter) {
             dMidiParam += m_midiCorrection * dParam / m_neutralParameter;
         } else {
@@ -269,7 +269,7 @@ void ControlAudioTaperPotBehavior::setValueFromMidi(
         MidiOpCode o, double dMidiParam, ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
     double dParam = midiToParameter(dMidiParam);
-    pControl->set(parameterToValue(dParam), NULL);
+    pControl->set(parameterToValue(dParam), nullptr);
 }
 
 double ControlTTRotaryBehavior::valueToParameter(double dValue) {
@@ -316,13 +316,13 @@ void ControlPushButtonBehavior::setValueFromMidi(
         auto* timer = getTimer();
         if (pressed) {
             // Toggle on press
-            double value = pControl->get();
-            pControl->set(!value, NULL);
+            bool value = (pControl->get() != 0);
+            pControl->set(!value, nullptr);
             timer->setSingleShot(true);
             timer->start(kPowerWindowTimeMillis);
         } else if (!timer->isActive()) {
             // Disable after releasing a long press
-            pControl->set(0., NULL);
+            pControl->set(0., nullptr);
         }
     } else if (m_buttonMode == TOGGLE || m_buttonMode == LONGPRESSLATCHING) {
         // This block makes push-buttons act as toggle buttons.
@@ -334,7 +334,7 @@ void ControlPushButtonBehavior::setValueFromMidi(
                 // the same control from different devices.
                 double value = pControl->get();
                 value = (int)(value + 1.) % m_iNumStates;
-                pControl->set(value, NULL);
+                pControl->set(value, nullptr);
                 if (m_buttonMode == LONGPRESSLATCHING) {
                     auto* timer = getTimer();
                     timer->setSingleShot(true);
@@ -346,15 +346,15 @@ void ControlPushButtonBehavior::setValueFromMidi(
                         getTimer()->isActive() && value >= 1.) {
                     // revert toggle if button is released too early
                     value = (int)(value - 1.) % m_iNumStates;
-                    pControl->set(value, NULL);
+                    pControl->set(value, nullptr);
                 }
             }
         }
     } else { // Not a toggle button (trigger only when button pushed)
         if (pressed) {
-            pControl->set(1., NULL);
+            pControl->set(1., nullptr);
         } else {
-            pControl->set(0., NULL);
+            pControl->set(0., nullptr);
         }
     }
 }

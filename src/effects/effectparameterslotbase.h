@@ -1,5 +1,4 @@
-#ifndef EFFECTPARAMETERSLOTBASE_H
-#define EFFECTPARAMETERSLOTBASE_H
+#pragma once
 
 #include <QObject>
 #include <QVariant>
@@ -12,9 +11,6 @@
 class ControlObject;
 class ControlPushButton;
 
-class EffectParameterSlotBase;
-typedef QSharedPointer<EffectParameterSlotBase> EffectParameterSlotBasePointer;
-
 class EffectParameterSlotBase : public QObject {
     Q_OBJECT
   public:
@@ -24,7 +20,7 @@ class EffectParameterSlotBase : public QObject {
     QString name() const;
     QString shortName() const;
     QString description() const;
-    const EffectManifestParameter getManifest();
+    EffectManifestParameterPointer getManifest();
 
     virtual QDomElement toXml(QDomDocument* doc) const = 0;
     virtual void loadParameterSlotFromXml(const QDomElement& parameterElement) = 0;
@@ -35,7 +31,7 @@ class EffectParameterSlotBase : public QObject {
 
   protected:
     const unsigned int m_iParameterSlotNumber;
-    QString m_group;
+    const QString m_group;
     EffectPointer m_pEffect;
     EffectParameter* m_pEffectParameter;
 
@@ -46,5 +42,3 @@ class EffectParameterSlotBase : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectParameterSlotBase);
 };
-
-#endif /* EFFECTPARAMETERSLOTBASE_H */

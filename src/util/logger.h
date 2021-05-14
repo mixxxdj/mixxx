@@ -1,6 +1,4 @@
-#ifndef MIXXX_UTIL_LOGGER_H
-#define MIXXX_UTIL_LOGGER_H
-
+#pragma once
 
 #include <QByteArray>
 #include <QLatin1String>
@@ -28,7 +26,7 @@ public:
     }
 
     bool traceEnabled() const {
-        return Logging::traceEnabled();
+        return Logging::enabled(LogLevel::Trace);
     }
 
     // Trace the elapsed time of some timed action in microseconds.
@@ -51,20 +49,15 @@ public:
     }
 
     bool debugEnabled() const {
-        return Logging::debugEnabled();
+        return Logging::enabled(LogLevel::Debug);
     }
 
     QDebug info() const {
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
         return log(qInfo());
-#else
-        // Qt4 does not support log level Info, use Debug instead
-        return debug();
-#endif
     }
 
     bool infoEnabled() const {
-        return Logging::infoEnabled();
+        return Logging::enabled(LogLevel::Info);
     }
 
     QDebug warning() const {
@@ -80,6 +73,3 @@ private:
 };
 
 }  // namespace mixxx
-
-
-#endif /* MIXXX_UTIL_LOGGER_H */

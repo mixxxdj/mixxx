@@ -11,7 +11,7 @@
 <Template>
   <WidgetGroup>
     <Layout>vertical</Layout>
-    <MinimumSize>34,42</MinimumSize>
+    <MinimumSize>34,</MinimumSize>
     <MaximumSize>58,42</MaximumSize>
     <SizePolicy>me,f</SizePolicy>
     <Children>
@@ -45,50 +45,29 @@
         <Elide>right</Elide>
       </EffectParameterName>
 
-      <Template src="skin:left_5state_button.xml">
-        <!-- Button has no text/images, qss only -->
-        <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
-        <SetVariable name="ObjectName">EffectSlotParameterLinkTypeButton</SetVariable>
-        <SetVariable name="MinimumSize"><Variable name="SmallHorizontalStretchLinkButtonMinimumSize"/></SetVariable>
-        <SetVariable name="MaximumSize"><Variable name="SmallHorizontalStretchLinkButtonMaximumSize"/></SetVariable>
-        <SetVariable name="SizePolicy"><Variable name="SmallHorizontalStretchLinkButtonSizePolicy"/></SetVariable>
-        <SetVariable name="state_0_text"></SetVariable>
-        <SetVariable name="state_0_pressed"></SetVariable>
-        <SetVariable name="state_0_unpressed"></SetVariable>
-        <SetVariable name="state_1_text"></SetVariable>
-        <SetVariable name="state_1_pressed"></SetVariable>
-        <SetVariable name="state_1_unpressed"></SetVariable>
-        <SetVariable name="state_2_text"></SetVariable>
-        <SetVariable name="state_2_pressed"></SetVariable>
-        <SetVariable name="state_2_unpressed"></SetVariable>
-        <SetVariable name="state_3_text"></SetVariable>
-        <SetVariable name="state_3_pressed"></SetVariable>
-        <SetVariable name="state_3_unpressed"></SetVariable>
-        <SetVariable name="state_4_text"></SetVariable>
-        <SetVariable name="state_4_pressed"></SetVariable>
-        <SetVariable name="state_4_unpressed"></SetVariable>
-        <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
-      </Template>
-
       <WidgetGroup>
-        <ObjectName>EffectSlotParameterLinkInversionButtonContainer</ObjectName>
-        <Layout>vertical</Layout>
-        <Size>-1,6f</Size>
+        <ObjectName>EffectSlotParameterLinkButtonsContainer</ObjectName>
+        <Layout>horizontal</Layout>
+        <Size>-1,8f</Size>
         <Children>
           <Template src="skin:left_2state_button.xml">
             <!-- Button has no text/images, qss only -->
             <SetVariable name="TooltipId">EffectSlot_parameter_inversion</SetVariable>
             <SetVariable name="ObjectName">EffectSlotParameterLinkInversionButton</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SmallHorizontalStretchLinkButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SmallHorizontalStretchLinkButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SmallHorizontalStretchLinkButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text"></SetVariable>
-            <SetVariable name="state_0_pressed"></SetVariable>
-            <SetVariable name="state_0_unpressed"></SetVariable>
-            <SetVariable name="state_1_text"></SetVariable>
-            <SetVariable name="state_1_pressed"></SetVariable>
-            <SetVariable name="state_1_unpressed"></SetVariable>
+            <SetVariable name="MinimumSize">6,6</SetVariable>
+            <SetVariable name="MaximumSize">10,6</SetVariable>
+            <SetVariable name="SizePolicy">me,f</SetVariable>
             <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_inverse</SetVariable>
+          </Template>
+
+          <Template src="skin:left_5state_button.xml">
+            <!-- Button has no text/images, qss only -->
+            <SetVariable name="TooltipId">EffectSlot_parameter_link_type</SetVariable>
+            <SetVariable name="ObjectName">EffectSlotParameterLinkTypeButton</SetVariable>
+            <SetVariable name="MinimumSize">30,6</SetVariable>
+            <SetVariable name="MaximumSize">46,6</SetVariable>
+            <SetVariable name="SizePolicy">me,f</SetVariable>
+            <SetVariable name="left_connection_control">[EffectRack<Variable name="EffectRack"/>_EffectUnit<Variable name="EffectUnit"/>_Effect<Variable name="Effect"/>],parameter<Variable name="EffectParameter"/>_link_type</SetVariable>
           </Template>
         </Children>
       </WidgetGroup>

@@ -1,5 +1,4 @@
-#ifndef CONTROLLERS_KEYBOARD_KEYBOARDEVENTFILTER_H
-#define CONTROLLERS_KEYBOARD_KEYBOARDEVENTFILTER_H
+#pragma once
 
 #include <QObject>
 #include <QEvent>
@@ -47,5 +46,3 @@ class KeyboardEventFilter : public QObject {
     // Multi-hash of key sequence to
     QMultiHash<ConfigValueKbd, ConfigKey> m_keySequenceToControlHash;
 };
-
-#endif  // CONTROLLERS_KEYBOARD_KEYBOARDEVENTFILTER_H

@@ -1,54 +1,66 @@
 #include <gtest/gtest.h>
+
 #include <QtDebug>
 
 #include "track/beatgrid.h"
+#include "track/track.h"
 #include "util/memory.h"
+
+using namespace mixxx;
 
 namespace {
 
-TEST(BeatGridTest, Scale) {
+const double kMaxBeatError = 1e-9;
+
+TrackPointer newTrack(int sampleRate) {
     TrackPointer pTrack(Track::newTemporary());
+    pTrack->setAudioProperties(
+            mixxx::audio::ChannelCount(2),
+            mixxx::audio::SampleRate(sampleRate),
+            mixxx::audio::Bitrate(),
+            mixxx::Duration::fromSeconds(180));
+    return pTrack;
+}
 
+TEST(BeatGridTest, Scale) {
     int sampleRate = 44100;
-    double bpm = 60.0;
-    pTrack->setBpm(bpm);
-    pTrack->setSampleRate(sampleRate);
+    TrackPointer pTrack = newTrack(sampleRate);
 
-    auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
-    pGrid->setBpm(bpm);
+    double bpm = 60.0;
+    pTrack->trySetBpm(bpm);
+
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
-    pGrid->scale(Beats::DOUBLE);
+    pGrid = pGrid->scale(Beats::DOUBLE);
     EXPECT_DOUBLE_EQ(2 * bpm, pGrid->getBpm());
 
-    pGrid->scale(Beats::HALVE);
+    pGrid = pGrid->scale(Beats::HALVE);
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 
-    pGrid->scale(Beats::TWOTHIRDS);
+    pGrid = pGrid->scale(Beats::TWOTHIRDS);
     EXPECT_DOUBLE_EQ(bpm * 2 / 3, pGrid->getBpm());
 
-    pGrid->scale(Beats::THREEHALVES);
+    pGrid = pGrid->scale(Beats::THREEHALVES);
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 
-    pGrid->scale(Beats::THREEFOURTHS);
+    pGrid = pGrid->scale(Beats::THREEFOURTHS);
     EXPECT_DOUBLE_EQ(bpm * 3 / 4, pGrid->getBpm());
 
-    pGrid->scale(Beats::FOURTHIRDS);
+    pGrid = pGrid->scale(Beats::FOURTHIRDS);
     EXPECT_DOUBLE_EQ(bpm, pGrid->getBpm());
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
-    TrackPointer pTrack(Track::newTemporary());
-
     int sampleRate = 44100;
-    double bpm = 60.0;
+    TrackPointer pTrack = newTrack(sampleRate);
+
+    double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
-    pTrack->setSampleRate(sampleRate);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
-    pGrid->setBpm(bpm);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
     // Pretend we're on the 20th beat;
     double position = beatLength * 20;
 
@@ -58,33 +70,36 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat) {
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < 20; ++i) {
-        EXPECT_EQ(position + beatLength*(i-1), pGrid->findNthBeat(position, i));
-        EXPECT_EQ(position + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_NEAR(position + beatLength * (i - 1), pGrid->findNthBeat(position, i), kMaxBeatError);
+        EXPECT_NEAR(position + beatLength * (-i + 1), pGrid->findNthBeat(position, -i), kMaxBeatError);
     }
 
     // Also test prev/next beat calculation.
     double prevBeat, nextBeat;
-    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat);
-    EXPECT_EQ(position, prevBeat);
-    EXPECT_EQ(position + beatLength, nextBeat);
+    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, true);
+    EXPECT_NEAR(position, prevBeat, kMaxBeatError);
+    EXPECT_NEAR(position + beatLength, nextBeat, kMaxBeatError);
+
+    // Also test prev/next beat calculation without snaping tolerance
+    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
+    EXPECT_NEAR(position, prevBeat, kMaxBeatError);
+    EXPECT_NEAR(position + beatLength, nextBeat, kMaxBeatError);
 
     // Both previous and next beat should return the current position.
-    EXPECT_EQ(position, pGrid->findNextBeat(position));
-    EXPECT_EQ(position, pGrid->findPrevBeat(position));
+    EXPECT_NEAR(position, pGrid->findNextBeat(position), kMaxBeatError);
+    EXPECT_NEAR(position, pGrid->findPrevBeat(position), kMaxBeatError);
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
-    TrackPointer pTrack(Track::newTemporary());
-
     int sampleRate = 44100;
-    double bpm = 60.0;
+    TrackPointer pTrack = newTrack(sampleRate);
+
+    double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
-    pTrack->setSampleRate(sampleRate);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
-    pGrid->setBpm(bpm);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     // Pretend we're just before the 20th beat.
     const double kClosestBeat = 20 * beatLength;
@@ -96,33 +111,36 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_BeforeEpsilon) {
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < 20; ++i) {
-        EXPECT_EQ(kClosestBeat + beatLength*(i-1), pGrid->findNthBeat(position, i));
-        EXPECT_EQ(kClosestBeat + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_NEAR(kClosestBeat + beatLength * (i - 1), pGrid->findNthBeat(position, i), kMaxBeatError);
+        EXPECT_NEAR(kClosestBeat + beatLength * (-i + 1), pGrid->findNthBeat(position, -i), kMaxBeatError);
     }
 
     // Also test prev/next beat calculation.
     double prevBeat, nextBeat;
-    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat);
-    EXPECT_EQ(kClosestBeat, prevBeat);
-    EXPECT_EQ(kClosestBeat + beatLength, nextBeat);
+    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, true);
+    EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
+    EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
+
+    // Also test prev/next beat calculation without snaping tolerance
+    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
+    EXPECT_NEAR(kClosestBeat - beatLength, prevBeat, kMaxBeatError);
+    EXPECT_NEAR(kClosestBeat, nextBeat, kMaxBeatError);
 
     // Both previous and next beat should return the closest beat.
-    EXPECT_EQ(kClosestBeat, pGrid->findNextBeat(position));
-    EXPECT_EQ(kClosestBeat, pGrid->findPrevBeat(position));
+    EXPECT_NEAR(kClosestBeat, pGrid->findNextBeat(position), kMaxBeatError);
+    EXPECT_NEAR(kClosestBeat, pGrid->findPrevBeat(position), kMaxBeatError);
 }
 
 TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
-    TrackPointer pTrack(Track::newTemporary());
-
     int sampleRate = 44100;
-    double bpm = 60.0;
+    TrackPointer pTrack = newTrack(sampleRate);
+
+    double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
-    pTrack->setSampleRate(sampleRate);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
-    pGrid->setBpm(bpm);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     // Pretend we're just before the 20th beat.
     const double kClosestBeat = 20 * beatLength;
@@ -134,32 +152,36 @@ TEST(BeatGridTest, TestNthBeatWhenOnBeat_AfterEpsilon) {
     // findNthBeat should return exactly the current beat if we ask for 1 or
     // -1. For all other values, it should return n times the beat length.
     for (int i = 1; i < 20; ++i) {
-        EXPECT_EQ(kClosestBeat + beatLength*(i-1), pGrid->findNthBeat(position, i));
-        EXPECT_EQ(kClosestBeat + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_NEAR(kClosestBeat + beatLength * (i - 1), pGrid->findNthBeat(position, i), kMaxBeatError);
+        EXPECT_NEAR(kClosestBeat + beatLength * (-i + 1), pGrid->findNthBeat(position, -i), kMaxBeatError);
     }
 
     // Also test prev/next beat calculation.
     double prevBeat, nextBeat;
-    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat);
-    EXPECT_EQ(kClosestBeat, prevBeat);
-    EXPECT_EQ(kClosestBeat + beatLength, nextBeat);
+    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, true);
+    EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
+    EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
+
+    // Also test prev/next beat calculation without snaping tolerance
+    pGrid->findPrevNextBeats(position, &prevBeat, &nextBeat, false);
+    EXPECT_NEAR(kClosestBeat, prevBeat, kMaxBeatError);
+    EXPECT_NEAR(kClosestBeat + beatLength, nextBeat, kMaxBeatError);
 
     // Both previous and next beat should return the closest beat.
-    EXPECT_EQ(kClosestBeat, pGrid->findNextBeat(position));
-    EXPECT_EQ(kClosestBeat, pGrid->findPrevBeat(position));
+    EXPECT_NEAR(kClosestBeat, pGrid->findNextBeat(position), kMaxBeatError);
+    EXPECT_NEAR(kClosestBeat, pGrid->findPrevBeat(position), kMaxBeatError);
 }
 
 TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
-    TrackPointer pTrack(Track::newTemporary());
     int sampleRate = 44100;
-    double bpm = 60.0;
+    TrackPointer pTrack = newTrack(sampleRate);
+
+    double bpm = 60.1;
     const int kFrameSize = 2;
-    pTrack->setBpm(bpm);
-    pTrack->setSampleRate(sampleRate);
+    pTrack->trySetBpm(bpm);
     double beatLength = (60.0 * sampleRate / bpm) * kFrameSize;
 
-    auto pGrid = std::make_unique<BeatGrid>(*pTrack, 0);
-    pGrid->setBpm(bpm);
+    auto pGrid = BeatGrid::makeBeatGrid(pTrack->getSampleRate(), QString(), bpm, 0);
 
     // Pretend we're half way between the 20th and 21st beat
     double previousBeat = beatLength * 20.0;
@@ -172,15 +194,39 @@ TEST(BeatGridTest, TestNthBeatWhenNotOnBeat) {
     // findNthBeat should return multiples of beats starting from the next or
     // previous beat, depending on whether N is positive or negative.
     for (int i = 1; i < 20; ++i) {
-        EXPECT_EQ(nextBeat + beatLength*(i-1), pGrid->findNthBeat(position, i));
-        EXPECT_EQ(previousBeat + beatLength*(-i+1), pGrid->findNthBeat(position, -i));
+        EXPECT_NEAR(nextBeat + beatLength*(i-1), pGrid->findNthBeat(position, i), kMaxBeatError);
+        EXPECT_NEAR(previousBeat + beatLength*(-i+1), pGrid->findNthBeat(position, -i), kMaxBeatError);
     }
 
     // Also test prev/next beat calculation
     double foundPrevBeat, foundNextBeat;
-    pGrid->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat);
-    EXPECT_EQ(previousBeat, foundPrevBeat);
-    EXPECT_EQ(nextBeat, foundNextBeat);
+    pGrid->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, true);
+    EXPECT_NEAR(previousBeat, foundPrevBeat, kMaxBeatError);
+    EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);
+
+    // Also test prev/next beat calculation without snaping tolerance
+    pGrid->findPrevNextBeats(position, &foundPrevBeat, &foundNextBeat, false);
+    EXPECT_NEAR(previousBeat, foundPrevBeat, kMaxBeatError);
+    EXPECT_NEAR(nextBeat, foundNextBeat, kMaxBeatError);
+}
+
+TEST(BeatGridTest, FromMetadata) {
+    int sampleRate = 44100;
+    TrackPointer pTrack = newTrack(sampleRate);
+
+    double bpm = 60.1;
+    ASSERT_TRUE(pTrack->trySetBpm(bpm));
+    EXPECT_DOUBLE_EQ(pTrack->getBpm(), bpm);
+
+    auto pBeats = pTrack->getBeats();
+    EXPECT_DOUBLE_EQ(pBeats->getBpm(), bpm);
+
+    // Invalid bpm resets the bpm
+    ASSERT_TRUE(pTrack->trySetBpm(-60.1));
+    EXPECT_DOUBLE_EQ(pTrack->getBpm(), mixxx::Bpm::kValueUndefined);
+
+    pBeats = pTrack->getBeats();
+    EXPECT_EQ(pBeats.isNull(), true);
 }
 
 }  // namespace

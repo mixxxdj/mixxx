@@ -1,0 +1,32 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    A skin setting button that has a left-click control.
+    It already has un/checked circles for enabled/disabled state
+  Variables:
+    text: name of the skin setting
+    skinsetting: skin setting control
+    TooltipId
+-->
+<Template>
+  <PushButton>
+    <TooltipId><Variable name="TooltipId"/></TooltipId>
+    <ObjectName>SkinSettingsButton</ObjectName>
+    <Size>80me,20f</Size>
+    <NumberStates>2</NumberStates>
+    <State>
+      <Number>0</Number>
+      <Text>&#9675; <Variable name="text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <State>
+      <Number>1</Number>
+      <Text>&#9679; <Variable name="text"/></Text>
+      <Alignment>left</Alignment>
+    </State>
+    <Connection>
+      <ConfigKey persist="true"><Variable name="skinsetting"/></ConfigKey>
+      <ButtonState>LeftButton</ButtonState>
+    </Connection>
+  </PushButton>
+</Template>

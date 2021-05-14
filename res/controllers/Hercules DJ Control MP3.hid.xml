@@ -5,7 +5,8 @@
         <author>Shalty
 Adaptation for the MP3 reusing the work on the Mk1 by zestoy/ewanuno</author>
         <description>Native HID script for the Hercules DJ Control MP3 controller.</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=1&amp;t=4966</forums>
+        <forums>https://mixxx.discourse.group/t/hid-output-not-working-with-hercules-dj-control-windows/13365</forums>
+        <manual>hercules_djcontrol_mp3</manual>
     </info>
     <controller id="Hercules DJ Control MP3 HID">
         <scriptfiles>

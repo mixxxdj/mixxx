@@ -18,20 +18,30 @@
             <SizePolicy>e,min</SizePolicy>
             <Text>Skin Settings</Text>
           </Label>
-          <Template src="skin:../Deere/left_2state_button.xml">
-            <SetVariable name="TooltipId">skin_settings</SetVariable>
-            <SetVariable name="ObjectName">SidebarShowHideSkinSettingsButton</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text"></SetVariable>
-            <SetVariable name="state_0_pressed">icon/ic_settings_48px.svg</SetVariable>
-            <SetVariable name="state_0_unpressed">icon/ic_settings_48px.svg</SetVariable>
-            <SetVariable name="state_1_text"></SetVariable>
-            <SetVariable name="state_1_pressed">icon/ic_settings_48px.svg</SetVariable>
-            <SetVariable name="state_1_unpressed">icon/ic_settings_48px.svg</SetVariable>
-            <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
-          </Template>
+          <PushButton>
+            <TooltipId>skin_settings</TooltipId>
+            <ObjectName>SidebarShowHideSkinSettingsButton</ObjectName>
+            <MinimumSize><Variable name="SquareButtonMinimumSize"/></MinimumSize>
+            <MaximumSize><Variable name="SquareButtonMaximumSize"/></MaximumSize>
+            <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
+            <NumberStates>2</NumberStates>
+            <State>
+              <Number>0</Number>
+              <Text><Variable name="state_0_text"/></Text>
+              <Pressed scalemode="STRETCH_ASPECT">skin:../Deere/icon/ic_clear_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">skin:../Deere/icon/ic_clear_48px.svg</Unpressed>
+            </State>
+            <State>
+              <Number>1</Number>
+              <Text><Variable name="state_1_text"/></Text>
+              <Pressed scalemode="STRETCH_ASPECT">skin:../Deere/icon/ic_clear_48px.svg</Pressed>
+              <Unpressed scalemode="STRETCH_ASPECT">skin:../Deere/icon/ic_clear_48px.svg</Unpressed>
+            </State>
+            <Connection>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
+              <ButtonState>LeftButton</ButtonState>
+            </Connection>
+          </PushButton>
         </Children>
       </WidgetGroup>
 
@@ -40,45 +50,17 @@
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">Parallel Waveforms</SetVariable>
+            <SetVariable name="skinsetting">[Deere],show_parallel_waveforms</SetVariable>
+          </Template>
 
-          <PushButton>
-            <TooltipId></TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Parallel Waveforms</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Parallel Waveforms</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Deere],show_parallel_waveforms</ConfigKey>
-            </Connection>
-          </PushButton>
-
-          <PushButton>
-            <TooltipId>toggle_4decks</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; 4 Decks</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; 4 Decks</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Master],show_4decks</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">toggle_4decks</SetVariable>
+            <SetVariable name="text">4 Decks</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_4decks</SetVariable>
+          </Template>
 
         </Children>
       </WidgetGroup>
@@ -95,250 +77,108 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <PushButton>
-            <TooltipId>show_coverart</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Cover Art</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Cover Art</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Master],show_coverart</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_coverart</SetVariable>
+            <SetVariable name="text">Cover Art</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_coverart</SetVariable>
+          </Template>
 
-          <PushButton>
-            <TooltipId>show_spinny</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Spinnies</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Spinnies</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Master],show_spinnies</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_spinny</SetVariable>
+            <SetVariable name="text">Spinnies</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_spinnies</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Artist &amp; Track Title</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Artist &amp; Track Title</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Deere],show_track_info</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">Artist &amp; Track Title</SetVariable>
+            <SetVariable name="skinsetting">[Deere],show_track_info</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; BPM</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; BPM</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Deere],show_bpm_info</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">BPM</SetVariable>
+            <SetVariable name="skinsetting">[Deere],show_bpm_info</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Star Rating</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Star Rating</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Deere],show_starrating</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">Star Rating</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_starrating</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; More Hotcues</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; More Hotcues</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Deere],show_more_hotcues</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">8 Hotcues</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_8_hotcues</SetVariable>
+          </Template>
 
-          <PushButton>
-            <TooltipId>show_vinylcontrol</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Vinyl Control Options</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Vinyl Control Options</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[VinylControl],show_vinylcontrol</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_intro_outro_cues</SetVariable>
+            <SetVariable name="text">Intro &amp; Outro Cues</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_intro_outro_cues</SetVariable>
+          </Template>
+
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_vinylcontrol</SetVariable>
+            <SetVariable name="text">Vinyl Control Options</SetVariable>
+            <SetVariable name="skinsetting">[VinylControl],show_vinylcontrol</SetVariable>
+          </Template>
+
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_coverart</SetVariable>
+            <SetVariable name="text">Hotcue Shift Buttons</SetVariable>
+            <SetVariable name="skinsetting">[Skin],timing_shift_buttons</SetVariable>
+          </Template>
 
         </Children>
       </WidgetGroup>
 
-      <Label>
-        <ObjectName>h2</ObjectName>
-        <Text>Mixer</Text>
-      </Label>
+      <Template src="skin:../Deere/skinsettings_category_button.xml">
+        <SetVariable name="TooltipId">show_mixer</SetVariable>
+        <SetVariable name="text">Mixer</SetVariable>
+        <SetVariable name="skinsetting">[Master],show_mixer</SetVariable>
+      </Template>
 
       <WidgetGroup>
         <ObjectName>h3</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <PushButton>
-            <TooltipId>show_mixer</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Show</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Show</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Master],show_mixer</ConfigKey>
-            </Connection>
-          </PushButton>
 
-          <PushButton>
-            <TooltipId></TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Equalizers</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Equalizers</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Master],show_eqs</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">Equalizers</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_eq_knobs</SetVariable>
+          </Template>
 
-          <PushButton>
-            <TooltipId></TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Kill Switches</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Kill Switches</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Master],show_killswitches</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">Kill Switches</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_eq_kill_buttons</SetVariable>
+          </Template>
 
-          <PushButton>
-            <TooltipId></TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Faders</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Faders</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Master],show_faders</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">Faders</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_faders</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Crossfader</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Crossfader</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Deere],show_crossfader</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">Crossfader</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_xfader</SetVariable>
+          </Template>
 
         </Children>
       </WidgetGroup>
 
       <!-- Sampler Settings -->
-      <Label>
-        <ObjectName>h2</ObjectName>
-        <Text>Samplers</Text>
-      </Label>
+      <Template src="skin:../Deere/skinsettings_category_button.xml">
+        <SetVariable name="TooltipId">show_samplers</SetVariable>
+        <SetVariable name="text">Samplers</SetVariable>
+        <SetVariable name="skinsetting">[Samplers],show_samplers</SetVariable>
+      </Template>
 
       <WidgetGroup>
         <ObjectName>h3</ObjectName>
@@ -346,7 +186,7 @@
         <SizePolicy>me,max</SizePolicy>
         <Children>
 
-          <WidgetStack currentpage="[Deere],sampler_row_current" >
+          <WidgetStack currentpage="[Skin],sampler_row_current">
             <NextControl>[Deere],sampler_bank_next</NextControl>
             <PrevControl>[Deere],sampler_bank_prev</PrevControl>
             <Children>
@@ -477,10 +317,11 @@
       </WidgetGroup>
 
       <!-- Effects Settings -->
-      <Label>
-        <ObjectName>h2</ObjectName>
-        <Text>Effects</Text>
-      </Label>
+      <Template src="skin:../Deere/skinsettings_category_button.xml">
+        <SetVariable name="TooltipId">show_effects</SetVariable>
+        <SetVariable name="text">Effects</SetVariable>
+        <SetVariable name="skinsetting">[EffectRack1],show</SetVariable>
+      </Template>
 
       <WidgetGroup>
         <ObjectName>h3</ObjectName>
@@ -488,112 +329,44 @@
         <SizePolicy>me,min</SizePolicy>
         <Children>
 
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Superknob</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Superknob</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Master],show_superknobs</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">Superknob</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_superknobs</SetVariable>
+          </Template>
 
-          <PushButton>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; 4 Effect Units</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; 4 Effect Units</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Master],show_4effectunits</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId"></SetVariable>
+            <SetVariable name="text">4 Effect Units</SetVariable>
+            <SetVariable name="skinsetting">[Skin],show_4effectunits</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 
       <!-- Library Settings -->
-      <Label>
-        <ObjectName>h2</ObjectName>
-        <Text>Library</Text>
-      </Label>
+      <Template src="skin:../Deere/skinsettings_category_button.xml">
+        <SetVariable name="TooltipId">show_library</SetVariable>
+        <SetVariable name="text">Library</SetVariable>
+        <SetVariable name="skinsetting">[Skin],show_library</SetVariable>
+      </Template>
 
       <WidgetGroup>
         <ObjectName>h3</ObjectName>
         <Layout>vertical</Layout>
         <SizePolicy>me,min</SizePolicy>
         <Children>
-          <PushButton>
-            <TooltipId>show_library</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Show</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Show</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Library],show_library</ConfigKey>
-              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-            </Connection>
-          </PushButton>
 
-          <PushButton>
-            <TooltipId>show_previewdeck</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Preview Deck</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Preview Deck</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[PreviewDeck],show_previewdeck</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_previewdeck</SetVariable>
+            <SetVariable name="text">Preview Deck</SetVariable>
+            <SetVariable name="skinsetting">[PreviewDeck],show_previewdeck</SetVariable>
+          </Template>
 
-          <PushButton>
-            <TooltipId>show_coverart</TooltipId>
-            <Size>80me,20f</Size>
-            <NumberStates>2</NumberStates>
-            <State>
-              <Number>0</Number>
-              <Text>&#9675; Cover Art</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <State>
-              <Number>1</Number>
-              <Text>&#9679; Cover Art</Text>
-              <Alignment>left</Alignment>
-            </State>
-            <Connection>
-              <ConfigKey>[Library],show_coverart</ConfigKey>
-            </Connection>
-          </PushButton>
+          <Template src="skin:../Deere/skinsettings_button.xml">
+            <SetVariable name="TooltipId">show_coverart</SetVariable>
+            <SetVariable name="text">Cover Art</SetVariable>
+            <SetVariable name="skinsetting">[Library],show_coverart</SetVariable>
+          </Template>
         </Children>
       </WidgetGroup>
 
@@ -601,7 +374,7 @@
 
     </Children>
     <Connection>
-      <ConfigKey>[Deere],show_skin_settings</ConfigKey>
+      <ConfigKey>[Master],skin_settings</ConfigKey>
       <BindProperty>visible</BindProperty>
     </Connection>
   </WidgetGroup>

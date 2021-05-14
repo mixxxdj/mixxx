@@ -1,5 +1,4 @@
-#ifndef WTRACKPROPERTY_H
-#define WTRACKPROPERTY_H
+#pragma once
 
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -7,36 +6,53 @@
 
 #include "preferences/usersettings.h"
 #include "skin/skincontext.h"
-#include "track/track.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
+#include "util/parented_ptr.h"
+#include "widget/trackdroptarget.h"
 #include "widget/wlabel.h"
 
-class WTrackProperty : public WLabel {
+class Library;
+class WTrackMenu;
+
+class WTrackProperty : public WLabel, public TrackDropTarget {
     Q_OBJECT
   public:
-    WTrackProperty(const char* group, UserSettingsPointer pConfig, QWidget* pParent);
+    WTrackProperty(
+            QWidget* pParent,
+            UserSettingsPointer pConfig,
+            Library* pLibrary,
+            const QString& group);
+    ~WTrackProperty() override;
 
     void setup(const QDomNode& node, const SkinContext& context) override;
 
-  signals:
-    void trackDropped(QString filename, QString group);
+signals:
+  void trackDropped(const QString& filename, const QString& group) override;
+  void cloneDeck(const QString& sourceGroup, const QString& targetGroup) override;
 
-  public slots:
-    void slotTrackLoaded(TrackPointer track);
-    void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
+public slots:
+  void slotTrackLoaded(TrackPointer pTrack);
+  void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
 
-  private slots:
-    void updateLabel(Track*);
+protected:
+  void contextMenuEvent(QContextMenuEvent* event) override;
 
-  private:
-    void dragEnterEvent(QDragEnterEvent *event) override;
-    void dropEvent(QDropEvent *event) override;
-    void mouseMoveEvent(QMouseEvent *event) override;
+private slots:
+  void slotTrackChanged(TrackId);
 
-    const char* m_pGroup;
-    UserSettingsPointer m_pConfig;
-    TrackPointer m_pCurrentTrack;
-    QString m_property;
+private:
+  void dragEnterEvent(QDragEnterEvent* event) override;
+  void dropEvent(QDropEvent* event) override;
+  void mouseMoveEvent(QMouseEvent* event) override;
+  void mouseDoubleClickEvent(QMouseEvent* event) override;
+
+  void updateLabel();
+
+  const QString m_group;
+  const UserSettingsPointer m_pConfig;
+  TrackPointer m_pCurrentTrack;
+  QString m_property;
+
+  const parented_ptr<WTrackMenu> m_pTrackMenu;
 };
-
-
-#endif /* WTRACKPROPERTY_H */

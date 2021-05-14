@@ -1,0 +1,29 @@
+build:
+- default.nix
+- CMakeLists.txt
+- build/**
+- cmake/**
+
+code quality:
+- src/test/**
+- .clang-format
+- .codespell
+- .eslint*
+- .flake8
+- .pre-commit-config.yaml
+- pyproject.toml
+
+controllers:
+- res/controllers/**
+
+library:
+- src/library/**
+
+skins:
+- res/skins/**
+
+ui:
+- src/**.ui
+- src/dialog/**
+- src/preferences/**
+- src/widget/**

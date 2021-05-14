@@ -1,9 +1,10 @@
-#ifndef WAVEFORMWIDGETTYPE_H
-#define WAVEFORMWIDGETTYPE_H
+#pragma once
 
 class WaveformWidgetType {
   public:
     enum Type {
+        // The order must not be changed because the waveforms are referenced
+        // from the sorted preferences by a number.
         EmptyWaveform = 0,
         SoftwareSimpleWaveform, //TODO
         SoftwareWaveform,
@@ -17,8 +18,10 @@ class WaveformWidgetType {
         RGBWaveform,
         GLRGBWaveform,
         GLSLRGBWaveform,
+        QtVSyncTest,
+        QtHSVWaveform,
+        QtRGBWaveform,
+        GLSLRGBStackedWaveform,
         Count_WaveformwidgetType // Also used as invalid value
     };
 };
-
-#endif // WAVEFORMWIDGETTYPE_H

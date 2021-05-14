@@ -1,23 +1,14 @@
-/**
- * @file portmidicontroller.h
- * @author Albert Santoni alberts@mixxx.org
- * @author Sean M. Pappalardo  spappalardo@mixxx.org
- * @date Thu 15 Mar 2012
- * @brief PortMidi-based MIDI backend
- *
- */
-
-#include "controllers/midi/midiutils.h"
 #include "controllers/midi/portmidicontroller.h"
+
 #include "controllers/controllerdebug.h"
+#include "controllers/midi/midiutils.h"
+#include "moc_portmidicontroller.cpp"
 
 PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
-                                       const PmDeviceInfo* outputDeviceInfo,
-                                       int inputDeviceIndex,
-                                       int outputDeviceIndex)
-        : MidiController(),
-          m_cReceiveMsg_index(0),
-          m_bInSysex(false) {
+        const PmDeviceInfo* outputDeviceInfo,
+        int inputDeviceIndex,
+        int outputDeviceIndex)
+        : MidiController(), m_cReceiveMsg_index(0), m_bInSysex(false) {
     for (unsigned int k = 0; k < MIXXX_PORTMIDI_BUFFER_LEN; ++k) {
         // Can be shortened to `m_midiBuffer[k] = {}` with C++11.
         m_midiBuffer[k].message = 0;
@@ -34,7 +25,7 @@ PortMidiController::PortMidiController(const PmDeviceInfo* inputDeviceInfo,
             inputDeviceInfo, inputDeviceIndex));
     }
     if (outputDeviceInfo) {
-        if (inputDeviceInfo == NULL) {
+        if (inputDeviceInfo == nullptr) {
             setDeviceName(QString("%1").arg(outputDeviceInfo->name));
         }
         setOutputDevice(outputDeviceInfo->output);
@@ -55,8 +46,9 @@ int PortMidiController::open() {
         return -1;
     }
 
-    if (getName() == MIXXX_PORTMIDI_NO_DEVICE_STRING)
+    if (getName() == MIXXX_PORTMIDI_NO_DEVICE_STRING) {
         return -1;
+    }
 
     m_bInSysex = false;
     m_cReceiveMsg_index = 0;
@@ -126,16 +118,6 @@ bool PortMidiController::poll() {
         return false;
     }
 
-    // Returns true if events are available or an error code.
-    PmError gotEvents = m_pInputDevice->poll();
-    if (gotEvents == FALSE) {
-        return false;
-    }
-    if (gotEvents < 0) {
-        qWarning() << "PortMidi error:" << Pm_GetErrorText(gotEvents);
-        return false;
-    }
-
     int numEvents = m_pInputDevice->read(m_midiBuffer, MIXXX_PORTMIDI_BUFFER_LEN);
 
     //qDebug() << "PortMidiController::poll()" << numEvents;
@@ -151,7 +133,7 @@ bool PortMidiController::poll() {
 
         if ((status & 0xF8) == 0xF8) {
             // Handle real-time MIDI messages at any time
-            receive(status, 0, 0, timestamp);
+            receivedShortMessage(status, 0, 0, timestamp);
             continue;
         }
 
@@ -165,7 +147,7 @@ bool PortMidiController::poll() {
                 //unsigned char channel = status & 0x0F;
                 unsigned char note = Pm_MessageData1(m_midiBuffer[i].message);
                 unsigned char velocity = Pm_MessageData2(m_midiBuffer[i].message);
-                receive(status, note, velocity, timestamp);
+                receivedShortMessage(status, note, velocity, timestamp);
             }
         }
 
@@ -230,7 +212,7 @@ void PortMidiController::sendShortMsg(unsigned char status, unsigned char byte1,
     }
 }
 
-void PortMidiController::send(QByteArray data) {
+void PortMidiController::sendBytes(const QByteArray& data) {
     // PortMidi does not receive a length argument for the buffer we provide to
     // Pm_WriteSysEx. Instead, it scans for a MIDI_EOX byte to know when the
     // message is over. If one is not provided, it will overflow the buffer and

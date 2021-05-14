@@ -102,8 +102,10 @@ public:
         return debug << dbId.m_value;
     }
 
-    friend uint qHash(const DbId& dbId) {
-        return qHash(dbId.m_value);
+    friend uint qHash(
+            const DbId& dbId,
+            uint seed = 0) {
+        return qHash(dbId.m_value, seed);
     }
 
 private:

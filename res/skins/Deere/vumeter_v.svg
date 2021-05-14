@@ -7,25 +7,25 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   version="1.1"
+   id="svg2"
    width="3"
    height="100"
-   id="svg2"
-   inkscape:version="0.91 r13725"
-   sodipodi:docname="vumeter_v.svg">
+   version="1.1"
+   sodipodi:docname="vumeter_v.svg"
+   inkscape:version="1.0 (4035a4fb49, 2020-05-01)">
   <metadata
-     id="metadata19">
+     id="metadata2191">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
   <sodipodi:namedview
+     inkscape:document-rotation="0"
      pagecolor="#ffffff"
      bordercolor="#666666"
      borderopacity="1"
@@ -34,54 +34,77 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1366"
-     inkscape:window-height="702"
-     id="namedview17"
+     inkscape:window-width="3840"
+     inkscape:window-height="2092"
+     id="namedview2189"
      showgrid="false"
-     fit-margin-top="0"
-     fit-margin-left="0"
-     fit-margin-right="0"
-     fit-margin-bottom="0"
-     inkscape:zoom="3.337544"
-     inkscape:cx="-24.578018"
-     inkscape:cy="64.898884"
-     inkscape:window-x="0"
-     inkscape:window-y="27"
+     inkscape:zoom="22.330432"
+     inkscape:cx="-36.198249"
+     inkscape:cy="34.061672"
+     inkscape:window-x="2560"
+     inkscape:window-y="28"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2" />
   <defs
      id="defs4">
     <linearGradient
        id="vumeterGrad"
-       x1="0"
-       y1="17.320508"
        x2="0"
-       y2="0"
-       gradientTransform="scale(0.17320508,5.7735027)"
+       y1="17.321"
+       gradientTransform="scale(.17321 5.7735)"
        gradientUnits="userSpaceOnUse">
       <stop
-         offset="0%"
-         style="stop-color:rgb(0,255,0);stop-opacity:1"
-         id="stop7" />
+         id="stop7"
+         stop-color="#0f0"
+         offset="0" />
       <stop
-         offset="90%"
-         style="stop-color:rgb(0,255,0);stop-opacity:1"
-         id="stop9" />
+         id="stop9"
+         stop-color="#0f0"
+         offset=".9" />
       <stop
-         offset="90%"
-         style="stop-color:rgb(255,255,0);stop-opacity:1"
-         id="stop11" />
+         id="stop11"
+         stop-color="#ff0"
+         offset=".9" />
       <stop
-         offset="100%"
-         style="stop-color:rgb(255,255,0);stop-opacity:1"
-         id="stop13" />
+         id="stop13"
+         stop-color="#ff0"
+         offset="1" />
+    </linearGradient>
+    <linearGradient
+       id="vumeterGradOff"
+       x2="0"
+       y1="17.321"
+       gradientTransform="matrix(0.17321,0,0,5.7735,5.2559299,-0.04019004)"
+       gradientUnits="userSpaceOnUse">
+      <stop
+         id="stop20"
+         stop-color="#004b00"
+         offset="0" />
+      <stop
+         id="stop21"
+         stop-color="#004b00"
+         offset=".9" />
+      <stop
+         id="stop22"
+         stop-color="#4f4f00"
+         offset=".9" />
+      <stop
+         id="stop23"
+         stop-color="#4f4f00"
+         offset="1" />
     </linearGradient>
   </defs>
   <rect
+     id="rect15"
      width="3"
      height="100"
-     id="rect15"
+     fill="url(#vumeterGrad)" />
+  <rect
+     fill="url(#vumeterGrad)"
+     height="100"
+     width="3"
+     id="rect15-6"
      x="0"
      y="0"
-     style="fill:url(#vumeterGrad)" />
+     style="fill:url(#vumeterGradOff);fill-opacity:1" />
 </svg>

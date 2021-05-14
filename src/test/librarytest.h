@@ -1,57 +1,32 @@
-#ifndef LIBRARYTEST_H
-#define LIBRARYTEST_H
+#pragma once
 
-#include "test/mixxxtest.h"
+#include <memory>
 
+#include "control/controlobject.h"
 #include "database/mixxxdb.h"
 #include "library/trackcollection.h"
-#include "util/db/dbconnectionpooler.h"
+#include "library/trackcollectionmanager.h"
+#include "test/mixxxdbtest.h"
 #include "util/db/dbconnectionpooled.h"
-#include "track/globaltrackcache.h"
+#include "util/db/dbconnectionpooler.h"
 
-
-class LibraryTest : public MixxxTest,
-    public virtual /*implements*/ GlobalTrackCacheSaver {
-
-  public:
-    void saveCachedTrack(Track* pTrack) noexcept override {
-        m_trackCollection.exportTrackMetadata(pTrack);
-        m_trackCollection.saveTrack(pTrack);
-    }
-
+class LibraryTest : public MixxxDbTest {
   protected:
-    LibraryTest()
-        : m_mixxxDb(config()),
-          m_dbConnectionPooler(m_mixxxDb.connectionPool()),
-          m_dbConnection(mixxx::DbConnectionPooled(m_mixxxDb.connectionPool())),
-          m_trackCollection(config()) {
-        MixxxDb::initDatabaseSchema(m_dbConnection);
-        m_trackCollection.connectDatabase(m_dbConnection);
-        GlobalTrackCache::createInstance(this);
-    }
-    ~LibraryTest() override {
-        GlobalTrackCache::destroyInstance();
-        m_trackCollection.disconnectDatabase();
+    LibraryTest();
+    ~LibraryTest() override = default;
+
+    TrackCollectionManager* trackCollectionManager() const {
+        return m_pTrackCollectionManager.get();
     }
 
-    mixxx::DbConnectionPoolPtr dbConnectionPool() const {
-        return m_mixxxDb.connectionPool();
+    TrackCollection* internalCollection() const {
+        return trackCollectionManager()->internalCollection();
     }
 
-    QSqlDatabase dbConnection() const {
-        return m_dbConnection;
-    }
-
-    TrackCollection* collection() {
-        return &m_trackCollection;
-    }
+    TrackPointer getOrAddTrackByLocation(
+            const QString& trackLocation) const;
 
   private:
-    const MixxxDb m_mixxxDb;
-    const mixxx::DbConnectionPooler m_dbConnectionPooler;
-    QSqlDatabase m_dbConnection;
-    TrackCollection m_trackCollection;
+    const std::unique_ptr<TrackCollectionManager> m_pTrackCollectionManager;
+    ControlObject m_keyNotationCO;
 };
-
-
-#endif /* LIBRARYTEST_H */

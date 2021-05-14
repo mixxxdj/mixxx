@@ -1,5 +1,4 @@
-#ifndef STATSMANAGER_H
-#define STATSMANAGER_H
+#pragma once
 
 #include <QMap>
 #include <QObject>
@@ -12,19 +11,40 @@
 #include <QThreadStorage>
 #include <QList>
 
-#include "util/fifo.h"
+#include "rigtorp/SPSCQueue.h"
+
 #include "util/singleton.h"
 #include "util/stat.h"
 #include "util/event.h"
 
 class StatsManager;
 
-class StatsPipe : public FIFO<StatReport> {
+class StatsPipe final {
   public:
-    StatsPipe(StatsManager* pManager);
-    virtual ~StatsPipe();
+    explicit StatsPipe(StatsManager* pManager);
+    ~StatsPipe();
+
+    bool enqueue(StatReport report) {
+        return m_queue.try_emplace(std::move(report));
+    }
+
+    bool dequeue(StatReport* pReport) {
+        auto pFront = m_queue.front();
+        if (!pFront) {
+            return false;
+        }
+        *pReport = *pFront;
+        m_queue.pop();
+        return true;
+    }
+
+    size_t remainingCapacity() const {
+        return m_queue.capacity() - m_queue.size();
+    }
+
   private:
     StatsManager* m_pManager;
+    rigtorp::SPSCQueue<StatReport> m_queue;
 };
 
 class StatsManager : public QThread, public Singleton<StatsManager> {
@@ -34,7 +54,7 @@ class StatsManager : public QThread, public Singleton<StatsManager> {
     virtual ~StatsManager();
 
     // Returns true if write succeeds.
-    bool maybeWriteReport(const StatReport& report);
+    bool maybeWriteReport(StatReport report);
 
     static bool s_bStatsManagerEnabled;
 
@@ -73,6 +93,3 @@ class StatsManager : public QThread, public Singleton<StatsManager> {
 
     friend class StatsPipe;
 };
-
-
-#endif /* STATSMANAGER_H */

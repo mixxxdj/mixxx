@@ -3,8 +3,9 @@
   <info>
     <name>Vestax Typhoon</name>
     <author>bestdani</author>
-    <description>bestdani's controller capping for Vestax Typhoon in Mixxx 2.0+ and script. The controller reacts as descriped on the console. Some elements are taken from Bill Good's original mapping.</description>
-    <forums>http://mixxx.org/forums/viewtopic.php?p=14494#p14494</forums>
+    <description>bestdani's controller capping for Vestax Typhoon in Mixxx 2.0+ and script. The controller reacts as described on the console. Some elements are taken from Bill Good's original mapping.</description>
+    <forums>https://mixxx.discourse.group/t/vestax-typhoon-mapping-for-mixxx-2-0/12551/1#p14494</forums>
+    <manual>vestax_typhoon</manual>
   </info>
   <controller id="Vestax Typhoon">
     <scriptfiles>

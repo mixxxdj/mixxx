@@ -27,7 +27,7 @@ function EKSOtusController() {
         var name = undefined;
         var offset = 0;
 
-        packet = new HIDPacket("control",[0x0,0x35],64);
+        packet = new HIDPacket("control", 0, undefined, [0x35]);
         packet.addControl("hid","wheel_position",2,"H");
         packet.addControl("hid","wheel_speed",4,"h");
         packet.addControl("hid","timestamp",6,"I");
@@ -84,27 +84,27 @@ function EKSOtusController() {
         packet.addControl("hid","touch_slider",46,"I",0x40000000)
         packet.addControl("hid","touch_trackpad",46,"I",0x80000000);
         packet.addControl("hid","packet_number",51,"B");
-        packet.addControl("hid","deck_status",52,"B"); 
+        packet.addControl("hid","deck_status",52,"B");
         this.controller.registerInputPacket(packet);
 
-        packet = new HIDPacket("firmware_version",[0xa,0x4],64);
+        packet = new HIDPacket("firmware_version", 0xa, undefined, [0x4]);
         packet.addControl("hid","major",2,"B");
         packet.addControl("hid","minor",3,"B");
         this.controller.registerInputPacket(packet);
 
-        packet = new HIDPacket("trackpad_mode",[0x5,0x3],64);
+        packet = new HIDPacket("trackpad_mode", 0x5, undefined, [0x3]);
         packet.addControl("hid","status",2,"B");
         this.controller.registerInputPacket(packet);
 
     }
 
-    this.registerOutputPackets = function() { 
+    this.registerOutputPackets = function() {
         var packet = undefined;
         var name = undefined;
         var offset = 0;
 
-        packet = new HIDPacket("button_leds",[0x16,0x18],32);
-        offset = 2;
+        packet = new HIDPacket("button_leds", 0x16, undefined, [0x18]);
+        offset = 1;
         packet.addOutput("hid","jog_nw",offset++,"B");
         packet.addOutput("hid","jog_ne",offset++,"B");
         packet.addOutput("hid","jog_se",offset++,"B");
@@ -129,8 +129,8 @@ function EKSOtusController() {
         packet.addOutput("hid","fastforward",offset++,"B");
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("slider_leds",[0x17,0x16],32);
-        offset = 2;
+        packet = new HIDPacket("slider_leds", 0x17, undefined, [0x16]);
+        offset = 1;
         packet.addOutput("pitch","slider_1",offset++,"B");
         packet.addOutput("pitch","slider_2",offset++,"B");
         packet.addOutput("pitch","slider_3",offset++,"B");
@@ -153,26 +153,26 @@ function EKSOtusController() {
         packet.addOutput("pitch","slider_scale_3",offset++,"B");
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("led_wheel_left",[0x14,0x20],32);
-        offset = 2;
-        for (var led_index=1;led_index<=this.wheelLEDCount/2;led_index++) 
+        packet = new HIDPacket("led_wheel_left", 0x14, undefined, [0x20]);
+        offset = 1;
+        for (var led_index=1;led_index<=this.wheelLEDCount/2;led_index++)
             packet.addOutput("hid","wheel_" + led_index,offset++,"B");
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("led_wheel_right",[0x15,0x20],32);
-        offset = 2;
-        for (var led_index=this.wheelLEDCount/2+1;led_index<=this.wheelLEDCount;led_index++) 
+        packet = new HIDPacket("led_wheel_right", 0x15, undefined, [0x20]);
+        offset = 1;
+        for (var led_index=this.wheelLEDCount/2+1;led_index<=this.wheelLEDCount;led_index++)
             packet.addOutput("hid","wheel_" + led_index,offset++,"B");
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("request_firmware_version",[0xa,0x2],32);
+        packet = new HIDPacket("request_firmware_version", 0xa, undefined, [0x2]);
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("set_trackpad_mode",[0x5,0x3],32);
+        packet = new HIDPacket("set_trackpad_mode", 0x5, undefined, [0x3]);
         packet.addControl("hid","mode",2,"B");
         this.controller.registerOutputPacket(packet);
 
-        packet = new HIDPacket("set_ledcontrol_mode",[0x1d,0x3],32);
+        packet = new HIDPacket("set_ledcontrol_mode", 0x1d, undefined, [0x3]);
         packet.addControl("hid","mode",2,"B");
         this.controller.registerOutputPacket(packet);
     }
@@ -305,7 +305,7 @@ function EKSOtusController() {
 
 }
 
-EksOtus = new EKSOtusController(); 
+EksOtus = new EKSOtusController();
 
 // Initialize device state, send request for firmware. Otus is not
 // usable before we receive a valid firmware version response.
@@ -349,7 +349,7 @@ EksOtus.init = function (id) {
     controller.rampedScratchEnable = true;
 
     EksOtus.setTrackpadMode(this.trackpadMode);
-    // Note: Otus is not considered initialized before we get 
+    // Note: Otus is not considered initialized before we get
     // response to this packet
     EksOtus.requestFirmwareVersion();
     // Link controls and register callbacks
@@ -378,7 +378,7 @@ EksOtus.outputCallback = function(value,group,key) {
             return;
         group = controller.resolveGroup("deck");
     }
-    if (value==1) 
+    if (value==1)
         EksOtus.controller.setOutput("deck",key,
             controller.LEDColors[controller.deckOutputColors[controller.activeDeck]],
             true
@@ -413,11 +413,11 @@ EksOtus.incomingData = function(data,length) {
 }
 
 EksOtus.FirmwareVersionWrapper = function(packet,data) {
-    return EksOtus.FirmwareVersionResponse(packet,data); 
+    return EksOtus.FirmwareVersionResponse(packet,data);
 }
 
 EksOtus.TrackpadModeWrapper = function(packet,data) {
-    return EksOtus.TrackpadModeResponse(packet,data); 
+    return EksOtus.TrackpadModeResponse(packet,data);
 }
 
 // Callback to set current loaded track's duration for wheel led animation
@@ -426,7 +426,7 @@ EksOtus.loadedTrackDuration = function(value) {
 }
 
 // Link virtual HID naming of input and LED controls to mixxx
-// Note: HID specification has more fields than we map here. 
+// Note: HID specification has more fields than we map here.
 EksOtus.registerCallbacks = function() {
     var controller = EksOtus.controller;
 
@@ -502,30 +502,30 @@ EksOtus.registerCallbacks = function() {
 }
 
 // Default scaler for jog values
-EksOtus.wheelScaler = function(group,name,value) { 
+EksOtus.wheelScaler = function(group,name,value) {
     if (EksOtus.wheelPosition==undefined) {
         EksOtus.wheelPosition = value;
         return 0;
     }
-    var delta = EksOtus.wheelPosition - value; 
+    var delta = EksOtus.wheelPosition - value;
     if (delta>32768)
-        return 0; 
+        return 0;
     EksOtus.wheelPosition = value;
     if (delta>-8 && delta<8)
         return -delta/4;
-    return -delta/16; 
+    return -delta/16;
 }
 
-EksOtus.jogScaler = function(group,name,value) { 
+EksOtus.jogScaler = function(group,name,value) {
     if (EksOtus.wheelPosition==undefined) {
         EksOtus.wheelPosition = value;
         return 0;
     }
-    var delta = EksOtus.wheelPosition - value; 
+    var delta = EksOtus.wheelPosition - value;
     if (delta>32768)
-        return 0; 
+        return 0;
     EksOtus.wheelPosition = value;
-    return -delta/64; 
+    return -delta/64;
 }
 
 // Deck rate adjustment with top corner wheels
@@ -547,7 +547,7 @@ EksOtus.resetWheelLEDs = function (color) {
     var controller = EksOtus.controller;
     if (color==undefined || !(color in controller.LEDColors))
         color = "off";
-    for (i=1;i<=EksOtus.wheelLEDCount;i++) 
+    for (i=1;i<=EksOtus.wheelLEDCount;i++)
         controller.setOutput("jog","wheel_"+i,color,false);
     EksOtus.updateLEDs(true);
 }
@@ -567,9 +567,9 @@ EksOtus.hotcue = function (field) {
         field.value==controller.buttonStates.released)
         return;
     var active_group = controller.resolveDeckGroup(controller.activeDeck);
-    if (controller.modifiers.get("shift")) 
+    if (controller.modifiers.get("shift"))
         command = field.name + "_clear";
-    else 
+    else
         command = field.name + "_activate";
     engine.setValue(active_group,command,true);
 }
@@ -649,18 +649,18 @@ EksOtus.headphones = function (field) {
     }
 }
 
-// Control effects or somethig with XY pad
+// Control effects or something with XY pad
 EksOtus.xypad = function(field) {
     var controller = EksOtus.controller;
     if (controller.activeDeck==undefined)
         return;
-    print ("XYPAD group " + field.group + 
+    print ("XYPAD group " + field.group +
         " name " + field.name + " value " + field.value
     );
 }
 
 // Function called when the special 'Deck Switch' button is pressed
-// TODO - add code for 'hold deck_switch and press hot_cue[1-4] 
+// TODO - add code for 'hold deck_switch and press hot_cue[1-4]
 // to select deck 1-4
 EksOtus.deckSwitch = function(field) {
     var controller = EksOtus.controller;
@@ -773,12 +773,12 @@ EksOtus.circleLEDs = function(position) {
     // Only update every third LED to save HID packet bandwidth
     var wheelLEDSplit = 3;
     var wheelLEDGroups = EksOtus.wheelLEDCount/wheelLEDSplit;
-    var timeRemaining = ((1-position)*EksOtus.activeTrackDuration) | 0; 
+    var timeRemaining = ((1-position)*EksOtus.activeTrackDuration) | 0;
     var track_pos = position * EksOtus.activeTrackDuration;
     var revolutions = track_pos / EksOtus.revTime;
     var led_index = (((revolutions-(revolutions|0))*wheelLEDGroups)|0)*wheelLEDSplit;
     led_index++;
-    if (led_index==EksOtus.activeSpinningPlatterLED) 
+    if (led_index==EksOtus.activeSpinningPlatterLED)
         return;
     EksOtus.activeSpinningPlatterLED = led_index;
     EksOtus.resetWheelLEDs("off",false);

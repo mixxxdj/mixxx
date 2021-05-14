@@ -1,0 +1,16 @@
+<!--
+Spinny template
+Stacked waveforms: always show cover art in spinny
+Split waveforms: show cover art in spinny when it is not showing in deck text row,
+but do not show cover art in spinny when the cover art is showing right above it
+in the deck text row.
+
+Use smaller spinny sizes for 4 decks than 2 decks.
+-->
+<Template>
+  <CoverArt>
+    <TooltipId>coverart</TooltipId>
+    <SizePolicy>me,me</SizePolicy>
+    <Group><Variable name="group"/></Group>
+  </CoverArt>
+</Template>

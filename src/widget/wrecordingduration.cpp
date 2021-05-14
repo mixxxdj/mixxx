@@ -1,5 +1,7 @@
 #include "widget/wrecordingduration.h"
 
+#include "moc_wrecordingduration.cpp"
+
 WRecordingDuration::WRecordingDuration(QWidget *parent,
                                     RecordingManager* pRecordingManager)
         : WLabel(parent),
@@ -11,10 +13,14 @@ WRecordingDuration::~WRecordingDuration() {
 
 void WRecordingDuration::setup(const QDomNode& node, const SkinContext& context) {
     WLabel::setup(node, context);
-    connect(m_pRecordingManager, SIGNAL(durationRecorded(QString)),
-        this, SLOT(refreshLabel(QString)));
-    connect(m_pRecordingManager, SIGNAL(isRecording(bool)),
-            this, SLOT(slotRecordingInactive(bool)));
+    connect(m_pRecordingManager,
+            &RecordingManager::durationRecorded,
+            this,
+            &WRecordingDuration::refreshLabel);
+    connect(m_pRecordingManager,
+            &RecordingManager::isRecording,
+            this,
+            &WRecordingDuration::slotRecordingInactive);
 
     // When we're recording show text from "InactiveText" node
     QString inactiveText;
@@ -35,6 +41,6 @@ void WRecordingDuration::slotRecordingInactive(bool isRecording) {
     }
 }
 
-void WRecordingDuration::refreshLabel(QString durationRecorded) {
+void WRecordingDuration::refreshLabel(const QString& durationRecorded) {
     setText(durationRecorded);
 }

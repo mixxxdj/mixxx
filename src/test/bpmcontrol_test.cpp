@@ -6,8 +6,7 @@
 #include "mixxxtest.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
-#include "engine/bpmcontrol.h"
-#include "track/beats.h"
+#include "engine/controls/bpmcontrol.h"
 #include "track/beatfactory.h"
 #include "track/beatgrid.h"
 #include "track/beatmap.h"
@@ -26,13 +25,19 @@ TEST_F(BpmControlTest, ShortestPercentageChange) {
 
 TEST_F(BpmControlTest, BeatContext_BeatGrid) {
     const int sampleRate = 44100;
+
+    TrackPointer pTrack = Track::newTemporary();
+    pTrack->setAudioProperties(
+            mixxx::audio::ChannelCount(2),
+            mixxx::audio::SampleRate(sampleRate),
+            mixxx::audio::Bitrate(),
+            mixxx::Duration::fromSeconds(180));
+
     const double bpm = 60.0;
     const int kFrameSize = 2;
     const double expectedBeatLength = (60.0 * sampleRate / bpm) * kFrameSize;
-    TrackPointer pTrack = Track::newTemporary();
-    pTrack->setSampleRate(sampleRate);
 
-    BeatsPointer pBeats = BeatFactory::makeBeatGrid(*pTrack, bpm, 0);
+    const mixxx::BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrack->getSampleRate(), bpm, 0);
 
     // On a beat.
     double prevBeat, nextBeat, beatLength, beatPercentage;
