@@ -39,6 +39,30 @@ inline bool isMaster(SyncMode mode) {
     return (mode == SYNC_MASTER_SOFT || mode == SYNC_MASTER_EXPLICIT);
 }
 
+enum SyncMasterLight {
+    MASTER_INVALID = -1,
+    MASTER_OFF = 0,
+    MASTER_SOFT = 1,
+    MASTER_EXPLICIT = 2,
+};
+
+inline SyncMasterLight SyncModeToMasterLight(SyncMode mode) {
+    switch (mode) {
+    case SYNC_INVALID:
+    case SYNC_NONE:
+    case SYNC_FOLLOWER:
+        return MASTER_OFF;
+    case SYNC_MASTER_SOFT:
+        return MASTER_SOFT;
+    case SYNC_MASTER_EXPLICIT:
+        return MASTER_EXPLICIT;
+        break;
+    case SYNC_NUM_MODES:
+        break;
+    }
+    return MASTER_INVALID;
+}
+
 /// Syncable is an abstract base class for any object that wants to participate
 /// in Master Sync.
 class Syncable {
@@ -110,13 +134,10 @@ class SyncableListener {
     // Syncable::notifySyncModeChanged.
     virtual void requestSyncMode(Syncable* pSyncable, SyncMode mode) = 0;
 
-    // Used by Syncables to tell EngineSync it wants to be enabled in any mode
-    // (master/follower).
-    virtual void requestEnableSync(Syncable* pSyncable, bool enabled) = 0;
-
     // A Syncable must never call notifyBpmChanged in response to a setMasterBpm()
     // call.
     virtual void notifyBaseBpmChanged(Syncable* pSyncable, double bpm) = 0;
+    virtual void notifyRateChanged(Syncable* pSyncable, double bpm) = 0;
     virtual void requestBpmUpdate(Syncable* pSyncable, double bpm) = 0;
 
     // Syncables notify EngineSync directly about various events. EngineSync
