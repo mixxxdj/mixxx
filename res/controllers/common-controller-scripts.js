@@ -1,6 +1,21 @@
 // Functions common to all controllers go in this file
-
-nop = function () {}    // Only here so you don't get a syntax error on load if the file was otherwise empty
+/* global print:off
+       printObject:off
+       stringifyObject:off
+       arrayContains:off
+       secondstominutes:off
+       msecondstominutes:off
+       colorCodeToObject:off
+       colorCodeFromObject:off
+       script:off
+       bpm:off
+       ButtonState:off
+       LedState:off
+       Controller:off
+       Button:off
+       Control:off
+       Deck:off
+ */
 
 // ----------------- Prototype enhancements ---------------------
 
@@ -11,89 +26,144 @@ String.prototype.toInt = function() {
         a[i] = this.charCodeAt(i);
     }
     return a;
-}
+};
 
 // ----------------- Function overloads ---------------------
 
 // Causes script print() calls to appear in the log file as well
-print = function(string) {
+var print = function(string) {
     engine.log(string);
-}
+};
 
-var printObject = function (object) {
-    print(JSON.stringify(object, null, 2));
+// eslint-disable-next-line no-unused-vars
+var printObject = function(obj, maxdepth) {
+    print(stringifyObject(obj, maxdepth));
+};
+
+var stringifyObject = function(obj, maxdepth, checked, prefix) {
+    if (!maxdepth)
+        maxdepth = 2;
+    try {
+        return JSON.stringify(obj, null, maxdepth);
+    } catch (e) {
+        if (!checked)
+            checked = [];
+        if (!prefix)
+            prefix = "";
+        if (maxdepth > 0 && typeof obj === "object" && obj !== null &&
+            Object.getPrototypeOf(obj) !== "" && !arrayContains(checked, obj)) {
+            checked.push(obj);
+            var output = "{\n";
+            for (var property in obj) {
+                var value = obj[property];
+                if (typeof value === "function")
+                    continue;
+                output += prefix + property + ": "
+                    + stringifyObject(value, maxdepth - 1, checked, prefix + "  ")
+                    + "\n";
+            }
+            return output + prefix.substr(2) + "}";
+        }
+    }
+    return obj;
+};
+
+var arrayContains = function(array, elem) {
+    for (var i = 0; i < array.length; i++) {
+        if (array[i] === elem)
+            return true;
+    }
+    return false;
 };
 
 // ----------------- Generic functions ---------------------
 
-function secondstominutes(secs)
-{
-   var m = (secs / 60) | 0;
+// eslint-disable-next-line no-unused-vars
+var secondstominutes = function(secs) {
+    var m = (secs / 60) | 0;
 
-   return (m < 10 ? "0" + m : m)
-          + ":"
-          + ( ( secs %= 60 ) < 10 ? "0" + secs : secs);
-}
+    return (m < 10 ? "0" + m : m)
+        + ":"
+        + ((secs %= 60) < 10 ? "0" + secs : secs);
+};
 
-function msecondstominutes(msecs)
-{
+// eslint-disable-next-line no-unused-vars
+var msecondstominutes = function(msecs) {
     var m = (msecs / 60000) | 0;
     msecs %= 60000;
     var secs = (msecs / 1000) | 0;
     msecs %= 1000;
     msecs = Math.round(msecs * 100 / 1000);
-    if (msecs==100) msecs=99;
-
-//     print("secs="+secs+", msecs="+msecs);
+    if (msecs === 100)
+        msecs = 99;
 
     return (m < 10 ? "0" + m : m)
         + ":"
-        + ( secs < 10 ? "0" + secs : secs )
+        + (secs < 10 ? "0" + secs : secs)
         + "."
-        + ( msecs < 10 ? "0" + msecs : msecs);
-}
+        + (msecs < 10 ? "0" + msecs : msecs);
+};
 
-function script() {}
+// Converts an object with "red", "green" and "blue" properties (value range
+// 0-255) into an RGB color code (e.g. 0xFF0000).
+// eslint-disable-next-line no-unused-vars
+var colorCodeFromObject = function(color) {
+    return ((color.red & 0xFF) << 16 | (color.green & 0xFF) << 8 | (color.blue & 0xFF));
+};
+
+// Converts an RGB color code (e.g. 0xFF0000) into an object with "red",
+// "green" and "blue" properties (value range 0-255).
+// eslint-disable-next-line no-unused-vars
+var colorCodeToObject = function(colorCode) {
+    return {
+        "red": (colorCode >> 16) & 0xFF,
+        "green": (colorCode >> 8) & 0xFF,
+        "blue": colorCode & 0xFF,
+    };
+};
+
+var script = function() {
+};
 
 // DEPRECATED -- use script.midiDebug() instead
-script.debug = function (channel, control, value, status, group) {
+script.debug = function(channel, control, value, status, group) {
     print("Warning: script.debug() is deprecated. Use script.midiDebug() instead.");
     script.midiDebug(channel, control, value, status, group);
-}
+};
 
 // DEPRECATED -- use script.midiPitch() instead
-script.pitch = function (LSB, MSB, status) {
+script.pitch = function(LSB, MSB, status) {
     print("Warning: script.pitch() is deprecated. Use script.midiPitch() instead.");
     return script.midiPitch(LSB, MSB, status);
-}
+};
 
 // DEPRECATED -- use script.absoluteLin() instead
-script.absoluteSlider = function (group, key, value, low, high, min, max) {
+script.absoluteSlider = function(group, key, value, low, high, min, max) {
     print("Warning: script.absoluteSlider() is deprecated. Use engine.setValue(group, key, script.absoluteLin(...)) instead.");
     engine.setValue(group, key, script.absoluteLin(value, low, high, min, max));
-}
+};
 
-script.midiDebug = function (channel, control, value, status, group) {
+script.midiDebug = function(channel, control, value, status, group) {
     print("Script.midiDebug - channel: 0x" + channel.toString(16) +
-          " control: 0x" + control.toString(16) + " value: 0x" + value.toString(16) +
-          " status: 0x" + status.toString(16) + " group: " + group);
-}
+        " control: 0x" + control.toString(16) + " value: 0x" + value.toString(16) +
+        " status: 0x" + status.toString(16) + " group: " + group);
+};
 
 // Returns the deck number of a "ChannelN" or "SamplerN" group
-script.deckFromGroup = function (group) {
+script.deckFromGroup = function(group) {
     var deck = 0;
-    if (group.substring(2,8)=="hannel") {
+    if (group.substring(2, 8) === "hannel") {
         // Extract deck number from the group text
-        deck = group.substring(8,group.length-1);
+        deck = group.substring(8, group.length - 1);
     }
-/*
-    else if (group.substring(2,8)=="ampler") {
-        // Extract sampler number from the group text
-        deck = group.substring(8,group.length-1);
-    }
-*/
+    /*
+        else if (group.substring(2,8)=="ampler") {
+            // Extract sampler number from the group text
+            deck = group.substring(8,group.length-1);
+        }
+    */
     return parseInt(deck);
-}
+};
 
 /* -------- ------------------------------------------------------
      script.bindConnections
@@ -104,7 +174,7 @@ script.deckFromGroup = function (group) {
             controls will be bound to.
    Output:  none
    -------- ------------------------------------------------------ */
-script.bindConnections = function (group, controlsToFunctions, remove) {
+script.bindConnections = function(group, controlsToFunctions, remove) {
     var control;
     remove = (remove === undefined) ? false : remove;
 
@@ -114,7 +184,7 @@ script.bindConnections = function (group, controlsToFunctions, remove) {
             engine.trigger(group, control);
         }
     }
-}
+};
 
 /* -------- ------------------------------------------------------
      script.toggleControl
@@ -122,9 +192,9 @@ script.bindConnections = function (group, controlsToFunctions, remove) {
    Input:   Group and control names
    Output:  none
    -------- ------------------------------------------------------ */
-script.toggleControl = function (group, control) {
+script.toggleControl = function(group, control) {
     engine.setValue(group, control, !(engine.getValue(group, control)));
-}
+};
 
 /* -------- ------------------------------------------------------
      script.toggleControl
@@ -135,15 +205,15 @@ script.toggleControl = function (group, control) {
    Input:   Group and control names, delay in milliseconds (optional)
    Output:  none
    -------- ------------------------------------------------------ */
-script.triggerControl = function (group, control, delay) {
-    if (typeof delay !== 'number') {
+script.triggerControl = function(group, control, delay) {
+    if (typeof delay !== "number") {
         delay = 200;
     }
     engine.setValue(group, control, 1);
-    engine.beginTimer(delay, function () {
+    engine.beginTimer(delay, function() {
         engine.setValue(group, control, 0);
     }, true);
-}
+};
 
 /* -------- ------------------------------------------------------
      script.absoluteLin
@@ -154,22 +224,22 @@ script.triggerControl = function (group, control, delay) {
             (Default knob values are standard MIDI 0..127)
    Output:  MixxxControl value corresponding to the knob position
    -------- ------------------------------------------------------ */
-script.absoluteLin = function (value, low, high, min, max) {
+script.absoluteLin = function(value, low, high, min, max) {
     if (!min) {
         min = 0;
     }
     if (!max) {
         max = 127;
     }
-    
+
     if (value <= min) {
         return low;
     } else if (value >= max) {
         return high;
     } else {
-        return ((((high - low) / (max-min)) * (value-min)) + low);
+        return ((((high - low) / (max - min)) * (value - min)) + low);
     }
-}
+};
 
 /* -------- ------------------------------------------------------
      script.absoluteLinInverse
@@ -180,14 +250,14 @@ script.absoluteLin = function (value, low, high, min, max) {
             (Default knob values are standard MIDI 0..127)
    Output:  Linear value corresponding to the knob position
    -------- ------------------------------------------------------ */
-script.absoluteLinInverse = function (value, low, high, min, max) {
+script.absoluteLinInverse = function(value, low, high, min, max) {
     if (!min) {
         min = 0;
     }
     if (!max) {
         max = 127;
     }
-    var result = (((value-low)*(max-min))/(high-low)) + min
+    var result = (((value - low) * (max - min)) / (high - low)) + min;
     if (result < min) {
         return min;
     } else if (result > max) {
@@ -195,7 +265,7 @@ script.absoluteLinInverse = function (value, low, high, min, max) {
     } else {
         return result;
     }
-}
+};
 
 
 /* -------- ------------------------------------------------------
@@ -207,22 +277,22 @@ script.absoluteLinInverse = function (value, low, high, min, max) {
             (Default knob values are standard MIDI 0..127)
    Output:  MixxxControl value corresponding to the knob position
    -------- ------------------------------------------------------ */
-script.absoluteNonLin = function (value, low, mid, high, min, max) {
+script.absoluteNonLin = function(value, low, mid, high, min, max) {
     if (!min) {
         min = 0;
     }
     if (!max) {
         max = 127;
     }
-    var center = (max-min)/2;
-    if (value==center || value==Math.round(center)) {
+    var center = (max - min) / 2;
+    if (value === center || value === Math.round(center)) {
         return mid;
-    } else if (value<center) {
-        return low+(value/(center/(mid-low)));
+    } else if (value < center) {
+        return low + (value / (center / (mid - low)));
     } else {
-        return mid+((value-center)/(center/(high-mid)));
+        return mid + ((value - center) / (center / (high - mid)));
     }
-}
+};
 
 /* -------- ------------------------------------------------------
      script.absoluteNonLinInverse
@@ -232,24 +302,24 @@ script.absoluteNonLin = function (value, low, mid, high, min, max) {
  bottom of output range, top of output range. (Default output range is standard MIDI 0..127)
  Output: MixxxControl value scaled to output range
  -------- ------------------------------------------------------ */
-script.absoluteNonLinInverse = function (value, low, mid, high, min, max) {
+script.absoluteNonLinInverse = function(value, low, mid, high, min, max) {
     if (!min) {
         min = 0;
     }
     if (!max) {
         max = 127;
     }
-    var center = (max-min)/2;
+    var center = (max - min) / 2;
     var result;
-    
-    if (value==mid) {
+
+    if (value === mid) {
         return center;
-    } else if (value<mid) {
-        result = (center/(mid-low)) * (value-low);
+    } else if (value < mid) {
+        result = (center / (mid - low)) * (value - low);
     } else {
-        result = center + (center/(high-mid)) * (value-mid);
+        result = center + (center / (high - mid)) * (value - mid);
     }
-    
+
     if (result < min) {
         return min;
     } else if (result > max) {
@@ -257,7 +327,7 @@ script.absoluteNonLinInverse = function (value, low, mid, high, min, max) {
     } else {
         return result;
     }
-}
+};
 
 /* -------- ------------------------------------------------------
      script.crossfaderCurve
@@ -265,15 +335,17 @@ script.absoluteNonLinInverse = function (value, low, mid, high, min, max) {
    Input:   Current value of the hardware control, min and max values for that control
    Output:  none
    -------- ------------------------------------------------------ */
-script.crossfaderCurve = function (value, min, max) {
-    if (engine.getValue("[Mixer Profile]", "xFaderMode")==1) {
+script.crossfaderCurve = function(value, min, max) {
+    if (engine.getValue("[Mixer Profile]", "xFaderMode") === 1) {
         // Constant Power
-        engine.setValue("[Mixer Profile]", "xFaderCalibration", script.absoluteLin(value, 0.5, 0.962, min, max));
+        engine.setValue("[Mixer Profile]", "xFaderCalibration",
+            script.absoluteLin(value, 0.5, 0.962, min, max));
     } else {
         // Additive
-        engine.setValue("[Mixer Profile]", "xFaderCurve", script.absoluteLin(value, 1, 2, min, max));
+        engine.setValue("[Mixer Profile]", "xFaderCurve",
+            script.absoluteLin(value, 1, 2, min, max));
     }
-}
+};
 
 /* -------- ------------------------------------------------------
      script.loopMove
@@ -284,15 +356,15 @@ script.crossfaderCurve = function (value, min, max) {
    Input:   MixxxControl group, direction to move, number of beats to move
    Output:  none
    -------- ------------------------------------------------------ */
-script.loopMove = function (group,direction,numberOfBeats) {
-    if (!numberOfBeats || numberOfBeats==0) numberOfBeats = 0.5;
+script.loopMove = function(group, direction, numberOfBeats) {
+    if (!numberOfBeats || numberOfBeats === 0) numberOfBeats = 0.5;
 
     if (direction < 0) {
         engine.setValue(group, "loop_move", -numberOfBeats);
     } else {
         engine.setValue(group, "loop_move", numberOfBeats);
     }
-}
+};
 
 /* -------- ------------------------------------------------------
      script.midiPitch
@@ -304,17 +376,17 @@ script.loopMove = function (group,direction,numberOfBeats) {
             message was not a Pitch message (0xE#)
    -------- ------------------------------------------------------ */
 // TODO: Is this still useful now that MidiController.cpp properly handles these?
-script.midiPitch = function (LSB, MSB, status) {
+script.midiPitch = function(LSB, MSB, status) {
     if ((status & 0xF0) !== 0xE0) {  // Mask the upper nybble so we can check the opcode regardless of the channel
-        print("Script.midiPitch: Error, not a MIDI pitch (0xEn) message: "+status);
+        print("Script.midiPitch: Error, not a MIDI pitch (0xEn) message: " + status);
         return false;
     }
     var value = (MSB << 7) | LSB;  // Construct the 14-bit number
     // Range is 0x0000..0x3FFF center @ 0x2000, i.e. 0..16383 center @ 8192
-    var rate = (value-8192)/8191;
-//     print("Script.Pitch: MSB="+MSB+", LSB="+LSB+", value="+value+", rate="+rate);
+    var rate = (value - 8192) / 8191;
+    //     print("Script.Pitch: MSB="+MSB+", LSB="+LSB+", value="+value+", rate="+rate);
     return rate;
-}
+};
 
 /* -------- ------------------------------------------------------
      script.spinback
@@ -326,17 +398,18 @@ script.midiPitch = function (LSB, MSB, status) {
    -------- ------------------------------------------------------ */
 script.spinback = function(channel, control, value, status, group, factor, rate) {
     // if brake is called without defined factor and rate, reset to defaults
-    if (factor === undefined && rate === undefined) {
+    if (factor === undefined) {
         factor = 1;
-        rate = -10;
     }
     // if brake is called without defined rate, reset to default
     if (rate === undefined) {
         rate = -10;
     }
     // disable on note-off or zero value note/cc
-    engine.spinback(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), factor, rate);
-}
+    engine.spinback(
+        parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
+        factor, rate);
+};
 
 /* -------- ------------------------------------------------------
      script.brake
@@ -352,8 +425,10 @@ script.brake = function(channel, control, value, status, group, factor) {
         factor = 1;
     }
     // disable on note-off or zero value note/cc, use default decay rate '1'
-    engine.brake(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), factor);
-}
+    engine.brake(
+        parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
+        factor);
+};
 
 /* -------- ------------------------------------------------------
      script.softStart
@@ -370,13 +445,17 @@ script.softStart = function(channel, control, value, status, group, factor) {
         factor = 1;
     }
     // disable on note-off or zero value note/cc, use default increase rate '1'
-    engine.softStart(parseInt(group.substring(8,9)), ((status & 0xF0) !== 0x80 && value > 0), factor);
-}
+    engine.softStart(
+        parseInt(group.substring(8, 9)), ((status & 0xF0) !== 0x80 && value > 0),
+        factor);
+};
 
 // bpm - Used for tapping the desired BPM for a deck
-function bpm() {}
+var bpm = function() {
+};
 
 bpm.tapTime = 0.0;
+bpm.previousTapDelta = 0.0;
 bpm.tap = [];   // Tap sample values
 
 /* -------- ------------------------------------------------------
@@ -389,135 +468,154 @@ bpm.tap = [];   // Tap sample values
    Output:  -
    -------- ------------------------------------------------------ */
 bpm.tapButton = function(deck) {
-    var now = new Date()/1000;   // Current time in seconds
+    var now = new Date() / 1000; // Current time in seconds
     var tapDelta = now - bpm.tapTime;
-    bpm.tapTime=now;
-    if (tapDelta>2.0) { // reset if longer than two seconds between taps
-        bpm.tap=[];
+    bpm.tapTime = now;
+
+    // assign tapDelta in cases where the button has not been pressed previously
+    if (bpm.tap.length < 1) {
+        bpm.previousTapDelta = tapDelta;
+    }
+    // reset if longer than two seconds between taps
+    if (tapDelta > 2.0) {
+        bpm.tap = [];
         return;
     }
-    bpm.tap.push(60/tapDelta);
-    if (bpm.tap.length>8) bpm.tap.shift();  // Keep the last 8 samples for averaging
+    // reject occurrences of accidental double or missed taps
+    // a tap is considered missed when the delta of this press is 80% longer than the previous one
+    // and a tap is considered double when the delta is shorter than 40% of the previous one.
+    // these numbers are just guesses that produced good results in practice
+    if ((tapDelta > bpm.previousTapDelta * 1.8)||(tapDelta < bpm.previousTapDelta * 0.6)) {
+        return;
+    }
+    bpm.previousTapDelta = tapDelta;
+    bpm.tap.push(60 / tapDelta);
+    // Keep the last 8 samples for averaging
+    if (bpm.tap.length > 8) bpm.tap.shift();
     var sum = 0;
-    for (i=0; i<bpm.tap.length; i++) {
+    for (var i=0; i<bpm.tap.length; i++) {
         sum += bpm.tap[i];
     }
-    var average = sum/bpm.tap.length;
+    var average = sum / bpm.tap.length;
 
-    var fRateScale = average/engine.getValue("[Channel"+deck+"]","bpm");
+    var group = "[Channel" + deck + "]";
+
+    // "bpm" was changed in 1.10 to reflect the *adjusted* bpm, but I presume it
+    // was supposed to return the tracks bpm (which it did before the change).
+    // "file_bpm" is supposed to return the set BPM of the loaded track of the
+    // channel.
+    var fRateScale = average/engine.getValue(group, "file_bpm");
 
     // Adjust the rate:
-    fRateScale = (fRateScale-1.)/engine.getValue("[Channel"+deck+"]","rateRange");
+    fRateScale = (fRateScale - 1.) / engine.getValue(group, "rateRange");
 
-    engine.setValue("[Channel"+deck+"]","rate",fRateScale * engine.getValue("[Channel"+deck+"]","rate_dir"));
-//     print("Script: BPM="+average+" setting to "+fRateScale);
-}
+    engine.setValue(
+        group, "rate",
+        fRateScale * engine.getValue(group, "rate_dir"));
+};
 
 // ----------------- Common regular expressions --------------------------
-script.samplerRegEx = /^\[Sampler(\d+)\]$/ ;
-script.channelRegEx = /^\[Channel(\d+)\]$/ ;
-script.eqRegEx = /^\[EqualizerRack1_(\[.*\])_Effect1\]$/ ;
-script.quickEffectRegEx = /^\[QuickEffectRack1_(\[.*\])\]$/ ;
-script.effectUnitRegEx = /^\[EffectRack1_EffectUnit(\d+)\]$/ ;
-script.individualEffectRegEx = /^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/ ;
+script.samplerRegEx = /^\[Sampler(\d+)\]$/;
+script.channelRegEx = /^\[Channel(\d+)\]$/;
+script.eqRegEx = /^\[EqualizerRack1_(\[.*\])_Effect1\]$/;
+script.quickEffectRegEx = /^\[QuickEffectRack1_(\[.*\])\]$/;
+script.effectUnitRegEx = /^\[EffectRack1_EffectUnit(\d+)\]$/;
+script.individualEffectRegEx = /^\[EffectRack1_EffectUnit(\d+)_Effect(\d+)\]$/;
 
 // ----------------- Object definitions --------------------------
 
 
-ButtonState = {"released":0x00, "pressed":0x7F};
-LedState =  {"off": 0x00, "on": 0x7F};
+var ButtonState = {"released": 0x00, "pressed": 0x7F};
+// eslint-disable-next-line no-unused-vars
+var LedState = {"off": 0x00, "on": 0x7F};
 
-//Controller
-function Controller () {
-   this.group = "[Master]";
-   this.Controls = [];
-   this.Buttons = [];
+// Controller
+var Controller = function() {
+    this.group = "[Master]";
+    this.Controls = [];
+    this.Buttons = [];
 };
 
 Controller.prototype.addButton = function(buttonName, button, eventHandler) {
-   if(eventHandler) {
-      var executionEnvironment = this;
-      function handler(value) {
-         button.state = value;
-         executionEnvironment[eventHandler](value);
-      }
-      button.handler = handler;
-   }
-   this.Buttons[buttonName] = button;
-}
-
-Controller.prototype.setControlValue = function(control, value) {
-   this.Controls[control].setValue(this.group, value);
-}
-
-//Button
-function Button(controlId) {
-   this.controlId = controlId;
-   this.state = ButtonState.released;
-}
-Button.prototype.handleEvent = function(value) {
-   this.handler(value);
+    if (eventHandler) {
+        var executionEnvironment = this;
+        var handler = function(value) {
+            button.state = value;
+            executionEnvironment[eventHandler](value);
+        };
+        button.handler = handler;
+    }
+    this.Buttons[buttonName] = button;
 };
 
-//Control
-function Control(mappedFunction, softMode) {
-   // These defaults are for MIDI controllers
-   this.minInput = 0;
-   this.midInput = 0x3F;
-   this.maxInput = 0x7F;
-   // ----
+Controller.prototype.setControlValue = function(control, value) {
+    this.Controls[control].setValue(this.group, value);
+};
 
-   this.minOutput = -1.0;
-   this.midOutput = 0.0;
-   this.maxOutput = 1.0;
-   this.mappedFunction = mappedFunction;
-   this.softMode = softMode;
-   this.maxJump = 10;
-}
+// Button
+var Button = function(controlId) {
+    this.controlId = controlId;
+    this.state = ButtonState.released;
+};
+Button.prototype.handleEvent = function(value) {
+    this.handler(value);
+};
 
-Control.prototype.setValue = function(group, inputValue){
-   var outputValue = 0;
-   if(inputValue <= this.midInput){
-      outputValue = this.minOutput + ((inputValue - this.minInput) / (this.midInput - this.minInput)) * (this.midOutput - this.minOutput);
-   } else {
-      outputValue = this.midOutput + ((inputValue - this.midInput) / (this.maxInput - this.midInput)) * (this.maxOutput - this.midOutput);
-   }
-   if(this.softMode){
-      var currentValue = engine.getValue(group, this.mappedFunction);
-      var currentRelative = 0.0;
-      if(currentValue <= this.midOutput){
-         currentRelative = this.minInput + ((currentValue - this.minOutput) / (this.midOutput - this.minOutput)) * (this.midInput - this.minInput);
-      } else {
-         currentRelative = this.midInput + ((currentValue - this.midOutput) / (this.maxOutput - this.midOutput)) * (this.maxInput - this.midInput);
-      }
-      if(inputValue > currentRelative - this.maxJump && inputValue < currentRelative + this.maxJump) {
-         engine.setValue(group, this.mappedFunction, outputValue);
-      }
-   } else {
-      engine.setValue(group, this.mappedFunction, outputValue);
-   }
-}
+// Control
+var Control = function(mappedFunction, softMode) {
+    // These defaults are for MIDI controllers
+    this.minInput = 0;
+    this.midInput = 0x3F;
+    this.maxInput = 0x7F;
+    // ----
 
-//Deck
-Deck = function (deckNumber, group) {
-   this.deckNumber = deckNumber;
-   this.group = group;
-   this.Buttons = [];
-}
+    this.minOutput = -1.0;
+    this.midOutput = 0.0;
+    this.maxOutput = 1.0;
+    this.mappedFunction = mappedFunction;
+    this.softMode = softMode;
+    this.maxJump = 10;
+};
+
+Control.prototype.setValue = function(group, inputValue) {
+    var outputValue = 0;
+    if (inputValue <= this.midInput) {
+        outputValue = this.minOutput
+            + ((inputValue - this.minInput) / (this.midInput - this.minInput))
+            * (this.midOutput - this.minOutput);
+    } else {
+        outputValue = this.midOutput
+            + ((inputValue - this.midInput) / (this.maxInput - this.midInput))
+            * (this.maxOutput - this.midOutput);
+    }
+    if (this.softMode) {
+        var currentValue = engine.getValue(group, this.mappedFunction);
+        var currentRelative = 0.0;
+        if (currentValue <= this.midOutput) {
+            currentRelative = this.minInput
+                + ((currentValue - this.minOutput) / (this.midOutput - this.minOutput))
+                * (this.midInput - this.minInput);
+        } else {
+            currentRelative = this.midInput
+                + ((currentValue - this.midOutput) / (this.maxOutput - this.midOutput))
+                * (this.maxInput - this.midInput);
+        }
+        if (inputValue > currentRelative - this.maxJump
+                && inputValue < currentRelative + this.maxJump) {
+            engine.setValue(group, this.mappedFunction, outputValue);
+        }
+    } else {
+        engine.setValue(group, this.mappedFunction, outputValue);
+    }
+};
+
+// Deck
+var Deck = function(deckNumber, group) {
+    this.deckNumber = deckNumber;
+    this.group = group;
+    this.Buttons = [];
+};
 Deck.prototype.setControlValue = Controller.prototype.setControlValue;
 Deck.prototype.addButton = Controller.prototype.addButton;
-
-// Data packet
-function Packet(length, initialValue) {
-    this.length = length;
-    this.data = new Array(length);  // Size the array
-
-    if (!initialValue) initialValue=0;
-
-    // Initialize data values
-    for (i=0; i<this.length; i++) {
-        this.data[i]=initialValue;
-    }
-}
 
 // ----------------- END Object definitions ----------------------

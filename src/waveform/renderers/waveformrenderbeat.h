@@ -1,5 +1,4 @@
-#ifndef WAVEFORMRENDERBEAT_H
-#define WAVEFORMRENDERBEAT_H
+#pragma once
 
 #include <QColor>
 
@@ -21,5 +20,3 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };
-
-#endif //WAVEFORMRENDERBEAT_H

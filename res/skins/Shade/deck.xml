@@ -1,648 +1,659 @@
 <Template>
-	<WidgetGroup>
-        <ObjectName>Deck</ObjectName>
-		<Size>0e,165f</Size>
-        <Layout>horizontal</Layout>
-		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-		<Children>
-			<WidgetGroup>
-		        <ObjectName>DeckLeftBorder</ObjectName>
-				<Size>5f,165f</Size>
-				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-			</WidgetGroup>	
-			<WidgetGroup>
-				<ObjectName>DeckLeft</ObjectName>
-				<Size>0e,165f</Size>
-				<Layout>vertical</Layout>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-				<Children>
-					<WidgetGroup>
-				        <ObjectName>DeckTopLeftMidPart</ObjectName>
-						<Size>0e,45f</Size>
-						<Layout>horizontal</Layout>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-						<Children>
-							<WidgetGroup>
-								<ObjectName>DeckTopLeftPart</ObjectName>
-								<Size>40f,45f</Size>
-								<BackPath>style/style_bg_deck_top_left.png</BackPath>
-								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-								<Children>
-									<CoverArt>
-										<Pos>2,7</Pos>
-										<TooltipId>coverart</TooltipId>
-										<ObjectName>DeckCoverArt</ObjectName>
-										<Size>35f,35f</Size>
-										<Group>[Channel<Variable name="channum"/>]</Group>
-									</CoverArt>
-								</Children>
-							</WidgetGroup>
-							<WidgetGroup>
-								<ObjectName>DeckTopMidPart</ObjectName>
-								<Size>i,45f</Size>
-								<Layout>vertical</Layout>
-								<BackPath>style/style_bg_deck_top_mid.png</BackPath>
-								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-								<Children>
-									<TrackProperty>
-										<TooltipId>track_title</TooltipId>
-										<Style>QLabel { 
-											font: bold 13px sans-serif;
-											font-family: "Open Sans";
-											background-color: transparent; 
-											color: #191F24; 
-											text-align: left; 
-											padding-left: 1px; 
-				                            padding-top: 4px;
-										}
-										</Style>
-										<Property>title</Property>
-										<Channel><Variable name="channum"/></Channel>
-										<Size>0e,20f</Size>
-										<Elide>right</Elide>
-									</TrackProperty>
+  <SetVariable name="group">[Channel<Variable name="channum"/>]</SetVariable>
+  <WidgetGroup>
+    <Size>0e,0min</Size>
+    <Layout>horizontal</Layout>
+    <Children>
+      <WidgetGroup>
+        <ObjectName>DeckLeftBorder</ObjectName>
+        <Size>5f,-1min</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>DeckLeft</ObjectName>
+        <Size>0e,100min</Size>
+        <Layout>vertical</Layout>
+        <Children>
+          <WidgetGroup><!-- Cover/Artist/title/time / waveform/spinny / overview/controls -->
+            <ObjectName>DeckLeft</ObjectName>
+            <Size>0e,165f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup><!-- Cover/Artist/title/time / waveform/spinny / overview/controls -->
+                <ObjectName>DeckLeft</ObjectName>
+                <Size>0e,165f</Size>
+                <Layout>vertical</Layout>
+                <Children>
+                  <WidgetGroup><!-- Cover art / Artist/title / Playposition -->
+                    <ObjectName>DeckTopLeftMidPart</ObjectName>
+                    <Size>0e,45f</Size>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>DeckTopLeftPart</ObjectName>
+                        <Size>40f,45f</Size>
+                        <BackPath>style/style_bg_deck_top_left.png</BackPath>
+                        <Children>
+                          <TrackWidgetGroup>
+                            <Pos>2,7</Pos>
+                            <Size>35f,35f</Size>
+                            <Group><Variable name="group"/></Group>
+                            <TrackColorAlpha>200</TrackColorAlpha>
+                            <Children>
+                              <CoverArt>
+                                <Pos>0,0</Pos>
+                                <TooltipId>coverart</TooltipId>
+                                <ObjectName>DeckCoverArt</ObjectName>
+                                <Size>35f,35f</Size>
+                                <Group><Variable name="group"/></Group>
+                              </CoverArt>
+                            </Children>
+                          </TrackWidgetGroup>
+                        </Children>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                        <ObjectName>DeckTopMidPart</ObjectName>
+                        <Size>i,45f</Size>
+                        <Layout>vertical</Layout>
+                        <BackPath>style/style_bg_deck_top_mid.png</BackPath>
+                        <Children>
+                          <WidgetGroup>
+                            <ObjectName>ArtistAndTimeRow</ObjectName>
+                            <Size>0e,23f</Size>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <TrackProperty>
+                                <TooltipId>track_title</TooltipId>
+                                <Style>QLabel {
+                                  font-size: 13px;
+                                  line-height: 13px;
+                                  font-weight: bold;
+                                  color: #191F24;
+                                  text-align: left;
+                                  padding-left: 1px;
+                                  padding-top: 4px;
+                                }
+                                </Style>
+                                <Property>titleInfo</Property>
+                                <Channel><Variable name="channum"/></Channel>
+                                <Size>0e,23f</Size>
+                                <Elide>right</Elide>
+                              </TrackProperty>
+                              <PushButton>
+                                <TooltipId>eject</TooltipId>
+                                <NumberStates>1</NumberStates>
+                                <State>
+                                  <Number>0</Number>
+                                  <Pressed>skin:/btn/btn_eject_over.png</Pressed>
+                                  <Unpressed>skin:/btn/btn_eject.png</Unpressed>
+                                </State>
+                                <Connection>
+                                  <ConfigKey><Variable name="group"/>,eject</ConfigKey>
+                                  <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                                  <ButtonState>LeftButton</ButtonState>
+                                  <ConnectValueToWidget>false</ConnectValueToWidget>
+                                </Connection>
+                              </PushButton>
+                            </Children>
+                          </WidgetGroup>
 
-									<WidgetGroup>
-										<ObjectName>ArtistAndTimeRow</ObjectName>
-										<Size>0e,20f</Size>
-										<Layout>horizontal</Layout>
-										<Children>
-											<TrackProperty>
-												<TooltipId>track_artist</TooltipId>
-												<Style>QLabel { 
-				                                    font: bold 13px sans-serif;
-													font-family: "Open Sans";
-													background-color: transparent;
-													color: #191F24;
-													text-align: left;
-													padding-left: 1px; 
-				                                    padding-top: 4px;
-				                                }
-												</Style>
-												<Property>artist</Property>
-												<Channel><Variable name="channum"/></Channel>
-												<SizePolicy>me,max</SizePolicy>
-												<Elide>right</Elide>
-											</TrackProperty>
-											<NumberPos>
-												<TooltipId>track_time</TooltipId>
-												<Style>QLabel { 
-													font: bold 13px sans-serif;
-													font-family: Open Sans;
-													background-color: transparent;
-													color: #191F24;
-													text-align: right;
-													padding-left: 1px;
-													padding-top: 4px; 
-													}
-												</Style>
-												<Group>[Channel<Variable name="channum"/>]</Group>
-												<Alignment>right</Alignment>
-											</NumberPos>
-										</Children>
-									</WidgetGroup>
-								</Children>
-							</WidgetGroup>
-						</Children>
-				    </WidgetGroup>
-					<WidgetGroup>
-				        <ObjectName>DeckUpperLeftMidPart</ObjectName>
-						<Size>0e,81f</Size>
-						<Layout>horizontal</Layout>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-						<Children>
-							<WidgetGroup>
-								<ObjectName>DeckUpperMidPart</ObjectName>
-								<Size>0e,81f</Size>
-								<BackPath>style/style_bg_deck_pane.png</BackPath>
-								<Layout>horizontal</Layout>
-								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-								<Children>
-									<!-- Collapsing Waveform, VinylControl & spinning Vinyl widget-->
-									<WidgetGroup>
-										<ObjectName>DeckWaveformVinylControlSpinny</ObjectName>
-										<Size>0e,81f</Size>
-										<Layout>horizontal</Layout>
-										<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
-										<Children>
-											<!--If you want the waveforms center to adjust when resizing in a collapsing widget
-											(e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
-											and don't specify the Waveform's <Size>. So you would have:
-											Parent WidgetGroup
-												Waveform Widget (no Widgetgroup)
-												Child WidgetGroup for Spinny
-													Spinny Widget
-											-->
-	
-											<!--
-											**********************************************
-											Visual- Waveform
-											**********************************************
-											-->
-											<Visual>
-												<TooltipId>waveform_display</TooltipId>
-												<Style></Style>
-												<Channel><Variable name="channum"/></Channel>
-												<Size>0e,81f</Size>
-												<!--See comment about <Size> above-->
-												<!--<Size>415,119</Size>-->
-												<BgColor>#8D98A3</BgColor>
-												<!--<BgPixmap>style/style_bg_waveform.png</BgPixmap>-->
-												<SignalHighColor></SignalHighColor>
-												<SignalMidColor></SignalMidColor>
-												<SignalLowColor></SignalLowColor>
-												<SignalColor>#191F24</SignalColor>
-												<BeatColor>#FFFFFF</BeatColor>
-												<PlayPosColor>#00FF00</PlayPosColor>
-												<EndOfTrackColor>#EA0000</EndOfTrackColor>
-												<AxesColor>#00FF00</AxesColor>
-												<Align></Align>
-												<DefaultMark>
-													<Align>top</Align>
-													<Color>#FD0564</Color>
-													<TextColor>#FFFFFF</TextColor>
-													<Text> %1 </Text>
-												</DefaultMark>
-												<MarkRange>
-													<StartControl>loop_start_position</StartControl>
-													<EndControl>loop_end_position</EndControl>
-													<EnabledControl>loop_enabled</EnabledControl>
-													<Color>#00FF00</Color>
-													<DisabledColor>#BCDBFB</DisabledColor>
-												</MarkRange>
-												<Mark>
-													<Control>loop_start_position</Control>
-													<Text>IN</Text>
-													<Align>bottom</Align>
-													<Color>#00FF00</Color>
-													<TextColor>#FFFFFF</TextColor>
-												</Mark>
-												<Mark>
-													<Control>loop_end_position</Control>
-													<Text>OUT</Text>
-													<Align>bottom</Align>
-													<Color>#00FF00</Color>
-													<TextColor>#FFFFFF</TextColor>
-												</Mark>
-												<!--
-												The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
-													- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
-													- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
-												-->
-												<Mark>
-													<Control>cue_point</Control>
-													<Text>CUE</Text>
-													<Align>top</Align>
-													<Color>#FF001C</Color>
-													<TextColor>#FFFFFF</TextColor>
-												</Mark>
-											</Visual>
+                          <TrackWidgetGroup>
+                            <Size>0e,1f</Size>
+                            <Group><Variable name="group"/></Group>
+                            <TrackColorAlpha>255</TrackColorAlpha>
+                          </TrackWidgetGroup>
 
-											<!-- Spinning Vinyl & VinylControl -->
-											<WidgetGroup>
-												<Layout>horizontal</Layout>
-												<Children>
-													<!-- Spinning Vinyl sub-widget -->
-													<WidgetGroup>
-														<Size>81f,81f</Size>
-														<Children>
-															<!--
-															**********************************************
-															Visual- Spinning vinyl
-															**********************************************
-															-->
-															<Spinny>
-																<TooltipId>spinny</TooltipId>
-																<Channel><Variable name="channum"/></Channel>
-																<PathBackground>vinyl_spinny1_background.png</PathBackground>
-																<PathForeground>vinyl_spinny1_foreground.png</PathForeground>
-																<PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
-															</Spinny>
-														</Children>
-														<Connection>
-															<ConfigKey>[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
-															<BindProperty>visible</BindProperty>
-														</Connection>
-													</WidgetGroup>
-							 						<Template src="skin:vinylcontrol.xml">
-														<SetVariable name="channum"><Variable name="channum"/></SetVariable>
-													</Template>
-												</Children>
-											</WidgetGroup>
-	
-										</Children>
-									</WidgetGroup>
-								</Children>
-							</WidgetGroup>	
-						</Children>
-					</WidgetGroup>	
-					<WidgetGroup>
-				        <ObjectName>DeckLowerLeftMidPart</ObjectName>
-						<Size>0e,39f</Size>
-						<Layout>horizontal</Layout>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-						<Children>
-							<WidgetGroup>
-								<ObjectName>DeckLowerMidPart</ObjectName>
-								<Size>0e,39f</Size>
-								<Layout>horizontal</Layout>
-								<BackPath>style/style_bg_deck_woverview.png</BackPath>
-								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-								<Children>
-									<Overview>
-										<TooltipId>waveform_overview</TooltipId>
-										<Style></Style>
-										<Channel><Variable name="channum"/></Channel>
-										<Size>0e,37f</Size>
-										<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
-										<BgColor></BgColor>
-										<BgPixmap></BgPixmap>
-										<SignalHighColor></SignalHighColor>
-										<SignalMidColor></SignalMidColor>
-										<SignalLowColor></SignalLowColor>
-										<SignalColor>#191F24</SignalColor>
-										<PlayPosColor>#00FF00</PlayPosColor>
-										<EndOfTrackColor>#EA0000</EndOfTrackColor>
-										<PlayedOverlayColor>#60000000</PlayedOverlayColor>
-										<DefaultMark>
-											<Align>bottom|right</Align>
-											<Color>#FD0564</Color>
-											<TextColor>#FFFFFF</TextColor>
-											<Text> %1 </Text>
-										</DefaultMark>
-										<MarkRange>
-											<StartControl>loop_start_position</StartControl>
-											<EndControl>loop_end_position</EndControl>
-											<EnabledControl>loop_enabled</EnabledControl>
-											<Color>#00FF00</Color>
-											<DisabledColor>#FFFFFF</DisabledColor>
-										</MarkRange>
-										<Mark>
-											<Control>cue_point</Control>
-											<Text>C</Text>
-											<Align>top|right</Align>
-											<Color>#FF001C</Color>
-											<TextColor>#FFFFFF</TextColor>
-										</Mark>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum"/>],playposition</ConfigKey>
-											<EmitOnDownPress>false</EmitOnDownPress>
-										</Connection>
-									</Overview>
-								</Children>
-							</WidgetGroup>
-							<WidgetGroup>
-								<ObjectName>DeckLowerLeftPart</ObjectName>
-								<Size>63f,39f</Size>
-								<BackPath>style/style_bg_deck_woverview_buttons.png</BackPath>
-								<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
-								<Children>
-									<PushButton>
-										<TooltipId>show_spinny</TooltipId>
-										<Style></Style>
-										<NumberStates>2</NumberStates>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_spinny1.png</Pressed>
-											<Unpressed>btn_spinny1.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_spinny1_over.png</Pressed>
-											<Unpressed>btn_spinny1_over.png</Unpressed>
-										</State>
-										<Pos>1,1</Pos>
-										<Connection>
-											<ConfigKey>[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
-											<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-											<ButtonState>LeftButton</ButtonState>
-										</Connection>
-									</PushButton>
-									<PushButton>
-										<TooltipId>repeat</TooltipId>
-										<Style></Style>
-										<NumberStates>2</NumberStates>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_repeat1.png</Pressed>
-											<Unpressed>btn_repeat1.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_repeat1_over.png</Pressed>
-											<Unpressed>btn_repeat1_over.png</Unpressed>
-										</State>
-										<Pos>22,1</Pos>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum"/>],repeat</ConfigKey>
-										</Connection>
-									</PushButton>
-									<PushButton>
-										<TooltipId>eject</TooltipId>
-										<Style></Style>
-										<NumberStates>1</NumberStates>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_eject1_over.png</Pressed>
-											<Unpressed>btn_eject1.png</Unpressed>
-										</State>
-										<Pos>43,1</Pos>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum"/>],eject</ConfigKey>
-											<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-											<ButtonState>LeftButton</ButtonState>
-											<ConnectValueToWidget>false</ConnectValueToWidget>
-										</Connection>
-									</PushButton>
-									<PushButton>
-										<TooltipId>beats_translate_curpos</TooltipId>
-										<Style></Style>
-										<NumberStates>1</NumberStates>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_beatgrid1_over.png</Pressed>
-											<Unpressed>btn_beatgrid1.png</Unpressed>
-										</State>
-										<Pos>1,20</Pos>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum"/>],beats_translate_curpos</ConfigKey>
-											<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-											<ButtonState>LeftButton</ButtonState>
-										</Connection>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum"/>],beats_translate_match_alignment</ConfigKey>
-											<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-											<ButtonState>RightButton</ButtonState>
-										</Connection>
-									</PushButton>
+                          <WidgetGroup>
+                            <ObjectName>ArtistAndTimeRow</ObjectName>
+                            <Size>0e,19f</Size>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <TrackProperty>
+                                <TooltipId>track_artist</TooltipId>
+                                <Style>QLabel {
+                                  font-size: 13px;
+                                  line-height: 13px;
+                                  font-weight: bold;
+                                  background-color: transparent;
+                                  color: #191F24;
+                                  text-align: left;
+                                  padding-left: 1px;
+                                }
+                                </Style>
+                                <Property>artist</Property>
+                                <Channel><Variable name="channum"/></Channel>
+                                <SizePolicy>me,max</SizePolicy>
+                                <Elide>right</Elide>
+                              </TrackProperty>
+                              <NumberPos>
+                                <TooltipId>track_time</TooltipId>
+                                <Style>QLabel {
+                                  font-size: 13px;
+                                  font-weight: bold;
+                                  background-color: transparent;
+                                  color: #191F24;
+                                  text-align: right;
+                                  padding-left: 1px;
+                                }
+                                </Style>
+                                <Group><Variable name="group"/></Group>
+                                <Alignment>right</Alignment>
+                              </NumberPos>
+                            </Children>
+                          </WidgetGroup>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup><!-- Cover art / Artist/title / Playposition -->
+                  <WidgetGroup><!-- Scrolling waveform / Spinny / Vinyl controls -->
+                    <ObjectName>DeckUpperLeftMidPart</ObjectName>
+                    <Size>0e,81f</Size>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>DeckUpperMidPart</ObjectName>
+                        <Size>0e,81f</Size>
+                        <BackPath>style/style_bg_deck_pane.png</BackPath>
+                        <Layout>horizontal</Layout>
+                        <Children>
+                          <!-- Collapsing Waveform, VinylControl & spinning Vinyl widget-->
+                          <WidgetGroup>
+                            <ObjectName>DeckWaveformVinylControlSpinny</ObjectName>
+                            <Size>0e,81f</Size>
+                            <Layout>horizontal</Layout>
+                            <Children>
+                              <!--If you want the waveforms center to adjust when resizing in a collapsing widget
+                              (e.g. to display spinning vinyl widget like in this skin) don't put the Waveform in a widget group,
+                              and don't specify the Waveform's <Size>. So you would have:
+                              Parent WidgetGroup
+                                Waveform Widget (no Widgetgroup)
+                                Child WidgetGroup for Spinny
+                                  Spinny Widget
+                              -->
 
-									<PushButton>
-										<TooltipId>quantize</TooltipId>
-										<Style></Style>
-										<NumberStates>2</NumberStates>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_quantize1.png</Pressed>
-											<Unpressed>btn_quantize1.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_quantize1_over.png</Pressed>
-											<Unpressed>btn_quantize1_over.png</Unpressed>
-										</State>
-										<Pos>22,20</Pos>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum"/>],quantize</ConfigKey>
-											<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-											<ButtonState>LeftButton</ButtonState>
-										</Connection>
-									</PushButton>
-									<PushButton>
-										<TooltipId>keylock</TooltipId>
-										<Style></Style>
-										<NumberStates>2</NumberStates>
-										<State>
-											<Number>0</Number>
-											<Pressed>btn_keylock1.png</Pressed>
-											<Unpressed>btn_keylock1.png</Unpressed>
-										</State>
-										<State>
-											<Number>1</Number>
-											<Pressed>btn_keylock1_over.png</Pressed>
-											<Unpressed>btn_keylock1_over.png</Unpressed>
-										</State>
-										<Pos>43,20</Pos>
-										<Connection>
-											<ConfigKey>[Channel<Variable name="channum"/>],keylock</ConfigKey>
-										</Connection>
-									</PushButton>
-	
-								</Children>
-							</WidgetGroup>	
-						</Children>
-					</WidgetGroup>	
-				</Children>
-			</WidgetGroup>
-			<WidgetGroup>
-		        <ObjectName>DeckRightPart</ObjectName>
-				<Size>52f,165f</Size>
-				<BackPath>style/style_bg_deck_right.png</BackPath>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-				<Children>
-					<PushButton>
-						<TooltipId>sync_enabled</TooltipId>
-						<Style></Style>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_kill_down.png</Pressed>
-							<Unpressed>btn_kill.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_kill_overdown.png</Pressed>
-							<Unpressed>btn_kill_over.png</Unpressed>
-						</State>
-						<Pos>6,21</Pos>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],sync_enabled</ConfigKey>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],beatsync_tempo</ConfigKey>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
-					</PushButton>
+                              <!--
+                              **********************************************
+                              Visual- Waveform
+                              **********************************************
+                              -->
+                              <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <Size>0e,81f</Size>
+                                <Children>
+                                  <Template src="skin:waveform.xml"/>
+                                </Children>
+                              </WidgetGroup>
 
-					<PushButton>
-						<TooltipId>sync_reset_key</TooltipId>
-						<Style></Style>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_kill_down.png</Pressed>
-							<Unpressed>btn_kill.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_kill_overdown.png</Pressed>
-							<Unpressed>btn_kill_over.png</Unpressed>
-						</State>
-						<Pos>32,21</Pos>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],sync_key</ConfigKey>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],reset_key</ConfigKey>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
-					</PushButton>
+                              <!-- Spinning Vinyl & VinylControl -->
+                              <WidgetGroup>
+                                <Layout>horizontal</Layout>
+                                <Children>
+                                  <!-- Spinning Vinyl sub-widget -->
+                                  <WidgetGroup>
+                                    <Size>81f,81f</Size>
+                                    <Layout>horizontal</Layout>
+                                    <Children>
+                                      <!--
+                                      **********************************************
+                                      Visual- Spinning vinyl
+                                      **********************************************
+                                      -->
+                                      <Spinny>
+                                        <TooltipId>spinny</TooltipId>
+                                        <Size>81f,81f</Size>
+                                        <Channel><Variable name="channum"/></Channel>
+                                        <PathBackground scalemode="STRETCH_ASPECT">vinyl_spinny_background.png</PathBackground>
+                                        <PathForeground scalemode="STRETCH_ASPECT">vinyl_spinny_foreground.png</PathForeground>
+                                        <PathGhost scalemode="STRETCH_ASPECT">vinyl_spinny_foreground_ghost.png</PathGhost>
+                                      </Spinny>
+                                    </Children>
+                                    <Connection>
+                                      <ConfigKey>[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
+                                      <BindProperty>visible</BindProperty>
+                                    </Connection>
+                                  </WidgetGroup>
+                                  <Template src="skin:vinylcontrol.xml"/>
+                                </Children>
+                              </WidgetGroup>
+
+                            </Children>
+                          </WidgetGroup>
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup><!-- Scrolling waveform / Spinny / Vinyl controls -->
+                  <WidgetGroup><!-- Overview waveform / Deck controls -->
+                    <ObjectName>DeckLowerLeftMidPart</ObjectName>
+                    <Size>0e,39f</Size>
+                    <Layout>horizontal</Layout>
+                    <Children>
+                      <WidgetGroup>
+                        <ObjectName>DeckLowerMidPart</ObjectName>
+                        <Size>0e,39f</Size>
+                        <Layout>horizontal</Layout>
+                        <BackPath>style/style_bg_deck_woverview.png</BackPath>
+                        <Children>
+                          <SingletonContainer>
+                            <ObjectName>Overview<Variable name="channum"/></ObjectName>
+                          </SingletonContainer>
+                        </Children>
+                      </WidgetGroup>
+                      <WidgetGroup>
+                        <ObjectName>DeckLowerLeftPart</ObjectName>
+                        <Size>63f,39f</Size>
+                        <BackPath>style/style_bg_deck_woverview_buttons.png</BackPath>
+                        <Children>
+                          <PushButton>
+                            <TooltipId>show_spinny</TooltipId>
+                            <NumberStates>2</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>skin:/btn/btn_spinny.png</Pressed>
+                              <Unpressed>skin:/btn/btn_spinny.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>skin:/btn/btn_spinny_over.png</Pressed>
+                              <Unpressed>skin:/btn/btn_spinny_over.png</Unpressed>
+                            </State>
+                            <Pos>1,1</Pos>
+                            <Connection>
+                              <ConfigKey>[Spinny<Variable name="channum"/>],show_spinny</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>repeat</TooltipId>
+                            <NumberStates>2</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>skin:/btn/btn_repeat.png</Pressed>
+                              <Unpressed>skin:/btn/btn_repeat.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>skin:/btn/btn_repeat_over.png</Pressed>
+                              <Unpressed>skin:/btn/btn_repeat_over.png</Unpressed>
+                            </State>
+                            <Pos>22,1</Pos>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,repeat</ConfigKey>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>slip_mode</TooltipId>
+                            <NumberStates>2</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>skin:/btn/btn_slip.png</Pressed>
+                              <Unpressed>skin:/btn/btn_slip.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>skin:/btn/btn_slip_over.png</Pressed>
+                              <Unpressed>skin:/btn/btn_slip_over.png</Unpressed>
+                            </State>
+                            <Pos>43,1</Pos>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,slip_enabled</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>beats_translate_curpos</TooltipId>
+                            <NumberStates>1</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>skin:/btn/btn_beatgrid_over.png</Pressed>
+                              <Unpressed>skin:/btn/btn_beatgrid.png</Unpressed>
+                            </State>
+                            <Pos>1,20</Pos>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beats_translate_curpos</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,beats_translate_match_alignment</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>RightButton</ButtonState>
+                            </Connection>
+                          </PushButton>
+
+                          <PushButton>
+                            <TooltipId>quantize</TooltipId>
+                            <NumberStates>2</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>skin:/btn/btn_quantize.png</Pressed>
+                              <Unpressed>skin:/btn/btn_quantize.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>skin:/btn/btn_quantize_over.png</Pressed>
+                              <Unpressed>skin:/btn/btn_quantize_over.png</Unpressed>
+                            </State>
+                            <Pos>22,20</Pos>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,quantize</ConfigKey>
+                              <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                              <ButtonState>LeftButton</ButtonState>
+                            </Connection>
+                          </PushButton>
+                          <PushButton>
+                            <TooltipId>keylock</TooltipId>
+                            <NumberStates>2</NumberStates>
+                            <State>
+                              <Number>0</Number>
+                              <Pressed>skin:/btn/btn_keylock.png</Pressed>
+                              <Unpressed>skin:/btn/btn_keylock.png</Unpressed>
+                            </State>
+                            <State>
+                              <Number>1</Number>
+                              <Pressed>skin:/btn/btn_keylock_over.png</Pressed>
+                              <Unpressed>skin:/btn/btn_keylock_over.png</Unpressed>
+                            </State>
+                            <Pos>43,20</Pos>
+                            <Connection>
+                              <ConfigKey><Variable name="group"/>,keylock</ConfigKey>
+                            </Connection>
+                          </PushButton>
+
+                        </Children>
+                      </WidgetGroup>
+                    </Children>
+                  </WidgetGroup><!-- Overview waveform / Deck controls -->
+                </Children>
+              </WidgetGroup><!-- Cover/Artist/title/time / waveform/spinny / overview/controls -->
+              <WidgetGroup><!-- Speed/key controls -->
+                <ObjectName>DeckRightPart</ObjectName>
+                <Size>52f,165f</Size>
+                <BackPath>style/style_bg_deck_right.png</BackPath>
+                <Children>
+                  <PushButton>
+                    <TooltipId>sync_enabled</TooltipId>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_sync_bpm_down.png</Pressed>
+                      <Unpressed>skin:/btn/btn_sync_bpm.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_sync_bpm_overdown.png</Pressed>
+                      <Unpressed>skin:/btn/btn_sync_bpm_over.png</Unpressed>
+                    </State>
+                    <Pos>3,15</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,sync_enabled</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,beatsync_tempo</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+
+                  <PushButton>
+                    <TooltipId>sync_reset_key</TooltipId>
+                    <NumberStates>2</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Pressed>skin:/btn/btn_sync_key_down.png</Pressed>
+                      <Unpressed>skin:/btn/btn_sync_key.png</Unpressed>
+                    </State>
+                    <State>
+                      <Number>1</Number>
+                      <Pressed>skin:/btn/btn_sync_key_overdown.png</Pressed>
+                      <Unpressed>skin:/btn/btn_sync_key_over.png</Unpressed>
+                    </State>
+                    <Pos>27,15</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,sync_key</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,reset_key</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
 
 
-					<WidgetGroup>
-						<Pos>3,34</Pos>
-						<Size>47f,26f</Size>
-						<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0px; padding: 0; }
-							QLabel { 
-								font: bold 9px sans-serif;
-								font-family: "Open Sans";
-								background-color: transparent; 
-								color: #191F24; 
-                                padding-bottom: -2px;
-							}
-						</Style>
-				        <Layout>vertical</Layout>
-						<Children>
-							<NumberBpm>
-								<TooltipId>visual_bpm</TooltipId>
-								<Channel><Variable name="channum"/></Channel>
-								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-								<Alignment>center</Alignment>
-								<Connection>
-									<ConfigKey>[Channel<Variable name="channum"/>],visual_bpm</ConfigKey>
-								</Connection>
-							</NumberBpm>
-							<Key>
-								<TooltipId>visual_key</TooltipId>
-								<Channel><Variable name="channum"/></Channel>
-								<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-								<Alignment>center</Alignment>
-								<Connection>
-									<ConfigKey>[Channel<Variable name="channum"/>],visual_key</ConfigKey>
-								</Connection>
-							</Key>
+                  <WidgetGroup>
+                    <Pos>3,30</Pos>
+                    <Size>47f,26f</Size>
+                    <Style>QLabel {
+                        font-size: 12px;
+                        font-weight: bold;
+                        background-color: transparent;
+                        color: #191F24;
+                        padding-bottom: -2px;
+                      }
+                    </Style>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <NumberBpm>
+                        <TooltipId>visual_bpm</TooltipId>
+                        <Channel><Variable name="channum"/></Channel>
+                        <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                        <Alignment>center</Alignment>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,visual_bpm</ConfigKey>
+                        </Connection>
+                      </NumberBpm>
+                      <Key>
+                        <TooltipId>visual_key</TooltipId>
+                        <Channel><Variable name="channum"/></Channel>
+                        <!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
+                        <Alignment>center</Alignment>
+                        <Connection>
+                          <ConfigKey><Variable name="group"/>,visual_key</ConfigKey>
+                        </Connection>
+                      </Key>
 
-						</Children>
-					</WidgetGroup>	
-					<SliderComposed>
-						<Style></Style>
-						<Handle>knob_visual_key.png</Handle>
-						<Slider>slider_visual_key.png</Slider>
-						<Pos>18,59</Pos>
-						<Horizontal>true</Horizontal>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],visual_key_distance</ConfigKey>
-							<EmitOnDownPress>false</EmitOnDownPress>
-						</Connection>
-					</SliderComposed>
+                    </Children>
+                  </WidgetGroup>
+                  <SliderComposed>
+                    <Handle>knob_visual_key.png</Handle>
+                    <Slider>slider_visual_key.png</Slider>
+                    <Pos>18,55</Pos>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,visual_key_distance</ConfigKey>
+                      <EmitOnDownPress>false</EmitOnDownPress>
+                    </Connection>
+                  </SliderComposed>
 
-					<PushButton>
-						<TooltipId>pitch_down</TooltipId>
-						<Size>10f,10f</Size>
-						<Style></Style>
-						<NumberStates>1</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Text>◄</Text>
-						</State>
-						<Pos>5,57</Pos>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],pitch_down</ConfigKey>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],pitch_down_small</ConfigKey>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
-					</PushButton>
+                  <PushButton>
+                    <TooltipId>pitch_down</TooltipId>
+                    <Size>10f,10f</Size>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text>◄</Text>
+                    </State>
+                    <Pos>5,52</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,pitch_down</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,pitch_down_small</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
 
-					<PushButton>
-						<TooltipId>pitch_up</TooltipId>
-						<Size>10f,10f</Size>
-						<Style></Style>
-						<NumberStates>1</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Text>►</Text>
-						</State>
-						<Pos>38,57</Pos>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],pitch_up</ConfigKey>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],pitch_up_small</ConfigKey>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
-					</PushButton>
+                  <PushButton>
+                    <TooltipId>pitch_up</TooltipId>
+                    <Size>10f,10f</Size>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text>►</Text>
+                    </State>
+                    <Pos>38,52</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,pitch_up</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,pitch_up_small</ConfigKey>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
 
-					<SliderComposed>
-						<TooltipId>pitch</TooltipId>
-						<Style></Style>
-						<Handle>knob_visual_key.png</Handle>
-						<Slider>slider_visual_key.png</Slider>
-						<Pos>18,63</Pos>
-						<Horizontal>true</Horizontal>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],pitch</ConfigKey>
-							<EmitOnDownPress>false</EmitOnDownPress>
-						</Connection>
-					</SliderComposed>
+                  <SliderComposed>
+                    <TooltipId>pitch</TooltipId>
+                    <Handle>knob_visual_key.png</Handle>
+                    <Slider>slider_visual_key.png</Slider>
+                    <Pos>18,58</Pos>
+                    <Horizontal>true</Horizontal>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,pitch</ConfigKey>
+                      <EmitOnDownPress>false</EmitOnDownPress>
+                    </Connection>
+                  </SliderComposed>
 
-					<SliderComposed>
-						<TooltipId>rate</TooltipId>
-						<Style></Style>
-						<Handle>knob_pitch1.png</Handle>
-						<Slider>slider_pitch1.png</Slider>
-						<Pos>20,67</Pos>
-						<Horizontal>false</Horizontal>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],rate</ConfigKey>
-							<EmitOnDownPress>false</EmitOnDownPress>
-						</Connection>
-					</SliderComposed>
+                  <!-- Pitch range indicators -->
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayTopPrefix</ObjectName>
+                    <Channel><Variable name="channum" /></Channel>
+                    <Position>Top</Position>
+                    <Display>prefix</Display>
+                    <Size>20f,-1me</Size>
+                    <Pos>0,62</Pos>
+                  </RateRange>
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayTopRate</ObjectName>
+                    <Channel><Variable name="channum" /></Channel>
+                    <Position>Top</Position>
+                    <Display>range</Display>
+                    <Size>20f,-1me</Size>
+                    <Pos>32,62</Pos>
+                  </RateRange>
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayBottomPrefix</ObjectName>
+                    <Channel><Variable name="channum" /></Channel>
+                    <Position>Bottom</Position>
+                    <Align>Bottom</Align>
+                    <Display>prefix</Display>
+                    <Size>20f,-1me</Size>
+                    <Pos>0,148</Pos>
+                  </RateRange>
+                  <RateRange>
+                    <TooltipId>rate_range_display</TooltipId>
+                    <ObjectName>RateDisplayBottomRate</ObjectName>
+                    <Channel><Variable name="channum" /></Channel>
+                    <Align>Bottom</Align>
+                    <Display>range</Display>
+                    <Size>20f,-1me</Size>
+                    <Pos>32,148</Pos>
+                  </RateRange>
 
-					<PushButton>
-						<TooltipId>rate_temp_up_rate_temp_up_small</TooltipId>
-                        <Size>10f,10f</Size>
-						<NumberStates>1</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Text>►</Text>
-						</State>
-						<Pos>36,148</Pos>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],rate_temp_up</ConfigKey>
-							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],rate_temp_up_small</ConfigKey>
-							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
-					</PushButton>
+                  <SliderComposed>
+                    <TooltipId>rate</TooltipId>
+                    <Handle>knob_pitch.png</Handle>
+                    <Slider>slider_pitch.png</Slider>
+                    <Pos>20,62</Pos>
+                    <Horizontal>false</Horizontal>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,rate</ConfigKey>
+                      <EmitOnDownPress>false</EmitOnDownPress>
+                    </Connection>
+                  </SliderComposed>
 
-					<PushButton>
-						<TooltipId>rate_temp_down_rate_temp_down_small</TooltipId>
-                        <Size>10f,10f</Size>
-						<NumberStates>1</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Text>◄</Text>
-						</State>
-						<Pos>7,148</Pos>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],rate_temp_down</ConfigKey>
-							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-						<Connection>
-							<ConfigKey>[Channel<Variable name="channum"/>],rate_temp_down_small</ConfigKey>
-							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
-							<ButtonState>RightButton</ButtonState>
-						</Connection>
-					</PushButton>
-				</Children>
-			</WidgetGroup>
-			<WidgetGroup>
-		        <ObjectName>DeckLeftBorder</ObjectName>
-				<Size>5f,201f</Size>
-				<BackPath>style/style_bg_deck_border.png</BackPath>
-				<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
-			</WidgetGroup>	
-		</Children>
-	</WidgetGroup>
+                  <PushButton>
+                    <TooltipId>rate_temp_up_rate_temp_up_small</TooltipId>
+                    <Size>10f,10f</Size>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text>►</Text>
+                    </State>
+                    <Pos>36,138</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,rate_temp_up</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,rate_temp_up_small</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+
+                  <PushButton>
+                    <TooltipId>rate_temp_down_rate_temp_down_small</TooltipId>
+                    <Size>10f,10f</Size>
+                    <NumberStates>1</NumberStates>
+                    <State>
+                      <Number>0</Number>
+                      <Text>◄</Text>
+                    </State>
+                    <Pos>7,138</Pos>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,rate_temp_down</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>LeftButton</ButtonState>
+                    </Connection>
+                    <Connection>
+                      <ConfigKey><Variable name="group"/>,rate_temp_down_small</ConfigKey>
+                      <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+                      <ButtonState>RightButton</ButtonState>
+                    </Connection>
+                  </PushButton>
+                </Children>
+              </WidgetGroup><!-- Speed/key controls -->
+            </Children>
+          </WidgetGroup>
+
+          <!-- effects <- -> mic/aux | sampler | jump | loop | cues -->
+          <WidgetGroup>
+            <Size>0e,59f</Size>
+            <Layout>horizontal</Layout>
+            <BackPath>style/style_bg_deck_pane.png</BackPath>
+            <Children>
+              <Template src="skin:deck_effect.xml"/>
+              <WidgetGroup>
+                <Size>0e,59f</Size>
+              </WidgetGroup>
+              <Template src="skin:deck_transport.xml"/>
+            </Children>
+          </WidgetGroup>
+
+          <!-- effects <- -> mic/aux | sampler | jump | loop | cues -->
+          <WidgetGroup>
+            <Size>0e,24f</Size>
+            <Layout>horizontal</Layout>
+            <Children>
+              <Template src="skin:deck_cues.xml">
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Skin],show_intro_outro_cues</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>DeckLeftBorder</ObjectName>
+            <Size>0e,5f</Size>
+            <BackPath>style/style_bg_deck_border.png</BackPath>
+          </WidgetGroup>
+
+        </Children>
+      </WidgetGroup>
+      <WidgetGroup>
+        <ObjectName>DeckRightBorder</ObjectName>
+        <Size>5f,-1min</Size>
+        <BackPath>style/style_bg_deck_border.png</BackPath>
+      </WidgetGroup>
+    </Children>
+  </WidgetGroup>
 </Template>

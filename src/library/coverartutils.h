@@ -1,36 +1,34 @@
-#ifndef COVERARTUTILS_H
-#define COVERARTUTILS_H
+#pragma once
 
 #include <QImage>
+#include <QList>
+#include <QSize>
 #include <QString>
 #include <QStringList>
-#include <QSize>
-#include <QFileInfo>
-#include <QLinkedList>
 
-#include "track/track.h"
-#include "util/sandbox.h"
+#include "track/track_decl.h"
+#include "util/cache.h"
+#include "util/fileinfo.h"
+#include "util/imageutils.h"
 
 class CoverInfo;
 class CoverInfoRelative;
 
+namespace mixxx {
+
+class FileAccess;
+
+} // namespace mixxx
+
 class CoverArtUtils {
   public:
+    CoverArtUtils() = delete;
+
     static QString defaultCoverLocation();
 
-    // Extracts the first cover art image embedded within the file at
-    // fileInfo. If no security token is provided a new one is created.
+    // Extracts the first cover art image embedded within the file.
     static QImage extractEmbeddedCover(
-            QFileInfo fileInfo);
-    static QImage extractEmbeddedCover(
-            QFileInfo fileInfo,
-            SecurityTokenPointer pToken);
-
-    static QImage loadCover(const CoverInfo& info);
-    static quint16 calculateHash(const QImage& image) {
-        return qChecksum(reinterpret_cast<const char*>(image.constBits()),
-                         image.byteCount());
-    }
+            mixxx::FileAccess trackFileAccess);
 
     static QStringList supportedCoverArtExtensions();
     static QString supportedCoverArtExtensionsRegex();
@@ -46,27 +44,57 @@ class CoverArtUtils {
     };
 
     // Guesses the cover art for the provided track.
-    static CoverInfo guessCoverInfo(const Track& track);
+    static CoverInfoRelative guessCoverInfo(
+            const Track& track);
 
-    static QLinkedList<QFileInfo> findPossibleCoversInFolder(
+    static QList<QFileInfo> findPossibleCoversInFolder(
             const QString& folder);
 
     // Selects an appropriate cover file from provided list of image files.
-    static CoverInfo selectCoverArtForTrack(
+    static CoverInfoRelative selectCoverArtForTrack(
             const Track& track,
-            const QLinkedList<QFileInfo>& covers);
+            const QList<QFileInfo>& covers);
 
     // Selects an appropriate cover file from provided list of image
     // files. Assumes a SecurityTokenPointer is held by the caller for all files
     // in 'covers'.
     static CoverInfoRelative selectCoverArtForTrack(
-            const QString& trackBaseName,
+            const mixxx::FileInfo& trackFile,
             const QString& albumName,
-            const QLinkedList<QFileInfo>& covers);
-
-
-  private:
-    CoverArtUtils() {}
+            const QList<QFileInfo>& covers);
 };
 
-#endif /* COVERARTUTILS_H */
+// Stateful guessing of cover art by caching the possible
+// covers from the last visited folder.
+class CoverInfoGuesser {
+  public:
+    // Guesses the cover art for the provided track.
+    // An embedded cover must be extracted beforehand and provided.
+    CoverInfoRelative guessCoverInfo(
+            const mixxx::FileInfo& trackFile,
+            const QString& albumName,
+            const QImage& embeddedCover);
+
+    // Extracts an embedded cover image if available and guesses
+    // the cover art for the provided track.
+    CoverInfoRelative guessCoverInfoForTrack(
+            const Track& track);
+
+    void guessAndSetCoverInfoForTrack(
+            Track& track);
+    void guessAndSetCoverInfoForTracks(
+            const TrackPointerList& tracks);
+
+  private:
+    QString m_cachedFolder;
+    QList<QFileInfo> m_cachedPossibleCoversInFolder;
+};
+
+// Guesses the cover art for the provided tracks by searching the tracks'
+// metadata and folders for image files. All I/O is done in a separate
+// thread.
+void guessTrackCoverInfoConcurrently(TrackPointer pTrack);
+
+// Concurrent guessing of track covers during short running
+// tests may cause spurious test failures due to timing issues.
+void disableConcurrentGuessingOfTrackCoverInfoDuringTests();

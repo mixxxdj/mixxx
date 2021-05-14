@@ -1,18 +1,18 @@
-#ifndef LEGACYSKINPARSER_H
-#define LEGACYSKINPARSER_H
+#pragma once
 
-#include <QObject>
-#include <QString>
-#include <QList>
 #include <QDomElement>
+#include <QList>
 #include <QMutex>
+#include <QObject>
+#include <QSet>
+#include <QString>
 
 #include "preferences/usersettings.h"
-#include "skin/skinparser.h"
-#include "vinylcontrol/vinylcontrolmanager.h"
-#include "skin/tooltips.h"
 #include "proto/skin.pb.h"
+#include "skin/skinparser.h"
+#include "skin/tooltips.h"
 #include "util/memory.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
 
 class WBaseWidget;
 class Library;
@@ -32,11 +32,14 @@ class LegacySkinParser : public QObject, public SkinParser {
   public:
     LegacySkinParser(UserSettingsPointer pConfig);
     LegacySkinParser(UserSettingsPointer pConfig,
-                     KeyboardEventFilter* pKeyboard, PlayerManager* pPlayerManager,
-                     ControllerManager* pControllerManager,
-                     Library* pLibrary, VinylControlManager* pVCMan,
-                     EffectsManager* pEffectsManager,
-                     RecordingManager* pRecordingManager);
+            QSet<ControlObject*>* pSkinCreatedControls,
+            KeyboardEventFilter* pKeyboard,
+            PlayerManager* pPlayerManager,
+            ControllerManager* pControllerManager,
+            Library* pLibrary,
+            VinylControlManager* pVCMan,
+            EffectsManager* pEffectsManager,
+            RecordingManager* pRecordingManager);
     virtual ~LegacySkinParser();
 
     virtual bool canParse(const QString& skinPath);
@@ -48,15 +51,15 @@ class LegacySkinParser : public QObject, public SkinParser {
     static QList<QString> getSchemeList(const QString& qSkinPath);
     // Parse a skin manifest from the provided skin document root.
     static mixxx::skin::SkinManifest getSkinManifest(const QDomElement& skinDocument);
-    static void freeChannelStrings();
+    static void clearSharedGroupStrings();
 
     static Qt::MouseButton parseButtonState(const QDomNode& node,
                                             const SkinContext& context);
 
     static QString getStyleFromNode(const QDomNode& node);
+    static QDomElement openSkin(const QString& skinPath);
 
   private:
-    static QDomElement openSkin(const QString& skinPath);
 
     QList<QWidget*> parseNode(const QDomElement& node);
 
@@ -66,8 +69,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     // Parsers for each node
 
     // Most widgets can use parseStandardWidget.
-    template <class T>
-    QWidget* parseStandardWidget(const QDomElement& element, bool timerListener=false);
+    template<class T>
+    T* parseStandardWidget(const QDomElement& element);
 
     // Label widgets.
     template <class T>
@@ -76,6 +79,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseText(const QDomElement& node);
     QWidget* parseTrackProperty(const QDomElement& node);
     QWidget* parseStarRating(const QDomElement& node);
+    QWidget* parseRateRange(const QDomElement& node);
     QWidget* parseNumberRate(const QDomElement& node);
     QWidget* parseNumberPos(const QDomElement& node);
     QWidget* parseEngineKey(const QDomElement& node);
@@ -88,17 +92,18 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseEffectButtonParameterName(const QDomElement& node);
     QWidget* parseEffectPushButton(const QDomElement& node);
     QWidget* parseEffectSelector(const QDomElement& node);
+    QWidget* parseHotcueButton(const QDomElement& node);
 
     // Legacy pre-1.12.0 skin support.
     QWidget* parseBackground(const QDomElement& node, QWidget* pOuterWidget, QWidget* pInnerWidget);
 
     // Grouping / layout.
     QWidget* parseWidgetGroup(const QDomElement& node);
+    QWidget* parseTrackWidgetGroup(const QDomElement& node);
     QWidget* parseWidgetStack(const QDomElement& node);
     QWidget* parseSizeAwareStack(const QDomElement& node);
     QWidget* parseSplitter(const QDomElement& node);
     void parseSingletonDefinition(const QDomElement& node);
-    QWidget* parseSingletonContainer(const QDomElement& node);
 
     // Visual widgets.
     QWidget* parseVisual(const QDomElement& node);
@@ -129,15 +134,19 @@ class LegacySkinParser : public QObject, public SkinParser {
     QString getLibraryStyle(const QDomNode& node);
 
     QString lookupNodeGroup(const QDomElement& node);
-    static const char* safeChannelString(const QString& channelStr);
+    static QString getSharedGroupString(const QString& channelStr);
+    ControlObject* controlFromConfigKey(const ConfigKey& element,
+            bool bPersist,
+            bool* pCreated = nullptr);
     ControlObject* controlFromConfigNode(const QDomElement& element,
-                                         const QString& nodeName,
-                                         bool* created);
+            const QString& nodeName,
+            bool* pCreated = nullptr);
 
     QString parseLaunchImageStyle(const QDomNode& node);
     void parseChildren(const QDomElement& node, WWidgetGroup* pGroup);
 
     UserSettingsPointer m_pConfig;
+    QSet<ControlObject*>* m_pSkinCreatedControls;
     KeyboardEventFilter* m_pKeyboard;
     PlayerManager* m_pPlayerManager;
     ControllerManager* m_pControllerManager;
@@ -150,9 +159,5 @@ class LegacySkinParser : public QObject, public SkinParser {
     QString m_style;
     Tooltips m_tooltips;
     QHash<QString, QDomElement> m_templateCache;
-    static QList<const char*> s_channelStrs;
-    static QMutex s_safeStringMutex;
+    static QSet<QString> s_sharedGroupStrings;
 };
-
-
-#endif /* LEGACYSKINPARSER_H */

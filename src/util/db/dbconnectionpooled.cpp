@@ -26,9 +26,11 @@ DbConnectionPooled::operator QSqlDatabase() const {
                 << "Thread-local database connection not found";
         return QSqlDatabase(); // abort
     }
-    kLogger.debug()
-            << "Found thread-local database connection"
-            << *pDbConnection;;
+    if (kLogger.debugEnabled()) {
+        kLogger.debug()
+                    << "Found thread-local database connection"
+                    << *pDbConnection;;
+    }
     return *pDbConnection;
 }
 

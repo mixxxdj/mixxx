@@ -28,13 +28,13 @@ else{midi.sendShortMsg(0x80,0x63,0x7F);/*loop out button led off*/}
 if(looping){
 midi.sendShortMsg(0x90,0x62,0x7F);// loop in button led on
 midi.sendShortMsg(0x90,0x63,0x7F);// loop out button led on
-midi.sendShortMsg(0x90,0x64,0x7F);// reloop/exit  button led on
+midi.sendShortMsg(0x90,0x64,0x7F);// reloop/exit button led on
 }
-else{midi.sendShortMsg(0x80,0x64,0x7F);/* reloop/exit  button led off*/}
+else{midi.sendShortMsg(0x80,0x64,0x7F);/* reloop/exit button led off*/}
 
 if(looping==0 && startposition != -1 && endposition != -1)
 {
-midi.sendShortMsg(0x80,0x64,0x7F);// reloop/exit  button led off
+midi.sendShortMsg(0x80,0x64,0x7F);// reloop/exit button led off
 }
 
 }
@@ -82,7 +82,7 @@ midi.sendShortMsg(0x90,0x68,0x7F);// deck+ button led on
 }
 
 
-// loop otions start
+// loop options start
 VestaxVCI1003DEX.loopin = function (channel, control, value, status, group) {if(value==0x7F)   {engine.setValue(active_deck,"loop_in",1);}}
 
 VestaxVCI1003DEX.loopout = function (channel, control, value, status, group) {if(value==0x7F)   {engine.setValue(active_deck,"loop_out",1);}}
@@ -92,43 +92,43 @@ VestaxVCI1003DEX.reloop_exit = function (channel, control, value, status, group)
 VestaxVCI1003DEX.loopMinus = function (channel, control, value, status, group) {if (value == 0x7F){engine.setValue(active_deck,"loop_halve",1);}}
 VestaxVCI1003DEX.loopPlus = function (channel, control, value, status, group) {if (value == 0x7F){engine.setValue(active_deck,"loop_double",1);}}
 
-// loop otions end
+// loop options end
 
 // deck specific buttons start
 
 VestaxVCI1003DEX.jog_touch1 = function (channel, control, value, status, group) {
-if(value=0x7F){engine.scratchEnable("[Channel1]", 128*3, 45, 1.0/8, (1.0/8)/32);} 
+if(value=0x7F){engine.scratchEnable("[Channel1]", 128*3, 45, 1.0/8, (1.0/8)/32);}
 if(value==0)  {engine.scratchDisable("[Channel1]");}
 }
 
 VestaxVCI1003DEX.jog_touch2 = function (channel, control, value, status, group) {
-if(value=0x7F){engine.scratchEnable("[Channel1]", 128*3, 45, 1.0/8, (1.0/8)/32);} 
+if(value=0x7F){engine.scratchEnable("[Channel1]", 128*3, 45, 1.0/8, (1.0/8)/32);}
 if(value==0)  {engine.scratchDisable("[Channel1]");}
 }
 
 VestaxVCI1003DEX.jog_wheel1 = function (channel, control, value, status, group) {
-   // 41 > 7F: CW Slow > Fast ??? 
+   // 41 > 7F: CW Slow > Fast ???
    // 3F > 0 : CCW Slow > Fast ???
    var jogValue = value - 0x40; // -64 to +63, - = CCW, + = CW
    engine.setValue("[Channel1]","jog", jogValue/16);
 }
 
 VestaxVCI1003DEX.jog_wheel2 = function (channel, control, value, status, group) {
-   // 41 > 7F: CW Slow > Fast ??? 
+   // 41 > 7F: CW Slow > Fast ???
    // 3F > 0 : CCW Slow > Fast ???
    var jogValue = value - 0x40; // -64 to +63, - = CCW, + = CW
    engine.setValue("[Channel2]","jog", jogValue/16);
 }
 
 VestaxVCI1003DEX.jog_wheel_seek1 = function (channel, control, value, status, group) {
-   // 41 > 7F: CW Slow > Fast ??? 
+   // 41 > 7F: CW Slow > Fast ???
    // 3F > 0 : CCW Slow > Fast ???
    var jogValue = value - 0x40; // -64 to +63, - = CCW, + = CW
    engine.setValue("[Channel1]","jog", jogValue);
 }
 
 VestaxVCI1003DEX.jog_wheel_seek2 = function (channel, control, value, status, group) {
-   // 41 > 7F: CW Slow > Fast ??? 
+   // 41 > 7F: CW Slow > Fast ???
    // 3F > 0 : CCW Slow > Fast ???
    var jogValue = value - 0x40; // -64 to +63, - = CCW, + = CW
    engine.setValue("[Channel2]","jog", jogValue);
@@ -419,7 +419,7 @@ VestaxVCI1003DEX.sampler3play = function (channel, control, value, status, group
 
 //sampler play buttons end
 
-//middle position of the knobs ot an extra midi signal.
+//middle position of the knobs to an extra midi signal.
 VestaxVCI1003DEX.pregainreset1 = function (channel, control, value, status, group) {engine.setValue("[Channel1]","pregain",1.0);}
 VestaxVCI1003DEX.filterHighreset1 = function (channel, control, value, status, group) {engine.setValue("[Channel1]","filterHigh",1.0);}
 VestaxVCI1003DEX.filterMidreset1 = function (channel, control, value, status, group) {engine.setValue("[Channel1]","filterMid",1.0);}
@@ -437,7 +437,7 @@ active_deck_number=1
 midi.sendShortMsg(0x90,0x67,0x7F);// deck- button led on
 midi.sendShortMsg(0x80,0x68,0x7F);// deck+ button led off
 
-// TODO SOFTTAKEOVER does not work(mixxbug) , AUTOLOOP LEDs, LOOP BAHAVIOUR with keylock on(mixxxbug) , cue shuffle mode,loopmove mode?
+// TODO SOFTTAKEOVER does not work(mixxbug) , AUTOLOOP LEDs, LOOP BEHAVIOUR with keylock on(mixxxbug) , cue shuffle mode,loopmove mode?
 engine.softTakeover("[Channel1]", "rate", true); // wtf does not work
 
 currentCue1=1;
@@ -473,10 +473,10 @@ midi.sendShortMsg(0x80,0x45,0x7F);// right reverse mode button led off
 
 midi.sendShortMsg(0x80,0x62,0x7F);// loop in button led off
 midi.sendShortMsg(0x80,0x63,0x7F);// loop out button led off
-midi.sendShortMsg(0x80,0x64,0x7F);// reloop/exit  button led off
+midi.sendShortMsg(0x80,0x64,0x7F);// reloop/exit button led off
 
 midi.sendShortMsg(0x80,0x46,0x7F);// left sync button led off
-midi.sendShortMsg(0x80,0x47,0x7F);// rigth sync button led off
+midi.sendShortMsg(0x80,0x47,0x7F);// right sync button led off
 
 /*
 
@@ -544,27 +544,27 @@ midi.sendShortMsg(0x90,0x52,0x7F);// selection down button led on!!cc
 
 
 // channel A
-midi.sendShortMsg(0x80,0x53,0x7F);// pad1  button led off 
+midi.sendShortMsg(0x80,0x53,0x7F);// pad1  button led off
 midi.sendShortMsg(0x90,0x53,0x7F);// pad1  button led on
-midi.sendShortMsg(0x80,0x54,0x7F);// pad1  button led off 
+midi.sendShortMsg(0x80,0x54,0x7F);// pad1  button led off
 midi.sendShortMsg(0x90,0x54,0x7F);// pad1  button led on
-midi.sendShortMsg(0x80,0x55,0x7F);// pad1  button led off 
+midi.sendShortMsg(0x80,0x55,0x7F);// pad1  button led off
 midi.sendShortMsg(0x90,0x55,0x7F);// pad1  button led on
 
 //channel B
-midi.sendShortMsg(0x80,0x56,0x7F);// pad2  button led off 
+midi.sendShortMsg(0x80,0x56,0x7F);// pad2  button led off
 midi.sendShortMsg(0x90,0x56,0x7F);// pad2  button led on
-midi.sendShortMsg(0x80,0x57,0x7F);// pad2  button led off 
+midi.sendShortMsg(0x80,0x57,0x7F);// pad2  button led off
 midi.sendShortMsg(0x90,0x57,0x7F);// pad2  button led on
-midi.sendShortMsg(0x80,0x58,0x7F);// pad2  button led off 
+midi.sendShortMsg(0x80,0x58,0x7F);// pad2  button led off
 midi.sendShortMsg(0x90,0x58,0x7F);// pad2  button led on
 
 // sampler
-midi.sendShortMsg(0x80,0x59,0x7F);// pad3  button led off 
+midi.sendShortMsg(0x80,0x59,0x7F);// pad3  button led off
 midi.sendShortMsg(0x90,0x59,0x7F);// pad3  button led on
-midi.sendShortMsg(0x80,0x5A,0x7F);// pad3  button led off 
+midi.sendShortMsg(0x80,0x5A,0x7F);// pad3  button led off
 midi.sendShortMsg(0x90,0x5A,0x7F);// pad3  button led on
-midi.sendShortMsg(0x80,0x5B,0x7F);// pad3  button led off 
+midi.sendShortMsg(0x80,0x5B,0x7F);// pad3  button led off
 midi.sendShortMsg(0x90,0x5B,0x7F);// pad3  button led on
 
 midi.sendShortMsg(0x80,0x5C,0x7F);// up button led off !!
@@ -599,7 +599,7 @@ midi.sendShortMsg(0x80,0x68,0x7F);// deck+ button led off
 midi.sendShortMsg(0x90,0x68,0x7F);// deck+ button led on
 midi.sendShortMsg(0x80,0x46,0x7F);// left sync button led off
 midi.sendShortMsg(0x90,0x46,0x7F);// left sync button led on
-midi.sendShortMsg(0x80,0x47,0x7F);// rigth sync button led off
+midi.sendShortMsg(0x80,0x47,0x7F);// right sync button led off
 midi.sendShortMsg(0x90,0x47,0x7F);// right sync button led on
 */
 }

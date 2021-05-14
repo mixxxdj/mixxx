@@ -1,8 +1,5 @@
 #include "util/battery/batterywindows.h"
 
-// tell windows we target XP and later
-// http://msdn.microsoft.com/en-us/library/windows/desktop/aa372693(v=vs.85).aspx
-#define _WIN32_WINNT 0x0400
 #include <windows.h>
 #include <QDebug>
 #include <QString>
@@ -11,11 +8,8 @@ BatteryWindows::BatteryWindows(QObject* pParent)
         : Battery(pParent) {
 }
 
-BatteryWindows::~BatteryWindows() {
-}
-
 void BatteryWindows::read() {
-    m_iMinutesLeft = 0;
+    m_iMinutesLeft = Battery::TIME_UNKNOWN;
     m_dPercentage = 0.0;
     m_chargingState = Battery::UNKNOWN;
 
@@ -25,7 +19,7 @@ void BatteryWindows::read() {
     if (GetSystemPowerStatus(&spsPwr)) {
         // get rest power of battery
         m_dPercentage = static_cast<double>(spsPwr.BatteryLifePercent);
-        // check for unkown flag and reset to default
+        // check for unknown flag and reset to default
         if (m_dPercentage == 255) {
             m_dPercentage = 0;
         }
@@ -39,11 +33,14 @@ void BatteryWindows::read() {
         if (m_dPercentage > 99) {
             m_chargingState = Battery::CHARGED;
         }
-        // windows tells us the remainging time in seconds
-        m_iMinutesLeft = static_cast<int>(spsPwr.BatteryLifeTime) / 60;
+        // windows tells us the remaining time in seconds (-1 if unknown)
+        int seconds_left = static_cast<int>(spsPwr.BatteryLifeTime);
+        if (seconds_left >= 0) {
+            m_iMinutesLeft = seconds_left / 60;
+        }
     }
 
-    // QString bat = "unkown";
+    // QString bat = "unknown";
     // switch (m_chargingState) {
     // case Battery::CHARGING:
     //     bat = "charging";

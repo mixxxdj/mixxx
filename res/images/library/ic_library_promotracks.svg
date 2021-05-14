@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:osb="http://www.openswatchbook.org/uri/2009/osb"
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="32"
+   height="32"
+   id="svg2"
+   inkscape:version="0.92.3 (unknown)"
+   sodipodi:docname="ic_library_promotracks.svg"
+   style="display:inline"
+   inkscape:export-filename=""
+   inkscape:export-xdpi="135"
+   inkscape:export-ydpi="135">
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1366"
+     inkscape:window-height="740"
+     id="namedview26"
+     showgrid="false"
+     inkscape:zoom="2"
+     inkscape:cx="-7.9658816"
+     inkscape:cy="5.5219561"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="ic_library_crates"
+     inkscape:object-paths="true"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:snap-midpoints="true">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3788"
+       empspacing="4"
+       visible="true"
+       enabled="true"
+       snapvisiblegridlinesonly="true"
+       originx="4"
+       spacingx="1"
+       spacingy="1"
+       color="#00ffe0"
+       opacity="0.1254902"
+       empcolor="#0072ff"
+       empopacity="0.25098039"
+       originy="4"
+       dotted="false" />
+  </sodipodi:namedview>
+  <title
+     id="title5647">Mixxx 1.12+ iconset</title>
+  <defs
+     id="defs28">
+    <linearGradient
+       id="linearGradient5515"
+       osb:paint="solid">
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="0"
+         id="stop5517" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5695-6">
+      <stop
+         style="stop-color:#3c3c3c;stop-opacity:1;"
+         offset="0"
+         id="stop5697-6" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop5699-7" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient5695-4">
+      <stop
+         style="stop-color:#646464;stop-opacity:1;"
+         offset="0"
+         id="stop5697-7" />
+      <stop
+         style="stop-color:#000000;stop-opacity:1;"
+         offset="1"
+         id="stop5699-6" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942-73">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944-6" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946-6" />
+    </linearGradient>
+    <linearGradient
+       id="linearGradient4942-5">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944-9" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946-5" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient5026"
+       x1="7.2128572"
+       y1="-1.5660703"
+       x2="7.2128572"
+       y2="12.183993"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-0.2899498)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient5338"
+       gradientUnits="userSpaceOnUse"
+       x1="17"
+       y1="-12.5"
+       x2="17"
+       y2="11.5"
+       gradientTransform="translate(-1,20.5)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient3405"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="translate(-1,20.5)"
+       x1="17"
+       y1="-12.5"
+       x2="17"
+       y2="11.5" />
+  </defs>
+  <metadata
+     id="metadata4">
+    <rdf:RDF>
+      <rdf:Description
+         rdf:about="">
+        <dc:title />
+        <dc:creator />
+        <dc:rights />
+        <dc:description />
+        <dc:format>image/svg+xml</dc:format>
+        <dc:language>en</dc:language>
+      </rdf:Description>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title>Mixxx 1.12+ iconset</dc:title>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>Mixxx</rdf:li>
+            <rdf:li>GUI</rdf:li>
+            <rdf:li>Interface</rdf:li>
+            <rdf:li>Icons</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>s.brandt@mixxx.org</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <cc:license
+           rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
+        <dc:date>2014-04-18</dc:date>
+        <dc:source>www.mixxx.org</dc:source>
+        <dc:description>Iconset for use in Mixxx 1.12s+. Optimized for 48px (16px) icon size. Contains icons for preference menu and library widget
+
+Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc:description>
+        <dc:coverage />
+        <dc:language>en</dc:language>
+      </cc:Work>
+      <cc:License
+         rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Reproduction" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#Distribution" />
+        <cc:permits
+           rdf:resource="http://creativecommons.org/ns#DerivativeWorks" />
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+  <g
+     style="display:inline"
+     id="ic_library_crates"
+     inkscape:label="#g6169">
+    <g
+       style="display:inline"
+       id="ic_library_promotracks"
+       inkscape:label="#g6183">
+      <g
+         id="g3960-9"
+         style="stroke:#1a1a1a"
+         transform="matrix(1.7244366,0,0,1.7454465,0.0618849,10.733492)">
+        <path
+           inkscape:connector-curvature="0"
+           sodipodi:nodetypes="ccc"
+           id="path3964-7"
+           d="M 5.1832089,9.8923158 9.2425058,5.8818806 13.301802,9.8923158"
+           style="fill:none;stroke:url(#linearGradient5026);stroke-width:2.13555778;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+      </g>
+      <path
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="cccccccccccccc"
+         id="rect3928-3"
+         d="M 4,4 C 2.8899865,4 2,5.015111 2,6 v 12 c 0,0.984889 0.8899865,2 2,2 h 24 c 1.110012,0 2,-1.015111 2,-2 V 6 C 30,5.015111 29.110012,4 28,4 Z M 4,6 H 28 V 18 H 4 Z"
+         style="fill:url(#linearGradient3405);fill-opacity:1;stroke:none" />
+      <path
+         inkscape:connector-curvature="0"
+         id="rect3940-8"
+         d="m 4.267e-4,2 v 1.777778 c -0.007182,0.07144 0,0.148682 0,0.222222 0,1.108 0.8362381,2 1.8749732,2 H 30.125026 C 31.163763,6 32,5.108 32,4 32,3.92646 32.0072,3.849217 32,3.777778 V 2 H 30.125027 1.8753999 Z"
+         style="fill:url(#linearGradient5338);fill-opacity:1;stroke:none"
+         sodipodi:nodetypes="ccssssccccc" />
+    </g>
+  </g>
+</svg>

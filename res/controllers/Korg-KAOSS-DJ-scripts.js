@@ -1,10 +1,10 @@
 // Korg KAOSS DJ controller mapping for Mixxx
 // Seb Dooris, Fayaaz Ahmed, Lee Arromba
 
-var KAOSSDJ = {};  
-var ON = 0x7F, 
-    OFF = 0x00, 
-    UP = 0x01, 
+var KAOSSDJ = {};
+var ON = 0x7F,
+    OFF = 0x00,
+    UP = 0x01,
     DOWN = 0x7F;
 var ledChannel = {
     'btnsL': 0x97,
@@ -117,7 +117,7 @@ KAOSSDJ.wheelTurn = function(channel, control, value, status, group) {
         newValue = value - 128;
     }
     if (engine.isScratching(deckNumber)) {
-        engine.scratchTick(deckNumber, newValue); 
+        engine.scratchTick(deckNumber, newValue);
     } else {
         engine.setValue('[Channel' + deckNumber + ']', 'jog', newValue); // Pitch bend
     }
@@ -134,9 +134,9 @@ KAOSSDJ.wheelTurnShift = function(channel, control, value, status, group) {
             newValue = value - 128;
         }
         newValue = newValue * 4; // multiplier (to speed it up)
-        engine.scratchTick(deck.deckNumber, newValue); 
+        engine.scratchTick(deck.deckNumber, newValue);
     } else {
-        // Move beatgrid 
+        // Move beatgrid
         if(value === UP){
             engine.setValue(deck.group, 'beats_translate_later', true);
         } else if (value === DOWN){

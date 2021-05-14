@@ -1,5 +1,4 @@
-#ifndef WSPLITTER_H
-#define WSPLITTER_H
+#pragma once
 
 #include <QDomNode>
 #include <QEvent>
@@ -26,5 +25,3 @@ class WSplitter : public QSplitter, public WBaseWidget {
     UserSettingsPointer m_pConfig;
     ConfigKey m_configKey;
 };
-
-#endif /* WSPLITTER_H */

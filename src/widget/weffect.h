@@ -1,5 +1,4 @@
-#ifndef WEFFECT_H
-#define WEFFECT_H
+#pragma once
 
 #include <QDomNode>
 
@@ -26,6 +25,3 @@ class WEffect : public WLabel {
     EffectsManager* m_pEffectsManager;
     EffectSlotPointer m_pEffectSlot;
 };
-
-
-#endif /* WEFFECT_H */

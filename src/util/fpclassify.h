@@ -1,5 +1,4 @@
-#ifndef UTIL_FPCLASSIFY_H
-#define UTIL_FPCLASSIFY_H
+#pragma once
 
 #ifdef _MSC_VER
 
@@ -34,5 +33,3 @@ int util_isnan(double x);
 int util_isinf(double x);
 
 #endif
-
-#endif // UTIL_FPCLASSIFY_H

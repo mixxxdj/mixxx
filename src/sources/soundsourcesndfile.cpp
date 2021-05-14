@@ -1,8 +1,9 @@
-#include <QDir>
-
 #include "sources/soundsourcesndfile.h"
 
+#include <QDir>
+
 #include "util/logger.h"
+#include "util/semanticversion.h"
 
 namespace mixxx {
 
@@ -10,7 +11,60 @@ namespace {
 
 const Logger kLogger("SoundSourceSndFile");
 
+const QStringList kSupportedFileExtensions = {
+        QStringLiteral("aif"),
+        QStringLiteral("aiff"),
+        // ALAC/CAF has been added in version 1.0.26
+        // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
+        // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
+        QStringLiteral("caf"),
+        QStringLiteral("flac"),
+        QStringLiteral("ogg"),
+        QStringLiteral("wav"),
+};
+
+// SoundSourceProxyTest fails for version >= 1.0.30 and OGG files
+// https://github.com/libsndfile/libsndfile/issues/643
+const mixxx::SemanticVersion kVersionStringWithBrokenOggDecoding(1, 0, 30);
+
+QStringList getSupportedFileExtensionsFiltered() {
+    auto supportedFileExtensions = kSupportedFileExtensions;
+    QString libsndfileVersion = sf_version_string();
+    int separatorIndex = libsndfileVersion.lastIndexOf("-");
+    auto semver = mixxx::SemanticVersion(libsndfileVersion.right(separatorIndex));
+    if (semver >= kVersionStringWithBrokenOggDecoding) {
+        kLogger.info()
+                << "Disabling OGG decoding for"
+                << libsndfileVersion;
+        supportedFileExtensions.removeAll(QStringLiteral("ogg"));
+    }
+    return supportedFileExtensions;
+};
+
 } // anonymous namespace
+
+//static
+const QString SoundSourceProviderSndFile::kDisplayName = QStringLiteral("libsndfile");
+
+SoundSourceProviderSndFile::SoundSourceProviderSndFile()
+        : m_supportedFileExtensions(getSupportedFileExtensionsFiltered()) {
+}
+
+QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
+    return m_supportedFileExtensions;
+}
+
+SoundSourceProviderPriority SoundSourceProviderSndFile::getPriorityHint(
+        const QString& supportedFileExtension) const {
+    if (supportedFileExtension.startsWith(QStringLiteral("aif")) ||
+            supportedFileExtension == QLatin1String("wav")) {
+        // Default decoder for AIFF and WAV
+        return SoundSourceProviderPriority::Default;
+    } else {
+        // Otherwise only used as fallback
+        return SoundSourceProviderPriority::Lower;
+    }
+}
 
 SoundSourceSndFile::SoundSourceSndFile(const QUrl& url)
         : SoundSource(url),
@@ -35,11 +89,11 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(
     const ushort* const fileNameUtf16 = localFileName.utf16();
     static_assert(sizeof(wchar_t) == sizeof(ushort), "QString::utf16(): wchar_t and ushort have different sizes");
     m_pSndFile = sf_wchar_open(
-        reinterpret_cast<wchar_t*>(const_cast<ushort*>(fileNameUtf16)),
-        SFM_READ,
-        &sfInfo);
+            reinterpret_cast<wchar_t*>(const_cast<ushort*>(fileNameUtf16)),
+            SFM_READ,
+            &sfInfo);
 #else
-    m_pSndFile = sf_open(getLocalFileName().toLocal8Bit(), SFM_READ, &sfInfo);
+    m_pSndFile = sf_open(QFile::encodeName(getLocalFileName()), SFM_READ, &sfInfo);
 #endif
 
     switch (sf_error(m_pSndFile)) {
@@ -57,14 +111,14 @@ SoundSource::OpenResult SoundSourceSndFile::tryOpen(
             return OpenResult::Aborted;
         } else {
             kLogger.warning() << "Error opening libsndfile file:"
-                    << getUrlString()
-                    << errorMsg;
+                              << getUrlString()
+                              << errorMsg;
             return OpenResult::Failed;
         }
     }
 
-    setChannelCount(sfInfo.channels);
-    setSampleRate(sfInfo.samplerate);
+    initChannelCountOnce(sfInfo.channels);
+    initSampleRateOnce(sfInfo.samplerate);
     initFrameIndexRangeOnce(IndexRange::forward(0, sfInfo.frames));
 
     m_curFrameIndex = frameIndexMin();
@@ -80,15 +134,14 @@ void SoundSourceSndFile::close() {
             m_curFrameIndex = frameIndexMin();
         } else {
             kLogger.warning() << "Failed to close file:" << closeResult
-                    << sf_strerror(m_pSndFile)
-                    << getUrlString();
+                              << sf_strerror(m_pSndFile)
+                              << getUrlString();
         }
     }
 }
 
 ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
-        WritableSampleFrames writableSampleFrames) {
-
+        const WritableSampleFrames& writableSampleFrames) {
     const SINT firstFrameIndex = writableSampleFrames.frameIndexRange().start();
 
     if (m_curFrameIndex != firstFrameIndex) {
@@ -97,7 +150,7 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
             m_curFrameIndex = seekResult;
         } else {
             kLogger.warning() << "Failed to seek libsnd file:" << seekResult
-                    << sf_strerror(m_pSndFile);
+                              << sf_strerror(m_pSndFile);
             m_curFrameIndex = sf_seek(m_pSndFile, 0, SEEK_CUR);
             return ReadableSampleFrames(IndexRange::between(m_curFrameIndex, m_curFrameIndex));
         }
@@ -116,34 +169,16 @@ ReadableSampleFrames SoundSourceSndFile::readSampleFramesClamped(
                 resultRange,
                 SampleBuffer::ReadableSlice(
                         writableSampleFrames.writableData(),
-                        frames2samples(readCount)));
+                        getSignalInfo().frames2samples(readCount)));
     } else {
         kLogger.warning() << "Failed to read from libsnd file:"
-                << readCount
-                << sf_strerror(m_pSndFile);
+                          << readCount
+                          << sf_strerror(m_pSndFile);
         return ReadableSampleFrames(
                 IndexRange::between(
                         m_curFrameIndex,
                         m_curFrameIndex));
     }
-}
-
-QString SoundSourceProviderSndFile::getName() const {
-    return "libsndfile";
-}
-
-QStringList SoundSourceProviderSndFile::getSupportedFileExtensions() const {
-    QStringList supportedFileExtensions;
-    supportedFileExtensions.append("aiff");
-    supportedFileExtensions.append("aif");
-    supportedFileExtensions.append("wav");
-    supportedFileExtensions.append("flac");
-    supportedFileExtensions.append("ogg");
-    // ALAC/CAF has been added in version 1.0.26
-    // NOTE(uklotzde, 2015-05-26): Unfortunately ALAC in M4A containers
-    // is still not supported https://github.com/mixxxdj/mixxx/pull/904#issuecomment-221928362
-    supportedFileExtensions.append("caf");
-    return supportedFileExtensions;
 }
 
 } // namespace mixxx

@@ -1,46 +1,39 @@
-#include <QtDebug>
-#include <QSharedPointer>
-
 #include "control/control.h"
 
+#include "control/controlobject.h"
+#include "moc_control.cpp"
 #include "util/stat.h"
 
-// Static member variable definition
+//static
 UserSettingsPointer ControlDoublePrivate::s_pUserConfig;
 
-QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::s_qCOHash
-GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
+//static
+QHash<ConfigKey, QWeakPointer<ControlDoublePrivate>> ControlDoublePrivate::s_qCOHash
+        GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
 
+//static
 QHash<ConfigKey, ConfigKey> ControlDoublePrivate::s_qCOAliasHash
-GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
+        GUARDED_BY(ControlDoublePrivate::s_qCOHashMutex);
 
+//static
 MMutex ControlDoublePrivate::s_qCOHashMutex;
 
-/*
-ControlDoublePrivate::ControlDoublePrivate()
-        : m_bIgnoreNops(true),
-          m_bTrack(false),
-          m_trackType(Stat::UNSPECIFIED),
-          m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_confirmRequired(false) {
-    initialize();
-}
-*/
-
-ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
-                                           ControlObject* pCreatorCO,
-                                           bool bIgnoreNops, bool bTrack,
-                                           bool bPersist, double defaultValue)
+ControlDoublePrivate::ControlDoublePrivate(
+        const ConfigKey& key,
+        ControlObject* pCreatorCO,
+        bool bIgnoreNops,
+        bool bTrack,
+        bool bPersist,
+        double defaultValue)
         : m_key(key),
+          m_pCreatorCO(pCreatorCO),
           m_bPersistInConfiguration(bPersist),
           m_bIgnoreNops(bIgnoreNops),
           m_bTrack(bTrack),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_confirmRequired(false),
-          m_pCreatorCO(pCreatorCO) {
+                  Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_confirmRequired(false) {
     initialize(defaultValue);
 }
 
@@ -74,7 +67,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 
     if (m_bPersistInConfiguration) {
         UserSettingsPointer pConfig = ControlDoublePrivate::s_pUserConfig;
-        if (pConfig != NULL) {
+        if (pConfig != nullptr) {
             pConfig->set(m_key, QString::number(get()));
         }
     }
@@ -84,9 +77,8 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& key) {
     MMutexLocker locker(&s_qCOHashMutex);
 
-    QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it =
-            s_qCOHash.find(key);
-    if (it == s_qCOHash.end()) {
+    auto it = s_qCOHash.constFind(key);
+    if (it == s_qCOHash.constEnd()) {
         qWarning() << "WARNING: ControlDoublePrivate::insertAlias called for null control" << key;
         return;
     }
@@ -103,69 +95,99 @@ void ControlDoublePrivate::insertAlias(const ConfigKey& alias, const ConfigKey& 
 
 // static
 QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
-        const ConfigKey& key, bool warn, ControlObject* pCreatorCO,
-        bool bIgnoreNops, bool bTrack, bool bPersist, double defaultValue) {
-    if (key.isEmpty()) {
-        if (warn) {
-            qWarning() << "ControlDoublePrivate::getControl returning NULL"
-                       << "for empty ConfigKey.";
-        }
-        return QSharedPointer<ControlDoublePrivate>();
+        const ConfigKey& key,
+        ControlFlags flags,
+        ControlObject* pCreatorCO,
+        bool bIgnoreNops,
+        bool bTrack,
+        bool bPersist,
+        double defaultValue) {
+    if (!key.isValid()) {
+        qWarning() << "ControlDoublePrivate::getControl returning nullptr"
+                   << "for invalid ConfigKey" << key;
+        DEBUG_ASSERT(flags.testFlag(ControlFlag::AllowInvalidKey));
+        return nullptr;
     }
 
-
-    QSharedPointer<ControlDoublePrivate> pControl;
     // Scope for MMutexLocker.
     {
-        MMutexLocker locker(&s_qCOHashMutex);
-        QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.find(key);
-
+        const MMutexLocker locker(&s_qCOHashMutex);
+        const auto it = s_qCOHash.find(key);
         if (it != s_qCOHash.end()) {
-            if (pCreatorCO) {
-                if (warn) {
-                    qDebug() << "ControlObject" << key.group << key.item << "already created";
+            auto pControl = it.value().lock();
+            if (pControl) {
+                // Control object already exists
+                VERIFY_OR_DEBUG_ASSERT(!pCreatorCO) {
+                    qWarning()
+                            << "ControlObject"
+                            << key.group << key.item
+                            << "already created";
+                    return nullptr;
                 }
+                return pControl;
             } else {
-                pControl = it.value();
+                // The weak pointer has become invalid and can be cleaned up
+                s_qCOHash.erase(it);
             }
         }
     }
 
-    if (pControl == NULL) {
-        if (pCreatorCO) {
-            pControl = QSharedPointer<ControlDoublePrivate>(
-                    new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops,
-                                             bTrack, bPersist, defaultValue));
-            MMutexLocker locker(&s_qCOHashMutex);
-            //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
-            s_qCOHash.insert(key, pControl);
-        } else if (warn) {
-            qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
-                       << key.group << "," << key.item << ")";
-        }
+    if (pCreatorCO) {
+        auto pControl = QSharedPointer<ControlDoublePrivate>(
+                new ControlDoublePrivate(key,
+                        pCreatorCO,
+                        bIgnoreNops,
+                        bTrack,
+                        bPersist,
+                        defaultValue));
+        const MMutexLocker locker(&s_qCOHashMutex);
+        //qDebug() << "ControlDoublePrivate::s_qCOHash.insert(" << key.group << "," << key.item << ")";
+        s_qCOHash.insert(key, pControl);
+        return pControl;
     }
-    return pControl;
+
+    if (!flags.testFlag(ControlFlag::NoWarnIfMissing)) {
+        qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
+                   << key.group << "," << key.item << ")";
+        DEBUG_ASSERT(flags.testFlag(ControlFlag::NoAssertIfMissing));
+    }
+    return nullptr;
 }
 
 // static
-void ControlDoublePrivate::getControls(
-        QList<QSharedPointer<ControlDoublePrivate> >* pControlList) {
-    s_qCOHashMutex.lock();
-    pControlList->clear();
-    for (QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = s_qCOHash.begin();
-             it != s_qCOHash.end(); ++it) {
-        QSharedPointer<ControlDoublePrivate> pControl = it.value();
-        if (!pControl.isNull()) {
-            pControlList->push_back(pControl);
-        }
-    }
-    s_qCOHashMutex.unlock();
-}
-
-// static
-QHash<ConfigKey, ConfigKey> ControlDoublePrivate::getControlAliases() {
+QList<QSharedPointer<ControlDoublePrivate>> ControlDoublePrivate::getAllInstances() {
+    QList<QSharedPointer<ControlDoublePrivate>> result;
     MMutexLocker locker(&s_qCOHashMutex);
-    return s_qCOAliasHash;
+    result.reserve(s_qCOHash.size());
+    for (auto it = s_qCOHash.begin(); it != s_qCOHash.end(); ++it) {
+        auto pControl = it.value().lock();
+        if (pControl) {
+            result.append(std::move(pControl));
+        } else {
+            // The weak pointer has become invalid and can be cleaned up
+            s_qCOHash.erase(it);
+        }
+    }
+    return result;
+}
+
+// static
+QList<QSharedPointer<ControlDoublePrivate>> ControlDoublePrivate::takeAllInstances() {
+    QList<QSharedPointer<ControlDoublePrivate>> result;
+    MMutexLocker locker(&s_qCOHashMutex);
+    result.reserve(s_qCOHash.size());
+    for (auto it = s_qCOHash.begin(); it != s_qCOHash.end(); ++it) {
+        auto pControl = it.value().lock();
+        if (pControl) {
+            result.append(std::move(pControl));
+        }
+    }
+    s_qCOHash.clear();
+    return result;
+}
+
+void ControlDoublePrivate::deleteCreatorCO() {
+    delete m_pCreatorCO.fetchAndStoreOrdered(nullptr);
 }
 
 void ControlDoublePrivate::reset() {
@@ -173,7 +195,7 @@ void ControlDoublePrivate::reset() {
     // NOTE: pSender = NULL is important. The originator of this action does
     // not know the resulting value so it makes sense that we should emit a
     // general valueChanged() signal even though we know the originator.
-    set(defaultValue, NULL);
+    set(defaultValue, nullptr);
 }
 
 void ControlDoublePrivate::set(double value, QObject* pSender) {
@@ -183,7 +205,7 @@ void ControlDoublePrivate::set(double value, QObject* pSender) {
         return;
     }
     if (m_confirmRequired) {
-        emit(valueChangeRequest(value));
+        emit valueChangeRequest(value);
     } else {
         setInner(value, pSender);
     }
@@ -198,7 +220,7 @@ void ControlDoublePrivate::setInner(double value, QObject* pSender) {
         return;
     }
     m_value.setValue(value);
-    emit(valueChanged(value, pSender));
+    emit valueChanged(value, pSender);
 
     if (m_bTrack) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
@@ -258,12 +280,4 @@ double ControlDoublePrivate::getMidiParameter() const {
         return 0;
     }
     return pBehavior->valueToMidiParameter(get());
-}
-
-bool ControlDoublePrivate::connectValueChangeRequest(const QObject* receiver,
-        const char* method, Qt::ConnectionType type) {
-    // confirmation is only required if connect was successful
-    m_confirmRequired = connect(this, SIGNAL(valueChangeRequest(double)),
-                receiver, method, type);
-    return m_confirmRequired;
 }

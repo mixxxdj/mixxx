@@ -2,19 +2,20 @@
 
 #include <QtDebug>
 
-#include "waveform/visualplayposition.h"
-#include "util/timer.h"
-#include "util/trace.h"
-#include "control/controlproxy.h"
 #include "control/controlobject.h"
-#include "util/denormalsarezero.h"
+#include "control/controlproxy.h"
 #include "engine/sidechain/enginenetworkstream.h"
 #include "float.h"
+#include "moc_sounddevicenetwork.cpp"
 #include "soundio/sounddevice.h"
 #include "soundio/soundmanager.h"
 #include "soundio/soundmanagerutil.h"
+#include "util/denormalsarezero.h"
 #include "util/logger.h"
 #include "util/sample.h"
+#include "util/timer.h"
+#include "util/trace.h"
+#include "waveform/visualplayposition.h"
 
 namespace {
 const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
@@ -25,29 +26,23 @@ const int kNetworkLatencyFrames = 8192; // 185 ms @ 44100 Hz
 // Which results in case of ogg in a dynamic latency from 0.14 ms to to 185 ms
 // Now we have switched to a fixed latency of 8192 frames (stereo samples) =
 // which is 185 @ 44100 ms and twice the maximum of the max mixxx audio buffer
-const int kBufferFrames = kNetworkLatencyFrames * 4; // 743 ms @ 44100 Hz
-// normally * 2 is sufficient.
-// We allow to buffer two extra chunks for a CPU overload case, when
-// the broadcast thread is not scheduled in time.
 
 const mixxx::Logger kLogger("SoundDeviceNetwork");
-}
+} // namespace
 
 SoundDeviceNetwork::SoundDeviceNetwork(UserSettingsPointer config,
                                        SoundManager *sm,
                                        QSharedPointer<EngineNetworkStream> pNetworkStream)
         : SoundDevice(config, sm),
           m_pNetworkStream(pNetworkStream),
-          m_outputDrift(false),
           m_inputDrift(false),
           m_framesSinceAudioLatencyUsageUpdate(0),
           m_denormals(false),
-          m_targetTime(0),
-          m_lastCallbackEntrytoDacSecs(0) {
+          m_targetTime(0) {
     // Setting parent class members:
     m_hostAPI = "Network stream";
     m_dSampleRate = 44100.0;
-    m_strInternalName = kNetworkDeviceInternalName;
+    m_deviceId.name = kNetworkDeviceInternalName;
     m_strDisplayName = QObject::tr("Network stream");
     m_iNumInputChannels = pNetworkStream->getNumInputChannels();
     m_iNumOutputChannels = pNetworkStream->getNumOutputChannels();
@@ -61,7 +56,7 @@ SoundDeviceNetwork::~SoundDeviceNetwork() {
 
 SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) {
     Q_UNUSED(syncBuffers);
-    kLogger.debug() << "open:" << getInternalName();
+    kLogger.debug() << "open:" << m_deviceId.name;
 
     // Sample rate
     if (m_dSampleRate <= 0) {
@@ -112,7 +107,7 @@ SoundDeviceError SoundDeviceNetwork::open(bool isClkRefDevice, int syncBuffers) 
 }
 
 bool SoundDeviceNetwork::isOpen() const {
-    return (m_inputFifo != NULL || m_outputFifo != NULL);
+    return (m_inputFifo != nullptr || m_outputFifo != nullptr);
 }
 
 SoundDeviceError SoundDeviceNetwork::close() {
@@ -135,7 +130,9 @@ QString SoundDeviceNetwork::getError() const {
 }
 
 void SoundDeviceNetwork::readProcess() {
-    if (!m_inputFifo || !m_pNetworkStream || !m_iNumInputChannels) return;
+    if (!m_inputFifo || !m_pNetworkStream || !m_iNumInputChannels) {
+        return;
+    }
 
     int inChunkSize = m_framesPerBuffer * m_iNumInputChannels;
     int readAvailable = m_pNetworkStream->getReadExpected()
@@ -227,7 +224,9 @@ void SoundDeviceNetwork::readProcess() {
 }
 
 void SoundDeviceNetwork::writeProcess() {
-    if (!m_outputFifo || !m_pNetworkStream) return;
+    if (!m_outputFifo || !m_pNetworkStream) {
+        return;
+    }
 
     int outChunkSize = m_framesPerBuffer * m_iNumOutputChannels;
     int writeAvailable = m_outputFifo->writeAvailable();
@@ -271,8 +270,8 @@ void SoundDeviceNetwork::writeProcess() {
 
     QVector<NetworkOutputStreamWorkerPtr> workers =
             m_pNetworkStream->outputWorkers();
-    for(auto pWorker : workers) {
-        if(pWorker.isNull()) {
+    for (const auto& pWorker : workers) {
+        if (pWorker.isNull()) {
             continue;
         }
 
@@ -333,7 +332,7 @@ void SoundDeviceNetwork::workerWriteProcess(NetworkOutputStreamWorkerPtr pWorker
         }
 
         QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
-        if(pFifo) {
+        if (pFifo) {
             // interval = copyCount
             // Check for desired kNetworkLatencyFrames + 1/2 interval to
             // avoid big jitter due to interferences with sync code
@@ -357,7 +356,7 @@ void SoundDeviceNetwork::workerWrite(NetworkOutputStreamWorkerPtr pWorker,
         int writeAvailable = pFifo->writeAvailable();
         int writeRequired = frames * m_iNumOutputChannels;
         if (writeAvailable < writeRequired) {
-            kLogger.warning() << "write: worker buffer full, loosing samples";
+            kLogger.warning() << "write: worker buffer full, losing samples";
             pWorker->incOverflowCount();
         }
 
@@ -380,11 +379,11 @@ void SoundDeviceNetwork::workerWriteSilence(NetworkOutputStreamWorkerPtr pWorker
     }
 
     QSharedPointer<FIFO<CSAMPLE>> pFifo = pWorker->getOutputFifo();
-    if(pFifo) {
+    if (pFifo) {
         int writeAvailable = pFifo->writeAvailable();
         int writeRequired = frames * m_iNumOutputChannels;
         if (writeAvailable < writeRequired) {
-            kLogger.warning() << "writeSilence: worker buffer full, loosing samples";
+            kLogger.warning() << "writeSilence: worker buffer full, losing samples";
             pWorker->incOverflowCount();
         }
 
@@ -414,7 +413,7 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
     updateCallbackEntryToDacTime();
 
     Trace trace("SoundDeviceNetwork::callbackProcessClkRef %1",
-                getInternalName());
+                m_deviceId.name);
 
 
     if (!m_denormals) {
@@ -436,24 +435,38 @@ void SoundDeviceNetwork::callbackProcessClkRef() {
         } else {
              qDebug() << "SSE: Flush to zero mode already enabled";
         }
+#endif
+
+#ifdef aarch64
+        // Flush-to-zero on aarch64 is controlled by the Floating-point Control Register
+        // Load the register into our variable.
+        int savedFPCR;
+        asm volatile("mrs %[savedFPCR], FPCR"
+                     : [ savedFPCR ] "=r"(savedFPCR));
+
+        qDebug() << "aarch64 FPCR: setting bit 24 to 1 to enable Flush-to-zero";
+        // Bit 24 is the flush-to-zero mode control bit. Setting it to 1 flushes denormals to 0.
+        asm volatile("msr FPCR, %[src]"
+                     :
+                     : [ src ] "r"(savedFPCR | (1 << 24)));
+#endif
         // verify if flush to zero or denormals to zero works
         // test passes if one of the two flag is set.
         volatile double doubleMin = DBL_MIN; // the smallest normalized double
         VERIFY_OR_DEBUG_ASSERT(doubleMin / 2 == 0.0) {
-            qWarning() << "SSE: Denormals to zero mode is not working. EQs and effects may suffer high CPU load";
-        } else {
-            qDebug() << "SSE: Denormals to zero mode is working";
+            qWarning() << "Network Sound: Denormals to zero mode is not working. "
+                          "EQs and effects may suffer high CPU load";
         }
-#else
-        qWarning() << "No SSE: No denormals to zero mode available. EQs and effects may suffer high CPU load";
-#endif
+        else {
+            qDebug() << "Network Sound: Denormals to zero mode is working";
+        }
     }
 
     m_pSoundManager->readProcess();
 
     {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess prepare %1",
-                getInternalName());
+                m_deviceId.name);
         m_pSoundManager->onDeviceOutputCallback(m_framesPerBuffer);
     }
 

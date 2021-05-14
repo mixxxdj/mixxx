@@ -1,5 +1,4 @@
-#ifndef WBATTERY_H
-#define WBATTERY_H
+#pragma once
 
 #include <QList>
 #include <QPixmap>
@@ -15,13 +14,16 @@
 class WBattery : public WWidget {
     Q_OBJECT
   public:
-    explicit WBattery(QWidget* parent=nullptr);
+    explicit WBattery(QWidget* parent = nullptr);
+    ~WBattery() override = default;
 
     void setup(const QDomNode& node, const SkinContext& context);
 
-  public slots:
+    static QString formatTooltip(double dPercentage);
+
+  private slots:
     // gets information from battery and updates the Pixmap
-    void update();
+    void slotStateChanged();
 
   protected:
     void paintEvent(QPaintEvent * /*unused*/) override;
@@ -34,10 +36,7 @@ class WBattery : public WWidget {
     PaintablePointer m_pCurrentPixmap;
 
     PaintablePointer m_pPixmapBack;
-    PaintablePointer m_pPixmapUnknown;
     PaintablePointer m_pPixmapCharged;
     QVector<PaintablePointer> m_dischargingPixmaps;
     QVector<PaintablePointer> m_chargingPixmaps;
 };
-
-#endif /* WBATTERY_H */

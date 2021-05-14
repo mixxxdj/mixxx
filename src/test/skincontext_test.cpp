@@ -44,19 +44,12 @@ TEST_F(SkinContextTest, UpdateVariables) {
     var2.setAttribute("format", "%1_%1");
     tmpl.appendChild(var2);
 
-    // Set test5 to the result of test3 + test4.
-    QDomElement var3 = doc.createElement("SetVariable");
-    var3.setAttribute("name", "test5");
-    var3.setAttribute("expression", "test3 + test4");
-    tmpl.appendChild(var3);
-
     m_context.updateVariables(tmpl);
 
     EXPECT_QSTRING_EQ("zxcv", m_context.variable("test"));
     EXPECT_QSTRING_EQ("1234_1234", m_context.variable("test2"));
     EXPECT_QSTRING_EQ("foo", m_context.variable("test3"));
     EXPECT_QSTRING_EQ("bar", m_context.variable("test4"));
-    EXPECT_QSTRING_EQ("foobar", m_context.variable("test5"));
 }
 
 TEST_F(SkinContextTest, UpdateVariables_EmbeddedVariable) {
@@ -109,20 +102,4 @@ TEST_F(SkinContextTest, VariableWithFormat) {
     test.appendChild(variableNode);
     m_context.setVariable("name", "Mixxx");
     EXPECT_QSTRING_EQ("Hello -Mixxx-", m_context.nodeToString(test));
-}
-
-TEST_F(SkinContextTest, VariableWithExpression) {
-    // Evaluate an ECMAScript expression in the current context.
-    QDomDocument doc;
-    QDomElement test = doc.createElement("Test");
-    test.appendChild(doc.createTextNode("Hello "));
-    QDomElement variableNode = doc.createElement("Variable");
-    variableNode.setAttribute(
-        "expression", "'Mixxx, value + 1 = ' + (parseInt(value) + 1)");
-    test.appendChild(variableNode);
-    test.appendChild(doc.createTextNode(". Isn't that great?"));
-    m_context.setVariable("name", "Mixxx");
-    m_context.setVariable("value", "2");
-    EXPECT_QSTRING_EQ("Hello Mixxx, value + 1 = 3. Isn't that great?",
-                      m_context.nodeToString(test));
 }

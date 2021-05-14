@@ -1,61 +1,61 @@
-#ifndef DLGPREFLIBRARY_H
-#define DLGPREFLIBRARY_H
+#pragma once
 
+#include <QFont>
 #include <QStandardItemModel>
 #include <QWidget>
-#include <QFont>
 
-#include "preferences/dialog/ui_dlgpreflibrarydlg.h"
-#include "preferences/usersettings.h"
+#include "defs_urls.h"
 #include "library/library.h"
 #include "library/library_preferences.h"
-#include "preferences/dlgpreferencepage.h"
-
-/**
-  *@author Tue & Ken Haste Andersen
-  */
+#include "preferences/dialog/dlgpreferencepage.h"
+#include "preferences/dialog/ui_dlgpreflibrarydlg.h"
+#include "preferences/usersettings.h"
 
 class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
   public:
-    enum TrackDoubleClickAction {
-        LOAD_TO_DECK,
-        ADD_TO_AUTODJ_BOTTOM,
-        ADD_TO_AUTODJ_TOP
+    enum class TrackDoubleClickAction : int {
+        LoadToDeck = 0,
+        AddToAutoDJBottom = 1,
+        AddToAutoDJTop = 2,
+        Ignore = 3,
     };
 
     DlgPrefLibrary(
             QWidget* pParent,
             UserSettingsPointer pConfig,
-            Library* pLibrary);
+            std::shared_ptr<Library> pLibrary);
     ~DlgPrefLibrary() override {}
+
+    QUrl helpUrl() const override;
 
   public slots:
     // Common preference page slots.
-    void slotUpdate();
-    void slotShow();
-    void slotHide();
-    void slotResetToDefaults();
-    void slotApply();
-    void slotCancel();
+    void slotUpdate() override;
+    void slotShow() override;
+    void slotHide() override;
+    void slotResetToDefaults() override;
+    void slotApply() override;
+    void slotCancel() override;
 
     // Dialog to browse for music file directory
     void slotAddDir();
     void slotRemoveDir();
     void slotRelocateDir();
-    void slotExtraPlugins();
 
   signals:
     void apply();
     void scanLibrary();
-    void requestAddDir(QString dir);
-    void requestRemoveDir(QString dir, Library::RemovalType removalType);
-    void requestRelocateDir(QString currentDir, QString newDir);
+    void requestAddDir(const QString& dir);
+    void requestRemoveDir(const QString& dir, Library::RemovalType removalType);
+    void requestRelocateDir(const QString& currentDir, const QString& newDir);
 
   private slots:
     void slotRowHeightValueChanged(int);
     void slotSelectFont();
     void slotSyncTrackMetadataExportToggled();
+    void slotSearchDebouncingTimeoutMillisChanged(int);
+    void slotSeratoMetadataExportClicked(bool);
 
   private:
     void initializeDirList();
@@ -63,10 +63,8 @@ class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
 
     QStandardItemModel m_dirListModel;
     UserSettingsPointer m_pConfig;
-    Library* m_pLibrary;
+    std::shared_ptr<Library> m_pLibrary;
     bool m_bAddedDirectory;
     QFont m_originalTrackTableFont;
     int m_iOriginalTrackTableRowHeight;
 };
-
-#endif

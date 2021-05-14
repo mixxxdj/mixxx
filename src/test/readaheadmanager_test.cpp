@@ -3,33 +3,39 @@
 #include <QtDebug>
 #include <QScopedPointer>
 
-#include "engine/cachingreader.h"
+#include "engine/cachingreader/cachingreader.h"
 #include "control/controlobject.h"
-#include "engine/loopingcontrol.h"
+#include "engine/controls/loopingcontrol.h"
 #include "engine/readaheadmanager.h"
 #include "test/mixxxtest.h"
 #include "util/assert.h"
 #include "util/defs.h"
 #include "util/sample.h"
 
+namespace {
+const QString kGroup = "[test]";
+} // namespace
+
 class StubReader : public CachingReader {
   public:
     StubReader()
-            : CachingReader("[test]", UserSettingsPointer()) { }
+            : CachingReader(kGroup, UserSettingsPointer()) {
+    }
 
-    SINT read(SINT startSample, SINT numSamples, bool reverse,
+    CachingReader::ReadResult read(SINT startSample, SINT numSamples, bool reverse,
              CSAMPLE* buffer) override {
         Q_UNUSED(startSample);
         Q_UNUSED(reverse);
         SampleUtil::clear(buffer, numSamples);
-        return numSamples;
+        return CachingReader::ReadResult::AVAILABLE;
     }
 };
 
 class StubLoopControl : public LoopingControl {
   public:
     StubLoopControl()
-            : LoopingControl("[test]", UserSettingsPointer()) { }
+            : LoopingControl(kGroup, UserSettingsPointer()) {
+    }
 
     void pushTriggerReturnValue(double value) {
         m_triggerReturnValues.push_back(value);
@@ -56,15 +62,12 @@ class StubLoopControl : public LoopingControl {
         Q_UNUSED(pHintList);
     }
 
-    void notifySeek(double dNewPlaypos, bool adjustingPhase) override {
+    void notifySeek(double dNewPlaypos) override {
         Q_UNUSED(dNewPlaypos);
-        Q_UNUSED(adjustingPhase);
     }
 
-  public slots:
-    void trackLoaded(TrackPointer pTrack, TrackPointer pOldTrack) override {
+    void trackLoaded(TrackPointer pTrack) override {
         Q_UNUSED(pTrack);
-        Q_UNUSED(pOldTrack);
     }
 
   protected:
@@ -74,7 +77,17 @@ class StubLoopControl : public LoopingControl {
 
 class ReadAheadManagerTest : public MixxxTest {
   public:
-    ReadAheadManagerTest() : m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) { }
+    ReadAheadManagerTest()
+            : m_beatClosestCO(ConfigKey(kGroup, "beat_closest")),
+              m_beatNextCO(ConfigKey(kGroup, "beat_next")),
+              m_beatPrevCO(ConfigKey(kGroup, "beat_prev")),
+              m_playCO(ConfigKey(kGroup, "play")),
+              m_quantizeCO(ConfigKey(kGroup, "quantize")),
+              m_slipEnabledCO(ConfigKey(kGroup, "slip_enabled")),
+              m_trackSamplesCO(ConfigKey(kGroup, "track_samples")),
+              m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
+    }
+
   protected:
     void SetUp() override {
         SampleUtil::clear(m_pBuffer, MAX_BUFFER_LEN);
@@ -87,6 +100,13 @@ class ReadAheadManagerTest : public MixxxTest {
     QScopedPointer<StubReader> m_pReader;
     QScopedPointer<StubLoopControl> m_pLoopControl;
     QScopedPointer<ReadAheadManager> m_pReadAheadManager;
+    ControlObject m_beatClosestCO;
+    ControlObject m_beatNextCO;
+    ControlObject m_beatPrevCO;
+    ControlObject m_playCO;
+    ControlObject m_quantizeCO;
+    ControlObject m_slipEnabledCO;
+    ControlObject m_trackSamplesCO;
     CSAMPLE* m_pBuffer;
 };
 

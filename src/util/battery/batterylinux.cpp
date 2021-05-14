@@ -7,85 +7,61 @@
 #include <QtDebug>
 
 BatteryLinux::BatteryLinux(QObject* pParent)
-    : Battery(pParent) {
+    : Battery(pParent),
+      m_client(up_client_new()) {
 }
 
 BatteryLinux::~BatteryLinux() {
+    g_object_unref(static_cast<UpClient*>(m_client));
 }
 
 void BatteryLinux::read() {
-    m_iMinutesLeft = 0;
+    VERIFY_OR_DEBUG_ASSERT(static_cast<UpClient*>(m_client)) {
+        return;
+    }
+    m_iMinutesLeft = Battery::TIME_UNKNOWN;
     m_dPercentage = 0.0;
     m_chargingState = Battery::UNKNOWN;
 
-    // NOTE(rryan): It would be nice if we could create the client
-    // once. However, while testing this up_client_get_devices(client) returned
-    // an empty list when I tried to re-use the UpClient instance.
-    UpClient* client = up_client_new();
-    if (client == nullptr) {
-      return;
+    UpDevice *device = up_client_get_display_device(static_cast<UpClient*>(m_client));
+    if (!device) {
+        return;
     }
 
-#if !UP_CHECK_VERSION(0, 9, 99)
-    // Re-enumerate in case a device is added.
-    up_client_enumerate_devices_sync(client, NULL, NULL);
-#endif
+    guint kind = UP_DEVICE_KIND_UNKNOWN;
+    gboolean isPresent = false;
+    guint state = UP_DEVICE_STATE_UNKNOWN;
+    gdouble percentage = 0.0;
+    gint64 timeToEmpty = 0;
+    gint64 timeToFull = 0;
+    g_object_get(G_OBJECT(device),
+                 "kind", &kind,
+                 "is-present", &isPresent,
+                 "state", &state,
+                 "percentage", &percentage,
+                 "time-to-empty", &timeToEmpty,
+                 "time-to-full", &timeToFull,
+                 NULL);
+    g_clear_object(&device);
 
-    GPtrArray* devices = up_client_get_devices(client);
-    if (devices == nullptr) {
-      return;
+    if (!isPresent || kind != UP_DEVICE_KIND_BATTERY) {
+        return;
     }
 
-    for (guint i = 0; i < devices->len; ++i) {
-      gpointer device = g_ptr_array_index(devices, i);
-      if (device == nullptr) {
-        continue;
-      }
-
-      gboolean online;
-      gdouble percentage;
-      guint state;
-      guint kind;
-      gint64 timeToEmpty;
-      gint64 timeToFull;
-      g_object_get(G_OBJECT(device),
-                   "percentage", &percentage,
-                   "online", &online,
-                   "state", &state,
-                   "kind", &kind,
-                   "time-to-empty", &timeToEmpty,
-                   "time-to-full", &timeToFull,
-                   NULL);
-
-      // qDebug() << "BatteryLinux::read()"
-      //          << "online" << online
-      //          << "percentage" << percentage
-      //          << "state" << state
-      //          << "kind" << kind
-      //          << "timeToEmpty" << timeToEmpty
-      //          << "timeToFull" << timeToFull;
-
-      if (kind == UP_DEVICE_KIND_BATTERY) {
-        if (state == UP_DEVICE_STATE_CHARGING) {
-          m_chargingState = CHARGING;
-        } else if (state == UP_DEVICE_STATE_DISCHARGING) {
-          m_chargingState = DISCHARGING;
-        } else if (state == UP_DEVICE_STATE_FULLY_CHARGED) {
-          m_chargingState = CHARGED;
-        } else {
-          m_chargingState = UNKNOWN;
-        }
-
-        m_dPercentage = percentage;
-        if (m_chargingState == CHARGING) {
-          m_iMinutesLeft = timeToFull / 60;
-        } else if (m_chargingState == DISCHARGING) {
-          m_iMinutesLeft = timeToEmpty / 60;
-        }
-        break;
-      }
+    if (state == UP_DEVICE_STATE_CHARGING) {
+        m_chargingState = CHARGING;
+    } else if (state == UP_DEVICE_STATE_DISCHARGING) {
+        m_chargingState = DISCHARGING;
+    } else if (state == UP_DEVICE_STATE_FULLY_CHARGED) {
+        m_chargingState = CHARGED;
     }
 
-    g_ptr_array_free(devices, TRUE);
-    g_object_unref(client);
+    m_dPercentage = percentage;
+
+    // upower tells us the remaining time in seconds (0 if unknown)
+    if (m_chargingState == CHARGING && timeToFull > 0) {
+        m_iMinutesLeft = timeToFull / 60;
+    } else if (m_chargingState == DISCHARGING && timeToEmpty > 0) {
+        m_iMinutesLeft = timeToEmpty / 60;
+    }
 }

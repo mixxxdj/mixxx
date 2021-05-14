@@ -1,0 +1,38 @@
+<!-- A hotcue button. The only variable that needs to be specified is "number" -->
+<Template>
+  <WidgetGroup>
+    <ObjectName>Hotcue<Variable name="number"/></ObjectName>
+    <MinimumSize>26,26</MinimumSize>
+    <MaximumSize>26,26</MaximumSize>
+    <SizePolicy>me,f</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+      <HotcueButton>
+        <TooltipId>hotcue</TooltipId>
+        <ObjectName>HotcueButton</ObjectName>
+        <MinimumSize>26,26</MinimumSize>
+        <MaximumSize>26,26</MaximumSize>
+        <SizePolicy>me,f</SizePolicy>
+        <Group><Variable name="Group"/></Group>
+        <Hotcue><Variable name="number"/></Hotcue>
+        <NumberStates>3</NumberStates>
+        <DimBrightThreshold><Variable name="DimBrightThresholdHotcueBtn"/></DimBrightThreshold>
+        <State>
+          <Number>0</Number>
+          <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square_active.svg</Pressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square_set.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_square_active.svg</Pressed>
+        </State>
+        <State>
+          <Number>2</Number>
+          <Unpressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_set.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:/buttons_<Variable name="btn_scheme"/>/btn_<Variable name="btn_type"/>_square_active.svg</Pressed>
+        </State>
+      </HotcueButton>
+    </Children>
+  </WidgetGroup>
+</Template>

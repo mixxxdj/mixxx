@@ -1,0 +1,103 @@
+<Template>
+  <WidgetGroup>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,min</SizePolicy>
+    <Children>
+
+      <WidgetGroup>
+        <ObjectName>DeckCompact<Variable name="ChanNum" /></ObjectName>
+        <Layout>horizontal</Layout>
+        <SizePolicy>me,min</SizePolicy>
+        <Children>
+
+          <WidgetGroup>
+            <ObjectName>DeckRows2345</ObjectName>
+            <SizePolicy>me,min</SizePolicy>
+            <Layout>vertical</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>DeckRows234</ObjectName>
+                <SizePolicy>me,min</SizePolicy>
+                <Layout>horizontal</Layout>
+                <Children>
+
+                  <WidgetGroup>
+                    <ObjectName>SpinnyCoverContainer_BigCompact</ObjectName>
+                    <Layout>horizontal</Layout>
+                    <SizePolicy>f,f</SizePolicy>
+                    <Children>
+                      <SingletonContainer>
+                        <ObjectName>SpinnyCoverart<Variable name="ChanNum"/></ObjectName>
+                      </SingletonContainer>
+                    </Children>
+                    <Connection>
+                      <ConfigKey>[LateNight],show_big_spinny_cover</ConfigKey>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup><!-- SpinnyCoverContainer_BigCompact -->
+
+                  <WidgetGroup>
+                    <SizePolicy>me,min</SizePolicy>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Template src="skin:/decks/row_2_3_TitleArtistTime_compact.xml" />
+                      <Template src="skin:/decks/row_4_overviewSpinny_compact.xml" />
+                    </Children>
+                  </WidgetGroup>
+
+                  <WidgetGroup>
+                    <Size>1f,0min</Size>
+                    <Connection>
+                      <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
+                      <Transform><Not/></Transform>
+                      <BindProperty>visible</BindProperty>
+                    </Connection>
+                  </WidgetGroup>
+
+                </Children>
+              </WidgetGroup><!-- DeckRows234 -->
+
+              <Template src="skin:/decks/row_5_transportLoopJump_compact.xml" />
+
+            </Children>
+          </WidgetGroup><!-- DeckRows2345 -->
+
+          <WidgetGroup>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Children>
+              <WidgetGroup>
+                <ObjectName>DeckRateSpacer</ObjectName>
+                <SizePolicy>min,min</SizePolicy>
+                <Children/>
+                <Connection>
+                  <ConfigKey persist="true">[LateNight],show_vumeters_compact</ConfigKey>
+                  <Transform><Not/></Transform>
+                  <BindProperty>visible</BindProperty>
+                </Connection>
+              </WidgetGroup>
+            </Children>
+            <Connection>
+              <ConfigKey persist="true">[Skin],show_rate_controls_compact</ConfigKey>
+              <Transform><Not/></Transform>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+          </WidgetGroup>
+
+          <Template src="skin:/decks/rate_controls_compact.xml"/>
+
+        </Children>
+        <!-- This is supposed to reduce margin and eliminate the border that
+          touches the optional VU meters when they're visible.
+          Unfortunately it is buggy and works only for the state that is
+          active while the skin is loaded. If the highlight value changes the
+          layout may be screwed and inner widgets overlap the outer border.. wtf?
+        <Connection>
+          <ConfigKey persist="true">[LateNight],show_vumeters_compact</ConfigKey>
+          <BindProperty>highlight</BindProperty>
+        </Connection> -->
+      </WidgetGroup><!-- DeckCompactN -->
+
+    </Children>
+  </WidgetGroup>
+</Template>

@@ -1,10 +1,9 @@
-#ifndef SYNCCONTROL_H
-#define SYNCCONTROL_H
+#pragma once
 
 #include <QScopedPointer>
 #include <gtest/gtest_prod.h>
 
-#include "engine/enginecontrol.h"
+#include "engine/controls/enginecontrol.h"
 #include "engine/sync/syncable.h"
 
 class EngineChannel;
@@ -14,6 +13,7 @@ class ControlObject;
 class ControlProxy;
 class ControlPushButton;
 
+/// SyncControl is the Master Sync object for playback decks.
 class SyncControl : public EngineControl, public Syncable {
     Q_OBJECT
   public:
@@ -24,42 +24,48 @@ class SyncControl : public EngineControl, public Syncable {
                 EngineChannel* pChannel, SyncableListener* pEngineSync);
     ~SyncControl() override;
 
-    const QString& getGroup() const { return m_sGroup; }
-    EngineChannel* getChannel() const { return m_pChannel; }
-    double getBpm() const;
+    const QString& getGroup() const override { return m_sGroup; }
+    EngineChannel* getChannel() const override { return m_pChannel; }
+    double getBpm() const override;
 
-    SyncMode getSyncMode() const;
-    void notifySyncModeChanged(SyncMode mode);
-    void notifyOnlyPlayingSyncable();
-    void requestSyncPhase();
-    bool isPlaying() const;
+    SyncMode getSyncMode() const override;
+    void setSyncMode(SyncMode mode) override;
+    void notifyOnlyPlayingSyncable() override;
+    void requestSync() override;
+    bool isPlaying() const override;
+    bool isAudible() const override;
 
-    double getBeatDistance() const;
-    void setBeatDistance(double beatDistance);
-    double getBaseBpm() const;
+    double adjustSyncBeatDistance(double beatDistance) const;
+    double getBeatDistance() const override;
+    void updateTargetBeatDistance();
+    double getBaseBpm() const override;
+
+    // The local bpm is the base bpm of the track around the current position.
+    // For beatmap tracks, this can change with every beat.
     void setLocalBpm(double local_bpm);
+    void updateAudible();
 
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
-    void setMasterBeatDistance(double beatDistance);
-    void setMasterBaseBpm(double);
+    void setMasterBeatDistance(double beatDistance) override;
+
     // Must never result in a call to
     // SyncableListener::notifyBpmChanged or signal loops could occur.
-    void setMasterBpm(double bpm);
-    void setMasterParams(double beatDistance, double baseBpm, double bpm);
+    void setMasterBpm(double bpm) override;
+    void setMasterParams(double beatDistance, double baseBpm, double bpm) override;
 
     // Must never result in a call to
     // SyncableListener::notifyInstantaneousBpmChanged or signal loops could
     // occur.
-    void setInstantaneousBpm(double bpm);
+    void setInstantaneousBpm(double bpm) override;
 
     void setEngineControls(RateControl* pRateControl, BpmControl* pBpmControl);
 
     void reportTrackPosition(double fractionalPlaypos);
     void reportPlayerSpeed(double speed, bool scratching);
-
-  public slots:
-    void trackLoaded(TrackPointer pNewTrack, TrackPointer pOldTrack) override;
+    void notifySeek(double dNewPlaypos) override;
+    void trackLoaded(TrackPointer pNewTrack) override;
+    void trackBeatsUpdated(mixxx::BeatsPointer pBeats) override;
 
   private slots:
     // Fired by changes in play.
@@ -71,14 +77,8 @@ class SyncControl : public EngineControl, public Syncable {
     // Fired when passthrough mode is enabled or disabled.
     void slotPassthroughChanged(double v);
 
-    // Fired when a track is ejected.
-    void slotEjectPushed(double v);
-
     // Fired by changes in rate, rate_dir, rateRange.
     void slotRateChanged();
-
-    // Fired by changes in file_bpm.
-    void slotFileBpmChanged();
 
     // Change request handlers for sync properties.
     void slotSyncModeChangeRequest(double state);
@@ -92,8 +92,7 @@ class SyncControl : public EngineControl, public Syncable {
     // best factor for multiplying the master bpm to get a bpm this syncable
     // should match against.
     double determineBpmMultiplier(double myBpm, double targetBpm) const;
-    void updateTargetBeatDistance();
-    double calcRateRatio();
+    double fileBpm() const;
 
     QString m_sGroup;
     // The only reason we have this pointer is an optimzation so that the
@@ -114,13 +113,13 @@ class SyncControl : public EngineControl, public Syncable {
     // It is handy to store the raw reported target beat distance in case the
     // multiplier changes and we need to recalculate the target distance.
     double m_unmultipliedTargetBeatDistance;
-    double m_beatDistance;
-    double m_prevLocalBpm;
+    ControlValueAtomic<double> m_prevLocalBpm;
+    QAtomicInt m_audible;
 
     QScopedPointer<ControlPushButton> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
     QScopedPointer<ControlPushButton> m_pSyncEnabled;
-    QScopedPointer<ControlObject> m_pSyncBeatDistance;
+    QScopedPointer<ControlObject> m_pBeatDistance;
 
     // These ControlProxys are created as parent to this and deleted by
     // the Qt object tree. This helps that they are deleted by the creating
@@ -128,15 +127,12 @@ class SyncControl : public EngineControl, public Syncable {
     ControlProxy* m_pPlayButton;
     ControlProxy* m_pBpm;
     ControlProxy* m_pLocalBpm;
-    ControlProxy* m_pFileBpm;
-    ControlProxy* m_pRateSlider;
-    ControlProxy* m_pRateDirection;
-    ControlProxy* m_pRateRange;
+    ControlProxy* m_pRateRatio;
     ControlProxy* m_pVCEnabled;
     ControlProxy* m_pPassthroughEnabled;
-    ControlProxy* m_pEjectButton;
     ControlProxy* m_pSyncPhaseButton;
+    ControlProxy* m_pQuantize;
+
+    // m_pBeats is written from an engine worker thread
+    mixxx::BeatsPointer m_pBeats;
 };
-
-
-#endif /* SYNCCONTROL_H */

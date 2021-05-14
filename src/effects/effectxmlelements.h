@@ -15,7 +15,7 @@ const QString ChainSuperParameter("SuperParameterValue");
 const QString ChainId("Id");
 const QString ChainName("Name");
 const QString ChainDescription("Description");
-const QString ChainInsertionType("InsertionType");
+const QString ChainMixMode("MixMode");
 
 const QString EffectsRoot("Effects");
 const QString Effect("Effect");

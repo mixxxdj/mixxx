@@ -1,5 +1,4 @@
-#ifndef CONTROLBEHAVIOR_H
-#define CONTROLBEHAVIOR_H
+#pragma once
 
 #include <QTimer>
 #include <QScopedPointer>
@@ -116,7 +115,7 @@ class ControlAudioTaperPotBehavior : public ControlPotmeterBehavior {
     double m_offset;
     // ensures that the neutral position on a integer midi value
     // This value is subtracted from the Midi value at neutral position
-    // and is allways < 1
+    // and is always < 1
     double m_midiCorrection;
 };
 
@@ -159,5 +158,3 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     int m_iNumStates;
     QScopedPointer<QTimer> m_pushTimer;
 };
-
-#endif /* CONTROLBEHAVIOR_H */

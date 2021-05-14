@@ -1,5 +1,4 @@
-#ifndef EMPTYWAVEFORM_H
-#define EMPTYWAVEFORM_H
+#pragma once
 
 #include <QWidget>
 
@@ -17,6 +16,7 @@ class EmptyWaveformWidget : public QWidget, public WaveformWidgetAbstract {
 
     static inline QString getWaveformWidgetName() { return tr("Empty"); }
     static inline bool useOpenGl() { return false; }
+    static inline bool useOpenGles() { return false; }
     static inline bool useOpenGLShaders() { return false; }
     static inline bool developerOnly() { return false; }
 
@@ -26,8 +26,6 @@ class EmptyWaveformWidget : public QWidget, public WaveformWidgetAbstract {
     virtual mixxx::Duration render();
 
   private:
-    EmptyWaveformWidget(const char* group, QWidget* parent);
+    EmptyWaveformWidget(const QString& group, QWidget* parent);
     friend class WaveformWidgetFactory;
 };
-
-#endif // EMPTYWAVEFORM_H

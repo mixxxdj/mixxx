@@ -1,5 +1,4 @@
-#ifndef EFFECTSMANAGER_H
-#define EFFECTSMANAGER_H
+#pragma once
 
 #include <QObject>
 #include <QHash>
@@ -11,26 +10,26 @@
 #include "preferences/usersettings.h"
 #include "control/controlpotmeter.h"
 #include "control/controlpushbutton.h"
-#include "effects/effect.h"
-#include "effects/effectchain.h"
-#include "effects/effectchainmanager.h"
-#include "effects/effectchainslot.h"
-#include "effects/effectrack.h"
-#include "effects/effectsbackend.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/message.h"
 #include "util/class.h"
 #include "util/fifo.h"
 
 class EngineEffectsManager;
+class EffectChainManager;
+class EffectManifest;
+class EffectsBackend;
 
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
-    typedef bool (*EffectManifestFilterFnc)(const EffectManifest& pManifest);
+    static const QString kNoEffectString;
 
-    EffectsManager(QObject* pParent, UserSettingsPointer pConfig,
-                   ChannelHandleFactory* pChannelHandleFactory);
+    typedef bool (*EffectManifestFilterFnc)(EffectManifest* pManifest);
+
+    EffectsManager(QObject* pParent,
+            UserSettingsPointer pConfig,
+            ChannelHandleFactoryPointer pChannelHandleFactory);
     virtual ~EffectsManager();
 
     EngineEffectsManager* getEngineEffectsManager() {
@@ -49,8 +48,8 @@ class EffectsManager : public QObject {
     // takes ownership of the backend, and will delete it when EffectsManager is
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
-    void registerInputChannel(const ChannelHandleAndGroup& handle_group);
-    void registerOutputChannel(const ChannelHandleAndGroup& handle_group);
+    void registerInputChannel(const ChannelHandleAndGroup& handleGroup);
+    void registerOutputChannel(const ChannelHandleAndGroup& handleGroup);
     const QSet<ChannelHandleAndGroup>& registeredInputChannels() const;
     const QSet<ChannelHandleAndGroup>& registeredOutputChannels() const;
 
@@ -79,29 +78,41 @@ class EffectsManager : public QObject {
     QString getNextEffectId(const QString& effectId);
     QString getPrevEffectId(const QString& effectId);
 
-    inline const QList<EffectManifest>& getAvailableEffectManifests() const {
+    inline const QList<EffectManifestPointer>& getAvailableEffectManifests() const {
         return m_availableEffectManifests;
     };
-    const QList<EffectManifest> getAvailableEffectManifestsFiltered(
+    inline const QList<EffectManifestPointer>& getVisibleEffectManifests() const {
+        return m_visibleEffectManifests;
+    };
+    const QList<EffectManifestPointer> getAvailableEffectManifestsFiltered(
         EffectManifestFilterFnc filter) const;
     bool isEQ(const QString& effectId) const;
-    QPair<EffectManifest, EffectsBackend*> getEffectManifestAndBackend(
-            const QString& effectId) const;
-    EffectManifest getEffectManifest(const QString& effectId) const;
+    void getEffectManifestAndBackend(
+            const QString& effectId,
+            EffectManifestPointer* ppManifest, EffectsBackend** ppBackend) const;
+    EffectManifestPointer getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
+
+    void setEffectVisibility(EffectManifestPointer pManifest, bool visibility);
+    bool getEffectVisibility(EffectManifestPointer pManifest);
 
     // Temporary, but for setting up all the default EffectChains and EffectRacks
     void setup();
+
+    // Reloads all effect to the slots to update parameter assignments
+    void refeshAllRacks();
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
     // ownership of request and deletes it once a response is received.
     bool writeRequest(EffectsRequest* request);
 
   signals:
-    void availableEffectsUpdated(EffectManifest);
+    // TODO() Not connected. Can be used when we implement effect PlugIn loading at runtime
+    void availableEffectsUpdated(EffectManifestPointer);
+    void visibleEffectsUpdated();
 
   private slots:
-    void slotBackendRegisteredEffect(EffectManifest manifest);
+    void slotBackendRegisteredEffect(EffectManifestPointer pManifest);
 
   private:
     QString debugString() const {
@@ -111,11 +122,12 @@ class EffectsManager : public QObject {
     void processEffectsResponses();
     void collectGarbage(const EffectsRequest* pResponse);
 
-    ChannelHandleFactory* m_pChannelHandleFactory;
+    ChannelHandleFactoryPointer m_pChannelHandleFactory;
 
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;
-    QList<EffectManifest> m_availableEffectManifests;
+    QList<EffectManifestPointer> m_availableEffectManifests;
+    QList<EffectManifestPointer> m_visibleEffectManifests;
 
     EngineEffectsManager* m_pEngineEffectsManager;
 
@@ -132,6 +144,3 @@ class EffectsManager : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };
-
-
-#endif /* EFFECTSMANAGER_H */

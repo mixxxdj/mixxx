@@ -39,8 +39,7 @@
 **
 ****************************************************************************/
 
-#ifndef PERFORMANCETIMER_H
-#define PERFORMANCETIMER_H
+#pragma once
 
 //
 // This is a fork of QPerformanceTimer just without the Q prefix
@@ -74,5 +73,3 @@ private:
     qint64 t2;
 #endif
 };
-
-#endif // PERFORMANCETIMER_H

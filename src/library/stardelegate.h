@@ -1,35 +1,15 @@
-/***************************************************************************
-                           stardelegate.h
-                              -------------------
-     copyright            : (C) 2010 Tobias Rafreider
-     copyright            : (C) 2009 Nokia Corporation
+#pragma once
 
-***************************************************************************/
+#include "library/tableitemdelegate.h"
 
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-
-#ifndef STARDELEGATE_H
-#define STARDELEGATE_H
-
-#include <QStyledItemDelegate>
-#include <QTableView>
-
-class StarDelegate : public QStyledItemDelegate {
+class StarDelegate : public TableItemDelegate {
     Q_OBJECT
   public:
-    StarDelegate(QObject* pParent = 0);
+    StarDelegate(QTableView* pTrackTable);
 
     // reimplemented from QItemDelegate and is called whenever the view needs to
     // repaint an item
-    void paint(QPainter* painter, const QStyleOptionViewItem& option,
+    void paintItem(QPainter* painter, const QStyleOptionViewItem& option,
                const QModelIndex& index) const;
 
     // returns an item's preferred size
@@ -58,5 +38,3 @@ class StarDelegate : public QStyledItemDelegate {
     QPersistentModelIndex m_currentEditedCellIndex;
     bool m_isOneCellInEditMode;
 };
-
-#endif

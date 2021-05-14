@@ -11,10 +11,20 @@
     <SizePolicy>min,f</SizePolicy>
     <Children>
 
+      <Battery>
+        <ObjectName>Battery</ObjectName>
+        <Size>24,24</Size>
+        <SizePolicy>f,f</SizePolicy>
+        <PixmapCharged scalemode="STRETCH_ASPECT">icon/ic_battery_charged_48px.svg</PixmapCharged>
+        <NumberStates>8</NumberStates>
+        <PixmapsCharging scalemode="STRETCH_ASPECT">icon/ic_battery_charging_%1_48px.svg</PixmapsCharging>
+        <PixmapsDischarging scalemode="STRETCH_ASPECT">icon/ic_battery_discharging_%1_48px.svg</PixmapsDischarging>
+      </Battery>
+
       <WidgetGroup>
         <ObjectName>ToolBarLeft</ObjectName>
         <Layout>horizontal</Layout>
-        <SizePolicy>max,min</SizePolicy>
+        <SizePolicy>min,min</SizePolicy>
         <Children>
 
           <WidgetGroup>
@@ -24,63 +34,15 @@
               <Time>
                 <TooltipId>time</TooltipId>
                 <ObjectName>Time</ObjectName>
-                <Size>60f,20f</Size>
-                <ShowSeconds>false</ShowSeconds>
+                <Size>52f,20f</Size>
+                <CustomFormat>hh:mm</CustomFormat>
               </Time>
 
-            <Template src="skin:vumeter_latency.xml">
-              <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
-              <SetVariable name="group">[Master]</SetVariable>
-              <SetVariable name="control">audio_latency_usage</SetVariable>
-            </Template>
-            </Children>
-          </WidgetGroup>
-
-          <Template src="skin:spacer_hx.xml">
-            <SetVariable name="width">15</SetVariable>
-          </Template>
-
-          <WidgetGroup>
-            <ObjectName>HeadphoneControls</ObjectName>
-            <SizePolicy>me,min</SizePolicy>
-            <Layout>horizontal</Layout>
-            <Connection>
-              <ConfigKey>[Master],headEnabled</ConfigKey>
-              <BindProperty>visible</BindProperty>
-            </Connection>
-            <Children>
-
-              <Template src="skin:knob_toolbar.xml">
-                <SetVariable name="TooltipId">headMix</SetVariable>
+              <Template src="skin:vumeter_latency.xml">
+                <SetVariable name="TooltipId">audio_latency_usage</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
-                <SetVariable name="control">headMix</SetVariable>
-                <SetVariable name="color">blue_gapless</SetVariable>
-                <SetVariable name="label">Head Mix</SetVariable>
+                <SetVariable name="control">audio_latency_usage</SetVariable>
               </Template>
-
-              <Template src="skin:knob_toolbar.xml">
-                <SetVariable name="TooltipId">headphone_gain</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
-                <SetVariable name="control">headGain</SetVariable>
-                <SetVariable name="color">green</SetVariable>
-                <SetVariable name="label">Head</SetVariable>
-              </Template>
-
-              <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId">headSplit</SetVariable>
-                <SetVariable name="ObjectName">ToolbarButton</SetVariable>
-                <SetVariable name="MinimumSize">65,22</SetVariable>
-                <SetVariable name="MaximumSize">65,22</SetVariable>
-                <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text">SPLIT CUE</SetVariable>
-                <SetVariable name="state_1_text">SPLIT CUE</SetVariable>
-                <SetVariable name="left_connection_control">[Master],headSplit</SetVariable>
-              </Template>
-
-            <Template src="skin:spacer_hx.xml">
-              <SetVariable name="width">15</SetVariable>
-            </Template>
-
             </Children>
           </WidgetGroup>
 
@@ -90,19 +52,63 @@
             <Layout>horizontal</Layout>
             <Children>
               <Template src="skin:knob_toolbar.xml">
-                <SetVariable name="TooltipId">balance</SetVariable>
-                <SetVariable name="group">[Master]</SetVariable>
-                <SetVariable name="control">balance</SetVariable>
-                <SetVariable name="color">purple</SetVariable>
-                <SetVariable name="label">Balance</SetVariable>
-              </Template>
-
-              <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">master_gain</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
                 <SetVariable name="control">gain</SetVariable>
                 <SetVariable name="color">green</SetVariable>
-                <SetVariable name="label">Master</SetVariable>
+                <SetVariable name="label">Main</SetVariable>
+              </Template>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
+                <SetVariable name="MinimumSize">26,22</SetVariable>
+                <SetVariable name="MaximumSize">26,22</SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">FX1</SetVariable>
+                <SetVariable name="state_1_text">FX1</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit1],group_[Master]_enable</SetVariable>
+              </Template>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
+                <SetVariable name="MinimumSize">18,22</SetVariable>
+                <SetVariable name="MaximumSize">18,22</SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">2</SetVariable>
+                <SetVariable name="state_1_text">2</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit2],group_[Master]_enable</SetVariable>
+              </Template>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
+                <SetVariable name="MinimumSize">18,22</SetVariable>
+                <SetVariable name="MaximumSize">18,22</SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">3</SetVariable>
+                <SetVariable name="state_1_text">3</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit3],group_[Master]_enable</SetVariable>
+              </Template>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">EffectUnit_master_enabled</SetVariable>
+                <SetVariable name="ObjectName">FxAssignmentButton</SetVariable>
+                <SetVariable name="MinimumSize">18,22</SetVariable>
+                <SetVariable name="MaximumSize">18,22</SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="SmallWideButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">4</SetVariable>
+                <SetVariable name="state_1_text">4</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1_EffectUnit4],group_[Master]_enable</SetVariable>
+              </Template>
+
+              <Template src="skin:knob_toolbar.xml">
+                <SetVariable name="TooltipId">balance</SetVariable>
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="control">balance</SetVariable>
+                <SetVariable name="color">purple</SetVariable>
+                <SetVariable name="label">Bal</SetVariable>
               </Template>
 
             </Children>
@@ -116,10 +122,6 @@
               <BindProperty>visible</BindProperty>
             </Connection>
             <Children>
-              <Template src="skin:spacer_hx.xml">
-                <SetVariable name="width">15</SetVariable>
-              </Template>
-
               <Template src="skin:knob_toolbar.xml">
                 <SetVariable name="TooltipId">booth_gain</SetVariable>
                 <SetVariable name="group">[Master]</SetVariable>
@@ -127,14 +129,88 @@
                 <SetVariable name="color">grey</SetVariable>
                 <SetVariable name="label">Booth</SetVariable>
               </Template>
+
+              <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+            </Children>
+          </WidgetGroup>
+
+          <WidgetGroup>
+            <ObjectName>HeadphoneControls</ObjectName>
+            <SizePolicy>min,min</SizePolicy>
+            <Layout>horizontal</Layout>
+            <Connection>
+              <ConfigKey>[Master],headEnabled</ConfigKey>
+              <BindProperty>visible</BindProperty>
+            </Connection>
+            <Children>
+
+              <Template src="skin:knob_toolbar.xml">
+                <SetVariable name="TooltipId">headphone_gain</SetVariable>
+                <SetVariable name="group">[Master]</SetVariable>
+                <SetVariable name="control">headGain</SetVariable>
+                <SetVariable name="color">green</SetVariable>
+                <SetVariable name="label">Head</SetVariable>
+              </Template>
+
+              <WidgetGroup>
+                <Layout>horizontal</Layout>
+                <Children>
+                  <KnobComposed>
+                    <TooltipId>headMix</TooltipId>
+                    <Size>34f,28f</Size>
+                    <Knob>knob_toolbar.svg</Knob>
+                    <BackPath>knob_bg_blue_gapless.svg</BackPath>
+                    <MinAngle>-135</MinAngle>
+                    <MaxAngle>135</MaxAngle>
+                    <KnobCenterYOffset>1.32</KnobCenterYOffset>
+                    <Connection>
+                      <ConfigKey>[Master],headMix</ConfigKey>
+                    </Connection>
+                  </KnobComposed>
+                  <WidgetGroup>
+                    <Layout>vertical</Layout>
+                    <Children>
+                      <Label>
+                        <Size>30min,10f</Size>
+                        <ObjectName>KnobLabelH</ObjectName>
+                        <Text>Head</Text>
+                        <Alignment>center</Alignment>
+                      </Label>
+                      <Label>
+                        <Size>30min,10f</Size>
+                        <ObjectName>KnobLabelH</ObjectName>
+                        <Text>Mix</Text>
+                        <Alignment>center</Alignment>
+                      </Label>
+                    </Children>
+                  </WidgetGroup>
+                </Children>
+              </WidgetGroup>
+
+              <WidgetGroup><Size>5f,0min</Size></WidgetGroup>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">headSplit</SetVariable>
+                <SetVariable name="ObjectName">ToolbarButton</SetVariable>
+                <SetVariable name="MinimumSize">38,22</SetVariable>
+                <SetVariable name="MaximumSize">38,22</SetVariable>
+                <SetVariable name="SizePolicy">f,f</SetVariable>
+                <SetVariable name="state_0_text">SPLIT</SetVariable>
+                <SetVariable name="state_1_text">SPLIT</SetVariable>
+                <SetVariable name="left_connection_control">[Master],headSplit</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>10f,0min</Size></WidgetGroup>
+
             </Children>
           </WidgetGroup>
 
         </Children>
       </WidgetGroup>
 
-
-      <Template src="skin:spacer_h.xml"/>
+      <WidgetGroup>
+        <SizePolicy>me,min</SizePolicy>
+      </WidgetGroup>
 
       <WidgetGroup>
         <ObjectName>ToolBarRight</ObjectName>
@@ -205,8 +281,7 @@
                 just displaying the AutoDJ status here.
               -->
               <Template src="skin:statuslight_3state.xml">
-                <SetVariable name="TooltipId"></SetVariable>
-                <SetVariable name="Tooltip">AutoDJ active</SetVariable>
+                <SetVariable name="TooltipId">autodj_status</SetVariable>
                 <SetVariable name="ObjectName">AutoDjNotification</SetVariable>
                 <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
                 <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
@@ -221,6 +296,7 @@
 
           <WidgetGroup>
             <Layout>horizontal</Layout>
+            <SizePolicy>min,min</SizePolicy>
             <Children>
 
               <WidgetGroup>
@@ -236,9 +312,7 @@
                     <ObjectName>RecordingDuration</ObjectName>
                   </RecordingDuration>
 
-                  <Template src="skin:spacer_hx.xml">
-                    <SetVariable name="width">4f,</SetVariable>
-                  </Template>
+                  <WidgetGroup><Size>4f,0min</Size></WidgetGroup>
                 </Children>
               </WidgetGroup>
 
@@ -272,71 +346,114 @@
             <SetVariable name="display_connection_control">[Shoutcast],status</SetVariable>
           </Template>
 
-          <Template src="skin:left_2state_button.xml">
-            <SetVariable name="TooltipId">show_effects</SetVariable>
-            <SetVariable name="ObjectName">ToolbarButton</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="ToolbarButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="ToolbarButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">EFFECTS</SetVariable>
-            <SetVariable name="state_1_text">EFFECTS</SetVariable>
-            <SetVariable name="left_connection_control">[EffectRack1],show</SetVariable>
-          </Template>
+          <WidgetGroup>
+            <Layout>horizontal</Layout>
+            <SizePolicy>me,min</SizePolicy>
+            <Children>
 
-          <Template src="skin:left_2state_button.xml">
-            <SetVariable name="TooltipId">show_samplers</SetVariable>
-            <SetVariable name="ObjectName">ToolbarButton</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="ToolbarButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="ToolbarButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">SAMPLERS</SetVariable>
-            <SetVariable name="state_1_text">SAMPLERS</SetVariable>
-            <SetVariable name="left_connection_control">[Samplers],show_samplers</SetVariable>
-          </Template>
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">show_mixer</SetVariable>
+                <SetVariable name="ObjectName">ToolbarButton</SetVariable>
+                <SetVariable name="MinimumSize">55,22</SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="ToolbarButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy">me,f</SetVariable>
+                <SetVariable name="state_0_text">MIXER</SetVariable>
+                <SetVariable name="state_1_text">MIXER</SetVariable>
+                <SetVariable name="left_connection_control">[Master],show_mixer</SetVariable>
+              </Template>
 
-          <Template src="skin:left_2state_button.xml">
-            <SetVariable name="TooltipId">show_microphone</SetVariable>
-            <SetVariable name="ObjectName">ToolbarButton</SetVariable>
-            <SetVariable name="MinimumSize"><Variable name="ToolbarButtonMinimumSize"/></SetVariable>
-            <SetVariable name="MaximumSize"><Variable name="ToolbarButtonMaximumSize"/></SetVariable>
-            <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
-            <SetVariable name="state_0_text">MICS &amp; AUX</SetVariable>
-            <SetVariable name="state_1_text">MICS &amp; AUX</SetVariable>
-            <SetVariable name="left_connection_control">[Microphone],show_microphone</SetVariable>
-          </Template>
+              <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">show_effects</SetVariable>
+                <SetVariable name="ObjectName">ToolbarButton</SetVariable>
+                <SetVariable name="MinimumSize">55,22</SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="ToolbarButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy">me,f</SetVariable>
+                <SetVariable name="state_0_text">EFFECTS</SetVariable>
+                <SetVariable name="state_1_text">EFFECTS</SetVariable>
+                <SetVariable name="left_connection_control">[EffectRack1],show</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">show_samplers</SetVariable>
+                <SetVariable name="ObjectName">ToolbarButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="ToolbarButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="ToolbarButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">SAMPLERS</SetVariable>
+                <SetVariable name="state_1_text">SAMPLERS</SetVariable>
+                <SetVariable name="left_connection_control">[Samplers],show_samplers</SetVariable>
+              </Template>
+
+              <WidgetGroup><Size>6f,1min</Size></WidgetGroup>
+
+              <Template src="skin:left_2state_button.xml">
+                <SetVariable name="TooltipId">show_microphone</SetVariable>
+                <SetVariable name="ObjectName">ToolbarButton</SetVariable>
+                <SetVariable name="MinimumSize"><Variable name="ToolbarButtonMinimumSize"/></SetVariable>
+                <SetVariable name="MaximumSize"><Variable name="ToolbarButtonMaximumSize"/></SetVariable>
+                <SetVariable name="SizePolicy"><Variable name="ToolbarButtonSizePolicy"/></SetVariable>
+                <SetVariable name="state_0_text">MICS &amp; AUX</SetVariable>
+                <SetVariable name="state_1_text">MICS &amp; AUX</SetVariable>
+                <SetVariable name="left_connection_control">[Microphone],show_microphone</SetVariable>
+              </Template>
+            </Children>
+            <Connection>
+              <ConfigKey>[Master],maximize_library</ConfigKey>
+              <BindProperty>visible</BindProperty>
+              <Transform><Not/></Transform>
+            </Connection>
+          </WidgetGroup>
+
+          <!-- Hack to apply layoutPadding twice here -->
+          <WidgetGroup><Size>0f,1min</Size></WidgetGroup>
 
           <WidgetGroup>
-            <Size>107f,25f</Size>
-            <BackPath>image/mixxx_logo.svg</BackPath>
+            <Size>94f,22f</Size>
+            <BackPath scalemode="STRETCH_ASPECT">image/mixxx_logo.svg</BackPath>
           </WidgetGroup>
 
           <WidgetGroup>
             <SizePolicy>min,min</SizePolicy>
             <Layout>horizontal</Layout>
             <Children>
-              <Template src="skin:left_2state_button.xml">
-                <SetVariable name="TooltipId">skin_settings</SetVariable>
-                <SetVariable name="ObjectName">ShowHideSkinSettingsButton</SetVariable>
-                <SetVariable name="MinimumSize"><Variable name="SquareButtonMinimumSize"/></SetVariable>
-                <SetVariable name="MaximumSize"><Variable name="SquareButtonMaximumSize"/></SetVariable>
-                <SetVariable name="SizePolicy"><Variable name="SquareButtonSizePolicy"/></SetVariable>
-                <SetVariable name="state_0_text"></SetVariable>
-                <SetVariable name="state_0_pressed">icon/ic_settings_48px.svg</SetVariable>
-                <SetVariable name="state_0_unpressed">icon/ic_settings_48px.svg</SetVariable>
-                <SetVariable name="state_1_text"></SetVariable>
-                <SetVariable name="state_1_pressed">icon/ic_settings_48px.svg</SetVariable>
-                <SetVariable name="state_1_unpressed">icon/ic_settings_48px.svg</SetVariable>
-                <SetVariable name="left_connection_control">[Deere],show_skin_settings</SetVariable>
-              </Template>
+              <PushButton>
+                <TooltipId>skin_settings</TooltipId>
+                <ObjectName>SidebarShowHideSkinSettingsButton</ObjectName>
+                <MinimumSize><Variable name="SquareButtonMinimumSize"/></MinimumSize>
+                <MaximumSize><Variable name="SquareButtonMaximumSize"/></MaximumSize>
+                <SizePolicy><Variable name="SquareButtonSizePolicy"/></SizePolicy>
+                <NumberStates>2</NumberStates>
+                <State>
+                  <Number>0</Number>
+                  <Text><Variable name="state_0_text"/></Text>
+                  <Pressed scalemode="STRETCH_ASPECT">icon/ic_settings_48px.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">icon/ic_settings_48px.svg</Unpressed>
+                </State>
+                <State>
+                  <Number>1</Number>
+                  <Text><Variable name="state_1_text"/></Text>
+                  <Pressed scalemode="STRETCH_ASPECT">icon/ic_settings_48px.svg</Pressed>
+                  <Unpressed scalemode="STRETCH_ASPECT">icon/ic_settings_48px.svg</Unpressed>
+                </State>
+                <Connection>
+                  <ConfigKey>[Master],skin_settings</ConfigKey>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+              </PushButton>
             </Children>
             <Connection>
-              <ConfigKey>[Deere],show_skin_settings</ConfigKey>
+              <ConfigKey>[Master],skin_settings</ConfigKey>
               <BindProperty>visible</BindProperty>
               <Transform>
                 <Not/>
               </Transform>
             </Connection>
           </WidgetGroup>
+
 
         </Children>
       </WidgetGroup>

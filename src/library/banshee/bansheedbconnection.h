@@ -1,5 +1,4 @@
-#ifndef BANSHEEDBCONNECTION_H
-#define BANSHEEDBCONNECTION_H
+#pragma once
 
 #include <QSqlDatabase>
 #include <QUrl>
@@ -54,15 +53,13 @@ public:
 
     bool open(const QString& databaseFile);
     int getSchemaVersion();
-    QList<struct Playlist> getPlaylists();
-    QList<struct PlaylistEntry> getPlaylistEntries(int playlistId);
+    QList<Playlist> getPlaylists();
+    QList<PlaylistEntry> getPlaylistEntries(int playlistId);
 
 private:
     QSqlDatabase m_database;
-    QMap<int, struct Track> m_trackMap;
-    QMap<int, struct Artist> m_artistMap;
-    QMap<int, struct Album> m_albumMap;
+    QMap<int, Track> m_trackMap;
+    QMap<int, Artist> m_artistMap;
+    QMap<int, Album> m_albumMap;
 
 };
-
-#endif // BANSHEEDBCONNECTION_H

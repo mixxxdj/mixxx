@@ -4,8 +4,8 @@
         <name>Pioneer DDJ-SX</name>
         <author>Maximilian Beiersdorfer, DJMaxergy</author>
         <description>Pioneer DDJ-SX controller mapping</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=8310</forums>
-        <wiki>http://mixxx.org/wiki/doku.php/pioneer_ddj-sx</wiki>
+        <forums>https://mixxx.discourse.group/t/pioneer-ddj-sx-controller-mapping/15954</forums>
+        <manual>pioneer_ddj_sx</manual>
     </info>
     <controller id="DDJ-SX">
         <scriptfiles>
@@ -147,7 +147,7 @@
             <control>
                 <group>[Library]</group>
                 <key>PioneerDDJSX.rotarySelectorShiftedClick</key>
-                <description>Choose item (doube click on selected item) (old: Expand/collapse selected sidebar item), Button: SHIFT &amp; BROWSER PRESS</description>
+                <description>Choose item (double click on selected item) (old: Expand/collapse selected sidebar item), Button: SHIFT &amp; BROWSER PRESS</description>
                 <status>0x96</status>
                 <midino>0x42</midino>
                 <options>
@@ -783,7 +783,7 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control> 
+            </control>
             <control>
                 <group>[Channel1]</group>
                 <key>PioneerDDJSX.quantizeButton</key>
@@ -5793,7 +5793,7 @@
                 <options>
                     <script-binding/>
                 </options>
-            </control> 
+            </control>
             <control>
                 <group>[Channel4]</group>
                 <key>PioneerDDJSX.samplerButtons</key>

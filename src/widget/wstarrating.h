@@ -1,29 +1,39 @@
-#ifndef WSTARRATING_H
-#define WSTARRATING_H
+#pragma once
 
 #include <QEvent>
 #include <QMouseEvent>
 #include <QStylePainter>
 
-#include "skin/skincontext.h"
-#include "track/track.h"
-
+#include "control/controlpushbutton.h"
 #include "library/starrating.h"
+#include "skin/skincontext.h"
+#include "track/track_decl.h"
+#include "track/trackid.h"
 #include "widget/wwidget.h"
+
+class ControlObject;
+class ControlPushButton;
 
 class WStarRating : public WWidget {
     Q_OBJECT
   public:
-    WStarRating(QString group, QWidget* pParent);
+    WStarRating(const QString& group, QWidget* pParent);
 
     virtual void setup(const QDomNode& node, const SkinContext& context);
     QSize sizeHint() const override;
+
+    /// Manually set a custom rating
+    ///
+    /// The value must be consistent with the current track if connected.
+    void setRating(int rating);
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack = TrackPointer());
 
   private slots:
-    void updateRating(Track*);
+    void slotTrackChanged(TrackId);
+    void slotStarsUp(double v);
+    void slotStarsDown(double v);
 
   protected:
     void paintEvent(QPaintEvent* e) override;
@@ -33,14 +43,14 @@ class WStarRating : public WWidget {
     void fillDebugTooltip(QStringList* debug) const override;
 
     StarRating m_starRating;
-    QString m_pGroup;
+    const QString m_group;
     TrackPointer m_pCurrentTrack;
     bool m_focused;
     mutable QRect m_contentRect;
 
-    private:
-        void updateRating();
-        int starAtPosition(int x);
+  private:
+    void updateRatingFromTrack();
+    int starAtPosition(int x);
+    std::unique_ptr<ControlPushButton> m_pStarsUp;
+    std::unique_ptr<ControlPushButton> m_pStarsDown;
 };
-
-#endif /* WSTARRATING_H */

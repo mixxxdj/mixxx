@@ -1,0 +1,175 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Deck visual row (waveform and spinny).
+    Use smaller spinny sizes for 4 decks than 2 decks.
+  Variables:
+    i: deck number, used for to construct group name
+    group: the group to connect to
+-->
+<Template>
+  <WidgetGroup>
+    <ObjectName>VisualRow</ObjectName>
+    <Layout>horizontal</Layout>
+    <SizePolicy>me,me</SizePolicy>
+    <Children>
+
+      <Template src="skin:vinylcontrol.xml"/>
+
+      <Visual>
+        <TooltipId>waveform_display</TooltipId>
+        <Group><Variable name="group"/></Group>
+        <BgColor><Variable name="DeckBackgroundColor"/></BgColor>
+        <SignalHighColor></SignalHighColor>
+        <SignalMidColor></SignalMidColor>
+        <SignalLowColor></SignalLowColor>
+        <SignalRGBHighColor></SignalRGBHighColor>
+        <SignalRGBMidColor></SignalRGBMidColor>
+        <SignalRGBLowColor></SignalRGBLowColor>
+        <SignalColor><Variable name="DeckSignalColor"/></SignalColor>
+        <BeatColor>#ffffff</BeatColor>
+        <PlayPosColor>#00FF00</PlayPosColor>
+        <EndOfTrackColor>#EA0000</EndOfTrackColor>
+        <AxesColor></AxesColor>
+        <Align></Align>
+        <DefaultMark>
+          <Align>top</Align>
+          <Color>#006596</Color>
+          <TextColor>#000000</TextColor>
+          <Text> %1 </Text>
+        </DefaultMark>
+        <Mark>
+          <Control>cue_point</Control>
+          <Pixmap>image/marker_cue.png</Pixmap>
+          <Text>CUE</Text>
+          <Align>bottom</Align>
+          <Color>#FF001C</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <!-- Loop -->
+        <MarkRange>
+          <StartControl>loop_start_position</StartControl>
+          <EndControl>loop_end_position</EndControl>
+          <EnabledControl>loop_enabled</EnabledControl>
+          <Color>#00FF00</Color>
+          <Opacity>0.8</Opacity>
+          <DisabledColor>#FFFFFF</DisabledColor>
+          <DisabledOpacity>0.5</DisabledOpacity>
+        </MarkRange>
+        <Mark>
+          <Control>loop_start_position</Control>
+          <Pixmap>image/marker_loop_in.png</Pixmap>
+          <Text>IN</Text>
+          <Align>bottom</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>loop_end_position</Control>
+          <Pixmap>image/marker_loop_out.png</Pixmap>
+          <Text>OUT</Text>
+          <Align>bottom</Align>
+          <Color>#00FF00</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <!-- Intro -->
+        <MarkRange>
+          <StartControl>intro_start_position</StartControl>
+          <EndControl>intro_end_position</EndControl>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+          <Color>#0000FF</Color>
+          <Opacity>0.1</Opacity>
+        </MarkRange>
+        <Mark>
+          <Control>intro_start_position</Control>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+          <Text>|&#9698;</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>intro_end_position</Control>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+          <Text>&#9698;|</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <!-- Outro -->
+        <MarkRange>
+          <StartControl>outro_start_position</StartControl>
+          <EndControl>outro_end_position</EndControl>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+          <Color>#0000FF</Color>
+          <Opacity>0.1</Opacity>
+        </MarkRange>
+        <Mark>
+          <Control>outro_start_position</Control>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+          <Text>|&#9699;</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <Mark>
+          <Control>outro_end_position</Control>
+          <VisibilityControl>[Skin],show_intro_outro_cues</VisibilityControl>
+          <Text>&#9699;|</Text>
+          <Align>bottom</Align>
+          <Color>#0000FF</Color>
+          <TextColor>#FFFFFF</TextColor>
+        </Mark>
+        <!--
+        The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+        - if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+        - if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+        -->
+      </Visual>
+
+      <WidgetGroup>
+        <ObjectName>WaveformZoomContainer</ObjectName>
+        <Layout>vertical</Layout>
+        <SizePolicy>min,min</SizePolicy>
+        <Children>
+          <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">waveform_zoom_down</SetVariable>
+            <SetVariable name="ObjectName">WaveformZoomDownButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_add_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_add_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_down</SetVariable>
+          </Template>
+
+          <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">waveform_zoom_set_default</SetVariable>
+            <SetVariable name="ObjectName">WaveformZoomSetDefaultButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_clear_48px</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_clear_48px</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_set_default</SetVariable>
+          </Template>
+
+          <Template src="skin:left_1state_button.xml">
+            <SetVariable name="TooltipId">waveform_zoom_up</SetVariable>
+            <SetVariable name="ObjectName">WaveformZoomUpButton</SetVariable>
+            <SetVariable name="MinimumSize"><Variable name="SmallSquareButtonMinimumSize"/></SetVariable>
+            <SetVariable name="MaximumSize"><Variable name="SmallSquareButtonMaximumSize"/></SetVariable>
+            <SetVariable name="SizePolicy"><Variable name="SmallSquareButtonSizePolicy"/></SetVariable>
+            <SetVariable name="state_0_text"></SetVariable>
+            <SetVariable name="state_0_pressed">icon/ic_remove_48px.svg</SetVariable>
+            <SetVariable name="state_0_unpressed">icon/ic_remove_48px.svg</SetVariable>
+            <SetVariable name="left_connection_control"><Variable name="group"/>,waveform_zoom_up</SetVariable>
+          </Template>
+        </Children>
+      </WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

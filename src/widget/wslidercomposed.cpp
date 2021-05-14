@@ -1,39 +1,41 @@
-/***************************************************************************
-                          wslidercomposed.cpp  -  description
-                             -------------------
-    begin                : Tue Jun 25 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "widget/wslidercomposed.h"
 
-#include <QtDebug>
-#include <QStylePainter>
 #include <QStyleOption>
+#include <QStylePainter>
+#include <QtDebug>
 
+#include "moc_wslidercomposed.cpp"
+#include "util/debug.h"
+#include "util/duration.h"
+#include "util/math.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
-#include "util/debug.h"
-#include "util/math.h"
+#include "widget/wskincolor.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WWidget(parent),
-      m_bRightButtonPressed(false),
       m_dHandleLength(0.0),
       m_dSliderLength(0.0),
       m_bHorizontal(false),
+      m_dBarWidth(0.0),
+      m_dBarBgWidth(0.0),
+      m_dBarStart(0.0),
+      m_dBarEnd(0.0),
+      m_dBarBgStart(0.0),
+      m_dBarBgEnd(0.0),
+      m_dBarAxisPos(0.0),
+      m_bBarUnipolar(true),
+      m_barColor(nullptr),
+      m_barBgColor(nullptr),
+      m_barPenCap(Qt::FlatCap),
       m_pSlider(nullptr),
-      m_pHandle(nullptr) {
+      m_pHandle(nullptr),
+      m_renderTimer(mixxx::Duration::fromMillis(20),
+                    mixxx::Duration::fromSeconds(1)) {
+    connect(&m_renderTimer,
+            &WidgetRenderTimer::update,
+            this,
+            QOverload<>::of(&QWidget::update));
 }
 
 WSliderComposed::~WSliderComposed() {
@@ -44,6 +46,7 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     // Setup pixmaps
     unsetPixmaps();
 
+    double scaleFactor = context.getScaleFactor();
     QDomElement slider = context.selectElement(node, "Slider");
     if (!slider.isNull()) {
         // The implicit default in <1.12.0 was FIXED so we keep it for backwards
@@ -52,7 +55,7 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
         setSliderPixmap(
                 sourceSlider,
                 context.selectScaleMode(slider, Paintable::FIXED),
-                context.getScaleFactor());
+                scaleFactor);
     }
 
     m_dSliderLength = m_bHorizontal ? width() : height();
@@ -65,7 +68,66 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     // compatibility.
     setHandlePixmap(h, sourceHandle,
                     context.selectScaleMode(handle, Paintable::FIXED),
-                    context.getScaleFactor());
+                    scaleFactor);
+
+    // Set up the level bar.
+    QColor barColor = context.selectColor(node, "BarColor");
+    context.hasNodeSelectDouble(node, "BarWidth", &m_dBarWidth);
+    if (barColor.isValid() && m_dBarWidth > 0.0) {
+        m_barColor = WSkinColor::getCorrectColor(barColor);
+        m_dBarWidth *= scaleFactor;
+        QString margins;
+        QString bgMargins;
+        if (context.hasNodeSelectString(node, "BarMargins", &margins)) {
+            int comma = margins.indexOf(",");
+            bool m1ok;
+            bool m2ok;
+            double m1 = (margins.leftRef(comma)).toDouble(&m1ok);
+            double m2 = (margins.midRef(comma + 1)).toDouble(&m2ok);
+            if (m1ok && m2ok) {
+                m_dBarStart = m1 * scaleFactor;
+                m_dBarEnd = m2 * scaleFactor;
+            }
+        }
+
+        // Set up the bar background if there's a valid color set.
+        // If the background width and margins are not set explicitly
+        // we simply adopt the settings of the level bar.
+        QColor barBgColor = context.selectColor(node, "BarBgColor");
+        if (barBgColor.isValid()) {
+            m_barBgColor = WSkinColor::getCorrectColor(barBgColor);
+            if (context.hasNodeSelectDouble(node, "BarBgWidth", &m_dBarBgWidth)) {
+                if (m_dBarBgWidth > 0.0) {
+                    m_dBarBgWidth *= scaleFactor;
+                }
+            } else {
+                m_dBarBgWidth = m_dBarWidth;
+            }
+            if (context.hasNodeSelectString(node, "BarBgMargins", &bgMargins)) {
+                int comma = bgMargins.indexOf(",");
+                bool m1ok;
+                bool m2ok;
+                double m1 = (bgMargins.leftRef(comma)).toDouble(&m1ok);
+                double m2 = (bgMargins.midRef(comma + 1)).toDouble(&m2ok);
+                if (m1ok && m2ok) {
+                    m_dBarBgStart = m1 * scaleFactor;
+                    m_dBarBgEnd = m2 * scaleFactor;
+                }
+            } else {
+                m_dBarBgStart = m_dBarStart;
+                m_dBarBgEnd = m_dBarEnd;
+            }
+        }
+        // Shift the bar center line to the right or to the bottom (horizontal sliders)
+        if (context.hasNodeSelectDouble(node, "BarAxisPos", &m_dBarAxisPos)) {
+            m_dBarAxisPos *= scaleFactor;
+        }
+        // Draw the bar from 0 by default, from bottom or from left (horizontal)
+        m_bBarUnipolar = context.selectBool(node, "BarUnipolar", true);
+        if (context.selectBool(node, "BarRoundCaps", false)) {
+            m_barPenCap = Qt::RoundCap;
+        }
+    }
 
     QString eventWhileDrag;
     if (context.hasNodeSelectString(node, "EventWhileDrag", &eventWhileDrag)) {
@@ -84,11 +146,13 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
             }
         }
     }
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
-void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
-                                      Paintable::DrawMode drawMode,
-                                      double scaleFactor) {
+void WSliderComposed::setSliderPixmap(const PixmapSource& sourceSlider,
+        Paintable::DrawMode drawMode,
+        double scaleFactor) {
     m_pSlider = WPixmapStore::getPaintable(sourceSlider, drawMode, scaleFactor);
     if (!m_pSlider) {
         qDebug() << "WSliderComposed: Error loading slider pixmap:" << sourceSlider.getPath();
@@ -99,9 +163,9 @@ void WSliderComposed::setSliderPixmap(PixmapSource sourceSlider,
 }
 
 void WSliderComposed::setHandlePixmap(bool bHorizontal,
-                                      PixmapSource sourceHandle,
-                                      Paintable::DrawMode mode,
-                                      double scaleFactor) {
+        const PixmapSource& sourceHandle,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     m_bHorizontal = bHorizontal;
     m_handler.setHorizontal(m_bHorizontal);
     m_pHandle = WPixmapStore::getPaintable(sourceHandle, mode, scaleFactor);
@@ -147,19 +211,84 @@ void WSliderComposed::paintEvent(QPaintEvent * /*unused*/) {
         m_pSlider->draw(rect(), &p);
     }
 
+    // Draw level bar underneath handle
+    if (m_barColor.isValid() && m_dBarWidth > 0.0) {
+        drawBar(&p);
+    }
+
     if (!m_pHandle.isNull() && !m_pHandle->isNull()) {
         // Slider position rounded, verify this for HiDPI : bug 1479037
         double drawPos = round(m_handler.parameterToPosition(getControlParameterDisplay()));
+        QRectF targetRect;
         if (m_bHorizontal) {
             // The handle's draw mode determines whether it is stretched.
-            QRectF targetRect(drawPos, 0, m_dHandleLength, height());
-            m_pHandle->draw(targetRect, &p);
+            targetRect = QRectF(drawPos, 0, m_dHandleLength, height());
         } else {
             // The handle's draw mode determines whether it is stretched.
-            QRectF targetRect(0, drawPos, width(), m_dHandleLength);
-            m_pHandle->draw(targetRect, &p);
+            targetRect = QRectF(0, drawPos, width(), m_dHandleLength);
         }
+        m_pHandle->draw(targetRect, &p);
     }
+}
+
+void WSliderComposed::drawBar(QPainter* pPainter) {
+    double x1;
+    double x2;
+    double y1;
+    double y2;
+    double value;
+
+    // Draw bar background
+    if (m_dBarBgWidth > 0.0) {
+        QPen barBgPen = QPen(m_barBgColor);
+        barBgPen.setWidthF(m_dBarBgWidth);
+        barBgPen.setCapStyle(m_barPenCap);
+        pPainter->setPen(barBgPen);
+        QLineF barBg;
+        if (m_bHorizontal) {
+            barBg = QLineF(m_dBarBgStart, m_dBarAxisPos,
+                    width() - m_dBarBgEnd, m_dBarAxisPos);
+        } else {
+            barBg = QLineF(m_dBarAxisPos, height() - m_dBarBgEnd,
+                    m_dBarAxisPos, m_dBarBgStart);
+        }
+        pPainter->drawLine(barBg);
+    }
+
+    QPen barPen = QPen(m_barColor);
+    barPen.setWidthF(m_dBarWidth);
+    barPen.setCapStyle(m_barPenCap);
+    pPainter->setPen(barPen);
+
+    if (m_bHorizontal) {
+        // Left to right increases the parameter
+        value = getControlParameterDisplay();
+        if (m_bBarUnipolar) {
+            // draw from the left
+            x1 = m_dBarStart;
+        } else {
+            // draw from center
+            x1 = m_dBarStart + (width() - m_dBarStart -m_dBarEnd) / 2;
+        }
+        x2 = m_dBarStart + value * (width() - m_dBarStart - m_dBarEnd);
+        y1 = m_dBarAxisPos;
+        y2 = y1;
+    } else { // vertical slider
+        // Sliders usually increase parameters when moved UP, but pixels
+        // are count top to bottom, so we flip the scale
+        value = 1.0 - getControlParameterDisplay();
+        x1 = m_dBarAxisPos;
+        x2 = x1;
+        if (m_bBarUnipolar) {
+            // draw from bottom
+            y1 = height() - m_dBarEnd;
+        } else {
+            // draw from center
+            y1 = m_dBarEnd + (height() - m_dBarStart - m_dBarEnd) / 2;
+        }
+        y2 = m_dBarStart + value * (height() - m_dBarStart - m_dBarEnd);
+    }
+    pPainter->drawLine(QLineF(x1, y1, x2, y2));
 }
 
 void WSliderComposed::resizeEvent(QResizeEvent* pEvent) {
@@ -225,4 +354,12 @@ double WSliderComposed::calculateHandleLength() {
         }
     }
     return 0;
+}
+
+void WSliderComposed::inputActivity() {
+#ifdef __APPLE__
+    m_renderTimer.activity();
+#else
+    update();
+#endif
 }

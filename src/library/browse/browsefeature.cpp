@@ -1,50 +1,64 @@
-// browsefeature.cpp
-// Created 9/8/2009 by RJ Ryan (rryan@mit.edu)
+#include "library/browse/browsefeature.h"
 
-#include <QStringList>
-#include <QTreeView>
-#include <QDirModel>
-#include <QStringList>
-#include <QFileInfo>
-#include <QDesktopServices>
 #include <QAction>
+#include <QDirModel>
+#include <QFileInfo>
 #include <QMenu>
 #include <QPushButton>
+#include <QStandardPaths>
+#include <QStringList>
+#include <QTreeView>
 
-#include "track/track.h"
-#include "library/treeitem.h"
-#include "library/browse/browsefeature.h"
-#include "library/trackcollection.h"
-#include "widget/wlibrarytextbrowser.h"
-#include "widget/wlibrary.h"
 #include "controllers/keyboard/keyboardeventfilter.h"
-#include "util/sandbox.h"
+#include "library/library.h"
+#include "library/trackcollection.h"
+#include "library/trackcollectionmanager.h"
+#include "library/treeitem.h"
+#include "moc_browsefeature.cpp"
+#include "track/track.h"
 #include "util/memory.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
+#include "widget/wlibrarytextbrowser.h"
 
-const QString kQuickLinksSeparator = "-+-";
+namespace {
 
-BrowseFeature::BrowseFeature(QObject* parent,
-                             UserSettingsPointer pConfig,
-                             TrackCollection* pTrackCollection,
-                             RecordingManager* pRecordingManager)
-        : LibraryFeature(parent),
-          m_pConfig(pConfig),
-          m_browseModel(this, pTrackCollection, pRecordingManager),
+const QString kQuickLinksSeparator = QStringLiteral("-+-");
+
+} // anonymous namespace
+
+BrowseFeature::BrowseFeature(
+        Library* pLibrary,
+        UserSettingsPointer pConfig,
+        RecordingManager* pRecordingManager)
+        : LibraryFeature(pLibrary, pConfig),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
+          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel),
-          m_pTrackCollection(pTrackCollection),
-          m_pLastRightClickedItem(NULL) {
-    connect(this, SIGNAL(requestAddDir(QString)),
-            parent, SLOT(slotRequestAddDir(QString)));
+          m_pLastRightClickedItem(nullptr),
+          m_icon(":/images/library/ic_library_computer.svg") {
+    connect(this,
+            &BrowseFeature::requestAddDir,
+            pLibrary,
+            &Library::slotRequestAddDir);
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
-    connect(m_pAddQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotAddQuickLink()));
+    connect(m_pAddQuickLinkAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotAddQuickLink);
 
     m_pRemoveQuickLinkAction = new QAction(tr("Remove from Quick Links"),this);
-    connect(m_pRemoveQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotRemoveQuickLink()));
+    connect(m_pRemoveQuickLinkAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotRemoveQuickLink);
 
     m_pAddtoLibraryAction = new QAction(tr("Add to Library"),this);
-    connect(m_pAddtoLibraryAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToLibrary()));
+    connect(m_pAddtoLibraryAction,
+            &QAction::triggered,
+            this,
+            &BrowseFeature::slotAddToLibrary);
 
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -55,7 +69,7 @@ BrowseFeature::BrowseFeature(QObject* parent,
     m_proxyModel.setDynamicSortFilter(true);
 
     // The invisible root item of the child model
-    auto pRootItem = std::make_unique<TreeItem>(this);
+    std::unique_ptr<TreeItem> pRootItem = TreeItem::newRoot(this);
 
     m_pQuickLinkItem = pRootItem->appendChild(tr("Quick Links"), QUICK_LINK_NODE);
 
@@ -89,9 +103,10 @@ BrowseFeature::BrowseFeature(QObject* parent,
     // /Volumes
     pRootItem->appendChild(tr("Devices"), "/Volumes/");
 #else  // LINUX
-    pRootItem->appendChild(tr("Removable Devices"), "/media/");
+    // DEVICE_NODE contents will be rendered lazily in onLazyChildExpandation.
+    pRootItem->appendChild(tr("Removable Devices"), DEVICE_NODE);
 
-    // show root directory on UNIX-based operating systems
+    // show root directory on Linux.
     pRootItem->appendChild(QDir::rootPath(), QDir::rootPath());
 #endif
 
@@ -136,7 +151,7 @@ void BrowseFeature::slotAddQuickLink() {
     QString name = extractNameFromPath(spath);
 
     QModelIndex parent = m_childModel.index(m_pQuickLinkItem->parentRow(), 0);
-    auto pNewChild = std::make_unique<TreeItem>(this, name, vpath);
+    auto pNewChild = std::make_unique<TreeItem>(name, vpath);
     QList<TreeItem*> rows;
     rows.append(pNewChild.get());
     pNewChild.release();
@@ -151,7 +166,7 @@ void BrowseFeature::slotAddToLibrary() {
         return;
     }
     QString spath = m_pLastRightClickedItem->getData().toString();
-    emit(requestAddDir(spath));
+    emit requestAddDir(spath);
 
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
@@ -167,7 +182,7 @@ void BrowseFeature::slotAddToLibrary() {
     msgBox.exec();
 
     if (msgBox.clickedButton() == scanButton) {
-        emit(scanLibrary());
+        emit scanLibrary();
     }
 }
 
@@ -199,14 +214,14 @@ void BrowseFeature::slotRemoveQuickLink() {
 }
 
 QIcon BrowseFeature::getIcon() {
-    return QIcon(":/images/library/ic_library_computer.png");
+    return m_icon;
 }
 
 TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BrowseFeature::bindWidget(WLibrary* libraryWidget,
+void BrowseFeature::bindLibraryWidget(WLibrary* libraryWidget,
                                KeyboardEventFilter* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
@@ -214,10 +229,15 @@ void BrowseFeature::bindWidget(WLibrary* libraryWidget,
     libraryWidget->registerView("BROWSEHOME", edit);
 }
 
+void BrowseFeature::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
+    // store the sidebar widget pointer for later use in onRightClickChild
+    m_pSidebarWidget = pSidebarWidget;
+}
+
 void BrowseFeature::activate() {
-    emit(switchToView("BROWSEHOME"));
-    emit(restoreSearch(QString()));
-    emit(enableCoverArtDisplay(false));
+    emit switchToView("BROWSEHOME");
+    emit disableSearch();
+    emit enableCoverArtDisplay(false);
 }
 
 // Note: This is executed whenever you single click on an child item
@@ -229,27 +249,28 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
 
     QString path = item->getData().toString();
     if (path == QUICK_LINK_NODE || path == DEVICE_NODE) {
-        m_browseModel.setPath(MDir());
+        m_browseModel.setPath({});
     } else {
         // Open a security token for this path and if we do not have access, ask
         // for it.
-        MDir dir(path);
-        if (!dir.canAccess()) {
-            if (Sandbox::askForAccess(path)) {
+        auto dirInfo = mixxx::FileInfo(path);
+        auto dirAccess = mixxx::FileAccess(dirInfo);
+        if (!dirAccess.isReadable()) {
+            if (Sandbox::askForAccess(&dirInfo)) {
                 // Re-create to get a new token.
-                dir = MDir(path);
+                dirAccess = mixxx::FileAccess(dirInfo);
             } else {
                 // TODO(rryan): Activate an info page about sandboxing?
                 return;
             }
         }
-        m_browseModel.setPath(dir);
+        m_browseModel.setPath(std::move(dirAccess));
     }
-    emit(showTrackModel(&m_proxyModel));
-    emit(enableCoverArtDisplay(false));
+    emit showTrackModel(&m_proxyModel);
+    emit enableCoverArtDisplay(false);
 }
 
-void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
+void BrowseFeature::onRightClickChild(const QPoint& globalPos, const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     m_pLastRightClickedItem = item;
 
@@ -263,7 +284,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
         return;
     }
 
-    QMenu menu(NULL);
+    QMenu menu(m_pSidebarWidget);
     if (item->parent()->getData().toString() == QUICK_LINK_NODE) {
         menu.addAction(m_pRemoveQuickLinkAction);
         menu.exec(globalPos);
@@ -273,7 +294,12 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
     foreach (const QString& str, m_quickLinkList) {
         if (str == path) {
-             return;
+            // if path is a QuickLink:
+            // show remove action
+            menu.addAction(m_pRemoveQuickLinkAction);
+            menu.exec(globalPos);
+            onLazyChildExpandation(index);
+            return;
         }
      }
 
@@ -283,11 +309,75 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
      onLazyChildExpandation(index);
 }
 
+namespace {
+// Get the list of devices (under "Removable Devices" section).
+QList<TreeItem*> getRemovableDevices() {
+    QList<TreeItem*> ret;
+#if defined(__WINDOWS__)
+    // Repopulate drive list
+    QFileInfoList drives = QDir::drives();
+    // show drive letters
+    foreach (QFileInfo drive, drives) {
+        // Using drive.filePath() instead of drive.canonicalPath() as it
+        // freezes interface too much if there is a network share mounted
+        // (drive letter assigned) but unavailable
+        //
+        // drive.canonicalPath() make a system call to the underlying filesystem
+        // introducing delay if it is unreadable.
+        // drive.filePath() doesn't make any access to the filesystem and consequently
+        // shorten the delay
+        QString display_path = drive.filePath();
+        if (display_path.endsWith("/")) {
+            display_path.chop(1);
+        }
+        TreeItem* driveLetter = new TreeItem(
+            display_path, // Displays C:
+            drive.filePath()); // Displays C:/
+        ret << driveLetter;
+    }
+#elif defined(__LINUX__)
+    // To get devices on Linux, we look for directories under /media and
+    // /run/media/$USER.
+    QFileInfoList devices;
+
+    // Add folders under /media to devices.
+    devices += QDir("/media").entryInfoList(
+        QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Add folders under /run/media/$USER to devices.
+    QDir run_media_user_dir(QStringLiteral("/run/media/") + QString::fromLocal8Bit(qgetenv("USER")));
+    devices += run_media_user_dir.entryInfoList(
+        QDir::AllDirs | QDir::NoDotAndDotDot);
+
+    // Convert devices into a QList<TreeItem*> for display.
+    foreach(QFileInfo device, devices) {
+        TreeItem* folder = new TreeItem(
+            device.fileName(),
+            QVariant(device.filePath() + QStringLiteral("/")));
+        ret << folder;
+    }
+#endif
+    return ret;
+}
+} // namespace
+
 // This is called whenever you double click or use the triangle symbol to expand
 // the subtree. The method will read the subfolders.
 void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
+    // The selected item might have been removed just before this function
+    // is invoked!
+    // NOTE(2018-04-21, uklotzde): The following checks prevent a crash
+    // that would otherwise occur after a quick link has been removed.
+    // Especially the check of QVariant::isValid() seems to be essential.
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1510068
+    // After migration to Qt5 the implementation of all LibraryFeatures
+    // should be revisited, because I consider these checks only as a
+    // temporary workaround.
+    if (!index.isValid()) {
+        return;
+    }
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-    if (!item) {
+    if (!(item && item->getData().isValid())) {
         return;
     }
 
@@ -309,35 +399,14 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
 
     // If we are on the special device node
     if (path == DEVICE_NODE) {
-        // Repopulate drive list
-        QFileInfoList drives = QDir::drives();
-        // show drive letters
-        foreach (QFileInfo drive, drives) {
-            // Using drive.filePath() instead of drive.canonicalPath() as it
-            // freezes interface too much if there is a network share mounted
-            // (drive letter assigned) but unavailable
-            //
-            // drive.canonicalPath() make a system call to the underlying filesystem
-            // introducing delay if it is unreadable.
-            // drive.filePath() doesn't make any access to the filesystem and consequently
-            // shorten the delay
-            QString display_path = drive.filePath();
-            if (display_path.endsWith("/")) {
-                display_path.chop(1);
-            }
-            TreeItem* driveLetter = new TreeItem(
-                this,
-                display_path, // Displays C:
-                drive.filePath()); // Displays C:/
-            folders << driveLetter;
-        }
+        folders += getRemovableDevices();
     } else {
         // we assume that the path refers to a folder in the file system
         // populate childs
-        MDir dir(path);
+        const auto dirAccess = mixxx::FileAccess(mixxx::FileInfo(path));
 
-        QFileInfoList all = dir.dir().entryInfoList(
-            QDir::Dirs | QDir::NoDotAndDotDot);
+        QFileInfoList all = dirAccess.info().toQDir().entryInfoList(
+                QDir::Dirs | QDir::NoDotAndDotDot);
 
         // loop through all the item and construct the childs
         foreach (QFileInfo one, all) {
@@ -350,9 +419,8 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex& index) {
             // Once the items are added to the TreeItemModel,
             // the models takes ownership of them and ensures their deletion
             TreeItem* folder = new TreeItem(
-                this,
                 one.fileName(),
-                one.absoluteFilePath() + "/");
+                QVariant(one.absoluteFilePath() + QStringLiteral("/")));
             folders << folder;
         }
     }
@@ -389,7 +457,7 @@ void BrowseFeature::loadQuickLinks() {
     }
 }
 
-QString BrowseFeature::extractNameFromPath(QString spath) {
+QString BrowseFeature::extractNameFromPath(const QString& spath) {
     QString path = spath.left(spath.count()-1);
     int index = path.lastIndexOf("/");
     QString name = (spath.count() > 1) ? path.mid(index+1) : spath;
@@ -398,15 +466,14 @@ QString BrowseFeature::extractNameFromPath(QString spath) {
 
 QStringList BrowseFeature::getDefaultQuickLinks() const {
     // Default configuration
-    QStringList mixxxMusicDirs = m_pTrackCollection->getDirectoryDAO().getDirs();
-    QDir osMusicDir(QDesktopServices::storageLocation(
-            QDesktopServices::MusicLocation));
-    QDir osDocumentsDir(QDesktopServices::storageLocation(
-            QDesktopServices::DocumentsLocation));
-    QDir osHomeDir(QDesktopServices::storageLocation(
-            QDesktopServices::HomeLocation));
-    QDir osDesktopDir(QDesktopServices::storageLocation(
-            QDesktopServices::DesktopLocation));
+    QDir osMusicDir(QStandardPaths::writableLocation(
+            QStandardPaths::MusicLocation));
+    QDir osDocumentsDir(QStandardPaths::writableLocation(
+            QStandardPaths::DocumentsLocation));
+    QDir osHomeDir(QStandardPaths::writableLocation(
+            QStandardPaths::HomeLocation));
+    QDir osDesktopDir(QStandardPaths::writableLocation(
+            QStandardPaths::DesktopLocation));
     QDir osDownloadsDir(osHomeDir);
     // TODO(XXX) i18n -- no good way to get the download path. We could tr() it
     // but the translator may not realize we want the usual name of the
@@ -418,12 +485,15 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     bool osDownloadsDirIncluded = false;
     bool osDesktopDirIncluded = false;
     bool osDocumentsDirIncluded = false;
-    foreach (QString dirPath, mixxxMusicDirs) {
-        QDir dir(dirPath);
+    const auto rootDirs = m_pLibrary->trackCollectionManager()
+                                  ->internalCollection()
+                                  ->loadRootDirs();
+    for (mixxx::FileInfo fileInfo : rootDirs) {
         // Skip directories we don't have permission to.
-        if (!Sandbox::canAccessFile(dir)) {
+        if (!Sandbox::canAccess(&fileInfo)) {
             continue;
         }
+        const auto dir = fileInfo.toQDir();
         if (dir == osMusicDir) {
             osMusicDirIncluded = true;
         }
@@ -439,22 +509,20 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
         result << dir.canonicalPath() + "/";
     }
 
-    if (!osMusicDirIncluded && Sandbox::canAccessFile(osMusicDir)) {
+    if (!osMusicDirIncluded && Sandbox::canAccessDir(osMusicDir)) {
         result << osMusicDir.canonicalPath() + "/";
     }
 
     if (downloadsExists && !osDownloadsDirIncluded &&
-            Sandbox::canAccessFile(osDownloadsDir)) {
+            Sandbox::canAccessDir(osDownloadsDir)) {
         result << osDownloadsDir.canonicalPath() + "/";
     }
 
-    if (!osDesktopDirIncluded &&
-            Sandbox::canAccessFile(osDesktopDir)) {
+    if (!osDesktopDirIncluded && Sandbox::canAccessDir(osDesktopDir)) {
         result << osDesktopDir.canonicalPath() + "/";
     }
 
-    if (!osDocumentsDirIncluded &&
-            Sandbox::canAccessFile(osDocumentsDir)) {
+    if (!osDocumentsDirIncluded && Sandbox::canAccessDir(osDocumentsDir)) {
         result << osDocumentsDir.canonicalPath() + "/";
     }
 

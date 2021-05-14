@@ -4,18 +4,18 @@
 #include <gtest/gtest.h>
 
 #include "control/controlpotmeter.h"
-#include "effects/native/autopaneffect.h"
-#include "effects/native/bessel4lvmixeqeffect.h"
-#include "effects/native/bessel8lvmixeqeffect.h"
-#include "effects/native/bitcrushereffect.h"
-#include "effects/native/echoeffect.h"
-#include "effects/native/filtereffect.h"
-#include "effects/native/flangereffect.h"
-#include "effects/native/graphiceqeffect.h"
-#include "effects/native/linkwitzriley8eqeffect.h"
-#include "effects/native/moogladder4filtereffect.h"
-#include "effects/native/phasereffect.h"
-#include "effects/native/reverbeffect.h"
+#include "effects/builtin/autopaneffect.h"
+#include "effects/builtin/bessel4lvmixeqeffect.h"
+#include "effects/builtin/bessel8lvmixeqeffect.h"
+#include "effects/builtin/bitcrushereffect.h"
+#include "effects/builtin/echoeffect.h"
+#include "effects/builtin/filtereffect.h"
+#include "effects/builtin/flangereffect.h"
+#include "effects/builtin/graphiceqeffect.h"
+#include "effects/builtin/linkwitzriley8eqeffect.h"
+#include "effects/builtin/moogladder4filtereffect.h"
+#include "effects/builtin/phasereffect.h"
+#include "effects/builtin/reverbeffect.h"
 #include "engine/channelhandle.h"
 #include "engine/effects/groupfeaturestate.h"
 #include "test/baseeffecttest.h"
@@ -31,9 +31,9 @@ class EffectsBenchmarkTest : public BaseEffectTest {
 };
 
 template <class EffectType>
-void benchmarkNativeEffectDefaultParameters(const mixxx::EngineParameters& bufferParameters,
+void benchmarkBuiltInEffectDefaultParameters(const mixxx::EngineParameters& bufferParameters,
                                             benchmark::State* pState, EffectsManager* pEffectsManager) {
-    EffectManifest manifest = EffectType::getManifest();
+    EffectManifestPointer pManifest = EffectType::getManifest();
 
     ChannelHandleFactory factory;
     QSet<ChannelHandleAndGroup> activeInputChannels;
@@ -46,7 +46,7 @@ void benchmarkNativeEffectDefaultParameters(const mixxx::EngineParameters& buffe
     activeInputChannels.insert(handle_and_group);
     EffectInstantiatorPointer pInstantiator = EffectInstantiatorPointer(
         new EffectProcessorInstantiator<EffectType>());
-    EngineEffect effect(manifest, activeInputChannels, pEffectsManager, pInstantiator);
+    EngineEffect effect(pManifest, activeInputChannels, pEffectsManager, pInstantiator);
 
     GroupFeatureState featureState;
     EffectEnableState enableState = EffectEnableState::Enabled;
@@ -65,7 +65,7 @@ void benchmarkNativeEffectDefaultParameters(const mixxx::EngineParameters& buffe
 #define FOR_COMMON_BUFFER_SIZES(bm) bm->Arg(32)->Arg(64)->Arg(128)->Arg(256)->Arg(512)->Arg(1024)->Arg(2048)->Arg(4096);
 
 #define DECLARE_EFFECT_BENCHMARK(EffectName)                           \
-TEST_F(EffectsBenchmarkTest, BM_NativeEffects_DefaultParameters_##EffectName) { \
+TEST_F(EffectsBenchmarkTest, BM_BuiltInEffects_DefaultParameters_##EffectName) { \
     ControlPotmeter loEqFrequency(                                     \
         ConfigKey("[Mixer Profile]", "LoEQFrequency"), 0., 22040);     \
     loEqFrequency.setDefaultValue(250.0);                              \
@@ -73,12 +73,12 @@ TEST_F(EffectsBenchmarkTest, BM_NativeEffects_DefaultParameters_##EffectName) { 
         ConfigKey("[Mixer Profile]", "HiEQFrequency"), 0., 22040);     \
     hiEqFrequency.setDefaultValue(2500.0);                             \
     mixxx::EngineParameters bufferParameters(                          \
-        mixxx::AudioSignal::SampleRate(44100),                         \
+        mixxx::audio::SampleRate(44100),                         \
         state.range_x());                                              \
-    benchmarkNativeEffectDefaultParameters<EffectName>(                \
+    benchmarkBuiltInEffectDefaultParameters<EffectName>(                \
         bufferParameters, &state, m_pEffectsManager);                                     \
 }                                                                      \
-FOR_COMMON_BUFFER_SIZES(BENCHMARK(BM_NativeEffects_DefaultParameters_##EffectName));
+FOR_COMMON_BUFFER_SIZES(BENCHMARK(BM_BuiltInEffects_DefaultParameters_##EffectName));
 
 DECLARE_EFFECT_BENCHMARK(Bessel4LVMixEQEffect)
 DECLARE_EFFECT_BENCHMARK(Bessel8LVMixEQEffect)
@@ -94,4 +94,3 @@ DECLARE_EFFECT_BENCHMARK(ReverbEffect)
 
 }  // namespace
 #endif
-

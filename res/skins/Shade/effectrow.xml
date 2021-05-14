@@ -15,7 +15,6 @@
               <WidgetGroup>
                 <ObjectName>SamplerLeftBorder</ObjectName>
                 <Size>3f,0e</Size>
-                <Style>QGroupBox { border: 0px solid red; } QWidget { margin: 10px; padding: 0; }</Style>
               </WidgetGroup>
               <WidgetGroup>
                 <ObjectName>EffectUnit</ObjectName>
@@ -67,13 +66,6 @@
         </Connection>
       </WidgetGroup>
     </Children>
-    <Connection>
-      <ConfigKey>[Master],maximize_library</ConfigKey>
-      <BindProperty>visible</BindProperty>
-      <Transform>
-        <Not/>
-      </Transform>
-    </Connection>
   </WidgetGroup>
 </Template>
 

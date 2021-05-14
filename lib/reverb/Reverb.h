@@ -221,16 +221,20 @@ class PlateX2
 #endif
 
 /// (timrae) Define our own interface instead of using the original LADSPA plugin interface
-class MixxxPlateX2 : public PlateStub {
-	public:
-		void processBuffer(const sample_t* in, sample_t* out, const uint frames, const sample_t bandwidthParam,
-									const sample_t decayParam, const sample_t dampingParam, const sample_t blendParam);
+ class MixxxPlateX2 : public PlateStub {
+    public:
+        void processBuffer(const sample_t* in, sample_t* out, const uint frames,
+                           const sample_t bandwidthParam,
+                           const sample_t decayParam,
+                           const sample_t dampingParam,
+                           const sample_t currentSend,
+                           const sample_t previousSend);
 
-		void init(float sampleRate) {
-			fs = sampleRate;
-			PlateStub::init();
-			PlateStub::activate();
-		}
-};
+        void init(float sampleRate) {
+            fs = sampleRate;
+            PlateStub::init();
+            PlateStub::activate();
+        }
+ };
 
 #endif /* REVERB_H */

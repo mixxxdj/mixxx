@@ -1,8 +1,7 @@
-#ifndef SCANNERUTIL_H
-#define SCANNERUTIL_H
+#pragma once
 
 #include <QDir>
-#include <QDesktopServices>
+#include <QStandardPaths>
 #include <QStringList>
 
 // Library scanner utility methods.
@@ -15,13 +14,13 @@ class ScannerUtil {
         // blacklist. On Windows, the iTunes folder is contained within the
         // standard music folder.
         QString iTunesArtFolder = QDir::toNativeSeparators(
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation) +
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation) +
             "/iTunes/Album Artwork");
         blacklist << iTunesArtFolder;
 #ifdef __WINDOWS__
         // Blacklist the _Serato_ directory that pollutes "My Music" on Windows.
         QString seratoDir = QDir::toNativeSeparators(
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation) +
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation) +
             "/_Serato_");
         blacklist << seratoDir;
 #endif
@@ -31,5 +30,3 @@ class ScannerUtil {
   private:
     ScannerUtil() {}
 };
-
-#endif /* SCANNERUTIL_H */

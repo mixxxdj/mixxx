@@ -1,21 +1,33 @@
+#include "library/coverartcache.h"
+
 #include <QFutureWatcher>
 #include <QPixmapCache>
-#include <QStringBuilder>
 #include <QtConcurrentRun>
 #include <QtDebug>
 
-#include "library/coverartcache.h"
 #include "library/coverartutils.h"
+#include "moc_coverartcache.cpp"
+#include "track/track.h"
+#include "util/compatibility.h"
 #include "util/logger.h"
-
+#include "util/thread_affinity.h"
 
 namespace {
 
 mixxx::Logger kLogger("CoverArtCache");
 
-QString pixmapCacheKey(quint16 hash, int width) {
+// The initial QPixmapCache limit is 10MB.
+// But it is not used just by the coverArt stuff,
+// it is also used by Qt to handle other things behind the scenes.
+// Consequently coverArt cache will always have less than those
+// 10MB available to store the pixmaps.
+// So, we must increase this size a bit more,
+// in order to allow CoverCache handle more covers (performance gain).
+constexpr int kPixmapCacheLimit = 20480;
+
+QString pixmapCacheKey(mixxx::cache_key_t hash, int width) {
     return QString("CoverArtCache_%1_%2")
-            .arg(QString::number(hash)).arg(width);
+            .arg(QString::number(hash), QString::number(width));
 }
 
 // The transformation mode when scaling images
@@ -28,45 +40,69 @@ inline QImage resizeImageWidth(const QImage& image, int width) {
 
 } // anonymous namespace
 
-const bool sDebug = false;
-
 CoverArtCache::CoverArtCache() {
-    // The initial QPixmapCache limit is 10MB.
-    // But it is not used just by the coverArt stuff,
-    // it is also used by Qt to handle other things behind the scenes.
-    // Consequently coverArt cache will always have less than those
-    // 10MB available to store the pixmaps.
-    // So, we must increase this size a bit more,
-    // in order to allow CoverCache handle more covers (performance gain).
-    QPixmapCache::setCacheLimit(20480);
+    QPixmapCache::setCacheLimit(kPixmapCacheLimit);
 }
 
-CoverArtCache::~CoverArtCache() {
-    qDebug() << "~CoverArtCache()";
-}
-
-QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
-                                    const QObject* pRequestor,
-                                    const int desiredWidth,
-                                    const bool onlyCached,
-                                    const bool signalWhenDone) {
-    if (sDebug) {
-        kLogger.debug() << "requestCover"
-                 << requestInfo << pRequestor <<
-                desiredWidth << onlyCached << signalWhenDone;
+//static
+void CoverArtCache::requestCover(
+        const QObject* pRequestor,
+        const CoverInfo& coverInfo,
+        const TrackPointer& pTrack) {
+    CoverArtCache* pCache = CoverArtCache::instance();
+    VERIFY_OR_DEBUG_ASSERT(pCache) {
+        return;
     }
+    pCache->tryLoadCover(
+            pRequestor,
+            pTrack,
+            coverInfo,
+            0, // original size
+            Loading::Default);
+}
 
-    if (requestInfo.type == CoverInfo::NONE) {
-        if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestInfo,
-                            QPixmap(), true));
+//static
+void CoverArtCache::requestTrackCover(
+        const QObject* pRequestor,
+        const TrackPointer& pTrack) {
+    VERIFY_OR_DEBUG_ASSERT(pTrack) {
+        return;
+    }
+    requestCover(
+            pRequestor,
+            pTrack->getCoverInfoWithLocation(),
+            pTrack);
+}
+
+QPixmap CoverArtCache::tryLoadCover(
+        const QObject* pRequestor,
+        const TrackPointer& pTrack,
+        const CoverInfo& coverInfo,
+        int desiredWidth,
+        Loading loading) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "requestCover"
+                << pRequestor
+                << coverInfo
+                << desiredWidth
+                << loading;
+    }
+    DEBUG_ASSERT(!pTrack ||
+                pTrack->getLocation() == coverInfo.trackLocation);
+
+    const auto requestedCacheKey = coverInfo.cacheKey();
+
+    if (coverInfo.type == CoverInfo::NONE) {
+        if (loading == Loading::Default) {
+            emit coverFound(pRequestor, coverInfo, QPixmap(), requestedCacheKey, false);
         }
         return QPixmap();
     }
 
     // keep a list of trackIds for which a future is currently running
     // to avoid loading the same picture again while we are loading it
-    QPair<const QObject*, quint16> requestId = qMakePair(pRequestor, requestInfo.hash);
+    QPair<const QObject*, mixxx::cache_key_t> requestId = qMakePair(pRequestor, requestedCacheKey);
     if (m_runningRequests.contains(requestId)) {
         return QPixmap();
     }
@@ -76,129 +112,168 @@ QPixmap CoverArtCache::requestCover(const CoverInfo& requestInfo,
     // column). It's very important to keep the cropped covers in cache because
     // it avoids having to rescale+crop it ALWAYS (which brings a lot of
     // performance issues).
-    QString cacheKey = pixmapCacheKey(requestInfo.hash, desiredWidth);
+    QString cacheKey = pixmapCacheKey(requestedCacheKey, desiredWidth);
 
     QPixmap pixmap;
     if (QPixmapCache::find(cacheKey, &pixmap)) {
-        if (signalWhenDone) {
-            emit(coverFound(pRequestor, requestInfo, pixmap, true));
+        if (kLogger.traceEnabled()) {
+            kLogger.trace()
+                    << "requestCover cache hit"
+                    << coverInfo
+                    << loading;
+        }
+        if (loading == Loading::Default) {
+            emit coverFound(pRequestor, coverInfo, pixmap, requestedCacheKey, false);
         }
         return pixmap;
     }
 
-    if (onlyCached) {
-        if (sDebug) {
-            kLogger.debug() << "requestCover cache miss";
+    if (loading == Loading::CachedOnly) {
+        if (kLogger.traceEnabled()) {
+            kLogger.trace() << "requestCover cache miss";
         }
         return QPixmap();
     }
 
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "requestCover starting future for"
+                << coverInfo;
+    }
     m_runningRequests.insert(requestId);
+    // The watcher will be deleted in coverLoaded()
     QFutureWatcher<FutureResult>* watcher = new QFutureWatcher<FutureResult>(this);
     QFuture<FutureResult> future = QtConcurrent::run(
-            this, &CoverArtCache::loadCover, requestInfo, pRequestor,
-            desiredWidth, signalWhenDone);
-    connect(watcher, SIGNAL(finished()), this, SLOT(coverLoaded()));
+            &CoverArtCache::loadCover,
+            pRequestor,
+            pTrack,
+            coverInfo,
+            desiredWidth,
+            loading == Loading::Default);
+    connect(watcher,
+            &QFutureWatcher<FutureResult>::finished,
+            this,
+            &CoverArtCache::coverLoaded);
     watcher->setFuture(future);
     return QPixmap();
 }
 
 //static
-void CoverArtCache::requestCover(const Track& track,
-                         const QObject* pRequestor) {
-    CoverArtCache* pCache = CoverArtCache::instance();
-    if (pCache == nullptr) return;
-
-    CoverInfo info = track.getCoverInfoWithLocation();
-    pCache->requestCover(info, pRequestor, 0, false, true);
-}
-
 CoverArtCache::FutureResult CoverArtCache::loadCover(
-        const CoverInfo& info,
         const QObject* pRequestor,
-        const int desiredWidth,
-        const bool signalWhenDone) {
-    if (sDebug) {
-        kLogger.debug() << "loadCover"
-                 << info << desiredWidth << signalWhenDone;
+        TrackPointer pTrack,
+        CoverInfo coverInfo,
+        int desiredWidth,
+        bool signalWhenDone) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace()
+                << "loadCover"
+                << coverInfo
+                << desiredWidth
+                << signalWhenDone;
+    }
+    DEBUG_ASSERT(!pTrack ||
+            pTrack->getLocation() == coverInfo.trackLocation);
+
+    auto res = FutureResult(
+            pRequestor,
+            coverInfo.cacheKey(),
+            signalWhenDone);
+    DEBUG_ASSERT(!res.coverInfoUpdated);
+
+    auto loadedImage = coverInfo.loadImage(
+            pTrack ? pTrack->getFileAccess().token() : SecurityTokenPointer());
+    if (!loadedImage.image.isNull()) {
+        // Refresh hash before resizing the original image!
+        res.coverInfoUpdated = coverInfo.refreshImageDigest(loadedImage.image);
+        if (pTrack && res.coverInfoUpdated) {
+            kLogger.info()
+                    << "Updating cover info of track"
+                    << coverInfo.trackLocation;
+            pTrack->setCoverInfo(coverInfo);
+        }
+
+        // Resize image to requested size
+        if (desiredWidth > 0) {
+            // Adjust the cover size according to the request
+            // or downsize the image for efficiency.
+            loadedImage.image = resizeImageWidth(loadedImage.image, desiredWidth);
+        }
     }
 
-    QImage image = CoverArtUtils::loadCover(info);
-
-    // TODO(XXX) Should we re-hash here? If the cover file (or track metadata)
-    // has changed then info.hash may be incorrect. The fix
-    // will also require noticing a hash mis-match at higher levels and
-    // recording the hash change in the database.
-
-    // Adjust the cover size according to the request or downsize the image for
-    // efficiency.
-    if (!image.isNull() && desiredWidth > 0) {
-        image = resizeImageWidth(image, desiredWidth);
-    }
-
-    FutureResult res;
-    res.pRequestor = pRequestor;
-    res.cover = CoverArt(info, image, desiredWidth);
-    res.signalWhenDone = signalWhenDone;
-
+    res.coverArt = CoverArt(
+            std::move(coverInfo),
+            std::move(loadedImage),
+            desiredWidth);
     return res;
 }
 
 // watcher
 void CoverArtCache::coverLoaded() {
-    QFutureWatcher<FutureResult>* watcher;
-    watcher = reinterpret_cast<QFutureWatcher<FutureResult>*>(sender());
-    FutureResult res = watcher->result();
-
-    if (sDebug) {
-        kLogger.debug() << "coverLoaded" << res.cover;
+    FutureResult res;
+    {
+        QFutureWatcher<FutureResult>* pFutureWatcher =
+                static_cast<QFutureWatcher<FutureResult>*>(sender());
+        VERIFY_OR_DEBUG_ASSERT(pFutureWatcher) {
+            return;
+        }
+        res = pFutureWatcher->result();
+        pFutureWatcher->deleteLater();
     }
 
-    // Don't cache full size covers (resizedToWidth = 0)
-    // Large cover art wastes space in our cache and will likely
-    // uncache a lot of the small covers we need in the library
-    // table.
-    // Full size covers are used in the Skin Widgets, which are
-    // loaded with an artificial delay anyway and an additional
-    // re-load delay can be accepted.
-
-    // Create pixmap, GUI thread only
-    QPixmap pixmap = QPixmap::fromImage(res.cover.image);
-    if (!pixmap.isNull() && res.cover.resizedToWidth != 0) {
-        // we have to be sure that res.cover.hash is unique
-        // because insert replaces the images with the same key
-        QString cacheKey = pixmapCacheKey(
-                res.cover.hash, res.cover.resizedToWidth);
-        QPixmapCache::insert(cacheKey, pixmap);
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "coverLoaded" << res.coverArt;
     }
 
-    m_runningRequests.remove(qMakePair(res.pRequestor, res.cover.hash));
+    QPixmap pixmap;
+    if (res.coverArt.loadedImage.result != CoverInfo::LoadedImage::Result::NoImage) {
+        if (res.coverArt.loadedImage.result == CoverInfo::LoadedImage::Result::Ok) {
+            DEBUG_ASSERT(!res.coverArt.loadedImage.location.isEmpty());
+        } else {
+            DEBUG_ASSERT(res.coverArt.loadedImage.image.isNull());
+            kLogger.warning()
+                    << "Failed to load cover art image"
+                    << res.coverArt.loadedImage
+                    << "for track"
+                    << res.coverArt.trackLocation;
+            // Substitute missing cover art with a placeholder image to avoid high CPU load
+            // See also: https://bugs.launchpad.net/mixxx/+bug/1879160
+            const int imageSize = math_max(1, res.coverArt.resizedToWidth);
+            QImage placeholderImage(imageSize, imageSize, QImage::Format_RGB32);
+            placeholderImage.fill(
+                    mixxx::RgbColor::toQColor(res.coverArt.color, Qt::darkGray));
+            res.coverArt.loadedImage.image = placeholderImage;
+        }
+        // Create pixmap, GUI thread only!
+        DEBUG_ASSERT_MAIN_THREAD_AFFINITY();
+        DEBUG_ASSERT(!res.coverArt.loadedImage.image.isNull());
+        pixmap = QPixmap::fromImage(res.coverArt.loadedImage.image);
+        // Don't cache full size covers (resizedToWidth = 0)
+        // Large cover art wastes space in our cache and will likely
+        // uncache a lot of the small covers we need in the library
+        // table.
+        // Full size covers are used in the Skin Widgets, which are
+        // loaded with an artificial delay anyway and an additional
+        // re-load delay can be accepted.
+        if (res.coverArt.resizedToWidth > 0) {
+            DEBUG_ASSERT(!pixmap.isNull());
+            // It is very unlikely that res.coverArt.hash generates the
+            // same hash for different images. Otherwise the wrong image would
+            // be displayed when loaded from the cache.
+            QString cacheKey = pixmapCacheKey(
+                    res.coverArt.cacheKey(), res.coverArt.resizedToWidth);
+            QPixmapCache::insert(cacheKey, pixmap);
+        }
+    }
+
+    m_runningRequests.remove(qMakePair(res.pRequestor, res.requestedCacheKey));
 
     if (res.signalWhenDone) {
-        emit(coverFound(res.pRequestor, res.cover, pixmap, false));
-    }
-}
-
-void CoverArtCache::requestGuessCovers(QList<TrackPointer> tracks) {
-    QtConcurrent::run(this, &CoverArtCache::guessCovers, tracks);
-}
-
-void CoverArtCache::requestGuessCover(TrackPointer pTrack) {
-    QtConcurrent::run(this, &CoverArtCache::guessCover, pTrack);
-}
-
-void CoverArtCache::guessCover(TrackPointer pTrack) {
-    if (pTrack) {
-        kLogger.debug() << "Guessing cover art for" << pTrack->getLocation();
-        CoverInfo cover = CoverArtUtils::guessCoverInfo(*pTrack);
-        pTrack->setCoverInfo(cover);
-    }
-}
-
-void CoverArtCache::guessCovers(QList<TrackPointer> tracks) {
-    kLogger.debug() << "Guessing cover art for"
-             << tracks.size() << "tracks";
-    foreach (TrackPointer pTrack, tracks) {
-        guessCover(pTrack);
+        emit coverFound(
+                res.pRequestor,
+                std::move(res.coverArt),
+                pixmap,
+                res.requestedCacheKey,
+                res.coverInfoUpdated);
     }
 }

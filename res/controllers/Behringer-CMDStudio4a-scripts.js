@@ -13,7 +13,7 @@
 /* global script                                                      */
 /* global print                                                       */
 /* global midi                                                        */
-//////////////////////////////////////////////////////////////////////// 
+////////////////////////////////////////////////////////////////////////
 
 // Master function definition.
 function BehringerCMDStudio4a() {}
@@ -58,7 +58,7 @@ BehringerCMDStudio4a.initLEDs = function () {
     midi.sendShortMsg(0x90, 0x16, 0x00);
     midi.sendShortMsg(0x91, 0x36, 0x00);
     midi.sendShortMsg(0x92, 0x16, 0x00);
-    midi.sendShortMsg(0x93, 0x36, 0x00);    
+    midi.sendShortMsg(0x93, 0x36, 0x00);
 }
 
 BehringerCMDStudio4a.init = function () {
@@ -68,7 +68,7 @@ BehringerCMDStudio4a.init = function () {
     engine.connectControl("[Master]","VuMeterL","BehringerCMDStudio4a.vuMeterUpdate");
     engine.connectControl("[Master]","VuMeterR","BehringerCMDStudio4a.vuMeterUpdate");
 }
- 
+
 BehringerCMDStudio4a.shutdown = function() {
     // Leave the deck in a properly initialised state.
     BehringerCMDStudio4a.initLEDs();
@@ -135,7 +135,7 @@ BehringerCMDStudio4a.scratch = function (channel, control, value, status, group)
     midi.sendShortMsg(status, control, BehringerCMDStudio4a.scratchButtonState[channel] ? 0x01 : 0x00);
 }
 
-// Function to deal with the FX Assign buttons, (becasue they also act as "shift" buttons).
+// Function to deal with the FX Assign buttons, (because they also act as "shift" buttons).
 BehringerCMDStudio4a.fxAssign = function (channel, control, value, status, group) {
     // FX Assign buttons start at 0x52.
     var fxAssignButton = (control - 0x52) & 1;  // Either 0 or 1 depending on button (1 or 2).
@@ -156,7 +156,7 @@ BehringerCMDStudio4a.fxAssign = function (channel, control, value, status, group
     }
 }
 
-// Function to deal with the browse left/right buttons, (becasue they have an "FX Assign mode" behaviour).
+// Function to deal with the browse left/right buttons, (because they have an "FX Assign mode" behaviour).
 BehringerCMDStudio4a.browseLR = function (channel, control, value, status, group) {
     if (BehringerCMDStudio4a.fxAssignPushed) {
         BehringerCMDStudio4a.fxAssignShiftUsed = true;
@@ -207,10 +207,10 @@ BehringerCMDStudio4a.hotcue = function (channel, control, value, status, group) 
                     // turn it on directly here, the only work-around I could
                     // think of was to create a (very short) timed call-back
                     // to turn it off!
-					// Raised bug about this:
-					// https://bugs.launchpad.net/mixxx/+bug/1538200
-					// Changed timer from 50 to 100 after the pathology of this
-					// bug was explined in the bug report.
+                    // Raised bug about this:
+                    // https://bugs.launchpad.net/mixxx/+bug/1538200
+                    // Changed timer from 50 to 100 after the pathology of this
+                    // bug was explined in the bug report.
                     engine.beginTimer(100, function() { engine.setValue(group, "slip_enabled", 1); }, 1);
                 }
             }
@@ -223,21 +223,21 @@ BehringerCMDStudio4a.hotcue = function (channel, control, value, status, group) 
 
 // Functions to deal with the pitch inc/dec buttons, (because they have a DEL-mode behaviour).
 BehringerCMDStudio4a.pitch = function (channel, control, value, status, group) {
-	// Work out the direction.
-	var direction = ((control & 0x01) == 0) ? "down" : "up";
-	// Work out the type (and join) by looking at the DEL button state.
-	var type = BehringerCMDStudio4a.delButtonState[channel] ? "pitch" : "rate";
-	var join = BehringerCMDStudio4a.delButtonState[channel] ? "" : "_perm";
-	// Pushed or released?
+    // Work out the direction.
+    var direction = ((control & 0x01) == 0) ? "down" : "up";
+    // Work out the type (and join) by looking at the DEL button state.
+    var type = BehringerCMDStudio4a.delButtonState[channel] ? "pitch" : "rate";
+    var join = BehringerCMDStudio4a.delButtonState[channel] ? "" : "_perm";
+    // Pushed or released?
     if (value == 127) {
         // Button pushed.
         BehringerCMDStudio4a.pitchPushed[control & 0x01][channel] = true;
-		// Is the other button pushed too?
-		if (BehringerCMDStudio4a.pitchPushed[(~control) & 0x01][channel]) {
-			engine.setValue(group, type, 0); // Yep! reset the control.
-		} else {
-			engine.setValue(group, type+join+"_"+direction, 1);
-		}
+        // Is the other button pushed too?
+        if (BehringerCMDStudio4a.pitchPushed[(~control) & 0x01][channel]) {
+            engine.setValue(group, type, 0); // Yep! reset the control.
+        } else {
+            engine.setValue(group, type+join+"_"+direction, 1);
+        }
     } else {
         // Button released.
         BehringerCMDStudio4a.pitchPushed[control & 0x01][channel] = false;

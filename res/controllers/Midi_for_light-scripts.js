@@ -3,7 +3,7 @@ function midi_for_light() {}
 /*
     midi_for_light
 
-    Sending informations on midi for using in a light software.
+    Sending information on midi for using in a light software.
     Extend the light show and make it sync to the current deck.
     - beat
     - bpm
@@ -16,29 +16,29 @@ function midi_for_light() {}
 ///////////////////////////////////////////////////////////////
 //                       USER OPTIONS                        //
 ///////////////////////////////////////////////////////////////
-var midi_channel = 1; // set midi_channel. Valid range: 1 to 16.  
+var midi_channel = 1; // set midi_channel. Valid range: 1 to 16.
 var enable_beat = true; // set to false if you not need beat
 var enable_bpm = true; // set to false if you not need BPM
 var enable_mtc_timecode = false; // set to false if you not need midi time code
-var enable_vu_mono_current = false; // set to false if you not need VU mono current 
-var enable_vu_mono_average_min = false; // set to false if you not need VU mono average min 
+var enable_vu_mono_current = false; // set to false if you not need VU mono current
+var enable_vu_mono_average_min = false; // set to false if you not need VU mono average min
 var enable_vu_mono_average_mid = false; // set to false if you not need VU mono average mid
 var enable_vu_mono_average_max = false; // set to false if you not need VU mono average max
 var enable_vu_mono_average_fit = true; // set to false if you not need VU mono average fit
 var enable_vu_mono_current_meter = false; // set to false if you not need VU mono current meter
 var enable_vu_mono_average_meter = true; // set to false if you not need VU mono average meter
-var enable_vu_left_current = false; // set to false if you not need VU left current 
-var enable_vu_left_average_min = false; // set to false if you not need VU left average min 
-var enable_vu_left_average_mid = false; // set to false if you not need VU left average mid 
-var enable_vu_left_average_max = false; // set to false if you not need VU left average max 
-var enable_vu_left_average_fit = true; // set to false if you not need VU left average fit 
+var enable_vu_left_current = false; // set to false if you not need VU left current
+var enable_vu_left_average_min = false; // set to false if you not need VU left average min
+var enable_vu_left_average_mid = false; // set to false if you not need VU left average mid
+var enable_vu_left_average_max = false; // set to false if you not need VU left average max
+var enable_vu_left_average_fit = true; // set to false if you not need VU left average fit
 var enable_vu_left_current_meter = false; // set to false if you not need VU left current meter
 var enable_vu_left_average_meter = false; // set to false if you not need VU left average meter
-var enable_vu_right_current = false; // set to false if you not need VU right current 
-var enable_vu_right_average_min = false; // set to false if you not need VU right average min 
-var enable_vu_right_average_mid = false; // set to false if you not need VU right average mid 
-var enable_vu_right_average_max = false; // set to false if you not need VU right average max 
-var enable_vu_right_average_fit = true; // set to false if you not need VU right average fit 
+var enable_vu_right_current = false; // set to false if you not need VU right current
+var enable_vu_right_average_min = false; // set to false if you not need VU right average min
+var enable_vu_right_average_mid = false; // set to false if you not need VU right average mid
+var enable_vu_right_average_max = false; // set to false if you not need VU right average max
+var enable_vu_right_average_fit = true; // set to false if you not need VU right average fit
 var enable_vu_right_current_meter = false; // set to false if you not need VU right current meter
 var enable_vu_right_average_meter = false; // set to false if you not need VU right average meter
 
@@ -70,7 +70,7 @@ if (enable_vu_mono_current === true || enable_vu_mono_average_min === true || en
 //                         FUNCTIONS                         //
 ///////////////////////////////////////////////////////////////
 
-midi_for_light.init = function(id) { // called when the MIDI device is opened & set up   
+midi_for_light.init = function(id) { // called when the MIDI device is opened & set up
     midi_for_light.id = id; // store the ID of this device for later use
     midi_for_light.directory_mode = false;
     midi_for_light.deck_current = 0;
@@ -132,7 +132,7 @@ midi_for_light.deckButtonPlay = function(value, group, control) { // called when
 
 };
 
-midi_for_light.deckBeatWatchdog = function(deck) { //  if current deck beat lost without reason, search a new current deck   
+midi_for_light.deckBeatWatchdog = function(deck) { //  if current deck beat lost without reason, search a new current deck
     engine.stopTimer(deck_beat_watchdog_timer[deck]);
     beat_watchdog[deck] = true;
     if (midi_for_light.volumebeat === false) midi_for_light.crossfaderChange();
@@ -149,7 +149,7 @@ midi_for_light.vuMeter = function() { // read, calculate and send vu-meter value
     var vu_left_current = engine.getValue("[Master]", "VuMeterL");
     var vu_right_current = engine.getValue("[Master]", "VuMeterR");
 
-    // arraycounter 
+    // arraycounter
     vu_array_fill_counter++;
     if (vu_array_fill_counter > vu_array_fill_maximum) {
         vu_array_fill_counter = 1;
@@ -485,7 +485,7 @@ midi_for_light.sendMidiMtcFullFrame = function(value, group, control) { // sends
 
     if (PlayPositionRest < 0) PlayPositionRest = 0;
 
-    // calculate position hour and stripping from PlayPositionRest 
+    // calculate position hour and stripping from PlayPositionRest
     var hr = Math.floor(PlayPositionRest / 3600);
     PlayPositionRest = PlayPositionRest - (hr * 3600);
     // calculate position minute and stripping from PlayPositionRest
@@ -505,7 +505,7 @@ midi_for_light.deckBeatOutputToMidi = function(value, group, control) { // send 
     var deck = parseInt(group.substring(8, 9)) - 1;
     var deck_bpm = parseInt(engine.getValue(group, "bpm")) - 50;
 
-    // reset deck beat watchdog 
+    // reset deck beat watchdog
     engine.stopTimer(deck_beat_watchdog_timer[deck]);
     beat_watchdog[deck] = false;
     deck_beat_watchdog_timer[deck] = engine.beginTimer(beat_watchdog_time, "midi_for_light.deckBeatWatchdog(" + deck + ")");

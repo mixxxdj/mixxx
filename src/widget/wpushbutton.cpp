@@ -1,34 +1,18 @@
-/***************************************************************************
-                          wpushbutton.cpp  -  description
-                             -------------------
-    begin                : Fri Jun 21 2002
-    copyright            : (C) 2002 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "widget/wpushbutton.h"
 
-#include <QStylePainter>
-#include <QStyleOption>
-#include <QPixmap>
-#include <QtDebug>
-#include <QMouseEvent>
-#include <QTouchEvent>
-#include <QPaintEvent>
 #include <QApplication>
+#include <QMouseEvent>
+#include <QPaintEvent>
+#include <QPixmap>
+#include <QStyleOption>
+#include <QStylePainter>
+#include <QTouchEvent>
+#include <QtDebug>
 
 #include "control/controlbehavior.h"
 #include "control/controlobject.h"
 #include "control/controlpushbutton.h"
+#include "moc_wpushbutton.cpp"
 #include "util/debug.h"
 #include "util/math.h"
 #include "widget/wpixmapstore.h"
@@ -70,7 +54,25 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         }
     }
 
-    // Load pixmaps for associated states
+    // Adds an ellipsis to truncated text
+    QString elide;
+    if (context.hasNodeSelectString(node, "Elide", &elide)) {
+        elide = elide.toLower();
+        if (elide == "right") {
+            m_elideMode = Qt::ElideRight;
+        } else if (elide == "middle") {
+            m_elideMode = Qt::ElideMiddle;
+        } else if (elide == "left") {
+            m_elideMode = Qt::ElideLeft;
+        } else if (elide == "none") {
+            m_elideMode = Qt::ElideNone;
+        } else {
+            qDebug() << "WPushButton::setup(): Elide =" << elide <<
+                    "unknown, use right, middle, left or none.";
+        }
+    }
+
+    // Load pixmaps and set texts for associated states
     QDomNode state = context.selectNode(node, "State");
     while (!state.isNull()) {
         if (state.isElement() && state.nodeName() == "State") {
@@ -82,7 +84,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
             // context.
             QScopedPointer<SkinContext> createdStateContext;
             if (context.hasVariableUpdates(state)) {
-                createdStateContext.reset(new SkinContext(context));
+                createdStateContext.reset(new SkinContext(&context));
                 createdStateContext->updateVariables(state);
             }
 
@@ -144,7 +146,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         m_leftButtonMode = ControlPushButton::PUSH;
         if (!leftClickForcePush) {
             const ConfigKey& configKey = leftConnection->getKey();
-            ControlPushButton* p = dynamic_cast<ControlPushButton*>(
+            ControlPushButton* p = qobject_cast<ControlPushButton*>(
                     ControlObject::getControl(configKey));
             if (p) {
                 m_leftButtonMode = p->getButtonMode();
@@ -187,7 +189,7 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         m_rightButtonMode = ControlPushButton::PUSH;
         if (!rightClickForcePush) {
             const ConfigKey configKey = rightConnection->getKey();
-            ControlPushButton* p = dynamic_cast<ControlPushButton*>(
+            ControlPushButton* p = qobject_cast<ControlPushButton*>(
                     ControlObject::getControl(configKey));
             if (p) {
                 m_rightButtonMode = p->getButtonMode();
@@ -222,11 +224,15 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
             rightConnection->setDirectionOption(ControlParameterWidgetConnection::DIR_FROM_WIDGET);
         }
     }
+
+    setFocusPolicy(Qt::NoFocus);
 }
 
 void WPushButton::setStates(int iStates) {
+    m_bHovered = false;
     m_bPressed = false;
     m_iNoStates = iStates;
+    m_elideMode = Qt::ElideNone;
     m_activeTouchButton = Qt::NoButton;
 
     m_pressedPixmaps.resize(iStates);
@@ -235,8 +241,11 @@ void WPushButton::setStates(int iStates) {
     m_align.resize(iStates);
 }
 
-void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource source,
-                            Paintable::DrawMode mode, double scaleFactor) {
+void WPushButton::setPixmap(int iState,
+        bool bPressed,
+        const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     QVector<PaintablePointer>& pixmaps = bPressed ?
             m_pressedPixmaps : m_unpressedPixmaps;
 
@@ -257,9 +266,9 @@ void WPushButton::setPixmap(int iState, bool bPressed, PixmapSource source,
     pixmaps.replace(iState, pPixmap);
 }
 
-void WPushButton::setPixmapBackground(PixmapSource source,
-                                      Paintable::DrawMode mode,
-                                      double scaleFactor) {
+void WPushButton::setPixmapBackground(const PixmapSource& source,
+        Paintable::DrawMode mode,
+        double scaleFactor) {
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPaintable(source, mode, scaleFactor);
     if (!source.isEmpty() &&
@@ -270,7 +279,7 @@ void WPushButton::setPixmapBackground(PixmapSource source,
 }
 
 void WPushButton::restyleAndRepaint() {
-    emit(displayValueChanged(readDisplayValue()));
+    emit displayValueChanged(readDisplayValue());
 
     // According to http://stackoverflow.com/a/3822243 this is the least
     // expensive way to restyle just this widget.
@@ -335,7 +344,15 @@ void WPushButton::paintEvent(QPaintEvent* e) {
 
     QString text = m_text.at(idx);
     if (!text.isEmpty()) {
-        p.drawText(rect(), m_align.at(idx), text);
+        QFontMetrics metrics(font());
+        // ToDo(ronso0) Consider css padding for buttons with border images
+        // * read QWidget::style()->property("padding-left");
+        // * adjust width()
+        // * transform rect()
+//        int textWidth = width() - lPad - rPad;
+//        QRect textRect = rect().adjust(x1, y1, x2, y2);
+        QString elidedText = metrics.elidedText(text, m_elideMode, width());
+        p.drawText(rect(), m_align.at(idx), elidedText);
     }
 }
 
@@ -346,12 +363,12 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     if (m_leftButtonMode == ControlPushButton::POWERWINDOW
             && m_iNoStates == 2) {
         if (leftClick) {
-            if (getControlParameterLeft() == 0.0) {
-                m_clickTimer.setSingleShot(true);
-                m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
-            }
+            m_clickTimer.setSingleShot(true);
+            m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
             m_bPressed = true;
-            setControlParameterLeftDown(1.0);
+
+            double emitValue = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
+            setControlParameterLeftDown(emitValue);
             restyleAndRepaint();
         }
         // discharge right clicks here, because is used for latching in POWERWINDOW mode
@@ -360,7 +377,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary button function always a Pushbutton
-        // due the leak of visual feedback we do not allow a toggle function
+        // due the lack of visual feedback we do not allow a toggle function
         if (m_rightButtonMode == ControlPushButton::PUSH ||
                 m_rightButtonMode == ControlPushButton::TRIGGER ||
                 m_iNoStates == 1) {
@@ -372,6 +389,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     }
 
     if (leftClick) {
+        m_bPressed = true;
         double emitValue;
         if (m_leftButtonMode == ControlPushButton::PUSH
                 || m_iNoStates == 1) {
@@ -379,7 +397,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             // or this is a push button.
             emitValue = 1.0;
         } else {
-            // Toggle thru the states
+            // Toggle through the states
             emitValue = getControlParameterLeft();
             if (!isnan(emitValue) && m_iNoStates > 0) {
                 emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
@@ -389,21 +407,52 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
                 m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
             }
         }
-        m_bPressed = true;
         setControlParameterLeftDown(emitValue);
         restyleAndRepaint();
     }
 }
 
+bool WPushButton::event(QEvent* e) {
+    if (e->type() == QEvent::WindowDeactivate) {
+        // if the window is deactivated while in pressed state
+        if (m_bPressed) {
+            m_bPressed = false;
+            restyleAndRepaint();
+        }
+    } else if (e->type() == QEvent::Enter) {
+        m_bHovered = true;
+        restyleAndRepaint();
+    } else if (e->type() == QEvent::Leave) {
+        if (m_bPressed) {
+            // A Leave event is send instead of a mouseReleaseEvent()
+            // fake it to get not stucked in pressed state
+            QMouseEvent mouseEvent = QMouseEvent(
+                    QEvent::MouseButtonRelease,
+                    QPointF(),
+                    QPointF(),
+                    QPointF(),
+                    Qt::LeftButton,
+                    Qt::NoButton,
+                    Qt::NoModifier,
+                    Qt::MouseEventSynthesizedByApplication);
+            mouseReleaseEvent(&mouseEvent);
+        }
+        m_bHovered = false;
+        restyleAndRepaint();
+    }
+    return WWidget::event(e);
+}
+
 void WPushButton::focusOutEvent(QFocusEvent* e) {
-    Q_UNUSED(e);
-    if (e->reason() != Qt::MouseFocusReason) {
+    qDebug() << "focusOutEvent" << e->reason();
+    if (m_bPressed && e->reason() != Qt::MouseFocusReason) {
         // Since we support multi touch there is no reason to reset
         // the pressed flag if the Primary touch point is moved to an
         // other widget
         m_bPressed = false;
         restyleAndRepaint();
     }
+    QWidget::focusOutEvent(e);
 }
 
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
@@ -416,7 +465,8 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
             if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
                 // Release button after timer, but not if right button is clicked
-                setControlParameterLeftUp(0.0);
+                double emitValue = getControlParameterLeft() == 0.0 ? 1.0 : 0.0;
+                setControlParameterLeftUp(emitValue);
             }
             m_bPressed = false;
         } else if (rightClick) {
@@ -430,16 +480,17 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         // This is the secondary clickButton function,
         // due the leak of visual feedback we do not allow a toggle
         // function
+        m_bPressed = false;
         if (m_rightButtonMode == ControlPushButton::PUSH
                 || m_iNoStates == 1) {
-            m_bPressed = false;
             setControlParameterRightUp(0.0);
-            restyleAndRepaint();
         }
+        restyleAndRepaint();
         return;
     }
 
     if (leftClick) {
+        m_bPressed = false;
         double emitValue = getControlParameterLeft();
         if (m_leftButtonMode == ControlPushButton::PUSH
                 || m_iNoStates == 1) {
@@ -456,7 +507,6 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
                 // Nothing special happens when releasing a normal toggle button
             }
         }
-        m_bPressed = false;
         setControlParameterLeftUp(emitValue);
         restyleAndRepaint();
     }

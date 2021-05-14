@@ -1,20 +1,3 @@
-/***************************************************************************
-                          sounddevice.cpp
-                             -------------------
-    begin                : Sun Aug 12, 2007, past my bedtime
-    copyright            : (C) 2007 Albert Santoni
-    email                : gamegod \a\t users.sf.net
-***************************************************************************/
-
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
 #include "soundio/sounddevice.h"
 
 #include <QtDebug>
@@ -29,16 +12,12 @@
 SoundDevice::SoundDevice(UserSettingsPointer config, SoundManager* sm)
         : m_pConfig(config),
           m_pSoundManager(sm),
-          m_strInternalName("Unknown Soundcard"),
           m_strDisplayName("Unknown Soundcard"),
           m_iNumOutputChannels(2),
           m_iNumInputChannels(2),
           m_dSampleRate(44100.0),
           m_hostAPI("Unknown API"),
           m_framesPerBuffer(0) {
-}
-
-SoundDevice::~SoundDevice() {
 }
 
 int SoundDevice::getNumInputChannels() const {
@@ -104,11 +83,7 @@ void SoundDevice::clearInputs() {
 }
 
 bool SoundDevice::operator==(const SoundDevice &other) const {
-    return this->getInternalName() == other.getInternalName();
-}
-
-bool SoundDevice::operator==(const QString &other) const {
-    return getInternalName() == other;
+    return m_deviceId == other.getDeviceId();
 }
 
 void SoundDevice::composeOutputBuffer(CSAMPLE* outputBuffer,
@@ -216,8 +191,7 @@ void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
         // Non Stereo input (iFrameSize != 2)
         // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
 
-        for (QList<AudioInputBuffer>::const_iterator i = m_audioInputs.begin(),
-                     e = m_audioInputs.end(); i != e; ++i) {
+        for (auto i = m_audioInputs.constBegin(), e = m_audioInputs.constEnd(); i != e; ++i) {
             const AudioInputBuffer& in = *i;
             ChannelGroup chanGroup = in.getChannelGroup();
             int iChannelCount = chanGroup.getChannelCount();
@@ -249,8 +223,7 @@ void SoundDevice::composeInputBuffer(const CSAMPLE* inputBuffer,
 
 void SoundDevice::clearInputBuffer(const SINT framesToPush,
                                    const SINT framesWriteOffset) {
-    for (QList<AudioInputBuffer>::const_iterator i = m_audioInputs.begin(),
-                 e = m_audioInputs.end(); i != e; ++i) {
+    for (auto i = m_audioInputs.constBegin(), e = m_audioInputs.constEnd(); i != e; ++i) {
         const AudioInputBuffer& in = *i;
         CSAMPLE* pInputBuffer = in.getBuffer();  // Always stereo
         SampleUtil::clear(&pInputBuffer[framesWriteOffset * 2], framesToPush * 2);

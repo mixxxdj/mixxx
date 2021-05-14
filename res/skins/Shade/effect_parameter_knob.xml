@@ -13,20 +13,23 @@
 		<ObjectName>EffectParameterKnob</ObjectName>
 		<Layout>vertical</Layout>
 		<SizePolicy>me,f</SizePolicy>
-		<MinimumSize>-1,50</MinimumSize>
-		<MaximumSize>-1,50</MaximumSize>
+		<MinimumSize>38,46</MinimumSize>
+		<MaximumSize>-1,46</MaximumSize>
 		<Children>
 			<EffectParameterName>
 				<Style>
 					WEffectParameter {
-						font: 10px/8px sans-serif;
-						font-family: "Open Sans";
+            font-size: 10px;
+            line-height: 8px;
 						background-color: transparent;
 						color: #191F24;
 						padding-left: 1px;
 					}
 					QLabel { qproperty-alignment: AlignCenter; }
 				</Style>
+        <Elide>right</Elide>
+        <SizePolicy>me,f</SizePolicy>
+        <MaximumSize>-1,46</MaximumSize>
 				<ObjectName>KnobLabel</ObjectName>
 				<EffectRack>1</EffectRack>
 				<EffectUnit><Variable name="effectunitnum"/></EffectUnit>
@@ -36,70 +39,78 @@
 
 			<WidgetGroup>
 				<Layout>vertical</Layout>
-				<Size>38,34</Size>
 				<Children>
-					<EffectParameterKnob>
-						<NumberStates>64</NumberStates>
-						<Path>knobs/knob_rotary_s%1.png</Path>
-						<Connection>
-							<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/></ConfigKey>
-						</Connection>
-					</EffectParameterKnob>
+					<WidgetGroup>
+						<Layout>horizontal</Layout>
+						<Children>
+							<EffectParameterKnob>
+								<NumberStates>64</NumberStates>
+								<Path>knobs_no_center/knob_rotary_s%1.png</Path>
+								<Connection>
+									<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/></ConfigKey>
+								</Connection>
+							</EffectParameterKnob>
+						</Children>
+					</WidgetGroup>
 
-					<PushButton>
-						<Size>38f,3f</Size>
-						<TooltipId>EffectSlot_parameter_link_type</TooltipId>
-						<NumberStates>5</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_link_type/btn_link_type_none.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_none.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_link_type/btn_link_type_linked.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_linked.png</Unpressed>
-						</State>
-				   		<State>
-							<Number>2</Number>
-							<Pressed>btn_link_type/btn_link_type_left.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_left.png</Unpressed>
-						</State>
-						<State>
-				  			<Number>3</Number>
-				  			<Pressed>btn_link_type/btn_link_type_right.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_right.png</Unpressed>
-						</State>
-				   		<State>
-				  			<Number>4</Number>
-				  			<Pressed>btn_link_type/btn_link_type_left_right.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_left_right.png</Unpressed>
-						</State>
-						<Connection>
-							<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/>_link_type</ConfigKey>
-				  			<ButtonState>LeftButton</ButtonState>
-						</Connection>
-					</PushButton>
-
-					<PushButton>
-						<Size>38f,3f</Size>
-						<TooltipId>EffectSlot_parameter_inversion</TooltipId>
-						<NumberStates>2</NumberStates>
-						<State>
-							<Number>0</Number>
-							<Pressed>btn_link_type/btn_link_type_none.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_none.png</Unpressed>
-						</State>
-						<State>
-							<Number>1</Number>
-							<Pressed>btn_link_type/btn_link_type_inverted.png</Pressed>
-							<Unpressed>btn_link_type/btn_link_type_inverted.png</Unpressed>
-						</State>
-						<Connection>
-							<ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/>_link_inverse</ConfigKey>
-							<ButtonState>LeftButton</ButtonState>
-						</Connection>
-					</PushButton>
+					<WidgetGroup>
+						<Layout>horizontal</Layout>
+						<Children>
+              <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+					    <PushButton>
+						    <TooltipId>EffectSlot_parameter_inversion</TooltipId>
+						    <NumberStates>2</NumberStates>
+						    <State>
+							    <Number>0</Number>
+							    <Pressed>skin:/btn_link_type/btn_link_inversion_off.png</Pressed>
+							    <Unpressed>skin:/btn_link_type/btn_link_inversion_off.png</Unpressed>
+						    </State>
+						    <State>
+							    <Number>1</Number>
+							    <Pressed>skin:/btn_link_type/btn_link_inversion_on.png</Pressed>
+							    <Unpressed>skin:/btn_link_type/btn_link_inversion_on.png</Unpressed>
+						    </State>
+						    <Connection>
+							    <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/>_link_inverse</ConfigKey>
+							    <ButtonState>LeftButton</ButtonState>
+						    </Connection>
+					    </PushButton>
+					    <PushButton>
+						    <TooltipId>EffectSlot_parameter_link_type</TooltipId>
+						    <NumberStates>5</NumberStates>
+						    <State>
+							    <Number>0</Number>
+							    <Pressed>skin:/btn_link_type/btn_link_type_none.png</Pressed>
+							    <Unpressed>skin:/btn_link_type/btn_link_type_none.png</Unpressed>
+						    </State>
+						    <State>
+							    <Number>1</Number>
+							    <Pressed>skin:/btn_link_type/btn_link_type_linked.png</Pressed>
+							    <Unpressed>skin:/btn_link_type/btn_link_type_linked.png</Unpressed>
+						    </State>
+				       		<State>
+							    <Number>2</Number>
+							    <Pressed>skin:/btn_link_type/btn_link_type_left.png</Pressed>
+							    <Unpressed>skin:/btn_link_type/btn_link_type_left.png</Unpressed>
+						    </State>
+						    <State>
+				      			<Number>3</Number>
+				      			<Pressed>skin:/btn_link_type/btn_link_type_right.png</Pressed>
+							    <Unpressed>skin:/btn_link_type/btn_link_type_right.png</Unpressed>
+						    </State>
+				       		<State>
+				      			<Number>4</Number>
+				      			<Pressed>skin:/btn_link_type/btn_link_type_left_right.png</Pressed>
+							    <Unpressed>skin:/btn_link_type/btn_link_type_left_right.png</Unpressed>
+						    </State>
+						    <Connection>
+							    <ConfigKey>[EffectRack1_EffectUnit<Variable name="effectunitnum"/>_Effect<Variable name="effectnum"/>],parameter<Variable name="effectparameternum"/>_link_type</ConfigKey>
+				      			<ButtonState>LeftButton</ButtonState>
+						    </Connection>
+					    </PushButton>
+              <WidgetGroup><Size>0min,0min</Size></WidgetGroup>
+						</Children>
+					</WidgetGroup>
 				</Children>
 			</WidgetGroup>
 

@@ -1,5 +1,4 @@
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
 
 #include <cstddef>
 #include <climits>
@@ -17,20 +16,9 @@ typedef std::ptrdiff_t SINT;
 // range [SHRT_MIN, SHRT_MAX].
 typedef short int SAMPLE;
 constexpr SAMPLE SAMPLE_ZERO = 0;
-constexpr SAMPLE SAMPLE_MIN = SHRT_MIN;
-constexpr SAMPLE SAMPLE_MAX = SHRT_MAX;
+constexpr SAMPLE SAMPLE_MINIMUM = SHRT_MIN;
+constexpr SAMPLE SAMPLE_MAXIMUM = SHRT_MAX;
 
-// Limits the range of a SAMPLE value to [SAMPLE_MIN, SAMPLE_MAX].
-inline
-SAMPLE SAMPLE_clamp(SAMPLE in) {
-    return math_clamp(in, SAMPLE_MIN, SAMPLE_MAX);
-}
-
-// Limits the range of a SAMPLE value to [-SAMPLE_MAX, SAMPLE_MAX].
-inline
-SAMPLE SAMPLE_clampSymmetric(SAMPLE in) {
-    return math_clamp(in, static_cast<SAMPLE>(-SAMPLE_MAX), SAMPLE_MAX);
-}
 
 // 32-bit single precision floating-point sample data
 // normalized within the range [-1.0, 1.0] with a peak
@@ -62,5 +50,3 @@ inline
 CSAMPLE_GAIN CSAMPLE_GAIN_clamp(CSAMPLE_GAIN in) {
     return math_clamp(in, CSAMPLE_GAIN_MIN, CSAMPLE_GAIN_MAX);
 }
-
-#endif /* TYPES_H */

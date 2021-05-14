@@ -224,24 +224,6 @@ TEST_F(SampleUtilTest, copy2WithGain) {
     }
 }
 
-TEST_F(SampleUtilTest, copy2WithGainAliased) {
-    for (int i = 0; i < buffers.size(); ++i) {
-        CSAMPLE* buffer = buffers[i];
-        int size = sizes[i];
-        FillBuffer(buffer, 1.0f, size);
-        SampleUtil::copy2WithGain(buffer,
-                                  buffer, 1.0,
-                                  buffer, 1.0,
-                                  size);
-        AssertWholeBufferEquals(buffer, 2.0f, size);
-        SampleUtil::copy2WithGain(buffer,
-                                  buffer, 2.0,
-                                  buffer, 3.0,
-                                  size);
-        AssertWholeBufferEquals(buffer, 10.0f, size);
-    }
-}
-
 TEST_F(SampleUtilTest, copy3WithGain) {
     for (int i = 0; i < buffers.size(); ++i) {
         CSAMPLE* buffer = buffers[i];
@@ -271,37 +253,17 @@ TEST_F(SampleUtilTest, copy3WithGain) {
     }
 }
 
-TEST_F(SampleUtilTest, copy3WithGainAliased) {
-    for (int i = 0; i < buffers.size(); ++i) {
-        CSAMPLE* buffer = buffers[i];
-        int size = sizes[i];
-        FillBuffer(buffer, 1.0f, size);
-        SampleUtil::copy3WithGain(buffer,
-                                  buffer, 1.0,
-                                  buffer, 1.0,
-                                  buffer, 1.0,
-                                  size);
-        AssertWholeBufferEquals(buffer, 3.0f, size);
-        SampleUtil::copy3WithGain(buffer,
-                                  buffer, 2.0,
-                                  buffer, 3.0,
-                                  buffer, 4.0,
-                                  size);
-        AssertWholeBufferEquals(buffer, 27.0f, size);
-    }
-}
-
 TEST_F(SampleUtilTest, convertS16ToFloat32) {
     // Shorts are asymmetric, so SAMPLE_MAX is less than -SAMPLE_MIN.
-    const float expectedMax = static_cast<float>(SAMPLE_MAX) /
-                              static_cast<float>(-SAMPLE_MIN);
+    const float expectedMax = static_cast<float>(SAMPLE_MAXIMUM) /
+            static_cast<float>(-SAMPLE_MINIMUM);
     for (int i = 0; i < buffers.size(); ++i) {
         CSAMPLE* buffer = buffers[i];
         int size = sizes[i];
         SAMPLE* s16 = new SAMPLE[size];
         FillBuffer(buffer, 1.0f, size);
         for (int j = 0; j < size; ++j) {
-            s16[j] = SAMPLE_MAX;
+            s16[j] = SAMPLE_MAXIMUM;
         }
         SampleUtil::convertS16ToFloat32(buffer, s16, size);
         for (int j = 0; j < size; ++j) {
@@ -317,7 +279,7 @@ TEST_F(SampleUtilTest, convertS16ToFloat32) {
         }
         FillBuffer(buffer, -1.0f, size);
         for (int j = 0; j < size; ++j) {
-            s16[j] = SAMPLE_MIN;
+            s16[j] = SAMPLE_MINIMUM;
         }
         SampleUtil::convertS16ToFloat32(buffer, s16, size);
         for (int j = 0; j < size; ++j) {
@@ -392,22 +354,22 @@ TEST_F(SampleUtilTest, reverse) {
     if (buffers.size() > 0 && sizes[0] > 10) {
         CSAMPLE* buffer = buffers[1];
         for (int i = 0; i < 10; ++i) {
-            buffer[i] = i * 0.1;
+            buffer[i] = i * 0.1f;
         }
 
         SampleUtil::reverse(buffer, 10);
 
         // check if right channel remains at odd index
-        EXPECT_FLOAT_EQ(buffer[0], 0.8);
-        EXPECT_FLOAT_EQ(buffer[1], 0.9);
-        EXPECT_FLOAT_EQ(buffer[2], 0.6);
-        EXPECT_FLOAT_EQ(buffer[3], 0.7);
-        EXPECT_FLOAT_EQ(buffer[4], 0.4);
-        EXPECT_FLOAT_EQ(buffer[5], 0.5);
-        EXPECT_FLOAT_EQ(buffer[6], 0.2);
-        EXPECT_FLOAT_EQ(buffer[7], 0.3);
-        EXPECT_FLOAT_EQ(buffer[8], 0.0);
-        EXPECT_FLOAT_EQ(buffer[9], 0.1);
+        EXPECT_FLOAT_EQ(buffer[0], 0.8f);
+        EXPECT_FLOAT_EQ(buffer[1], 0.9f);
+        EXPECT_FLOAT_EQ(buffer[2], 0.6f);
+        EXPECT_FLOAT_EQ(buffer[3], 0.7f);
+        EXPECT_FLOAT_EQ(buffer[4], 0.4f);
+        EXPECT_FLOAT_EQ(buffer[5], 0.5f);
+        EXPECT_FLOAT_EQ(buffer[6], 0.2f);
+        EXPECT_FLOAT_EQ(buffer[7], 0.3f);
+        EXPECT_FLOAT_EQ(buffer[8], 0.0f);
+        EXPECT_FLOAT_EQ(buffer[9], 0.1f);
     }
 }
 
@@ -416,27 +378,27 @@ TEST_F(SampleUtilTest, copyReverse) {
         CSAMPLE* source = buffers[0];
         CSAMPLE* destination = buffers[1];
         for (int i = 0; i < 10; ++i) {
-            source[i] = i * 0.1;
+            source[i] = i * 0.1f;
         }
 
         SampleUtil::copyReverse(destination, source, 10);
 
         // check if right channel remains at odd index
-        EXPECT_FLOAT_EQ(destination[0], 0.8);
-        EXPECT_FLOAT_EQ(destination[1], 0.9);
-        EXPECT_FLOAT_EQ(destination[2], 0.6);
-        EXPECT_FLOAT_EQ(destination[3], 0.7);
-        EXPECT_FLOAT_EQ(destination[4], 0.4);
-        EXPECT_FLOAT_EQ(destination[5], 0.5);
-        EXPECT_FLOAT_EQ(destination[6], 0.2);
-        EXPECT_FLOAT_EQ(destination[7], 0.3);
-        EXPECT_FLOAT_EQ(destination[8], 0.0);
-        EXPECT_FLOAT_EQ(destination[9], 0.1);
+        EXPECT_FLOAT_EQ(destination[0], 0.8f);
+        EXPECT_FLOAT_EQ(destination[1], 0.9f);
+        EXPECT_FLOAT_EQ(destination[2], 0.6f);
+        EXPECT_FLOAT_EQ(destination[3], 0.7f);
+        EXPECT_FLOAT_EQ(destination[4], 0.4f);
+        EXPECT_FLOAT_EQ(destination[5], 0.5f);
+        EXPECT_FLOAT_EQ(destination[6], 0.2f);
+        EXPECT_FLOAT_EQ(destination[7], 0.3f);
+        EXPECT_FLOAT_EQ(destination[8], 0.0f);
+        EXPECT_FLOAT_EQ(destination[9], 0.1f);
     }
 }
 
 static void BM_MemCpy(benchmark::State& state) {
-    size_t size = state.range_x();
+    SINT size = static_cast<SINT>(state.range(0));
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -452,7 +414,7 @@ static void BM_MemCpy(benchmark::State& state) {
 BENCHMARK(BM_MemCpy)->Range(64, 4096);
 
 static void BM_StdCpy(benchmark::State& state) {
-    size_t size = state.range_x();
+    SINT size = static_cast<SINT>(state.range(0));
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -468,7 +430,7 @@ static void BM_StdCpy(benchmark::State& state) {
 BENCHMARK(BM_StdCpy)->Range(64, 4096);
 
 static void BM_SampleUtilCopy(benchmark::State& state) {
-    size_t size = state.range_x();
+    SINT size = static_cast<SINT>(state.range(0));
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -488,7 +450,7 @@ BENCHMARK(BM_SampleUtilCopy)->Range(64, 4096);
 TEST_F(SampleUtilTest, copy3WithGainSpeed) {
     CSAMPLE* buffer = buffers[0];
 
-    int size = sizes[0] - (rand() % 2) * 8; // preven predicting loop size
+    int size = sizes[0] - (rand() % 2) * 8; // prevent predicting loop size
     FillBuffer(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
     FillBuffer(buffer2, 0.0f, size);
@@ -583,7 +545,7 @@ TEST_F(SampleUtilTest, copy3WithGainSpeed) {
 */
 
 static void BM_Copy2WithGain(benchmark::State& state) {
-    size_t size = state.range_x();
+    SINT size = static_cast<SINT>(state.range(0));
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);
@@ -602,7 +564,7 @@ static void BM_Copy2WithGain(benchmark::State& state) {
 BENCHMARK(BM_Copy2WithGain)->Range(64, 4096);
 
 static void BM_Copy2WithRampingGain(benchmark::State& state) {
-    size_t size = state.range_x();
+    SINT size = static_cast<SINT>(state.range(0));
     CSAMPLE* buffer = SampleUtil::alloc(size);
     SampleUtil::fill(buffer, 0.0f, size);
     CSAMPLE* buffer2 = SampleUtil::alloc(size);

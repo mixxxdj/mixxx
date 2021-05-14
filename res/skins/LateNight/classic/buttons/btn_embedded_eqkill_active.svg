@@ -1,0 +1,12 @@
+<svg width="18" height="18" version="1.1" xmlns="http://www.w3.org/2000/svg">
+	<defs>
+		<linearGradient id="a" x1=".5" x2="24.405561" y1="12" y2="12" gradientTransform="matrix(-.5652174 0 0 .26530613 -1.6521574 -8.4693876)" gradientUnits="userSpaceOnUse">
+			<stop stop-opacity=".47451" offset="0"/>
+			<stop stop-opacity="0" offset=".50727087"/>
+			<stop stop-opacity=".0047619" offset="1"/>
+		</linearGradient>
+	</defs>
+	<rect transform="matrix(0,-1,-1,0,0,0)" x="-15.5" y="-15.5" width="13" height="13" rx="1.5" color="#000001" fill="url(#a)" stroke-width=".99999988"/>
+	<rect x="1.5" y="1.50003" width="15" height="15" fill="none" stroke="#020201" stroke-linecap="square" style="paint-order:fill markers stroke"/>
+	<rect x="1.5" y="1.50003" width="15" height="15" rx="1.5" ry="1.5" fill="none" stroke="#020201" stroke-linecap="square" style="paint-order:fill markers stroke"/>
+</svg>

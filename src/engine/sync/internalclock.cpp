@@ -1,19 +1,26 @@
-#include <QtDebug>
-
 #include "engine/sync/internalclock.h"
 
-#include "engine/sync/enginesync.h"
-#include "control/controlobject.h"
-#include "control/controllinpotmeter.h"
-#include "control/controlpushbutton.h"
-#include "preferences/usersettings.h"
+#include <QtDebug>
 
-InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
-        : m_group(pGroup),
+#include "control/controllinpotmeter.h"
+#include "control/controlobject.h"
+#include "control/controlpushbutton.h"
+#include "engine/sync/enginesync.h"
+#include "moc_internalclock.cpp"
+#include "preferences/usersettings.h"
+#include "util/logger.h"
+
+namespace {
+const mixxx::Logger kLogger("InternalClock");
+} // namespace
+
+InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync)
+        : m_group(group),
           m_pEngineSync(pEngineSync),
           m_mode(SYNC_NONE),
           m_iOldSampleRate(44100),
           m_dOldBpm(124.0),
+          m_dBaseBpm(124.0),
           m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
           m_dClockPosition(0) {
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
@@ -21,55 +28,65 @@ InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
     // and bpm_down controls.
     // bpm_up / bpm_down steps by 1
     // bpm_up_small / bpm_down_small steps by 0.1
-    m_pClockBpm.reset(new ControlLinPotmeter(ConfigKey(m_group, "bpm"),
-                                          1, 200, 1, 0.1, true));
-    connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotBpmChanged(double)),
+    m_pClockBpm.reset(
+            new ControlLinPotmeter(ConfigKey(m_group, "bpm"), 1, 200, 1, 0.1, true));
+    connect(m_pClockBpm.data(),
+            &ControlObject::valueChanged,
+            this,
+            &InternalClock::slotBaseBpmChanged,
             Qt::DirectConnection);
 
+    // The relative position between two beats in the range 0.0 ... 1.0
     m_pClockBeatDistance.reset(new ControlObject(ConfigKey(m_group, "beat_distance")));
-    connect(m_pClockBeatDistance.data(), SIGNAL(valueChanged(double)),
-            this, SLOT(slotBeatDistanceChanged(double)),
+    connect(m_pClockBeatDistance.data(), &ControlObject::valueChanged,
+            this, &InternalClock::slotBeatDistanceChanged,
             Qt::DirectConnection);
 
     m_pSyncMasterEnabled.reset(
-        new ControlPushButton(ConfigKey(pGroup, "sync_master")));
+            new ControlPushButton(ConfigKey(m_group, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     m_pSyncMasterEnabled->connectValueChangeRequest(
-        this, SLOT(slotSyncMasterEnabledChangeRequest(double)),
-        Qt::DirectConnection);
+            this, &InternalClock::slotSyncMasterEnabledChangeRequest, Qt::DirectConnection);
 }
 
 InternalClock::~InternalClock() {
 }
 
-void InternalClock::notifySyncModeChanged(SyncMode mode) {
+void InternalClock::setSyncMode(SyncMode mode) {
     // Syncable has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_mode = mode;
-    m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
+    m_pSyncMasterEnabled->setAndConfirm(isMaster(mode));
 }
 
 void InternalClock::notifyOnlyPlayingSyncable() {
     // No action necessary.
 }
 
-void InternalClock::requestSyncPhase() {
+void InternalClock::requestSync() {
     // TODO(owilliams): This should probably be how we reset the internal beat distance.
 }
 
 void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
-    bool currentlyMaster = getSyncMode() == SYNC_MASTER;
-
+    SyncMode mode = m_mode;
+    //Note: internal clock is always sync enabled
     if (state > 0.0) {
-        if (currentlyMaster) {
+        if (mode == SYNC_MASTER_EXPLICIT) {
             // Already master.
             return;
         }
-        m_pEngineSync->requestSyncMode(this, SYNC_MASTER);
+        if (mode == SYNC_MASTER_SOFT) {
+            // user request: make master explicit
+            m_mode = SYNC_MASTER_EXPLICIT;
+            return;
+        }
+        if (mode == SYNC_NONE) {
+            m_dBaseBpm = m_dOldBpm;
+        }
+        m_pEngineSync->requestSyncMode(this, SYNC_MASTER_EXPLICIT);
     } else {
         // Turning off master goes back to follower mode.
-        if (!currentlyMaster) {
+        if (mode == SYNC_FOLLOWER) {
             // Already not master.
             return;
         }
@@ -86,7 +103,9 @@ double InternalClock::getBeatDistance() const {
 }
 
 void InternalClock::setMasterBeatDistance(double beatDistance) {
-    //qDebug() << "InternalClock::setBeatDistance" << beatDistance;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "InternalClock::setMasterBeatDistance" << beatDistance;
+    }
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
     // Make sure followers have an up-to-date beat distance.
@@ -94,11 +113,7 @@ void InternalClock::setMasterBeatDistance(double beatDistance) {
 }
 
 double InternalClock::getBaseBpm() const {
-    return m_dOldBpm;
-}
-
-void InternalClock::setMasterBaseBpm(double bpm) {
-    Q_UNUSED(bpm)
+    return m_dBaseBpm;
 }
 
 double InternalClock::getBpm() const {
@@ -106,7 +121,9 @@ double InternalClock::getBpm() const {
 }
 
 void InternalClock::setMasterBpm(double bpm) {
-    //qDebug() << "InternalClock::setBpm" << bpm;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "InternalClock::setBpm" << bpm;
+    }
     if (bpm == 0) {
         return;
     }
@@ -115,30 +132,39 @@ void InternalClock::setMasterBpm(double bpm) {
 }
 
 void InternalClock::setInstantaneousBpm(double bpm) {
-    //qDebug() << "InternalClock::setInstantaneousBpm" << bpm;
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "InternalClock::setInstantaneousBpm" << bpm;
+    }
     // Do nothing.
     Q_UNUSED(bpm);
 }
 
 void InternalClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {
-    Q_UNUSED(baseBpm)
-    if (bpm == 0) {
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "InternalClock::setMasterParams" << beatDistance << baseBpm << bpm;
+    }
+    if (bpm <= 0.0 || baseBpm <= 0.0) {
         return;
     }
+    m_dBaseBpm = baseBpm;
     setMasterBpm(bpm);
     setMasterBeatDistance(beatDistance);
 }
 
-void InternalClock::slotBpmChanged(double bpm) {
-    updateBeatLength(m_iOldSampleRate, bpm);
-    m_pEngineSync->notifyBpmChanged(this, bpm);
-}
-
-void InternalClock::slotBeatDistanceChanged(double beat_distance) {
-    if (beat_distance < 0.0 || beat_distance > 1.0) {
+void InternalClock::slotBaseBpmChanged(double baseBpm) {
+    m_dBaseBpm = baseBpm;
+    updateBeatLength(m_iOldSampleRate, m_dBaseBpm);
+    if (!isSynchronized()) {
         return;
     }
-    setMasterBeatDistance(beat_distance);
+    m_pEngineSync->notifyBaseBpmChanged(this, m_dBaseBpm);
+}
+
+void InternalClock::slotBeatDistanceChanged(double beatDistance) {
+    if (beatDistance < 0.0 || beatDistance > 1.0) {
+        return;
+    }
+    setMasterBeatDistance(beatDistance);
 }
 
 void InternalClock::updateBeatLength(int sampleRate, double bpm) {
@@ -200,7 +226,7 @@ void InternalClock::onCallbackEnd(int sampleRate, int bufferSize) {
         m_dClockPosition -= m_dBeatLength;
     }
 
-    double beat_distance = getBeatDistance();
-    m_pClockBeatDistance->set(beat_distance);
-    m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
+    double beatDistance = getBeatDistance();
+    m_pClockBeatDistance->set(beatDistance);
+    m_pEngineSync->notifyBeatDistanceChanged(this, beatDistance);
 }

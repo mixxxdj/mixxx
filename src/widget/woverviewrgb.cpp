@@ -6,15 +6,18 @@
 #include "util/math.h"
 #include "waveform/waveform.h"
 
-WOverviewRGB::WOverviewRGB(const char* pGroup,
-                           UserSettingsPointer pConfig, QWidget* parent)
-        : WOverview(pGroup, pConfig, parent)  {
+WOverviewRGB::WOverviewRGB(
+        const QString& group,
+        PlayerManager* pPlayerManager,
+        UserSettingsPointer pConfig,
+        QWidget* parent)
+        : WOverview(group, pPlayerManager, pConfig, parent) {
 }
 
 bool WOverviewRGB::drawNextPixmapPart() {
     ScopedTimer t("WOverviewRGB::drawNextPixmapPart");
 
-    //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
+    //qDebug() << "WOverview::drawNextPixmapPart()";
 
     int currentCompletion;
 
@@ -32,7 +35,9 @@ bool WOverviewRGB::drawNextPixmapPart() {
         // Waveform pixmap twice the height of the viewport to be scalable
         // by total_gain
         // We keep full range waveform data to scale it on paint
-        m_waveformSourceImage = QImage(dataSize / 2, 2 * 255,
+        m_waveformSourceImage = QImage(
+                dataSize / 2,
+                static_cast<int>(2 * 255 * m_devicePixelRatio),
                 QImage::Format_ARGB32_Premultiplied);
         m_waveformSourceImage.fill(QColor(0, 0, 0, 0).value());
     }
@@ -43,7 +48,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
     const int completionIncrement = waveformCompletion - m_actualCompletion;
 
     int visiblePixelIncrement = completionIncrement * length() / dataSize;
-    if (completionIncrement < 2 || visiblePixelIncrement == 0) {
+    if (waveformCompletion < (dataSize - 2) &&
+            (completionIncrement < 2 || visiblePixelIncrement == 0)) {
         return false;
     }
 
@@ -90,7 +96,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
-            painter.drawLine(currentCompletion / 2, -left, currentCompletion / 2, 0);
+            painter.drawLine(QPointF(currentCompletion / 2, -left * m_devicePixelRatio),
+                             QPointF(currentCompletion / 2, 0));
         }
 
         // Retrieve "raw" LMH values from waveform
@@ -108,7 +115,8 @@ bool WOverviewRGB::drawNextPixmapPart() {
         if (max > 0.0) {
             color.setRgbF(red / max, green / max, blue / max);
             painter.setPen(color);
-            painter.drawLine(currentCompletion / 2, 0, currentCompletion / 2, right);
+            painter.drawLine(QPointF(currentCompletion / 2, 0),
+                             QPointF(currentCompletion / 2, right * m_devicePixelRatio));
         }
     }
 

@@ -1,17 +1,14 @@
-//  Created on: 28/apr/2011
-//      Author: vittorio
+#pragma once
 
-
-#ifndef DLGPREFBEATS_H
-#define DLGPREFBEATS_H
-
-#include <QWidget>
-#include <QString>
 #include <QList>
+#include <QString>
+#include <QWidget>
 
-#include "preferences/usersettings.h"
-#include "preferences/dlgpreferencepage.h"
+#include "analyzer/plugins/analyzerplugin.h"
+#include "preferences/beatdetectionsettings.h"
+#include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefbeatsdlg.h"
+#include "preferences/usersettings.h"
 
 class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     Q_OBJECT
@@ -19,34 +16,31 @@ class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     DlgPrefBeats(QWidget *parent, UserSettingsPointer _config);
     virtual ~DlgPrefBeats();
 
+    QUrl helpUrl() const override;
+
   public slots:
     // Apply changes to widget
-    void slotApply();
-    void slotUpdate();
-    void slotResetToDefaults();
+    void slotApply() override;
+    void slotUpdate() override;
+    void slotResetToDefaults() override;
 
   private slots:
     void pluginSelected(int i);
     void analyzerEnabled(int i);
     void fixedtempoEnabled(int i);
-    void offsetEnabled(int i);
     void fastAnalysisEnabled(int i);
-    void minBpmRangeChanged(int value);
-    void maxBpmRangeChanged(int value);
     void slotReanalyzeChanged(int value);
+    void slotReanalyzeImportedChanged(int value);
 
   private:
-    void populate();
     void loadSettings();
 
-    // Pointer to config object
-    UserSettingsPointer m_pconfig;
-    QList<QString> m_listName;
-    QList<QString> m_listLibrary, m_listIdentifier;
-    QString m_selectedAnalyzer;
-    int m_minBpm;
-    int m_maxBpm;
-    bool m_banalyzerEnabled, m_bfixedtempoEnabled, m_boffsetEnabled, m_FastAnalysisEnabled, m_bReanalyze;
+    BeatDetectionSettings m_bpmSettings;
+    QList<mixxx::AnalyzerPluginInfo> m_availablePlugins;
+    QString m_selectedAnalyzerId;
+    bool m_bAnalyzerEnabled;
+    bool m_bFixedTempoEnabled;
+    bool m_bFastAnalysisEnabled;
+    bool m_bReanalyze;
+    bool m_bReanalyzeImported;
 };
-
-#endif // DLGPREFBEATS_H

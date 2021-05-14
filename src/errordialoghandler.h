@@ -1,39 +1,15 @@
-/***************************************************************************
-                          errordialoghandler.h  -  description
-                             -------------------
-    begin                : Fri Feb 20 2009
-    copyright            : (C) 2009 by Sean M. Pappalardo
-    email                : pegasus@c64.org
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
-#ifndef ERRORDIALOGHANDLER_H
-#define ERRORDIALOGHANDLER_H
+#pragma once
 
 #include <QObject>
 #include <QMessageBox>
-#include <QSignalMapper>
 #include <QMutex>
 #include <QString>
 #include <QList>
 
 #include "util/class.h"
 
-/**
-  * Class used to allow all threads to display message boxes on error conditions
-  *     with a custom list of standard buttons and to be able to react to them
-  *
-  *@author Sean M. Pappalardo
-  */
-
+/** Class used to allow all threads to display message boxes on error conditions
+  * with a custom list of standard buttons and to be able to react to them. */
 typedef enum {
     DLG_FATAL       = 5,
     DLG_CRITICAL    = 4,
@@ -46,10 +22,10 @@ typedef enum {
 class ErrorDialogProperties {
   public:
     /** Set the window title. ("Mixxx" is always prepended.) */
-    void setTitle(QString title);
+    void setTitle(const QString& title);
 
     /** Set a key to prevent multiple dialogs until the first is closed */
-    inline void setKey(QString key) {
+    inline void setKey(const QString& key) {
         m_key = key;
     }
 
@@ -58,19 +34,20 @@ class ErrorDialogProperties {
     }
 
     /** Set the primary window text */
-    void setText(QString text);
+    void setText(const QString& text);
     QString getText() const {
         return m_text;
     }
 
     /** Set additional window text */
-    inline void setInfoText(QString text) {
+    inline void setInfoText(const QString& text) {
         m_infoText = text;
     }
 
     /** Set detailed text (causes "Show Details" button to appear.) */
-    inline void setDetails(QString text) {
+    inline void setDetails(const QString& text, bool bUseMonospaceFont = false) {
         m_details = text;
+        m_detailsUseMonospaceFont = bUseMonospaceFont;
     }
 
     /** Set whether the box is modal (blocks the GUI) or not */
@@ -113,6 +90,7 @@ class ErrorDialogProperties {
     QString m_text;
     QString m_infoText;
     QString m_details;
+    bool m_detailsUseMonospaceFont;
     bool m_modal;
     bool m_shouldQuit;
     DialogType m_type;
@@ -142,7 +120,7 @@ class ErrorDialogHandler : public QObject {
     }
     static void setEnabled(bool enabled);
 
-    virtual ~ErrorDialogHandler();
+    ~ErrorDialogHandler() override;
     // Call this to get a new instance of ErrorDialogProperties to populate with
     // data
     ErrorDialogProperties* newDialogProperties();
@@ -151,8 +129,7 @@ class ErrorDialogHandler : public QObject {
     // requested message box. They return false if a dialog with the same key
     // (or title if no key) is already displayed. If shouldQuit is true, Mixxx
     // will shut down.
-    bool requestErrorDialog(DialogType type, QString message,
-                            bool shouldQuit=false);
+    bool requestErrorDialog(DialogType type, const QString& message, bool shouldQuit = false);
     bool requestErrorDialog(ErrorDialogProperties* props);
 
     // Allows a means for main() to skip exec() if there was a critical or fatal
@@ -161,12 +138,12 @@ class ErrorDialogHandler : public QObject {
 
   signals:
     void showErrorDialog(ErrorDialogProperties* props);
-    void stdButtonClicked(QString key, QMessageBox::StandardButton whichStdButton);
+    void stdButtonClicked(const QString& key, QMessageBox::StandardButton whichStdButton);
 
   private slots:
     /** Actually displays the box */
     void errorDialog(ErrorDialogProperties* props);
-    void boxClosed(QString key);
+    void boxClosed(const QString& key, QMessageBox* msgBox);
 
   private:
     // Private constructor
@@ -177,10 +154,7 @@ class ErrorDialogHandler : public QObject {
 
     bool m_errorCondition;
     QList<QString> m_dialogKeys;
-    QSignalMapper m_signalMapper;
     QMutex m_mutex;
 
     DISALLOW_COPY_AND_ASSIGN(ErrorDialogHandler);
 };
-
-#endif

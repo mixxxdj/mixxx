@@ -7,7 +7,7 @@ FwdSqlQuerySelectResult::FwdSqlQuerySelectResult()
 }
 
 // NOTE(uklotzde): The query is passed as an r-value reference to
-// indicate that ownership is transfered. Qt uses implicit sharing
+// indicate that ownership is transferred. Qt uses implicit sharing
 // instead of actually moving the contents of the object. This might
 // be less efficient than actually moving the object's contents, but
 // meets all requirements.

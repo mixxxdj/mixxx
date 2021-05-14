@@ -95,7 +95,7 @@
      <item row="6" column="0">
       <widget class="QLabel" name="masteMixLabel">
        <property name="text">
-        <string>Master Mix</string>
+        <string>Main Mix</string>
        </property>
       </widget>
      </item>
@@ -108,7 +108,7 @@
      <item row="7" column="0">
       <widget class="QLabel" name="masterMonoLabel">
        <property name="text">
-        <string>Master Output Mode</string>
+        <string>Main Output Mode</string>
        </property>
       </widget>
      </item>
@@ -148,7 +148,7 @@
      <item row="11" column="0">
       <widget class="QLabel" name="masterDelayLabel">
        <property name="text">
-        <string>Master Delay</string>
+        <string>Main Output Delay</string>
        </property>
       </widget>
      </item>
@@ -171,7 +171,7 @@
      <item row="12" column="0">
       <widget class="QLabel" name="headDelayLabel">
        <property name="text">
-        <string>Headphone Delay</string>
+        <string>Headphone Output Delay</string>
        </property>
       </widget>
      </item>
@@ -194,7 +194,7 @@
      <item row="13" column="0">
       <widget class="QLabel" name="boothDelayLabel">
        <property name="text">
-        <string>Booth Delay</string>
+        <string>Booth Output Delay</string>
        </property>
       </widget>
      </item>
@@ -340,10 +340,7 @@
        </widget>
       </item>
       <item row="3" column="0" colspan="2">
-       <widget class="QLabel" name="limitsHint">
-        <property name="text">
-         <string>Enable Realtime scheduling (currently disabled), see the &lt;a href=&quot;http://mixxx.org/wiki/doku.php/adjusting_audio_latency&quot;&gt;Mixxx Wiki&lt;/a&gt;.</string>
-        </property>
+       <widget class="QLabel" name="realtimeHint">
         <property name="wordWrap">
          <bool>true</bool>
         </property>
@@ -354,9 +351,6 @@
       </item>
       <item row="4" column="0" colspan="2">
        <widget class="QLabel" name="hardwareGuide">
-        <property name="text">
-         <string>The &lt;a href=&quot;http://mixxx.org/wiki/doku.php/hardware_compatibility&quot;&gt;Mixxx DJ Hardware Guide&lt;/a&gt; lists sound cards and controllers you may want to consider for using Mixxx.</string>
-        </property>
         <property name="wordWrap">
          <bool>true</bool>
         </property>
@@ -433,10 +427,17 @@
   <tabstop>sampleRateComboBox</tabstop>
   <tabstop>audioBufferComboBox</tabstop>
   <tabstop>deviceSyncComboBox</tabstop>
-  <tabstop>headDelaySpinBox</tabstop>
+  <tabstop>engineClockComboBox</tabstop>
+  <tabstop>keylockComboBox</tabstop>
+  <tabstop>masterMixComboBox</tabstop>
+  <tabstop>masterOutputModeComboBox</tabstop>
+  <tabstop>micMonitorModeComboBox</tabstop>
+  <tabstop>latencyCompensationSpinBox</tabstop>
   <tabstop>masterDelaySpinBox</tabstop>
-  <tabstop>ioTabs</tabstop>
+  <tabstop>headDelaySpinBox</tabstop>
+  <tabstop>boothDelaySpinBox</tabstop>
   <tabstop>queryButton</tabstop>
+  <tabstop>ioTabs</tabstop>
  </tabstops>
  <resources/>
  <connections/>

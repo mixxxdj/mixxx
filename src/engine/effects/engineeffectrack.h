@@ -1,5 +1,4 @@
-#ifndef ENGINEEFFECTRACK_H
-#define ENGINEEFFECTRACK_H
+#pragma once
 
 #include <QList>
 
@@ -10,7 +9,7 @@
 
 class EngineEffectChain;
 
-//TODO(Be): Remove this superflous class.
+//TODO(Be): Remove this superfluous class.
 class EngineEffectRack : public EffectsRequestHandler {
   public:
     EngineEffectRack(int iRackNumber);
@@ -47,5 +46,3 @@ class EngineEffectRack : public EffectsRequestHandler {
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffectRack);
 };
-
-#endif /* ENGINEEFFECTRACK_H */

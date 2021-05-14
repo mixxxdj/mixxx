@@ -1,6 +1,4 @@
-#ifndef MIXXXDB_H
-#define MIXXXDB_H
-
+#pragma once
 
 #include <QSqlDatabase>
 
@@ -19,11 +17,12 @@ class MixxxDb : public QObject {
 
     static bool initDatabaseSchema(
             const QSqlDatabase& database,
-            const QString& schemaFile = kDefaultSchemaFile,
-            int schemaVersion = kRequiredSchemaVersion);
+            int schemaVersion = kRequiredSchemaVersion,
+            const QString& schemaFile = kDefaultSchemaFile);
 
     explicit MixxxDb(
-            const UserSettingsPointer& pConfig);
+            const UserSettingsPointer& pConfig,
+            bool inMemoryConnection = false);
 
     mixxx::DbConnectionPoolPtr connectionPool() const {
         return m_pDbConnectionPool;
@@ -32,6 +31,3 @@ class MixxxDb : public QObject {
   private:
     mixxx::DbConnectionPoolPtr m_pDbConnectionPool;
 };
-
-
-#endif //  MIXXXDB_H

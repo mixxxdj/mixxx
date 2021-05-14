@@ -254,8 +254,8 @@ PlateStub::process (sample_t x, sample_t decay, sample_t * _xl, sample_t * _xr)
 	x = input.lattice[3].process (x, indiff2);
 
 	/* summation point */
-	register double xl = x + decay * tank.delay[3].get();
-	register double xr = x + decay * tank.delay[1].get();
+	double xl = x + decay * tank.delay[3].get();
+	double xr = x + decay * tank.delay[1].get();
 
 	/* lh */
 	xl = tank.mlattice[0].process (xl, dediff1);
@@ -431,30 +431,31 @@ Descriptor<PlateX2>::setup()
 #endif
 
 
-
+#include <util/rampingvalue.h>
 // (timrae) we have our left / right samples interleaved in the same array, so use slightly modified version of PlateX2::cycle
-void MixxxPlateX2::processBuffer(const sample_t* in, sample_t* out, const uint frames, const sample_t bandwidthParam,
-								const sample_t decayParam, const sample_t dampingParam, const sample_t blendParam) {
-	// set bandwidth
-	input.bandwidth.set(exp(-M_PI * (1. - (.005 + .994*bandwidthParam))));
-	// set decay
-	sample_t decay = .890*decayParam;
-	// set damping
-	double damp = exp(-M_PI * (.0005+.9995*dampingParam));
-	tank.damping[0].set(damp);
-	tank.damping[1].set(damp);
-	// set blend
-	sample_t blend = pow(blendParam, 1.53);
+void MixxxPlateX2::processBuffer(const sample_t* in, sample_t* out, const uint frames,
+                                 const sample_t bandwidthParam,
+                                 const sample_t decayParam,
+                                 const sample_t dampingParam,
+                                 const sample_t currentSend,
+                                 const sample_t previousSend) {
+    // set bandwidth
+    input.bandwidth.set(exp(-M_PI * (1. - (.005 + .994*bandwidthParam))));
+    // set decay
+    sample_t decay = .890*decayParam;
+    // set damping
+    double damp = exp(-M_PI * (.0005+.9995*dampingParam));
+    tank.damping[0].set(damp);
+    tank.damping[1].set(damp);
+    RampingValue<sample_t> send(pow(currentSend, 1.53), previousSend, frames);
 
-	// the modulated lattices interpolate, which needs truncated float
-	DSP::FPTruncateMode _truncate;
+    // the modulated lattices interpolate, which needs truncated float
+    DSP::FPTruncateMode _truncate;
 
-	// loop through the buffer, processing each sample
-	for (uint i = 0; i + 1 < frames; i += 2) {
-		sample_t mono_sample = blend * (in[i] + in[i + 1]) / 2;
-		sample_t xl, xr;
-		PlateStub::process(mono_sample, decay, &xl, &xr);
-		out[i] = xl + in[i];
-		out[i + 1] = xr + in[i + 1];
-	}
-}
+    // loop through the buffer, processing each sample
+    for (uint i = 0; i + 1 < frames; i += 2) {
+        sample_t mono_sample = send.getNext() * (in[i] + in[i + 1]) / 2;
+        PlateStub::process(mono_sample, decay, &out[i], &out[i+1]);
+    }
+ }
+

@@ -1,0 +1,32 @@
+<!DOCTYPE template>
+<!--
+  Description:
+    Some widgets and containers that are used in multiple places,
+    depending on skin configuration.
+  Variables:
+    i: the deck number (1-4)
+-->
+<Template>
+  <SetVariable name="group">[Channel<Variable name="i"/>]</SetVariable>
+
+  <SingletonDefinition>
+    <ObjectName>DeckWaveform<Variable name="i"/></ObjectName>
+    <Children>
+      <Template src="skin:../Deere/deck_waveform.xml"/>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>DeckCoverArt<Variable name="i"/></ObjectName>
+    <Children>
+      <Template src="skin:../Deere/deck_coverart.xml"/>
+    </Children>
+  </SingletonDefinition>
+
+  <SingletonDefinition>
+    <ObjectName>DeckOverview<Variable name="i"/></ObjectName>
+    <Children>
+      <Template src="skin:../Deere/deck_overview.xml"/>
+    </Children>
+  </SingletonDefinition>
+</Template>

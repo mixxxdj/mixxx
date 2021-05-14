@@ -4,7 +4,7 @@
 #include <QtDebug>
 
 #include "control/controlproxy.h"
-#include "engine/enginechannel.h"
+#include "engine/channels/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "test/mixxxtest.h"
 #include "test/signalpathtest.h"
@@ -20,10 +20,9 @@ namespace {
 class EngineChannelMock : public EngineChannel {
   public:
     EngineChannelMock(const QString& group,
-                      ChannelOrientation defaultOrientation,
-                      EngineMaster* pMaster)
-            : EngineChannel(pMaster->registerChannelGroup(group),
-                            defaultOrientation) {
+            ChannelOrientation defaultOrientation,
+            EngineMaster* pMaster)
+            : EngineChannel(pMaster->registerChannelGroup(group), defaultOrientation, nullptr, /*isTalkoverChannel*/ false, /*isPrimarydeck*/ true) {
     }
 
     void applyVolume(CSAMPLE* pBuff, const int iBufferSize) {

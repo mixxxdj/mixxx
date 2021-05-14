@@ -1,0 +1,26 @@
+<svg width="40" height="34" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <metadata>
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <dc:title/>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs>
+    <radialGradient id="a" cx="366.94" cy="355.36" r="21.466" fr="0" gradientTransform="matrix(1 0 0 .98824 -5.7382e-7 4.1807)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#c4f161" stop-opacity=".94902" offset="0"/>
+      <stop stop-color="#73c500" offset=".54692"/>
+      <stop stop-color="#5ba000" stop-opacity="0" offset="1"/>
+    </radialGradient>
+    <filter id="b" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="0.42678198"/>
+    </filter>
+  </defs>
+  <g>
+    <path d="m17.31 6.9473 0.01953 6.8965c7.77e-4 0.68917 0.27685 1.1799 0.75866 1.5703 0.48229 0.39082 1.1278 0.54125 1.8672 0.54125 0.70313 0 1.3483-0.09195 1.8574-0.45726 0.50908-0.36531 0.8064-0.88929 0.87389-1.5586l0.0039-0.04297v-0.04101l2e-3 -6.8516c-2.5225-0.65769-2.8446-0.68396-5.3826-0.056645z" color="#000000" color-rendering="auto" dominant-baseline="auto" image-rendering="auto" shape-rendering="auto" solid-color="#000000" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"/>
+    <path d="m20 5.693c1.108 0 1.8438 0.60953 1.8438 1.7175v6.043c0 1.108-0.73575 1.7017-1.8438 1.7017s-1.8438-0.59369-1.8438-1.7017v-6.043c0-1.108 0.73575-1.7175 1.8438-1.7175z" fill="#518f00"/>
+    <path transform="matrix(.073219 0 0 .044122 -6.8667 -8.904)" d="m388.4 355.36a21.466 21.213 0 1 1-42.931 0 21.466 21.213 0 1 1 42.931 0z" fill="url(#a)" filter="url(#b)" opacity=".52959" stroke-width="1.2646"/>
+  </g>
+</svg>

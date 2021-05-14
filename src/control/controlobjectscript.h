@@ -1,9 +1,9 @@
-#ifndef CONTROLOBJECTSCRIPT_H
-#define CONTROLOBJECTSCRIPT_H
+#pragma once
 
-#include "controllers/controllerengine.h"
-#include "controllers/controllerdebug.h"
+#include <QVector>
+
 #include "control/controlproxy.h"
+#include "controllers/scripting/legacy/scriptconnection.h"
 
 // this is used for communicate with controller scripts
 class ControlObjectScript : public ControlProxy {
@@ -13,18 +13,18 @@ class ControlObjectScript : public ControlProxy {
 
     bool addScriptConnection(const ScriptConnection& conn);
 
-    void removeScriptConnection(const ScriptConnection& conn);
+    bool removeScriptConnection(const ScriptConnection& conn);
 
     // Required for legacy behavior of ControllerEngine::connectControl
     inline int countConnections() {
             return m_scriptConnections.size(); };
     inline ScriptConnection firstConnection() {
             return m_scriptConnections.first(); };
-    void disconnectAllConnectionsToFunction(const QScriptValue& function);
+    void disconnectAllConnectionsToFunction(const QJSValue& function);
 
     // Called from update();
     void emitValueChanged() override {
-        emit(trigger(get(), this));
+        emit trigger(get(), this);
     }
 
   signals:
@@ -36,7 +36,5 @@ class ControlObjectScript : public ControlProxy {
     void slotValueChanged(double v, QObject*);
 
   private:
-    QList<ScriptConnection> m_scriptConnections;
+    QVector<ScriptConnection> m_scriptConnections;
 };
-
-#endif // CONTROLOBJECTSCRIPT_H

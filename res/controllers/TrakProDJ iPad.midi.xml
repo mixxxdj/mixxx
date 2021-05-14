@@ -4,6 +4,7 @@
     <name>TrakProDJ iPad</name>
     <author>Ilkka Tuohela &lt;hile@iki.fi&gt;</author>
     <description>TrakProDJ iPad application midi mapping</description>
+    <manual>trakprodj</manual>
   </info>
   <controller id="Network" port="">
     <scriptfiles>

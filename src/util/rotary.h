@@ -1,5 +1,4 @@
-#ifndef MIXXX_UTIL_ROTARY_H
-#define MIXXX_UTIL_ROTARY_H
+#pragma once
 
 class Rotary {
   public:
@@ -18,7 +17,7 @@ class Rotary {
     double filter(double dValue);
     // Hard set event value
     double fillBuffer(double dValue);
-    // Collect callibration data
+    // Collect calibration data
     void calibrate(double dValue);
     // Set filter length
     void setFilterLength(int i);
@@ -38,5 +37,3 @@ class Rotary {
     double m_dLastValue;
     int m_iCalibrationCount;
 };
-
-#endif /* MIXXX_UTIL_ROTARY_H */

@@ -1,5 +1,4 @@
-#ifndef CIRCULARBUFFER_H
-#define CIRCULARBUFFER_H
+#pragma once
 
 #include <stdlib.h>
 
@@ -93,5 +92,3 @@ class CircularBuffer {
     unsigned int m_iWritePos;
     unsigned int m_iReadPos;
 };
-
-#endif /* CIRCULARBUFFER_H */

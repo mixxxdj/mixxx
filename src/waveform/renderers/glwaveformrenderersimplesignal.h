@@ -1,12 +1,15 @@
-#ifndef GLWAVEFORMRENDERERSIMPLESIGNAL_H
-#define GLWAVEFORMRENDERERSIMPLESIGNAL_H
+#pragma once
 
-#include "waveformrenderersignalbase.h"
+#include "waveform/renderers/glwaveformrenderer.h"
+#if !defined(QT_NO_OPENGL) && !defined(QT_OPENGL_ES_2)
+
+#include "waveform/renderers/waveformrenderersignalbase.h"
 
 class ControlObject;
 
-class GLWaveformRendererSimpleSignal : public WaveformRendererSignalBase {
-public:
+class GLWaveformRendererSimpleSignal : public WaveformRendererSignalBase,
+                                       public GLWaveformRenderer {
+  public:
     explicit GLWaveformRendererSimpleSignal(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererSimpleSignal();
 
@@ -14,4 +17,4 @@ public:
     virtual void draw(QPainter* painter, QPaintEvent* event);
 };
 
-#endif // GLWAVEFORMRENDERERSIMPLESIGNAL_H
+#endif // QT_NO_OPENGL && !QT_OPENGL_ES_2

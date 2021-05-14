@@ -1,18 +1,18 @@
 /**
- * American Audio VMS4 controller script v2.0 for Mixxx v2.0
+ * American Audio VMS4 controller script v2.1 for Mixxx v2.1.x
  * Copyright (C) 2010  Anders Gunnarsson
- * Copyright (C) 2011-2015  Sean M. Pappalardo
+ * Copyright (C) 2011-2018  Sean M. Pappalardo
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
@@ -54,7 +54,7 @@ VMS4.init = function (id) {    // called when the MIDI device is opened & set up
 
     // Enable soft-takeover for all direct hardware controls
     //  (Many of these are mapped in the XML directly so these have no effect.
-    //  Here for completeness incase any eventually move to script.)
+    //  Here for completeness in case any eventually move to script.)
     engine.softTakeover("[Master]","crossfader",true);
     engine.softTakeover("[Channel1]","rate",true);
     engine.softTakeover("[Channel1]","volume",true);
@@ -92,7 +92,7 @@ VMS4.init = function (id) {    // called when the MIDI device is opened & set up
     engine.softTakeover("[EffectRack1_EffectUnit4]","super1",true);
     engine.softTakeover("[EffectRack1_EffectUnit4]","mix",true);
     engine.softTakeover("[EffectRack1_EffectUnit4]","super1",true);
-    
+
 
     print("American Audio "+VMS4.id+" initialized.");
 }
@@ -228,6 +228,8 @@ VMS4.Deck.prototype.keyLockButtonHandler = function(value) {
 }
 
 VMS4.Deck.prototype.effectParamButtonHandler = function(value) {
+    // Couldn't get this to work. The buttons are mapped instead to VMS4.effectParameterButton
+
 //     if(value == ButtonState.pressed) {
 //         this.controlEffectParameter=!this.controlEffectParameter;
 //         if (this.controlEffectParameter) {
@@ -244,6 +246,10 @@ VMS4.Deck.prototype.effectParamButtonHandler = function(value) {
 VMS4.Decks = {"Left":new VMS4.Deck(1,"[Channel1]"), "Right":new VMS4.Deck(2,"[Channel2]")};
 VMS4.GroupToDeck = {"[Channel1]":"Left", "[Channel2]":"Right"};
 VMS4.GroupToDeckNum = {"[Channel1]":1, "[Channel2]":2, "[Channel3]":3, "[Channel4]":4};
+VMS4.StripToSide = {0x28:"Left", 0x2D:"Right"};
+VMS4.touchStripPos = {"Left":null, "Right":null}; // Stores the position on touch
+                                                  // to convert the absolute sliders
+                                                  // to relative ones
 
 VMS4.GetDeck = function(group) {
    try {
@@ -300,28 +306,27 @@ VMS4.pitchCenter = function(channel, control, value, status, group) {
 
 VMS4.effectSelect = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
-    
+
     if (deck.effectSelect == -1 || isNaN(deck.effectSelect)) deck.effectSelect = value;
-    
+
     // Take wrap around into account
     var wrapCount = 0;
     if (value>=0 && value<10 && deck.effectSelect>117 && deck.effectSelect<=127) wrapCount+=1;
     if (value>117 && value<=127 && deck.effectSelect>=0 && deck.effectSelect<10) wrapCount-=1;
-    
+
     var diff = value - deck.effectSelect;
     deck.effectSelect=value;
-    
+
     diff += wrapCount*128;
-    
-    engine.setValue("[EffectRack1_EffectUnit"+VMS4.GetDeckNum(group)+"]","chain_selector",diff);
+
+    engine.setValue("[EffectRack1_EffectUnit"+VMS4.GetDeckNum(group)+"_Effect1]",
+                    "effect_selector",diff);
 }
 
 VMS4.effectSelectPress = function(channel, control, value, status, group) {
     var deckNum = VMS4.GetDeckNum(group);
     if (value > 0x40) {
-        engine.setValue("[EffectRack1_EffectUnit"+deckNum+"]","enabled",
-                        !engine.getValue("[EffectRack1_EffectUnit"+deckNum+"]","enabled")
-        );
+        script.toggleControl("[EffectRack1_EffectUnit"+deckNum+"_Effect1]","enabled");
     }
 }
 
@@ -330,11 +335,9 @@ VMS4.effectControl = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
     var deckNum = VMS4.GetDeckNum(group);
     if (deck.controlEffectParameter) {
-        engine.setValue("[EffectRack1_EffectUnit"+deckNum+"]","super1",
-                        script.absoluteLin(value,0,1));
+        engine.setParameter("[EffectRack1_EffectUnit"+deckNum+"]","super1",value/0x7F);
     } else {
-        engine.setValue("[EffectRack1_EffectUnit"+deckNum+"]","mix",
-                        script.absoluteLin(value,0,1));
+        engine.setParameter("[EffectRack1_EffectUnit"+deckNum+"]","mix",value/0x7F);
     }
 }
 
@@ -363,17 +366,17 @@ VMS4.effectParameterButton = function(channel, control, value, status, group) {
 VMS4.sampleSelect = function(channel, control, value, status, group) {
     var deck = VMS4.GetDeck(group);
     if (deck.sampleSelect == -1) deck.sampleSelect = value;
-    
+
     // Take wrap around into account
     var wrapCount = 0;
     if (value>=0 && value<10 && deck.sampleSelect>117 && deck.sampleSelect<=127) wrapCount+=1;
     if (value>117 && value<=127 && deck.sampleSelect>=0 && deck.sampleSelect<10) wrapCount-=1;
-    
+
     var diff = value - deck.sampleSelect;
     deck.sampleSelect=value;
-    
+
     diff += wrapCount*128;
-    
+
     engine.setValue("[Playlist]","SelectTrackKnob",diff);
 }
 
@@ -392,11 +395,43 @@ VMS4.jog_move_msb = function(channel, control, value, status, group) {
    deck.jogMsb = value;
 }
 
-VMS4.touch_strip = function(channel, control, value, status, group) {
-   // Only modify the playposition if the deck is NOT playing!
-   if (engine.getValue(group, "play") === 0) {
-      engine.setValue(group, "playposition", value);
-   }
+VMS4.strip_fx_dw = function(channel, control, value, status, group) {
+    var deck = VMS4.GetDeckNum(group);
+    // When the deck is playing, adjust effect dry/wet. When it isn't, do needle drop.
+    if (engine.getValue(group, "play") === 0) {
+        engine.setValue(group, "playposition", value/0x7F);
+    } else {
+        engine.setParameter("[EffectRack1_EffectUnit"+deck+"]","mix",value/0x7F);
+    }
+}
+
+VMS4.strip_touch = function(channel, control, value, status, group) {
+    var deck = VMS4.GetDeckNum(group);
+    if (deck === 1) {    // Left side
+        if ((status & 0xF0) === 0x80) {    // If button up
+            VMS4.touchStripPos["Left"] = null;
+        }
+    } else {    // Right side
+        if ((status & 0xF0) === 0x80) {    // If button up
+            VMS4.touchStripPos["Right"] = null;
+        }
+    }
+}
+
+VMS4.strip_scroll = function(channel, control, value, status, group) {
+    var side = VMS4.StripToSide[control];
+    if (VMS4.touchStripPos[side] !== null) {
+        // Higher on the strip gives a higher value, and up is negative on Library
+        //  scroll controls
+        if (side === "Left") {
+            engine.setValue("[Playlist]", "SelectPlaylist",
+                            VMS4.touchStripPos[side] - value);
+        } else {
+            engine.setValue("[Playlist]", "SelectTrackKnob",
+                            VMS4.touchStripPos[side] - value);
+        }
+    }
+    VMS4.touchStripPos[side] = value;
 }
 
 VMS4.vinyl = function(channel, control, value, status, group) {

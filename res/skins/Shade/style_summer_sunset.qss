@@ -1,0 +1,181 @@
+/* Summer Sunset */
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
+QToolTip,
+WLibrarySidebar QMenu,
+WLibrarySidebar QMenu::item,
+WLibrary QHeaderView QMenu,
+WLibrary QHeaderView QMenu::item,
+QTextBrowser QMenu,
+QTextBrowser QMenu::item,
+WTrackMenu,
+WTrackMenu::item,
+WTrackMenu QMenu,
+WTrackMenu QMenu::item,
+WTrackMenu QMenu QCheckBox,
+QLineEdit QMenu,
+QLineEdit QMenu::item,
+WBeatSpinBox::up-button,
+WBeatSpinBox::down-button,
+WCueMenuPopup,
+WCoverArtMenu,
+WCoverArtMenu::item,
+WEffectSelector,
+WEffectSelector QAbstractScrollArea,
+WEffectSelector::down-arrow,
+WEffectSelector::indicator:unchecked,
+#fadeModeCombobox QAbstractScrollArea,
+#fadeModeCombobox::item,
+#fadeModeCombobox::indicator:unchecked {
+  color: #101307;
+  background-color: #ad9e4f;
+}
+#MainMenu,
+#MainMenu::item,
+WBeatSpinBox,
+#spinBoxTransition::up-button,
+#spinBoxTransition::down-button,
+#fadeModeCombobox,
+#fadeModeCombobox::down-arrow {
+  color: #060613;
+  background-color: #998A3C;
+}
+#spinBoxTransition {
+  background-color: #7b6f38;
+}
+  #MainMenu QMenu::separator
+  WLibrarySidebar QMenu::separator,
+  WLibrary QHeaderView QMenu::separator,
+  WTrackMenu::separator,
+  WTrackMenu QMenu::separator,
+  QLineEdit QMenu::separator {
+    border-top: 1px solid #222;
+  }
+#MainMenu::item:selected,
+#MainMenu QMenu::item:selected,
+#MainMenu QMenu::item:focus,
+#MainMenu QMenu::item:hover,
+#MainMenu QMenu::indicator:checked:selected,
+#MainMenu QMenu::indicator:unchecked:selected,
+WLibrarySidebar QMenu::item:selected,
+WLibrarySidebar QMenu::indicator:unchecked:selected,
+WLibrary QHeaderView QMenu::item:selected,
+WLibrary QHeaderView QMenu::indicator:unchecked:selected,
+QTextBrowser QMenu::item:selected,
+WTrackMenu::item:selected,
+WTrackMenu QMenu::item:selected,
+WTrackMenu QMenu QCheckBox:selected,
+WTrackMenu QMenu QCheckBox:focus,
+WTrackMenu QMenu QCheckBox:hover,
+QLineEdit QMenu::item:selected,
+WCoverArtMenu::item:selected,
+WEffectSelector::item:selected,
+WEffectSelector::indicator:unchecked:selected,
+#fadeModeCombobox::item:selected,
+#fadeModeCombobox::indicator:unchecked:selected {
+  background-color: #d9c663;
+  }
+  WEffectSelector::indicator:unchecked:selected,
+  #fadeModeCombobox::indicator:unchecked:selected {
+    border-color: #d9c663;
+  }
+  /* hover over checked effect */
+  WEffectSelector::item:checked:selected,
+  #fadeModeCombobox::item:checked:selected {
+    background-color: #887a35;
+  }
+  /* unchecked menu checkbox */
+  WLibrarySidebar QMenu::indicator:unchecked,
+  WLibrary QHeaderView QMenu::indicator:unchecked,
+  WTrackMenu QMenu QCheckBox::indicator:enabled:unchecked {
+    border-color: #222;
+  }
+
+  /* checked checkbox */
+  /* checkbox in Crate name context menu: "[ ] Auto DJ Track Source"  */
+  WLibrarySidebar QMenu::indicator:checked,
+  WLibrary QHeaderView QMenu::indicator:checked,
+  WTrackMenu QMenu QCheckBox::indicator:checked,
+  WEffectSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
+    border-color: #222;
+    background-color: #4bcf09;
+  }
+  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+    border-color: #222;
+    background-color: #85b271;
+  }
+  /* disabled checked box */
+  WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
+    border-color: #666;
+    background-color: #888;
+  }
+
+#MainMenu QMenu::indicator:checked,
+#MainMenu QMenu::indicator:checked:selected {
+  image: url(skin:/btn/btn_mainmenu_summer_checkbox_checked.svg);
+}
+#MainMenu QMenu::indicator:unchecked,
+#MainMenu QMenu::indicator:unchecked:selected {
+  image: url(skin:/btn/btn_mainmenu_summer_checkbox.svg);
+}
+
+#EffectSelectorGroup[highlight="1"]{
+	border: 1px solid #f8ba54;
+}
+#EffectSelectorGroup[highlight="0"]{
+	border: 0px solid #f8ba54;
+}
+
+#CueDeleteButton {
+  background-color: #cdbb5d;
+}
+#CueLabelEdit {
+  background-color: #706633;
+}
+
+/* Passthrough label on overview waveform */
+WOverview #PassthroughLabel {
+  color: #FF9900;
+}
+
+#LibraryContainer QTableView:focus,
+#LibraryContainer QTreeView:focus,
+#LibraryContainer QTextBrowser:focus,
+WSearchLineEdit:focus {
+  border-color: #78C70B;
+}
+
+#LibraryFeatureControls QPushButton:enabled {
+  background-color: #998A3C;
+  border: 1px solid #998A3C;
+  }
+  #LibraryFeatureControls QPushButton:!enabled {
+    background-color: #706633;
+    border: 1px solid #706633;
+    }
+  #LibraryFeatureControls QPushButton:unchecked {
+    color: #888;
+    background-color: #444;
+    }
+  #LibraryFeatureControls QPushButton:checked {
+    color: #000;
+    background-color: #52F904;
+    border: 1px solid #52F904;
+    }
+
+WLibrary QRadioButton::indicator:checked {
+  image: url(skin:/btn/btn_lib_radio_button_on_neongreen.svg) center center;
+}
+
+/* 'Enable AutoDJ' button	*/
+QPushButton#pushButtonAutoDJ:hover,
+QPushButton#pushButtonRecording:hover,
+QPushButton#pushButtonAnalyze:hover {
+   border: 1px solid #52F904;
+  }
+
+WRateRange {
+  color: #4B515F;
+}

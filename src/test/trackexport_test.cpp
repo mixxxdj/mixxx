@@ -6,17 +6,20 @@
 #include <QDebug>
 #include <QScopedPointer>
 
+#include "moc_trackexport_test.cpp"
+#include "track/track.h"
+
 FakeOverwriteAnswerer::~FakeOverwriteAnswerer() { }
 
-void FakeOverwriteAnswerer::slotProgress(QString filename, int progress, int count) {
+void FakeOverwriteAnswerer::slotProgress(const QString& filename, int progress, int count) {
     m_progress_filename = filename;
     m_progress = progress;
     m_progress_count = count;
 }
 
 void FakeOverwriteAnswerer::slotAskOverwriteMode(
-            QString filename,
-            std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
+        const QString& filename,
+        std::promise<TrackExportWorker::OverwriteAnswer>* promise) {
     auto it = m_answers.find(filename);
     // Make sure this filename is in the map, and then remove it.
     // The ASSERT_EQ macro has trouble with this comparison.
@@ -36,16 +39,16 @@ void FakeOverwriteAnswerer::cancelButtonClicked() {
 
 TEST_F(TrackExporterTest, SimpleListExport) {
     // Create a simple list of trackpointers and export them.
-    QFileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    QFileInfo fileinfo2(m_testDataDir.filePath("cover-test.flac"));
-    TrackPointer track2(Track::newTemporary(fileinfo2));
-    QFileInfo fileinfo3(m_testDataDir.filePath("cover-test.m4a"));
-    TrackPointer track3(Track::newTemporary(fileinfo3));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    mixxx::FileInfo fileinfo2(m_testDataDir.filePath("cover-test.flac"));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
+    mixxx::FileInfo fileinfo3(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
+    TrackPointer track3(Track::newTemporary(mixxx::FileAccess(fileinfo3)));
 
     // An initializer list would be prettier here, but it doesn't compile
     // on MSVC or OSX.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     tracks.append(track3);
@@ -59,31 +62,31 @@ TEST_F(TrackExporterTest, SimpleListExport) {
     EXPECT_EQ(3, m_answerer->currentProgressCount());
 
     // The destination folder should have all the files.
-    EXPECT_TRUE(QFileInfo(m_exportDir.filePath("cover-test.ogg")).exists());
-    EXPECT_TRUE(QFileInfo(m_exportDir.filePath("cover-test.flac")).exists());
-    EXPECT_TRUE(QFileInfo(m_exportDir.filePath("cover-test.m4a")).exists());
+    EXPECT_TRUE(QFileInfo::exists(m_exportDir.filePath("cover-test.ogg")));
+    EXPECT_TRUE(QFileInfo::exists(m_exportDir.filePath("cover-test.flac")));
+    EXPECT_TRUE(QFileInfo::exists(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a")));
 }
 
 TEST_F(TrackExporterTest, OverwriteSkip) {
     // Export a tracklist with two existing tracks -- overwrite one and skip
     // the other.
-    QFileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    const qint64 fileSize1 = fileinfo1.size();
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    QFileInfo fileinfo2(m_testDataDir.filePath("cover-test.m4a"));
-    TrackPointer track2(Track::newTemporary(fileinfo2));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    const qint64 fileSize1 = fileinfo1.sizeInBytes();
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    mixxx::FileInfo fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
 
     // Create empty versions at the destination so we can see if we actually
     // overwrote or skipped.
     QFile file1(m_exportDir.filePath("cover-test.ogg"));
     ASSERT_TRUE(file1.open(QIODevice::WriteOnly));
     file1.close();
-    QFile file2(m_exportDir.filePath("cover-test.m4a"));
+    QFile file2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     ASSERT_TRUE(file2.open(QIODevice::WriteOnly));
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -105,31 +108,31 @@ TEST_F(TrackExporterTest, OverwriteSkip) {
     EXPECT_TRUE(newfile1.exists());
     EXPECT_EQ(fileSize1, newfile1.size());
 
-    QFileInfo newfile2(m_exportDir.filePath("cover-test.m4a"));
+    QFileInfo newfile2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     EXPECT_TRUE(newfile2.exists());
     EXPECT_EQ(0, newfile2.size());
 }
 
 TEST_F(TrackExporterTest, OverwriteAll) {
     // Export a tracklist with two existing tracks -- overwrite both.
-    QFileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    const qint64 fileSize1 = fileinfo1.size();
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    QFileInfo fileinfo2(m_testDataDir.filePath("cover-test.m4a"));
-    const qint64 fileSize2 = fileinfo2.size();
-    TrackPointer track2(Track::newTemporary(fileinfo2));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    const qint64 fileSize1 = fileinfo1.sizeInBytes();
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    mixxx::FileInfo fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
+    const qint64 fileSize2 = fileinfo2.sizeInBytes();
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
 
     // Create empty versions at the destination so we can see if we actually
     // overwrote or skipped.
     QFile file1(m_exportDir.filePath("cover-test.ogg"));
     ASSERT_TRUE(file1.open(QIODevice::WriteOnly));
     file1.close();
-    QFile file2(m_exportDir.filePath("cover-test.m4a"));
+    QFile file2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     ASSERT_TRUE(file2.open(QIODevice::WriteOnly));
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -148,29 +151,29 @@ TEST_F(TrackExporterTest, OverwriteAll) {
     EXPECT_TRUE(newfile1.exists());
     EXPECT_EQ(fileSize1, newfile1.size());
 
-    QFileInfo newfile2(m_exportDir.filePath("cover-test.m4a"));
+    QFileInfo newfile2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     EXPECT_TRUE(newfile2.exists());
     EXPECT_EQ(fileSize2, newfile2.size());
 }
 
 TEST_F(TrackExporterTest, SkipAll) {
     // Export a tracklist with two existing tracks -- skip both.
-    QFileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    QFileInfo fileinfo2(m_testDataDir.filePath("cover-test.m4a"));
-    TrackPointer track2(Track::newTemporary(fileinfo2));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    mixxx::FileInfo fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
 
     // Create empty versions at the destination so we can see if we actually
     // overwrote or skipped.
     QFile file1(m_exportDir.filePath("cover-test.ogg"));
     ASSERT_TRUE(file1.open(QIODevice::WriteOnly));
     file1.close();
-    QFile file2(m_exportDir.filePath("cover-test.m4a"));
+    QFile file2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     ASSERT_TRUE(file2.open(QIODevice::WriteOnly));
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -189,7 +192,7 @@ TEST_F(TrackExporterTest, SkipAll) {
     EXPECT_TRUE(newfile1.exists());
     EXPECT_EQ(0, newfile1.size());
 
-    QFileInfo newfile2(m_exportDir.filePath("cover-test.m4a"));
+    QFileInfo newfile2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     EXPECT_TRUE(newfile2.exists());
     EXPECT_EQ(0, newfile2.size());
 }
@@ -197,19 +200,19 @@ TEST_F(TrackExporterTest, SkipAll) {
 TEST_F(TrackExporterTest, Cancel) {
     // Export a tracklist with two existing tracks, but cancel before we do
     // anything.
-    QFileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    QFileInfo fileinfo2(m_testDataDir.filePath("cover-test.m4a"));
-    TrackPointer track2(Track::newTemporary(fileinfo2));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    mixxx::FileInfo fileinfo2(m_testDataDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
 
     // Create empty version at the destination so we can see if we actually
     // canceled.
-    QFile file2(m_exportDir.filePath("cover-test.m4a"));
+    QFile file2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     ASSERT_TRUE(file2.open(QIODevice::WriteOnly));
     file2.close();
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -228,19 +231,19 @@ TEST_F(TrackExporterTest, Cancel) {
     QFileInfo newfile1(m_exportDir.filePath("cover-test.ogg"));
     EXPECT_FALSE(newfile1.exists());
 
-    QFileInfo newfile2(m_exportDir.filePath("cover-test.m4a"));
+    QFileInfo newfile2(m_exportDir.filePath("cover-test-itunes-12.3.0-aac.m4a"));
     EXPECT_TRUE(newfile2.exists());
     EXPECT_EQ(0, newfile2.size());
 }
 
 TEST_F(TrackExporterTest, DedupeList) {
     // Create a track list with a duplicate track, see that it gets deduped.
-    QFileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    TrackPointer track1(Track::newTemporary(fileinfo1));
-    TrackPointer track2(Track::newTemporary(fileinfo1));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);
@@ -264,20 +267,20 @@ TEST_F(TrackExporterTest, DedupeList) {
 TEST_F(TrackExporterTest, MungeFilename) {
     // Create a track list with a duplicate track in a different location,
     // see that the name gets munged.
-    QFileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
-    TrackPointer track1(Track::newTemporary(fileinfo1));
+    mixxx::FileInfo fileinfo1(m_testDataDir.filePath("cover-test.ogg"));
+    TrackPointer track1(Track::newTemporary(mixxx::FileAccess(fileinfo1)));
 
     // Create a file with the same name in a different place.  Its filename
     // should be munged and the file still copied.
     QDir tempPath(QDir::tempPath());
     QFile file2(tempPath.filePath("cover-test.ogg"));
-    QFileInfo fileinfo2(file2);
+    mixxx::FileInfo fileinfo2(file2);
     ASSERT_TRUE(file2.open(QIODevice::WriteOnly));
     file2.close();
-    TrackPointer track2(Track::newTemporary(fileinfo2));
+    TrackPointer track2(Track::newTemporary(mixxx::FileAccess(fileinfo2)));
 
     // Set up the worker and answerer.
-    QList<TrackPointer> tracks;
+    TrackPointerList tracks;
     tracks.append(track1);
     tracks.append(track2);
     TrackExportWorker worker(m_exportDir.canonicalPath(), tracks);

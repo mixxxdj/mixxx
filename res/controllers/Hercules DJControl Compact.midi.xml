@@ -7,7 +7,7 @@
 who want the labeled "mid" knob to adjust high eq instead may use the MIDI
 wizard to remap it, or edit the controller XML file directly to change this
 setting.</description>
-        <wiki>http://mixxx.org/wiki/doku.php/djcontrol_compact</wiki>
+        <manual>hercules_djcontrol_compact</manual>
     </info>
     <controller id="DJControl">
         <scriptfiles>
@@ -609,7 +609,7 @@ setting.</description>
                     <normal/>
                 </options>
             </control>
- 	    <control>
+         <control>
                 <group>[Channel1]</group>
                 <key>hotcue_1_clear</key>
                 <status>0x90</status>
@@ -618,7 +618,7 @@ setting.</description>
                     <normal/>
                 </options>
             </control>
- 	    <control>
+         <control>
                 <group>[Channel1]</group>
                 <key>hotcue_2_clear</key>
                 <status>0x90</status>
@@ -627,7 +627,7 @@ setting.</description>
                     <normal/>
                 </options>
             </control>
- 	    <control>
+         <control>
                 <group>[Channel1]</group>
                 <key>hotcue_3_clear</key>
                 <status>0x90</status>
@@ -636,7 +636,7 @@ setting.</description>
                     <normal/>
                 </options>
             </control>
- 	    <control>
+         <control>
                 <group>[Channel1]</group>
                 <key>hotcue_4_clear</key>
                 <status>0x90</status>
@@ -645,7 +645,7 @@ setting.</description>
                     <normal/>
                 </options>
             </control>
- 	    <control>
+         <control>
                 <group>[Channel2]</group>
                 <key>hotcue_1_clear</key>
                 <status>0x90</status>
@@ -654,7 +654,7 @@ setting.</description>
                     <normal/>
                 </options>
             </control>
- 	    <control>
+         <control>
                 <group>[Channel2]</group>
                 <key>hotcue_2_clear</key>
                 <status>0x90</status>
@@ -663,7 +663,7 @@ setting.</description>
                     <normal/>
                 </options>
             </control>
- 	    <control>
+         <control>
                 <group>[Channel2]</group>
                 <key>hotcue_3_clear</key>
                 <status>0x90</status>
@@ -672,7 +672,7 @@ setting.</description>
                     <normal/>
                 </options>
             </control>
- 	    <control>
+         <control>
                 <group>[Channel2]</group>
                 <key>hotcue_4_clear</key>
                 <status>0x90</status>

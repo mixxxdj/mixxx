@@ -1,5 +1,4 @@
-#ifndef MIXXX_UTIL_TIME_H
-#define MIXXX_UTIL_TIME_H
+#pragma once
 
 #include "util/performancetimer.h"
 #include "util/threadcputimer.h"
@@ -43,5 +42,3 @@ class Time {
 };
 
 } // namespace mixxx
-
-#endif /* MIXXX_UTIL_TIME_H */

@@ -1,5 +1,4 @@
-#ifndef ENGINEEFFECT_H
-#define ENGINEEFFECT_H
+#pragma once
 
 #include <QMap>
 #include <QString>
@@ -19,14 +18,14 @@
 
 class EngineEffect : public EffectsRequestHandler {
   public:
-    EngineEffect(const EffectManifest& manifest,
+    EngineEffect(EffectManifestPointer pManifest,
                  const QSet<ChannelHandleAndGroup>& activeInputChannels,
                  EffectsManager* pEffectsManager,
                  EffectInstantiatorPointer pInstantiator);
     virtual ~EngineEffect();
 
     const QString& name() const {
-        return m_manifest.name();
+        return m_pManifest->name();
     }
 
     EngineEffectParameter* getParameterById(const QString& id) {
@@ -50,12 +49,16 @@ class EngineEffect : public EffectsRequestHandler {
                  const EffectEnableState chainEnableState,
                  const GroupFeatureState& groupFeatures);
 
-  private:
-    QString debugString() const {
-        return QString("EngineEffect(%1)").arg(m_manifest.name());
+    const EffectManifestPointer getManifest() const {
+        return m_pManifest;
     }
 
-    EffectManifest m_manifest;
+  private:
+    QString debugString() const {
+        return QString("EngineEffect(%1)").arg(m_pManifest->name());
+    }
+
+    EffectManifestPointer m_pManifest;
     EffectProcessor* m_pProcessor;
     ChannelHandleMap<ChannelHandleMap<EffectEnableState>> m_effectEnableStateForChannelMatrix;
     bool m_effectRampsFromDry;
@@ -67,5 +70,3 @@ class EngineEffect : public EffectsRequestHandler {
 
     DISALLOW_COPY_AND_ASSIGN(EngineEffect);
 };
-
-#endif /* ENGINEEFFECT_H */

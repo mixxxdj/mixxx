@@ -2,9 +2,10 @@
 
 #include <QFileDialog>
 #include <QFileInfo>
-#include <QDesktopServices>
 #include <QMessageBox>
+#include <QStandardPaths>
 
+#include "moc_trackexportwizard.cpp"
 #include "util/assert.h"
 
 void TrackExportWizard::exportTracks() {
@@ -18,10 +19,10 @@ void TrackExportWizard::exportTracks() {
 bool TrackExportWizard::selectDestinationDirectory() {
     QString lastExportDirectory = m_pConfig->getValue(
             ConfigKey("[Library]", "LastTrackCopyDirectory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+            QStandardPaths::writableLocation(QStandardPaths::MusicLocation));
 
     QString destDir = QFileDialog::getExistingDirectory(
-            NULL, tr("Export Track Files To"), lastExportDirectory);
+            nullptr, tr("Export Track Files To"), lastExportDirectory);
     if (destDir.isEmpty()) {
         return false;
     }
@@ -32,4 +33,3 @@ bool TrackExportWizard::selectDestinationDirectory() {
     m_dialog.reset(new TrackExportDlg(m_parent, m_pConfig, m_worker.data()));
     return true;
 }
-

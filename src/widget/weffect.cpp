@@ -1,8 +1,9 @@
-#include <QtDebug>
-
 #include "widget/weffect.h"
 
+#include <QtDebug>
+
 #include "effects/effectsmanager.h"
+#include "moc_weffect.cpp"
 #include "widget/effectwidgetutils.h"
 
 WEffect::WEffect(QWidget* pParent, EffectsManager* pEffectsManager)
@@ -31,8 +32,7 @@ void WEffect::setup(const QDomNode& node, const SkinContext& context) {
 void WEffect::setEffectSlot(EffectSlotPointer pEffectSlot) {
     if (pEffectSlot) {
         m_pEffectSlot = pEffectSlot;
-        connect(pEffectSlot.data(), SIGNAL(updated()),
-                this, SLOT(effectUpdated()));
+        connect(pEffectSlot.data(), &EffectSlot::updated, this, &WEffect::effectUpdated);
         effectUpdated();
     }
 }
@@ -43,12 +43,13 @@ void WEffect::effectUpdated() {
     if (m_pEffectSlot) {
         EffectPointer pEffect = m_pEffectSlot->getEffect();
         if (pEffect) {
-            const EffectManifest& manifest = pEffect->getManifest();
-            name = manifest.displayName();
-            description = QString("%1\n%2").arg(manifest.name(), manifest.description());
+            EffectManifestPointer pManifest = pEffect->getManifest();
+            name = pManifest->displayName();
+            //: %1 = effect name; %2 = effect description
+            description = tr("%1: %2").arg(pManifest->name(), pManifest->description());
         }
     } else {
-        name = tr("None");
+        name = EffectsManager::kNoEffectString;
         description = tr("No effect loaded.");
     }
     setText(name);

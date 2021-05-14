@@ -18,7 +18,7 @@
 // - After activating brake, Play button is not working
 
 // 10/26/2016 - Changed by Shaun O'Neill
-//              Updated the flanger effects rack. Removed depricated XML controls and added new JS functions to modify the FX knobs
+//              Updated the flanger effects rack. Removed deprecated XML controls and added new JS functions to modify the FX knobs
 // 10/10/2017 - Changed by Shaun O'Neill
 //              Added super button control via shift + fx1 knob.
 //              Low frequency filter now doubles as filter effect control via shift key.

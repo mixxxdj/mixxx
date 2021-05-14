@@ -3,7 +3,8 @@
     <name>DJ-Tech i-Mix Reload</name>
     <author>vininim</author>
     <description>MIDI mapping for DJ-Tech i-Mix Reload</description>
-    <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=1637</forums>
+    <forums>https://mixxx.discourse.group/t/dj-tech-i-mix-reload-mapping-for-trunk-as-of-date-of-post/10776</forums>
+    <manual>dj_tech_imix_reload</manual>
   </info>
   <controller id="DJ-Tech i-Mix Reload">
     <scriptfiles>
@@ -520,7 +521,7 @@
         <group>[Channel1]</group>
         <key>DJTechiMixReload.hotcuefunction</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -529,7 +530,7 @@
         <group>[Channel1]</group>
         <key>DJTechiMixReload.hotcuefunction</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -538,7 +539,7 @@
         <group>[Channel1]</group>
         <key>DJTechiMixReload.hotcuefunction</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -547,7 +548,7 @@
         <group>[Channel2]</group>
         <key>DJTechiMixReload.hotcuefunction</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -556,7 +557,7 @@
         <group>[Channel2]</group>
         <key>DJTechiMixReload.hotcuefunction</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -565,7 +566,7 @@
         <group>[Channel2]</group>
         <key>DJTechiMixReload.hotcuefunction</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -574,7 +575,7 @@
         <group>[Channel1]</group>
         <key>DJTechiMixReload.setfunction</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -583,7 +584,7 @@
         <group>[Channel2]</group>
         <key>DJTechiMixReload.setfunction</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -592,7 +593,7 @@
         <group>[Channel1]</group>
         <key>flanger</key>
         <options>
-	  <normal/>
+      <normal/>
         </options>
       </control>
       <control>
@@ -601,7 +602,7 @@
         <group>[Channel2]</group>
         <key>flanger</key>
         <options>
-	  <normal/>
+      <normal/>
         </options>
       </control>
       <control>
@@ -610,7 +611,7 @@
         <group>[Flanger]</group>
         <key>lfoDepth</key>
         <options>
-	  <normal/>
+      <normal/>
         </options>
       </control>
       <control>
@@ -619,7 +620,7 @@
         <group>[Flanger]</group>
         <key>lfoDelay</key>
         <options>
-	  <normal/>
+      <normal/>
         </options>
       </control>
       <control>
@@ -628,7 +629,7 @@
         <group>[Flanger]</group>
         <key>lfoPeriod</key>
         <options>
-	  <normal/>
+      <normal/>
         </options>
       </control>
       <control>
@@ -637,7 +638,7 @@
         <group>[Channel1]</group>
         <key>DJTechiMixReload.wheeltouch</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -646,7 +647,7 @@
         <group>[Channel1]</group>
         <key>DJTechiMixReload.scratch</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -655,7 +656,7 @@
         <group>[Channel1]</group>
         <key>DJTechiMixReload.scratch</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -664,7 +665,7 @@
         <group>[Channel2]</group>
         <key>DJTechiMixReload.wheeltouch</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -673,7 +674,7 @@
         <group>[Channel2]</group>
         <key>DJTechiMixReload.scratch</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
       <control>
@@ -682,7 +683,7 @@
         <group>[Channel2]</group>
         <key>DJTechiMixReload.scratch</key>
         <options>
-	  <Script-Binding/>
+      <Script-Binding/>
         </options>
       </control>
     </controls>

@@ -4,7 +4,7 @@
 // ^that means do what ever you want^ //
 //       made for Mixxx 1.11.x        //
 ////////////////////////////////////////
- 
+
 function NumarkV7() {}
 
 /////////////////////////////////
@@ -12,10 +12,10 @@ function NumarkV7() {}
 //   Customization Variables   //
 //                             //
 /////////////////////////////////
- 
+
 NumarkV7.RateRanges = [ 0.0, 0.08, 0.1, 0.16, 0.5, 1.0 ];
 NumarkV7.MotorOnLoad = false; //set to "true" to diasble motor on load
-NumarkV7.ScratchDisableDefault = false; //set to "true" to disable scratching when the motors are runnning.
+NumarkV7.ScratchDisableDefault = false; //set to "true" to disable scratching when the motors are running.
 NumarkV7.loop_modeOnLoad = "Manual"; //("Manual", "Auto")
 NumarkV7.MotorSpeed = true; //Record RPM (true = "33 1/3",false = "45")
 
@@ -47,8 +47,8 @@ NumarkV7.PitchAPause = 0; //pauses scratching while changing pitch
 NumarkV7.PitchBPause = 0; //pauses scratching while changing pitch
 NumarkV7.PitchAPauseOn = false; //true is timer is running.
 NumarkV7.PitchBPauseOn = false; //true is timer is running.
-NumarkV7.ScratchDisableA = false; //set to "true" to disable scratching when the motors are runnning.
-NumarkV7.ScratchDisableB = false; //set to "true" to disable scratching when the motors are runnning.
+NumarkV7.ScratchDisableA = false; //set to "true" to disable scratching when the motors are running.
+NumarkV7.ScratchDisableB = false; //set to "true" to disable scratching when the motors are running.
 NumarkV7.ScratchDiffA = 0x00; //records last value
 NumarkV7.ScratchDiffB = 0x00; //records last value
 NumarkV7.RPM = 33+1/3; //Motor-Scratch rpm
@@ -140,11 +140,11 @@ NumarkV7.init2 = function () {
 	engine.connectControl("[Channel2]", "hotcue_3_enabled", "NumarkV7.ShiftB");
 	engine.connectControl("[Channel2]", "hotcue_4_enabled", "NumarkV7.ShiftB");
 	engine.connectControl("[Channel2]", "hotcue_5_enabled", "NumarkV7.ShiftB");
-	
+
     //set rate range
     engine.setValue("[Channel1]","rateRange",NumarkV7.RateRanges[NumarkV7.RangeArray]);
 	engine.setValue("[Channel2]","rateRange",NumarkV7.RateRanges[NumarkV7.RangeArray]);
-	
+
     //trigger LEDs
     engine.trigger("[Channel1]", "rate");
     engine.trigger("[Flanger]", "lfoPeriod");
@@ -270,7 +270,7 @@ NumarkV7.RunLED12 = function () {
 NumarkV7.RunLED13 = function () {
     midi.sendShortMsg(0xB0,0x34,0x00);
 	midi.sendShortMsg(0xB0,0x35,0x00);
-    midi.sendShortMsg(0xB0,0x36,0x00);    
+    midi.sendShortMsg(0xB0,0x36,0x00);
 }
 
 ///////////////////////////
@@ -304,7 +304,7 @@ NumarkV7.FxSliderAFine = function (channel, control, value, status, group) {
 	NumarkV7.FxSliderA();
 }
 NumarkV7.FxSliderA = function () {
-	var currentvalue = (NumarkV7.FxSliderAFineParse+NumarkV7.FxSliderACoarseParse); 
+	var currentvalue = (NumarkV7.FxSliderAFineParse+NumarkV7.FxSliderACoarseParse);
     engine.setValue("[Flanger]","lfoDepth", currentvalue);
 }
 NumarkV7.FxSliderBCoarse = function (channel, control, value, status, group) {
@@ -315,7 +315,7 @@ NumarkV7.FxSliderBFine = function (channel, control, value, status, group) {
 	NumarkV7.FxSliderB();
 }
 NumarkV7.FxSliderB = function () {
-	var currentvalue = (NumarkV7.FxSliderBFineParse+NumarkV7.FxSliderBCoarseParse); 
+	var currentvalue = (NumarkV7.FxSliderBFineParse+NumarkV7.FxSliderBCoarseParse);
     engine.setValue("[Flanger]","lfoDepth", currentvalue);
 }
 NumarkV7.FxParam = function (channel, control, value, status, group) {
@@ -348,7 +348,7 @@ NumarkV7.Peak11 = function (value, low, high) {
     if (value>low+halfInterval*15) LEDs++;
     if (value>=high) LEDs++;
     return LEDs;
-} 
+}
 NumarkV7.FxSelect = function (channel, control, value, status, group) {
 	var currentvalue = engine.getValue("[Flanger]","lfoDelay" );
 	if ((value == 0x01)&&(status == 0xB0)&&(currentvalue < 10000)){
@@ -466,7 +466,7 @@ NumarkV7.MotorOffButtonB = function (channel, control, value, status, group) {
 				midi.sendShortMsg(0xB0,0x29,0x00);
 				NumarkV7.Play2B();
 			}
-		} 
+		}
     }
 }
 
@@ -498,7 +498,7 @@ NumarkV7.PlayA = function (channel, control, value, status, group) {
             midi.sendShortMsg(0xB0,0x09,0x00);
             NumarkV7.MotorOffA();
         }
-        
+
     }
 }
 NumarkV7.Play2A = function (channel, control, value, status, group) {
@@ -513,7 +513,7 @@ NumarkV7.Play2A = function (channel, control, value, status, group) {
             midi.sendShortMsg(0xB0,0x09,0x00);
             NumarkV7.MotorOffA();
         }
-        
+
     }
 }
 NumarkV7.CueLEDA = function (){
@@ -547,7 +547,7 @@ NumarkV7.PlayB = function (channel, control, value, status, group) {
             midi.sendShortMsg(0xB0,0x1F,0x00);
             NumarkV7.MotorOffB();
         }
-        
+
     }
 }
 NumarkV7.Play2B = function (channel, control, value, status, group) {
@@ -562,7 +562,7 @@ NumarkV7.Play2B = function (channel, control, value, status, group) {
             midi.sendShortMsg(0xB0,0x1F,0x00);
             NumarkV7.MotorOffB();
         }
-        
+
     }
 }
 NumarkV7.CueLEDB = function (){
@@ -603,7 +603,7 @@ NumarkV7.MotorOnB = function () {
 		if ((!NumarkV7.ScratchDisableB)&&(!engine.isScratching(2))) {
 			engine.scratchEnable(2, 37056, NumarkV7.RPM, (1.0), (0.27), false);
 		}
-    
+
 	}
     else {
         midi.sendShortMsg(0xB0,0x4E,0x00);//stop motor
@@ -1527,7 +1527,7 @@ NumarkV7.LoopShiftDownA = function (channel, control, value, status, group) {
 		engine.setValue("[Channel1]", "loop_start_position", (loopStart - loopLength));
 		engine.setValue("[Channel1]", "loop_end_position", loopStart);
 		midi.sendShortMsg(0xB0,0x16,0x01);
-		
+
 	}
 	if (value == 0x00) {
 		midi.sendShortMsg(0xB0,0x16,0x00);
@@ -1584,12 +1584,12 @@ NumarkV7.DeckSelectR = function (channel, control, value, status, group) {
 	}
 }
 NumarkV7.MasterL = function (channel, control, value, status, group) {
-	if (value == 00) {
+	if (value == 0x00) {
 		NumarkV7.init;
 	}
 }
 NumarkV7.MasterR = function (channel, control, value, status, group) {
-	if ((value == 00)&&(!NumarkV7.ScratchDisableB)) {
+	if ((value == 0x00)&&(!NumarkV7.ScratchDisableB)) {
 		engine.scratchEnable(2, 37056, NumarkV7.RPM, (1.0), (0.27), false);
 	}
 	if (value == 0x7F){
