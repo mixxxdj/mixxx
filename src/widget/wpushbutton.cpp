@@ -67,8 +67,8 @@ void WPushButton::setup(const QDomNode& node, const SkinContext& context) {
         } else if (elide == "none") {
             m_elideMode = Qt::ElideNone;
         } else {
-            qDebug() << "WPushButton::setup(): Elide =" << elide <<
-                    "unknown, use right, middle, left or none.";
+            qDebug() << "WPushButton::setup(): Elide =" << elide
+                     << "unknown, use right, middle, left or none.";
         }
     }
 
@@ -349,8 +349,8 @@ void WPushButton::paintEvent(QPaintEvent* e) {
         // * read QWidget::style()->property("padding-left");
         // * adjust width()
         // * transform rect()
-//        int textWidth = width() - lPad - rPad;
-//        QRect textRect = rect().adjust(x1, y1, x2, y2);
+        //        int textWidth = width() - lPad - rPad;
+        //        QRect textRect = rect().adjust(x1, y1, x2, y2);
         QString elidedText = metrics.elidedText(text, m_elideMode, width());
         p.drawText(rect(), m_align.at(idx), elidedText);
     }

@@ -706,8 +706,8 @@ QWidget* LegacySkinParser::parseWidgetStack(const QDomElement& node) {
         }
     }
 
-    WWidgetStack* pStack = new WWidgetStack(m_pParent, nextConfigKey,
-            prevConfigKey, currentPageConfigKey);
+    WWidgetStack* pStack = new WWidgetStack(
+            m_pParent, nextConfigKey, prevConfigKey, currentPageConfigKey);
     pStack->setObjectName("WidgetStack");
     pStack->setContentsMargins(0, 0, 0, 0);
     commonWidgetSetup(node, pStack);
@@ -923,8 +923,7 @@ QWidget* LegacySkinParser::parseOverview(const QDomElement& node) {
             &WOverview::trackDropped,
             m_pPlayerManager,
             &PlayerManager::slotLoadToPlayer);
-    connect(overviewWidget, &WOverview::cloneDeck,
-            m_pPlayerManager, &PlayerManager::slotCloneDeck);
+    connect(overviewWidget, &WOverview::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     commonWidgetSetup(node, overviewWidget);
     overviewWidget->setup(node, *m_pContext);
@@ -978,8 +977,7 @@ QWidget* LegacySkinParser::parseVisual(const QDomElement& node) {
             &WWaveformViewer::trackDropped,
             m_pPlayerManager,
             &PlayerManager::slotLoadToPlayer);
-    connect(viewer, &WWaveformViewer::cloneDeck,
-            m_pPlayerManager, &PlayerManager::slotCloneDeck);
+    connect(viewer, &WWaveformViewer::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
 
     // if any already loaded
     viewer->slotTrackLoaded(pPlayer->getLoadedTrack());
@@ -1259,7 +1257,7 @@ QWidget* LegacySkinParser::parseSearchBox(const QDomElement& node) {
     // to changes in the configuration.
     const auto searchDebouncingTimeoutMillis =
             m_pConfig->getValue(
-                    ConfigKey("[Library]","SearchDebouncingTimeoutMillis"),
+                    ConfigKey("[Library]", "SearchDebouncingTimeoutMillis"),
                     WSearchLineEdit::kDefaultDebouncingTimeoutMillis);
     WSearchLineEdit::setDebouncingTimeoutMillis(searchDebouncingTimeoutMillis);
 
@@ -1297,8 +1295,7 @@ QWidget* LegacySkinParser::parseCoverArt(const QDomElement& node) {
                 &WCoverArt::trackDropped,
                 m_pPlayerManager,
                 &PlayerManager::slotLoadToPlayer);
-        connect(pCoverArt, &WCoverArt::cloneDeck,
-                m_pPlayerManager, &PlayerManager::slotCloneDeck);
+        connect(pCoverArt, &WCoverArt::cloneDeck, m_pPlayerManager, &PlayerManager::slotCloneDeck);
     }
 
     return pCoverArt;
@@ -1478,8 +1475,12 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
     if (m_pContext->hasNodeSelectString(node, "BgColor", &bgColor)) {
         color.setNamedColor(bgColor);
         color = WSkinColor::getCorrectColor(color);
-        styleHack.append(QString("WLibraryTableView {  background-color: %1; }\n ").arg(color.name()));
-        styleHack.append(QString("WLibrarySidebar {  background-color: %1; }\n ").arg(color.name()));
+        styleHack.append(
+                QString("WLibraryTableView {  background-color: %1; }\n ")
+                        .arg(color.name()));
+        styleHack.append(
+                QString("WLibrarySidebar {  background-color: %1; }\n ")
+                        .arg(color.name()));
 
         styleHack.append(QString("WSearchLineEdit {  background-color: %1; }\n ").arg(color.name()));
         styleHack.append(QString("QTextBrowser {  background-color: %1; }\n ").arg(color.name()));
@@ -1499,7 +1500,9 @@ QString LegacySkinParser::getLibraryStyle(const QDomNode& node) {
         color.setNamedColor(bgColorRowUneven);
         color = WSkinColor::getCorrectColor(color);
 
-        styleHack.append(QString("WLibraryTableView { alternate-background-color: %1; }\n ").arg(color.name()));
+        styleHack.append(QString(
+                "WLibraryTableView { alternate-background-color: %1; }\n ")
+                                 .arg(color.name()));
     }
     style.prepend(styleHack);
     return style;
@@ -1776,7 +1779,7 @@ void LegacySkinParser::setupSize(const QDomNode& node, QWidget* pWidget) {
         } else if (x != -1 || y != -1) {
             SKIN_WARNING(node, *m_pContext)
                     << "Could not parse widget MinimumSize:" << size;
-	}
+        }
     }
 
 
@@ -2072,7 +2075,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
             bool directionOptionSet = false;
             int directionOption = ControlParameterWidgetConnection::DIR_FROM_AND_TO_WIDGET;
             if (m_pContext->hasNodeSelectBool(
-                    con, "ConnectValueFromWidget", &nodeValue)) {
+                        con, "ConnectValueFromWidget", &nodeValue)) {
                 if (nodeValue) {
                     directionOption = directionOption | ControlParameterWidgetConnection::DIR_FROM_WIDGET;
                 } else {
@@ -2082,7 +2085,7 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
             }
 
             if (m_pContext->hasNodeSelectBool(
-                    con, "ConnectValueToWidget", &nodeValue)) {
+                        con, "ConnectValueToWidget", &nodeValue)) {
                 if (nodeValue) {
                     directionOption = directionOption | ControlParameterWidgetConnection::DIR_TO_WIDGET;
                 } else {
@@ -2101,14 +2104,14 @@ void LegacySkinParser::setupConnections(const QDomNode& node, WBaseWidget* pWidg
             int emitOption =
                     ControlParameterWidgetConnection::EMIT_ON_PRESS;
             if (m_pContext->hasNodeSelectBool(
-                    con, "EmitOnDownPress", &nodeValue)) {
+                        con, "EmitOnDownPress", &nodeValue)) {
                 if (nodeValue) {
                     emitOption = ControlParameterWidgetConnection::EMIT_ON_PRESS;
                 } else {
                     emitOption = ControlParameterWidgetConnection::EMIT_ON_RELEASE;
                 }
             } else if (m_pContext->hasNodeSelectBool(
-                    con, "EmitOnPressAndRelease", &nodeValue)) {
+                               con, "EmitOnPressAndRelease", &nodeValue)) {
                 if (nodeValue) {
                     emitOption = ControlParameterWidgetConnection::EMIT_ON_PRESS_AND_RELEASE;
                 } else {

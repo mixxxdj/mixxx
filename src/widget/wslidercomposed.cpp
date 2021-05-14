@@ -12,26 +12,26 @@
 #include "widget/wpixmapstore.h"
 #include "widget/wskincolor.h"
 
-WSliderComposed::WSliderComposed(QWidget * parent)
-    : WWidget(parent),
-      m_dHandleLength(0.0),
-      m_dSliderLength(0.0),
-      m_bHorizontal(false),
-      m_dBarWidth(0.0),
-      m_dBarBgWidth(0.0),
-      m_dBarStart(0.0),
-      m_dBarEnd(0.0),
-      m_dBarBgStart(0.0),
-      m_dBarBgEnd(0.0),
-      m_dBarAxisPos(0.0),
-      m_bBarUnipolar(true),
-      m_barColor(nullptr),
-      m_barBgColor(nullptr),
-      m_barPenCap(Qt::FlatCap),
-      m_pSlider(nullptr),
-      m_pHandle(nullptr),
-      m_renderTimer(mixxx::Duration::fromMillis(20),
-                    mixxx::Duration::fromSeconds(1)) {
+WSliderComposed::WSliderComposed(QWidget* parent)
+        : WWidget(parent),
+          m_dHandleLength(0.0),
+          m_dSliderLength(0.0),
+          m_bHorizontal(false),
+          m_dBarWidth(0.0),
+          m_dBarBgWidth(0.0),
+          m_dBarStart(0.0),
+          m_dBarEnd(0.0),
+          m_dBarBgStart(0.0),
+          m_dBarBgEnd(0.0),
+          m_dBarAxisPos(0.0),
+          m_bBarUnipolar(true),
+          m_barColor(nullptr),
+          m_barBgColor(nullptr),
+          m_barPenCap(Qt::FlatCap),
+          m_pSlider(nullptr),
+          m_pHandle(nullptr),
+          m_renderTimer(mixxx::Duration::fromMillis(20),
+                  mixxx::Duration::fromSeconds(1)) {
     connect(&m_renderTimer,
             &WidgetRenderTimer::update,
             this,
@@ -66,9 +66,10 @@ void WSliderComposed::setup(const QDomNode& node, const SkinContext& context) {
     bool h = context.selectBool(node, "Horizontal", false);
     // The implicit default in <1.12.0 was FIXED so we keep it for backwards
     // compatibility.
-    setHandlePixmap(h, sourceHandle,
-                    context.selectScaleMode(handle, Paintable::FIXED),
-                    scaleFactor);
+    setHandlePixmap(h,
+            sourceHandle,
+            context.selectScaleMode(handle, Paintable::FIXED),
+            scaleFactor);
 
     // Set up the level bar.
     QColor barColor = context.selectColor(node, "BarColor");
@@ -246,11 +247,9 @@ void WSliderComposed::drawBar(QPainter* pPainter) {
         pPainter->setPen(barBgPen);
         QLineF barBg;
         if (m_bHorizontal) {
-            barBg = QLineF(m_dBarBgStart, m_dBarAxisPos,
-                    width() - m_dBarBgEnd, m_dBarAxisPos);
+            barBg = QLineF(m_dBarBgStart, m_dBarAxisPos, width() - m_dBarBgEnd, m_dBarAxisPos);
         } else {
-            barBg = QLineF(m_dBarAxisPos, height() - m_dBarBgEnd,
-                    m_dBarAxisPos, m_dBarBgStart);
+            barBg = QLineF(m_dBarAxisPos, height() - m_dBarBgEnd, m_dBarAxisPos, m_dBarBgStart);
         }
         pPainter->drawLine(barBg);
     }
@@ -268,7 +267,7 @@ void WSliderComposed::drawBar(QPainter* pPainter) {
             x1 = m_dBarStart;
         } else {
             // draw from center
-            x1 = m_dBarStart + (width() - m_dBarStart -m_dBarEnd) / 2;
+            x1 = m_dBarStart + (width() - m_dBarStart - m_dBarEnd) / 2;
         }
         x2 = m_dBarStart + value * (width() - m_dBarStart - m_dBarEnd);
         y1 = m_dBarAxisPos;
