@@ -7,9 +7,10 @@
 *.log
 *.log.*
 
-__pycache__
-
 # TOOLS
+
+# Might be created when running a Python script from the tools folder
+__pycache__
 
 # Clang/cmake
 *_build
