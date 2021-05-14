@@ -907,6 +907,27 @@ TEST_F(EngineSyncTest, EnableOneDeckInitsMaster) {
                     ConfigKey(m_sInternalClockGroup, "beat_distance")));
 }
 
+TEST_F(EngineSyncTest, MomentarySyncAlgorithmTwo) {
+    m_pConfig->set(ConfigKey("[BPM]", "sync_lock_algorithm"),
+            ConfigValue(EngineSync::PREFER_LOCK_BPM));
+
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 120, 0.0);
+    m_pTrack1->trySetBeats(pBeats1);
+    mixxx::BeatsPointer pBeats2 = BeatFactory::makeBeatGrid(m_pTrack2->getSampleRate(), 128, 0.0);
+    m_pTrack2->trySetBeats(pBeats2);
+
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    auto pButtonSyncEnabled1 =
+            std::make_unique<ControlProxy>(m_sGroup1, "sync_enabled");
+    pButtonSyncEnabled1->slotSet(1.0);
+    pButtonSyncEnabled1->slotSet(0.0);
+
+    ProcessBuffer();
+
+    EXPECT_DOUBLE_EQ(128.0, ControlObject::get(ConfigKey(m_sGroup1, "bpm")));
+}
+
 TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
     // Enabling sync on a deck causes it to be master, and sets bpm and clock.
     // Set the deck to play.

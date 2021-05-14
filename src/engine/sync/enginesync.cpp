@@ -263,7 +263,7 @@ Syncable* EngineSync::pickMaster(Syncable* enabling_syncable) {
             return m_pInternalClock;
         }
 
-        if (stopped_deck_count > 1) {
+        if (stopped_deck_count >= 1) {
             return first_stopped_deck;
         }
         break;

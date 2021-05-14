@@ -150,6 +150,7 @@ class EngineSync : public SyncableListener {
     FRIEND_TEST(EngineSyncTest, SyncToNonSyncDeck);
     FRIEND_TEST(EngineSyncTest, SetFileBpmUpdatesLocalBpm);
     FRIEND_TEST(EngineSyncTest, BpmAdjustFactor);
+    FRIEND_TEST(EngineSyncTest, MomentarySyncAlgorithmTwo);
     friend class EngineSyncTest;
 
     UserSettingsPointer m_pConfig;
