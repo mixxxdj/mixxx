@@ -48,7 +48,7 @@
 
 	Pitch bend:
 		The pitch bend buttons increase or decrease the song pitch by one
-		semitone without affecting the set pitch. Press both buttons together
+		semitone without affecting the set tempo. Press both buttons together
 		to reset to the original song pitch.
 
 	Load track: 	Only if the track is paused. Put the pitch in 0 at load.
