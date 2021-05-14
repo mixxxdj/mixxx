@@ -33,6 +33,3 @@ compile_commands.json
 # Build and distribution directories for various build configurations
 /build
 /install
-
-# VisualStudio project files
-/.vs/
