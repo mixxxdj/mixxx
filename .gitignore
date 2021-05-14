@@ -7,12 +7,6 @@
 *.log
 *.log.*
 
-# Compilation artifacts
-src/mixxx.rc.include
-src/mixxx.res
-src/test/**/*.actual
-res/qrc_mixxx.cc
-
 __pycache__
 
 # TOOLS
@@ -33,3 +27,11 @@ compile_commands.json
 # Build and distribution directories for various build configurations
 /build
 /install
+
+# Legacy compilation artifacts that are obsolete starting with 2.3
+# TODO: Delete after 2.2 with SCons has been abandoned. Developers
+# are supposed to clean their project directory!
+src/mixxx.rc.include
+src/mixxx.res
+src/test/**/*.actual
+res/qrc_mixxx.cc
