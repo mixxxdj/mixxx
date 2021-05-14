@@ -2,8 +2,8 @@
 <MixxxControllerPreset schemaVersion="1" mixxxVersion="1.11.0+">
     <info>
         <name>Numark MixTrack Pro</name>
-        <author>Matteo (matteo@magm3.com), James Ralston, and D. J. Freije (dario2004@gmail.com)</author>
-        <description>version v1.2 w/brake, backspin, blink beat Leds.</description>
+        <author>Matteo (matteo@magm3.com), James Ralston, D. J. Freije (dario2004@gmail.com), and Quint Guvernator</author>
+        <description>version v1.3 w/ effects access, beat jump, improved looping, and pitch control</description>
         <forums>https://mixxx.discourse.group/t/numark-mixtrack-pro-with-backspin-and-more/12557</forums>
         <manual>numark_mixtrack_pro</manual>
     </info>
