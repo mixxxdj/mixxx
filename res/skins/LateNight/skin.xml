@@ -298,7 +298,7 @@
       <!-- ToDo ronso0 :: Unfortunately, variables are not considered here, yet ;)
           because the launch screen appears while the skin is parsed.
       image: url(skin:/style_<Variable name="scheme"/>/mixxx_logo.svg); -->
-      image: url(skin:/palemoon/style/mixxx_logo.svg);
+      background: transparent url(skin:/palemoon/style/mixxx_logo.svg) no-repeat center center;
       padding: 0;
       margin: 0px 2px 0px 2px;
       border: none;
