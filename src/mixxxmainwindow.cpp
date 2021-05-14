@@ -982,6 +982,9 @@ void MixxxMainWindow::rebootMixxxView() {
     // safe geometry for later restoration
     const QRect initGeometry = geometry();
 
+    // store the fullscreen state and restore after skin change
+    bool wasFullScreen = isFullScreen();
+
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
     // that need to be deleted -- otherwise we can't tell what features the skin
@@ -999,7 +1002,6 @@ void MixxxMainWindow::rebootMixxxView() {
     // mode. If you change skins while in fullscreen (on Linux, at least) the
     // window returns to 0,0 but and the backdrop disappears so it looks as if
     // it is not fullscreen, but acts as if it is.
-    bool wasFullScreen = isFullScreen();
     slotViewFullScreen(false);
 
     if (!loadConfiguredSkin()) {
