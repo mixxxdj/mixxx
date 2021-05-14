@@ -12,6 +12,8 @@
 #include <QProcessEnvironment>
 #include <QStandardPaths>
 
+#include "config.h"
+#include "defs_urls.h"
 #include "sources/soundsourceproxy.h"
 
 CmdlineArgs::CmdlineArgs()
@@ -28,6 +30,10 @@ CmdlineArgs::CmdlineArgs()
 #ifdef MIXXX_SETTINGS_PATH
           m_settingsPath(QDir::homePath().append("/").append(MIXXX_SETTINGS_PATH)) {
 #else
+#ifdef __LINUX__
+#error "We are not ready to switch to XDG folders under Linux"
+#endif
+
           // TODO(XXX) Trailing slash not needed anymore as we switches from String::append
           // to QDir::filePath elsewhere in the code. This is candidate for removal.
           m_settingsPath(
@@ -60,8 +66,9 @@ bool parseLogLevel(
 bool CmdlineArgs::parse(const QStringList& arguments) {
     QCommandLineParser parser;
     parser.setApplicationDescription(QCoreApplication::translate("main",
-            "Mixxx is an open source DJ software. For more information, see "
-            "https://manual.mixxx.org/2.3/chapters/appendix.html#command-line-options).\n"
+            "Mixxx is an open source DJ software. For more information, "
+            "see " MIXXX_MANUAL_COMMANDLINEOPTIONS_URL
+            "\n."
             "CamelCase arguments are deprecated and will be removed in 2.5"));
     parser.setSingleDashWordOptionMode(QCommandLineParser::ParseAsLongOptions);
 

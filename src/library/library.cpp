@@ -257,7 +257,7 @@ Library::~Library() {
     // Empty but required due to forward declarations in header file!
 }
 
-TrackCollectionManager* Library::trackCollections() const {
+TrackCollectionManager* Library::trackCollectionManager() const {
     // Cannot be implemented inline due to forward declarations
     return m_pTrackCollectionManager;
 }
@@ -588,12 +588,6 @@ void Library::setRowHeight(int rowHeight) {
 void Library::setEditMedatataSelectedClick(bool enabled) {
     m_editMetadataSelectedClick = enabled;
     emit setSelectedClick(enabled);
-}
-
-TrackCollection& Library::trackCollection() {
-    DEBUG_ASSERT(m_pTrackCollectionManager);
-    DEBUG_ASSERT(m_pTrackCollectionManager->internalCollection());
-    return *m_pTrackCollectionManager->internalCollection();
 }
 
 void Library::searchTracksInCollection(const QString& query) {

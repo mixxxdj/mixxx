@@ -46,23 +46,26 @@ RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfi
                   << "genre";
     m_trackSource->setSearchColumns(searchColumns);
 
-    m_pRhythmboxTrackModel = new BaseExternalTrackModel(
-        this, pLibrary->trackCollections(),
-        "mixxx.db.model.rhythmbox",
-        "rhythmbox_library",
-        m_trackSource);
-    m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(
-        this, pLibrary->trackCollections(),
-        "mixxx.db.model.rhythmbox_playlist",
-        "rhythmbox_playlists",
-        "rhythmbox_playlist_tracks",
-        m_trackSource);
+    m_pRhythmboxTrackModel = new BaseExternalTrackModel(this,
+            pLibrary->trackCollectionManager(),
+            "mixxx.db.model.rhythmbox",
+            "rhythmbox_library",
+            m_trackSource);
+    m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(this,
+            pLibrary->trackCollectionManager(),
+            "mixxx.db.model.rhythmbox_playlist",
+            "rhythmbox_playlists",
+            "rhythmbox_playlist_tracks",
+            m_trackSource);
 
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
-    m_database = QSqlDatabase::cloneDatabase(pLibrary->trackCollections()->internalCollection()->database(),
-                                             "RHYTHMBOX_SCANNER");
+    m_database =
+            QSqlDatabase::cloneDatabase(pLibrary->trackCollectionManager()
+                                                ->internalCollection()
+                                                ->database(),
+                    "RHYTHMBOX_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -86,12 +89,12 @@ RhythmboxFeature::~RhythmboxFeature() {
 }
 
 BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
-                                            this, m_pLibrary->trackCollections(),
-                                            "mixxx.db.model.rhythmbox_playlist",
-                                            "rhythmbox_playlists",
-                                            "rhythmbox_playlist_tracks",
-                                            m_trackSource);
+    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(this,
+            m_pLibrary->trackCollectionManager(),
+            "mixxx.db.model.rhythmbox_playlist",
+            "rhythmbox_playlists",
+            "rhythmbox_playlist_tracks",
+            m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }

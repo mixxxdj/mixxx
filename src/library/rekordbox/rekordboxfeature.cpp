@@ -1364,7 +1364,8 @@ RekordboxFeature::RekordboxFeature(
             << LIBRARYTABLE_KEY;
     m_trackSource->setSearchColumns(searchColumns);
 
-    m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(this, pLibrary->trackCollections(), m_trackSource);
+    m_pRekordboxPlaylistModel = new RekordboxPlaylistModel(
+            this, pLibrary->trackCollectionManager(), m_trackSource);
 
     m_title = tr("Rekordbox");
 
@@ -1427,7 +1428,8 @@ void RekordboxFeature::htmlLinkClicked(const QUrl& link) {
 }
 
 BaseSqlTableModel* RekordboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(this, m_pLibrary->trackCollections(), m_trackSource);
+    RekordboxPlaylistModel* model = new RekordboxPlaylistModel(
+            this, m_pLibrary->trackCollectionManager(), m_trackSource);
     model->setPlaylist(playlist);
     return model;
 }

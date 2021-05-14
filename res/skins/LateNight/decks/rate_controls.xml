@@ -20,55 +20,54 @@
         <SizePolicy>min,me</SizePolicy>
         <Children>
 
-          <WidgetGroup><!-- BPM + rate -->
+          <WidgetGroup><!-- BPM + rate + Tap overlay-->
             <ObjectName>BpmRateTapContainer</ObjectName>
             <Layout>vertical</Layout>
             <SizePolicy>min,me</SizePolicy>
             <MaximumSize>,46</MaximumSize>
             <Children>
-              <WidgetGroup><!-- BpmContainer + Tap overlay -->
-                <ObjectName>AlignCenter</ObjectName>
+              <WidgetGroup>
+                <ObjectName>BpmTapContainer</ObjectName>
                 <Layout>stacked</Layout>
-                <Size>56f,22f</Size>
+                <Size>57f,-1me</Size>
                 <Children>
                   <!-- In order to make the bpm display tappable, we use an old-style
                   widget group and put the bpm pushbutton on top of the display. -->
                   <PushButton>
                     <TooltipId>bpm_tap_visual_bpm</TooltipId>
                     <ObjectName>BpmTap</ObjectName>
-                    <Size>56f,22f</Size>
+                    <Size>57f,-1me</Size>
                     <NumberStates>1</NumberStates>
-                    <State>
-                      <Number>0</Number>
-                    </State>
-                    <State>
-                      <Number>1</Number>
-                    </State>
                     <Connection>
                       <ConfigKey><Variable name="Group"/>,bpm_tap</ConfigKey>
                     </Connection>
                   </PushButton>
-                  <NumberBpm>
-                    <ObjectName>BpmText</ObjectName>
-                    <TooltipId>visual_bpm</TooltipId>
-                    <Size>56f,22f</Size>
-                    <Channel><Variable name="ChanNum" /></Channel>
-                    <NumberOfDigits>2</NumberOfDigits>
-                    <Connection>
-                      <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
-                    </Connection>
-                  </NumberBpm>
+                  <WidgetGroup><!-- BPM + rate -->
+                    <ObjectName>AlignCenter</ObjectName>
+                    <Layout>vertical</Layout>
+                    <Size>57f,-1me</Size>
+                    <Children>
+                      <Number>
+                        <ObjectName>BpmText</ObjectName>
+                        <TooltipId>visual_bpm</TooltipId>
+                        <Size>57f,22f</Size>
+                        <NumberOfDigits>2</NumberOfDigits>
+                        <Connection>
+                          <ConfigKey><Variable name="Group"/>,visual_bpm</ConfigKey>
+                        </Connection>
+                      </Number>
+                      <NumberRate>
+                        <TooltipId>rate_display</TooltipId>
+                        <ObjectName>RateText</ObjectName>
+                        <Channel><Variable name="ChanNum" /></Channel>
+                        <NumberOfDigits>2</NumberOfDigits>
+                      </NumberRate>
+                    </Children>
+                  </WidgetGroup>
                 </Children>
-              </WidgetGroup><!-- BpmContainer + Tap overlay -->
-
-              <NumberRate>
-                <TooltipId>rate_display</TooltipId>
-                <ObjectName>RateText</ObjectName>
-                <Channel><Variable name="ChanNum" /></Channel>
-                <NumberOfDigits>2</NumberOfDigits>
-              </NumberRate>
+              </WidgetGroup>
             </Children>
-          </WidgetGroup><!-- BPM + rate -->
+          </WidgetGroup><!-- BpmRateTapContainer -->
 
           <WidgetGroup>
             <ObjectName>SyncBox</ObjectName>
@@ -120,13 +119,13 @@
             <Children>
 
               <WidgetGroup><!-- Rate slider + range displays -->
+                <ObjectName>RateSliderBox</ObjectName>
                 <Layout>stacked</Layout>
                 <SizePolicy>max,me</SizePolicy>
                 <Children>
 
                   <!-- Rate slider + center indicator -->
                   <WidgetGroup>
-                    <ObjectName>RateSliderBox</ObjectName>
                     <Size>54f,121f</Size>
                     <Children>
                       <Label>

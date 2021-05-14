@@ -526,8 +526,12 @@ void EngineBuffer::loadFakeTrack(TrackPointer pTrack, bool bPlay) {
     if (bPlay) {
         m_playButton->set((double)bPlay);
     }
-    slotTrackLoaded(pTrack, pTrack->getSampleRate(),
-                    pTrack->getSampleRate() * pTrack->getDurationInt());
+    slotTrackLoaded(
+            pTrack,
+            pTrack->getSampleRate(),
+            // TODO: Round to integer after multiplication with sample rate
+            // and not before?
+            pTrack->getSampleRate() * pTrack->getDurationSecondsInt());
 }
 
 // WARNING: Always called from the EngineWorker thread pool
@@ -672,7 +676,7 @@ double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
 
 void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekType) {
     // Prevent NaN's from sneaking into the engine.
-    if (isnan(fractionalPos)) {
+    VERIFY_OR_DEBUG_ASSERT(!isnan(fractionalPos)) {
         return;
     }
     double newSamplePosition = fractionalPos * m_pTrackSamples->get();

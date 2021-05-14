@@ -50,7 +50,10 @@ const QString Track::kArtistTitleSeparator = QStringLiteral(" - ");
 Track::Track(
         mixxx::FileAccess fileAccess,
         TrackId trackId)
-        : m_qMutex(QMutex::Recursive),
+        :
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+          m_qMutex(QMutex::Recursive),
+#endif
           m_fileAccess(std::move(fileAccess)),
           m_record(trackId),
           m_bDirty(false),
@@ -298,8 +301,9 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
     return false;
 }
 
-QString Track::getBpmText() const {
-    return QString("%1").arg(getBpm(), 3,'f',1);
+double Track::getBpm() const {
+    const QMutexLocker lock(&m_qMutex);
+    return getBpmWhileLocked().getValue();
 }
 
 bool Track::trySetBpm(double bpmValue) {
@@ -454,19 +458,18 @@ void Track::setDuration(double duration) {
     setDuration(mixxx::Duration::fromSeconds(duration));
 }
 
-double Track::getDuration(DurationRounding rounding) const {
+double Track::getDuration() const {
     QMutexLocker lock(&m_qMutex);
-    const auto durationSeconds =
-            m_record.getMetadata().getStreamInfo().getDuration().toDoubleSeconds();
-    switch (rounding) {
-    case DurationRounding::SECONDS:
-        return std::round(durationSeconds);
-    default:
-        return durationSeconds;
-    }
+    return m_record.getMetadata().getStreamInfo().getDuration().toDoubleSeconds();
 }
 
-QString Track::getDurationText(mixxx::Duration::Precision precision) const {
+int Track::getDurationSecondsInt() const {
+    QMutexLocker lock(&m_qMutex);
+    return static_cast<int>(m_record.getMetadata().getDurationSecondsRounded());
+}
+
+QString Track::getDurationText(
+        mixxx::Duration::Precision precision) const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getDurationText(precision);
 }

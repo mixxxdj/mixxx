@@ -125,13 +125,13 @@ Console::Console()
                         MAX_PATH,
                         TEXT("%s : %s"),
                         m_oldTitle,
-                        VersionStore::applicationTitle().utf16());
+                        VersionStore::applicationName().utf16());
 #else
                 StringCchPrintf(szNewTitle,
                         MAX_PATH,
                         TEXT("%s : %s"),
                         m_oldTitle,
-                        VersionStore::applicationTitle().toLocal8Bit().data());
+                        VersionStore::applicationName().toLocal8Bit().data());
 #endif
                 // Set console title to new title
                 if (SetConsoleTitle(szNewTitle)) {

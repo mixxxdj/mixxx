@@ -348,7 +348,11 @@ class CueControl : public EngineControl {
     QMap<QObject*, int> m_controlMap;
 
     // Must be locked when using the m_pLoadedTrack and it's properties
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    QRecursiveMutex m_trackMutex;
+#else
     QMutex m_trackMutex;
+#endif
     TrackPointer m_pLoadedTrack; // is written from an engine worker thread
 
     friend class HotcueControlTest;

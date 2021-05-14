@@ -741,7 +741,7 @@ bool BaseSqlTableModel::setTrackValueForColumn(
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_pTrackCollectionManager->internalCollection()->getTrackById(getTrackId(index));
+    return m_pTrackCollectionManager->getTrackById(getTrackId(index));
 }
 
 TrackId BaseSqlTableModel::getTrackId(const QModelIndex& index) const {

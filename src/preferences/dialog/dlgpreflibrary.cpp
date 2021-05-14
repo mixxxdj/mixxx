@@ -156,7 +156,9 @@ void DlgPrefLibrary::initializeDirList() {
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
     m_dirListModel.clear();
-    const auto rootDirs = m_pLibrary->trackCollections()->internalCollection()->loadRootDirs();
+    const auto rootDirs = m_pLibrary->trackCollectionManager()
+                                  ->internalCollection()
+                                  ->loadRootDirs();
     for (const mixxx::FileInfo& rootDir : rootDirs) {
         m_dirListModel.appendRow(new QStandardItem(rootDir.location()));
     }

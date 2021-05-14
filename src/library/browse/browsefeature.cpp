@@ -32,8 +32,8 @@ BrowseFeature::BrowseFeature(
         UserSettingsPointer pConfig,
         RecordingManager* pRecordingManager)
         : LibraryFeature(pLibrary, pConfig),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
-          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
+          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_pLastRightClickedItem(nullptr),
           m_icon(":/images/library/ic_library_computer.svg") {
@@ -485,7 +485,9 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     bool osDownloadsDirIncluded = false;
     bool osDesktopDirIncluded = false;
     bool osDocumentsDirIncluded = false;
-    const auto rootDirs = m_pLibrary->trackCollections()->internalCollection()->loadRootDirs();
+    const auto rootDirs = m_pLibrary->trackCollectionManager()
+                                  ->internalCollection()
+                                  ->loadRootDirs();
     for (mixxx::FileInfo fileInfo : rootDirs) {
         // Skip directories we don't have permission to.
         if (!Sandbox::canAccess(&fileInfo)) {
