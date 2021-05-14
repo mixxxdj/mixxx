@@ -406,7 +406,11 @@ void EngineBuffer::requestSyncPhase() {
 void EngineBuffer::requestEnableSync(bool enabled) {
     // If we're not playing, the queued event won't get processed so do it now.
     if (m_playButton->get() == 0.0) {
-        m_pEngineSync->requestEnableSync(m_pSyncControl, enabled);
+        if (enabled) {
+            m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
+        } else {
+            m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
+        }
         return;
     }
     SyncRequestQueued enable_request =
@@ -1195,14 +1199,14 @@ void EngineBuffer::processSyncRequests() {
             static_cast<SyncMode>(m_iSyncModeQueued.fetchAndStoreRelease(SYNC_INVALID));
     switch (enable_request) {
     case SYNC_REQUEST_ENABLE:
-        m_pEngineSync->requestEnableSync(m_pSyncControl, true);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
         break;
     case SYNC_REQUEST_DISABLE:
-        m_pEngineSync->requestEnableSync(m_pSyncControl, false);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
         break;
     case SYNC_REQUEST_ENABLEDISABLE:
-        m_pEngineSync->requestEnableSync(m_pSyncControl, true);
-        m_pEngineSync->requestEnableSync(m_pSyncControl, false);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_FOLLOWER);
+        m_pEngineSync->requestSyncMode(m_pSyncControl, SYNC_NONE);
         break;
     case SYNC_REQUEST_NONE:
         break;
@@ -1266,7 +1270,7 @@ void EngineBuffer::processSeek(bool paused) {
 
     if (!paused && (seekType & SEEK_PHASE)) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineBuffer::processSeek Seeking phase";
+            kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seeking phase";
         }
         double requestedPosition = position;
         double syncPosition = m_pBpmControl->getBeatMatchPosition(position, true, true);
@@ -1279,7 +1283,7 @@ void EngineBuffer::processSeek(bool paused) {
     }
     if (position != m_filepos_play) {
         if (kLogger.traceEnabled()) {
-            kLogger.trace() << "EngineBuffer::processSeek Seek to" << position;
+            kLogger.trace() << "EngineBuffer::processSeek" << getGroup() << "Seek to" << position;
         }
         setNewPlaypos(position);
     }
@@ -1339,12 +1343,6 @@ void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
         // At Track end
         speed = 0;
     }
-
-    // Report fractional playpos to SyncControl.
-    // TODO(rryan) It's kind of hacky that this is in updateIndicators but it
-    // prevents us from computing fFractionalPlaypos multiple times per
-    // EngineBuffer::process().
-    m_pSyncControl->reportTrackPosition(fFractionalPlaypos);
 
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider)
@@ -1450,6 +1448,10 @@ double EngineBuffer::getVisualPlayPos() const {
 
 double EngineBuffer::getTrackSamples() const {
     return m_pTrackSamples->get();
+}
+
+double EngineBuffer::getUserOffset() const {
+    return m_pBpmControl->getUserOffset();
 }
 
 double EngineBuffer::getRateRatio() const {

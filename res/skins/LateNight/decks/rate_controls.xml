@@ -80,8 +80,33 @@
                 <SetVariable name="Size">48f,22f</SetVariable>
                 <SetVariable name="BtnSize">sync</SetVariable>
                 <SetVariable name="ConfigKey"><Variable name="Group"/>,sync_enabled</SetVariable>
-                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,beatsync_tempo</SetVariable>
+                <SetVariable name="ConfigKeyRight"><Variable name="Group"/>,sync_master</SetVariable>
               </Template>
+              <PushButton>
+                  <TooltipId>sync_master</TooltipId>
+                  <ObjectName>SyncLeader</ObjectName>
+                  <Size>48f,22f</Size>
+                  <NumberStates>3</NumberStates>
+                  <State>
+                      <Number>0</Number>
+                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Pressed>
+                  </State>
+                  <State>
+                      <Number>1</Number>
+                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Pressed>
+                  </State>
+                  <State>
+                      <Number>2</Number>
+                      <Unpressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Unpressed>
+                      <Pressed scalemode="STRETCH">skin:/<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_sync_active.svg</Pressed>
+                  </State>
+                  <Connection>
+                      <ConfigKey><Variable name="Group"/>,sync_master</ConfigKey>
+                      <ButtonState>LeftButton</ButtonState>
+                  </Connection>
+              </PushButton>
             </Children>
           </WidgetGroup>
 
