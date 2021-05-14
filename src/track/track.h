@@ -330,9 +330,12 @@ class Track : public QObject {
     void importMetadata(
             mixxx::TrackMetadata importedMetadata,
             const QDateTime& metadataSynchronized = QDateTime());
-    // Merge additional metadata that is not (yet) stored in the database
-    // and only available from file tags.
-    void mergeImportedMetadata(
+
+    /// Merge additional metadata that is not (yet) stored in the database
+    /// and only available from file tags.
+    ///
+    /// Returns true if the track has been modified and false otherwise.
+    bool mergeImportedMetadata(
             const mixxx::TrackMetadata& importedMetadata);
 
     void readTrackMetadata(

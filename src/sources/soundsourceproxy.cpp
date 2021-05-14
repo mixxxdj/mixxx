@@ -304,7 +304,9 @@ SoundSourceProxy::allProviderRegistrationsForUrl(
 
 //static
 ExportTrackMetadataResult
-SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack, UserSettingsPointer pConfig) {
+SoundSourceProxy::exportTrackMetadataBeforeSaving(
+        Track* pTrack,
+        const UserSettingsPointer& pConfig) {
     DEBUG_ASSERT(pTrack);
     const auto fileInfo = pTrack->getFileInfo();
     mixxx::MetadataSourcePointer pMetadataSource;
@@ -333,7 +335,7 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(Track* pTrack, UserSettingsPoi
     } else {
         kLogger.warning()
                 << "Unable to export track metadata into file"
-                << fileInfo.location();
+                << fileInfo;
         return ExportTrackMetadataResult::Skipped;
     }
 }
@@ -512,19 +514,19 @@ SoundSourceProxy::importTrackMetadataAndCoverImage(
             pCoverImage);
 }
 
-void SoundSourceProxy::updateTrackFromSource(
-        ImportTrackMetadataMode importTrackMetadataMode) {
+bool SoundSourceProxy::updateTrackFromSource(
+        UpdateTrackFromSourceMode mode) {
     DEBUG_ASSERT(m_pTrack);
 
     if (getUrl().isEmpty()) {
         // Silently skip tracks without a corresponding file
-        return; // abort
+        return false; // abort
     }
     if (!m_pSoundSource) {
         kLogger.warning()
                 << "Unable to update track from unsupported file type"
                 << getUrl().toString();
-        return; // abort
+        return false; // abort
     }
 
     // The SoundSource provides the actual type of the corresponding file
@@ -543,8 +545,7 @@ void SoundSourceProxy::updateTrackFromSource(
     // if the user did not explicitly choose to (re-)import metadata
     // explicitly from this file.
     bool mergeImportedMetadata = false;
-    if (metadataSynchronized &&
-            (importTrackMetadataMode == ImportTrackMetadataMode::Once)) {
+    if (metadataSynchronized && mode == UpdateTrackFromSourceMode::Once) {
         // No (re-)import needed or desired, only merge missing properties
         mergeImportedMetadata = true;
     }
@@ -570,7 +571,7 @@ void SoundSourceProxy::updateTrackFromSource(
                         << getUrl().toString();
             }
         } else {
-            // (Re-)import embedded cover art
+            // Request reimport of embedded cover art
             pCoverImg = &coverImg;
         }
     }
@@ -596,9 +597,11 @@ void SoundSourceProxy::updateTrackFromSource(
         if (metadataImported.first == mixxx::MetadataSource::ImportResult::Succeeded) {
             // Partial import of properties that are not (yet) stored
             // in the database
-            m_pTrack->mergeImportedMetadata(trackMetadata);
-        } // else: Nothing to do if no metadata has been imported
-        return;
+            return m_pTrack->mergeImportedMetadata(trackMetadata);
+        } else {
+            // Nothing to do if no metadata has been imported
+            return false;
+        }
     }
 
     // Full import
@@ -675,7 +678,7 @@ void SoundSourceProxy::updateTrackFromSource(
 
     // Do not continue with unknown and maybe invalid metadata!
     if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
-        return;
+        return false;
     }
 
     m_pTrack->importMetadata(trackMetadata, metadataImported.second);
@@ -708,6 +711,7 @@ void SoundSourceProxy::updateTrackFromSource(
         m_pTrack->setCoverInfo(coverInfo);
     }
 
+    return true;
 }
 
 mixxx::AudioSourcePointer SoundSourceProxy::openAudioSource(

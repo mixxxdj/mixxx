@@ -29,7 +29,7 @@ class TrackUpdateTest: public MixxxTest {
 
     static TrackPointer newTestTrackParsed() {
         auto pTrack = newTestTrack();
-        SoundSourceProxy(pTrack).updateTrackFromSource();
+        EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource());
         EXPECT_TRUE(pTrack->isMetadataSynchronized());
         EXPECT_TRUE(hasTrackMetadata(pTrack));
         EXPECT_TRUE(hasCoverArt(pTrack));
@@ -59,18 +59,19 @@ TEST_F(TrackUpdateTest, parseModifiedCleanOnce) {
     pTrack->readTrackMetadata(&trackMetadataBefore);
     auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Once);
+    // Re-update from source should have no effect
+    ASSERT_FALSE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Once));
 
     mixxx::TrackMetadata trackMetadataAfter;
     pTrack->readTrackMetadata(&trackMetadataAfter);
     auto coverInfoAfter = pTrack->getCoverInfo();
 
-    // Not updated
-    EXPECT_TRUE(pTrack->isMetadataSynchronized());
-    EXPECT_FALSE(pTrack->isDirty());
-    EXPECT_EQ(trackMetadataBefore, trackMetadataAfter);
-    EXPECT_EQ(coverInfoBefore, coverInfoAfter);
+    // Verify that the track has not been modified
+    ASSERT_TRUE(pTrack->isMetadataSynchronized());
+    ASSERT_FALSE(pTrack->isDirty());
+    ASSERT_EQ(trackMetadataBefore, trackMetadataAfter);
+    ASSERT_EQ(coverInfoBefore, coverInfoAfter);
 }
 
 TEST_F(TrackUpdateTest, parseModifiedCleanAgainSkipCover) {
@@ -81,8 +82,8 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainSkipCover) {
     pTrack->readTrackMetadata(&trackMetadataBefore);
     auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Again);
+    EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Again));
 
     mixxx::TrackMetadata trackMetadataAfter;
     pTrack->readTrackMetadata(&trackMetadataAfter);
@@ -107,8 +108,8 @@ TEST_F(TrackUpdateTest, parseModifiedCleanAgainUpdateCover) {
     pTrack->readTrackMetadata(&trackMetadataBefore);
     auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Again);
+    EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Again));
 
     mixxx::TrackMetadata trackMetadataAfter;
     pTrack->readTrackMetadata(&trackMetadataAfter);
@@ -128,8 +129,8 @@ TEST_F(TrackUpdateTest, parseModifiedDirtyAgain) {
     pTrack->readTrackMetadata(&trackMetadataBefore);
     auto coverInfoBefore = pTrack->getCoverInfo();
 
-    SoundSourceProxy(pTrack).updateTrackFromSource(
-            SoundSourceProxy::ImportTrackMetadataMode::Again);
+    EXPECT_TRUE(SoundSourceProxy(pTrack).updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Again));
 
     mixxx::TrackMetadata trackMetadataAfter;
     pTrack->readTrackMetadata(&trackMetadataAfter);
