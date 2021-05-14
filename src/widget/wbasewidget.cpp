@@ -173,7 +173,6 @@ void WBaseWidget::prependBaseTooltip(const QString& tooltip) {
     m_pWidget->setToolTip(m_baseTooltip);
 }
 
-
 QString WBaseWidget::getDefaultBaseTooltipId() const {
     QString toolTipId;
     if (!m_connections.isEmpty()) {

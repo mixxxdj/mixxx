@@ -3,7 +3,9 @@
 #include "moc_tooltips.cpp"
 
 Tooltips::Tooltips() {
-    m_dropTracksHere = tr("Drop tracks from library, external file manager, or other decks/samplers here.");
+    m_dropTracksHere =
+            tr("Drop tracks from library, external file manager, or other "
+               "decks/samplers here.");
     m_resetToDefault = tr("Reset to default value.");
     m_leftClick = tr("Left-click");
     m_rightClick = tr("Right-click");
@@ -99,10 +101,14 @@ void Tooltips::addStandardTooltips() {
 
     add("waveform_display")
             << tr("Waveform Display")
-            << tr("Shows the loaded track's waveform near the playback position.")
+            << tr("Shows the loaded track's waveform near the playback "
+                  "position.")
             << QString("%1: %2").arg(m_leftClick, m_scratchMouse)
-            << QString("%1: %2").arg(m_rightClick, tr("Drag with mouse to make temporary pitch adjustments."))
-            << QString("%1: %2").arg(m_scrollWheel, tr("Scroll to change the waveform zoom level."))
+            << QString("%1: %2").arg(m_rightClick,
+                       tr("Drag with mouse to make temporary pitch "
+                          "adjustments."))
+            << QString("%1: %2").arg(m_scrollWheel,
+                       tr("Scroll to change the waveform zoom level."))
             << m_dropTracksHere;
 
     add("waveform_zoom_up")
@@ -392,14 +398,19 @@ void Tooltips::addStandardTooltips() {
 
     add("rate_temp_up_rate_temp_up_small")
             << tr("Raise Pitch Temporary (Nudge)")
-            << QString("%1: %2").arg(m_leftClick, tr("Holds the pitch higher while active."))
-            << QString("%1: %2").arg(m_rightClick, tr("Holds the pitch higher (small amount) while active."))
+            << QString("%1: %2").arg(
+                       m_leftClick, tr("Holds the pitch higher while active."))
+            << QString("%1: %2").arg(m_rightClick,
+                       tr("Holds the pitch higher (small amount) while "
+                          "active."))
             << changeAmount;
 
     add("rate_temp_down_rate_temp_down_small")
             << tr("Lower Pitch Temporary (Nudge)")
-            << QString("%1: %2").arg(m_leftClick, tr("Holds the pitch lower while active."))
-            << QString("%1: %2").arg(m_rightClick, tr("Holds the pitch lower (small amount) while active."))
+            << QString("%1: %2").arg(
+                       m_leftClick, tr("Holds the pitch lower while active."))
+            << QString("%1: %2").arg(m_rightClick,
+                       tr("Holds the pitch lower (small amount) while active."))
             << changeAmount;
 
     add("filterLow")
@@ -518,10 +529,14 @@ void Tooltips::addStandardTooltips() {
 
     // Reverse and reverseroll (censor)
     add("reverse")
-    << tr("Reverse")
-            << QString("%1: %2").arg(m_leftClick, tr("Reverses track playback during regular playback."))
-            << QString("%1: %2").arg(m_rightClick, tr("Puts a track into reverse while being held (Censor)."))
-            << tr("Playback continues where the track would have been if it had not been temporarily reversed.");
+            << tr("Reverse")
+            << QString("%1: %2").arg(m_leftClick,
+                       tr("Reverses track playback during regular playback."))
+            << QString("%1: %2").arg(m_rightClick,
+                       tr("Puts a track into reverse while being held "
+                          "(Censor)."))
+            << tr("Playback continues where the track would have been if it "
+                  "had not been temporarily reversed.");
 
     // Currently used for samplers
     m_headlines.insert("play", "Play/Pause");
@@ -611,13 +626,19 @@ void Tooltips::addStandardTooltips() {
     add("beatsync_beatsync_tempo")
             << tr("Old Synchronize")
             << tr("(This skin should be updated to use Master Sync!)")
-            << QString("%1: %2").arg(m_leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "
-                                                   "if BPM is detected on both."))
-            << QString("%1: %2").arg(m_rightClick, tr("Syncs the tempo (BPM) to that of the other track, "
-                                                    "if BPM is detected on both."))
-            << tr("Syncs to the first deck (in numerical order) that is playing a track and has a BPM.")
-            << tr("If no deck is playing, syncs to the first deck that has a BPM.")
-            << tr("Decks can't sync to samplers and samplers can only sync to decks.");
+            << QString("%1: %2").arg(m_leftClick,
+                       tr("Syncs the tempo (BPM) and phase to that of the "
+                          "other track, "
+                          "if BPM is detected on both."))
+            << QString("%1: %2").arg(m_rightClick,
+                       tr("Syncs the tempo (BPM) to that of the other track, "
+                          "if BPM is detected on both."))
+            << tr("Syncs to the first deck (in numerical order) that is "
+                  "playing a track and has a BPM.")
+            << tr("If no deck is playing, syncs to the first deck that has a "
+                  "BPM.")
+            << tr("Decks can't sync to samplers and samplers can only sync to "
+                  "decks.");
 
     // Awesome-Sync (TM)
     add("sync_enabled")
@@ -792,10 +813,14 @@ void Tooltips::addStandardTooltips() {
     //beatloop and beatlooproll
     add("beatloop_activate")
             << tr("Beatloop")
-            << QString("%1: %2").arg(m_leftClick, tr("Start a loop over the set number of beats."))
+            << QString("%1: %2").arg(m_leftClick,
+                       tr("Start a loop over the set number of beats."))
             << quantizeSnap
-            << QString("%1: %2").arg(m_rightClick, tr("Temporarily enable a rolling loop over the set number of beats."))
-            << tr("Playback will resume where the track would have been if it had not entered the loop.");
+            << QString("%1: %2").arg(m_rightClick,
+                       tr("Temporarily enable a rolling loop over the set "
+                          "number of beats."))
+            << tr("Playback will resume where the track would have been if it "
+                  "had not entered the loop.");
 
     add("beatjump_size")
             << tr("Beatjump/Loop Move Size")
@@ -803,17 +828,25 @@ void Tooltips::addStandardTooltips() {
 
     add("beatjump_forward")
             << tr("Beatjump Forward")
-            << QString("%1: %2").arg(m_leftClick + " " + loopInactive, tr("Jump forward by the set number of beats."))
-            << QString("%1: %2").arg(m_leftClick + " " + loopActive, tr("Move the loop forward by the set number of beats."))
-            << QString("%1: %2").arg(m_rightClick + " " + loopInactive, tr("Jump forward by 1 beat."))
-            << QString("%1: %2").arg(m_rightClick + " " + loopActive, tr("Move the loop forward by 1 beat."));
+            << QString("%1: %2").arg(m_leftClick + " " + loopInactive,
+                       tr("Jump forward by the set number of beats."))
+            << QString("%1: %2").arg(m_leftClick + " " + loopActive,
+                       tr("Move the loop forward by the set number of beats."))
+            << QString("%1: %2").arg(m_rightClick + " " + loopInactive,
+                       tr("Jump forward by 1 beat."))
+            << QString("%1: %2").arg(m_rightClick + " " + loopActive,
+                       tr("Move the loop forward by 1 beat."));
 
     add("beatjump_backward")
             << tr("Beatjump Backward")
-            << QString("%1: %2").arg(m_leftClick + " " + loopInactive, tr("Jump backward by the set number of beats."))
-            << QString("%1: %2").arg(m_leftClick + " " + loopActive, tr("Move the loop backward by the set number of beats."))
-            << QString("%1: %2").arg(m_rightClick + " " + loopInactive, tr("Jump backward by 1 beat."))
-            << QString("%1: %2").arg(m_rightClick + " " + loopActive, tr("Move the loop backward by 1 beat."));
+            << QString("%1: %2").arg(m_leftClick + " " + loopInactive,
+                       tr("Jump backward by the set number of beats."))
+            << QString("%1: %2").arg(m_leftClick + " " + loopActive,
+                       tr("Move the loop backward by the set number of beats."))
+            << QString("%1: %2").arg(m_rightClick + " " + loopInactive,
+                       tr("Jump backward by 1 beat."))
+            << QString("%1: %2").arg(m_rightClick + " " + loopActive,
+                       tr("Move the loop backward by 1 beat."));
 
     add("loop_exit")
             << tr("Loop Exit")

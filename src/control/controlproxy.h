@@ -155,11 +155,11 @@ class ControlProxy : public QObject {
     }
 
     const QString description() const {
-        return m_pControl ?  m_pControl->description() : QString();
+        return m_pControl ? m_pControl->description() : QString();
     }
 
     QString name() const {
-        return m_pControl ?  m_pControl->name() : QString();
+        return m_pControl ? m_pControl->name() : QString();
     }
 
   public slots:

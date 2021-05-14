@@ -12,7 +12,6 @@ class Tooltips : public QObject {
     QString tooltipForId(const QString& id) const;
     QString tooltipForTemplate(const QString& id) const;
 
-
   private:
     void addStandardTooltips();
     QString tooltipSeparator() const;
