@@ -447,8 +447,8 @@ class Track : public QObject {
 
 
     ExportTrackMetadataResult exportMetadata(
-            mixxx::MetadataSourcePointer pMetadataSource,
-            UserSettingsPointer pConfig);
+            const mixxx::MetadataSource& metadataSource,
+            const UserSettingsPointer& pConfig);
 
     // Information about the actual properties of the
     // audio stream is only available after opening the

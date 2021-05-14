@@ -331,7 +331,9 @@ SoundSourceProxy::exportTrackMetadataBeforeSaving(
         pMetadataSource = proxy.m_pSoundSource;
     }
     if (pMetadataSource) {
-        return pTrack->exportMetadata(pMetadataSource, pConfig);
+        return pTrack->exportMetadata(
+                *pMetadataSource,
+                pConfig);
     } else {
         kLogger.warning()
                 << "Unable to export track metadata into file"
