@@ -1472,6 +1472,12 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         // before, so just check and try for every track that has been
         // freshly loaded from the database.
         SoundSourceProxy(pTrack).updateTrackFromSource();
+        if (kLogger.debugEnabled() && pTrack->isDirty()) {
+            kLogger.debug()
+                    << "Updated track metadata from file tags:"
+                    << pTrack->getFileInfo().lastModified()
+                    << pTrack->getMetadata();
+        }
     }
 
     // Validate and refresh cover image hash values if needed.
