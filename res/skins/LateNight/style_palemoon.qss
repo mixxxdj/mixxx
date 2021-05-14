@@ -1551,285 +1551,6 @@ WPushButton#CrossfaderButton,
 
 
 
-/************** button background colors **************************************/
-
-/* top-level buttons in transport, fx, micaux and others */
-#DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
-#PlayCueMini WPushButton[displayValue="0"],
-WPushButton#PlayIndicator[displayValue="0"],
-WPushButton#CueDeck[displayValue="0"],
-#SamplerPlayBox WPushButton#PreviewIndicator,
-WPushButton#LoopActivate[displayValue="0"],
-#KeyControls WPushButton[displayValue="0"],
-#EQKillButtonBox WPushButton[displayValue="0"],
-WPushButton#QuickEffectButton[displayValue="0"],
-WPushButton#FxToggleButton[displayValue="0"],
-#MicAuxUnit WPushButton[displayValue="0"],
-#MicDuckingContainer WPushButton[displayValue="0"],
-WBeatSpinBox,
-WBeatSpinBox::up-button,
-WBeatSpinBox::down-button {
-  background-color: #121213;
-  }
-  /* dim buttons in top-level containers */
-  #LoopControls WPushButton[displayValue="0"],
-  #BeatjumpControls WPushButton[displayValue="0"],
-  WPushButton#SyncDeck[value="0"],
-  WBeatSpinBox::up-button,
-  WBeatSpinBox::down-button,
-  WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
-  WPushButton#FxParameterButton[displayValue="0"],
-  #LibraryContainer QHeaderView,
-  #LibraryContainer QHeaderView::section {
-    background-color: #171719;
-  }
-  /* even buttons in 2nd level containers */
-  #FxAssignButtons WPushButton[displayValue="0"],
-  #VinylControls WPushButton[displayValue="0"],
-  #KeyControls WPushButton[displayValue="0"],
-  WPushButton#VinylModeButton[displayValue="1"],
-  WPushButton#VinylModeButton[displayValue="2"],
-  WPushButton#HotcueButton[displayValue="0"],
-  WPushButton#SpecialCueButton[displayValue="0"],
-  #RateControls WPushButton[displayValue="0"],
-  WPushButton#PflButton[displayValue="0"],
-  WPushButton#MixModeButton[displayValue="0"],
-  WPushButton#MixModeButton[displayValue="1"],
-  WEffectSelector,
-  #fadeModeCombobox,
-  #SamplerContainer WPushButton#SyncSampler[displayValue="0"],
-  #SamplerContainer WPushButton#PflButton[displayValue="0"],
-  #MicAuxUnit WPushButton#PflButton[displayValue="0"],
-  WPushButton#MicAuxAdd {
-    background-color: #1e1e20;
-  }
-  /* brigth buttons in dimmed containers
-  #BeatgridControls WPushButton[displayValue="0"], */
-  #CueDeleteButton,
-  #SplitCue[displayValue="0"],
-  #PlayPreview[displayValue="0"],
-  /* library controls */
-  #spinBoxTransition::up-button,
-  #spinBoxTransition::down-button,
-  QPushButton#pushButtonAutoDJ:enabled:!checked,
-  #LibraryFeatureControls QPushButton:enabled {
-    background-color: #222;
-  }
-  /* dark buttons in toolbar */
-  #ToolBar WPushButton[displayValue="0"],
-  #MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"] {
-    background-color: #151517;
-  }
-
-/* Orange for 'active' status */
-WPushButton#PlayDeck[displayValue="1"],
-WPushButton#PlayDeckMini[displayValue="1"],
-WPushButton#PlaySampler[displayValue="1"],
-WPushButton#PlayPreview[displayValue="1"],
-WPushButton#PlayIndicator[displayValue="1"],
-#LibraryPreviewButton:checked,
-#CueDeck[displayValue="1"],
-WPushButton#Reverse[pressed="true"],
-#LoopActivate[value="1"],
-#Reloop[value="1"],
-#SyncSampler[displayValue="1"],
-#MicTalk[value="1"], #AuxPlay[value="1"],
-#MicDucking[value="1"],
-#MicDucking[value="2"],
-#VinylButton[displayValue="1"],
-#PassthroughButton[displayValue="1"],
-QPushButton#pushButtonAutoDJ:checked,
-QPushButton#pushButtonAnalyze:checked {
-  background-color: #b24c12;
-  }
-  /* Orange border for Play buttons when previewing from
-    Cue or Hotcue */
-  WPushButton#PreviewIndicator[value="1"] {
-    border: 3px solid #b24c12;
-    /* work around round borders being painted outside the actual border area */
-    border-radius: 0px;
-  }
-/* dim orange for momentary controls */
-#KeyControls WPushButton[pressed="true"],
-#SyncDeck[value="1"],
-WPushButton#LoopIn[pressed="true"],
-WPushButton#LoopOut[pressed="true"],
-#BeatjumpControls WPushButton[value="1"],
-#RateControls WPushButton[value="1"],
-#BeatgridControls WPushButton[pressed="true"]/*,
-#CueDeleteButton[pressed="true"]*/ {
-  background-color: #7d350d;
-  }
-  #BpmTap[pressed="true"] {
-   border: 1px solid #7d350d;
-  }
-
-/* Red */
-#EQKillButtonBox WPushButton[displayValue="1"],
-QPushButton#pushButtonRecording:checked,
-#RecFeedback[displayValue="2"] {
-  background-color: #a80000;
-}
-
-/* Green for Fx toggles, QuickEffect + Fx12 */
-#FxUnit1 #FxToggleButton[displayValue="1"],
-#FxUnit2 #FxToggleButton[displayValue="1"],
-#BroadcastButton[displayValue="2"] {
-  background-color: #438225;
-  }
-  /* Dim green for assign buttons Fx12 */
-  WPushButton#QuickEffectButton[displayValue="1"],
-  #FxAssignButton1[displayValue="1"],
-  #FxAssignButton2[displayValue="1"] {
-    background-color: #236b00;
-  }
-/* Blue for Fx buttons 3/4 */
-#FxUnit3 #FxToggleButton[displayValue="1"],
-#FxUnit4 #FxToggleButton[displayValue="1"],
-WBeatSpinBox::up-button:pressed,
-WBeatSpinBox::down-button:pressed,
-#spinBoxTransition::up-button:pressed,
-#spinBoxTransition::down-button:pressed {
-  background-color: #257b82;
-  }
-  /* Dim blue for assign buttons Fx34 */
-  #FxAssignButton3[displayValue="1"],
-  #FxAssignButton4[displayValue="1"] {
-    background-color: #146674;
-  }
-
-WPushButton#FxSuperLinkButton[value="0"],
-WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
-  background-color: #333;
-  }
-  #FxSuperLinkInvertButton[displayValue="1"] {
-    background-color: #9C0900;
-    }
-
-/* Green for Fx1 / Fx2 */
-#FxUnit1 #FxSuperLinkButton[value="1"],
-#FxUnit2 #FxSuperLinkButton[value="1"] {
-  background-color: #236b00;
-  }
-#FxUnit1 #FxSuperLinkButton[value="2"],
-#FxUnit2 #FxSuperLinkButton[value="2"] {
-/* a simple way to achieve a partitioning in thirds  */
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #236b00,
-    stop: 0.33 #236b00,
-    stop: 0.34 #333,
-    stop: 1 #333);
-  }
-#FxUnit1 #FxSuperLinkButton[value="3"],
-#FxUnit2 #FxSuperLinkButton[value="3"] {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #333,
-    stop: 0.66 #333,
-    stop: 0.67 #236b00,
-    stop: 1 #236b00);
-  }
-#FxUnit1 #FxSuperLinkButton[value="4"],
-#FxUnit2 #FxSuperLinkButton[value="4"] {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #236b00,
-    stop: 0.330000 #236b00,
-    stop: 0.340000 #333,
-    stop: 0.660000 #333,
-    stop: 0.670000 #236b00,
-    stop: 1 #236b00);
-  }
-
-/* Blue for Fx3 / Fx4 */
-#FxUnit3 #FxSuperLinkButton[value="1"],
-#FxUnit4 #FxSuperLinkButton[value="1"] {
-  background-color: #146674;
-  }
-#FxUnit3 #FxSuperLinkButton[value="2"],
-#FxUnit4 #FxSuperLinkButton[value="2"] {  /*
-  a simple way to achieve a partitioning in thirds  */
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #146674,
-    stop: 0.33 #146674,
-    stop: 0.34 #333,
-    stop: 1 #333);
-  }
-#FxUnit3 #FxSuperLinkButton[value="3"],
-#FxUnit4 #FxSuperLinkButton[value="3"] {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #333,
-    stop: 0.66 #333,
-    stop: 0.67 #146674,
-    stop: 1 #146674);
-  }
-#FxUnit3 #FxSuperLinkButton[value="4"],
-#FxUnit4 #FxSuperLinkButton[value="4"] {
-  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
-    stop: 0 #146674,
-    stop: 0.330000 #146674,
-    stop: 0.340000 #333,
-    stop: 0.660000 #333,
-    stop: 0.670000 #146674,
-    stop: 1 #146674);
-  }
-
-/* Yellow */
-#RecFeedback[displayValue="1"],     /* initialize recording */
-#BroadcastButton[displayValue="1"]  /* connecting */ {
-  background-color: #d09300;
-}
-
-#SpecialCueButton[value="1"] {
-  background-color: #395579;
-}
-
-/* pink */
-#BroadcastButton[displayValue="3"], /* failure */
-#RecFeedback[displayValue="3"] {
-  background-color: #f856e7;
-}
-
-/* Grey for GUI toggles */
-#GuiToggleButton[displayValue="1"],
-#SkinSettingsToggle[displayValue="1"] {
-  background-color: #777;
-}
-
-/* Grey */
-#VinylCueButton[displayValue="1"],
-#VinylCueButton[displayValue="2"],
-#PflButton[value="1"],
-#FxParameterButton[displayValue="1"],
-QPushButton#pushButtonRepeatPlaylist:checked {
-  background-color: #666;
-}
-
-/* Darker grey */
-#SplitCue[value="1"] {
-  background-color: #555;
-}
-
-/* Special flat/invisible buttons */
-#BeatgridControlsToggle,
-WPushButton#PlayDeck[displayValue="0"],
-WPushButton#PlayDeckMini[displayValue="0"],
-WPushButton#PlaySampler[displayValue="0"],
-#DeckRow_5_LoopCuesTransport WPushButton#PreviewIndicator,
-#PlayCueMini WPushButton#PreviewIndicator,
-WPushButton#FxFocusButton[displayValue="0"],
-#SamplerSettings WPushButton[displayValue="0"],
-#SamplerSettingsMini WPushButton[displayValue="0"],
-WPushButton#FxExpand[displayValue="0"],
-WPushButton#SamplerExpand[displayValue="0"],
-WPushButton#CrossfaderButton[displayValue="0"],
-WPushButton#CrossfaderButton[displayValue="1"],
-WPushButton#RecButton[displayValue="0"],
-WPushButton#RecButton[displayValue="1"],
-#RecDot {
-  background-color: transparent;
-}
-
-
-
 /************** Button icons **************************************************/
 WPushButton#PlayDeck[value="0"] {
   background: url(skin:/palemoon/buttons/btn__play_deck.svg) no-repeat center center;
@@ -2435,6 +2156,285 @@ WColorPicker QPushButton[checked="true"] {
 }
 
 /************** Button icons **************************************************/
+
+/************** button background colors **************************************/
+
+/* top-level buttons in transport, fx, micaux and others */
+#DeckRow_5_LoopCuesTransport WPushButton[displayValue="0"],
+#PlayCueMini WPushButton[displayValue="0"],
+WPushButton#PlayIndicator[displayValue="0"],
+WPushButton#CueDeck[displayValue="0"],
+#SamplerPlayBox WPushButton#PreviewIndicator,
+WPushButton#LoopActivate[displayValue="0"],
+#KeyControls WPushButton[displayValue="0"],
+#EQKillButtonBox WPushButton[displayValue="0"],
+WPushButton#QuickEffectButton[displayValue="0"],
+WPushButton#FxToggleButton[displayValue="0"],
+#MicAuxUnit WPushButton[displayValue="0"],
+#MicDuckingContainer WPushButton[displayValue="0"],
+WBeatSpinBox,
+WBeatSpinBox::up-button,
+WBeatSpinBox::down-button {
+  background-color: #121213;
+  }
+  /* dim buttons in top-level containers */
+  #LoopControls WPushButton[displayValue="0"],
+  #BeatjumpControls WPushButton[displayValue="0"],
+  WPushButton#SyncDeck[value="0"],
+  WBeatSpinBox::up-button,
+  WBeatSpinBox::down-button,
+  WPushButton#LoopActivate[displayValue="0"], /* in compact deck */
+  WPushButton#FxParameterButton[displayValue="0"],
+  #LibraryContainer QHeaderView,
+  #LibraryContainer QHeaderView::section {
+    background-color: #171719;
+  }
+  /* even buttons in 2nd level containers */
+  #FxAssignButtons WPushButton[displayValue="0"],
+  #VinylControls WPushButton[displayValue="0"],
+  #KeyControls WPushButton[displayValue="0"],
+  WPushButton#VinylModeButton[displayValue="1"],
+  WPushButton#VinylModeButton[displayValue="2"],
+  WPushButton#HotcueButton[displayValue="0"],
+  WPushButton#SpecialCueButton[displayValue="0"],
+  #RateControls WPushButton[displayValue="0"],
+  WPushButton#PflButton[displayValue="0"],
+  WPushButton#MixModeButton[displayValue="0"],
+  WPushButton#MixModeButton[displayValue="1"],
+  WEffectSelector,
+  #fadeModeCombobox,
+  #SamplerContainer WPushButton#SyncSampler[displayValue="0"],
+  #SamplerContainer WPushButton#PflButton[displayValue="0"],
+  #MicAuxUnit WPushButton#PflButton[displayValue="0"],
+  WPushButton#MicAuxAdd {
+    background-color: #1e1e20;
+  }
+  /* brigth buttons in dimmed containers
+  #BeatgridControls WPushButton[displayValue="0"], */
+  #CueDeleteButton,
+  #SplitCue[displayValue="0"],
+  #PlayPreview[displayValue="0"],
+  /* library controls */
+  #spinBoxTransition::up-button,
+  #spinBoxTransition::down-button,
+  QPushButton#pushButtonAutoDJ:enabled:!checked,
+  #LibraryFeatureControls QPushButton:enabled {
+    background-color: #222;
+  }
+  /* dark buttons in toolbar */
+  #ToolBar WPushButton[displayValue="0"],
+  #MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"] {
+    background-color: #151517;
+  }
+
+/* Orange for 'active' status */
+WPushButton#PlayDeck[displayValue="1"],
+WPushButton#PlayDeckMini[displayValue="1"],
+WPushButton#PlaySampler[displayValue="1"],
+WPushButton#PlayPreview[displayValue="1"],
+WPushButton#PlayIndicator[displayValue="1"],
+#LibraryPreviewButton:checked,
+#CueDeck[displayValue="1"],
+WPushButton#Reverse[pressed="true"],
+#LoopActivate[value="1"],
+#Reloop[value="1"],
+#SyncSampler[displayValue="1"],
+#MicTalk[value="1"], #AuxPlay[value="1"],
+#MicDucking[value="1"],
+#MicDucking[value="2"],
+#VinylButton[displayValue="1"],
+#PassthroughButton[displayValue="1"],
+QPushButton#pushButtonAutoDJ:checked,
+QPushButton#pushButtonAnalyze:checked {
+  background-color: #b24c12;
+  }
+  /* Orange border for Play buttons when previewing from
+    Cue or Hotcue */
+  WPushButton#PreviewIndicator[value="1"] {
+    border: 3px solid #b24c12;
+    /* work around round borders being painted outside the actual border area */
+    border-radius: 0px;
+  }
+/* dim orange for momentary controls */
+#KeyControls WPushButton[pressed="true"],
+#SyncDeck[value="1"],
+WPushButton#LoopIn[pressed="true"],
+WPushButton#LoopOut[pressed="true"],
+#BeatjumpControls WPushButton[value="1"],
+#RateControls WPushButton[value="1"],
+#BeatgridControls WPushButton[pressed="true"]/*,
+#CueDeleteButton[pressed="true"]*/ {
+  background-color: #7d350d;
+  }
+  #BpmTap[pressed="true"] {
+   border: 1px solid #7d350d;
+  }
+
+/* Red */
+#EQKillButtonBox WPushButton[displayValue="1"],
+QPushButton#pushButtonRecording:checked,
+#RecFeedback[displayValue="2"] {
+  background-color: #a80000;
+}
+
+/* Green for Fx toggles, QuickEffect + Fx12 */
+#FxUnit1 #FxToggleButton[displayValue="1"],
+#FxUnit2 #FxToggleButton[displayValue="1"],
+#BroadcastButton[displayValue="2"] {
+  background-color: #438225;
+  }
+  /* Dim green for assign buttons Fx12 */
+  WPushButton#QuickEffectButton[displayValue="1"],
+  #FxAssignButton1[displayValue="1"],
+  #FxAssignButton2[displayValue="1"] {
+    background-color: #236b00;
+  }
+/* Blue for Fx buttons 3/4 */
+#FxUnit3 #FxToggleButton[displayValue="1"],
+#FxUnit4 #FxToggleButton[displayValue="1"],
+WBeatSpinBox::up-button:pressed,
+WBeatSpinBox::down-button:pressed,
+#spinBoxTransition::up-button:pressed,
+#spinBoxTransition::down-button:pressed {
+  background-color: #257b82;
+  }
+  /* Dim blue for assign buttons Fx34 */
+  #FxAssignButton3[displayValue="1"],
+  #FxAssignButton4[displayValue="1"] {
+    background-color: #146674;
+  }
+
+WPushButton#FxSuperLinkButton[value="0"],
+WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
+  background-color: #333;
+  }
+  #FxSuperLinkInvertButton[displayValue="1"] {
+    background-color: #9C0900;
+    }
+
+/* Green for Fx1 / Fx2 */
+#FxUnit1 #FxSuperLinkButton[value="1"],
+#FxUnit2 #FxSuperLinkButton[value="1"] {
+  background-color: #236b00;
+  }
+#FxUnit1 #FxSuperLinkButton[value="2"],
+#FxUnit2 #FxSuperLinkButton[value="2"] {
+/* a simple way to achieve a partitioning in thirds  */
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #236b00,
+    stop: 0.33 #236b00,
+    stop: 0.34 #333,
+    stop: 1 #333);
+  }
+#FxUnit1 #FxSuperLinkButton[value="3"],
+#FxUnit2 #FxSuperLinkButton[value="3"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #333,
+    stop: 0.66 #333,
+    stop: 0.67 #236b00,
+    stop: 1 #236b00);
+  }
+#FxUnit1 #FxSuperLinkButton[value="4"],
+#FxUnit2 #FxSuperLinkButton[value="4"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #236b00,
+    stop: 0.330000 #236b00,
+    stop: 0.340000 #333,
+    stop: 0.660000 #333,
+    stop: 0.670000 #236b00,
+    stop: 1 #236b00);
+  }
+
+/* Blue for Fx3 / Fx4 */
+#FxUnit3 #FxSuperLinkButton[value="1"],
+#FxUnit4 #FxSuperLinkButton[value="1"] {
+  background-color: #146674;
+  }
+#FxUnit3 #FxSuperLinkButton[value="2"],
+#FxUnit4 #FxSuperLinkButton[value="2"] {  /*
+  a simple way to achieve a partitioning in thirds  */
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #146674,
+    stop: 0.33 #146674,
+    stop: 0.34 #333,
+    stop: 1 #333);
+  }
+#FxUnit3 #FxSuperLinkButton[value="3"],
+#FxUnit4 #FxSuperLinkButton[value="3"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #333,
+    stop: 0.66 #333,
+    stop: 0.67 #146674,
+    stop: 1 #146674);
+  }
+#FxUnit3 #FxSuperLinkButton[value="4"],
+#FxUnit4 #FxSuperLinkButton[value="4"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 #146674,
+    stop: 0.330000 #146674,
+    stop: 0.340000 #333,
+    stop: 0.660000 #333,
+    stop: 0.670000 #146674,
+    stop: 1 #146674);
+  }
+
+/* Yellow */
+#RecFeedback[displayValue="1"],     /* initialize recording */
+#BroadcastButton[displayValue="1"]  /* connecting */ {
+  background-color: #d09300;
+}
+
+WPushButton#SpecialCueButton[value="1"] {
+  background-color: #395579;
+}
+
+/* pink */
+#BroadcastButton[displayValue="3"], /* failure */
+#RecFeedback[displayValue="3"] {
+  background-color: #f856e7;
+}
+
+/* Grey for GUI toggles */
+#GuiToggleButton[displayValue="1"],
+#SkinSettingsToggle[displayValue="1"] {
+  background-color: #777;
+}
+
+/* Grey */
+#VinylCueButton[displayValue="1"],
+#VinylCueButton[displayValue="2"],
+#PflButton[value="1"],
+#FxParameterButton[displayValue="1"],
+QPushButton#pushButtonRepeatPlaylist:checked {
+  background-color: #666;
+}
+
+/* Darker grey */
+#SplitCue[value="1"] {
+  background-color: #555;
+}
+
+/* Special flat/invisible buttons */
+#BeatgridControlsToggle,
+WPushButton#PlayDeck[displayValue="0"],
+WPushButton#PlayDeckMini[displayValue="0"],
+WPushButton#PlaySampler[displayValue="0"],
+#DeckRow_5_LoopCuesTransport WPushButton#PreviewIndicator,
+#PlayCueMini WPushButton#PreviewIndicator,
+WPushButton#FxFocusButton[displayValue="0"],
+#SamplerSettings WPushButton[displayValue="0"],
+#SamplerSettingsMini WPushButton[displayValue="0"],
+WPushButton#FxExpand[displayValue="0"],
+WPushButton#SamplerExpand[displayValue="0"],
+WPushButton#CrossfaderButton[displayValue="0"],
+WPushButton#CrossfaderButton[displayValue="1"],
+WPushButton#RecButton[displayValue="0"],
+WPushButton#RecButton[displayValue="1"],
+#RecDot {
+  background-color: transparent;
+}
+
+
 /************** Button styles *************************************************/
 
 
