@@ -862,11 +862,16 @@ void MixxxMainWindow::slotDeveloperToolsClosed() {
 }
 
 void MixxxMainWindow::slotViewFullScreen(bool toggle) {
+    qDebug() << "";
+    qDebug() << "   slotViewFullScreen(" << toggle << ")";
+    qDebug() << "   isFullScreen() before" << isFullScreen();
     if (isFullScreen() == toggle) {
+        qDebug() << "   > return";
         return;
     }
 
     if (toggle) {
+        qDebug() << "   > showFullScreen()";
         showFullScreen();
 #ifdef __LINUX__
         // Fix for "No menu bar with ubuntu unity in full screen mode" Bug
@@ -883,8 +888,13 @@ void MixxxMainWindow::slotViewFullScreen(bool toggle) {
         createMenuBar();
         connectMenuBar();
 #endif
+        qDebug() << "   > showNormal()";
         showNormal();
     }
+    qDebug() << "";
+    qDebug() << "   isFullScreen after" << isFullScreen();
+    qDebug() << "   emit fullScreenChanged(" << toggle << ")";
+    qDebug() << "";
     emit fullScreenChanged(toggle);
 }
 
@@ -977,6 +987,9 @@ void MixxxMainWindow::slotTooltipModeChanged(mixxx::TooltipsPreference tt) {
 }
 
 void MixxxMainWindow::rebootMixxxView() {
+    qDebug() << "";
+    qDebug() << "";
+    qDebug() << "";
     qDebug() << "Now in rebootMixxxView...";
 
     // safe geometry for later restoration
@@ -984,6 +997,9 @@ void MixxxMainWindow::rebootMixxxView() {
 
     // store the fullscreen state and restore after skin change
     bool wasFullScreen = isFullScreen();
+    qDebug() << "";
+    qDebug() << "   wasFullScreen" << wasFullScreen;
+    qDebug() << "";
 
     // We need to tell the menu bar that we are about to delete the old skin and
     // create a new one. It holds "visibility" controls (e.g. "Show Samplers")
@@ -996,13 +1012,18 @@ void MixxxMainWindow::rebootMixxxView() {
         WaveformWidgetFactory::instance()->destroyWidgets();
         delete m_pCentralWidget;
         m_pCentralWidget = nullptr;
+        qDebug() << "   m_pWidgetParent deleted";
+        qDebug() << "";
     }
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
     // mode. If you change skins while in fullscreen (on Linux, at least) the
     // window returns to 0,0 but and the backdrop disappears so it looks as if
     // it is not fullscreen, but acts as if it is.
+    qDebug() << "   1 isFullScreen()" << isFullScreen();
     slotViewFullScreen(false);
+    qDebug() << "   2 isFullScreen()" << isFullScreen();
+    qDebug() << "";
 
     if (!loadConfiguredSkin()) {
         QMessageBox::critical(this,
@@ -1011,6 +1032,8 @@ void MixxxMainWindow::rebootMixxxView() {
         // m_pWidgetParent is NULL, we can't continue.
         return;
     }
+    qDebug() << "   new skin loaded";
+    qDebug() << "";
     m_pMenuBar->setStyleSheet(m_pCentralWidget->styleSheet());
 
     setCentralWidget(m_pCentralWidget);
@@ -1019,9 +1042,14 @@ void MixxxMainWindow::rebootMixxxView() {
     // to paint the new skin with X11
     // https://bugs.launchpad.net/mixxx/+bug/1773587
 #else
+    qDebug() << "   3 isFullScreen()" << isFullScreen();
+    qDebug() << "   adjustSize()";
     adjustSize();
+    qDebug() << "   4 isFullScreen()" << isFullScreen();
+    qDebug() << "";
 #endif
 
+    qDebug() << "   wasFullScreen" << wasFullScreen;
     if (wasFullScreen) {
         slotViewFullScreen(true);
     } else {
@@ -1033,8 +1061,11 @@ void MixxxMainWindow::rebootMixxxView() {
         // If the minimum size of the new skin is larger then the restored
         // geometry, the window will be enlarged right & bottom which is
         // safe as the menu is still reachable.
+        qDebug() << "   setGeometry(initGeometry)";
         setGeometry(initGeometry);
     }
+    qDebug() << "   5 isFullScreen()" << isFullScreen();
+    qDebug() << "";
 
     qDebug() << "rebootMixxxView DONE";
 }
