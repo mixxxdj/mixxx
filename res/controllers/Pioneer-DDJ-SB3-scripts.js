@@ -1,4 +1,3 @@
-
 var PioneerDDJSB3 = {};
 //var PioneerDDJSB3 = {};
 
@@ -91,7 +90,7 @@ PioneerDDJSB3.updateBPM = function(bpm, group) {
     var bpmBitsPadded = [];
 
     var offset = 16 - bpmBits.length;
-    
+
     var i;
 
     for (i=0; i<16; i++) {
@@ -676,19 +675,19 @@ PioneerDDJSB3.bindDeckControlConnections = function(channelGroup, isUnbinding) {
     var i,
         index,
         controlsToFunctions = {
-            "pfl": "PioneerDDJSB3.headphoneCueLed",
-            "keylock": "PioneerDDJSB3.keyLockLed",
-            "loop_enabled": "PioneerDDJSB3.autoLoopLed",
+            "pfl": PioneerDDJSB3.headphoneCueLed,
+            "keylock": PioneerDDJSB3.keyLockLed,
+            "loop_enabled": PioneerDDJSB3.autoLoopLed,
         };
 
-    controlsToFunctions.slipEnabled = "PioneerDDJSB3.slipLed";
+    controlsToFunctions.slipEnabled = PioneerDDJSB3.slipLed;
 
     for (i = 1; i <= 8; i++) {
-        controlsToFunctions["hotcue_" + i + "_enabled"] = "PioneerDDJSB3.hotCueLeds";
+        controlsToFunctions["hotcue_" + i + "_enabled"] = PioneerDDJSB3.hotCueLeds;
     }
 
     for (index in PioneerDDJSB3.looprollIntervals) {
-        controlsToFunctions["beatlooproll_" + PioneerDDJSB3.looprollIntervals[index] + "_activate"] = "PioneerDDJSB3.beatlooprollLeds";
+        controlsToFunctions["beatlooproll_" + PioneerDDJSB3.looprollIntervals[index] + "_activate"] = PioneerDDJSB3.beatlooprollLeds;
     }
 
     script.bindConnections(channelGroup, controlsToFunctions, isUnbinding);
@@ -702,13 +701,13 @@ PioneerDDJSB3.bindNonDeckControlConnections = function(isUnbinding) {
     }
 
     if (PioneerDDJSB3.showVumeterMaster) {
-        engine.connectControl("[Master]", "VuMeterL", "PioneerDDJSB3.VuMeterLeds", isUnbinding);
-        engine.connectControl("[Master]", "VuMeterR", "PioneerDDJSB3.VuMeterLeds", isUnbinding);
+        engine.connectControl("[Master]", "VuMeterL", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Master]", "VuMeterR", PioneerDDJSB3.VuMeterLeds, isUnbinding);
     } else {
-        engine.connectControl("[Channel1]", "VuMeter", "PioneerDDJSB3.VuMeterLeds", isUnbinding);
-        engine.connectControl("[Channel2]", "VuMeter", "PioneerDDJSB3.VuMeterLeds", isUnbinding);
-        engine.connectControl("[Channel3]", "VuMeter", "PioneerDDJSB3.VuMeterLeds", isUnbinding);
-        engine.connectControl("[Channel4]", "VuMeter", "PioneerDDJSB3.VuMeterLeds", isUnbinding);
+        engine.connectControl("[Channel1]", "VuMeter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Channel2]", "VuMeter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Channel3]", "VuMeter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
+        engine.connectControl("[Channel4]", "VuMeter", PioneerDDJSB3.VuMeterLeds, isUnbinding);
     }
 };
 
