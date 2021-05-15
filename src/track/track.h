@@ -326,8 +326,11 @@ class Track : public QObject {
     bool refreshCoverImageDigest(
             const QImage& loadedImage = QImage());
 
-    // Set/get track metadata all at once.
-    void importMetadata(
+    /// Set track metadata after importing from the source.
+    ///
+    /// The timestamp tracks when metadata has last been synchronized
+    /// with file tags, either by importing or exporting the metadata.
+    void replaceMetadataFromSource(
             mixxx::TrackMetadata importedMetadata,
             const QDateTime& metadataSynchronized = QDateTime());
 
@@ -442,7 +445,7 @@ class Track : public QObject {
     /// and only available from file tags.
     ///
     /// Returns true if the track has been modified and false otherwise.
-    bool mergeImportedMetadata(
+    bool mergeExtraMetadataFromSource(
             const mixxx::TrackMetadata& importedMetadata);
 
     ExportTrackMetadataResult exportMetadata(

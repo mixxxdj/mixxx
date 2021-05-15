@@ -220,7 +220,7 @@ void DlgTagFetcher::apply() {
                 trackRelease.releaseGroupId);
     }
 #endif // __EXTRA_METADATA__
-    m_track->importMetadata(
+    m_track->replaceMetadataFromSource(
             std::move(trackMetadata),
             // Prevent re-import of outdated metadata from file tags
             // by explicitly setting the synchronization time stamp

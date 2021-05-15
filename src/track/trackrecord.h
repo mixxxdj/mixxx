@@ -111,7 +111,7 @@ class TrackRecord final {
     // data when needed.
     //
     // Returns true if any property has been modified or false otherwise.
-    bool mergeImportedMetadata(
+    bool mergeExtraMetadataFromSource(
             const TrackMetadata& importedMetadata);
 
     /// Update the stream info after opening the audio stream during

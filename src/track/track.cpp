@@ -117,7 +117,7 @@ void Track::relocate(
     // the updated location from the database.
 }
 
-void Track::importMetadata(
+void Track::replaceMetadataFromSource(
         mixxx::TrackMetadata importedMetadata,
         const QDateTime& metadataSynchronized) {
     // Information stored in Serato tags is imported separately after
@@ -228,10 +228,10 @@ void Track::importMetadata(
     }
 }
 
-bool Track::mergeImportedMetadata(
+bool Track::mergeExtraMetadataFromSource(
         const mixxx::TrackMetadata& importedMetadata) {
     QMutexLocker lock(&m_qMutex);
-    if (!m_record.mergeImportedMetadata(importedMetadata)) {
+    if (!m_record.mergeExtraMetadataFromSource(importedMetadata)) {
         // Not modified
         return false;
     }
@@ -1422,7 +1422,7 @@ ExportTrackMetadataResult Track::exportMetadata(
         // library database! This will in turn update the current metadata
         // that is stored in the database. New columns that need to be populated
         // from file tags cannot be filled during a database migration.
-        m_record.mergeImportedMetadata(importedFromFile);
+        m_record.mergeExtraMetadataFromSource(importedFromFile);
 
         // Prepare export by cloning and normalizing the metadata
         normalizedFromRecord = m_record.getMetadata();

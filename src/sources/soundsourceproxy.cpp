@@ -546,10 +546,10 @@ bool SoundSourceProxy::updateTrackFromSource(
     // existing track metadata should not be updated implicitly, i.e.
     // if the user did not explicitly choose to (re-)import metadata
     // explicitly from this file.
-    bool mergeImportedMetadata = false;
+    bool mergeExtraMetadataFromSource = false;
     if (metadataSynchronized && mode == UpdateTrackFromSourceMode::Once) {
         // No (re-)import needed or desired, only merge missing properties
-        mergeImportedMetadata = true;
+        mergeExtraMetadataFromSource = true;
     }
 
     // Save for later to replace the unreliable and imprecise audio
@@ -562,7 +562,7 @@ bool SoundSourceProxy::updateTrackFromSource(
     QImage coverImg;
     DEBUG_ASSERT(coverImg.isNull());
     QImage* pCoverImg = nullptr; // pointer also serves as a flag
-    if (!mergeImportedMetadata) {
+    if (!mergeExtraMetadataFromSource) {
         const auto coverInfo = m_pTrack->getCoverInfo();
         if (coverInfo.source == CoverInfo::USER_SELECTED &&
                 coverInfo.type == CoverInfo::FILE) {
@@ -593,13 +593,13 @@ bool SoundSourceProxy::updateTrackFromSource(
     }
 
     // Partial import
-    if (mergeImportedMetadata) {
+    if (mergeExtraMetadataFromSource) {
         // No reimport of embedded cover image desired in this case
         DEBUG_ASSERT(!pCoverImg);
         if (metadataImported.first == mixxx::MetadataSource::ImportResult::Succeeded) {
             // Partial import of properties that are not (yet) stored
             // in the database
-            return m_pTrack->mergeImportedMetadata(trackMetadata);
+            return m_pTrack->mergeExtraMetadataFromSource(trackMetadata);
         } else {
             // Nothing to do if no metadata has been imported
             return false;
