@@ -12,6 +12,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
+#include "track/beatutils.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "track/track.h"
@@ -24,13 +25,15 @@
 #include "widget/wstarrating.h"
 
 namespace {
+
+constexpr double kBpmTabRounding = 1 / 12.0;
 constexpr int kFilterLength = 80;
 constexpr int kMinBpm = 30;
-} // namespace
-
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
         static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
+
+} // namespace
 
 DlgTrackInfo::DlgTrackInfo(
         const TrackModel* trackModel)
@@ -545,7 +548,9 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
         return;
     }
     double averageBpm = 60.0 * 1000.0 / averageLength;
-    // average bpm needs to be truncated for this comparison:
+    averageBpm = BeatUtils::roundBpmWithinRange(averageBpm - kBpmTabRounding,
+            averageBpm,
+            averageBpm + kBpmTabRounding);
     if (averageBpm != m_dLastTapedBpm) {
         m_dLastTapedBpm = averageBpm;
         spinBpm->setValue(averageBpm);

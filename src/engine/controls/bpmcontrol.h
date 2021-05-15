@@ -107,6 +107,7 @@ class BpmControl : public EngineControl {
     }
     bool syncTempo();
     double calcSyncAdjustment(bool userTweakingSync);
+    void adjustBeatsBpm(double deltaBpm);
 
     friend class SyncControl;
 
