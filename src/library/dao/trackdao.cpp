@@ -745,14 +745,11 @@ TrackId TrackDAO::addTracksAddTrack(const TrackPointer& pTrack, bool unremove) {
         }
 
         // Time stamps are stored with timezone UTC in the database
-        mixxx::TrackRecord trackRecord;
-        pTrack->readTrackRecord(&trackRecord);
-        const mixxx::BeatsPointer pBeats = pTrack->getBeats();
         const auto trackDateAdded = QDateTime::currentDateTimeUtc();
         if (!insertTrackLibrary(
                     m_pQueryLibraryInsert.get(),
-                    trackRecord,
-                    pBeats,
+                    pTrack->getRecord(),
+                    pTrack->getBeats(),
                     trackLocationId,
                     fileAccess.info(),
                     trackDateAdded)) {
@@ -1475,6 +1472,12 @@ TrackPointer TrackDAO::getTrackById(TrackId trackId) const {
         // before, so just check and try for every track that has been
         // freshly loaded from the database.
         SoundSourceProxy(pTrack).updateTrackFromSource();
+        if (kLogger.debugEnabled() && pTrack->isDirty()) {
+            kLogger.debug()
+                    << "Updated track metadata from file tags:"
+                    << pTrack->getFileInfo().lastModified()
+                    << pTrack->getMetadata();
+        }
     }
 
     // Validate and refresh cover image hash values if needed.
@@ -1619,10 +1622,10 @@ bool TrackDAO::updateTrack(Track* pTrack) const {
 
     query.bindValue(":track_id", trackId.toVariant());
 
-    mixxx::TrackRecord trackRecord;
-    pTrack->readTrackRecord(&trackRecord);
-    const mixxx::BeatsPointer pBeats = pTrack->getBeats();
-    bindTrackLibraryValues(&query, trackRecord, pBeats);
+    bindTrackLibraryValues(
+            &query,
+            pTrack->getRecord(),
+            pTrack->getBeats());
 
     VERIFY_OR_DEBUG_ASSERT(query.exec()) {
         LOG_FAILED_QUERY(query);

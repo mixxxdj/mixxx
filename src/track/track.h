@@ -338,11 +338,10 @@ class Track : public QObject {
     bool mergeImportedMetadata(
             const mixxx::TrackMetadata& importedMetadata);
 
-    void readTrackMetadata(
-            mixxx::TrackMetadata* pTrackMetadata,
+    mixxx::TrackMetadata getMetadata(
             bool* pMetadataSynchronized = nullptr) const;
-    void readTrackRecord(
-            mixxx::TrackRecord* pTrackRecord,
+
+    mixxx::TrackRecord getRecord(
             bool* pDirty = nullptr) const;
 
     // Mark the track dirty if it isn't already.
