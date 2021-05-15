@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.3+">
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.2+">
   <info>
     <name>Pioneer DDJ-SB3</name>
     <author>Dancephy.com</author>
     <description>Mapping file for the Pioneer DDJ-SB3 controller. Version 1.1.0.</description>
-    <wiki/>
-    <forums/>
+    <wiki>https://github.com/mixxxdj/mixxx/wiki/Pioneer%20DDJ-SB3</wiki>
+    <manual>pioneer_ddj_sb3</manual>
+    <forums>https://mixxx.discourse.group/t/pioneer-ddj-sb3-mapping-v1-0-now-available/22186</forums>
   </info>
   <controller>
     <scriptfiles>
