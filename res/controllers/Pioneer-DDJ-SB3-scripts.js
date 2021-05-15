@@ -35,7 +35,6 @@ PioneerDDJSB3.looprollIntervals = [1 / 16, 1 / 8, 1 / 4, 1 / 2, 1, 2, 4, 8];
 
 /*
     Pioneer DDJ-SB3 mapping for Mixxx
-    Copyright (c) 2019 Dancephy LLC (javier@dancephy.com), licensed under GPL version 3 or later
     Copyright (c) 2017 Be (be.0@gmx.com), licensed under GPL version 2 or later
     Copyright (c) 2014-2015 various contributors, licensed under MIT license
 
