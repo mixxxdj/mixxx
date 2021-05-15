@@ -14,6 +14,8 @@
 #include "util/logger.h"
 #include "util/math.h"
 
+const double kTrackPositionMasterHandoff = 0.99;
+
 const double SyncControl::kBpmUnity = 1.0;
 const double SyncControl::kBpmHalve = 0.5;
 const double SyncControl::kBpmDouble = 2.0;
