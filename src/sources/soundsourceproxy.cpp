@@ -683,7 +683,9 @@ bool SoundSourceProxy::updateTrackFromSource(
         return false;
     }
 
-    m_pTrack->importMetadata(trackMetadata, metadataImported.second);
+    m_pTrack->replaceMetadataFromSource(
+            std::move(trackMetadata),
+            metadataImported.second);
 
     bool pendingBeatsImport = m_pTrack->getBeatsImportStatus() == Track::ImportStatus::Pending;
     bool pendingCueImport = m_pTrack->getCueImportStatus() == Track::ImportStatus::Pending;
