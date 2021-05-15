@@ -331,13 +331,6 @@ class Track : public QObject {
             mixxx::TrackMetadata importedMetadata,
             const QDateTime& metadataSynchronized = QDateTime());
 
-    /// Merge additional metadata that is not (yet) stored in the database
-    /// and only available from file tags.
-    ///
-    /// Returns true if the track has been modified and false otherwise.
-    bool mergeImportedMetadata(
-            const mixxx::TrackMetadata& importedMetadata);
-
     mixxx::TrackMetadata getMetadata(
             bool* pMetadataSynchronized = nullptr) const;
 
@@ -445,6 +438,12 @@ class Track : public QObject {
     void importPendingCueInfosMarkDirtyAndUnlock(
             QMutexLocker* pLock);
 
+    /// Merge additional metadata that is not (yet) stored in the database
+    /// and only available from file tags.
+    ///
+    /// Returns true if the track has been modified and false otherwise.
+    bool mergeImportedMetadata(
+            const mixxx::TrackMetadata& importedMetadata);
 
     ExportTrackMetadataResult exportMetadata(
             const mixxx::MetadataSource& metadataSource,
