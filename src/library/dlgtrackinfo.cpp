@@ -1,7 +1,9 @@
 #include "library/dlgtrackinfo.h"
 
 #include <QDesktopServices>
+#include <QSignalBlocker>
 #include <QStringBuilder>
+#include <QTreeWidget>
 #include <QtDebug>
 
 #include "library/coverartcache.h"
@@ -46,10 +48,6 @@ DlgTrackInfo::DlgTrackInfo(
           m_pWCoverArtLabel(make_parented<WCoverArtLabel>(this)),
           m_pWStarRating(make_parented<WStarRating>(nullptr, this)) {
     init();
-}
-
-DlgTrackInfo::~DlgTrackInfo() {
-    unloadTrack(false);
 }
 
 void DlgTrackInfo::init() {
@@ -149,6 +147,57 @@ void DlgTrackInfo::init() {
             this,
             &DlgTrackInfo::slotBpmTap);
 
+    // Metadata fields
+    connect(txtTrackName,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                m_trackRecord.refMetadata().refTrackInfo().setTitle(txtTrackName->text().trimmed());
+            });
+    connect(txtArtist,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                m_trackRecord.refMetadata().refTrackInfo().setArtist(txtArtist->text().trimmed());
+            });
+    connect(txtAlbum,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                m_trackRecord.refMetadata().refAlbumInfo().setTitle(txtAlbum->text().trimmed());
+            });
+    connect(txtAlbumArtist,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                m_trackRecord.refMetadata().refAlbumInfo().setArtist(
+                        txtAlbumArtist->text().trimmed());
+            });
+    connect(txtComposer,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                m_trackRecord.refMetadata().refTrackInfo().setComposer(
+                        txtComposer->text().trimmed());
+            });
+    connect(txtGrouping,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                m_trackRecord.refMetadata().refTrackInfo().setGrouping(
+                        txtGrouping->text().trimmed());
+            });
+    connect(txtYear,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                m_trackRecord.refMetadata().refTrackInfo().setYear(txtYear->text().trimmed());
+            });
+    connect(txtTrackNumber, &QLineEdit::editingFinished, [this]() {
+        m_trackRecord.refMetadata().refTrackInfo().setTrackNumber(
+                txtTrackNumber->text().trimmed());
+    });
+
     connect(btnImportMetadataFromFile,
             &QPushButton::clicked,
             this,
@@ -181,17 +230,18 @@ void DlgTrackInfo::init() {
             &DlgTrackInfo::slotReloadCoverArt);
 }
 
-void DlgTrackInfo::slotOk() {
-    unloadTrack(true);
-    accept();
-}
-
 void DlgTrackInfo::slotApply() {
     saveTrack();
 }
 
+void DlgTrackInfo::slotOk() {
+    slotApply();
+    clear();
+    accept();
+}
+
 void DlgTrackInfo::slotCancel() {
-    unloadTrack(false);
+    clear();
     reject();
 }
 
@@ -234,42 +284,80 @@ void DlgTrackInfo::loadPrevTrack() {
     }
 }
 
-void DlgTrackInfo::populateFields(const Track& track) {
+void DlgTrackInfo::updateFromTrack(const Track& track) {
+    const QSignalBlocker signalBlocker(this);
+
     setWindowTitle(track.getInfo());
 
-    // Editable fields
-    txtTrackName->setText(track.getTitle());
-    txtArtist->setText(track.getArtist());
-    txtAlbum->setText(track.getAlbum());
-    txtAlbumArtist->setText(track.getAlbumArtist());
-    txtGenre->setText(track.getGenre());
-    txtComposer->setText(track.getComposer());
-    txtGrouping->setText(track.getGrouping());
-    txtYear->setText(track.getYear());
-    txtTrackNumber->setText(track.getTrackNumber());
-    txtComment->setPlainText(track.getComment());
+    replaceTrackRecord(
+            track.getRecord(),
+            track.getLocation());
 
-    // Non-editable fields
-    txtDuration->setText(track.getDurationText(mixxx::Duration::Precision::SECONDS));
-    txtDateAdded->setText(mixxx::displayLocalDateTime(track.getDateAdded()));
+    // Non-editable track fields
     txtLocation->setText(QDir::toNativeSeparators(track.getLocation()));
-    txtType->setText(track.getType());
-    txtBitrate->setText(
-            track.getBitrateText() +
-            QChar(' ') +
-            tr(mixxx::audio::Bitrate::unit()));
-    txtBpm->setText(track.getBpmText());
-    m_keysClone = track.getKeys();
-    txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));
-    const mixxx::ReplayGain replayGain(track.getReplayGain());
-    txtReplayGain->setText(mixxx::ReplayGain::ratioToString(replayGain.getRatio()));
 
     reloadTrackBeats(track);
 
-    m_loadedCoverInfo = track.getCoverInfoWithLocation();
-    m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, QPixmap());
-    CoverArtCache::requestCover(this, m_loadedCoverInfo);
     m_pWStarRating->slotTrackLoaded(m_pLoadedTrack);
+}
+
+void DlgTrackInfo::replaceTrackRecord(
+        mixxx::TrackRecord&& trackRecord,
+        const QString& trackLocation) {
+    // Signals are already blocked
+    m_trackRecord = std::move(trackRecord);
+
+    const auto coverInfo = CoverInfo(
+            m_trackRecord.getCoverInfo(),
+            trackLocation);
+    m_pWCoverArtLabel->setCoverArt(coverInfo, QPixmap());
+    // Executed concurrently
+    CoverArtCache::requestCover(this, coverInfo);
+
+    txtType->setText(
+            trackRecord.getFileType());
+    txtDateAdded->setText(
+            mixxx::displayLocalDateTime(
+                    trackRecord.getDateAdded()));
+
+    updateTrackMetadataFields();
+}
+
+void DlgTrackInfo::updateTrackMetadataFields() {
+    // Editable fields
+    txtTrackName->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getTitle());
+    txtArtist->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getArtist());
+    txtAlbum->setText(
+            m_trackRecord.getMetadata().getAlbumInfo().getTitle());
+    txtAlbumArtist->setText(
+            m_trackRecord.getMetadata().getAlbumInfo().getArtist());
+    txtGenre->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getGenre());
+    txtComposer->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getComposer());
+    txtGrouping->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getGrouping());
+    txtYear->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getYear());
+    txtTrackNumber->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getTrackNumber());
+    txtComment->setPlainText(
+            m_trackRecord.getMetadata().getTrackInfo().getComment());
+    txtBpm->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getBpmText());
+    txtKey->setText(
+            m_trackRecord.getMetadata().getTrackInfo().getKey());
+
+    // Non-editable fields
+    txtDuration->setText(
+            m_trackRecord.getMetadata().getDurationText(mixxx::Duration::Precision::SECONDS));
+    txtBitrate->setText(
+            m_trackRecord.getMetadata().getBitrateText());
+    txtReplayGain->setText(
+            mixxx::ReplayGain::ratioToString(
+                    m_trackRecord.getMetadata().getTrackInfo().getReplayGain().getRatio()));
 }
 
 void DlgTrackInfo::reloadTrackBeats(const Track& track) {
@@ -302,7 +390,7 @@ void DlgTrackInfo::loadTrackInternal(const TrackPointer& pTrack) {
 
     m_pLoadedTrack = pTrack;
 
-    populateFields(*m_pLoadedTrack);
+    updateFromTrack(*m_pLoadedTrack);
     m_pWCoverArtLabel->loadTrack(m_pLoadedTrack);
 
     // We already listen to changed() so we don't need to listen to individual
@@ -345,8 +433,8 @@ void DlgTrackInfo::slotCoverFound(
     Q_UNUSED(coverInfoUpdated);
     if (pRequestor == this &&
             m_pLoadedTrack &&
-            m_loadedCoverInfo.trackLocation == coverInfo.trackLocation) {
-        m_loadedCoverInfo = coverInfo;
+            m_pLoadedTrack->getLocation() == coverInfo.trackLocation) {
+        m_trackRecord.setCoverInfo(coverInfo);
         m_pWCoverArtLabel->setCoverArt(coverInfo, pixmap);
     }
 }
@@ -365,8 +453,8 @@ void DlgTrackInfo::slotCoverInfoSelected(const CoverInfoRelative& coverInfo) {
     VERIFY_OR_DEBUG_ASSERT(m_pLoadedTrack) {
         return;
     }
-    m_loadedCoverInfo = CoverInfo(coverInfo, m_pLoadedTrack->getLocation());
-    CoverArtCache::requestCover(this, m_loadedCoverInfo);
+    m_trackRecord.setCoverInfo(coverInfo);
+    CoverArtCache::requestCover(this, CoverInfo(coverInfo, m_pLoadedTrack->getLocation()));
 }
 
 void DlgTrackInfo::slotOpenInFileBrowser() {
@@ -384,54 +472,29 @@ void DlgTrackInfo::saveTrack() {
 
     // First, disconnect the track changed signal. Otherwise we signal ourselves
     // and repopulate all these fields.
-    disconnect(m_pLoadedTrack.get(),
-            &Track::changed,
-            this,
-            &DlgTrackInfo::slotTrackChanged);
+    const QSignalBlocker signalBlocker(this);
 
-    m_pLoadedTrack->setTitle(txtTrackName->text());
-    m_pLoadedTrack->setArtist(txtArtist->text());
-    m_pLoadedTrack->setAlbum(txtAlbum->text());
-    m_pLoadedTrack->setAlbumArtist(txtAlbumArtist->text());
-    m_pLoadedTrack->setGenre(txtGenre->text());
-    m_pLoadedTrack->setComposer(txtComposer->text());
-    m_pLoadedTrack->setGrouping(txtGrouping->text());
-    m_pLoadedTrack->setYear(txtYear->text());
-    m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
-    m_pLoadedTrack->setComment(txtComment->toPlainText());
+    // Special case handling for the comment field that is not
+    // updated in m_trackMetadata while editing!
+    m_trackRecord.refMetadata().refTrackInfo().setComment(txtComment->toPlainText());
 
-    m_pLoadedTrack->trySetBeats(m_pBeatsClone);
-    reloadTrackBeats(*m_pLoadedTrack);
-
-    // If the user is editing the key and hits enter to close DlgTrackInfo, the
-    // editingFinished signal will not fire in time. Run the key text changed
-    // handler now to see if the key was edited. If the key was unchanged or
-    // invalid then the change will be rejected.
+    // If the user is editing the bpm or key and hits enter to close DlgTrackInfo,
+    // the editingFinished signal will not fire in time. Invoke the connected
+    // handlers manually to capture any changes. If the bpm or key was unchanged
+    // or invalid then the change will be ignored/rejected.
+    slotSpinBpmValueChanged(spinBpm->value());
     slotKeyTextChanged();
 
-    m_pLoadedTrack->setKeys(m_keysClone);
-    m_pLoadedTrack->setCoverInfo(m_loadedCoverInfo);
+    // Update the cached track
+    m_pLoadedTrack->replaceRecord(std::move(m_trackRecord), std::move(m_pBeatsClone));
 
-    // Reconnect changed signals now.
-    connect(m_pLoadedTrack.get(),
-            &Track::changed,
-            this,
-            &DlgTrackInfo::slotTrackChanged);
-}
-
-void DlgTrackInfo::unloadTrack(bool save) {
-    if (!m_pLoadedTrack) {
-        return;
-    }
-
-    if (save) {
-        saveTrack();
-    }
-
-    clear();
+    // Repopulate the dialog and update the UI
+    updateFromTrack(*m_pLoadedTrack);
 }
 
 void DlgTrackInfo::clear() {
+    const QSignalBlocker signalBlocker(this);
+
     if (m_pLoadedTrack) {
         disconnect(m_pLoadedTrack.get(),
                 &Track::changed,
@@ -440,30 +503,12 @@ void DlgTrackInfo::clear() {
         m_pLoadedTrack.reset();
     }
 
-    txtTrackName->setText("");
-    txtArtist->setText("");
-    txtAlbum->setText("");
-    txtAlbumArtist->setText("");
-    txtGenre->setText("");
-    txtComposer->setText("");
-    txtGrouping->setText("");
-    txtYear->setText("");
-    txtTrackNumber->setText("");
-    txtComment->setPlainText("");
+    resetTrackRecord();
+
     spinBpm->setValue(0.0);
     m_pBeatsClone.clear();
-    m_keysClone = Keys();
 
-    txtDuration->setText("");
-    txtType->setText("");
     txtLocation->setText("");
-    txtBitrate->setText("");
-    txtBpm->setText("");
-    txtKey->setText("");
-    txtReplayGain->setText("");
-
-    m_loadedCoverInfo = CoverInfo();
-    m_pWCoverArtLabel->setCoverArt(m_loadedCoverInfo, QPixmap());
 }
 
 void DlgTrackInfo::slotBpmDouble() {
@@ -588,28 +633,26 @@ void DlgTrackInfo::slotKeyTextChanged() {
     const QString newKeyText = txtKey->text();
     Keys newKeys = KeyFactory::makeBasicKeysFromText(newKeyText,
             mixxx::track::io::key::USER);
-    const mixxx::track::io::key::ChromaticKey globalKey(newKeys.getGlobalKey());
+    const mixxx::track::io::key::ChromaticKey newKey(newKeys.getGlobalKey());
 
     // If the new key string is invalid and not empty them reject the new key.
-    if (globalKey == mixxx::track::io::key::INVALID && !newKeyText.isEmpty()) {
-        txtKey->setText(KeyUtils::getGlobalKeyText(m_keysClone));
+    if (newKey == mixxx::track::io::key::INVALID && !newKeyText.isEmpty()) {
+        txtKey->setText(m_trackRecord.getMetadata().getTrackInfo().getKey());
         return;
     }
 
-    // If the new key is the same as the old key, reject the change.
-    if (globalKey == m_keysClone.getGlobalKey()) {
-        return;
-    }
-
-    // Otherwise, accept.
-    m_keysClone = newKeys;
+    m_trackRecord.refMetadata().refTrackInfo().setKey(newKey);
 }
 
 void DlgTrackInfo::slotImportMetadataFromFile() {
     if (!m_pLoadedTrack) {
         return;
     }
-    mixxx::TrackMetadata trackMetadata;
+    // Initialize the metadata with the current metadata to avoid
+    // losing existing metadata or to lose the beat grid by replacing
+    // it with a default grid created from an imprecise BPM.
+    // See also: https://bugs.launchpad.net/mixxx/+bug/1929311
+    mixxx::TrackMetadata trackMetadata = m_pLoadedTrack->getMetadata();
     QImage coverImage;
     const auto [importResult, metadataSynchronized] =
             SoundSourceProxy(m_pLoadedTrack)
@@ -623,24 +666,20 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             fileAccess.info(),
             trackMetadata.getAlbumInfo().getTitle(),
             coverImage);
-    // Allocate a temporary track object for repopulating the fields.
-    // We cannot reuse m_pLoadedTrack, because it might already been
-    // modified and we don't want to lose those changes.
-    // TODO: Populate fields from TrackRecord instead of Track
-    const TrackPointer pTrack =
-            Track::newTemporary(std::move(fileAccess));
-    DEBUG_ASSERT(pTrack);
-    pTrack->replaceMetadataFromSource(
+    mixxx::TrackRecord trackRecord;
+    trackRecord.replaceMetadataFromSource(
             std::move(trackMetadata),
             metadataSynchronized);
-    pTrack->setCoverInfo(
+    trackRecord.setCoverInfo(
             std::move(guessedCoverInfo));
-    populateFields(*pTrack);
+    replaceTrackRecord(
+            std::move(trackRecord),
+            fileAccess.info().location());
 }
 
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {
     if (m_pLoadedTrack && m_pLoadedTrack->getId() == trackId) {
-        populateFields(*m_pLoadedTrack);
+        updateFromTrack(*m_pLoadedTrack);
     }
 }
 
@@ -650,6 +689,7 @@ void DlgTrackInfo::slotImportMetadataFromMusicBrainz() {
                 m_pTrackModel);
         connect(m_pDlgTagFetcher.get(),
                 &QDialog::finished,
+                this,
                 [this]() {
                     if (m_pDlgTagFetcher.get() == sender()) {
                         m_pDlgTagFetcher.release()->deleteLater();
