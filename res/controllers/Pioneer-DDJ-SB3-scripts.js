@@ -160,8 +160,7 @@ PioneerDDJSB3.scratchSettings = {
     "alpha": 1.0 / 8,
     "beta": 1.0 / 8 / 32,
     "jogResolution": 720,
-    "vinylSpeed": 33 + 1 / 3,
-    "safeScratchTimeout": 20
+    "vinylSpeed": 33 + 1 / 3
 };
 
 PioneerDDJSB3.channelGroups = {
