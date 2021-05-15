@@ -332,7 +332,7 @@ class Track : public QObject {
     /// with file tags, either by importing or exporting the metadata.
     void replaceMetadataFromSource(
             mixxx::TrackMetadata importedMetadata,
-            const QDateTime& metadataSynchronized = QDateTime());
+            const QDateTime& metadataSynchronized);
 
     mixxx::TrackMetadata getMetadata(
             bool* pMetadataSynchronized = nullptr) const;

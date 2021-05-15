@@ -631,7 +631,8 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
             Track::newTemporary(std::move(fileAccess));
     DEBUG_ASSERT(pTrack);
     pTrack->replaceMetadataFromSource(
-            std::move(trackMetadata));
+            std::move(trackMetadata),
+            metadataSynchronized);
     pTrack->setCoverInfo(
             std::move(guessedCoverInfo));
     populateFields(*pTrack);
