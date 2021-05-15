@@ -42,11 +42,11 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     void slotUpdateEqAutoReset(int);
     void slotUpdateGainAutoReset(int);
     void slotBypass(int state);
-    // Update the Master EQ
-    void slotUpdateMasterEQParameter(int value);
-    void slotMasterEQToDefault();
-    void setMasterEQParameter(int i, double value);
-    void slotMasterEqEffectChanged(int effectIndex);
+    // Update the Main EQ
+    void slotUpdateMainEQParameter(int value);
+    void slotMainEQToDefault();
+    void setMainEQParameter(int i, double value);
+    void slotMainEqEffectChanged(int effectIndex);
 
   signals:
     void apply(const QString &);
@@ -59,7 +59,7 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
     int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validate_levels();
     void updateBandFilter(int index, double value);
-    void setUpMasterEQ();
+    void setUpMainEQ();
     void applySelections();
 
     ControlProxy m_COLoFreq;
@@ -81,11 +81,11 @@ class DlgPrefEQ : public DlgPreferencePage, public Ui::DlgPrefEQDlg  {
 
     bool m_inSlotPopulateDeckEffectSelectors;
 
-    // Members needed for the Master EQ
+    // Members needed for the Main EQ
     QList<QSlider*> m_masterEQSliders;
     QList<QLabel*> m_masterEQValues;
     QList<QLabel*> m_masterEQLabels;
-    QWeakPointer<Effect> m_pEffectMasterEQ;
+    QWeakPointer<Effect> m_pEffectMainEQ;
 
     bool m_bEqAutoReset;
     bool m_bGainAutoReset;
