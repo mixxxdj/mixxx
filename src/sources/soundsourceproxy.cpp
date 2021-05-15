@@ -579,10 +579,12 @@ bool SoundSourceProxy::updateTrackFromSource(
     }
 
     // Parse the tags stored in the audio file
-    auto metadataImported =
-            m_pSoundSource->importTrackMetadataAndCoverImage(
-                    &trackMetadata, pCoverImg);
-    if (metadataImported.first == mixxx::MetadataSource::ImportResult::Failed) {
+    auto metadataImportedFromSource =
+            importTrackMetadataAndCoverImage(
+                    &trackMetadata,
+                    pCoverImg);
+    if (metadataImportedFromSource.first ==
+            mixxx::MetadataSource::ImportResult::Failed) {
         kLogger.warning()
                 << "Failed to import track metadata"
                 << (pCoverImg ? "and embedded cover art" : "")
@@ -596,7 +598,7 @@ bool SoundSourceProxy::updateTrackFromSource(
     if (mergeExtraMetadataFromSource) {
         // No reimport of embedded cover image desired in this case
         DEBUG_ASSERT(!pCoverImg);
-        if (metadataImported.first == mixxx::MetadataSource::ImportResult::Succeeded) {
+        if (metadataImportedFromSource.first == mixxx::MetadataSource::ImportResult::Succeeded) {
             // Partial import of properties that are not (yet) stored
             // in the database
             return m_pTrack->mergeExtraMetadataFromSource(trackMetadata);
@@ -669,26 +671,28 @@ bool SoundSourceProxy::updateTrackFromSource(
         if (trackMetadata.refTrackInfo().parseArtistTitleFromFileName(
                     fileInfo.fileName(), splitArtistTitle)) {
             // Pretend that metadata import succeeded
-            metadataImported.first = mixxx::MetadataSource::ImportResult::Succeeded;
-            if (metadataImported.second.isNull()) {
+            metadataImportedFromSource.first = mixxx::MetadataSource::ImportResult::Succeeded;
+            if (metadataImportedFromSource.second.isNull()) {
                 // Since this is also some kind of metadata import, we mark the
                 // track's metadata as synchronized with the time stamp of the file.
-                metadataImported.second = fileInfo.lastModified();
+                metadataImportedFromSource.second = fileInfo.lastModified();
             }
         }
     }
 
     // Do not continue with unknown and maybe invalid metadata!
-    if (metadataImported.first != mixxx::MetadataSource::ImportResult::Succeeded) {
+    if (metadataImportedFromSource.first != mixxx::MetadataSource::ImportResult::Succeeded) {
         return false;
     }
 
     m_pTrack->replaceMetadataFromSource(
             std::move(trackMetadata),
-            metadataImported.second);
+            metadataImportedFromSource.second);
 
-    bool pendingBeatsImport = m_pTrack->getBeatsImportStatus() == Track::ImportStatus::Pending;
-    bool pendingCueImport = m_pTrack->getCueImportStatus() == Track::ImportStatus::Pending;
+    const bool pendingBeatsImport =
+            m_pTrack->getBeatsImportStatus() == Track::ImportStatus::Pending;
+    const bool pendingCueImport =
+            m_pTrack->getCueImportStatus() == Track::ImportStatus::Pending;
     if (pendingBeatsImport || pendingCueImport) {
         // Try to open the audio source once to determine the actual
         // stream properties for finishing the pending import.
