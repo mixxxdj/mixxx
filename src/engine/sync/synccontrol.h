@@ -61,6 +61,7 @@ class SyncControl : public EngineControl, public Syncable {
 
     void setEngineControls(RateControl* pRateControl, BpmControl* pBpmControl);
 
+    void reportTrackPosition(double fractionalPlaypos);
     void reportPlayerSpeed(double speed, bool scratching);
     void notifySeek(double dNewPlaypos) override;
     void trackLoaded(TrackPointer pNewTrack) override;
