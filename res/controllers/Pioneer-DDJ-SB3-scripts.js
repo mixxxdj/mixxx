@@ -284,20 +284,20 @@ PioneerDDJSB3.Deck = function(deckNumber) {
     this.group = "[Channel" + deckNumber + "]";
 
     this.shiftButton = function(channel, control, value, status, group) {
+        var i;
         if (value > 0) {
             theDeck.shift();
             PioneerDDJSB3.shiftPressed = true;
             PioneerDDJSB3.chFaderStart[deckNumber] = null;
             PioneerDDJSB3.headphoneLevel.shift();
-            for (var i = 0; i < PioneerDDJSB3.shiftListeners.length; i++) {
+            for (i = 0; i < PioneerDDJSB3.shiftListeners.length; i++) {
                 PioneerDDJSB3.shiftListeners[i](group, true);
             }
         } else {
             theDeck.unshift();
             PioneerDDJSB3.shiftPressed = false;
             PioneerDDJSB3.headphoneLevel.unshift();
-            // eslint-disable-next-line no-redeclare
-            for (var i = 0; i < PioneerDDJSB3.shiftListeners.length; i++) {
+            for (i = 0; i < PioneerDDJSB3.shiftListeners.length; i++) {
                 PioneerDDJSB3.shiftListeners[i](group, false);
             }
         }
