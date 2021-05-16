@@ -1335,13 +1335,8 @@ bool EngineBuffer::isTrackLoaded() {
 
 bool EngineBuffer::getQueuedSeekPosition(double* pSeekPosition) {
     const QueuedSeek queuedSeek = m_queuedSeek.getValue();
-    bool isSeekQueued = queuedSeek.seekType != SEEK_NONE;
-    if (isSeekQueued) {
-        *pSeekPosition = queuedSeek.position;
-    } else {
-        *pSeekPosition = -1;
-    }
-    return isSeekQueued;
+    *pSeekPosition = queuedSeek.position;
+    return (queuedSeek.seekType != SEEK_NONE);
 }
 
 void EngineBuffer::slotEjectTrack(double v) {
