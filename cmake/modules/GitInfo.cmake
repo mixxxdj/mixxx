@@ -50,6 +50,11 @@ if(NOT GIT_DESCRIBE)
   endif()
 else()
   message(NOTICE "Git describe: ${GIT_DESCRIBE}")
+  if(NOT GIT_COMMIT_DATE)
+    message(NOTICE "Git commit date unknown, using current time for GIT_COMMIT_DATE")
+    # use current date in case of tar ball builds
+    string(TIMESTAMP GIT_COMMIT_DATE "%Y-%m-%dT%H:%M:%SZ" UTC)
+  endif()
 endif()
 
 # Get the current commit date
