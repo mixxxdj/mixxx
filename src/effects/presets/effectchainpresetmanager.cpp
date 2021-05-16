@@ -210,7 +210,6 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
 
     QFile file(fileName);
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-        file.close();
         QMessageBox::critical(nullptr,
                 tr("Error exporting effect chain preset"),
                 tr("Could not save effect chain preset \"%1\" to file \"%2\"")
