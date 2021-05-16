@@ -793,6 +793,13 @@ double BpmControl::getBeatMatchPosition(
     if (!m_pBeats) {
         return dThisPosition;
     }
+    const double dThisRateRatio = m_pRateRatio->get();
+    if (dThisRateRatio == 0.0) {
+        // We can't continue without a rate.
+        // This avoids also a division by zero in the following calculations
+        return dThisPosition;
+    }
+
     // Explicit master buffer is always in sync!
     if (getSyncMode() == SYNC_MASTER_EXPLICIT) {
         return dThisPosition;
@@ -866,7 +873,6 @@ double BpmControl::getBeatMatchPosition(
 
     const double dOtherPosition = pOtherEngineBuffer->getExactPlayPos();
     const double dThisSampleRate = m_pBeats->getSampleRate();
-    const double dThisRateRatio = m_pRateRatio->get();
 
     // Seek our next beat to the other next beat near our beat.
     // This is the only thing we can do if the track has different BPM,
