@@ -11,12 +11,6 @@ else()
 endif()
 set(CPACK_PACKAGE_FILE_NAME "mixxx-${PACKAGE_VERSION}")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-source")
-set(CPACK_DEBIAN_GIT_BRANCH ${GIT_BRANCH})
-set(CPACK_DEBIAN_GIT_COMMIT_COUNT ${GIT_COMMIT_COUNT})
-set(CPACK_DEBIAN_GIT_COMMIT_DATE ${GIT_COMMIT_DATE})
-set(CPACK_DEBIAN_GIT_COMMIT_YEAR ${GIT_COMMIT_YEAR})
-set(CPACK_DEBIAN_GIT_DESCRIBE "${GIT_DESCRIBE}")
-set(CPACK_DEBIAN_GIT_DIRTY ${GIT_DIRTY})
 
 # The upstream version must not contain hyphen
 # . for nomal versioning + for advance and ~ for decline the version
