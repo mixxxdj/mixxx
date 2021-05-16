@@ -374,8 +374,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
         // use SEEK_STANDARD for that
         seekType = SEEK_STANDARD;
     }
-    struct QueuedSeek queuedSeek = {newpos, seekType};
-    m_queuedSeek.setValue(queuedSeek);
+    m_queuedSeek.setValue({newpos, seekType});
 }
 
 void EngineBuffer::requestSyncPhase() {
@@ -625,7 +624,7 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     bool playPossible = true;
-    struct QueuedSeek queuedSeek = m_queuedSeek.getValue();
+    const QueuedSeek queuedSeek = m_queuedSeek.getValue();
     if ((!m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0) ||
             (m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0 &&
                     m_filepos_play >= m_pTrackSamples->get() &&
@@ -1150,13 +1149,12 @@ void EngineBuffer::processSeek(bool paused) {
         seekCloneBuffer(pChannel->getEngineBuffer());
     }
 
-    struct QueuedSeek queuedSeek = m_queuedSeek.getValue();
+    const QueuedSeek queuedSeek = m_queuedSeek.getValue();
 
     SeekRequests seekType = queuedSeek.seekType;
     double position = queuedSeek.position;
 
-    queuedSeek = {-1, SEEK_NONE};
-    m_queuedSeek.setValue(queuedSeek);
+    m_queuedSeek.setValue({-1, SEEK_NONE});
 
     // Don't allow the playposition to go past the end.
     if (position > m_trackSamplesOld) {
@@ -1333,7 +1331,7 @@ bool EngineBuffer::isTrackLoaded() {
 }
 
 bool EngineBuffer::getQueuedSeekPosition(double* pSeekPosition) {
-    struct QueuedSeek queuedSeek = m_queuedSeek.getValue();
+    const QueuedSeek queuedSeek = m_queuedSeek.getValue();
     bool isSeekQueued = queuedSeek.seekType != SEEK_NONE;
     if (isSeekQueued) {
         *pSeekPosition = queuedSeek.position;
