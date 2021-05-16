@@ -312,6 +312,7 @@ void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
                 nullptr,
                 tr("Could not delete effect chain preset"),
                 tr("Could not delete effect chain preset \"%1\"").arg(chainPresetName));
+        return;
     }
 
     EffectChainPresetPointer pPreset =
