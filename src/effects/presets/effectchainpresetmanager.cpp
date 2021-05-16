@@ -396,7 +396,7 @@ void EffectChainPresetManager::savePreset(EffectChainPresetPointer pPreset) {
     savePresetXml(pPreset);
 }
 
-void EffectChainPresetManager::importSavedPresets() {
+void EffectChainPresetManager::importUserPresets() {
     QString savedPresetsPath(
             m_pConfig->getSettingsPath() + kEffectChainPresetDirectory);
     QDir savedPresetsDir(savedPresetsPath);
@@ -492,7 +492,7 @@ void EffectChainPresetManager::resetToDefaults() {
     m_quickEffectChainPresetsSorted.clear();
     m_effectChainPresets.clear();
 
-    importSavedPresets();
+    importUserPresets();
     importDefaultPresets();
     generateDefaultQuickEffectPresets();
     prependRemainingPresetsToLists();
@@ -560,7 +560,7 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
         }
     }
 
-    importSavedPresets();
+    importUserPresets();
 
     // Reload order of custom chain presets
     QStringList chainPresetsSorted;

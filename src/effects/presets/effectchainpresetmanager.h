@@ -78,7 +78,7 @@ class EffectChainPresetManager : public QObject {
   private:
     bool savePresetXml(EffectChainPresetPointer pPreset);
 
-    void importSavedPresets();
+    void importUserPresets();
     void importDefaultPresets();
     void generateDefaultQuickEffectPresets();
     void prependRemainingPresetsToLists();
