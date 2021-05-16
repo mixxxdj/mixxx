@@ -5,6 +5,6 @@ class GitInfoStore {
     static const char* branch();
     static const char* describe();
     static const char* date();
-    int commitCount();
+    static int commitCount();
     static bool dirty();
 };
