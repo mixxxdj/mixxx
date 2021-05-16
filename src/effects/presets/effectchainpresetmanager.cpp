@@ -132,7 +132,7 @@ void EffectChainPresetManager::importPreset() {
                             &okay)
                                       .trimmed();
                     if (!okay) {
-                        break;
+                        continue;
                     }
                 }
                 pPreset->setName(newName);
