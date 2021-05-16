@@ -524,7 +524,7 @@ bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     QDomDocument doc(EffectXml::Chain);
     doc.setContent(EffectXml::FileHeader);
     doc.appendChild(pPreset->toXml(&doc));
-    file.write(doc.toString().toUtf8());
+    file.write(doc.toByteArray());
     file.close();
     return true;
 }
