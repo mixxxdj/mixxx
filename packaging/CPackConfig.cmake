@@ -1,5 +1,7 @@
 # unlike CMakeLists.txt this file is include at cpack time, once per generator after CPack has set CPACK_GENERATOR
 # to the actual generator being used. It allows per-generator setting of CPACK_* variables at cpack time.
+set(GIT_DESCRIBE "${CPACK_GIT_DESCRIBE}")
+set(GIT_COMMIT_DATE ${CPACK_GIT_COMMIT_DATE})
 set(CMAKE_CURRENT_SOURCE_DIR "${CPACK_SOURCE_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 include(GitInfo)
