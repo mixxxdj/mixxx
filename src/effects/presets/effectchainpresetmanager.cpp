@@ -97,19 +97,24 @@ void EffectChainPresetManager::importPreset() {
             tr("Mixxx Effect Chain Presets") + QStringLiteral(" (*") +
                     kXmlFileExtension + QStringLiteral(")"));
 
-    QString importFailed = tr("Error importing effect chain preset:");
+    QString importFailedText = tr("Error importing effect chain preset");
+    QString importFailedInformativeText = tr("Error importing effect chain preset \"%1\"");
     for (int i = 0; i < fileNames.size(); ++i) {
         QString filePath = fileNames.at(i);
         QDomDocument doc;
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly)) {
-            QMessageBox::critical(
-                    nullptr, importFailed, importFailed + QStringLiteral(" ") + filePath);
+            QMessageBox msgBox;
+            msgBox.setText(importFailedText);
+            msgBox.setInformativeText(importFailedInformativeText.arg(filePath));
+            msgBox.setDetailedText(file.errorString());
+            msgBox.setIcon(QMessageBox::Critical);
+            msgBox.exec();
             continue;
         } else if (!doc.setContent(&file)) {
             file.close();
             QMessageBox::critical(
-                    nullptr, importFailed, importFailed + QStringLiteral(" ") + filePath);
+                    nullptr, importFailedText, importFailedInformativeText.arg(filePath));
             continue;
         }
         file.close();
@@ -156,7 +161,7 @@ void EffectChainPresetManager::importPreset() {
                 }
                 if (!effectAvailable) {
                     QMessageBox::warning(nullptr,
-                            importFailed,
+                            importFailedText,
                             tr("The effect chain imported from \"%1\" contains "
                                "an effect that is not available:")
                                             .arg(filePath) +
@@ -176,7 +181,7 @@ void EffectChainPresetManager::importPreset() {
             emit quickEffectChainPresetListUpdated();
         } else {
             QMessageBox::critical(
-                    nullptr, importFailed, importFailed + " " + filePath);
+                    nullptr, importFailedText, importFailedInformativeText.arg(filePath));
         }
     }
 }
@@ -210,10 +215,14 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
 
     QFile file(fileName);
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-        QMessageBox::critical(nullptr,
-                tr("Error exporting effect chain preset"),
-                tr("Could not save effect chain preset \"%1\" to file \"%2\"")
+        QMessageBox msgBox;
+        msgBox.setText(tr("Error exporting effect chain preset"));
+        msgBox.setInformativeText(
+                tr("Could not save effect chain preset \"%1\" to file \"%2\".")
                         .arg(chainPresetName, fileName));
+        msgBox.setDetailedText(file.errorString());
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
         return;
     }
 
@@ -274,10 +283,14 @@ void EffectChainPresetManager::renamePreset(const QString& oldName) {
     QFile oldFile(directoryPath + kFolderDelimiter +
             mixxx::filename::sanitize(oldName) + kXmlFileExtension);
     if (!oldFile.remove()) {
-        QMessageBox::warning(
-                nullptr,
-                tr("Could not remove old effect chain preset"),
-                tr("Could not remove old effect chain preset \"%1\"").arg(oldName));
+        QMessageBox msgBox;
+        msgBox.setText(tr("Error removing old effect chain preset"));
+        msgBox.setInformativeText(
+                tr("Could not remove old effect chain preset \"%1\"")
+                        .arg(oldName));
+        msgBox.setDetailedText(oldFile.errorString());
+        msgBox.setIcon(QMessageBox::Warning);
+        msgBox.exec();
     }
 
     if (index != -1) {
@@ -308,10 +321,14 @@ void EffectChainPresetManager::deletePreset(const QString& chainPresetName) {
     QFile file(m_pConfig->getSettingsPath() + kEffectChainPresetDirectory +
             kFolderDelimiter + mixxx::filename::sanitize(chainPresetName) + kXmlFileExtension);
     if (!file.remove()) {
-        QMessageBox::critical(
-                nullptr,
-                tr("Could not delete effect chain preset"),
-                tr("Could not delete effect chain preset \"%1\"").arg(chainPresetName));
+        QMessageBox msgBox;
+        msgBox.setText(tr("Error deleting effect chain preset"));
+        msgBox.setInformativeText(
+                tr("Could not delete effect chain preset \"%1\"")
+                        .arg(chainPresetName));
+        msgBox.setDetailedText(file.errorString());
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
         return;
     }
 
@@ -513,10 +530,14 @@ bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     QFile file(path + kFolderDelimiter +
             mixxx::filename::sanitize(pPreset->name()) + kXmlFileExtension);
     if (!file.open(QIODevice::Truncate | QIODevice::WriteOnly)) {
-        QMessageBox::critical(
-                nullptr,
-                tr("Could not save effect chain preset"),
-                tr("Could not save effect chain preset \"%1\"").arg(pPreset->name()));
+        QMessageBox msgBox;
+        msgBox.setText(tr("Error saving effect chain preset"));
+        msgBox.setInformativeText(
+                tr("Could not save effect chain preset \"%1\"")
+                        .arg(pPreset->name()));
+        msgBox.setDetailedText(file.errorString());
+        msgBox.setIcon(QMessageBox::Critical);
+        msgBox.exec();
         qWarning() << "Could not save effect chain preset" << file.fileName();
         return false;
     }
