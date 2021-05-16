@@ -18,6 +18,10 @@ MixtrackProFX.jogScratchBeta = 1/32;
 MixtrackProFX.jogPitchSensitivity = 10;
 MixtrackProFX.jogSeekSensitivity = 10000;
 
+// blink settings
+MixtrackProFX.enableBlink = true;
+MixtrackProFX.blinkDelay = 700;
+
 // state variables, don't touch
 MixtrackProFX.shifted = false;
 MixtrackProFX.scratchModeEnabled = [true, true];
@@ -156,6 +160,8 @@ MixtrackProFX.EffectUnit.prototype = new components.ComponentContainer();
 MixtrackProFX.Deck = function(number) {
     var deck = this;
     var channel = number - 1;
+    var blinkTimer = 0;
+    var blinkLedState = true;
 
     components.Deck.call(this, number);
 
@@ -269,6 +275,7 @@ MixtrackProFX.Deck = function(number) {
     // switch pad mode to hotcue
     this.modeHotcue = new components.Button({
         input: function(channel) {
+            deck.blinkLedOff();
             midi.sendShortMsg(0x90 + channel, 0x00, 0x7F); // hotcue
             midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
             midi.sendShortMsg(0x90 + channel, 0x07, 0x01); // fader cuts
@@ -292,6 +299,7 @@ MixtrackProFX.Deck = function(number) {
     // switch pad mode to auto loop
     this.modeAutoloop = new components.Button({
         input: function(channel) {
+            deck.blinkLedOff();
             midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
             midi.sendShortMsg(0x90 + channel, 0x0D, 0x7F); // auto loop
             midi.sendShortMsg(0x90 + channel, 0x07, 0x01); // fader cuts
@@ -338,6 +346,7 @@ MixtrackProFX.Deck = function(number) {
     // switch pad mode to fader cuts
     this.modeFadercuts = new components.Button({
         input: function(channel) {
+            deck.blinkLedOff();
             midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
             midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
             midi.sendShortMsg(0x90 + channel, 0x07, 0x09); // fader cuts (yes 0x09 works the best for some reason)
@@ -363,6 +372,7 @@ MixtrackProFX.Deck = function(number) {
     // switch pad mode to sampler
     this.modeSample = new components.Button({
         input: function(channel) {
+            deck.blinkLedOff();
             midi.sendShortMsg(0x90 + channel, 0x00, 0x01); // hotcue
             midi.sendShortMsg(0x90 + channel, 0x0D, 0x01); // auto loop
             midi.sendShortMsg(0x90 + channel, 0x07, 0x01); // fader cuts
@@ -392,6 +402,7 @@ MixtrackProFX.Deck = function(number) {
             midi.sendShortMsg(0x90 + channel, 0x0B, 0x01); // sample
             midi.sendShortMsg(0x90 + channel, 0x0F, 0x7F); // sample shifted
             midi.sendShortMsg(0x90 + channel, 0x02, 0x01); // beatjump
+            deck.blinkLedOn(0x90 + channel, 0x0B); // blink sample
 
             for (var i = 0; i < 8; i++) {
                 deck.pads[i].group = "[Sampler" + (i + 9) + "]";
@@ -415,6 +426,7 @@ MixtrackProFX.Deck = function(number) {
             midi.sendShortMsg(0x90 + channel, 0x0B, 0x01); // sample
             midi.sendShortMsg(0x90 + channel, 0x0F, 0x01); // sample shifted
             midi.sendShortMsg(0x90 + channel, 0x02, 0x7F); // beatjump
+            deck.blinkLedOn(0x90 + channel, 0x00); // blink hotcue
 
             deck.pads[0].inKey = "beatjump_0.0625_forward";
             deck.pads[0].outKey = "beatjump_0.0625_forward";
@@ -450,6 +462,30 @@ MixtrackProFX.Deck = function(number) {
             deck.pads.reconnectComponents();
         }
     });
+
+    // start an infinite timer that toggles led state
+    this.blinkLedOn = function(midi1, midi2) {
+        if (!MixtrackProFX.enableBlink) {
+            return;
+        }
+
+        deck.blinkLedOff();
+        blinkLedState = true;
+        blinkTimer = engine.beginTimer(MixtrackProFX.blinkDelay, function() {
+            midi.sendShortMsg(midi1, midi2, blinkLedState ? 0x7F : 0x01);
+            blinkLedState = !blinkLedState;
+        });
+    };
+
+    // stop the blink timer
+    this.blinkLedOff = function() {
+        if (!MixtrackProFX.enableBlink || blinkTimer === 0) {
+            return;
+        }
+
+        engine.stopTimer(blinkTimer);
+        blinkTimer = 0;
+    };
 
     this.shiftButton = new components.Button({
         input: function(channel, control, value) {
