@@ -143,10 +143,6 @@ class EffectManifestParameter {
         return m_parameterType;
     }
 
-    void setParameterType(const ParameterType parameterType) {
-        m_parameterType = parameterType;
-    }
-
     ValueScaler valueScaler() const {
         return m_valueScaler;
     }
@@ -235,6 +231,10 @@ class EffectManifestParameter {
     }
 
   private:
+    void setParameterType(const ParameterType parameterType) {
+        m_parameterType = parameterType;
+    }
+
     QString debugString() const {
         return QString("EffectManifestParameter(%1)").arg(m_id);
     }
