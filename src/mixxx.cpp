@@ -316,6 +316,11 @@ MixxxMainWindow::MixxxMainWindow(
     // million different variables the first waveform may be horribly
     // corrupted. See bug 521509 -- bkgood ?? -- vrince
     setCentralWidget(m_pCentralWidget);
+
+    // Show the menubar after the launch image is replaced by the skin widget,
+    // otherwise it would shift the launch image shortly before the skin is visible.
+    m_pMenuBar->show();
+
     // The launch image widget is automatically disposed, but we still have a
     // pointer to it.
     m_pLaunchImage = nullptr;
@@ -1096,7 +1101,6 @@ bool MixxxMainWindow::loadConfiguredSkin() {
         initializationProgressUpdate(100, "");
     }
     emit skinLoaded();
-    m_pMenuBar->show();
     return m_pCentralWidget != nullptr;
 }
 
