@@ -165,7 +165,6 @@ QAbstractScrollArea::corner {
 #OverviewBox,
 #OverviewBoxMini,
 #KeyText,
-WSearchLineEdit,
 WCueMenuPopup #CueLabelEdit {
   border-top: 1px solid #0d0d0d;
   border-left: 1px solid #121212;
@@ -290,10 +289,13 @@ WSearchLineEdit {
   }
   #DeckRateSeparator,
   #DeckRateSeparatorCompact,
-  #FxMixerSeparatorCollapsed,
-  #SkinSettingsSeparator {
+  #FxMixerSeparatorCollapsed {
     min-width: 0px;
     max-width: 0px;
+  }
+  #SkinSettingsSeparator {
+    min-height: 0px;
+    max-height: 0px;
   }
   #FxMixerSeparatorCollapsed {
     margin-left: 3px;
@@ -341,7 +343,7 @@ WSearchLineEdit {
   border-color: #0c0c0c;
 }
 
-#BpmRateTapContainer:hover,
+#BpmTapContainer:hover,
 #PlayPositionText:hover, #PlayPositionTextSmall:hover {
   background-color: #151517;
   border-radius: 1px;
@@ -627,33 +629,19 @@ WSearchLineEdit {
 #RateContainer {
   padding: 4px 0px 0px 0px;
   }
-  #RateContainerCompact {
-    padding: 0px 0px 0px 0px;
+
+  #RateText {
+    padding: 0px;
+    margin: 0px 2px 0px 0px;
   }
 
-  #BpmRateTapContainer {
-    margin: 1px;
-    padding: 0px 1px 0px 0px;
-    }
-    #BpmRateContainer {
-      margin: 0px 0px 0px 3px;
-      }
-      #RateText {
-        padding: 0px;
-        margin: 0px 2px 0px 0px;
-      }
+#SyncBox {
+  margin: 2px 1px 1px 0px;
+}
 
-  #SyncBox {
-    margin: 2px 1px 1px 0px;
-  }
-
-  #RateControls {
-    margin: 0px 1px 0px 2px;
-    /*background-color: #000;*/
-    }
-  #RateSlider {
-    /*background-color: rgba(255,0,0,80);*/
-  }
+#RateControls {
+  margin: 0px 1px 0px 2px;
+}
 
 
 /********************** Loop Controls / AutoDJ spinbox ************************/
@@ -890,29 +878,30 @@ WBeatSpinBox::down-button,
   padding: 2px 7px 1px 3px;
 }
 
+#FxFocusButtonBox {
+  margin-right: 3px;
+}
+
+WPushButton#FxSuperLinkButton,
+WPushButton#FxSuperLinkInvertButton {
+  border-radius: 3px;
+  margin: 1px 1px 0px 0px;
+}
+
 WEffectSelector:!editable,
 WEffectSelector:!editable:on {
-  margin: 1px 0px 0px 0px;
   /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
       names start getting cut off. Adding explicit padding improves this. */
-  padding: 4px 0px 4px 4px;
-  /* The 3D frame on the combo box becomes flat when you give it a border
-  border-radius: 3px; */
-  }
+  padding: 3px 0px 1px 5px;
+  margin: 0px;
+}
 #fadeModeCombobox:!editable,
 #fadeModeCombobox:!editable:on {
-  height: 18px;
-  margin: 0px 0px 3px 1px;
-  padding: 1px 0px 1px 4px;
-  }
-
-  WEffectSelector QAbstractScrollArea,
-  #fadeModeCombobox QAbstractScrollArea {
-    border: 1px solid #444;
-    border-radius: 2px;
-    padding: 0px;
-    margin: 0px;
-  }
+  min-height: 17px;
+  max-height: 17px;
+  padding: 2px 0px 0px 5px;
+  margin: 4px 1px 4px 1px;
+}
   /* selected item */
   WEffectSelector::checked,
   #fadeModeCombobox::checked {
@@ -933,16 +922,10 @@ WEffectSelector:!editable:on {
     text sits at left border now
     border: 0; */
   }
-
-#FxFocusButtonBox {
-  margin-right: 3px;
-}
-
-WPushButton#FxSuperLinkButton,
-WPushButton#FxSuperLinkInvertButton {
-  border-radius: 3px;
-  margin: 1px 1px 0px 0px;
-}
+  WEffectSelector::down-arrow,
+  #fadeModeCombobox::down-arrow {
+    image: url(skin:/palemoon/buttons/btn__fx_selector_down.svg);
+  }
 
 
 /************** Sampler *************************************************/
@@ -1157,8 +1140,16 @@ WPushButton#FxSuperLinkInvertButton {
     padding-left: 18px;
   }
 
-#SubmenuCover {
+#SubmenuCover,
+#DeckSizeCover[highlight="0"] {
   background-color: rgba(15, 15, 15, 180);
+}
+#DeckSizeCover[highlight="1"] {
+  background-color: qlineargradient(x1: 0, y1: 0, x2: 1, y2: 0,
+    stop: 0 rgba(15, 15, 15, 220),
+    stop: 0.70 rgba(15, 15, 15, 220),
+    stop: 0.71 transparent,
+    stop: 1 transparent);
 }
 #SkinSettingsMixerToggle {
   background-color: rgba(15, 15, 15, 255);
@@ -1172,11 +1163,9 @@ WPushButton#FxSuperLinkInvertButton {
 
 /************** font colors **************************************************/
 
-#FxUnit1 #FxUnitLabel,
-#FxUnit2 #FxUnitLabel,
-#FxUnit3 #FxUnitLabel,
-#FxUnit4 #FxUnitLabel,
-#MicAuxLabelUnconfigured,
+WLabel#FxUnitLabel,
+WLabel#MicAuxLabel,
+WLabel#MicAuxLabelUnconfigured,
 WEffectSelector,
 #fadeModeCombobox {
   font-weight: 500;
@@ -1184,16 +1173,18 @@ WEffectSelector,
 
 /* Ivory */
 #Deck1 #TitleText, #Deck1 #ArtistText,
-  #DeckCompact1 #TitleText, #DeckCompact1 #ArtistText,
-  #DeckMini1 #TitleTextSmall, #DeckMini1 #ArtistTextSmall,
-  #Deck1 #BpmText, #DeckCompact1 #BpmText, #DeckMini1 #BpmTextSmall,
+#DeckCompact1 #TitleText, #DeckCompact1 #ArtistText,
+#DeckMini1 #TitleTextSmall, #DeckMini1 #ArtistTextSmall,
+#Deck1 #BpmText, #DeckCompact1 #BpmText, #DeckMini1 #BpmTextSmall,
 #Deck2 #TitleText, #Deck2 #ArtistText,
-  #DeckCompact2 #TitleText, #DeckCompact2 #ArtistText,
-  #DeckMini2 #TitleTextSmall, #DeckMini2 #ArtistTextSmall,
-  #Deck2 #BpmText, #DeckCompact2 #BpmText, #DeckMini2 #BpmTextSmall,
+#DeckCompact2 #TitleText, #DeckCompact2 #ArtistText,
+#DeckMini2 #TitleTextSmall, #DeckMini2 #ArtistTextSmall,
+#Deck2 #BpmText, #DeckCompact2 #BpmText, #DeckMini2 #BpmTextSmall,
 #MicAuxLabel,
 #SamplerTitle, #SamplerTitleMini,
-/* Library controls */
+#MainMenu QMenu,
+#MainMenu QMenu::item,
+#MainMenu QMenu QCheckBox,
 WSearchLineEdit, WTime,
 #PreviewDeckTextBox, #PreviewTitle, #PreviewBPM,
 #LibraryBPMSpinBox,
@@ -1207,18 +1198,17 @@ WSearchLineEdit, WTime,
 #LibraryFeatureControls QRadioButton,
 /* Tooltip and menus */
 QToolTip,
-WBeatSpinBox QMenu,
-#spinBoxTransition QMenu,
-#LibraryContainer QMenu,
-#LibraryContainer QMenu QCheckBox,
-WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCueMenuPopup QLabel,
-#CueLabelEdit,
-WCoverArtMenu,
+WLibrarySidebar QMenu,
+WLibrary QHeaderView QMenu,
+QTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
-WTrackMenu QMenu QCheckBox {
+WTrackMenu QMenu QCheckBox,
+QLineEdit QMenu,
+WCueMenuPopup,
+WCueMenuPopup QLabel,
+#CueLabelEdit,
+WCoverArtMenu {
   color: #c2b3a5;
   }
   /* dim ivory / light brown */
@@ -1245,17 +1235,17 @@ WEffectSelector:!editable:on,
 }
   /* dim² ivory */
   #Deck1 #PlayPositionText,
-    #DeckCompact1 #PlayPositionTextSmall,
-    #DeckMini1 #PlayPositionTextSmall,
-    #Deck1 #KeyText,
-    #DeckCompact1 #KeyText,
-    #DeckMini1 #KeyTextSmall,
+  #DeckCompact1 #PlayPositionTextSmall,
+  #DeckMini1 #PlayPositionTextSmall,
+  #Deck1 #KeyText,
+  #DeckCompact1 #KeyText,
+  #DeckMini1 #KeyTextSmall,
   #Deck2 #PlayPositionText,
-    #DeckCompact2 #PlayPositionTextSmall,
-    #DeckMini2 #PlayPositionTextSmall,
-    #Deck2 #KeyText,
-    #DeckCompact2 #KeyText,
-    #DeckMini2 #KeyTextSmall,
+  #DeckCompact2 #PlayPositionTextSmall,
+  #DeckMini2 #PlayPositionTextSmall,
+  #Deck2 #KeyText,
+  #DeckCompact2 #KeyText,
+  #DeckMini2 #KeyTextSmall,
   #SamplerBpm, #SamplerBpmMini,
   #LibraryContainer QHeaderView {
     color: #766b65;
@@ -1327,6 +1317,11 @@ WEffectSelector:!editable:on,
     background-color: #028392;
   }
 
+#MainMenu,
+#MainMenu::item {
+  color: #888;
+}
+
 /* Grey. default for all deck labels */
 #MainMenu,
 #MainMenu QMenu,
@@ -1360,7 +1355,10 @@ WEffectSelector QAbstractScrollArea,
 
 /* Even darker grey for knob labels in master/headphone mixer */
 #MixerMasterHeadphone #KnobLabel,
-#MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"],
+#MixerMasterHeadphone #FxAssignButtons WPushButton[displayValue="0"] {
+  color: #555;
+}
+
 #LatencyLabel {
   color: #444;
 }
@@ -1497,14 +1495,6 @@ WEffectSelector:!editable,
     border-image: url(skin:/palemoon/buttons/btn_embedded_library_disabled.svg) 2 2 2 2;
   }
 
-  WEffectSelector,
-  WEffectSelector::on {
-    margin-top: 1px;
-  }
-  WEffectSelector::on {
-    padding-left: 10px;
-  }
-
 #KeyUp {
   border-width: 1px 2px 0px 2px;
   border-image: url(skin:/palemoon/buttons/btn_embedded_library.svg) 1 2 12 2;
@@ -1524,6 +1514,7 @@ WEffectSelector:!editable,
 
 #BeatgridControls WPushButton, WPushButton#BeatgridControlsToggle,
 #DeckRow_5_LoopCuesTransport WPushButton,
+#RateControls WPushButton,
 WPushButton#PlayDeck,
 WPushButton#PreviewIndicator,
 WPushButton#PlayIndicator,
@@ -1659,6 +1650,7 @@ QPushButton#pushButtonAnalyze:checked {
     border-radius: 0px;
   }
 /* dim orange for momentary controls */
+#KeyControls WPushButton[pressed="true"],
 #SyncDeck[value="1"],
 WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
@@ -1693,7 +1685,11 @@ QPushButton#pushButtonRecording:checked,
   }
 /* Blue for Fx buttons 3/4 */
 #FxUnit3 #FxToggleButton[displayValue="1"],
-#FxUnit4 #FxToggleButton[displayValue="1"] {
+#FxUnit4 #FxToggleButton[displayValue="1"],
+WBeatSpinBox::up-button:pressed,
+WBeatSpinBox::down-button:pressed,
+#spinBoxTransition::up-button:pressed,
+#spinBoxTransition::down-button:pressed {
   background-color: #257b82;
   }
   /* Dim blue for assign buttons Fx34 */
@@ -1795,7 +1791,7 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
 /* Grey for GUI toggles */
 #GuiToggleButton[displayValue="1"],
 #SkinSettingsToggle[displayValue="1"] {
-  background-color: #555;
+  background-color: #777;
 }
 
 /* Grey */
@@ -2516,13 +2512,23 @@ WColorPicker QPushButton[checked="true"] {
   padding-top: 5px;*/
 }
 
-#LibraryContainer {
+#SkinContainer {
+  background-color: #080808;
+}
+#LibraryContainer QTableView,
+#LibraryContainer QTextBrowser,
+#LibraryContainer QTreeView,
+#SkinSettings,
+WSearchLineEdit,
+WLibrary QLineEdit,
+#spinBoxTransition,
+#LibraryBPMSpinBox {
+  background-color: #0f0f0f;
 }
 
 #LibraryContainer QTableView,
 #LibraryContainer QTextBrowser,
 #LibraryContainer QTreeView {
-  background-color: #0f0f0f;
   alternate-background-color: #0a0a0a;
 /* In selected library rows this sets the color of
   * shapes in star rating delegate
@@ -2570,13 +2576,13 @@ WTrackTableView {
 
 /* This is the only way to select the 'Played' checkbox.
   Note that this also selects the BPM lock. */
-#LibraryContainer QTableView::indicator {
+WLibrary QTableView::indicator {
   /* border is added to configured size */
   border: 1px solid transparent;
   margin: 0px;
   padding: 0px;
   }
-  #LibraryContainer QTableView::indicator:unchecked {
+  WLibrary QTableView::indicator:unchecked {
     border: 1px solid rgba(151,151,151,128);
   }
 
@@ -2584,7 +2590,6 @@ WTrackTableView {
 WLibrary QLineEdit,
 #LibraryBPMSpinBox {
   color: #ddd;
-  background-color: #0f0f0f;
   selection-color: #000;
   selection-background-color: #ccc;
   border: 1px solid #2c454f;
@@ -2721,7 +2726,6 @@ WEffectSelector QAbstractScrollArea QScrollBar::corner {
 /*********** library search bar *********************************/
 WSearchLineEdit {
   padding: 2px;
-  background-color: #0f0f0f;
   selection-color: #000;
   selection-background-color: #ccc;
   }
@@ -2806,7 +2810,7 @@ WLibrary QRadioButton::indicator:unchecked {
   }
 /* add margin to compensate for frameless library table */
 #LibraryFeatureControls QPushButton,
-#fadeModeCombobox,
+/* #fadeModeCombobox set below */
 #spinBoxTransition {
   margin-top: 4px;
   }
@@ -2866,15 +2870,16 @@ WLibrary QRadioButton::indicator:unchecked {
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/
 QToolTip,
-#LibraryContainer QMenu,
+WLibrarySidebar QMenu,
+WLibrary QHeaderView QMenu,
+QTextBrowser QMenu,
 WTrackMenu,
 WTrackMenu QMenu,
-WEffectSelector QAbstractScrollArea,
-#fadeModeCombobox QAbstractScrollArea,
-WBeatSpinBox QMenu,
+QLineEdit QMenu,
 WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCoverArtMenu {
+WCoverArtMenu,
+WEffectSelector QAbstractScrollArea,
+#fadeModeCombobox QAbstractScrollArea {
   padding: 3px;
   border: 1px solid #333;
   border-radius: 1px;
@@ -2885,83 +2890,64 @@ WCoverArtMenu {
   border-radius: 1px;
 }
 
-#SkinContainer {
-  background-color: #080808;
-}
-#LibraryContainer QTableView,
-#LibraryContainer QTextBrowser,
-#LibraryContainer QTreeView,
-#SkinSettings,
-WSearchLineEdit,
-#spinBoxTransition {
-  background-color: #0f0f0f;
-}
-
+QToolTip,
 #MainMenu,
 #MainMenu::item,
 #MainMenu QMenu,
 #MainMenu QMenu::item,
 #MainMenu QMenu QCheckBox,
-#LibraryContainer QMenu,
-#LibraryContainer QMenu::item,
-#LibraryContainer QMenu QCheckBox,
+WLibrarySidebar QMenu,
+WLibrarySidebar QMenu::item,
+WLibrary QHeaderView QMenu,
+WLibrary QHeaderView QMenu::item,
+QTextBrowser QMenu,
+QTextBrowser QMenu::item,
 WTrackMenu,
-WTrackMenu QMenu,
 WTrackMenu::item,
+WTrackMenu QMenu,
 WTrackMenu QMenu::item,
 WTrackMenu QMenu QCheckBox,
-QToolTip,
-WBeatSpinBox QMenu,
-WBeatSpinBox QMenu::item,
-WCueMenuPopup,
-WCueMenuPopup QMenu,
-WCueMenuPopup QMenu::item,
-WCueMenuPopup QLabel,
+QLineEdit QMenu,
+QLineEdit QMenu::item,
 WCoverArtMenu,
 WCoverArtMenu::item,
+WCueMenuPopup,
+WCueMenuPopup QLabel,
 WEffectSelector QAbstractScrollArea,
 WEffectSelector::item,
 #fadeModeCombobox QAbstractScrollArea,
 #fadeModeCombobox::item {
   background-color: #151517;
 }
-  /* hovered items */
-  #MainMenu::item:selected,
-  #MainMenu QMenu::item:selected,
-  #MainMenu QMenu::item:focus,
-  #MainMenu QMenu::item:hover,
-  #MainMenu QMenu::indicator:checked:selected,
-  #MainMenu QMenu::indicator:unchecked:selected,
-  #LibraryContainer QMenu::item:selected,
-  #LibraryContainer QMenu QCheckBox:selected,
-  #LibraryContainer QMenu QCheckBox:focus,  /* selected by keyboard */
-  #LibraryContainer QMenu QCheckBox:hover, /* mouse hover */
-  WTrackMenu::item:selected,
-  WTrackMenu QMenu::item:selected,
-  WTrackMenu QMenu QCheckBox:selected,
-  WTrackMenu QMenu QCheckBox:focus,
-  WTrackMenu QMenu QCheckBox:hover,
-  #fadeModeCombobox::item:selected,
-  WEffectSelector::item:selected,
-  WBeatSpinBox QMenu::item:selected,
-  WCueMenuPopup QMenu::item:selected,
-  WCoverArtMenu::item:selected,
-  #SkinSettingsButton[hover="true"],
-  #SkinSettingsNumToggle[hover="true"],
-  #SkinSettingsNumToggleHeader[hover="true"],
-  #SkinSettingsMixerToggle[hover="true"],
-  #SkinSettingsLabelButton[hover="true"] {
-    background-color: #2c454f;
-    border-radius: 1px;
-    color: #fff;
-    /* remove OS focus indicator */
-    outline: none;
-  }
-  /* remove OS focus indicator from some buttons */
-  WLibrary QCheckBox,
-  #LibraryBPMButton::item:selected,
-  WCueMenuPopup QPushButton:focus {
-    outline: none;
+/* hovered items */
+#MainMenu::item:selected,
+#MainMenu QMenu::item:selected,
+#MainMenu QMenu::item:focus,
+#MainMenu QMenu::item:hover,
+#MainMenu QMenu::indicator:checked:selected,
+/* ::indicator:!checked won't work. use 'unchecked' */
+#MainMenu QMenu::indicator:unchecked:selected,
+WLibrarySidebar QMenu::item:selected,
+WLibrary QHeaderView QMenu::item:selected,
+WTrackMenu::item:selected,
+WTrackMenu QMenu::item:selected,
+WTrackMenu QMenu QCheckBox:selected,
+WTrackMenu QMenu QCheckBox:focus,
+WTrackMenu QMenu QCheckBox:hover,
+QLineEdit QMenu::item:selected,
+WCoverArtMenu::item:selected,
+#fadeModeCombobox::item:selected,
+WEffectSelector::item:selected,
+#SkinSettingsButton[hover="true"],
+#SkinSettingsNumToggle[hover="true"],
+#SkinSettingsNumToggleHeader[hover="true"],
+#SkinSettingsMixerToggle[hover="true"],
+#SkinSettingsLabelButton[hover="true"] {
+  background-color: #2c454f;
+  border-radius: 1px;
+  color: #fff;
+  /* remove OS focus indicator */
+  outline: none;
   }
   /* hover over checked effect */
   WEffectSelector::item:checked:selected,
@@ -2969,57 +2955,43 @@ WEffectSelector::item,
   #fadeModeCombobox::item:checked:selected {
     background-color: #2f2f2f;
     color: #fff;
-    }
-  /* disabled items */
-  #MainMenu QMenu::item:disabled,
-  #MainMenu QMenu QCheckBox:disabled,
-  #LibraryContainer QMenu::item:disabled,
-  #LibraryContainer QMenu QCheckBox:disabled,
-  WTrackMenu::item:disabled,
-  WTrackMenu QMenu::item:disabled,
-  WTrackMenu QMenu QCheckBox:disabled,
-  WEffectSelector::item:disabled,
-  #fadeModeCombobox::item:disabled,
-  WBeatSpinBox QMenu::item:disabled,
-  WCueMenuPopup QMenu::item:disabled,
-  WCoverArtMenu::item:disabled {
-    color: #555;
   }
+  /* remove OS focus indicator from some buttons */
+  WLibrary QCheckBox:focus,
+  #LibraryBPMButton::item:selected,
+  WCueMenuPopup QPushButton:focus {
+    outline: none;
+  }
+/* disabled items */
+#MainMenu QMenu::item:disabled,
+#MainMenu QMenu QCheckBox:disabled,
+WTrackMenu::item:disabled,
+WTrackMenu QMenu::item:disabled,
+WTrackMenu QMenu QCheckBox:disabled,
+QLineEdit QMenu::item:disabled {
+  color: #494949;
+}
 
-WEffectSelector,
-#fadeModeCombobox {
-  /* The 3D frame on the combo box becomes flat when you give it a border
-  border-radius: 3px; */
-  }
-  WEffectSelector:!editable,
-  WEffectSelector:!editable:on {
-    /* If you use margin top/bottom 0, the combo box shrinks in width (go figure) and
-        names start getting cut off. Adding explicit padding improves this. */
-    padding: 3px 0px 1px 5px;
-    margin: 0px;
-  }
-  #fadeModeCombobox:!editable,
-  #fadeModeCombobox:!editable:on {
-    min-height: 17px;
-    max-height: 17px;
-    padding: 1px 0px 1px 5px;
-    margin: 4px 1px 4px 1px;
-  }
-  WEffectSelector::down-arrow,
-  #fadeModeCombobox::down-arrow {
-    image: url(skin:/palemoon/buttons/btn__fx_selector_down.svg);
-  }
-
-  #MainMenu QMenu:separator,
+  #MainMenu QMenu::separator,
   #LibraryContainer QMenu::separator,
   WTrackMenu::separator,
   WTrackMenu QMenu::separator,
-  WCueMenuPopup QMenu::separator,
-  WBeatSpinBox QMenu::separator,
+  QLineEdit QMenu::separator,
   #SkinSettingsSeparator {
     border-top: 1px solid #000;
     border-bottom: 1px solid #222;
+  }
+
+  #MainMenu QMenu::right-arrow,
+  WTrackMenu::right-arrow,
+  WTrackMenu QMenu::right-arrow {
+    image: url(skin:/palemoon/style/menu_arrow_ivory.svg);
     }
+  #MainMenu QMenu::right-arrow:selected,
+  WTrackMenu::right-arrow:selected,
+  WTrackMenu QMenu::right-arrow:selected {
+    image: url(skin:/palemoon/style/menu_arrow_white.svg);
+  }
 
   #MainMenu QMenu::indicator:checked,
   #MainMenu QMenu::indicator:checked:selected {
@@ -3029,12 +3001,13 @@ WEffectSelector,
     #MainMenu QMenu::indicator:unchecked:selected {
       image: url(skin:/palemoon/buttons/btn__menu_checkbox.svg);
     }
-  #LibraryContainer QMenu QCheckBox::indicator:checked,
-  #LibraryContainer QMenu::indicator:checked,
-  #LibraryContainer QTableView::indicator:checked,
+
+  WLibrarySidebar QMenu::indicator:checked,
+  WLibrary QHeaderView QMenu::indicator:checked,
+  WLibrary QTableView::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked,
-  WTrackMenu QMenu::indicator:checked,
-  WCueMenuPopup QMenu::indicator:checked {
+  WEffectSelector::indicator:checked,
+  #fadeModeCombobox::indicator:checked {
     image: url(skin:/palemoon/buttons/btn__lib_checkmark_blue.svg);
   }
   WEffectSelector::indicator:checked,
@@ -3045,68 +3018,38 @@ WEffectSelector,
     margin-left: 4px;
   }
   /* disabled menu item and checkbox */
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked,
-  #LibraryContainer QMenu QCheckBox::indicator:indeterminate,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled:checked,
+  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
+  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
   WTrackMenu QMenu QCheckBox::indicator:indeterminate {
-    image: url(skin:/palemoon/buttons/btn__lib_checkmark_grey.svg);
-    }
-  /* explicitly remove icon from unchecked items */
-  #LibraryContainer QMenu::indicator:unchecked,
-  #LibraryContainer QMenu::indicator:unchecked:selected,
-  #LibraryContainer QTableView::indicator:unchecked,
-  #LibraryContainer QTableView::indicator:unchecked:selected,
-  WEffectSelector::indicator:unchecked,
-  WEffectSelector::indicator:unchecked:selected,
-  #fadeModeCombobox::indicator:unchecked,
-  #fadeModeCombobox::indicator:unchecked:selected {
-    image: none;
-  }
-
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked,
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled:unchecked,
-  #LibraryContainer QMenu QCheckBox::indicator:indeterminate,
-  #LibraryContainer QMenu::indicator:!enabled:unchecked,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled:unchecked,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled:checked,
-  WTrackMenu QMenu QCheckBox::indicator:indeterminate,
-  WCueMenuPopup QMenu::indicator:!enabled:unchecked {
     background-color: #222;
-    }
-
-  #MainMenu::item:!enabled,
-  #MainMenu QMenu::item:!enabled,
-  #LibraryContainer QMenu::item:!enabled,
-  #LibraryContainer QMenu QCheckBox:!enabled,
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled,
-  WTrackMenu::item:!enabled,
-  WTrackMenu QMenu::item:!enabled,
-  WTrackMenu QMenu QCheckBox:!enabled,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled,
-  WCueMenuPopup QMenu::item:!enabled,
-  WCoverArtMenu::item:!enabled {
-    color: #494949;
-    }
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled:checked,
-  #LibraryContainer QMenu QCheckBox::indicator:!enabled:unchecked,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled:checked,
-  WTrackMenu QMenu QCheckBox::indicator:!enabled:unchecked,
-  WCueMenuPopup QMenu::indicator:!enabled:unchecked {
-    border: 1px solid #222;
-    }
-
-
-  #MainMenu QMenu::right-arrow,
-  #LibraryContainer QMenu::right-arrow,
-  WTrackMenu::right-arrow,
-  WTrackMenu QMenu::right-arrow {
-    image: url(skin:/palemoon/style/menu_arrow_ivory.svg);
-    }
-  #MainMenu QMenu::right-arrow:selected,
-  #LibraryContainer QMenu::right-arrow:selected,
-  WTrackMenu::right-arrow:selected,
-  WTrackMenu QMenu::right-arrow:selected {
-    image: url(skin:/palemoon/style/menu_arrow_white.svg);
   }
+  WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
+    image: url(skin:/palemoon/buttons/btn__lib_checkmark_grey.svg);
+  }
+  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
+    image: url(skin:/palemoon/buttons/btn__lib_checkmark_indeterminate_blue.svg);
+  }
+  WTrackMenu QMenu QCheckBox::indicator:disabled:indeterminate {
+    image: url(skin:/palemoon/buttons/btn__lib_checkmark_indeterminate_grey.svg);
+  }
+  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
+  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked {
+    border: 1px solid #222;
+  }
+
+/* explicitly remove icons from unchecked items otherwise
+  selected, unchecked items would have a checkmark */
+WLibrarySidebar QMenu::indicator:unchecked,
+WLibrarySidebar QMenu::indicator:unchecked:selected,
+WLibrary QHeaderView QMenu::indicator:unchecked,
+WLibrary QHeaderView QMenu::indicator:unchecked:selected,
+WLibrary QTableView::indicator:unchecked,
+WLibrary QTableView::indicator:unchecked:selected,
+WEffectSelector::indicator:unchecked,
+WEffectSelector::indicator:unchecked:selected,
+#fadeModeCombobox::indicator:unchecked,
+#fadeModeCombobox::indicator:unchecked:selected {
+  image: none;
+}
 /************** common styles for WEffectSelector ******************************
 *************** QSpinBox, QMenu, QToolTip *************************************/

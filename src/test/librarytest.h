@@ -15,12 +15,12 @@ class LibraryTest : public MixxxDbTest {
     LibraryTest();
     ~LibraryTest() override = default;
 
-    TrackCollectionManager* trackCollections() const {
+    TrackCollectionManager* trackCollectionManager() const {
         return m_pTrackCollectionManager.get();
     }
 
     TrackCollection* internalCollection() const {
-        return trackCollections()->internalCollection();
+        return trackCollectionManager()->internalCollection();
     }
 
     TrackPointer getOrAddTrackByLocation(

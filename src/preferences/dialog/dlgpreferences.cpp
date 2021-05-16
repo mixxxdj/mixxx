@@ -95,7 +95,7 @@ DlgPreferences::DlgPreferences(
     DlgPrefLibrary* plibraryPage = new DlgPrefLibrary(this, m_pConfig, pLibrary);
     connect(plibraryPage,
             &DlgPrefLibrary::scanLibrary,
-            pLibrary->trackCollections(),
+            pLibrary->trackCollectionManager(),
             &TrackCollectionManager::startLibraryScan);
     addPageWidget(PreferencesPage(plibraryPage,
                           new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type)),

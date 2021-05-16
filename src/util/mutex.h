@@ -12,9 +12,7 @@
 
 class CAPABILITY("mutex") MMutex {
   public:
-    MMutex(QMutex::RecursionMode mode = QMutex::NonRecursive)
-            : m_mutex(mode) {
-    }
+    MMutex() = default;
 
     inline void lock() ACQUIRE() { m_mutex.lock(); }
     inline void unlock() RELEASE() { m_mutex.unlock(); }

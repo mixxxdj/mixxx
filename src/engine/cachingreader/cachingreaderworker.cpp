@@ -135,17 +135,16 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
     // Emit that a new track is loading, stops the current track
     emit trackLoading();
 
-    const QString trackLocation = pTrack->getLocation();
-    if (trackLocation.isEmpty() || !pTrack->checkFileExists()) {
+    if (!pTrack->getFileInfo().checkFileExists()) {
         kLogger.warning()
                 << m_group
                 << "File not found"
-                << trackLocation;
+                << pTrack->getFileInfo();
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit trackLoadFailed(pTrack,
                 tr("The file '%1' could not be found.")
-                        .arg(QDir::toNativeSeparators(trackLocation)));
+                        .arg(QDir::toNativeSeparators(pTrack->getLocation())));
         return;
     }
 
@@ -156,12 +155,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         kLogger.warning()
                 << m_group
                 << "Failed to open file"
-                << trackLocation;
+                << pTrack->getFileInfo();
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit trackLoadFailed(pTrack,
                 tr("The file '%1' could not be loaded.")
-                        .arg(QDir::toNativeSeparators(trackLocation)));
+                        .arg(QDir::toNativeSeparators(pTrack->getLocation())));
         return;
     }
 
@@ -173,12 +172,12 @@ void CachingReaderWorker::loadTrack(const TrackPointer& pTrack) {
         kLogger.warning()
                 << m_group
                 << "Failed to open empty file"
-                << trackLocation;
+                << pTrack->getFileInfo();
         const auto update = ReaderStatusUpdate::trackUnloaded();
         m_pReaderStatusFIFO->writeBlocking(&update, 1);
         emit trackLoadFailed(pTrack,
                 tr("The file '%1' is empty and could not be loaded.")
-                        .arg(QDir::toNativeSeparators(trackLocation)));
+                        .arg(QDir::toNativeSeparators(pTrack->getLocation())));
         return;
     }
 

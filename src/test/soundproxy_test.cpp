@@ -210,10 +210,9 @@ TEST_F(SoundSourceProxyTest, openEmptyFile) {
 }
 
 TEST_F(SoundSourceProxyTest, readArtist) {
-    auto pTrack = Track::newTemporary(TrackFile(
-            kTestDir, "artist.mp3"));
+    auto pTrack = Track::newTemporary(kTestDir, "artist.mp3");
     SoundSourceProxy proxy(pTrack);
-    proxy.updateTrackFromSource();
+    EXPECT_TRUE(proxy.updateTrackFromSource());
     EXPECT_EQ("Test Artist", pTrack->getArtist());
 }
 
@@ -221,43 +220,45 @@ TEST_F(SoundSourceProxyTest, readNoTitle) {
     // We need to verify every track has at least a title to not have empty lines in the library
 
     // Test a file with no metadata
-    auto pTrack1 = Track::newTemporary(TrackFile(
-            kTestDir, "empty.mp3"));
+    auto pTrack1 = Track::newTemporary(
+            kTestDir, "empty.mp3");
     SoundSourceProxy proxy1(pTrack1);
-    proxy1.updateTrackFromSource();
+    EXPECT_TRUE(proxy1.updateTrackFromSource());
     EXPECT_EQ("empty", pTrack1->getTitle());
 
     // Test a reload also works
     pTrack1->setTitle("");
-    proxy1.updateTrackFromSource(SoundSourceProxy::ImportTrackMetadataMode::Again);
+    EXPECT_TRUE(proxy1.updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Again));
     EXPECT_EQ("empty", pTrack1->getTitle());
 
     // Test a file with other metadata but no title
-    auto pTrack2 = Track::newTemporary(TrackFile(
-            kTestDir, "cover-test-png.mp3"));
+    auto pTrack2 = Track::newTemporary(
+            kTestDir, "cover-test-png.mp3");
     SoundSourceProxy proxy2(pTrack2);
-    proxy2.updateTrackFromSource();
+    EXPECT_TRUE(proxy2.updateTrackFromSource());
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a reload also works
     pTrack2->setTitle("");
-    proxy2.updateTrackFromSource(SoundSourceProxy::ImportTrackMetadataMode::Again);
+    EXPECT_TRUE(proxy2.updateTrackFromSource(
+            SoundSourceProxy::UpdateTrackFromSourceMode::Again));
     EXPECT_EQ("cover-test-png", pTrack2->getTitle());
 
     // Test a file with a title
-    auto pTrack3 = Track::newTemporary(TrackFile(
-            kTestDir, "cover-test-jpg.mp3"));
+    auto pTrack3 = Track::newTemporary(
+            kTestDir, "cover-test-jpg.mp3");
     SoundSourceProxy proxy3(pTrack3);
-    proxy3.updateTrackFromSource();
+    EXPECT_TRUE(proxy3.updateTrackFromSource());
     EXPECT_EQ("test22kMono", pTrack3->getTitle());
 }
 
 TEST_F(SoundSourceProxyTest, TOAL_TPE2) {
-    auto pTrack = Track::newTemporary(TrackFile(
-            kTestDir, "TOAL_TPE2.mp3"));
+    auto pTrack = Track::newTemporary(kTestDir, "TOAL_TPE2.mp3");
     SoundSourceProxy proxy(pTrack);
     mixxx::TrackMetadata trackMetadata;
-    EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded, proxy.importTrackMetadata(&trackMetadata));
+    EXPECT_EQ(mixxx::MetadataSource::ImportResult::Succeeded,
+            proxy.importTrackMetadataAndCoverImage(&trackMetadata, nullptr).first);
     EXPECT_EQ("TITLE2", trackMetadata.getTrackInfo().getArtist());
     EXPECT_EQ("ARTIST", trackMetadata.getAlbumInfo().getTitle());
     EXPECT_EQ("TITLE", trackMetadata.getAlbumInfo().getArtist());

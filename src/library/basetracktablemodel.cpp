@@ -915,7 +915,7 @@ QList<QUrl> BaseTrackTableModel::collectUrls(
             continue;
         }
         visitedRows.insert(index.row());
-        QUrl url = TrackFile(getTrackLocation(index)).toUrl();
+        QUrl url = mixxx::FileInfo(getTrackLocation(index)).toQUrl();
         if (url.isValid()) {
             urls.append(url);
         }
@@ -1026,7 +1026,7 @@ void BaseTrackTableModel::emitDataChangedForMultipleRowsInColumn(
 
 TrackPointer BaseTrackTableModel::getTrackByRef(
         const TrackRef& trackRef) const {
-    return m_pTrackCollectionManager->internalCollection()->getTrackByRef(trackRef);
+    return m_pTrackCollectionManager->getTrackByRef(trackRef);
 }
 
 TrackId BaseTrackTableModel::doGetTrackId(

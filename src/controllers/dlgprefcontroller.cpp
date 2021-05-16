@@ -18,7 +18,7 @@
 #include "defs_urls.h"
 #include "moc_dlgprefcontroller.cpp"
 #include "preferences/usersettings.h"
-#include "util/version.h"
+#include "util/versionstore.h"
 
 namespace {
 const QString kMappingExt(".midi.xml");

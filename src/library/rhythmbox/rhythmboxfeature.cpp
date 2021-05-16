@@ -46,23 +46,26 @@ RhythmboxFeature::RhythmboxFeature(Library* pLibrary, UserSettingsPointer pConfi
                   << "genre";
     m_trackSource->setSearchColumns(searchColumns);
 
-    m_pRhythmboxTrackModel = new BaseExternalTrackModel(
-        this, pLibrary->trackCollections(),
-        "mixxx.db.model.rhythmbox",
-        "rhythmbox_library",
-        m_trackSource);
-    m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(
-        this, pLibrary->trackCollections(),
-        "mixxx.db.model.rhythmbox_playlist",
-        "rhythmbox_playlists",
-        "rhythmbox_playlist_tracks",
-        m_trackSource);
+    m_pRhythmboxTrackModel = new BaseExternalTrackModel(this,
+            pLibrary->trackCollectionManager(),
+            "mixxx.db.model.rhythmbox",
+            "rhythmbox_library",
+            m_trackSource);
+    m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(this,
+            pLibrary->trackCollectionManager(),
+            "mixxx.db.model.rhythmbox_playlist",
+            "rhythmbox_playlists",
+            "rhythmbox_playlist_tracks",
+            m_trackSource);
 
     m_isActivated =  false;
     m_title = tr("Rhythmbox");
 
-    m_database = QSqlDatabase::cloneDatabase(pLibrary->trackCollections()->internalCollection()->database(),
-                                             "RHYTHMBOX_SCANNER");
+    m_database =
+            QSqlDatabase::cloneDatabase(pLibrary->trackCollectionManager()
+                                                ->internalCollection()
+                                                ->database(),
+                    "RHYTHMBOX_SCANNER");
 
     //Open the database connection in this thread.
     if (!m_database.open()) {
@@ -86,12 +89,12 @@ RhythmboxFeature::~RhythmboxFeature() {
 }
 
 BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(const QString& playlist) {
-    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
-                                            this, m_pLibrary->trackCollections(),
-                                            "mixxx.db.model.rhythmbox_playlist",
-                                            "rhythmbox_playlists",
-                                            "rhythmbox_playlist_tracks",
-                                            m_trackSource);
+    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(this,
+            m_pLibrary->trackCollectionManager(),
+            "mixxx.db.model.rhythmbox_playlist",
+            "rhythmbox_playlists",
+            "rhythmbox_playlist_tracks",
+            m_trackSource);
     pModel->setPlaylist(playlist);
     return pModel;
 }
@@ -150,7 +153,8 @@ TreeItem* RhythmboxFeature::importMusicCollection() {
         }
     }
 
-    if (!Sandbox::askForAccess(QFileInfo(db).absoluteFilePath()) ||
+    mixxx::FileInfo fileInfo(db);
+    if (!Sandbox::askForAccess(&fileInfo) ||
             !db.open(QIODevice::ReadOnly)) {
         return nullptr;
     }
@@ -331,8 +335,8 @@ void RhythmboxFeature::importTrack(QXmlStreamReader &xml, QSqlQuery &query) {
         }
     }
 
-    const auto trackFile = TrackFile::fromUrl(locationUrl);
-    QString location = trackFile.location();
+    const auto fileInfo = mixxx::FileInfo::fromQUrl(locationUrl);
+    QString location = fileInfo.location();
     if (location.isEmpty()) {
         // here in case of smb:// location
         // TODO(XXX) QUrl does not support SMB:// locations does Mixxx?
@@ -371,13 +375,13 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
         //read next XML element
         xml.readNext();
         if (xml.isStartElement() && xml.name() == "location") {
-            const auto trackFile = TrackFile::fromUrl(xml.readElementText());
+            const auto fileInfo = mixxx::FileInfo::fromQUrl(xml.readElementText());
 
             //get the ID of the file in the rhythmbox_library table
             int track_id = -1;
             QSqlQuery finder_query(m_database);
             finder_query.prepare("select id from rhythmbox_library where location=:path");
-            finder_query.bindValue(":path", trackFile.location());
+            finder_query.bindValue(":path", fileInfo.location());
             bool success = finder_query.exec();
 
             if (success) {

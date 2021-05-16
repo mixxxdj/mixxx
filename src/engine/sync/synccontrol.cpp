@@ -7,13 +7,12 @@
 #include "engine/controls/bpmcontrol.h"
 #include "engine/controls/ratecontrol.h"
 #include "engine/enginebuffer.h"
+#include "engine/enginemaster.h"
 #include "moc_synccontrol.cpp"
 #include "track/track.h"
 #include "util/assert.h"
 #include "util/logger.h"
 #include "util/math.h"
-
-const double kTrackPositionMasterHandoff = 0.99;
 
 const double SyncControl::kBpmUnity = 1.0;
 const double SyncControl::kBpmHalve = 0.5;
@@ -54,6 +53,7 @@ SyncControl::SyncControl(const QString& group, UserSettingsPointer pConfig,
     m_pSyncMasterEnabled.reset(
             new ControlPushButton(ConfigKey(group, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSyncMasterEnabled->setStates(3);
     m_pSyncMasterEnabled->connectValueChangeRequest(
             this, &SyncControl::slotSyncMasterEnabledChangeRequest, Qt::DirectConnection);
 
@@ -125,7 +125,7 @@ void SyncControl::setSyncMode(SyncMode mode) {
     // requires. Bypass confirmation by using setAndConfirm.
     m_pSyncMode->setAndConfirm(mode);
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
-    m_pSyncMasterEnabled->setAndConfirm(isMaster(mode));
+    m_pSyncMasterEnabled->setAndConfirm(SyncModeToMasterLight(mode));
     if (mode == SYNC_FOLLOWER) {
         if (m_pVCEnabled && m_pVCEnabled->toBool()) {
             // If follower mode is enabled, disable vinyl control.
@@ -140,9 +140,7 @@ void SyncControl::setSyncMode(SyncMode mode) {
                       "must disable passthrough";
         m_pPassthroughEnabled->set(0.0);
     }
-    if (isMaster(mode)) {
-        m_pBpmControl->resetSyncAdjustment();
-    } else if (mode == SYNC_NONE) {
+    if (mode == SYNC_NONE) {
         m_masterBpmAdjustFactor = kBpmUnity;
     }
 }
@@ -169,6 +167,10 @@ void SyncControl::requestSync() {
 
 bool SyncControl::isPlaying() const {
     return m_pPlayButton->toBool();
+}
+
+bool SyncControl::isAudible() const {
+    return m_audible;
 }
 
 double SyncControl::adjustSyncBeatDistance(double beatDistance) const {
@@ -309,15 +311,6 @@ void SyncControl::setInstantaneousBpm(double bpm) {
     m_pBpmControl->setInstantaneousBpm(bpm * m_masterBpmAdjustFactor);
 }
 
-void SyncControl::reportTrackPosition(double fractionalPlaypos) {
-    // If we're close to the end, and master, disable master so we don't stop
-    // the party.
-    if (isMaster(getSyncMode()) &&
-            fractionalPlaypos > kTrackPositionMasterHandoff) {
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
-    }
-}
-
 // called from an engine worker thread
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
     mixxx::BeatsPointer pBeats;
@@ -343,20 +336,30 @@ void SyncControl::trackBeatsUpdated(mixxx::BeatsPointer pBeats) {
     m_masterBpmAdjustFactor = kBpmUnity;
 
     SyncMode syncMode = getSyncMode();
-    if (syncMode == SYNC_MASTER_SOFT || syncMode == SYNC_FOLLOWER) {
-        // If we change or remove beats while soft master, hand off.
+    if (isMaster(syncMode)) {
+        if (!m_pBeats) {
+            // If the track was ejected or suddenly has no beats, we can no longer
+            // be master.
+            m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+        } else {
+            // We are remaining master, so notify the engine with our update.
+            m_pBpmControl->updateLocalBpm();
+            m_pEngineSync->notifyBaseBpmChanged(this, getBaseBpm());
+        }
+    } else if (isFollower(syncMode)) {
         // If we were a follower, requesting sync mode refreshes
-        // the soft master.
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+        // the soft master -- if we went from having no bpm to having
+        // a bpm, we might need to become master.
+        m_pChannel->getEngineBuffer()->requestSyncMode(syncMode);
+        m_pBpmControl->updateLocalBpm();
     }
-    setLocalBpm(m_pLocalBpm->get());
 }
 
 void SyncControl::slotControlPlay(double play) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "SyncControl::slotControlPlay" << getSyncMode() << play;
     }
-    m_pEngineSync->notifyPlaying(this, play > 0.0);
+    m_pEngineSync->notifyPlayingAudible(this, play > 0.0 && m_audible);
 }
 
 void SyncControl::slotVinylControlChanged(double enabled) {
@@ -391,15 +394,6 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
     }
     SyncMode mode = getSyncMode();
     if (state > 0.0) {
-        if (mode == SYNC_MASTER_EXPLICIT) {
-            // Already master.
-            return;
-        }
-        if (mode == SYNC_MASTER_SOFT) {
-            // user request: make master explicit
-            m_pSyncMode->setAndConfirm(SYNC_MASTER_EXPLICIT);
-            return;
-        }
         if (m_pPassthroughEnabled->toBool()) {
             qDebug() << "Disallowing enabling of sync mode when passthrough active";
             return;
@@ -407,11 +401,16 @@ void SyncControl::slotSyncMasterEnabledChangeRequest(double state) {
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_MASTER_EXPLICIT);
     } else {
         // Turning off master goes back to follower mode.
-        if (mode == SYNC_FOLLOWER) {
-            // Already not master.
+        switch (mode) {
+        case SYNC_MASTER_EXPLICIT:
+            m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_MASTER_SOFT);
+            break;
+        case SYNC_MASTER_SOFT:
+            m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+            break;
+        default:
             return;
         }
-        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
 }
 
@@ -457,6 +456,18 @@ void SyncControl::setLocalBpm(double local_bpm) {
     }
 }
 
+void SyncControl::updateAudible() {
+    int channelIndex = m_pChannel->getChannelIndex();
+    if (channelIndex >= 0) {
+        CSAMPLE_GAIN gain = getEngineMaster()->getMasterGain(channelIndex);
+        bool newAudible = gain > CSAMPLE_GAIN_ZERO;
+        if (m_audible != newAudible) {
+            m_audible = newAudible;
+            m_pEngineSync->notifyPlayingAudible(this, m_pPlayButton->toBool() && m_audible);
+        }
+    }
+}
+
 void SyncControl::slotRateChanged() {
     double bpm = m_pLocalBpm ? m_pLocalBpm->get() * m_pRateRatio->get() : 0.0;
     if (kLogger.traceEnabled()) {
@@ -465,7 +476,7 @@ void SyncControl::slotRateChanged() {
     if (bpm > 0 && isSynchronized()) {
         // When reporting our bpm, remove the multiplier so the masters all
         // think the followers have the same bpm.
-        m_pEngineSync->notifyBaseBpmChanged(this, bpm / m_masterBpmAdjustFactor);
+        m_pEngineSync->notifyRateChanged(this, bpm / m_masterBpmAdjustFactor);
     }
 }
 

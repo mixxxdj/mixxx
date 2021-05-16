@@ -15,7 +15,8 @@ EngineChannel::EngineChannel(const ChannelHandleAndGroup& handleGroup,
           m_pSampleRate(new ControlProxy("[Master]", "samplerate")),
           m_sampleBuffer(nullptr),
           m_bIsPrimaryDeck(isPrimaryDeck),
-          m_bIsTalkoverChannel(isTalkoverChannel) {
+          m_bIsTalkoverChannel(isTalkoverChannel),
+          m_channelIndex(-1) {
     m_pPFL = new ControlPushButton(ConfigKey(getGroup(), "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
     m_pMaster = new ControlPushButton(ConfigKey(getGroup(), "master"));

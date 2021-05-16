@@ -12,6 +12,7 @@
 #include "preferences/colorpalettesettings.h"
 #include "sources/soundsourceproxy.h"
 #include "track/beatfactory.h"
+#include "track/beatutils.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "track/track.h"
@@ -24,13 +25,15 @@
 #include "widget/wstarrating.h"
 
 namespace {
+
+constexpr double kBpmTabRounding = 1 / 12.0;
 constexpr int kFilterLength = 80;
 constexpr int kMinBpm = 30;
-} // namespace
-
 // Maximum allowed interval between beats (calculated from kMinBpm).
 const mixxx::Duration kMaxInterval = mixxx::Duration::fromMillis(
         static_cast<qint64>(1000.0 * (60.0 / kMinBpm)));
+
+} // namespace
 
 DlgTrackInfo::DlgTrackInfo(
         const TrackModel* trackModel)
@@ -545,7 +548,9 @@ void DlgTrackInfo::slotBpmTap(double averageLength, int numSamples) {
         return;
     }
     double averageBpm = 60.0 * 1000.0 / averageLength;
-    // average bpm needs to be truncated for this comparison:
+    averageBpm = BeatUtils::roundBpmWithinRange(averageBpm - kBpmTabRounding,
+            averageBpm,
+            averageBpm + kBpmTabRounding);
     if (averageBpm != m_dLastTapedBpm) {
         m_dLastTapedBpm = averageBpm;
         spinBpm->setValue(averageBpm);
@@ -601,17 +606,32 @@ void DlgTrackInfo::slotKeyTextChanged() {
 }
 
 void DlgTrackInfo::slotImportMetadataFromFile() {
-    if (m_pLoadedTrack) {
-        // Allocate a temporary track object for reading the metadata.
-        // We cannot reuse m_pLoadedTrack, because it might already been
-        // modified and we want to read fresh metadata directly from the
-        // file. Otherwise the changes in m_pLoadedTrack would be lost.
-        TrackPointer pTrack = SoundSourceProxy::importTemporaryTrack(
-                m_pLoadedTrack->getFileInfo(),
-                m_pLoadedTrack->getSecurityToken());
-        DEBUG_ASSERT(pTrack);
-        populateFields(*pTrack);
+    if (!m_pLoadedTrack) {
+        return;
     }
+    mixxx::TrackMetadata trackMetadata;
+    QImage coverImage;
+    const auto [importResult, metadataSynchronized] =
+            SoundSourceProxy(m_pLoadedTrack)
+                    .importTrackMetadataAndCoverImage(
+                            &trackMetadata, &coverImage);
+    if (importResult != mixxx::MetadataSource::ImportResult::Succeeded) {
+        return;
+    }
+    auto fileAccess = m_pLoadedTrack->getFileAccess();
+    auto guessedCoverInfo = CoverInfoGuesser().guessCoverInfo(
+            fileAccess.info(),
+            trackMetadata.getAlbumInfo().getTitle(),
+            coverImage);
+    // Allocate a temporary track object for repopulating the fields.
+    // We cannot reuse m_pLoadedTrack, because it might already been
+    // modified and we don't want to lose those changes.
+    // TODO: Populate fields from TrackRecord instead of Track
+    TrackPointer pTrack = Track::newTemporary(std::move(fileAccess));
+    DEBUG_ASSERT(pTrack);
+    pTrack->importMetadata(std::move(trackMetadata));
+    pTrack->setCoverInfo(std::move(guessedCoverInfo));
+    populateFields(*pTrack);
 }
 
 void DlgTrackInfo::slotTrackChanged(TrackId trackId) {

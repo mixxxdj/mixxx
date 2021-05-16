@@ -214,7 +214,12 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
     setHorizontalHeader(header);
     header->setSectionsMovable(true);
     header->setSectionsClickable(true);
-    header->setHighlightSections(true);
+    // Setting this to true would render all column labels BOLD as soon as the
+    // tableview is focused -- and would not restore the previous style when
+    // it's unfocused. This can not be overwritten with qss, so it can screw up
+    // the skin design. Also, due to selectionModel()->selectedRows() it is not
+    // even useful to highlight the focused column because all colmsn are highlighted.
+    header->setHighlightSections(false);
     header->setSortIndicatorShown(m_sorting);
     header->setDefaultAlignment(Qt::AlignLeft);
 
@@ -682,19 +687,6 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         // clears them)
         this->selectionModel()->clear();
 
-        // Add all the dropped URLs/tracks to the track model (playlist/crate)
-        QList<TrackFile> trackFiles = DragAndDropHelper::supportedTracksFromUrls(
-            event->mimeData()->urls(), false, true);
-
-        QList<QString> fileLocationList;
-        for (const TrackFile& trackFile : trackFiles) {
-            fileLocationList.append(trackFile.location());
-        }
-
-        // Drag-and-drop from an external application
-        // eg. dragging a track from Windows Explorer onto the track table.
-        int numNewRows = fileLocationList.count();
-
         // Have to do this here because the index is invalid after
         // addTrack
         int selectionStartRow = destIndex.row();
@@ -714,11 +706,21 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
             selectionStartRow = model()->rowCount();
         }
 
-        // calling the addTracks returns number of failed additions
-        int tracksAdded = trackModel->addTracks(destIndex, fileLocationList);
-
-        // Decrement # of rows to select if some were skipped
-        numNewRows -= (fileLocationList.size() - tracksAdded);
+        // Add all the dropped URLs/tracks to the track model (playlist/crate)
+        int numNewRows;
+        {
+            const QList<mixxx::FileInfo> trackFileInfos =
+                    DragAndDropHelper::supportedTracksFromUrls(
+                            event->mimeData()->urls(), false, true);
+            QList<QString> trackLocations;
+            trackLocations.reserve(trackFileInfos.size());
+            for (const auto& fileInfo : trackFileInfos) {
+                trackLocations.append(fileInfo.location());
+            }
+            numNewRows = trackModel->addTracks(destIndex, trackLocations);
+            DEBUG_ASSERT(numNewRows >= 0);
+            DEBUG_ASSERT(numNewRows <= trackFileInfos.size());
+        }
 
         // Create the selection, but only if the track model supports
         // reordering. (eg. crates don't support reordering/indexes)
@@ -849,12 +851,12 @@ void WTrackTableView::addToAutoDJ(PlaylistDAO::AutoDJSendLoc loc) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pLibrary->trackCollections()
+    PlaylistDAO& playlistDao = m_pLibrary->trackCollectionManager()
                                        ->internalCollection()
                                        ->getPlaylistDAO();
 
     // TODO(XXX): Care whether the append succeeded.
-    m_pLibrary->trackCollections()->unhideTracks(trackIds);
+    m_pLibrary->trackCollectionManager()->unhideTracks(trackIds);
     playlistDao.addTracksToAutoDJQueue(trackIds, loc);
 }
 

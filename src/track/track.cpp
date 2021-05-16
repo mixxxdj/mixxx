@@ -23,16 +23,6 @@ const ConfigKey kConfigKeySeratoMetadataExport("[Library]", "SeratoMetadataExpor
 // memory leaks.
 std::atomic<int> s_numberOfInstances;
 
-SecurityTokenPointer openSecurityToken(
-        const TrackFile& trackFile,
-        SecurityTokenPointer pSecurityToken = SecurityTokenPointer()) {
-    if (pSecurityToken.isNull()) {
-        return Sandbox::openSecurityToken(trackFile.asFileInfo(), true);
-    } else {
-        return pSecurityToken;
-    }
-}
-
 template<typename T>
 inline bool compareAndSet(T* pField, const T& value) {
     if (*pField != value) {
@@ -58,12 +48,13 @@ inline mixxx::Bpm getBeatsPointerBpm(
 const QString Track::kArtistTitleSeparator = QStringLiteral(" - ");
 
 Track::Track(
-        TrackFile fileInfo,
-        SecurityTokenPointer pSecurityToken,
+        mixxx::FileAccess fileAccess,
         TrackId trackId)
-        : m_qMutex(QMutex::Recursive),
-          m_fileInfo(std::move(fileInfo)),
-          m_pSecurityToken(openSecurityToken(m_fileInfo, std::move(pSecurityToken))),
+        :
+#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+          m_qMutex(QMutex::Recursive),
+#endif
+          m_fileAccess(std::move(fileAccess)),
           m_record(trackId),
           m_bDirty(false),
           m_bMarkedForMetadataExport(false) {
@@ -102,29 +93,24 @@ Track::~Track() {
 
 //static
 TrackPointer Track::newTemporary(
-        TrackFile fileInfo,
-        SecurityTokenPointer pSecurityToken) {
+        mixxx::FileAccess fileAccess) {
     return std::make_shared<Track>(
-            std::move(fileInfo),
-            std::move(pSecurityToken));
+            std::move(fileAccess));
 }
 
 //static
 TrackPointer Track::newDummy(
-        TrackFile fileInfo,
+        const QString& filePath,
         TrackId trackId) {
     return std::make_shared<Track>(
-            std::move(fileInfo),
-            SecurityTokenPointer(),
+            mixxx::FileAccess(mixxx::FileInfo(filePath)),
             trackId);
 }
 
 void Track::relocate(
-        TrackFile fileInfo,
-        SecurityTokenPointer pSecurityToken) {
+        mixxx::FileAccess fileAccess) {
     QMutexLocker lock(&m_qMutex);
-    m_pSecurityToken = openSecurityToken(fileInfo, std::move(pSecurityToken));
-    m_fileInfo = std::move(fileInfo);
+    m_fileAccess = std::move(fileAccess);
     // The track does not need to be marked as dirty,
     // because this function will always be called with
     // the updated location from the database.
@@ -241,39 +227,34 @@ void Track::importMetadata(
     }
 }
 
-void Track::mergeImportedMetadata(
+bool Track::mergeImportedMetadata(
         const mixxx::TrackMetadata& importedMetadata) {
     QMutexLocker lock(&m_qMutex);
-    if (m_record.mergeImportedMetadata(importedMetadata)) {
-        markDirtyAndUnlock(&lock);
+    if (!m_record.mergeImportedMetadata(importedMetadata)) {
+        // Not modified
+        return false;
     }
+    markDirtyAndUnlock(&lock);
+    // Modified
+    return true;
 }
 
-void Track::readTrackMetadata(
-        mixxx::TrackMetadata* pTrackMetadata,
+mixxx::TrackMetadata Track::getMetadata(
         bool* pMetadataSynchronized) const {
-    DEBUG_ASSERT(pTrackMetadata);
-    QMutexLocker lock(&m_qMutex);
-    *pTrackMetadata = m_record.getMetadata();
+    const QMutexLocker locked(&m_qMutex);
     if (pMetadataSynchronized) {
         *pMetadataSynchronized = m_record.getMetadataSynchronized();
     }
+    return m_record.getMetadata();
 }
 
-void Track::readTrackRecord(
-        mixxx::TrackRecord* pTrackRecord,
+mixxx::TrackRecord Track::getRecord(
         bool* pDirty) const {
-    DEBUG_ASSERT(pTrackRecord);
-    QMutexLocker lock(&m_qMutex);
-    *pTrackRecord = m_record;
+    const QMutexLocker locked(&m_qMutex);
     if (pDirty) {
         *pDirty = m_bDirty;
     }
-}
-
-QString Track::getCanonicalLocation() const {
-    QMutexLocker lock(&m_qMutex);
-    return /*mutable*/ m_fileInfo.freshCanonicalLocation(); // non-const
+    return m_record;
 }
 
 mixxx::ReplayGain Track::getReplayGain() const {
@@ -316,8 +297,9 @@ bool Track::trySetBpmWhileLocked(double bpmValue) {
     return false;
 }
 
-QString Track::getBpmText() const {
-    return QString("%1").arg(getBpm(), 3,'f',1);
+double Track::getBpm() const {
+    const QMutexLocker lock(&m_qMutex);
+    return getBpmWhileLocked().getValue();
 }
 
 bool Track::trySetBpm(double bpmValue) {
@@ -417,7 +399,7 @@ QString Track::getInfo() const {
     QMutexLocker lock(&m_qMutex);
     if (m_record.getMetadata().getTrackInfo().getArtist().trimmed().isEmpty()) {
         if (m_record.getMetadata().getTrackInfo().getTitle().trimmed().isEmpty()) {
-            return m_fileInfo.fileName();
+            return m_fileAccess.info().fileName();
         } else {
             return m_record.getMetadata().getTrackInfo().getTitle();
         }
@@ -432,7 +414,7 @@ QString Track::getTitleInfo() const {
     QMutexLocker lock(&m_qMutex);
     if (m_record.getMetadata().getTrackInfo().getArtist().trimmed().isEmpty() &&
             m_record.getMetadata().getTrackInfo().getTitle().trimmed().isEmpty()) {
-        return m_fileInfo.fileName();
+        return m_fileAccess.info().fileName();
     } else {
         return m_record.getMetadata().getTrackInfo().getTitle();
     }
@@ -472,19 +454,18 @@ void Track::setDuration(double duration) {
     setDuration(mixxx::Duration::fromSeconds(duration));
 }
 
-double Track::getDuration(DurationRounding rounding) const {
+double Track::getDuration() const {
     QMutexLocker lock(&m_qMutex);
-    const auto durationSeconds =
-            m_record.getMetadata().getStreamInfo().getDuration().toDoubleSeconds();
-    switch (rounding) {
-    case DurationRounding::SECONDS:
-        return std::round(durationSeconds);
-    default:
-        return durationSeconds;
-    }
+    return m_record.getMetadata().getStreamInfo().getDuration().toDoubleSeconds();
 }
 
-QString Track::getDurationText(mixxx::Duration::Precision precision) const {
+int Track::getDurationSecondsInt() const {
+    QMutexLocker lock(&m_qMutex);
+    return static_cast<int>(m_record.getMetadata().getDurationSecondsRounded());
+}
+
+QString Track::getDurationText(
+        mixxx::Duration::Precision precision) const {
     QMutexLocker lock(&m_qMutex);
     return m_record.getMetadata().getDurationText(precision);
 }
@@ -1326,10 +1307,10 @@ bool Track::refreshCoverImageDigest(
     QMutexLocker lock(&m_qMutex);
     auto coverInfo = CoverInfo(
             m_record.getCoverInfo(),
-            m_fileInfo.location());
+            m_fileAccess.info().location());
     if (!coverInfo.refreshImageDigest(
                 loadedImage,
-                m_pSecurityToken)) {
+                m_fileAccess.token())) {
         return false;
     }
     if (!compareAndSet(
@@ -1339,7 +1320,7 @@ bool Track::refreshCoverImageDigest(
     }
     kLogger.info()
             << "Refreshed cover image digest"
-            << m_fileInfo.location();
+            << m_fileAccess.info().location();
     markDirtyAndUnlock(&lock);
     emit coverArtUpdated();
     return true;
@@ -1352,7 +1333,7 @@ CoverInfoRelative Track::getCoverInfo() const {
 
 CoverInfo Track::getCoverInfoWithLocation() const {
     QMutexLocker lock(&m_qMutex);
-    return CoverInfo(m_record.getCoverInfo(), m_fileInfo.location());
+    return CoverInfo(m_record.getCoverInfo(), m_fileAccess.info().location());
 }
 
 ExportTrackMetadataResult Track::exportMetadata(

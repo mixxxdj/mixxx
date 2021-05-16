@@ -32,8 +32,8 @@ BrowseFeature::BrowseFeature(
         UserSettingsPointer pConfig,
         RecordingManager* pRecordingManager)
         : LibraryFeature(pLibrary, pConfig),
-          m_pTrackCollection(pLibrary->trackCollections()->internalCollection()),
-          m_browseModel(this, pLibrary->trackCollections(), pRecordingManager),
+          m_pTrackCollection(pLibrary->trackCollectionManager()->internalCollection()),
+          m_browseModel(this, pLibrary->trackCollectionManager(), pRecordingManager),
           m_proxyModel(&m_browseModel),
           m_pLastRightClickedItem(nullptr),
           m_icon(":/images/library/ic_library_computer.svg") {
@@ -253,17 +253,18 @@ void BrowseFeature::activateChild(const QModelIndex& index) {
     } else {
         // Open a security token for this path and if we do not have access, ask
         // for it.
-        auto dir = mixxx::FileAccess(mixxx::FileInfo(path));
-        if (!dir.isReadable()) {
-            if (Sandbox::askForAccess(path)) {
+        auto dirInfo = mixxx::FileInfo(path);
+        auto dirAccess = mixxx::FileAccess(dirInfo);
+        if (!dirAccess.isReadable()) {
+            if (Sandbox::askForAccess(&dirInfo)) {
                 // Re-create to get a new token.
-                dir = mixxx::FileAccess(mixxx::FileInfo(path));
+                dirAccess = mixxx::FileAccess(dirInfo);
             } else {
                 // TODO(rryan): Activate an info page about sandboxing?
                 return;
             }
         }
-        m_browseModel.setPath(std::move(dir));
+        m_browseModel.setPath(std::move(dirAccess));
     }
     emit showTrackModel(&m_proxyModel);
     emit enableCoverArtDisplay(false);
@@ -484,13 +485,15 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     bool osDownloadsDirIncluded = false;
     bool osDesktopDirIncluded = false;
     bool osDocumentsDirIncluded = false;
-    const auto rootDirs = m_pLibrary->trackCollections()->internalCollection()->loadRootDirs();
-    for (const mixxx::FileInfo& fileInfo : rootDirs) {
-        const auto dir = fileInfo.toQDir();
+    const auto rootDirs = m_pLibrary->trackCollectionManager()
+                                  ->internalCollection()
+                                  ->loadRootDirs();
+    for (mixxx::FileInfo fileInfo : rootDirs) {
         // Skip directories we don't have permission to.
-        if (!Sandbox::canAccessDir(dir)) {
+        if (!Sandbox::canAccess(&fileInfo)) {
             continue;
         }
+        const auto dir = fileInfo.toQDir();
         if (dir == osMusicDir) {
             osMusicDirIncluded = true;
         }
@@ -515,13 +518,11 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
         result << osDownloadsDir.canonicalPath() + "/";
     }
 
-    if (!osDesktopDirIncluded &&
-            Sandbox::canAccessDir(osDesktopDir)) {
+    if (!osDesktopDirIncluded && Sandbox::canAccessDir(osDesktopDir)) {
         result << osDesktopDir.canonicalPath() + "/";
     }
 
-    if (!osDocumentsDirIncluded &&
-            Sandbox::canAccessDir(osDocumentsDir)) {
+    if (!osDocumentsDirIncluded && Sandbox::canAccessDir(osDocumentsDir)) {
         result << osDocumentsDir.canonicalPath() + "/";
     }
 

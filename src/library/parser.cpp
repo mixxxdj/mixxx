@@ -142,19 +142,19 @@ bool Parser::isUtf8(const char* string) {
     return true;
 }
 
-TrackFile Parser::playlistEntryToTrackFile(
+mixxx::FileInfo Parser::playlistEntryToFileInfo(
         const QString& playlistEntry,
         const QString& basePath) {
     if (playlistEntry.startsWith("file:")) {
         // URLs are always absolute
-        return TrackFile::fromUrl(QUrl(playlistEntry));
+        return mixxx::FileInfo::fromQUrl(QUrl(playlistEntry));
     }
     auto filePath = QString(playlistEntry).replace('\\', '/');
-    auto trackFile = TrackFile(filePath);
-    if (basePath.isEmpty() || trackFile.asFileInfo().isAbsolute()) {
+    auto trackFile = mixxx::FileInfo(filePath);
+    if (basePath.isEmpty() || trackFile.isAbsolute()) {
         return trackFile;
     } else {
         // Fallback: Relative to base path
-        return TrackFile(QDir(basePath), filePath);
+        return mixxx::FileInfo(QDir(basePath), filePath);
     }
 }

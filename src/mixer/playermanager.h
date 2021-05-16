@@ -251,7 +251,11 @@ class PlayerManager : public QObject, public PlayerManagerInterface {
     void addAuxiliaryInner();
 
     // Used to protect access to PlayerManager state across threads.
+#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
+    mutable QRecursiveMutex m_mutex;
+#else
     mutable QMutex m_mutex;
+#endif
 
     PerformanceTimer m_cloneTimer;
     QString m_lastLoadedPlayer;
