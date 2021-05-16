@@ -1157,8 +1157,6 @@ void EngineBuffer::processSeek(bool paused) {
     SeekRequests seekType = queuedSeek.seekType;
     double position = queuedSeek.position;
 
-    m_queuedSeek.setValue(kNoQueuedSeek);
-
     // Don't allow the playposition to go past the end.
     if (position > m_trackSamplesOld) {
         position = m_trackSamplesOld;
@@ -1188,7 +1186,8 @@ void EngineBuffer::processSeek(bool paused) {
             // new position was already set above
             break;
         default:
-            qWarning() << "Unhandled seek request type: " << seekType;
+            DEBUG_ASSERT(!"Unhandled seek request type");
+            m_queuedSeek.setValue(kNoQueuedSeek);
             return;
     }
 
@@ -1211,6 +1210,10 @@ void EngineBuffer::processSeek(bool paused) {
         }
         setNewPlaypos(position);
     }
+    // Reset the m_queuedSeek value after it has been processed in
+    // setNewPlaypos() so that the Engine Controls have always access to the
+    // position of the upcoming buffer cycle (used for loop cues)
+    m_queuedSeek.setValue(kNoQueuedSeek);
 }
 
 void EngineBuffer::postProcess(const int iBufferSize) {
