@@ -47,12 +47,13 @@
 namespace {
 const mixxx::Logger kLogger("EngineBuffer");
 
-const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
+constexpr double kLinearScalerElipsis =
+        1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 
-const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
+constexpr SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
 // Rate at which the playpos slider is updated
-const int kPlaypositionUpdateRate = 15; // updates per second
+constexpr int kPlaypositionUpdateRate = 15; // updates per second
 
 } // anonymous namespace
 
@@ -96,6 +97,8 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_bCrossfadeReady(false),
           m_iLastBufferSize(0) {
+    m_queuedSeek.setValue(kNoQueuedSeek);
+
     // zero out crossfade buffer
     SampleUtil::clear(m_pCrossfadeBuffer, MAX_BUFFER_LEN);
 
@@ -1154,7 +1157,7 @@ void EngineBuffer::processSeek(bool paused) {
     SeekRequests seekType = queuedSeek.seekType;
     double position = queuedSeek.position;
 
-    m_queuedSeek.setValue({-1, SEEK_NONE});
+    m_queuedSeek.setValue(kNoQueuedSeek);
 
     // Don't allow the playposition to go past the end.
     if (position > m_trackSamplesOld) {

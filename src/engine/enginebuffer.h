@@ -384,6 +384,8 @@ class EngineBuffer : public EngineObject {
     QAtomicInt m_iEnableSyncQueued;
     QAtomicInt m_iSyncModeQueued;
     ControlValueAtomic<QueuedSeek> m_queuedSeek;
+    static constexpr QueuedSeek kNoQueuedSeek = {
+            -1.0, SEEK_NONE}; // value used if no seek is queued
     QAtomicPointer<EngineChannel> m_pChannelToCloneFrom;
 
     // Is true if the previous buffer was silent due to pausing
