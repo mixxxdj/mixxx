@@ -80,8 +80,8 @@ void WLabel::setup(const QDomNode& node, const SkinContext& context) {
         } else if (elide == "none") {
             m_elideMode = Qt::ElideNone;
         } else {
-            qDebug() << "WLabel::setup(): Elide =" << elide <<
-                    "unknown, use right, middle, left or none.";
+            qDebug() << "WLabel::setup(): Elide =" << elide
+                     << "unknown, use right, middle, left or none.";
         }
     }
 }
@@ -130,7 +130,7 @@ void WLabel::resizeEvent(QResizeEvent* event) {
     setText(m_longText);
 }
 
-void WLabel::fillDebugTooltip(QStringList* debug) {
+void WLabel::fillDebugTooltip(QStringList* debug) const {
     WBaseWidget::fillDebugTooltip(debug);
     *debug << QString("Text: \"%1\"").arg(text());
 }

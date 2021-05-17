@@ -82,7 +82,7 @@ class WWidgetGroup : public QFrame, public WBaseWidget {
     void paintEvent(QPaintEvent* pe) override;
     void resizeEvent(QResizeEvent* re) override;
     bool event(QEvent* pEvent) override;
-    void fillDebugTooltip(QStringList* debug) override;
+    void fillDebugTooltip(QStringList* debug) const override;
 
   private:
     // Associated background pixmap

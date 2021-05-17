@@ -159,6 +159,28 @@ void WBaseWidget::updateTooltip() {
     }
 }
 
+void WBaseWidget::prependBaseTooltip(const QString& tooltip) {
+    if (!tooltip.isEmpty()) {
+        m_baseTooltip.prepend(tooltip);
+    } else {
+        // use CO description if any
+        QString coTooltip;
+        if (!m_connections.isEmpty()) {
+            coTooltip = m_connections.at(0)->name() + "\n" + m_connections.at(0)->description();
+        }
+        m_baseTooltip.prepend(coTooltip);
+    }
+    m_pWidget->setToolTip(m_baseTooltip);
+}
+
+QString WBaseWidget::getDefaultBaseTooltipId() const {
+    QString toolTipId;
+    if (!m_connections.isEmpty()) {
+        toolTipId = m_connections.at(0)->getKey().item;
+    }
+    return toolTipId;
+}
+
 template <>
 QString toDebugString(const QSizePolicy::Policy& policy) {
     switch (policy) {
@@ -182,7 +204,7 @@ QString toDebugString(const QSizePolicy::Policy& policy) {
     return QString::number(static_cast<int>(policy));
 }
 
-void WBaseWidget::fillDebugTooltip(QStringList* debug) {
+void WBaseWidget::fillDebugTooltip(QStringList* debug) const {
     QSizePolicy policy = m_pWidget->sizePolicy();
     *debug << QString("ClassName: %1").arg(m_pWidget->metaObject()->className())
            << QString("ObjectName: %1").arg(m_pWidget->objectName())

@@ -92,13 +92,25 @@ class ControlProxy : public QObject {
         // throws a [-Wclazy-lambda-unique-connection] warning.
         switch (requestedConnectionType) {
         case Qt::AutoConnection:
-            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedAuto, copConnection);
+            connect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    this,
+                    &ControlProxy::slotValueChangedAuto,
+                    copConnection);
             break;
         case Qt::DirectConnection:
-            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedDirect, copConnection);
+            connect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    this,
+                    &ControlProxy::slotValueChangedDirect,
+                    copConnection);
             break;
         case Qt::QueuedConnection:
-            connect(m_pControl.data(), &ControlDoublePrivate::valueChanged, this, &ControlProxy::slotValueChangedQueued, copConnection);
+            connect(m_pControl.data(),
+                    &ControlDoublePrivate::valueChanged,
+                    this,
+                    &ControlProxy::slotValueChangedQueued,
+                    copConnection);
             break;
         default:
             // Should be unreachable, but just to make sure ;-)
@@ -140,6 +152,14 @@ class ControlProxy : public QObject {
     // Returns the normalized parameter of the object. Thread safe, non-blocking.
     inline double getDefault() const {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
+    }
+
+    const QString description() const {
+        return m_pControl ? m_pControl->description() : QString();
+    }
+
+    QString name() const {
+        return m_pControl ? m_pControl->name() : QString();
     }
 
   public slots:

@@ -165,7 +165,7 @@ void WStarRating::mouseReleaseEvent(QMouseEvent* /*unused*/) {
     m_pCurrentTrack->setRating(m_starRating.starCount());
 }
 
-void WStarRating::fillDebugTooltip(QStringList* debug) {
+void WStarRating::fillDebugTooltip(QStringList* debug) const {
     WWidget::fillDebugTooltip(debug);
 
     QString currentRating = "-";

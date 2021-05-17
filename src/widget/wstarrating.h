@@ -40,7 +40,7 @@ class WStarRating : public WWidget {
     void mouseMoveEvent(QMouseEvent *event) override;
     void mouseReleaseEvent(QMouseEvent *event) override;
     void leaveEvent(QEvent * /*unused*/) override;
-    void fillDebugTooltip(QStringList* debug) override;
+    void fillDebugTooltip(QStringList* debug) const override;
 
     StarRating m_starRating;
     const QString m_group;

@@ -27,6 +27,14 @@ class ControlWidgetConnection : public QObject {
         return m_pControl->getKey();
     }
 
+    const QString description() const {
+        return m_pControl->description();
+    }
+
+    QString name() const {
+        return m_pControl->name();
+    }
+
     virtual QString toDebugString() const = 0;
 
   protected slots:

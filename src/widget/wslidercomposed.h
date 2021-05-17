@@ -1,18 +1,18 @@
 #pragma once
 
-#include <QString>
-#include <QWidget>
 #include <QDomNode>
-#include <QWheelEvent>
-#include <QPaintEvent>
 #include <QMouseEvent>
+#include <QPaintEvent>
 #include <QResizeEvent>
+#include <QString>
+#include <QWheelEvent>
+#include <QWidget>
 
 #include "skin/skincontext.h"
 #include "util/widgetrendertimer.h"
 #include "widget/slidereventhandler.h"
-#include "widget/wwidget.h"
 #include "widget/wpixmapstore.h"
+#include "widget/wwidget.h"
 
 /** A widget for a slider composed of a background pixmap and a handle. */
 class WSliderComposed : public WWidget  {
@@ -36,7 +36,7 @@ class WSliderComposed : public WWidget  {
 
   public slots:
     void onConnectedControlChanged(double dParameter, double dValue) override;
-    void fillDebugTooltip(QStringList* debug) override;
+    void fillDebugTooltip(QStringList* debug) const override;
 
   protected:
     void mouseMoveEvent(QMouseEvent* e) override;

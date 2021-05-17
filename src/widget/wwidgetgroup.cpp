@@ -132,7 +132,7 @@ void WWidgetGroup::setup(const QDomNode& node, const SkinContext& context) {
             // Adding a zero-size dummy widget as index 0 here before
             // any child is added in the xml template works around
             // https://bugs.launchpad.net/mixxx/+bug/1627859
-            QWidget *dummyWidget = new QWidget();
+            QWidget* dummyWidget = new QWidget();
             dummyWidget->setFixedSize(0, 0);
             pLayout->addWidget(dummyWidget);
         }
@@ -214,7 +214,7 @@ bool WWidgetGroup::event(QEvent* pEvent) {
     return QFrame::event(pEvent);
 }
 
-void WWidgetGroup::fillDebugTooltip(QStringList* debug) {
+void WWidgetGroup::fillDebugTooltip(QStringList* debug) const {
     WBaseWidget::fillDebugTooltip(debug);
     *debug << QString("LayoutAlignment: %1").arg(toDebugString(layoutAlignment()))
            << QString("LayoutContentsMargins: %1").arg(toDebugString(layoutContentsMargins()))

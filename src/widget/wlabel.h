@@ -31,7 +31,7 @@ class WLabel : public QLabel, public WBaseWidget {
   protected:
     bool event(QEvent* pEvent) override;
     void resizeEvent(QResizeEvent* event) override;
-    void fillDebugTooltip(QStringList* debug) override;
+    void fillDebugTooltip(QStringList* debug) const override;
     QString m_skinText;
     // Foreground and background colors.
     QColor m_qFgColor;
