@@ -47,12 +47,13 @@
 namespace {
 const mixxx::Logger kLogger("EngineBuffer");
 
-const double kLinearScalerElipsis = 1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
+constexpr double kLinearScalerElipsis =
+        1.00058; // 2^(0.01/12): changes < 1 cent allows a linear scaler
 
-const SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
+constexpr SINT kSamplesPerFrame = 2; // Engine buffer uses Stereo frames only
 
 // Rate at which the playpos slider is updated
-const int kPlaypositionUpdateRate = 15; // updates per second
+constexpr int kPlaypositionUpdateRate = 15; // updates per second
 
 } // anonymous namespace
 
@@ -87,7 +88,6 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_startButton(nullptr),
           m_endButton(nullptr),
           m_bScalerOverride(false),
-          m_iSeekQueued(SEEK_NONE),
           m_iSeekPhaseQueued(0),
           m_iEnableSyncQueued(SYNC_REQUEST_NONE),
           m_iSyncModeQueued(SYNC_INVALID),
@@ -97,6 +97,8 @@ EngineBuffer::EngineBuffer(const QString& group,
           m_pCrossfadeBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_bCrossfadeReady(false),
           m_iLastBufferSize(0) {
+    m_queuedSeek.setValue(kNoQueuedSeek);
+
     // zero out crossfade buffer
     SampleUtil::clear(m_pCrossfadeBuffer, MAX_BUFFER_LEN);
 
@@ -393,9 +395,7 @@ void EngineBuffer::queueNewPlaypos(double newpos, enum SeekRequest seekType) {
         // use SEEK_STANDARD for that
         seekType = SEEK_STANDARD;
     }
-    m_queuedSeekPosition.setValue(newpos);
-    // set m_queuedPosition valid
-    m_iSeekQueued = seekType;
+    m_queuedSeek.setValue({newpos, seekType});
 }
 
 void EngineBuffer::requestSyncPhase() {
@@ -557,7 +557,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_dSlipPosition = 0.;
     m_dSlipRate = 0;
 
-    m_iSeekQueued.storeRelease(SEEK_NONE);
+    m_queuedSeek.setValue(kNoQueuedSeek);
 
     // Reset the pitch value for the new track.
     m_pause.unlock();
@@ -598,7 +598,7 @@ void EngineBuffer::ejectTrack() {
     m_playposSlider->set(0);
     m_pCueControl->resetIndicators();
 
-    m_iSeekQueued.storeRelease(SEEK_NONE);
+    m_queuedSeek.setValue(kNoQueuedSeek);
 
     m_pause.unlock();
 
@@ -700,10 +700,11 @@ bool EngineBuffer::updateIndicatorsAndModifyPlay(bool newPlay, bool oldPlay) {
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     bool playPossible = true;
+    const QueuedSeek queuedSeek = m_queuedSeek.getValue();
     if ((!m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0) ||
             (m_pCurrentTrack && atomicLoadRelaxed(m_iTrackLoading) == 0 &&
                     m_filepos_play >= m_pTrackSamples->get() &&
-                    !atomicLoadRelaxed(m_iSeekQueued)) ||
+                    queuedSeek.seekType == SEEK_NONE) ||
             m_pPassthroughEnabled->toBool()) {
         // play not possible
         playPossible = false;
@@ -1224,16 +1225,10 @@ void EngineBuffer::processSeek(bool paused) {
         seekCloneBuffer(pChannel->getEngineBuffer());
     }
 
-    // We need to read position just after reading seekType, to ensure that we
-    // read the matching position to seek_typ or a position from a new (second)
-    // seek just queued from another thread
-    // The later case is ok, because we will process the new seek in the next
-    // call anyway again.
+    const QueuedSeek queuedSeek = m_queuedSeek.getValue();
 
-    SeekRequests seekType = static_cast<SeekRequest>(
-            m_iSeekQueued.loadAcquire());
-
-    double position = m_queuedSeekPosition.getValue();
+    SeekRequests seekType = queuedSeek.seekType;
+    double position = queuedSeek.position;
 
     // Don't allow the playposition to go past the end.
     if (position > m_trackSamplesOld) {
@@ -1264,7 +1259,8 @@ void EngineBuffer::processSeek(bool paused) {
             // new position was already set above
             break;
         default:
-            qWarning() << "Unhandled seek request type: " << seekType;
+            DEBUG_ASSERT(!"Unhandled seek request type");
+            m_queuedSeek.setValue(kNoQueuedSeek);
             return;
     }
 
@@ -1287,7 +1283,10 @@ void EngineBuffer::processSeek(bool paused) {
         }
         setNewPlaypos(position);
     }
-    m_iSeekQueued.storeRelease(SEEK_NONE);
+    // Reset the m_queuedSeek value after it has been processed in
+    // setNewPlaypos() so that the Engine Controls have always access to the
+    // position of the upcoming buffer cycle (used for loop cues)
+    m_queuedSeek.setValue(kNoQueuedSeek);
 }
 
 void EngineBuffer::postProcess(const int iBufferSize) {
@@ -1316,13 +1315,9 @@ void EngineBuffer::postProcess(const int iBufferSize) {
 }
 
 bool EngineBuffer::getQueuedSeekPosition(double* pSeekPosition) const {
-    bool isSeekQueued = m_iSeekQueued.loadAcquire() != SEEK_NONE;
-    if (isSeekQueued) {
-        *pSeekPosition = m_queuedSeekPosition.getValue();
-    } else {
-        *pSeekPosition = -1;
-    }
-    return isSeekQueued;
+    const QueuedSeek queuedSeek = m_queuedSeek.getValue();
+    *pSeekPosition = queuedSeek.position;
+    return (queuedSeek.seekType != SEEK_NONE);
 }
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
