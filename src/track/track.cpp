@@ -280,13 +280,13 @@ bool Track::replaceRecord(
         bpmUpdatedFlag = trySetBpmWhileLocked(
                 newRecord.getMetadata().getTrackInfo().getBpm().getValue());
     }
-    // Preserve the new (or existing) bpm that might have been updated already.
-    // Otherwise the bpm in the metadata could become inconsistent with the
-    // beat grid when replacing the entire metadata with the new record that
-    // includes a nominal bpm value!
+    // The bpm in m_record has already been updated. Read it and copy it into
+    // the new record to ensure it will be consistent with the new beat grid.
     const auto newBpm = m_record.getMetadata().getTrackInfo().getBpm();
     newRecord.refMetadata().refTrackInfo().setBpm(newBpm);
+    // Finally replace the current with the new record
     m_record = std::move(newRecord);
+    // Unlock before emitting signals
     markDirtyAndUnlock(&locked);
     if (bpmUpdatedFlag) {
         emit bpmUpdated(newBpm.getValue());
