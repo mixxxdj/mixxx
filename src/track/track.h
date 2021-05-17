@@ -340,7 +340,7 @@ class Track : public QObject {
     mixxx::TrackRecord getRecord(
             bool* pDirty = nullptr) const;
     bool replaceRecord(
-            mixxx::TrackRecord&& newRecord,
+            mixxx::TrackRecord newRecord,
             mixxx::BeatsPointer pOptionalBeats = nullptr);
 
     // Mark the track dirty if it isn't already.

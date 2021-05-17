@@ -258,7 +258,7 @@ mixxx::TrackRecord Track::getRecord(
 }
 
 bool Track::replaceRecord(
-        mixxx::TrackRecord&& newRecord,
+        mixxx::TrackRecord newRecord,
         mixxx::BeatsPointer pOptionalBeats) {
     const auto newKey = newRecord.getGlobalKey();
     const auto newReplayGain = newRecord.getMetadata().getTrackInfo().getReplayGain();
