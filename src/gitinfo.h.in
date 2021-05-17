@@ -4,8 +4,8 @@
 // files that include this will be recompile very often. Therefore, this should
 // only be included from versionstore.cpp.
 
-#ifndef VERSION_STORE
-    #error "Include only from versionstore.cpp and mixxx.rc.include to avoid unnecessary recompile on every commit."
+#ifndef GIT_INFO
+    #error "Include only from gitinfostore.cpp and mixxx.rc.include to avoid unnecessary recompile on every commit."
 #endif
 
 #define GIT_BRANCH "@GIT_BRANCH@"
