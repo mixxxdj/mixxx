@@ -19,10 +19,35 @@ DDJ200.init = function() {
 
         var vgroup = "[Channel" + i + "]";
 
-        // run onTrackLoad after every track load to set LEDs accordingly
+        // run updateDeckLeds after every track load to set LEDs accordingly
         engine.makeConnection(vgroup, "track_loaded", function(ch, vgroup) {
-            DDJ200.onTrackLoad(ch, vgroup);
+            DDJ200.updateDeckLeds(vgroup);
         });
+
+        // run switchPlayLED after play/pause track to set LEDs accordingly
+        engine.makeConnection(vgroup, "play", function(ch, vgroup) {
+            var vDeckNo = script.deckFromGroup(vgroup);
+            var d = (vDeckNo % 2) ? 0 : 1;
+            DDJ200.switchPlayLED(d, ch);
+        });
+
+        // run switchSyncLED after sync toogle to set LEDs accordingly
+        engine.makeConnection(vgroup, "sync_enabled", function(ch, vgroup) {
+            var vDeckNo = script.deckFromGroup(vgroup);
+            var d = (vDeckNo % 2) ? 0 : 1;
+            DDJ200.switchSyncLED(d, ch);
+        });
+
+        // listen to changes on hotcues
+        for (var j = 1; j <= 8; j++) {
+            // run switchPadLED after every hotcue update
+            engine.makeConnection(vgroup, "hotcue_" + j + "_enabled", function(ch, vgroup, control) {
+                var pad = Number(control.split("_")[1]);
+                var vDeckNo = script.deckFromGroup(vgroup);
+                var d = (vDeckNo % 2) ? 0 : 1;           // d = deckNo - 1
+                DDJ200.switchPadLED(d, pad, ch);
+            });
+        }
 
         // set Pioneer CDJ cue mode for all decks
         engine.setValue(vgroup, "cue_cdj", true);
@@ -54,7 +79,7 @@ DDJ200.LEDsOff = function() {                         // turn off LED buttons:
     }
 };
 
-DDJ200.onTrackLoad = function(channel, vgroup) {
+DDJ200.updateDeckLeds = function(vgroup) {
     // set LEDs (hotcues, etc.) for the loaded deck
     // if controller is switched to this deck
     var vDeckNo = script.deckFromGroup(vgroup);
@@ -320,20 +345,31 @@ DDJ200.switchLEDs = function(vDeckNo) {
     // set LEDs of controller deck 1 or 2 according to virtual deck
     var d = (vDeckNo % 2) ? 0 : 1;           // d = deckNo - 1
     var vgroup = "[Channel" + vDeckNo + "]";
-    midi.sendShortMsg(0x90 + d, 0x0B, 0x7F * engine.getValue(vgroup, "play"));
+    DDJ200.switchPlayLED(d, engine.getValue(vgroup, "play"));
     midi.sendShortMsg(0x90 + d, 0x0C, 0x7F *
                       (engine.getValue(vgroup, "cue_point") !== -1));
-    midi.sendShortMsg(0x90 + d, 0x58, 0x7F * engine.getValue(vgroup,
-        "sync_enabled"));
+    DDJ200.switchSyncLED(d, engine.getValue(vgroup, "sync_enabled"));
     if (!DDJ200.fourDeckMode) {
         midi.sendShortMsg(0x90 + d, 0x54,
             0x7F * engine.getValue(vgroup, "pfl"));
     }
 
     for (var i = 1; i <= 8; i++) {
-        midi.sendShortMsg(0x97 + 2 * d, i - 1, 0x7F * engine.getValue(
-            vgroup, "hotcue_" + i + "_enabled"));
+        var isButtonEnabled = engine.getValue(vgroup, "hotcue_" + i + "_enabled");
+        DDJ200.switchPadLED(d, i, isButtonEnabled);
     }
+};
+
+DDJ200.switchPlayLED = function(deck, enabled) {
+    midi.sendShortMsg(0x90 + deck, 0x0B, 0x7F * enabled);
+};
+
+DDJ200.switchSyncLED = function(deck, enabled) {
+    midi.sendShortMsg(0x90 + deck, 0x58, 0x7F * enabled);
+};
+
+DDJ200.switchPadLED = function(deck, pad, enabled) {
+    midi.sendShortMsg(0x97 + 2 * deck, pad - 1, 0x7F * enabled);
 };
 
 DDJ200.toggleDeck = function(channel, control, value, status, group) {
