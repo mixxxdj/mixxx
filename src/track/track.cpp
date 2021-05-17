@@ -140,28 +140,11 @@ void Track::replaceMetadataFromSource(
         const auto importedKeyText = importedMetadata.getTrackInfo().getKey();
         importedMetadata.refTrackInfo().setKey(m_record.getMetadata().getTrackInfo().getKey());
 
-        bool modified = false;
-        // Only set the metadata synchronized flag (column `header_parsed`
-        // in the database) from false to true, but never reset it back to
-        // false. Otherwise file tags would be re-imported and overwrite
-        // the metadata stored in the database, e.g. after retrieving metadata
-        // from MusicBrainz!
-        // TODO: In the future this flag should become a time stamp
-        // to detect updates of files and then decide based on time
-        // stamps if file tags need to be re-imported.
-        if (!metadataSynchronized.isNull()) {
-            modified |= compareAndSet(
-                    m_record.ptrMetadataSynchronized(),
-                    true);
-        }
-
         const auto oldReplayGain =
                 m_record.getMetadata().getTrackInfo().getReplayGain();
-        if (m_record.getMetadata() != importedMetadata) {
-            m_record.setMetadata(std::move(importedMetadata));
-            // Don't use importedMetadata after move assignment!!
-            modified = true;
-        }
+        bool modified = m_record.replaceMetadataFromSource(
+                std::move(importedMetadata),
+                metadataSynchronized);
         const auto newReplayGain =
                 m_record.getMetadata().getTrackInfo().getReplayGain();
 
@@ -256,6 +239,50 @@ mixxx::TrackRecord Track::getRecord(
         *pDirty = m_bDirty;
     }
     return m_record;
+}
+
+bool Track::replaceRecord(
+        mixxx::TrackRecord&& newRecord,
+        mixxx::BeatsPointer pOptionalBeats) {
+    const auto newKey = newRecord.getGlobalKey();
+    const auto newReplayGain = newRecord.getMetadata().getTrackInfo().getReplayGain();
+    QMutexLocker locked(&m_qMutex);
+    const bool recordUnchanged = m_record == newRecord;
+    if (recordUnchanged && !pOptionalBeats) {
+        return false;
+    }
+    const auto oldKey = m_record.getGlobalKey();
+    const auto oldReplayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
+    bool bpmUpdatedFlag;
+    if (pOptionalBeats) {
+        bpmUpdatedFlag = trySetBeatsWhileLocked(std::move(pOptionalBeats));
+        if (recordUnchanged && !bpmUpdatedFlag) {
+            return false;
+        }
+    } else {
+        // Setting the bpm manually may in turn update the beat grid
+        bpmUpdatedFlag = trySetBpmWhileLocked(
+                newRecord.getMetadata().getTrackInfo().getBpm().getValue());
+    }
+    // Preserve the new (or existing) bpm that might have been updated already.
+    // Otherwise the bpm in the metadata could become inconsistent with the
+    // beat grid when replacing the entire metadata with the new record that
+    // includes a nominal bpm value!
+    const auto newBpm = m_record.getMetadata().getTrackInfo().getBpm();
+    newRecord.refMetadata().refTrackInfo().setBpm(newBpm);
+    m_record = std::move(newRecord);
+    markDirtyAndUnlock(&locked);
+    if (bpmUpdatedFlag) {
+        emit bpmUpdated(newBpm.getValue());
+        emit beatsUpdated();
+    }
+    if (oldKey != newKey) {
+        emitKeysUpdated(newKey);
+    }
+    if (oldReplayGain != newReplayGain) {
+        emit replayGainUpdated(newReplayGain);
+    }
+    return true;
 }
 
 mixxx::ReplayGain Track::getReplayGain() const {
