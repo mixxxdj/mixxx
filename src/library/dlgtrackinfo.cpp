@@ -627,10 +627,14 @@ void DlgTrackInfo::slotImportMetadataFromFile() {
     // We cannot reuse m_pLoadedTrack, because it might already been
     // modified and we don't want to lose those changes.
     // TODO: Populate fields from TrackRecord instead of Track
-    TrackPointer pTrack = Track::newTemporary(std::move(fileAccess));
+    const TrackPointer pTrack =
+            Track::newTemporary(std::move(fileAccess));
     DEBUG_ASSERT(pTrack);
-    pTrack->importMetadata(std::move(trackMetadata));
-    pTrack->setCoverInfo(std::move(guessedCoverInfo));
+    pTrack->replaceMetadataFromSource(
+            std::move(trackMetadata),
+            metadataSynchronized);
+    pTrack->setCoverInfo(
+            std::move(guessedCoverInfo));
     populateFields(*pTrack);
 }
 

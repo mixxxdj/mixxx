@@ -326,17 +326,13 @@ class Track : public QObject {
     bool refreshCoverImageDigest(
             const QImage& loadedImage = QImage());
 
-    // Set/get track metadata all at once.
-    void importMetadata(
-            mixxx::TrackMetadata importedMetadata,
-            const QDateTime& metadataSynchronized = QDateTime());
-
-    /// Merge additional metadata that is not (yet) stored in the database
-    /// and only available from file tags.
+    /// Set track metadata after importing from the source.
     ///
-    /// Returns true if the track has been modified and false otherwise.
-    bool mergeImportedMetadata(
-            const mixxx::TrackMetadata& importedMetadata);
+    /// The timestamp tracks when metadata has last been synchronized
+    /// with file tags, either by importing or exporting the metadata.
+    void replaceMetadataFromSource(
+            mixxx::TrackMetadata importedMetadata,
+            const QDateTime& metadataSynchronized);
 
     mixxx::TrackMetadata getMetadata(
             bool* pMetadataSynchronized = nullptr) const;
@@ -445,10 +441,16 @@ class Track : public QObject {
     void importPendingCueInfosMarkDirtyAndUnlock(
             QMutexLocker* pLock);
 
+    /// Merge additional metadata that is not (yet) stored in the database
+    /// and only available from file tags.
+    ///
+    /// Returns true if the track has been modified and false otherwise.
+    bool mergeExtraMetadataFromSource(
+            const mixxx::TrackMetadata& importedMetadata);
 
     ExportTrackMetadataResult exportMetadata(
-            mixxx::MetadataSourcePointer pMetadataSource,
-            UserSettingsPointer pConfig);
+            const mixxx::MetadataSource& metadataSource,
+            const UserSettingsPointer& pConfig);
 
     // Information about the actual properties of the
     // audio stream is only available after opening the

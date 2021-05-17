@@ -5,6 +5,7 @@
 
 #include "engine/engine.h"
 #include "moc_track.cpp"
+#include "sources/metadatasource.h"
 #include "track/beatfactory.h"
 #include "track/beatmap.h"
 #include "track/trackref.h"
@@ -116,7 +117,7 @@ void Track::relocate(
     // the updated location from the database.
 }
 
-void Track::importMetadata(
+void Track::replaceMetadataFromSource(
         mixxx::TrackMetadata importedMetadata,
         const QDateTime& metadataSynchronized) {
     // Information stored in Serato tags is imported separately after
@@ -227,10 +228,10 @@ void Track::importMetadata(
     }
 }
 
-bool Track::mergeImportedMetadata(
+bool Track::mergeExtraMetadataFromSource(
         const mixxx::TrackMetadata& importedMetadata) {
     QMutexLocker lock(&m_qMutex);
-    if (!m_record.mergeImportedMetadata(importedMetadata)) {
+    if (!m_record.mergeExtraMetadataFromSource(importedMetadata)) {
         // Not modified
         return false;
     }
@@ -1337,14 +1338,8 @@ CoverInfo Track::getCoverInfoWithLocation() const {
 }
 
 ExportTrackMetadataResult Track::exportMetadata(
-        mixxx::MetadataSourcePointer pMetadataSource,
-        UserSettingsPointer pConfig) {
-    VERIFY_OR_DEBUG_ASSERT(pMetadataSource) {
-        kLogger.warning()
-                << "Cannot export track metadata:"
-                << getLocation();
-        return ExportTrackMetadataResult::Failed;
-    }
+        const mixxx::MetadataSource& metadataSource,
+        const UserSettingsPointer& pConfig) {
     // Locking shouldn't be necessary here, because this function will
     // be called after all references to the object have been dropped.
     // But it doesn't hurt much, so let's play it safe ;)
@@ -1421,13 +1416,13 @@ ExportTrackMetadataResult Track::exportMetadata(
     // Otherwise floating-point values like the bpm value might become
     // inconsistent with the actual value stored by the beat grid!
     mixxx::TrackMetadata normalizedFromRecord;
-    if ((pMetadataSource->importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
-            mixxx::MetadataSource::ImportResult::Succeeded)) {
+    if ((metadataSource.importTrackMetadataAndCoverImage(&importedFromFile, nullptr).first ==
+                mixxx::MetadataSource::ImportResult::Succeeded)) {
         // Prevent overwriting any file tags that are not yet stored in the
         // library database! This will in turn update the current metadata
         // that is stored in the database. New columns that need to be populated
         // from file tags cannot be filled during a database migration.
-        m_record.mergeImportedMetadata(importedFromFile);
+        m_record.mergeExtraMetadataFromSource(importedFromFile);
 
         // Prepare export by cloning and normalizing the metadata
         normalizedFromRecord = m_record.getMetadata();
@@ -1488,7 +1483,7 @@ ExportTrackMetadataResult Track::exportMetadata(
             << "New metadata (modified)"
             << normalizedFromRecord;
     const auto trackMetadataExported =
-            pMetadataSource->exportTrackMetadata(normalizedFromRecord);
+            metadataSource.exportTrackMetadata(normalizedFromRecord);
     switch (trackMetadataExported.first) {
     case mixxx::MetadataSource::ExportResult::Succeeded:
         // After successfully exporting the metadata we record the fact

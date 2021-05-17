@@ -108,11 +108,11 @@ bool copyIfNotEmpty(
 
 } // anonymous namespace
 
-bool TrackRecord::mergeImportedMetadata(
-        const TrackMetadata& importedFromFile) {
+bool TrackRecord::mergeExtraMetadataFromSource(
+        const TrackMetadata& importedMetadata) {
     bool modified = false;
     TrackInfo* pMergedTrackInfo = m_metadata.ptrTrackInfo();
-    const TrackInfo& importedTrackInfo = importedFromFile.getTrackInfo();
+    const TrackInfo& importedTrackInfo = importedMetadata.getTrackInfo();
     if (pMergedTrackInfo->getTrackTotal() == kTrackTotalPlaceholder) {
         pMergedTrackInfo->setTrackTotal(importedTrackInfo.getTrackTotal());
         // Also set the track number if it is still empty due
@@ -180,7 +180,7 @@ bool TrackRecord::mergeImportedMetadata(
             pMergedTrackInfo->ptrWork(),
             importedTrackInfo.getWork());
     AlbumInfo* pMergedAlbumInfo = refMetadata().ptrAlbumInfo();
-    const AlbumInfo& importedAlbumInfo = importedFromFile.getAlbumInfo();
+    const AlbumInfo& importedAlbumInfo = importedMetadata.getAlbumInfo();
     modified |= mergeReplayGainMetadataProperty(
             pMergedAlbumInfo->ptrReplayGain(),
             importedAlbumInfo.getReplayGain());
