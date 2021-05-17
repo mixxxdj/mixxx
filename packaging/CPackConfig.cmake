@@ -1,5 +1,7 @@
 # unlike CMakeLists.txt this file is include at cpack time, once per generator after CPack has set CPACK_GENERATOR
 # to the actual generator being used. It allows per-generator setting of CPACK_* variables at cpack time.
+set(GIT_DESCRIBE "${CPACK_GIT_DESCRIBE}")
+set(GIT_COMMIT_DATE ${CPACK_GIT_COMMIT_DATE})
 set(CMAKE_CURRENT_SOURCE_DIR "${CPACK_SOURCE_DIR}")
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/modules")
 include(GitInfo)
@@ -11,12 +13,6 @@ else()
 endif()
 set(CPACK_PACKAGE_FILE_NAME "mixxx-${PACKAGE_VERSION}")
 set(CPACK_SOURCE_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}-source")
-set(CPACK_DEBIAN_GIT_BRANCH ${GIT_BRANCH})
-set(CPACK_DEBIAN_GIT_COMMIT_COUNT ${GIT_COMMIT_COUNT})
-set(CPACK_DEBIAN_GIT_COMMIT_DATE ${GIT_COMMIT_DATE})
-set(CPACK_DEBIAN_GIT_COMMIT_YEAR ${GIT_COMMIT_YEAR})
-set(CPACK_DEBIAN_GIT_DESCRIBE "${GIT_DESCRIBE}")
-set(CPACK_DEBIAN_GIT_DIRTY ${GIT_DIRTY})
 
 # The upstream version must not contain hyphen
 # . for nomal versioning + for advance and ~ for decline the version

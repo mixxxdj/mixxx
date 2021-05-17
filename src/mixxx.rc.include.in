@@ -1,4 +1,4 @@
-#define VERSION_STORE
+#define GIT_INFO
 #include "gitinfo.h"
 
 #ifdef GIT_COMMIT_YEAR
