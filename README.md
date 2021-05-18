@@ -1,8 +1,8 @@
 # Mixxx
-[![GitHub latest tag](https://img.shields.io/github/tag/mixxxdj/mixxx.svg)](https://www.mixxx.org/download)
+[![GitHub latest tag](https://img.shields.io/github/tag/mixxxdj/mixxx.svg)](https://mixxx.org/download)
 [![Packaging status](https://repology.org/badge/tiny-repos/mixxx.svg)](https://repology.org/metapackage/mixxx/versions)
 [![Zulip chat](https://img.shields.io/badge/zulip-join_chat-brightgreen.svg)](https://mixxx.zulipchat.com)
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=QSFMYWN2B3JD2&source=url)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://mixxx.org/donate)
 
 [Mixxx] is Free DJ software that gives you everything you need to perform live
 DJ mixes. Mixxx works on GNU/Linux, Windows, and macOS.
@@ -94,7 +94,7 @@ development and community news:
 
 - Chat with us on [Zulip][zulip].
 - Follow us on [Twitter] and [Facebook].
-- Subscribe to the [Mixxx Development Blog][blog].
+- Subscribe to the [Mixxx Blog][blog].
 - Post on the [Mixxx forums][discourse].
 
 ## License
@@ -102,18 +102,16 @@ development and community news:
 Mixxx is released under the GPLv2. See the LICENSE file for a full copy of the
 license.
 
-[mixxx]: https://www.mixxx.org
+[mixxx]: https://mixxx.org
 [download-stable]: https://mixxx.org/download/#stable
 [download-testing]: https://mixxx.org/download/#testing
-[launchpad]: https://bugs.launchpad.net/mixxx
 [fileabug]: https://bugs.launchpad.net/mixxx/+filebug
 [twitter]: https://twitter.com/mixxxdj
 [facebook]: https://www.facebook.com/pages/Mixxx-DJ-Software/21723485212
-[blog]: https://mixxxblog.blogspot.com
-[manual]: https://www.mixxx.org/manual/latest/
+[blog]: https://mixxx.org/news/
+[manual]: https://manual.mixxx.org/
 [wiki]: https://github.com/mixxxdj/mixxx/wiki
-[faq]: https://mixxx.org/wiki/doku.php/faq
-[forums]: https://www.mixxx.org/forums/
+[faq]: https://github.com/mixxxdj/mixxx/wiki/Faq
 [Compiling on Linux]: https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux
 [Compiling on MacOS]: https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20macOS
 [Compiling on Windows]: https://github.com/mixxxdj/mixxx/wiki/compiling-on-windows
@@ -124,9 +122,9 @@ license.
 [easybugs]: https://bugs.launchpad.net/mixxx/+bugs?field.searchtext=&orderby=-importance&search=Search&field.status%3Alist=NEW&field.status%3Alist=CONFIRMED&field.status%3Alist=TRIAGED&field.status%3Alist=INPROGRESS&field.status%3Alist=INCOMPLETE_WITH_RESPONSE&field.status%3Alist=INCOMPLETE_WITHOUT_RESPONSE&assignee_option=any&field.assignee=&field.bug_reporter=&field.bug_commenter=&field.subscriber=&field.structural_subscriber=&field.tag=easy&field.tags_combinator=ANY&field.has_cve.used=&field.omit_dupes.used=&field.omit_dupes=on&field.affects_me.used=&field.has_patch.used=&field.has_branches.used=&field.has_branches=on&field.has_no_branches.used=&field.has_no_branches=on&field.has_blueprints.used=&field.has_blueprints=on&field.has_no_blueprints.used=&field.has_no_blueprints=on
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
 [help translate content]: https://www.transifex.com/projects/p/mixxxdj
-[Mixxx i18n wiki]: https://mixxx.org/wiki/doku.php/internationalization
-[Mixxx localization forum]: https://mixxx.org/forums/viewforum.php?f=10
+[Mixxx i18n wiki]: https://github.com/mixxxdj/mixxx/wiki/Internationalization
+[Mixxx localization forum]: https://mixxx.discourse.group/c/translation/13
 [Mixxx glossary]: https://www.transifex.com/projects/p/mixxxdj/glossary/l/en/
-[hardware compatibility]: https://mixxx.org/wiki/doku.php/Hardware-Compatibility
+[hardware compatibility]: https://github.com/mixxxdj/mixxx/wiki/Hardware-Compatibility
 [zulip]: https://mixxx.zulipchat.com/
 [discourse]: https://mixxx.discourse.group/
