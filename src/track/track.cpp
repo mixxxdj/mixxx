@@ -262,13 +262,18 @@ bool Track::replaceRecord(
         mixxx::BeatsPointer pOptionalBeats) {
     const auto newKey = newRecord.getGlobalKey();
     const auto newReplayGain = newRecord.getMetadata().getTrackInfo().getReplayGain();
+    const auto newColor = newRecord.getColor();
+
     QMutexLocker locked(&m_qMutex);
     const bool recordUnchanged = m_record == newRecord;
     if (recordUnchanged && !pOptionalBeats) {
         return false;
     }
+
     const auto oldKey = m_record.getGlobalKey();
     const auto oldReplayGain = m_record.getMetadata().getTrackInfo().getReplayGain();
+    const auto oldColor = m_record.getColor();
+
     bool bpmUpdatedFlag;
     if (pOptionalBeats) {
         bpmUpdatedFlag = trySetBeatsWhileLocked(std::move(pOptionalBeats));
@@ -284,10 +289,13 @@ bool Track::replaceRecord(
     // the new record to ensure it will be consistent with the new beat grid.
     const auto newBpm = m_record.getMetadata().getTrackInfo().getBpm();
     newRecord.refMetadata().refTrackInfo().setBpm(newBpm);
+
     // Finally replace the current with the new record
     m_record = std::move(newRecord);
+
     // Unlock before emitting signals
     markDirtyAndUnlock(&locked);
+
     if (bpmUpdatedFlag) {
         emit bpmUpdated(newBpm.getValue());
         emit beatsUpdated();
@@ -297,6 +305,9 @@ bool Track::replaceRecord(
     }
     if (oldReplayGain != newReplayGain) {
         emit replayGainUpdated(newReplayGain);
+    }
+    if (oldColor != newColor) {
+        emit colorUpdated(newColor);
     }
     return true;
 }
