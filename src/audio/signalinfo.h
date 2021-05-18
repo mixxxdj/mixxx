@@ -46,7 +46,7 @@ class SignalInfo final {
     // Conversion: #samples / sample offset -> #frames / frame offset
     double samples2framesFractional(double samples) const {
         DEBUG_ASSERT(getChannelCount().isValid());
-        return samples / getChannelCount();
+        return samples / static_cast<double>(getChannelCount());
     }
 
     // Conversion: #frames / frame offset -> #samples / sample offset
@@ -58,7 +58,7 @@ class SignalInfo final {
     // Conversion: #frames / frame offset -> second offset
     double frames2secsFractional(double frames) const {
         DEBUG_ASSERT(getSampleRate().isValid());
-        return frames / getSampleRate();
+        return frames / static_cast<double>(getSampleRate());
     }
 
     // Conversion: #frames / frame offset -> second offset
@@ -69,7 +69,7 @@ class SignalInfo final {
     // Conversion: second offset -> #frames / frame offset
     double secs2frames(double seconds) const {
         DEBUG_ASSERT(getSampleRate().isValid());
-        return seconds * getSampleRate();
+        return seconds * static_cast<double>(getSampleRate());
     }
 
     // Conversion: #frames / frame offset -> millisecond offset
