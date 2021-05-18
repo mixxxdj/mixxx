@@ -5,10 +5,13 @@
 #include "effects/presets/effectxmlelements.h"
 #include "util/xml.h"
 
-EffectPreset::EffectPreset() {
+EffectPreset::EffectPreset()
+        : m_backendType(EffectBackendType::Unknown),
+          m_dMetaParameter(0.0) {
 }
 
-EffectPreset::EffectPreset(const QDomElement& effectElement) {
+EffectPreset::EffectPreset(const QDomElement& effectElement)
+        : EffectPreset() {
     // effectElement can come from untrusted input from the filesystem, so do not DEBUG_ASSERT
     if (effectElement.tagName() != EffectXml::Effect) {
         return;
@@ -37,10 +40,10 @@ EffectPreset::EffectPreset(const QDomElement& effectElement) {
     }
 }
 
-EffectPreset::EffectPreset(const EffectSlotPointer pEffectSlot) {
-    m_id = pEffectSlot->id();
-    m_backendType = pEffectSlot->backendType();
-    m_dMetaParameter = pEffectSlot->getMetaParameter();
+EffectPreset::EffectPreset(const EffectSlotPointer pEffectSlot)
+        : m_id(pEffectSlot->id()),
+          m_backendType(pEffectSlot->backendType()),
+          m_dMetaParameter(pEffectSlot->getMetaParameter()) {
     // Parameters are reloaded in the order they are saved, so the order of
     // loaded effects must be preserved.
     int numTypes = static_cast<int>(EffectParameterType::NUM_TYPES);
@@ -56,10 +59,10 @@ EffectPreset::EffectPreset(const EffectSlotPointer pEffectSlot) {
     }
 }
 
-EffectPreset::EffectPreset(const EffectManifestPointer pManifest) {
-    m_id = pManifest->id();
-    m_backendType = pManifest->backendType();
-    m_dMetaParameter = pManifest->metaknobDefault();
+EffectPreset::EffectPreset(const EffectManifestPointer pManifest)
+        : m_id(pManifest->id()),
+          m_backendType(pManifest->backendType()),
+          m_dMetaParameter(pManifest->metaknobDefault()) {
     for (const auto& pParameterManifest : pManifest->parameters()) {
         m_effectParameterPresets.append(EffectParameterPreset(pParameterManifest));
     }
