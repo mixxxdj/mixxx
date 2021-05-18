@@ -5,7 +5,9 @@
 #include "util/xml.h"
 
 EffectChainPreset::EffectChainPreset()
-        : m_name(kNoEffectString) {
+        : m_name(kNoEffectString),
+          m_mixMode(EffectChainMixMode::DrySlashWet),
+          m_dSuper(0.0) {
 }
 
 EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
@@ -42,26 +44,26 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
     }
 }
 
-EffectChainPreset::EffectChainPreset(const EffectChain* chain) {
-    m_name = chain->presetName();
-    m_mixMode = chain->mixMode();
-    m_dSuper = chain->getSuperParameter();
+EffectChainPreset::EffectChainPreset(const EffectChain* chain)
+        : m_name(chain->presetName()),
+          m_mixMode(chain->mixMode()),
+          m_dSuper(chain->getSuperParameter()) {
     for (const auto& pEffectSlot : chain->getEffectSlots()) {
         m_effectPresets.append(EffectPresetPointer(new EffectPreset(pEffectSlot)));
     }
 }
 
-EffectChainPreset::EffectChainPreset(EffectManifestPointer pManifest) {
-    m_name = pManifest->displayName();
-    m_mixMode = EffectChainMixMode::DrySlashWet;
-    m_dSuper = pManifest->metaknobDefault();
+EffectChainPreset::EffectChainPreset(EffectManifestPointer pManifest)
+        : m_name(pManifest->displayName()),
+          m_mixMode(EffectChainMixMode::DrySlashWet),
+          m_dSuper(pManifest->metaknobDefault()) {
     m_effectPresets.append(EffectPresetPointer(new EffectPreset(pManifest)));
 }
 
-EffectChainPreset::EffectChainPreset(EffectPresetPointer pEffectPreset) {
-    m_name = pEffectPreset->id();
-    m_mixMode = EffectChainMixMode::DrySlashWet;
-    m_dSuper = pEffectPreset->metaParameter();
+EffectChainPreset::EffectChainPreset(EffectPresetPointer pEffectPreset)
+        : m_name(pEffectPreset->id()),
+          m_mixMode(EffectChainMixMode::DrySlashWet),
+          m_dSuper(pEffectPreset->metaParameter()) {
     m_effectPresets.append(pEffectPreset);
 }
 

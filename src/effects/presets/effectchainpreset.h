@@ -47,7 +47,7 @@ class EffectChainPreset {
 
   private:
     QString m_name;
-    double m_dSuper;
     EffectChainMixMode::Type m_mixMode;
+    double m_dSuper;
     QList<EffectPresetPointer> m_effectPresets;
 };
