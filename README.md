@@ -15,13 +15,6 @@ To get started with Mixxx:
 2. For experimentation and testing, [download a development release][download-testing].
 3. To live on the bleeding edge, clone the repo: `git clone https://github.com/mixxxdj/mixxx.git`
 
-## Roadmap
-
-The Mixxx team is hard at work on Mixxx 2.3. The best place to keep track of
-2.3 development is the [2.3.0 milestone page on Launchpad][launchpad 2.3.0].
-
-A more general roadmap can be found on [the wiki][wiki roadmap].
-
 ## Bug tracker
 
 The Mixxx team uses [Launchpad] to manage Mixxx development.
@@ -117,8 +110,6 @@ license.
 [Compiling on Windows]: https://github.com/mixxxdj/mixxx/wiki/compiling-on-windows
 [Using Git]: https://github.com/mixxxdj/mixxx/wiki/Using-Git
 [CMake]: https://cmake.org/
-[launchpad 2.3.0]: https://launchpad.net/mixxx/+milestone/2.3.0
-[wiki roadmap]: https://mixxx.org/wiki/doku.php/development_roadmap
 [easybugs]: https://bugs.launchpad.net/mixxx/+bugs?field.searchtext=&orderby=-importance&search=Search&field.status%3Alist=NEW&field.status%3Alist=CONFIRMED&field.status%3Alist=TRIAGED&field.status%3Alist=INPROGRESS&field.status%3Alist=INCOMPLETE_WITH_RESPONSE&field.status%3Alist=INCOMPLETE_WITHOUT_RESPONSE&assignee_option=any&field.assignee=&field.bug_reporter=&field.bug_commenter=&field.subscriber=&field.structural_subscriber=&field.tag=easy&field.tags_combinator=ANY&field.has_cve.used=&field.omit_dupes.used=&field.omit_dupes=on&field.affects_me.used=&field.has_patch.used=&field.has_branches.used=&field.has_branches=on&field.has_no_branches.used=&field.has_no_branches=on&field.has_blueprints.used=&field.has_blueprints=on&field.has_no_blueprints.used=&field.has_no_blueprints=on
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
 [help translate content]: https://www.transifex.com/projects/p/mixxxdj
