@@ -200,7 +200,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             configVersion = config->getValueString(ConfigKey("[Config]","Version"));
         }
         else {
-#elif __WINDOWS__
+#elif defined(__WINDOWS__)
         qDebug() << "Config version is empty, trying to read pre-1.12.0 config";
         // Try to read the config from the pre-1.12.0 final directory on Windows (we moved it in 1.12.0 final)
         QScopedPointer<QFile> oldConfigFile(new QFile(QDir::homePath().append("/Local Settings/Application Data/Mixxx/mixxx.cfg")));
@@ -227,7 +227,7 @@ UserSettingsPointer Upgrade::versionUpgrade(const QString& settingsPath) {
             return config;
 #ifdef __APPLE__
         }
-#elif __WINDOWS__
+#elif defined(__WINDOWS__)
         }
 #endif
     }
