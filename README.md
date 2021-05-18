@@ -24,42 +24,32 @@ Have a bug or feature request? [File a bug on Launchpad][fileabug].
 Want to get involved in Mixxx development? Assign yourself a bug from the [easy
 bug list][easybugs] and get started!
 
-## Compiling on Linux
+## Building Mixxx
+
+First, open a terminal (on Windows, use "x64 Native Tools command prompt for
+VS2019"), download the mixxx source code and navigate to it:
+
+    $ git clone https://github.com/mixxxdj/mixxx.git
+    $ cd mixxx
+
+Fetch the required dependencies (on Windows, macOS and Debian/Ubuntu, you can
+do that by running `tools\windows_buildenv.bat`, `source
+tools/macos_buildenv.sh setup` or `source tools/debian_buildenv.sh setup`
+respectively), then run:
+
     $ mkdir build
     $ cd build
-    $ cmake ..
+    $ cmake ..   # Use `cmake -G Ninja ..` on Windows
     $ cmake --build .
-Please see our helpful guide on the [wiki] for more information: [Compiling on Linux]
 
-## Compiling on MacOS
-    $ mkdir build
-    $ cd build
-    $ cmake ..
-    $ cmake --build .
-Please see our helpful guide on the [wiki] for more information: [Compiling on MacOS]
+There should now be a `mixxx` executable in the current directory that you can
+run. Alternatively, can generate a package using `cpack`.
 
-## Compiling on Windows
-### Build Requirements
-- Windows 7 or later
-- MS Visual Studio 2019 (Community Edition is free of charge)
-- At least 10G free diskspace
-- To create an .msi installer, you need to install the WiX toolkit from https://wixtoolset.org/releases/
-### Setup your build environment
-1. Download these sources (using git checkout as described in [Using Git])
-2. Run the batch file `tools\windows_buildenv.bat`
-   - This file downloads the prebuild Mixxx environment, defined in `cmake\windows_build_environment_name` from https://downloads.mixxx.org/builds/buildserver/2.3.x-windows/
-   - Generates the `CMakeSettings.json` with the matching build configurations for Visual Studio
-3. Start Visual Studio, choose "Open a local folder" select the `mixxx` directory containing `CMakeSettings.json`
-4. Menu "Project" -> "Generate Cache for mixxx"
-5. Select the build configuration in the toolbar (`x64__portable` is recommended)
-6. Menu "Build" -> "Build All"
-### Creating an .msi installer (optional)
-7. Than open the Visual Studio 'Developer Command Prompt' by Menu -> "Tools" -> "Command line" -> "Developer Command Prompt"
-8. Go to your build directory, e.g. by "cd .\build\x64-portable"
-9. Run "cpack -G WIX"
+More Information can be found on the [wiki]:
 
-
-Please see also our helpful guide on the [wiki] for more information: [Compiling on Windows]
+- [Compiling on Linux]
+- [Compiling on macOS]
+- [Compiling on Windows]
 
 ## Documentation
 
@@ -108,7 +98,6 @@ license.
 [Compiling on Linux]: https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20Linux
 [Compiling on MacOS]: https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20macOS
 [Compiling on Windows]: https://github.com/mixxxdj/mixxx/wiki/compiling-on-windows
-[Using Git]: https://github.com/mixxxdj/mixxx/wiki/Using-Git
 [CMake]: https://cmake.org/
 [easybugs]: https://bugs.launchpad.net/mixxx/+bugs?field.searchtext=&orderby=-importance&search=Search&field.status%3Alist=NEW&field.status%3Alist=CONFIRMED&field.status%3Alist=TRIAGED&field.status%3Alist=INPROGRESS&field.status%3Alist=INCOMPLETE_WITH_RESPONSE&field.status%3Alist=INCOMPLETE_WITHOUT_RESPONSE&assignee_option=any&field.assignee=&field.bug_reporter=&field.bug_commenter=&field.subscriber=&field.structural_subscriber=&field.tag=easy&field.tags_combinator=ANY&field.has_cve.used=&field.omit_dupes.used=&field.omit_dupes=on&field.affects_me.used=&field.has_patch.used=&field.has_branches.used=&field.has_branches=on&field.has_no_branches.used=&field.has_no_branches=on&field.has_blueprints.used=&field.has_blueprints=on&field.has_no_blueprints.used=&field.has_no_blueprints=on
 [creating skins]: https://mixxx.org/wiki/doku.php/Creating-Skins
