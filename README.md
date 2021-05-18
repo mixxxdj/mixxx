@@ -95,7 +95,6 @@ development and community news:
 - Chat with us on [Zulip][zulip].
 - Follow us on [Twitter] and [Facebook].
 - Subscribe to the [Mixxx Development Blog][blog].
-- Join the developer [mailing list].
 - Post on the [Mixxx forums][discourse].
 
 ## License
@@ -119,7 +118,6 @@ license.
 [Compiling on MacOS]: https://github.com/mixxxdj/mixxx/wiki/Compiling%20on%20macOS
 [Compiling on Windows]: https://github.com/mixxxdj/mixxx/wiki/compiling-on-windows
 [Using Git]: https://github.com/mixxxdj/mixxx/wiki/Using-Git
-[mailing list]: https://lists.sourceforge.net/lists/listinfo/mixxx-devel
 [CMake]: https://cmake.org/
 [launchpad 2.3.0]: https://launchpad.net/mixxx/+milestone/2.3.0
 [wiki roadmap]: https://mixxx.org/wiki/doku.php/development_roadmap
