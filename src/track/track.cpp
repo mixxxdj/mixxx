@@ -144,6 +144,12 @@ void Track::replaceMetadataFromSource(
     auto pSeratoCuesImporter = importedMetadata.getTrackInfo().getSeratoTags().importCueInfos();
 
     {
+        // Save some new values for later
+        const auto importedBpm = importedMetadata.getTrackInfo().getBpm();
+        const auto importedKeyText = importedMetadata.getTrackInfo().getKey();
+        // Parse the imported key before entering the locking scope
+        const auto importedKey = KeyUtils::guessKeyFromText(importedKeyText);
+
         // enter locking scope
         QMutexLocker lock(&m_qMutex);
 
@@ -151,9 +157,7 @@ void Track::replaceMetadataFromSource(
         // overwriting with an inconsistent value. The bpm must always be
         // set together with the beat grid and the key text must be parsed
         // and validated.
-        const auto importedBpm = importedMetadata.getTrackInfo().getBpm();
         importedMetadata.refTrackInfo().setBpm(getBpmWhileLocked());
-        const auto importedKeyText = importedMetadata.getTrackInfo().getKey();
         importedMetadata.refTrackInfo().setKey(m_record.getMetadata().getTrackInfo().getKey());
 
         const auto oldReplayGain =
@@ -178,7 +182,7 @@ void Track::replaceMetadataFromSource(
         const auto newBpm = getBpmWhileLocked();
 
         auto keysModified = false;
-        if (KeyUtils::guessKeyFromText(importedKeyText) != mixxx::track::io::key::INVALID) {
+        if (importedKey != mixxx::track::io::key::INVALID) {
             // Only update the current key with a valid value. Otherwise preserve
             // the existing value.
             keysModified = m_record.updateGlobalKeyText(
