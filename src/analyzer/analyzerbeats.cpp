@@ -67,10 +67,10 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSam
 
     const auto plugins = availablePlugins();
     if (!plugins.isEmpty()) {
-        m_pluginId = defaultPlugin().id;
+        m_pluginId = defaultPlugin().id();
         QString pluginId = m_bpmSettings.getBeatPluginId();
         for (const auto& info : plugins) {
-            if (info.id == pluginId) {
+            if (info.id() == pluginId) {
                 m_pluginId = pluginId; // configured Plug-In available
                 break;
             }
@@ -100,9 +100,9 @@ bool AnalyzerBeats::initialize(TrackPointer pTrack, int sampleRate, int totalSam
 
     DEBUG_ASSERT(!m_pPlugin);
     if (bShouldAnalyze) {
-        if (m_pluginId == mixxx::AnalyzerQueenMaryBeats::pluginInfo().id) {
+        if (m_pluginId == mixxx::AnalyzerQueenMaryBeats::pluginInfo().id()) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerQueenMaryBeats>();
-        } else if (m_pluginId == mixxx::AnalyzerSoundTouchBeats::pluginInfo().id) {
+        } else if (m_pluginId == mixxx::AnalyzerSoundTouchBeats::pluginInfo().id()) {
             m_pPlugin = std::make_unique<mixxx::AnalyzerSoundTouchBeats>();
         } else {
             // This must not happen, because we have already verified above
@@ -134,7 +134,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
 
     QString pluginID = m_bpmSettings.getBeatPluginId();
     if (pluginID.isEmpty()) {
-        pluginID = defaultPlugin().id;
+        pluginID = defaultPlugin().id();
     }
 
     // If the track already has a Beats object then we need to decide whether to
@@ -159,7 +159,7 @@ bool AnalyzerBeats::shouldAnalyze(TrackPointer pTrack) const {
     }
 
     if (subVersion.isEmpty() && pBeats->findNextBeat(0) <= 0.0 &&
-            m_pluginId != mixxx::AnalyzerSoundTouchBeats::pluginInfo().id) {
+            m_pluginId != mixxx::AnalyzerSoundTouchBeats::pluginInfo().id()) {
         // This happens if the beat grid was created from the metadata BPM value.
         qDebug() << "First beat is 0 for grid so analyzing track to find first beat.";
         return true;
