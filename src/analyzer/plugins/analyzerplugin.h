@@ -20,15 +20,15 @@ class AnalyzerPluginInfo {
               m_isConstantTempoSupported(isConstantTempoSupported) {
     }
 
-    QString id() const {
+    const QString& id() const {
         return m_id;
     }
 
-    QString author() const {
+    const QString& author() const {
         return m_author;
     }
 
-    QString name() const {
+    const QString& name() const {
         return m_name;
     }
 
