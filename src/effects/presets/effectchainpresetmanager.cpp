@@ -93,7 +93,7 @@ EffectChainPresetPointer EffectChainPresetManager::quickEffectPresetAtIndex(
 void EffectChainPresetManager::importPreset() {
     QStringList fileNames = QFileDialog::getOpenFileNames(nullptr,
             tr("Import effect chain preset"),
-            QString(),
+            QDir::homePath(),
             tr("Mixxx Effect Chain Presets") + QStringLiteral(" (*") +
                     kXmlFileExtension + QStringLiteral(")"));
 
