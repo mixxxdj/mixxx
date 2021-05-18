@@ -14,6 +14,7 @@ DlgPrefEffects::DlgPrefEffects(QWidget* pParent,
         UserSettingsPointer pConfig,
         std::shared_ptr<EffectsManager> pEffectsManager)
         : DlgPreferencePage(pParent),
+          m_pFocusedChainList(nullptr),
           m_pConfig(pConfig),
           m_pVisibleEffectsList(pEffectsManager->getVisibleEffectsList()),
           m_pChainPresetManager(pEffectsManager->getChainPresetManager()),
