@@ -230,10 +230,9 @@ void EffectSlot::addEffectParameterSlot(EffectParameterType parameterType) {
                         m_group, m_iNumParameterSlots[parameterType]));
     }
     ++m_iNumParameterSlots[parameterType];
-    m_pControlNumParameterSlots[parameterType]->forceSet(
-            m_pControlNumParameterSlots[parameterType]->get() + 1);
-    VERIFY_OR_DEBUG_ASSERT(m_iNumParameterSlots[parameterType] ==
-            m_pControlNumParameterSlots[parameterType]->get()) {
+    const auto pCONumParameterSlots = m_pControlNumParameterSlots[parameterType];
+    pCONumParameterSlots->forceSet(pCONumParameterSlots->get() + 1);
+    VERIFY_OR_DEBUG_ASSERT(m_iNumParameterSlots[parameterType] == pCONumParameterSlots->get()) {
         return;
     }
     m_parameterSlots[parameterType].append(pParameterSlot);
