@@ -7,6 +7,7 @@ class EffectChainMixMode {
         DrySlashWet = 0,
         DryPlusWet = 1
     };
+    static constexpr int kNumModes = 2;
 
     static QString toString(Type type);
     static Type fromString(const QString& string);
