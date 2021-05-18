@@ -11,8 +11,8 @@ DJ mixes. Mixxx works on GNU/Linux, Windows, and macOS.
 
 To get started with Mixxx:
 
-1. For live use, [download the latest stable version][download].
-2. For experimentation and testing, [download a development release][builds].
+1. For live use, [download the latest stable version][download-stable].
+2. For experimentation and testing, [download a development release][download-testing].
 3. To live on the bleeding edge, clone the repo: `git clone https://github.com/mixxxdj/mixxx.git`
 
 ## Roadmap
@@ -104,8 +104,8 @@ Mixxx is released under the GPLv2. See the LICENSE file for a full copy of the
 license.
 
 [mixxx]: https://www.mixxx.org
-[download]: https://www.mixxx.org/download
-[builds]: https://downloads.mixxx.org/builds/
+[download-stable]: https://mixxx.org/download/#stable
+[download-testing]: https://mixxx.org/download/#testing
 [launchpad]: https://bugs.launchpad.net/mixxx
 [fileabug]: https://bugs.launchpad.net/mixxx/+filebug
 [twitter]: https://twitter.com/mixxxdj
