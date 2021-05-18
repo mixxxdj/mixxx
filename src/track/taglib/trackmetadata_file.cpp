@@ -35,7 +35,7 @@ void readAudioProperties(
                 audio::SampleRate(audioProperties.sampleRate()),
         },
                 audio::Bitrate(audioProperties.bitrate()),
-#if (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
+#if defined(TAGLIB_HAS_LENGTH_IN_MILLISECONDS) && (TAGLIB_HAS_LENGTH_IN_MILLISECONDS)
                 Duration::fromMillis(audioProperties.lengthInMilliseconds()),
 #else
                         Duration::fromSeconds(audioProperties.length()),
@@ -151,7 +151,7 @@ bool hasMP4Tag(TagLib::MP4::File& file) {
     // Note (TagLib 1.11.1): For MP4 files without file tags
     // TagLib still reports that the MP4 tag exists. Additionally
     // we need to check that the tag itself is not empty.
-#if (TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY)
+#if defined(TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY) && (TAGLIB_HAS_MP4TAG_CHECK_AND_IS_EMPTY)
     return file.hasMP4Tag() && !file.tag()->isEmpty();
 #else
     return file.tag() != nullptr;
