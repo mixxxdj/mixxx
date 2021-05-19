@@ -13,21 +13,21 @@ EffectPreset::EffectPreset()
 EffectPreset::EffectPreset(const QDomElement& effectElement)
         : EffectPreset() {
     // effectElement can come from untrusted input from the filesystem, so do not DEBUG_ASSERT
-    if (effectElement.tagName() != EffectXml::Effect) {
+    if (effectElement.tagName() != EffectXml::kEffect) {
         return;
     }
     if (!effectElement.hasChildNodes()) {
         return;
     }
 
-    m_id = XmlParse::selectNodeQString(effectElement, EffectXml::EffectId);
+    m_id = XmlParse::selectNodeQString(effectElement, EffectXml::kEffectId);
     m_backendType = EffectsBackend::backendTypeFromString(
             XmlParse::selectNodeQString(effectElement,
-                    EffectXml::EffectBackendType));
-    m_dMetaParameter = XmlParse::selectNodeDouble(effectElement, EffectXml::EffectMetaParameter);
+                    EffectXml::kEffectBackendType));
+    m_dMetaParameter = XmlParse::selectNodeDouble(effectElement, EffectXml::kEffectMetaParameter);
 
     QDomElement parametersElement =
-            XmlParse::selectElement(effectElement, EffectXml::ParametersRoot);
+            XmlParse::selectElement(effectElement, EffectXml::kParametersRoot);
     QDomNodeList parametersList = parametersElement.childNodes();
 
     for (int i = 0; i < parametersList.count(); ++i) {
@@ -69,7 +69,7 @@ EffectPreset::EffectPreset(const EffectManifestPointer pManifest)
 }
 
 const QDomElement EffectPreset::toXml(QDomDocument* doc) const {
-    QDomElement effectElement = doc->createElement(EffectXml::Effect);
+    QDomElement effectElement = doc->createElement(EffectXml::kEffect);
     if (m_id.isEmpty()) {
         return effectElement;
     }
@@ -77,20 +77,20 @@ const QDomElement EffectPreset::toXml(QDomDocument* doc) const {
     XmlParse::addElement(
             *doc,
             effectElement,
-            EffectXml::EffectMetaParameter,
+            EffectXml::kEffectMetaParameter,
             QString::number(m_dMetaParameter));
     XmlParse::addElement(
             *doc,
             effectElement,
-            EffectXml::EffectId,
+            EffectXml::kEffectId,
             m_id);
     XmlParse::addElement(
             *doc,
             effectElement,
-            EffectXml::EffectBackendType,
+            EffectXml::kEffectBackendType,
             EffectsBackend::backendTypeToString(m_backendType));
 
-    QDomElement parametersElement = doc->createElement(EffectXml::ParametersRoot);
+    QDomElement parametersElement = doc->createElement(EffectXml::kParametersRoot);
     for (const auto& pParameter : std::as_const(m_effectParameterPresets)) {
         parametersElement.appendChild(pParameter.toXml(doc));
     }

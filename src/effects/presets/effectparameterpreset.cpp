@@ -8,7 +8,7 @@ EffectParameterPreset::EffectParameterPreset() {
 }
 
 EffectParameterPreset::EffectParameterPreset(const QDomElement& parameterElement) {
-    VERIFY_OR_DEBUG_ASSERT(parameterElement.tagName() == EffectXml::Parameter) {
+    VERIFY_OR_DEBUG_ASSERT(parameterElement.tagName() == EffectXml::kParameter) {
         return;
     }
     if (!parameterElement.hasChildNodes()) {
@@ -16,21 +16,21 @@ EffectParameterPreset::EffectParameterPreset(const QDomElement& parameterElement
         m_id = QString();
         m_linkType = EffectManifestParameter::LinkType::None;
     } else {
-        m_id = XmlParse::selectNodeQString(parameterElement, EffectXml::ParameterId);
+        m_id = XmlParse::selectNodeQString(parameterElement, EffectXml::kParameterId);
 
         m_dValue = XmlParse::selectNodeDouble(parameterElement,
-                EffectXml::ParameterValue);
+                EffectXml::kParameterValue);
 
         m_linkType = EffectManifestParameter::LinkTypeFromString(
                 XmlParse::selectNodeQString(parameterElement,
-                        EffectXml::ParameterLinkType));
+                        EffectXml::kParameterLinkType));
 
         m_linkInversion = static_cast<EffectManifestParameter::LinkInversion>(
                 static_cast<int>(XmlParse::selectNodeDouble(parameterElement,
-                        EffectXml::ParameterLinkInversion)));
+                        EffectXml::kParameterLinkInversion)));
 
         m_bHidden = XmlParse::selectNodeBool(parameterElement,
-                EffectXml::ParameterHidden);
+                EffectXml::kParameterHidden);
     }
 }
 
@@ -54,26 +54,26 @@ EffectParameterPreset::EffectParameterPreset(
 const QDomElement EffectParameterPreset::toXml(QDomDocument* doc) const {
     QDomElement parameterElement;
     if (!m_id.isEmpty()) {
-        parameterElement = doc->createElement(EffectXml::Parameter);
+        parameterElement = doc->createElement(EffectXml::kParameter);
         XmlParse::addElement(*doc,
                 parameterElement,
-                EffectXml::EffectId,
+                EffectXml::kEffectId,
                 m_id);
         XmlParse::addElement(*doc,
                 parameterElement,
-                EffectXml::ParameterValue,
+                EffectXml::kParameterValue,
                 QString::number(m_dValue));
         XmlParse::addElement(*doc,
                 parameterElement,
-                EffectXml::ParameterLinkType,
+                EffectXml::kParameterLinkType,
                 EffectManifestParameter::LinkTypeToString(m_linkType));
         XmlParse::addElement(*doc,
                 parameterElement,
-                EffectXml::ParameterLinkInversion,
+                EffectXml::kParameterLinkInversion,
                 QString::number(static_cast<int>(m_linkInversion)));
         XmlParse::addElement(*doc,
                 parameterElement,
-                EffectXml::ParameterHidden,
+                EffectXml::kParameterHidden,
                 QString::number(static_cast<int>(m_bHidden)));
     }
     return parameterElement;

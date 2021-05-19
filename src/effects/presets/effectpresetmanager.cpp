@@ -71,8 +71,8 @@ void EffectPresetManager::saveDefaultForEffect(EffectPresetPointer pEffectPreset
             pEffectPreset->id(), pEffectPreset->backendType());
     m_defaultPresets.insert(pManifest, pEffectPreset);
 
-    QDomDocument doc(EffectXml::Effect);
-    doc.setContent(EffectXml::FileHeader);
+    QDomDocument doc(EffectXml::kEffect);
+    doc.setContent(EffectXml::kFileHeader);
     doc.appendChild(pEffectPreset->toXml(&doc));
 
     QString path(m_pConfig->getSettingsPath() + kEffectDefaultsDirectory);

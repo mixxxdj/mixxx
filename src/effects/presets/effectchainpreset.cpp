@@ -12,8 +12,8 @@ EffectChainPreset::EffectChainPreset()
 
 EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
     // chainElement can come from untrusted input from the filesystem, so do not DEBUG_ASSERT
-    if (chainElement.tagName() != EffectXml::Chain) {
-        qWarning() << "Effect chain preset has no" << EffectXml::Chain << "XML element";
+    if (chainElement.tagName() != EffectXml::kChain) {
+        qWarning() << "Effect chain preset has no" << EffectXml::kChain << "XML element";
         return;
     }
     if (!chainElement.hasChildNodes()) {
@@ -21,14 +21,14 @@ EffectChainPreset::EffectChainPreset(const QDomElement& chainElement) {
         return;
     }
 
-    m_name = XmlParse::selectNodeQString(chainElement, EffectXml::ChainName);
+    m_name = XmlParse::selectNodeQString(chainElement, EffectXml::kChainName);
 
-    QString mixModeStr = XmlParse::selectNodeQString(chainElement, EffectXml::ChainMixMode);
+    QString mixModeStr = XmlParse::selectNodeQString(chainElement, EffectXml::kChainMixMode);
     m_mixMode = EffectChainMixMode::fromString(mixModeStr);
 
-    m_dSuper = XmlParse::selectNodeDouble(chainElement, EffectXml::ChainSuperParameter);
+    m_dSuper = XmlParse::selectNodeDouble(chainElement, EffectXml::kChainSuperParameter);
 
-    QDomElement effectsElement = XmlParse::selectElement(chainElement, EffectXml::EffectsRoot);
+    QDomElement effectsElement = XmlParse::selectElement(chainElement, EffectXml::kEffectsRoot);
     QDomNodeList effectList = effectsElement.childNodes();
 
     for (int i = 0; i < effectList.count(); ++i) {
@@ -68,22 +68,22 @@ EffectChainPreset::EffectChainPreset(EffectPresetPointer pEffectPreset)
 }
 
 const QDomElement EffectChainPreset::toXml(QDomDocument* doc) const {
-    QDomElement chainElement = doc->createElement(EffectXml::Chain);
+    QDomElement chainElement = doc->createElement(EffectXml::kChain);
 
     XmlParse::addElement(*doc,
             chainElement,
-            EffectXml::ChainName,
+            EffectXml::kChainName,
             m_name);
     XmlParse::addElement(*doc,
             chainElement,
-            EffectXml::ChainMixMode,
+            EffectXml::kChainMixMode,
             EffectChainMixMode::toString(m_mixMode));
     XmlParse::addElement(*doc,
             chainElement,
-            EffectXml::ChainSuperParameter,
+            EffectXml::kChainSuperParameter,
             QString::number(m_dSuper));
 
-    QDomElement effectsElement = doc->createElement(EffectXml::EffectsRoot);
+    QDomElement effectsElement = doc->createElement(EffectXml::kEffectsRoot);
     for (const auto& pEffectPreset : m_effectPresets) {
         effectsElement.appendChild(pEffectPreset->toXml(doc));
     }

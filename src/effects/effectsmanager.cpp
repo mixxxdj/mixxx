@@ -200,9 +200,9 @@ void EffectsManager::readEffectsXml() {
 }
 
 void EffectsManager::saveEffectsXml() {
-    QDomDocument doc(EffectXml::Root);
-    doc.setContent(EffectXml::FileHeader);
-    QDomElement rootElement = doc.createElement(EffectXml::Root);
+    QDomDocument doc(EffectXml::kRoot);
+    doc.setContent(EffectXml::kFileHeader);
+    QDomElement rootElement = doc.createElement(EffectXml::kRoot);
     rootElement.setAttribute(
             "schemaVersion", QString::number(EffectXml::kXmlSchemaVersion));
     doc.appendChild(rootElement);

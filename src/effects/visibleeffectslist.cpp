@@ -47,16 +47,16 @@ const EffectManifestPointer VisibleEffectsList::previous(
 void VisibleEffectsList::readEffectsXml(
         const QDomDocument& doc, EffectsBackendManagerPointer pBackendManager) {
     QDomElement root = doc.documentElement();
-    QDomElement visibleEffectsElement = XmlParse::selectElement(root, EffectXml::VisibleEffects);
-    QDomNodeList effectsElementsList = visibleEffectsElement.elementsByTagName(EffectXml::Effect);
+    QDomElement visibleEffectsElement = XmlParse::selectElement(root, EffectXml::kVisibleEffects);
+    QDomNodeList effectsElementsList = visibleEffectsElement.elementsByTagName(EffectXml::kEffect);
     QList<EffectManifestPointer> list;
 
     for (int i = 0; i < effectsElementsList.count(); ++i) {
         QDomNode effectNode = effectsElementsList.at(i);
         if (effectNode.isElement()) {
-            QString id = XmlParse::selectNodeQString(effectNode, EffectXml::EffectId);
+            QString id = XmlParse::selectNodeQString(effectNode, EffectXml::kEffectId);
             QString backendString = XmlParse::selectNodeQString(
-                    effectNode, EffectXml::EffectBackendType);
+                    effectNode, EffectXml::kEffectBackendType);
             EffectBackendType backendType = EffectsBackend::backendTypeFromString(backendString);
             EffectManifestPointer pManifest = pBackendManager->getManifest(id, backendType);
             if (pManifest) {
@@ -74,18 +74,18 @@ void VisibleEffectsList::readEffectsXml(
 
 void VisibleEffectsList::saveEffectsXml(QDomDocument* pDoc) {
     QDomElement root = pDoc->documentElement();
-    QDomElement visibleEffectsElement = pDoc->createElement(EffectXml::VisibleEffects);
+    QDomElement visibleEffectsElement = pDoc->createElement(EffectXml::kVisibleEffects);
     root.appendChild(visibleEffectsElement);
     for (const auto& pManifest : std::as_const(m_list)) {
         VERIFY_OR_DEBUG_ASSERT(pManifest) {
             continue;
         }
-        QDomElement effectElement = pDoc->createElement(EffectXml::Effect);
+        QDomElement effectElement = pDoc->createElement(EffectXml::kEffect);
         visibleEffectsElement.appendChild(effectElement);
-        XmlParse::addElement(*pDoc, effectElement, EffectXml::EffectId, pManifest->id());
+        XmlParse::addElement(*pDoc, effectElement, EffectXml::kEffectId, pManifest->id());
         XmlParse::addElement(*pDoc,
                 effectElement,
-                EffectXml::EffectBackendType,
+                EffectXml::kEffectBackendType,
                 EffectsBackend::backendTypeToString(pManifest->backendType()));
     }
 }

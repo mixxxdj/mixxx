@@ -226,8 +226,8 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
         return;
     }
 
-    QDomDocument doc(EffectXml::Chain);
-    doc.setContent(EffectXml::FileHeader);
+    QDomDocument doc(EffectXml::kChain);
+    doc.setContent(EffectXml::kFileHeader);
     doc.appendChild(pPreset->toXml(&doc));
     file.write(doc.toByteArray());
     file.close();
@@ -542,8 +542,8 @@ bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
         return false;
     }
 
-    QDomDocument doc(EffectXml::Chain);
-    doc.setContent(EffectXml::FileHeader);
+    QDomDocument doc(EffectXml::kChain);
+    doc.setContent(EffectXml::kFileHeader);
     doc.appendChild(pPreset->toXml(&doc));
     file.write(doc.toByteArray());
     file.close();
@@ -565,10 +565,10 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
 
     // Reload state of standard chains
     QDomElement root = doc.documentElement();
-    QDomElement rackElement = XmlParse::selectElement(root, EffectXml::Rack);
+    QDomElement rackElement = XmlParse::selectElement(root, EffectXml::kRack);
     QDomElement chainsElement =
-            XmlParse::selectElement(rackElement, EffectXml::ChainsRoot);
-    QDomNodeList chainsList = chainsElement.elementsByTagName(EffectXml::Chain);
+            XmlParse::selectElement(rackElement, EffectXml::kChainsRoot);
+    QDomNodeList chainsList = chainsElement.elementsByTagName(EffectXml::kChain);
 
     for (int i = 0; i < chainsList.count(); ++i) {
         QDomNode chainNode = chainsList.at(i);
@@ -586,9 +586,9 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // Reload order of custom chain presets
     QStringList chainPresetsSorted;
     QDomElement chainPresetsElement =
-            XmlParse::selectElement(root, EffectXml::ChainPresetList);
+            XmlParse::selectElement(root, EffectXml::kChainPresetList);
     QDomNodeList presetNameList =
-            chainPresetsElement.elementsByTagName(EffectXml::ChainPresetName);
+            chainPresetsElement.elementsByTagName(EffectXml::kChainPresetName);
     for (int i = 0; i < presetNameList.count(); ++i) {
         QDomNode presetNameNode = presetNameList.at(i);
         if (presetNameNode.isElement()) {
@@ -616,9 +616,9 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
     // Reload order of QuickEffect chain presets
     QStringList quickEffectChainPresetsSorted;
     QDomElement quickEffectChainPresetsElement =
-            XmlParse::selectElement(root, EffectXml::QuickEffectList);
+            XmlParse::selectElement(root, EffectXml::kQuickEffectList);
     QDomNodeList quickEffectPresetNameList =
-            quickEffectChainPresetsElement.elementsByTagName(EffectXml::ChainPresetName);
+            quickEffectChainPresetsElement.elementsByTagName(EffectXml::kChainPresetName);
     for (int i = 0; i < quickEffectPresetNameList.count(); ++i) {
         QDomNode presetNameNode = quickEffectPresetNameList.at(i);
         if (presetNameNode.isElement()) {
@@ -645,10 +645,10 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
 
     // Reload presets that were loaded into QuickEffects on last shutdown
     QDomElement quickEffectPresetsElement =
-            XmlParse::selectElement(root, EffectXml::QuickEffectChainPresets);
+            XmlParse::selectElement(root, EffectXml::kQuickEffectChainPresets);
     QDomNodeList quickEffectNodeList =
             quickEffectPresetsElement.elementsByTagName(
-                    EffectXml::ChainPresetName);
+                    EffectXml::kChainPresetName);
     for (int i = 0; i < quickEffectNodeList.count(); ++i) {
         QDomElement presetNameElement = quickEffectNodeList.at(i).toElement();
         if (!presetNameElement.isNull()) {
@@ -666,9 +666,9 @@ EffectsXmlData EffectChainPresetManager::readEffectsXml(
 void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsXmlData& data) {
     // Save presets for current state of standard chains
     QDomElement rootElement = pDoc->documentElement();
-    QDomElement rackElement = pDoc->createElement(EffectXml::Rack);
+    QDomElement rackElement = pDoc->createElement(EffectXml::kRack);
     rootElement.appendChild(rackElement);
-    QDomElement chainsElement = pDoc->createElement(EffectXml::ChainsRoot);
+    QDomElement chainsElement = pDoc->createElement(EffectXml::kChainsRoot);
     rackElement.appendChild(chainsElement);
     for (const auto& pPreset : std::as_const(data.standardEffectChainPresets)) {
         chainsElement.appendChild(pPreset->toXml(pDoc));
@@ -676,36 +676,36 @@ void EffectChainPresetManager::saveEffectsXml(QDomDocument* pDoc, const EffectsX
 
     // Save order of custom chain presets
     QDomElement chainPresetListElement =
-            pDoc->createElement(EffectXml::ChainPresetList);
+            pDoc->createElement(EffectXml::kChainPresetList);
     for (const auto& pPreset : std::as_const(m_effectChainPresetsSorted)) {
         XmlParse::addElement(*pDoc,
                 chainPresetListElement,
-                EffectXml::ChainPresetName,
+                EffectXml::kChainPresetName,
                 pPreset->name());
     }
     rootElement.appendChild(chainPresetListElement);
 
     // Save order of QuickEffect chain presets
     QDomElement quickEffectChainPresetListElement =
-            pDoc->createElement(EffectXml::QuickEffectList);
+            pDoc->createElement(EffectXml::kQuickEffectList);
     for (const auto& pPreset : std::as_const(m_quickEffectChainPresetsSorted)) {
         XmlParse::addElement(*pDoc,
                 quickEffectChainPresetListElement,
-                EffectXml::ChainPresetName,
+                EffectXml::kChainPresetName,
                 pPreset->name());
     }
     rootElement.appendChild(quickEffectChainPresetListElement);
 
     // Save which presets are loaded to QuickEffects
     QDomElement quickEffectPresetsElement =
-            pDoc->createElement(EffectXml::QuickEffectChainPresets);
+            pDoc->createElement(EffectXml::kQuickEffectChainPresets);
     for (auto it = data.quickEffectChainPresets.begin();
             it != data.quickEffectChainPresets.end();
             it++) {
         QDomElement quickEffectElement = XmlParse::addElement(
                 *pDoc,
                 quickEffectPresetsElement,
-                EffectXml::ChainPresetName,
+                EffectXml::kChainPresetName,
                 it.value()->name());
         quickEffectElement.setAttribute(QStringLiteral("group"), it.key());
     }
