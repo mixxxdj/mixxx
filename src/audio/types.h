@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QtDebug>
+#include <cstdint>
 
 #include "util/assert.h"
 #include "util/optional.h"
@@ -34,7 +35,9 @@ QDebug operator<<(QDebug dbg, ChannelLayout arg);
 
 class ChannelCount {
   public:
-    typedef SINT value_t;
+    // Use a native type with more than 8 bits to avoid -Werror=type-limits
+    // errors on comparisons with the min/max constants.
+    typedef uint16_t value_t;
 
   private:
     // The default value is invalid and indicates a missing or unknown value.
@@ -73,8 +76,7 @@ class ChannelCount {
     }
 
     constexpr bool isValid() const {
-        return (kValueMin <= m_value) &&
-                (m_value <= kValueMax);
+        return kValueMin <= m_value && m_value <= kValueMax;
     }
 
     /*implicit*/ constexpr operator value_t() const {
@@ -87,7 +89,7 @@ class ChannelCount {
 
 class SampleRate {
   public:
-    typedef SINT value_t;
+    typedef uint32_t value_t;
 
   private:
     // The default value is invalid and indicates a missing or unknown value.
@@ -114,8 +116,7 @@ class SampleRate {
     }
 
     constexpr bool isValid() const {
-        return (kValueMin <= m_value) &&
-                (m_value <= kValueMax);
+        return kValueMin <= m_value && m_value <= kValueMax;
     }
 
     void operator=(const value_t& value) {
@@ -145,7 +146,7 @@ QDebug operator<<(QDebug dbg, SampleRate arg);
 // expected quality.
 class Bitrate {
   public:
-    typedef SINT value_t;
+    typedef uint32_t value_t;
 
   private:
     // The default value is invalid and indicates a missing or unknown value.
