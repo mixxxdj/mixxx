@@ -25,10 +25,10 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     depth->setShortName(QObject::tr("Bit Depth"));
     depth->setDescription(QObject::tr(
             "The bit depth of the samples"));
-    depth->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    depth->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
+    depth->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    depth->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    depth->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
+    depth->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::Inverted);
     depth->setNeutralPointOnScale(1.0);
     // for values -1 0 +1
     // we do not allow a 1 bit version because this causes a distortion because of the missing sign bit
@@ -40,10 +40,10 @@ EffectManifestPointer BitCrusherEffect::getManifest() {
     frequency->setShortName(QObject::tr("Down"));
     frequency->setDescription(QObject::tr(
             "The sample rate to which the signal is downsampled"));
-    frequency->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    frequency->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
-    frequency->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    frequency->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
+    frequency->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    frequency->setUnitsHint(EffectManifestParameter::UnitsHint::SampleRate);
+    frequency->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
+    frequency->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::Inverted);
     frequency->setNeutralPointOnScale(1.0);
     frequency->setRange(0.02, 1.0, 1.0);
 

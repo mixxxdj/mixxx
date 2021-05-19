@@ -439,7 +439,7 @@ void DlgPrefEQ::slotUpdateMainEQParameter(int value) {
         QSlider* slider = qobject_cast<QSlider*>(sender());
         int index = slider->property("index").toInt();
         auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
-                EffectManifestParameter::ParameterType::KNOB, index);
+                EffectManifestParameter::ParameterType::Knob, index);
 
         if (pParameterSlot->isLoaded()) {
             double dValue = value / 100.0;
@@ -558,10 +558,10 @@ void DlgPrefEQ::setUpMainEQ() {
     // Load parameters from preferences:
     EffectSlotPointer pEffectSlot(m_pEffectMainEQ);
     if (!pEffectSlot.isNull()) {
-        int knobNum = pEffectSlot->numParameters(EffectManifestParameter::ParameterType::KNOB);
+        int knobNum = pEffectSlot->numParameters(EffectManifestParameter::ParameterType::Knob);
         for (int i = 0; i < knobNum; i++) {
             auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
-                    EffectManifestParameter::ParameterType::KNOB, i);
+                    EffectManifestParameter::ParameterType::Knob, i);
 
             if (pParameterSlot->isLoaded()) {
                 QString strValue = m_pConfig->getValueString(ConfigKey(kConfigKey,
@@ -603,13 +603,13 @@ void DlgPrefEQ::slotMainEqEffectChanged(int effectIndex) {
             pEffectSlot->setEnabled(true);
             m_pEffectMainEQ = pEffectSlot;
 
-            int knobNum = pEffectSlot->numParameters(EffectManifestParameter::ParameterType::KNOB);
+            int knobNum = pEffectSlot->numParameters(EffectManifestParameter::ParameterType::Knob);
 
             // Create and set up Main EQ's sliders
             int i;
             for (i = 0; i < knobNum; i++) {
                 auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
-                        EffectManifestParameter::ParameterType::KNOB, i);
+                        EffectManifestParameter::ParameterType::Knob, i);
 
                 if (pParameterSlot->isLoaded()) {
                     EffectManifestParameterPointer pManifestParameter =
@@ -690,10 +690,10 @@ QString DlgPrefEQ::getEQEffectGroupForDeck(int deck) const {
 void DlgPrefEQ::slotMainEQToDefault() {
     EffectSlotPointer pEffectSlot(m_pEffectMainEQ);
     if (!pEffectSlot.isNull()) {
-        int knobNum = pEffectSlot->numParameters(EffectManifestParameter::ParameterType::KNOB);
+        int knobNum = pEffectSlot->numParameters(EffectManifestParameter::ParameterType::Knob);
         for (int i = 0; i < knobNum; i++) {
             auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
-                    EffectManifestParameter::ParameterType::KNOB, i);
+                    EffectManifestParameter::ParameterType::Knob, i);
             if (pParameterSlot->isLoaded()) {
                 double defaultValue = pParameterSlot->getManifest()->getDefault();
                 setMainEQParameter(i, defaultValue);
@@ -706,7 +706,7 @@ void DlgPrefEQ::setMainEQParameter(int i, double value) {
     EffectSlotPointer pEffectSlot(m_pEffectMainEQ);
     if (!pEffectSlot.isNull()) {
         auto pParameterSlot = pEffectSlot->getEffectParameterSlot(
-                EffectManifestParameter::ParameterType::KNOB, i);
+                EffectManifestParameter::ParameterType::Knob, i);
 
         if (pParameterSlot->isLoaded()) {
             pParameterSlot->slotParameterValueChanged(value);

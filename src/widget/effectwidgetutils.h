@@ -81,7 +81,7 @@ class EffectWidgetUtils {
         if (parameterNumberOk) {
             // XML effect nodes are 1-indexed.
             return pEffectSlot->getEffectParameterSlot(
-                    EffectManifestParameter::ParameterType::KNOB,
+                    EffectManifestParameter::ParameterType::Knob,
                     parameterNumber - 1);
         }
         return EffectParameterSlotBasePointer();
@@ -100,7 +100,7 @@ class EffectWidgetUtils {
         if (parameterNumberOk) {
             // XML effect nodes are 1-indexed.
             return pEffectSlot->getEffectParameterSlot(
-                    EffectManifestParameter::ParameterType::BUTTON,
+                    EffectManifestParameter::ParameterType::Button,
                     parameterNumber - 1);
         }
         return EffectParameterSlotBasePointer();

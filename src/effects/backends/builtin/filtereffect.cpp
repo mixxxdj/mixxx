@@ -31,9 +31,9 @@ EffectManifestPointer FilterEffect::getManifest() {
     lpf->setShortName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr(
             "Corner frequency ratio of the low pass filter"));
-    lpf->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    lpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
-    lpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_LEFT);
+    lpf->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    lpf->setUnitsHint(EffectManifestParameter::UnitsHint::Hertz);
+    lpf->setDefaultLinkType(EffectManifestParameter::LinkType::LinkedLeft);
     lpf->setNeutralPointOnScale(1);
     lpf->setRange(kMinCorner, kMaxCorner, kMaxCorner);
 
@@ -44,8 +44,8 @@ EffectManifestPointer FilterEffect::getManifest() {
     q->setDescription(QObject::tr(
             "Resonance of the filters\n"
             "Default: flat top")); // What does this mean?
-    q->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    q->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
+    q->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    q->setUnitsHint(EffectManifestParameter::UnitsHint::SampleRate);
     q->setRange(0.4, 0.707106781, 4.0); // 0.707106781 = Butterworth
 
     EffectManifestParameterPointer hpf = pManifest->addParameter();
@@ -54,9 +54,9 @@ EffectManifestPointer FilterEffect::getManifest() {
     hpf->setShortName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr(
             "Corner frequency ratio of the high pass filter"));
-    hpf->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    hpf->setUnitsHint(EffectManifestParameter::UnitsHint::HERTZ);
-    hpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_RIGHT);
+    hpf->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    hpf->setUnitsHint(EffectManifestParameter::UnitsHint::Hertz);
+    hpf->setDefaultLinkType(EffectManifestParameter::LinkType::LinkedRight);
     hpf->setNeutralPointOnScale(0.0);
     hpf->setRange(kMinCorner, kMinCorner, kMaxCorner);
 

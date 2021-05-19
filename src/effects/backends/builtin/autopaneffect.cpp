@@ -33,10 +33,10 @@ EffectManifestPointer AutoPanEffect::getManifest() {
             "How fast the sound goes from one side to another\n"
             "1/4 - 4 beats rounded to 1/2 beat if tempo is detected\n"
             "1/4 - 4 seconds if no tempo is detected"));
-    period->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    period->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    period->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::INVERTED);
+    period->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    period->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    period->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
+    period->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::Inverted);
     period->setRange(0.0, 2.0, 4.0);
 
     EffectManifestParameterPointer smoothing = pManifest->addParameter();
@@ -45,9 +45,9 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     smoothing->setShortName(QObject::tr("Smooth"));
     smoothing->setDescription(QObject::tr(
             "How smoothly the signal goes from one side to the other"));
-    smoothing->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    smoothing->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    smoothing->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    smoothing->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    smoothing->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     smoothing->setRange(0.25, 0.50, 0.50); // There are two steps per period so max is half
 
     // TODO(Ferran Pujol): when KnobComposedMaskedRing branch is merged to master,
@@ -60,9 +60,9 @@ EffectManifestPointer AutoPanEffect::getManifest() {
     width->setShortName(QObject::tr("Width"));
     width->setDescription(QObject::tr(
             "How far the signal goes to each side"));
-    width->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    width->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    width->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    width->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    width->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     width->setRange(0.0, 0.5, 1.0); // 0.02 * sampleRate => 20ms
 
     return pManifest;

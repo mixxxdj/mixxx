@@ -28,8 +28,8 @@ EffectManifestPointer ReverbEffect::getManifest() {
     decay->setShortName(QObject::tr("Decay"));
     decay->setDescription(QObject::tr(
             "Lower decay values cause reverberations to fade out more quickly."));
-    decay->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    decay->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    decay->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    decay->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     decay->setRange(0, 0.5, 1);
 
     EffectManifestParameterPointer bandwidth = pManifest->addParameter();
@@ -39,8 +39,8 @@ EffectManifestPointer ReverbEffect::getManifest() {
     bandwidth->setDescription(QObject::tr(
             "Bandwidth of the low pass filter at the input.\n"
             "Higher values result in less attenuation of high frequencies."));
-    bandwidth->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    bandwidth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    bandwidth->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    bandwidth->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     bandwidth->setRange(0, 1, 1);
 
     EffectManifestParameterPointer damping = pManifest->addParameter();
@@ -50,8 +50,8 @@ EffectManifestPointer ReverbEffect::getManifest() {
     damping->setDescription(
             QObject::tr("Higher damping values cause high frequencies to decay "
                         "more quickly than low frequencies."));
-    damping->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    damping->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    damping->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    damping->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     damping->setRange(0, 0, 1);
 
     EffectManifestParameterPointer send = pManifest->addParameter();
@@ -60,10 +60,10 @@ EffectManifestPointer ReverbEffect::getManifest() {
     send->setShortName(QObject::tr("Send"));
     send->setDescription(QObject::tr(
             "How much of the signal to send in to the effect"));
-    send->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
-    send->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::NOT_INVERTED);
+    send->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    send->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    send->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
+    send->setDefaultLinkInversion(EffectManifestParameter::LinkInversion::NotInverted);
     send->setRange(0, 0, 1);
 
     return pManifest;

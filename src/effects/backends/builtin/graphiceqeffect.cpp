@@ -31,8 +31,8 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
     low->setShortName(QString("%1 Hz").arg(centerFrequencies[0]));
     low->setDescription(QObject::tr(
             "Gain for Low Filter"));
-    low->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    low->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    low->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     low->setNeutralPointOnScale(0.5);
     low->setRange(-12, 0, 12);
 
@@ -51,8 +51,8 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
         mid->setDescription(QObject::tr(
                 "Gain for Band Filter %1")
                                     .arg(i + 1));
-        mid->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-        mid->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+        mid->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+        mid->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         mid->setNeutralPointOnScale(0.5);
         mid->setRange(-12, 0, 12);
     }
@@ -62,8 +62,8 @@ EffectManifestPointer GraphicEQEffect::getManifest() {
     high->setName(QString("%1 kHz").arg(centerFrequencies[7] / 1000));
     high->setDescription(QObject::tr(
             "Gain for High Filter"));
-    high->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    high->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    high->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    high->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     high->setRange(-12, 0, 12);
 
     return pManifest;

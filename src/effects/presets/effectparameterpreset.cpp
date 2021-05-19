@@ -14,7 +14,7 @@ EffectParameterPreset::EffectParameterPreset(const QDomElement& parameterElement
     if (!parameterElement.hasChildNodes()) {
         m_dValue = 0.0;
         m_id = QString();
-        m_linkType = EffectManifestParameter::LinkType::NONE;
+        m_linkType = EffectManifestParameter::LinkType::None;
     } else {
         m_id = XmlParse::selectNodeQString(parameterElement, EffectXml::ParameterId);
 

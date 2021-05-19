@@ -68,7 +68,7 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             param->setId(symbol);
             // node must not be freed here, it is owned by port
 
-            param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+            param->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
             if (isnan(m_default[i]) || m_default[i] < m_minimum[i] || m_default[i] > m_maximum[i]) {
                 m_default[i] = m_minimum[i];
             }
@@ -76,14 +76,14 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
 
             // Set the appropriate Hints
             if (lilv_port_has_property(m_pLV2plugin, port, properties["button_port"])) {
-                param->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
+                param->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
                 buildEnumerationOptions(port, param);
-                param->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
+                param->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
             } else if (lilv_port_has_property(m_pLV2plugin, port, properties["integer_port"])) {
-                param->setValueScaler(EffectManifestParameter::ValueScaler::INTEGRAL);
+                param->setValueScaler(EffectManifestParameter::ValueScaler::Integral);
             } else {
-                param->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
+                param->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
             }
         }
     }
@@ -109,8 +109,8 @@ LV2Manifest::LV2Manifest(const LilvPlugin* plug,
             param->setId(symbol);
             // info must not be freed here, it is owned by port
 
-            param->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-            param->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
+            param->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+            param->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
             if (lilv_port_has_property(m_pLV2plugin, port, properties["enumeration_port"])) {
                 buildEnumerationOptions(port, param);
             } else {

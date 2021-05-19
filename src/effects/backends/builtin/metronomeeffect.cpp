@@ -28,8 +28,8 @@ EffectManifestPointer MetronomeEffect::getManifest() {
     period->setId("bpm");
     period->setName(QObject::tr("BPM"));
     period->setDescription(QObject::tr("Set the beats per minute value of the click sound"));
-    period->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    period->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    period->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    period->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     period->setRange(40, 120, 208);
 
     // Period unit
@@ -38,8 +38,8 @@ EffectManifestPointer MetronomeEffect::getManifest() {
     periodUnit->setName(QObject::tr("Sync"));
     periodUnit->setDescription(QObject::tr(
             "Synchronizes the BPM with the track if it can be retrieved"));
-    periodUnit->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-    periodUnit->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    periodUnit->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    periodUnit->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     periodUnit->setRange(0, 1, 1);
 
     return pManifest;

@@ -13,80 +13,89 @@ typedef QSharedPointer<EffectManifestParameter> EffectManifestParameterPointer;
 
 class EffectManifestParameter {
   public:
-    enum class ParameterType {
-        KNOB,
-        BUTTON,
-
-        NUM_TYPES
+    enum class ParameterType : int {
+        Knob,
+        Button,
+        NumTypes,
     };
 
-    enum class ValueScaler {
-        UNKNOWN = 0,
-        LINEAR,
-        LINEAR_INVERSE,
-        LOGARITHMIC,
-        LOGARITHMIC_INVERSE,
-        INTEGRAL, /// A step rotary, steps given by m_steps
-                  /// are arranged with equal distance on scale
-        TOGGLE    /// For button and enum controls, not accessible
-                  /// from many controllers, no linking to meta knob
+    enum class ValueScaler : int {
+        Unknown = 0,
+        Linear,
+        LinearInverse,
+        Logarithmic,
+        LogarithmicInverse,
+        /// A step rotary, steps given by m_steps are arranged with equal
+        /// distance on scale
+        Integral,
+        /// For button and enum controls, not accessible from many controllers,
+        /// no linking to meta knob
+        Toggle,
     };
 
-    enum class UnitsHint {
-        UNKNOWN = 0,
-        TIME,
-        HERTZ,
-        SAMPLERATE, /// fraction of the samplerate
-        BEATS,      /// multiples of a beat
+    enum class UnitsHint : int {
+        Unknown = 0,
+        Time,
+        Hertz,
+        /// Fraction of the Sample Rate
+        SampleRate,
+        /// Multiples of a Beat
+        Beats,
     };
 
-    enum class LinkType {
-        NONE = 0,          /// Not controlled by the meta knob
-        LINKED,            /// Controlled by the meta knob as it is
-        LINKED_LEFT,       /// Controlled by the left side of the meta knob
-        LINKED_RIGHT,      /// Controlled by the right side of the meta knob
-        LINKED_LEFT_RIGHT, /// Controlled by both sides of the meta knob
-        NUM_LINK_TYPES
+    enum class LinkType : int {
+        /// Not controlled by the meta knob
+        None = 0,
+        /// Controlled by the meta knob as it is
+        Linked,
+        /// Controlled by the left side of the meta knob
+        LinkedLeft,
+        /// Controlled by the right side of the meta knob
+        LinkedRight,
+        /// Controlled by both sides of the meta knob
+        LinkedLeftRight,
+        NumLinkTypes,
     };
 
     static QString LinkTypeToString(LinkType type) {
-        if (type == LinkType::LINKED) {
+        switch (type) {
+        case LinkType::Linked:
             return QLatin1String("LINKED");
-        } else if (type == LinkType::LINKED_LEFT) {
+        case LinkType::LinkedLeft:
             return QLatin1String("LINKED_LEFT");
-        } else if (type == LinkType::LINKED_RIGHT) {
+        case LinkType::LinkedRight:
             return QLatin1String("LINKED_RIGHT");
-        } else if (type == LinkType::LINKED_LEFT_RIGHT) {
+        case LinkType::LinkedLeftRight:
             return QLatin1String("LINKED_LEFT_RIGHT");
-        } else {
+        default:
             return QLatin1String("NONE");
         }
     }
 
     static LinkType LinkTypeFromString(const QString& string) {
         if (string == QLatin1String("LINKED")) {
-            return LinkType::LINKED;
+            return LinkType::Linked;
         } else if (string == QLatin1String("LINKED_LEFT")) {
-            return LinkType::LINKED_LEFT;
+            return LinkType::LinkedLeft;
         } else if (string == QLatin1String("LINKED_RIGHT")) {
-            return LinkType::LINKED_RIGHT;
+            return LinkType::LinkedRight;
         } else if (string == QLatin1String("LINKED_LEFT_RIGHT")) {
-            return LinkType::LINKED_LEFT_RIGHT;
+            return LinkType::LinkedLeftRight;
         } else {
-            return LinkType::NONE;
+            return LinkType::None;
         }
     }
 
-    enum class LinkInversion {
-        NOT_INVERTED = 0,
-        INVERTED = 1
+    enum class LinkInversion : int {
+        NotInverted = 0,
+        Inverted = 1
     };
 
     EffectManifestParameter()
-            : m_valueScaler(ValueScaler::UNKNOWN),
-              m_unitsHint(UnitsHint::UNKNOWN),
-              m_defaultLinkType(LinkType::NONE),
-              m_defaultLinkInversion(LinkInversion::NOT_INVERTED),
+            : m_valueScaler(ValueScaler::Unknown),
+              m_unitsHint(UnitsHint::Unknown),
+              m_defaultLinkType(LinkType::None),
+              m_defaultLinkInversion(LinkInversion::NotInverted),
               m_neutralPointOnScale(0.0),
               m_default(0),
               m_minimum(0),
@@ -148,10 +157,10 @@ class EffectManifestParameter {
     }
     void setValueScaler(ValueScaler valueScaler) {
         m_valueScaler = valueScaler;
-        if (valueScaler == ValueScaler::TOGGLE) {
-            setParameterType(ParameterType::BUTTON);
+        if (valueScaler == ValueScaler::Toggle) {
+            setParameterType(ParameterType::Button);
         } else {
-            setParameterType(ParameterType::KNOB);
+            setParameterType(ParameterType::Knob);
         }
     }
 

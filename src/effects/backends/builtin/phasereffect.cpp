@@ -35,8 +35,8 @@ EffectManifestPointer PhaserEffect::getManifest() {
             "Period of the LFO (low frequency oscillator)\n"
             "1/4 - 4 beats rounded to 1/2 beat if tempo is detected\n"
             "1/4 - 4 seconds if no tempo is detected"));
-    period->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    period->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
+    period->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    period->setUnitsHint(EffectManifestParameter::UnitsHint::Beats);
     period->setRange(0.0, 1.0, 4.0);
 
     EffectManifestParameterPointer fb = pManifest->addParameter();
@@ -45,8 +45,8 @@ EffectManifestPointer PhaserEffect::getManifest() {
     fb->setShortName(QObject::tr("Feedback"));
     fb->setDescription(QObject::tr(
             "Controls how much of the output signal is looped"));
-    fb->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    fb->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    fb->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    fb->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     fb->setRange(-1.0, 0.0, 1.0);
 
     EffectManifestParameterPointer range = pManifest->addParameter();
@@ -55,8 +55,8 @@ EffectManifestPointer PhaserEffect::getManifest() {
     range->setShortName(QObject::tr("Range"));
     range->setDescription(QObject::tr(
             "Controls the frequency range across which the notches sweep."));
-    range->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    range->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    range->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    range->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     range->setRange(0.05, 1.0, 1.0);
 
     EffectManifestParameterPointer stages = pManifest->addParameter();
@@ -65,8 +65,8 @@ EffectManifestPointer PhaserEffect::getManifest() {
     stages->setShortName(QObject::tr("Stages"));
     stages->setDescription(QObject::tr(
             "Number of stages")); // stages of what?
-    stages->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    stages->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    stages->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    stages->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     stages->setRange(1.0, 3.5, 6.0);
 
     EffectManifestParameterPointer depth = pManifest->addParameter();
@@ -75,9 +75,9 @@ EffectManifestPointer PhaserEffect::getManifest() {
     depth->setShortName(QObject::tr("Depth"));
     depth->setDescription(QObject::tr(
             "Intensity of the effect"));
-    depth->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    depth->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    depth->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    depth->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     depth->setRange(0.5, 0.5, 1.0);
 
     EffectManifestParameterPointer triplet = pManifest->addParameter();
@@ -86,8 +86,8 @@ EffectManifestPointer PhaserEffect::getManifest() {
     triplet->setShortName(QObject::tr("Triplets"));
     triplet->setDescription(QObject::tr(
             "Divide rounded 1/2 beats of the Period parameter by 3."));
-    triplet->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-    triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    triplet->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    triplet->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     triplet->setRange(0, 0, 1);
 
     EffectManifestParameterPointer stereo = pManifest->addParameter();
@@ -97,8 +97,8 @@ EffectManifestPointer PhaserEffect::getManifest() {
     stereo->setDescription(QObject::tr(
             "Sets the LFOs (low frequency oscillators) for the left and right "
             "channels out of phase with each others"));
-    stereo->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-    stereo->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    stereo->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    stereo->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     stereo->setRange(0, 0, 1);
 
     return pManifest;

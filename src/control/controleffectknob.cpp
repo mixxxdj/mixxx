@@ -15,13 +15,13 @@ void ControlEffectKnob::setBehaviour(EffectManifestParameter::ValueScaler type,
         return;
     }
 
-    if (type == EffectManifestParameter::ValueScaler::LINEAR) {
+    if (type == EffectManifestParameter::ValueScaler::Linear) {
         m_pControl->setBehavior(new ControlLinPotmeterBehavior(
                 dMinValue, dMaxValue, false));
-    } else if (type == EffectManifestParameter::ValueScaler::LINEAR_INVERSE) {
+    } else if (type == EffectManifestParameter::ValueScaler::LinearInverse) {
         m_pControl->setBehavior(new ControlLinInvPotmeterBehavior(
                 dMinValue, dMaxValue, false));
-    } else if (type == EffectManifestParameter::ValueScaler::LOGARITHMIC) {
+    } else if (type == EffectManifestParameter::ValueScaler::Logarithmic) {
         if (dMinValue == 0) {
             if (dMaxValue == 1.0) {
                 // Volume like control
@@ -39,7 +39,7 @@ void ControlEffectKnob::setBehaviour(EffectManifestParameter::ValueScaler type,
             m_pControl->setBehavior(
                     new ControlLogPotmeterBehavior(dMinValue, dMaxValue, -40));
         }
-    } else if (type == EffectManifestParameter::ValueScaler::LOGARITHMIC_INVERSE) {
+    } else if (type == EffectManifestParameter::ValueScaler::LogarithmicInverse) {
         m_pControl->setBehavior(
                 new ControlLogInvPotmeterBehavior(dMinValue, dMaxValue, -40));
     }

@@ -70,7 +70,7 @@ void WEffectChainPresetButton::populateMenu() {
         auto pEffectMenu = make_parented<QMenu>(m_pMenu);
         pEffectMenu->setTitle(pEffectSlot->getManifest()->displayName());
 
-        int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NUM_TYPES);
+        int numTypes = static_cast<int>(EffectManifestParameter::ParameterType::NumTypes);
         for (int parameterTypeId = 0; parameterTypeId < numTypes; ++parameterTypeId) {
             const EffectManifestParameter::ParameterType parameterType =
                     static_cast<EffectManifestParameter::ParameterType>(parameterTypeId);

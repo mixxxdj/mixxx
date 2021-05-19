@@ -41,20 +41,20 @@ EffectSlot::EffectSlot(const QString& group,
     m_pControlLoaded = std::make_unique<ControlObject>(ConfigKey(m_group, "loaded"));
     m_pControlLoaded->setReadOnly();
 
-    m_pControlNumParameters.insert(EffectParameterType::KNOB,
+    m_pControlNumParameters.insert(EffectParameterType::Knob,
             QSharedPointer<ControlObject>(
                     new ControlObject(ConfigKey(m_group, "num_parameters"))));
-    m_pControlNumParameters.insert(EffectParameterType::BUTTON,
+    m_pControlNumParameters.insert(EffectParameterType::Button,
             QSharedPointer<ControlObject>(
                     new ControlObject(ConfigKey(m_group, "num_button_parameters"))));
     for (const auto& pControlNumParameters : std::as_const(m_pControlNumParameters)) {
         pControlNumParameters->setReadOnly();
     }
 
-    m_pControlNumParameterSlots.insert(EffectParameterType::KNOB,
+    m_pControlNumParameterSlots.insert(EffectParameterType::Knob,
             QSharedPointer<ControlObject>(
                     new ControlObject(ConfigKey(m_group, "num_parameterslots"))));
-    m_pControlNumParameterSlots.insert(EffectParameterType::BUTTON,
+    m_pControlNumParameterSlots.insert(EffectParameterType::Button,
             QSharedPointer<ControlObject>(
                     new ControlObject(ConfigKey(m_group, "num_button_parameterslots"))));
     for (const auto& pControlNumParameterSlots : std::as_const(m_pControlNumParameterSlots)) {
@@ -110,8 +110,8 @@ EffectSlot::EffectSlot(const QString& group,
             &EffectSlot::slotClear);
 
     for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
-        addEffectParameterSlot(EffectParameterType::KNOB);
-        addEffectParameterSlot(EffectParameterType::BUTTON);
+        addEffectParameterSlot(EffectParameterType::Knob);
+        addEffectParameterSlot(EffectParameterType::Button);
     }
 
     m_pControlMetaParameter = std::make_unique<ControlPotmeter>(
@@ -220,11 +220,11 @@ EffectManifestPointer EffectSlot::getManifest() const {
 void EffectSlot::addEffectParameterSlot(EffectParameterType parameterType) {
     EffectParameterSlotBasePointer pParameterSlot =
             EffectParameterSlotBasePointer();
-    if (parameterType == EffectParameterType::KNOB) {
+    if (parameterType == EffectParameterType::Knob) {
         pParameterSlot = static_cast<EffectParameterSlotBasePointer>(
                 new EffectKnobParameterSlot(
                         m_group, m_iNumParameterSlots[parameterType]));
-    } else if (parameterType == EffectParameterType::BUTTON) {
+    } else if (parameterType == EffectParameterType::Button) {
         pParameterSlot = static_cast<EffectParameterSlotBasePointer>(
                 new EffectButtonParameterSlot(
                         m_group, m_iNumParameterSlots[parameterType]));
@@ -318,7 +318,7 @@ void EffectSlot::loadEffectInner(const EffectManifestPointer pManifest,
 
     // Map the parameter slots to the EffectParameters.
     // The slot order is determined by the order parameters are listed in the preset.
-    int numTypes = static_cast<int>(EffectParameterType::NUM_TYPES);
+    int numTypes = static_cast<int>(EffectParameterType::NumTypes);
     for (int parameterTypeId = 0; parameterTypeId < numTypes;
             ++parameterTypeId) {
         const EffectParameterType parameterType =
@@ -403,7 +403,7 @@ void EffectSlot::unloadEffect() {
 
 void EffectSlot::loadParameters() {
     //qDebug() << this << m_group << "loading parameters";
-    int numTypes = static_cast<int>(EffectParameterType::NUM_TYPES);
+    int numTypes = static_cast<int>(EffectParameterType::NumTypes);
     for (int parameterTypeId = 0; parameterTypeId < numTypes;
             ++parameterTypeId) {
         const EffectParameterType parameterType =
@@ -539,7 +539,7 @@ void EffectSlot::slotClear(double v) {
 void EffectSlot::syncSofttakeover() {
     for (const auto& parameterSlotList : std::as_const(m_parameterSlots)) {
         for (const auto& pParameterSlot : std::as_const(parameterSlotList)) {
-            if (pParameterSlot->parameterType() == EffectParameterType::KNOB) {
+            if (pParameterSlot->parameterType() == EffectParameterType::Knob) {
                 pParameterSlot->syncSofttakeover();
             }
         }
@@ -572,9 +572,9 @@ void EffectSlot::slotEffectMetaParameter(double v, bool force) {
     }
 
     // Only knobs are linked to the metaknob; not buttons
-    const auto& knobParameters = m_parameterSlots.value(EffectParameterType::KNOB);
+    const auto& knobParameters = m_parameterSlots.value(EffectParameterType::Knob);
     for (const auto& pParameterSlot : std::as_const(knobParameters)) {
-        if (pParameterSlot->parameterType() == EffectParameterType::KNOB) {
+        if (pParameterSlot->parameterType() == EffectParameterType::Knob) {
             pParameterSlot->onEffectMetaParameterChanged(v, force);
         }
     }

@@ -9,10 +9,10 @@ class EqualizerUtil {
     // Creates common EQ parameters like low/mid/high gain and kill buttons.
     static void createCommonParameters(EffectManifest* pManifest, bool linear) {
         EffectManifestParameter::ValueScaler valueScaler =
-                EffectManifestParameter::ValueScaler::LOGARITHMIC;
+                EffectManifestParameter::ValueScaler::Logarithmic;
         double maximum = 4.0;
         if (linear) {
-            valueScaler = EffectManifestParameter::ValueScaler::LINEAR;
+            valueScaler = EffectManifestParameter::ValueScaler::Linear;
             maximum = 2.0;
         }
 
@@ -21,7 +21,7 @@ class EqualizerUtil {
         low->setName(QObject::tr("Low"));
         low->setDescription(QObject::tr("Gain for Low Filter"));
         low->setValueScaler(valueScaler);
-        low->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+        low->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         low->setNeutralPointOnScale(0.5);
         low->setRange(0, 1.0, maximum);
 
@@ -29,8 +29,8 @@ class EqualizerUtil {
         killLow->setId("killLow");
         killLow->setName(QObject::tr("Kill Low"));
         killLow->setDescription(QObject::tr("Kill the Low Filter"));
-        killLow->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-        killLow->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+        killLow->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+        killLow->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         killLow->setRange(0, 0, 1);
 
         EffectManifestParameterPointer mid = pManifest->addParameter();
@@ -38,7 +38,7 @@ class EqualizerUtil {
         mid->setName(QObject::tr("Mid"));
         mid->setDescription(QObject::tr("Gain for Mid Filter"));
         mid->setValueScaler(valueScaler);
-        mid->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+        mid->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         mid->setNeutralPointOnScale(0.5);
         mid->setRange(0, 1.0, maximum);
 
@@ -46,8 +46,8 @@ class EqualizerUtil {
         killMid->setId("killMid");
         killMid->setName(QObject::tr("Kill Mid"));
         killMid->setDescription(QObject::tr("Kill the Mid Filter"));
-        killMid->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-        killMid->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+        killMid->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+        killMid->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         killMid->setRange(0, 0, 1);
 
         EffectManifestParameterPointer high = pManifest->addParameter();
@@ -55,7 +55,7 @@ class EqualizerUtil {
         high->setName(QObject::tr("High"));
         high->setDescription(QObject::tr("Gain for High Filter"));
         high->setValueScaler(valueScaler);
-        high->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+        high->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         high->setNeutralPointOnScale(0.5);
         high->setRange(0, 1.0, maximum);
 
@@ -63,8 +63,8 @@ class EqualizerUtil {
         killHigh->setId("killHigh");
         killHigh->setName(QObject::tr("Kill High"));
         killHigh->setDescription(QObject::tr("Kill the High Filter"));
-        killHigh->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-        killHigh->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+        killHigh->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+        killHigh->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
         killHigh->setRange(0, 0, 1);
     }
 

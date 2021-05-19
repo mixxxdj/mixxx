@@ -48,8 +48,8 @@ EffectManifestPointer EchoEffect::getManifest() {
             "Delay time\n"
             "1/8 - 2 beats if tempo is detected\n"
             "1/8 - 2 seconds if no tempo is detected"));
-    delay->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    delay->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
+    delay->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    delay->setUnitsHint(EffectManifestParameter::UnitsHint::Beats);
     delay->setRange(0.0, 0.5, 2.0);
 
     EffectManifestParameterPointer feedback = pManifest->addParameter();
@@ -58,8 +58,8 @@ EffectManifestPointer EchoEffect::getManifest() {
     feedback->setShortName(QObject::tr("Feedback"));
     feedback->setDescription(QObject::tr(
             "Amount the echo fades each time it loops"));
-    feedback->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    feedback->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    feedback->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    feedback->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     feedback->setRange(0.00, db2ratio(-3.0), 1.00);
 
     EffectManifestParameterPointer pingpong = pManifest->addParameter();
@@ -69,8 +69,8 @@ EffectManifestPointer EchoEffect::getManifest() {
     pingpong->setDescription(
             QObject::tr("How much the echoed sound bounces between the left "
                         "and right sides of the stereo field"));
-    pingpong->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    pingpong->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    pingpong->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    pingpong->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     pingpong->setRange(0.0, 0.0, 1.0);
 
     EffectManifestParameterPointer send = pManifest->addParameter();
@@ -79,9 +79,9 @@ EffectManifestPointer EchoEffect::getManifest() {
     send->setShortName(QObject::tr("Send"));
     send->setDescription(QObject::tr(
             "How much of the signal to send into the delay buffer"));
-    send->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    send->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    send->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    send->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    send->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    send->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     send->setRange(0.0, db2ratio(-3.0), 1.0);
 
     EffectManifestParameterPointer quantize = pManifest->addParameter();
@@ -90,8 +90,8 @@ EffectManifestPointer EchoEffect::getManifest() {
     quantize->setShortName(QObject::tr("Quantize"));
     quantize->setDescription(QObject::tr(
             "Round the Time parameter to the nearest 1/4 beat."));
-    quantize->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-    quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    quantize->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    quantize->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     quantize->setRange(0, 1, 1);
 
     EffectManifestParameterPointer triplet = pManifest->addParameter();
@@ -101,8 +101,8 @@ EffectManifestPointer EchoEffect::getManifest() {
     triplet->setDescription(
             QObject::tr("When the Quantize parameter is enabled, divide "
                         "rounded 1/4 beats of Time parameter by 3."));
-    triplet->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-    triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    triplet->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    triplet->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     triplet->setRange(0, 0, 1);
 
     return pManifest;

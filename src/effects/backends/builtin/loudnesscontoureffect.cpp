@@ -39,9 +39,9 @@ EffectManifestPointer LoudnessContourEffect::getManifest() {
     loudness->setShortName(QObject::tr("Loudness"));
     loudness->setDescription(QObject::tr(
             "Set the gain of the applied loudness contour"));
-    loudness->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    loudness->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    loudness->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    loudness->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    loudness->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    loudness->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     loudness->setNeutralPointOnScale(1);
     loudness->setRange(-kMaxLoGain, -kMaxLoGain / 2, 0);
 
@@ -51,8 +51,8 @@ EffectManifestPointer LoudnessContourEffect::getManifest() {
     useGain->setShortName(QObject::tr("Use Gain"));
     useGain->setDescription(QObject::tr(
             "Follow Gain Knob"));
-    useGain->setValueScaler(EffectManifestParameter::ValueScaler::TOGGLE);
-    useGain->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    useGain->setValueScaler(EffectManifestParameter::ValueScaler::Toggle);
+    useGain->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     useGain->setRange(0, 0, 1);
 
     return pManifest;

@@ -28,9 +28,9 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     lpf->setId("lpf");
     lpf->setName(QObject::tr("LPF"));
     lpf->setDescription(QObject::tr("Corner frequency ratio of the low pass filter"));
-    lpf->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    lpf->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    lpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_LEFT);
+    lpf->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    lpf->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    lpf->setDefaultLinkType(EffectManifestParameter::LinkType::LinkedLeft);
     lpf->setNeutralPointOnScale(1);
     lpf->setRange(kMinCorner, kMaxCorner, kMaxCorner);
 
@@ -39,17 +39,17 @@ EffectManifestPointer MoogLadder4FilterEffect::getManifest() {
     q->setName(QObject::tr("Resonance"));
     q->setShortName(QObject::tr("Res"));
     q->setDescription(QObject::tr("Resonance of the filters. 4 = self oscillating"));
-    q->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    q->setUnitsHint(EffectManifestParameter::UnitsHint::SAMPLERATE);
+    q->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    q->setUnitsHint(EffectManifestParameter::UnitsHint::SampleRate);
     q->setRange(0.0, 1.0, 4.0);
 
     EffectManifestParameterPointer hpf = pManifest->addParameter();
     hpf->setId("hpf");
     hpf->setName(QObject::tr("HPF"));
     hpf->setDescription(QObject::tr("Corner frequency ratio of the high pass filter"));
-    hpf->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    hpf->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    hpf->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED_RIGHT);
+    hpf->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    hpf->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    hpf->setDefaultLinkType(EffectManifestParameter::LinkType::LinkedRight);
     hpf->setNeutralPointOnScale(0.0);
     hpf->setRange(kMinCorner, kMinCorner, kMaxCorner);
 

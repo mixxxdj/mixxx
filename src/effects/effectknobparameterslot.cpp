@@ -13,7 +13,7 @@
 EffectKnobParameterSlot::EffectKnobParameterSlot(
         const QString& group, const unsigned int iParameterSlotNumber)
         : EffectParameterSlotBase(
-                  group, iParameterSlotNumber, EffectParameterType::KNOB) {
+                  group, iParameterSlotNumber, EffectParameterType::Knob) {
     QString itemPrefix = formatItemPrefix(iParameterSlotNumber);
 
     m_pControlValue = new ControlEffectKnob(
@@ -35,7 +35,7 @@ EffectKnobParameterSlot::EffectKnobParameterSlot(
             ConfigKey(m_group, itemPrefix + QString("_link_type")));
     m_pControlLinkType->setButtonMode(ControlPushButton::TOGGLE);
     m_pControlLinkType->setStates(
-            static_cast<int>(EffectManifestParameter::LinkType::NUM_LINK_TYPES));
+            static_cast<int>(EffectManifestParameter::LinkType::NumLinkTypes));
     m_pControlLinkType->connectValueChangeRequest(
             this, &EffectKnobParameterSlot::slotLinkTypeChanging);
 
@@ -64,7 +64,7 @@ void EffectKnobParameterSlot::loadParameter(EffectParameterPointer pEffectParame
     clear();
 
     VERIFY_OR_DEBUG_ASSERT(pEffectParameter->manifest()->parameterType() ==
-            EffectParameterType::KNOB) {
+            EffectParameterType::Knob) {
         return;
     }
 
@@ -104,7 +104,7 @@ void EffectKnobParameterSlot::clear() {
     m_pControlValue->setDefaultValue(0.0);
     m_pControlType->forceSet(0.0);
     m_pControlLinkType->setAndConfirm(
-            static_cast<double>(EffectManifestParameter::LinkType::NONE));
+            static_cast<double>(EffectManifestParameter::LinkType::None));
     m_pMetaknobSoftTakeover->setThreshold(SoftTakeover::kDefaultTakeoverThreshold);
     m_pControlLinkInverse->set(0.0);
     emit updated();
@@ -119,20 +119,20 @@ void EffectKnobParameterSlot::slotLinkTypeChanging(double v) {
     EffectManifestParameter::LinkType newType =
             static_cast<EffectManifestParameter::LinkType>(
                     static_cast<int>(v));
-    if (newType == EffectManifestParameter::LinkType::LINKED_LEFT ||
-            newType == EffectManifestParameter::LinkType::LINKED_RIGHT ||
-            newType == EffectManifestParameter::LinkType::LINKED_LEFT_RIGHT) {
+    if (newType == EffectManifestParameter::LinkType::LinkedLeft ||
+            newType == EffectManifestParameter::LinkType::LinkedRight ||
+            newType == EffectManifestParameter::LinkType::LinkedLeftRight) {
         double neutral = m_pManifestParameter->neutralPointOnScale();
         if (neutral > 0.0 && neutral < 1.0) {
             // Knob is already a split knob, meaning it has a positive and
             // negative effect if it's twisted above the neutral point or
             // below the neutral point.
             // Toggle back to 0
-            newType = EffectManifestParameter::LinkType::NONE;
+            newType = EffectManifestParameter::LinkType::None;
         }
     }
-    if (newType == EffectManifestParameter::LinkType::LINKED_LEFT ||
-            newType == EffectManifestParameter::LinkType::LINKED_RIGHT) {
+    if (newType == EffectManifestParameter::LinkType::LinkedLeft ||
+            newType == EffectManifestParameter::LinkType::LinkedRight) {
         m_pMetaknobSoftTakeover->setThreshold(
                 SoftTakeover::kDefaultTakeoverThreshold * 2.0);
     } else {
@@ -162,7 +162,7 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
         double neutral = m_pManifestParameter->neutralPointOnScale();
 
         switch (type) {
-        case EffectManifestParameter::LinkType::LINKED:
+        case EffectManifestParameter::LinkType::Linked:
             if (parameter < 0.0 || parameter > 1.0) {
                 return;
             }
@@ -184,7 +184,7 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
                 }
             }
             break;
-        case EffectManifestParameter::LinkType::LINKED_LEFT:
+        case EffectManifestParameter::LinkType::LinkedLeft:
             if (parameter >= 0.5 && parameter <= 1.0) {
                 parameter = 1;
             } else if (parameter >= 0.0 && parameter <= 0.5) {
@@ -193,7 +193,7 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
                 return;
             }
             break;
-        case EffectManifestParameter::LinkType::LINKED_RIGHT:
+        case EffectManifestParameter::LinkType::LinkedRight:
             if (parameter >= 0.5 && parameter <= 1.0) {
                 parameter -= 0.5;
                 parameter *= 2;
@@ -203,7 +203,7 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
                 return;
             }
             break;
-        case EffectManifestParameter::LinkType::LINKED_LEFT_RIGHT:
+        case EffectManifestParameter::LinkType::LinkedLeftRight:
             if (parameter >= 0.5 && parameter <= 1.0) {
                 parameter -= 0.5;
                 parameter *= 2;
@@ -214,7 +214,7 @@ void EffectKnobParameterSlot::onEffectMetaParameterChanged(double parameter, boo
                 return;
             }
             break;
-        case EffectManifestParameter::LinkType::NONE:
+        case EffectManifestParameter::LinkType::None:
         default:
             return;
         }

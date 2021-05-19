@@ -27,9 +27,9 @@ EffectManifestPointer TremoloEffect::getManifest() {
     depth->setShortName(QObject::tr("Depth"));
     depth->setDescription(QObject::tr(
             "How much the effect changes the volume"));
-    depth->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    depth->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    depth->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    depth->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    depth->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    depth->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     depth->setRange(0, 1, 1);
 
     EffectManifestParameterPointer rate = pManifest->addParameter();
@@ -41,8 +41,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
             "4 beats - 1/8 beat if tempo is detected\n"
             "1/4 Hz - 8 Hz if no tempo is detected"));
     rate->setValueScaler(
-            EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    rate->setUnitsHint(EffectManifestParameter::UnitsHint::BEATS);
+            EffectManifestParameter::ValueScaler::Logarithmic);
+    rate->setUnitsHint(EffectManifestParameter::UnitsHint::Beats);
     rate->setRange(1.0 / 4, 1, 8);
 
     EffectManifestParameterPointer width = pManifest->addParameter();
@@ -52,8 +52,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
     width->setDescription(QObject::tr(
             "Width of the volume peak\n"
             "10% - 90% of the effect period"));
-    width->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    width->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+    width->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    width->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     width->setRange(0.1, 0.5, 0.9);
 
     EffectManifestParameterPointer waveform = pManifest->addParameter();
@@ -65,8 +65,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
             "Fully left: Square wave\n"
             "Fully right: Sine wave"));
     waveform->setValueScaler(
-            EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    waveform->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+            EffectManifestParameter::ValueScaler::Logarithmic);
+    waveform->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     waveform->setRange(0.005, 0.5, 1);
 
     EffectManifestParameterPointer phase = pManifest->addParameter();
@@ -78,8 +78,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
             "Fully left: beginning of the effect period\n"
             "Fully right: end of the effect period"));
     phase->setValueScaler(
-            EffectManifestParameter::ValueScaler::LINEAR);
-    phase->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+            EffectManifestParameter::ValueScaler::Linear);
+    phase->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     phase->setRange(0, 0, 1);
 
     EffectManifestParameterPointer quantize = pManifest->addParameter();
@@ -89,8 +89,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
     quantize->setDescription(QObject::tr(
             "Round the Rate parameter to the nearest whole division of a beat."));
     quantize->setValueScaler(
-            EffectManifestParameter::ValueScaler::TOGGLE);
-    quantize->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+            EffectManifestParameter::ValueScaler::Toggle);
+    quantize->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     quantize->setRange(0, 1, 1);
 
     EffectManifestParameterPointer triplet = pManifest->addParameter();
@@ -100,8 +100,8 @@ EffectManifestPointer TremoloEffect::getManifest() {
     triplet->setDescription(QObject::tr(
             "When the Quantize parameter is enabled, divide the effect period by 3."));
     triplet->setValueScaler(
-            EffectManifestParameter::ValueScaler::TOGGLE);
-    triplet->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
+            EffectManifestParameter::ValueScaler::Toggle);
+    triplet->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
     triplet->setRange(0, 0, 1);
 
     return pManifest;

@@ -7,7 +7,7 @@ QDebug operator<<(QDebug dbg, const EffectManifest& manifest) {
 bool EffectManifest::hasMetaKnobLinking() const {
     for (const auto& pParameterManifest : m_parameters) {
         if (pParameterManifest->defaultLinkType() !=
-                EffectManifestParameter::LinkType::NONE) {
+                EffectManifestParameter::LinkType::None) {
             return true;
         }
     }

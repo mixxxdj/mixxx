@@ -31,9 +31,9 @@ EffectManifestPointer BalanceEffect::getManifest() {
     balance->setShortName(QObject::tr("Balance"));
     balance->setDescription(QObject::tr(
             "Adjust balance between left and right channels"));
-    balance->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    balance->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    balance->setDefaultLinkType(EffectManifestParameter::LinkType::LINKED);
+    balance->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    balance->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    balance->setDefaultLinkType(EffectManifestParameter::LinkType::Linked);
     balance->setRange(-1.0, 0.0, +1.0);
 
     EffectManifestParameterPointer midSide = pManifest->addParameter();
@@ -45,9 +45,9 @@ EffectManifestPointer BalanceEffect::getManifest() {
             "Fully left: mono\n"
             "Fully right: only side ambiance\n"
             "Center: does not change the original signal."));
-    midSide->setValueScaler(EffectManifestParameter::ValueScaler::LINEAR);
-    midSide->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    midSide->setDefaultLinkType(EffectManifestParameter::LinkType::NONE);
+    midSide->setValueScaler(EffectManifestParameter::ValueScaler::Linear);
+    midSide->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    midSide->setDefaultLinkType(EffectManifestParameter::LinkType::None);
     midSide->setRange(-1.0, 0.0, +1.0);
 
     EffectManifestParameterPointer midLowPass = pManifest->addParameter();
@@ -56,9 +56,9 @@ EffectManifestPointer BalanceEffect::getManifest() {
     midLowPass->setShortName(QObject::tr("Bypass Fr."));
     midLowPass->setDescription(QObject::tr(
             "Frequencies below this cutoff are not adjusted in the stereo field"));
-    midLowPass->setValueScaler(EffectManifestParameter::ValueScaler::LOGARITHMIC);
-    midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::UNKNOWN);
-    midLowPass->setDefaultLinkType(EffectManifestParameter::LinkType::NONE);
+    midLowPass->setValueScaler(EffectManifestParameter::ValueScaler::Logarithmic);
+    midLowPass->setUnitsHint(EffectManifestParameter::UnitsHint::Unknown);
+    midLowPass->setDefaultLinkType(EffectManifestParameter::LinkType::None);
     midLowPass->setNeutralPointOnScale(1);
     midLowPass->setRange(kMinCornerHz, kMinCornerHz, kMaxCornerHz);
 
