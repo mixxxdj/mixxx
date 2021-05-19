@@ -427,7 +427,9 @@ LaunchImage* LegacySkinParser::parseLaunchImage(const QString& skinPath, QWidget
     QDir::setSearchPaths("skin", skinPaths);
 
     QString styleSheet = parseLaunchImageStyle(skinDocument);
-    LaunchImage* pLaunchImage = new LaunchImage(pParent, styleSheet);
+    // Transform relative 'skin:' urls into absolute paths.
+    // See stylesheetAbsIconPaths() for details.
+    LaunchImage* pLaunchImage = new LaunchImage(pParent, stylesheetAbsIconPaths(styleSheet));
     setupSize(skinDocument, pLaunchImage);
     return pLaunchImage;
 }
@@ -2030,7 +2032,9 @@ void LegacySkinParser::setupWidget(const QDomNode& node,
         m_style.clear(); // only apply color scheme to the first widget
     }
     if (!style.isEmpty()) {
-        pWidget->setStyleSheet(style);
+        // Transform relative 'skin:' urls into absolute paths.
+        // See stylesheetAbsIconPaths() for details.
+        pWidget->setStyleSheet(stylesheetAbsIconPaths(style));
     }
 }
 
@@ -2261,4 +2265,16 @@ void LegacySkinParser::addShortcutToToolTip(WBaseWidget* pWidget,
 
 QString LegacySkinParser::parseLaunchImageStyle(const QDomNode& node) {
     return m_pContext->selectString(node, "LaunchImageStyle");
+}
+
+QString LegacySkinParser::stylesheetAbsIconPaths(QString& style) {
+    // Workaround for https://bugs.kde.org/show_bug.cgi?id=434451 which renders
+    // relative SVG icon paths in external stylesheets unusable:
+    // Replaces relative icon urls in stylesheets (external qss or inline
+    // <Style> nodes) with absolute file paths.
+    // TODO Can be removed/disabled as soon as all target distros have the fixed
+    // package in their repo.
+    // Note: It's safe to use the base path after parseSkin() has updated it
+    // (parseLaunchImage() appends "/" earlier)
+    return style.replace("url(skin:", "url(" + m_pContext->getSkinBasePath());
 }
