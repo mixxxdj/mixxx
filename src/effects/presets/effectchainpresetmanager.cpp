@@ -229,7 +229,9 @@ void EffectChainPresetManager::exportPreset(const QString& chainPresetName) {
     QDomDocument doc(EffectXml::kChain);
     doc.setContent(EffectXml::kFileHeader);
     doc.appendChild(pPreset->toXml(&doc));
-    file.write(doc.toByteArray());
+    if (!file.write(doc.toByteArray())) {
+        qWarning() << "Could not write effect chain preset XML to" << file.fileName();
+    }
     file.close();
 }
 
@@ -445,8 +447,11 @@ void EffectChainPresetManager::importDefaultPresets() {
         QString copiedFileName = savedPresetsPath + kFolderDelimiter + fileName;
         QFileInfo copiedFileInfo(copiedFileName);
         if (!copiedFileInfo.exists()) {
-            QFile::copy(defaultPresetsPath + kFolderDelimiter + fileName,
-                    copiedFileName);
+            const QString originalFileName = defaultPresetsPath + kFolderDelimiter + fileName;
+            if (!QFile::copy(originalFileName, copiedFileName)) {
+                qWarning() << "Could not copy default effect chain preset to" << copiedFileName;
+                continue;
+            }
         }
 
         EffectChainPresetPointer pEffectChainPreset = loadPresetFromFile(copiedFileName);
@@ -545,9 +550,12 @@ bool EffectChainPresetManager::savePresetXml(EffectChainPresetPointer pPreset) {
     QDomDocument doc(EffectXml::kChain);
     doc.setContent(EffectXml::kFileHeader);
     doc.appendChild(pPreset->toXml(&doc));
-    file.write(doc.toByteArray());
+    const bool success = file.write(doc.toByteArray());
+    if (!success) {
+        qWarning() << "Could not write effect chain preset XML to" << file.fileName();
+    }
     file.close();
-    return true;
+    return success;
 }
 
 EffectsXmlData EffectChainPresetManager::readEffectsXml(
