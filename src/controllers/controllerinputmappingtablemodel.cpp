@@ -190,7 +190,7 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_CHANNEL:
                 return MidiUtils::channelFromStatus(mapping.key.status);
             case MIDI_COLUMN_OPCODE:
-                return MidiUtils::opCodeFromStatus(mapping.key.status);
+                return MidiUtils::opCodeValue(MidiUtils::opCodeFromStatus(mapping.key.status));
             case MIDI_COLUMN_CONTROL:
                 return mapping.key.control;
             case MIDI_COLUMN_OPTIONS:

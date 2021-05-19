@@ -166,7 +166,7 @@ void MidiController::learnTemporaryInputMappings(const MidiInputMappings& mappin
     foreach (const MidiInputMapping& mapping, mappings) {
         m_temporaryInputMappings.insert(mapping.key.key, mapping);
 
-        unsigned char opCode = MidiUtils::opCodeFromStatus(mapping.key.status);
+        MidiOpCode opCode = MidiUtils::opCodeFromStatus(mapping.key.status);
         bool twoBytes = MidiUtils::isMessageTwoBytes(opCode);
         QString message = twoBytes ? QString("0x%1 0x%2")
                 .arg(QString::number(mapping.key.status, 16).toUpper(),
@@ -212,7 +212,7 @@ void MidiController::receivedShortMessage(unsigned char status,
         mixxx::Duration timestamp) {
     // The rest of this function is for legacy mappings
     unsigned char channel = MidiUtils::channelFromStatus(status);
-    unsigned char opCode = MidiUtils::opCodeFromStatus(status);
+    MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
 
     // Ignore MIDI beat clock messages (0xF8) until we have proper MIDI sync in
     // Mixxx. These messages are not suitable to use in JS anyway, as they are
@@ -224,8 +224,8 @@ void MidiController::receivedShortMessage(unsigned char status,
         return;
     }
 
-    controllerDebug(MidiUtils::formatMidiMessage(getName(), status, control, value,
-                                                 channel, opCode, timestamp));
+    controllerDebug(MidiUtils::formatMidiOpCode(
+            getName(), status, control, value, channel, opCode, timestamp));
     MidiKey mappingKey(status, control);
 
     triggerActivity();
@@ -254,7 +254,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                                          mixxx::Duration timestamp) {
     Q_UNUSED(timestamp);
     unsigned char channel = MidiUtils::channelFromStatus(status);
-    unsigned char opCode = MidiUtils::opCodeFromStatus(status);
+    MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
 
     if (mapping.options.script) {
         ControllerScriptEngineLegacy* pEngine = getScriptEngine();
@@ -344,7 +344,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
             m_fourteen_bit_queued_mappings.append(qMakePair(mapping, value));
             return;
         }
-    } else if (opCode == MIDI_PITCH_BEND) {
+    } else if (opCode == MidiOpCode::PitchBendChange) {
         // compute 14-bit value for pitch bend messages
         int iValue;
         iValue = (value << 7) | control;
@@ -365,7 +365,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi
     // mapping is <button> we override the Midi 'status' appropriately.
     if (mapping.options.button || mapping.options.sw) {
-        opCode = MIDI_NOTE_ON;
+        opCode = MidiOpCode::NoteOn;
     }
 
     if (mapping.options.soft_takeover) {

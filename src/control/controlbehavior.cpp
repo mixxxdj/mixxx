@@ -299,15 +299,15 @@ ControlPushButtonBehavior::ControlPushButtonBehavior(ButtonMode buttonMode,
 void ControlPushButtonBehavior::setValueFromMidi(
         MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
     // Calculate pressed State of the midi Button
-    // Some controller like the RMX2 are sending always MIDI_NOTE_ON
+    // Some controller like the RMX2 are sending always MidiOpCode::NoteOn
     // with a changed dParam 127 for pressed an 0 for released.
-    // Other controller like the VMS4 are using MIDI_NOTE_ON
-    // And MIDI_NOTE_OFF and a velocity value like a piano keyboard
+    // Other controller like the VMS4 are using MidiOpCode::NoteOn
+    // And MidiOpCode::NoteOff and a velocity value like a piano keyboard
     bool pressed = true;
-    if (o == MIDI_NOTE_OFF || dParam == 0) {
-        // MIDI_NOTE_ON + 0 should be interpreted a released according to
+    if (o == MidiOpCode::NoteOff || dParam == 0) {
+        // MidiOpCode::NoteOn + 0 should be interpreted a released according to
         // http://de.wikipedia.org/wiki/Musical_Instrument_Digital_Interface
-        // looking for MIDI_NOTE_ON doesn't seem to work...
+        // looking for MidiOpCode::NoteOn doesn't seem to work...
         pressed = false;
     }
 
