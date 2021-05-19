@@ -4,7 +4,7 @@
 
 #include "effects/backends/effectmanifest.h"
 
-class QDomDocument;
+QT_FORWARD_DECLARE_CLASS(QDomDocument);
 
 class VisibleEffectsList : public QObject {
     Q_OBJECT
