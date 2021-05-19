@@ -5,6 +5,7 @@
 #include <QMetaType>
 #include <QPair>
 #include <QtDebug>
+#include <cstdint>
 
 #include "preferences/usersettings.h"
 
@@ -96,9 +97,6 @@ enum class MidiOpCode : uint8_t {
 };
 QDebug operator<<(QDebug debug, MidiOpCode midiOpCode);
 uint qHash(MidiOpCode key, uint seed);
-
-typedef unsigned int    uint32_t;
-typedef unsigned short  uint16_t;
 
 enum class MidiOption : uint16_t {
     None = 0x0000,
