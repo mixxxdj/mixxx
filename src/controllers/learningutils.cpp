@@ -173,7 +173,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // - VCI-400 vinyl toggle button (NOTE_ON)
         // - Korg nanoKontrol switches (CC)
         MidiOptions options;
-        options.sw = true;
+        options.setFlag(MidiOption::Switch);
 
         MidiKey note_on;
         // The predicate ensures only NOTE_ON or CC messages can trigger this
@@ -198,7 +198,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // though it is called 'selectknob' it is actually only two's complement
         // processing).
         MidiOptions options;
-        options.selectknob = true;
+        options.setFlag(MidiOption::SelectKnob);
         MidiKey knob;
         knob.status = MidiUtils::statusFromOpCodeAndChannel(
                 MidiOpCode::ControlChange, *stats.channels.begin());
@@ -208,7 +208,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
         // A "spread 64" ticker, where 0x40 is zero, positive jog values are
         // 0x41 and above, and negative jog values are 0x3F and below.
         MidiOptions options;
-        options.spread64 = true;
+        options.setFlag(MidiOption::Spread64);
 
         MidiKey knob;
         knob.status = MidiUtils::statusFromOpCodeAndChannel(
@@ -290,7 +290,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
                 MidiOpCode::ControlChange, *stats.channels.begin());
         msb.control = msb_control;
         MidiOptions msb_option;
-        msb_option.fourteen_bit_msb = true;
+        msb_option.setFlag(MidiOption::FourteenBitMSB);
         mappings.append(MidiInputMapping(msb, msb_option, control));
 
         MidiKey lsb;
@@ -298,7 +298,7 @@ MidiInputMappings LearningUtils::guessMidiInputMappings(
                 MidiOpCode::ControlChange, *stats.channels.begin());
         lsb.control = lsb_control;
         MidiOptions lsb_option;
-        lsb_option.fourteen_bit_lsb = true;
+        lsb_option.setFlag(MidiOption::FourteenBitLSB);
         mappings.append(MidiInputMapping(lsb, lsb_option, control));
     }
 

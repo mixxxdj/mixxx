@@ -27,39 +27,39 @@ QString MidiUtils::formatByteAsHex(unsigned char value) {
 // static
 QString MidiUtils::midiOptionToTranslatedString(MidiOption option) {
     switch (option) {
-        case MIDI_OPTION_NONE:
-            return QObject::tr("Normal");
-        case MIDI_OPTION_INVERT:
-            return QObject::tr("Invert");
-        case MIDI_OPTION_ROT64:
-            return QObject::tr("Rot64");
-        case MIDI_OPTION_ROT64_INV:
-            return QObject::tr("Rot64Inv");
-        case MIDI_OPTION_ROT64_FAST:
-            return QObject::tr("Rot64Fast");
-        case MIDI_OPTION_DIFF:
-            return QObject::tr("Diff");
-        case MIDI_OPTION_BUTTON:
-            return QObject::tr("Button");
-        case MIDI_OPTION_SWITCH:
-            return QObject::tr("Switch");
-        case MIDI_OPTION_SPREAD64:
-            return QObject::tr("Spread64");
-        case MIDI_OPTION_HERC_JOG:
-            return QObject::tr("HercJog");
-        case MIDI_OPTION_SELECTKNOB:
-            return QObject::tr("SelectKnob");
-        case MIDI_OPTION_SOFT_TAKEOVER:
-            return QObject::tr("SoftTakeover");
-        case MIDI_OPTION_SCRIPT:
-            return QObject::tr("Script");
-        case MIDI_OPTION_14BIT_LSB:
-            return QObject::tr("14-bit (LSB)");
-        case MIDI_OPTION_14BIT_MSB:
-            return QObject::tr("14-bit (MSB)");
-        default:
-            return QObject::tr("Unknown (0x%1)")
-                    .arg(option, 4, 16, QLatin1Char('0'));
+    case MidiOption::None:
+        return QObject::tr("Normal");
+    case MidiOption::Invert:
+        return QObject::tr("Invert");
+    case MidiOption::Rot64:
+        return QObject::tr("Rot64");
+    case MidiOption::Rot64Invert:
+        return QObject::tr("Rot64Inv");
+    case MidiOption::Rot64Fast:
+        return QObject::tr("Rot64Fast");
+    case MidiOption::Diff:
+        return QObject::tr("Diff");
+    case MidiOption::Button:
+        return QObject::tr("Button");
+    case MidiOption::Switch:
+        return QObject::tr("Switch");
+    case MidiOption::Spread64:
+        return QObject::tr("Spread64");
+    case MidiOption::HercJog:
+        return QObject::tr("HercJog");
+    case MidiOption::SelectKnob:
+        return QObject::tr("SelectKnob");
+    case MidiOption::SoftTakeover:
+        return QObject::tr("SoftTakeover");
+    case MidiOption::Script:
+        return QObject::tr("Script");
+    case MidiOption::FourteenBitLSB:
+        return QObject::tr("14-bit (LSB)");
+    case MidiOption::FourteenBitMSB:
+        return QObject::tr("14-bit (MSB)");
+    default:
+        return QObject::tr("Unknown (0x%1)")
+                .arg(static_cast<uint16_t>(option), 4, 16, QLatin1Char('0'));
     }
 }
 

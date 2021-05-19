@@ -126,7 +126,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_ButtonMidiOpt
     unsigned char control = 0x10;
 
     MidiOptions options;
-    options.button = true;
+    options.setFlag(MidiOption::Button);
 
     addMapping(MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                                 MidiOpCode::NoteOn, channel),
@@ -163,7 +163,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_PushButtonCO_ToggleOnOff_SwitchMidiOpt
     unsigned char control = 0x10;
 
     MidiOptions options;
-    options.sw = true;
+    options.setFlag(MidiOption::Switch);
 
     addMapping(MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                                 MidiOpCode::NoteOn, channel),
@@ -314,7 +314,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_ButtonMidiOption)
     unsigned char control = 0x10;
 
     MidiOptions options;
-    options.button = true;
+    options.setFlag(MidiOption::Button);
 
     addMapping(MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                                 MidiOpCode::NoteOn, channel),
@@ -354,7 +354,7 @@ TEST_F(MidiControllerTest, ReceiveMessage_ToggleCO_ToggleOnOff_SwitchMidiOption)
     unsigned char control = 0x10;
 
     MidiOptions options;
-    options.sw = true;
+    options.setFlag(MidiOption::Switch);
 
     addMapping(MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                                 MidiOpCode::NoteOn, channel),
@@ -476,10 +476,10 @@ TEST_F(MidiControllerTest, ReceiveMessage_PotMeterCO_14BitCC) {
     unsigned char msb_control = 0x11;
 
     MidiOptions lsb;
-    lsb.fourteen_bit_lsb = true;
+    lsb.setFlag(MidiOption::FourteenBitLSB);
 
     MidiOptions msb;
-    msb.fourteen_bit_msb = true;
+    msb.setFlag(MidiOption::FourteenBitMSB);
 
     addMapping(MidiInputMapping(
             MidiKey(MidiUtils::statusFromOpCodeAndChannel(

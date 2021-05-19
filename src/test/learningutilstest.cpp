@@ -7,7 +7,7 @@
 #include "util/memory.h"
 
 std::ostream& operator<<(std::ostream& stream, const MidiInputMapping& mapping) {
-    stream << mapping.key.key << mapping.options.all;
+    stream << mapping.key.key << static_cast<uint16_t>(mapping.options);
     return stream;
 }
 
@@ -219,7 +219,7 @@ TEST_F(LearningUtilsTest, CC14BitKnob_MSBFirst) {
 
     ASSERT_EQ(2, mappings.size());
     MidiOptions lsb_option;
-    lsb_option.fourteen_bit_lsb = true;
+    lsb_option.setFlag(MidiOption::FourteenBitLSB);
     EXPECT_TRUE(containsMapping(mappings,
             MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                              MidiOpCode::ControlChange, 0x01),
@@ -227,7 +227,7 @@ TEST_F(LearningUtilsTest, CC14BitKnob_MSBFirst) {
                     lsb_option,
                     control)));
     MidiOptions msb_option;
-    msb_option.fourteen_bit_msb = true;
+    msb_option.setFlag(MidiOption::FourteenBitMSB);
     EXPECT_TRUE(containsMapping(mappings,
             MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                              MidiOpCode::ControlChange, 0x01),
@@ -272,7 +272,7 @@ TEST_F(LearningUtilsTest, CC14BitKnob_LSBFirst) {
 
     ASSERT_EQ(2, mappings.size());
     MidiOptions lsb_option;
-    lsb_option.fourteen_bit_lsb = true;
+    lsb_option.setFlag(MidiOption::FourteenBitLSB);
     EXPECT_TRUE(containsMapping(mappings,
             MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                              MidiOpCode::ControlChange, 0x01),
@@ -280,7 +280,7 @@ TEST_F(LearningUtilsTest, CC14BitKnob_LSBFirst) {
                     lsb_option,
                     control)));
     MidiOptions msb_option;
-    msb_option.fourteen_bit_msb = true;
+    msb_option.setFlag(MidiOption::FourteenBitMSB);
     EXPECT_TRUE(containsMapping(mappings,
             MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                              MidiOpCode::ControlChange, 0x01),
@@ -303,7 +303,7 @@ TEST_F(LearningUtilsTest, CC7BitKnob_ConfusableForCC7BitTicker_Zeroes) {
             LearningUtils::guessMidiInputMappings(control, m_messages);
 
     MidiOptions options;
-    options.selectknob = true;
+    options.setFlag(MidiOption::SelectKnob);
     ASSERT_EQ(1, mappings.size());
     EXPECT_EQ(MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                                MidiOpCode::ControlChange, 0x01),
@@ -494,7 +494,7 @@ TEST_F(LearningUtilsTest, CC7BitTicker) {
 
     ASSERT_EQ(1, mappings.size());
     MidiOptions options;
-    options.selectknob = true;
+    options.setFlag(MidiOption::SelectKnob);
     EXPECT_EQ(MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                                MidiOpCode::ControlChange, 0x01),
                                        0x10),
@@ -522,7 +522,7 @@ TEST_F(LearningUtilsTest, Spread64Ticker) {
 
     ASSERT_EQ(1, mappings.size());
     MidiOptions options;
-    options.spread64 = true;
+    options.setFlag(MidiOption::Spread64);
     EXPECT_EQ(MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                                MidiOpCode::ControlChange, 0x01),
                                        0x10),
@@ -548,7 +548,7 @@ TEST_F(LearningUtilsTest, CC7BitTicker_SingleDirection) {
     addMessage(MidiOpCode::ControlChange, 0x01, 0x10, 0x01);
 
     MidiOptions options;
-    options.selectknob = true;
+    options.setFlag(MidiOption::SelectKnob);
 
     ConfigKey control("[Test]", "SomeControl");
     MidiInputMappings mappings =
@@ -594,7 +594,7 @@ TEST_F(LearningUtilsTest, SingleMessageSwitchMode_NoteOn) {
 
     ASSERT_EQ(1, mappings.size());
     MidiOptions options;
-    options.sw = true;
+    options.setFlag(MidiOption::Switch);
     EXPECT_EQ(MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                                MidiOpCode::NoteOn, 0x01),
                                        0x10),
@@ -633,7 +633,7 @@ TEST_F(LearningUtilsTest, SingleMessageSwitchMode_CC) {
 
     ASSERT_EQ(1, mappings.size());
     MidiOptions options;
-    options.sw = true;
+    options.setFlag(MidiOption::Switch);
     EXPECT_EQ(MidiInputMapping(MidiKey(MidiUtils::statusFromOpCodeAndChannel(
                                                MidiOpCode::ControlChange, 0x01),
                                        0x10),

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QFlags>
 #include <QList>
 #include <QMetaType>
 #include <QPair>
@@ -99,61 +100,36 @@ uint qHash(MidiOpCode key, uint seed);
 typedef unsigned int    uint32_t;
 typedef unsigned short  uint16_t;
 
-typedef enum {
-    MIDI_OPTION_NONE          = 0x0000,
-    MIDI_OPTION_INVERT        = 0x0001,
-    MIDI_OPTION_ROT64         = 0x0002,
-    MIDI_OPTION_ROT64_INV     = 0x0004,
-    MIDI_OPTION_ROT64_FAST    = 0x0008,
-    MIDI_OPTION_DIFF          = 0x0010,
-    MIDI_OPTION_BUTTON        = 0x0020,
-    MIDI_OPTION_SWITCH        = 0x0040,
-    MIDI_OPTION_SPREAD64      = 0x0080,
-    MIDI_OPTION_HERC_JOG      = 0x0100,
-    MIDI_OPTION_SELECTKNOB    = 0x0200,
-    MIDI_OPTION_SOFT_TAKEOVER = 0x0400,
-    MIDI_OPTION_SCRIPT        = 0x0800,
-    MIDI_OPTION_14BIT_MSB     = 0x1000,
-    MIDI_OPTION_14BIT_LSB     = 0x2000,
-    // Should mask all bits used.
-    MIDI_OPTION_MASK          = 0xFFFF,
-} MidiOption;
-
-struct MidiOptions {
-    MidiOptions()
-            : all(0) {
-    }
-
-    bool operator==(const MidiOptions& other) const {
-        return all == other.all;
-    }
-
-    union
-    {
-        uint32_t    all;
-        struct
-        {
-            bool invert        : 1;
-            bool rot64         : 1;
-            bool rot64_inv     : 1;
-            bool rot64_fast    : 1;
-            bool diff          : 1;
-            bool button        : 1;    // Button Down (!=00) and Button Up (00) events happen together
-            bool sw            : 1;    // button down (!=00) and button up (00) events happen separately
-            bool spread64      : 1;    // accelerated difference from 64
-            bool herc_jog      : 1;    // generic Hercules range correction 0x01 -> +1; 0x7f -> -1
-            bool selectknob    : 1;    // relative knob which can be turned forever and outputs a signed value
-            bool soft_takeover : 1;    // prevents sudden changes when hardware position differs from software value
-            bool script        : 1;    // maps a MIDI control to a custom MixxxScript function
-            // the message supplies the MSB of a 14-bit message
-            bool fourteen_bit_msb : 1;
-            // the message supplies the LSB of a 14-bit message
-            bool fourteen_bit_lsb : 1;
-            bool herc_jog_fast    : 1;  // generic Hercules range correction 0x01 -> +5; 0x7f -> -5
-            // 19 more available for future expansion
-        };
-    };
+enum class MidiOption : uint16_t {
+    None = 0x0000,
+    Invert = 0x0001,
+    Rot64 = 0x0002,
+    Rot64Invert = 0x0004,
+    Rot64Fast = 0x0008,
+    Diff = 0x0010,
+    /// Button Down (!=00) and Button Up (00) events happen together
+    Button = 0x0020,
+    /// Button Down (!=00) and Button Up (00) events happen separately
+    Switch = 0x0040,
+    /// Accelerated Difference from 64
+    Spread64 = 0x0080,
+    /// Generic Hercules Range Correction (0x01 -> +1; 0x7f -> -1)
+    HercJog = 0x0100,
+    /// Relative Knob which can be turned forever and outputs a signed value
+    SelectKnob = 0x0200,
+    /// Prevents Sudden Changes when hardware position differs from software value
+    SoftTakeover = 0x0400,
+    /// Maps a MIDI control to a custom JavaScript function
+    Script = 0x0800,
+    /// Nessage supplies the LSB of a 14-bit message
+    FourteenBitLSB = 0x1000,
+    /// Nessage supplies the MSB of a 14-bit message
+    FourteenBitMSB = 0x2000,
+    /// Generic Hercules Range Correction (0x01 -> +5; 0x7f -> -5)
+    HercJogFast = 0x4000,
 };
+Q_DECLARE_FLAGS(MidiOptions, MidiOption);
+Q_DECLARE_OPERATORS_FOR_FLAGS(MidiOptions);
 Q_DECLARE_METATYPE(MidiOptions);
 
 struct MidiOutput {

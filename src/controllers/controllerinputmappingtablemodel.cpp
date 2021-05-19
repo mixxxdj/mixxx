@@ -196,7 +196,7 @@ QVariant ControllerInputMappingTableModel::data(const QModelIndex& index,
             case MIDI_COLUMN_OPTIONS:
                 // UserRole is used for sorting.
                 if (role == Qt::UserRole) {
-                    return mapping.options.all;
+                    return QVariant(mapping.options);
                 }
                 return QVariant::fromValue(mapping.options);
             case MIDI_COLUMN_ACTION:

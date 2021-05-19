@@ -256,7 +256,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
     unsigned char channel = MidiUtils::channelFromStatus(status);
     MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
 
-    if (mapping.options.script) {
+    if (mapping.options.testFlag(MidiOption::Script)) {
         ControllerScriptEngineLegacy* pEngine = getScriptEngine();
         if (pEngine == nullptr) {
             return;
@@ -284,9 +284,8 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     double newValue = value;
 
-
-    bool mapping_is_14bit = mapping.options.fourteen_bit_msb ||
-            mapping.options.fourteen_bit_lsb;
+    bool mapping_is_14bit = mapping.options.testFlag(MidiOption::FourteenBitMSB) ||
+            mapping.options.testFlag(MidiOption::FourteenBitLSB);
     if (!mapping_is_14bit && !m_fourteen_bit_queued_mappings.isEmpty()) {
         qWarning() << "MidiController was waiting for the MSB/LSB of a 14-bit"
                    << "message but the next message received was not mapped as 14-bit."
@@ -294,15 +293,20 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         m_fourteen_bit_queued_mappings.clear();
     }
 
-    //qDebug() << "MIDI Options" << QString::number(mapping.options.all, 2).rightJustified(16,'0');
+    //qDebug() << "MIDI Options" << QString::number(mapping.options, 2).rightJustified(16,'0');
 
     if (mapping_is_14bit) {
         bool found = false;
         for (auto it = m_fourteen_bit_queued_mappings.begin();
              it != m_fourteen_bit_queued_mappings.end(); ++it) {
             if (it->first.control == mapping.control) {
-                if ((it->first.options.fourteen_bit_lsb && mapping.options.fourteen_bit_lsb) ||
-                    (it->first.options.fourteen_bit_msb && mapping.options.fourteen_bit_msb)) {
+                if ((it->first.options.testFlag(MidiOption::FourteenBitLSB) &&
+                            mapping.options.testFlag(
+                                    MidiOption::FourteenBitLSB)) ||
+                        (it->first.options.testFlag(
+                                 MidiOption::FourteenBitMSB) &&
+                                mapping.options.testFlag(
+                                        MidiOption::FourteenBitMSB))) {
                     qWarning() << "MidiController: 14-bit MIDI mapping has mis-matched LSB/MSB options."
                                << "Ignoring both messages.";
                     m_fourteen_bit_queued_mappings.erase(it);
@@ -310,12 +314,12 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                 }
 
                 int iValue = 0;
-                if (mapping.options.fourteen_bit_msb) {
+                if (mapping.options.testFlag(MidiOption::FourteenBitMSB)) {
                     iValue = (value << 7) | it->second;
                     // qDebug() << "MSB" << value
                     //          << "LSB" << it->second
                     //          << "Joint:" << iValue;
-                } else if (mapping.options.fourteen_bit_lsb) {
+                } else if (mapping.options.testFlag(MidiOption::FourteenBitLSB)) {
                     iValue = (it->second << 7) | value;
                     // qDebug() << "MSB" << it->second
                     //          << "LSB" << value
@@ -364,11 +368,12 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi
     // mapping is <button> we override the Midi 'status' appropriately.
-    if (mapping.options.button || mapping.options.sw) {
+    if (mapping.options.testFlag(MidiOption::Button) ||
+            mapping.options.testFlag(MidiOption::Switch)) {
         opCode = MidiOpCode::NoteOn;
     }
 
-    if (mapping.options.soft_takeover) {
+    if (mapping.options.testFlag(MidiOption::SoftTakeover)) {
         // This is the only place to enable it if it isn't already.
         m_st.enable(pCO);
         if (m_st.ignore(pCO, pCO->getParameterForMidi(newValue))) {
@@ -383,15 +388,15 @@ double MidiController::computeValue(
     double tempval = 0.;
     double diff = 0.;
 
-    if (options.all == 0) {
+    if (!options) {
         return newmidivalue;
     }
 
-    if (options.invert) {
+    if (options.testFlag(MidiOption::Invert)) {
         return 127. - newmidivalue;
     }
 
-    if (options.rot64 || options.rot64_inv) {
+    if (options.testFlag(MidiOption::Rot64) || options.testFlag(MidiOption::Rot64Invert)) {
         tempval = prevmidivalue;
         diff = newmidivalue - 64.;
         if (diff == -1 || diff == 1) {
@@ -399,7 +404,7 @@ double MidiController::computeValue(
         } else {
             diff += (diff > 0 ? -1 : +1);
         }
-        if (options.rot64) {
+        if (options.testFlag(MidiOption::Rot64)) {
             tempval += diff;
         } else {
             tempval -= diff;
@@ -407,7 +412,7 @@ double MidiController::computeValue(
         return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
     }
 
-    if (options.rot64_fast) {
+    if (options.testFlag(MidiOption::Rot64Fast)) {
         tempval = prevmidivalue;
         diff = newmidivalue - 64.;
         diff *= 1.5;
@@ -415,7 +420,7 @@ double MidiController::computeValue(
         return (tempval < 0. ? 0. : (tempval > 127. ? 127.0 : tempval));
     }
 
-    if (options.diff) {
+    if (options.testFlag(MidiOption::Diff)) {
         //Interpret 7-bit signed value using two's compliment.
         if (newmidivalue >= 64.) {
             newmidivalue = newmidivalue - 128.;
@@ -427,7 +432,7 @@ double MidiController::computeValue(
         newmidivalue = prevmidivalue + newmidivalue;
     }
 
-    if (options.selectknob) {
+    if (options.testFlag(MidiOption::SelectKnob)) {
         //Interpret 7-bit signed value using two's compliment.
         if (newmidivalue >= 64.) {
             newmidivalue = newmidivalue - 128.;
@@ -438,15 +443,15 @@ double MidiController::computeValue(
         //Since this is a selection knob, we do not want to inherit previous values.
     }
 
-    if (options.button) {
+    if (options.testFlag(MidiOption::Button)) {
         newmidivalue = newmidivalue != 0;
     }
 
-    if (options.sw) {
+    if (options.testFlag(MidiOption::Switch)) {
         newmidivalue = 1;
     }
 
-    if (options.spread64) {
+    if (options.testFlag(MidiOption::Spread64)) {
         //qDebug() << "MIDI_OPT_SPREAD64";
         // BJW: Spread64: Distance away from centre point (aka "relative CC")
         // Uses a similar non-linear scaling formula as ControlTTRotary::getValueFromWidget()
@@ -462,7 +467,7 @@ double MidiController::computeValue(
         //qDebug() << "Spread64: in " << distance << "  out " << newmidivalue;
     }
 
-    if (options.herc_jog) {
+    if (options.testFlag(MidiOption::HercJog)) {
         if (newmidivalue > 64.) {
             newmidivalue -= 128.;
         }
@@ -470,7 +475,7 @@ double MidiController::computeValue(
         //if (_prevmidivalue != 0.0) { qDebug() << "AAAAAAAAAAAA" << prevmidivalue; }
     }
 
-    if (options.herc_jog_fast) {
+    if (options.testFlag(MidiOption::HercJogFast)) {
         if (newmidivalue > 64.) {
             newmidivalue -= 128.;
         }
@@ -511,7 +516,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
                                          const QByteArray& data,
                                          mixxx::Duration timestamp) {
     // Custom script handler
-    if (mapping.options.script) {
+    if (mapping.options.testFlag(MidiOption::Script)) {
         ControllerScriptEngineLegacy* pEngine = getScriptEngine();
         if (pEngine == nullptr) {
             return;
