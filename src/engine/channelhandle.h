@@ -1,5 +1,4 @@
-#ifndef CHANNELHANDLE_H
-#define CHANNELHANDLE_H
+#pragma once
 // ChannelHandle defines a unique identifier for channels of audio in the engine
 // (e.g. headphone output, master output, deck 1, microphone 3). Previously we
 // used the group string of the channel in the engine to uniquely identify it
@@ -160,6 +159,10 @@ class ChannelHandleMap {
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::const_iterator const_iterator;
     typedef typename QVarLengthArray<T, kMaxExpectedGroups>::iterator iterator;
 
+    ChannelHandleMap()
+            : m_dummy(T()) {
+    }
+
     const T& at(const ChannelHandle& handle) const {
         if (!handle.valid()) {
             return m_dummy;
@@ -208,12 +211,18 @@ class ChannelHandleMap {
 
   private:
     inline void maybeExpand(int iSize) {
-        if (m_data.size() < iSize) {
-            m_data.resize(iSize);
+        if (QTypeInfo<T>::isComplex) {
+            // The value for complex types is initialized by QVarLengthArray
+            if (m_data.size() < iSize) {
+                m_data.resize(iSize);
+            }
+        } else {
+            // We need to initialize simple types ourselves
+            while (m_data.size() < iSize) {
+                m_data.append(T());
+            }
         }
     }
     container_type m_data;
     T m_dummy;
 };
-
-#endif /* CHANNELHANDLE,_H */
