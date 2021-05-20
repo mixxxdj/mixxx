@@ -1311,12 +1311,18 @@ if(UNIX AND NOT APPLE)
       "${CMAKE_INSTALL_DATADIR}/applications"
   )
 
-  # Icon file for menu entry
+  # Icon files for menu entry
   install(
     FILES
       "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/mixxx.svg"
     DESTINATION
       "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"
+  )
+  install(
+    FILES
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/mixxx.png"
+    DESTINATION
+      "${CMAKE_INSTALL_DATADIR}/icons/hicolor/32x32/apps"
   )
 
   # .metainfo.xml file for KDE/GNOME AppStream initiative
