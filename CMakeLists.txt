@@ -1314,7 +1314,7 @@ if(UNIX AND NOT APPLE)
   # Icon file for menu entry
   install(
     FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg"
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx.svg"
     DESTINATION
       "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"
   )
