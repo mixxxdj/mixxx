@@ -92,10 +92,18 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
         // Add beatLengthMillis, otherwise we'd import the same beat position
         // twice (we already imported it above).
         beatPositionMillis += beatLengthMillis;
+
+        // Sometimes the previous calculation can lead to a position behind the
+        // terminal marker position, because the BPM value is inaccurate. In
+        // that case, use the rangeEndBeatPositionMillis directly.
+        if (beatPositionMillis > rangeEndBeatPositionMillis) {
+            beatPositionMillis = rangeEndBeatPositionMillis;
+        }
     }
 
-    // Now fill the range with beats until the end is reached
-    while (beatPositionMillis < rangeEndBeatPositionMillis) {
+    // Now fill the range with beats until the end is reached. Add a half beat
+    // length, to make sure that the last beat is actually included.
+    while (beatPositionMillis <= (rangeEndBeatPositionMillis + beatLengthMillis / 2)) {
         beats.append(streamInfo.getSignalInfo().millis2frames(
                 beatPositionMillis + timingOffsetMillis));
         beatPositionMillis += beatLengthMillis;
