@@ -261,6 +261,10 @@ class SkinContext {
         return m_pConfig;
     }
 
+    QString getSkinBasePath() const {
+        return m_skinBasePath;
+    }
+
   private:
     PixmapSource getPixmapSourceInner(const QString& filename) const;
 
