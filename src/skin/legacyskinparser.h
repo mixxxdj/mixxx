@@ -143,6 +143,7 @@ class LegacySkinParser : public QObject, public SkinParser {
             bool* pCreated = nullptr);
 
     QString parseLaunchImageStyle(const QDomNode& node);
+    QString stylesheetAbsIconPaths(QString& style);
     void parseChildren(const QDomElement& node, WWidgetGroup* pGroup);
 
     UserSettingsPointer m_pConfig;
