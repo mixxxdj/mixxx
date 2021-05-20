@@ -284,8 +284,8 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     double newValue = value;
 
-    bool mapping_is_14bit = mapping.options.testFlag(MidiOption::FourteenBitMSB) ||
-            mapping.options.testFlag(MidiOption::FourteenBitLSB);
+    const bool mapping_is_14bit = mapping.options &
+            (MidiOption::FourteenBitMSB | MidiOption::FourteenBitLSB);
     if (!mapping_is_14bit && !m_fourteen_bit_queued_mappings.isEmpty()) {
         qWarning() << "MidiController was waiting for the MSB/LSB of a 14-bit"
                    << "message but the next message received was not mapped as 14-bit."
@@ -300,13 +300,8 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
         for (auto it = m_fourteen_bit_queued_mappings.begin();
              it != m_fourteen_bit_queued_mappings.end(); ++it) {
             if (it->first.control == mapping.control) {
-                if ((it->first.options.testFlag(MidiOption::FourteenBitLSB) &&
-                            mapping.options.testFlag(
-                                    MidiOption::FourteenBitLSB)) ||
-                        (it->first.options.testFlag(
-                                 MidiOption::FourteenBitMSB) &&
-                                mapping.options.testFlag(
-                                        MidiOption::FourteenBitMSB))) {
+                if ((it->first.options & mapping.options) &
+                        (MidiOption::FourteenBitLSB | MidiOption::FourteenBitMSB)) {
                     qWarning() << "MidiController: 14-bit MIDI mapping has mis-matched LSB/MSB options."
                                << "Ignoring both messages.";
                     m_fourteen_bit_queued_mappings.erase(it);
@@ -368,8 +363,7 @@ void MidiController::processInputMapping(const MidiInputMapping& mapping,
 
     // ControlPushButton ControlObjects only accept NOTE_ON, so if the midi
     // mapping is <button> we override the Midi 'status' appropriately.
-    if (mapping.options.testFlag(MidiOption::Button) ||
-            mapping.options.testFlag(MidiOption::Switch)) {
+    if (mapping.options & (MidiOption::Button | MidiOption::Switch)) {
         opCode = MidiOpCode::NoteOn;
     }
 
@@ -396,7 +390,7 @@ double MidiController::computeValue(
         return 127. - newmidivalue;
     }
 
-    if (options.testFlag(MidiOption::Rot64) || options.testFlag(MidiOption::Rot64Invert)) {
+    if (options & (MidiOption::Rot64 | MidiOption::Rot64Invert)) {
         tempval = prevmidivalue;
         diff = newmidivalue - 64.;
         if (diff == -1 || diff == 1) {
