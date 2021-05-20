@@ -32,7 +32,7 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
             filePath, streamInfo.getSignalInfo());
 
     QVector<double> beats;
-    double beatPositionMillis;
+    double beatPositionMillis = 0;
     double beatLengthMillis;
     // Calculate beat positions for non-terminal markers
     for (int i = 0; i < m_nonTerminalMarkers.size(); ++i) {
@@ -59,20 +59,46 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
 
         beats.reserve(beats.size() + pMarker->beatsTillNextMarker());
         for (quint32 j = 0; j < pMarker->beatsTillNextMarker(); ++j) {
-            beats.append(streamInfo.getSignalInfo().millis2frames(
-                    beatPositionMillis + (j * beatLengthMillis)));
+            beats.append(streamInfo.getSignalInfo().millis2frames(beatPositionMillis));
+            beatPositionMillis += beatLengthMillis;
         }
     }
 
-    // Calculate remaining beat positions until track end
-    beatPositionMillis =
-            static_cast<double>(m_pTerminalMarker->positionSecs()) * 1000 +
-            timingOffsetMillis;
+    // Calculate remaining beat positions between the last non-terminal marker
+    // beat (or the start of the track if none exist) and the terminal marker,
+    // using the given BPM.
+    //
+    //                beatPositionMillis          Terminal Marker
+    //                     v                              v
+    //     | | | | | | | | |[###### Remaining range ######]
     beatLengthMillis = 60000.0 / static_cast<double>(m_pTerminalMarker->bpm());
     VERIFY_OR_DEBUG_ASSERT(m_pTerminalMarker->positionSecs() >= 0 && beatLengthMillis > 0) {
         return {};
     }
-    while (beatPositionMillis < streamInfo.getDuration().toDoubleMillis()) {
+
+    const double rangeEndBeatPositionMillis =
+            static_cast<double>(m_pTerminalMarker->positionSecs()) * 1000 +
+            timingOffsetMillis;
+
+    if (beats.isEmpty()) {
+        VERIFY_OR_DEBUG_ASSERT(beatPositionMillis == 0) {
+            return {};
+        }
+        // If there are no beats yet (because there were no non-terminal
+        // markers), beatPositionMillis will be 0. In that case we have to find
+        // the offset backwards from the terminal marker position.
+        // Because we're working with doubles, we can't use modulo and need to
+        // implement it ourselves.
+        const double divisor = std::floor(rangeEndBeatPositionMillis / beatLengthMillis);
+        beatPositionMillis = rangeEndBeatPositionMillis - (divisor * beatLengthMillis);
+    } else {
+        // Add beatLengthMillis, otherwise we'd import the same beat position
+        // twice (we already imported it above).
+        beatPositionMillis += beatLengthMillis;
+    }
+
+    // Now fill the range with beats until the end is reached
+    while (beatPositionMillis < rangeEndBeatPositionMillis) {
         beats.append(streamInfo.getSignalInfo().millis2frames(beatPositionMillis));
         beatPositionMillis += beatLengthMillis;
     }
