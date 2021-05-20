@@ -28,7 +28,7 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
         return {};
     }
 
-    double timingOffsetMillis = SeratoTags::guessTimingOffsetMillis(
+    const double timingOffsetMillis = SeratoTags::guessTimingOffsetMillis(
             filePath, streamInfo.getSignalInfo());
 
     QVector<double> beats;
@@ -37,20 +37,17 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
     // Calculate beat positions for non-terminal markers
     for (int i = 0; i < m_nonTerminalMarkers.size(); ++i) {
         SeratoBeatGridNonTerminalMarkerPointer pMarker = m_nonTerminalMarkers.at(i);
-        beatPositionMillis =
-                static_cast<double>(pMarker->positionSecs()) * 1000 +
-                timingOffsetMillis;
+        beatPositionMillis = static_cast<double>(pMarker->positionSecs()) * 1000;
         VERIFY_OR_DEBUG_ASSERT(pMarker->positionSecs() >= 0 &&
                 pMarker->beatsTillNextMarker() > 0) {
             return {};
         }
-        double nextBeatPositionMillis =
+        const double nextBeatPositionMillis =
                 static_cast<double>(i == (m_nonTerminalMarkers.size() - 1)
                                 ? m_pTerminalMarker->positionSecs()
                                 : m_nonTerminalMarkers.at(i + 1)
                                           ->positionSecs()) *
-                        1000 +
-                timingOffsetMillis;
+                1000;
         VERIFY_OR_DEBUG_ASSERT(nextBeatPositionMillis > beatPositionMillis) {
             return {};
         }
@@ -59,7 +56,8 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
 
         beats.reserve(beats.size() + pMarker->beatsTillNextMarker());
         for (quint32 j = 0; j < pMarker->beatsTillNextMarker(); ++j) {
-            beats.append(streamInfo.getSignalInfo().millis2frames(beatPositionMillis));
+            beats.append(streamInfo.getSignalInfo().millis2frames(
+                    beatPositionMillis + timingOffsetMillis));
             beatPositionMillis += beatLengthMillis;
         }
     }
@@ -77,8 +75,7 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
     }
 
     const double rangeEndBeatPositionMillis =
-            static_cast<double>(m_pTerminalMarker->positionSecs()) * 1000 +
-            timingOffsetMillis;
+            static_cast<double>(m_pTerminalMarker->positionSecs()) * 1000;
 
     if (beats.isEmpty()) {
         VERIFY_OR_DEBUG_ASSERT(beatPositionMillis == 0) {
@@ -99,7 +96,8 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
 
     // Now fill the range with beats until the end is reached
     while (beatPositionMillis < rangeEndBeatPositionMillis) {
-        beats.append(streamInfo.getSignalInfo().millis2frames(beatPositionMillis));
+        beats.append(streamInfo.getSignalInfo().millis2frames(
+                beatPositionMillis + timingOffsetMillis));
         beatPositionMillis += beatLengthMillis;
     }
 
