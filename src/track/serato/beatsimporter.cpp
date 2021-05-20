@@ -33,7 +33,6 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
 
     QVector<double> beats;
     double beatPositionMillis = 0;
-    double beatLengthMillis;
     // Calculate beat positions for non-terminal markers
     for (int i = 0; i < m_nonTerminalMarkers.size(); ++i) {
         SeratoBeatGridNonTerminalMarkerPointer pMarker = m_nonTerminalMarkers.at(i);
@@ -51,7 +50,8 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
         VERIFY_OR_DEBUG_ASSERT(nextBeatPositionMillis > beatPositionMillis) {
             return {};
         }
-        beatLengthMillis = (nextBeatPositionMillis - beatPositionMillis) /
+        const double beatLengthMillis =
+                (nextBeatPositionMillis - beatPositionMillis) /
                 pMarker->beatsTillNextMarker();
 
         beats.reserve(beats.size() + pMarker->beatsTillNextMarker());
@@ -69,7 +69,7 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
     //                beatPositionMillis          Terminal Marker
     //                     v                              v
     //     | | | | | | | | |[###### Remaining range ######]
-    beatLengthMillis = 60000.0 / static_cast<double>(m_pTerminalMarker->bpm());
+    const double beatLengthMillis = 60000.0 / static_cast<double>(m_pTerminalMarker->bpm());
     VERIFY_OR_DEBUG_ASSERT(m_pTerminalMarker->positionSecs() >= 0 && beatLengthMillis > 0) {
         return {};
     }
