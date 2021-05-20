@@ -1314,7 +1314,7 @@ if(UNIX AND NOT APPLE)
   # Icon file for menu entry
   install(
     FILES
-      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx.svg"
+      "${CMAKE_CURRENT_SOURCE_DIR}/res/images/icons/mixxx.svg"
     DESTINATION
       "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"
   )
@@ -2701,7 +2701,7 @@ set(CPACK_DEBIAN_INSTALL_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackDebI
 
 set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
 set(CPACK_WIX_LICENSE_RTF "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/LICENSE.rtf")
-set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/images/ic_mixxx.ico")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/images/icons/ic_mixxx.ico")
 set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(CPACK_WIX_UI_BANNER "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/images/banner.bmp")
 set(CPACK_WIX_UI_DIALOG "${CMAKE_CURRENT_SOURCE_DIR}/packaging/wix/images/dialog.bmp")
