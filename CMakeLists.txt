@@ -1316,7 +1316,7 @@ if(UNIX AND NOT APPLE)
     FILES
       "${CMAKE_CURRENT_SOURCE_DIR}/res/images/mixxx_icon.svg"
     DESTINATION
-      "${CMAKE_INSTALL_DATADIR}/pixmaps"
+      "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps"
   )
 
   # .metainfo.xml file for KDE/GNOME AppStream initiative
