@@ -81,7 +81,7 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
     }
 
     const double rangeEndBeatPositionMillis =
-            static_cast<double>(m_pTerminalMarker->positionSecs()) * 1000;
+            static_cast<double>(m_pTerminalMarker->positionSecs() * 1000);
 
     if (beats.isEmpty()) {
         VERIFY_OR_DEBUG_ASSERT(beatPositionMillis == 0) {
@@ -94,17 +94,8 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
         // implement it ourselves.
         const double divisor = std::floor(rangeEndBeatPositionMillis / beatLengthMillis);
         beatPositionMillis = rangeEndBeatPositionMillis - (divisor * beatLengthMillis);
-    } else {
-        // Add beatLengthMillis, otherwise we'd import the same beat position
-        // twice (we already imported it above).
-        beatPositionMillis += beatLengthMillis;
-
-        // Sometimes the previous calculation can lead to a position behind the
-        // terminal marker position, because the BPM value is inaccurate. In
-        // that case, use the rangeEndBeatPositionMillis directly.
-        if (beatPositionMillis > rangeEndBeatPositionMillis) {
-            beatPositionMillis = rangeEndBeatPositionMillis;
-        }
+    } else if (beatPositionMillis > rangeEndBeatPositionMillis) {
+        beatPositionMillis = rangeEndBeatPositionMillis;
     }
 
     // Now fill the range with beats until the end is reached. Add a half beat
