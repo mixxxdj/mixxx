@@ -84,9 +84,7 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
             static_cast<double>(m_pTerminalMarker->positionSecs() * 1000);
 
     if (beats.isEmpty()) {
-        VERIFY_OR_DEBUG_ASSERT(beatPositionMillis == 0) {
-            return {};
-        }
+        DEBUG_ASSERT(beatPositionMillis == 0);
         // If there are no beats yet (because there were no non-terminal
         // markers), beatPositionMillis will be 0. In that case we have to find
         // the offset backwards from the terminal marker position.
