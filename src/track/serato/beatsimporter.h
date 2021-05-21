@@ -21,6 +21,9 @@ class SeratoBeatsImporter : public BeatsImporter {
             const audio::StreamInfo& streamInfo) override;
 
   private:
+    QVector<double> importBeatsAndApplyTimingOffset(
+            double timingOffsetMillis, const audio::SignalInfo& signalInfo);
+
     QList<SeratoBeatGridNonTerminalMarkerPointer> m_nonTerminalMarkers;
     SeratoBeatGridTerminalMarkerPointer m_pTerminalMarker;
 };

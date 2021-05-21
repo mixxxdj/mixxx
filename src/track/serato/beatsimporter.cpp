@@ -24,12 +24,18 @@ bool SeratoBeatsImporter::isEmpty() const {
 
 QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
         const QString& filePath, const audio::StreamInfo& streamInfo) {
+    const audio::SignalInfo& signalInfo = streamInfo.getSignalInfo();
+    const double timingOffsetMillis = SeratoTags::guessTimingOffsetMillis(
+            filePath, signalInfo);
+
+    return importBeatsAndApplyTimingOffset(timingOffsetMillis, signalInfo);
+}
+
+QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
+        double timingOffsetMillis, const audio::SignalInfo& signalInfo) {
     VERIFY_OR_DEBUG_ASSERT(!isEmpty()) {
         return {};
     }
-
-    const double timingOffsetMillis = SeratoTags::guessTimingOffsetMillis(
-            filePath, streamInfo.getSignalInfo());
 
     QVector<double> beats;
     double beatPositionMillis = 0;
@@ -56,7 +62,7 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
 
         beats.reserve(beats.size() + pMarker->beatsTillNextMarker());
         for (quint32 j = 0; j < pMarker->beatsTillNextMarker(); ++j) {
-            beats.append(streamInfo.getSignalInfo().millis2frames(
+            beats.append(signalInfo.millis2frames(
                     beatPositionMillis + timingOffsetMillis));
             beatPositionMillis += beatLengthMillis;
         }
@@ -104,7 +110,7 @@ QVector<double> SeratoBeatsImporter::importBeatsAndApplyTimingOffset(
     // Now fill the range with beats until the end is reached. Add a half beat
     // length, to make sure that the last beat is actually included.
     while (beatPositionMillis <= (rangeEndBeatPositionMillis + beatLengthMillis / 2)) {
-        beats.append(streamInfo.getSignalInfo().millis2frames(
+        beats.append(signalInfo.millis2frames(
                 beatPositionMillis + timingOffsetMillis));
         beatPositionMillis += beatLengthMillis;
     }
