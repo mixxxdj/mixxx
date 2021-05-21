@@ -1,5 +1,7 @@
 #pragma once
 
+#include <gtest/gtest_prod.h>
+
 #include <QList>
 
 #include "track/beatsimporter.h"
@@ -21,6 +23,8 @@ class SeratoBeatsImporter : public BeatsImporter {
             const audio::StreamInfo& streamInfo) override;
 
   private:
+    FRIEND_TEST(SeratoBeatGridTest, SerializeBeatMap);
+
     QVector<double> importBeatsAndApplyTimingOffset(
             double timingOffsetMillis, const audio::SignalInfo& signalInfo);
 

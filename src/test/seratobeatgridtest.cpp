@@ -8,9 +8,17 @@
 #include "track/beatgrid.h"
 #include "track/beatmap.h"
 #include "track/serato/beatgrid.h"
+#include "track/serato/beatsimporter.h"
 #include "util/memory.h"
 
 namespace {
+
+// Maximum allowed frame position inaccuracy after reimport
+constexpr double kEpsilon = 0.1;
+
+} // namespace
+
+namespace mixxx {
 
 class SeratoBeatGridTest : public testing::Test {
   protected:
@@ -149,6 +157,17 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
         EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 0);
         EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
         EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm));
+
+        // Check if the beats can be re-imported losslessly
+        mixxx::SeratoBeatsImporter beatsImporter(
+                seratoBeatGrid.nonTerminalMarkers(),
+                seratoBeatGrid.terminalMarker());
+        QVector<double> importedBeatPositionsFrames =
+                beatsImporter.importBeatsAndApplyTimingOffset(0, signalInfo);
+        ASSERT_EQ(beatPositionsFrames.size(), importedBeatPositionsFrames.size());
+        for (int i = 0; i < beatPositionsFrames.size(); i++) {
+            EXPECT_NEAR(beatPositionsFrames[i], importedBeatPositionsFrames[i], kEpsilon);
+        }
     }
 
     // Now add 3 minutes of beats at 50 bpm to the beatgrid
@@ -171,7 +190,18 @@ TEST_F(SeratoBeatGridTest, SerializeBeatMap) {
         EXPECT_EQ(seratoBeatGrid.nonTerminalMarkers().size(), 2);
         EXPECT_NE(seratoBeatGrid.terminalMarker(), nullptr);
         EXPECT_FLOAT_EQ(seratoBeatGrid.terminalMarker()->bpm(), static_cast<float>(bpm / 2));
+
+        // Check if the beats can be re-imported losslessly
+        mixxx::SeratoBeatsImporter beatsImporter(
+                seratoBeatGrid.nonTerminalMarkers(),
+                seratoBeatGrid.terminalMarker());
+        QVector<double> importedBeatPositionsFrames =
+                beatsImporter.importBeatsAndApplyTimingOffset(0, signalInfo);
+        ASSERT_EQ(beatPositionsFrames.size(), importedBeatPositionsFrames.size());
+        for (int i = 0; i < beatPositionsFrames.size(); i++) {
+            EXPECT_NEAR(beatPositionsFrames[i], importedBeatPositionsFrames[i], kEpsilon);
+        }
     }
 }
 
-} // namespace
+} // namespace mixxx
