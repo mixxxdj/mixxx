@@ -468,7 +468,7 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
         const double currentDeltaFrames = currentBeatPositionFrames - previousBeatPositionFrames;
         const double differenceBetweenCurrentAndPreviousDelta =
                 abs(currentDeltaFrames - previousDeltaFrames);
-        if (differenceBetweenCurrentAndPreviousDelta > kEpsilon) {
+        if (differenceBetweenCurrentAndPreviousDelta > kEpsilon || nonTerminalMarkers.isEmpty()) {
             // We are adding a new beat marker, therefore we need to update the
             // `beatsSinceLastMarker` variable of the last marker we added.
             if (!nonTerminalMarkers.isEmpty()) {
