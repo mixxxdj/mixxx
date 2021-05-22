@@ -33,6 +33,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     void slotApply() override;
     void slotResetToDefaults() override;
 
+  private slots:
     void slotSetTooltips();
     void slotSetSkinDescription();
     void slotSetSkin(int);
