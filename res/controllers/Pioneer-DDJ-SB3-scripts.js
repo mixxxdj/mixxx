@@ -1094,16 +1094,19 @@ PioneerDDJSB3.stopFlashingPadLedControl = function(deck, groupNumber, shiftGroup
 };
 
 PioneerDDJSB3.nonPadLedControl = function(deck, ledNumber, active) {
-    var nonPadLedsBaseChannel = 0x90,
-        midiChannelOffset = PioneerDDJSB3.deckConverter(deck);
+    var midiChannelOffset = PioneerDDJSB3.deckConverter(deck);
 
-    if (midiChannelOffset !== null) {
-        midi.sendShortMsg(
-            nonPadLedsBaseChannel + midiChannelOffset,
-            ledNumber,
-            active ? 0x7F : 0x00
-        );
+    if (midiChannelOffset === null || midiChannelOffset === undefined) {
+        return;
     }
+
+    var nonPadLedsBaseChannel = 0x90;
+
+    midi.sendShortMsg(
+        nonPadLedsBaseChannel + midiChannelOffset,
+        ledNumber,
+        active ? 0x7F : 0x00
+    );
 };
 
 
