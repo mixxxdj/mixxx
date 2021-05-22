@@ -84,7 +84,7 @@ PioneerDDJSB3.updateBPM = function(bpm, group) {
     }
 
     var bpmValue = Math.round(bpm * 100);
-    var bpmBits = bpmValue.toString(2).split("");
+    var bpmBits = bpmValue.toString(2);
 
     var bpmBitsPadded = [];
 
