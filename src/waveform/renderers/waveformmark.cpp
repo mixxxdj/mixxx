@@ -1,6 +1,6 @@
 #include <QtDebug>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "waveform/renderers/waveformsignalcolors.h"
 #include "widget/wskincolor.h"
 

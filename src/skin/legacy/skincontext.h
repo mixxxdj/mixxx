@@ -13,7 +13,7 @@
 #include <QRegExp>
 
 #include "preferences/usersettings.h"
-#include "skin/pixmapsource.h"
+#include "skin/legacy/pixmapsource.h"
 #include "util/color/color.h"
 #include "widget/wsingletoncontainer.h"
 #include "widget/wpixmapstore.h"

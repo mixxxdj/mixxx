@@ -6,13 +6,13 @@
 #include <QtDebug>
 
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "skin/legacyskinparser.h"
+#include "skin/legacy/legacyskinparser.h"
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "effects/effectsmanager.h"
 #include "mixer/playermanager.h"
 #include "util/debug.h"
-#include "skin/launchimage.h"
+#include "skin/legacy/launchimage.h"
 #include "util/timer.h"
 #include "recording/recordingmanager.h"
 

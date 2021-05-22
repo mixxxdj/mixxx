@@ -9,7 +9,7 @@
 #include "mixer/basetrackplayer.h"
 #include "preferences/usersettings.h"
 #include "library/coverartcache.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "widget/trackdroptarget.h"
 #include "widget/wbasewidget.h"
 #include "widget/wcoverartmenu.h"

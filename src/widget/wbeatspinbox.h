@@ -3,7 +3,7 @@
 #include "control/controlobject.h"
 #include "control/controlproxy.h"
 #include "widget/wbasewidget.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include <QDoubleSpinBox>
 #include <QLineEdit>
 

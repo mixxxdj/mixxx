@@ -9,7 +9,7 @@
 #include <QVector>
 
 #include "control/controlpushbutton.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/fpclassify.h"
 #include "widget/controlwidgetconnection.h"
 #include "widget/wpixmapstore.h"
