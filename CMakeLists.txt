@@ -1881,15 +1881,6 @@ if(WIN32 AND STATIC_DEPS)
   target_compile_definitions(mixxx-lib PUBLIC FLAC__NO_DLL)
 endif()
 
-# FpClassify This is a wrapper around the fpclassify function that prevents
-# inlining It is compiled without optimization and allows to use these function
-# from -ffast-math optimized objects. The MSVC option /fp:fast does not suffer this issue
-add_library(FpClassify STATIC EXCLUDE_FROM_ALL src/util/fpclassify.cpp)
-if(GNU_GCC OR LLVM_CLANG)
-  target_compile_options(FpClassify PRIVATE -fno-fast-math)
-endif()
-target_link_libraries(mixxx-lib PRIVATE FpClassify)
-
 # googletest
 # Required to use the macro FRIEND_TEST from <gtest/gtest_prod.h>
 # in production code

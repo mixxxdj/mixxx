@@ -1,18 +1,10 @@
 #pragma once
 
-#include <math.h>
-
 #include <cmath>
-// Note: Because of our fpclassify hack, we actually need to include both,
-// the c and the c++ version of the math header.
-// From GCC 6.1.1 math.h depends on cmath, which fails to compile if included
-// after our fpclassify hack
-
 #include <algorithm>
 #include <type_traits>
 
 #include "util/assert.h"
-#include "util/fpclassify.h"
 
 // If we don't do this then we get the C90 fabs from the global namespace which
 // is only defined for double.

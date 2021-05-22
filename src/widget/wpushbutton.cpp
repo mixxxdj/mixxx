@@ -399,7 +399,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         } else {
             // Toggle through the states
             emitValue = getControlParameterLeft();
-            if (!isnan(emitValue) && m_iNoStates > 0) {
+            if (!std::isnan(emitValue) && m_iNoStates > 0) {
                 emitValue = static_cast<int>(emitValue + 1.0) % m_iNoStates;
             }
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING) {
@@ -500,7 +500,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             if (m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING
                     && m_clickTimer.isActive() && emitValue >= 1.0) {
                 // revert toggle if button is released too early
-                if (!isnan(emitValue) && m_iNoStates > 0) {
+                if (!std::isnan(emitValue) && m_iNoStates > 0) {
                     emitValue = static_cast<int>(emitValue - 1.0) % m_iNoStates;
                 }
             } else {

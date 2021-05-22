@@ -80,7 +80,7 @@ void VinylControlControl::notifySeekQueued() {
 
 void VinylControlControl::slotControlVinylSeek(double fractionalPos) {
     // Prevent NaN's from sneaking into the engine.
-    if (isnan(fractionalPos)) {
+    if (std::isnan(fractionalPos)) {
         return;
     }
 

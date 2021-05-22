@@ -198,8 +198,8 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
     for (SINT i = 0;
             i < bufferParameters.samplesPerBuffer();
             i += bufferParameters.channelCount()) {
-        left = pInput[i] + tanh(left * feedback);
-        right = pInput[i + 1] + tanh(right * feedback);
+        left = pInput[i] + std::tanh(left * feedback);
+        right = pInput[i + 1] + std::tanh(right * feedback);
 
         // For stereo enabled, the channels are out of phase
         pState->leftPhase = fmodf(pState->leftPhase + freqSkip, kDoublePi);
@@ -218,8 +218,8 @@ void PhaserEffect::processChannel(const ChannelHandle& handle,
             CSAMPLE wLeft = range * delayLeft;
             CSAMPLE wRight = range * delayRight;
 
-            CSAMPLE tanwLeft = tanh(wLeft / 2);
-            CSAMPLE tanwRight = tanh(wRight / 2);
+            CSAMPLE tanwLeft = std::tanh(wLeft / 2);
+            CSAMPLE tanwRight = std::tanh(wRight / 2);
 
             filterCoefLeft = (1.0f - tanwLeft) / (1.0f + tanwLeft);
             filterCoefRight = (1.0f - tanwRight) / (1.0f + tanwRight);

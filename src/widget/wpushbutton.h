@@ -47,7 +47,7 @@ class WPushButton : public WWidget {
 
     int readDisplayValue() const {
         double value = getControlParameterDisplay();
-        if (!isnan(value) && m_iNoStates > 0) {
+        if (!std::isnan(value) && m_iNoStates > 0) {
             return static_cast<int>(value) % m_iNoStates;
         }
         return 0;

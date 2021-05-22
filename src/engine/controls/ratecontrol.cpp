@@ -376,7 +376,7 @@ double RateControl::getJogFactor() const {
     double jogValueFiltered = m_pJogFilter->filter(jogValue);
     double jogFactor = jogValueFiltered * jogSensitivity;
 
-    if (isnan(jogValue) || isnan(jogFactor)) {
+    if (std::isnan(jogValue) || std::isnan(jogFactor)) {
         jogFactor = 0.0;
     }
 
@@ -423,7 +423,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         } else {
             double scratchFactor = m_pScratch2->get();
             // Don't trust values from m_pScratch2
-            if (isnan(scratchFactor)) {
+            if (std::isnan(scratchFactor)) {
                 scratchFactor = 0.0;
             }
             if (paused) {
@@ -575,7 +575,7 @@ void RateControl::setRateTemp(double v) {
         m_tempRateRatio = -1.0;
     } else if (m_tempRateRatio > 1.0) {
         m_tempRateRatio = 1.0;
-    } else if (isnan(m_tempRateRatio)) {
+    } else if (std::isnan(m_tempRateRatio)) {
         m_tempRateRatio = 0;
     }
 }

@@ -676,7 +676,7 @@ double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
 
 void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekType) {
     // Prevent NaN's from sneaking into the engine.
-    VERIFY_OR_DEBUG_ASSERT(!isnan(fractionalPos)) {
+    VERIFY_OR_DEBUG_ASSERT(!std::isnan(fractionalPos)) {
         return;
     }
     double newSamplePosition = fractionalPos * m_pTrackSamples->get();

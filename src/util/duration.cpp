@@ -4,7 +4,6 @@
 #include <QTime>
 
 #include "util/assert.h"
-#include "util/fpclassify.h"
 #include "util/math.h"
 
 namespace mixxx {
@@ -26,7 +25,7 @@ QChar DurationBase::kDecimalSeparator = QChar(0x002E);
 
 // static
 QString DurationBase::formatTime(double dSeconds, Precision precision) {
-    if (dSeconds < 0.0 || !isfinite(dSeconds)
+    if (dSeconds < 0.0 || !std::isfinite(dSeconds)
             // Use >= instead of >: 2^63-1 (qint64) is rounded to 2^63 (double)
             || dSeconds >= static_cast<double>(std::numeric_limits<qint64>::max())) {
         // negative durations and infinity or isNaN values are not supported

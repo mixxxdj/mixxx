@@ -20,10 +20,10 @@ inline CSAMPLE scaleSignal(CSAMPLE invalue, FilterIndex index = FilterCount) {
     if (invalue == 0.0) {
         return 0;
     } else if (index == Low || index == Mid) {
-        //return pow(invalue, 2 * 0.5);
+        //return std::pow(invalue, 2 * 0.5);
         return invalue;
     } else {
-        return pow(invalue, 2.0f * 0.316f);
+        return std::pow(invalue, 2.0f * 0.316f);
     }
 }
 
