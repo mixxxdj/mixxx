@@ -1,12 +1,15 @@
 #pragma once
 
+#include <QMap>
 #include <QWidget>
 #include <memory>
+#include <optional>
 
 #include "preferences/constants.h"
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefinterfacedlg.h"
 #include "preferences/usersettings.h"
+#include "skin/legacy/skin.h"
 
 class ControlProxy;
 class ControlPotmeter;
@@ -54,8 +57,9 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     MixxxMainWindow *m_mixxx;
     std::shared_ptr<SkinLoader> m_pSkinLoader;
 
-    QString m_skin;
-    QString m_skinOnUpdate;
+    QMap<QString, std::optional<mixxx::skin::legacy::Skin>> m_skins;
+    mixxx::skin::legacy::Skin m_skin;
+    QString m_skinNameOnUpdate;
     QString m_colorScheme;
     QString m_localeOnUpdate;
     mixxx::TooltipsPreference m_tooltipMode;
