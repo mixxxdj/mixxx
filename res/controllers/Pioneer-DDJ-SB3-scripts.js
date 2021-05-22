@@ -92,7 +92,7 @@ PioneerDDJSB3.updateBPM = function(bpm, group) {
 
     var i;
 
-    for (i=0; i<16; i++) {
+    for (i = 0; i < 16; i++) {
         if (i < offset) {
             bpmBitsPadded[i] = "0";
         } else {
@@ -102,10 +102,10 @@ PioneerDDJSB3.updateBPM = function(bpm, group) {
 
     var bytes = [];
 
-    for (i=0; i<4; i++) {
+    for (i = 0; i < 4; i++) {
         var mbyte = 0;
 
-        for (var j=0; j<4; j++) {
+        for (var j = 0; j < 4; j++) {
             var bitIndex = (i * 4) + j;
             var bit = parseInt(bpmBitsPadded[bitIndex]);
             mbyte = mbyte | (bit << (3 - j));
@@ -1038,18 +1038,20 @@ PioneerDDJSB3.deckConverter = function(group) {
 };
 
 PioneerDDJSB3.padLedControl = function(deck, groupNumber, shiftGroup, ledNumber, shift, active) {
-    var padLedsBaseChannel = 0x97,
-        padLedControl = (shiftGroup ? 0x40 : 0x00) + (shift ? 0x08 : 0x00) + groupNumber + ledNumber,
-        midiChannelOffset = PioneerDDJSB3.deckConverter(deck);
+    var midiChannelOffset = PioneerDDJSB3.deckConverter(deck);
 
-    if (midiChannelOffset !== null) {
-        engine.log("Pad Led: deck: " + deck + " group: " + groupNumber + " led: " + ledNumber + " active: " + !!active);
-        midi.sendShortMsg(
-            padLedsBaseChannel + midiChannelOffset,
-            padLedControl,
-            active ? 0x7F : 0x00
-        );
+    if (midiChannelOffset === null || midiChannelOffset === undefined) {
+        return;
     }
+
+    var padLedsBaseChannel = 0x97;
+    var padLedControl = (shiftGroup ? 0x40 : 0x00) + (shift ? 0x08 : 0x00) + groupNumber + ledNumber;
+
+    midi.sendShortMsg(
+        padLedsBaseChannel + midiChannelOffset,
+        padLedControl,
+        active ? 0x7F : 0x00
+    );
 };
 
 PioneerDDJSB3.flashingPadLedControl = [];
