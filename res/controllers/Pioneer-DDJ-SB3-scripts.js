@@ -1431,7 +1431,9 @@ PioneerDDJSB3.EffectUnit = function(unitNumber) {
         }
     };
 
-    for (var i = 1; i <= 3; i++) {
+    var i;
+
+    for (i = 1; i <= 3; i++) {
         this.buttonLights[i] = new this.EffectButtonLight(i);
     }
 
@@ -1495,8 +1497,7 @@ PioneerDDJSB3.EffectUnit = function(unitNumber) {
 
     this.button = [];
 
-    // eslint-disable-next-line no-redeclare
-    for (var i = 1; i <= 3; i++) {
+    for (i = 1; i <= 3; i++) {
         this.button[i] = new this.EffectEnableButton(i);
         this.button[i + 3] = new this.EffectFocusButton(i);
 
@@ -1607,15 +1608,17 @@ PioneerDDJSB3.Slicer.prototype.PLAY_POSITION_FLOOR = 0;
 PioneerDDJSB3.Slicer.prototype.PLAY_POSITION_RANGE = 1 - PioneerDDJSB3.Slicer.prototype.PLAY_POSITION_FLOOR;
 
 PioneerDDJSB3.Slicer.prototype.shutdown = function() {
-    for (var i = 0; i < this.midiOutputBeatLeds.length; i++) {
+    var i;
+
+    for (i = 0; i < this.midiOutputBeatLeds.length; i++) {
         var ledMidi = this.midiOutputBeatLeds[i];
 
         if (ledMidi) {
             midi.sendShortMsg(this.midiOutputOp, ledMidi, 0x0);
         }
     }
-    // eslint-disable-next-line no-redeclare
-    for (var i = 0; i < this.connections.length; i++) {
+
+    for (i = 0; i < this.connections.length; i++) {
         this.connections[i].disconnect();
     }
 };
