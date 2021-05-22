@@ -13,6 +13,7 @@
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/legacyskin.h"
 #include "skin/legacy/legacyskinparser.h"
+#include "skin/qml/qmlskin.h"
 #include "util/debug.h"
 #include "util/timer.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -21,6 +22,7 @@ namespace mixxx {
 namespace skin {
 
 using legacy::LegacySkin;
+using qml::QmlSkin;
 
 SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
         m_pConfig(pConfig) {
@@ -192,6 +194,11 @@ QString SkinLoader::pickResizableSkin(const QString& oldSkin) const {
 
 SkinPointer SkinLoader::skinFromDirectory(const QDir& dir) const {
     SkinPointer pSkin = LegacySkin::fromDirectory(dir);
+    if (pSkin && pSkin->isValid()) {
+        return pSkin;
+    }
+
+    pSkin = QmlSkin::fromDirectory(dir);
     if (pSkin && pSkin->isValid()) {
         return pSkin;
     }
