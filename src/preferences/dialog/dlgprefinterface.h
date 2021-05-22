@@ -34,7 +34,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     void slotResetToDefaults() override;
 
     void slotSetTooltips();
-    void slotSetSkinDescription(const QString& skin);
+    void slotSetSkinDescription();
     void slotSetSkin(int);
     void slotSetScheme(int);
     void slotUpdateSchemes();

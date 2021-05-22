@@ -130,7 +130,7 @@ DlgPrefInterface::DlgPrefInterface(
     } else {
         warningLabel->show();
     }
-    slotSetSkinDescription(m_skin.name());
+    slotSetSkinDescription();
 
     connect(ComboBoxSkinconf,
             QOverload<int>::of(&QComboBox::currentIndexChanged),
@@ -339,9 +339,8 @@ void DlgPrefInterface::slotSetScheme(int) {
     skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin.name(), m_colorScheme));
 }
 
-void DlgPrefInterface::slotSetSkinDescription(const QString& skinName) {
-    const Skin skin(QFileInfo(m_pSkinLoader->getSkinPath(skinName)));
-    const QString description = skin.description();
+void DlgPrefInterface::slotSetSkinDescription() {
+    const QString description = m_skin.description();
     if (!description.isEmpty()) {
         skinDescriptionText->show();
         skinDescriptionText->setText(description);
@@ -366,7 +365,7 @@ void DlgPrefInterface::slotSetSkin(int) {
             warningLabel->show();
         }
         slotUpdateSchemes();
-        slotSetSkinDescription(m_skin.name());
+        slotSetSkinDescription();
     }
 
     skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkinName, m_colorScheme));
