@@ -30,7 +30,8 @@ QList<Skin> SkinLoader::getSkins() const {
     const QList<QDir> skinSearchPaths = getSkinSearchPaths();
     QList<Skin> skins;
     for (const QDir& dir : skinSearchPaths) {
-        for (const QFileInfo& fileInfo : dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+        const QList<QFileInfo> fileInfos = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
+        for (const QFileInfo& fileInfo : fileInfos) {
             QDir skinDir(fileInfo.absoluteFilePath());
             if (skinDir.exists(QStringLiteral("skin.xml"))) {
                 skins.append(Skin(fileInfo));
