@@ -26,6 +26,24 @@ QFileInfo Skin::path() const {
     return m_path;
 }
 
+QPixmap Skin::preview(const QString& schemeName = QString()) const {
+    QPixmap preview;
+    if (!schemeName.isEmpty()) {
+        QString schemeNameUnformatted = schemeName;
+        QString schemeNameFormatted = schemeNameUnformatted.replace(" ", "");
+        preview.load(m_path.absoluteFilePath() +
+                QStringLiteral("/skin_preview_") + schemeNameFormatted +
+                QStringLiteral(".png"));
+    } else {
+        preview.load(m_path.absoluteFilePath() + QStringLiteral("/skin_preview.png"));
+    }
+    if (!preview.isNull()) {
+        return preview;
+    }
+    preview.load(":/images/skin_preview_placeholder.png");
+    return preview;
+}
+
 QFileInfo Skin::skinFile() const {
     DEBUG_ASSERT(isValid());
     return QFileInfo(path().absoluteFilePath() + QStringLiteral("/skin.xml"));

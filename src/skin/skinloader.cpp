@@ -73,22 +73,6 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
     return QString();
 }
 
-QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schemeName) const {
-    QPixmap preview;
-    if (!schemeName.isEmpty()) {
-        QString schemeNameUnformatted = schemeName;
-        QString schemeNameFormatted = schemeNameUnformatted.replace(" ","");
-        preview.load(getSkinPath(skinName) + "/skin_preview_" + schemeNameFormatted + ".png");
-    } else {
-        preview.load(getSkinPath(skinName) + "/skin_preview.png");
-    }
-    if (!preview.isNull()){
-        return preview;
-    }
-    preview.load(":/images/skin_preview_placeholder.png");
-    return preview;
-}
-
 QString SkinLoader::getConfiguredSkinPath() const {
     QString configSkin = m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
 

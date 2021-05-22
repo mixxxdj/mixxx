@@ -2,6 +2,7 @@
 
 #include <QFileInfo>
 #include <QList>
+#include <QPixmap>
 #include <QScreen>
 #include <QString>
 
@@ -16,6 +17,7 @@ class Skin {
 
     bool isValid() const;
     QFileInfo path() const;
+    QPixmap preview(const QString& schemeName) const;
 
     QString name() const;
     QString description() const;

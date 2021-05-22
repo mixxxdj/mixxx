@@ -122,8 +122,7 @@ DlgPrefInterface::DlgPrefInterface(
     ComboBoxSkinconf->setCurrentIndex(index);
     // schemes must be updated here to populate the drop-down box and set m_colorScheme
     slotUpdateSchemes();
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(
-            m_skin.name(), m_colorScheme));
+    skinPreviewLabel->setPixmap(m_skin.preview(m_colorScheme));
     const auto* const pScreen = getScreen();
     if (m_skin.fitsScreenSize(*pScreen)) {
         warningLabel->hide();
@@ -192,7 +191,7 @@ QScreen* DlgPrefInterface::getScreen() const {
 void DlgPrefInterface::slotUpdateSchemes() {
     // Re-populates the scheme combobox and attempts to pick the color scheme from config file.
     // Since this involves opening a file we won't do this as part of regular slotUpdate
-    QList<QString> schlist = m_skin.colorschemes();
+    const QList<QString> schlist = m_skin.colorschemes();
 
     ComboBoxSchemeconf->clear();
 
@@ -200,7 +199,7 @@ void DlgPrefInterface::slotUpdateSchemes() {
         ComboBoxSchemeconf->setEnabled(false);
         ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", nullptr));
         ComboBoxSchemeconf->setCurrentIndex(0);
-        // clear m_colorScheme so that SkinLoader::getSkinPreview returns the correct preview
+        // clear m_colorScheme so that the correct skin preview is loaded
         m_colorScheme = QString();
     } else {
         ComboBoxSchemeconf->setEnabled(true);
@@ -336,7 +335,7 @@ void DlgPrefInterface::slotSetScheme(int) {
         m_colorScheme = newScheme;
         m_bRebootMixxxView = true;
     }
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin.name(), m_colorScheme));
+    skinPreviewLabel->setPixmap(m_skin.preview(m_colorScheme));
 }
 
 void DlgPrefInterface::slotSetSkinDescription() {
@@ -351,24 +350,25 @@ void DlgPrefInterface::slotSetSkinDescription() {
 
 void DlgPrefInterface::slotSetSkin(int) {
     QString newSkinName = ComboBoxSkinconf->currentText();
-    if (newSkinName != m_skin.name()) {
-        const Skin newSkin = m_skins[newSkinName];
-        VERIFY_OR_DEBUG_ASSERT(newSkin.isValid()) {
-            return;
-        }
-        m_skin = newSkin;
-        m_bRebootMixxxView = newSkinName != m_skinNameOnUpdate;
-        const auto* const pScreen = getScreen();
-        if (pScreen && m_skin.fitsScreenSize(*pScreen)) {
-            warningLabel->hide();
-        } else {
-            warningLabel->show();
-        }
-        slotUpdateSchemes();
-        slotSetSkinDescription();
+    if (newSkinName == m_skin.name()) {
+        return;
     }
 
-    skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(newSkinName, m_colorScheme));
+    const Skin newSkin = m_skins[newSkinName];
+    VERIFY_OR_DEBUG_ASSERT(newSkin.isValid()) {
+        return;
+    }
+    m_skin = newSkin;
+    m_bRebootMixxxView = newSkinName != m_skinNameOnUpdate;
+    const auto* const pScreen = getScreen();
+    if (pScreen && m_skin.fitsScreenSize(*pScreen)) {
+        warningLabel->hide();
+    } else {
+        warningLabel->show();
+    }
+    slotUpdateSchemes();
+    slotSetSkinDescription();
+    skinPreviewLabel->setPixmap(m_skin.preview(m_colorScheme));
 }
 
 void DlgPrefInterface::slotApply() {
