@@ -14,8 +14,6 @@
 #include "util/logger.h"
 #include "util/math.h"
 
-const double kTrackPositionMasterHandoff = 0.99;
-
 const double SyncControl::kBpmUnity = 1.0;
 const double SyncControl::kBpmHalve = 0.5;
 const double SyncControl::kBpmDouble = 2.0;
@@ -316,8 +314,7 @@ void SyncControl::setInstantaneousBpm(double bpm) {
 void SyncControl::reportTrackPosition(double fractionalPlaypos) {
     // If we're close to the end, and master, disable master so we don't stop
     // the party.
-    if (isMaster(getSyncMode()) &&
-            fractionalPlaypos > kTrackPositionMasterHandoff) {
+    if (isMaster(getSyncMode()) && fractionalPlaypos >= 1.0) {
         m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
     }
 }
