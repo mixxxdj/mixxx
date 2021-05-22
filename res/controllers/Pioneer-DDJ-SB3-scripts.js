@@ -728,13 +728,6 @@ PioneerDDJSB3.deckShiftSwitchTable = {
     "[Channel4]": "[Channel2]"
 };
 
-PioneerDDJSB3.deckIndexTable = {
-    "[Channel1]": 0,
-    "[Channel2]": 1,
-    "[Channel3]": 2,
-    "[Channel4]": 3
-};
-
 PioneerDDJSB3.initDeck = function(group) {
     PioneerDDJSB3.bindDeckControlConnections(group, false);
     PioneerDDJSB3.nonPadLedControl(group, PioneerDDJSB3.nonPadLeds.shiftKeyLock, PioneerDDJSB3.channelGroups[group] > 1);
