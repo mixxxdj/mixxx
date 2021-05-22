@@ -58,7 +58,7 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     MixxxMainWindow *m_mixxx;
     std::shared_ptr<SkinLoader> m_pSkinLoader;
 
-    QMap<QString, std::optional<mixxx::skin::legacy::Skin>> m_skins;
+    QMap<QString, mixxx::skin::legacy::Skin> m_skins;
     mixxx::skin::legacy::Skin m_skin;
     QString m_skinNameOnUpdate;
     QString m_colorScheme;

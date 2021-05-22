@@ -114,7 +114,7 @@ DlgPrefInterface::DlgPrefInterface(
     int index = 0;
     for (const Skin& skin : skins) {
         ComboBoxSkinconf->insertItem(index, skin.name());
-        m_skins.insert(skin.name(), std::optional(skin));
+        m_skins.insert(skin.name(), skin);
         index++;
     }
     qWarning() << m_skins.keys();
@@ -228,9 +228,9 @@ void DlgPrefInterface::slotUpdateSchemes() {
 void DlgPrefInterface::slotUpdate() {
     const QString skinNameOnUpdate =
             m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
-    const std::optional<Skin> skinOnUpdate = m_skins[skinNameOnUpdate];
-    if (skinOnUpdate) {
-        m_skinNameOnUpdate = (*skinOnUpdate).name();
+    const Skin skinOnUpdate = m_skins[skinNameOnUpdate];
+    if (skinOnUpdate.isValid()) {
+        m_skinNameOnUpdate = skinOnUpdate.name();
     } else {
         m_skinNameOnUpdate = m_pSkinLoader->getDefaultSkinName();
     }
@@ -352,11 +352,11 @@ void DlgPrefInterface::slotSetSkinDescription() {
 void DlgPrefInterface::slotSetSkin(int) {
     QString newSkinName = ComboBoxSkinconf->currentText();
     if (newSkinName != m_skin.name()) {
-        const std::optional<Skin> newSkin = m_skins[newSkinName];
-        VERIFY_OR_DEBUG_ASSERT(newSkin) {
+        const Skin newSkin = m_skins[newSkinName];
+        VERIFY_OR_DEBUG_ASSERT(newSkin.isValid()) {
             return;
         }
-        m_skin = *newSkin;
+        m_skin = newSkin;
         m_bRebootMixxxView = newSkinName != m_skinNameOnUpdate;
         const auto* const pScreen = getScreen();
         if (pScreen && m_skin.fitsScreenSize(*pScreen)) {

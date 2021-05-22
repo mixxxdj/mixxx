@@ -11,13 +11,11 @@ namespace legacy {
 
 class Skin {
   public:
-    explicit Skin(const QFileInfo& path)
-            : m_path(path) {
-    }
+    Skin() = default;
+    Skin(const QFileInfo& path);
 
-    QFileInfo path() const {
-        return m_path;
-    }
+    bool isValid() const;
+    QFileInfo path() const;
 
     QString name() const;
     QString description() const;

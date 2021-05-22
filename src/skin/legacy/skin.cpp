@@ -12,19 +12,37 @@ namespace mixxx {
 namespace skin {
 namespace legacy {
 
+Skin::Skin(const QFileInfo& path)
+        : m_path(path) {
+    DEBUG_ASSERT(isValid());
+}
+
+bool Skin::isValid() const {
+    return !m_path.filePath().isEmpty() && m_path.exists();
+}
+
+QFileInfo Skin::path() const {
+    DEBUG_ASSERT(isValid());
+    return m_path;
+}
+
 QFileInfo Skin::skinFile() const {
+    DEBUG_ASSERT(isValid());
     return QFileInfo(path().absoluteFilePath() + QStringLiteral("/skin.xml"));
 }
 
 QString Skin::name() const {
+    DEBUG_ASSERT(isValid());
     return m_path.fileName();
 }
 
 QList<QString> Skin::colorschemes() const {
+    DEBUG_ASSERT(isValid());
     return LegacySkinParser::getSchemeList(path().absoluteFilePath());
 }
 
 QString Skin::description() const {
+    DEBUG_ASSERT(isValid());
     SkinManifest manifest = LegacySkinParser::getSkinManifest(
             LegacySkinParser::openSkin(path().absoluteFilePath()));
     QString description = QString::fromStdString(manifest.description());
@@ -35,6 +53,7 @@ QString Skin::description() const {
 }
 
 bool Skin::fitsScreenSize(const QScreen& screen) const {
+    DEBUG_ASSERT(isValid());
     // Use the full resolution of the entire screen that is
     // available in full-screen mode.
     const auto screenSize = screen.size();
