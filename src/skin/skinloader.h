@@ -6,6 +6,7 @@
 #include <QWidget>
 
 #include "preferences/usersettings.h"
+#include "skin/legacy/skin.h"
 
 class KeyboardEventFilter;
 class PlayerManager;
@@ -39,6 +40,7 @@ class SkinLoader {
     QString getConfiguredSkinPath() const;
     QString getDefaultSkinName() const;
     QList<QDir> getSkinSearchPaths() const;
+    QList<mixxx::skin::legacy::Skin> getSkins() const;
 
   private:
     QString pickResizableSkin(const QString& oldSkin) const;

@@ -16,12 +16,29 @@
 #include "util/timer.h"
 #include "recording/recordingmanager.h"
 
+using mixxx::skin::legacy::Skin;
+
 SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
         m_pConfig(pConfig) {
 }
 
 SkinLoader::~SkinLoader() {
     LegacySkinParser::clearSharedGroupStrings();
+}
+
+QList<Skin> SkinLoader::getSkins() const {
+    const QList<QDir> skinSearchPaths = getSkinSearchPaths();
+    QList<Skin> skins;
+    for (const QDir& dir : skinSearchPaths) {
+        for (const QFileInfo& fileInfo : dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
+            QDir skinDir(fileInfo.absoluteFilePath());
+            if (skinDir.exists(QStringLiteral("skin.xml"))) {
+                skins.append(Skin(fileInfo));
+            }
+        }
+    }
+
+    return skins;
 }
 
 QList<QDir> SkinLoader::getSkinSearchPaths() const {

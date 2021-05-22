@@ -15,49 +15,13 @@
 #include "moc_dlgprefinterface.cpp"
 #include "preferences/usersettings.h"
 #include "skin/legacy/legacyskinparser.h"
+#include "skin/legacy/skin.h"
 #include "skin/skinloader.h"
 #include "util/screensaver.h"
 #include "util/widgethelper.h"
 
 using mixxx::skin::SkinManifest;
-
-namespace {
-
-const QRegExp kMinSizeRegExp("<MinimumSize>(\\d+), *(\\d+)<");
-
-bool skinFitsScreenSize(
-        const QScreen& screen,
-        const QString& skin) {
-    // Use the full resolution of the entire screen that is
-    // available in full-screen mode.
-    const auto screenSize = screen.size();
-    QFile skinfile(skin + QStringLiteral("/skin.xml"));
-    if (skinfile.open(QFile::ReadOnly | QFile::Text)) {
-        QTextStream in(&skinfile);
-        bool found_size = false;
-        while (!in.atEnd()) {
-            if (kMinSizeRegExp.indexIn(in.readLine()) != -1) {
-                found_size = true;
-                break;
-            }
-        }
-        if (found_size) {
-            return !(kMinSizeRegExp.cap(1).toInt() > screenSize.width() ||
-                    kMinSizeRegExp.cap(2).toInt() > screenSize.height());
-        }
-    }
-
-    // If regex failed, fall back to skin name parsing.
-    QString skinName = skin.left(skin.indexOf(QRegExp("\\d")));
-    QString resName = skin.right(skin.count() - skinName.count());
-    QString res = resName.left(resName.lastIndexOf(QRegExp("\\d")) + 1);
-    QString skinWidth = res.left(res.indexOf("x"));
-    QString skinHeight = res.right(res.count() - skinWidth.count() - 1);
-    return skinWidth.toInt() <= screenSize.width() &&
-            skinHeight.toInt() <= screenSize.height();
-}
-
-} // namespace
+using mixxx::skin::legacy::Skin;
 
 DlgPrefInterface::DlgPrefInterface(
         QWidget* parent,
@@ -145,26 +109,21 @@ DlgPrefInterface::DlgPrefInterface(
     skinDescriptionText->setText("");
     skinDescriptionText->hide();
 
-    QList<QDir> skinSearchPaths = m_pSkinLoader->getSkinSearchPaths();
-    QList<QFileInfo> skins;
-    for (QDir& dir : skinSearchPaths) {
-        dir.setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
-        skins.append(dir.entryInfoList());
-    }
+    const QList<Skin> skins = m_pSkinLoader->getSkins();
 
     QString configuredSkinPath = m_pSkinLoader->getConfiguredSkinPath();
     int index = 0;
     const auto* const pScreen = getScreen();
-    for (const QFileInfo& skinInfo : skins) {
-        ComboBoxSkinconf->insertItem(index, skinInfo.fileName());
+    for (const Skin& skin : skins) {
+        ComboBoxSkinconf->insertItem(index, skin.name());
 
-        if (skinInfo.absoluteFilePath() == configuredSkinPath) {
-            m_skin = skinInfo.fileName();
+        if (skin.path() == configuredSkinPath) {
+            m_skin = skin.name();
             ComboBoxSkinconf->setCurrentIndex(index);
             // schemes must be updated here to populate the drop-down box and set m_colorScheme
             slotUpdateSchemes();
             skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
-            if (skinFitsScreenSize(*pScreen, configuredSkinPath)) {
+            if (skin.fitsScreenSize(*pScreen)) {
                 warningLabel->hide();
             } else {
                 warningLabel->show();
@@ -234,8 +193,8 @@ QScreen* DlgPrefInterface::getScreen() const {
 void DlgPrefInterface::slotUpdateSchemes() {
     // Re-populates the scheme combobox and attempts to pick the color scheme from config file.
     // Since this involves opening a file we won't do this as part of regular slotUpdate
-    QList<QString> schlist = LegacySkinParser::getSchemeList(
-                m_pSkinLoader->getSkinPath(m_skin));
+    const Skin skin(QFileInfo(m_pSkinLoader->getSkinPath(m_skin)));
+    QList<QString> schlist = skin.colorschemes();
 
     ComboBoxSchemeconf->clear();
 
@@ -378,11 +337,10 @@ void DlgPrefInterface::slotSetScheme(int) {
     skinPreviewLabel->setPixmap(m_pSkinLoader->getSkinPreview(m_skin, m_colorScheme));
 }
 
-void DlgPrefInterface::slotSetSkinDescription(const QString& skin) {
-    SkinManifest manifest = LegacySkinParser::getSkinManifest(
-            LegacySkinParser::openSkin(m_pSkinLoader->getSkinPath(skin)));
-    QString description = QString::fromStdString(manifest.description());
-    if (manifest.has_description() && !description.isEmpty()) {
+void DlgPrefInterface::slotSetSkinDescription(const QString& skinName) {
+    const Skin skin(QFileInfo(m_pSkinLoader->getSkinPath(skinName)));
+    const QString description = skin.description();
+    if (!description.isEmpty()) {
         skinDescriptionText->show();
         skinDescriptionText->setText(description);
     } else {
@@ -394,10 +352,10 @@ void DlgPrefInterface::slotSetSkin(int) {
     QString newSkin = ComboBoxSkinconf->currentText();
     if (newSkin != m_skin) {
         m_skin = newSkin;
+        const Skin skin(QFileInfo(m_pSkinLoader->getSkinPath(m_skin)));
         m_bRebootMixxxView = newSkin != m_skinOnUpdate;
         const auto* const pScreen = getScreen();
-        if (pScreen &&
-                skinFitsScreenSize(*pScreen, m_pSkinLoader->getSkinPath(m_skin))) {
+        if (pScreen && skin.fitsScreenSize(*pScreen)) {
             warningLabel->hide();
         } else {
             warningLabel->show();
