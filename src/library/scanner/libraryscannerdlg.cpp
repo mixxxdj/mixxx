@@ -10,7 +10,7 @@
 LibraryScannerDlg::LibraryScannerDlg(QWidget* parent, Qt::WindowFlags f)
         : QWidget(parent, f),
           m_bCancelled(false) {
-    setWindowIcon(QIcon(":/images/mixxx_icon.svg"));
+    setWindowIcon(QIcon(":/images/icons/mixxx.svg"));
 
     QVBoxLayout* pLayout = new QVBoxLayout(this);
 
