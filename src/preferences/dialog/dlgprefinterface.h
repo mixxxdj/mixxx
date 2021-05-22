@@ -9,7 +9,7 @@
 #include "preferences/dialog/dlgpreferencepage.h"
 #include "preferences/dialog/ui_dlgprefinterfacedlg.h"
 #include "preferences/usersettings.h"
-#include "skin/legacy/skin.h"
+#include "skin/skin.h"
 
 class ControlProxy;
 class ControlPotmeter;
@@ -58,8 +58,8 @@ class DlgPrefInterface : public DlgPreferencePage, public Ui::DlgPrefControlsDlg
     MixxxMainWindow *m_mixxx;
     std::shared_ptr<SkinLoader> m_pSkinLoader;
 
-    QMap<QString, mixxx::skin::legacy::Skin> m_skins;
-    mixxx::skin::legacy::Skin m_skin;
+    QMap<QString, mixxx::skin::SkinPointer> m_skins;
+    mixxx::skin::SkinPointer m_pSkin;
     QString m_skinNameOnUpdate;
     QString m_colorScheme;
     QString m_localeOnUpdate;

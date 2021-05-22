@@ -15,13 +15,13 @@
 #include "moc_dlgprefinterface.cpp"
 #include "preferences/usersettings.h"
 #include "skin/legacy/legacyskinparser.h"
-#include "skin/legacy/skin.h"
+#include "skin/skin.h"
 #include "skin/skinloader.h"
 #include "util/screensaver.h"
 #include "util/widgethelper.h"
 
 using mixxx::skin::SkinManifest;
-using mixxx::skin::legacy::Skin;
+using mixxx::skin::SkinPointer;
 
 DlgPrefInterface::DlgPrefInterface(
         QWidget* parent,
@@ -32,7 +32,7 @@ DlgPrefInterface::DlgPrefInterface(
           m_pConfig(pConfig),
           m_mixxx(mixxx),
           m_pSkinLoader(pSkinLoader),
-          m_skin(QFileInfo(pSkinLoader->getConfiguredSkinPath())),
+          m_pSkin(pSkinLoader->getConfiguredSkin()),
           m_dScaleFactorAuto(1.0),
           m_bUseAutoScaleFactor(false),
           m_dScaleFactor(1.0),
@@ -110,21 +110,20 @@ DlgPrefInterface::DlgPrefInterface(
     skinDescriptionText->setText("");
     skinDescriptionText->hide();
 
-    const QList<Skin> skins = m_pSkinLoader->getSkins();
+    const QList<SkinPointer> skins = m_pSkinLoader->getSkins();
     int index = 0;
-    for (const Skin& skin : skins) {
-        ComboBoxSkinconf->insertItem(index, skin.name());
-        m_skins.insert(skin.name(), skin);
+    for (const SkinPointer& pSkin : skins) {
+        ComboBoxSkinconf->insertItem(index, pSkin->name());
+        m_skins.insert(pSkin->name(), pSkin);
         index++;
     }
-    qWarning() << m_skins.keys();
 
     ComboBoxSkinconf->setCurrentIndex(index);
     // schemes must be updated here to populate the drop-down box and set m_colorScheme
     slotUpdateSchemes();
-    skinPreviewLabel->setPixmap(m_skin.preview(m_colorScheme));
+    skinPreviewLabel->setPixmap(m_pSkin->preview(m_colorScheme));
     const auto* const pScreen = getScreen();
-    if (m_skin.fitsScreenSize(*pScreen)) {
+    if (m_pSkin->fitsScreenSize(*pScreen)) {
         warningLabel->hide();
     } else {
         warningLabel->show();
@@ -191,7 +190,7 @@ QScreen* DlgPrefInterface::getScreen() const {
 void DlgPrefInterface::slotUpdateSchemes() {
     // Re-populates the scheme combobox and attempts to pick the color scheme from config file.
     // Since this involves opening a file we won't do this as part of regular slotUpdate
-    const QList<QString> schlist = m_skin.colorschemes();
+    const QList<QString> schlist = m_pSkin->colorschemes();
 
     ComboBoxSchemeconf->clear();
 
@@ -227,9 +226,9 @@ void DlgPrefInterface::slotUpdateSchemes() {
 void DlgPrefInterface::slotUpdate() {
     const QString skinNameOnUpdate =
             m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
-    const Skin skinOnUpdate = m_skins[skinNameOnUpdate];
-    if (skinOnUpdate.isValid()) {
-        m_skinNameOnUpdate = skinOnUpdate.name();
+    const SkinPointer pSkinOnUpdate = m_skins[skinNameOnUpdate];
+    if (pSkinOnUpdate != nullptr && pSkinOnUpdate->isValid()) {
+        m_skinNameOnUpdate = pSkinOnUpdate->name();
     } else {
         m_skinNameOnUpdate = m_pSkinLoader->getDefaultSkinName();
     }
@@ -335,11 +334,11 @@ void DlgPrefInterface::slotSetScheme(int) {
         m_colorScheme = newScheme;
         m_bRebootMixxxView = true;
     }
-    skinPreviewLabel->setPixmap(m_skin.preview(m_colorScheme));
+    skinPreviewLabel->setPixmap(m_pSkin->preview(m_colorScheme));
 }
 
 void DlgPrefInterface::slotSetSkinDescription() {
-    const QString description = m_skin.description();
+    const QString description = m_pSkin->description();
     if (!description.isEmpty()) {
         skinDescriptionText->show();
         skinDescriptionText->setText(description);
@@ -350,29 +349,29 @@ void DlgPrefInterface::slotSetSkinDescription() {
 
 void DlgPrefInterface::slotSetSkin(int) {
     QString newSkinName = ComboBoxSkinconf->currentText();
-    if (newSkinName == m_skin.name()) {
+    if (newSkinName == m_pSkin->name()) {
         return;
     }
 
-    const Skin newSkin = m_skins[newSkinName];
-    VERIFY_OR_DEBUG_ASSERT(newSkin.isValid()) {
+    const SkinPointer pNewSkin = m_skins[newSkinName];
+    VERIFY_OR_DEBUG_ASSERT(pNewSkin != nullptr && pNewSkin->isValid()) {
         return;
     }
-    m_skin = newSkin;
+    m_pSkin = pNewSkin;
     m_bRebootMixxxView = newSkinName != m_skinNameOnUpdate;
     const auto* const pScreen = getScreen();
-    if (pScreen && m_skin.fitsScreenSize(*pScreen)) {
+    if (pScreen && m_pSkin->fitsScreenSize(*pScreen)) {
         warningLabel->hide();
     } else {
         warningLabel->show();
     }
     slotUpdateSchemes();
     slotSetSkinDescription();
-    skinPreviewLabel->setPixmap(m_skin.preview(m_colorScheme));
+    skinPreviewLabel->setPixmap(m_pSkin->preview(m_colorScheme));
 }
 
 void DlgPrefInterface::slotApply() {
-    m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), m_skin.name());
+    m_pConfig->set(ConfigKey("[Config]", "ResizableSkin"), m_pSkin->name());
     m_pConfig->set(ConfigKey("[Config]", "Scheme"), m_colorScheme);
 
     QString locale = ComboBoxLocale->itemData(
@@ -411,7 +410,7 @@ void DlgPrefInterface::slotApply() {
     if (m_bRebootMixxxView) {
         m_mixxx->rebootMixxxView();
         // Allow switching skins multiple times without closing the dialog
-        m_skinNameOnUpdate = m_skin.name();
+        m_skinNameOnUpdate = m_pSkin->name();
     }
     m_bRebootMixxxView = false;
 }

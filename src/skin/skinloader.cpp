@@ -5,18 +5,20 @@
 #include <QString>
 #include <QtDebug>
 
-#include "vinylcontrol/vinylcontrolmanager.h"
-#include "skin/legacy/legacyskinparser.h"
 #include "controllers/controllermanager.h"
-#include "library/library.h"
 #include "effects/effectsmanager.h"
+#include "library/library.h"
 #include "mixer/playermanager.h"
-#include "util/debug.h"
-#include "skin/legacy/launchimage.h"
-#include "util/timer.h"
 #include "recording/recordingmanager.h"
+#include "skin/legacy/launchimage.h"
+#include "skin/legacy/legacyskin.h"
+#include "skin/legacy/legacyskinparser.h"
+#include "util/debug.h"
+#include "util/timer.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
 
-using mixxx::skin::legacy::Skin;
+using mixxx::skin::SkinPointer;
+using mixxx::skin::legacy::LegacySkin;
 
 SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
         m_pConfig(pConfig) {
@@ -26,15 +28,15 @@ SkinLoader::~SkinLoader() {
     LegacySkinParser::clearSharedGroupStrings();
 }
 
-QList<Skin> SkinLoader::getSkins() const {
+QList<SkinPointer> SkinLoader::getSkins() const {
     const QList<QDir> skinSearchPaths = getSkinSearchPaths();
-    QList<Skin> skins;
+    QList<SkinPointer> skins;
     for (const QDir& dir : skinSearchPaths) {
         const QList<QFileInfo> fileInfos = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
         for (const QFileInfo& fileInfo : fileInfos) {
             QDir skinDir(fileInfo.absoluteFilePath());
             if (skinDir.exists(QStringLiteral("skin.xml"))) {
-                skins.append(Skin(fileInfo));
+                skins.append(std::make_shared<LegacySkin>(fileInfo));
             }
         }
     }
@@ -63,17 +65,19 @@ QList<QDir> SkinLoader::getSkinSearchPaths() const {
     return searchPaths;
 }
 
-QString SkinLoader::getSkinPath(const QString& skinName) const {
+SkinPointer SkinLoader::getSkin(const QString& skinName) const {
     const QList<QDir> skinSearchPaths = getSkinSearchPaths();
     for (QDir dir : skinSearchPaths) {
         if (dir.cd(skinName)) {
-            return dir.absolutePath();
+            if (dir.exists("skin.xml")) {
+                return std::make_shared<LegacySkin>(QFileInfo(dir.absolutePath()));
+            }
         }
     }
-    return QString();
+    return nullptr;
 }
 
-QString SkinLoader::getConfiguredSkinPath() const {
+SkinPointer SkinLoader::getConfiguredSkin() const {
     QString configSkin = m_pConfig->getValueString(ConfigKey("[Config]", "ResizableSkin"));
 
     // If we don't have a skin defined, we might be migrating from 1.11 and
@@ -90,14 +94,15 @@ QString SkinLoader::getConfiguredSkinPath() const {
         }
     }
 
-    QString skinPath = getSkinPath(configSkin);
+    SkinPointer pSkin = getSkin(configSkin);
 
-    if (skinPath.isEmpty()) {
-        skinPath = getSkinPath(getDefaultSkinName());
-        qDebug() << "Could not find the user's configured skin."
-                 << "Falling back on the default skin:" << skinPath;
+    if (pSkin == nullptr || !pSkin->isValid()) {
+        const QString defaultSkinName = getDefaultSkinName();
+        pSkin = getSkin(defaultSkinName);
+        qWarning() << "Could not find the user's configured skin."
+                   << "Falling back on the default skin:" << defaultSkinName;
     }
-    return skinPath;
+    return pSkin;
 }
 
 QString SkinLoader::getDefaultSkinName() const {
@@ -114,10 +119,10 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         EffectsManager* pEffectsManager,
         RecordingManager* pRecordingManager) {
     ScopedTimer timer("SkinLoader::loadConfiguredSkin");
-    QString skinPath = getConfiguredSkinPath();
+    SkinPointer pSkin = getConfiguredSkin();
 
-    // If we don't have a skin path then fail.
-    if (skinPath.isEmpty()) {
+    // If we don't have a skin then fail.
+    VERIFY_OR_DEBUG_ASSERT(pSkin != nullptr && pSkin->isValid()) {
         return nullptr;
     }
 
@@ -130,13 +135,17 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
             pVCMan,
             pEffectsManager,
             pRecordingManager);
-    return legacy.parseSkin(skinPath, pParent);
+    return legacy.parseSkin(pSkin->path().absoluteFilePath(), pParent);
 }
 
 LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) {
-    QString skinPath = getConfiguredSkinPath();
+    SkinPointer pSkin = getConfiguredSkin();
+    VERIFY_OR_DEBUG_ASSERT(pSkin != nullptr && pSkin->isValid()) {
+        return nullptr;
+    }
+
     LegacySkinParser parser(m_pConfig);
-    LaunchImage* pLaunchImage = parser.parseLaunchImage(skinPath, pParent);
+    LaunchImage* pLaunchImage = parser.parseLaunchImage(pSkin->path().absoluteFilePath(), pParent);
     if (pLaunchImage == nullptr) {
         // Construct default LaunchImage
         pLaunchImage = new LaunchImage(pParent, QString());

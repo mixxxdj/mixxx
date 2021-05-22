@@ -1,4 +1,4 @@
-#include "skin/legacy/skin.h"
+#include "skin/legacy/legacyskin.h"
 
 #include "skin/legacy/legacyskinparser.h"
 
@@ -12,21 +12,21 @@ namespace mixxx {
 namespace skin {
 namespace legacy {
 
-Skin::Skin(const QFileInfo& path)
+LegacySkin::LegacySkin(const QFileInfo& path)
         : m_path(path) {
     DEBUG_ASSERT(isValid());
 }
 
-bool Skin::isValid() const {
+bool LegacySkin::isValid() const {
     return !m_path.filePath().isEmpty() && m_path.exists();
 }
 
-QFileInfo Skin::path() const {
+QFileInfo LegacySkin::path() const {
     DEBUG_ASSERT(isValid());
     return m_path;
 }
 
-QPixmap Skin::preview(const QString& schemeName = QString()) const {
+QPixmap LegacySkin::preview(const QString& schemeName = QString()) const {
     QPixmap preview;
     if (!schemeName.isEmpty()) {
         QString schemeNameUnformatted = schemeName;
@@ -44,22 +44,22 @@ QPixmap Skin::preview(const QString& schemeName = QString()) const {
     return preview;
 }
 
-QFileInfo Skin::skinFile() const {
+QFileInfo LegacySkin::skinFile() const {
     DEBUG_ASSERT(isValid());
     return QFileInfo(path().absoluteFilePath() + QStringLiteral("/skin.xml"));
 }
 
-QString Skin::name() const {
+QString LegacySkin::name() const {
     DEBUG_ASSERT(isValid());
     return m_path.fileName();
 }
 
-QList<QString> Skin::colorschemes() const {
+QList<QString> LegacySkin::colorschemes() const {
     DEBUG_ASSERT(isValid());
     return LegacySkinParser::getSchemeList(path().absoluteFilePath());
 }
 
-QString Skin::description() const {
+QString LegacySkin::description() const {
     DEBUG_ASSERT(isValid());
     SkinManifest manifest = LegacySkinParser::getSkinManifest(
             LegacySkinParser::openSkin(path().absoluteFilePath()));
@@ -70,7 +70,7 @@ QString Skin::description() const {
     return description;
 }
 
-bool Skin::fitsScreenSize(const QScreen& screen) const {
+bool LegacySkin::fitsScreenSize(const QScreen& screen) const {
     DEBUG_ASSERT(isValid());
     // Use the full resolution of the entire screen that is
     // available in full-screen mode.
