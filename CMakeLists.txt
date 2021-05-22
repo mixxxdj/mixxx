@@ -930,6 +930,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/widget/wpixmapstore.cpp
   src/widget/wpushbutton.cpp
   src/widget/wrecordingduration.cpp
+  src/widget/wscrollable.cpp
   src/widget/wsearchlineedit.cpp
   src/widget/wsingletoncontainer.cpp
   src/widget/wsizeawarestack.cpp
