@@ -113,7 +113,6 @@ class SyncControl : public EngineControl, public Syncable {
     // It is handy to store the raw reported target beat distance in case the
     // multiplier changes and we need to recalculate the target distance.
     double m_unmultipliedTargetBeatDistance;
-    double m_lastTargetBeatDistance;
     ControlValueAtomic<double> m_prevLocalBpm;
     QAtomicInt m_audible;
 

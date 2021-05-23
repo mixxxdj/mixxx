@@ -114,7 +114,7 @@ class Syncable {
 
     // Tells a Syncable that it's going to be used as a source for master
     // params. This is a gross hack so that the SyncControl can undo its
-    // half/double adjustment.
+    // half/double adjustment so bpms are initialized correctly.
     virtual void notifyMasterParamSource() = 0;
 
     // Combines the above three calls into one, since they are often set
