@@ -140,6 +140,9 @@ void InternalClock::setInstantaneousBpm(double bpm) {
     Q_UNUSED(bpm);
 }
 
+void InternalClock::notifyMasterParamSource() {
+}
+
 void InternalClock::setMasterParams(double beatDistance, double baseBpm, double bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "InternalClock::setMasterParams" << beatDistance << baseBpm << bpm;

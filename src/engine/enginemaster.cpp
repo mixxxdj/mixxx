@@ -369,6 +369,11 @@ void EngineMaster::processChannels(int iBufferSize) {
 
     // Do internal master sync post-processing before the other
     // channels.
+    // OK, so this means the internal clock knows that it has crossed a beat
+    // boundary before the channels do. This means when we call this, we
+    // notify all the channels that the master beat distance has changed.
+    // They try to update the target beat distance, and guess the
+    // wrong number because they can't do half/double calculation correctly.
     m_pMasterSync->onCallbackEnd(m_iSampleRate, m_iBufferSize);
 
     // After all the engines have been processed, trigger post-processing

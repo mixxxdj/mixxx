@@ -115,8 +115,8 @@ class EngineSync : public SyncableListener {
 
     void setMasterParams(Syncable* pSource);
 
-    /// Check if there are no playing followers left.
-    bool noPlayingFollowers() const;
+    /// Return the playing syncables, if any. This is used to initialize beat distance settings.
+    QList<Syncable*> getPlayingSyncables() const;
 
     /// Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);
