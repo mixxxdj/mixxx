@@ -1,0 +1,70 @@
+import Mixxx 0.1 as Mixxx
+import QtQuick 2.12
+
+Item {
+    id: root
+
+    property alias group: control.group
+    property alias key: control.key
+    property alias background: background.data
+    property alias foreground: foreground.data
+    property real min: 0
+    property real max: 1
+    property real angle: 130
+
+    Mixxx.ControlProxy {
+        id: control
+    }
+
+    Mixxx.ControlProxy {
+        id: resetcontrol
+
+        group: root.group
+        key: root.key + "_set_default"
+    }
+
+    Rectangle {
+        id: background
+
+        width: root.width
+        height: root.height
+        anchors.centerIn: root
+        color: "transparent"
+    }
+
+    Rectangle {
+        id: foreground
+
+        width: root.width
+        height: root.height
+        anchors.centerIn: root
+        color: "transparent"
+        rotation: (control.parameter - (root.max - root.min) / 2) * 2 * root.angle
+    }
+
+    MouseArea {
+        id: mousearea
+
+        property real posy: root.height / 2
+
+        anchors.fill: root
+        onWheel: {
+            if (wheel.angleDelta.y < 0)
+                control.parameter = control.parameter + 0.1;
+            else
+                control.parameter = control.parameter - 0.1;
+        }
+        onDoubleClicked: resetcontrol.value = 1
+        onPressed: {
+            mousearea.posy = mouse.y;
+        }
+        onPositionChanged: {
+            if (mousearea.pressed) {
+                var dy = mousearea.posy - mouse.y;
+                control.parameter += Math.max(Math.min(dy, 100), -100) / 100;
+                mousearea.posy = mouse.y;
+            }
+        }
+    }
+
+}
