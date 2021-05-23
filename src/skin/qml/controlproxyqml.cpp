@@ -30,6 +30,7 @@ void ControlProxyQml::setValue(double newValue) {
         return;
     }
     m_pControlProxy->set(newValue);
+    m_pControlProxy->emitValueChanged();
 }
 
 double ControlProxyQml::getValue() const {
@@ -44,6 +45,7 @@ void ControlProxyQml::setParameter(double newValue) {
         return;
     }
     m_pControlProxy->setParameter(newValue);
+    m_pControlProxy->emitValueChanged();
 }
 
 double ControlProxyQml::getParameter() const {
