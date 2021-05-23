@@ -167,7 +167,6 @@ class Bitrate {
     }
 
     /*implicit*/ operator value_t() const {
-        DEBUG_ASSERT(m_value >= kValueDefault); // unsigned value
         return m_value;
     }
 
