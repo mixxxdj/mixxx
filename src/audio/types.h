@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 #include <cstdint>
+#include <limits>
 
 #include "util/assert.h"
 #include "util/optional.h"
@@ -35,9 +36,7 @@ QDebug operator<<(QDebug dbg, ChannelLayout arg);
 
 class ChannelCount {
   public:
-    // Use a native type with more than 8 bits to avoid -Werror=type-limits
-    // errors on comparisons with the min/max constants.
-    typedef uint16_t value_t;
+    typedef uint8_t value_t;
 
   private:
     // The default value is invalid and indicates a missing or unknown value.
@@ -57,26 +56,49 @@ class ChannelCount {
     static ChannelCount fromLayout(ChannelLayout layout) {
         switch (layout) {
         case ChannelLayout::Mono:
-            return ChannelCount(1);
+            return mono();
         case ChannelLayout::DualMono:
-            return ChannelCount(2);
+            return stereo();
         case ChannelLayout::Stereo:
-            return ChannelCount(2);
+            return stereo();
         }
         DEBUG_ASSERT(!"unreachable code");
+    }
+
+    static constexpr ChannelCount mono() {
+        return ChannelCount(static_cast<value_t>(1));
+    }
+
+    static constexpr ChannelCount stereo() {
+        return ChannelCount(static_cast<value_t>(2));
+    }
+
+    static ChannelCount fromInt(int value) {
+        VERIFY_OR_DEBUG_ASSERT(value >= std::numeric_limits<value_t>::min() &&
+                value <= std::numeric_limits<value_t>::max()) {
+            return ChannelCount();
+        }
+        return ChannelCount(static_cast<value_t>(value));
     }
 
     explicit constexpr ChannelCount(
             value_t value = kValueDefault)
             : m_value(value) {
     }
+
+    // A limits checking c-tor fom int channel used in many
+    // external libraries
+    explicit ChannelCount(int value)
+            : m_value(fromInt(value).m_value) {
+    }
+
     explicit ChannelCount(
             ChannelLayout layout)
             : m_value(fromLayout(layout).m_value) {
     }
 
     constexpr bool isValid() const {
-        return kValueMin <= m_value && m_value <= kValueMax;
+        return kValueMin <= m_value;
     }
 
     /*implicit*/ constexpr operator value_t() const {
