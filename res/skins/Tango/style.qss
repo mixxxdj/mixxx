@@ -115,22 +115,22 @@ WWidgetGroup {
     - waveforms & lower skin part
     - treeview & library table */
 #LibrarySplitter::handle:horizontal {
-  image: url(skin:../Tango/graphics/splitterHori_handle.svg);
+  image: url(skin:/../Tango/graphics/splitterHori_handle.svg);
   }
   #LibrarySplitter::handle:horizontal:hover,
   #LibrarySplitter::handle:horizontal:pressed {
-    image: url(skin:../Tango/graphics/splitterHori_handle_pressed.svg);
+    image: url(skin:/../Tango/graphics/splitterHori_handle_pressed.svg);
   }
   /* splitter between coverArt and tree view */
   #LibrarySplitter::handle:vertical,
   #WaveformSplitter::handle:vertical {
-    image: url(skin:../Tango/graphics/splitterVert_handle.svg);
+    image: url(skin:/../Tango/graphics/splitterVert_handle.svg);
     }
     #LibrarySplitter::handle:vertical:hover,
     #LibrarySplitter::handle:vertical:pressed,
     #WaveformSplitter::handle:vertical:hover,
     #WaveformSplitter::handle:vertical:pressed {
-      image: url(skin:../Tango/graphics/splitterVert_handle_pressed.svg);
+      image: url(skin:/../Tango/graphics/splitterVert_handle_pressed.svg);
     }
 
 
@@ -146,11 +146,11 @@ WWidgetGroup {
   }
   #SkinSettingsClose {
     border-radius:2px;
-    background: transparent url(skin:../Tango/buttons/btn_skinsettings_close.svg) no-repeat center top;
+    background: transparent url(skin:/../Tango/buttons/btn_skinsettings_close.svg) no-repeat center top;
     }
     #SkinSettingsClose:hover {
       border-radius:2px;
-      background: #0f0f0f url(skin:../Tango/buttons/btn_skinsettings_close_hover.svg) no-repeat center top;
+      background: #0f0f0f url(skin:/../Tango/buttons/btn_skinsettings_close_hover.svg) no-repeat center top;
     }
 
 #SkinSettingsSeparator {
@@ -277,16 +277,16 @@ WWidgetGroup {
   }
 
 #MasterHeadMixerLabel {
-  background: url(skin:../Tango/buttons/btn_master_head_mixer.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_master_head_mixer.svg) no-repeat center center;
   }
   #MasterMixerLabel {
-    background: url(skin:../Tango/buttons/btn_master.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_master.svg) no-repeat center center;
   }
   #HeadphoneMixerLabel {
-    background: url(skin:../Tango/buttons/btn_head.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_head.svg) no-repeat center center;
   }
 #BoothMixerLabel {
-  background: url(skin:../Tango/buttons/btn_booth.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_booth.svg) no-repeat center center;
 }
 #MixerbarKnob {
   qproperty-layoutAlignment: 'AlignCenter';
@@ -359,7 +359,7 @@ WWidgetGroup {
     }
   #RecDot {
     background-color: transparent;  /*
-    background: url(skin:../Tango/graphics/rec_dot.svg) no-repeat center center; */
+    background: url(skin:/../Tango/graphics/rec_dot.svg) no-repeat center center; */
     font-size: 12px/12px;
     margin: 2px 0px 0px 0px;
     }
@@ -395,32 +395,32 @@ WWidgetGroup {
   margin: 0px;
   }
   #BroadcastButton[displayValue="0"] {
-    background: url(skin:../Tango/buttons/btn_broadcast_off.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_broadcast_off.svg) no-repeat center center;
     }
     #BroadcastButton[displayValue="0"]:hover {
-      background: url(skin:../Tango/buttons/btn_broadcast_off_hover.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_broadcast_off_hover.svg) no-repeat center center;
       }
   #BroadcastButton[displayValue="1"] {
-    background: url(skin:../Tango/buttons/btn_broadcast_connecting.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_broadcast_connecting.svg) no-repeat center center;
     }
   #BroadcastButton[displayValue="2"] {
-    background: url(skin:../Tango/buttons/btn_broadcast_connected.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_broadcast_connected.svg) no-repeat center center;
     }
   #BroadcastButton[displayValue="3"] {
-    background: url(skin:../Tango/buttons/btn_broadcast_failure.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_broadcast_failure.svg) no-repeat center center;
     }
   #BroadcastButton[displayValue="4"] {
-    background: url(skin:../Tango/buttons/btn_broadcast_warning.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_broadcast_warning.svg) no-repeat center center;
     }
     #BroadcastButton:hover {
       background-color: #0f0f0f;
     }
 
 #SkinSettingsToggler[displayValue="0"] {
-  background: transparent url(skin:../Tango/buttons/btn_skinsettings_off.svg) no-repeat center center;
+  background: transparent url(skin:/../Tango/buttons/btn_skinsettings_off.svg) no-repeat center center;
   }
   #SkinSettingsToggler[displayValue="0"]:hover {
-    background: #0f0f0f url(skin:../Tango/buttons/btn_skinsettings_on.svg) no-repeat center center;
+    background: #0f0f0f url(skin:/../Tango/buttons/btn_skinsettings_on.svg) no-repeat center center;
   }
 
 
@@ -456,38 +456,38 @@ WWidgetGroup {
 }
 
 #BeatgridButtonToggler[displayValue="0"] {
-  background: #333 url(skin:../Tango/buttons/btn_arrow_left.svg) no-repeat center center;
+  background: #333 url(skin:/../Tango/buttons/btn_arrow_left.svg) no-repeat center center;
   }
   #BeatgridButtonToggler[displayValue="0"]:hover {
-    background: #333 url(skin:../Tango/buttons/btn_arrow_left_hover.svg) no-repeat center center;
+    background: #333 url(skin:/../Tango/buttons/btn_arrow_left_hover.svg) no-repeat center center;
   }
 #BeatgridButtonToggler[displayValue="1"] {
-  background: #333 url(skin:../Tango/buttons/btn_arrow_right.svg) no-repeat center center;
+  background: #333 url(skin:/../Tango/buttons/btn_arrow_right.svg) no-repeat center center;
   }
   #BeatgridButtonToggler[displayValue="1"]:hover {
-    background: #333 url(skin:../Tango/buttons/btn_arrow_right_hover.svg) no-repeat center center;
+    background: #333 url(skin:/../Tango/buttons/btn_arrow_right_hover.svg) no-repeat center center;
   }
 
   #BeatgridCurpos {
-    background: url(skin:../Tango/buttons/btn_beats_curpos.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_beats_curpos.svg) no-repeat center center;
   }
   #BeatgridSlower {
-    background: url(skin:../Tango/buttons/btn_beats_slower.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_beats_slower.svg) no-repeat center center;
   }
   #BeatgridFaster {
-    background: url(skin:../Tango/buttons/btn_beats_faster.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_beats_faster.svg) no-repeat center center;
   }
   #BeatgridEarlier {
-    background: url(skin:../Tango/buttons/btn_beats_earlier.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_beats_earlier.svg) no-repeat center center;
   }
   #BeatgridLater {
-    background: url(skin:../Tango/buttons/btn_beats_later.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_beats_later.svg) no-repeat center center;
   }
   #HotcuesEarlier {
-    background: url(skin:../Tango/buttons/btn_hotcues_earlier.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_hotcues_earlier.svg) no-repeat center center;
   }
   #HotcuesLater {
-    background: url(skin:../Tango/buttons/btn_hotcues_later.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_hotcues_later.svg) no-repeat center center;
   }
 #BeatgridCurpos,
 #BeatgridSlower,
@@ -522,10 +522,10 @@ WWidgetGroup {
   qproperty-layoutAlignment: 'AlignLeft | AlignTop';
   }
   #MicSectionIcon {
-    background: url(skin:../Tango/buttons/btn_mic_section.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_mic_section.svg) no-repeat center center;
   }
   #AuxSectionLabel {
-    background: url(skin:../Tango/buttons/btn_aux_section.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_aux_section.svg) no-repeat center center;
   }
 
 #MicUnit, #AuxUnit {
@@ -535,10 +535,10 @@ WWidgetGroup {
   padding-left: 2px;
   }
   #MicUnitIcon {
-    background: url(skin:../Tango/buttons/btn_mic_unit.svg) no-repeat center left;
+    background: url(skin:/../Tango/buttons/btn_mic_unit.svg) no-repeat center left;
   }
   #AuxUnitIcon {
-    background: url(skin:../Tango/buttons/btn_aux_unit.svg) no-repeat center left;
+    background: url(skin:/../Tango/buttons/btn_aux_unit.svg) no-repeat center left;
   }
   #MicUnitLabel, #AuxUnitLabel {
     padding-bottom: 8px;
@@ -638,37 +638,37 @@ WLabel#TrackComment {
   #VinylTogglerLeft[displayValue="0"],
   #VinylTogglerRightPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="1"] {
-    background: url(skin:../Tango/buttons/btn_vinyl_left.svg) no-repeat top center;
+    background: url(skin:/../Tango/buttons/btn_vinyl_left.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="0"]:hover,
     #VinylTogglerRightPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="1"]:hover {
-      background: url(skin:../Tango/buttons/btn_vinyl_left_hover.svg) no-repeat top center;
+      background: url(skin:/../Tango/buttons/btn_vinyl_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerLeft[displayValue="1"],
   #VinylTogglerLeftPassthrough[displayValue="1"],
   #VinylTogglerRight[displayValue="0"] {
-    background: url(skin:../Tango/buttons/btn_vinyl_right.svg) no-repeat top center;
+    background: url(skin:/../Tango/buttons/btn_vinyl_right.svg) no-repeat top center;
     }
     #VinylTogglerLeft[displayValue="1"]:hover,
     #VinylTogglerLeftPassthrough[displayValue="1"]:hover,
     #VinylTogglerRight[displayValue="0"]:hover {
-      background: url(skin:../Tango/buttons/btn_vinyl_right_hover.svg) no-repeat top center;
+      background: url(skin:/../Tango/buttons/btn_vinyl_right_hover.svg) no-repeat top center;
     }
   /* When passthrough is active but Vinyl Controls are hidden,
     yellow background indicates passthrough, similar to how
     the FX expand toggle does */
   #VinylTogglerLeftPassthrough[displayValue="0"] {
-    background: url(skin:../Tango/buttons/btn_vinyl_pass_left.svg) no-repeat top center;
+    background: url(skin:/../Tango/buttons/btn_vinyl_pass_left.svg) no-repeat top center;
     }
     #VinylTogglerLeftPassthrough[displayValue="0"]:hover {
-      background: url(skin:../Tango/buttons/btn_vinyl_pass_left_hover.svg) no-repeat top center;
+      background: url(skin:/../Tango/buttons/btn_vinyl_pass_left_hover.svg) no-repeat top center;
     }
   #VinylTogglerRightPassthrough[displayValue="0"] {
-    background: url(skin:../Tango/buttons/btn_vinyl_pass_right.svg) no-repeat top center;
+    background: url(skin:/../Tango/buttons/btn_vinyl_pass_right.svg) no-repeat top center;
     }
     #VinylTogglerRightPassthrough[displayValue="0"]:hover {
-      background: url(skin:../Tango/buttons/btn_vinyl_pass_right_hover.svg) no-repeat top center;
+      background: url(skin:/../Tango/buttons/btn_vinyl_pass_right_hover.svg) no-repeat top center;
     }
   #VinylTogglerLeftPassthrough,
   #VinylTogglerRightPassthrough {
@@ -790,7 +790,7 @@ WLabel#TrackComment {
     border: 1px solid #fff;
     }
     #LoopIndicator[displayValue="1"] {
-      background: url(skin:../Tango/buttons/btn_reloop_on.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_reloop_on.svg) no-repeat center center;
     }
 
 #DeckRowTransport {
@@ -829,32 +829,32 @@ WLabel#TrackComment {
 
   #DeckControlsToggle_Left[displayValue="0"],
   #MasterHeadMixerToggle[displayValue="0"] {
-    background: url(skin:../Tango/buttons/btn_arrow_right.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_arrow_right.svg) no-repeat center center;
     }
     #DeckControlsToggle_Left[displayValue="0"]:hover,
     #MasterHeadMixerToggle[displayValue="0"]:hover {
-      background: url(skin:../Tango/buttons/btn_arrow_right_hover.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_arrow_right_hover.svg) no-repeat center center;
     }
     #DeckControlsToggle_Left[displayValue="1"],
     #MasterHeadMixerToggle[displayValue="1"] {
-      background: url(skin:../Tango/buttons/btn_arrow_left.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_arrow_left.svg) no-repeat center center;
     }
     #DeckControlsToggle_Left[displayValue="1"]:hover,
     #MasterHeadMixerToggle[displayValue="1"]:hover {
-      background: url(skin:../Tango/buttons/btn_arrow_left_hover.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_arrow_left_hover.svg) no-repeat center center;
     }
 
   #DeckControlsToggle_Right[displayValue="0"] {
-    background: url(skin:../Tango/buttons/btn_arrow_left.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_arrow_left.svg) no-repeat center center;
     }
     #DeckControlsToggle_Right[displayValue="0"]:hover {
-      background: url(skin:../Tango/buttons/btn_arrow_left_hover.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_arrow_left_hover.svg) no-repeat center center;
     }
     #DeckControlsToggle_Right[displayValue="1"] {
-      background: url(skin:../Tango/buttons/btn_arrow_right.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_arrow_right.svg) no-repeat center center;
     }
     #DeckControlsToggle_Right[displayValue="1"]:hover {
-      background: url(skin:../Tango/buttons/btn_arrow_right_hover.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_arrow_right_hover.svg) no-repeat center center;
     }
 
   #DeckControlsExpandedLeft,
@@ -901,13 +901,13 @@ WLabel#TrackComment {
 
 #PassthroughPlayCover {
   background-color: transparent;
-  background: url(skin:../Tango/buttons/btn_mic_aux_mute.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_mic_aux_mute.svg) no-repeat center center;
 }
 
 #MicTalkover,
 #AuxEnable {
   background-color: transparent;
-  background: url(skin:../Tango/buttons/btn_mic_aux_mute.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_mic_aux_mute.svg) no-repeat center center;
 }
 
 #PlayCue[displayValue="0"]:hover,
@@ -1122,22 +1122,22 @@ WBeatSpinBox,
     This would make them overlap so we need to move one of those two
     buttons out of the way: */
     right: -16px;
-    background: url(skin:../Tango/buttons/btn_beatbox_up.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_beatbox_up.svg) no-repeat center center;
     }
     WBeatSpinBox::up-button:hover,
     #spinBoxTransition::up-button:hover {
-      background: url(skin:../Tango/buttons/btn_beatbox_up_hover.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_beatbox_up_hover.svg) no-repeat center center;
     }
   WBeatSpinBox::down-button,
   #spinBoxTransition::down-button {
     subcontrol-position: center right;
     border-top-left-radius: 3px;
     border-bottom-left-radius: 3px;
-    background: url(skin:../Tango/buttons/btn_beatbox_down.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_beatbox_down.svg) no-repeat center center;
     }
     WBeatSpinBox::down-button:hover,
     #spinBoxTransition::down-button:hover {
-      background: url(skin:../Tango/buttons/btn_beatbox_down_hover.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_beatbox_down_hover.svg) no-repeat center center;
     }
   WBeatSpinBox::up-button,
   WBeatSpinBox::down-button,
@@ -1191,20 +1191,20 @@ WBeatSpinBox,
   }
   #SyncButtonOverlay[displayValue="0"]:hover,
   #SyncButtonOverlayMini[displayValue="0"]:hover {
-    background: url(skin:../Tango/buttons/btn_key_match_hover.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_key_match_hover.svg) no-repeat center center;
   }
 
   #RateUp {
-    background: url(skin:../Tango/buttons/btn_rate_up.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_rate_up.svg) no-repeat center center;
     }
     #RateUp:hover {
-      background: url(skin:../Tango/buttons/btn_rate_up_hover.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_rate_up_hover.svg) no-repeat center center;
     }
   #RateDown {
-    background: url(skin:../Tango/buttons/btn_rate_down.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_rate_down.svg) no-repeat center center;
     }
     #RateDown:hover {
-      background: url(skin:../Tango/buttons/btn_rate_down_hover.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_rate_down_hover.svg) no-repeat center center;
     }
 
   #KeyDisplay, #KeyDisplayMini {
@@ -1221,19 +1221,19 @@ WBeatSpinBox,
   }
     #KeyMatch:hover,
     #KeyMatchMini:hover {
-      background: url(skin:../Tango/buttons/btn_key_match_hover.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_key_match_hover.svg) no-repeat center center;
     }
     #KeyUp {
-      background: url(skin:../Tango/buttons/btn_key_up.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_key_up.svg) no-repeat center center;
       }
       #KeyUp:hover {
-        background: url(skin:../Tango/buttons/btn_key_up_hover.svg) no-repeat center center;
+        background: url(skin:/../Tango/buttons/btn_key_up_hover.svg) no-repeat center center;
       }
     #KeyDown {
-      background: url(skin:../Tango/buttons/btn_key_down.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_key_down.svg) no-repeat center center;
       }
       #KeyDown:hover {
-        background: url(skin:../Tango/buttons/btn_key_down_hover.svg) no-repeat center center;
+        background: url(skin:/../Tango/buttons/btn_key_down_hover.svg) no-repeat center center;
       }
   #Bpm, #KeyDisplayMatch,
   #RateUp, #RateDown,
@@ -1374,10 +1374,10 @@ WLabel#TrackComment {
 
 /* Kill indicators underneath EQ knobs */
 #EQKilledUnderlay[displayValue="1"] {
-  background: url(skin:../Tango/knobs_sliders/knob_eq_killed.svg) no-repeat center center;
+  background: url(skin:/../Tango/knobs_sliders/knob_eq_killed.svg) no-repeat center center;
 }
 #QuickFxDisabledUnderlay[displayValue="0"] {
-  background: url(skin:../Tango/knobs_sliders/knob_quickFX_disabled.svg) no-repeat center center;
+  background: url(skin:/../Tango/knobs_sliders/knob_quickFX_disabled.svg) no-repeat center center;
 }
 
 #QuickFXSide {
@@ -1403,13 +1403,13 @@ WLabel#TrackComment {
 
 /*  This wouldn't scale the image:
 #PflButton[displayValue="0"] {
-  background: transparent url(skin:../Tango/buttons/btn_pfl_off.svg) no-repeat center center;
+  background: transparent url(skin:/../Tango/buttons/btn_pfl_off.svg) no-repeat center center;
   background-origin: padding;
   }
   This is a workaround to scale and center the image, but image would appear blurred
   if it is scaled up too much (>120). Source:
   https://forum.qt.io/topic/40151/solved-scaled-background-image-using-stylesheet/6
-  border-background: url(skin:../Tango/buttons/btn_pfl_off.svg) 0 0 0 0 stretch stretch; */
+  border-background: url(skin:/../Tango/buttons/btn_pfl_off.svg) 0 0 0 0 stretch stretch; */
 #PflBoxLeft,
 #PflBoxRight {
   background-color: #0f0f0f;
@@ -1487,19 +1487,19 @@ decks, samplers, mic, aux, fx */
   }
 
 #VUMeterLabelMaster {
-  background: url(skin:../Tango/buttons/btn_master_vu_label.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_master_vu_label.svg) no-repeat center center;
 }
 #VUMeterLabelDeck1 {
-  background: url(skin:../Tango/buttons/btn_deck1_vu_label.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_deck1_vu_label.svg) no-repeat center center;
 }
 #VUMeterLabelDeck2 {
-  background: url(skin:../Tango/buttons/btn_deck2_vu_label.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_deck2_vu_label.svg) no-repeat center center;
 }
 #VUMeterLabelDeck3 {
-  background: url(skin:../Tango/buttons/btn_deck3_vu_label.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_deck3_vu_label.svg) no-repeat center center;
 }
 #VUMeterLabelDeck4 {
-  background: url(skin:../Tango/buttons/btn_deck4_vu_label.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_deck4_vu_label.svg) no-repeat center center;
 }
 
 
@@ -1534,22 +1534,22 @@ decks, samplers, mic, aux, fx */
 #FixedLoopSizesMiniMaxi[displayValue="0"],
 #FxMiniMaxi[displayValue="0"],
 #SamplersMiniMaxi[displayValue="0"] {
-  background-image: url(skin:../Tango/buttons/btn_arrow_down.svg)
+  background-image: url(skin:/../Tango/buttons/btn_arrow_down.svg)
   }
   #FixedLoopSizesMiniMaxi[displayValue="0"]:hover,
   #FxMiniMaxi[displayValue="0"]:hover,
   #SamplersMiniMaxi[displayValue="0"]:hover {
-    background-image: url(skin:../Tango/buttons/btn_arrow_down_hover.svg);
+    background-image: url(skin:/../Tango/buttons/btn_arrow_down_hover.svg);
   }
 #FixedLoopSizesMiniMaxi[displayValue="1"],
 #FxMiniMaxi[displayValue="1"],
 #SamplersMiniMaxi[displayValue="1"] {
-  background-image: url(skin:../Tango/buttons/btn_arrow_up.svg);
+  background-image: url(skin:/../Tango/buttons/btn_arrow_up.svg);
   }
   #FixedLoopSizesMiniMaxi[displayValue="1"]:hover,
   #FxMiniMaxi[displayValue="1"]:hover,
   #SamplersMiniMaxi[displayValue="1"]:hover {
-    background-image: url(skin:../Tango/buttons/btn_arrow_up_hover.svg);
+    background-image: url(skin:/../Tango/buttons/btn_arrow_up_hover.svg);
   }
 
 #FxUnitControls {
@@ -1588,12 +1588,12 @@ decks, samplers, mic, aux, fx */
 /* no focus */
 #FxFlow_mini_separator {
   background-color: transparent;
-  background: url(skin:../Tango/graphics/fxFlow_mini_noFocus_Fx1-2-3.svg) no-repeat center center;
+  background: url(skin:/../Tango/graphics/fxFlow_mini_noFocus_Fx1-2-3.svg) no-repeat center center;
 }
 #FxFlow_maxi_separator {
   background-color: transparent;
   border-radius: 0px;
-  background: url(skin:../Tango/graphics/fxFlow_maxi_noFocus_Fx1-2-3.svg) no-repeat right center;
+  background: url(skin:/../Tango/graphics/fxFlow_maxi_noFocus_Fx1-2-3.svg) no-repeat right center;
 }
 
 #FxFlow_focus_background,
@@ -1611,15 +1611,15 @@ decks, samplers, mic, aux, fx */
 #FxFlow_mini_focus_separator1-2[highlight="3"],
 #FxFlow_mini_focus_separator2-3[highlight="0"],
 #FxFlow_mini_focus_separator2-3[highlight="1"] {
-  background: transparent url(skin:../Tango/graphics/fxFlow_mini_noFocus_Fx1-2-3.svg) no-repeat center center;
+  background: transparent url(skin:/../Tango/graphics/fxFlow_mini_noFocus_Fx1-2-3.svg) no-repeat center center;
   }
   #FxFlow_mini_focus_separator1-2[highlight="1"],
   #FxFlow_mini_focus_separator2-3[highlight="2"] {
-    background: transparent url(skin:../Tango/graphics/fxFlow_mini_focus_left.svg) no-repeat center center;
+    background: transparent url(skin:/../Tango/graphics/fxFlow_mini_focus_left.svg) no-repeat center center;
   }
   #FxFlow_mini_focus_separator1-2[highlight="2"],
   #FxFlow_mini_focus_separator2-3[highlight="3"] {
-    background: transparent url(skin:../Tango/graphics/fxFlow_mini_focus_right.svg) no-repeat center center;
+    background: transparent url(skin:/../Tango/graphics/fxFlow_mini_focus_right.svg) no-repeat center center;
   }
 
 /* expanded effect slots, vertical layout */
@@ -1627,31 +1627,31 @@ decks, samplers, mic, aux, fx */
 #FxFlow_maxi_focus_separator1-2[highlight="3"],
 #FxFlow_maxi_focus_separator2-3[highlight="0"],
 #FxFlow_maxi_focus_separator2-3[highlight="1"] {
-  background: transparent url(skin:../Tango/graphics/fxFlow_maxi_noFocus_Fx1-2-3.svg) no-repeat center center;
+  background: transparent url(skin:/../Tango/graphics/fxFlow_maxi_noFocus_Fx1-2-3.svg) no-repeat center center;
   }
   #FxFlow_maxi_focus_separator1-2[highlight="1"],
   #FxFlow_maxi_focus_separator2-3[highlight="2"] {
-    background: transparent url(skin:../Tango/graphics/fxFlow_maxi_focus_top.svg) no-repeat center center;
+    background: transparent url(skin:/../Tango/graphics/fxFlow_maxi_focus_top.svg) no-repeat center center;
   }
   #FxFlow_maxi_focus_separator1-2[highlight="2"],
   #FxFlow_maxi_focus_separator2-3[highlight="3"] {
-    background: transparent url(skin:../Tango/graphics/fxFlow_maxi_focus_bottom.svg) no-repeat center center;
+    background: transparent url(skin:/../Tango/graphics/fxFlow_maxi_focus_bottom.svg) no-repeat center center;
   }
 /* /effect slot focus indicators */
 
 #FxFocusButton {
 }
   #FxFocusButton[displayValue="0"] {
-    background: transparent url(skin:../Tango/buttons/btn_fx_focus_off.svg) no-repeat center center;
+    background: transparent url(skin:/../Tango/buttons/btn_fx_focus_off.svg) no-repeat center center;
     }
     #FxFocusButton[displayValue="0"]:hover {
-      background: transparent url(skin:../Tango/buttons/btn_fx_focus_off_hover.svg) no-repeat center center;
+      background: transparent url(skin:/../Tango/buttons/btn_fx_focus_off_hover.svg) no-repeat center center;
     }
   #FxFocusButton[displayValue="1"] {
-    background: transparent url(skin:../Tango/buttons/btn_fx_focus_on.svg) no-repeat center center;
+    background: transparent url(skin:/../Tango/buttons/btn_fx_focus_on.svg) no-repeat center center;
     }
     #FxFocusButton[displayValue="1"]:hover {
-      background: transparent url(skin:../Tango/buttons/btn_fx_focus_on_hover.svg) no-repeat center center;
+      background: transparent url(skin:/../Tango/buttons/btn_fx_focus_on_hover.svg) no-repeat center center;
     }
 
 #FxMetaknob {
@@ -1730,11 +1730,11 @@ decks, samplers, mic, aux, fx */
       background-color: #101010;
       width: 11px;
       height: 20px; */
-      background: url(skin:../Tango/buttons/btn_fx_selector_list.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_fx_selector_list.svg) no-repeat center center;
       }
       WEffectSelector::down-arrow:hover,
       #fadeModeCombobox::down-arrow:hover {
-        background: url(skin:../Tango/buttons/btn_fx_selector_list_hover.svg) no-repeat center center;
+        background: url(skin:/../Tango/buttons/btn_fx_selector_list_hover.svg) no-repeat center center;
       }
 
     WEffectSelector QAbstractScrollArea,
@@ -1775,11 +1775,11 @@ decks, samplers, mic, aux, fx */
       above will be applied... it's qt magic
       background-color: #0081B7; */
       margin: 3px;
-      background: url(skin:../Tango/buttons/btn_lib_checkmark_white.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_lib_checkmark_white.svg) no-repeat center center;
     }
     WEffectSelector::indicator:!checked,
     #fadeModeCombobox::indicator:!checked {
-      background: url(skin:../Tango/buttons/btn_.svg) no-repeat center center;
+      background: url(skin:/../Tango/buttons/btn_.svg) no-repeat center center;
     }
 
 #FxParametersLeft {
@@ -2144,11 +2144,11 @@ WEffectSelector::indicator:unchecked,
   }
   #MainMenu QMenu::indicator:checked,
   #MainMenu QMenu::indicator:checked:selected {
-    image: url(skin:../Tango/buttons/btn_mainmenu_checkbox_checked.svg);
+    image: url(skin:/../Tango/buttons/btn_mainmenu_checkbox_checked.svg);
   }
   #MainMenu QMenu::indicator:unchecked,
   #MainMenu QMenu::indicator:unchecked:selected {
-    image: url(skin:../Tango/buttons/btn_mainmenu_checkbox.svg);
+    image: url(skin:/../Tango/buttons/btn_mainmenu_checkbox.svg);
   }
 
 #MainMenu QMenu {
@@ -2334,12 +2334,12 @@ WTrackMenu QMenu::right-arrow {
   #MainMenu QMenu::right-arrow,
   WTrackMenu::right-arrow,
   WTrackMenu QMenu::right-arrow {
-    image: url(skin:../Tango/buttons/btn_arrow_right.svg);
+    image: url(skin:/../Tango/buttons/btn_arrow_right.svg);
   }
   #MainMenu QMenu::right-arrow:selected,
   WTrackMenu::right-arrow:selected,
   WTrackMenu QMenu::right-arrow:selected {
-    image: url(skin:../Tango/buttons/btn_arrow_right_hover.svg);
+    image: url(skin:/../Tango/buttons/btn_arrow_right_hover.svg);
   }
 
   WLibrary QHeaderView QMenu::indicator {
@@ -2347,7 +2347,7 @@ WTrackMenu QMenu::right-arrow {
     height: 10px;
     }
     WLibrary QHeaderView QMenu::indicator:checked {
-      image: url(skin:../Tango/buttons/btn_lib_checkmark_white.svg);
+      image: url(skin:/../Tango/buttons/btn_lib_checkmark_white.svg);
     }
 
 WLibrarySidebar QMenu::indicator,
@@ -2362,11 +2362,11 @@ WTrackMenu QMenu QCheckBox::indicator {
   WLibrarySidebar QMenu::indicator:checked,
   WLibrary QHeaderView QMenu::indicator:checked,
   WTrackMenu QMenu QCheckBox::indicator:checked {
-    image: url(skin:../Tango/buttons/btn_lib_checkmark.svg);
+    image: url(skin:/../Tango/buttons/btn_lib_checkmark.svg);
     border: 1px solid #111;
   }
   WTrackMenu QMenu QCheckBox::indicator:indeterminate {
-    image: url(skin:../Tango/buttons/btn_lib_checkmark_indeterminate.svg);
+    image: url(skin:/../Tango/buttons/btn_lib_checkmark_indeterminate.svg);
     background-color: #1e1e1e;
   }
   /* disabled menu checkbox */
@@ -2374,10 +2374,10 @@ WTrackMenu QMenu QCheckBox::indicator {
     background-color: #222;
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
-    image: url(skin:../Tango/buttons/btn_lib_checkmark_grey.svg);
+    image: url(skin:/../Tango/buttons/btn_lib_checkmark_grey.svg);
   }
   WTrackMenu QMenu QCheckBox::indicator:disabled:indeterminate {
-    image: url(skin:../Tango/buttons/btn_lib_checkmark_indeterminate_grey.svg);
+    image: url(skin:/../Tango/buttons/btn_lib_checkmark_indeterminate_grey.svg);
   }
 
 /* widgets in cue popup menu */
@@ -2390,7 +2390,7 @@ WTrackMenu QMenu QCheckBox::indicator {
   border: 1px solid #666;
   background-color: #333;
   border-radius: 2px;
-  qproperty-icon: url(skin:../Tango/buttons/btn_delete.svg);
+  qproperty-icon: url(skin:/../Tango/buttons/btn_delete.svg);
   /* make the icon slightly larger than default 16px */
   qproperty-iconSize: 20px;
 }
@@ -2476,16 +2476,16 @@ WTrackMenu QMenu QCheckBox::indicator {
 #LibMiniMaxiButton {
   }
   #LibMiniMaxiButton[displayValue="0"] {
-    background: url(skin:../Tango/buttons/btn_lib_maxi.svg) no-repeat center top;
+    background: url(skin:/../Tango/buttons/btn_lib_maxi.svg) no-repeat center top;
     }
     #LibMiniMaxiButton[displayValue="0"]:hover {
-      background: url(skin:../Tango/buttons/btn_lib_maxi_hover.svg) no-repeat center top;
+      background: url(skin:/../Tango/buttons/btn_lib_maxi_hover.svg) no-repeat center top;
     }
   #LibMiniMaxiButton[displayValue="1"] {
-    background: url(skin:../Tango/buttons/btn_lib_mini.svg) no-repeat center top;
+    background: url(skin:/../Tango/buttons/btn_lib_mini.svg) no-repeat center top;
     }
     #LibMiniMaxiButton[displayValue="1"]:hover {
-      background: url(skin:../Tango/buttons/btn_lib_mini_hover.svg) no-repeat center top;
+      background: url(skin:/../Tango/buttons/btn_lib_mini_hover.svg) no-repeat center top;
     }
 
 #LibraryContainer QTableView,
@@ -2565,7 +2565,7 @@ WTrackTableView {
 /*  Closed branch icon in tree */
 #LibraryContainer QTreeView::branch:has-children:!has-siblings:closed,
 #LibraryContainer QTreeView::branch:closed:has-children:has-siblings {
-  image: url(skin:../Tango/graphics/branch_closed.png);
+  image: url(skin:/../Tango/graphics/branch_closed.png);
   }
   #LibraryContainer QTreeView::branch:has-children:!has-siblings:closed:selected,
   #LibraryContainer QTreeView::branch:closed:has-children:has-siblings:selected {
@@ -2575,7 +2575,7 @@ WTrackTableView {
 /*  Open branch icon in tree */
 #LibraryContainer QTreeView::branch:open:has-children:!has-siblings,
 #LibraryContainer QTreeView::branch:open:has-children:has-siblings {
-  image: url(skin:../Tango/graphics/branch_open.png);
+  image: url(skin:/../Tango/graphics/branch_open.png);
   }
   #LibraryContainer QTreeView::branch:open:has-children:!has-siblings:selected,
   #LibraryContainer QTreeView::branch:open:has-children:has-siblings:selected {
@@ -2627,10 +2627,10 @@ WTrackTableView {
   }
 
   #LibraryContainer QHeaderView::up-arrow {
-    background: url(skin:../Tango/buttons/btn_library_sort_up.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_library_sort_up.svg) no-repeat center center;
   }
   #LibraryContainer QHeaderView::down-arrow {
-    background: url(skin:../Tango/buttons/btn_library_sort_down.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_library_sort_down.svg) no-repeat center center;
   }
   #LibraryContainer QHeaderView::up-arrow,
   #LibraryContainer QHeaderView::down-arrow {
@@ -2810,34 +2810,34 @@ Library features and their buttons:
 
 /* AutoDJ button icons */
 QPushButton#pushButtonAutoDJ:!checked {
-  background: url(skin:../Tango/buttons/btn_autodj_enable_off.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_autodj_enable_off.svg) no-repeat center center;
   }
   QPushButton#pushButtonAutoDJ:checked {
-    background: url(skin:../Tango/buttons/btn_autodj_enable_on.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_autodj_enable_on.svg) no-repeat center center;
   }
 QPushButton#pushButtonFadeNow:!enabled {
-  background: url(skin:../Tango/buttons/btn_autodj_fade_disabled.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_autodj_fade_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonFadeNow:enabled {
-    background: url(skin:../Tango/buttons/btn_autodj_fade.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_autodj_fade.svg) no-repeat center center;
   }
 QPushButton#pushButtonSkipNext:!enabled {
-  background: url(skin:../Tango/buttons/btn_autodj_skip_disabled.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_autodj_skip_disabled.svg) no-repeat center center;
   }
   QPushButton#pushButtonSkipNext:enabled {
-    background: url(skin:../Tango/buttons/btn_autodj_skip.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_autodj_skip.svg) no-repeat center center;
   }
 QPushButton#pushButtonShuffle {
-  background: url(skin:../Tango/buttons/btn_autodj_shuffle.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_autodj_shuffle.svg) no-repeat center center;
 }
 QPushButton#pushButtonAddRandom {
-  background: url(skin:../Tango/buttons/btn_autodj_addrandom.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_autodj_addrandom.svg) no-repeat center center;
 }
 QPushButton#pushButtonRepeatPlaylist:!checked {
-  background: url(skin:../Tango/buttons/btn_autodj_repeat_playlist_off.svg) no-repeat center center;
+  background: url(skin:/../Tango/buttons/btn_autodj_repeat_playlist_off.svg) no-repeat center center;
   }
   QPushButton#pushButtonRepeatPlaylist:checked {
-    background: url(skin:../Tango/buttons/btn_autodj_repeat_playlist_on.svg) no-repeat center center;
+    background: url(skin:/../Tango/buttons/btn_autodj_repeat_playlist_on.svg) no-repeat center center;
   }
 /* AutoDJ button icons */
 
@@ -2903,10 +2903,10 @@ QPushButton#pushButtonRecording:checked {
   /* Entire BPM cell */
   /* Lock icon at the left */
   #LibraryBPMButton::indicator:checked {
-    image: url(skin:../Tango/buttons/btn_lib_bpm_locked.svg);
+    image: url(skin:/../Tango/buttons/btn_lib_bpm_locked.svg);
     }
   #LibraryBPMButton::indicator:unchecked {
-    image: url(skin:../Tango/buttons/btn_lib_bpm_unlocked.svg);
+    image: url(skin:/../Tango/buttons/btn_lib_bpm_unlocked.svg);
     }
   /* BPM value */
   #LibraryBPMButton::item {
@@ -2919,10 +2919,10 @@ QPushButton#pushButtonRecording:checked {
   border-left: 0px;
   }
   #LibraryBPMSpinBox::up-button {
-    background: #0f0f0f url(skin:../Tango/buttons/btn_lib_spinbox_up_white.svg) no-repeat;
+    background: #0f0f0f url(skin:/../Tango/buttons/btn_lib_spinbox_up_white.svg) no-repeat;
     }
   #LibraryBPMSpinBox::down-button {
-    background: #0f0f0f url(skin:../Tango/buttons/btn_lib_spinbox_down_white.svg) no-repeat;
+    background: #0f0f0f url(skin:/../Tango/buttons/btn_lib_spinbox_down_white.svg) no-repeat;
   }
 
   /* Button in library "Preview" column */
@@ -2932,14 +2932,14 @@ QPushButton#pushButtonRecording:checked {
     border: 1px solid transparent;
     }
     #LibraryPreviewButton:!checked {
-    /*  image: url(skin:../Tango/buttons/btn_lib_preview_play.svg); */
+    /*  image: url(skin:/../Tango/buttons/btn_lib_preview_play.svg); */
       }
       #LibraryPreviewButton:!checked:hover {
         border: 1px solid #888;
         background-color: #0f0f0f;
       }
     #LibraryPreviewButton:checked {
-    /*  background: url(skin:../Tango/buttons/btn_lib_preview_pause.svg); */
+    /*  background: url(skin:/../Tango/buttons/btn_lib_preview_pause.svg); */
       background-color: #000;
       border: 1px solid #555;
       }
@@ -2972,7 +2972,7 @@ QPushButton#pushButtonRecording:checked {
       border: 1px solid #888;
     }
   #LibraryContainer QTableView::indicator:checked {
-    background: url(skin:../Tango/buttons/btn_lib_checkmark.svg);
+    background: url(skin:/../Tango/buttons/btn_lib_checkmark.svg);
     }
   #LibraryContainer QTableView::indicator:unchecked {
     background: none;
@@ -3023,11 +3023,11 @@ QRadioButton#radioButtonRecentlyAdded {
 }
 
 WLibrary QRadioButton::indicator:checked {
-  background: url(skin:../Tango/buttons/btn_lib_radio_button_on.svg) center center;
+  background: url(skin:/../Tango/buttons/btn_lib_radio_button_on.svg) center center;
 }
 
 WLibrary QRadioButton::indicator:unchecked {
-  background: url(skin:../Tango/buttons/btn_lib_radio_button_off.svg) center center;
+  background: url(skin:/../Tango/buttons/btn_lib_radio_button_off.svg) center center;
 }
 
 /* explicitly remove icons from unchecked items otherwise
