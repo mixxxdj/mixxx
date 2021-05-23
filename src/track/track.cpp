@@ -343,7 +343,12 @@ bool Track::trySetAndLockBeats(mixxx::BeatsPointer pBeats) {
 }
 
 bool Track::setBeatsWhileLocked(mixxx::BeatsPointer pBeats) {
-    if (m_pBeats == pBeats) {
+    if (m_pBeats == pBeats &&
+            // Changing the BPM of the indirectly referenced beat grid object does not
+            // immediately affect the track's nominal BPM!
+            // TODO: Using two disjunct QObject instances is a design flaw that needs
+            // to be fixed eventually.
+            m_record.getMetadata().getTrackInfo().getBpm() == getBeatsPointerBpm(pBeats)) {
         return false;
     }
     m_pBeats = std::move(pBeats);
