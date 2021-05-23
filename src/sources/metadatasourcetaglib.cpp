@@ -337,11 +337,15 @@ class MpegTagSaver : public TagSaver {
                 if (taglib::ape::exportTrackMetadataIntoTag(pFile->APETag(), trackMetadata)) {
                     modifiedTagsBitmask |= TagLib::MPEG::File::APE;
                 }
-                // Only write ID3v2 tag if it already exists
-                pID3v2Tag = pFile->ID3v2Tag(false);
+                // Only write ID3v2 tag if it already exists.
+                if (pFile->hasID3v2Tag()) {
+                    pID3v2Tag = pFile->ID3v2Tag(false);
+                    DEBUG_ASSERT(pID3v2Tag);
+                }
             } else {
                 // Get or create ID3v2 tag
                 pID3v2Tag = pFile->ID3v2Tag(true);
+                DEBUG_ASSERT(pID3v2Tag);
             }
             if (taglib::id3v2::exportTrackMetadataIntoTag(pID3v2Tag, trackMetadata)) {
                 modifiedTagsBitmask |= TagLib::MPEG::File::ID3v2;
@@ -405,10 +409,14 @@ class FlacTagSaver : public TagSaver {
             if (taglib::hasID3v2Tag(*pFile)) {
                 modifiedTags |= taglib::id3v2::exportTrackMetadataIntoTag(pFile->ID3v2Tag(), trackMetadata);
                 // Only write VorbisComment tag if it already exists
-                pXiphComment = pFile->xiphComment(false);
+                if (taglib::hasXiphComment(*pFile)) {
+                    pXiphComment = pFile->xiphComment(false);
+                    DEBUG_ASSERT(pXiphComment);
+                }
             } else {
                 // Get or create VorbisComment tag
                 pXiphComment = pFile->xiphComment(true);
+                DEBUG_ASSERT(pXiphComment);
             }
             modifiedTags |= taglib::xiph::exportTrackMetadataIntoTag(
                     pXiphComment, trackMetadata, taglib::FileType::FLAC);
@@ -550,13 +558,28 @@ class WavTagSaver : public TagSaver {
     static bool exportTrackMetadata(TagLib::RIFF::WAV::File* pFile, const TrackMetadata& trackMetadata) {
         bool modifiedTags = false;
         if (pFile->isOpen()) {
+            TagLib::RIFF::Info::Tag* pInfoTag = nullptr;
             // Write into all available tags
 #if (TAGLIB_HAS_WAV_ID3V2TAG)
-            modifiedTags |= taglib::id3v2::exportTrackMetadataIntoTag(pFile->ID3v2Tag(), trackMetadata);
+            if (pFile->hasID3v2Tag()) {
+                modifiedTags |= taglib::id3v2::exportTrackMetadataIntoTag(
+                        pFile->ID3v2Tag(), trackMetadata);
+                // Only write Info tag if it already exists
+                if (pFile->hasInfoTag()) {
+                    pInfoTag = pFile->InfoTag();
+                    DEBUG_ASSERT(pInfoTag);
+                }
+            } else {
+                // Get or create Info tag
+                pInfoTag = pFile->InfoTag();
+                DEBUG_ASSERT(pInfoTag);
+            }
 #else
             modifiedTags |= taglib::id3v2::exportTrackMetadataIntoTag(pFile->tag(), trackMetadata);
+            pInfoTag = pFile->InfoTag();
+            DEBUG_ASSERT(pInfoTag);
 #endif
-            modifiedTags |= exportTrackMetadataIntoRIFFTag(pFile->InfoTag(), trackMetadata);
+            modifiedTags |= exportTrackMetadataIntoRIFFTag(pInfoTag, trackMetadata);
         }
         return modifiedTags;
     }
