@@ -311,6 +311,14 @@ void SyncControl::setInstantaneousBpm(double bpm) {
     m_pBpmControl->setInstantaneousBpm(bpm * m_masterBpmAdjustFactor);
 }
 
+void SyncControl::reportTrackPosition(double fractionalPlaypos) {
+    // If we're close to the end, and master, disable master so we don't stop
+    // the party.
+    if (isMaster(getSyncMode()) && fractionalPlaypos >= 1.0) {
+        m_pChannel->getEngineBuffer()->requestSyncMode(SYNC_FOLLOWER);
+    }
+}
+
 // called from an engine worker thread
 void SyncControl::trackLoaded(TrackPointer pNewTrack) {
     mixxx::BeatsPointer pBeats;
