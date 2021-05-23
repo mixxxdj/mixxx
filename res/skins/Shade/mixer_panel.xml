@@ -565,6 +565,7 @@
               -->
               <!--Button as visual indicator for Recording State-->
               <PushButton>
+              <TooltipId>toggle_recording</TooltipId>
                 <NumberStates>3</NumberStates>
                 <State>
                   <Number>0</Number>
