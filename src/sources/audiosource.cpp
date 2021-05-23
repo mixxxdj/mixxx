@@ -144,11 +144,8 @@ bool AudioSource::verifyReadable() {
         kLogger.warning()
                 << "Invalid number of channels:"
                 << getSignalInfo().getChannelCount()
-                << "is out of range ["
-                << audio::ChannelCount::min()
-                << ","
-                << audio::ChannelCount::max()
-                << "]";
+                << "<"
+                << audio::ChannelCount::min();
         result = false;
     }
     if (!m_signalInfo.getSampleRate().isValid()) {

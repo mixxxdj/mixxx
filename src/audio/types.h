@@ -35,9 +35,7 @@ QDebug operator<<(QDebug dbg, ChannelLayout arg);
 
 class ChannelCount {
   public:
-    // Use a native type with more than 8 bits to avoid -Werror=type-limits
-    // errors on comparisons with the min/max constants.
-    typedef uint16_t value_t;
+    typedef int value_t;
 
   private:
     // The default value is invalid and indicates a missing or unknown value.
@@ -45,13 +43,9 @@ class ChannelCount {
 
   public:
     static constexpr value_t kValueMin = 1;   // lower bound (inclusive)
-    static constexpr value_t kValueMax = 255; // upper bound (inclusive, 8-bit unsigned integer)
 
     static constexpr ChannelCount min() {
         return ChannelCount(kValueMin);
-    }
-    static constexpr ChannelCount max() {
-        return ChannelCount(kValueMax);
     }
 
     static ChannelCount fromLayout(ChannelLayout layout) {
@@ -70,13 +64,14 @@ class ChannelCount {
             value_t value = kValueDefault)
             : m_value(value) {
     }
+
     explicit ChannelCount(
             ChannelLayout layout)
             : m_value(fromLayout(layout).m_value) {
     }
 
     constexpr bool isValid() const {
-        return kValueMin <= m_value && m_value <= kValueMax;
+        return kValueMin <= m_value;
     }
 
     /*implicit*/ constexpr operator value_t() const {
