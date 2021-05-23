@@ -560,11 +560,11 @@
 
               <!--
               **********************************************
-              Visual- Recording State
+              Button- Toggle Recording / Visual- Recording State
               **********************************************
               -->
-              <!--Button as visual indicator for recording state-->
-			  <PushButton>
+              <!--Button as visual indicator for Recording State-->
+              <PushButton>
                 <NumberStates>3</NumberStates>
                 <State>
                   <Number>0</Number>
@@ -583,6 +583,11 @@
                 </State>
                 <Pos>214,18</Pos>
                 <Connection>
+                  <ConfigKey>[Recording],toggle_recording</ConfigKey>
+                  <EmitOnDownPress>true</EmitOnDownPress>
+                  <ButtonState>LeftButton</ButtonState>
+                </Connection>
+                <Connection>
                   <ConfigKey>[Recording],status</ConfigKey>
                 </Connection>
               </PushButton>
@@ -593,40 +598,21 @@
               **********************************************
               -->
               <RecordingDuration>
-				<Style>
+                <Style>
                   QLabel {
-                    font-size: 9px;
+                    font-size: 8px;
                     background-color: transparent;
                     color: #191F24;
                     text-align:center;
                   }
                 </Style>
-				<ObjectName>RecDuration</ObjectName>
-				<TooltipId>recording_duration</TooltipId>
-				<Pos>216,18</Pos>
-				<Size>26f,14f</Size>
-				<InactiveText>REC</InactiveText>
-				<Alignment>center</Alignment>
-		      </RecordingDuration>
-
-		      <!--
-              **********************************************
-              Button- Toggle Recording
-              **********************************************
-              -->
-              <!--invisible Rec button-->
-		      <PushButton>
-				<TooltipId>toggle_recording</TooltipId>
-                <Pos>214,18</Pos>
-                <Connection>
-                  <ConfigKey>[Recording],toggle_recording</ConfigKey>
-                  <EmitOnDownPress>true</EmitOnDownPress>
-                  <ButtonState>LeftButton</ButtonState>
-                </Connection>
-                <Connection>
-                  <ConfigKey>[Recording],toggle_recording</ConfigKey>
-                </Connection>
-              </PushButton>
+                <ObjectName>RecDuration</ObjectName>
+                <TooltipId>recording_duration</TooltipId>
+                <Pos>212,8</Pos>
+                <Size>32f,8f</Size>
+                <InactiveText>--:--</InactiveText>
+                <Alignment>center</Alignment>
+               </RecordingDuration>
 
               <!--
               **********************************************
