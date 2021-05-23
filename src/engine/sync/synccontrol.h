@@ -48,10 +48,10 @@ class SyncControl : public EngineControl, public Syncable {
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     void setMasterBeatDistance(double beatDistance) override;
-
     // Must never result in a call to
     // SyncableListener::notifyBpmChanged or signal loops could occur.
     void setMasterBpm(double bpm) override;
+    void notifyMasterParamSource() override;
     void setMasterParams(double beatDistance, double baseBpm, double bpm) override;
 
     // Must never result in a call to
@@ -113,6 +113,7 @@ class SyncControl : public EngineControl, public Syncable {
     // It is handy to store the raw reported target beat distance in case the
     // multiplier changes and we need to recalculate the target distance.
     double m_unmultipliedTargetBeatDistance;
+    double m_lastTargetBeatDistance;
     ControlValueAtomic<double> m_prevLocalBpm;
     QAtomicInt m_audible;
 

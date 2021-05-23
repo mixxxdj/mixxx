@@ -112,6 +112,11 @@ class Syncable {
     // signal loops could occur.
     virtual void setMasterBpm(double bpm) = 0;
 
+    // Tells a Syncable that it's going to be used as a source for master
+    // params. This is a gross hack so that the SyncControl can undo its
+    // half/double adjustment.
+    virtual void notifyMasterParamSource() = 0;
+
     // Combines the above three calls into one, since they are often set
     // simultaneously.  Avoids redundant recalculation that would occur by
     // using the three calls separately.

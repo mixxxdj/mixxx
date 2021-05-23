@@ -96,8 +96,15 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         }
     }
 
-    if (noPlayingFollowers() && m_pMasterSyncable) {
-        m_pMasterSyncable->notifyOnlyPlayingSyncable();
+    auto players = getPlayingSyncables();
+    if (players.size() == 1) {
+        qDebug() << "!!!!!!!!!!!!!!!!!!!!!1there is only one playing syncable, tell it so!";
+        players.at(0)->notifyOnlyPlayingSyncable();
+    } else {
+        qDebug() << "players!";
+        for (auto* play : players) {
+            qDebug() << play->getGroup();
+        }
     }
 }
 
@@ -350,11 +357,31 @@ void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) 
 
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
         activateMaster(newMaster, SYNC_MASTER_SOFT);
+        setMasterParams(newMaster);
     }
 
-    if (noPlayingFollowers() && m_pMasterSyncable) {
-        m_pMasterSyncable->notifyOnlyPlayingSyncable();
-        setMasterParams(m_pMasterSyncable);
+    // we know for a fact that pSyncable is playing and audible.
+    // We want to init master params
+    // cases:
+    // just we are playing: set master params with our settings
+    // NO. just because we are master, doesn't mean we win! we might be copying someone else.
+    // if anything we should JUST init beat distance.
+    // another deck is playing and it's master: don't touch it
+    // another deck is playing and it's not master: don't touch it
+    auto players = getPlayingSyncables();
+    if (players.size() == 1) {
+        Syncable* onlyPlayer = players.at(0);
+        qDebug() << "2222222222222222222222222222 there is only one playing "
+                    "syncable, it gets to set beat dist"
+                 << onlyPlayer->getGroup();
+        onlyPlayer->notifyOnlyPlayingSyncable();
+        // setMasterParams(onlyPlayer);
+        setMasterBeatDistance(onlyPlayer, onlyPlayer->getBeatDistance());
+    } else {
+        qDebug() << "players!";
+        for (auto* play : players) {
+            qDebug() << play->getGroup();
+        }
     }
 
     pSyncable->requestSync();
@@ -597,35 +624,72 @@ void EngineSync::setMasterBeatDistance(Syncable* pSource, double beatDistance) {
 }
 
 void EngineSync::setMasterParams(Syncable* pSource) {
-    const double beatDistance = pSource->getBeatDistance();
+    // so the bug here is that we are setting the master parameters from some source, but
+    // that source may not be the master! but when we update the multipliers, we update
+    // based on who is master. We used to try to force master to be multiplier 1.0, but that
+    // causes problems.
+
+    pSource->notifyMasterParamSource();
+
+    double beatDistance = pSource->getBeatDistance();
+    // // If the params source is not playing, but other syncables are, then we are a stopped
+    // // explicit Master and we should not initialize the beat distance.  Take it from the
+    // // internal clock instead.
+    if (!pSource->isPlaying()) {
+        bool playingSyncables = false;
+        for (Syncable* pSyncable : m_syncables) {
+            qDebug() << "checking" << pSyncable->getGroup();
+            if (pSyncable == pSource) {
+                continue;
+            }
+            if (!pSyncable->isSynchronized()) {
+                continue;
+            }
+            qDebug() << "it's valid";
+            if (pSyncable->isPlaying()) {
+                qDebug() << "found a playing syncable" << pSyncable->getGroup();
+                playingSyncables = true;
+                break;
+            }
+        }
+        if (playingSyncables) {
+            qDebug() << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+                        "BaseSyncableListener::setMasterParams, not playing, "
+                        "playing followers, pull from internal clock"
+                     << pSource->getGroup();
+            beatDistance = m_pInternalClock->getBeatDistance();
+        }
+    }
+    // Do we want the RAW values here, not multiplied by adjust factor??
     const double baseBpm = pSource->getBaseBpm();
     double bpm = pSource->getBpm();
     if (bpm <= 0) {
         bpm = baseBpm;
     }
-    // qDebug() << "BaseSyncableListener::setMasterParams, source is"
-    //          << pSource->getGroup() << beatDistance << baseBpm << bpm;
+    qDebug() << "BaseSyncableListener::setMasterParams, source is"
+             << pSource->getGroup() << beatDistance << baseBpm << bpm;
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterParams(beatDistance, baseBpm, bpm);
     }
     foreach (Syncable* pSyncable, m_syncables) {
-        if (pSyncable == pSource || !pSyncable->isSynchronized()) {
+        // not sure if we should skip the pSource here.
+        if (!pSyncable->isSynchronized()) {
             continue;
         }
         pSyncable->setMasterParams(beatDistance, baseBpm, bpm);
     }
 }
 
-bool EngineSync::noPlayingFollowers() const {
+QList<Syncable*> EngineSync::getPlayingSyncables() const {
+    QList<Syncable*> players;
     for (Syncable* pSyncable : m_syncables) {
         if (!pSyncable->isSynchronized()) {
             continue;
         }
 
-        if (pSyncable->isPlaying() && pSyncable->isAudible() &&
-                isFollower(pSyncable->getSyncMode())) {
-            return false;
+        if (pSyncable->isPlaying()) {
+            players.append(pSyncable);
         }
     }
-    return true;
+    return players;
 }
