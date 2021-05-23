@@ -536,7 +536,9 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     // we don't adjust the reported distance the track will try to adjust
     // sync against itself.
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::getBeatDistance" << dThisPosition;
+        kLogger.trace() << getGroup()
+                        << "BpmControl::getBeatDistance. dThisPosition:"
+                        << dThisPosition;
     }
     double dPrevBeat = m_pPrevBeat->get();
     double dNextBeat = m_pNextBeat->get();
@@ -560,7 +562,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
     }
 
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << getGroup() << "BpmControl::getBeatDistance"
+        kLogger.trace() << getGroup() << "BpmControl::getBeatDistance. dBeatPercentage:"
                         << dBeatPercentage << "-  offset "
                         << m_dUserOffset.getValue() << " =  "
                         << (dBeatPercentage - m_dUserOffset.getValue());

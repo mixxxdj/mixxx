@@ -1445,6 +1445,23 @@ TEST_F(EngineSyncTest, ZeroBPMRateAdjustIgnored) {
             ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 }
 
+TEST_F(EngineSyncTest, DISABLED_BeatDistanceBeforeStart) {
+    // If the start position is before zero, we should still initialize the beat distance
+    // corretly.  Unfortunately, this currently doesn't work.
+
+    mixxx::BeatsPointer pBeats1 = BeatFactory::makeBeatGrid(m_pTrack1->getSampleRate(), 128, 0.0);
+    m_pTrack1->trySetBeats(pBeats1);
+    ControlObject::set(ConfigKey(m_sGroup1, "playposition"), -.05);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))
+            ->set(SYNC_MASTER_SOFT);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ProcessBuffer();
+    EXPECT_NEAR(
+            ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get(),
+            ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "beat_distance"))->get(),
+            kMaxBeatDistanceEpsilon);
+}
+
 TEST_F(EngineSyncTest, ZeroLatencyRateChangeNoQuant) {
     // Confirm that a rate change in an explicit master is instantly communicated
     // to followers.
@@ -1660,9 +1677,7 @@ TEST_F(EngineSyncTest, HalfDoubleBpmTest) {
             ->set(SYNC_FOLLOWER);
 
     // Mixxx will choose the first playing deck to be master.  Let's start deck 2 first.
-    qDebug() << "~~~~~~~~~~~~~~~~~~~~ ch2 play";
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
-    qDebug() << "~~~~~~~~~~~~~~~~~~~~ ch1 play";
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ProcessBuffer();
 
@@ -1999,9 +2014,7 @@ TEST_F(EngineSyncTest, SyncPhaseToPlayingNonSyncDeck) {
     // Next Deck becomes master and the Master clock is set to 100 BPM
     // The 130 BPM Track should be played at 100 BPM, rate = 0.769230769
     pButtonSyncEnabled1->set(1.0);
-    qDebug() << "PUSH PLAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY";
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
-
     // Beat length: 40707.692307692305
     // Buffer size is 1024 at 44.1 kHz at the given rate = 787.692307692 Samples
     // Expected beat_distance = 0.019349962

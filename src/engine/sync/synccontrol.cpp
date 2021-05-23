@@ -212,7 +212,6 @@ void SyncControl::setMasterBeatDistance(double beatDistance) {
     // Set the BpmControl target beat distance to beatDistance, adjusted by
     // the multiplier if in effect.  This way all of the multiplier logic
     // is contained in this single class.
-    m_lastTargetBeatDistance = m_unmultipliedTargetBeatDistance;
     m_unmultipliedTargetBeatDistance = beatDistance;
     // Update the target beat distance based on the multiplier.
     updateTargetBeatDistance();
@@ -245,31 +244,11 @@ void SyncControl::notifyMasterParamSource() {
 
 void SyncControl::setMasterParams(
         double beatDistance, double baseBpm, double bpm) {
-    qDebug() << "SyncControl::setMasterParams" << getGroup() << beatDistance << baseBpm << bpm;
-    // if (paramSource == this) {
-    //     baseBpm *= m_masterBpmAdjustFactor;
-    //     bpm *= m_masterBpmAdjustFactor;
-    //     qDebug() << "we were param source, undo adjust factor:" << baseBpm << bpm;
-    // }
-    // Calculate the factor for the file bpm. That gives the best
-    // result at any rate slider position.
-    qDebug() << "file bpm: " << fileBpm();
-
-    // masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
-    // double masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
+    if (kLogger.traceEnabled()) {
+        kLogger.trace() << "SyncControl::setMasterParams" << getGroup()
+                        << beatDistance << baseBpm << bpm;
+    }
     m_masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
-    // if (paramSource == this) {
-    //     //     qDebug() << "We were param source!";
-    //     //     // If we are the param source, we need to undo the adjustment factor
-    //     //     // or else we start piling multipliers on top of each other.
-    //     //     bpm *= masterBpmAdjustFactor;
-    //     m_masterBpmAdjustFactor = kBpmUnity;
-    // } else {
-    //     m_masterBpmAdjustFactor = masterBpmAdjustFactor;
-    // }
-
-    // m_masterBpmAdjustFactor = determineBpmMultiplier(fileBpm(), baseBpm);
-    qDebug() << "ADJUST FACTOR?!" << m_masterBpmAdjustFactor;
     setMasterBpm(bpm);
     setMasterBeatDistance(beatDistance);
 }
@@ -311,7 +290,6 @@ void SyncControl::updateTargetBeatDistance() {
         targetDistance *= kBpmDouble;
     } else if (m_masterBpmAdjustFactor == kBpmHalve) {
         targetDistance *= kBpmHalve;
-        qDebug() << "my beat dist" << m_pBeatDistance->get();
         // Our beat distance CO is still a buffer behind, so take the current value.
         if (m_pBpmControl->getBeatDistance(getSampleOfTrack().current) >= 0.5) {
             targetDistance += 0.5;
@@ -466,7 +444,6 @@ void SyncControl::setLocalBpm(double local_bpm) {
     if (local_bpm == m_prevLocalBpm.getValue()) {
         return;
     }
-    qDebug() << "SyncControl::setLocalBpm" << getGroup() << local_bpm;
     m_prevLocalBpm.setValue(local_bpm);
 
     SyncMode syncMode = getSyncMode();
