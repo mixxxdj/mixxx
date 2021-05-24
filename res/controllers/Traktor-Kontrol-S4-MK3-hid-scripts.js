@@ -856,3 +856,29 @@ TraktorS4MK3_alex.unknownGroupError = function(s4ControlName, mixxxControlName) 
 TraktorS4MK3_alex.unmappedDeckError = function(deck) {
     this.error("Unable to map S4 deck '" + deck + "' to a Mixxx deck")
 }
+
+// NOTES on USB messages in Wireshark -----------------------------------------
+//
+// usb.darwin.endpoint_type == 1 is URB_ISOCHRONOUS
+// usb.darwin.endpoint_type == 2 is URB_BULK
+// usb.darwin.endpoint_type == 3 is URB_INTERRUPT
+//
+// usb.darwin.request_type == 0 is SUBMITTED
+// usb.darwin.request_type == 1 is COMPLETED
+//
+// usb.darwin.endpoint_address:
+//   0x00 - host
+//   0x01 - OUT, URB_ISOCHRONOUS, messages of ~22k bytes, ~700 KiB/s
+//   0x02 - OUT, URB_INTERRUPT, messages of 11, 41, 79 and 95 bytes (LEDs?)
+//   0x03 - OUT, URB_BULK, messages of 153k bytes, ~3 MiB/s
+//   0x81 - IN, URB_ISOCHRONOUS messages of ~2k bytes
+//   0x82 - IN, URB_ISOCHRONOUS messages of just 4 bytes
+//   0x83 - IN, messages 0x01, 0x02, and 0x03, URB_INTERRUPT mode
+//
+// Wireshark filter for the message3:
+//
+// usb.darwin.endpoint_address == 0x83 &&
+// usb.darwin.endpoint_type == 3 &&
+// ((usb.darwin.io_len == 60 && usb.darwin.request_type == 1)
+//  || (usb.darwin.io_len == 128 && usb.darwin.request_type == 0)))
+//
