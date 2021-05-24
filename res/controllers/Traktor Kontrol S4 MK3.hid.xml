@@ -1,0 +1,25 @@
+<!-- Copyright 2021 Google LLC. -->
+<!-- SPDX-Licence-Identifier: GPL-2.0-or-later -->
+<?xml version='1.0' encoding='utf-8'?>
+<MixxxControllerPreset schemaVersion="1" mixxxVersion="2.2.0">
+    <info>
+        <name>Traktor Kontrol S4 MK3</name>
+        <author>Alexander Churanov</author>
+        <description>WARNING: This work is still in progress!</description>
+        <forums>https://mixxx.discourse.group/t/traktor-kontrol-s4-mk3/21613</forums>
+        <wiki>TODO</wiki>
+        <devices>
+          <product protocol="hid"
+                   vendor_id="0x17cc" product_id="0x1720"
+                   usage_page="0xff01" usage="TODO" interface_number="TODO" />
+        </devices>
+    </info>
+    <controller id="Traktor">
+        <scriptfiles>
+          <file filename="common-hid-packet-parser.js"
+                functionprefix=""/>
+          <file filename="Traktor-Kontrol-S4-MK3-hid-scripts.js"
+                functionprefix="TraktorS4MK3_alex"/>
+        </scriptfiles>
+    </controller>
+</MixxxControllerPreset>
