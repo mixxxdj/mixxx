@@ -6,6 +6,7 @@
 #include <QtDebug>
 
 #include "controllers/controllermanager.h"
+#include "coreservices.h"
 #include "effects/effectsmanager.h"
 #include "library/library.h"
 #include "mixer/playermanager.h"
@@ -111,13 +112,7 @@ QString SkinLoader::getDefaultSkinName() const {
 
 QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         QSet<ControlObject*>* pSkinCreatedControls,
-        KeyboardEventFilter* pKeyboard,
-        PlayerManager* pPlayerManager,
-        ControllerManager* pControllerManager,
-        Library* pLibrary,
-        VinylControlManager* pVCMan,
-        EffectsManager* pEffectsManager,
-        RecordingManager* pRecordingManager) {
+        mixxx::CoreServices* pCoreServices) {
     ScopedTimer timer("SkinLoader::loadConfiguredSkin");
     SkinPointer pSkin = getConfiguredSkin();
 
@@ -128,13 +123,13 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
 
     LegacySkinParser legacy(m_pConfig,
             pSkinCreatedControls,
-            pKeyboard,
-            pPlayerManager,
-            pControllerManager,
-            pLibrary,
-            pVCMan,
-            pEffectsManager,
-            pRecordingManager);
+            pCoreServices->getKeyboardEventFilter().get(),
+            pCoreServices->getPlayerManager().get(),
+            pCoreServices->getControllerManager().get(),
+            pCoreServices->getLibrary().get(),
+            pCoreServices->getVinylControlManager().get(),
+            pCoreServices->getEffectsManager().get(),
+            pCoreServices->getRecordingManager().get());
     return legacy.parseSkin(pSkin->path().absoluteFilePath(), pParent);
 }
 

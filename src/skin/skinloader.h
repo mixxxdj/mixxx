@@ -8,15 +8,11 @@
 #include "preferences/usersettings.h"
 #include "skin/skin.h"
 
-class KeyboardEventFilter;
-class PlayerManager;
-class ControllerManager;
 class ControlObject;
-class Library;
-class VinylControlManager;
-class EffectsManager;
-class RecordingManager;
 class LaunchImage;
+namespace mixxx {
+class CoreServices;
+}
 
 class SkinLoader {
   public:
@@ -25,13 +21,7 @@ class SkinLoader {
 
     QWidget* loadConfiguredSkin(QWidget* pParent,
             QSet<ControlObject*>* skinCreatedControls,
-            KeyboardEventFilter* pKeyboard,
-            PlayerManager* pPlayerManager,
-            ControllerManager* pControllerManager,
-            Library* pLibrary,
-            VinylControlManager* pVCMan,
-            EffectsManager* pEffectsManager,
-            RecordingManager* pRecordingManager);
+            mixxx::CoreServices* pCoreServices);
 
     LaunchImage* loadLaunchImage(QWidget* pParent);
 

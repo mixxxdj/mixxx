@@ -1090,13 +1090,7 @@ bool MixxxMainWindow::loadConfiguredSkin() {
     // TODO: use std::shared_ptr throughout skin widgets instead of these hacky get() calls
     m_pCentralWidget = m_pSkinLoader->loadConfiguredSkin(this,
             &m_skinCreatedControls,
-            m_pCoreServices->getKeyboardEventFilter().get(),
-            m_pCoreServices->getPlayerManager().get(),
-            m_pCoreServices->getControllerManager().get(),
-            m_pCoreServices->getLibrary().get(),
-            m_pCoreServices->getVinylControlManager().get(),
-            m_pCoreServices->getEffectsManager().get(),
-            m_pCoreServices->getRecordingManager().get());
+            m_pCoreServices.get());
     if (centralWidget() == m_pLaunchImage) {
         initializationProgressUpdate(100, "");
     }
