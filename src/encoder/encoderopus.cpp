@@ -21,7 +21,7 @@ constexpr int kMaxOpusBufferSize = 1+1275;
 constexpr int kOpusFrameMs = 60;
 constexpr int kOpusChannelCount = 2;
 // Opus only supports 48 and 96 kHz samplerates
-constexpr int kMasterSamplerate = 48000;
+constexpr mixxx::audio::SampleRate kMasterSamplerate = mixxx::audio::SampleRate(48000);
 
 const mixxx::Logger kLogger("EncoderOpus");
 
@@ -73,7 +73,7 @@ int getSerial() {
 } // namespace
 
 //static
-int EncoderOpus::getMasterSamplerate() {
+mixxx::audio::SampleRate EncoderOpus::getMasterSamplerate() {
     return kMasterSamplerate;
 }
 
