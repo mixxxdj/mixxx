@@ -8,12 +8,6 @@
 #include "preferences/usersettings.h"
 #include "skin/skin.h"
 
-class ControlObject;
-class LaunchImage;
-namespace mixxx {
-class CoreServices;
-}
-
 class SkinLoader {
   public:
     SkinLoader(UserSettingsPointer pConfig);
@@ -23,7 +17,7 @@ class SkinLoader {
             QSet<ControlObject*>* skinCreatedControls,
             mixxx::CoreServices* pCoreServices);
 
-    LaunchImage* loadLaunchImage(QWidget* pParent);
+    LaunchImage* loadLaunchImage(QWidget* pParent) const;
 
     mixxx::skin::SkinPointer getSkin(const QString& skinName) const;
     mixxx::skin::SkinPointer getConfiguredSkin() const;

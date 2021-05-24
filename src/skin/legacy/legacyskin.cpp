@@ -1,5 +1,6 @@
 #include "skin/legacy/legacyskin.h"
 
+#include "coreservices.h"
 #include "skin/legacy/legacyskinparser.h"
 
 namespace {
@@ -99,6 +100,34 @@ bool LegacySkin::fitsScreenSize(const QScreen& screen) const {
     QString skinHeight = res.right(res.count() - skinWidth.count() - 1);
     return skinWidth.toInt() <= screenSize.width() &&
             skinHeight.toInt() <= screenSize.height();
+}
+
+LaunchImage* LegacySkin::loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig) const {
+    VERIFY_OR_DEBUG_ASSERT(isValid()) {
+        return nullptr;
+    }
+    LegacySkinParser parser(pConfig);
+    LaunchImage* pLaunchImage = parser.parseLaunchImage(m_path.absoluteFilePath(), pParent);
+    return pLaunchImage;
+}
+
+QWidget* LegacySkin::loadSkin(QWidget* pParent,
+        UserSettingsPointer pConfig,
+        QSet<ControlObject*>* pSkinCreatedControls,
+        mixxx::CoreServices* pCoreServices) const {
+    VERIFY_OR_DEBUG_ASSERT(isValid()) {
+        return nullptr;
+    }
+    LegacySkinParser legacy(pConfig,
+            pSkinCreatedControls,
+            pCoreServices->getKeyboardEventFilter().get(),
+            pCoreServices->getPlayerManager().get(),
+            pCoreServices->getControllerManager().get(),
+            pCoreServices->getLibrary().get(),
+            pCoreServices->getVinylControlManager().get(),
+            pCoreServices->getEffectsManager().get(),
+            pCoreServices->getRecordingManager().get());
+    return legacy.parseSkin(m_path.absoluteFilePath(), pParent);
 }
 
 } // namespace legacy

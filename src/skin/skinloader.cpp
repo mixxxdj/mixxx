@@ -6,7 +6,6 @@
 #include <QtDebug>
 
 #include "controllers/controllermanager.h"
-#include "coreservices.h"
 #include "effects/effectsmanager.h"
 #include "library/library.h"
 #include "mixer/playermanager.h"
@@ -121,30 +120,21 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
         return nullptr;
     }
 
-    LegacySkinParser legacy(m_pConfig,
-            pSkinCreatedControls,
-            pCoreServices->getKeyboardEventFilter().get(),
-            pCoreServices->getPlayerManager().get(),
-            pCoreServices->getControllerManager().get(),
-            pCoreServices->getLibrary().get(),
-            pCoreServices->getVinylControlManager().get(),
-            pCoreServices->getEffectsManager().get(),
-            pCoreServices->getRecordingManager().get());
-    return legacy.parseSkin(pSkin->path().absoluteFilePath(), pParent);
+    return pSkin->loadSkin(pParent, m_pConfig, pSkinCreatedControls, pCoreServices);
 }
 
-LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) {
+LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) const {
     SkinPointer pSkin = getConfiguredSkin();
     VERIFY_OR_DEBUG_ASSERT(pSkin != nullptr && pSkin->isValid()) {
         return nullptr;
     }
 
-    LegacySkinParser parser(m_pConfig);
-    LaunchImage* pLaunchImage = parser.parseLaunchImage(pSkin->path().absoluteFilePath(), pParent);
+    LaunchImage* pLaunchImage = pSkin->loadLaunchImage(pParent, m_pConfig);
     if (pLaunchImage == nullptr) {
         // Construct default LaunchImage
         pLaunchImage = new LaunchImage(pParent, QString());
     }
+
     return pLaunchImage;
 }
 

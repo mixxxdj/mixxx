@@ -29,6 +29,11 @@ class LegacySkin : public mixxx::skin::Skin {
     QList<QString> colorschemes() const override;
 
     bool fitsScreenSize(const QScreen& screen) const override;
+    LaunchImage* loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig) const override;
+    QWidget* loadSkin(QWidget* pParent,
+            UserSettingsPointer pConfig,
+            QSet<ControlObject*>* pSkinCreatedControls,
+            mixxx::CoreServices* pCoreServices) const override;
 
   private:
     QFileInfo skinFile() const;

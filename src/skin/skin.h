@@ -4,10 +4,20 @@
 #include <QList>
 #include <QPixmap>
 #include <QScreen>
+#include <QSet>
 #include <QString>
+#include <QWidget>
 #include <memory>
 
+#include "preferences/usersettings.h"
+
+class ControlObject;
+class LaunchImage;
+
 namespace mixxx {
+
+class CoreServices;
+
 namespace skin {
 
 enum class SkinType {
@@ -29,6 +39,12 @@ class Skin {
     virtual QList<QString> colorschemes() const = 0;
 
     virtual bool fitsScreenSize(const QScreen& screen) const = 0;
+
+    virtual LaunchImage* loadLaunchImage(QWidget* pParent, UserSettingsPointer pConfig) const = 0;
+    virtual QWidget* loadSkin(QWidget* pParent,
+            UserSettingsPointer pConfig,
+            QSet<ControlObject*>* pSkinCreatedControls,
+            mixxx::CoreServices* pCoreServices) const = 0;
 };
 
 typedef std::shared_ptr<Skin> SkinPointer;
