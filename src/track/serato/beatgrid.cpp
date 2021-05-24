@@ -443,73 +443,57 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
     auto pBeatsIterator = pBeats->findBeats(0, trackDurationSamples);
 
     // This might be null if the track doesn't contain any beats
-    if (!pBeatsIterator) {
+    if (!pBeatsIterator || !pBeatsIterator->hasNext()) {
         qWarning() << "Serato Beatgrid: No beats available, exporting empty beatgrid!";
         setTerminalMarker(nullptr);
         setNonTerminalMarkers({});
         return;
     }
 
+    const double beatgridFrameOffset = signalInfo.samples2framesFractional(pBeatsIterator->next());
     double currentBeatPositionFrames = 0;
     double previousBeatPositionFrames = 0;
     double previousDeltaFrames = -1;
-    int beatsSinceLastMarker = 0;
     QList<SeratoBeatGridNonTerminalMarkerPointer> nonTerminalMarkers;
+    {
+        const double positionSecs = signalInfo.frames2secsFractional(
+                currentBeatPositionFrames + beatgridFrameOffset);
+        nonTerminalMarkers.append(
+                std::make_shared<SeratoBeatGridNonTerminalMarker>(
+                        positionSecs - timingOffsetSecs, 0));
+    }
     while (pBeatsIterator->hasNext()) {
         previousBeatPositionFrames = currentBeatPositionFrames;
         currentBeatPositionFrames =
-                signalInfo.samples2framesFractional(
-                        pBeatsIterator->next());
+                signalInfo.samples2framesFractional(pBeatsIterator->next()) -
+                beatgridFrameOffset;
 
         // Calculate the delta between the current beat and the previous beat.
         // If the distance is the same as the distance between the previous
         // beat and the beat before that, we can just increment
         // `beatsSinceLastMarker`. If not, we need to add a new marker.
         const double currentDeltaFrames = currentBeatPositionFrames - previousBeatPositionFrames;
+        if (previousDeltaFrames < 0) {
+            previousDeltaFrames = currentDeltaFrames;
+        }
+
         const double differenceBetweenCurrentAndPreviousDelta =
                 abs(currentDeltaFrames - previousDeltaFrames);
-        if (differenceBetweenCurrentAndPreviousDelta > kEpsilon) {
+        if (differenceBetweenCurrentAndPreviousDelta >= kEpsilon) {
+            const double positionSecs = signalInfo.frames2secsFractional(
+                    previousBeatPositionFrames + beatgridFrameOffset);
+            nonTerminalMarkers.append(
+                    std::make_shared<SeratoBeatGridNonTerminalMarker>(
+                            positionSecs - timingOffsetSecs, 1));
+        } else {
             // We are adding a new beat marker, therefore we need to update the
             // `beatsSinceLastMarker` variable of the last marker we added.
-            if (!nonTerminalMarkers.isEmpty()) {
-                DEBUG_ASSERT(beatsSinceLastMarker > 0);
-                const auto pNonTerminalMarker =
-                        nonTerminalMarkers.at(nonTerminalMarkers.size() - 1);
-                DEBUG_ASSERT(pNonTerminalMarker);
-                pNonTerminalMarker->setBeatsTillNextMarker(beatsSinceLastMarker);
-
-                // After adding the first marker, the the sample delta won't
-                // match, because it compares the distance between beats 1 and
-                // two with the distance between the start of the track and the
-                // first beat. This special case makes sure that we don't add
-                // an unnecessary additional marker that has
-                // beatsSinceLastMarker set to 1.
-                if (nonTerminalMarkers.size() == 1 && beatsSinceLastMarker == 1) {
-                    previousDeltaFrames = currentDeltaFrames;
-                    beatsSinceLastMarker++;
-                    continue;
-                }
-            }
-            // Don't create a SeratoBeatGridNonTerminalMarker entry for the
-            // last beat, this needs to be a terminal marker entry.
-            if (pBeatsIterator->hasNext()) {
-                const double positionSecs =
-                        signalInfo.frames2secsFractional(
-                                currentBeatPositionFrames) -
-                        timingOffsetSecs;
-                nonTerminalMarkers.append(
-                        std::make_shared<SeratoBeatGridNonTerminalMarker>(positionSecs, 0));
-            }
-            beatsSinceLastMarker = 0;
+            const auto pNonTerminalMarker = nonTerminalMarkers.last();
+            pNonTerminalMarker->setBeatsTillNextMarker(
+                    pNonTerminalMarker->beatsTillNextMarker() + 1);
         }
-        beatsSinceLastMarker++;
-        previousDeltaFrames = currentDeltaFrames;
-    }
 
-    // The track has no beats. This isn't possible because the `pBeatsIterator`
-    // check above should have caught this case already.
-    VERIFY_OR_DEBUG_ASSERT(currentBeatPositionFrames != -1) {
-        return;
+        previousDeltaFrames = currentDeltaFrames;
     }
 
     // If the beatgrid is constant, i.e. if there is only a single non-terminal
@@ -520,28 +504,17 @@ void SeratoBeatGrid::setBeats(BeatsPointer pBeats,
         nonTerminalMarkers.clear();
     }
 
-    // Update the `beatsSinceLastMarker` of the last non-terminal marker we inserted.
-    if (!nonTerminalMarkers.isEmpty()) {
-        DEBUG_ASSERT(beatsSinceLastMarker > 0);
-        const auto pNonTerminalMarker = nonTerminalMarkers.at(nonTerminalMarkers.size() - 1);
-        DEBUG_ASSERT(pNonTerminalMarker);
-        // We need to subtract 1 from `beatsSinceLastMarker`, because at the end of
-        // the last iteration the counter is incremented even though we didn't move
-        // a beat forwards.
-        pNonTerminalMarker->setBeatsTillNextMarker(beatsSinceLastMarker - 1);
-    }
-
     // Finally, create the terminal marker.
-    const double positionSecs =
-            signalInfo.frames2secsFractional(
-                    currentBeatPositionFrames) -
-            timingOffsetSecs;
+    const double currentBeatPositionFramesWithOffset =
+            currentBeatPositionFrames + beatgridFrameOffset;
+    const double positionSecs = signalInfo.frames2secsFractional(
+            currentBeatPositionFramesWithOffset);
     const double bpm = pBeats->getBpmAroundPosition(
-            signalInfo.frames2samples(
-                    static_cast<SINT>(currentBeatPositionFrames)),
+            signalInfo.getChannelCount() * currentBeatPositionFramesWithOffset,
             1);
 
-    setTerminalMarker(std::make_shared<SeratoBeatGridTerminalMarker>(positionSecs, bpm));
+    setTerminalMarker(std::make_shared<SeratoBeatGridTerminalMarker>(
+            positionSecs - timingOffsetSecs, bpm));
     setNonTerminalMarkers(nonTerminalMarkers);
 }
 
