@@ -315,7 +315,7 @@ QPushButton#LibraryPreviewButton {
 }
 
 QPushButton#LibraryPreviewButton:!checked {
-  image: url(skin:/icon/ic_library_preview_play.svg);
+  /*image: url(skin:/icon/ic_library_preview_play.svg);*/
 }
 
 QPushButton#LibraryPreviewButton:!checked:hover {
@@ -324,7 +324,7 @@ QPushButton#LibraryPreviewButton:!checked:hover {
 }
 
 QPushButton#LibraryPreviewButton:checked {
-  image: url(skin:/icon/ic_library_preview_pause.svg);
+  /*image: url(skin:/icon/ic_library_preview_pause.svg);*/
   background-color: #0f0f0f;
   border: 1px solid #006596;
 }
