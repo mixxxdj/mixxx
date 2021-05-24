@@ -1,5 +1,6 @@
 import Mixxx 0.1 as Mixxx
-import QtQuick 2.12
+import QtQuick 2.15
+import QtQuick.Shapes 1.15
 
 Item {
     id: root
@@ -11,6 +12,14 @@ Item {
     property real min: 0
     property real max: 1
     property real angle: 130
+    property bool arc: false
+    property real arcRadius: width / 2
+    property real arcOffsetX: 0
+    property real arcOffsetY: 0
+    property alias arcColor: arcPath.strokeColor
+    property alias arcWidth: arcPath.strokeWidth
+    property alias arcStyle: arcPath.strokeStyle
+    property alias arcStylePattern: arcPath.dashPattern
 
     Mixxx.ControlProxy {
         id: control
@@ -40,6 +49,33 @@ Item {
         anchors.centerIn: root
         color: "transparent"
         rotation: (control.parameter - (root.max - root.min) / 2) * 2 * root.angle
+    }
+
+    Shape {
+        anchors.fill: root
+        antialiasing: true
+        layer.smooth: true
+        layer.samples: 2
+        visible: root.arc
+
+        ShapePath {
+            id: arcPath
+
+            strokeColor: "transparent"
+            strokeWidth: 2
+            fillColor: "transparent"
+
+            PathAngleArc {
+                startAngle: -90
+                sweepAngle: (control.parameter - (root.max - root.min) / 2) * 2 * root.angle
+                radiusX: root.arcRadius
+                radiusY: root.arcRadius
+                centerX: root.width / 2 + root.arcOffsetX
+                centerY: root.width / 2 + root.arcOffsetY
+            }
+
+        }
+
     }
 
     MouseArea {
