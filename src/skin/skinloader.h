@@ -27,6 +27,7 @@ class SkinLoader {
 
   private:
     QString pickResizableSkin(const QString& oldSkin) const;
+    mixxx::skin::SkinPointer skinFromDirectory(const QDir& dir) const;
 
     UserSettingsPointer m_pConfig;
 };

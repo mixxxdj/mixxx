@@ -35,8 +35,12 @@ QList<SkinPointer> SkinLoader::getSkins() const {
         const QList<QFileInfo> fileInfos = dir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
         for (const QFileInfo& fileInfo : fileInfos) {
             QDir skinDir(fileInfo.absoluteFilePath());
-            if (skinDir.exists(QStringLiteral("skin.xml"))) {
-                skins.append(std::make_shared<LegacySkin>(fileInfo));
+            SkinPointer pSkin = skinFromDirectory(skinDir);
+            if (pSkin) {
+                VERIFY_OR_DEBUG_ASSERT(pSkin->isValid()) {
+                    continue;
+                }
+                skins.append(pSkin);
             }
         }
     }
@@ -69,8 +73,12 @@ SkinPointer SkinLoader::getSkin(const QString& skinName) const {
     const QList<QDir> skinSearchPaths = getSkinSearchPaths();
     for (QDir dir : skinSearchPaths) {
         if (dir.cd(skinName)) {
-            if (dir.exists("skin.xml")) {
-                return std::make_shared<LegacySkin>(QFileInfo(dir.absolutePath()));
+            SkinPointer pSkin = skinFromDirectory(dir);
+            if (pSkin) {
+                VERIFY_OR_DEBUG_ASSERT(pSkin->isValid()) {
+                    continue;
+                }
+                return pSkin;
             }
         }
     }
@@ -149,4 +157,13 @@ QString SkinLoader::pickResizableSkin(const QString& oldSkin) const {
         return "Shade";
     }
     return QString();
+}
+
+SkinPointer SkinLoader::skinFromDirectory(const QDir& dir) const {
+    SkinPointer pSkin = LegacySkin::fromDirectory(dir);
+    if (pSkin && pSkin->isValid()) {
+        return pSkin;
+    }
+
+    return nullptr;
 }

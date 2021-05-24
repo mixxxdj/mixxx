@@ -6,12 +6,21 @@
 namespace {
 
 const QRegExp kMinSizeRegExp("<MinimumSize>(\\d+), *(\\d+)<");
+const QString kSkinManifestFileName(QStringLiteral("skin.xml"));
 
 } // namespace
 
 namespace mixxx {
 namespace skin {
 namespace legacy {
+
+// static
+SkinPointer LegacySkin::fromDirectory(const QDir& dir) {
+    if (dir.exists(kSkinManifestFileName)) {
+        return std::make_shared<LegacySkin>(QFileInfo(dir.absolutePath()));
+    }
+    return nullptr;
+}
 
 LegacySkin::LegacySkin(const QFileInfo& path)
         : m_path(path) {
@@ -47,7 +56,7 @@ QPixmap LegacySkin::preview(const QString& schemeName = QString()) const {
 
 QFileInfo LegacySkin::skinFile() const {
     DEBUG_ASSERT(isValid());
-    return QFileInfo(path().absoluteFilePath() + QStringLiteral("/skin.xml"));
+    return QFileInfo(path().absoluteFilePath() + QStringLiteral("/") + kSkinManifestFileName);
 }
 
 QString LegacySkin::name() const {

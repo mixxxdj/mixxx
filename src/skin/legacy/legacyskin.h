@@ -1,5 +1,6 @@
 #pragma once
 
+#include <QDir>
 #include <QFileInfo>
 #include <QList>
 #include <QPixmap>
@@ -16,6 +17,8 @@ class LegacySkin : public mixxx::skin::Skin {
   public:
     LegacySkin() = default;
     LegacySkin(const QFileInfo& path);
+
+    static SkinPointer fromDirectory(const QDir& dir);
 
     mixxx::skin::SkinType type() const override {
         return mixxx::skin::SkinType::Legacy;
