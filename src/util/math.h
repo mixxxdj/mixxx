@@ -1,14 +1,7 @@
 #pragma once
 
-#include <math.h>
-
-#include <cmath>
-// Note: Because of our fpclassify hack, we actually need to include both,
-// the c and the c++ version of the math header.
-// From GCC 6.1.1 math.h depends on cmath, which fails to compile if included
-// after our fpclassify hack
-
 #include <algorithm>
+#include <cmath>
 #include <type_traits>
 
 #include "util/assert.h"

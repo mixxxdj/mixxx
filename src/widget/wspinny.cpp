@@ -15,7 +15,7 @@
 #include "track/track.h"
 #include "util/compatibility.h"
 #include "util/dnd.h"
-#include "util/math.h"
+#include "util/fpclassify.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "waveform/sharedglcontext.h"
@@ -442,8 +442,8 @@ void WSpinny::resizeEvent(QResizeEvent* /*unused*/) {
 double WSpinny::calculateAngle(double playpos) {
     double trackFrames = m_pTrackSamples->get() / 2;
     double trackSampleRate = m_pTrackSampleRate->get();
-    if (isnan(playpos) || isnan(trackFrames) || isnan(trackSampleRate) ||
-        trackFrames <= 0 || trackSampleRate <= 0) {
+    if (util_isnan(playpos) || util_isnan(trackFrames) || util_isnan(trackSampleRate) ||
+            trackFrames <= 0 || trackSampleRate <= 0) {
         return 0.0;
     }
 
@@ -451,7 +451,7 @@ double WSpinny::calculateAngle(double playpos) {
     double t = playpos * trackFrames / trackSampleRate;
 
     // Bad samplerate or number of track samples.
-    if (isnan(t)) {
+    if (util_isnan(t)) {
         return 0.0;
     }
 
@@ -488,7 +488,7 @@ double WSpinny::calculateAngle(double playpos) {
 /** Given a normalized playpos, calculate the integer number of rotations
     that it would take to wind the vinyl to that position. */
 int WSpinny::calculateFullRotations(double playpos) {
-    if (isnan(playpos)) {
+    if (util_isnan(playpos)) {
         return 0;
     }
     //Convert playpos to seconds.
@@ -504,7 +504,7 @@ int WSpinny::calculateFullRotations(double playpos) {
 
 //Inverse of calculateAngle()
 double WSpinny::calculatePositionFromAngle(double angle) {
-    if (isnan(angle)) {
+    if (util_isnan(angle)) {
         return 0.0;
     }
 
@@ -513,14 +513,14 @@ double WSpinny::calculatePositionFromAngle(double angle) {
 
     double trackFrames = m_pTrackSamples->get() / 2;
     double trackSampleRate = m_pTrackSampleRate->get();
-    if (isnan(trackFrames) || isnan(trackSampleRate) ||
-        trackFrames <= 0 || trackSampleRate <= 0) {
+    if (util_isnan(trackFrames) || util_isnan(trackSampleRate) ||
+            trackFrames <= 0 || trackSampleRate <= 0) {
         return 0.0;
     }
 
     // Convert t from seconds into a normalized playposition value.
     double playpos = t * trackSampleRate / trackFrames;
-    if (isnan(playpos)) {
+    if (util_isnan(playpos)) {
         return 0.0;
     }
     return playpos;
