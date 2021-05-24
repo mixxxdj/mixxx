@@ -113,7 +113,7 @@ bool TrackRecord::replaceMetadataFromSource(
         const QDateTime& metadataSynchronized) {
     bool modified = false;
     if (getMetadata() != importedMetadata) {
-        refMetadata() = std::move(importedMetadata);
+        setMetadata(std::move(importedMetadata));
         modified = true;
     }
     // Only set the metadata synchronized flag (column `header_parsed`
@@ -125,7 +125,7 @@ bool TrackRecord::replaceMetadataFromSource(
     // to detect updates of files and then decide based on time
     // stamps if file tags need to be re-imported.
     if (!getMetadataSynchronized() && !metadataSynchronized.isNull()) {
-        refMetadataSynchronized() = true;
+        setMetadataSynchronized(true);
         modified = true;
     }
     return modified;
