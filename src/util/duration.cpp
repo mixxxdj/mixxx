@@ -1,11 +1,11 @@
 #include "util/duration.h"
 
-#include <QtGlobal>
 #include <QTime>
+#include <QtGlobal>
+#include <cmath>
 
 #include "util/assert.h"
 #include "util/fpclassify.h"
-#include "util/math.h"
 
 namespace mixxx {
 
@@ -26,7 +26,7 @@ QChar DurationBase::kDecimalSeparator = QChar(0x002E);
 
 // static
 QString DurationBase::formatTime(double dSeconds, Precision precision) {
-    if (dSeconds < 0.0 || !isfinite(dSeconds)
+    if (dSeconds < 0.0 || !util_isfinite(dSeconds)
             // Use >= instead of >: 2^63-1 (qint64) is rounded to 2^63 (double)
             || dSeconds >= static_cast<double>(std::numeric_limits<qint64>::max())) {
         // negative durations and infinity or isNaN values are not supported
@@ -114,7 +114,7 @@ QString DurationBase::formatKiloSeconds(double dSeconds, Precision precision) {
     }
 
     int kilos = (int)dSeconds / 1000;
-    double seconds = floor(fmod(dSeconds, 1000));
+    double seconds = std::floor(fmod(dSeconds, 1000));
     double subs = fmod(dSeconds, 1);
 
     QString durationString =
