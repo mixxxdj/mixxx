@@ -198,9 +198,11 @@ SkinPointer SkinLoader::skinFromDirectory(const QDir& dir) const {
         return pSkin;
     }
 
-    pSkin = QmlSkin::fromDirectory(dir);
-    if (pSkin && pSkin->isValid()) {
-        return pSkin;
+    if (m_pConfig->getValue(ConfigKey("[Config]", "experimental_qml_skin_support"), false)) {
+        pSkin = QmlSkin::fromDirectory(dir);
+        if (pSkin && pSkin->isValid()) {
+            return pSkin;
+        }
     }
 
     return nullptr;
