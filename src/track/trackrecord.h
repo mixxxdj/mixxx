@@ -103,6 +103,9 @@ class TrackRecord final {
             const QString& keyText,
             track::io::key::Source keySource);
 
+    bool replaceMetadataFromSource(
+            TrackMetadata&& importedMetadata,
+            const QDateTime& metadataSynchronized);
     // Merge the current metadata with new and additional properties
     // imported from the file. Since these properties are not (yet)
     // stored in the library or have been added later all existing
