@@ -25,9 +25,14 @@ class EngineMaster;
 class GuiTick;
 class LaunchImage;
 class Library;
-class SkinLoader;
 class VisualsManager;
 class WMainMenuBar;
+
+namespace mixxx {
+namespace skin {
+class SkinLoader;
+}
+} // namespace mixxx
 
 #ifdef __ENGINEPRIME__
 namespace mixxx {
@@ -116,7 +121,7 @@ class MixxxMainWindow : public QMainWindow {
     QWidget* m_pCentralWidget;
     LaunchImage* m_pLaunchImage;
 
-    std::shared_ptr<SkinLoader> m_pSkinLoader;
+    std::shared_ptr<mixxx::skin::SkinLoader> m_pSkinLoader;
     GuiTick* m_pGuiTick;
     VisualsManager* m_pVisualsManager;
 

@@ -17,8 +17,10 @@
 #include "util/timer.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 
-using mixxx::skin::SkinPointer;
-using mixxx::skin::legacy::LegacySkin;
+namespace mixxx {
+namespace skin {
+
+using legacy::LegacySkin;
 
 SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
         m_pConfig(pConfig) {
@@ -167,3 +169,6 @@ SkinPointer SkinLoader::skinFromDirectory(const QDir& dir) const {
 
     return nullptr;
 }
+
+} // namespace skin
+} // namespace mixxx
