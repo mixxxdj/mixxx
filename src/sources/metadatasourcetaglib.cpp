@@ -313,7 +313,7 @@ class MpegTagSaver : public TagSaver {
             : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
               m_modifiedTagsBitmask(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~MpegTagSaver() = default;
+    ~MpegTagSaver() override = default;
 
     bool hasModifiedTags() const override {
         return m_modifiedTagsBitmask != TagLib::MPEG::File::NoTags;
@@ -363,7 +363,7 @@ class Mp4TagSaver : public TagSaver {
             : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
               m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~Mp4TagSaver() = default;
+    ~Mp4TagSaver() override = default;
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -388,7 +388,7 @@ class FlacTagSaver : public TagSaver {
             : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
               m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~FlacTagSaver() = default;
+    ~FlacTagSaver() override = default;
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -431,7 +431,7 @@ class OggTagSaver : public TagSaver {
             : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
               m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~OggTagSaver() = default;
+    ~OggTagSaver() override = default;
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -473,7 +473,7 @@ class OpusTagSaver : public TagSaver {
             : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
               m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~OpusTagSaver() = default;
+    ~OpusTagSaver() override = default;
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -537,7 +537,7 @@ class WavTagSaver : public TagSaver {
             : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
               m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~WavTagSaver() = default;
+    ~WavTagSaver() override = default;
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
@@ -587,7 +587,7 @@ class AiffTagSaver : public TagSaver {
             : m_file(TAGLIB_FILENAME_FROM_QSTRING(fileName)),
               m_modifiedTags(exportTrackMetadata(&m_file, trackMetadata)) {
     }
-    ~AiffTagSaver() = default;
+    ~AiffTagSaver() override = default;
 
     bool hasModifiedTags() const override {
         return m_modifiedTags;
