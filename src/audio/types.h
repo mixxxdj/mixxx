@@ -41,28 +41,42 @@ class ChannelCount {
   private:
     // The default value is invalid and indicates a missing or unknown value.
     static constexpr value_t kValueDefault = 0;
+    static constexpr value_t kValueMin = 1;   // lower bound (inclusive)
+
+    static value_t valueFromInt(int value) {
+        VERIFY_OR_DEBUG_ASSERT(value >= std::numeric_limits<value_t>::min() &&
+                value <= std::numeric_limits<value_t>::max()) {
+            return kValueDefault;
+        }
+        return static_cast<value_t>(value);
+    }
+
+    static value_t valueFromLayout(ChannelLayout layout) {
+        switch (layout) {
+        case ChannelLayout::Mono:
+            return 1;
+        case ChannelLayout::DualMono:
+            return 2;
+        case ChannelLayout::Stereo:
+            return 2;
+        }
+        DEBUG_ASSERT(!"unreachable code");
+    }
 
   public:
-    static constexpr value_t kValueMin = 1;   // lower bound (inclusive)
-    static constexpr value_t kValueMax = 255; // upper bound (inclusive, 8-bit unsigned integer)
-
     static constexpr ChannelCount min() {
         return ChannelCount(kValueMin);
     }
     static constexpr ChannelCount max() {
-        return ChannelCount(kValueMax);
+        return ChannelCount(std::numeric_limits<value_t>::max());
     }
 
     static ChannelCount fromLayout(ChannelLayout layout) {
-        switch (layout) {
-        case ChannelLayout::Mono:
-            return mono();
-        case ChannelLayout::DualMono:
-            return stereo();
-        case ChannelLayout::Stereo:
-            return stereo();
-        }
-        DEBUG_ASSERT(!"unreachable code");
+        return ChannelCount(valueFromLayout(layout));
+    }
+
+    static ChannelCount fromInt(int value) {
+        return ChannelCount(valueFromInt(value));
     }
 
     static constexpr ChannelCount mono() {
@@ -73,14 +87,6 @@ class ChannelCount {
         return ChannelCount(static_cast<value_t>(2));
     }
 
-    static ChannelCount fromInt(int value) {
-        VERIFY_OR_DEBUG_ASSERT(value >= std::numeric_limits<value_t>::min() &&
-                value <= std::numeric_limits<value_t>::max()) {
-            return ChannelCount();
-        }
-        return ChannelCount(static_cast<value_t>(value));
-    }
-
     explicit constexpr ChannelCount(
             value_t value = kValueDefault)
             : m_value(value) {
@@ -89,12 +95,12 @@ class ChannelCount {
     // A limits checking c-tor fom int channel used in many
     // external libraries
     explicit ChannelCount(int value)
-            : m_value(fromInt(value).m_value) {
+            : m_value(valueFromInt(value)) {
     }
 
     explicit ChannelCount(
             ChannelLayout layout)
-            : m_value(fromLayout(layout).m_value) {
+            : m_value(valueFromLayout(layout)) {
     }
 
     constexpr bool isValid() const {
