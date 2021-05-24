@@ -34,7 +34,6 @@
 #include "util/compatibility.h"
 #include "util/defs.h"
 #include "util/logger.h"
-#include "util/math.h"
 #include "util/sample.h"
 #include "util/timer.h"
 #include "waveform/visualplayposition.h"
@@ -676,7 +675,7 @@ double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
 
 void EngineBuffer::doSeekFractional(double fractionalPos, enum SeekRequest seekType) {
     // Prevent NaN's from sneaking into the engine.
-    VERIFY_OR_DEBUG_ASSERT(!isnan(fractionalPos)) {
+    VERIFY_OR_DEBUG_ASSERT(!util_isnan(fractionalPos)) {
         return;
     }
     double newSamplePosition = fractionalPos * m_pTrackSamples->get();

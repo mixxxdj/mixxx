@@ -156,8 +156,8 @@ void AutoPanEffect::processChannel(
         // part of the period fraction being a step (not in the slope)
         CSAMPLE stepsFractionPart = floorf((quarter + 1.0f) / 2.0f) * smoothing;
 
-        // float inInterval = fmod( periodFraction, (period / 2.0) );
-        float inStepInterval = fmod(periodFraction, 0.5f);
+        // float inInterval = std::fmod( periodFraction, (period / 2.0) );
+        float inStepInterval = std::fmod(periodFraction, 0.5f);
 
         CSAMPLE angleFraction;
         if (inStepInterval > u && inStepInterval < (u + smoothing)) {

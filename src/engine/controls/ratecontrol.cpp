@@ -11,7 +11,6 @@
 #include "engine/controls/enginecontrol.h"
 #include "engine/positionscratchcontroller.h"
 #include "moc_ratecontrol.cpp"
-#include "util/math.h"
 #include "util/rotary.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -376,7 +375,7 @@ double RateControl::getJogFactor() const {
     double jogValueFiltered = m_pJogFilter->filter(jogValue);
     double jogFactor = jogValueFiltered * jogSensitivity;
 
-    if (isnan(jogValue) || isnan(jogFactor)) {
+    if (util_isnan(jogValue) || util_isnan(jogFactor)) {
         jogFactor = 0.0;
     }
 
@@ -423,7 +422,7 @@ double RateControl::calculateSpeed(double baserate, double speed, bool paused,
         } else {
             double scratchFactor = m_pScratch2->get();
             // Don't trust values from m_pScratch2
-            if (isnan(scratchFactor)) {
+            if (util_isnan(scratchFactor)) {
                 scratchFactor = 0.0;
             }
             if (paused) {
@@ -575,7 +574,7 @@ void RateControl::setRateTemp(double v) {
         m_tempRateRatio = -1.0;
     } else if (m_tempRateRatio > 1.0) {
         m_tempRateRatio = 1.0;
-    } else if (isnan(m_tempRateRatio)) {
+    } else if (util_isnan(m_tempRateRatio)) {
         m_tempRateRatio = 0;
     }
 }
