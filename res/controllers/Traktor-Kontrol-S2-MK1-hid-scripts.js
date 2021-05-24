@@ -263,7 +263,7 @@ TraktorS2MK1.registerInputPackets = function() {
     engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter2", true);
     engine.softTakeover("[EqualizerRack1_[Channel2]_Effect1]", "parameter1", true);
 
-    for (var i = 1; i <= 3; i++) {
+    for (i = 1; i <= 3; i++) {
         engine.softTakeover("[EffectRack1_EffectUnit1_Effect" + i + "]", "meta", true);
         engine.softTakeover("[EffectRack1_EffectUnit2_Effect" + i + "]", "meta", true);
         for (var j = 1; j <= 3; j++) {
@@ -414,7 +414,7 @@ TraktorS2MK1.linkDeckOutputs = function(key, callback) {
     TraktorS2MK1.controller.linkOutput("[Channel2]", key, "[Channel2]", key, callback);
 };
 
-TraktorS2MK1.linkDeckCustomOutputs = function(key, callback){
+TraktorS2MK1.linkDeckCustomOutputs = function(key, callback) {
     engine.makeConnection("[Channel1]", key, callback).trigger();
     engine.makeConnection("[Channel2]", key, callback).trigger();
 };
@@ -1377,7 +1377,7 @@ TraktorS2MK1.setPlayIndicatorMode = function(group, value) {
         connection.disconnect();
     });
     var connection = engine.makeConnection(group, value ? "play_indicator" : "keylock",
-                                           TraktorS2MK1.makeLEDCallback("!play_indicator"));
+        TraktorS2MK1.makeLEDCallback("!play_indicator"));
 
     TraktorS2MK1.playIndicatorConnections[group] = [connection];
     connection.trigger();
