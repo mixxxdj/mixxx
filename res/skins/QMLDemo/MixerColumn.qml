@@ -46,6 +46,9 @@ Item {
             height: 107
             group: root.group
             key: "volume"
+            bar: true
+            barColor: "#257b82"
+            barMargin: 10
 
             handle: Image {
                 source: "../LateNight/palemoon/sliders/knob_volume_deck.svg"
