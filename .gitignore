@@ -72,3 +72,12 @@ CMakeSettings.json
 
 # VisualStudio project files
 /.vs/
+
+# Exclude unneeded files from GoogleTest library when updating our bundled
+# GoogleTest library in the lib/ directory
+lib/googletest/docs
+lib/googletest/ci
+lib/googletest/.github
+lib/googletest/googlemock/test
+lib/googletest/googletest/samples
+lib/googletest/googletest/test
