@@ -1,0 +1,95 @@
+#include "skin/qml/qmlplayerproxy.h"
+
+#include "mixer/basetrackplayer.h"
+
+#define PROPERTY_IMPL(TYPE, NAME, GETTER, SETTER)    \
+    TYPE QmlPlayerProxy::GETTER() const {            \
+        const TrackPointer pTrack = m_pCurrentTrack; \
+        if (pTrack == nullptr) {                     \
+            return TYPE();                           \
+        }                                            \
+        return pTrack->GETTER();                     \
+    }                                                \
+                                                     \
+    void QmlPlayerProxy::SETTER(const TYPE& value) { \
+        const TrackPointer pTrack = m_pCurrentTrack; \
+        if (pTrack != nullptr) {                     \
+            pTrack->SETTER(value);                   \
+            emit NAME##Changed();                    \
+        }                                            \
+    }
+
+namespace mixxx {
+namespace skin {
+namespace qml {
+
+QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = nullptr)
+        : QObject(parent), m_pTrackPlayer(pTrackPlayer) {
+    connect(m_pTrackPlayer,
+            &BaseTrackPlayer::loadingTrack,
+            this,
+            &QmlPlayerProxy::slotLoadingTrack);
+    connect(m_pTrackPlayer,
+            &BaseTrackPlayer::newTrackLoaded,
+            this,
+            &QmlPlayerProxy::slotTrackLoaded);
+    connect(this, &QmlPlayerProxy::trackChanged, this, &QmlPlayerProxy::slotTrackChanged);
+}
+
+void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
+    m_pCurrentTrack = pTrack;
+    if (pTrack != nullptr) {
+        connect(pTrack.get(),
+                &Track::changed,
+                this,
+                &QmlPlayerProxy::trackChanged);
+        connect(pTrack.get(),
+                &Track::keyUpdated,
+                this,
+                &QmlPlayerProxy::keyChanged);
+    }
+    emit trackChanged();
+}
+
+void QmlPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
+    Q_UNUSED(pNewTrack);
+    Q_UNUSED(pOldTrack);
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack != nullptr) {
+        disconnect(pTrack.get(), nullptr, this, nullptr);
+    }
+    m_pCurrentTrack.reset();
+    emit trackChanged();
+}
+
+void QmlPlayerProxy::slotTrackChanged() {
+    emit artistChanged();
+    emit titleChanged();
+    emit albumChanged();
+    emit albumArtistChanged();
+    emit genreChanged();
+    emit composerChanged();
+    emit groupingChanged();
+    emit yearChanged();
+    emit trackNumberChanged();
+    emit trackTotalChanged();
+    emit commentChanged();
+    emit keyChanged();
+}
+
+PROPERTY_IMPL(QString, artist, getArtist, setArtist)
+PROPERTY_IMPL(QString, title, getTitle, setTitle)
+PROPERTY_IMPL(QString, album, getAlbum, setAlbum)
+PROPERTY_IMPL(QString, albumArtist, getAlbumArtist, setAlbumArtist)
+PROPERTY_IMPL(QString, genre, getGenre, setGenre)
+PROPERTY_IMPL(QString, composer, getComposer, setComposer)
+PROPERTY_IMPL(QString, grouping, getGrouping, setGrouping)
+PROPERTY_IMPL(QString, year, getYear, setYear)
+PROPERTY_IMPL(QString, trackNumber, getTrackNumber, setTrackNumber)
+PROPERTY_IMPL(QString, trackTotal, getTrackTotal, setTrackTotal)
+PROPERTY_IMPL(QString, comment, getComment, setComment)
+PROPERTY_IMPL(QString, key, getKeyText, setKeyText)
+
+} // namespace qml
+} // namespace skin
+} // namespace mixxx
