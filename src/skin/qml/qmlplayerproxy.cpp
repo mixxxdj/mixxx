@@ -125,6 +125,7 @@ void QmlPlayerProxy::slotTrackChanged() {
     emit commentChanged();
     emit keyTextChanged();
     emit colorChanged();
+    emit coverArtUrlChanged();
 }
 
 PROPERTY_IMPL(QString, artist, getArtist, setArtist)
@@ -154,6 +155,19 @@ void QmlPlayerProxy::setColor(const QColor& value) {
         std::optional<RgbColor> color = RgbColor::fromQColor(value);
         pTrack->setColor(color);
     }
+}
+
+QUrl QmlPlayerProxy::getCoverArtUrl() const {
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack == nullptr) {
+        return QUrl();
+    }
+
+    const CoverInfo coverInfo = pTrack->getCoverInfoWithLocation();
+    QUrl url("image://mixxx/coverart/");
+    return url.resolved(
+            QString::fromLatin1(coverInfo.trackLocation.toUtf8().toBase64(
+                    QByteArray::Base64UrlEncoding)));
 }
 
 } // namespace qml

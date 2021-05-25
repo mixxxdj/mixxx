@@ -1,6 +1,7 @@
 #include <QColor>
 #include <QObject>
 #include <QString>
+#include <QUrl>
 
 #include "track/track.h"
 
@@ -27,6 +28,7 @@ class QmlPlayerProxy : public QObject {
     Q_PROPERTY(QString comment READ getComment WRITE setComment NOTIFY commentChanged)
     Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyTextChanged)
     Q_PROPERTY(QColor color READ getColor WRITE setColor NOTIFY colorChanged)
+    Q_PROPERTY(QUrl coverArtUrl READ getCoverArtUrl NOTIFY coverArtUrlChanged)
 
   public:
     explicit QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent);
@@ -45,6 +47,7 @@ class QmlPlayerProxy : public QObject {
     QString getComment() const;
     QString getKeyText() const;
     QColor getColor() const;
+    QUrl getCoverArtUrl() const;
 
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);
@@ -84,6 +87,7 @@ class QmlPlayerProxy : public QObject {
     void commentChanged();
     void keyTextChanged();
     void colorChanged();
+    void coverArtUrlChanged();
 
   private:
     BaseTrackPlayer* m_pTrackPlayer;
