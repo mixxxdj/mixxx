@@ -1,4 +1,4 @@
-#include "skin/legacyskinparser.h"
+#include "skin/legacy/legacyskinparser.h"
 
 #include <QDir>
 #include <QGridLayout>
@@ -21,9 +21,9 @@
 #include "mixer/playermanager.h"
 #include "moc_legacyskinparser.cpp"
 #include "recording/recordingmanager.h"
-#include "skin/colorschemeparser.h"
-#include "skin/launchimage.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/colorschemeparser.h"
+#include "skin/legacy/launchimage.h"
+#include "skin/legacy/skincontext.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 #include "util/valuetransformer.h"

@@ -9,8 +9,8 @@
 
 #include "preferences/usersettings.h"
 #include "proto/skin.pb.h"
-#include "skin/skinparser.h"
-#include "skin/tooltips.h"
+#include "skin/legacy/skinparser.h"
+#include "skin/legacy/tooltips.h"
 #include "util/memory.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 

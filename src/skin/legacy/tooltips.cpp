@@ -1,4 +1,4 @@
-#include "skin/tooltips.h"
+#include "skin/legacy/tooltips.h"
 
 #include "moc_tooltips.cpp"
 

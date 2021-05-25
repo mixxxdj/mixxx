@@ -4,7 +4,7 @@
 #include <QSvgRenderer>
 #include <QPainter>
 
-#include "skin/imgloader.h"
+#include "skin/legacy/imgloader.h"
 #include "util/assert.h"
 
 

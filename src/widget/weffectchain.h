@@ -6,7 +6,7 @@
 
 #include "effects/effectchainslot.h"
 #include "widget/wlabel.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 class EffectsManager;
 

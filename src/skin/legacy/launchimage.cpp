@@ -1,4 +1,4 @@
-#include "skin/launchimage.h"
+#include "skin/legacy/launchimage.h"
 
 #include <util/assert.h>
 

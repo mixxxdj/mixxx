@@ -2,7 +2,7 @@
 #include <QStringList>
 #include <QAction>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 
