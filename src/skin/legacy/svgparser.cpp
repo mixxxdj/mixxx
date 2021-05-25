@@ -2,7 +2,7 @@
 #include <QStringList>
 #include <QScriptValue>
 
-#include "skin/svgparser.h"
+#include "skin/legacy/svgparser.h"
 
 SvgParser::SvgParser(const SkinContext* pParentContext)
         : m_pParentContext(pParentContext),

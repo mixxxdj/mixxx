@@ -1,7 +1,7 @@
 #include <QtDebug>
 #include <QCryptographicHash>
 
-#include "skin/pixmapsource.h"
+#include "skin/legacy/pixmapsource.h"
 #include "util/assert.h"
 
 PixmapSource::PixmapSource()

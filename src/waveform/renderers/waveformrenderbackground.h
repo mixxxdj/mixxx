@@ -5,7 +5,7 @@
 #include <QPaintEvent>
 #include <QPainter>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/class.h"
 #include "waveformrendererabstract.h"
 

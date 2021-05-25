@@ -1,8 +1,8 @@
 #pragma once
 
 #include "preferences/usersettings.h"
-#include "skin/legacyskinparser.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/legacyskinparser.h"
+#include "skin/legacy/skincontext.h"
 
 class ImgSource;
 

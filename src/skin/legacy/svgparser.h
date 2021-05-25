@@ -4,7 +4,7 @@
 #include <QDomNode>
 #include <QDomElement>
 
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 
 
 // A class for managing the svg files

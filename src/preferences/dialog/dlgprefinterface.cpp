@@ -14,7 +14,7 @@
 #include "mixxx.h"
 #include "moc_dlgprefinterface.cpp"
 #include "preferences/usersettings.h"
-#include "skin/legacyskinparser.h"
+#include "skin/legacy/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "util/screensaver.h"
 #include "util/widgethelper.h"

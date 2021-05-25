@@ -4,8 +4,8 @@
 #include <QAction>
 #include <QScriptValueIterator>
 
-#include "skin/skincontext.h"
-#include "skin/svgparser.h"
+#include "skin/legacy/skincontext.h"
+#include "skin/legacy/svgparser.h"
 #include "util/cmdlineargs.h"
 #include "util/math.h"
 
