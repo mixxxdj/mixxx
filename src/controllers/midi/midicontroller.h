@@ -54,13 +54,7 @@ class MidiController : public Controller {
     }
 
   protected slots:
-    virtual void receivedShortMessage(
-            unsigned char status,
-            unsigned char control,
-            unsigned char value,
-            mixxx::Duration timestamp);
-    // For receiving System Exclusive messages
-    void receive(const QByteArray& data, mixxx::Duration timestamp) override;
+    virtual void receive(const QByteArray& data, mixxx::Duration timestamp) override;
     int close() override;
 
   private slots:
@@ -71,6 +65,14 @@ class MidiController : public Controller {
     void commitTemporaryInputMappings();
 
   private:
+    virtual void receivedShortMessage(
+            unsigned char status,
+            unsigned char control,
+            unsigned char value,
+            mixxx::Duration timestamp);
+    // For receiving System Exclusive messages
+    void receiveSysEx(const QByteArray& data, mixxx::Duration timestamp);
+
     void processInputMapping(
             const MidiInputMapping& mapping,
             unsigned char status,

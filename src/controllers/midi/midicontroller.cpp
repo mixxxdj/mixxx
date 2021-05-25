@@ -11,6 +11,14 @@
 #include "util/math.h"
 #include "util/screensaver.h"
 
+namespace {
+
+bool isSysex(const QByteArray& data) {
+    return (data.at(0) & 0xFF) == MIDI_SYSEX;
+}
+
+} // anonymous namespace
+
 MidiController::MidiController()
         : Controller() {
     setDeviceCategory(tr("MIDI Controller"));
@@ -481,6 +489,14 @@ double MidiController::computeValue(
 }
 
 void MidiController::receive(const QByteArray& data, mixxx::Duration timestamp) {
+    if (isSysex(data)) {
+        receiveSysEx(data, timestamp);
+    } else {
+        receivedShortMessage(data.at(0), data.at(1), data.at(2), timestamp);
+    }
+}
+
+void MidiController::receiveSysEx(const QByteArray& data, mixxx::Duration timestamp) {
     controllerDebug(MidiUtils::formatSysexMessage(getName(), data, timestamp));
 
     MidiKey mappingKey(data.at(0), 0xFF);
