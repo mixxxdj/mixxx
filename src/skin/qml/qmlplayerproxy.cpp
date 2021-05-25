@@ -47,6 +47,10 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
                 &Track::keyUpdated,
                 this,
                 &QmlPlayerProxy::keyChanged);
+        connect(pTrack.get(),
+                &Track::colorUpdated,
+                this,
+                &QmlPlayerProxy::colorChanged);
     }
     emit trackChanged();
 }
@@ -75,6 +79,7 @@ void QmlPlayerProxy::slotTrackChanged() {
     emit trackTotalChanged();
     emit commentChanged();
     emit keyChanged();
+    emit colorChanged();
 }
 
 PROPERTY_IMPL(QString, artist, getArtist, setArtist)
@@ -89,6 +94,23 @@ PROPERTY_IMPL(QString, trackNumber, getTrackNumber, setTrackNumber)
 PROPERTY_IMPL(QString, trackTotal, getTrackTotal, setTrackTotal)
 PROPERTY_IMPL(QString, comment, getComment, setComment)
 PROPERTY_IMPL(QString, key, getKeyText, setKeyText)
+
+QColor QmlPlayerProxy::getColor() const {
+    const TrackPointer pTrack = m_pCurrentTrack;
+    if (pTrack == nullptr) {
+        return QColor();
+    }
+    return RgbColor::toQColor(pTrack->getColor());
+}
+
+void QmlPlayerProxy::setColor(const QColor& value) {
+    const TrackPointer pTrack = m_pTrackPlayer->getLoadedTrack();
+    if (pTrack != nullptr) {
+        std::optional<RgbColor> color = RgbColor::fromQColor(value);
+        pTrack->setColor(color);
+        emit colorChanged();
+    }
+}
 
 } // namespace qml
 } // namespace skin
