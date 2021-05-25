@@ -969,12 +969,6 @@ PioneerDDJSB3.headphoneLevel = new components.Pot({
         this.connect();
     },
 
-    shift: function() {
-        this.group = "[Master]";
-        this.inKey = "headMix";
-        this.disconnect();
-        this.connect();
-    },
 
     inValueScale: PioneerDDJSB3.inValueScale
 });
