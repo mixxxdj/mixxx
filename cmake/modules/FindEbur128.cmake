@@ -45,7 +45,8 @@ The following cache variables may also be set:
 
 find_package(PkgConfig QUIET)
 if(PkgConfig_FOUND)
-  pkg_check_modules(PC_Ebur128 QUIET libebur128>=1.2.4)
+  # The bundled version 1.2.6 only fixes dynamic linking on Windows
+  pkg_check_modules(PC_Ebur128 QUIET libebur128>=1.2.5)
 endif()
 
 find_path(Ebur128_INCLUDE_DIR

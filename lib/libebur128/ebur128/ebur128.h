@@ -14,52 +14,52 @@ extern "C" {
 
 #define EBUR128_VERSION_MAJOR 1
 #define EBUR128_VERSION_MINOR 2
-#define EBUR128_VERSION_PATCH 4
+#define EBUR128_VERSION_PATCH 6
 
-#include <stddef.h>       /* for size_t */
+#include <stddef.h> /* for size_t */
 
 /** \enum channel
  *  Use these values when setting the channel map with ebur128_set_channel().
  *  See definitions in ITU R-REC-BS 1770-4
  */
 enum channel {
-  EBUR128_UNUSED = 0,     /**< unused channel (for example LFE channel) */
-  EBUR128_LEFT   = 1,
-  EBUR128_Mp030  = 1,     /**< itu M+030 */
-  EBUR128_RIGHT  = 2,
-  EBUR128_Mm030  = 2,     /**< itu M-030 */
-  EBUR128_CENTER = 3,
-  EBUR128_Mp000  = 3,     /**< itu M+000 */
-  EBUR128_LEFT_SURROUND  = 4,
-  EBUR128_Mp110  = 4,     /**< itu M+110 */
-  EBUR128_RIGHT_SURROUND = 5,
-  EBUR128_Mm110  = 5,     /**< itu M-110 */
-  EBUR128_DUAL_MONO,      /**< a channel that is counted twice */
-  EBUR128_MpSC,           /**< itu M+SC */
-  EBUR128_MmSC,           /**< itu M-SC */
-  EBUR128_Mp060,          /**< itu M+060 */
-  EBUR128_Mm060,          /**< itu M-060 */
-  EBUR128_Mp090,          /**< itu M+090 */
-  EBUR128_Mm090,          /**< itu M-090 */
-  EBUR128_Mp135,          /**< itu M+135 */
-  EBUR128_Mm135,          /**< itu M-135 */
-  EBUR128_Mp180,          /**< itu M+180 */
-  EBUR128_Up000,          /**< itu U+000 */
-  EBUR128_Up030,          /**< itu U+030 */
-  EBUR128_Um030,          /**< itu U-030 */
-  EBUR128_Up045,          /**< itu U+045 */
-  EBUR128_Um045,          /**< itu U-030 */
-  EBUR128_Up090,          /**< itu U+090 */
-  EBUR128_Um090,          /**< itu U-090 */
-  EBUR128_Up110,          /**< itu U+110 */
-  EBUR128_Um110,          /**< itu U-110 */
-  EBUR128_Up135,          /**< itu U+135 */
-  EBUR128_Um135,          /**< itu U-135 */
-  EBUR128_Up180,          /**< itu U+180 */
-  EBUR128_Tp000,          /**< itu T+000 */
-  EBUR128_Bp000,          /**< itu B+000 */
-  EBUR128_Bp045,          /**< itu B+045 */
-  EBUR128_Bm045           /**< itu B-045 */
+  EBUR128_UNUSED = 0,         /**< unused channel (for example LFE channel) */
+  EBUR128_LEFT = 1,           /**<           */
+  EBUR128_Mp030 = 1,          /**< itu M+030 */
+  EBUR128_RIGHT = 2,          /**<           */
+  EBUR128_Mm030 = 2,          /**< itu M-030 */
+  EBUR128_CENTER = 3,         /**<           */
+  EBUR128_Mp000 = 3,          /**< itu M+000 */
+  EBUR128_LEFT_SURROUND = 4,  /**<           */
+  EBUR128_Mp110 = 4,          /**< itu M+110 */
+  EBUR128_RIGHT_SURROUND = 5, /**<           */
+  EBUR128_Mm110 = 5,          /**< itu M-110 */
+  EBUR128_DUAL_MONO,          /**< a channel that is counted twice */
+  EBUR128_MpSC,               /**< itu M+SC  */
+  EBUR128_MmSC,               /**< itu M-SC  */
+  EBUR128_Mp060,              /**< itu M+060 */
+  EBUR128_Mm060,              /**< itu M-060 */
+  EBUR128_Mp090,              /**< itu M+090 */
+  EBUR128_Mm090,              /**< itu M-090 */
+  EBUR128_Mp135,              /**< itu M+135 */
+  EBUR128_Mm135,              /**< itu M-135 */
+  EBUR128_Mp180,              /**< itu M+180 */
+  EBUR128_Up000,              /**< itu U+000 */
+  EBUR128_Up030,              /**< itu U+030 */
+  EBUR128_Um030,              /**< itu U-030 */
+  EBUR128_Up045,              /**< itu U+045 */
+  EBUR128_Um045,              /**< itu U-030 */
+  EBUR128_Up090,              /**< itu U+090 */
+  EBUR128_Um090,              /**< itu U-090 */
+  EBUR128_Up110,              /**< itu U+110 */
+  EBUR128_Um110,              /**< itu U-110 */
+  EBUR128_Up135,              /**< itu U+135 */
+  EBUR128_Um135,              /**< itu U-135 */
+  EBUR128_Up180,              /**< itu U+180 */
+  EBUR128_Tp000,              /**< itu T+000 */
+  EBUR128_Bp000,              /**< itu B+000 */
+  EBUR128_Bp045,              /**< itu B+045 */
+  EBUR128_Bm045               /**< itu B-045 */
 };
 
 /** \enum error
@@ -79,20 +79,19 @@ enum error {
  */
 enum mode {
   /** can call ebur128_loudness_momentary */
-  EBUR128_MODE_M           = (1 << 0),
+  EBUR128_MODE_M = (1 << 0),
   /** can call ebur128_loudness_shortterm */
-  EBUR128_MODE_S           = (1 << 1) | EBUR128_MODE_M,
+  EBUR128_MODE_S = (1 << 1) | EBUR128_MODE_M,
   /** can call ebur128_loudness_global_* and ebur128_relative_threshold */
-  EBUR128_MODE_I           = (1 << 2) | EBUR128_MODE_M,
+  EBUR128_MODE_I = (1 << 2) | EBUR128_MODE_M,
   /** can call ebur128_loudness_range */
-  EBUR128_MODE_LRA         = (1 << 3) | EBUR128_MODE_S,
+  EBUR128_MODE_LRA = (1 << 3) | EBUR128_MODE_S,
   /** can call ebur128_sample_peak */
   EBUR128_MODE_SAMPLE_PEAK = (1 << 4) | EBUR128_MODE_M,
   /** can call ebur128_true_peak */
-  EBUR128_MODE_TRUE_PEAK   = (1 << 5) | EBUR128_MODE_M
-                                      | EBUR128_MODE_SAMPLE_PEAK,
+  EBUR128_MODE_TRUE_PEAK = (1 << 5) | EBUR128_MODE_M | EBUR128_MODE_SAMPLE_PEAK,
   /** uses histogram algorithm to calculate loudness */
-  EBUR128_MODE_HISTOGRAM   = (1 << 6)
+  EBUR128_MODE_HISTOGRAM = (1 << 6)
 };
 
 /** forward declaration of ebur128_state_internal */
@@ -103,10 +102,10 @@ struct ebur128_state_internal;
  *  You should not need to modify this struct directly.
  */
 typedef struct {
-  int mode;                           /**< The current mode. */
-  unsigned int channels;              /**< The number of channels. */
-  unsigned long samplerate;           /**< The sample rate. */
-  struct ebur128_state_internal* d;   /**< Internal state. */
+  int mode;                         /**< The current mode. */
+  unsigned int channels;            /**< The number of channels. */
+  unsigned long samplerate;         /**< The sample rate. */
+  struct ebur128_state_internal* d; /**< Internal state. */
 } ebur128_state;
 
 /** \brief Get library version number. Do not pass null pointers here.
@@ -124,9 +123,8 @@ void ebur128_get_version(int* major, int* minor, int* patch);
  *  @param mode see the mode enum for possible values.
  *  @return an initialized library state, or NULL on error.
  */
-ebur128_state* ebur128_init(unsigned int channels,
-                            unsigned long samplerate,
-                            int mode);
+ebur128_state*
+ebur128_init(unsigned int channels, unsigned long samplerate, int mode);
 
 /** \brief Destroy library state.
  *
@@ -175,7 +173,7 @@ int ebur128_change_parameters(ebur128_state* st,
 
 /** \brief Set the maximum window duration.
  *
- *  Set the maximum duration that will be used for ebur128_window_loudness().
+ *  Set the maximum duration that will be used for ebur128_loudness_window().
  *  Note that this destroys the current content of the audio buffer.
  *
  *  @param st library state.
@@ -220,17 +218,15 @@ int ebur128_add_frames_short(ebur128_state* st,
                              const short* src,
                              size_t frames);
 /** \brief See \ref ebur128_add_frames_short */
-int ebur128_add_frames_int(ebur128_state* st,
-                             const int* src,
-                             size_t frames);
+int ebur128_add_frames_int(ebur128_state* st, const int* src, size_t frames);
 /** \brief See \ref ebur128_add_frames_short */
 int ebur128_add_frames_float(ebur128_state* st,
                              const float* src,
                              size_t frames);
 /** \brief See \ref ebur128_add_frames_short */
 int ebur128_add_frames_double(ebur128_state* st,
-                             const double* src,
-                             size_t frames);
+                              const double* src,
+                              size_t frames);
 
 /** \brief Get global integrated loudness in LUFS.
  *
@@ -423,4 +419,4 @@ int ebur128_relative_threshold(ebur128_state* st, double* out);
 }
 #endif
 
-#endif  /* EBUR128_H_ */
+#endif /* EBUR128_H_ */
