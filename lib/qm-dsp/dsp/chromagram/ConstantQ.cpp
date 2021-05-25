@@ -61,15 +61,14 @@ void ConstantQ::sparsekernel()
 
         // Compute a complex sinusoid windowed with a hamming window
         // of the right length
-
-        const double samplesPerCycle =
-            m_FS / (m_FMin * pow(2, (double)j / (double)m_BPO));
-        int windowLength = (int)ceil(m_dQ * samplesPerCycle);
+        
+        int windowLength = (int)ceil
+            (m_dQ * m_FS / (m_FMin * pow(2, (double)j / (double)m_BPO)));
 
         int origin = m_FFTLength/2 - windowLength/2;
 
         for (int i = 0; i < windowLength; ++i) {
-            double angle = (2.0 * M_PI * i) / samplesPerCycle;
+            double angle = (2.0 * M_PI * m_dQ * i) / windowLength;
             windowRe[origin + i] = cos(angle);
             windowIm[origin + i] = sin(angle);
         }
