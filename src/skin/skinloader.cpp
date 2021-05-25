@@ -97,11 +97,6 @@ SkinPointer SkinLoader::getConfiguredSkin() const {
         if (!oldSkin.isEmpty()) {
             configSkin = pickResizableSkin(oldSkin);
         }
-        // If the old skin was empty or we couldn't guess a skin, go with the
-        // default.
-        if (configSkin.isEmpty()) {
-            configSkin = getDefaultSkinName();
-        }
     }
 
     SkinPointer pSkin = getSkin(configSkin);
@@ -109,8 +104,9 @@ SkinPointer SkinLoader::getConfiguredSkin() const {
     if (pSkin == nullptr || !pSkin->isValid()) {
         const QString defaultSkinName = getDefaultSkinName();
         pSkin = getSkin(defaultSkinName);
-        qWarning() << "Could not find the user's configured skin."
-                   << "Falling back on the default skin:" << defaultSkinName;
+        qWarning() << "Configured skin" << configSkin
+                   << "not found, falling back to default skin"
+                   << defaultSkinName;
     }
     return pSkin;
 }
@@ -125,12 +121,45 @@ QWidget* SkinLoader::loadConfiguredSkin(QWidget* pParent,
     ScopedTimer timer("SkinLoader::loadConfiguredSkin");
     SkinPointer pSkin = getConfiguredSkin();
 
-    // If we don't have a skin then fail.
+    // If we don't have a skin then fail. This makes sense here, because the
+    // method above already tried to fall back to the default skin if the
+    // configured one is not available. If `pSkin` is nullptr, we both the
+    // configured and the default skin were not found, so there is nothing we
+    // can do.
     VERIFY_OR_DEBUG_ASSERT(pSkin != nullptr && pSkin->isValid()) {
         return nullptr;
     }
 
-    return pSkin->loadSkin(pParent, m_pConfig, pSkinCreatedControls, pCoreServices);
+    QWidget* pLoadedSkin = pSkin->loadSkin(pParent, m_pConfig, pSkinCreatedControls, pCoreServices);
+
+    // If the skin exists but failed to load, try to fall back to the default skin.
+    if (pLoadedSkin == nullptr) {
+        const QString defaultSkinName = getDefaultSkinName();
+        if (defaultSkinName == pSkin->name()) {
+            qCritical() << "Configured skin " << pSkin->name()
+                        << " failed to load, no fallback available (it already "
+                           "is the default skin)";
+        } else {
+            qWarning() << "Configured skin " << pSkin->name()
+                       << " failed to load, falling back to default skin "
+                       << defaultSkinName;
+            pSkin = getSkin(defaultSkinName);
+            // If we don't have a skin then fail.
+            VERIFY_OR_DEBUG_ASSERT(pSkin != nullptr && pSkin->isValid()) {
+                qCritical() << "Default skin" << defaultSkinName << "not found";
+                return nullptr;
+            }
+
+            // This might also fail, but
+            pLoadedSkin = pSkin->loadSkin(pParent, m_pConfig, pSkinCreatedControls, pCoreServices);
+        }
+        DEBUG_ASSERT(pLoadedSkin != nullptr);
+    }
+
+    VERIFY_OR_DEBUG_ASSERT(pLoadedSkin != nullptr) {
+        qCritical() << "No skin can be loaded, please check your installation.";
+    }
+    return pLoadedSkin;
 }
 
 LaunchImage* SkinLoader::loadLaunchImage(QWidget* pParent) const {
