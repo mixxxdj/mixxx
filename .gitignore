@@ -29,6 +29,15 @@ compile_commands.json
 /build
 /install
 
+# Exclude unneeded files from GoogleTest library when updating our bundled
+# GoogleTest library in the lib/ directory
+lib/googletest/docs
+lib/googletest/ci
+lib/googletest/.github
+lib/googletest/googlemock/test
+lib/googletest/googletest/samples
+lib/googletest/googletest/test
+
 # Legacy compilation artifacts that are obsolete starting with 2.3
 # TODO: Delete after 2.2 with SCons has been abandoned. Developers
 # are supposed to clean their project directory!

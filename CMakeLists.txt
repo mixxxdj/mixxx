@@ -1408,8 +1408,8 @@ set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of GoogleTest" FORCE)
 # Add googletest directly to our build. This adds the following targets:
 # gtest, gtest_main, gmock and gmock_main
 add_subdirectory(
-  "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest-1.10.x"
-  "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest-1.10.x"
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/googletest"
+  "${CMAKE_CURRENT_BINARY_DIR}/lib/googletest"
 )
 
 add_executable(mixxx-test
