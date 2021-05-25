@@ -1,6 +1,7 @@
 import "." as Skin
 import Mixxx 0.1 as Mixxx
 import Mixxx.Controls 0.1 as MixxxControls
+import QtGraphicalEffects 1.12
 import QtQuick 2.12
 import "Theme"
 
@@ -15,7 +16,7 @@ Rectangle {
     radius: 5
     height: 56
 
-    Rectangle {
+    Image {
         id: coverArt
 
         anchors.top: parent.top
@@ -23,6 +24,28 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 5
         width: height
+        source: root.deckPlayer.coverArtUrl
+        visible: false
+    }
+
+    Rectangle {
+        id: coverArtCircle
+
+        anchors.fill: coverArt
+        radius: height / 2
+        visible: false
+    }
+
+    OpacityMask {
+        anchors.fill: coverArt
+        source: coverArt
+        maskSource: coverArtCircle
+    }
+
+    Rectangle {
+        id: spinnyCircle
+
+        anchors.fill: coverArt
         radius: height / 2
         border.width: 2
         border.color: Theme.deckLineColor
