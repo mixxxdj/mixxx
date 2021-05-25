@@ -19,6 +19,10 @@ Item {
             height: width
             group: root.group
             key: "pregain"
+            arc: true
+            arcRadius: 15
+            arcColor: "#b96300"
+            arcWidth: 2
 
             background: Image {
                 source: "../LateNight/palemoon/knobs/knob_bg_master.svg"

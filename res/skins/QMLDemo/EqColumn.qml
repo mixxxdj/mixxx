@@ -33,6 +33,10 @@ Item {
             height: width
             group: "[QuickEffectRack1_" + root.group + "]"
             key: "super1"
+            arc: true
+            arcRadius: 15
+            arcColor: "#518f00"
+            arcWidth: 2
 
             background: Image {
                 source: "../LateNight/palemoon/knobs/knob_bg_master.svg"

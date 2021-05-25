@@ -15,6 +15,10 @@ Item {
 
         anchors.fill: parent
         group: "[EqualizerRack1_" + channelGroup + "_Effect1]"
+        arc: true
+        arcRadius: 15
+        arcColor: "#858585"
+        arcWidth: 2
 
         background: Image {
             source: "../LateNight/palemoon/knobs/knob_bg_master.svg"
