@@ -102,7 +102,8 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
         return nullptr;
     }
 
-    qmlRegisterType<QmlControlProxy>("Mixxx.Engine", 0, 1, "Control");
+    qmlRegisterType<QmlControlProxy>("Mixxx", 0, 1, "ControlProxy");
+
     QQuickWidget* pWidget = new QQuickWidget(pParent);
     pWidget->engine()->setBaseUrl(QUrl::fromLocalFile(m_path.absoluteFilePath()));
     pWidget->engine()->addImportPath(m_path.absoluteFilePath());
