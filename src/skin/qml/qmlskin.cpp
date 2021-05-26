@@ -11,6 +11,7 @@
 #include "skin/qml/qmleffectmanifestparametersmodel.h"
 #include "skin/qml/qmleffectslotproxy.h"
 #include "skin/qml/qmleffectsmanagerproxy.h"
+#include "skin/qml/qmllibraryproxy.h"
 #include "skin/qml/qmlplayermanagerproxy.h"
 #include "skin/qml/qmlplayerproxy.h"
 #include "skin/qml/qmlvisibleeffectsmodel.h"
@@ -202,6 +203,21 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
                                         pConfig,
                                         pEngine);
                         return pConfigProxy;
+                    }));
+
+    qmlRegisterSingletonType<QmlLibraryProxy>("Mixxx",
+            0,
+            1,
+            "Library",
+            lambda_to_singleton_type_factory_ptr(
+                    [pCoreServices](QQmlEngine* pEngine,
+                            QJSEngine* pScriptEngine) -> QObject* {
+                        Q_UNUSED(pScriptEngine);
+
+                        QmlLibraryProxy* pLibraryProxy = new QmlLibraryProxy(
+                                pCoreServices->getLibrary().get(),
+                                pEngine);
+                        return pLibraryProxy;
                     }));
 
     QQuickWidget* pWidget = new QQuickWidget(pParent);
