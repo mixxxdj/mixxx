@@ -734,6 +734,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/legacy/pixmapsource.cpp
   src/skin/legacy/legacyskin.cpp
   src/skin/qml/qmlcontrolproxy.cpp
+  src/skin/qml/qmllibraryproxy.cpp
   src/skin/qml/qmlplayermanagerproxy.cpp
   src/skin/qml/qmlplayerproxy.cpp
   src/skin/qml/qmlskin.cpp

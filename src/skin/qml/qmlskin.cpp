@@ -6,6 +6,7 @@
 
 #include "coreservices.h"
 #include "skin/qml/qmlcontrolproxy.h"
+#include "skin/qml/qmllibraryproxy.h"
 #include "skin/qml/qmlplayermanagerproxy.h"
 #include "skin/qml/qmlplayerproxy.h"
 #include "util/assert.h"
@@ -145,6 +146,10 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
             "Player",
             "Player objects can't be created directly, please use "
             "Mixxx.PlayerManager.getPlayer(group)");
+
+    QmlLibraryProxy* pLibraryProxy = new QmlLibraryProxy(
+            pCoreServices->getLibrary().get(), pParent);
+    qmlRegisterSingletonInstance("Mixxx", 0, 1, "Library", pLibraryProxy);
 
     QQuickWidget* pWidget = new QQuickWidget(pParent);
 

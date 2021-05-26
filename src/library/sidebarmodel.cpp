@@ -80,6 +80,16 @@ void SidebarModel::addLibraryFeature(LibraryFeature* pFeature) {
             &SidebarModel::slotRowsRemoved);
 }
 
+LibraryFeature* SidebarModel::getLibraryFeatureByName(const QString& featureName) {
+    for (LibraryFeature* pFeature : m_sFeatures) {
+        if (pFeature->title() == featureName) {
+            return pFeature;
+        }
+    }
+
+    return nullptr;
+}
+
 QModelIndex SidebarModel::getDefaultSelection() {
     if (m_sFeatures.size() == 0) {
         return QModelIndex();

@@ -73,6 +73,11 @@ class Library: public QObject {
 
     void addFeature(LibraryFeature* feature);
 
+    /// Needed for exposing models to QML
+    SidebarModel* sidebarModel() const {
+        return m_pSidebarModel.get();
+    }
+
     int getTrackTableRowHeight() const {
         return m_iTrackTableRowHeight;
     }
