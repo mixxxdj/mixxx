@@ -66,6 +66,9 @@ class QmlPlayerProxy : public QObject {
     void setColor(const QColor& color);
 
   signals:
+    void trackLoading();
+    void trackLoaded();
+    void trackUnloaded();
     void trackChanged();
 
     void albumChanged();

@@ -33,6 +33,10 @@ QmlPlayerProxy::QmlPlayerProxy(BaseTrackPlayer* pTrackPlayer, QObject* parent = 
             &BaseTrackPlayer::newTrackLoaded,
             this,
             &QmlPlayerProxy::slotTrackLoaded);
+    connect(m_pTrackPlayer,
+            &BaseTrackPlayer::playerEmpty,
+            this,
+            &QmlPlayerProxy::trackUnloaded);
     connect(this, &QmlPlayerProxy::trackChanged, this, &QmlPlayerProxy::slotTrackChanged);
 }
 
@@ -53,6 +57,7 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
                 &QmlPlayerProxy::colorChanged);
     }
     emit trackChanged();
+    emit trackLoaded();
 }
 
 void QmlPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack) {
@@ -64,6 +69,7 @@ void QmlPlayerProxy::slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldT
     }
     m_pCurrentTrack.reset();
     emit trackChanged();
+    emit trackLoading();
 }
 
 void QmlPlayerProxy::slotTrackChanged() {
