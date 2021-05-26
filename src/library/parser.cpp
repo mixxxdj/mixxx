@@ -33,33 +33,6 @@ long Parser::countParsed() {
     return (long)m_sLocations.count();
 }
 
-bool Parser::isBinary(const QString& filename) {
-    char firstByte;
-    QFile file(filename);
-    if (file.open(QIODevice::ReadOnly) && file.getChar(&firstByte)) {
-        // If starting byte is not an ASCII character then the file
-        // probably contains binary data.
-        if (firstByte >= 32 && firstByte <= 126) {
-            // Valid ASCII character
-            return false;
-        }
-        // Check for UTF-8 BOM
-        if (firstByte == '\xEF') {
-            char nextChar;
-            if (file.getChar(&nextChar) &&
-                    nextChar == '\xBB' &&
-                    file.getChar(&nextChar) &&
-                    nextChar == '\xBF') {
-                // UTF-8 text file
-                return false;
-            }
-            return true;
-        }
-    }
-    qDebug() << "Parser: Error reading from" << filename;
-    return true; //should this raise an exception?
-}
-
 // The following public domain code is taken from
 // http://stackoverflow.com/questions/1031645/how-to-detect-utf-8-in-plain-c
 // Thank you Christoph!
