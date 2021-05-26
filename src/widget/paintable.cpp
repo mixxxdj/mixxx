@@ -4,7 +4,7 @@
 #include <QString>
 #include <QtDebug>
 
-#include "skin/imgloader.h"
+#include "skin/legacy/imgloader.h"
 
 #include "util/math.h"
 #include "util/memory.h"

@@ -4,7 +4,7 @@
 #pragma once
 
 #include "widget/wlabel.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "recording/recordingmanager.h"
 
 class WRecordingDuration: public WLabel {

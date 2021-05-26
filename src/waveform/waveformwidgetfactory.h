@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "preferences/usersettings.h"
-#include "skin/skincontext.h"
+#include "skin/legacy/skincontext.h"
 #include "util/performancetimer.h"
 #include "util/singleton.h"
 #include "waveform/waveform.h"
