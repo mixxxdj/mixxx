@@ -5,7 +5,11 @@
 
 #include "control/controlproxy.h"
 
-class ControlProxyQml : public QObject {
+namespace mixxx {
+namespace skin {
+namespace qml {
+
+class QmlControlProxy : public QObject {
     Q_OBJECT
 // The REQUIRED flag only exists in Qt 5.14 and later.
 #if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
@@ -21,7 +25,7 @@ class ControlProxyQml : public QObject {
     Q_PROPERTY(double parameter READ getParameter WRITE setParameter NOTIFY parameterChanged)
 
   public:
-    ControlProxyQml(QObject* parent = nullptr);
+    QmlControlProxy(QObject* parent = nullptr);
 
     void setGroup(const QString& group);
     const QString& getGroup() const;
@@ -60,3 +64,7 @@ class ControlProxyQml : public QObject {
     ConfigKey m_coKey;
     std::unique_ptr<ControlProxy> m_pControlProxy;
 };
+
+} // namespace qml
+} // namespace skin
+} // namespace mixxx

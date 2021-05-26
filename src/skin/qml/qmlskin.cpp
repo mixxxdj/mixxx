@@ -3,7 +3,7 @@
 #include <QQmlEngine>
 #include <QQuickWidget>
 
-#include "skin/qml/controlproxyqml.h"
+#include "skin/qml/qmlcontrolproxy.h"
 #include "util/assert.h"
 
 namespace {
@@ -102,7 +102,7 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
         return nullptr;
     }
 
-    qmlRegisterType<ControlProxyQml>("Mixxx.Engine", 0, 1, "Control");
+    qmlRegisterType<QmlControlProxy>("Mixxx.Engine", 0, 1, "Control");
     QQuickWidget* pWidget = new QQuickWidget(pParent);
     pWidget->engine()->setBaseUrl(QUrl::fromLocalFile(m_path.absoluteFilePath()));
     pWidget->engine()->addImportPath(m_path.absoluteFilePath());

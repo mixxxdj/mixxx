@@ -1,21 +1,25 @@
-#include "skin/qml/controlproxyqml.h"
+#include "skin/qml/qmlcontrolproxy.h"
 
-#include "moc_controlproxyqml.cpp"
+#include "moc_qmlcontrolproxy.cpp"
 
-ControlProxyQml::ControlProxyQml(QObject* parent)
+namespace mixxx {
+namespace skin {
+namespace qml {
+
+QmlControlProxy::QmlControlProxy(QObject* parent)
         : QObject(parent),
           m_pControlProxy(nullptr) {
 }
 
-bool ControlProxyQml::isKeyValid() const {
+bool QmlControlProxy::isKeyValid() const {
     return m_coKey.isValid();
 }
 
-bool ControlProxyQml::isInitialized() const {
+bool QmlControlProxy::isInitialized() const {
     return m_pControlProxy != nullptr;
 }
 
-void ControlProxyQml::setGroup(const QString& group) {
+void QmlControlProxy::setGroup(const QString& group) {
     const bool keyValidBeforeSet = isKeyValid();
     m_coKey.group = group;
     const bool keyValidAfterSet = isKeyValid();
@@ -25,11 +29,11 @@ void ControlProxyQml::setGroup(const QString& group) {
     tryInitialize();
 }
 
-const QString& ControlProxyQml::getGroup() const {
+const QString& QmlControlProxy::getGroup() const {
     return m_coKey.group;
 }
 
-void ControlProxyQml::setKey(const QString& key) {
+void QmlControlProxy::setKey(const QString& key) {
     const bool keyValidBeforeSet = isKeyValid();
     m_coKey.item = key;
     const bool keyValidAfterSet = isKeyValid();
@@ -39,11 +43,11 @@ void ControlProxyQml::setKey(const QString& key) {
     tryInitialize();
 }
 
-const QString& ControlProxyQml::getKey() const {
+const QString& QmlControlProxy::getKey() const {
     return m_coKey.item;
 }
 
-void ControlProxyQml::setValue(double newValue) {
+void QmlControlProxy::setValue(double newValue) {
     if (!isInitialized()) {
         qWarning() << "QmlControlProxy: Attempted to set value" << newValue
                    << "on non-initialized CO" << m_coKey;
@@ -53,7 +57,7 @@ void ControlProxyQml::setValue(double newValue) {
     m_pControlProxy->emitValueChanged();
 }
 
-double ControlProxyQml::getValue() const {
+double QmlControlProxy::getValue() const {
     if (!isInitialized()) {
         qWarning() << "QmlControlProxy: Attempted to get value from "
                       "non-initialized CO"
@@ -63,7 +67,7 @@ double ControlProxyQml::getValue() const {
     return m_pControlProxy->get();
 }
 
-void ControlProxyQml::setParameter(double newValue) {
+void QmlControlProxy::setParameter(double newValue) {
     if (!isInitialized()) {
         qWarning() << "QmlControlProxy: Attempted to set parameter" << newValue
                    << "on non-initialized CO" << m_coKey;
@@ -73,7 +77,7 @@ void ControlProxyQml::setParameter(double newValue) {
     m_pControlProxy->emitValueChanged();
 }
 
-double ControlProxyQml::getParameter() const {
+double QmlControlProxy::getParameter() const {
     if (!isInitialized()) {
         qWarning() << "QmlControlProxy: Attempted to get parameter from "
                       "non-initialized CO"
@@ -83,7 +87,7 @@ double ControlProxyQml::getParameter() const {
     return m_pControlProxy->getParameter();
 }
 
-bool ControlProxyQml::initialize() {
+bool QmlControlProxy::initialize() {
     const bool wasInitialized = isInitialized();
     VERIFY_OR_DEBUG_ASSERT(!wasInitialized || m_coKey != m_pControlProxy->getKey()) {
         qWarning() << "QmlControlProxy: Tried to initialize although CO"
@@ -128,13 +132,13 @@ bool ControlProxyQml::initialize() {
     if (!wasInitialized) {
         emit initializedChanged(true);
     }
-    m_pControlProxy->connectValueChanged(this, &ControlProxyQml::slotControlProxyValueChanged);
+    m_pControlProxy->connectValueChanged(this, &QmlControlProxy::slotControlProxyValueChanged);
     m_pControlProxy->emitValueChanged();
 
     return true;
 }
 
-bool ControlProxyQml::tryInitialize() {
+bool QmlControlProxy::tryInitialize() {
     // Initialize when the key is valid and the underlying control proxy was
     // either not initialized or has a different key.
     if (isKeyValid() && (!isInitialized() || m_coKey != m_pControlProxy->getKey())) {
@@ -143,7 +147,11 @@ bool ControlProxyQml::tryInitialize() {
     return false;
 }
 
-void ControlProxyQml::slotControlProxyValueChanged(double newValue) {
+void QmlControlProxy::slotControlProxyValueChanged(double newValue) {
     emit valueChanged(newValue);
     emit parameterChanged(m_pControlProxy->getParameter());
 }
+
+} // namespace qml
+} // namespace skin
+} // namespace mixxx
