@@ -113,7 +113,7 @@ MixxxMainWindow::MixxxMainWindow(
     initializeWindow();
 
     // Show launch image immediately so the user knows Mixxx is starting
-    m_pSkinLoader = std::make_unique<SkinLoader>(m_pCoreServices->getSettings());
+    m_pSkinLoader = std::make_unique<mixxx::skin::SkinLoader>(m_pCoreServices->getSettings());
     m_pLaunchImage = m_pSkinLoader->loadLaunchImage(this);
     m_pCentralWidget = (QWidget*)m_pLaunchImage;
     setCentralWidget(m_pCentralWidget);
@@ -1090,13 +1090,7 @@ bool MixxxMainWindow::loadConfiguredSkin() {
     // TODO: use std::shared_ptr throughout skin widgets instead of these hacky get() calls
     m_pCentralWidget = m_pSkinLoader->loadConfiguredSkin(this,
             &m_skinCreatedControls,
-            m_pCoreServices->getKeyboardEventFilter().get(),
-            m_pCoreServices->getPlayerManager().get(),
-            m_pCoreServices->getControllerManager().get(),
-            m_pCoreServices->getLibrary().get(),
-            m_pCoreServices->getVinylControlManager().get(),
-            m_pCoreServices->getEffectsManager().get(),
-            m_pCoreServices->getRecordingManager().get());
+            m_pCoreServices.get());
     if (centralWidget() == m_pLaunchImage) {
         initializationProgressUpdate(100, "");
     }
