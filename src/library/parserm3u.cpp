@@ -49,7 +49,7 @@ QList<QString> ParserM3u::parse(const QString& sFilename) {
     clearLocations();
 
     QFile file(sFilename);
-    if (isBinary(sFilename) || !file.open(QIODevice::ReadOnly)) {
+    if (!file.open(QIODevice::ReadOnly)) {
         qWarning()
                 << "Failed to open playlist file"
                 << sFilename;
