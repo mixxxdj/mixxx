@@ -124,3 +124,23 @@ repos:
     stages:
     - commit
     - manual
+  - id: qmlformat
+    name: qmlformat
+    entry: qmlformat -i
+    pass_filenames: true
+    require_serial: true
+    language: system
+    types: [text]
+    files: ^.*\.qml$
+    # Not enabled in commit stage by default, because qmlformat requires Qt
+    # 5.15 to be installed
+    stages:
+    - manual
+  - id: qmllint
+    name: qmllint
+    entry: qmllint
+    pass_filenames: true
+    require_serial: true
+    language: system
+    types: [text]
+    files: ^.*\.qml$
