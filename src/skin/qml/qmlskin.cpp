@@ -8,6 +8,7 @@
 #include "skin/qml/qmlcontrolproxy.h"
 #include "skin/qml/qmlplayermanagerproxy.h"
 #include "skin/qml/qmlplayerproxy.h"
+#include "skin/qml/qmlwaveformoverview.h"
 #include "util/assert.h"
 
 namespace {
@@ -123,6 +124,7 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
     }
 
     qmlRegisterType<QmlControlProxy>("Mixxx", 0, 1, "ControlProxy");
+    qmlRegisterType<QmlWaveformOverview>("Mixxx", 0, 1, "WaveformOverview");
 
     qmlRegisterSingletonType<QmlPlayerManagerProxy>("Mixxx",
             0,

@@ -46,6 +46,11 @@ class QmlPlayerProxy : public QObject {
     QString getKeyText() const;
     QColor getColor() const;
 
+    /// Needed for interacting with the raw track player object.
+    BaseTrackPlayer* internalTrackPlayer() const {
+        return m_pTrackPlayer;
+    }
+
   public slots:
     void slotTrackLoaded(TrackPointer pTrack);
     void slotLoadingTrack(TrackPointer pNewTrack, TrackPointer pOldTrack);
