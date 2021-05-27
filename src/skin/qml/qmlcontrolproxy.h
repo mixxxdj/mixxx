@@ -60,7 +60,6 @@ class QmlControlProxy : public QObject {
     bool initialize();
     bool tryInitialize();
 
-    QString m_emptyString;
     ConfigKey m_coKey;
     std::unique_ptr<ControlProxy> m_pControlProxy;
 };
