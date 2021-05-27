@@ -25,8 +25,8 @@ SkinPointer QmlSkin::fromDirectory(const QDir& dir) {
 
 QmlSkin::QmlSkin(const QFileInfo& path)
         : m_path(path),
-          m_settings(path.absoluteFilePath() + QStringLiteral("/") +
-                          kSkinMetadataFileName,
+          m_settings(QDir(path.absoluteFilePath())
+                             .absoluteFilePath(kSkinMetadataFileName),
                   QSettings::IniFormat) {
     DEBUG_ASSERT(isValid());
 }
@@ -40,12 +40,16 @@ QFileInfo QmlSkin::path() const {
     return m_path;
 }
 
-QPixmap QmlSkin::preview(const QString& schemeName = QString()) const {
+QDir QmlSkin::dir() const {
+    return QDir(path().absoluteFilePath());
+}
+
+QPixmap QmlSkin::preview(const QString& schemeName) const {
     Q_UNUSED(schemeName);
     DEBUG_ASSERT(schemeName.isEmpty());
     DEBUG_ASSERT(isValid());
     QPixmap preview;
-    preview.load(m_path.absoluteFilePath() + QStringLiteral("/skin_preview.png"));
+    preview.load(dir().absoluteFilePath(QStringLiteral("skin_preview.png")));
     if (preview.isNull()) {
         preview.load(":/images/skin_preview_placeholder.png");
     }
@@ -107,8 +111,7 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
     QQuickWidget* pWidget = new QQuickWidget(pParent);
     pWidget->engine()->setBaseUrl(QUrl::fromLocalFile(m_path.absoluteFilePath()));
     pWidget->engine()->addImportPath(m_path.absoluteFilePath());
-    pWidget->setSource(QUrl::fromLocalFile(m_path.absoluteFilePath() +
-            QStringLiteral("/") + kMainQmlFileName));
+    pWidget->setSource(QUrl::fromLocalFile(dir().absoluteFilePath(kMainQmlFileName)));
     pWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
     if (pWidget->status() != QQuickWidget::Ready) {
         qWarning() << "Skin" << name() << "failed to load!";

@@ -40,6 +40,8 @@ class QmlSkin : public mixxx::skin::Skin {
             mixxx::CoreServices* pCoreServices) const override;
 
   private:
+    QDir dir() const;
+
     QFileInfo m_path;
     QSettings m_settings;
 };
