@@ -14,6 +14,7 @@ Item {
     property real barMargin: 0
     property alias barColor: barPath.strokeColor
     property alias barWidth: barPath.strokeWidth
+    property real barStart: 0
 
     Slider {
         id: slider
@@ -59,7 +60,7 @@ Item {
                     strokeWidth: 2
                     fillColor: "transparent"
                     startX: root.width / 2
-                    startY: root.height - root.barMargin
+                    startY: root.height - root.barMargin - (root.height - 2 * root.barMargin) * barStart
 
                     PathLine {
                         x: root.width / 2
