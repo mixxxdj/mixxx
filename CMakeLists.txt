@@ -545,6 +545,7 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/engine/sidechain/enginesidechain.cpp
   src/engine/sidechain/networkinputstreamworker.cpp
   src/engine/sidechain/networkoutputstreamworker.cpp
+  src/engine/sync/abletonlink.cpp
   src/engine/sync/enginesync.cpp
   src/engine/sync/internalclock.cpp
   src/engine/sync/synccontrol.cpp
@@ -1685,6 +1686,12 @@ endif()
 # Dependencies
 #
 option(STATIC_DEPS "Link dependencies statically" OFF)
+
+# Ableton Link
+include(${CMAKE_CURRENT_SOURCE_DIR}/lib/ableton-link/AbletonLinkConfig.cmake)
+target_link_libraries(mixxx-lib PUBLIC Ableton::Link)
+# target_include_directories(mixxx-lib PUBLIC ${link_HEADERS})
+target_include_directories(mixxx-lib SYSTEM PUBLIC lib/ableton-link/include)
 
 # Chromaprint
 find_package(Chromaprint REQUIRED)

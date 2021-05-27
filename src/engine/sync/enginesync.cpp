@@ -5,6 +5,7 @@
 
 #include "engine/channels/enginechannel.h"
 #include "engine/enginebuffer.h"
+#include "engine/sync/abletonlink.h"
 #include "engine/sync/internalclock.h"
 #include "util/assert.h"
 #include "util/logger.h"
@@ -12,11 +13,13 @@
 namespace {
 const mixxx::Logger kLogger("EngineSync");
 const QString kInternalClockGroup = QStringLiteral("[InternalClock]");
+const QString kAbletonLinkGroup = QStringLiteral("[AbletonLink]");
 } // anonymous namespace
 
 EngineSync::EngineSync(UserSettingsPointer pConfig)
         : m_pConfig(pConfig),
           m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
+          m_pAbletonLink(new AbletonLink(kAbletonLinkGroup, this)),
           m_pMasterSyncable(nullptr) {
     qRegisterMetaType<SyncMode>("SyncMode");
     m_pInternalClock->setMasterBpm(124.0);
@@ -26,6 +29,7 @@ EngineSync::~EngineSync() {
     // We use the slider value because that is never set to 0.0.
     m_pConfig->set(ConfigKey(kInternalClockGroup, "bpm"), ConfigValue(m_pInternalClock->getBpm()));
     delete m_pInternalClock;
+    delete m_pAbletonLink;
 }
 
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
@@ -507,10 +511,12 @@ void EngineSync::addSyncableDeck(Syncable* pSyncable) {
 
 void EngineSync::onCallbackStart(int sampleRate, int bufferSize) {
     m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
+    m_pAbletonLink->onCallbackStart(sampleRate, bufferSize);
 }
 
 void EngineSync::onCallbackEnd(int sampleRate, int bufferSize) {
     m_pInternalClock->onCallbackEnd(sampleRate, bufferSize);
+    m_pAbletonLink->onCallbackStart(sampleRate, bufferSize);
 }
 
 EngineChannel* EngineSync::getMaster() const {
@@ -561,6 +567,7 @@ void EngineSync::setMasterBpm(Syncable* pSource, double bpm) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterBpm(bpm);
     }
+    m_pAbletonLink->setMasterBpm(bpm);
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 !pSyncable->isSynchronized()) {
@@ -574,6 +581,7 @@ void EngineSync::setMasterInstantaneousBpm(Syncable* pSource, double bpm) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setInstantaneousBpm(bpm);
     }
+    m_pAbletonLink->setInstantaneousBpm(bpm);
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 !pSyncable->isSynchronized()) {
@@ -587,6 +595,7 @@ void EngineSync::setMasterBeatDistance(Syncable* pSource, double beatDistance) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterBeatDistance(beatDistance);
     }
+    m_pAbletonLink->setMasterBeatDistance(beatDistance);
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource ||
                 !pSyncable->isSynchronized()) {
@@ -608,6 +617,7 @@ void EngineSync::setMasterParams(Syncable* pSource) {
     if (pSource != m_pInternalClock) {
         m_pInternalClock->setMasterParams(beatDistance, baseBpm, bpm);
     }
+    m_pAbletonLink->setMasterParams(beatDistance, baseBpm, bpm);
     foreach (Syncable* pSyncable, m_syncables) {
         if (pSyncable == pSource || !pSyncable->isSynchronized()) {
             continue;

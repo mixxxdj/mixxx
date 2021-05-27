@@ -6,6 +6,7 @@
 #include "preferences/usersettings.h"
 
 class InternalClock;
+class AbletonLink;
 class EngineChannel;
 
 /// EngineSync is the heart of the Mixxx Sync Lock engine.  It knows which objects
@@ -156,6 +157,8 @@ class EngineSync : public SyncableListener {
     UserSettingsPointer m_pConfig;
     /// The InternalClock syncable.
     InternalClock* m_pInternalClock;
+    /// The Ableton Link syncable.
+    AbletonLink* m_pAbletonLink;
     /// The current Syncable that is the leader.
     Syncable* m_pMasterSyncable;
     /// The list of all Syncables registered via addSyncableDeck.
