@@ -6,6 +6,11 @@ namespace mixxx {
 namespace skin {
 namespace qml {
 
+namespace {
+constexpr double kDefaultValue = 0.0;
+constexpr double kDefaultParameter = 0.0;
+} // namespace
+
 QmlControlProxy::QmlControlProxy(QObject* parent)
         : QObject(parent),
           m_isComponentComplete(false),
@@ -73,6 +78,7 @@ void QmlControlProxy::setValue(double newValue) {
             qWarning() << "QmlControlProxy: Attempted to set value" << newValue
                        << "on non-initialized CO" << m_coKey;
         }
+        emit valueChanged(kDefaultValue);
         return;
     }
     m_pControlProxy->set(newValue);
@@ -86,7 +92,7 @@ double QmlControlProxy::getValue() const {
                           "non-initialized CO"
                        << m_coKey << "(returning 0)";
         }
-        return 0;
+        return kDefaultValue;
     }
     return m_pControlProxy->get();
 }
@@ -97,6 +103,7 @@ void QmlControlProxy::setParameter(double newValue) {
             qWarning() << "QmlControlProxy: Attempted to set parameter" << newValue
                        << "on non-initialized CO" << m_coKey;
         }
+        emit parameterChanged(kDefaultValue);
         return;
     }
     m_pControlProxy->setParameter(newValue);
@@ -111,7 +118,7 @@ double QmlControlProxy::getParameter() const {
                           "non-initialized CO"
                        << m_coKey << "(returning 0)";
         }
-        return 0;
+        return kDefaultParameter;
     }
     return m_pControlProxy->getParameter();
 }
