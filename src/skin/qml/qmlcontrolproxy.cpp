@@ -74,10 +74,6 @@ const QString& QmlControlProxy::getKey() const {
 
 void QmlControlProxy::setValue(double newValue) {
     if (!isInitialized()) {
-        if (m_isComponentComplete) {
-            qWarning() << "QmlControlProxy: Attempted to set value" << newValue
-                       << "on non-initialized CO" << m_coKey;
-        }
         emit valueChanged(kDefaultValue);
         return;
     }
@@ -87,11 +83,6 @@ void QmlControlProxy::setValue(double newValue) {
 
 double QmlControlProxy::getValue() const {
     if (!isInitialized()) {
-        if (m_isComponentComplete) {
-            qWarning() << "QmlControlProxy: Attempted to get value from "
-                          "non-initialized CO"
-                       << m_coKey << "(returning 0)";
-        }
         return kDefaultValue;
     }
     return m_pControlProxy->get();
@@ -99,10 +90,6 @@ double QmlControlProxy::getValue() const {
 
 void QmlControlProxy::setParameter(double newValue) {
     if (!isInitialized()) {
-        if (m_isComponentComplete) {
-            qWarning() << "QmlControlProxy: Attempted to set parameter" << newValue
-                       << "on non-initialized CO" << m_coKey;
-        }
         emit parameterChanged(kDefaultValue);
         return;
     }
@@ -113,11 +100,6 @@ void QmlControlProxy::setParameter(double newValue) {
 
 double QmlControlProxy::getParameter() const {
     if (!isInitialized()) {
-        if (m_isComponentComplete) {
-            qWarning() << "QmlControlProxy: Attempted to get parameter from "
-                          "non-initialized CO"
-                       << m_coKey << "(returning 0)";
-        }
         return kDefaultParameter;
     }
     return m_pControlProxy->getParameter();
@@ -146,9 +128,13 @@ void QmlControlProxy::reinitializeOrReset() {
         return;
     }
 
+    // We don't need to warn here if the control is missing, because we'll do a
+    // check below and print a warning anyway. If the key is invalid, this will
+    // still trigger an assertion because we checked the key validity above. If
+    // it's still invalid, that's a programming error.
     std::unique_ptr<ControlProxy> pControlProxy =
             std::make_unique<ControlProxy>(
-                    m_coKey, this, ControlFlag::NoAssertIfMissing);
+                    m_coKey, this, ControlFlag::NoWarnIfMissing);
 
     // This should never happen, but it doesn't hurt to check.
     VERIFY_OR_DEBUG_ASSERT(pControlProxy != nullptr) {
