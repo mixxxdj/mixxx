@@ -99,8 +99,7 @@ Rectangle {
         DeckRow {
             id: decksAB
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: 500
+            width: root.width
             height: 180
             leftDeck: "[Channel1]"
             rightDeck: "[Channel2]"
@@ -115,8 +114,7 @@ Rectangle {
                 stateHidden = !stateHidden;
             }
 
-            anchors.horizontalCenter: parent.horizontalCenter
-            width: 500
+            width: root.width
             height: 180
             leftDeck: "[Channel3]"
             rightDeck: "[Channel4]"

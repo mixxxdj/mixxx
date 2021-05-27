@@ -1,3 +1,4 @@
+import Mixxx 0.1 as Mixxx
 import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.15
 import QtQuick.Controls 2.15
@@ -11,78 +12,21 @@ Item {
 
     RowLayout {
         anchors.fill: parent
-        Layout.margins: 0
+        anchors.leftMargin: 10
+        anchors.rightMargin: 10
+        Layout.margins: 10
 
-        Rectangle {
-            color: "#121213"
-            implicitWidth: 68
-            implicitHeight: 26
+        Deck {
             Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-
-            MixxxControls.ToggleButton {
-                id: playButtonDeck1
-
-                anchors.fill: parent
-                group: root.leftDeck
-                key: "play"
-                icon.width: 50
-                icon.height: 24
-
-                State {
-                    name: "0"
-
-                    PropertyChanges {
-                        target: playButtonDeck1
-                        icon.source: "../LateNight/palemoon/buttons/btn__play_deck.svg"
-                        icon.color: "#777777"
-                        background.color: "transparent"
-                        background.border.width: 2
-                    }
-
-                    PropertyChanges {
-                        target: playButtonDeck1BgImage
-                        source: "../LateNight/palemoon/buttons/btn_embedded_play.svg"
-                    }
-
-                }
-
-                State {
-                    name: "1"
-
-                    PropertyChanges {
-                        target: playButtonDeck1
-                        icon.source: "../LateNight/palemoon/buttons/btn__play_deck_active.svg"
-                        icon.color: "transparent"
-                        background.color: "#b24c12"
-                        background.border.width: 2
-                    }
-
-                    PropertyChanges {
-                        target: playButtonDeck1BgImage
-                        source: "../LateNight/palemoon/buttons/btn_embedded_play_active.svg"
-                    }
-
-                }
-
-                background: Rectangle {
-                    anchors.fill: parent
-
-                    data: Image {
-                        id: playButtonDeck1BgImage
-
-                        anchors.fill: parent
-                    }
-
-                }
-
-            }
-
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            group: root.leftDeck
         }
 
         Rectangle {
             Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-            implicitWidth: 300
-            implicitHeight: 180
+            implicitWidth: 200
+            Layout.fillHeight: true
             color: "#1e1e20"
             border.color: "#121213"
             border.width: 2
@@ -116,70 +60,11 @@ Item {
 
         }
 
-        Rectangle {
+        Deck {
             Layout.alignment: Qt.AlignVCenter | Qt.AlignHCenter
-            implicitWidth: 68
-            implicitHeight: 26
-            color: "#121213"
-
-            MixxxControls.ToggleButton {
-                id: playButtonDeck2
-
-                anchors.fill: parent
-                group: root.rightDeck
-                key: "play"
-                icon.width: 50
-                icon.height: 24
-
-                State {
-                    name: "0"
-
-                    PropertyChanges {
-                        target: playButtonDeck2
-                        icon.source: "../LateNight/palemoon/buttons/btn__play_deck.svg"
-                        icon.color: "#777777"
-                        background.color: "transparent"
-                        background.border.width: 2
-                    }
-
-                    PropertyChanges {
-                        target: playButtonDeck2BgImage
-                        source: "../LateNight/palemoon/buttons/btn_embedded_play.svg"
-                    }
-
-                }
-
-                State {
-                    name: "1"
-
-                    PropertyChanges {
-                        target: playButtonDeck2
-                        icon.source: "../LateNight/palemoon/buttons/btn__play_deck_active.svg"
-                        icon.color: "transparent"
-                        background.color: "#b24c12"
-                        background.border.width: 2
-                    }
-
-                    PropertyChanges {
-                        target: playButtonDeck2BgImage
-                        source: "../LateNight/palemoon/buttons/btn_embedded_play_active.svg"
-                    }
-
-                }
-
-                background: Rectangle {
-                    anchors.fill: parent
-
-                    data: Image {
-                        id: playButtonDeck2BgImage
-
-                        anchors.fill: parent
-                    }
-
-                }
-
-            }
-
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            group: root.rightDeck
         }
 
     }
