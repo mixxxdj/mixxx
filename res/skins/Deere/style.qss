@@ -309,12 +309,13 @@ WLibrary QLineEdit,
 QPushButton#LibraryPreviewButton {
   background: transparent;
   margin: 0px;
-  padding: 0px;
+  padding: 3px;
   border: 1px solid transparent;
   border-radius: 2px;
 }
 
 QPushButton#LibraryPreviewButton:!checked {
+  /* TODO ronso0 Restore once fixed lib linKIconThemes (vers. <..80) is in *ubuntu main repos */
   /*image: url(skin:/../Deere/icon/ic_library_preview_play.svg);*/
 }
 
