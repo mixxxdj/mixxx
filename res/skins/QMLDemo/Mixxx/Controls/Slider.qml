@@ -1,7 +1,7 @@
 import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
 import QtQuick.Controls 2.12
-import QtQuick.Shapes 1.15
+import QtQuick.Shapes 1.12
 
 Item {
     id: root

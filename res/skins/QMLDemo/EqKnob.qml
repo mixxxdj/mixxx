@@ -1,5 +1,5 @@
 import Mixxx.Controls 0.1 as MixxxControls
-import QtQuick 2.15
+import QtQuick 2.12
 
 Item {
     id: root
