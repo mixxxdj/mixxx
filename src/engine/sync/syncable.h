@@ -8,13 +8,13 @@ enum SyncMode {
     SYNC_INVALID = -1,
     SYNC_NONE = 0,
     SYNC_FOLLOWER = 1,
-    // SYNC_MASTER_SOFT is a master that Mixxx has chosen automatically.
-    // depending on how decks stop and start, it may reassign soft master at will.
-    SYNC_MASTER_SOFT = 2,
-    // SYNC_MASTER_EXPLICIT represents an explicit request that the synacable be
-    // master. Mixxx will only remove a SYNC_MASTER_SOFT if the track is stopped or
+    // SYNC_LEADER_SOFT is a leader that Mixxx has chosen automatically.
+    // depending on how decks stop and start, it may reassign soft leader at will.
+    SYNC_LEADER_SOFT = 2,
+    // SYNC_LEADER_EXPLICIT represents an explicit request that the synacable be
+    // leader. Mixxx will only remove a SYNC_LEADER_SOFT if the track is stopped or
     // ejected.
-    SYNC_MASTER_EXPLICIT = 3,
+    SYNC_LEADER_EXPLICIT = 3,
     SYNC_NUM_MODES
 };
 
@@ -35,36 +35,36 @@ inline bool isFollower(SyncMode mode) {
     return (mode == SYNC_FOLLOWER);
 }
 
-inline bool isMaster(SyncMode mode) {
-    return (mode == SYNC_MASTER_SOFT || mode == SYNC_MASTER_EXPLICIT);
+inline bool isLeader(SyncMode mode) {
+    return (mode == SYNC_LEADER_SOFT || mode == SYNC_LEADER_EXPLICIT);
 }
 
-enum SyncMasterLight {
-    MASTER_INVALID = -1,
-    MASTER_OFF = 0,
-    MASTER_SOFT = 1,
-    MASTER_EXPLICIT = 2,
+enum SyncLeaderLight {
+    LEADER_INVALID = -1,
+    LEADER_OFF = 0,
+    LEADER_SOFT = 1,
+    LEADER_EXPLICIT = 2,
 };
 
-inline SyncMasterLight SyncModeToMasterLight(SyncMode mode) {
+inline SyncLeaderLight SyncModeToLeaderLight(SyncMode mode) {
     switch (mode) {
     case SYNC_INVALID:
     case SYNC_NONE:
     case SYNC_FOLLOWER:
-        return MASTER_OFF;
-    case SYNC_MASTER_SOFT:
-        return MASTER_SOFT;
-    case SYNC_MASTER_EXPLICIT:
-        return MASTER_EXPLICIT;
+        return LEADER_OFF;
+    case SYNC_LEADER_SOFT:
+        return LEADER_SOFT;
+    case SYNC_LEADER_EXPLICIT:
+        return LEADER_EXPLICIT;
         break;
     case SYNC_NUM_MODES:
         break;
     }
-    return MASTER_INVALID;
+    return LEADER_INVALID;
 }
 
 /// Syncable is an abstract base class for any object that wants to participate
-/// in Master Sync.
+/// in Sync Lock.
 class Syncable {
   public:
     virtual ~Syncable() = default;
@@ -103,25 +103,25 @@ class Syncable {
     virtual double getBaseBpm() const = 0;
 
     // The following functions are used to tell syncables about the state of the
-    // current Sync Master.
+    // current Sync Leader.
     // Must never result in a call to
     // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
-    virtual void updateMasterBeatDistance(double beatDistance) = 0;
+    virtual void updateLeaderBeatDistance(double beatDistance) = 0;
 
     // Update the current playback speed (not including scratch values)
-    // of the current master.
+    // of the current leader.
     // Must never result in a call to SyncableListener::notifyBpmChanged or
     // signal loops could occur.
-    virtual void updateMasterBpm(double bpm) = 0;
+    virtual void updateLeaderBpm(double bpm) = 0;
 
-    // Tells a Syncable that it's going to be used as a source for master
+    // Tells a Syncable that it's going to be used as a source for leader
     // params. This is a gross hack so that the SyncControl can undo its
     // half/double adjustment so bpms are initialized correctly.
-    virtual void notifyMasterParamSource() = 0;
+    virtual void notifyLeaderParamSource() = 0;
 
-    // Perform a reset of Master parameters. This function also triggers recalculation
+    // Perform a reset of Leader parameters. This function also triggers recalculation
     // of half-double multiplier.
-    virtual void reinitMasterParams(double beatDistance, double baseBpm, double bpm) = 0;
+    virtual void reinitLeaderParams(double beatDistance, double baseBpm, double bpm) = 0;
 
     // Update the playback speed of the master, including scratch values.
     // Must never result in a call to
@@ -141,7 +141,7 @@ class SyncableListener {
     // Syncable::notifySyncModeChanged.
     virtual void requestSyncMode(Syncable* pSyncable, SyncMode mode) = 0;
 
-    // A Syncable must never call notifyBpmChanged in response to a setMasterBpm()
+    // A Syncable must never call notifyBpmChanged in response to a updateLeaderBpm()
     // call.
     virtual void notifyBaseBpmChanged(Syncable* pSyncable, double bpm) = 0;
     virtual void notifyRateChanged(Syncable* pSyncable, double bpm) = 0;
@@ -162,5 +162,5 @@ class SyncableListener {
 
     virtual void notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) = 0;
 
-    virtual Syncable* getMasterSyncable() = 0;
+    virtual Syncable* getLeaderSyncable() = 0;
 };

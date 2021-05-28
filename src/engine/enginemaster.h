@@ -87,7 +87,7 @@ class EngineMaster : public QObject, public AudioSource {
         }
     }
 
-    // Provide access to the master sync so enginebuffers can know what their rate controller is.
+    // Provide access to the sync lock so enginebuffers can know what their rate controller is.
     EngineSync* getEngineSync() const{
         return m_pMasterSync;
     }
@@ -254,7 +254,7 @@ class EngineMaster : public QObject, public AudioSource {
     ControlObject* m_pBoothEnabled;
 
   private:
-    // Processes active channels. The master sync channel (if any) is processed
+    // Processes active channels. The sync lock channel (if any) is processed
     // first and all others are processed after. Populates m_activeChannels,
     // m_activeBusChannels, m_activeHeadphoneChannels, and
     // m_activeTalkoverChannels with each channel that is active for the

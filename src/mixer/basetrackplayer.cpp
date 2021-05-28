@@ -481,7 +481,7 @@ void BaseTrackPlayerImpl::slotTrackLoaded(TrackPointer pNewTrack,
             int reset = m_pConfig->getValue<int>(
                     ConfigKey("[Controls]", "SpeedAutoReset"), RESET_PITCH);
             if (reset == RESET_SPEED || reset == RESET_PITCH_AND_SPEED) {
-                // Avoid resetting speed if master sync is enabled and other decks with sync enabled
+                // Avoid resetting speed if sync lock is enabled and other decks with sync enabled
                 // are playing, as this would change the speed of already playing decks.
                 if (!m_pEngineMaster->getEngineSync()->otherSyncedPlaying(getGroup())) {
                     m_pRateRatio->set(1.0);

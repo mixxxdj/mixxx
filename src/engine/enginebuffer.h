@@ -256,7 +256,7 @@ class EngineBuffer : public EngineObject {
     FRIEND_TEST(EngineSyncTest, HalfDoubleThenPlay);
     FRIEND_TEST(EngineSyncTest, UserTweakBeatDistance);
     FRIEND_TEST(EngineSyncTest, UserTweakPreservedInSeek);
-    FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInMasterChange);
+    FRIEND_TEST(EngineSyncTest, FollowerUserTweakPreservedInLeaderChange);
     FRIEND_TEST(EngineSyncTest, BeatMapQuantizePlay);
     FRIEND_TEST(EngineBufferTest, ScalerNoTransport);
     EngineSync* m_pEngineSync;

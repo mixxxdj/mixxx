@@ -270,7 +270,7 @@ const CSAMPLE* EngineMaster::getSidechainBuffer() const {
 }
 
 void EngineMaster::processChannels(int iBufferSize) {
-    // Update internal master sync rate.
+    // Update internal sync lock rate.
     m_pMasterSync->onCallbackStart(m_iSampleRate, m_iBufferSize);
 
     m_activeBusChannels[EngineChannel::LEFT].clear();
@@ -281,7 +281,7 @@ void EngineMaster::processChannels(int iBufferSize) {
     m_activeChannels.clear();
 
     //ScopedTimer timer("EngineMaster::processChannels");
-    EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
+    EngineChannel* pMasterChannel = m_pMasterSync->getLeader();
     // Reserve the first place for the master channel which
     // should be processed first
     m_activeChannels.append(NULL);
@@ -367,7 +367,7 @@ void EngineMaster::processChannels(int iBufferSize) {
         }
     }
 
-    // Do internal master sync post-processing before the other
+    // Do internal sync lock post-processing before the other
     // channels.
     // Note, because we call this on the internal clock first,
     // it will have an up-to-date beatDistance, whereas the other

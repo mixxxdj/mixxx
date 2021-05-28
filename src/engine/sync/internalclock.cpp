@@ -24,7 +24,7 @@ InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync
           m_dBeatLength(m_iOldSampleRate * 60.0 / m_dOldBpm),
           m_dClockPosition(0) {
     // Pick a wide range (1 to 200) and allow out of bounds sets. This lets you
-    // map a soft-takeover MIDI knob to the master BPM. This also creates bpm_up
+    // map a soft-takeover MIDI knob to the leader BPM. This also creates bpm_up
     // and bpm_down controls.
     // bpm_up / bpm_down steps by 1
     // bpm_up_small / bpm_down_small steps by 0.1
@@ -42,12 +42,14 @@ InternalClock::InternalClock(const QString& group, SyncableListener* pEngineSync
             this, &InternalClock::slotBeatDistanceChanged,
             Qt::DirectConnection);
 
-    m_pSyncMasterEnabled.reset(
-            new ControlPushButton(ConfigKey(m_group, "sync_master")));
-    m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    m_pSyncMasterEnabled->setStates(3);
-    m_pSyncMasterEnabled->connectValueChangeRequest(
-            this, &InternalClock::slotSyncMasterEnabledChangeRequest, Qt::DirectConnection);
+    m_pSyncLeaderEnabled.reset(
+            new ControlPushButton(ConfigKey(m_group, "sync_leader")));
+    m_pSyncLeaderEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSyncLeaderEnabled->setStates(3);
+    m_pSyncLeaderEnabled->connectValueChangeRequest(
+            this, &InternalClock::slotSyncLeaderEnabledChangeRequest, Qt::DirectConnection);
+    ControlDoublePrivate::insertAlias(ConfigKey(m_group, "sync_master"),
+            ConfigKey(m_group, "sync_leader"));
 }
 
 InternalClock::~InternalClock() {
@@ -57,7 +59,7 @@ void InternalClock::setSyncMode(SyncMode mode) {
     // Syncable has absolutely no say in the matter. This is what EngineSync
     // requires. Bypass confirmation by using setAndConfirm.
     m_mode = mode;
-    m_pSyncMasterEnabled->setAndConfirm(SyncModeToMasterLight(mode));
+    m_pSyncLeaderEnabled->setAndConfirm(SyncModeToLeaderLight(mode));
 }
 
 void InternalClock::notifyUniquePlaying() {
@@ -68,27 +70,27 @@ void InternalClock::requestSync() {
     // TODO(owilliams): This should probably be how we reset the internal beat distance.
 }
 
-void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
+void InternalClock::slotSyncLeaderEnabledChangeRequest(double state) {
     SyncMode mode = m_mode;
     //Note: internal clock is always sync enabled
     if (state > 0.0) {
-        if (mode == SYNC_MASTER_EXPLICIT) {
-            // Already master.
+        if (mode == SYNC_LEADER_EXPLICIT) {
+            // Already leader.
             return;
         }
-        if (mode == SYNC_MASTER_SOFT) {
-            // user request: make master explicit
-            m_mode = SYNC_MASTER_EXPLICIT;
+        if (mode == SYNC_LEADER_SOFT) {
+            // user request: make leader explicit
+            m_mode = SYNC_LEADER_EXPLICIT;
             return;
         }
         if (mode == SYNC_NONE) {
             m_dBaseBpm = m_dOldBpm;
         }
-        m_pEngineSync->requestSyncMode(this, SYNC_MASTER_EXPLICIT);
+        m_pEngineSync->requestSyncMode(this, SYNC_LEADER_EXPLICIT);
     } else {
-        // Turning off master goes back to follower mode.
+        // Turning off leader goes back to follower mode.
         if (mode == SYNC_FOLLOWER) {
-            // Already not master.
+            // Already not leader.
             return;
         }
         m_pEngineSync->requestSyncMode(this, SYNC_FOLLOWER);
@@ -103,9 +105,9 @@ double InternalClock::getBeatDistance() const {
     return m_dClockPosition / m_dBeatLength;
 }
 
-void InternalClock::updateMasterBeatDistance(double beatDistance) {
+void InternalClock::updateLeaderBeatDistance(double beatDistance) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "InternalClock::setMasterBeatDistance" << beatDistance;
+        kLogger.trace() << "InternalClock::updateLeaderBeatDistance" << beatDistance;
     }
     m_dClockPosition = beatDistance * m_dBeatLength;
     m_pClockBeatDistance->set(beatDistance);
@@ -121,7 +123,7 @@ double InternalClock::getBpm() const {
     return m_pClockBpm->get();
 }
 
-void InternalClock::updateMasterBpm(double bpm) {
+void InternalClock::updateLeaderBpm(double bpm) {
     if (kLogger.traceEnabled()) {
         kLogger.trace() << "InternalClock::setBpm" << bpm;
     }
@@ -140,19 +142,19 @@ void InternalClock::updateInstantaneousBpm(double bpm) {
     Q_UNUSED(bpm);
 }
 
-void InternalClock::notifyMasterParamSource() {
+void InternalClock::notifyLeaderParamSource() {
 }
 
-void InternalClock::reinitMasterParams(double beatDistance, double baseBpm, double bpm) {
+void InternalClock::reinitLeaderParams(double beatDistance, double baseBpm, double bpm) {
     if (kLogger.traceEnabled()) {
-        kLogger.trace() << "InternalClock::reinitMasterParams" << beatDistance << baseBpm << bpm;
+        kLogger.trace() << "InternalClock::reinitLeaderParams" << beatDistance << baseBpm << bpm;
     }
     if (bpm <= 0.0 || baseBpm <= 0.0) {
         return;
     }
     m_dBaseBpm = baseBpm;
-    updateMasterBpm(bpm);
-    updateMasterBeatDistance(beatDistance);
+    updateLeaderBpm(bpm);
+    updateLeaderBeatDistance(beatDistance);
 }
 
 void InternalClock::slotBaseBpmChanged(double baseBpm) {
@@ -168,7 +170,7 @@ void InternalClock::slotBeatDistanceChanged(double beatDistance) {
     if (beatDistance < 0.0 || beatDistance > 1.0) {
         return;
     }
-    updateMasterBeatDistance(beatDistance);
+    updateLeaderBeatDistance(beatDistance);
 }
 
 void InternalClock::updateBeatLength(int sampleRate, double bpm) {
@@ -189,7 +191,7 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     // that last term is 1 over bpm.
 
     if (qFuzzyCompare(bpm, 0)) {
-        qDebug() << "WARNING: Master bpm reported to be zero, internal clock guessing 124bpm";
+        qDebug() << "WARNING: Leader bpm reported to be zero, internal clock guessing 124bpm";
         m_dBeatLength = (sampleRate * 60.0) / 124.0;
         m_dOldBpm = 124.0;
     } else {
@@ -204,7 +206,7 @@ void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     m_iOldSampleRate = sampleRate;
 
     // Restore the old beat distance.
-    updateMasterBeatDistance(oldBeatDistance);
+    updateLeaderBeatDistance(oldBeatDistance);
 }
 
 void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
