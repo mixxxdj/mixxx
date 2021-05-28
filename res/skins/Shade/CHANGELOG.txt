@@ -24,11 +24,7 @@ the resulting work only under the same or similar license to this one.
 CHANGELOG
 
 v2.3.0.01  (11/05/2021)
-* Feature: Added UI elements for [Recording] (toggle button, status display button and duration) lp:1924279
-* Feature: Added custom images for the [Recording] status button
-* Update: Graphics to gain a symmetric look in the mixer panel
-* Update: Repositioned UI elements to fit symmetric look
-* Fix: Skin previews updated
+* Feature: Added Recording toggle and duration display lp:1924279
 
 v1.12.0.01  (15/12/2013)
 * Feature: Added <reverseroll> as right-click option to the Reverse button

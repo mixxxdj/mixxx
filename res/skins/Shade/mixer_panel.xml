@@ -601,7 +601,8 @@
               <RecordingDuration>
                 <Style>
                   QLabel {
-                    font-size: 8px;
+                    font-size: 9px;
+                    font-weight: bold;
                     background-color: transparent;
                     color: #191F24;
                     text-align:center;
@@ -610,10 +611,10 @@
                 <ObjectName>RecDuration</ObjectName>
                 <TooltipId>recording_duration</TooltipId>
                 <Pos>212,8</Pos>
-                <Size>32f,8f</Size>
+                <Size>34f,9f</Size>
                 <InactiveText>--:--</InactiveText>
                 <Alignment>center</Alignment>
-               </RecordingDuration>
+              </RecordingDuration>
 
               <!--
               **********************************************
