@@ -54,8 +54,6 @@ Item {
     Shape {
         anchors.fill: root
         antialiasing: true
-        layer.smooth: true
-        layer.samples: 2
         visible: root.arc
 
         ShapePath {

@@ -49,8 +49,6 @@ Item {
             Shape {
                 anchors.fill: parent
                 antialiasing: true
-                layer.smooth: true
-                layer.samples: 2
                 visible: root.bar
 
                 ShapePath {
