@@ -2,6 +2,12 @@
 
 #include "mixer/basetrackplayer.h"
 
+// FIXME: Unfornately, clazy can stumble over these preprocessor macros and
+// show false-positive warnings. Therefore, the clazy-incorrect-emit warnings
+// are disabled in this source file.
+//
+// clazy:excludeall=incorrect-emit
+
 #define PROPERTY_IMPL(TYPE, NAME, GETTER, SETTER)    \
     TYPE QmlPlayerProxy::GETTER() const {            \
         const TrackPointer pTrack = m_pCurrentTrack; \
