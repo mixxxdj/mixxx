@@ -71,10 +71,11 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     void slotControlProxyValueChanged(double newValue);
 
   private:
-    /// (Re-)Initializes or resets the underlying control proxy. Called for the first time when
-    /// component construction has been completed. From that moment on, it's
-    /// called whenever the group or key changes.
-    void reinitializeOrReset();
+    /// (Re-)Initializes or resets the pointer to the underlying control proxy.
+    /// Called for the first time when component construction has been
+    /// completed. From that moment on, it's called whenever the group or key
+    /// changes.
+    void reinitializeFromKey();
 
     ConfigKey m_coKey;
 

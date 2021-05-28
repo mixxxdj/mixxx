@@ -19,7 +19,7 @@ QmlControlProxy::QmlControlProxy(QObject* parent)
 
 void QmlControlProxy::componentComplete() {
     m_isComponentComplete = true;
-    reinitializeOrReset();
+    reinitializeFromKey();
 }
 
 bool QmlControlProxy::isKeyValid() const {
@@ -44,7 +44,7 @@ void QmlControlProxy::setGroup(const QString& group) {
         emit keyValidChanged(keyValidAfterSet);
     }
 
-    reinitializeOrReset();
+    reinitializeFromKey();
 }
 
 const QString& QmlControlProxy::getGroup() const {
@@ -65,7 +65,7 @@ void QmlControlProxy::setKey(const QString& key) {
         emit keyValidChanged(keyValidAfterSet);
     }
 
-    reinitializeOrReset();
+    reinitializeFromKey();
 }
 
 const QString& QmlControlProxy::getKey() const {
@@ -105,7 +105,7 @@ double QmlControlProxy::getParameter() const {
     return m_pControlProxy->getParameter();
 }
 
-void QmlControlProxy::reinitializeOrReset() {
+void QmlControlProxy::reinitializeFromKey() {
     // Just ignore this if the component is still loading, because group or key may not be set yet.
     if (!m_isComponentComplete) {
         return;
