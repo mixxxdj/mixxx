@@ -25,7 +25,7 @@ class QmlPlayerProxy : public QObject {
                     NOTIFY trackNumberChanged)
     Q_PROPERTY(QString trackTotal READ getTrackTotal WRITE setTrackTotal NOTIFY trackTotalChanged)
     Q_PROPERTY(QString comment READ getComment WRITE setComment NOTIFY commentChanged)
-    Q_PROPERTY(QString key READ getKeyText WRITE setKeyText NOTIFY keyChanged)
+    Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyTextChanged)
     Q_PROPERTY(QColor color READ getColor WRITE setColor NOTIFY colorChanged)
 
   public:
@@ -82,7 +82,7 @@ class QmlPlayerProxy : public QObject {
     void trackNumberChanged();
     void trackTotalChanged();
     void commentChanged();
-    void keyChanged();
+    void keyTextChanged();
     void colorChanged();
 
   private:

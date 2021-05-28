@@ -56,7 +56,7 @@ void QmlPlayerProxy::slotTrackLoaded(TrackPointer pTrack) {
         connect(pTrack.get(),
                 &Track::keyUpdated,
                 this,
-                &QmlPlayerProxy::keyChanged);
+                &QmlPlayerProxy::keyTextChanged);
         connect(pTrack.get(),
                 &Track::colorUpdated,
                 this,
@@ -90,7 +90,7 @@ void QmlPlayerProxy::slotTrackChanged() {
     emit trackNumberChanged();
     emit trackTotalChanged();
     emit commentChanged();
-    emit keyChanged();
+    emit keyTextChanged();
     emit colorChanged();
 }
 
@@ -105,7 +105,7 @@ PROPERTY_IMPL(QString, year, getYear, setYear)
 PROPERTY_IMPL(QString, trackNumber, getTrackNumber, setTrackNumber)
 PROPERTY_IMPL(QString, trackTotal, getTrackTotal, setTrackTotal)
 PROPERTY_IMPL(QString, comment, getComment, setComment)
-PROPERTY_IMPL(QString, key, getKeyText, setKeyText)
+PROPERTY_IMPL(QString, keyText, getKeyText, setKeyText)
 
 QColor QmlPlayerProxy::getColor() const {
     const TrackPointer pTrack = m_pCurrentTrack;
