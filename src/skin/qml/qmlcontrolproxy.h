@@ -28,7 +28,7 @@ class QmlControlProxy : public QObject, public QQmlParserStatus {
     Q_PROPERTY(double parameter READ getParameter WRITE setParameter NOTIFY parameterChanged)
 
   public:
-    QmlControlProxy(QObject* parent = nullptr);
+    explicit QmlControlProxy(QObject* parent = nullptr);
 
     /// Implementing the QQmlParserStatus interface requires overriding this
     /// method, but we don't need it.
