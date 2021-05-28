@@ -615,7 +615,7 @@ void EngineSync::setMasterParams(Syncable* pSource) {
         // explicit Master and we should not initialize the beat distance.  Take it from the
         // internal clock instead.
         bool playingSyncables = false;
-        for (Syncable* pSyncable : m_syncables) {
+        for (Syncable* pSyncable : qAsConst(m_syncables)) {
             if (pSyncable == pSource) {
                 continue;
             }
