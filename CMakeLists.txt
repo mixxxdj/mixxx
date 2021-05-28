@@ -733,6 +733,8 @@ add_library(mixxx-lib STATIC EXCLUDE_FROM_ALL
   src/skin/legacy/legacyskinparser.cpp
   src/skin/legacy/pixmapsource.cpp
   src/skin/legacy/legacyskin.cpp
+  src/skin/qml/qmlcontrolproxy.cpp
+  src/skin/qml/qmlskin.cpp
   src/skin/legacy/skincontext.cpp
   src/skin/legacy/tooltips.cpp
   src/skin/skinloader.cpp
@@ -1978,6 +1980,7 @@ find_package(Qt5
     Network
     OpenGL
     Qml
+    QuickWidgets
     Sql
     Svg
     Test
@@ -1992,6 +1995,7 @@ target_link_libraries(mixxx-lib PUBLIC
   Qt5::Network
   Qt5::OpenGL
   Qt5::Qml
+  Qt5::QuickWidgets
   Qt5::Sql
   Qt5::Svg
   Qt5::Test

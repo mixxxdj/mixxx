@@ -57,6 +57,7 @@ MixxxApplication::MixxxApplication(int& argc, char** argv)
           m_rightPressedButtons(0),
           m_pTouchShift(nullptr) {
     registerMetaTypes();
+    setAttribute(Qt::AA_DontCreateNativeWidgetSiblings);
 
     // Increase the size of the global thread pool to at least
     // 4 threads, even if less cores are available. These threads
