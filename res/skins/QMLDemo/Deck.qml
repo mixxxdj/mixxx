@@ -38,6 +38,38 @@ Item {
                     }
 
                     Item {
+                        id: spinny
+
+                        anchors.fill: coverArt
+
+                        // The Spinnies are automatically hidden if the track
+                        // is stopped. This is not really useful, but is nice for
+                        // demo'ing transitions.
+                        Mixxx.ControlProxy {
+                            group: root.group
+                            key: "play"
+                            onValueChanged: spinnyIndicator.indicatorVisible = (value > 0)
+                        }
+
+                        MixxxControls.Spinny {
+                            id: spinnyIndicator
+
+                            anchors.fill: parent
+                            group: root.group
+                            indicatorVisible: false
+
+                            indicatorDelegate: Image {
+                                mipmap: true
+                                width: spinnyIndicator.width
+                                height: spinnyIndicator.height
+                                source: "../LateNight/palemoon/style/spinny_indicator.svg"
+                            }
+
+                        }
+
+                    }
+
+                    Item {
                         id: trackText
 
                         anchors.top: parent.top
