@@ -1,14 +1,16 @@
 /* Style the library preview button with a default image */
 #LibraryPreviewButton {
-  background: transparent; border: 0;
+  /* TODO ronso0 Restore once fixed lib linKIconThemes (vers. <..80) is in *ubuntu main repos */
+  /*background: transparent; border: 0;*/
 }
 
 #LibraryPreviewButton:checked {
-  image: url(:/images/library/ic_library_preview_pause.svg);
+  /* TODO ronso0 Restore once fixed lib linKIconThemes (vers. <..80) is in *ubuntu main repos */
+  background: url(:/images/library/ic_library_preview_pause.svg) no-repeat center center;
 }
 
 #LibraryPreviewButton:!checked {
-  image: url(:/images/library/ic_library_preview_play.svg);
+  background: url(:/images/library/ic_library_preview_play.svg) no-repeat center center;
 }
 
 /* Style the library BPM Button with a default image */

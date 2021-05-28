@@ -616,20 +616,22 @@ WTrackTableView {
 
   /* Button in library "Preview" column */
   #LibraryPreviewButton {
-    background: transparent;
+    /* TODO ronso0 Restore once fixed lib linKIconThemes (vers. <..80) is in *ubuntu main repos */
+    /*background: transparent;*/
     margin: 0px;
-    padding: 0px;
+    padding: 3px;
     border: 1px solid transparent;
   }
   #LibraryPreviewButton:!checked{
-    image: url(skin:/btn/btn_lib_preview_play.svg);
+    /* TODO ronso0 Restore once fixed lib linKIconThemes (vers. <..80) is in *ubuntu main repos */
+    /*image: url(skin:/btn/btn_lib_preview_play.svg);*/
   }
   #LibraryPreviewButton:!checked:hover {
     border: 1px solid #666;
     background: #0f0f0f;
   }
   #LibraryPreviewButton:checked {
-    image: url(skin:/btn/btn_lib_preview_pause.svg);
+    /*image: url(skin:/btn/btn_lib_preview_pause.svg);*/
     background-color: #0f0f0f;
     border: 1px solid #444;
   }
