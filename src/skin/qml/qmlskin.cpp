@@ -9,6 +9,9 @@
 namespace {
 const QString kSkinMetadataFileName = QStringLiteral("skin.ini");
 const QString kMainQmlFileName = QStringLiteral("main.qml");
+
+// TODO: Figure out a sensible default value or expose this as a config option
+constexpr int kMultisamplingSampleCount = 2;
 } // namespace
 
 namespace mixxx {
@@ -109,6 +112,12 @@ QWidget* QmlSkin::loadSkin(QWidget* pParent,
     qmlRegisterType<QmlControlProxy>("Mixxx", 0, 1, "ControlProxy");
 
     QQuickWidget* pWidget = new QQuickWidget(pParent);
+
+    // Enable multisampling for much nicer rendering of shapes/images
+    QSurfaceFormat format;
+    format.setSamples(kMultisamplingSampleCount);
+    pWidget->setFormat(format);
+
     pWidget->engine()->setBaseUrl(QUrl::fromLocalFile(m_path.absoluteFilePath()));
     pWidget->engine()->addImportPath(m_path.absoluteFilePath());
     pWidget->setSource(QUrl::fromLocalFile(dir().absoluteFilePath(kMainQmlFileName)));
