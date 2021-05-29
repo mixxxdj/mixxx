@@ -23,12 +23,11 @@ Item {
         height: root.height
         orientation: Qt.Vertical
         wheelEnabled: true
+        value: control.parameter
+        onMoved: control.parameter = value
 
         Mixxx.ControlProxy {
             id: control
-
-            parameter: slider.value
-            onValueChanged: slider.value = parameter
         }
 
         handle: Rectangle {
