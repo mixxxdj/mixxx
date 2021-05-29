@@ -129,12 +129,120 @@ Item {
                 Layout.fillHeight: true
                 implicitWidth: 50
 
-                MixxxControls.Slider {
-                    id: volumeSlider
+                MixxxControls.ToggleButton {
+                    id: syncButton
 
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
-                    width: parent.width
-                    height: parent.height
+                    anchors.top: parent.top
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 24
+                    group: root.group
+                    key: "sync_enabled"
+                    icon.width: 50
+                    icon.height: 24
+
+                    State {
+                        name: "0"
+
+                        PropertyChanges {
+                            target: syncButton
+                            icon.source: "../LateNight/palemoon/buttons/btn__sync_deck.svg"
+                            icon.color: "#777777"
+                            background.color: "transparent"
+                            background.border.width: 2
+                        }
+
+                        PropertyChanges {
+                            target: syncButtonBgImage
+                            source: "../LateNight/palemoon/buttons/btn_embedded_sync.svg"
+                        }
+
+                    }
+
+                    State {
+                        name: "1"
+
+                        PropertyChanges {
+                            target: syncButton
+                            icon.source: "../LateNight/palemoon/buttons/btn__sync_deck_active.svg"
+                            icon.color: "transparent"
+                            background.color: "#b24c12"
+                            background.border.width: 2
+                        }
+
+                        PropertyChanges {
+                            target: syncButtonBgImage
+                            source: "../LateNight/palemoon/buttons/btn_embedded_sync_active.svg"
+                        }
+
+                    }
+
+                    background: Rectangle {
+                        anchors.fill: parent
+
+                        data: Image {
+                            id: syncButtonBgImage
+
+                            anchors.fill: parent
+                        }
+
+                    }
+
+                }
+
+                Mixxx.ControlProxy {
+                    id: bpmControl
+
+                    group: root.group
+                    key: "bpm"
+                }
+
+                Text {
+                    id: bpmText
+
+                    anchors.top: syncButton.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: contentHeight
+                    text: bpmControl.value.toFixed(2)
+                    horizontalAlignment: Text.AlignHCenter
+                    font.family: "Open Sans"
+                    font.bold: true
+                    font.pixelSize: 11
+                    color: "#777"
+                }
+
+                Mixxx.ControlProxy {
+                    id: rateRatioControl
+
+                    group: root.group
+                    key: "rate_ratio"
+                }
+
+                Text {
+                    id: bpmRatioText
+
+                    property real ratio: ((rateRatioControl.value - 1) * 100).toPrecision(2)
+
+                    anchors.top: bpmText.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: contentHeight
+                    text: (ratio > 0) ? "+" + ratio.toFixed(2) : ratio.toFixed(2)
+                    horizontalAlignment: Text.AlignHCenter
+                    font.family: "Open Sans"
+                    font.bold: true
+                    font.pixelSize: 10
+                    color: "#404040"
+                }
+
+                MixxxControls.Slider {
+                    id: rateSlider
+
+                    anchors.top: bpmRatioText.bottom
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.bottom: parent.bottom
                     group: root.group
                     key: "rate"
                     bar: true
@@ -149,8 +257,7 @@ Item {
                     }
 
                     background: Image {
-                        width: volumeSlider.width
-                        height: volumeSlider.height
+                        anchors.fill: parent
                         source: "../LateNight/palemoon/sliders/slider_volume_deck.svg"
                     }
 

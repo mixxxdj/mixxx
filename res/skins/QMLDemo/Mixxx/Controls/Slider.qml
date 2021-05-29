@@ -19,8 +19,7 @@ Item {
     Slider {
         id: slider
 
-        width: root.width
-        height: root.height
+        anchors.fill: parent
         orientation: Qt.Vertical
         wheelEnabled: true
         value: control.parameter
@@ -43,6 +42,8 @@ Item {
 
             Item {
                 id: background
+
+                anchors.fill: parent
             }
 
             Shape {
