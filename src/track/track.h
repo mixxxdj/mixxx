@@ -61,18 +61,15 @@ class Track : public QObject {
     Q_PROPERTY(QString trackTotal READ getTrackTotal WRITE setTrackTotal NOTIFY trackTotalChanged)
     Q_PROPERTY(int timesPlayed READ getTimesPlayed NOTIFY timesPlayedChanged)
     Q_PROPERTY(QString comment READ getComment WRITE setComment NOTIFY commentChanged)
-    Q_PROPERTY(double bpm READ getBpm NOTIFY bpmUpdated)
-    Q_PROPERTY(QString bpmFormatted READ getBpmText STORED false NOTIFY bpmTextChanged)
-    Q_PROPERTY(QString key READ getKeyText WRITE setKeyText NOTIFY keysUpdated)
+    Q_PROPERTY(double bpm READ getBpm NOTIFY bpmChanged)
+    Q_PROPERTY(QString bpmText READ getBpmText STORED false NOTIFY bpmChanged)
+    Q_PROPERTY(QString keyText READ getKeyText WRITE setKeyText NOTIFY keyChanged)
     Q_PROPERTY(double duration READ getDuration NOTIFY durationChanged)
-    Q_PROPERTY(QString durationFormatted READ getDurationTextSeconds
+    Q_PROPERTY(QString durationText READ getDurationTextSeconds STORED false NOTIFY durationChanged)
+    Q_PROPERTY(QString durationTextCentiseconds READ getDurationTextCentiseconds
                     STORED false NOTIFY durationChanged)
-    Q_PROPERTY(QString durationFormattedCentiseconds READ
-                    getDurationTextCentiseconds
-                            STORED false NOTIFY durationChanged)
-    Q_PROPERTY(QString durationFormattedMilliseconds READ
-                    getDurationTextMilliseconds
-                            STORED false NOTIFY durationChanged)
+    Q_PROPERTY(QString durationTextMilliseconds READ getDurationTextMilliseconds
+                    STORED false NOTIFY durationChanged)
     Q_PROPERTY(QString info READ getInfo STORED false NOTIFY infoChanged)
     Q_PROPERTY(QString titleInfo READ getTitleInfo STORED false NOTIFY infoChanged)
 
@@ -381,7 +378,8 @@ class Track : public QObject {
     void trackNumberChanged(const QString&);
     void trackTotalChanged(const QString&);
     void commentChanged(const QString&);
-    void bpmTextChanged();
+    void bpmChanged();
+    void keyChanged();
     void timesPlayedChanged();
     void durationChanged();
     void infoChanged();
@@ -389,10 +387,7 @@ class Track : public QObject {
     void waveformUpdated();
     void waveformSummaryUpdated();
     void coverArtUpdated();
-    void bpmUpdated(double bpm);
     void beatsUpdated();
-    void keyUpdated(double key);
-    void keysUpdated();
     void replayGainUpdated(mixxx::ReplayGain replayGain);
     void colorUpdated(const mixxx::RgbColor::optional_t& color);
     void cuesUpdated();
@@ -424,10 +419,9 @@ class Track : public QObject {
     void setDirtyAndUnlock(QMutexLocker* pLock, bool bDirty);
 
     void afterKeysUpdated(QMutexLocker* pLock);
-    void emitKeysUpdated(mixxx::track::io::key::ChromaticKey newKey);
 
     void afterBeatsAndBpmUpdated(QMutexLocker* pLock);
-    void emitBeatsAndBpmUpdated(mixxx::Bpm newBpm);
+    void emitBeatsAndBpmUpdated();
 
     /// Emits a changed signal for each Q_PROPERTY
     void emitMetadataChanged();

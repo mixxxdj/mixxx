@@ -179,7 +179,6 @@ void Track::replaceMetadataFromSource(
             beatsAndBpmModified = trySetBpmWhileLocked(importedBpm.getValue());
         }
         modified |= beatsAndBpmModified;
-        const auto newBpm = getBpmWhileLocked();
 
         auto keysModified = false;
         if (importedKey != mixxx::track::io::key::INVALID) {
@@ -190,7 +189,6 @@ void Track::replaceMetadataFromSource(
                     mixxx::track::io::key::FILE_METADATA);
         }
         modified |= keysModified;
-        const auto newKey = m_record.getGlobalKey();
 
         // Import track color from Serato tags if available
         const auto newColor = m_record.getMetadata().getTrackInfo().getSeratoTags().getTrackColor();
@@ -206,10 +204,10 @@ void Track::replaceMetadataFromSource(
         markDirtyAndUnlock(&lock);
 
         if (beatsAndBpmModified) {
-            emitBeatsAndBpmUpdated(newBpm);
+            emitBeatsAndBpmUpdated();
         }
         if (keysModified) {
-            emitKeysUpdated(newKey);
+            emit keyChanged();
         }
         if (oldReplayGain != newReplayGain) {
             emit replayGainUpdated(newReplayGain);
@@ -304,12 +302,10 @@ bool Track::replaceRecord(
     markDirtyAndUnlock(&locked);
 
     if (bpmUpdatedFlag) {
-        emit bpmUpdated(newBpm.getValue());
-        emit beatsUpdated();
-        emit bpmTextChanged();
+        emitBeatsAndBpmUpdated();
     }
     if (oldKey != newKey) {
-        emitKeysUpdated(newKey);
+        emit keyChanged();
     }
     if (oldReplayGain != newReplayGain) {
         emit replayGainUpdated(newReplayGain);
@@ -437,16 +433,13 @@ void Track::afterBeatsAndBpmUpdated(
         QMutexLocker* pLock) {
     DEBUG_ASSERT(pLock);
 
-    const auto bpm = getBpmWhileLocked();
     markDirtyAndUnlock(pLock);
-    emitBeatsAndBpmUpdated(bpm);
+    emitBeatsAndBpmUpdated();
 }
 
-void Track::emitBeatsAndBpmUpdated(
-        mixxx::Bpm newBpm) {
-    emit bpmUpdated(newBpm.getValue());
+void Track::emitBeatsAndBpmUpdated() {
+    emit bpmChanged();
     emit beatsUpdated();
-    emit bpmTextChanged();
 }
 
 void Track::emitMetadataChanged() {
@@ -461,12 +454,11 @@ void Track::emitMetadataChanged() {
     emit trackNumberChanged(getTrackNumber());
     emit trackTotalChanged(getTrackTotal());
     emit commentChanged(getComment());
-    emit bpmTextChanged();
+    emit bpmChanged();
     emit timesPlayedChanged();
     emit durationChanged();
     emit infoChanged();
-    emit keysUpdated();
-    emit bpmUpdated(getBpm());
+    emit keyChanged();
 }
 
 void Track::setMetadataSynchronized(bool metadataSynchronized) {
@@ -1328,15 +1320,8 @@ void Track::setRating (int rating) {
 }
 
 void Track::afterKeysUpdated(QMutexLocker* pLock) {
-    const auto newKey = m_record.getGlobalKey();
     markDirtyAndUnlock(pLock);
-    emitKeysUpdated(newKey);
-}
-
-void Track::emitKeysUpdated(mixxx::track::io::key::ChromaticKey newKey) {
-    // New key might be INVALID. We don't care.
-    emit keyUpdated(KeyUtils::keyToNumericValue(newKey));
-    emit keysUpdated();
+    emit keyChanged();
 }
 
 void Track::setKeys(const Keys& keys) {
