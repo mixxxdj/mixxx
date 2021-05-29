@@ -303,6 +303,7 @@ bool Track::replaceRecord(
     if (bpmUpdatedFlag) {
         emit bpmUpdated(newBpm.getValue());
         emit beatsUpdated();
+        emit bpmTextChanged();
     }
     if (oldKey != newKey) {
         emitKeysUpdated(newKey);
@@ -440,6 +441,7 @@ void Track::emitBeatsAndBpmUpdated(
         mixxx::Bpm newBpm) {
     emit bpmUpdated(newBpm.getValue());
     emit beatsUpdated();
+    emit bpmTextChanged();
 }
 
 void Track::setMetadataSynchronized(bool metadataSynchronized) {
