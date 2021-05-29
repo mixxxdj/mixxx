@@ -569,18 +569,18 @@
                 <NumberStates>3</NumberStates>
                 <State>
                   <Number>0</Number>
-                  <Pressed>skin:/btn/btn_record.png</Pressed>
-                  <Unpressed>skin:/btn/btn_record.png</Unpressed>
+                  <Pressed>skin:/btn/btn_record_off.png</Pressed>
+                  <Unpressed>skin:/btn/btn_record_off.png</Unpressed>
                 </State>
                   <State>
                   <Number>1</Number>
-                  <Pressed>skin:/btn/btn_record_overdown.png</Pressed>
-                  <Unpressed>skin:/btn/btn_record_overdown.png</Unpressed>
+                  <Pressed>skin:/btn/btn_record_ready.png</Pressed>
+                  <Unpressed>skin:/btn/btn_record_ready.png</Unpressed>
                 </State>
                 <State>
                   <Number>2</Number>
-                  <Pressed>skin:/btn/btn_record_over.png</Pressed>
-                  <Unpressed>skin:/btn/btn_record_over.png</Unpressed>
+                  <Pressed>skin:/btn/btn_record_on.png</Pressed>
+                  <Unpressed>skin:/btn/btn_record_on.png</Unpressed>
                 </State>
                 <Pos>214,18</Pos>
                 <Connection>
