@@ -302,7 +302,7 @@ void DlgTrackInfo::updateFromTrack(const Track& track) {
 }
 
 void DlgTrackInfo::replaceTrackRecord(
-        mixxx::TrackRecord&& trackRecord,
+        mixxx::TrackRecord trackRecord,
         const QString& trackLocation) {
     // Signals are already blocked
     m_trackRecord = std::move(trackRecord);
@@ -314,11 +314,12 @@ void DlgTrackInfo::replaceTrackRecord(
     // Executed concurrently
     CoverArtCache::requestCover(this, coverInfo);
 
+    // Non-editable fields
     txtType->setText(
-            trackRecord.getFileType());
+            m_trackRecord.getFileType());
     txtDateAdded->setText(
             mixxx::displayLocalDateTime(
-                    trackRecord.getDateAdded()));
+                    m_trackRecord.getDateAdded()));
 
     updateTrackMetadataFields();
 }

@@ -91,7 +91,7 @@ class DlgTrackInfo : public QDialog, public Ui::DlgTrackInfo {
     void updateFromTrack(const Track& track);
 
     void replaceTrackRecord(
-            mixxx::TrackRecord&& trackRecord,
+            mixxx::TrackRecord trackRecord,
             const QString& trackLocation);
     void resetTrackRecord() {
         replaceTrackRecord(
