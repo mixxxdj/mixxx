@@ -13,6 +13,7 @@
 #include "skin/legacy/launchimage.h"
 #include "skin/legacy/legacyskin.h"
 #include "skin/legacy/legacyskinparser.h"
+#include "skin/qml/qmlskin.h"
 #include "util/debug.h"
 #include "util/timer.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
@@ -21,6 +22,7 @@ namespace mixxx {
 namespace skin {
 
 using legacy::LegacySkin;
+using qml::QmlSkin;
 
 SkinLoader::SkinLoader(UserSettingsPointer pConfig) :
         m_pConfig(pConfig) {
@@ -194,6 +196,13 @@ SkinPointer SkinLoader::skinFromDirectory(const QDir& dir) const {
     SkinPointer pSkin = LegacySkin::fromDirectory(dir);
     if (pSkin && pSkin->isValid()) {
         return pSkin;
+    }
+
+    if (m_pConfig->getValue(ConfigKey("[Config]", "experimental_qml_skin_support"), false)) {
+        pSkin = QmlSkin::fromDirectory(dir);
+        if (pSkin && pSkin->isValid()) {
+            return pSkin;
+        }
     }
 
     return nullptr;

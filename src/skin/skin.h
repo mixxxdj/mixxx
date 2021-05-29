@@ -22,6 +22,7 @@ namespace skin {
 
 enum class SkinType {
     Legacy,
+    QML,
 };
 
 class Skin {

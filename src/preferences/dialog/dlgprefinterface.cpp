@@ -40,6 +40,11 @@ DlgPrefInterface::DlgPrefInterface(
           m_bRebootMixxxView(false) {
     setupUi(this);
 
+    VERIFY_OR_DEBUG_ASSERT(m_pSkin != nullptr) {
+        qWarning() << "Skipping creation of DlgPrefInterface because there is no skin available.";
+        return;
+    }
+
     // Locale setting
     // Iterate through the available locales and add them to the combobox
     // Borrowed following snippet from http://qt-project.org/wiki/How_to_create_a_multi_language_application
