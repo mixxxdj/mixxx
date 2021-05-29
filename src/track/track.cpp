@@ -1616,6 +1616,7 @@ void Track::setAudioProperties(
                 m_record.refMetadata().ptrStreamInfo(),
                 streamInfo)) {
         markDirtyAndUnlock(&lock);
+        emit durationChanged();
     }
 }
 
@@ -1631,6 +1632,7 @@ void Track::updateStreamInfoFromSource(
         // Nothing more to do
         if (updated) {
             markDirtyAndUnlock(&lock);
+            emit durationChanged();
         }
         return;
     }
