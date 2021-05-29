@@ -5,28 +5,9 @@ Item {
     id: root
 
     required property string group
-    property int rpm: 33
+    property real rpm: 33
     property bool indicatorVisible: true
     property alias indicatorDelegate: indicatorContainer.data
-
-    function update() {
-        if (!indicatorContainer.visible)
-            return ;
-
-        let positionNormalized = playPositionControl.value;
-        let totalFrames = samplesControl.value / 2;
-        let sampleRate = sampleRateControl.value;
-        if (isNaN(positionNormalized) || isNaN(totalFrames) || isNaN(sampleRate) || totalFrames <= 0 || sampleRate <= 0)
-            return ;
-
-        // Convert playpos to seconds.
-        let t = positionNormalized * totalFrames / sampleRate;
-        // Bad samplerate or number of track samples.
-        if (isNaN(t))
-            return ;
-
-        indicatorRotation.angle = (360 * rpm / 60 * t) % 360;
-    }
 
     // Avoid animation short blinking of spinny during startup
     Component.onCompleted: indicatorTransition.enabled = true
@@ -36,7 +17,6 @@ Item {
 
         group: root.group
         key: "track_samples"
-        onValueChanged: root.update()
     }
 
     Mixxx.ControlProxy {
@@ -44,7 +24,6 @@ Item {
 
         group: root.group
         key: "track_samplerate"
-        onValueChanged: root.update()
     }
 
     Mixxx.ControlProxy {
@@ -52,7 +31,6 @@ Item {
 
         group: root.group
         key: "playposition"
-        onValueChanged: root.update()
     }
 
     Item {
@@ -76,9 +54,14 @@ Item {
         transform: Rotation {
             id: indicatorRotation
 
+            property real roundsPerSecond: root.rpm / 60
+            property real totalFrames: samplesControl.value / 2
+            property real positionSeconds: (!isNaN(sampleRateControl.value) && sampleRateControl.value > 0) ? playPositionControl.value * totalFrames / sampleRateControl.value : 0
+            property real rotationFactor: indicatorRotation.roundsPerSecond * indicatorRotation.positionSeconds % 1
+
             origin.x: root.width / 2
             origin.y: root.height / 2
-            angle: 0
+            angle: 360 * rotationFactor
         }
 
         states: State {
