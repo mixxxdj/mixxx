@@ -84,9 +84,6 @@ Track::Track(
                 << "->"
                 << numberOfInstancesBefore + 1;
     }
-
-    connect(this, &Track::titleChanged, this, &Track::infoChanged);
-    connect(this, &Track::artistChanged, this, &Track::infoChanged);
 }
 
 Track::~Track() {
@@ -544,6 +541,7 @@ void Track::setTitle(const QString& s) {
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTitle(), value)) {
         markDirtyAndUnlock(&lock);
         emit titleChanged(value);
+        emit infoChanged();
     }
 }
 
@@ -558,6 +556,7 @@ void Track::setArtist(const QString& s) {
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrArtist(), value)) {
         markDirtyAndUnlock(&lock);
         emit artistChanged(value);
+        emit infoChanged();
     }
 }
 
