@@ -173,6 +173,13 @@ void DlgTrackInfo::init() {
                 m_trackRecord.refMetadata().refAlbumInfo().setArtist(
                         txtAlbumArtist->text().trimmed());
             });
+    connect(txtGenre,
+            &QLineEdit::editingFinished,
+            this,
+            [this]() {
+                m_trackRecord.refMetadata().refTrackInfo().setGenre(
+                        txtGenre->text().trimmed());
+            });
     connect(txtComposer,
             &QLineEdit::editingFinished,
             this,
