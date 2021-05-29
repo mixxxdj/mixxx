@@ -84,6 +84,9 @@ Track::Track(
                 << "->"
                 << numberOfInstancesBefore + 1;
     }
+
+    connect(this, &Track::titleChanged, this, &Track::infoChanged);
+    connect(this, &Track::artistChanged, this, &Track::infoChanged);
 }
 
 Track::~Track() {
@@ -506,6 +509,7 @@ void Track::setDuration(mixxx::Duration duration) {
                 m_record.refMetadata().refStreamInfo().ptrDuration(),
                 duration)) {
         markDirtyAndUnlock(&lock);
+        emit durationChanged();
     }
 }
 
@@ -536,8 +540,10 @@ QString Track::getTitle() const {
 
 void Track::setTitle(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTitle(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTitle(), value)) {
         markDirtyAndUnlock(&lock);
+        emit titleChanged(value);
     }
 }
 
@@ -548,8 +554,10 @@ QString Track::getArtist() const {
 
 void Track::setArtist(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrArtist(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrArtist(), value)) {
         markDirtyAndUnlock(&lock);
+        emit artistChanged(value);
     }
 }
 
@@ -560,8 +568,10 @@ QString Track::getAlbum() const {
 
 void Track::setAlbum(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refAlbumInfo().ptrTitle(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refAlbumInfo().ptrTitle(), value)) {
         markDirtyAndUnlock(&lock);
+        emit albumChanged(value);
     }
 }
 
@@ -572,8 +582,10 @@ QString Track::getAlbumArtist()  const {
 
 void Track::setAlbumArtist(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refAlbumInfo().ptrArtist(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refAlbumInfo().ptrArtist(), value)) {
         markDirtyAndUnlock(&lock);
+        emit albumArtistChanged(value);
     }
 }
 
@@ -584,8 +596,10 @@ QString Track::getYear()  const {
 
 void Track::setYear(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrYear(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrYear(), value)) {
         markDirtyAndUnlock(&lock);
+        emit yearChanged(value);
     }
 }
 
@@ -596,8 +610,10 @@ QString Track::getGenre() const {
 
 void Track::setGenre(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGenre(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGenre(), value)) {
         markDirtyAndUnlock(&lock);
+        emit genreChanged(value);
     }
 }
 
@@ -608,8 +624,10 @@ QString Track::getComposer() const {
 
 void Track::setComposer(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrComposer(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrComposer(), value)) {
         markDirtyAndUnlock(&lock);
+        emit composerChanged(value);
     }
 }
 
@@ -620,8 +638,10 @@ QString Track::getGrouping()  const {
 
 void Track::setGrouping(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGrouping(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrGrouping(), value)) {
         markDirtyAndUnlock(&lock);
+        emit groupingChanged(value);
     }
 }
 
@@ -637,15 +657,19 @@ QString Track::getTrackTotal()  const {
 
 void Track::setTrackNumber(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTrackNumber(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTrackNumber(), value)) {
         markDirtyAndUnlock(&lock);
+        emit trackNumberChanged(value);
     }
 }
 
 void Track::setTrackTotal(const QString& s) {
     QMutexLocker lock(&m_qMutex);
-    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTrackTotal(), s.trimmed())) {
+    const QString value = s.trimmed();
+    if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrTrackTotal(), value)) {
         markDirtyAndUnlock(&lock);
+        emit trackTotalChanged(value);
     }
 }
 
@@ -658,6 +682,7 @@ void Track::setPlayCounter(const PlayCounter& playCounter) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(m_record.ptrPlayCounter(), playCounter)) {
         markDirtyAndUnlock(&lock);
+        emit timesPlayedChanged();
     }
 }
 
@@ -667,6 +692,7 @@ void Track::updatePlayCounter(bool bPlayed) {
     playCounter.updateLastPlayedNowAndTimesPlayed(bPlayed);
     if (compareAndSet(m_record.ptrPlayCounter(), playCounter)) {
         markDirtyAndUnlock(&lock);
+        emit timesPlayedChanged();
     }
 }
 
@@ -692,6 +718,7 @@ void Track::setComment(const QString& s) {
     QMutexLocker lock(&m_qMutex);
     if (compareAndSet(m_record.refMetadata().refTrackInfo().ptrComment(), s)) {
         markDirtyAndUnlock(&lock);
+        emit commentChanged(s);
     }
 }
 
