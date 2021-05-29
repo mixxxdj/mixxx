@@ -483,7 +483,7 @@ void DlgTrackInfo::saveTrack() {
     const QSignalBlocker signalBlocker(this);
 
     // Special case handling for the comment field that is not
-    // updated in m_trackMetadata while editing!
+    // updated by the editingFinished signal.
     m_trackRecord.refMetadata().refTrackInfo().setComment(txtComment->toPlainText());
 
     // If the user is editing the bpm or key and hits enter to close DlgTrackInfo,
