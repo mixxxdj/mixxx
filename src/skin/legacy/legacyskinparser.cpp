@@ -675,6 +675,9 @@ QWidget* LegacySkinParser::parseScrollable(const QDomElement& node) {
             }
         }
     }
+    pScrollable->setup(node, *m_pContext);
+    pScrollable->Init();
+
     m_pParent = pOldParent;
     return pScrollable;
 }
