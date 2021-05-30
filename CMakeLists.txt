@@ -1472,6 +1472,7 @@ add_executable(mixxx-test
   src/test/metadatatest.cpp
   src/test/metaknob_link_test.cpp
   src/test/midicontrollertest.cpp
+  src/test/controllers/Traktor_Kontrol_S3_test.cpp
   src/test/mixxxtest.cpp
   src/test/movinginterquartilemean_test.cpp
   src/test/nativeeffects_test.cpp

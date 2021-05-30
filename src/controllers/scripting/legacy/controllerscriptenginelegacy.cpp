@@ -250,6 +250,14 @@ bool ControllerScriptEngineLegacy::evaluateScriptFile(const QFileInfo& scriptFil
     return true;
 }
 
+QJSValue ControllerScriptEngineLegacy::evaluateCodeString(
+        const QString& program, const QString& fileName, int lineNumber) {
+    VERIFY_OR_DEBUG_ASSERT(m_pJSEngine) {
+        return QJSValue::UndefinedValue;
+    }
+    return m_pJSEngine->evaluate(program, fileName, lineNumber);
+}
+
 QJSValue ControllerScriptEngineLegacy::wrapArrayBufferCallback(const QJSValue& callback) {
     return m_makeArrayBufferWrapperFunction.call(QJSValueList{callback});
 }

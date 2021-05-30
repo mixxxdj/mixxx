@@ -31,8 +31,14 @@ class ControllerScriptEngineLegacy : public ControllerScriptEngineBase {
         m_scriptFiles = scripts;
     }
 
-  private:
+  protected:
+    friend class ControllerTest;
     bool evaluateScriptFile(const QFileInfo& scriptFile);
+    QJSValue evaluateCodeString(const QString& program,
+            const QString& fileName = QString(),
+            int lineNumber = 1);
+
+  private:
     void shutdown() override;
 
     QJSValue wrapArrayBufferCallback(const QJSValue& callback);
