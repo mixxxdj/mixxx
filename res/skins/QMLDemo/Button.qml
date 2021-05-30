@@ -11,6 +11,7 @@ AbstractButton {
     property color normalColor: Theme.buttonNormalColor
     required property color activeColor
     property color pressedColor: activeColor
+    property bool highlight: false
 
     implicitWidth: 52
     implicitHeight: 26
@@ -37,11 +38,11 @@ AbstractButton {
         },
         State {
             name: "active"
-            when: root.checked && !root.pressed
+            when: (root.highlight || root.checked) && !root.pressed
 
             PropertyChanges {
                 target: backgroundImage
-                source: "images/button_pressed.svg"
+                source: "images/button.svg"
             }
 
             PropertyChanges {
@@ -57,7 +58,7 @@ AbstractButton {
         },
         State {
             name: "inactive"
-            when: !root.checked && !root.pressed
+            when: !root.checked && !root.highlight && !root.pressed
 
             PropertyChanges {
                 target: backgroundImage

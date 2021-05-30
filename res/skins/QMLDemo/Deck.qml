@@ -209,32 +209,54 @@ Item {
         anchors.bottom: parent.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        height: 26
-
-        Skin.ControlButton {
-            id: playButton
-
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            text: "Play"
-            group: root.group
-            key: "play"
-            checkable: true
-            activeColor: Theme.deckActiveColor
-        }
+        height: 56
 
         Skin.ControlButton {
             id: cueButton
 
-            anchors.left: playButton.right
+            anchors.left: parent.left
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.leftMargin: 5
-            text: "cue"
             group: root.group
             key: "cue_default"
+            text: "Cue"
             activeColor: Theme.deckActiveColor
+        }
+
+        Skin.ControlButton {
+            id: playButton
+
+            anchors.top: cueButton.bottom
+            anchors.left: parent.left
+            anchors.bottom: parent.bottom
+            anchors.topMargin: 5
+            group: root.group
+            key: "play"
+            text: "Play"
+            checkable: true
+            activeColor: Theme.deckActiveColor
+        }
+
+        Row {
+            anchors.left: cueButton.right
+            anchors.top: parent.top
+            anchors.bottom: parent.bottom
+            anchors.leftMargin: 10
+            spacing: -1
+
+            Repeater {
+                model: 8
+
+                Skin.HotcueButton {
+                    // Make index a required property, workaround for
+                    // https://bugreports.qt.io/browse/QTBUG-86009
+                    required property int index
+
+                    hotcueNumber: index + 1
+                    group: root.group
+                }
+
+            }
+
         }
 
         Skin.ControlButton {
@@ -242,7 +264,6 @@ Item {
 
             anchors.right: parent.right
             anchors.top: parent.top
-            anchors.bottom: parent.bottom
             text: "Sync"
             group: root.group
             key: "sync_enabled"
