@@ -22,7 +22,10 @@ Rectangle {
         anchors.bottom: parent.bottom
         anchors.margins: 5
         width: height
-        color: Theme.deckLineColor
+        radius: height / 2
+        border.width: 2
+        border.color: Theme.deckLineColor
+        color: "transparent"
     }
 
     Item {
@@ -46,11 +49,17 @@ Rectangle {
             group: root.group
             indicatorVisible: false
 
-            indicatorDelegate: Image {
-                mipmap: true
+            indicator: Item {
                 width: spinnyIndicator.width
                 height: spinnyIndicator.height
-                source: "../LateNight/palemoon/style/spinny_indicator.svg"
+
+                Rectangle {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    width: 2
+                    height: parent.height / 2
+                    color: Theme.deckTextColor
+                }
+
             }
 
         }
