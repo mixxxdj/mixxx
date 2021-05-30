@@ -69,8 +69,8 @@ MC7000.VinylModeOn = true; // default: true
 // Scratch algorithm parameters
 MC7000.scratchParams = {
     recordSpeed: 33 + 1/3, // default: 33 + 1/3
-    alpha: (1.0/10),   // default: (1.0/10)
-    beta: (1.0/10)/32  // default: (1.0/10)/32
+    alpha: (1.0/100),   // default: (1.0/10)
+    beta: (1.0/100)/32  // default: (1.0/10)/32
 };
 
 // Sensitivity factor of the jog wheel (also depends on audio latency)
