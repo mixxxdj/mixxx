@@ -70,9 +70,9 @@ Rectangle {
         id: infoBarTitle
 
         text: "Title Placeholder"
-        anchors.top: infoBarHSeparator.top
+        anchors.top: infoBarHSeparator1.top
         anchors.left: infoBarVSeparator.left
-        anchors.right: infoBarHSeparator.left
+        anchors.right: infoBarHSeparator1.left
         anchors.bottom: infoBarVSeparator.bottom
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -98,8 +98,8 @@ Rectangle {
         text: "Artist Placeholder"
         anchors.top: infoBarVSeparator.bottom
         anchors.left: infoBarVSeparator.left
-        anchors.right: infoBarHSeparator.left
-        anchors.bottom: infoBarHSeparator.bottom
+        anchors.right: infoBarHSeparator1.left
+        anchors.bottom: infoBarHSeparator1.bottom
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -108,13 +108,53 @@ Rectangle {
         color: infoBar.textColor
     }
 
+    Rectangle {
+        id: infoBarHSeparator1
+
+        anchors.top: infoBar.top
+        anchors.bottom: infoBar.bottom
+        anchors.right: infoBarKey.left
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+        width: 2
+        color: infoBar.lineColor
+    }
+
+    Text {
+        id: infoBarKey
+
+        anchors.top: infoBarHSeparator1.top
+        anchors.bottom: infoBarVSeparator.top
+        width: rateSlider.width
+        anchors.right: infoBarHSeparator2.left
+        verticalAlignment: Text.AlignVCenter
+        horizontalAlignment: Text.AlignHCenter
+        text: "KEY"
+        font.family: Theme.fontFamily
+        font.pixelSize: Theme.textFontPixelSize
+        color: infoBar.textColor
+    }
+
+    Rectangle {
+        id: infoBarHSeparator2
+
+        anchors.top: infoBar.top
+        anchors.bottom: infoBar.bottom
+        anchors.right: infoBarRateRatio.left
+        anchors.topMargin: 5
+        anchors.bottomMargin: 5
+        width: 2
+        color: infoBar.lineColor
+    }
+
     Text {
         id: infoBarRate
 
-        anchors.top: infoBarHSeparator.top
+        anchors.top: infoBarHSeparator2.top
         anchors.bottom: infoBarVSeparator.top
-        anchors.left: infoBarRightSpace.left
-        anchors.right: infoBarRightSpace.right
+        width: rateSlider.width
+        anchors.right: infoBar.right
+        anchors.rightMargin: 5
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         text: bpmControl.value.toFixed(2)
@@ -137,9 +177,10 @@ Rectangle {
         property real ratio: ((rateRatioControl.value - 1) * 100).toPrecision(2)
 
         anchors.top: infoBarVSeparator.bottom
-        anchors.bottom: infoBarHSeparator.bottom
-        anchors.left: infoBarRightSpace.left
-        anchors.right: infoBarRightSpace.right
+        anchors.bottom: infoBarHSeparator1.bottom
+        width: rateSlider.width
+        anchors.right: infoBar.right
+        anchors.rightMargin: 5
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
         font.family: Theme.fontFamily
@@ -154,27 +195,6 @@ Rectangle {
             key: "rate_ratio"
         }
 
-    }
-
-    Item {
-        id: infoBarRightSpace
-
-        anchors.top: infoBar.top
-        anchors.bottom: infoBar.bottom
-        anchors.right: infoBar.right
-        width: rateSlider.width
-    }
-
-    Rectangle {
-        id: infoBarHSeparator
-
-        anchors.top: infoBar.top
-        anchors.bottom: infoBar.bottom
-        anchors.right: infoBarRightSpace.left
-        anchors.topMargin: 5
-        anchors.bottomMargin: 5
-        width: 2
-        color: infoBar.lineColor
     }
 
 }

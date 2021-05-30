@@ -67,15 +67,96 @@ Item {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
 
+            Rectangle {
+                id: waveformBarVSeparator
+
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.rightMargin: 5
+                anchors.leftMargin: 5
+                height: 2
+                color: infoBar.lineColor
+            }
+
+            InfoBarButton {
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.leftMargin: 5
+                width: rateSlider.width
+                group: "[EffectRack1_EffectUnit1]"
+                key: "group_" + root.group + "_enable"
+                checkable: true
+                activeColor: Theme.deckActiveColor
+
+                foreground: Text {
+                    anchors.centerIn: parent
+                    text: "FX 1"
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    font.family: Theme.fontFamily
+                    font.bold: true
+                    font.pixelSize: Theme.textFontPixelSize
+                    color: infoBar.textColor
+                }
+
+            }
+
+            Rectangle {
+                id: waveformBarHSeparator1
+
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: waveformBarVSeparator.left
+                anchors.leftMargin: rateSlider.width
+                width: 2
+                color: infoBar.lineColor
+            }
+
+            InfoBarButton {
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: waveformBarHSeparator1.left
+                width: rateSlider.width
+                group: "[EffectRack1_EffectUnit2]"
+                key: "group_" + root.group + "_enable"
+                checkable: true
+                activeColor: Theme.deckActiveColor
+
+                foreground: Text {
+                    anchors.centerIn: parent
+                    text: "FX 2"
+                    verticalAlignment: Text.AlignVCenter
+                    horizontalAlignment: Text.AlignHCenter
+                    font.family: Theme.fontFamily
+                    font.bold: true
+                    font.pixelSize: Theme.textFontPixelSize
+                    color: infoBar.textColor
+                }
+
+            }
+
+            Rectangle {
+                id: waveformBarHSeparator2
+
+                anchors.top: parent.top
+                anchors.bottom: parent.bottom
+                anchors.left: waveformBarHSeparator1.right
+                anchors.leftMargin: rateSlider.width
+                width: 2
+                color: infoBar.lineColor
+            }
+
             Text {
                 id: waveformBarPosition
 
                 anchors.top: parent.top
                 anchors.bottom: parent.bottom
-                anchors.left: parent.left
+                anchors.left: waveformBarHSeparator2.right
                 anchors.leftMargin: 5
                 verticalAlignment: Text.AlignVCenter
-                horizontalAlignment: Text.AlignHCenter
+                horizontalAlignment: Text.AlignLeft
                 font.family: Theme.fontFamily
                 font.pixelSize: Theme.textFontPixelSize
                 color: infoBar.textColor
@@ -123,18 +204,6 @@ Item {
 
             }
 
-            Rectangle {
-                id: waveformBarVSeparator
-
-                anchors.top: parent.top
-                anchors.left: parent.left
-                anchors.right: parent.right
-                anchors.rightMargin: 5
-                anchors.leftMargin: 5
-                height: 2
-                color: infoBar.lineColor
-            }
-
             Item {
                 id: waveformBarRightSpace
 
@@ -164,7 +233,12 @@ Item {
                 key: "quantize"
                 checkable: true
                 activeColor: Theme.deckActiveColor
-                foreground: "images/icon_quantize.svg"
+
+                foreground: Image {
+                    anchors.centerIn: parent
+                    source: "images/icon_quantize.svg"
+                }
+
             }
 
             Item {
@@ -177,7 +251,7 @@ Item {
             }
 
             Rectangle {
-                id: waveformBarHSeparator2
+                id: waveformBarHSeparator3
 
                 anchors.top: waveformBar.top
                 anchors.bottom: waveformBar.bottom
@@ -196,7 +270,12 @@ Item {
                 key: "passthrough"
                 checkable: true
                 activeColor: Theme.deckActiveColor
-                foreground: "images/icon_passthrough.svg"
+
+                foreground: Image {
+                    anchors.centerIn: parent
+                    source: "images/icon_passthrough.svg"
+                }
+
             }
 
         }

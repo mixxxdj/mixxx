@@ -10,7 +10,7 @@ AbstractButton {
 
     required property string group
     required property string key
-    property alias foreground: foregroundImage.source
+    property alias foreground: foreground.data
     property color normalColor: Theme.buttonNormalColor
     required property color activeColor
     property color pressedColor: activeColor
@@ -54,17 +54,17 @@ AbstractButton {
         value: root.checked || root.down
     }
 
-    Image {
-        id: foregroundImage
+    Item {
+        id: foreground
 
-        anchors.centerIn: parent
+        anchors.fill: parent
     }
 
     ColorOverlay {
         id: colorOverlay
 
-        anchors.fill: foregroundImage
-        source: foregroundImage
+        anchors.fill: foreground
+        source: foreground
         color: root.normalColor
     }
 
