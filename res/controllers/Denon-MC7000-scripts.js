@@ -37,7 +37,7 @@ var MC7000 = {};
 // 1) Beat LED in Slicer mode (counts every 8 beats AFTER the CUE point)
 //    only works for CONSTANT TEMPO tracks
 //    needs beat grid and CUE point set
-MC7000.experimental = false;
+MC7000.experimental = true;
 
 // Wanna have Needle Search active while playing a track ?
 // In any case Needle Search is available holding "SHIFT" down.
@@ -496,12 +496,12 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
     // activate and clear Hot Cues
     if (MC7000.PADModeCue[deckNumber] && engine.getValue(group, "track_loaded") === 1) {
         for (i = 1; i <= 8; i++) {
-            if (control === 0x14 + i - 1 && value >= 0x01) {
+            if (control === 0x14 + i - 1 && value === 0x7F) {
                 engine.setValue(group, "hotcue_" + i + "_activate", true);
-            } else {
+            } else if (control === 0x14 + i - 1 && value === 0x00) {
                 engine.setValue(group, "hotcue_" + i + "_activate", false);
-            }
-            if (control === 0x1C + i - 1 && value >= 0x01) {
+                engine.setValue(group, "slip_enabled", 0);
+            } else if (control === 0x1C + i - 1 && value === 0x7F) {
                 engine.setValue(group, "hotcue_" + i + "_clear", true);
                 midi.sendShortMsg(0x94 + deckOffset, 0x1C + i - 1, MC7000.padColor.hotcueoff);
             }
@@ -562,6 +562,11 @@ MC7000.PadButtons = function(channel, control, value, status, group) {
                 if (engine.getValue("[Sampler" + i + "]", "track_loaded") === 0) {
                     engine.setValue("[Sampler" + i + "]", "LoadSelectedTrack", 1);
                 } else if (engine.getValue("[Sampler" + i + "]", "track_loaded") === 1) {
+                    // STOP PLAYING SAMPLERS ...
+                    for (j = 1; j <=8; j++) {
+                        engine.setValue("[Sampler" + j + "]", "cue_gotoandstop", 1);
+                    }
+                    // ... BEFORE THE ACTUAL SAMPLER TO PLAY GETS STARTED
                     engine.setValue("[Sampler" + i + "]", "cue_gotoandplay", 1);
                 }
             } else if (control === 0x1C + i - 1 && value >= 0x01) {
@@ -648,6 +653,7 @@ MC7000.wheelTouch = function(channel, control, value, status, group) {
                 MC7000.scratchParams.beta);
         } else {
             engine.scratchDisable(deckNumber);
+            engine.setValue(group, "slip_enabled", 0);
         }
     }
 };
@@ -659,7 +665,7 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
 
     // A: For a control that centers on 0:
     var numTicks = (value < 0x64) ? value : (value - 128);
-    var adjustedSpeed = numTicks * MC7000.jogSensitivity * 25;
+    var adjustedSpeed = numTicks * MC7000.jogSensitivity / 10;
     var deckNumber = script.deckFromGroup(group);
     var deckOffset = deckNumber - 1;
     if (engine.isScratching(deckNumber)) {
@@ -668,13 +674,11 @@ MC7000.wheelTurn = function(channel, control, value, status, group) {
     } else {
         if (MC7000.shift[deckOffset]) {
             // While Shift Button pressed -> Search through track
-            var jogSearch = 300 * adjustedSpeed / MC7000.jogWheelTicksPerRevolution;
+            var jogSearch = 100 * adjustedSpeed;
             engine.setValue(group, "jog", jogSearch);
         } else {
             // While Shift Button released -> Pitch Bend
-            var jogDelta = adjustedSpeed / MC7000.jogWheelTicksPerRevolution;
-            var jogAbsolute = jogDelta + engine.getValue(group, "jog");
-            engine.setValue(group, "jog", jogAbsolute);
+            engine.setValue(group, "jog", adjustedSpeed);
         }
     }
 };
