@@ -24,27 +24,27 @@ void DeviceChannelListener::Process(const hss1394::uint8 *pBuffer, hss1394::uint
         unsigned char status = pBuffer[i];
         unsigned char note;
         unsigned char velocity;
-        switch (status & 0xF0) {
-            case MIDI_NOTE_OFF:
-            case MIDI_NOTE_ON:
-            case MIDI_AFTERTOUCH:
-            case MIDI_CC:
-            case MIDI_PITCH_BEND:
-                if (i + 2 < uBufferSize) {
-                    note = pBuffer[i+1];
-                    velocity = pBuffer[i+2];
-                    emit receivedShortMessage(status, note, velocity, timestamp);
-                } else {
-                    qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
-                }
-                i += 3;
-                break;
-            default:
-                // Handle platter messages and any others that are not 3 bytes
-                QByteArray byteArray(reinterpret_cast<const char*>(pBuffer), uBufferSize);
-                emit receivedSysex(byteArray, timestamp);
-                i = uBufferSize;
-                break;
+        switch (MidiUtils::opCodeFromStatus(status)) {
+        case MidiOpCode::NoteOff:
+        case MidiOpCode::NoteOn:
+        case MidiOpCode::PolyphonicKeyPressure:
+        case MidiOpCode::ControlChange:
+        case MidiOpCode::PitchBendChange:
+            if (i + 2 < uBufferSize) {
+                note = pBuffer[i + 1];
+                velocity = pBuffer[i + 2];
+                emit receivedShortMessage(status, note, velocity, timestamp);
+            } else {
+                qWarning() << "Buffer underflow in DeviceChannelListener::Process()";
+            }
+            i += 3;
+            break;
+        default:
+            // Handle platter messages and any others that are not 3 bytes
+            QByteArray byteArray(reinterpret_cast<const char*>(pBuffer), uBufferSize);
+            emit receivedSysex(byteArray, timestamp);
+            i = uBufferSize;
+            break;
         }
     }
 }
@@ -177,10 +177,12 @@ void Hss1394Controller::sendShortMsg(unsigned char status, unsigned char byte1,
     const unsigned char data[3] = {status, byte1, byte2};
 
     int bytesSent = m_pChannel->SendChannelBytes(data, 3);
-    controllerDebug(MidiUtils::formatMidiMessage(getName(),
-                                                 status, byte1, byte2,
-                                                 MidiUtils::channelFromStatus(status),
-                                                 MidiUtils::opCodeFromStatus(status)));
+    controllerDebug(MidiUtils::formatMidiOpCode(getName(),
+            status,
+            byte1,
+            byte2,
+            MidiUtils::channelFromStatus(status),
+            MidiUtils::opCodeFromStatus(status)));
 
     if (bytesSent != 3) {
         qWarning() << "Sent" << bytesSent << "of 3 bytes:" << status << byte1 << byte2;

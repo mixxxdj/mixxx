@@ -34,7 +34,7 @@ void ControlDelegate::paint(QPainter* painter,
         QModelIndex optionsColumn = index.sibling(index.row(),
                                                   m_iMidiOptionsColumn);
         MidiOptions options = optionsColumn.data().value<MidiOptions>();
-        m_bIsIndexScript = options.script;
+        m_bIsIndexScript = options.testFlag(MidiOption::Script);
     }
 
     QStyledItemDelegate::paint(painter, option, index);
