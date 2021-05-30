@@ -1,57 +1,46 @@
+import "." as Skin
 import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
-import QtQuick.Layouts 1.11
+import QtQuick.Shapes 1.15
+import "Theme"
 
-Item {
+Column {
     id: root
 
     required property string group
 
-    implicitWidth: 35
-    implicitHeight: 150
+    spacing: 4
 
-    ColumnLayout {
-        EqKnob {
-            channelGroup: root.group
-            key: "parameter3"
-        }
+    Knob {
+        group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        key: "parameter3"
+        color: Theme.eqHighColor
+    }
 
-        EqKnob {
-            channelGroup: root.group
-            key: "parameter2"
-        }
+    Knob {
+        group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        key: "parameter2"
+        color: Theme.eqMidColor
+    }
 
-        EqKnob {
-            channelGroup: root.group
-            key: "parameter1"
-        }
+    Knob {
+        group: "[EqualizerRack1_" + root.group + "_Effect1]"
+        key: "parameter1"
+        color: Theme.eqLowColor
+    }
 
-        MixxxControls.Knob {
-            id: filterKnob
+    Knob {
+        group: "[QuickEffectRack1_" + root.group + "]"
+        arcStyle: ShapePath.DashLine
+        arcStylePattern: [2, 2]
+        key: "super1"
+        color: Theme.eqFxColor
+    }
 
-            width: 35
-            height: width
-            group: "[QuickEffectRack1_" + root.group + "]"
-            key: "super1"
-            arc: true
-            arcRadius: 15
-            arcColor: "#518f00"
-            arcWidth: 2
-
-            background: Image {
-                source: "../LateNight/palemoon/knobs/knob_bg_master.svg"
-                width: filterKnob.width
-                height: filterKnob.width / 7 * 6
-            }
-
-            foreground: Image {
-                source: "../LateNight/palemoon/knobs/knob_indicator_regular_green.svg"
-                width: filterKnob.width
-                height: filterKnob.width / 7 * 6
-            }
-
-        }
-
+    Skin.OrientationToggleButton {
+        group: root.group
+        key: "orientation"
+        color: Theme.crossfaderOrientationColor
     }
 
 }
