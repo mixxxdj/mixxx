@@ -322,7 +322,7 @@ WSearchLineEdit {
 
   #FxFlowIndicatorCollapsed {
     margin: 0px 0px 0px 0px;
-    background-image: url(skin:/palemoon/style/fx_flow_horizontal.svg) no-repeat center center;
+    background: url(skin:/palemoon/style/fx_flow_horizontal.svg) no-repeat center center;
   }
   #ToolbarSeparator {
     margin: 0px 5px;
@@ -695,7 +695,7 @@ WBeatSpinBox::down-button,
   #spinBoxTransition::up-button {
     height: 11px;
     subcontrol-position: top right;
-    image: url(skin:/palemoon/buttons/btn__spinbox_up.svg) no-repeat;
+    background-image: url(skin:/palemoon/buttons/btn__spinbox_up.svg);
     }
     WBeatSpinBox::up-button {
       margin: -2px -1px 0px 0px;
@@ -707,7 +707,7 @@ WBeatSpinBox::down-button,
   #spinBoxTransition::down-button {
     height: 11px;
     subcontrol-position: bottom right;
-    image: url(skin:/palemoon/buttons/btn__spinbox_down.svg) no-repeat;
+    background-image: url(skin:/palemoon/buttons/btn__spinbox_down.svg);
     }
     WBeatSpinBox::down-button {
       margin: 0px -1px -3px 0px;
@@ -924,7 +924,7 @@ WEffectSelector:!editable:on {
   }
   WEffectSelector::down-arrow,
   #fadeModeCombobox::down-arrow {
-    image: url(skin:/palemoon/buttons/btn__fx_selector_down.svg);
+    background: url(skin:/palemoon/buttons/btn__fx_selector_down.svg) no-repeat center center;
   }
 
 
@@ -1460,7 +1460,7 @@ WEffectSelector:!editable,
   #BroadcastButton[displayValue="2"],
   #BroadcastButton[displayValue="3"],
   #SkinSettingsToggle[displayValue="1"],
-  #LibraryFeatureControls QPushButton:pressed
+  #LibraryFeatureControls QPushButton:pressed,
   QPushButton#pushButtonAutoDJ:checked,
   QPushButton#pushButtonRepeatPlaylist:checked,
   QPushButton#pushButtonAnalyze:checked,
@@ -1484,9 +1484,9 @@ WEffectSelector:!editable,
   #LibraryContainer QHeaderView::up-arrow,
   #LibraryContainer QHeaderView::down-arrow {
     outline: none;
-    /* ToDo: restore image
-    border-width: 1px 2px 1px 0px;
-    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header_sort.svg) 1 2 1 1; */
+    /* ToDo: restore image */
+    /* border-width: 1px 2px 1px 0px;
+    border-image: url(skin:/palemoon/buttons/btn_embedded_library_header.svg) 1 2 1 3; */
   }
 
   #LibraryFeatureControls QPushButton:!enabled {
@@ -1550,6 +1550,672 @@ WPushButton#CrossfaderButton,
 }
 
 
+
+/************** Button icons **************************************************/
+WPushButton#PlayDeck[value="0"] {
+  background: url(skin:/palemoon/buttons/btn__play_deck.svg) no-repeat center center;
+  }
+  WPushButton#PlayDeck[value="1"] {
+    background: url(skin:/palemoon/buttons/btn__play_deck_active.svg) no-repeat center center;
+  }
+
+#PlayDeckMini[value="0"] {
+  background: url(skin:/palemoon/buttons/btn__play_deck_mini.svg) no-repeat center center;
+  }
+  #PlayDeckMini[value="1"] {
+    background: url(skin:/palemoon/buttons/btn__pause_deck_mini.svg) no-repeat center center;
+  }
+#PlaySampler[value="0"],
+#PlayPreview[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__play_sampler.svg) no-repeat center center;
+  }
+  #PlaySampler[value="1"],
+  #PlayPreview[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__pause_sampler.svg) no-repeat center center;
+  }
+
+#CueDeck[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__cue_deck.svg) no-repeat center center;
+  }
+  #CueDeck[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__cue_deck_active.svg) no-repeat center center;
+  }
+
+#Reverse {
+  background: url(skin:/palemoon/buttons/btn__reverse.svg) no-repeat center center;
+  }
+  #Reverse[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__reverse_active.svg) no-repeat center center;
+  }
+
+#Hotcue1 WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__1.svg) no-repeat center center;
+  }
+  #Hotcue1 WPushButton[displayValue="1"][dark="false"],
+  #Hotcue1 WPushButton[displayValue="2"][dark="false"] {
+    background: url(skin:/palemoon/buttons/btn__1_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__1_loop.svg) no-repeat center center;
+  }
+
+#Hotcue2 WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__2.svg) no-repeat center center;
+  }
+  #Hotcue2 WPushButton[displayValue="1"],
+  #Hotcue2 WPushButton[displayValue="2"] {
+    background: url(skin:/palemoon/buttons/btn__2_active.svg) no-repeat center center;
+  }
+  #Hotcue2 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue2 WPushButton[displayValue="2"][dark="true"] {
+    background: url(skin:/palemoon/buttons/btn__2_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__2_loop.svg) no-repeat center center;
+  }
+
+#Hotcue3 WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__3.svg) no-repeat center center;
+  }
+  #Hotcue3 WPushButton[displayValue="1"],
+  #Hotcue3 WPushButton[displayValue="2"] {
+    background: url(skin:/palemoon/buttons/btn__3_active.svg) no-repeat center center;
+  }
+  #Hotcue3 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue3 WPushButton[displayValue="2"][dark="true"] {
+    background: url(skin:/palemoon/buttons/btn__3_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__3_loop.svg) no-repeat center center;
+  }
+
+#Hotcue4 WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__4.svg) no-repeat center center;
+  }
+  #Hotcue4 WPushButton[displayValue="1"],
+  #Hotcue4 WPushButton[displayValue="2"] {
+    background: url(skin:/palemoon/buttons/btn__4_active.svg) no-repeat center center;
+  }
+  #Hotcue4 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue4 WPushButton[displayValue="2"][dark="true"] {
+    background: url(skin:/palemoon/buttons/btn__4_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__4_loop.svg) no-repeat center center;
+  }
+
+#Hotcue5 WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__5.svg) no-repeat center center;
+  }
+  #Hotcue5 WPushButton[displayValue="1"],
+  #Hotcue5 WPushButton[displayValue="2"] {
+    background: url(skin:/palemoon/buttons/btn__5_active.svg) no-repeat center center;
+  }
+  #Hotcue5 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue5 WPushButton[displayValue="2"][dark="true"] {
+    background: url(skin:/palemoon/buttons/btn__5_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__5_loop.svg) no-repeat center center;
+  }
+
+#Hotcue6 WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__6.svg) no-repeat center center;
+  }
+  #Hotcue6 WPushButton[displayValue="1"],
+  #Hotcue6 WPushButton[displayValue="2"] {
+    background: url(skin:/palemoon/buttons/btn__6_active.svg) no-repeat center center;
+  }
+  #Hotcue6 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue6 WPushButton[displayValue="2"][dark="true"] {
+    background: url(skin:/palemoon/buttons/btn__6_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__6_loop.svg) no-repeat center center;
+  }
+
+#Hotcue7 WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__7.svg) no-repeat center center;
+  }
+  #Hotcue7 WPushButton[displayValue="1"],
+  #Hotcue7 WPushButton[displayValue="2"] {
+    background: url(skin:/palemoon/buttons/btn__7_active.svg) no-repeat center center;
+  }
+  #Hotcue7 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue7 WPushButton[displayValue="2"][dark="true"] {
+    background: url(skin:/palemoon/buttons/btn__7_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__7_loop.svg) no-repeat center center;
+  }
+
+#Hotcue8 WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__8.svg) no-repeat center center;
+  }
+  #Hotcue8 WPushButton[displayValue="1"],
+  #Hotcue8 WPushButton[displayValue="2"] {
+    background: url(skin:/palemoon/buttons/btn__8_active.svg) no-repeat center center;
+  }
+  #Hotcue8 WPushButton[displayValue="1"][dark="true"],
+  #Hotcue8 WPushButton[displayValue="2"][dark="true"] {
+    background: url(skin:/palemoon/buttons/btn__8_active_dark.svg) no-repeat center center;
+  }
+  #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="false"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="false"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="true"],
+  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="true"] {
+    image: url(skin:/palemoon/buttons/btn__8_loop.svg) no-repeat center center;
+  }
+
+#SpecialCueButton_intro_start WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__intro_start.svg) no-repeat center center;
+  }
+  #SpecialCueButton_intro_start WPushButton[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__intro_start_active.svg) no-repeat center center;
+  }
+#SpecialCueButton_intro_end WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__intro_end.svg) no-repeat center center;
+  }
+  #SpecialCueButton_intro_end WPushButton[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__intro_end_active.svg) no-repeat center center;
+  }
+#SpecialCueButton_outro_start WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__outro_start.svg) no-repeat center center;
+  }
+  #SpecialCueButton_outro_start WPushButton[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__outro_start_active.svg) no-repeat center center;
+  }
+#SpecialCueButton_outro_end WPushButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__outro_end.svg) no-repeat center center;
+  }
+  #SpecialCueButton_outro_end WPushButton[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__outro_end_active.svg) no-repeat center center;
+  }
+
+#LoopActivate[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__loop.svg) no-repeat center center;
+  }
+  #LoopActivate[displayValue="1"], #LoopActivate[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__loop_active.svg) no-repeat center center;
+  }
+#Reloop[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__reloop.svg) no-repeat center center;
+  }
+  #Reloop[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__reloop_active.svg) no-repeat center center;
+  }
+
+#LoopIn {
+  background: url(skin:/palemoon/buttons/btn__loop_in.svg) no-repeat center center;
+  }
+  #LoopIn[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__loop_in_active.svg) no-repeat center center;
+  }
+#LoopOut {
+  background: url(skin:/palemoon/buttons/btn__loop_out.svg) no-repeat center center;
+  }
+  #LoopOut[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__loop_out_active.svg) no-repeat center center;
+  }
+
+#JumpForward {
+  background: url(skin:/palemoon/buttons/btn__beatjump_right.svg) no-repeat center center;
+  }
+  #JumpForward[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__beatjump_right_active.svg) no-repeat center center;
+  }
+#JumpBack {
+  background: url(skin:/palemoon/buttons/btn__beatjump_left.svg) no-repeat center center;
+  }
+  #JumpBack[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__beatjump_left_active.svg) no-repeat center center;
+  }
+
+/* Key buttons */
+#KeyMatchReset {
+  background: url(skin:/palemoon/buttons/btn__key_match.svg) no-repeat center center;
+  }
+  #KeyMatchReset[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__key_match_active.svg) no-repeat center center;
+  }
+
+#KeyUp {
+  background: url(skin:/palemoon/buttons/btn__key_up.svg) no-repeat center center;
+  }
+  #KeyUp[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__key_up_active.svg) no-repeat center center;
+  }
+
+#KeyDown {
+  background: url(skin:/palemoon/buttons/btn__key_down.svg) no-repeat center center;
+  }
+  #KeyDown[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__key_down_active.svg) no-repeat center center;
+  }
+
+/* Rate buttons */
+#SyncDeck[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__sync_deck.svg) no-repeat center center;
+  }
+  #SyncDeck[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__sync_deck_active.svg) no-repeat center center;
+  }
+
+  #SyncSampler {
+    background: url(skin:/palemoon/buttons/btn__sync_sampler.svg) no-repeat center center;
+    }
+    #SyncSampler[displayValue="1"] {
+      background: url(skin:/palemoon/buttons/btn__sync_sampler_active.svg) no-repeat center center;
+    }
+
+  #RatePermUp {
+    background: url(skin:/palemoon/buttons/btn__plus.svg) no-repeat center center;}
+  #RatePermUp[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__plus_active.svg) no-repeat center center;
+    }
+
+  #RatePermDown {
+    background: url(skin:/palemoon/buttons/btn__minus.svg) no-repeat center center;}
+  #RatePermDown[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__minus_active.svg) no-repeat center center;
+    }
+
+  #RateTempUp {
+    background: url(skin:/palemoon/buttons/btn__arrow_right_up.svg) no-repeat center center;}
+  #RateTempUp[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__arrow_right_up_active.svg) no-repeat center center;
+    }
+  #RateTempDown {
+    background: url(skin:/palemoon/buttons/btn__arrow_left_down.svg) no-repeat center center;}
+  #RateTempDown[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__arrow_left_down_active.svg) no-repeat center center;
+    }
+
+  #RateTempUpRev {
+    background: url(skin:/palemoon/buttons/btn__arrow_right_down.svg) no-repeat center center;}
+  #RateTempUpRev[pressed="true"] {
+    background: url(skin:/palemoon/buttons/btn__arrow_right_down_active.svg) no-repeat center center;
+    }
+
+  #RateTempDownRev {
+    background: url(skin:/palemoon/buttons/btn__arrow_left_up.svg) no-repeat center center;
+    }
+    #RateTempDownRev[pressed="true"] {
+      background: url(skin:/palemoon/buttons/btn__arrow_left_up_active.svg) no-repeat center center;
+    }
+
+/* Mixer buttons */
+#PflButton[value="0"] {
+  background: url(skin:/palemoon/buttons/btn__pfl.svg) no-repeat center center;
+  }
+  #PflButton[value="1"] {
+    background: url(skin:/palemoon/buttons/btn__pfl_active.svg) no-repeat center center;
+  }
+
+#QuickEffectButton[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__star.svg) no-repeat center center;
+}
+
+/* EQ Kill button icons H / M / L */
+#EQKillButton_High[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__eq_kill_high.svg) no-repeat center center;
+}
+#EQKillButton_Mid[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__eq_kill_mid.svg) no-repeat center center;
+}
+#EQKillButton_Low[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__eq_kill_low.svg) no-repeat center center;
+}
+
+/* EQ Kill / QuickEffect dots */
+#EQKillDot[displayValue="0"],
+#QuickEffectDot[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__eq_kill_dot_off.svg) no-repeat center center;
+  }
+  #EQKillDot[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__eq_kill_dot_active_red.svg) no-repeat center center;
+  }
+  #QuickEffectDot[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__eq_kill_dot_active_green.svg) no-repeat center center;
+  }
+
+#RateCenter[highlight="0"] {
+  background: url(skin:/palemoon/buttons/btn__rate_center_off.svg) no-repeat center center;
+  }
+  #RateCenter[highlight="1"] {
+    background: url(skin:/palemoon/buttons/btn__rate_center_cyan.svg) no-repeat center center;
+  }
+
+#SplitCue[value="0"] {
+  background: url(skin:/palemoon/buttons/btn__split.svg) no-repeat center center;
+  }
+  #SplitCue[value="1"] {
+    background: url(skin:/palemoon/buttons/btn__split_active.svg) no-repeat center center;
+  }
+
+#FxExpand,
+#SamplerExpand,
+#LibExpand {
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+#FxExpand[value="0"],
+#SamplerExpand[value="0"],
+#LibExpand[value="0"] {
+  background: url(skin:/palemoon/buttons/btn__expand_dim.svg) no-repeat center center;
+  }
+  #FxExpand[value="1"],
+  #SamplerExpand[value="1"],
+  #LibExpand[value="1"] {
+    background: url(skin:/palemoon/buttons/btn__collapse_dim.svg) no-repeat center center;
+  }
+
+#MixModeButton[value="0"] {
+  background: url(skin:/palemoon/buttons/btn__fx_mixmode_d-w.svg) no-repeat center center;
+  }
+  #MixModeButton[value="1"] {
+    background: url(skin:/palemoon/buttons/btn__fx_mixmode_d+w.svg) no-repeat center center;
+  }
+
+#FxToggleButton[value="0"] {
+  background: url(skin:/palemoon/buttons/btn__fx_toggle.svg) no-repeat center center;
+  }
+  #FxToggleButton[value="1"] {
+    background: url(skin:/palemoon/buttons/btn__fx_toggle_active.svg) no-repeat center center;
+  }
+
+#FxFocusButton[value="0"] {
+  background: url(skin:/palemoon/buttons/btn__fx_focus.svg) no-repeat center center;
+  }
+  #FxFocusButton[value="1"] {
+    background: url(skin:/palemoon/buttons/btn__fx_focus_active.svg) no-repeat center center;
+  }
+
+/* deck controls for decks 1-4 and samplers */
+#CurposButton12[displayValue="0"], #CurposButton34[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__beat_curpos.svg) no-repeat center center;
+  }
+  #CurposButton12[value="1"] {
+    background: url(skin:/palemoon/buttons/btn__beat_curpos_active_12.svg) no-repeat center center;
+  }
+  #CurposButton34[value="1"] {
+    background: url(skin:/palemoon/buttons/btn__beat_curpos_active_34.svg) no-repeat center center;
+  }
+
+  #EjectButton12[displayValue="0"], #EjectButton34[displayValue="0"] {
+    background: url(skin:/palemoon/buttons/btn__eject.svg) no-repeat center center;
+    }
+    #EjectButton12[value="1"] {
+      background: url(skin:/palemoon/buttons/btn__eject_active_12.svg) no-repeat center center;
+    }
+    #EjectButton34[value="1"] {
+      background: url(skin:/palemoon/buttons/btn__eject_active_34.svg) no-repeat center center;
+    }
+
+  #RepeatButton12[displayValue="0"], #RepeatButton34[displayValue="0"] {
+    background: url(skin:/palemoon/buttons/btn__repeat.svg) no-repeat center center;
+    }
+    #RepeatButton12[displayValue="1"] {
+      background: url(skin:/palemoon/buttons/btn__repeat_active_12.svg) no-repeat center center;
+    }
+    #RepeatButton34[displayValue="1"] {
+      background: url(skin:/palemoon/buttons/btn__repeat_active_34.svg) no-repeat center center;
+    }
+
+  #QuantizeButton12[displayValue="0"], #QuantizeButton34[displayValue="0"] {
+    background: url(skin:/palemoon/buttons/btn__quantize.svg) no-repeat center center;
+    }
+    #QuantizeButton12[displayValue="1"] {
+      background: url(skin:/palemoon/buttons/btn__quantize_active_12.svg) no-repeat center center;
+    }
+    #QuantizeButton34[displayValue="1"] {
+      background: url(skin:/palemoon/buttons/btn__quantize_active_34.svg) no-repeat center center;
+    }
+
+  #SlipmodeButton12[displayValue="0"], #SlipmodeButton34[displayValue="0"] {
+    background: url(skin:/palemoon/buttons/btn__slip.svg) no-repeat center center;
+    }
+    #SlipmodeButton12[displayValue="1"] {
+      background: url(skin:/palemoon/buttons/btn__slip_active_12.svg) no-repeat center center;
+    }
+    #SlipmodeButton34[displayValue="1"] {
+      background: url(skin:/palemoon/buttons/btn__slip_active_34.svg) no-repeat center center;
+    }
+
+  #KeylockButton12[displayValue="0"], #KeylockButton34[displayValue="0"] {
+    background: url(skin:/palemoon/buttons/btn__keylock.svg) no-repeat center center;
+    }
+    #KeylockButton12[displayValue="1"] {
+      background: url(skin:/palemoon/buttons/btn__keylock_active_12.svg) no-repeat center center;
+    }
+    #KeylockButton34[displayValue="1"] {
+      background: url(skin:/palemoon/buttons/btn__keylock_active_34.svg) no-repeat center center;
+    }
+
+#BeatgridControlsToggle[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
+  }
+  #BeatgridControlsToggle[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
+  }
+
+  #BeatCurposLarge[displayValue="0"] {
+    background: url(skin:/palemoon/buttons/btn__beat_curpos_large.svg) no-repeat center center;
+    }
+    #BeatCurposLarge[pressed="true"] {
+      background: url(skin:/palemoon/buttons/btn__beat_curpos_large_active.svg) no-repeat center center;
+    }
+
+  #BeatsEarlier {
+    background: url(skin:/palemoon/buttons/btn__beats_earlier.svg) no-repeat center center;
+    }
+    #BeatsEarlier[pressed="true"] {
+      background: url(skin:/palemoon/buttons/btn__beats_earlier_active.svg) no-repeat center center;
+    }
+
+  #BeatsLater {
+    background: url(skin:/palemoon/buttons/btn__beats_later.svg) no-repeat center center;
+    }
+    #BeatsLater[pressed="true"] {
+      background: url(skin:/palemoon/buttons/btn__beats_later_active.svg) no-repeat center center;
+    }
+
+  #BeatsSlower {
+    background: url(skin:/palemoon/buttons/btn__beats_slower.svg) no-repeat center center;
+    }
+    #BeatsSlower[pressed="true"] {
+      background: url(skin:/palemoon/buttons/btn__beats_slower_active.svg) no-repeat center center;
+    }
+
+  #BeatsFaster {
+    background: url(skin:/palemoon/buttons/btn__beats_faster.svg) no-repeat center center;
+    }
+    #BeatsFaster[pressed="true"] {
+      background: url(skin:/palemoon/buttons/btn__beats_faster_active.svg) no-repeat center center;
+    }
+  #HotcuesEarlier {
+    background: url(skin:/palemoon/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
+  }
+    #HotcuesEarlier[pressed="true"] {
+      background: url(skin:/palemoon/buttons/btn__beats_hotcues_earlier_active.svg) no-repeat center center;
+    }
+  #HotcuesLater {
+    background: url(skin:/palemoon/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
+  }
+    #HotcuesLater[pressed="true"] {
+      background: url(skin:/palemoon/buttons/btn__beats_hotcues_later_active.svg) no-repeat center center;
+    }
+
+#MicTalk[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__mic_talk.svg) no-repeat center center;
+  }
+  #MicTalk[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__mic_talk_active.svg) no-repeat center center;
+  }
+
+#AuxPlay[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__aux_play.svg) no-repeat center center;
+  }
+  #AuxPlay[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__aux_play_active.svg) no-repeat center center;
+  }
+
+#MicAuxAdd {
+  background: url(skin:/palemoon/buttons/btn__plus_flat.svg) no-repeat center center;
+}
+
+#MicDucking[value="0"] {
+  background: url(skin:/palemoon/buttons/btn__mic_duck_off.svg) no-repeat center center;
+  }
+  #MicDucking[value="1"] {
+    background: url(skin:/palemoon/buttons/btn__mic_duck_auto.svg) no-repeat center center;
+  }
+  #MicDucking[value="2"] {
+    background: url(skin:/palemoon/buttons/btn__mic_duck_manual.svg) no-repeat center center;
+  }
+
+#RecDot[highlight="0"] {
+  background: url(skin:/palemoon/buttons/btn__rec_dot.svg) no-repeat center center;
+  }
+  #RecDot[highlight="1"], #RecDot[highlight="2"] {
+    background: url(skin:/palemoon/buttons/btn__rec_dot_active.svg) no-repeat center center;
+  }
+
+#BroadcastButton[displayValue="0"] {
+  /* for some reason the alignment isn't rescpected, so the icons
+    have to be sized like available area (button size - margin) */
+  background: url(skin:/palemoon/buttons/btn__broadcast_off.svg) no-repeat left top;
+  }
+  #BroadcastButton[displayValue="1"],
+  #BroadcastButton[displayValue="2"],
+  #BroadcastButton[displayValue="3"] {
+    background: url(skin:/palemoon/buttons/btn__broadcast_on.svg) no-repeat left top;
+  }
+
+#SkinSettingsToggle[displayValue="0"] {
+  background: url(skin:/palemoon/buttons/btn__settings_off.svg) no-repeat left top;
+  }
+  #SkinSettingsToggle[displayValue="1"] {
+    background: url(skin:/palemoon/buttons/btn__settings_on.svg) no-repeat left top;
+  }
+
+#ToolbarLogo {
+  background: url(skin:/palemoon/style/mixxx_logo_small.svg) no-repeat center center;
+}
+
+WSearchLineEdit QToolButton:!focus {
+  background: url(skin:/palemoon/buttons/btn__lib_clear_search.svg);
+  }
+  WSearchLineEdit QToolButton:focus {
+    background: url(skin:/palemoon/buttons/btn__lib_clear_search_focus.svg);
+  }
+
+/* AutoDJ button icons */
+QPushButton#pushButtonAutoDJ:!checked {
+  background: url(skin:/palemoon/buttons/btn__autodj_enable_off.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonAutoDJ:checked {
+    background: url(skin:/palemoon/buttons/btn__autodj_enable_on.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonFadeNow:!enabled {
+  background: url(skin:/palemoon/buttons/btn__autodj_fade_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonFadeNow:enabled {
+    background: url(skin:/palemoon/buttons/btn__autodj_fade.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonSkipNext:!enabled {
+  background: url(skin:/palemoon/buttons/btn__autodj_skip_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonSkipNext:enabled {
+    background: url(skin:/palemoon/buttons/btn__autodj_skip.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonShuffle:enabled {
+  background: url(skin:/palemoon/buttons/btn__autodj_shuffle.svg) no-repeat center center;
+}
+
+QPushButton#pushButtonAddRandomTrack:enabled {
+  background: url(skin:/palemoon/buttons/btn__autodj_addrandom.svg) no-repeat center center;
+}
+
+QPushButton#pushButtonRepeatPlaylist:!checked {
+  background: url(skin:/palemoon/buttons/btn__autodj_repeat_playlist_off.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonRepeatPlaylist:checked {
+    background: url(skin:/palemoon/buttons/btn__autodj_repeat_playlist_on.svg) no-repeat center center;
+  }
+/* AutoDJ button icons */
+
+/* widgets in cue popup menu */
+WCueMenuPopup #CueDeleteButton {
+  qproperty-icon: url(skin:/palemoon/buttons/btn__delete.svg);
+  width: 24px;
+  height: 42px;
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+}
+
+WCueMenuPopup #CueDeleteButton:pressed {
+  background-color: #b24c12;
+  outline: none;
+  /* not applied: */
+  qproperty-icon: url(skin:/palemoon/buttons/btn__delete_active.svg);
+}
+WCueMenuPopup #CueLabelEdit {
+  /*border: 1px solid #c2b3a5;*/
+  border-radius: 0px;
+  background-color: #000;
+  selection-color: #000;
+  selection-background-color: #ccc;
+  padding: 2px;
+}
+
+/* Color picker in WCueMenuPopup and WTrackMenu (library and decks) */
+WColorPicker QPushButton {
+}
+WColorPicker QPushButton[checked="false"] {
+  outline: none;
+  border-width: 2px 2px 2px 2px;
+  border-image: url(skin:/palemoon/buttons/btn_colorpicker.svg) 2 2 2 2;
+  margin: 0px;
+  padding: 0px;
+}
+WColorPicker QPushButton[checked="true"] {
+  outline: none;
+  border-width: 2px 2px 2px 2px;
+  border-image: url(skin:/palemoon/buttons/btn_colorpicker_active.svg) 2 2 2 2;
+  margin: 0px;
+  padding: 0px;
+  /* This property behaves really strange:
+  * set to 20px it's 2px too tall
+  * set to 18px it's 2px too small
+  qproperty-iconSize: 20px;*/
+}
+
+/************** Button icons **************************************************/
 
 /************** button background colors **************************************/
 
@@ -1627,7 +2293,8 @@ WPushButton#PlayDeckMini[displayValue="1"],
 WPushButton#PlaySampler[displayValue="1"],
 WPushButton#PlayPreview[displayValue="1"],
 WPushButton#PlayIndicator[displayValue="1"],
-#LibraryPreviewButton:checked,
+/* TODO ronso0 Restore once fixed lib linKIconThemes (vers. <..80) is in *ubuntu main repos */
+/*#LibraryPreviewButton:checked,*/
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
 #LoopActivate[value="1"],
@@ -1656,8 +2323,9 @@ WPushButton#LoopIn[pressed="true"],
 WPushButton#LoopOut[pressed="true"],
 #BeatjumpControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
-#BeatgridControls WPushButton[pressed="true"]/*,
-#CueDeleteButton[pressed="true"]*/ {
+#BeatgridControls WPushButton[pressed="true"],
+/* #CueDeleteButton[pressed="true"], */
+#LibraryFeatureControls QPushButton:pressed {
   background-color: #7d350d;
   }
   #BpmTap[pressed="true"] {
@@ -1778,7 +2446,7 @@ WPushButton#FxSuperLinkInvertButton[displayValue="0"] {
   background-color: #d09300;
 }
 
-#SpecialCueButton[value="1"] {
+WPushButton#SpecialCueButton[value="1"] {
   background-color: #395579;
 }
 
@@ -1829,676 +2497,6 @@ WPushButton#RecButton[displayValue="1"],
 }
 
 
-
-/************** Button icons **************************************************/
-WPushButton#PlayDeck[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__play_deck.svg) no-repeat center center;
-  }
-  WPushButton#PlayDeck[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__play_deck_active.svg) no-repeat center center;
-  }
-
-#PlayDeckMini[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__play_deck_mini.svg) no-repeat center center;
-  }
-  #PlayDeckMini[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__pause_deck_mini.svg) no-repeat center center;
-  }
-#PlaySampler[value="0"],
-#PlayPreview[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__play_sampler.svg) no-repeat center center;
-  }
-  #PlaySampler[value="1"],
-  #PlayPreview[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__pause_sampler.svg) no-repeat center center;
-  }
-
-#CueDeck[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__cue_deck.svg) no-repeat center center;
-  }
-  #CueDeck[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__cue_deck_active.svg) no-repeat center center;
-  }
-
-#Reverse {
-  image: url(skin:/palemoon/buttons/btn__reverse.svg) no-repeat center center;
-  }
-  #Reverse[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__reverse_active.svg) no-repeat center center;
-  }
-
-#Hotcue1 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__1.svg) no-repeat center center;
-  }
-  #Hotcue1 WPushButton[displayValue="1"][dark="false"],
-  #Hotcue1 WPushButton[displayValue="2"][dark="false"] {
-    image: url(skin:/palemoon/buttons/btn__1_active.svg) no-repeat center center;
-  }
-  #Hotcue1 WPushButton[displayValue="1"][dark="true"],
-  #Hotcue1 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__1_active_dark.svg) no-repeat center center;
-  }
-  #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="false"],
-  #Hotcue1 WPushButton[type="loop"][displayValue="1"][dark="true"],
-  #Hotcue1 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__1_loop.svg) no-repeat center center;
-  }
-
-#Hotcue2 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__2.svg) no-repeat center center;
-  }
-  #Hotcue2 WPushButton[displayValue="1"],
-  #Hotcue2 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__2_active.svg) no-repeat center center;
-  }
-  #Hotcue2 WPushButton[displayValue="1"][dark="true"],
-  #Hotcue2 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__2_active_dark.svg) no-repeat center center;
-  }
-  #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="false"],
-  #Hotcue2 WPushButton[type="loop"][displayValue="1"][dark="true"],
-  #Hotcue2 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__2_loop.svg) no-repeat center center;
-  }
-
-#Hotcue3 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__3.svg) no-repeat center center;
-  }
-  #Hotcue3 WPushButton[displayValue="1"],
-  #Hotcue3 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__3_active.svg) no-repeat center center;
-  }
-  #Hotcue3 WPushButton[displayValue="1"][dark="true"],
-  #Hotcue3 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__3_active_dark.svg) no-repeat center center;
-  }
-  #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="false"],
-  #Hotcue3 WPushButton[type="loop"][displayValue="1"][dark="true"],
-  #Hotcue3 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__3_loop.svg) no-repeat center center;
-  }
-
-#Hotcue4 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__4.svg) no-repeat center center;
-  }
-  #Hotcue4 WPushButton[displayValue="1"],
-  #Hotcue4 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__4_active.svg) no-repeat center center;
-  }
-  #Hotcue4 WPushButton[displayValue="1"][dark="true"],
-  #Hotcue4 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__4_active_dark.svg) no-repeat center center;
-  }
-  #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="false"],
-  #Hotcue4 WPushButton[type="loop"][displayValue="1"][dark="true"],
-  #Hotcue4 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__4_loop.svg) no-repeat center center;
-  }
-
-#Hotcue5 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__5.svg) no-repeat center center;
-  }
-  #Hotcue5 WPushButton[displayValue="1"],
-  #Hotcue5 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__5_active.svg) no-repeat center center;
-  }
-  #Hotcue5 WPushButton[displayValue="1"][dark="true"],
-  #Hotcue5 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__5_active_dark.svg) no-repeat center center;
-  }
-  #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="false"],
-  #Hotcue5 WPushButton[type="loop"][displayValue="1"][dark="true"],
-  #Hotcue5 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__5_loop.svg) no-repeat center center;
-  }
-
-#Hotcue6 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__6.svg) no-repeat center center;
-  }
-  #Hotcue6 WPushButton[displayValue="1"],
-  #Hotcue6 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__6_active.svg) no-repeat center center;
-  }
-  #Hotcue6 WPushButton[displayValue="1"][dark="true"],
-  #Hotcue6 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__6_active_dark.svg) no-repeat center center;
-  }
-  #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="false"],
-  #Hotcue6 WPushButton[type="loop"][displayValue="1"][dark="true"],
-  #Hotcue6 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__6_loop.svg) no-repeat center center;
-  }
-
-#Hotcue7 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__7.svg) no-repeat center center;
-  }
-  #Hotcue7 WPushButton[displayValue="1"],
-  #Hotcue7 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__7_active.svg) no-repeat center center;
-  }
-  #Hotcue7 WPushButton[displayValue="1"][dark="true"],
-  #Hotcue7 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__7_active_dark.svg) no-repeat center center;
-  }
-  #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="false"],
-  #Hotcue7 WPushButton[type="loop"][displayValue="1"][dark="true"],
-  #Hotcue7 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__7_loop.svg) no-repeat center center;
-  }
-
-#Hotcue8 WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__8.svg) no-repeat center center;
-  }
-  #Hotcue8 WPushButton[displayValue="1"],
-  #Hotcue8 WPushButton[displayValue="2"] {
-    image: url(skin:/palemoon/buttons/btn__8_active.svg) no-repeat center center;
-  }
-  #Hotcue8 WPushButton[displayValue="1"][dark="true"],
-  #Hotcue8 WPushButton[displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__8_active_dark.svg) no-repeat center center;
-  }
-  #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="false"],
-  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="false"],
-  #Hotcue8 WPushButton[type="loop"][displayValue="1"][dark="true"],
-  #Hotcue8 WPushButton[type="loop"][displayValue="2"][dark="true"] {
-    image: url(skin:/palemoon/buttons/btn__8_loop.svg) no-repeat center center;
-  }
-
-#SpecialCueButton_intro_start WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__intro_start.svg) no-repeat center center;
-  }
-  #SpecialCueButton_intro_start WPushButton[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__intro_start_active.svg) no-repeat center center;
-  }
-#SpecialCueButton_intro_end WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__intro_end.svg) no-repeat center center;
-  }
-  #SpecialCueButton_intro_end WPushButton[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__intro_end_active.svg) no-repeat center center;
-  }
-#SpecialCueButton_outro_start WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__outro_start.svg) no-repeat center center;
-  }
-  #SpecialCueButton_outro_start WPushButton[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__outro_start_active.svg) no-repeat center center;
-  }
-#SpecialCueButton_outro_end WPushButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__outro_end.svg) no-repeat center center;
-  }
-  #SpecialCueButton_outro_end WPushButton[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__outro_end_active.svg) no-repeat center center;
-  }
-
-#LoopActivate[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__loop.svg) no-repeat center center;
-  }
-  #LoopActivate[displayValue="1"], #LoopActivate[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__loop_active.svg) no-repeat center center;
-  }
-#Reloop[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__reloop.svg) no-repeat center center;
-  }
-  #Reloop[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__reloop_active.svg) no-repeat center center;
-  }
-
-#LoopIn {
-  image: url(skin:/palemoon/buttons/btn__loop_in.svg) no-repeat center center;
-  }
-  #LoopIn[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__loop_in_active.svg) no-repeat center center;
-  }
-#LoopOut {
-  image: url(skin:/palemoon/buttons/btn__loop_out.svg) no-repeat center center;
-  }
-  #LoopOut[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__loop_out_active.svg) no-repeat center center;
-  }
-
-#JumpForward {
-  image: url(skin:/palemoon/buttons/btn__beatjump_right.svg) no-repeat center center;
-  }
-  #JumpForward[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__beatjump_right_active.svg) no-repeat center center;
-  }
-#JumpBack {
-  image: url(skin:/palemoon/buttons/btn__beatjump_left.svg) no-repeat center center;
-  }
-  #JumpBack[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__beatjump_left_active.svg) no-repeat center center;
-  }
-
-/* Key buttons */
-#KeyMatchReset {
-  image: url(skin:/palemoon/buttons/btn__key_match.svg) no-repeat center center;
-  }
-  #KeyMatchReset[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__key_match_active.svg) no-repeat center center;
-  }
-
-#KeyUp {
-  image: url(skin:/palemoon/buttons/btn__key_up.svg) no-repeat center center;
-  }
-  #KeyUp[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__key_up_active.svg) no-repeat center center;
-  }
-
-#KeyDown {
-  image: url(skin:/palemoon/buttons/btn__key_down.svg) no-repeat center center;
-  }
-  #KeyDown[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__key_down_active.svg) no-repeat center center;
-  }
-
-/* Rate buttons */
-#SyncDeck[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__sync_deck.svg) no-repeat center center;
-  }
-  #SyncDeck[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__sync_deck_active.svg) no-repeat center center;
-  }
-
-  #SyncSampler {
-    image: url(skin:/palemoon/buttons/btn__sync_sampler.svg) no-repeat center center;
-    }
-    #SyncSampler[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__sync_sampler_active.svg) no-repeat center center;
-    }
-
-  #RatePermUp {
-    image: url(skin:/palemoon/buttons/btn__plus.svg) no-repeat center center;}
-  #RatePermUp[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__plus_active.svg) no-repeat center center;
-    }
-
-  #RatePermDown {
-    image: url(skin:/palemoon/buttons/btn__minus.svg) no-repeat center center;}
-  #RatePermDown[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__minus_active.svg) no-repeat center center;
-    }
-
-  #RateTempUp {
-    image: url(skin:/palemoon/buttons/btn__arrow_right_up.svg) no-repeat center center;}
-  #RateTempUp[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__arrow_right_up_active.svg) no-repeat center center;
-    }
-  #RateTempDown {
-    image: url(skin:/palemoon/buttons/btn__arrow_left_down.svg) no-repeat center center;}
-  #RateTempDown[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__arrow_left_down_active.svg) no-repeat center center;
-    }
-
-  #RateTempUpRev {
-    image: url(skin:/palemoon/buttons/btn__arrow_right_down.svg) no-repeat center center;}
-  #RateTempUpRev[pressed="true"] {
-    image: url(skin:/palemoon/buttons/btn__arrow_right_down_active.svg) no-repeat center center;
-    }
-
-  #RateTempDownRev {
-    image: url(skin:/palemoon/buttons/btn__arrow_left_up.svg) no-repeat center center;
-    }
-    #RateTempDownRev[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__arrow_left_up_active.svg) no-repeat center center;
-    }
-
-/* Mixer buttons */
-#PflButton[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__pfl.svg) no-repeat center center;
-  }
-  #PflButton[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__pfl_active.svg) no-repeat center center;
-  }
-
-#QuickEffectButton[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__star.svg) no-repeat center center;
-}
-
-/* EQ Kill button icons H / M / L */
-#EQKillButton_High[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__eq_kill_high.svg) no-repeat center center;
-}
-#EQKillButton_Mid[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__eq_kill_mid.svg) no-repeat center center;
-}
-#EQKillButton_Low[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__eq_kill_low.svg) no-repeat center center;
-}
-
-/* EQ Kill / QuickEffect dots */
-#EQKillDot[displayValue="0"],
-#QuickEffectDot[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__eq_kill_dot_off.svg) no-repeat center center;
-  }
-  #EQKillDot[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__eq_kill_dot_active_red.svg) no-repeat center center;
-  }
-  #QuickEffectDot[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__eq_kill_dot_active_green.svg) no-repeat center center;
-  }
-
-#RateCenter[highlight="0"] {
-  image: url(skin:/palemoon/buttons/btn__rate_center_off.svg) no-repeat center center;
-  }
-  #RateCenter[highlight="1"] {
-    image: url(skin:/palemoon/buttons/btn__rate_center_cyan.svg) no-repeat center center;
-  }
-
-#SplitCue[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__split.svg) no-repeat center center;
-  }
-  #SplitCue[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__split_active.svg) no-repeat center center;
-  }
-
-#FxExpand,
-#SamplerExpand,
-#LibExpand {
-  background-repeat: no-repeat;
-  background-position: center center;
-}
-#FxExpand[value="0"],
-#SamplerExpand[value="0"],
-#LibExpand[value="0"] {
-  background: url(skin:/palemoon/buttons/btn__expand_dim.svg) no-repeat center center;
-  }
-  #FxExpand[value="1"],
-  #SamplerExpand[value="1"],
-  #LibExpand[value="1"] {
-    background: url(skin:/palemoon/buttons/btn__collapse_dim.svg) no-repeat center center;
-  }
-
-#MixModeButton[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__fx_mixmode_d-w.svg) no-repeat center center;
-  }
-  #MixModeButton[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__fx_mixmode_d+w.svg) no-repeat center center;
-  }
-
-#FxToggleButton[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__fx_toggle.svg) no-repeat center center;
-  }
-  #FxToggleButton[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__fx_toggle_active.svg) no-repeat center center;
-  }
-
-#FxFocusButton[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__fx_focus.svg) no-repeat center center;
-  }
-  #FxFocusButton[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__fx_focus_active.svg) no-repeat center center;
-  }
-
-/* deck controls for decks 1-4 and samplers */
-#CurposButton12[displayValue="0"], #CurposButton34[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__beat_curpos.svg) no-repeat center center;
-  }
-  #CurposButton12[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__beat_curpos_active_12.svg) no-repeat center center;
-  }
-  #CurposButton34[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__beat_curpos_active_34.svg) no-repeat center center;
-  }
-
-  #EjectButton12[displayValue="0"], #EjectButton34[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__eject.svg) no-repeat center center;
-    }
-    #EjectButton12[value="1"] {
-      image: url(skin:/palemoon/buttons/btn__eject_active_12.svg) no-repeat center center;
-    }
-    #EjectButton34[value="1"] {
-      image: url(skin:/palemoon/buttons/btn__eject_active_34.svg) no-repeat center center;
-    }
-
-  #RepeatButton12[displayValue="0"], #RepeatButton34[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__repeat.svg) no-repeat center center;
-    }
-    #RepeatButton12[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__repeat_active_12.svg) no-repeat center center;
-    }
-    #RepeatButton34[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__repeat_active_34.svg) no-repeat center center;
-    }
-
-  #QuantizeButton12[displayValue="0"], #QuantizeButton34[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__quantize.svg) no-repeat center center;
-    }
-    #QuantizeButton12[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__quantize_active_12.svg) no-repeat center center;
-    }
-    #QuantizeButton34[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__quantize_active_34.svg) no-repeat center center;
-    }
-
-  #SlipmodeButton12[displayValue="0"], #SlipmodeButton34[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__slip.svg) no-repeat center center;
-    }
-    #SlipmodeButton12[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__slip_active_12.svg) no-repeat center center;
-    }
-    #SlipmodeButton34[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__slip_active_34.svg) no-repeat center center;
-    }
-
-  #KeylockButton12[displayValue="0"], #KeylockButton34[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__keylock.svg) no-repeat center center;
-    }
-    #KeylockButton12[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__keylock_active_12.svg) no-repeat center center;
-    }
-    #KeylockButton34[displayValue="1"] {
-      image: url(skin:/palemoon/buttons/btn__keylock_active_34.svg) no-repeat center center;
-    }
-
-#BeatgridControlsToggle[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
-  }
-  #BeatgridControlsToggle[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
-  }
-
-  #BeatCurposLarge[displayValue="0"] {
-    image: url(skin:/palemoon/buttons/btn__beat_curpos_large.svg) no-repeat center center;
-    }
-    #BeatCurposLarge[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beat_curpos_large_active.svg) no-repeat center center;
-    }
-
-  #BeatsEarlier {
-    image: url(skin:/palemoon/buttons/btn__beats_earlier.svg) no-repeat center center;
-    }
-    #BeatsEarlier[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_earlier_active.svg) no-repeat center center;
-    }
-
-  #BeatsLater {
-    image: url(skin:/palemoon/buttons/btn__beats_later.svg) no-repeat center center;
-    }
-    #BeatsLater[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_later_active.svg) no-repeat center center;
-    }
-
-  #BeatsSlower {
-    image: url(skin:/palemoon/buttons/btn__beats_slower.svg) no-repeat center center;
-    }
-    #BeatsSlower[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_slower_active.svg) no-repeat center center;
-    }
-
-  #BeatsFaster {
-    image: url(skin:/palemoon/buttons/btn__beats_faster.svg) no-repeat center center;
-    }
-    #BeatsFaster[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_faster_active.svg) no-repeat center center;
-    }
-  #HotcuesEarlier {
-    image: url(skin:/palemoon/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
-  }
-    #HotcuesEarlier[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_hotcues_earlier_active.svg) no-repeat center center;
-    }
-  #HotcuesLater {
-    image: url(skin:/palemoon/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
-  }
-    #HotcuesLater[pressed="true"] {
-      image: url(skin:/palemoon/buttons/btn__beats_hotcues_later_active.svg) no-repeat center center;
-    }
-
-#MicTalk[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__mic_talk.svg) no-repeat center center;
-  }
-  #MicTalk[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__mic_talk_active.svg) no-repeat center center;
-  }
-
-#AuxPlay[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__aux_play.svg) no-repeat center center;
-  }
-  #AuxPlay[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__aux_play_active.svg) no-repeat center center;
-  }
-
-#MicAuxAdd {
-  image: url(skin:/palemoon/buttons/btn__plus_flat.svg) no-repeat center center;
-}
-
-#MicDucking[value="0"] {
-  image: url(skin:/palemoon/buttons/btn__mic_duck_off.svg) no-repeat center center;
-  }
-  #MicDucking[value="1"] {
-    image: url(skin:/palemoon/buttons/btn__mic_duck_auto.svg) no-repeat center center;
-  }
-  #MicDucking[value="2"] {
-    image: url(skin:/palemoon/buttons/btn__mic_duck_manual.svg) no-repeat center center;
-  }
-
-#RecDot[highlight="0"] {
-  image: url(skin:/palemoon/buttons/btn__rec_dot.svg) no-repeat center center;
-  }
-  #RecDot[highlight="1"], #RecDot[highlight="2"] {
-    image: url(skin:/palemoon/buttons/btn__rec_dot_active.svg) no-repeat center center;
-  }
-
-#BroadcastButton[displayValue="0"] {
-  /* for some reason the alignment isn't rescpected, so the icons
-    have to be sized like available area (button size - margin) */
-  image: url(skin:/palemoon/buttons/btn__broadcast_off.svg) no-repeat left top;
-  }
-  #BroadcastButton[displayValue="1"],
-  #BroadcastButton[displayValue="2"],
-  #BroadcastButton[displayValue="3"] {
-    image: url(skin:/palemoon/buttons/btn__broadcast_on.svg) no-repeat left top;
-  }
-
-#SkinSettingsToggle[displayValue="0"] {
-  image: url(skin:/palemoon/buttons/btn__settings_off.svg) no-repeat left top;
-  }
-  #SkinSettingsToggle[displayValue="1"] {
-    image: url(skin:/palemoon/buttons/btn__settings_on.svg) no-repeat left top;
-  }
-
-#ToolbarLogo {
-  image: url(skin:/palemoon/style/mixxx_logo_small.svg) no-repeat center center;
-}
-
-WSearchLineEdit QToolButton:!focus {
-  image: url(skin:/palemoon/buttons/btn__lib_clear_search.svg);
-  }
-  WSearchLineEdit QToolButton:focus {
-    image: url(skin:/palemoon/buttons/btn__lib_clear_search_focus.svg);
-  }
-
-/* AutoDJ button icons */
-QPushButton#pushButtonAutoDJ:!checked {
-  image: url(skin:/palemoon/buttons/btn__autodj_enable_off.svg) no-repeat center center;
-  }
-  QPushButton#pushButtonAutoDJ:checked {
-    image: url(skin:/palemoon/buttons/btn__autodj_enable_on.svg) no-repeat center center;
-  }
-
-QPushButton#pushButtonFadeNow:!enabled {
-  image: url(skin:/palemoon/buttons/btn__autodj_fade_disabled.svg) no-repeat center center;
-  }
-  QPushButton#pushButtonFadeNow:enabled {
-    image: url(skin:/palemoon/buttons/btn__autodj_fade.svg) no-repeat center center;
-  }
-
-QPushButton#pushButtonSkipNext:!enabled {
-  image: url(skin:/palemoon/buttons/btn__autodj_skip_disabled.svg) no-repeat center center;
-  }
-  QPushButton#pushButtonSkipNext:enabled {
-    image: url(skin:/palemoon/buttons/btn__autodj_skip.svg) no-repeat center center;
-  }
-
-QPushButton#pushButtonShuffle:enabled {
-  image: url(skin:/palemoon/buttons/btn__autodj_shuffle.svg) no-repeat center center;
-}
-
-QPushButton#pushButtonAddRandomTrack:enabled {
-  image: url(skin:/palemoon/buttons/btn__autodj_addrandom.svg) no-repeat center center;
-}
-
-QPushButton#pushButtonRepeatPlaylist:!checked {
-  image: url(skin:/palemoon/buttons/btn__autodj_repeat_playlist_off.svg) no-repeat center center;
-  }
-  QPushButton#pushButtonRepeatPlaylist:checked {
-    image: url(skin:/palemoon/buttons/btn__autodj_repeat_playlist_on.svg) no-repeat center center;
-  }
-/* AutoDJ button icons */
-
-/* widgets in cue popup menu */
-WCueMenuPopup #CueDeleteButton {
-  qproperty-icon: url(skin:/palemoon/buttons/btn__delete.svg);
-  width: 24px;
-  height: 42px;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-}
-
-WCueMenuPopup #CueDeleteButton:pressed {
-  background-color: #b24c12;
-  outline: none;
-  /* not applied: */
-  qproperty-icon: url(skin:/palemoon/buttons/btn__delete_active.svg);
-}
-WCueMenuPopup #CueLabelEdit {
-  /*border: 1px solid #c2b3a5;*/
-  border-radius: 0px;
-  background-color: #000;
-  selection-color: #000;
-  selection-background-color: #ccc;
-  padding: 2px;
-}
-
-/* Color picker in WCueMenuPopup and WTrackMenu (library and decks) */
-WColorPicker QPushButton {
-}
-WColorPicker QPushButton[checked="false"] {
-  outline: none;
-  border-width: 2px 2px 2px 2px;
-  border-image: url(skin:/palemoon/buttons/btn_colorpicker.svg) 2 2 2 2;
-  margin: 0px;
-  padding: 0px;
-}
-WColorPicker QPushButton[checked="true"] {
-  outline: none;
-  border-width: 2px 2px 2px 2px;
-  border-image: url(skin:/palemoon/buttons/btn_colorpicker_active.svg) 2 2 2 2;
-  margin: 0px;
-  padding: 0px;
-  /* This property behaves really strange:
-  * set to 20px it's 2px too tall
-  * set to 18px it's 2px too small
-  qproperty-iconSize: 20px;*/
-}
-
-/************** Button icons **************************************************/
 /************** Button styles *************************************************/
 
 
@@ -2625,15 +2623,18 @@ WLibrary QLineEdit,
 /* Button in library "Preview" column */
 #LibraryPreviewButton {
   margin: 0px;
-  padding: 0px;
+  padding: 3px;
   border-radius: 2px;
   border: 1px solid transparent;
   }
   #LibraryPreviewButton:!checked {
-    image: url(skin:/palemoon/buttons/btn__lib_preview_play.svg);
+    /* TODO ronso0 Restore once fixed lib linKIconThemes (vers. <..80) is in *ubuntu main repos */
+    /*image: url(skin:/palemoon/buttons/btn__lib_preview_play.svg);*/
     }
   #LibraryPreviewButton:checked {
-    image: url(skin:/palemoon/buttons/btn__lib_preview_pause.svg);
+    /*image: url(skin:/palemoon/buttons/btn__lib_preview_pause.svg);*/
+    border:  1px solid #b24c12;
+    background-color: #000;
     }
 
 
@@ -2645,11 +2646,20 @@ WLibrary QLineEdit,
     padding: 2px 1px 0px 3px;
     }
     #LibraryContainer QHeaderView::up-arrow {
-      image: url(skin:/palemoon/buttons/btn__lib_sort_up.svg);
+      background: url(skin:/palemoon/buttons/btn__lib_sort_up.svg) no-repeat center center;
     }
     #LibraryContainer QHeaderView::down-arrow {
-      image: url(skin:/palemoon/buttons/btn__lib_sort_down.svg);
+      background: url(skin:/palemoon/buttons/btn__lib_sort_down.svg) no-repeat center center;
     }
+    #LibraryContainer QHeaderView::up-arrow,
+    #LibraryContainer QHeaderView::down-arrow {
+      /* color should match that of QHeaderView::section,
+        with a little transparency added to not cut off the header label.
+        Hex >  2^8 = */
+      background-color: rgba(23,23,25,190);
+      /* add margin to not overlap the ::section border-image */
+      margin: 1px 2px 1px 0px;
+      }
 
 
 

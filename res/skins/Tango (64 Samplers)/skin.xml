@@ -143,7 +143,7 @@
         background-color: #0f0f0f;
       }
       QLabel {
-        image: url(skin:../Tango//graphics/logo_160x40.svg);
+        background-image: url(skin:/../Tango/graphics/logo_160x40.svg);
         padding: 0;
         margin: 0px 2px 0px 2px;
         border: none;
@@ -558,7 +558,7 @@
               </Children>
             </WidgetGroup><!-- topbar + skin elements -->
 
-            <Template src="skin:../Tango/skin_settings.xml"/>
+            <Template src="skin:skin_settings.xml"/>
 
           </Children>
         </WidgetGroup><!-- visible skin + size settings menu -->
