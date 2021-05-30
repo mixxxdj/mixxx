@@ -814,11 +814,20 @@ MC7000.stopTime = function(channel, control, value, status, group) {
 MC7000.reverse = function(channel, control, value, status, group) {
     var deckNumber = script.deckFromGroup(group);
     if (value > 0) {
-        // while the button is pressed spin back
-        engine.brake(deckNumber, true, MC7000.factor[deckNumber], - 15); // start at a rate of -15 and decrease by "factor"
+        if (engine.getValue(group, "slip_enabled"))  {
+        // backspin while button is pressed at a rate of -15 and decrease by "factor"
+            engine.brake(deckNumber, value > 0, MC7000.factor[deckNumber], - 15);
+        } else {
+            engine.brake(deckNumber, true, MC7000.factor[deckNumber], - 15);
+        }
     } else {
-        // when releasing the button the track starts softly again
-        engine.softStart(deckNumber, true, MC7000.factor[deckNumber]);
+        if (engine.getValue(group, "slip_enabled")) {
+            engine.brake(deckNumber, false); // disable brake effect
+            engine.setValue(group, "play", 1);
+            engine.setValue(group, "slip_enabled", 0);
+        } else {
+            engine.softStart(deckNumber, true, MC7000.factor[deckNumber]);
+        }
     }
 };
 
