@@ -2761,20 +2761,13 @@ Library features and their buttons:
 #LibraryFeatureControls QPushButton {
   text-align: center;
   font-weight: normal;
-  /* Note(ronso0)
-  Interferes with skin scaling, system font size respectively
-  font-size: 14px/14px;
-  Setting height/width here will prevent the buttons being scaled properly
-  min-height: 22px;
-  max-height: 22px;
-  height: 22px; */
   color: #ccc;
   border-radius: 2px;
   border: 1px solid #333;
   margin: 1px 2px 4px 1px;
   padding: 3px 6px 3px 6px;
-  background-color: #333;
-  background-position: center;
+  background-position: center center;
+  background-repeat: no-repeat;
   }
   #DlgAutoDJ > #LibraryFeatureControls QPushButton {
     padding: 1px 2px;
@@ -2810,37 +2803,40 @@ Library features and their buttons:
 
 /* AutoDJ button icons */
 QPushButton#pushButtonAutoDJ:!checked {
-  background: url(skin:/../Tango/buttons/btn_autodj_enable_off.svg) no-repeat center center;
+  background-image: url(skin:/../Tango/buttons/btn_autodj_enable_off.svg);
   }
   QPushButton#pushButtonAutoDJ:checked {
-    background: url(skin:/../Tango/buttons/btn_autodj_enable_on.svg) no-repeat center center;
+    background-image: url(skin:/../Tango/buttons/btn_autodj_enable_on.svg);
   }
 QPushButton#pushButtonFadeNow:!enabled {
-  background: url(skin:/../Tango/buttons/btn_autodj_fade_disabled.svg) no-repeat center center;
+  background-image: url(skin:/../Tango/buttons/btn_autodj_fade_disabled.svg);
   }
   QPushButton#pushButtonFadeNow:enabled {
-    background: url(skin:/../Tango/buttons/btn_autodj_fade.svg) no-repeat center center;
+    background-image: url(skin:/../Tango/buttons/btn_autodj_fade.svg);
   }
 QPushButton#pushButtonSkipNext:!enabled {
-  background: url(skin:/../Tango/buttons/btn_autodj_skip_disabled.svg) no-repeat center center;
+  background-image: url(skin:/../Tango/buttons/btn_autodj_skip_disabled.svg);
   }
   QPushButton#pushButtonSkipNext:enabled {
-    background: url(skin:/../Tango/buttons/btn_autodj_skip.svg) no-repeat center center;
+    background-image: url(skin:/../Tango/buttons/btn_autodj_skip.svg);
   }
 QPushButton#pushButtonShuffle {
-  background: url(skin:/../Tango/buttons/btn_autodj_shuffle.svg) no-repeat center center;
+  background-image: url(skin:/../Tango/buttons/btn_autodj_shuffle.svg);
 }
 QPushButton#pushButtonAddRandom {
-  background: url(skin:/../Tango/buttons/btn_autodj_addrandom.svg) no-repeat center center;
+  background-image: url(skin:/../Tango/buttons/btn_autodj_addrandom.svg);
 }
 QPushButton#pushButtonRepeatPlaylist:!checked {
-  background: url(skin:/../Tango/buttons/btn_autodj_repeat_playlist_off.svg) no-repeat center center;
+  background-image: url(skin:/../Tango/buttons/btn_autodj_repeat_playlist_off.svg);
   }
   QPushButton#pushButtonRepeatPlaylist:checked {
-    background: url(skin:/../Tango/buttons/btn_autodj_repeat_playlist_on.svg) no-repeat center center;
+    background-image: url(skin:/../Tango/buttons/btn_autodj_repeat_playlist_on.svg);
   }
 /* AutoDJ button icons */
 
+#LibraryFeatureControls QPushButton {
+  background-color: #333;
+  }
 #LibraryFeatureControls QPushButton:!enabled {
   color: #888;
   }
@@ -2858,6 +2854,9 @@ QPushButton#pushButtonRepeatPlaylist:!checked {
   }
 #LibraryFeatureControls QPushButton:checked:hover {
   border: 1px solid #fff;
+  }
+#LibraryFeatureControls QPushButton:pressed {
+  background-color: #444;
   }
 QPushButton#pushButtonRecording:unchecked {
   color: #888;
