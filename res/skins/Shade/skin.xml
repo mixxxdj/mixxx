@@ -224,7 +224,7 @@
     <LaunchImageStyle>
       LaunchImage { background-color: #202020; }
         QLabel {
-          background-image: url(skin:/style/mixxx-icon-logo-symbolic.png);
+          image: url(skin:/style/mixxx-icon-logo-symbolic.png);
           padding:0;
           margin:0;
           border:none;
