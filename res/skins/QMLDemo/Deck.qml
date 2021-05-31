@@ -161,13 +161,13 @@ Item {
                 font.pixelSize: Theme.textFontPixelSize
                 color: infoBar.textColor
                 text: {
-                    let positionSeconds = samplesControl.value / 2 / sampleRateControl.value * playPositionControl.value;
+                    const positionSeconds = samplesControl.value / 2 / sampleRateControl.value * playPositionControl.value;
                     if (isNaN(positionSeconds))
                         return "";
 
-                    var minutes = Math.floor(positionSeconds / 60);
-                    var seconds = positionSeconds - (minutes * 60);
-                    var subSeconds = Math.trunc((seconds - Math.trunc(seconds)) * 100);
+                    let minutes = Math.floor(positionSeconds / 60);
+                    let seconds = positionSeconds - (minutes * 60);
+                    let centiseconds = Math.trunc((seconds - Math.trunc(seconds)) * 100);
                     seconds = Math.trunc(seconds);
                     if (minutes < 10)
                         minutes = "0" + minutes;
@@ -175,10 +175,10 @@ Item {
                     if (seconds < 10)
                         seconds = "0" + seconds;
 
-                    if (subSeconds < 10)
-                        subSeconds = "0" + subSeconds;
+                    if (centiseconds < 10)
+                        centiseconds = "0" + centiseconds;
 
-                    return minutes + ':' + seconds + "." + subSeconds;
+                    return minutes + ':' + seconds + "." + centiseconds;
                 }
 
                 Mixxx.ControlProxy {
