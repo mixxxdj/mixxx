@@ -25,9 +25,8 @@ def main(argv=None):
             ).strip()
             v = re.search("moc ([0-9]*)\\.([0-9]*)\\.[0-9]*", str(moc_version))
             if v:
-                if int(v.group(1)) < 5:
-                    return 0
-                if int(v.group(1)) == 5 and int(v.group(2)) < 15:
+                version = (int(v.group(1)), int(v.group(2)))
+                if version < (5, 15):
                     return 0
         print(QMLFORMAT_MISSING_MESSAGE.strip(), file=sys.stderr)
         return 1
