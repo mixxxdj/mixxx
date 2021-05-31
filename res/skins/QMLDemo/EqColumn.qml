@@ -11,29 +11,34 @@ Column {
 
     spacing: 4
 
-    Knob {
+    EqKnob {
         group: "[EqualizerRack1_" + root.group + "_Effect1]"
         key: "parameter3"
+        statusKey: "button_parameter3"
         color: Theme.eqHighColor
     }
 
-    Knob {
+    EqKnob {
         group: "[EqualizerRack1_" + root.group + "_Effect1]"
         key: "parameter2"
+        statusKey: "button_parameter2"
         color: Theme.eqMidColor
     }
 
-    Knob {
+    EqKnob {
         group: "[EqualizerRack1_" + root.group + "_Effect1]"
         key: "parameter1"
+        statusKey: "button_parameter1"
         color: Theme.eqLowColor
     }
 
-    Knob {
+    EqKnob {
         group: "[QuickEffectRack1_" + root.group + "]"
+        key: "super1"
+        statusGroup: "[QuickEffectRack1_" + root.group + "_Effect1]"
+        statusKey: "enabled"
         arcStyle: ShapePath.DashLine
         arcStylePattern: [2, 2]
-        key: "super1"
         color: Theme.eqFxColor
     }
 
