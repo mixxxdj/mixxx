@@ -8,11 +8,11 @@ import "Theme"
 AbstractButton {
     id: root
 
-    required property string group
-    required property string key
+    property string group // required
+    property string key // required
     property alias foreground: foreground.data
     property color normalColor: Theme.buttonNormalColor
-    required property color activeColor
+    property color activeColor // required
     property color pressedColor: activeColor
 
     states: [

@@ -7,8 +7,8 @@ import "Theme"
 Skin.Button {
     id: root
 
-    required property int hotcueNumber
-    required property string group
+    property int hotcueNumber // required
+    property string group // required
 
     text: hotcueNumber
     width: playButton.height

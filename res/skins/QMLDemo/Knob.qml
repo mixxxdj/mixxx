@@ -5,7 +5,7 @@ import "Theme"
 MixxxControls.Knob {
     id: root
 
-    required property color color
+    property color color // required
 
     implicitWidth: 56
     implicitHeight: width

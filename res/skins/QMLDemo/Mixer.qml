@@ -4,8 +4,8 @@ import QtQuick.Controls 2.12
 Row {
     id: mixer
 
-    required property string leftDeckGroup
-    required property string rightDeckGroup
+    property string leftDeckGroup // required
+    property string rightDeckGroup // required
     property bool show4decks: false
 
     EqColumn {

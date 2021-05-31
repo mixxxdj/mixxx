@@ -6,12 +6,13 @@ import "Theme"
 Item {
     id: root
 
-    required property real crossfaderWidth
+    property real crossfaderWidth // required
 
     implicitHeight: crossfaderSlider.width
 
     Item {
         id: effectUnitLeftPlaceholder
+
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.bottom: parent.bottom
@@ -39,6 +40,7 @@ Item {
 
     Item {
         id: effectUnitRightPlaceholder
+
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.bottom: parent.bottom

@@ -9,7 +9,7 @@ import "Theme"
 Item {
     id: root
 
-    required property string group
+    property string group // required
 
     Skin.DeckInfoBar {
         id: infoBar
@@ -326,9 +326,13 @@ Item {
                 model: 8
 
                 Skin.HotcueButton {
-                    // Make index a required property, workaround for
-                    // https://bugreports.qt.io/browse/QTBUG-86009
-                    required property int index
+                    // TODO: Once we require Qt >= 5.14, we're going to re-add
+                    // the `required` keyword. If the component has any
+                    // required properties, we'll stumble over a Qt bug and
+                    // need the following workaround:
+                    //     required property int index
+                    // See this for details:
+                    // https://bugreports.qt.io/browse/QTBUG-86009, and need
 
                     hotcueNumber: index + 1
                     group: root.group

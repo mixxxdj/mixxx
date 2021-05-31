@@ -6,8 +6,8 @@ import QtQuick.Controls 2.12
 AbstractButton {
     id: root
 
-    required property string group
-    required property string key
+    property string group // required
+    property string key // required
     property alias orientation: control.value
     property color color: "white"
 

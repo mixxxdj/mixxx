@@ -3,7 +3,7 @@ import QtQuick 2.12
 Transition {
     id: root
 
-    required property var target
+    property var target // required
 
     to: "hidden"
     reversible: true

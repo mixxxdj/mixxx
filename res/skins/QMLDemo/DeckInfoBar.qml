@@ -7,7 +7,7 @@ import "Theme"
 Rectangle {
     id: root
 
-    required property string group
+    property string group // required
     property color textColor: Theme.deckTextColor
     property color lineColor: Theme.deckLineColor
 

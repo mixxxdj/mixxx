@@ -5,7 +5,7 @@ import QtQuick.Controls 2.12
 Item {
     id: root
 
-    required property string group
+    property string group // required
     property real rpm: 33
     property bool indicatorVisible: true
     property alias indicator: indicatorContainer.contentItem

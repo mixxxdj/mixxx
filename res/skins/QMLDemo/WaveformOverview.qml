@@ -6,7 +6,7 @@ import "Theme"
 Item {
     id: root
 
-    required property string group
+    property string group // required
 
     states: [
         State {

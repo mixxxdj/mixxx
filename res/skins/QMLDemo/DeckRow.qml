@@ -4,8 +4,8 @@ import QtQuick.Controls 2.12
 Item {
     id: root
 
-    required property string leftDeckGroup
-    required property string rightDeckGroup
+    property string leftDeckGroup // required
+    property string rightDeckGroup // required
     property alias mixer: mixer
 
     implicitHeight: mixer.height
