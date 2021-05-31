@@ -64,10 +64,10 @@ QPixmap SkinLoader::getSkinPreview(const QString& skinName, const QString& schem
     } else {
         preview.load(getSkinPath(skinName) + "/skin_preview.png");
     }
-    if (!preview.isNull()){
-        return preview;
+    if (preview.isNull()) {
+        preview.load(":/images/skin_preview_placeholder.png");
     }
-    preview.load(":/images/skin_preview_placeholder.png");
+    preview = preview.scaled(QSize(640, 360), Qt::KeepAspectRatio, Qt::SmoothTransformation);
     return preview;
 }
 
