@@ -19,7 +19,7 @@ Skin.Button {
 
         return "#" + hotcueColorControl.value.toString(16).padStart(6, "0");
     }
-    highlight: hotcueControl.value
+    highlight: hotcueStatusControl.value
 
     Mixxx.ControlProxy {
         id: hotcueColorControl
@@ -35,17 +35,15 @@ Skin.Button {
     }
 
     Mixxx.ControlProxy {
-        id: hotcueControl
+        id: hotcueStatusControl
 
         group: root.group
         key: "hotcue_" + hotcueNumber + "_enabled"
-    }
+        onValueChanged: {
+            if (hotcueStatusControl.value == 0)
+                popup.close();
 
-    Mixxx.ControlProxy {
-        id: hotcueClearControl
-
-        group: root.group
-        key: "hotcue_" + hotcueNumber + "_clear"
+        }
     }
 
     MouseArea {
@@ -54,6 +52,9 @@ Skin.Button {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         onClicked: {
+            if (hotcueStatusControl.value == 0)
+                return ;
+
             popup.x = mouse.x;
             popup.y = mouse.y;
             popup.open();
@@ -63,16 +64,71 @@ Skin.Button {
     Popup {
         id: popup
 
+        dim: false
         modal: true
         focus: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+        contentWidth: colorGrid.implicitWidth
+        contentHeight: colorGrid.implicitHeight + clearButton.implicitHeight
 
-        Text {
-            text: "Cue Popup Placeholder"
-            font.family: Theme.fontFamily
-            font.pixelSize: Theme.textFontPixelSize
-            color: Theme.deckTextColor
-            anchors.centerIn: parent
+        Grid {
+            id: colorGrid
+
+            columns: 4
+            spacing: 2
+
+            Repeater {
+                model: 16
+
+                Rectangle {
+                    height: 24
+                    width: 24
+                    color: Qt.hsva(index / 16, 1, 1, 1)
+
+                    MouseArea {
+                        anchors.fill: parent
+                        onClicked: {
+                            hotcueColorControl.value = (parseInt(parent.color.r * 255) << 16) | (parseInt(parent.color.g * 255) << 8) | parseInt(parent.color.b * 255);
+                            popup.close();
+                        }
+                    }
+
+                }
+
+            }
+
+        }
+
+        Skin.ControlButton {
+            id: clearButton
+
+            anchors.top: colorGrid.bottom
+            anchors.left: parent.left
+            anchors.topMargin: 5
+            group: root.group
+            key: "hotcue_" + hotcueNumber + "_clear"
+            text: "Clear"
+            activeColor: Theme.deckActiveColor
+        }
+
+        enter: Transition {
+            NumberAnimation {
+                properties: "opacity"
+                from: 0
+                to: 1
+                duration: 100
+            }
+
+        }
+
+        exit: Transition {
+            NumberAnimation {
+                properties: "opacity"
+                from: 1
+                to: 0
+                duration: 100
+            }
+
         }
 
         background: BorderImage {
