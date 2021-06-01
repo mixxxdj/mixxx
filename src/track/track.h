@@ -424,7 +424,7 @@ class Track : public QObject {
     void emitBeatsAndBpmUpdated();
 
     /// Emits a changed signal for each Q_PROPERTY
-    void emitMetadataChanged();
+    void emitChangedSignalsForAllMetadata();
 
     /// Sets beats and returns a boolean to indicate if BPM/Beats were updated.
     /// Only supposed to be called while the caller guards this a lock.

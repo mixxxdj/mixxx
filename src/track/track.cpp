@@ -216,7 +216,7 @@ void Track::replaceMetadataFromSource(
             emit colorUpdated(newColor);
         }
 
-        emitMetadataChanged();
+        emitChangedSignalsForAllMetadata();
     }
 
     // TODO: Import Serato metadata within the locking scope and not
@@ -240,7 +240,7 @@ bool Track::mergeExtraMetadataFromSource(
     }
     markDirtyAndUnlock(&lock);
     // Modified
-    emitMetadataChanged();
+    emitChangedSignalsForAllMetadata();
     return true;
 }
 
@@ -314,7 +314,7 @@ bool Track::replaceRecord(
         emit colorUpdated(newColor);
     }
 
-    emitMetadataChanged();
+    emitChangedSignalsForAllMetadata();
     return true;
 }
 
@@ -442,7 +442,7 @@ void Track::emitBeatsAndBpmUpdated() {
     emit beatsUpdated();
 }
 
-void Track::emitMetadataChanged() {
+void Track::emitChangedSignalsForAllMetadata() {
     emit artistChanged(getArtist());
     emit titleChanged(getTitle());
     emit albumChanged(getAlbum());
