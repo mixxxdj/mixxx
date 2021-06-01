@@ -115,9 +115,9 @@ class EngineSync : public SyncableListener {
 
     void setMasterParams(Syncable* pSource);
 
-    /// Iff there is a single playing syncable, return it. This is used to initialize master
-    /// params.
-    Syncable* getOnlyPlayingSyncable() const;
+    /// Iff there is a single playing syncable in sync mode, return it.
+    /// This is used to initialize master params.
+    Syncable* getUniquePlayingSyncedDeck() const;
 
     /// Only for testing. Do not use.
     Syncable* getSyncableForGroup(const QString& group);

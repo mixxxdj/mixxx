@@ -96,8 +96,9 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         }
     }
 
-    if (auto onlyPlayer = getOnlyPlayingSyncable(); onlyPlayer != nullptr) {
-        onlyPlayer->notifyOnlyPlayingSyncable();
+    Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
+    if (pOnlyPlayer) {
+        pOnlyPlayer->notifyOnlyPlayingSyncable();
     }
 }
 
@@ -351,11 +352,14 @@ void EngineSync::notifyPlayingAudible(Syncable* pSyncable, bool playingAudible) 
     if (newMaster != nullptr && newMaster != m_pMasterSyncable) {
         activateMaster(newMaster, SYNC_MASTER_SOFT);
         setMasterParams(newMaster);
-    } else if (auto onlyPlayer = getOnlyPlayingSyncable(); onlyPlayer != nullptr) {
-        // Even if we didn't change master, if there is only one player (us), then we should
-        // reinit the beat distance.
-        onlyPlayer->notifyOnlyPlayingSyncable();
-        setMasterBeatDistance(onlyPlayer, onlyPlayer->getBeatDistance());
+    } else {
+        Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
+        if (pOnlyPlayer) {
+            // Even if we didn't change master, if there is only one player (us), then we should
+            // reinit the beat distance.
+            pOnlyPlayer->notifyOnlyPlayingSyncable();
+            setMasterBeatDistance(pOnlyPlayer, pOnlyPlayer->getBeatDistance());
+        }
     }
 
     pSyncable->requestSync();
@@ -613,7 +617,7 @@ void EngineSync::setMasterParams(Syncable* pSource) {
     if (!pSource->isPlaying()) {
         // If the params source is not playing, but other syncables are, then we are a stopped
         // explicit Master and we should not initialize the beat distance.  Take it from the
-        // internal clock instead.
+        // internal clock instead, because that will be up to date with the playing deck(s).
         bool playingSyncables = false;
         for (Syncable* pSyncable : qAsConst(m_syncables)) {
             if (pSyncable == pSource) {
@@ -651,7 +655,7 @@ void EngineSync::setMasterParams(Syncable* pSource) {
     }
 }
 
-Syncable* EngineSync::getOnlyPlayingSyncable() const {
+Syncable* EngineSync::getUniquePlayingSyncedDeck() const {
     Syncable* onlyPlaying = nullptr;
     for (Syncable* pSyncable : m_syncables) {
         if (!pSyncable->isSynchronized()) {
