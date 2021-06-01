@@ -339,7 +339,9 @@ void DlgPrefInterface::slotSetScheme(int) {
         m_colorScheme = newScheme;
         m_bRebootMixxxView = true;
     }
-    skinPreviewLabel->setPixmap(m_pSkin->preview(m_colorScheme));
+    QPixmap preview = m_pSkin->preview(m_colorScheme);
+    skinPreviewLabel->setPixmap(preview.scaled(
+            QSize(640, 360), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
 void DlgPrefInterface::slotSetSkinDescription() {
@@ -372,7 +374,9 @@ void DlgPrefInterface::slotSetSkin(int) {
     }
     slotUpdateSchemes();
     slotSetSkinDescription();
-    skinPreviewLabel->setPixmap(m_pSkin->preview(m_colorScheme));
+    QPixmap preview = m_pSkin->preview(m_colorScheme);
+    skinPreviewLabel->setPixmap(preview.scaled(
+            QSize(640, 360), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
 void DlgPrefInterface::slotApply() {
