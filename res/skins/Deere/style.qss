@@ -1738,7 +1738,7 @@ do not highlight either state. */
 
 /* Special case SamplerPlayButtonRepeating controls
   When sampler is playing, displays same play icon as normal, but
-  background is red instead of blue.
+  background is purple instead of blue.
 */
 
 #SamplerPlayButtonRepeating[value="1"] {
