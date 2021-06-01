@@ -25,10 +25,6 @@ jobs:
       # on Pull Requests!).
       env:
         SKIP: end-of-file-fixer,trailing-whitespace,clang-format,eslint,no-commit-to-branch
-      with:
-        # Enable extra hooks that require special system dependencies that we
-        # cannot expect to be installed on all contributor's systems.
-        extra_args: --hook-stage manual --all-files
 
     - name: "Detect code style issues (pull_request)"
       uses: pre-commit/action@v2.0.0
@@ -36,13 +32,9 @@ jobs:
       env:
         SKIP: no-commit-to-branch
       with:
-        # Enable extra hooks that require special system dependencies that are
-        # available in our custom docker container, but cannot be expected to
-        # be installed on all contributor's systems.
-        #
         # HEAD is the not yet integrated PR merge commit +refs/pull/xxxx/merge
         # HEAD^1 is the PR target branch and HEAD^2 is the HEAD of the source branch
-        extra_args: --hook-stage manual --from-ref HEAD^1 --to-ref HEAD
+        extra_args: --from-ref HEAD^1 --to-ref HEAD
 
     - name: "Generate patch file"
       if: failure()

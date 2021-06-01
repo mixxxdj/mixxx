@@ -14,14 +14,11 @@ namespace qml {
 class QmlControlProxy : public QObject, public QQmlParserStatus {
     Q_OBJECT
     Q_INTERFACES(QQmlParserStatus)
-    // The REQUIRED flag only exists in Qt 5.14 and later.
-#if QT_VERSION >= QT_VERSION_CHECK(5, 14, 0)
-    Q_PROPERTY(QString group READ getGroup WRITE setGroup NOTIFY groupChanged REQUIRED)
-    Q_PROPERTY(QString key READ getKey WRITE setKey NOTIFY keyChanged REQUIRED)
-#else
+    // TODO: The REQUIRED flag only exists in Qt 5.14 and later. Once we
+    // require that as minimum dependency, add it to the group and key
+    // properties.
     Q_PROPERTY(QString group READ getGroup WRITE setGroup NOTIFY groupChanged)
     Q_PROPERTY(QString key READ getKey WRITE setKey NOTIFY keyChanged)
-#endif
     Q_PROPERTY(QString keyValid READ isKeyValid NOTIFY keyValidChanged)
     Q_PROPERTY(QString initialized READ isInitialized NOTIFY initializedChanged)
     Q_PROPERTY(double value READ getValue WRITE setValue NOTIFY valueChanged)

@@ -100,7 +100,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget* parent,
     connect(pushButtonFakeControl,
             &QAbstractButton::clicked,
             this,
-            &DlgControllerLearning::DEBUGFakeMidiMessage);
+            &DlgControllerLearning::DEBUGFakeMidiMessage;
     connect(pushButtonFakeControl2,
             &QAbstractButton::clicked,
             this,
@@ -258,11 +258,11 @@ void DlgControllerLearning::slotStartLearningPressed() {
 
 #ifdef CONTROLLERLESSTESTING
 void DlgControllerLearning::DEBUGFakeMidiMessage() {
-    slotMessageReceived(MIDI_CC, 0x20, 0x41);
+    slotMessageReceived(MidiOpCode::ControlChange, 0x20, 0x41);
 }
 
 void DlgControllerLearning::DEBUGFakeMidiMessage2() {
-    slotMessageReceived(MIDI_CC, 0x20, 0x3F);
+    slotMessageReceived(MidiOpCode::ControlChange, 0x20, 0x3F);
 }
 #endif
 
@@ -312,11 +312,11 @@ void DlgControllerLearning::slotMessageReceived(unsigned char status,
     // We got a message, so we can cancel the taking-too-long timeout.
     m_firstMessageTimer.stop();
 
-    // Unless this is a MIDI_CC and the progress bar is full, restart the
+    // Unless this is a MidiOpCode::ControlChange and the progress bar is full, restart the
     // timer.  That way the user won't just push buttons forever and wonder
     // why the wizard never advances.
-    unsigned char opCode = MidiUtils::opCodeFromStatus(status);
-    if (opCode != MIDI_CC || progressBarWiggleFeedback->value() != 10) {
+    MidiOpCode opCode = MidiUtils::opCodeFromStatus(status);
+    if (opCode != MidiOpCode::ControlChange || progressBarWiggleFeedback->value() != 10) {
         m_lastMessageTimer.start();
     }
 }
@@ -362,28 +362,34 @@ void DlgControllerLearning::slotTimerExpired() {
     QString midiControl = "";
     bool first = true;
     foreach (const MidiInputMapping& mapping, m_mappings) {
-        unsigned char opCode = MidiUtils::opCodeFromStatus(mapping.key.status);
+        MidiOpCode opCode = MidiUtils::opCodeFromStatus(mapping.key.status);
         bool twoBytes = MidiUtils::isMessageTwoBytes(opCode);
-        QString mappingStr = twoBytes ? QString("Status: 0x%1 Control: 0x%2 Options: 0x%03")
-                .arg(QString::number(mapping.key.status, 16).toUpper(),
-                     QString::number(mapping.key.control, 16).toUpper()
-                     .rightJustified(2, '0'),
-                     QString::number(mapping.options.all, 16).toUpper()
-                     .rightJustified(2, '0')) :
-                QString("0x%1 0x%2")
-                .arg(QString::number(mapping.key.status, 16).toUpper(),
-                     QString::number(mapping.options.all, 16).toUpper()
-                     .rightJustified(2, '0'));
+        QString mappingStr = twoBytes
+                ? QString("Status: 0x%1 Control: 0x%2 Options: 0x%03")
+                          .arg(QString::number(mapping.key.status, 16)
+                                          .toUpper(),
+                                  QString::number(mapping.key.control, 16)
+                                          .toUpper()
+                                          .rightJustified(2, '0'),
+                                  QString::number(mapping.options, 16)
+                                          .toUpper()
+                                          .rightJustified(2, '0'))
+                : QString("0x%1 0x%2")
+                          .arg(QString::number(mapping.key.status, 16)
+                                          .toUpper(),
+                                  QString::number(mapping.options, 16)
+                                          .toUpper()
+                                          .rightJustified(2, '0'));
 
         // Set the debug string and "Advanced MIDI Options" group using the
         // first mapping.
         if (first) {
             midiControl = mappingStr;
             MidiOptions options = mapping.options;
-            midiOptionInvert->setChecked(options.invert);
-            midiOptionSelectKnob->setChecked(options.selectknob);
-            midiOptionSoftTakeover->setChecked(options.soft_takeover);
-            midiOptionSwitchMode->setChecked(options.sw);
+            midiOptionInvert->setChecked(options.testFlag(MidiOption::Invert));
+            midiOptionSelectKnob->setChecked(options.testFlag(MidiOption::SelectKnob));
+            midiOptionSoftTakeover->setChecked(options.testFlag(MidiOption::SoftTakeover));
+            midiOptionSwitchMode->setChecked(options.testFlag(MidiOption::Switch));
             first = false;
         }
 
@@ -417,10 +423,10 @@ void DlgControllerLearning::slotMidiOptionsChanged() {
     for (MidiInputMappings::iterator it = m_mappings.begin();
          it != m_mappings.end(); ++it) {
         MidiOptions& options = it->options;
-        options.sw = midiOptionSwitchMode->isChecked();
-        options.soft_takeover = midiOptionSoftTakeover->isChecked();
-        options.invert = midiOptionInvert->isChecked();
-        options.selectknob = midiOptionSelectKnob->isChecked();
+        options.setFlag(MidiOption::Switch, midiOptionSwitchMode->isChecked());
+        options.setFlag(MidiOption::SoftTakeover, midiOptionSoftTakeover->isChecked());
+        options.setFlag(MidiOption::Invert, midiOptionInvert->isChecked());
+        options.setFlag(MidiOption::SelectKnob, midiOptionSelectKnob->isChecked());
     }
 
     emit learnTemporaryInputMappings(m_mappings);

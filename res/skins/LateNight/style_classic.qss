@@ -635,11 +635,11 @@ WLibrary {
     #spinBoxTransition::up-button {
       height: 11px;
       subcontrol-position: top right;
-      image: url(skin:/classic/buttons/spinbox_up.svg) no-repeat;
+      background-image: url(skin:/classic/buttons/spinbox_up.svg);
       }
       WBeatSpinBox::up-button:pressed,
       #spinBoxTransition::up-button:pressed {
-        image: url(skin:/classic/buttons/spinbox_up_pressed.svg) no-repeat;
+        background-image: url(skin:/classic/buttons/spinbox_up_pressed.svg);
       }
       WBeatSpinBox::up-button {
         margin: -1px 0px 0px 0px;
@@ -651,11 +651,11 @@ WLibrary {
     #spinBoxTransition::down-button {
       height: 11px;
       subcontrol-position: bottom right;
-      image: url(skin:/classic/buttons/spinbox_down.svg) no-repeat;
+      background-image: url(skin:/classic/buttons/spinbox_down.svg);
       }
       WBeatSpinBox::down-button:pressed,
       #spinBoxTransition::down-button:pressed {
-        image: url(skin:/classic/buttons/spinbox_down_pressed.svg) no-repeat;
+        background-image: url(skin:/classic/buttons/spinbox_down_pressed.svg);
       }
       WBeatSpinBox::down-button {
         margin: 0px 0px -2px 0px;
@@ -860,11 +860,11 @@ WEffectSelector,
   }
   WEffectSelector::down-arrow,
   #fadeModeCombobox::down-arrow {
-    image: url(skin:/classic/buttons/btn__fx_selector_down.svg);
+    background: url(skin:/classic/buttons/btn__fx_selector_down.svg) no-repeat center center;
     }
     WEffectSelector::down-arrow:hover,
     #fadeModeCombobox::down-arrow:hover {
-      image: url(skin:/classic/buttons/btn__fx_selector_down_pressed.svg);
+      background: url(skin:/classic/buttons/btn__fx_selector_down_pressed.svg) no-repeat center center;
     }
 
 
@@ -1347,6 +1347,421 @@ WPushButton#LibExpand,
 
 
 
+
+/************** Button icons **************************************************/
+
+#PlayDeck {
+  background: url(skin:/classic/buttons/btn__play_deck.svg) no-repeat center center;
+}
+
+#PlayDeckMini[value="0"] {
+  background: url(skin:/classic/buttons/btn__play_deck_mini.svg) no-repeat center center;
+  }
+  #PlayDeckMini[value="1"] {
+    background: url(skin:/classic/buttons/btn__pause_deck_mini.svg) no-repeat center center;
+  }
+#PlaySampler[value="0"],
+#PlayPreview[displayValue="0"] {
+  background: url(skin:/classic/buttons/btn__play_sampler.svg) no-repeat center center;
+  }
+  #PlaySampler[value="1"],
+  #PlayPreview[displayValue="1"] {
+    background: url(skin:/classic/buttons/btn__pause_sampler.svg) no-repeat center center;
+  }
+
+#CueDeck {
+  background: url(skin:/classic/buttons/btn__cue_deck.svg) no-repeat center center;
+}
+
+#Reverse {
+  background: url(skin:/classic/buttons/btn__reverse.svg) no-repeat center center;
+}
+
+#Hotcue1 WPushButton {
+  background: url(skin:/classic/buttons/btn__1.svg) no-repeat center center;
+  }
+  #Hotcue2 WPushButton {
+    background: url(skin:/classic/buttons/btn__2.svg) no-repeat center center;
+  }
+  #Hotcue3 WPushButton {
+    background: url(skin:/classic/buttons/btn__3.svg) no-repeat center center;
+  }
+  #Hotcue4 WPushButton {
+    background: url(skin:/classic/buttons/btn__4.svg) no-repeat center center;
+  }
+  #Hotcue5 WPushButton {
+    background: url(skin:/classic/buttons/btn__5.svg) no-repeat center center;
+  }
+  #Hotcue6 WPushButton {
+    background: url(skin:/classic/buttons/btn__6.svg) no-repeat center center;
+  }
+  #Hotcue7 WPushButton {
+    background: url(skin:/classic/buttons/btn__7.svg) no-repeat center center;
+  }
+  #Hotcue8 WPushButton {
+    background: url(skin:/classic/buttons/btn__8.svg) no-repeat center center;
+  }
+
+#SpecialCueButton_intro_start WPushButton {
+  background: url(skin:/classic/buttons/btn__intro_start.svg) no-repeat center center;
+  }
+  #SpecialCueButton_intro_end WPushButton {
+    background: url(skin:/classic/buttons/btn__intro_end.svg) no-repeat center center;
+  }
+  #SpecialCueButton_outro_start WPushButton {
+    background: url(skin:/classic/buttons/btn__outro_start.svg) no-repeat center center;
+  }
+  #SpecialCueButton_outro_end WPushButton {
+    background: url(skin:/classic/buttons/btn__outro_end.svg) no-repeat center center;
+  }
+
+#LoopActivate {
+  background: url(skin:/classic/buttons/btn__loop.svg) no-repeat center center;
+}
+#Reloop {
+  background: url(skin:/classic/buttons/btn__reloop.svg) no-repeat center center;
+}
+
+#LoopIn {
+  background: url(skin:/classic/buttons/btn__loop_in.svg) no-repeat center center;
+}
+#LoopOut {
+  background: url(skin:/classic/buttons/btn__loop_out.svg) no-repeat center center;
+}
+
+#JumpForward {
+  background: url(skin:/classic/buttons/btn__beatjump_right.svg) no-repeat center center;
+}
+#JumpBack {
+  background: url(skin:/classic/buttons/btn__beatjump_left.svg) no-repeat center center;
+}
+
+/* Key buttons */
+#KeyMatchReset {
+  background: url(skin:/classic/buttons/btn__key_match.svg) no-repeat center center;
+}
+
+#KeyUp {
+  background: url(skin:/classic/buttons/btn__key_up.svg) no-repeat center center;
+}
+
+#KeyDown {
+  background: url(skin:/classic/buttons/btn__key_down.svg) no-repeat center center;
+}
+
+/* Rate buttons */
+#SyncDeck {
+  background: url(skin:/classic/buttons/btn__sync_deck.svg) no-repeat center center;
+  }
+
+#SyncLeader {
+  background: url(skin:/classic/buttons/btn__leader_deck.svg) no-repeat center center;
+  }
+
+  #SyncSampler {
+    background: url(skin:/classic/buttons/btn__sync_sampler.svg) no-repeat center center;
+    }
+
+  #RatePermUp {
+    background: url(skin:/classic/buttons/btn__plus.svg) no-repeat center center;
+  }
+
+  #RatePermDown {
+    background: url(skin:/classic/buttons/btn__minus.svg) no-repeat center center;
+  }
+
+  #RateTempUp {
+    background: url(skin:/classic/buttons/btn__arrow_right_up.svg) no-repeat center center;
+  }
+  #RateTempDown {
+    background: url(skin:/classic/buttons/btn__arrow_left_down.svg) no-repeat center center;
+  }
+
+  #RateTempUpRev {
+    background: url(skin:/classic/buttons/btn__arrow_right_down.svg) no-repeat center center;
+  }
+
+  #RateTempDownRev {
+    background: url(skin:/classic/buttons/btn__arrow_left_up.svg) no-repeat center center;
+  }
+
+/* Mixer buttons */
+#PflButton {
+  background: url(skin:/classic/buttons/btn__pfl.svg) no-repeat center center;
+}
+
+#QuickEffectButton[displayValue="0"] {
+  background: url(skin:/classic/buttons/btn__star.svg) no-repeat center center;
+}
+
+/* EQ Kill button icons H / M / L */
+#EQKillButton_High[displayValue="0"] {
+  background: url(skin:/classic/buttons/btn__eq_kill_high.svg) no-repeat center center;
+}
+#EQKillButton_Mid[displayValue="0"] {
+  background: url(skin:/classic/buttons/btn__eq_kill_mid.svg) no-repeat center center;
+}
+#EQKillButton_Low[displayValue="0"] {
+  background: url(skin:/classic/buttons/btn__eq_kill_low.svg) no-repeat center center;
+}
+
+#SplitCue[displayValue="0"] {
+  background: url(skin:/classic/buttons/btn__split.svg) no-repeat center center;
+  }
+  #SplitCue[displayValue="1"] {
+    background: url(skin:/classic/buttons/btn__split_active.svg) no-repeat center center;
+  }
+
+#FxExpand[value="0"],
+#LibExpand[value="0"] {
+  background: url(skin:/classic/buttons/btn__expand.svg) no-repeat left center;
+  }
+  #FxExpand[value="1"],
+  #LibExpand[value="1"] {
+    background: url(skin:/classic/buttons/btn__collapse.svg) no-repeat left center;
+  }
+#SamplerExpand[value="0"] {
+  background: url(skin:/classic/buttons/btn__expand_dim.svg) no-repeat left center;
+  }
+  #SamplerExpand[value="1"] {
+    background: url(skin:/classic/buttons/btn__collapse_dim.svg) no-repeat left center;
+  }
+
+#MixModeButton[value="0"] {
+  background: url(skin:/classic/buttons/btn__fx_mixmode_d-w.svg) no-repeat center center;
+  }
+  #MixModeButton[value="1"] {
+    background: url(skin:/classic/buttons/btn__fx_mixmode_d+w.svg) no-repeat center center;
+  }
+
+#FxToggleButton[value="0"] {
+  background: url(skin:/classic/buttons/btn__fx_toggle.svg) no-repeat center center;
+  }
+  #FxToggleButton[value="1"] {
+    background: url(skin:/classic/buttons/btn__fx_toggle_active.svg) no-repeat center center;
+  }
+
+#FxFocusButton[value="0"] {
+  background: url(skin:/classic/buttons/btn__fx_focus.svg) no-repeat center center;
+  }
+  #FxFocusButton[value="1"] {
+    background: url(skin:/classic/buttons/btn__fx_focus_active.svg) no-repeat center center;
+  }
+
+/* deck controls for decks 1-4 and samplers */
+#CurposButton12[displayValue="0"], #CurposButton34[displayValue="0"] {
+  background: url(skin:/classic/buttons/btn__beat_curpos.svg) no-repeat center center;
+  }
+  #CurposButton12[value="1"] {
+    background: url(skin:/classic/buttons/btn__beat_curpos_active_12.svg) no-repeat center center;
+  }
+  #CurposButton34[value="1"] {
+    background: url(skin:/classic/buttons/btn__beat_curpos_active_34.svg) no-repeat center center;
+  }
+
+  #EjectButton12[displayValue="0"], #EjectButton34[displayValue="0"] {
+    background: url(skin:/classic/buttons/btn__eject.svg) no-repeat center center;
+    }
+    #EjectButton12[value="1"] {
+      background: url(skin:/classic/buttons/btn__eject_active_12.svg) no-repeat center center;
+    }
+    #EjectButton34[value="1"] {
+      background: url(skin:/classic/buttons/btn__eject_active_34.svg) no-repeat center center;
+    }
+
+  #RepeatButton12[displayValue="0"], #RepeatButton34[displayValue="0"] {
+    background: url(skin:/classic/buttons/btn__repeat.svg) no-repeat center center;
+    }
+    #RepeatButton12[displayValue="1"] {
+      background: url(skin:/classic/buttons/btn__repeat_active_12.svg) no-repeat center center;
+    }
+    #RepeatButton34[displayValue="1"] {
+      background: url(skin:/classic/buttons/btn__repeat_active_34.svg) no-repeat center center;
+    }
+
+  #QuantizeButton12[displayValue="0"], #QuantizeButton34[displayValue="0"] {
+    background: url(skin:/classic/buttons/btn__quantize.svg) no-repeat center center;
+    }
+    #QuantizeButton12[displayValue="1"] {
+      background: url(skin:/classic/buttons/btn__quantize_active_12.svg) no-repeat center center;
+    }
+    #QuantizeButton34[displayValue="1"] {
+      background: url(skin:/classic/buttons/btn__quantize_active_34.svg) no-repeat center center;
+    }
+
+  #SlipmodeButton12[displayValue="0"], #SlipmodeButton34[displayValue="0"] {
+    background: url(skin:/classic/buttons/btn__slip.svg) no-repeat center center;
+    }
+    #SlipmodeButton12[displayValue="1"] {
+      background: url(skin:/classic/buttons/btn__slip_active_12.svg) no-repeat center center;
+    }
+    #SlipmodeButton34[displayValue="1"] {
+      background: url(skin:/classic/buttons/btn__slip_active_34.svg) no-repeat center center;
+    }
+
+  #KeylockButton12[displayValue="0"], #KeylockButton34[displayValue="0"] {
+    background: url(skin:/classic/buttons/btn__keylock.svg) no-repeat center center;
+    }
+    #KeylockButton12[displayValue="1"] {
+      background: url(skin:/classic/buttons/btn__keylock_active_12.svg) no-repeat center center;
+    }
+    #KeylockButton34[displayValue="1"] {
+      background: url(skin:/classic/buttons/btn__keylock_active_34.svg) no-repeat center center;
+    }
+
+#BeatgridControlsToggle[displayValue="0"] {
+  background: url(skin:/classic/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
+  }
+  #BeatgridControlsToggle[displayValue="1"] {
+    background: url(skin:/classic/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
+  }
+  #BeatCurposLarge {
+    background: url(skin:/classic/buttons/btn__beat_curpos_large.svg) no-repeat center center;
+    }
+    #BeatsEarlier {
+      background: url(skin:/classic/buttons/btn__beats_earlier.svg) no-repeat center center;
+    }
+    #BeatsLater {
+      background: url(skin:/classic/buttons/btn__beats_later.svg) no-repeat center center;
+    }
+    #BeatsSlower {
+      background: url(skin:/classic/buttons/btn__beats_slower.svg) no-repeat center center;
+    }
+    #BeatsFaster {
+      background: url(skin:/classic/buttons/btn__beats_faster.svg) no-repeat center center;
+    }
+    #HotcuesEarlier {
+      background: url(skin:/classic/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
+    }
+    #HotcuesLater {
+      background: url(skin:/classic/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
+    }
+
+#MicTalk {
+  background: url(skin:/classic/buttons/btn__mic_talk.svg) no-repeat center center;
+}
+
+#AuxPlay {
+  background: url(skin:/classic/buttons/btn__aux_play.svg) no-repeat center center;
+}
+
+#MicAuxAdd {
+  background: url(skin:/classic/buttons/btn__plus_flat.svg) no-repeat center center;
+}
+
+#MicDucking[value="0"] {
+  background: url(skin:/classic/buttons/btn__mic_duck_off.svg) no-repeat center center;
+  }
+  #MicDucking[value="1"] {
+    background: url(skin:/classic/buttons/btn__mic_duck_auto.svg) no-repeat center center;
+  }
+  #MicDucking[value="2"] {
+    background: url(skin:/classic/buttons/btn__mic_duck_manual.svg) no-repeat center center;
+  }
+
+#RecDot[highlight="0"] {
+  background: url(skin:/classic/buttons/btn__rec_dot.svg) no-repeat center center;
+  }
+  #RecDot[highlight="1"],
+  #RecDot[highlight="2"] {
+    background: url(skin:/classic/buttons/btn__rec_dot_active.svg) no-repeat center center;
+  }
+
+#BroadcastButton[displayValue="0"] {
+  /* for some reason the alignment isn't rescpected, so the icons
+    have to be sized like available area (button size - margin) */
+  background: url(skin:/classic/buttons/btn__broadcast_off.svg) no-repeat left top;
+  }
+  #BroadcastButton[displayValue="1"],
+  #BroadcastButton[displayValue="2"],
+  #BroadcastButton[displayValue="3"] {
+    background: url(skin:/classic/buttons/btn__broadcast_on.svg) no-repeat left top;
+  }
+
+#SkinSettingsToggle[displayValue="0"] {
+  background: url(skin:/classic/buttons/btn__settings_off.svg) no-repeat left top;
+  }
+  #SkinSettingsToggle[displayValue="1"] {
+    background: url(skin:/classic/buttons/btn__settings_on.svg) no-repeat left top;
+  }
+
+#ToolbarLogo {
+  background: url(skin:/classic/style/mixxx_logo_small.svg) no-repeat center center;
+}
+#ToolbarSeparator {
+  background: url(skin:/classic/style/toolbar_separator.svg) no-repeat center center;
+  margin: 0px 3px;
+}
+
+WSearchLineEdit QToolButton:!focus {
+  background: url(skin:/classic/buttons/btn__lib_clear_search.svg);
+  }
+  WSearchLineEdit QToolButton:focus {
+    background: url(skin:/classic/buttons/btn__lib_clear_search_focus.svg);
+  }
+
+/* AutoDJ button icons */
+QPushButton#pushButtonAutoDJ:!checked {
+  background: url(skin:/classic/buttons/btn__autodj_enable_off.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonAutoDJ:checked {
+    background: url(skin:/classic/buttons/btn__autodj_enable_on.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonFadeNow:!enabled {
+  background: url(skin:/classic/buttons/btn__autodj_fade_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonFadeNow:enabled {
+    background: url(skin:/classic/buttons/btn__autodj_fade.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonSkipNext:!enabled {
+  background: url(skin:/classic/buttons/btn__autodj_skip_disabled.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonSkipNext:enabled {
+    background: url(skin:/classic/buttons/btn__autodj_skip.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonShuffle:enabled {
+  background: url(skin:/classic/buttons/btn__autodj_shuffle.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonAddRandomTrack:enabled {
+  background: url(skin:/classic/buttons/btn__autodj_addrandom.svg) no-repeat center center;
+  }
+
+QPushButton#pushButtonRepeatPlaylist:!checked {
+  background: url(skin:/classic/buttons/btn__autodj_repeat_playlist_off.svg) no-repeat center center;
+  }
+  QPushButton#pushButtonRepeatPlaylist:checked {
+    background: url(skin:/classic/buttons/btn__autodj_repeat_playlist_on.svg) no-repeat center center;
+  }
+
+/* widgets in cue popup menu */
+#CueDeleteButton {  /*
+  padding: 3px 6px; */
+  qproperty-icon: url(skin:/classic/buttons/btn__delete.svg);
+  /* color buttons are 42x24 px.
+  To get the final size for the Delete button consider border width.
+  It's a tall button, about the same height as cue number + label edit box */
+  width: 24px;
+  height: 42px;
+  border-width: 2px;
+  border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
+  /* make the icon slightly larger than default 16px */
+  qproperty-iconSize: 20px;
+  /* has no effect
+  padding: 0px; */
+}
+
+#CueLabelEdit {
+  border: 1px solid #f0bb2b;
+  border-radius: 0px;
+  background-color: #000;
+  selection-color: #000;
+  selection-background-color: #ccc;
+  padding: 2px;
+}
 /************** button background colors **************************************/
 
 /* top-level buttons in transport, fx, micaux and others */
@@ -1364,7 +1779,6 @@ WPushButton#VinylModeButton[displayValue="2"],
 WPushButton#MixModeButton[displayValue="1"],
 #RateControls WPushButton[displayValue="0"],
 WPushButton#SyncDeck[value="0"],
-WPushButton#SyncLeader[value="0"],
 #MixerContainer WPushButton[displayValue="0"],
 #FxUnitContainer WPushButton[displayValue="0"],
 #Sampler WPushButton[displayValue="0"],
@@ -1379,23 +1793,17 @@ WPushButton#SkinSettingsToggle[displayValue="0"] {
   background-color: #262626;
 }
 
-/* Orange for 'partially active' status */
-#SyncLeader[value="1"] {
-background-color: #db7700;
-}
-
 /* Red for 'active' status */
 #BeatgridControls WPushButton[value="1"],
 #RateControls WPushButton[value="1"],
-#SyncDeck[value="1"],
-#SyncLeader[value="2"],
-#SyncSampler[displayValue="1"],
+#SyncDeck[value="1"], #SyncSampler[displayValue="1"],
 WPushButton#PlayDeck[displayValue="1"],
 WPushButton#PlayDeckMini[displayValue="1"],
 WPushButton#PlaySampler[displayValue="1"],
 WPushButton#PlayPreview[displayValue="1"],
 WPushButton#PlayIndicator[displayValue="1"],
-#LibraryPreviewButton:checked,
+/* TODO ronso0 Restore once fixed lib linKIconThemes (vers. <..80) is in *ubuntu main repos */
+/*#LibraryPreviewButton:checked,*/
 #CueDeck[displayValue="1"],
 WPushButton#Reverse[pressed="true"],
 #KeyControls WPushButton[pressed="true"],
@@ -1562,421 +1970,6 @@ WPushButton#SamplerExpand[displayValue="0"],
 #RecDot {
   background-color: transparent;
 }
-
-/************** Button icons **************************************************/
-
-#PlayDeck {
-  image: url(skin:/classic/buttons/btn__play_deck.svg) no-repeat center center;
-}
-
-#PlayDeckMini[value="0"] {
-  image: url(skin:/classic/buttons/btn__play_deck_mini.svg) no-repeat center center;
-  }
-  #PlayDeckMini[value="1"] {
-    image: url(skin:/classic/buttons/btn__pause_deck_mini.svg) no-repeat center center;
-  }
-#PlaySampler[value="0"],
-#PlayPreview[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__play_sampler.svg) no-repeat center center;
-  }
-  #PlaySampler[value="1"],
-  #PlayPreview[displayValue="1"] {
-    image: url(skin:/classic/buttons/btn__pause_sampler.svg) no-repeat center center;
-  }
-
-#CueDeck {
-  image: url(skin:/classic/buttons/btn__cue_deck.svg) no-repeat center center;
-}
-
-#Reverse {
-  image: url(skin:/classic/buttons/btn__reverse.svg) no-repeat center center;
-}
-
-#Hotcue1 WPushButton {
-  image: url(skin:/classic/buttons/btn__1.svg) no-repeat center center;
-  }
-  #Hotcue2 WPushButton {
-    image: url(skin:/classic/buttons/btn__2.svg) no-repeat center center;
-  }
-  #Hotcue3 WPushButton {
-    image: url(skin:/classic/buttons/btn__3.svg) no-repeat center center;
-  }
-  #Hotcue4 WPushButton {
-    image: url(skin:/classic/buttons/btn__4.svg) no-repeat center center;
-  }
-  #Hotcue5 WPushButton {
-    image: url(skin:/classic/buttons/btn__5.svg) no-repeat center center;
-  }
-  #Hotcue6 WPushButton {
-    image: url(skin:/classic/buttons/btn__6.svg) no-repeat center center;
-  }
-  #Hotcue7 WPushButton {
-    image: url(skin:/classic/buttons/btn__7.svg) no-repeat center center;
-  }
-  #Hotcue8 WPushButton {
-    image: url(skin:/classic/buttons/btn__8.svg) no-repeat center center;
-  }
-
-#SpecialCueButton_intro_start WPushButton {
-  image: url(skin:/classic/buttons/btn__intro_start.svg) no-repeat center center;
-  }
-  #SpecialCueButton_intro_end WPushButton {
-    image: url(skin:/classic/buttons/btn__intro_end.svg) no-repeat center center;
-  }
-  #SpecialCueButton_outro_start WPushButton {
-    image: url(skin:/classic/buttons/btn__outro_start.svg) no-repeat center center;
-  }
-  #SpecialCueButton_outro_end WPushButton {
-    image: url(skin:/classic/buttons/btn__outro_end.svg) no-repeat center center;
-  }
-
-#LoopActivate {
-  image: url(skin:/classic/buttons/btn__loop.svg) no-repeat center center;
-}
-#Reloop {
-  image: url(skin:/classic/buttons/btn__reloop.svg) no-repeat center center;
-}
-
-#LoopIn {
-  image: url(skin:/classic/buttons/btn__loop_in.svg) no-repeat center center;
-}
-#LoopOut {
-  image: url(skin:/classic/buttons/btn__loop_out.svg) no-repeat center center;
-}
-
-#JumpForward {
-  image: url(skin:/classic/buttons/btn__beatjump_right.svg) no-repeat center center;
-}
-#JumpBack {
-  image: url(skin:/classic/buttons/btn__beatjump_left.svg) no-repeat center center;
-}
-
-/* Key buttons */
-#KeyMatchReset {
-  image: url(skin:/classic/buttons/btn__key_match.svg) no-repeat center center;
-}
-
-#KeyUp {
-  image: url(skin:/classic/buttons/btn__key_up.svg) no-repeat center center;
-}
-
-#KeyDown {
-  image: url(skin:/classic/buttons/btn__key_down.svg) no-repeat center center;
-}
-
-/* Rate buttons */
-#SyncDeck {
-  image: url(skin:/classic/buttons/btn__sync_deck.svg) no-repeat center center;
-  }
-
-#SyncLeader {
-  image: url(skin:/classic/buttons/btn__leader_deck.svg) no-repeat center center;
-  }
-
-  #SyncSampler {
-    image: url(skin:/classic/buttons/btn__sync_sampler.svg) no-repeat center center;
-    }
-
-  #RatePermUp {
-    image: url(skin:/classic/buttons/btn__plus.svg) no-repeat center center;
-  }
-
-  #RatePermDown {
-    image: url(skin:/classic/buttons/btn__minus.svg) no-repeat center center;
-  }
-
-  #RateTempUp {
-    image: url(skin:/classic/buttons/btn__arrow_right_up.svg) no-repeat center center;
-  }
-  #RateTempDown {
-    image: url(skin:/classic/buttons/btn__arrow_left_down.svg) no-repeat center center;
-  }
-
-  #RateTempUpRev {
-    image: url(skin:/classic/buttons/btn__arrow_right_down.svg) no-repeat center center;
-  }
-
-  #RateTempDownRev {
-    image: url(skin:/classic/buttons/btn__arrow_left_up.svg) no-repeat center center;
-  }
-
-/* Mixer buttons */
-#PflButton {
-  image: url(skin:/classic/buttons/btn__pfl.svg) no-repeat center center;
-}
-
-#QuickEffectButton[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__star.svg) no-repeat center center;
-}
-
-/* EQ Kill button icons H / M / L */
-#EQKillButton_High[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__eq_kill_high.svg) no-repeat center center;
-}
-#EQKillButton_Mid[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__eq_kill_mid.svg) no-repeat center center;
-}
-#EQKillButton_Low[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__eq_kill_low.svg) no-repeat center center;
-}
-
-#SplitCue[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__split.svg) no-repeat center center;
-  }
-  #SplitCue[displayValue="1"] {
-    image: url(skin:/classic/buttons/btn__split_active.svg) no-repeat center center;
-  }
-
-#FxExpand[value="0"],
-#LibExpand[value="0"] {
-  image: url(skin:/classic/buttons/btn__expand.svg) no-repeat left center;
-  }
-  #FxExpand[value="1"],
-  #LibExpand[value="1"] {
-    image: url(skin:/classic/buttons/btn__collapse.svg) no-repeat left center;
-  }
-#SamplerExpand[value="0"] {
-  image: url(skin:/classic/buttons/btn__expand_dim.svg) no-repeat left center;
-  }
-  #SamplerExpand[value="1"] {
-    image: url(skin:/classic/buttons/btn__collapse_dim.svg) no-repeat left center;
-  }
-
-#MixModeButton[value="0"] {
-  image: url(skin:/classic/buttons/btn__fx_mixmode_d-w.svg) no-repeat center center;
-  }
-  #MixModeButton[value="1"] {
-    image: url(skin:/classic/buttons/btn__fx_mixmode_d+w.svg) no-repeat center center;
-  }
-
-#FxToggleButton[value="0"] {
-  image: url(skin:/classic/buttons/btn__fx_toggle.svg) no-repeat center center;
-  }
-  #FxToggleButton[value="1"] {
-    image: url(skin:/classic/buttons/btn__fx_toggle_active.svg) no-repeat center center;
-  }
-
-#FxFocusButton[value="0"] {
-  image: url(skin:/classic/buttons/btn__fx_focus.svg) no-repeat center center;
-  }
-  #FxFocusButton[value="1"] {
-    image: url(skin:/classic/buttons/btn__fx_focus_active.svg) no-repeat center center;
-  }
-
-/* deck controls for decks 1-4 and samplers */
-#CurposButton12[displayValue="0"], #CurposButton34[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__beat_curpos.svg) no-repeat center center;
-  }
-  #CurposButton12[value="1"] {
-    image: url(skin:/classic/buttons/btn__beat_curpos_active_12.svg) no-repeat center center;
-  }
-  #CurposButton34[value="1"] {
-    image: url(skin:/classic/buttons/btn__beat_curpos_active_34.svg) no-repeat center center;
-  }
-
-  #EjectButton12[displayValue="0"], #EjectButton34[displayValue="0"] {
-    image: url(skin:/classic/buttons/btn__eject.svg) no-repeat center center;
-    }
-    #EjectButton12[value="1"] {
-      image: url(skin:/classic/buttons/btn__eject_active_12.svg) no-repeat center center;
-    }
-    #EjectButton34[value="1"] {
-      image: url(skin:/classic/buttons/btn__eject_active_34.svg) no-repeat center center;
-    }
-
-  #RepeatButton12[displayValue="0"], #RepeatButton34[displayValue="0"] {
-    image: url(skin:/classic/buttons/btn__repeat.svg) no-repeat center center;
-    }
-    #RepeatButton12[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__repeat_active_12.svg) no-repeat center center;
-    }
-    #RepeatButton34[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__repeat_active_34.svg) no-repeat center center;
-    }
-
-  #QuantizeButton12[displayValue="0"], #QuantizeButton34[displayValue="0"] {
-    image: url(skin:/classic/buttons/btn__quantize.svg) no-repeat center center;
-    }
-    #QuantizeButton12[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__quantize_active_12.svg) no-repeat center center;
-    }
-    #QuantizeButton34[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__quantize_active_34.svg) no-repeat center center;
-    }
-
-  #SlipmodeButton12[displayValue="0"], #SlipmodeButton34[displayValue="0"] {
-    image: url(skin:/classic/buttons/btn__slip.svg) no-repeat center center;
-    }
-    #SlipmodeButton12[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__slip_active_12.svg) no-repeat center center;
-    }
-    #SlipmodeButton34[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__slip_active_34.svg) no-repeat center center;
-    }
-
-  #KeylockButton12[displayValue="0"], #KeylockButton34[displayValue="0"] {
-    image: url(skin:/classic/buttons/btn__keylock.svg) no-repeat center center;
-    }
-    #KeylockButton12[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__keylock_active_12.svg) no-repeat center center;
-    }
-    #KeylockButton34[displayValue="1"] {
-      image: url(skin:/classic/buttons/btn__keylock_active_34.svg) no-repeat center center;
-    }
-
-#BeatgridControlsToggle[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__beatgrid_controls_expand.svg) no-repeat center center;
-  }
-  #BeatgridControlsToggle[displayValue="1"] {
-    image: url(skin:/classic/buttons/btn__beatgrid_controls_collapse.svg) no-repeat center center;
-  }
-  #BeatCurposLarge {
-    image: url(skin:/classic/buttons/btn__beat_curpos_large.svg) no-repeat center center;
-    }
-    #BeatsEarlier {
-      image: url(skin:/classic/buttons/btn__beats_earlier.svg) no-repeat center center;
-    }
-    #BeatsLater {
-      image: url(skin:/classic/buttons/btn__beats_later.svg) no-repeat center center;
-    }
-    #BeatsSlower {
-      image: url(skin:/classic/buttons/btn__beats_slower.svg) no-repeat center center;
-    }
-    #BeatsFaster {
-      image: url(skin:/classic/buttons/btn__beats_faster.svg) no-repeat center center;
-    }
-    #HotcuesEarlier {
-      image: url(skin:/classic/buttons/btn__beats_hotcues_earlier.svg) no-repeat center center;
-    }
-    #HotcuesLater {
-      image: url(skin:/classic/buttons/btn__beats_hotcues_later.svg) no-repeat center center;
-    }
-
-#MicTalk {
-  image: url(skin:/classic/buttons/btn__mic_talk.svg) no-repeat center center;
-}
-
-#AuxPlay {
-  image: url(skin:/classic/buttons/btn__aux_play.svg) no-repeat center center;
-}
-
-#MicAuxAdd {
-  image: url(skin:/classic/buttons/btn__plus_flat.svg) no-repeat center center;
-}
-
-#MicDucking[value="0"] {
-  image: url(skin:/classic/buttons/btn__mic_duck_off.svg) no-repeat center center;
-  }
-  #MicDucking[value="1"] {
-    image: url(skin:/classic/buttons/btn__mic_duck_auto.svg) no-repeat center center;
-  }
-  #MicDucking[value="2"] {
-    image: url(skin:/classic/buttons/btn__mic_duck_manual.svg) no-repeat center center;
-  }
-
-#RecDot[highlight="0"] {
-  image: url(skin:/classic/buttons/btn__rec_dot.svg) no-repeat center center;
-  }
-  #RecDot[highlight="1"],
-  #RecDot[highlight="2"] {
-    image: url(skin:/classic/buttons/btn__rec_dot_active.svg) no-repeat center center;
-  }
-
-#BroadcastButton[displayValue="0"] {
-  /* for some reason the alignment isn't rescpected, so the icons
-    have to be sized like available area (button size - margin) */
-  image: url(skin:/classic/buttons/btn__broadcast_off.svg) no-repeat left top;
-  }
-  #BroadcastButton[displayValue="1"],
-  #BroadcastButton[displayValue="2"],
-  #BroadcastButton[displayValue="3"] {
-    image: url(skin:/classic/buttons/btn__broadcast_on.svg) no-repeat left top;
-  }
-
-#SkinSettingsToggle[displayValue="0"] {
-  image: url(skin:/classic/buttons/btn__settings_off.svg) no-repeat left top;
-  }
-  #SkinSettingsToggle[displayValue="1"] {
-    image: url(skin:/classic/buttons/btn__settings_on.svg) no-repeat left top;
-  }
-
-#ToolbarLogo {
-  image: url(skin:/classic/style/mixxx_logo_small.svg) no-repeat center center;
-}
-#ToolbarSeparator {
-  image: url(skin:/classic/style/toolbar_separator.svg) no-repeat center center;
-  margin: 0px 3px;
-}
-
-WSearchLineEdit QToolButton:!focus {
-  image: url(skin:/classic/buttons/btn__lib_clear_search.svg);
-  }
-  WSearchLineEdit QToolButton:focus {
-    image: url(skin:/classic/buttons/btn__lib_clear_search_focus.svg);
-  }
-
-/* AutoDJ button icons */
-QPushButton#pushButtonAutoDJ:!checked {
-  image: url(skin:/classic/buttons/btn__autodj_enable_off.svg) no-repeat center center;
-  }
-  QPushButton#pushButtonAutoDJ:checked {
-    image: url(skin:/classic/buttons/btn__autodj_enable_on.svg) no-repeat center center;
-  }
-
-QPushButton#pushButtonFadeNow:!enabled {
-  image: url(skin:/classic/buttons/btn__autodj_fade_disabled.svg) no-repeat center center;
-  }
-  QPushButton#pushButtonFadeNow:enabled {
-    image: url(skin:/classic/buttons/btn__autodj_fade.svg) no-repeat center center;
-  }
-
-QPushButton#pushButtonSkipNext:!enabled {
-  image: url(skin:/classic/buttons/btn__autodj_skip_disabled.svg) no-repeat center center;
-  }
-  QPushButton#pushButtonSkipNext:enabled {
-    image: url(skin:/classic/buttons/btn__autodj_skip.svg) no-repeat center center;
-  }
-
-QPushButton#pushButtonShuffle:enabled {
-  image: url(skin:/classic/buttons/btn__autodj_shuffle.svg) no-repeat center center;
-  }
-
-QPushButton#pushButtonAddRandomTrack:enabled {
-  image: url(skin:/classic/buttons/btn__autodj_addrandom.svg) no-repeat center center;
-  }
-
-QPushButton#pushButtonRepeatPlaylist:!checked {
-  image: url(skin:/classic/buttons/btn__autodj_repeat_playlist_off.svg) no-repeat center center;
-  }
-  QPushButton#pushButtonRepeatPlaylist:checked {
-    image: url(skin:/classic/buttons/btn__autodj_repeat_playlist_on.svg) no-repeat center center;
-  }
-
-/* widgets in cue popup menu */
-#CueDeleteButton {  /*
-  padding: 3px 6px; */
-  qproperty-icon: url(skin:/classic/buttons/btn__delete.svg);
-  /* color buttons are 42x24 px.
-  To get the final size for the Delete button consider border width.
-  It's a tall button, about the same height as cue number + label edit box */
-  width: 24px;
-  height: 42px;
-  border-width: 2px;
-  border-image: url(skin:/classic/buttons/btn_embedded_library.svg) 2 2 2 2;
-  /* make the icon slightly larger than default 16px */
-  qproperty-iconSize: 20px;
-  /* has no effect
-  padding: 0px; */
-}
-
-#CueLabelEdit {
-  border: 1px solid #f0bb2b;
-  border-radius: 0px;
-  background-color: #000;
-  selection-color: #000;
-  selection-background-color: #ccc;
-  padding: 2px;
-}
 /************** Button icons **************************************************/
 /************** Button styles *************************************************/
 
@@ -2102,15 +2095,17 @@ WCueMenuPopup QPushButton:focus {
 /* Button in library "Preview" column */
 #LibraryPreviewButton {
   margin: 0px;
-  padding: 0px;
+  padding: 3px;
   border-radius: 2px;
   border: 1px solid transparent;
   }
   #LibraryPreviewButton:!checked {
-    image: url(skin:/classic/buttons/btn__lib_preview_play.svg);
+    /* TODO ronso0 Restore once fixed lib linKIconThemes (vers. <..80) is in *ubuntu main repos */
+    /* image: url(skin:/classic/buttons/btn__lib_preview_play.svg); */
     }
   #LibraryPreviewButton:checked {
-    image: url(skin:/classic/buttons/btn__lib_preview_pause.svg);
+    /* image: url(skin:/classic/buttons/btn__lib_preview_pause.svg); */
+    border: 1px solid red;
     }
 
 
@@ -2132,6 +2127,12 @@ WCueMenuPopup QPushButton:focus {
     border-right: 1px solid #000;
     border-bottom: 1px solid #000;
   }
+    #LibraryContainer QHeaderView::up-arrow {
+      background: url(skin:/classic/buttons/btn__lib_sort_up.svg)  no-repeat center center;
+      }
+    #LibraryContainer QHeaderView::down-arrow {
+      background: url(skin:/classic/buttons/btn__lib_sort_down.svg) no-repeat center center;
+    }
   #LibraryContainer QHeaderView::up-arrow,
   #LibraryContainer QHeaderView::down-arrow {
     border-right: 1px solid #000;
@@ -2140,12 +2141,6 @@ WCueMenuPopup QPushButton:focus {
     background-color: qlineargradient(x1:0, y1:0, x2:0, y2:1,
       stop:0 rgba(34,34,34,190),
       stop:1 rgba(17,17,17,190));
-    }
-    #LibraryContainer QHeaderView::up-arrow {
-      image: url(skin:/classic/buttons/btn__lib_sort_up.svg);
-      }
-    #LibraryContainer QHeaderView::down-arrow {
-      image: url(skin:/classic/buttons/btn__lib_sort_down.svg);
     }
 
 
@@ -2259,14 +2254,14 @@ WSearchLineEdit {
 
 #WaveformSplitter::handle,
 #SidebarCoverSplitter::handle {
-    image: url(skin:/classic/style/splitter_handle_horizontal.png); /*
+    background: url(skin:/classic/style/splitter_handle_horizontal.png) no-repeat center center; /*
     border-top: 1px solid #000; */
   }
   #WaveformSplitter::handle:pressed,
   #WaveformSplitter::handle:hover,
   #SidebarCoverSplitter::handle:pressed,
   #SidebarCoverSplitter::handle:hover {
-    image: url(skin:/classic/style/splitter_handle_horizontal_pressed.png);
+    background: url(skin:/classic/style/splitter_handle_horizontal_pressed.png) no-repeat center center;
   }
   #WaveformSplitter::handle:vertical,
   #SidebarCoverSplitter::handle:vertical {
@@ -2277,12 +2272,12 @@ WSearchLineEdit {
   (the splitter itself is vertical)
   Used to split Library sidebar & Tracks table */
 #LibrarySplitter::handle {
-  image: url(skin:/classic/style/splitter_handle_vertical.png);
+  background: url(skin:/classic/style/splitter_handle_vertical.png) no-repeat center center;
   background-color: #1e1e1e;
 }
 #LibrarySplitter::handle:pressed,
 #LibrarySplitter::handle:hover {
-  image: url(skin:/classic/style/splitter_handle_vertical_pressed.png);
+  background: url(skin:/classic/style/splitter_handle_vertical_pressed.png) no-repeat center center;
 }
 #LibrarySplitter::handle:vertical {
   /* 'height' works although it's actually the width of the handle */
@@ -2461,11 +2456,6 @@ QLineEdit QMenu::item:disabled {
     image: url(skin:/classic/buttons/btn__lib_checkmark_orange.svg);
     }
   /* disabled menu item and checkbox */
-  WTrackMenu QMenu QCheckBox::indicator:disabled:unchecked,
-  WTrackMenu QMenu QCheckBox::indicator:disabled:checked,
-  WTrackMenu QMenu QCheckBox::indicator:indeterminate {
-    background-color: #222;
-  }
   WTrackMenu QMenu QCheckBox::indicator:disabled:checked {
     image: url(skin:/classic/buttons/btn__lib_checkmark_grey.svg);
   }
