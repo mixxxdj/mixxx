@@ -15,6 +15,7 @@ QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
         : QQuickPaintedItem(parent),
           m_pPlayer(nullptr),
           m_channels(ChannelFlag::BothChannels),
+          m_renderer(Renderer::RGB),
           m_colorHigh(0xFF0000),
           m_colorMid(0x00FF00),
           m_colorLow(0x0000FF) {
@@ -162,35 +163,46 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
         pPainter->scale(width() / desiredWidth, height() / (2 * kDesiredChannelHeight));
     }
 
+    Renderer renderer = m_renderer;
     for (int currentCompletion = actualCompletion;
             currentCompletion < nextCompletion;
             currentCompletion += 2) {
-        const double offsetX = currentCompletion / 2.0;
-
-        if (channels.testFlag(ChannelFlag::LeftChannel)) {
-            // Draw left channel
-            const QColor leftColor = getPenColor(pWaveform, currentCompletion);
-            if (leftColor.isValid()) {
-                const uint8_t leftValue = pWaveform->getAll(currentCompletion);
-                pPainter->setPen(leftColor);
-                pPainter->drawLine(QPointF(offsetX, -leftValue), QPointF(offsetX, 0.0));
-            }
-        }
-
-        if (channels.testFlag(ChannelFlag::RightChannel)) {
-            // Draw right channel
-            QColor rightColor = getPenColor(pWaveform, currentCompletion + 1);
-            if (rightColor.isValid()) {
-                const uint8_t rightValue = pWaveform->getAll(currentCompletion + 1);
-                pPainter->setPen(rightColor);
-                pPainter->drawLine(QPointF(offsetX, 0.0), QPointF(offsetX, rightValue));
-            }
+        switch (renderer) {
+        default:
+            drawRgb(pPainter, channels, pWaveform, currentCompletion);
         }
     }
     pPainter->restore();
 }
 
-QColor QmlWaveformOverview::getPenColor(ConstWaveformPointer pWaveform, int completion) const {
+void QmlWaveformOverview::drawRgb(QPainter* pPainter,
+        Channels channels,
+        ConstWaveformPointer pWaveform,
+        int completion) const {
+    const double offsetX = completion / 2.0;
+
+    if (channels.testFlag(ChannelFlag::LeftChannel)) {
+        // Draw left channel
+        const QColor leftColor = getRgbPenColor(pWaveform, completion);
+        if (leftColor.isValid()) {
+            const uint8_t leftValue = pWaveform->getAll(completion);
+            pPainter->setPen(leftColor);
+            pPainter->drawLine(QPointF(offsetX, -leftValue), QPointF(offsetX, 0.0));
+        }
+    }
+
+    if (channels.testFlag(ChannelFlag::RightChannel)) {
+        // Draw right channel
+        QColor rightColor = getRgbPenColor(pWaveform, completion + 1);
+        if (rightColor.isValid()) {
+            const uint8_t rightValue = pWaveform->getAll(completion + 1);
+            pPainter->setPen(rightColor);
+            pPainter->drawLine(QPointF(offsetX, 0.0), QPointF(offsetX, rightValue));
+        }
+    }
+}
+
+QColor QmlWaveformOverview::getRgbPenColor(ConstWaveformPointer pWaveform, int completion) const {
     // Retrieve "raw" LMH values from waveform
     qreal low = static_cast<qreal>(pWaveform->getLow(completion));
     qreal mid = static_cast<qreal>(pWaveform->getMid(completion));
