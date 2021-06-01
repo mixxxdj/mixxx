@@ -75,6 +75,13 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     default:;
     }
 
+    Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
+    if (pOnlyPlayer) {
+        // This resets the user offset, so that if this deck gets used as the params syncable
+        // it will have that offset removed.
+        pOnlyPlayer->notifyOnlyPlayingSyncable();
+    }
+
     // Second, figure out what Syncable should be used to initialize the master
     // parameters, if any. Usually this is the new master. (Note, that pointer might be null!)
     Syncable* pParamsSyncable = m_pMasterSyncable;
@@ -96,10 +103,6 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         }
     }
 
-    Syncable* pOnlyPlayer = getUniquePlayingSyncedDeck();
-    if (pOnlyPlayer) {
-        pOnlyPlayer->notifyOnlyPlayingSyncable();
-    }
 }
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
