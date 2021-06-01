@@ -8,6 +8,7 @@ Rectangle {
     id: root
 
     property string group // required
+    property var deckPlayer: Mixxx.PlayerManager.getPlayer(group)
     property color textColor: Theme.deckTextColor
     property color lineColor: Theme.deckLineColor
 
@@ -69,7 +70,7 @@ Rectangle {
     Text {
         id: infoBarTitle
 
-        text: "Title Placeholder"
+        text: root.deckPlayer.title
         anchors.top: infoBarHSeparator1.top
         anchors.left: infoBarVSeparator.left
         anchors.right: infoBarHSeparator1.left
@@ -95,7 +96,7 @@ Rectangle {
     Text {
         id: infoBarArtist
 
-        text: "Artist Placeholder"
+        text: root.deckPlayer.artist
         anchors.top: infoBarVSeparator.bottom
         anchors.left: infoBarVSeparator.left
         anchors.right: infoBarHSeparator1.left
@@ -129,7 +130,7 @@ Rectangle {
         anchors.right: infoBarHSeparator2.left
         verticalAlignment: Text.AlignVCenter
         horizontalAlignment: Text.AlignHCenter
-        text: "KEY"
+        text: root.deckPlayer.key
         font.family: Theme.fontFamily
         font.pixelSize: Theme.textFontPixelSize
         color: infoBar.textColor
