@@ -49,6 +49,11 @@ QString SkinLoader::getSkinPath(const QString& skinName) const {
     const QList<QDir> skinSearchPaths = getSkinSearchPaths();
     for (QDir dir : skinSearchPaths) {
         if (dir.cd(skinName)) {
+            if (!dir.exists("skin.xml")) {
+                qWarning() << "Skipping skin directory" << dir.absolutePath()
+                           << "because \"skin.xml\" is missing";
+                continue;
+            }
             return dir.absolutePath();
         }
     }
