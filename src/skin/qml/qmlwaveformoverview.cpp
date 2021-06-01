@@ -5,37 +5,6 @@
 
 namespace {
 constexpr double kDesiredHeight = 255 * 2.0;
-
-constexpr qreal lowColorR = 0;
-constexpr qreal lowColorG = 0;
-constexpr qreal lowColorB = 1;
-constexpr qreal midColorR = 0;
-constexpr qreal midColorG = 1;
-constexpr qreal midColorB = 0;
-constexpr qreal highColorR = 1;
-constexpr qreal highColorG = 0;
-constexpr qreal highColorB = 0;
-
-QColor getPenColor(ConstWaveformPointer pWaveform, int completion) {
-    // Retrieve "raw" LMH values from waveform
-    qreal low = static_cast<qreal>(pWaveform->getLow(completion));
-    qreal mid = static_cast<qreal>(pWaveform->getMid(completion));
-    qreal high = static_cast<qreal>(pWaveform->getHigh(completion));
-
-    // Do matrix multiplication
-    qreal red = low * lowColorR + mid * midColorR + high * highColorR;
-    qreal green = low * lowColorG + mid * midColorG + high * highColorG;
-    qreal blue = low * lowColorB + mid * midColorB + high * highColorB;
-
-    // Normalize and draw
-    qreal max = math_max3(red, green, blue);
-    if (max > 0.0) {
-        QColor color;
-        color.setRgbF(red / max, green / max, blue / max);
-        return color;
-    }
-    return QColor();
-}
 } // namespace
 
 namespace mixxx {
@@ -43,7 +12,11 @@ namespace skin {
 namespace qml {
 
 QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
-        : QQuickPaintedItem(parent), m_pPlayer(nullptr) {
+        : QQuickPaintedItem(parent),
+          m_pPlayer(nullptr),
+          m_colorHigh(0xFF0000),
+          m_colorMid(0x00FF00),
+          m_colorLow(0x0000FF) {
 }
 
 QmlPlayerProxy* QmlWaveformOverview::getPlayer() const {
@@ -180,6 +153,28 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
         }
     }
     pPainter->restore();
+}
+
+QColor QmlWaveformOverview::getPenColor(ConstWaveformPointer pWaveform, int completion) const {
+    // Retrieve "raw" LMH values from waveform
+    qreal low = static_cast<qreal>(pWaveform->getLow(completion));
+    qreal mid = static_cast<qreal>(pWaveform->getMid(completion));
+    qreal high = static_cast<qreal>(pWaveform->getHigh(completion));
+
+    // Do matrix multiplication
+    qreal red = low * m_colorLow.redF() + mid * m_colorMid.redF() + high * m_colorHigh.redF();
+    qreal green = low * m_colorLow.greenF() + mid * m_colorMid.greenF() +
+            high * m_colorHigh.greenF();
+    qreal blue = low * m_colorLow.blueF() + mid * m_colorMid.blueF() + high * m_colorHigh.blueF();
+
+    // Normalize and draw
+    qreal max = math_max3(red, green, blue);
+    if (max > 0.0) {
+        QColor color;
+        color.setRgbF(red / max, green / max, blue / max);
+        return color;
+    }
+    return QColor();
 }
 
 } // namespace qml
