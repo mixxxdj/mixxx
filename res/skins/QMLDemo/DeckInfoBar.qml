@@ -198,4 +198,22 @@ Rectangle {
 
     }
 
+    gradient: Gradient {
+        orientation: Gradient.Horizontal
+
+        GradientStop {
+            position: -0.75
+            color: {
+                let trackColor = root.deckPlayer.color;
+                return trackColor ? trackColor : Theme.deckBackgroundColor;
+            }
+        }
+
+        GradientStop {
+            position: 0.5
+            color: Theme.deckBackgroundColor
+        }
+
+    }
+
 }
