@@ -168,6 +168,9 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
             currentCompletion < nextCompletion;
             currentCompletion += 2) {
         switch (renderer) {
+        case Renderer::Filtered:
+            drawFiltered(pPainter, channels, pWaveform, currentCompletion);
+            break;
         default:
             drawRgb(pPainter, channels, pWaveform, currentCompletion);
         }
@@ -199,6 +202,41 @@ void QmlWaveformOverview::drawRgb(QPainter* pPainter,
             pPainter->setPen(rightColor);
             pPainter->drawLine(QPointF(offsetX, 0.0), QPointF(offsetX, rightValue));
         }
+    }
+}
+
+void QmlWaveformOverview::drawFiltered(QPainter* pPainter,
+        Channels channels,
+        ConstWaveformPointer pWaveform,
+        int completion) const {
+    const double offsetX = completion / 2.0;
+
+    if (channels.testFlag(ChannelFlag::LeftChannel)) {
+        const uint8_t leftHigh = pWaveform->getHigh(completion);
+        pPainter->setPen(m_colorHigh);
+        pPainter->drawLine(QPointF(offsetX, 2 * -leftHigh), QPointF(offsetX, 0.0));
+
+        const uint8_t leftMid = pWaveform->getMid(completion);
+        pPainter->setPen(m_colorMid);
+        pPainter->drawLine(QPointF(offsetX, 1.5 * -leftMid), QPointF(offsetX, 0.0));
+
+        const uint8_t leftLow = pWaveform->getLow(completion);
+        pPainter->setPen(m_colorLow);
+        pPainter->drawLine(QPointF(offsetX, -leftLow), QPointF(offsetX, 0.0));
+    }
+
+    if (channels.testFlag(ChannelFlag::RightChannel)) {
+        const uint8_t rightHigh = pWaveform->getHigh(completion + 1);
+        pPainter->setPen(m_colorHigh);
+        pPainter->drawLine(QPointF(offsetX, 0), QPointF(offsetX, 2 * rightHigh));
+
+        const uint8_t rightMid = pWaveform->getMid(completion + 1) * 2;
+        pPainter->setPen(m_colorMid);
+        pPainter->drawLine(QPointF(offsetX, 0), QPointF(offsetX, 1.5 * rightMid));
+
+        const uint8_t rightLow = pWaveform->getLow(completion + 1);
+        pPainter->setPen(m_colorLow);
+        pPainter->drawLine(QPointF(offsetX, 0), QPointF(offsetX, rightLow));
     }
 }
 

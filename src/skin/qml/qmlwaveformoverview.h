@@ -34,6 +34,7 @@ class QmlWaveformOverview : public QQuickPaintedItem {
 
     enum class Renderer {
         RGB = 1,
+        Filtered = 2,
     };
     Q_ENUM(Renderer)
 
@@ -61,6 +62,10 @@ class QmlWaveformOverview : public QQuickPaintedItem {
 
   private:
     void setCurrentTrack(TrackPointer pTrack);
+    void drawFiltered(QPainter* pPainter,
+            Channels channels,
+            ConstWaveformPointer pWaveform,
+            int completion) const;
     void drawRgb(QPainter* pPainter,
             Channels channels,
             ConstWaveformPointer pWaveform,
