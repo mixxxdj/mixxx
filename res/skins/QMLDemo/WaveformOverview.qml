@@ -126,6 +126,10 @@ Item {
         MixxxControls.WaveformOverview {
             anchors.fill: parent
             channels: Mixxx.WaveformOverview.Channels.LeftChannel
+            renderer: Mixxx.WaveformOverview.Renderer.Filtered
+            colorHigh: Theme.white
+            colorMid: Theme.blue
+            colorLow: Theme.green
             group: root.group
         }
 
