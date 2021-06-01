@@ -1672,6 +1672,7 @@ void Track::updateStreamInfoFromSource(
         afterBeatsAndBpmUpdated(&lock);
     } else {
         markDirtyAndUnlock(&lock);
+        emit durationChanged();
     }
     if (cuesImported) {
         emit cuesUpdated();
