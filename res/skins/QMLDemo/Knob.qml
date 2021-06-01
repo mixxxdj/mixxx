@@ -8,7 +8,7 @@ MixxxControls.Knob {
     property color color // required
 
     implicitWidth: 56
-    implicitHeight: width
+    implicitHeight: implicitWidth
     arc: true
     arcRadius: 20
     arcColor: root.color
