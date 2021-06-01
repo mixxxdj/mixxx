@@ -31,6 +31,7 @@ Rectangle {
             anchors.right: parent.right
             anchors.bottom: parent.bottom
             anchors.margins: 1
+            antialiasing: false // for performance reasons
             height: control.parameter * (parent.height - 2 * anchors.margins)
             radius: width / 2
         }
@@ -40,6 +41,7 @@ Rectangle {
     Rectangle {
         id: meterGradient
 
+        antialiasing: false // for performance reasons
         anchors.fill: parent
         visible: false
 
