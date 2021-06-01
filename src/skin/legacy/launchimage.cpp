@@ -17,7 +17,7 @@ LaunchImage::LaunchImage(QWidget* pParent, const QString& styleSheet)
         setStyleSheet(
                 "LaunchImage { background-color: #202020; }"
                 "QLabel { "
-                "background-image: url(:/images/mixxx-icon-logo-symbolic.svg);"
+                "image: url(:/images/mixxx-icon-logo-symbolic.svg);"
                 "padding:0;"
                 "margin:0;"
                 "border:none;"

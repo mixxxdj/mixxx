@@ -307,16 +307,15 @@ WLibrary QLineEdit,
 
 /* button in library "Preview" column */
 QPushButton#LibraryPreviewButton {
-  background: transparent;
+  background-color: transparent;
   margin: 0px;
-  padding: 3px;
+  padding: 0px;
   border: 1px solid transparent;
   border-radius: 2px;
 }
 
 QPushButton#LibraryPreviewButton:!checked {
-  /* TODO ronso0 Restore once fixed lib linKIconThemes (vers. <..80) is in *ubuntu main repos */
-  /*image: url(skin:/../Deere/icon/ic_library_preview_play.svg);*/
+  image: url(skin:/../Deere/icon/ic_library_preview_play.svg);
 }
 
 QPushButton#LibraryPreviewButton:!checked:hover {
@@ -325,7 +324,7 @@ QPushButton#LibraryPreviewButton:!checked:hover {
 }
 
 QPushButton#LibraryPreviewButton:checked {
-  /*image: url(skin:/../Deere/icon/ic_library_preview_pause.svg);*/
+  image: url(skin:/../Deere/icon/ic_library_preview_pause.svg);
   background-color: #0f0f0f;
   border: 1px solid #006596;
 }
@@ -338,7 +337,7 @@ QPushButton#LibraryPreviewButton:checked:hover {
 #LibraryContainer QHeaderView {
   /* Don't set a font size to pick up the system font size. */
   color: #d2d2d2;
-  background: #1A1A1A;
+  background-color: #1A1A1A;
   border-bottom: 1px solid #141414;
 }
 
@@ -346,7 +345,7 @@ QPushButton#LibraryPreviewButton:checked:hover {
   height: 1.1em;
   font-weight: bold;
   padding: 2px;
-  background: #1A1A1A;
+  background-color: #1A1A1A;
   border-top: none;
   border-left: none;
   border-bottom: 1px solid #141414;
@@ -468,14 +467,14 @@ WSearchLineEdit {
 #LibraryVerticalSplitter::handle,
 #WaveformSplitter::handle {
   image: url(skin:/../Deere/image/style_handle_vertical_unchecked.svg);
-  background: #222;
+  background-color: #222;
 }
 
 #LibraryCoverArtSplitter::handle:pressed,
 #LibraryVerticalSplitter::handle:pressed,
 #WaveformSplitter::handle:pressed {
   image: url(skin:/../Deere/image/style_handle_vertical_checked.svg);
-  background: #222;
+  background-color: #222;
 }
 
 #LibraryCoverArtSplitter::handle:horizontal,
@@ -650,7 +649,7 @@ WEffectSelector QAbstractScrollArea QScrollBar:horizontal,
   border-top: 1px solid #141414;
   min-width: 12px;
   height: 15px;
-  background: #222222;
+  background-color: #222222;
   padding: 3px;
 }
 #LibraryContainer QScrollBar:vertical,
@@ -659,7 +658,7 @@ WEffectSelector QAbstractScrollArea QScrollBar:vertical,
   border-left: 1px solid #141414;
   min-height: 12px;
   width: 15px;
-  background: #222222;
+  background-color: #222222;
   padding: 3px;
 }
 /* "add-page" and "sub-page" are the gutter of the scrollbar */
@@ -675,7 +674,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::sub-page,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal {
   min-width: 25px;
-  background: #5F5F5F;
+  background-color: #5F5F5F;
   border-radius: 3px;
   border: none;
 }
@@ -683,7 +682,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical {
   min-height: 25px;
-  background: #5F5F5F;
+  background-color: #5F5F5F;
   border-radius: 3px;
   border: none;
 }
@@ -693,7 +692,7 @@ WEffectSelector QAbstractScrollArea QScrollBar::handle:horizontal:hover,
 WEffectSelector QAbstractScrollArea QScrollBar::handle:vertical:hover,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:horizontal:hover,
 #fadeModeCombobox QAbstractScrollArea QScrollBar::handle:vertical:hover {
-  background: #B3B3B3;
+  background-color: #B3B3B3;
 }
 
 /* Turn off buttons */
@@ -777,7 +776,7 @@ WEffectSelector QAbstractScrollArea::corner,
 #SkinSettings > #h3 WPushButton:hover,
 #SkinSettingsButton:hover,
 #SkinSettingsCategoryButton:hover {
-  background: #222222;
+  background-color: #222222;
 }
 
 /*******************************************************************************
@@ -1064,7 +1063,7 @@ WBeatSpinBox,
 #BpmKeyEditRowExpanded {
   /* emphasize active widget */
   border: 1px solid #FF6600;
-  background: rgba(255, 102, 0, 64);
+  background-color: rgba(255, 102, 0, 64);
   color: #D6D6D6;
 }
 
@@ -1739,7 +1738,7 @@ do not highlight either state. */
 
 /* Special case SamplerPlayButtonRepeating controls
   When sampler is playing, displays same play icon as normal, but
-  background is red instead of blue.
+  background is purple instead of blue.
 */
 
 #SamplerPlayButtonRepeating[value="1"] {

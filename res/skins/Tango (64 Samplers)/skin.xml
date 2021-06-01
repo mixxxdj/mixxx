@@ -143,7 +143,7 @@
         background-color: #0f0f0f;
       }
       QLabel {
-        background-image: url(skin:/../Tango/graphics/logo_160x40.svg);
+        image: url(skin:../Tango//graphics/logo_160x40.svg);
         padding: 0;
         margin: 0px 2px 0px 2px;
         border: none;
