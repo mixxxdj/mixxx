@@ -4,7 +4,7 @@
 #include "skin/qml/qmlplayerproxy.h"
 
 namespace {
-constexpr double kDesiredHeight = 255 * 2.0;
+constexpr double kDesiredChannelHeight = 255;
 } // namespace
 
 namespace mixxx {
@@ -14,6 +14,7 @@ namespace qml {
 QmlWaveformOverview::QmlWaveformOverview(QQuickItem* parent)
         : QQuickPaintedItem(parent),
           m_pPlayer(nullptr),
+          m_channels(ChannelFlag::BothChannels),
           m_colorHigh(0xFF0000),
           m_colorMid(0x00FF00),
           m_colorLow(0x0000FF) {
@@ -51,6 +52,19 @@ void QmlWaveformOverview::setPlayer(QmlPlayerProxy* pPlayer) {
 
     emit playerChanged();
     update();
+}
+
+QmlWaveformOverview::Channels QmlWaveformOverview::getChannels() const {
+    return m_channels;
+}
+
+void QmlWaveformOverview::setChannels(QmlWaveformOverview::Channels channels) {
+    if (m_channels == channels) {
+        return;
+    }
+
+    m_channels = channels;
+    emit channelsChanged(channels);
 }
 
 void QmlWaveformOverview::slotTrackLoaded(TrackPointer pTrack) {
@@ -125,31 +139,52 @@ void QmlWaveformOverview::paint(QPainter* pPainter) {
 
     const int nextCompletion = actualCompletion + completionIncrement;
 
+    const Channels channels = m_channels;
     pPainter->save();
-    // Set the y axis to half the height of the item
-    pPainter->translate(0.0, height() / 2);
-    // Set the x axis to half the height of the item
-    pPainter->scale(width() / desiredWidth, height() / kDesiredHeight);
+
+    switch (channels) {
+    case static_cast<int>(ChannelFlag::LeftChannel):
+        // Draw both channels.
+        // Set the y axis to half the height of the item
+        pPainter->translate(0.0, height());
+        // Set the x axis to half the height of the item
+        pPainter->scale(width() / desiredWidth, height() / kDesiredChannelHeight);
+        break;
+    case static_cast<int>(ChannelFlag::RightChannel):
+        // Set the x axis to half the height of the item
+        pPainter->scale(width() / desiredWidth, height() / kDesiredChannelHeight);
+        break;
+    default:
+        // Draw both channels.
+        // Set the y axis to half the height of the item
+        pPainter->translate(0.0, height() / 2);
+        // Set the x axis to half the height of the item
+        pPainter->scale(width() / desiredWidth, height() / (2 * kDesiredChannelHeight));
+    }
 
     for (int currentCompletion = actualCompletion;
             currentCompletion < nextCompletion;
             currentCompletion += 2) {
         const double offsetX = currentCompletion / 2.0;
 
-        // Draw left channel
-        const QColor leftColor = getPenColor(pWaveform, currentCompletion);
-        if (leftColor.isValid()) {
-            const uint8_t leftValue = pWaveform->getAll(currentCompletion);
-            pPainter->setPen(leftColor);
-            pPainter->drawLine(QPointF(offsetX, -leftValue), QPointF(offsetX, 0.0));
+        if (channels.testFlag(ChannelFlag::LeftChannel)) {
+            // Draw left channel
+            const QColor leftColor = getPenColor(pWaveform, currentCompletion);
+            if (leftColor.isValid()) {
+                const uint8_t leftValue = pWaveform->getAll(currentCompletion);
+                pPainter->setPen(leftColor);
+                pPainter->drawLine(QPointF(offsetX, -leftValue), QPointF(offsetX, 0.0));
+            }
         }
 
-        // Draw right channel
-        QColor rightColor = getPenColor(pWaveform, currentCompletion + 1);
-        if (rightColor.isValid()) {
-            const uint8_t rightValue = pWaveform->getAll(currentCompletion + 1);
-            pPainter->setPen(rightColor);
-            pPainter->drawLine(QPointF(offsetX, 0.0), QPointF(offsetX, rightValue));
+        if (channels.testFlag(ChannelFlag::RightChannel)) {
+            // Draw right channel
+            QColor rightColor = getPenColor(pWaveform, currentCompletion + 1);
+            if (rightColor.isValid()) {
+                const uint8_t rightValue = pWaveform->getAll(currentCompletion + 1);
+                pPainter->setPen(rightColor);
+                pPainter->drawLine(QPointF(offsetX, 0.0), QPointF(offsetX, rightValue));
+            }
         }
     }
     pPainter->restore();

@@ -15,18 +15,30 @@ class QmlPlayerProxy;
 
 class QmlWaveformOverview : public QQuickPaintedItem {
     Q_OBJECT
+    Q_FLAGS(Channels)
     Q_PROPERTY(mixxx::skin::qml::QmlPlayerProxy* player READ getPlayer
                     WRITE setPlayer NOTIFY playerChanged)
+    Q_PROPERTY(Channels channels READ getChannels WRITE setChannels NOTIFY channelsChanged)
     Q_PROPERTY(QColor colorHigh MEMBER m_colorHigh NOTIFY colorHighChanged)
     Q_PROPERTY(QColor colorMid MEMBER m_colorMid NOTIFY colorMidChanged)
     Q_PROPERTY(QColor colorLow MEMBER m_colorLow NOTIFY colorLowChanged)
 
   public:
+    enum class ChannelFlag : int {
+        LeftChannel = 1,
+        RightChannel = 2,
+        BothChannels = LeftChannel | RightChannel,
+    };
+    Q_DECLARE_FLAGS(Channels, ChannelFlag)
+
     QmlWaveformOverview(QQuickItem* parent = nullptr);
     void paint(QPainter* painter);
 
     void setPlayer(QmlPlayerProxy* player);
     QmlPlayerProxy* getPlayer() const;
+
+    void setChannels(Channels channels);
+    Channels getChannels() const;
   private slots:
     void slotTrackLoaded(TrackPointer pLoadedTrack);
     void slotTrackLoading(TrackPointer pNewTrack, TrackPointer pOldTrack);
@@ -35,6 +47,7 @@ class QmlWaveformOverview : public QQuickPaintedItem {
 
   signals:
     void playerChanged();
+    void channelsChanged(mixxx::skin::qml::QmlWaveformOverview::Channels channels);
     void colorHighChanged(const QColor& color);
     void colorMidChanged(const QColor& color);
     void colorLowChanged(const QColor& color);
@@ -45,6 +58,7 @@ class QmlWaveformOverview : public QQuickPaintedItem {
 
     QmlPlayerProxy* m_pPlayer;
     TrackPointer m_pCurrentTrack;
+    Channels m_channels;
     QColor m_colorHigh;
     QColor m_colorMid;
     QColor m_colorLow;
