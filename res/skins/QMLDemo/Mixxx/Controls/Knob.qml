@@ -32,22 +32,16 @@ Item {
         key: root.key + "_set_default"
     }
 
-    Rectangle {
+    Item {
         id: background
 
-        width: root.width
-        height: root.height
-        anchors.centerIn: root
-        color: "transparent"
+        anchors.fill: parent
     }
 
-    Rectangle {
+    Item {
         id: foreground
 
-        width: root.width
-        height: root.height
-        anchors.centerIn: root
-        color: "transparent"
+        anchors.fill: parent
         rotation: (control.parameter - (root.max - root.min) / 2) * 2 * root.angle
     }
 
