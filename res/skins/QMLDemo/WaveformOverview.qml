@@ -125,6 +125,7 @@ Item {
 
         MixxxControls.WaveformOverview {
             anchors.fill: parent
+            channels: Mixxx.WaveformOverview.Channels.LeftChannel
             group: root.group
         }
 
