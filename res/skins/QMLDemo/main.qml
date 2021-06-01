@@ -1,13 +1,17 @@
+import "." as Skin
 import QtQuick 2.12
 import QtQuick.Controls 2.12
 import QtQuick.Layouts 1.11
+import "Theme"
 
 Rectangle {
     id: root
 
+    property alias show4decks: show4DecksButton.checked
+
     width: 1920
     height: 1080
-    color: "#1e1e20"
+    color: Theme.backgroundColor
     visible: true
 
     Column {
@@ -19,165 +23,59 @@ Rectangle {
 
             width: parent.width
             height: 36
-            color: "#151517"
-            border.color: "#020202"
-            border.width: 1
+            color: Theme.toolbarBackgroundColor
             radius: 1
 
             Row {
                 padding: 5
                 spacing: 5
 
-                Button {
-                    id: decksCDToggle
+                Skin.Button {
+                    id: show4DecksButton
 
-                    width: 100
-                    height: 26
-                    text: "4 DECKS"
-                    font.family: "Open Sans"
-                    font.bold: true
-                    font.pixelSize: 11
-                    onClicked: decksCD.stateHidden = !decksCD.stateHidden
-                    states: [
-                        State {
-                            when: decksCD.stateHidden
-
-                            PropertyChanges {
-                                target: decksCDToggle
-                                background.color: "#151517"
-                                contentItem.color: "#777777"
-                            }
-
-                            PropertyChanges {
-                                target: decksCDToggleBgImage
-                                source: "../LateNight/palemoon/buttons/btn___active.svg"
-                            }
-
-                        },
-                        State {
-                            when: !decksCD.stateHidden
-
-                            PropertyChanges {
-                                target: decksCDToggle
-                                background.color: "#777777"
-                                contentItem.color: "#000000"
-                            }
-
-                            PropertyChanges {
-                                target: decksCDToggleBgImage
-                                source: "../LateNight/palemoon/buttons/btn__.svg"
-                            }
-
-                        }
-                    ]
-
-                    contentItem: Text {
-                        text: decksCDToggle.text
-                        font: decksCDToggle.font
-                        horizontalAlignment: Text.AlignHCenter
-                        verticalAlignment: Text.AlignVCenter
-                    }
-
-                    background: Rectangle {
-                        anchors.fill: parent
-                        border.width: 2
-
-                        Image {
-                            id: decksCDToggleBgImage
-
-                            anchors.fill: parent
-                        }
-
-                    }
-
+                    text: "4 Decks"
+                    activeColor: Theme.white
+                    checkable: true
                 }
 
             }
 
         }
 
-        DeckRow {
-            id: decksAB
+        Skin.DeckRow {
+            id: decks12
 
-            width: root.width
-            height: 180
-            leftDeck: "[Channel1]"
-            rightDeck: "[Channel2]"
+            leftDeckGroup: "[Channel1]"
+            rightDeckGroup: "[Channel2]"
+            width: parent.width - 10
+            x: 5
         }
 
-        DeckRow {
-            id: decksCD
+        Skin.CrossfaderRow {
+            id: crossfader
 
-            property bool stateHidden: true
+            crossfaderWidth: decks12.mixer.width
+            width: parent.width - 10
+            x: 5
+        }
 
-            function toggle() {
-                stateHidden = !stateHidden;
+        Skin.DeckRow {
+            id: decks34
+
+            leftDeckGroup: "[Channel3]"
+            rightDeckGroup: "[Channel4]"
+            width: parent.width - 10
+            x: 5
+
+            states: Skin.HiddenState {
+                when: !root.show4decks
+                target: decks34
             }
 
-            width: root.width
-            height: 180
-            leftDeck: "[Channel3]"
-            rightDeck: "[Channel4]"
-            states: [
-                State {
-                    when: !decksCD.stateHidden
+            transitions: Skin.HiddenTransition {
+                target: decks34
+            }
 
-                    PropertyChanges {
-                        target: decksCD
-                        opacity: 1
-                        visible: true
-                    }
-
-                },
-                State {
-                    when: decksCD.stateHidden
-
-                    PropertyChanges {
-                        target: decksCD
-                        opacity: 0
-                        visible: false
-                    }
-
-                }
-            ]
-            transitions: [
-                Transition {
-                    enabled: !decksCD.stateHidden
-
-                    SequentialAnimation {
-                        NumberAnimation {
-                            target: decksCD
-                            property: "opacity"
-                            duration: 150
-                        }
-
-                        PropertyAction {
-                            target: decksCD
-                            property: "visible"
-                        }
-
-                    }
-
-                },
-                Transition {
-                    enabled: decksCD.stateHidden
-
-                    SequentialAnimation {
-                        PropertyAction {
-                            target: decksCD
-                            property: "visible"
-                        }
-
-                        NumberAnimation {
-                            target: decksCD
-                            property: "opacity"
-                            duration: 150
-                        }
-
-                    }
-
-                }
-            ]
         }
 
         Library {

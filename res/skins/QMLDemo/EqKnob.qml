@@ -1,35 +1,39 @@
+import "." as Skin
+import Mixxx 0.1 as Mixxx
 import Mixxx.Controls 0.1 as MixxxControls
 import QtQuick 2.12
+import "Theme"
 
-Item {
+Skin.Knob {
     id: root
 
-    required property string channelGroup
-    property alias key: knob.key
+    property string statusGroup: root.group // required
+    property string statusKey // required
 
-    width: 35
-    height: 35
+    Mixxx.ControlProxy {
+        id: statusControl
 
-    MixxxControls.Knob {
-        id: knob
+        group: root.statusGroup
+        key: root.statusKey
+    }
 
-        anchors.fill: parent
-        group: "[EqualizerRack1_" + channelGroup + "_Effect1]"
-        arc: true
-        arcRadius: 15
-        arcColor: "#858585"
-        arcWidth: 2
+    Rectangle {
+        id: statusButton
 
-        background: Image {
-            source: "../LateNight/palemoon/knobs/knob_bg_master.svg"
-            width: 35
-            height: 30
-        }
+        anchors.left: root.left
+        anchors.bottom: root.bottom
+        anchors.leftMargin: 6
+        anchors.bottomMargin: 2
+        width: 8
+        height: width
+        radius: width / 2
+        border.width: 1
+        border.color: Theme.buttonNormalColor
+        color: statusControl.value ? root.color : "transparent"
 
-        foreground: Image {
-            source: "../LateNight/palemoon/knobs/knob_indicator_regular_red.svg"
-            width: 35
-            height: 30
+        MouseArea {
+            anchors.fill: parent
+            onClicked: statusControl.value = !statusControl.value
         }
 
     }

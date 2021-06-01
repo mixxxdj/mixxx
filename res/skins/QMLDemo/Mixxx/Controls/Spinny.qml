@@ -1,13 +1,14 @@
 import Mixxx 0.1 as Mixxx
 import QtQuick 2.12
+import QtQuick.Controls 2.12
 
 Item {
     id: root
 
-    required property string group
+    property string group // required
     property real rpm: 33
     property bool indicatorVisible: true
-    property alias indicatorDelegate: indicatorContainer.data
+    property alias indicator: indicatorContainer.contentItem
 
     // Avoid animation short blinking of spinny during startup
     Component.onCompleted: indicatorTransition.enabled = true
@@ -33,22 +34,17 @@ Item {
         key: "playposition"
     }
 
-    Item {
+    Control {
         id: indicatorContainer
 
         anchors.fill: parent
         visible: opacity > 0
 
-        Item {
-            anchors.fill: parent
-
-            data: Rectangle {
-                height: root.height / 2
-                width: height / 12
-                anchors.horizontalCenter: parent.horizontalCenter
-                anchors.top: parent.top
-            }
-
+        contentItem: Rectangle {
+            height: root.height / 2
+            width: height / 12
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.top: parent.top
         }
 
         transform: Rotation {
