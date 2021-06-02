@@ -150,24 +150,20 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
         return;
     }
 
-    TrackModel* newModel = nullptr;
-
-    /* If the model has not changed
-     * there's no need to exchange the headers
-     * this will cause a small GUI freeze
-     */
+    // If the model has not changed
+    // there's no need to exchange the headers
+    // this will cause a small GUI freeze
     if (getTrackModel() == trackModel) {
         // Re-sort the table even if the track model is the same. This triggers
         // a select() if the table is dirty.
         doSortByColumn(horizontalHeader()->sortIndicatorSection(),
                 horizontalHeader()->sortIndicatorOrder());
         return;
-    } else {
-        newModel = trackModel;
-        saveVScrollBarPos(getTrackModel());
-        //saving current vertical bar position
-        //using address of track model as key
     }
+
+    //saving current vertical bar position
+    //using address of track model as key
+    saveVScrollBarPos(getTrackModel());
 
     setVisible(false);
 
@@ -313,7 +309,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel* model) {
 
     setVisible(true);
 
-    restoreVScrollBarPos(newModel);
+    restoreVScrollBarPos(trackModel);
     // restoring scrollBar position using model pointer as key
     // scrollbar positions with respect to different models are backed by map
     initTrackMenu();
